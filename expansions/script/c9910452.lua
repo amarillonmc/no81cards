@@ -89,26 +89,27 @@ function c9910452.cfilter(c)
 end
 function c9910452.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local ct=Duel.GetMatchingGroupCount(c9910452.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		local ct=Duel.GetMatchingGroupCount(c9910452.cfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 		if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<ct then return false end
 		local g=Duel.GetDecktopGroup(tp,ct)
 		return g:FilterCount(Card.IsAbleToHand,nil)>0
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
+function c9910452.thfilter(c)
+	return c:IsSetCard(0x9950) and c:IsAbleToHand()
+end
 function c9910452.thop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local ct=Duel.GetMatchingGroupCount(c9910452.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local ct=Duel.GetMatchingGroupCount(c9910452.cfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	Duel.ConfirmDecktop(tp,ct)
 	local g=Duel.GetDecktopGroup(tp,ct)
-	if g:GetCount()>0 then
-		local tg=g:Filter(Card.IsAbleToHand,nil)
-		if tg:GetCount()>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg=tg:Select(tp,1,1,nil)
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,sg)
-		end
-		Duel.ShuffleDeck(tp)
+	local tg=g:Filter(c9910452.thfilter,nil)
+	if #tg>0 and Duel.SelectYesNo(tp,aux.Stringid(9910452,3)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=tg:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
 	end
+	Duel.ShuffleDeck(tp)
 end

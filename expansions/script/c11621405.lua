@@ -49,7 +49,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,nil,tp,LOCATION_DECK)
 end
 function cm.filter(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x5220) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

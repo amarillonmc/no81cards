@@ -36,7 +36,6 @@ function c11621412.initial_effect(c)
 	c:RegisterEffect(e3)
 	cm[c]=e3  
 end
-cm.SetCard_THY_PeachblossomCountry=true 
 --
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -54,15 +53,15 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEDOWN)
 	--  local ag=Duel.SelectMatchingCard(tp,Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	--  if ag:GetCount()>0 then
-	--	Duel.HintSelection(ag)
-	--	Duel.BreakEffect()
-	--	Duel.Release(ag,REASON_EFFECT)
+	--  Duel.HintSelection(ag)
+	--  Duel.BreakEffect()
+	--  Duel.Release(ag,REASON_EFFECT)
 	--  end
 	--end
 end
 --02
 function cm.ntrfilter(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x5220) and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
 end
 function cm.ntrcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF and Duel.IsExistingMatchingCard(cm.ntrfilter,tp,LOCATION_MZONE,0,1,nil)

@@ -56,7 +56,7 @@ end
 
 --activate
 function cm.thfilter(c)  
-	return c:IsType(TYPE_MONSTER) and c.yaojishi and c:IsAbleToHand()  
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xc220) and c:IsAbleToHand()  
 end  
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)  
 	if not e:GetHandler():IsRelateToEffect(e) then return end  
@@ -78,16 +78,16 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESET_CHAIN,0,1)
 end  
 function cm.eftg(e,c)  
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c.tezhiyao and c:IsPublic() 
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x5221) and c:IsPublic() 
 end  
 --destroy
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and rc.tezhiyao and rc:GetFlagEffect(m)==0
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and rc:IsSetCard(0x5221) and rc:GetFlagEffect(m)==0
 end
 function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and rc.tezhiyao and rc:GetFlagEffect(m)>0
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and rc:IsSetCard(0x5221) and rc:GetFlagEffect(m)>0
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end  

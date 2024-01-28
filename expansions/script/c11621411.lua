@@ -43,7 +43,6 @@ function c11621411.initial_effect(c)
 	e4:SetValue(cm.sumlimit)
 	c:RegisterEffect(e4)  
 end
-cm.SetCard_THY_PeachblossomCountry=true 
 --
 function cm.sumlimit(e,c)
 	return not c:IsRace(RACE_ZOMBIE)
@@ -68,46 +67,46 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
 	--  local ag=Duel.SelectMatchingCard(tp,cm.posfilter,tp,0,LOCATION_MZONE,1,1,nil)
 	--  if ag:GetCount()>0 then
-	--	  Duel.HintSelection(ag)
-	--	  Duel.BreakEffect()
-	--	  local tc=ag:GetFirst()
-	--	  local code=tc:GetOriginalCodeRule()
-	--	  --disable
-	--	  local e1=Effect.CreateEffect(c)
-	--	  e1:SetType(EFFECT_TYPE_SINGLE)
-	--	  e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
-	--	  e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	--	  e1:SetValue(ATTRIBUTE_LIGHT)
-	--	  e1:SetReset(RESET_PHASE+PHASE_END)
-	--	  tc:RegisterEffect(e1)
-	--	  local e2=e1:Clone()
-	--	  e2:SetCode(EFFECT_CHANGE_RACE)
-	--	  e2:SetValue(RACE_ZOMBIE)
-	--	  tc:RegisterEffect(e2)
-	--	  local e3=e1:Clone()
-	--	  if tc:IsLevelAbove(1) then
-	--		  e2:SetCode(EFFECT_CHANGE_LEVEL)
-	--	  end
-	--	  if tc:IsRankAbove(1) then
-	--		  e3:SetCode(EFFECT_CHANGE_RANK)
-	--	  end
-	--	  if tc:IsLinkAbove(1) then
-	--		  e3:SetCode(EFFECT_UPDATE_LINK)
-	--	  end
-	--	 e3:SetValue(3)
-	--	  tc:RegisterEffect(e3)
-	--	  local e4=e1:Clone()
-	--	  e4:SetCode(EFFECT_CHANGE_CODE)
-	--	  e4:SetType(EFFECT_TYPE_SINGLE)
-	--	  e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	--	  e4:SetValue(11621402)
-	--	  tc:RegisterEffect(e4)
+	--	Duel.HintSelection(ag)
+	--	Duel.BreakEffect()
+	--	local tc=ag:GetFirst()
+	--	local code=tc:GetOriginalCodeRule()
+	--	--disable
+	--	local e1=Effect.CreateEffect(c)
+	--	e1:SetType(EFFECT_TYPE_SINGLE)
+	--	e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+	--	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	--	e1:SetValue(ATTRIBUTE_LIGHT)
+	--	e1:SetReset(RESET_PHASE+PHASE_END)
+	--	tc:RegisterEffect(e1)
+	--	local e2=e1:Clone()
+	--	e2:SetCode(EFFECT_CHANGE_RACE)
+	--	e2:SetValue(RACE_ZOMBIE)
+	--	tc:RegisterEffect(e2)
+	--	local e3=e1:Clone()
+	--	if tc:IsLevelAbove(1) then
+	--		e2:SetCode(EFFECT_CHANGE_LEVEL)
+	--	end
+	--	if tc:IsRankAbove(1) then
+	--		e3:SetCode(EFFECT_CHANGE_RANK)
+	--	end
+	--	if tc:IsLinkAbove(1) then
+	--		e3:SetCode(EFFECT_UPDATE_LINK)
+	--	end
+	--   e3:SetValue(3)
+	--	tc:RegisterEffect(e3)
+	--	local e4=e1:Clone()
+	--	e4:SetCode(EFFECT_CHANGE_CODE)
+	--	e4:SetType(EFFECT_TYPE_SINGLE)
+	--	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	--	e4:SetValue(11621402)
+	--	tc:RegisterEffect(e4)
 	--  end
 	--end
 end
 --02
 function cm.ntrfilter(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x5220) and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
 end
 function cm.ntrcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF and Duel.IsExistingMatchingCard(cm.ntrfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -188,7 +187,7 @@ function cm.crtg2(e,c)
 end
 --03
 function cm.thfilter(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsAbleToRemove()
+	return c:IsSetCard(0x5220) and c:IsAbleToRemove()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end

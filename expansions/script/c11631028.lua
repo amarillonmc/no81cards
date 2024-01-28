@@ -2,7 +2,6 @@
 local m=11631028
 local cm=_G["c"..m]
 --strings
-cm.yaojishi=true 
 function cm.initial_effect(c)
 	--draw  
 	local e1=Effect.CreateEffect(c)  
@@ -38,7 +37,7 @@ function cm.initial_effect(c)
 end
 --draw
 function cm.filter(c)  
-	return c.yaojishi and c:IsSummonable(true,nil)
+	return c:IsSetCard(0xc220) and c:IsSummonable(true,nil)
 end  
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return  Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil)  and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end  
@@ -56,7 +55,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 end  
 --destroy replace
 function cm.repfilter(c,tp)
-	return c:IsFaceup() and c:IsControler(tp) and c:IsOnField() and (c.zhiyaoshu or c.yaojishi )  and not c:IsReason(REASON_REPLACE) --and c:IsReason(REASON_DESTROY)
+	return c:IsFaceup() and c:IsControler(tp) and c:IsOnField() and (c:IsSetCard(0x3221) or c:IsSetCard(0xc220) )  and not c:IsReason(REASON_REPLACE) --and c:IsReason(REASON_DESTROY)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -72,5 +71,5 @@ function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 end
 --act in hand
 function cm.actfilter(e,c)
-	return c.tezhiyao and c:IsPublic()
+	return c:IsSetCard(0x5221) and c:IsPublic()
 end

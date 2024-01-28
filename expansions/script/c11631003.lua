@@ -2,7 +2,6 @@
 local m=11631003
 local cm=_G["c"..m]
 --strings
-cm.zhiyaoshu=true 
 function cm.initial_effect(c)
 	--Activate  
 	local e1=Effect.CreateEffect(c)  
@@ -39,13 +38,13 @@ end
 
 --search
 function cm.cfilter(c)
-	return c.yaojishi and c:IsFaceup()
+	return c:IsSetCard(0xc220) and c:IsFaceup()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.filter(c)
-	return c.tezhiyao and c:IsAbleToHand()
+	return c:IsSetCard(0x5221) and c:IsAbleToHand()
 end  
 function cm.tgfilter(c,tp)
 	return c:IsAbleToDeck() and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,c)
@@ -89,10 +88,10 @@ function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	return (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) and Duel.GetTurnPlayer()==1-tp and not cm.con(e,tp,eg,ep,ev,re,r,rp) 
 end
 function cm.filter2(c)
-	return c.yaojishi and c:IsAbleToHand()
+	return c:IsSetCard(0xc220) and c:IsAbleToHand()
 end
 function cm.filter22(c)
-	return c.yaojishi
+	return c:IsSetCard(0xc220)
 end
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 end

@@ -37,7 +37,6 @@ function c11621407.initial_effect(c)
 	c:RegisterEffect(e3) 
 	cm[c]=e3 
 end
-cm.SetCard_THY_PeachblossomCountry=true 
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,m,0,TYPES_EFFECT_TRAP_MONSTER,1100,900,3,RACE_ZOMBIE,ATTRIBUTE_LIGHT) end
@@ -70,7 +69,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 --02
 function cm.ntrfilter(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x5220) and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
 end
 function cm.ntrcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF and Duel.IsExistingMatchingCard(cm.ntrfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -123,7 +122,7 @@ function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
 end
 --03
 function cm.thfilter(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x5220) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

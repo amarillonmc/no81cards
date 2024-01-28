@@ -36,14 +36,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3) 
 	cm[c]=e3	
 end
-cm.SetCard_THY_PeachblossomCountry=true 
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,m,0,TYPES_EFFECT_TRAP_MONSTER,2000,0,3,RACE_ZOMBIE,ATTRIBUTE_LIGHT) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.filter(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x5220) and c:IsType(TYPE_MONSTER)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -55,7 +54,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.thfilter(c,tp)
-	return c.SetCard_THY_PeachblossomCountry and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and (not c:IsForbidden()) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or c:IsType(TYPE_FIELD)) 
+	return c:IsSetCard(0x5220) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and (not c:IsForbidden()) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or c:IsType(TYPE_FIELD)) 
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,tp) end
@@ -74,7 +73,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.rlsfilter(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x5220) and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
 end
 function cm.rlscon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF and Duel.IsExistingMatchingCard(cm.rlsfilter,tp,LOCATION_MZONE,0,1,nil)

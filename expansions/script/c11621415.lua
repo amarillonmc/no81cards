@@ -35,7 +35,6 @@ function c11621415.initial_effect(c)
 	c:RegisterEffect(e3)
 	cm[c]=e3	  
 end
-cm.SetCard_THY_PeachblossomCountry=true 
 --
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -43,7 +42,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.filter(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x5220) and c:IsType(TYPE_MONSTER)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -57,21 +56,21 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	--  local ag=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	--  if ag:GetCount()>0 then
-	--	Duel.HintSelection(ag)
-	--	Duel.BreakEffect()
-	--	--immune
-	--	local e1=Effect.CreateEffect(e:GetHandler())
-	--	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
-	--	e1:SetCode(EFFECT_DESTROY_REPLACE)
-	--	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	--  Duel.HintSelection(ag)
+	--  Duel.BreakEffect()
+	--  --immune
+	--  local e1=Effect.CreateEffect(e:GetHandler())
+	--  e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+	--  e1:SetCode(EFFECT_DESTROY_REPLACE)
+	--  e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	--   e1:SetRange(LOCATION_MZONE)
-	--	e1:SetTarget(cm.reptg)
-	--	e1:SetValue(cm.repval)
-	--	e1:SetLabel(p)
-	--	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	--	--e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	--	ag:GetFirst():RegisterEffect(e1,true)
-	--	ag:GetFirst():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+	--  e1:SetTarget(cm.reptg)
+	--  e1:SetValue(cm.repval)
+	--  e1:SetLabel(p)
+	--  e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	--  --e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	--  ag:GetFirst():RegisterEffect(e1,true)
+	--  ag:GetFirst():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 	--  end
 	--end
 end
@@ -94,13 +93,13 @@ function cm.repval(e,c)
 end
 --02
 function cm.ntrfilter(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x5220) and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
 end
 function cm.ntrcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF and Duel.IsExistingMatchingCard(cm.ntrfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.spfilter(c,tp)
-	return c.SetCard_THY_PeachblossomCountry  and c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_TRAP) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetOriginalCode(),0,TYPES_EFFECT_TRAP_MONSTER,c:GetBaseAttack(),c:GetBaseDefense(),c:GetOriginalLevel(),c:GetOriginalRace(),c:GetOriginalAttribute())
+	return c:IsSetCard(0x5220)  and c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_TRAP) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetOriginalCode(),0,TYPES_EFFECT_TRAP_MONSTER,c:GetBaseAttack(),c:GetBaseDefense(),c:GetOriginalLevel(),c:GetOriginalRace(),c:GetOriginalAttribute())
 end
 function cm.ntrtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -124,7 +123,7 @@ function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
 end
 --03
 function cm.thfilter(c)
-	return c.SetCard_THY_PeachblossomCountry  and c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_TRAP) and c:IsAbleToHand() and (c:IsFaceup() or c:IsLocation(LOCATION_REMOVED))
+	return c:IsSetCard(0x5220)  and c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_TRAP) and c:IsAbleToHand() and (c:IsFaceup() or c:IsLocation(LOCATION_REMOVED))
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end

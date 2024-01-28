@@ -34,7 +34,7 @@ function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return (not c:IsRace(RACE_ZOMBIE)) and c:IsLocation(LOCATION_EXTRA)
 end
 function cm.filter(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsAbleToHand()
+	return c:IsSetCard(0x5220) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end

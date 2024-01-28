@@ -91,7 +91,7 @@ end
 end
 end
 function s.filter9(c,tp,aa)
-	return Card.IsPublic(c) and c:IsAttribute(aa) 
+	return Card.IsPublic(c) and Card.IsAttribute(c,aa) 
 end
 function s.lvcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffectLabel(tp,s)

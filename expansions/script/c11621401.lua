@@ -41,7 +41,6 @@ function c11621401.initial_effect(c)
 	e5:SetOperation(cm.setop)
 	c:RegisterEffect(e5)
 end
-cm.SetCard_THY_PeachblossomCountry=true 
 function cm.efilter(e,te)
 	return te:IsActiveType(TYPE_TRAP) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
 end
@@ -90,7 +89,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --02
 function cm.setfilter(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSSetable()
+	return c:IsSetCard(0x5220) and c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSSetable()
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) end

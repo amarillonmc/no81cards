@@ -37,7 +37,6 @@ function c11621414.initial_effect(c)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3) 
 end
-cm.SetCard_THY_PeachblossomCountry=true 
 --
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -45,7 +44,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.filter(c,e,tp)
-	return c.SetCard_THY_PeachblossomCountry and c:IsCode(11621401) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,true) --c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x5220) and c:IsCode(11621401) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,true) --c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -68,13 +67,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 --02
 function cm.ntrfilter(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x5220) and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
 end
 function cm.ntrcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.ntrfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.spfilter(c,tp)
-	return c.SetCard_THY_PeachblossomCountry  and c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_TRAP) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetOriginalCode(),0,TYPES_EFFECT_TRAP_MONSTER,c:GetBaseAttack(),c:GetBaseDefense(),c:GetOriginalLevel(),c:GetOriginalRace(),c:GetOriginalAttribute())
+	return c:IsSetCard(0x5220)  and c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_TRAP) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetOriginalCode(),0,TYPES_EFFECT_TRAP_MONSTER,c:GetBaseAttack(),c:GetBaseDefense(),c:GetOriginalLevel(),c:GetOriginalRace(),c:GetOriginalAttribute())
 end
 function cm.ntrtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -101,7 +100,7 @@ function cm.mfilter(c,e,tp,eg,ep,ev,re,r,rp)
 		if not te then return false end
 		local tg=te:GetTarget()
 		if tg and not tg(e,tp,eg,ep,ev,re,r,rp,0,nil,c) then return false end
-	return c.SetCard_THY_PeachblossomCountry  and c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_TRAP) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and not c:IsCode(m)
+	return c:IsSetCard(0x5220)  and c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_TRAP) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and not c:IsCode(m)
 end
 --
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -34,10 +34,9 @@ function c11621406.initial_effect(c)
 	e3:SetOperation(cm.atkop)
 	c:RegisterEffect(e3)
 end
-cm.SetCard_THY_PeachblossomCountry=true 
 --
 function cm.thfilter1(c)
-	return not c:IsCode(m) and c.SetCard_THY_PeachblossomCountry and c:IsAbleToHand()-- and c:IsType(TYPE_TRAP)
+	return not c:IsCode(m) and c:IsSetCard(0x5220) and c:IsAbleToHand()-- and c:IsType(TYPE_TRAP)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.thfilter1,tp,LOCATION_DECK,0,nil)
@@ -50,12 +49,12 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function cm.indtg(e,c)
-	return c.SetCard_THY_PeachblossomCountry
+	return c:IsSetCard(0x5220)
 end
 --
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	return rp==tp and rc.SetCard_THY_PeachblossomCountry and rc:IsType(TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+	return rp==tp and rc:IsSetCard(0x5220) and rc:IsType(TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -66,7 +65,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(-200)
+		e1:SetValue(-300)
 		tc:RegisterEffect(e1)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_UPDATE_DEFENSE)

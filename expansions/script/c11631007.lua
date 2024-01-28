@@ -2,7 +2,6 @@
 local m=11631007
 local cm=_G["c"..m]
 --strings
-cm.yaojishi=true 
 function cm.initial_effect(c)
 	--spsummon  
 	local e1=Effect.CreateEffect(c)  
@@ -41,7 +40,7 @@ end
 
 --spsummon
 function cm.spfilter(c)
-	return c.yaojishi and c:IsFaceup() and not c:IsCode(m)
+	return c:IsSetCard(0xc220) and c:IsFaceup() and not c:IsCode(m)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)  
 	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -60,7 +59,7 @@ end
 
 --draw
 function cm.tdfilter(c)  
-	return (c.yaojishi or c.zhiyaoshu or c.tezhiyao) and c:IsAbleToDeck()  
+	return (c:IsSetCard(0xc220) or c:IsSetCard(0x3221) or c:IsSetCard(0x5221)) and c:IsAbleToDeck()  
 end  
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.tdfilter(chkc) end  
@@ -86,5 +85,5 @@ end
 
 --act in hand
 function cm.actfilter(e,c)
-	return c.tezhiyao and c:IsPublic()
+	return c:IsSetCard(0x5221) and c:IsPublic()
 end

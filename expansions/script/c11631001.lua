@@ -2,7 +2,6 @@
 local m=11631001
 local cm=_G["c"..m]
 --strings
-cm.yaojishi=true 
 function cm.initial_effect(c)
 	--search  
 	local e1=Effect.CreateEffect(c)  
@@ -46,7 +45,7 @@ end
 
 --search
 function cm.filter(c)  
-	return c.zhiyaoshu and c:IsAbleToHand()  
+	return c:IsSetCard(0x3221) and c:IsAbleToHand()  
 end  
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end  
@@ -71,7 +70,7 @@ function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function cm.filter2(c)  
-	return c.tezhiyao and c:IsAbleToHand()  
+	return c:IsSetCard(0x5221) and c:IsAbleToHand()  
 end 
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil) end  
@@ -99,5 +98,5 @@ end
 
 --act in hand
 function cm.actfilter(e,c)
-	return c.tezhiyao and c:IsPublic()
+	return c:IsSetCard(0x5221) and c:IsPublic()
 end

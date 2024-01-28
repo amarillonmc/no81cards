@@ -2,7 +2,6 @@
 local m=11631030
 local cm=_G["c"..m]
 --strings
-cm.yaojishi=true 
 function cm.initial_effect(c)
 	--synchro summon  
 	aux.AddSynchroProcedure(c,cm.matfilter,aux.NonTuner(cm.matfilter2),1,1)  
@@ -60,7 +59,7 @@ function cm.matfilter(c)
 	return c:IsCode(11631007)
 end  
 function cm.matfilter2(c)
-	return c.yaojishi
+	return c:IsSetCard(0xc220)
 end
 
 --show
@@ -124,7 +123,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.spfilter(c,e,tp)
-	return c.yaojishi and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xc220) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) end
@@ -143,15 +142,15 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.etarget(e,c)
-	return (c.zhiyaoshu or c.yaojishi)  and c~=e:GetHandler()
+	return (c:IsSetCard(0x3221) or c:IsSetCard(0xc220))  and c~=e:GetHandler()
 end
 
 --search/negate
 function cm.cfilter1(c)
-	return c.yaojishi and c:IsAttribute(ATTRIBUTE_WATER) and not c:IsType(TYPE_TUNER)
+	return c:IsSetCard(0xc220) and c:IsAttribute(ATTRIBUTE_WATER) and not c:IsType(TYPE_TUNER)
 end
 function cm.cfilter2(c)
-	return c.yaojishi and c:IsAttribute(ATTRIBUTE_FIRE) and not c:IsType(TYPE_TUNER)
+	return c:IsSetCard(0xc220) and c:IsAttribute(ATTRIBUTE_FIRE) and not c:IsType(TYPE_TUNER)
 end
 function cm.matcheck1(c)
 	return c:IsSummonType(SUMMON_TYPE_SYNCHRO) and c:GetMaterial():IsExists(cm.cfilter1,1,nil)
@@ -165,7 +164,7 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and (cm.matcheck1(c) or Duel.IsChainNegatable(ev))
 end
 function cm.thfilter(c)
-	return c:IsAbleToHand() and (c.tezhiyao or c.zhiyaoshu)
+	return c:IsAbleToHand() and (c:IsSetCard(0x5221) or c:IsSetCard(0x3221))
 end
 function cm.tgf(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -197,7 +196,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then  
 			Duel.ConfirmCards(1-tp,g)  
 			local tc=Duel.GetOperatedGroup():GetFirst()
-			if tc and tc:IsLocation(LOCATION_HAND) and tc.tezhiyao then
+			if tc and tc:IsLocation(LOCATION_HAND) and tc:IsSetCard(0x5221)
+ then
 				Duel.ShuffleHand(tp)
 				local e1=Effect.CreateEffect(c) 
 				e1:SetDescription(aux.Stringid(m,1))
@@ -220,12 +220,12 @@ end
 --add attack
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler()
-	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and rp==tp and re:GetHandler().tezhiyao and c:GetFlagEffect(1)>0 then  
+	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and rp==tp and re:GetHandler():IsSetCard(0x5221)and c:GetFlagEffect(1)>0 then  
 		Duel.Recover(tp,1000,REASON_EFFECT)
 	end  
 end  
 
 --act in hand
 function cm.actfilter(e,c)
-	return c.tezhiyao and c:IsPublic()
+	return c:IsSetCard(0x5221) and c:IsPublic()
 end

@@ -14,9 +14,8 @@ function c11621413.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)	
 end
-cm.SetCard_THY_PeachblossomCountry=true 
 function cm.cfilter1(c)
-	return c.SetCard_THY_PeachblossomCountry and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x5220) and c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
 end
 function cm.cfilter2(c)
 	return c:IsCode(11621402) and c:IsFaceup() and c:IsControler(c:GetOwner())

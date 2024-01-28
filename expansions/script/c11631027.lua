@@ -2,7 +2,6 @@
 local m=11631027
 local cm=_G["c"..m]
 --strings
-cm.yaojishi=true 
 function cm.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
@@ -39,7 +38,7 @@ end
 
 --spsummon
 function cm.spfilter(c,e,tp)
-	return c.yaojishi and not c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xc220) and not c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -64,12 +63,12 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c.yaojishi
+	return not c:IsSetCard(0xc220)
 end
 
 --public
 function cm.pbfilter(c)
-	return c.tezhiyao and not c:IsPublic()
+	return c:IsSetCard(0x5221) and not c:IsPublic()
 end
 function cm.pbtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.pbfilter,tp,LOCATION_HAND,0,1,nil) end
@@ -91,5 +90,5 @@ end
 
 --act in hand
 function cm.actfilter(e,c)
-	return c.tezhiyao and c:IsPublic()
+	return c:IsSetCard(0x5221) and c:IsPublic()
 end

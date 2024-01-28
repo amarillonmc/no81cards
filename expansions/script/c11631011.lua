@@ -1,8 +1,7 @@
 --特制药·金疮药
 local m=11631011
 local cm=_G["c"..m]
---strings
-cm.tezhiyao=true 
+--strings 
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -30,7 +29,7 @@ end
 
 --activate
 function cm.cfilter(c)
-	return c.yaojishi and c:IsFaceup()
+	return c:IsSetCard(0xc220) and c:IsFaceup()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)

@@ -30,36 +30,20 @@ function c9910060.chainfilter(re,tp,cid)
 	return not (re:GetHandler():IsRace(RACE_FAIRY) and re:IsActiveType(TYPE_MONSTER)
 		and Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)==LOCATION_HAND)
 end
+function c9910060.ovfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x9951)
+end
 function c9910060.cfilter(c)
 	return c:IsAbleToRemoveAsCost() and c:IsAttribute(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)
 end
-function c9910060.ovfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_FAIRY)
-end
-function c9910060.selector(c,tp,g,sg,i)
-	sg:AddCard(c)
-	g:RemoveCard(c)
-	local flag=false
-	if i<2 then
-		flag=g:IsExists(c9910060.selector,1,nil,tp,g,sg,i+1)
-	else
-		flag=sg:FilterCount(Card.IsAttribute,nil,ATTRIBUTE_LIGHT)>0
-			and sg:FilterCount(Card.IsAttribute,nil,ATTRIBUTE_DARK)>0
-	end
-	sg:RemoveCard(c)
-	g:AddCard(c)
-	return flag
-end
 function c9910060.xyzop(e,tp,chk)
 	local g=Duel.GetMatchingGroup(c9910060.cfilter,tp,LOCATION_GRAVE,0,nil)
-	local sg=Group.CreateGroup()
-	if chk==0 then return (Duel.GetCustomActivityCount(9910060,tp,ACTIVITY_CHAIN)~=0 or Duel.GetCustomActivityCount(9910060,1-tp,ACTIVITY_CHAIN)~=0) and Duel.GetFlagEffect(tp,9910060)==0 and g:IsExists(c9910060.selector,1,nil,tp,g,sg,1) end
-	for i=1,2 do
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g1=g:FilterSelect(tp,c9910060.selector,1,1,nil,tp,g,sg,i)
-		sg:Merge(g1)
-		g:Sub(g1)
-	end
+	if chk==0 then return (Duel.GetCustomActivityCount(9910060,tp,ACTIVITY_CHAIN)~=0
+		or Duel.GetCustomActivityCount(9910060,1-tp,ACTIVITY_CHAIN)~=0)
+		and Duel.GetFlagEffect(tp,9910060)==0
+		and g:CheckSubGroup(aux.gfcheck,2,2,Card.IsAttribute,ATTRIBUTE_LIGHT,ATTRIBUTE_DARK) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local sg=g:SelectSubGroup(tp,aux.gfcheck,false,2,2,Card.IsAttribute,ATTRIBUTE_LIGHT,ATTRIBUTE_DARK)
 	Duel.Remove(sg,POS_FACEUP,REASON_COST)
 	Duel.RegisterFlagEffect(tp,9910060,RESET_PHASE+PHASE_END,0,1)
 end

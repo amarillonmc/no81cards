@@ -47,16 +47,15 @@ function c11621402.initial_effect(c)
 	e6:SetOperation(cm.setop)
 	c:RegisterEffect(e6)
 end
-cm.SetCard_THY_PeachblossomCountry=true 
 function cm.atkfilter(c)
-	return c:IsType(TYPE_TRAP) and c:IsFaceup() and c.SetCard_THY_PeachblossomCountry
+	return c:IsType(TYPE_TRAP) and c:IsFaceup() and c:IsSetCard(0x5220)
 end
 function cm.atkval(e,c)
 	return Duel.GetMatchingGroupCount(cm.atkfilter,c:GetControler(),LOCATION_ONFIELD,0,nil)*800
 end
 --01
 function cm.rfilter(c,tp)
-	return c:IsType(TYPE_TRAP) and c.SetCard_THY_PeachblossomCountry and (c:IsReleasable() or c:IsLocation(LOCATION_HAND))
+	return c:IsType(TYPE_TRAP) and c:IsSetCard(0x5220) and (c:IsReleasable() or c:IsLocation(LOCATION_HAND))
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.rfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil,tp) end
@@ -87,7 +86,7 @@ function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return loc>=g and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 end
 function cm.setfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_TRAP) and c:IsSSetable() and c.SetCard_THY_PeachblossomCountry
+	return c:IsFaceup() and c:IsType(TYPE_TRAP) and c:IsSSetable() and c:IsSetCard(0x5220)
 end
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 	local rg=Duel.GetMatchingGroup(cm.setfilter,tp,LOCATION_ONFIELD,0,nil)

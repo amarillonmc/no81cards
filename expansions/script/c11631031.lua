@@ -2,7 +2,6 @@
 local m=11631031
 local cm=_G["c"..m]
 --strings
-cm.tezhiyao=true 
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -31,13 +30,13 @@ end
 
 --activate
 function cm.cfilter(c)
-	return c.yaojishi and c:IsFaceup()
+	return c:IsSetCard(0xc220) and c:IsFaceup()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
 function cm.thfilter(c)
-	return (c.yaojishi or c.zhiyaoshu or c.tezhiyao)  and c:IsAbleToHand()
+	return (c:IsSetCard(0xc220) or c:IsSetCard(0x3221) or c:IsSetCard(0x5221))  and c:IsAbleToHand()
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and cm.thfilter(chkc) end  
@@ -53,7 +52,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.vfilter(c)
-	return c.tezhiyao
+	return c:IsSetCard(0x5221)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler()  
