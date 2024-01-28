@@ -39,10 +39,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.cfilter(c)
-	return cm.Qingyu(c) and c:IsFaceup()
+	return cm.Qingyu(c) and c:IsFaceup() and c:IsType(TYPE_MONSTER)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
