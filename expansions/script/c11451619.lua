@@ -48,6 +48,7 @@ end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local tg=mg:SelectSubGroup(tp,cm.dptcheck,true,2,99)
 	if tg and #tg>0 then
 		c:SetMaterial(tg)
