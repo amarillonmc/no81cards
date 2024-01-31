@@ -5539,16 +5539,18 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 		ADIMI_GetChainInfo=Duel.GetChainInfo
 		Duel.GetChainInfo=function(chainc,...)
 			local re=ADIMI_GetChainInfo(chainc,CHAININFO_TRIGGERING_EFFECT)
-			local rc=re:GetHandler()
-			local xe={}
-			if rc then xe={rc:IsHasEffect(53765099)} end
 			local b=false
-			local ls,typ=0
-			for _,v in pairs(xe) do
-				if re==v:GetLabelObject() then
-					b=true
-					ls,typ=v:GetLabel()
-					break
+			if re and aux.GetValueType(re)=="Effect" then
+				local rc=re:GetHandler()
+				local xe={}
+				if rc then xe={rc:IsHasEffect(53765099)} end
+				local ls,typ=0
+				for _,v in pairs(xe) do
+					if re==v:GetLabelObject() then
+						b=true
+						ls,typ=v:GetLabel()
+						break
+					end
 				end
 			end
 			local t={ADIMI_GetChainInfo(chainc,...)}
