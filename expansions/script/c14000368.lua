@@ -38,7 +38,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_GRAVE,0,nil)
 	if chk==0 then return #g>2 and g:IsExists(Card.IsCode,1,nil,14000358) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local tg=g:FilterSelect(tp,Card.IsCode,tp,1,1,nil,14000358)
+	local tg=g:FilterSelect(tp,Card.IsCode,1,1,nil,14000358)
 	local tg1=g:Select(tp,2,2,tg)
 	tg:Merge(tg1)
 	Duel.SendtoDeck(tg,nil,2,REASON_COST)

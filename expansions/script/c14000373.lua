@@ -59,6 +59,7 @@ function cm.cefilter(c,e,tp,eg,ep,ev,re,r,rp)
 	if not m then return false end
 	local te=m.release_effect
 	local tg=nil
+	if not te then return false end
 	if te then
 		tg=te:GetTarget()
 	end
