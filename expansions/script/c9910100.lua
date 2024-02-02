@@ -1,3 +1,4 @@
+if QutryZcd then return end
 QutryZcd = {}
 
 function QutryZcd.AddXyzProcedure(c,f,lv,ct,alterf,maxct,op)

@@ -1,3 +1,4 @@
+if QutryTxjp then return end
 QutryTxjp = {}
 
 function QutryTxjp.AddSpProcedure(c,m)

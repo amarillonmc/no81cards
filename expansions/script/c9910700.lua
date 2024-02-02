@@ -1,3 +1,4 @@
+if QutryYgzw then return end
 QutryYgzw = {}
 
 function QutryYgzw.AddSpProcedure(c,ct)
