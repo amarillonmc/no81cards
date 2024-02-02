@@ -116,7 +116,7 @@ function cm.spfilter2(c,e,tp,att)
 	return res
 end
 function cm.adop2(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
+	if not e:GetHandler():IsRelateToEffect(e) or Duel.GetLocationCount(1-tp,LOCATION_MZONE)<=0 then return end
 	local att=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SPSUMMON)
 	local g=Duel.GetMatchingGroup(cm.spfilter2,tp,0,LOCATION_HAND,nil,e,1-tp,att)
