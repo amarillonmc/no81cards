@@ -1,5 +1,5 @@
 --战车道装甲·四号坦克
-Duel.LoadScript("c9910100.lua")
+dofile("expansions/script/c9910100.lua")
 function c9910105.initial_effect(c)
 	--xyz summon
 	QutryZcd.AddXyzProcedure(c,nil,4,2,c9910105.xyzfilter,99)

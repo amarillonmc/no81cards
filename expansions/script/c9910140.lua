@@ -1,5 +1,5 @@
 --战车道装甲·追猎者
-Duel.LoadScript("c9910100.lua")
+dofile("expansions/script/c9910100.lua")
 function c9910140.initial_effect(c)
 	--xyz summon
 	QutryZcd.AddXyzProcedure(c,nil,3,2,c9910140.xyzfilter,99)

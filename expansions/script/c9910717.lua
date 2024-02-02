@@ -1,5 +1,5 @@
 --远古造物大灭绝
-Duel.LoadScript("c9910700.lua")
+dofile("expansions/script/c9910700.lua")
 function c9910717.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

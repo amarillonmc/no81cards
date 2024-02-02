@@ -1,5 +1,5 @@
 --甜心机仆的欢笑
-Duel.LoadScript("c9910550.lua")
+dofile("expansions/script/c9910550.lua")
 function c9910555.initial_effect(c)
 	--flag
 	QutryTxjp.AddTgFlag(c)

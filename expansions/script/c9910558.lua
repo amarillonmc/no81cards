@@ -1,5 +1,5 @@
 --甜心机仆 秋叶的礼物
-Duel.LoadScript("c9910550.lua")
+dofile("expansions/script/c9910550.lua")
 function c9910558.initial_effect(c)
 	--special summon
 	QutryTxjp.AddSpProcedure(c,9910558)

@@ -1,5 +1,5 @@
 --远古造物 三峡夷陵虫
-Duel.LoadScript("c9910700.lua")
+dofile("expansions/script/c9910700.lua")
 function c9910702.initial_effect(c)
 	--flag
 	QutryYgzw.AddTgFlag(c)

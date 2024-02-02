@@ -1,5 +1,5 @@
 --远古造物 风神翼龙
-Duel.LoadScript("c9910700.lua")
+dofile("expansions/script/c9910700.lua")
 function c9910731.initial_effect(c)
 	--special summon
 	QutryYgzw.AddSpProcedure(c,3)

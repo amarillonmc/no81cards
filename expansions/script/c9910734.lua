@@ -1,5 +1,5 @@
 --远古造物 巴里纳斯鳄
-Duel.LoadScript("c9910700.lua")
+dofile("expansions/script/c9910700.lua")
 function c9910734.initial_effect(c)
 	--special summon
 	QutryYgzw.AddSpProcedure(c,2)

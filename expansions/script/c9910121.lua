@@ -1,5 +1,5 @@
 --战车道装甲·丘吉尔MkⅦ
-Duel.LoadScript("c9910100.lua")
+dofile("expansions/script/c9910100.lua")
 function c9910121.initial_effect(c)
 	--xyz summon
 	QutryZcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),5,2,c9910121.xyzfilter,99)

@@ -1,5 +1,5 @@
 --战车道装甲·百夫长
-Duel.LoadScript("c9910100.lua")
+dofile("expansions/script/c9910100.lua")
 function c9910147.initial_effect(c)
 	--xyz summon
 	QutryZcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),7,3,c9910147.xyzfilter,99)

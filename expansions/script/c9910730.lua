@@ -1,5 +1,5 @@
 --穿梭的远古造物
-Duel.LoadScript("c9910700.lua")
+dofile("expansions/script/c9910700.lua")
 function c9910730.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

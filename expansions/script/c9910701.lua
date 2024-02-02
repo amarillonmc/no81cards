@@ -1,5 +1,5 @@
 --远古造物 狄更逊水母
-Duel.LoadScript("c9910700.lua")
+dofile("expansions/script/c9910700.lua")
 function c9910701.initial_effect(c)
 	--flag
 	QutryYgzw.AddTgFlag(c)

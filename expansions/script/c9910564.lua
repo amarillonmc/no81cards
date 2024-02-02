@@ -1,5 +1,5 @@
 --甜心机仆 天镜的礼物
-Duel.LoadScript("c9910550.lua")
+dofile("expansions/script/c9910550.lua")
 function c9910564.initial_effect(c)
 	--special summon
 	QutryTxjp.AddSpProcedure(c,9910564)

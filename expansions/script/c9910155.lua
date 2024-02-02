@@ -1,5 +1,5 @@
 --战车道装甲·玛蒂尔达
-Duel.LoadScript("c9910100.lua")
+dofile("expansions/script/c9910100.lua")
 function c9910155.initial_effect(c)
 	--xyz summon
 	QutryZcd.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),4,2,c9910155.xyzfilter,99)

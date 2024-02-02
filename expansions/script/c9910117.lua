@@ -1,5 +1,5 @@
 --战车道装甲·三号突击炮
-Duel.LoadScript("c9910100.lua")
+dofile("expansions/script/c9910100.lua")
 function c9910117.initial_effect(c)
 	--xyz summon
 	QutryZcd.AddXyzProcedure(c,nil,5,2,c9910117.xyzfilter,99)

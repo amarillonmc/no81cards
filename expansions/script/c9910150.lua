@@ -1,5 +1,5 @@
 --战车道装甲·亨舍尔虎王
-Duel.LoadScript("c9910100.lua")
+dofile("expansions/script/c9910100.lua")
 function c9910150.initial_effect(c)
 	--xyz summon
 	QutryZcd.AddXyzProcedure(c,nil,6,3,c9910150.xyzfilter,99)

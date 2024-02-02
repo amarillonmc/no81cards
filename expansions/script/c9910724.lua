@@ -1,5 +1,5 @@
 --远古造物 丽蛉
-Duel.LoadScript("c9910700.lua")
+dofile("expansions/script/c9910700.lua")
 function c9910724.initial_effect(c)
 	--special summon
 	QutryYgzw.AddSpProcedure(c,1)

@@ -1,5 +1,5 @@
 --远古造物 中华先光海葵
-Duel.LoadScript("c9910700.lua")
+dofile("expansions/script/c9910700.lua")
 function c9910706.initial_effect(c)
 	--special summon
 	QutryYgzw.AddSpProcedure(c,1)
