@@ -58,7 +58,7 @@ function c9910551.thop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.Remove(sg1,POS_FACEUP,REASON_EFFECT)==0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local tc2=g2:Select(tp,1,1,nil):GetFirst()
-		if tc2 and Duel.Remove(tc2,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
+		if tc2 and Duel.Remove(tc2,0,REASON_EFFECT+REASON_TEMPORARY)~=0 and not tc2:IsReason(REASON_REDIRECT) then
 			tc2:RegisterFlagEffect(9910551,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

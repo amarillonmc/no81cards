@@ -36,6 +36,9 @@ end
 function c9910197.chlimit(e,ep,tp)
 	return tp==ep or not e:GetHandler():IsType(TYPE_MONSTER) or not e:GetHandler():IsLinkState()
 end
+function c9910197.ogfilter(c)
+	return c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT)
+end
 function c9910197.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(c9910197.rmfilter,tp,0,LOCATION_MZONE,nil)
@@ -43,7 +46,7 @@ function c9910197.rmop(e,tp,eg,ep,ev,re,r,rp)
 		local fid=c:GetFieldID()
 		local rct=1
 		if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_STANDBY then rct=2 end
-		local og=Duel.GetOperatedGroup()
+		local og=Duel.GetOperatedGroup():Filter(c9910197.ogfilter,nil)
 		local oc=og:GetFirst()
 		while oc do
 			oc:RegisterFlagEffect(9910197,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY+RESET_OPPO_TURN,0,rct,fid)

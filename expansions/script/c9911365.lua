@@ -52,6 +52,9 @@ end
 function c9911365.gselect2(g)
 	return #g==1 or g:IsExists(Card.IsAbleToGrave,2,nil) or g:IsExists(Card.IsAbleToRemove,2,nil)
 end
+function c9911365.ogfilter(c)
+	return c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT)
+end
 function c9911365.rlop(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.GetMatchingGroup(c9911365.rlfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
 	local g2=Duel.GetMatchingGroup(c9911365.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,0,nil)
@@ -78,8 +81,9 @@ function c9911365.rlop(e,tp,eg,ep,ev,re,r,rp)
 			if opt==0 then
 				Duel.SendtoGrave(tg,REASON_EFFECT)
 			elseif opt==1 then
-				if Duel.Remove(tg,0,REASON_EFFECT+REASON_TEMPORARY)>0 and tg:IsExists(Card.IsLocation,1,nil,LOCATION_REMOVED) then
-					local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
+				if Duel.Remove(tg,0,REASON_EFFECT+REASON_TEMPORARY)>0 then
+					local og=Duel.GetOperatedGroup():Filter(c9911365.ogfilter,nil)
+					if #og==0 then return end
 					for tc in aux.Next(og) do
 						tc:RegisterFlagEffect(9911365,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 					end

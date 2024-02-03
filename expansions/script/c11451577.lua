@@ -2,6 +2,7 @@
 --21.06.20
 local cm,m=GetID()
 function cm.initial_effect(c)
+	c:EnableCounterPermit(0x971)
 	--act in hand
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -53,15 +54,15 @@ function cm.ctcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	e:GetHandler():AddCounter(0x1970,1)
+	e:GetHandler():AddCounter(0x971,1)
 	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then Duel.SetLP(tp,Duel.GetLP(tp)-300) end
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x1970,3,REASON_COST) end
-	e:GetHandler():RemoveCounter(tp,0x1970,3,REASON_COST)
+	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x971,3,REASON_COST) end
+	e:GetHandler():RemoveCounter(tp,0x971,3,REASON_COST)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and aux.disfilter1(chkc) end

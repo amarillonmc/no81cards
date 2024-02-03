@@ -87,7 +87,8 @@ function c9910957.thop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	elseif b2 then
 		local fid=c:GetFieldID()
-		if Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)~=0 and c:IsLocation(LOCATION_REMOVED) then
+		if Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)~=0 and c:IsLocation(LOCATION_REMOVED)
+			and not c:IsReason(REASON_REDIRECT) then
 			res=true
 			c:RegisterFlagEffect(9910957,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2,fid)
 			local e2=Effect.CreateEffect(c)

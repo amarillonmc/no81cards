@@ -155,7 +155,7 @@ function c9911383.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.HintSelection(g)
-		if Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)>0 then
+		if Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)>0 and not tc:IsReason(REASON_REDIRECT) then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_PHASE+PHASE_STANDBY)

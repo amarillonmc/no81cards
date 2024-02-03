@@ -29,8 +29,8 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sctg)
 	e2:SetOperation(cm.scop)
 	c:RegisterEffect(e2)
-	if not cm.global_check then
-		cm.global_check=true
+	if not PNFL_ETARGET_CHECK then
+		PNFL_ETARGET_CHECK=true
 		local ge3=Effect.CreateEffect(c)
 		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge3:SetCode(EVENT_BECOME_TARGET)
@@ -44,23 +44,27 @@ function cm.initial_effect(c)
 	end
 end
 function cm.checkop3(e,tp,eg,ep,ev,re,r,rp)
-	local tg=eg:Filter(Card.IsLocation,nil,LOCATION_MZONE)
+	local tg=eg
 	if #tg>0 then
-		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(m+1,RESET_EVENT+0x1fc0000,0,1)
+		for tc in aux.Next(eg) do
+			local prop=EFFECT_FLAG_SET_AVAILABLE
+			if PNFL_ETARGET_HINT or PNFL_DEBUG then prop=prop|EFFECT_FLAG_CLIENT_HINT end
+			tc:RegisterFlagEffect(11451541,RESET_EVENT+0x1fc0000,prop,1,0,aux.Stringid(11451541,5))
 		end
 	end
 end
 function cm.checkop6(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetMatchingGroup(cm.ctgfilter,0,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local tg=Duel.GetMatchingGroup(cm.ctgfilter,0,0x3c,0x3c,nil)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(m+1,RESET_EVENT+0x1fc0000,0,1)
+			local prop=EFFECT_FLAG_SET_AVAILABLE
+			if PNFL_ETARGET_HINT or PNFL_DEBUG then prop=prop|EFFECT_FLAG_CLIENT_HINT end
+			tc:RegisterFlagEffect(11451541,RESET_EVENT+0x1fc0000,prop,1,0,aux.Stringid(11451541,5))
 		end
 	end
 end
 function cm.ctgfilter(c)
-	return c:GetOwnerTargetCount()>0 and c:GetFlagEffect(m+1)==0
+	return c:GetOwnerTargetCount()>0 and c:GetFlagEffect(11451541)==0
 end
 function cm.filter(c,tp)
 	return c:IsControler(tp)
@@ -120,11 +124,23 @@ function cm.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.cfilter(c)
-	return c:IsFaceup() and c:GetFlagEffect(m+1)==0
+	return c:IsFaceup() and c:GetFlagEffect(11451541)==0
+end
+function cm.shfilter(c)
+	return c:GetFlagEffect(11451541)>0
 end
 function cm.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(cm.cfilter,tp,0,LOCATION_MZONE,2,nil) end
+	if chk==0 then
+		if not PNFL_ETARGET_HINT then
+			PNFL_ETARGET_HINT=true
+			local shg=Duel.GetMatchingGroup(cm.shfilter,tp,0x3c,0x3c,nil)
+			for tc in aux.Next(shg) do
+				tc:RegisterFlagEffect(11451541,RESET_EVENT+0x1fc0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451541,5))
+			end
+		end
+		return Duel.IsExistingTarget(cm.cfilter,tp,0,LOCATION_MZONE,2,nil)
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,cm.cfilter,tp,0,LOCATION_MZONE,2,2,nil)
 end
@@ -145,18 +161,18 @@ function cm.scop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetLabel(eid)
 	e1:SetCondition(cm.con)
 	if ac:IsAttribute(bc:GetAttribute()) and (ac:GetAttribute()==bc:GetAttribute() or Duel.SelectOption(tp,aux.Stringid(m,2),aux.Stringid(m,3))==0) then
-		ac:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,2))
-		bc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,2))
+		ac:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,2))
+		bc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,2))
 		e1:SetTarget(cm.sumlimit)
 	else
-		ac:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,3))
-		bc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,3))
+		ac:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,3))
+		bc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,3))
 		e1:SetTarget(cm.sumlimit2)
 	end
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.cfilter2(c,eid)
-	return c:IsFaceup() and c:GetFlagEffect(m)~=0 and c:GetFlagEffectLabel(m)==eid
+	return c:IsFaceup() and c:GetFlagEffect(m+1)~=0 and c:GetFlagEffectLabel(m+1)==eid
 end
 function cm.con(e)
 	return Duel.IsExistingMatchingCard(cm.cfilter2,0,LOCATION_MZONE,LOCATION_MZONE,1,nil,e:GetLabel())

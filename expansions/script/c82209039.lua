@@ -71,7 +71,7 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()<=0 then return end
 	local tc=g:GetFirst()
 	while tc do
-		if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 then 
+		if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 and not tc:IsReason(REASON_REDIRECT) then 
 			local e1=Effect.CreateEffect(c)  
 			e1:SetType(EFFECT_TYPE_FIELD)  
 			e1:SetCode(EFFECT_DISABLE)  

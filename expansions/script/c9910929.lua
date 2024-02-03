@@ -45,7 +45,7 @@ function c9910929.activate(e,tp,eg,ep,ev,re,r,rp)
 		and c:IsRelateToEffect(e) then
 		c:CancelToGrave()
 		local b1=c:IsCanTurnSet()
-		local b2=c:IsAbleToDeck()
+		local b2=c:IsAbleToDeck() and not rc:IsReason(REASON_REDIRECT)
 		if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910929,0),aux.Stringid(9910929,1))==0) then
 			Duel.BreakEffect()
 			Duel.ChangePosition(c,POS_FACEDOWN)

@@ -45,7 +45,7 @@ function c9910154.thoperation(e,tp,eg,ep,ev,re,r,rp)
 		and c:IsRelateToEffect(e) and c:IsAbleToRemove()
 		and Duel.SelectYesNo(tp,aux.Stringid(9910154,2)) then
 		Duel.BreakEffect()
-		Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)
+		if Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)==0 or c:IsReason(REASON_REDIRECT) then return end
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)

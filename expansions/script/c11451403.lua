@@ -73,7 +73,7 @@ function cm.reop1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(tg)
 		if tc:IsLocation(LOCATION_MZONE) then
 			Duel.Hint(HINT_CARD,0,m)
-			if Duel.Remove(tc,0,REASON_RULE+REASON_TEMPORARY)>0 then
+			if Duel.Remove(tc,0,REASON_RULE+REASON_TEMPORARY)>0 and not tc:IsReason(REASON_REDIRECT) then
 				n1=n1-1
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetDescription(aux.Stringid(m,0))
@@ -114,7 +114,7 @@ function cm.reop1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(tg)
 		if tc:IsLocation(LOCATION_MZONE) then
 			Duel.Hint(HINT_CARD,0,m)
-			if Duel.Remove(tc,0,REASON_RULE+REASON_TEMPORARY)>0 then
+			if Duel.Remove(tc,0,REASON_RULE+REASON_TEMPORARY)>0 and not tc:IsReason(REASON_REDIRECT) then
 				n2=n2-1
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetDescription(aux.Stringid(m,0))

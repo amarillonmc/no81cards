@@ -163,6 +163,9 @@ function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
 	return Duel.IsExistingMatchingCard(cm.RitualUltimateFilter,tp,LOCATION_DECK,0,1,nil,nil,e,tp,mg,nil,Card.GetLevel,"Greater")
 end
+function cm.rffilter(c)
+	return c:IsFaceup() and c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT)
+end
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 	::cancel::
 	local mg=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
@@ -185,7 +188,7 @@ function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.Remove(mat,0,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL+REASON_TEMPORARY)~=0 then
 			local fid=e:GetHandler():GetFieldID()
 			local og1=Duel.GetOperatedGroup()
-			local og=og1:Filter(Card.IsLocation,nil,LOCATION_REMOVED)
+			local og=og1:Filter(cm.rffilter,nil)
 			if og and #og>0 then
 				for oc in aux.Next(og) do
 					oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)

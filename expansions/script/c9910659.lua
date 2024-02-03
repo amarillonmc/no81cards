@@ -52,7 +52,7 @@ function c9910659.spop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsAbleToRemove()
 		and (not res or Duel.SelectOption(tp,aux.Stringid(9910659,0),aux.Stringid(9910659,1))==0) then
 		Duel.BreakEffect()
-		if Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
+		if Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 and not tc:IsReason(REASON_REDIRECT) then
 			tc:RegisterFlagEffect(9910659,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

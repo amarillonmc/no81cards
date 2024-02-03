@@ -68,7 +68,7 @@ function c9910666.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and c:IsAbleToRemove() and Duel.SelectYesNo(tp,aux.Stringid(9910666,1)) then
 		Duel.BreakEffect()
 		local fid=c:GetFieldID()
-		if Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)==0 then return end
+		if Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)==0 or c:IsReason(REASON_REDIRECT) then return end
 		c:RegisterFlagEffect(9910666,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

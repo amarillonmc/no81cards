@@ -74,6 +74,9 @@ function c9910470.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE)
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910470,2))
 end
+function c9910470.ogfilter(c)
+	return c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT)
+end
 function c9910470.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local chkf=tp
@@ -101,7 +104,7 @@ function c9910470.spop(e,tp,eg,ep,ev,re,r,rp)
 			tc:SetMaterial(mat1)
 			Duel.Remove(mat1,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			local fid=e:GetHandler():GetFieldID()
-			local og=Duel.GetOperatedGroup()
+			local og=Duel.GetOperatedGroup():Filter(c9910470.ogfilter,nil)
 			for oc in aux.Next(og) do
 				oc:RegisterFlagEffect(9910470,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 			end

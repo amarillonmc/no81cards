@@ -88,7 +88,7 @@ function cm.initial_effect(c)
 				end
 			end
 			if #og>=mi and Duel.GetMZoneCount(top)>0 then return true end
-			return _CheckTribute(c,mi-#og,ma,mg,top,...)
+			return cm.CheckTribute(c,mi-#og,ma,mg,top,...)
 		end
 		function Duel.SelectTribute(tp,c,mi,ma,mg,...)
 			local g=mg or Duel.GetTributeGroup(c)

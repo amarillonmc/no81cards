@@ -35,13 +35,8 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.destg2)
 	e2:SetOperation(cm.desop2)
 	c:RegisterEffect(e2)
-	if not NTR_CHECK then
-		NTR_CHECK=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_BE_BATTLE_TARGET)
-		ge1:SetOperation(cm.checkop)
-		Duel.RegisterEffect(ge1,0)
+	if not PNFL_ETARGET_CHECK then
+		PNFL_ETARGET_CHECK=true
 		local ge3=Effect.CreateEffect(c)
 		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge3:SetCode(EVENT_BECOME_TARGET)
@@ -52,6 +47,14 @@ function cm.initial_effect(c)
 		ge6:SetCode(EVENT_ADJUST)
 		ge6:SetOperation(cm.checkop6)
 		Duel.RegisterEffect(ge6,0)
+	end
+	if not PNFL_BTARGET_CHECK then
+		PNFL_BTARGET_CHECK=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_BE_BATTLE_TARGET)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
 	end
 end
 if not Duel.GetMustMaterial then
@@ -67,29 +70,36 @@ if not Duel.GetMustMaterial then
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttackTarget()
-	tc:RegisterFlagEffect(m,RESET_EVENT+0x1fc0000,0,1)
+	tc:RegisterFlagEffect(11451682,RESET_EVENT+0x1fc0000,0,1)
 end
 function cm.checkop3(e,tp,eg,ep,ev,re,r,rp)
-	local tg=eg:Filter(Card.IsOnField,nil)
+	local tg=eg
 	if #tg>0 then
-		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(m,RESET_EVENT+0x1fc0000,0,1)
+		for tc in aux.Next(eg) do
+			local prop=EFFECT_FLAG_SET_AVAILABLE
+			if PNFL_ETARGET_HINT or PNFL_DEBUG then prop=prop|EFFECT_FLAG_CLIENT_HINT end
+			tc:RegisterFlagEffect(11451541,RESET_EVENT+0x1fc0000,prop,1,0,aux.Stringid(11451541,5))
 		end
 	end
 end
 function cm.checkop6(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetMatchingGroup(cm.ctgfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local tg=Duel.GetMatchingGroup(cm.ctgfilter,0,0x3c,0x3c,nil)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(m,RESET_EVENT+0x1fc0000,0,1)
+			local prop=EFFECT_FLAG_SET_AVAILABLE
+			if PNFL_ETARGET_HINT or PNFL_DEBUG then prop=prop|EFFECT_FLAG_CLIENT_HINT end
+			tc:RegisterFlagEffect(11451541,RESET_EVENT+0x1fc0000,prop,1,0,aux.Stringid(11451541,5))
 		end
 	end
 end
 function cm.ctgfilter(c)
-	return c:GetOwnerTargetCount()>0 and c:GetFlagEffect(m)==0
+	return c:GetOwnerTargetCount()>0 and c:GetFlagEffect(11451541)==0
+end
+function cm.shfilter(c)
+	return c:GetFlagEffect(11451541)>0
 end
 function cm.GetLinkCount(c)
-	if c:GetFlagEffect(m)>0 then
+	if c:GetFlagEffect(11451541)>0 then
 		return 1+0x10000*2
 	elseif c:IsType(TYPE_LINK) and c:GetLink()>1 then
 		return 1+0x10000*c:GetLink()
@@ -131,6 +141,13 @@ function cm.LinkCondition(f,minc,maxc,gf)
 end
 function cm.LinkTarget(f,minc,maxc,gf)
 	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,lmat,min,max)
+				if not PNFL_ETARGET_HINT then
+					PNFL_ETARGET_HINT=true
+					local shg=Duel.GetMatchingGroup(cm.shfilter,tp,0x3c,0x3c,nil)
+					for tc in aux.Next(shg) do
+						tc:RegisterFlagEffect(11451541,RESET_EVENT+0x1fc0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451541,5))
+					end
+				end
 				local minc=minc
 				local maxc=maxc
 				if min then

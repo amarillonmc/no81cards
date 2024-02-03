@@ -156,7 +156,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		else
 			ct=Duel.Remove(sc,POS_FACEUP,REASON_EFFECT)
 		end
-		if ct~=0 and sc:IsLocation(LOCATION_REMOVED) then
+		if ct~=0 and sc:IsLocation(LOCATION_REMOVED) and not sc:IsReason(REASON_REDIRECT) then
 			sc:RegisterFlagEffect(m+4,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,8-flag,aux.Stringid(m+4,math.max(0,8-flag)))
 			local rc=c
 			if re and re:GetHandler() then rc=re:GetHandler() end

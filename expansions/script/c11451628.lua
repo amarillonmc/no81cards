@@ -265,7 +265,7 @@ function cm.syop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave=function(g,r)
 							if r==REASON_MATERIAL+REASON_SYNCHRO and #g>0 and Duel.Remove(g,POS_FACEUP,REASON_MATERIAL+REASON_SYNCHRO+REASON_TEMPORARY)>0 then
 								local fid=sc:GetFieldID()
-								local og=Duel.GetOperatedGroup()
+								local og=Duel.GetOperatedGroup():Filter(cm.rffilter,nil)
 								for oc in aux.Next(og) do
 									oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
 								end
@@ -289,6 +289,9 @@ function cm.syop(e,tp,eg,ep,ev,re,r,rp)
 						end
 		Duel.SynchroSummon(tp,sg:GetFirst(),nil)
 	end
+end
+function cm.rffilter(c)
+	return c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT)
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()

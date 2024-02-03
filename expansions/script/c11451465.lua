@@ -173,7 +173,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			local og1=Duel.GetOperatedGroup()
 			if og1:IsExists(cm.retfilter2,1,nil,tp,LOCATION_HAND) then Duel.ShuffleHand(tp) end
 			if og1:IsExists(cm.retfilter2,1,nil,1-tp,LOCATION_HAND) then Duel.ShuffleHand(1-tp) end
-			local og=Group.__band(og1,tg):Filter(Card.IsLocation,nil,LOCATION_REMOVED)
+			local og=Group.__band(og1,tg):Filter(cm.rffilter,nil)
 			if og and #og>0 then
 				for oc in aux.Next(og) do
 					oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
@@ -195,6 +195,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
+end
+function cm.rffilter(c)
+	return c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT)
 end
 function cm.retfilter2(c,p,loc)
 	if (c:IsPreviousLocation(LOCATION_SZONE) and c:GetPreviousTypeOnField()&TYPE_EQUIP>0) or c:IsPreviousLocation(LOCATION_FZONE) then return false end

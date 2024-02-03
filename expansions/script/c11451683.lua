@@ -56,13 +56,34 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.reptg)
 	e4:SetValue(cm.repval)
 	c:RegisterEffect(e4)
+	if not PNFL_ETARGET_CHECK then
+		PNFL_ETARGET_CHECK=true
+		local ge3=Effect.CreateEffect(c)
+		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge3:SetCode(EVENT_BECOME_TARGET)
+		ge3:SetOperation(cm.checkop3)
+		Duel.RegisterEffect(ge3,0)
+		local ge6=Effect.CreateEffect(c)
+		ge6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge6:SetCode(EVENT_ADJUST)
+		ge6:SetOperation(cm.checkop6)
+		Duel.RegisterEffect(ge6,0)
+	end
+	if not PNFL_BTARGET_CHECK then
+		PNFL_BTARGET_CHECK=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_BE_BATTLE_TARGET)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 	if not NTR_CHECK then
 		NTR_CHECK=true
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_BE_BATTLE_TARGET)
 		ge1:SetOperation(cm.checkop)
-		Duel.RegisterEffect(ge1,0)
+		--Duel.RegisterEffect(ge1,0)
 		local ge2=Effect.CreateEffect(c)
 		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge2:SetCode(EVENT_CHAINING)
@@ -73,7 +94,7 @@ function cm.initial_effect(c)
 		ge3:SetCode(EVENT_BECOME_TARGET)
 		ge3:SetOperation(cm.checkop3)
 		--ge3:SetLabelObject(ge2)
-		Duel.RegisterEffect(ge3,0)
+		--Duel.RegisterEffect(ge3,0)
 		local ge4=Effect.CreateEffect(c)
 		ge4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge4:SetCode(EVENT_CHAIN_END)
@@ -89,12 +110,12 @@ function cm.initial_effect(c)
 		ge6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge6:SetCode(EVENT_ADJUST)
 		ge6:SetOperation(cm.checkop6)
-		Duel.RegisterEffect(ge6,0)
+		--Duel.RegisterEffect(ge6,0)
 	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttackTarget()
-	tc:RegisterFlagEffect(m-1,RESET_EVENT+0x1fc0000,0,1)
+	tc:RegisterFlagEffect(11451682,RESET_EVENT+0x1fc0000,0,1)
 end
 function cm.checkop2(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return end
@@ -102,16 +123,6 @@ function cm.checkop2(e,tp,eg,ep,ev,re,r,rp)
 	if not g or #g==0 then return end
 	e:SetLabel(ev)
 	local tg=g:Filter(Card.IsOnField,nil)
-	if #tg>0 then
-		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(m-1,RESET_EVENT+0x1fc0000,0,1)
-		end
-	end
-end
-function cm.checkop3(e,tp,eg,ep,ev,re,r,rp)
-	--local lab=e:GetLabelObject():GetLabel()
-	--if lab~=ev-1 then return end
-	local tg=eg:Filter(Card.IsOnField,nil)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
 			tc:RegisterFlagEffect(m-1,RESET_EVENT+0x1fc0000,0,1)
@@ -133,19 +144,34 @@ function cm.checkop5(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+function cm.checkop3(e,tp,eg,ep,ev,re,r,rp)
+	local tg=eg
+	if #tg>0 then
+		for tc in aux.Next(eg) do
+			local prop=EFFECT_FLAG_SET_AVAILABLE
+			if PNFL_ETARGET_HINT or PNFL_DEBUG then prop=prop|EFFECT_FLAG_CLIENT_HINT end
+			tc:RegisterFlagEffect(11451541,RESET_EVENT+0x1fc0000,prop,1,0,aux.Stringid(11451541,5))
+		end
+	end
+end
 function cm.checkop6(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetMatchingGroup(cm.ctgfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local tg=Duel.GetMatchingGroup(cm.ctgfilter,0,0x3c,0x3c,nil)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(m-1,RESET_EVENT+0x1fc0000,0,1)
+			local prop=EFFECT_FLAG_SET_AVAILABLE
+			if PNFL_ETARGET_HINT or PNFL_DEBUG then prop=prop|EFFECT_FLAG_CLIENT_HINT end
+			tc:RegisterFlagEffect(11451541,RESET_EVENT+0x1fc0000,prop,1,0,aux.Stringid(11451541,5))
 		end
 	end
 end
 function cm.ctgfilter(c)
-	return c:GetOwnerTargetCount()>0 and c:GetFlagEffect(m-1)==0
+	return c:GetOwnerTargetCount()>0 and c:GetFlagEffect(11451541)==0
+end
+function cm.shfilter(c)
+	return c:GetFlagEffect(11451541)>0
 end
 function cm.tgfilter(c,e)
-	return c:IsCanBeEffectTarget(e) and c:GetFlagEffect(m-1)==0
+	return c:IsCanBeEffectTarget(e) and c:GetFlagEffect(11451541)==0
 end
 function cm.hand(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
@@ -154,6 +180,13 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) end
 	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if not PNFL_ETARGET_HINT then
+		PNFL_ETARGET_HINT=true
+		local shg=Duel.GetMatchingGroup(cm.shfilter,tp,0x3c,0x3c,nil)
+		for tc in aux.Next(shg) do
+			tc:RegisterFlagEffect(11451541,RESET_EVENT+0x1fc0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451541,5))
+		end
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
 		local g=Duel.SelectTarget(tp,cm.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler(),e)

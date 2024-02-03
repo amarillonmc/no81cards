@@ -50,7 +50,7 @@ function c9911355.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			local sc=g:Select(tp,1,1,nil):GetFirst()
-			if sc and Duel.Remove(sc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
+			if sc and Duel.Remove(sc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 and not sc:IsReason(REASON_REDIRECT) then
 				sc:RegisterFlagEffect(9911355,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
