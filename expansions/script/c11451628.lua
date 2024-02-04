@@ -433,7 +433,7 @@ function cm.diceop2(e,tp,eg,ep,ev,re,r,rp)
 		local ct=bit.band(ev,0xff)+bit.rshift(ev,16)
 		if ct>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
-			local val,idx=Duel.AnnounceNumber(tp,table.unpack(dc,1,ct))
+			local val,idx=Duel.AnnounceNumber(tp,table.unpack(aux.idx_table,1,ct))
 			ac=idx+1
 		end
 		dc[ac]=d

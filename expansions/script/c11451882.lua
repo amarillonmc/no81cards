@@ -59,7 +59,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		--summon
 		local e5=Effect.CreateEffect(c)
 		e5:SetDescription(aux.Stringid(m,0))
-		e5:SetCategory(CATEGORY_SUMMON)
+		e5:SetCategory(CATEGORY_SUMMON+CATEGORY_TOHAND)
 		e5:SetType(EFFECT_TYPE_QUICK_O)
 		e5:SetCode(EVENT_FREE_CHAIN)
 		e5:SetRange(LOCATION_MZONE)
