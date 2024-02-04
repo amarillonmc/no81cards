@@ -1,6 +1,5 @@
 --烬羽的逐焰·瑾维尼拉
-local m=11451747
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
@@ -34,7 +33,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if #g1>=2 and #g2>=2 then mac=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g1=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,mac,nil)
-	local g2=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,0,LOCATION_GRAVE,1,mac,nil)
+	local g2=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,0,LOCATION_GRAVE,#g1,#g1,nil)
 	g1:Merge(g2)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,#g1,0,0)
 end
