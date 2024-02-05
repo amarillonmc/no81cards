@@ -39,7 +39,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 and Duel.GetTurnPlayer()~=tp
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

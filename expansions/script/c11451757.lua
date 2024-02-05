@@ -68,7 +68,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler())
 end
 function cm.dsfilter(c)
-	return c:IsFaceup() and ((c:IsLocation(LOCATION_MZONE) and ((bit.band(c:GetOriginalType(),TYPE_SPELL+TYPE_TRAP)~=0 and (not c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsCanTurnSet()) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and c:IsCanTurnSet())) or (bit.band(c:GetOriginalType(),TYPE_SPELL+TYPE_TRAP)==0 and c:IsCanTurnSet()))) or (c:IsLocation(LOCATION_SZONE) and c:IsSSetable(true))) and not (c:IsType(TYPE_PENDULUM) and c:IsLocation(LOCATION_PZONE))
+	return c:IsFaceup() and c:IsCanTurnSet()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -83,22 +83,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and ct>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 		local g=Duel.SelectMatchingCard(tp,cm.dsfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil)
-		local flag=0
-		local setg=Group.CreateGroup()
-		for tc in aux.Next(g) do
-			tc:CancelToGrave()
-			if (tc:IsType(TYPE_MONSTER) and Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)>0) or Duel.ChangePosition(tc,POS_FACEDOWN)>0 then flag=1 end
-			--[[local loc=0
-			if tc:IsType(TYPE_FIELD) then loc=LOCATION_FZONE
-			elseif tc:IsType(TYPE_SPELL+TYPE_TRAP) then loc=LOCATION_SZONE end
-			if tc:GetOriginalType()&TYPE_MONSTER==0 and tc:IsLocation(LOCATION_MZONE) then Duel.MoveToField(tc,tp,tp,loc,POS_FACEDOWN,false) end--]]
-			if tc:IsType(TYPE_SPELL+TYPE_TRAP) and tc:IsFacedown() then setg:AddCard(tc) end
-		end
-		if #setg>0 then
-			setg:KeepAlive()
-			Duel.RaiseEvent(setg,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
-		end
-		if flag>0 then c:RemoveOverlayCard(tp,1,1,REASON_EFFECT) end
+		for tc in aux.Next(g) do tc:CancelToGrave() end
+		if Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)>0 then c:RemoveOverlayCard(tp,1,1,REASON_EFFECT) end
 	end
 end
 function cm.spfilter(c,se)

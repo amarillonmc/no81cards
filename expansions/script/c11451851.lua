@@ -152,7 +152,7 @@ function pnflpf.resetop(e,tp,eg,ep,ev,re,r,rp)
 		if PNFL_PROPHECY_FLIGHT_DEBUG then Debug.Message("reset") end
 		if res0 then for tc in aux.Next(g0) do tc:ResetFlagEffect(11451851) end end
 		if res1 then for tc in aux.Next(g1) do tc:ResetFlagEffect(11451851) end end
-		--Duel.Readjust()
+		Duel.Readjust()
 	end
 end
 function pnflpf.tdfilter(c)
@@ -212,7 +212,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e2:SetCode(EVENT_ADJUST)
 	e2:SetRange(LOCATION_DECK)
-	e2:SetCondition(function(e) return e:GetHandler():IsFaceup() end)
+	e2:SetCondition(function(e) return e:GetHandler():IsFaceup() and not pnfl_adjusting end)
 	e2:SetOperation(cm.adjustop)
 	c:RegisterEffect(e2)
 	local e7=e2:Clone()
@@ -264,7 +264,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then Duel.SSet(tp,g) end
 	if c:IsRelateToEffect(e) then
 		local res=Duel.TossCoin(tp,1)
-		if PNFL_PROPHECY_FLIGHT_DEBUG then res=1 end
+		--if PNFL_PROPHECY_FLIGHT_DEBUG then res=1 end
 		if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,0,REASON_EFFECT) and c:IsLocation(LOCATION_DECK) then
 			Duel.ShuffleDeck(c:GetControler())
 			if res==1 then c:ReverseInDeck() end

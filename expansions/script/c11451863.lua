@@ -103,13 +103,16 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=te:GetHandler()
 	local prop1,prop2=te:GetProperty()
 	local eset={Duel.IsPlayerAffectedByEffect(tp,m)}
-	if tc:IsLocation(LOCATION_HAND) and te:IsHasType(EFFECT_TYPE_ACTIVATE) and (tc:IsHasEffect(EFFECT_TRAP_ACT_IN_HAND) or tc:IsHasEffect(EFFECT_QP_ACT_IN_NTPHAND)) and tc~=e:GetHandler() then
+	local case1=tc:IsType(TYPE_SPELL) and not tc:IsType(TYPE_QUICKPLAY)
+	local case2=tc:IsType(TYPE_QUICKPLAY)
+	local case3=tc:IsType(TYPE_TRAP)
+	if cm.hand2(e) and tc:IsLocation(LOCATION_HAND) and te:IsHasType(EFFECT_TYPE_ACTIVATE) and tc~=e:GetHandler() and ((case2 and tc:GetEffectCount(EFFECT_QP_ACT_IN_NTPHAND)<=#eset) or (case3 and tc:GetEffectCount(EFFECT_TRAP_ACT_IN_HAND)<=#eset) or Duel.SelectYesNo(tp,aux.Stringid(m,0))) then
 		local cost=te:GetCost() or aux.TRUE
 		local cost2=function(e,tp,eg,ep,ev,re,r,rp,chk)
 						if chk==0 then return cost(e,tp,eg,ep,ev,re,r,rp,0) end
 						cost(e,tp,eg,ep,ev,re,r,rp,1)
 						e:SetCost(cost)
-						Duel.SSet(tp,c,tp,false)
+						Duel.SSet(tp,c,tp,true)
 					end
 		te:SetCost(cost2)
 	end
@@ -202,9 +205,11 @@ end
 function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	if not g or #g==0 then return end
+	if not g then return end
+	g=g:Filter(Card.IsRelateToEffect,nil,e)
+	if #g==0 then return end
 	g:KeepAlive()
-	g:ForEach(Card.RegisterFlagEffect,m-10,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,aux.Stringid(m,10))
+	g:ForEach(Card.RegisterFlagEffect,m-10,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,EFFECT_FLAG_CLIENT_HINT,1,aux.Stringid(m,10))
 	for tc in aux.Next(g) do
 		local ge2=Effect.CreateEffect(c)
 		ge2:SetDescription(aux.Stringid(m,10))
@@ -226,13 +231,17 @@ function cm.chkval(e,te)
 		local e3=Effect.CreateEffect(tc)
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e3:SetCode(EVENT_ADJUST)
+		e3:SetCondition(function() return not pnfl_adjusting end)
 		e3:SetOperation(cm.tdop)
 		Duel.RegisterEffect(e3,te:GetHandlerPlayer())
 	end
 	return false
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return end
+	pnfl_adjusting=true
 	Duel.DisableShuffleCheck()
 	Duel.SendtoGrave(Duel.GetFieldGroup(tp,LOCATION_DECK,0):GetMinGroup(Card.GetSequence),REASON_EFFECT)
 	e:Reset()
+	pnfl_adjusting=false
 end

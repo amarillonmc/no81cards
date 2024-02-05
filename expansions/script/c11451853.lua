@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e2:SetCode(EVENT_ADJUST)
 	e2:SetRange(LOCATION_DECK)
-	e2:SetCondition(function(e) return e:GetHandler():IsFaceup() end)
+	e2:SetCondition(function(e) return e:GetHandler():IsFaceup() and not pnfl_adjusting end)
 	e2:SetOperation(cm.adjustop)
 	c:RegisterEffect(e2)
 	local e7=e2:Clone()
@@ -94,7 +94,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if c:IsRelateToEffect(e) then
 		local res=Duel.TossCoin(tp,1)
-		if PNFL_PROPHECY_FLIGHT_DEBUG then res=1 end
+		--if PNFL_PROPHECY_FLIGHT_DEBUG then res=1 end
 		if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,0,REASON_EFFECT) and c:IsLocation(LOCATION_DECK) then
 			Duel.ShuffleDeck(c:GetControler())
 			if res==1 then c:ReverseInDeck() end
@@ -211,7 +211,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		local rg=ng:Filter(cm.nnfilter,nil,tc)
 		Duel.HintSelection(rg)
 		for tc in aux.Next(rg) do tc:CancelToGrave() end
-		if Duel.ChangePosition(rg,POS_FACEDOWN)>0 then
+		if Duel.ChangePosition(rg,POS_FACEDOWN_DEFENSE)>0 then
 			rg=rg:Filter(cm.tfilter,nil)
 			for tc in aux.Next(rg) do
 				local e1=Effect.CreateEffect(e:GetHandler())
