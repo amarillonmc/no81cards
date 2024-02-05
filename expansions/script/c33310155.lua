@@ -44,7 +44,7 @@ function c33310155.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,c33310155.costfil,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SendtoHand(g,nil,REASON_COST)
 	Debug.Message(e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false))
-	if not e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) then Duel.SendtoGrave(e:GetHandler(),0) Debug.Message(e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)) end
+	--if not e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) then Duel.SendtoGrave(e:GetHandler(),0) Debug.Message(e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)) end
 end
 function c33310155.tgfil(c,e,tp)
 	return c:IsSetCard(0x55b) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

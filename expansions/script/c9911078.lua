@@ -26,9 +26,14 @@ function c9911078.poscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
 	return true
 end
-function c9911078.costfilter(c,tp,mc,res)
+function c9911078.costfilter(c,tp,mc)
+	if not c:IsAbleToGraveAsCost() then return false end
 	local g=Group.FromCards(c,mc)
-	return c:IsAbleToGraveAsCost() and (res or Duel.IsExistingMatchingCard(c9911078.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,g))
+	if Duel.IsExistingMatchingCard(c9911078.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,g) then return true end
+	local ct1=Duel.GetCounter(tp,1,0,0x1954)-c:GetCounter(0x1954)
+	local ct2=Duel.GetCounter(tp,0,1,0x1954)
+	return (ct1>ct2 and Duel.GetDecktopGroup(tp,ct1-ct2):FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)==ct1-ct2)
+		or (ct1<ct2 and Duel.GetDecktopGroup(1-tp,ct2-ct1):FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)==ct2-ct1)
 end
 function c9911078.posfilter(c)
 	return c:IsType(TYPE_EFFECT) and c:IsFaceup() and c:IsCanTurnSet()
@@ -42,15 +47,15 @@ function c9911078.postg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()~=0 then
 			e:SetLabel(0)
-			return Duel.IsExistingMatchingCard(c9911078.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,tp,c,res)
+			return Duel.IsExistingMatchingCard(c9911078.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,tp,c)
 		else
-			return Duel.IsExistingMatchingCard(c9911078.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
+			return res or Duel.IsExistingMatchingCard(c9911078.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
 		end
 	end
 	if e:GetLabel()~=0 then
 		e:SetLabel(0)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,c9911078.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,tp,c,res)
+		local g=Duel.SelectMatchingCard(tp,c9911078.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,tp,c)
 		Duel.SendtoGrave(g,REASON_COST)
 	end
 end
