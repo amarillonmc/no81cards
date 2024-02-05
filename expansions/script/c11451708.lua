@@ -25,7 +25,7 @@ function cm.GetCardsInZone(tp,fd)
 		loc=LOCATION_SZONE
 		seq=seq-8
 	end
-	return Duel.GetFieldCard(p,loc,seq)
+	return Duel.GetFieldCard(p,loc,math.floor(seq+0.5))
 end
 function cm.mzlock(tp,seq,usep)
 	local mzc=Duel.GetFieldCard(tp,LOCATION_MZONE,seq)
@@ -70,6 +70,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		g:AddCard(tc)
 		local subg=tg:Filter(Card.IsCode,nil,tc:GetCode())
 		tg:Sub(subg)
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,0))
 		local fd=Duel.SelectField(tp,1,0,LOCATION_MZONE,(~(zone<<16)))
 		local mzc=cm.GetCardsInZone(tp,fd)
 		if mzc then dg:AddCard(mzc) end

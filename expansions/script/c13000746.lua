@@ -1,4 +1,3 @@
---我亦是行人
 local m=13000746
 local cm=_G["c"..m]
 function c13000746.initial_effect(c)
@@ -58,16 +57,16 @@ function cm.syncon(e,c,smat)
 	if c==nil then return true end
 	local mg=Duel.GetMatchingGroup(cm.synfilter,c:GetControler(),LOCATION_PZONE+LOCATION_MZONE,0,nil)
 	if smat and smat:IsType(TYPE_TUNER) then
-		return Duel.CheckTunerMaterial(c,smat,nil,aux.NonTuner(Card.IsSynchroType,TYPE_PENDULUM),1,99,mg) end
-	return Duel.CheckSynchroMaterial(c,nil,aux.NonTuner(Card.IsSynchroType,TYPE_PENDULUM),1,99,smat,mg)
+		return Duel.CheckTunerMaterial(c,smat,cm.synfilter6,aux.NonTuner(Card.IsSynchroType,TYPE_PENDULUM),1,99,mg) end
+	return Duel.CheckSynchroMaterial(c,cm.synfilter6,aux.NonTuner(Card.IsSynchroType,TYPE_PENDULUM),1,99,smat,mg)
 end
 function cm.syntg(e,tp,eg,ep,ev,re,r,rp,chk,c,smat)
 	local g=nil
 	local mg=Duel.GetMatchingGroup(cm.synfilter,c:GetControler(),LOCATION_PZONE+LOCATION_MZONE,0,nil)
 	if smat and smat:IsType(TYPE_TUNER) then
-		g=Duel.SelectTunerMaterial(c:GetControler(),c,smat,nil,aux.NonTuner(Card.IsSynchroType,TYPE_PENDULUM),1,99,mg)
+		g=Duel.SelectTunerMaterial(c:GetControler(),c,smat,cm.synfilter6,aux.NonTuner(Card.IsSynchroType,TYPE_PENDULUM),1,99,mg)
 	else
-		g=Duel.SelectSynchroMaterial(c:GetControler(),c,nil,aux.NonTuner(Card.IsSynchroType,TYPE_PENDULUM),1,99,smat,mg)
+		g=Duel.SelectSynchroMaterial(c:GetControler(),c,cm.synfilter6,aux.NonTuner(Card.IsSynchroType,TYPE_PENDULUM),1,99,smat,mg)
 	end
 	if g then
 		g:KeepAlive()

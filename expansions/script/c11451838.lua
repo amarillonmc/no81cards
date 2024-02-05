@@ -68,7 +68,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 and Duel.GetMZoneCount(tp)>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)>0 then
 			local rg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,0,nil)
 			if #rg>1 then
-				Duel.BreakEffect()
+				--Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 				local tg=rg:Select(tp,2,2,nil)
 				Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)
@@ -109,6 +109,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		local res=false
 		if tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and (not tc:IsSSetable() or Duel.SelectYesNo(tp,Stringid(m,3))) then
 			res=Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+			if res then Duel.ConfirmCards(1-tp,tc) end
 		else
 			res=Duel.SSet(tp,tc)>0
 		end

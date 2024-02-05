@@ -52,7 +52,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.exfilter,1-tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TODECK)
 	if Duel.SelectYesNo(1-tp,aux.Stringid(13090004,0)) then
-	Duel.SelectMatchingCard(1-tp,cm.exfilter,1-tp,LOCATION_MZONE,0,1,1,nil)
+	local sg=Duel.SelectMatchingCard(1-tp,cm.exfilter,1-tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 	end
 end

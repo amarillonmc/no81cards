@@ -19,10 +19,17 @@ local e4=Effect.CreateEffect(c)
 	e4:SetCode(EVENT_LEAVE_FIELD)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e4:SetCountLimit(1,13091022)
+	e4:SetCost(cm.cost)
 	e4:SetCondition(cm.con)
 	e4:SetOperation(cm.prop)
 	c:RegisterEffect(e4)
 
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeckAsCost,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeckAsCost,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_COST)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp,chk)
 return Duel.IsExistingMatchingCard(cm.penfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(function(c) return not c:IsSetCard(0xe08) end,tp,LOCATION_HAND,0,1,nil)

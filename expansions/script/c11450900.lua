@@ -339,7 +339,7 @@ function cm.GetCardsInZone(tp,fd)
 		loc=LOCATION_SZONE
 		seq=seq-8
 	end
-	return Duel.GetFieldCard(p,loc,seq)
+	return Duel.GetFieldCard(p,loc,math.floor(seq+0.5))
 end
 --从tp来看的zone->(p,loc,seq).11450996.
 function cm.zone2seq(tp,zone)

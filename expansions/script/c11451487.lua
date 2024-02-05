@@ -1,6 +1,5 @@
 --魔人★双子使徒 火焰书士
-local m=11451487
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--effect1
 	local e1=Effect.CreateEffect(c)
@@ -105,12 +104,6 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetOperation(cm.aclimit1)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e3:SetCode(EVENT_CHAIN_NEGATED)
-	e3:SetOperation(cm.aclimit2)
-	e3:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e3,tp)
 end
 function cm.aclimit1(e,tp,eg,ep,ev,re,r,rp)
 	if ep==tp or not re:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
@@ -120,11 +113,19 @@ function cm.aclimit1(e,tp,eg,ep,ev,re,r,rp)
 	else
 		Duel.SetFlagEffectLabel(tp,m,ct+1)
 	end
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	e2:SetLabel(ev)
+	e2:SetLabelObject(e1)
+	e2:SetReset(RESET_CHAIN)
+	e2:SetOperation(cm.resetop)
+	Duel.RegisterEffect(e2,tp)
 end
-function cm.aclimit2(e,tp,eg,ep,ev,re,r,rp)
+function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
 	if ep==tp or not re:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
 	local ct=Duel.GetFlagEffectLabel(tp,m)
-	if ct then Duel.SetFlagEffectLabel(tp,m,ct-1) end
+	if ev==e:GetLabel() then Duel.SetFlagEffectLabel(tp,m,ct-1) end
 end
 function cm.econ(e)
 	local ct=Duel.GetFlagEffectLabel(e:GetHandlerPlayer(),m)

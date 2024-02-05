@@ -11,6 +11,7 @@ function c11570001.initial_effect(c)
 	e1:SetCondition(c11570001.spcon)
 	e1:SetOperation(c11570001.spop)
 	c:RegisterEffect(e1)
+
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(11570001,0))
 	e2:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
@@ -83,10 +84,6 @@ function c11570001.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c11570001.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if g:GetCount()<=0 then return end
-	local rc=g:GetFirst()
-	if Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)~=0 then
-		Duel.BreakEffect()
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		if ft<=0 then return end
 		Duel.NegateSummon(eg)
@@ -130,7 +127,7 @@ function c11570001.operation(e,tp,eg,ep,ev,re,r,rp)
 			sc=sg:GetNext()
 		end
 		Duel.SpecialSummonComplete()
-	end end
+	end
 end
 function c11570001.cfilter2(c,tp)
 	return c:IsFaceup() and c:IsSetCard(0x810) and c:IsControler(tp)

@@ -76,9 +76,9 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		local res=Duel.TossCoin(tp,1)
 		if PNFL_PROPHECY_FLIGHT_DEBUG then res=1 end
-		if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,0,REASON_EFFECT) and c:IsLocation(LOCATION_DECK) and res==1 then
+		if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,0,REASON_EFFECT) and c:IsLocation(LOCATION_DECK) then
 			Duel.ShuffleDeck(c:GetControler())
-			c:ReverseInDeck()
+			if res==1 then c:ReverseInDeck() end
 		end
 	end
 end
@@ -100,6 +100,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if PNFL_PROPHECY_FLIGHT_DEBUG then Debug.Message("adjust"..c:GetCode()) end
 	c:ReverseInDeck()
+	pnflpf.resetop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetMatchingGroup(Card.IsHasEffect,tp,LOCATION_DECK,0,nil,11451851)
 	local sg=tg:Filter(cm.topfilter,nil)
 	local ct=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
@@ -183,7 +184,7 @@ function cm.distance2(ac,bc,tp)
 	return (by-ay)*(by-ay)+(ax-bx)*(ax-bx)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)
 	local ng=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if #g>0 and #ng>0 and Duel.SelectEffectYesNo(tp,e:GetHandler()) then

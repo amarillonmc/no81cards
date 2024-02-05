@@ -58,15 +58,16 @@ end
 function c11560717.ovfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ) 
 end
-function c11560717.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,11560717)==0 and Duel.GetCustomActivityCount(11560717,tp,ACTIVITY_CHAIN)~=0 end
+function c11560717.xyzop(e,tp,chk,mc)
+	if chk==0 then return Duel.GetFlagEffect(tp,11560717)==0 and Duel.GetCustomActivityCount(11560717,tp,ACTIVITY_CHAIN)~=0 and mc:CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	mc:RemoveOverlayCard(tp,1,1,REASON_COST)
 	Duel.RegisterFlagEffect(tp,11560717,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c11560717.cncon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
 	local ac=Duel.GetAttacker()
 	local bc=Duel.GetAttackTarget()
-	return ((ac and c==ac) or (bc and c==bc))	 
+	return ((ac and c==ac) or (bc and c==bc))	
 end
 function c11560717.cnop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
@@ -100,7 +101,7 @@ function c11560717.damop(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	if c:IsRelateToEffect(e) and atk>0 then 
 		Duel.Damage(p,atk/2,REASON_EFFECT)   
-	end	
+	end 
 end 
 function c11560717.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,nil) end  
@@ -139,7 +140,7 @@ function c11560717.tgop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetOperation(c11560717.damop) 
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			sc:RegisterEffect(e2) 
-		end	
+		end 
 	end 
 end 
 

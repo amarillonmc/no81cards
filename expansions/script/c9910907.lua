@@ -76,8 +76,16 @@ function c9910907.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(g,REASON_EFFECT)
 	end
 end
+function c9910907.rafilter(c,tp,race)
+	if c:IsFacedown() then return false end
+	if not race then
+		return Duel.IsExistingMatchingCard(c9910907.rafilter,tp,LOCATION_MZONE,0,1,c,tp,c:GetRace())
+	else
+		return c:IsRace(race)
+	end
+end
 function c9910907.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
+	return not Duel.IsExistingMatchingCard(c9910907.rafilter,tp,LOCATION_MZONE,0,1,nil,tp)
 end
 function c9910907.cfilter(c)
 	return aux.IsCodeListed(c,9910871)

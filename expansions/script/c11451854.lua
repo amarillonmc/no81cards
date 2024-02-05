@@ -52,8 +52,34 @@ function cm.initial_effect(c)
 	local e6=e5:Clone()
 	e6:SetCode(EVENT_PHASE+PHASE_END)
 	c:RegisterEffect(e6)
+	if not PNFL_INFLUENCED_CHECK then
+		PNFL_INFLUENCED_CHECK=true
+		--card influenced by effect
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_SINGLE)
+		ge2:SetCode(EFFECT_IMMUNE_EFFECT)
+		ge2:SetRange(LOCATION_ONFIELD)
+		ge2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE)
+		ge2:SetValue(cm.chkval0)
+		local ge3=Effect.CreateEffect(c)
+		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+		ge3:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
+		ge3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE)
+		ge3:SetLabelObject(ge2)
+		Duel.RegisterEffect(ge3,0)
+	end
 end
 cm.toss_coin=true
+function cm.chkval0(e,te)
+	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then
+		if e:GetHandler():GetFlagEffect(11451854)==0 then
+			local prop=EFFECT_FLAG_SET_AVAILABLE
+			if PNFL_INFLUENCED_HINT or PNFL_DEBUG then prop=prop|EFFECT_FLAG_CLIENT_HINT end
+			e:GetHandler():RegisterFlagEffect(11451854,RESET_EVENT+0x1fc0000,prop,1,0,aux.Stringid(11451854,2))
+		end
+	end
+	return false
+end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==1-tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
@@ -82,9 +108,9 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		local res=Duel.TossCoin(tp,1)
 		if PNFL_PROPHECY_FLIGHT_DEBUG then res=1 end
-		if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,0,REASON_EFFECT) and c:IsLocation(LOCATION_DECK) and res==1 then
+		if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,0,REASON_EFFECT) and c:IsLocation(LOCATION_DECK) then
 			Duel.ShuffleDeck(c:GetControler())
-			c:ReverseInDeck()
+			if res==1 then c:ReverseInDeck() end
 		end
 	end
 end
@@ -103,8 +129,8 @@ end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	if pnfl_adjusting then return end
 	pnfl_adjusting=true
-	if not PNFL_PROPHECY_FLIGHT_STONE_HAIL then
-		PNFL_PROPHECY_FLIGHT_STONE_HAIL=true
+	if not PNFL_INFLUENCED_HINT then
+		PNFL_INFLUENCED_HINT=true
 		local shg=Duel.GetMatchingGroup(cm.shfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 		for tc in aux.Next(shg) do
 			tc:RegisterFlagEffect(11451854,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451854,2))
@@ -113,6 +139,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if PNFL_PROPHECY_FLIGHT_DEBUG then Debug.Message("adjust"..c:GetCode()) end
 	c:ReverseInDeck()
+	pnflpf.resetop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetMatchingGroup(Card.IsHasEffect,tp,LOCATION_DECK,0,nil,11451851)
 	local sg=tg:Filter(cm.topfilter,nil)
 	local ct=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
@@ -176,27 +203,31 @@ function cm.tgfilter(c,e)
 	return c:IsRelateToEffect(e) and (c:IsLocation(LOCATION_GRAVE) or c:GetFlagEffect(11451854)>0) and c:IsAbleToRemove()
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)
 	if #g>0 and Duel.SelectEffectYesNo(tp,e:GetHandler()) then
 		local tc=g:GetFirst()
 		if #g>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			tc=g:Select(tp,1,1,nil):GetFirst()
+			tg=g:Select(tp,1,#g,nil)
 		end
 		Duel.Hint(HINT_CARD,0,m)
-		Duel.HintSelection(Group.FromCards(tc))
-		if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_REMOVED) then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_FIELD)
-			e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e1:SetTargetRange(0,1)
-			e1:SetValue(cm.aclimit)
-			e1:SetLabelObject(tc)
-			Duel.RegisterEffect(e1,tp)
-			tc:CreateEffectRelation(e1)
-		end 
+		Duel.HintSelection(tg)
+		if Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)>0 then
+			local rg=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
+			rg:KeepAlive()
+			for tc in aux.Next(rg) do
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_FIELD)
+				e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+				e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+				e1:SetTargetRange(0,1)
+				e1:SetValue(cm.aclimit)
+				e1:SetLabelObject(tc)
+				Duel.RegisterEffect(e1,tp)
+				tc:CreateEffectRelation(e1)
+			end
+		end
 	end
 end
 function cm.aclimit(e,re,tp)

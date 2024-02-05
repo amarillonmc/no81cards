@@ -95,7 +95,7 @@ end
 function cm.imop(e,te)
 	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then
 		if te:GetHandler():IsLocation(LOCATION_DECK) then
-			local e1=te:GetHandler():RegisterFlagEffect(11451858,RESET_EVENT+RESETS_STANDARD,0,1)
+			local e1=te:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 			e1:SetLabelObject(te)
 		end
 	end

@@ -169,7 +169,7 @@ function cm.GetCardsInZone(tp,fd)
 		loc=LOCATION_SZONE
 		seq=seq-8
 	end
-	return Duel.GetFieldCard(p,loc,seq)
+	return Duel.GetFieldCard(p,loc,math.floor(seq+0.5))
 end
 function cm.xytozone(x,y)
 	if x==-1 and y==0.5 then return 1<<13

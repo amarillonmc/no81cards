@@ -37,6 +37,7 @@ function cm.initial_effect(c)
 	e4:SetValue(1)
 	c:RegisterEffect(e4)
 end
+cm.toss_coin=true
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
@@ -54,6 +55,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=c:GetEquipTarget()
 	if tc and tc:IsAbleToDeck() and c:IsAbleToHand() and Duel.SelectEffectYesNo(tp,c) then
+		Duel.Hint(HINT_CARD,0,m)
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
 		if tc:IsLocation(LOCATION_MZONE) then
 			local res1,res2=Duel.TossCoin(tp,2)
@@ -71,6 +73,7 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_DECK,0,1,1,nil,TYPE_MONSTER):Filter(Card.IsFacedown,nil)
 	if #g>0 then
 		local tc=g:GetFirst()
+		Duel.ShuffleDeck(tp)
 		tc:ReverseInDeck()
 		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,c:GetFieldID())
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,c:GetFieldID())

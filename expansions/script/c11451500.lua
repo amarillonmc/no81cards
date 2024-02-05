@@ -23,7 +23,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
 end
 function cm.hand(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsSSetable,e:GetHandlerPlayer(),LOCATION_HAND,0,1,e:GetHandler())
+	return Duel.IsExistingMatchingCard(Card.IsSSetable,e:GetHandlerPlayer(),LOCATION_HAND,0,1,e:GetHandler()) and Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_SZONE)>1
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -52,10 +52,6 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 			e2:SetOperation(cm.rsop)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e2,tp)
-			local e3=e2:Clone()
-			e3:SetCode(EVENT_CHAIN_NEGATED)
-			e3:SetOperation(cm.rsop2)
-			Duel.RegisterEffect(e3,tp)
 			tc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
 			local e4=Effect.CreateEffect(c)
 			e4:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
@@ -86,14 +82,24 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	else
 		c:SetFlagEffectLabel(m,c:GetFlagEffectLabel(m)+1)
 	end
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	e2:SetLabel(ev)
+	e2:SetLabelObject(tc)
+	e2:SetReset(RESET_CHAIN)
+	e2:SetOperation(cm.resetop)
+	Duel.RegisterEffect(e2,tp)
 end
-function cm.rsop2(e,tp,eg,ep,ev,re,r,rp)
+function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetLabelObject()
 	if c:GetFlagEffect(m+1)==0 then return end
-	if flag and flag==1 then
-		c:ResetFlagEffect(m)
-	elseif flag and flag>1 then
-		c:SetFlagEffectLabel(m,flag-1)
+	if ev==e:GetLabel() then
+		if flag and flag==1 then
+			c:ResetFlagEffect(m)
+		elseif flag and flag>1 then
+			c:SetFlagEffectLabel(m,flag-1)
+		end
 	end
 end
 function cm.sscon(e,tp,eg,ep,ev,re,r,rp)

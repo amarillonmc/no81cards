@@ -147,6 +147,7 @@ function c11533706.xthop(e,tp,eg,ep,ev,re,r,rp)
 				mg=mg:Filter(tc.mat_filter,tc,tp)
 			else
 				mg:RemoveCard(tc)
+
 			end
 			aux.GCheckAdditional=aux.RitualCheckAdditional(tc,tc:GetLevel(),"Equal")
 			local mat=mg:SelectSubGroup(tp,aux.RitualCheck,false,1,tc:GetLevel(),tp,tc,tc:GetLevel(),"Equal")

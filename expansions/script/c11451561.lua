@@ -1,7 +1,6 @@
 --诡雷战术 隐秘出击
 --21.04.22
-local m=11451561
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -98,10 +97,6 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetOperation(cm.rsop)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e2,true)
-			local e3=e2:Clone()
-			e3:SetCode(EVENT_CHAIN_NEGATED)
-			e3:SetOperation(cm.rsop2)
-			tc:RegisterEffect(e3,true)
 			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 		end
 	end
@@ -117,7 +112,15 @@ function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():ResetFlagEffect(m)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	e2:SetLabel(ev)
+	e2:SetLabelObject(e1)
+	e2:SetReset(RESET_CHAIN)
+	e2:SetOperation(cm.resetop)
+	Duel.RegisterEffect(e2,tp)
 end
-function cm.rsop2(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
+	if ev==e:GetLabel() then e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1)) end
 end

@@ -77,11 +77,11 @@ function c10105672.filter(c)
 	return c:IsAbleToRemove()
 end
 function c10105672.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_ONFIELD) and c10105672.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c10105672.filter,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and c10105672.filter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c10105672.filter,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,c10105672.filter,tp,0,LOCATION_ONFIELD,1,2,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),1-tp,LOCATION_ONFIELD)
+	local g=Duel.SelectTarget(tp,c10105672.filter,tp,0,LOCATION_MZONE,1,2,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),1-tp,LOCATION_MZONE)
 end
 function c10105672.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)

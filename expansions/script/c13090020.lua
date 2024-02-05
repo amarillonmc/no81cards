@@ -176,7 +176,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetValue(s.actlimit)
 			e2:SetReset(RESET_PHASE+PHASE_END,2)
 			Duel.RegisterEffect(e2,tp)
-		Duel.Remove(1,POS_FACEUP,REASON_EFFECT)
+		Duel.Remove(rg1,POS_FACEUP,REASON_EFFECT)
 			--
 			
 	   

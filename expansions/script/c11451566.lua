@@ -43,7 +43,7 @@ function cm.GetCardsInZone(tp,fd)
 		loc=LOCATION_SZONE
 		seq=seq-8
 	end
-	return Duel.GetFieldCard(p,loc,seq)
+	return Duel.GetFieldCard(p,loc,math.floor(seq+0.5))
 end
 function cm.desfilter(c)
 	return not c:IsLocation(LOCATION_SZONE) or c:GetSequence()<5

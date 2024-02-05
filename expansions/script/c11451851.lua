@@ -5,12 +5,44 @@ function pnfl_prophecy_flight_initial(c)
 	PNFL_PROPHECY_FLIGHT_DEBUG=false
 	PNFL_PROPHECY_FLIGHT_OPERATION_PERMIT=true
 	PNFL_PROPHECY_FLIGHT_TACTIC_VIEW=false
-	PNFL_PROPHECY_FLIGHT_STONE_HAIL=false
 	pnflpf[0]=0
 	pnflpf[1]=0
 	pnflpf.coinsequence={}
 	_TossCoin=Duel.TossCoin
+	_SetCoinResult=Duel.SetCoinResult
+	function Duel.SetCoinResult(...)
+		local ct0=#pnflpf.coinsequence
+		local res0={Duel.GetCoinResult()}
+		if pnflpf.res and #res0>0 then
+			for i=1,#res0 do pnflpf.coinsequence[ct0+i]=res0[i] end
+		end
+		pnflpf.res=nil
+		_SetCoinResult(...)
+	end
 	function Duel.TossCoin(p,ct)
+		local ct0=#pnflpf.coinsequence
+		local res0={Duel.GetCoinResult()}
+		--before replaced by this coin, register last coin.
+		if pnflpf.res and #res0>0 then
+			for i=1,ct do pnflpf.coinsequence[ct0+i]=res0[i] end
+		end
+		pnflpf.res=res0
+		ct0=#pnflpf.coinsequence
+		local res={_TossCoin(p,ct)}
+		local ct1=#pnflpf.coinsequence
+		--if this coin isn't replaced, register it.
+		if pnflpf.res and ct0==ct1 then
+			for i=1,ct do pnflpf.coinsequence[ct1+i]=res[i] end
+		end
+		local str="实际投掷结果："
+		for i=1,#res do
+			if res[i]==1 then str=str.."[表]" else str=str.."[里]" end
+		end
+		--Debug.Message(str)
+		pnflpf.res=nil
+		return table.unpack(res)
+	end
+	--[[function Duel.TossCoin(p,ct)
 		local dic={}
 		local ct0=#pnflpf.coinsequence
 		for i=1,ct do table.insert(pnflpf.coinsequence,2) end
@@ -88,7 +120,7 @@ function pnfl_prophecy_flight_initial(c)
 		end
 		for i=1,ct do pnflpf.coinsequence[ct0+i]=res[i] end
 		return table.unpack(res)
-	end
+	end--]]
 	--increase by Card.ReverseInDeck
 	local ge0=Effect.CreateEffect(c)
 	ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -100,19 +132,6 @@ function pnfl_prophecy_flight_initial(c)
 	local ge1=ge0:Clone()
 	ge1:SetCode(EVENT_MOVE)
 	Duel.RegisterEffect(ge1,0)
-	--card influenced by effect
-	local ge2=Effect.CreateEffect(c)
-	ge2:SetType(EFFECT_TYPE_SINGLE)
-	ge2:SetCode(EFFECT_IMMUNE_EFFECT)
-	ge2:SetRange(LOCATION_ONFIELD)
-	ge2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE)
-	ge2:SetValue(pnflpf.chkval)
-	local ge3=Effect.CreateEffect(c)
-	ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-	ge3:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
-	ge3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE)
-	ge3:SetLabelObject(ge2)
-	Duel.RegisterEffect(ge3,0)
 	--tactic view
 	local ge4=Effect.CreateEffect(c)
 	ge4:SetDescription(aux.Stringid(11451851,4))
@@ -133,18 +152,8 @@ function pnflpf.resetop(e,tp,eg,ep,ev,re,r,rp)
 		if PNFL_PROPHECY_FLIGHT_DEBUG then Debug.Message("reset") end
 		if res0 then for tc in aux.Next(g0) do tc:ResetFlagEffect(11451851) end end
 		if res1 then for tc in aux.Next(g1) do tc:ResetFlagEffect(11451851) end end
-		Duel.Readjust()
+		--Duel.Readjust()
 	end
-end
-function pnflpf.chkval(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then
-		if e:GetHandler():GetFlagEffect(11451854)==0 then
-			local prop=EFFECT_FLAG_SET_AVAILABLE
-			if PNFL_PROPHECY_FLIGHT_STONE_HAIL then prop=prop|EFFECT_FLAG_CLIENT_HINT end
-			e:GetHandler():RegisterFlagEffect(11451854,RESET_EVENT+0x1fc0000,prop,1,0,aux.Stringid(11451854,2))
-		end
-	end
-	return false
 end
 function pnflpf.tdfilter(c)
 	return c:GetTurnID()==Duel.GetTurnCount()
@@ -256,9 +265,9 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		local res=Duel.TossCoin(tp,1)
 		if PNFL_PROPHECY_FLIGHT_DEBUG then res=1 end
-		if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,0,REASON_EFFECT) and c:IsLocation(LOCATION_DECK) and res==1 then
+		if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,0,REASON_EFFECT) and c:IsLocation(LOCATION_DECK) then
 			Duel.ShuffleDeck(c:GetControler())
-			c:ReverseInDeck()
+			if res==1 then c:ReverseInDeck() end
 		end
 	end
 end
@@ -280,6 +289,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if PNFL_PROPHECY_FLIGHT_DEBUG then Debug.Message("adjust"..c:GetCode()) end
 	c:ReverseInDeck()
+	pnflpf.resetop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetMatchingGroup(Card.IsHasEffect,tp,LOCATION_DECK,0,nil,11451851)
 	local sg=tg:Filter(cm.topfilter,nil)
 	local ct=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
@@ -380,10 +390,10 @@ function cm.GetCardsInZone(tp,fd)
 		loc=LOCATION_SZONE
 		seq=seq-8
 	end
-	return Duel.GetFieldCard(p,loc,seq)
+	return Duel.GetFieldCard(p,loc,math.floor(seq+0.5))
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)
 	if #g>0 and Duel.SelectEffectYesNo(tp,e:GetHandler()) then
 		local fd=0
@@ -408,6 +418,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 					if tc then Duel.Destroy(tc,REASON_EFFECT) end
 				end
 		if Duel.GetCurrentChain()==1 then op(e,tp) end
+		e:GetHandler():ResetFlagEffect(11451862)
 		local e6=Effect.CreateEffect(e:GetHandler())
 		e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e6:SetCode(EVENT_CHAIN_SOLVED)
