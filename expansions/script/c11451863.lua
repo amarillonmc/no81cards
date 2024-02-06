@@ -132,7 +132,9 @@ function cm.acfilter(c)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.acfilter,tp,0,0x1c,1,nil) end
+	local g=Duel.GetMatchingGroup(cm.acfilter,tp,0,0x1c,nil)
+	if chk==0 then return #g>0 end
+	Duel.HintSelection(g)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
