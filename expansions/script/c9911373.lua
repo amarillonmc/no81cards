@@ -63,6 +63,7 @@ function c9911373.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)
 		end
+		Duel.ShuffleHand(tp)
 	end
 	Duel.ShuffleDeck(tp)
 end
