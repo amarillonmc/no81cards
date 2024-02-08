@@ -273,5 +273,5 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	Duel.SendtoHand(tc,tc:GetPreviousControler(),REASON_EFFECT)
 end

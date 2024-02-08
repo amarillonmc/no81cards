@@ -32,7 +32,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil) and not eg:IsContains(e:GetHandler())
 end
 function cm.thfilter(c)
-	return c:IsRace(RACE_CYBERSE) and c:IsAbleToHand()
+	return c:IsRace(RACE_CYBERSE) and c:IsAbleToHand() and not c:IsHasEffect(EFFECT_NECRO_VALLEY)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) then Duel.HintSelection(Group.FromCards(e:GetHandler())) end
@@ -86,7 +86,7 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=e:GetLabelObject():Filter(cm.retfilter,nil,e)
-	for tc in aux.Next(tg) do Duel.SendtoHand(tc,nil,REASON_EFFECT) end
+	for tc in aux.Next(tg) do Duel.SendtoHand(tc,tp,REASON_EFFECT) end
 	e:GetLabelObject():Clear()
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)

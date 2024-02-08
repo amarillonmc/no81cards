@@ -149,6 +149,6 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local sg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_REMOVED,0,num,num,nil)
 		sg:ForEach(Card.SetStatus,STATUS_TO_HAND_WITHOUT_CONFIRM,true)
-		Duel.SendtoHand(sg,tp,REASON_EFFECT)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	end
 end

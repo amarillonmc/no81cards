@@ -57,6 +57,7 @@ function c9911359.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.AdjustAll()
 			Duel.ShuffleHand(1-tp)
 		end
+		if p==1-tp then Duel.ConfirmCards(1-tp,sg) end
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
 		local tg=sg:Select(p,1,1,nil)
 		Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)

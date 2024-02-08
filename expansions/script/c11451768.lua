@@ -1,6 +1,5 @@
 --天峦之王
-local m=11451768
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--public
 	local e1=Effect.CreateEffect(c)
@@ -102,7 +101,7 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	Duel.SendtoHand(tc,tp,REASON_EFFECT)
 end
 function cm.indcon(e)
 	local c=e:GetLabelObject()

@@ -102,7 +102,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		if num>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,num,num,nil)
-			Duel.SendtoDeck(sg,tp,2,REASON_EFFECT)
+			Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 		end
 	end
 end

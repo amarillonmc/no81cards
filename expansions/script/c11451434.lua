@@ -1,6 +1,5 @@
 --波动武士·X光军刺
-local m=11451434
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -49,7 +48,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_REMOVED,0,4,4,nil)
 	if #g>0 then
-		Duel.SendtoDeck(g,tp,2,REASON_EFFECT)
+		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 		g=Duel.GetOperatedGroup()
 		Duel.ConfirmCards(1-tp,g)
 		Duel.ShuffleDeck(tp)
