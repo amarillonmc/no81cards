@@ -85,9 +85,9 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,nil,1,c) end
+	if chk==0 then return Duel.CheckReleaseGroup(tp,nil,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(REASON_COST,tp,nil,1,1,c)
+	local g=Duel.SelectReleaseGroup(tp,nil,1,1,c)
 	Duel.Release(g,REASON_COST)
 end
 function cm.thfilter(c)

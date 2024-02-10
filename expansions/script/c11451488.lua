@@ -37,10 +37,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function cm.recost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(REASON_COST,tp,Card.IsRace,2,nil,RACE_FAIRY) or (Duel.CheckReleaseGroupEx(REASON_COST,tp,Card.IsRace,1,nil,RACE_FAIRY) and Duel.IsPlayerAffectedByEffect(tp,11451482)) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,Card.IsRace,2,REASON_COST,true,nil,RACE_FAIRY) or (Duel.CheckReleaseGroupEx(tp,Card.IsRace,1,REASON_COST,true,nil,RACE_FAIRY) and Duel.IsPlayerAffectedByEffect(tp,11451482)) end
 	local op=0
 	if Duel.IsPlayerAffectedByEffect(tp,11451482) then
-		if Duel.CheckReleaseGroupEx(REASON_COST,tp,Card.IsRace,2,nil,RACE_FAIRY) then
+		if Duel.CheckReleaseGroupEx(tp,Card.IsRace,2,REASON_COST,true,nil,RACE_FAIRY) then
 			op=Duel.SelectOption(tp,aux.Stringid(11451483,2),aux.Stringid(11451483,3))
 			Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(11451483,op+2))
 			if op==1 then
@@ -53,7 +53,7 @@ function cm.recost(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.ResetFlagEffect(tp,11451481)
 		end
 	end
-	local g=Duel.SelectReleaseGroupEx(REASON_COST,tp,Card.IsRace,2-op,2-op,nil,RACE_FAIRY)
+	local g=Duel.SelectReleaseGroupEx(tp,Card.IsRace,2-op,2-op,REASON_COST,true,nil,RACE_FAIRY)
 	aux.UseExtraReleaseCount(g,tp)
 	Duel.Release(g,REASON_COST)
 end
@@ -89,8 +89,8 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.thfilter,1,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_MZONE)
-	if chk==0 then return Duel.IsPlayerCanRelease(1-tp) and g:IsExists(Card.IsReleasable,1,nil,1-tp) and (#g>2 or (Duel.IsPlayerAffectedByEffect(tp,11451482) and #g>1)) end
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
+	if chk==0 then return Duel.IsPlayerCanRelease(1-tp) and g:IsExists(Card.IsReleasable,1,nil,1-tp) and #g>2 end --or (Duel.IsPlayerAffectedByEffect(tp,11451482) and #g>2)) end
 	local op=0
 	if Duel.IsPlayerAffectedByEffect(tp,11451482) then
 		op=Duel.SelectOption(tp,aux.Stringid(11451483,2),aux.Stringid(11451483,3))
@@ -105,7 +105,8 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanRelease(1-tp) then return end
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_MZONE)
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
+	if #g<=2 then return end
 	local op=e:GetLabel()
 	local ct=#g-2+op
 	if ct>0 then

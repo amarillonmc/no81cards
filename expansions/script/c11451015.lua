@@ -179,7 +179,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		else
 			res=(c:CheckActivateEffect(false,false,false)~=nil)
 		end
-		return res and Duel.CheckReleaseGroup(REASON_COST,tp,cm.rfilter,1,nil) and Duel.CheckReleaseGroup(REASON_COST,tp,cm.rfilter2,1,nil,tp,c)
+		return res and Duel.CheckReleaseGroup(tp,cm.rfilter,1,nil) and Duel.CheckReleaseGroup(tp,cm.rfilter2,1,nil,tp,c)
 	end
 end
 function cm.rfilter(c)

@@ -52,20 +52,20 @@ function cm.initial_effect(c)
 				return _SelectMatchingCard(sp,f,p,s,o,min,max,nc,...)
 			end
 		end
-		function Duel.SelectReleaseGroup(r,sp,f,min,max,nc,...)
+		function Duel.SelectReleaseGroup(sp,f,min,max,nc,...)
 			if Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
-				local g=cm.filter(Duel.GetReleaseGroup(sp,false,r),f,nil,...)
+				local g=cm.filter(Duel.GetReleaseGroup(sp,false),f,nil,...)
 				return g:Select(sp,min,max,nc)
 			else
-				return _SelectReleaseGroup(r,sp,f,min,max,nc,...)
+				return _SelectReleaseGroup(sp,f,min,max,nc,...)
 			end
 		end
-		function Duel.SelectReleaseGroupEx(r,sp,f,min,max,nc,...)
+		function Duel.SelectReleaseGroupEx(sp,f,min,max,r,bool,nc,...)
 			if Duel.GetFlagEffect(0,m)>0 and min==1 and max==1 then
-				local g=cm.filter(Duel.GetReleaseGroup(sp,true,r),f,nil,...)
+				local g=cm.filter(Duel.GetReleaseGroup(sp,true),f,nil,...)
 				return g:Select(sp,min,max,nc)
 			else
-				return _SelectReleaseGroupEx(r,sp,f,min,max,nc,...)
+				return _SelectReleaseGroupEx(sp,f,min,max,r,bool,nc,...)
 			end
 		end
 		function Duel.SelectTarget(sp,f,p,s,o,min,max,nc,...)
