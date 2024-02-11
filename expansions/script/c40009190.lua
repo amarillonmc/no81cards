@@ -46,6 +46,18 @@ function cm.initial_effect(c)
 	e4:SetHintTiming(0,TIMING_END_PHASE)
 	e4:SetCondition(cm.spcon2)
 	c:RegisterEffect(e4)
+
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_UPDATE_ATTACK)
+	e5:SetCondition(cm.condtion)
+	e5:SetValue(500)
+	c:RegisterEffect(e5)
+end
+function cm.condtion(e)
+	local ph=Duel.GetCurrentPhase()
+	return (ph==PHASE_DAMAGE or ph==PHASE_DAMAGE_CAL)
+		and Duel.GetAttacker()==e:GetHandler()
 end
 function cm.hspcon(e,c)
 	if c==nil then return true end
@@ -128,7 +140,7 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spfilter(c,e,tp,mc)
 	return c:IsRank(9) and c:IsType(TYPE_XYZ) and mc:IsCanBeXyzMaterial(c)
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0 and aux.IsCodeListed(c,40009190) 
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

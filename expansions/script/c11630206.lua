@@ -22,7 +22,6 @@ function c11630206.initial_effect(c)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)   
 end
-cm.SetCard_xxj_Mirror=true
 function cm.filter(c)
 	return c:IsLevelAbove(1) 
 end
@@ -54,9 +53,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if e:GetHandler():GetFlagEffect(m)<=0 then return end
 	if Duel.IsPlayerCanSpecialSummonMonster(tp,code,0,TYPES_TOKEN_MONSTER,atk,def,lv,race,att) then
-		local token=Duel.CreateToken(tp,11630207)		
+		local token=Duel.CreateToken(tp,11630207)	   
 		--e:GetLabelObject():GetLabel()
-		--Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)		
+		--Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)	  
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)

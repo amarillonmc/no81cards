@@ -20,7 +20,6 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.cdop)
 	c:RegisterEffect(e2)
 end
-cm.SetCard_xxj_Mirror=true
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,0)
@@ -37,7 +36,7 @@ end
 -----------------------------------------------------------------------
 
 function cm.cdfilter(c,typ)
-	return c:IsType(typ) and not c.SetCard_XWZL
+	return c:IsType(typ) and not c:IsSetCard(0x9220)
 end
 function cm.cdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g1=Duel.GetMatchingGroup(cm.cdfilter,tp,LOCATION_HAND,0,nil,TYPE_MONSTER)

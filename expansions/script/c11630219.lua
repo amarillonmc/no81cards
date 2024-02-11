@@ -11,7 +11,6 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)	  
 end
-cm.SetCard_xxj_Mirror=true
 function cm.filter(c)
 	return c:IsFaceup() 
 end

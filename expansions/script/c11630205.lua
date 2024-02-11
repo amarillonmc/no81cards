@@ -45,7 +45,6 @@ function c11630205.initial_effect(c)
 	e5:SetOperation(cm.thop)
 	c:RegisterEffect(e5)
 end
-cm.SetCard_xxj_Mirror=true
 function cm.cfilter(c,tp)
 	return c:IsControler(tp)
 end
@@ -151,7 +150,7 @@ function cm.tkcop(e,tp,eg,ep,ev,re,r,rp)
 end
 --03
 function cm.thfilter(c)
-	return c.SetCard_xxj_Mirror and not c:IsCode(m) and c:IsAbleToHand()
+	return c:IsSetCard(0x6220) and not c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

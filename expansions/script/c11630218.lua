@@ -29,9 +29,8 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.op)
 	c:RegisterEffect(e3)  
 end
-cm.SetCard_xxj_Mirror=true
 function cm.thfilter(c)
-	return c.SetCard_xxj_Mirror and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x6220) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

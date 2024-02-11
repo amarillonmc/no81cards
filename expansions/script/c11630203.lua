@@ -13,7 +13,6 @@ function c11630203.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)	
 end
-cm.SetCard_xxj_Mirror=true 
 function cm.copyfilter(c)
 	return c:IsFaceup() and not c:IsType(TYPE_TOKEN)
 end

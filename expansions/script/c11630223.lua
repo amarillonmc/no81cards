@@ -11,7 +11,6 @@ function c11630223.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)	
 end
-cm.SetCard_xxj_Mirror=true
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) end

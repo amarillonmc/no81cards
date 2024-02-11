@@ -4,5 +4,3 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	
 end
-
-cm.SetCard_XWZL=true

@@ -24,7 +24,6 @@ function c11621102.initial_effect(c)
 	e2:SetOperation(cm.tgop)
 	c:RegisterEffect(e2)	
 end
-cm.SetCard_xxj_Mirror=true 
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and ep~=tp
 end

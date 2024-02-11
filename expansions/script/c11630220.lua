@@ -34,9 +34,8 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.operation)
 	c:RegisterEffect(e3)
 end
-cm.SetCard_xxj_Mirror=true
 function cm.filter(e,c)
-	return c.SetCard_xxj_Mirror
+	return c:IsSetCard(0x6220)
 end
 function cm.actfilter(c)
 	return c:IsFaceup() and c:IsOriginalCodeRule(11630218)
@@ -49,7 +48,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return ep==tp
 end
 function cm.thfilter(c)
-	return c.SetCard_xxj_Mirror and  c:IsAbleToHand()
+	return c:IsSetCard(0x6220) and  c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=eg:GetCount()

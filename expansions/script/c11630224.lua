@@ -18,7 +18,6 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.activate2)
 	c:RegisterEffect(e2)
 end
-cm.SetCard_xxj_Mirror=true
 function cm.cfilter(c)
 	return c:IsType(TYPE_MONSTER) and not c:IsPublic()
 end

@@ -1,6 +1,5 @@
 --幻影骑士团 鬼魂长枪
-local m=11451750
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--to grave or negate
 	local e1=Effect.CreateEffect(c)

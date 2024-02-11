@@ -51,7 +51,6 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.thop)
 	c:RegisterEffect(e4)
 end
-cm.SetCard_xxj_Mirror=true 
 
 function cm.eqtg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsFaceup() and chkc:IsControler(tp) end

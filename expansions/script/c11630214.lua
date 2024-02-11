@@ -17,7 +17,6 @@ function cm.initial_effect(c)
 	e2:SetCondition(cm.handcon)
 	c:RegisterEffect(e2)   
 end
-cm.SetCard_xxj_Mirror=true
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)

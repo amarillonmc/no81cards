@@ -42,7 +42,6 @@ function c11621103.initial_effect(c)
 	e3:SetOperation(cm.desrepop)
 	c:RegisterEffect(e3)
 end
-cm.SetCard_xxj_Mirror=true
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsCanAddCounter(tp,0x63,7,c) end

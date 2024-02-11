@@ -12,7 +12,6 @@ function c11630208.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)	 
 end
-cm.SetCard_xxj_Mirror=true
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RACE)

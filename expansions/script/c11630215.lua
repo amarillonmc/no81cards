@@ -33,7 +33,6 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge2,0)
 	end 
 end
-cm.SetCard_xxj_Mirror=true
 function cm.resetcount(e,tp,eg,ep,ev,re,r,rp)
 	cm[0]=0
 	cm[1]=0

@@ -12,7 +12,6 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)	
 end
-cm.SetCard_xxj_Mirror=true
 function cm.rmfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
 end
@@ -69,7 +68,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanSpecialSummonMonster(1-tp,code,0,TYPES_TOKEN_MONSTER,atk,def,lv,ra,att) then
 		ft2=0
 	end 
-	for i=1,ft1 do	
+	for i=1,ft1 do  
 		local token=Duel.CreateToken(tp,11630217)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -110,7 +109,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		--
 		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 	end
-	for i=1,ft2 do	
+	for i=1,ft2 do  
 		local token=Duel.CreateToken(1-tp,11630217)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)

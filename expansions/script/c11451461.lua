@@ -1,7 +1,6 @@
 --虚诞衍生物
 --21.04.13
-local m=11451461
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)

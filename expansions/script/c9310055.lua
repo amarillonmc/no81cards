@@ -32,7 +32,7 @@ function c9310055.initial_effect(c)
 	--addition
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_CHAINING)
+	e4:SetCode(EVENT_CHAIN_SOLVING)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetCondition(c9310055.chcon)
 	e4:SetOperation(c9310055.chop)
@@ -65,7 +65,7 @@ function c9310055.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9310055.activate(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,c9310055.disfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 	   Duel.NegateActivation(ev)

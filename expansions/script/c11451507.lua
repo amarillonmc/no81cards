@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	--addition
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_CHAINING)
+	e4:SetCode(EVENT_CHAIN_SOLVING)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetCondition(cm.chcon)
 	e4:SetOperation(cm.chop)

@@ -23,7 +23,6 @@ function c11630204.initial_effect(c)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)   
 end
-cm.SetCard_xxj_Mirror=true
 function cm.spfilter(c,e,tp)
 	return c:IsType(TYPE_MONSTER)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false) --and c:IsLevelBelow(6)
 end

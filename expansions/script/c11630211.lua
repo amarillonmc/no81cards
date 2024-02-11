@@ -13,7 +13,6 @@ function c11630211.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)   
 end
-cm.SetCard_xxj_Mirror=true
 function cm.cfilter(c,tp)
 	local zone=0
 	local seq=c:GetSequence()

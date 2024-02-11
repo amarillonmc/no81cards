@@ -26,7 +26,7 @@ function cm.initial_effect(c)
 	--addition
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_CHAINING)
+	e4:SetCode(EVENT_CHAIN_SOLVING)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetCondition(cm.chcon)
 	e4:SetOperation(cm.chop)
@@ -37,7 +37,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.filter(c)
-	return c:GetType()&0x100004==0x100004 and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and not c:IsCode(m) and c:CheckActivateEffect(false,true,false)~=nil
+	return c:GetType()&0x100004==0x100004 and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:CheckActivateEffect(false,true,false)~=nil --and not c:IsCode(m)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then
@@ -45,12 +45,12 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		local tg=te:GetTarget()
 		return tg and tg(e,tp,eg,ep,ev,re,r,rp,0,chkc)
 	end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,e:GetHandler()) end
+	if chk==0 then return e:IsCostChecked() and Duel.IsExistingTarget(cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) end
 	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	local _GetCurrentChain=Duel.GetCurrentChain
 	Duel.GetCurrentChain=function() return _GetCurrentChain()-1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,e:GetHandler())
+	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil)
 	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true)
 	Duel.GetCurrentChain=_GetCurrentChain
 	Duel.ClearTargetCard()
