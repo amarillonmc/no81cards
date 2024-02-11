@@ -24,9 +24,9 @@ function c9910181.cfilter(c)
 end
 function c9910181.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.CheckReleaseGroupEx(REASON_COST,tp,c9910181.cfilter,1,nil) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c9910181.cfilter,1,REASON_COST,true,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroupEx(REASON_COST,tp,c9910181.cfilter,1,1,nil)
+	local g=Duel.SelectReleaseGroupEx(tp,c9910181.cfilter,1,1,REASON_COST,true,nil)
 	Duel.Release(g,REASON_COST)
 end
 function c9910181.target(e,tp,eg,ep,ev,re,r,rp,chk)

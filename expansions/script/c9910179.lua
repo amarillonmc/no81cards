@@ -44,11 +44,11 @@ end
 function c9910179.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
-		and Duel.CheckReleaseGroupEx(REASON_EFFECT,tp,c9910179.cfilter,1,nil)
+		and Duel.CheckReleaseGroupEx(tp,c9910179.cfilter,1,REASON_EFFECT,true,nil)
 		and Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_ONFIELD,1,nil,TYPE_SPELL+TYPE_TRAP)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910179,0)) then
 		Duel.BreakEffect()
-		local g=Duel.SelectReleaseGroupEx(REASON_EFFECT,tp,c9910179.cfilter,1,1,nil)
+		local g=Duel.SelectReleaseGroupEx(tp,c9910179.cfilter,1,1,REASON_EFFECT,true,nil)
 		if #g>0 and Duel.Release(g,REASON_EFFECT)~=0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local sg=Duel.SelectMatchingCard(tp,Card.IsType,tp,0,LOCATION_ONFIELD,1,1,nil,TYPE_SPELL+TYPE_TRAP)

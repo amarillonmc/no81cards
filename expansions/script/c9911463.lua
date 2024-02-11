@@ -58,14 +58,14 @@ function c9911463.rlfilter(c,e,tp)
 		and Duel.IsExistingMatchingCard(c9911463.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp)
 end
 function c9911463.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_EFFECT,tp,c9911463.rlfilter,1,nil,e,tp) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c9911463.rlfilter,1,REASON_EFFECT,false,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function c9911463.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(REASON_EFFECT,tp,c9911463.rlfilter,1,1,nil,e,tp)
+	local g=Duel.SelectReleaseGroupEx(tp,c9911463.rlfilter,1,1,REASON_EFFECT,false,nil,e,tp)
 	if g:GetCount()==0 then
-		g=Duel.SelectReleaseGroup(REASON_EFFECT,tp,Card.IsReleasableByEffect,1,1,nil)
+		g=Duel.SelectReleaseGroupEx(tp,Card.IsReleasableByEffect,1,1,REASON_EFFECT,false,nil)
 	end
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)

@@ -31,9 +31,9 @@ function c9910560.condition(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
 end
 function c9910560.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(REASON_COST,tp,Card.IsRace,1,nil,RACE_CYBERSE) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,Card.IsRace,1,REASON_COST,true,nil,RACE_CYBERSE) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroupEx(REASON_COST,tp,Card.IsRace,1,1,nil,RACE_CYBERSE)
+	local g=Duel.SelectReleaseGroupEx(tp,Card.IsRace,1,1,REASON_COST,true,nil,RACE_CYBERSE)
 	Duel.Release(g,REASON_COST)
 end
 function c9910560.target(e,tp,eg,ep,ev,re,r,rp,chk)

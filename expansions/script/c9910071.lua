@@ -42,9 +42,9 @@ function c9910071.attop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910071.reccost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(REASON_COST,tp,Card.IsRace,2,nil,RACE_FAIRY) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,Card.IsRace,2,REASON_COST,true,nil,RACE_FAIRY) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroupEx(REASON_COST,tp,Card.IsRace,2,2,nil,RACE_FAIRY)
+	local g=Duel.SelectReleaseGroupEx(tp,Card.IsRace,2,2,REASON_COST,true,nil,RACE_FAIRY)
 	local label=0
 	if g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_LIGHT) then label=label+1 end
 	if g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_DARK) then label=label+2 end

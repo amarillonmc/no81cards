@@ -27,9 +27,9 @@ function c9910290.filter2(c,e,tp,flag1,flag2)
 	return b1 or b2
 end
 function c9910290.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,c9910290.rfilter,1,nil,e,tp) end
+	if chk==0 then return Duel.CheckReleaseGroup(tp,c9910290.rfilter,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(REASON_COST,tp,c9910290.rfilter,1,1,nil,e,tp)
+	local g=Duel.SelectReleaseGroup(tp,c9910290.rfilter,1,1,nil,e,tp)
 	e:SetLabel(g:GetFirst():GetCode())
 	Duel.Release(g,REASON_COST)
 end

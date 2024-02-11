@@ -76,10 +76,10 @@ function c9910525.efffilter(c,e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910525.copyop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if rp==1-tp and c:GetFlagEffect(9910525)==0 and Duel.CheckReleaseGroupEx(REASON_EFFECT,tp,c9910525.rlfilter,1,nil)
+	if rp==1-tp and c:GetFlagEffect(9910525)==0 and Duel.CheckReleaseGroupEx(tp,c9910525.rlfilter,1,REASON_EFFECT,true,nil)
 		and Duel.SelectEffectYesNo(tp,c,aux.Stringid(9910525,0)) then
 		Duel.Hint(HINT_CARD,0,9910525)
-		local g=Duel.SelectReleaseGroupEx(REASON_EFFECT,tp,c9910525.rlfilter,1,1,nil)
+		local g=Duel.SelectReleaseGroupEx(tp,c9910525.rlfilter,1,1,REASON_EFFECT,true,nil)
 		if #g>0 and Duel.Release(g,REASON_EFFECT)~=0
 			and Duel.IsExistingMatchingCard(c9910525.efffilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,eg,ep,ev,re,r,rp)
 			and Duel.SelectYesNo(tp,aux.Stringid(9910525,1)) then

@@ -45,11 +45,11 @@ end
 function c9910176.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
-		and Duel.CheckReleaseGroupEx(REASON_EFFECT,tp,c9910176.cfilter,1,nil,tp)
+		and Duel.CheckReleaseGroupEx(tp,c9910176.cfilter,1,REASON_EFFECT,true,nil,tp)
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,9910178,0,0x4011,1000,1000,3,RACE_WARRIOR,ATTRIBUTE_WIND)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910176,0)) then
 		Duel.BreakEffect()
-		local g=Duel.SelectReleaseGroupEx(REASON_EFFECT,tp,c9910176.cfilter,1,1,nil,tp)
+		local g=Duel.SelectReleaseGroupEx(tp,c9910176.cfilter,1,1,REASON_EFFECT,true,nil,tp)
 		if g:GetCount()>0 and Duel.Release(g,REASON_EFFECT)~=0 then
 			token=Duel.CreateToken(tp,9910178)
 			if token then Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP) end

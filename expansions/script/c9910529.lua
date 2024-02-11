@@ -91,9 +91,9 @@ function c9910529.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910529.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()
-		and Duel.CheckReleaseGroupEx(REASON_COST,tp,nil,1,nil) end
+		and Duel.CheckReleaseGroupEx(tp,nil,1,REASON_COST,true,nil) end
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
-	local g=Duel.SelectReleaseGroupEx(REASON_COST,tp,nil,1,1,nil)
+	local g=Duel.SelectReleaseGroupEx(tp,nil,1,1,REASON_COST,true,nil)
 	Duel.Release(g,REASON_COST)
 end
 function c9910529.destg(e,tp,eg,ep,ev,re,r,rp,chk)

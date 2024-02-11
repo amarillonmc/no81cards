@@ -50,8 +50,8 @@ function c9911025.rfilter(c,tp)
 	return Duel.GetMZoneCount(tp,c)>0
 end
 function c9911025.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,c9911025.rfilter,1,nil,tp) end
-	local g=Duel.SelectReleaseGroup(REASON_COST,tp,c9911025.rfilter,1,1,nil,tp)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,c9911025.rfilter,1,nil,tp) end
+	local g=Duel.SelectReleaseGroup(tp,c9911025.rfilter,1,1,nil,tp)
 	local label=0
 	if g:IsExists(Card.IsRace,1,nil,RACE_AQUA) then label=1 end
 	e:SetLabel(label)

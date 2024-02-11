@@ -38,14 +38,14 @@ function c9910532.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then
 		if e:GetLabel()==1 then
 			e:SetLabel(0)
-			return Duel.CheckReleaseGroupEx(REASON_COST,tp,c9910532.costfilter,1,c,c,tp)
+			return Duel.CheckReleaseGroupEx(tp,c9910532.costfilter,1,REASON_COST,true,c,c,tp)
 		else
 			return Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,c)
 		end
 	end
 	if e:GetLabel()==1 then
 		e:SetLabel(0)
-		local sg=Duel.SelectReleaseGroupEx(REASON_COST,tp,c9910532.costfilter,1,1,c,c,tp)
+		local sg=Duel.SelectReleaseGroupEx(tp,c9910532.costfilter,1,1,REASON_COST,true,c,c,tp)
 		Duel.Release(sg,REASON_COST)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

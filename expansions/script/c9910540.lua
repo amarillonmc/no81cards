@@ -139,8 +139,8 @@ end
 function c9910540.rlop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Group.CreateGroup()
-	if Duel.CheckReleaseGroup(REASON_EFFECT,tp,Card.IsReleasableByEffect,1,nil) then
-		g=Duel.SelectReleaseGroup(REASON_EFFECT,tp,Card.IsReleasableByEffect,1,1,nil)
+	if Duel.CheckReleaseGroupEx(tp,Card.IsReleasableByEffect,1,REASON_EFFECT,false,nil) then
+		g=Duel.SelectReleaseGroupEx(tp,Card.IsReleasableByEffect,1,1,REASON_EFFECT,false,nil)
 	end
 	if c:IsRelateToEffect(e) then g:AddCard(c) end
 	if #g>0 then

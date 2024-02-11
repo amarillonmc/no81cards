@@ -85,9 +85,9 @@ function c9910510.costfilter(c)
 	return c:IsSetCard(0xa950) and c:IsType(TYPE_MONSTER) and c:IsReleasable()
 end
 function c9910510.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(REASON_COST,tp,c9910510.costfilter,1,nil) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c9910510.costfilter,1,REASON_COST,true,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroupEx(REASON_COST,tp,c9910510.costfilter,1,1,nil)
+	local g=Duel.SelectReleaseGroupEx(tp,c9910510.costfilter,1,1,REASON_COST,true,nil)
 	Duel.Release(g,REASON_COST)
 end
 function c9910510.distg(e,tp,eg,ep,ev,re,r,rp,chk)

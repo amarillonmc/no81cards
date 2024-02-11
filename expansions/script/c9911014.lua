@@ -18,7 +18,7 @@ function c9911014.rlfilter(c,tp)
 	return c:IsType(TYPE_MONSTER) and c:IsReleasableByEffect() and Duel.GetFieldGroupCount(tp,0,loc)>0
 end
 function c9911014.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(REASON_COST,tp,c9911014.rlfilter,1,nil,tp) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c9911014.rlfilter,1,REASON_EFFECT,true,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,LOCATION_HAND+LOCATION_ONFIELD)
 end
 function c9911014.fselect(g)
