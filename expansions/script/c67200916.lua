@@ -88,7 +88,7 @@ function c67200916.damop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=Duel.GetMatchingGroup(c67200916.spfilter,tp,LOCATION_EXTRA,0,g:GetFirst():GetCode(),e,tp)
 		if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(67200916,2)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-			local sc=sg:Select(tp,1,1,nil)
+			local sc=sg:Select(tp,1,1,g:GetFirst())
 			Duel.BreakEffect()
 			local b1=Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)
 			local b2=sc:IsExists(c67200916.spfilter1,1,nil,e,tp)
