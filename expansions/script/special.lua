@@ -42,5 +42,6 @@ function Auxiliary.PreloadUds()
 	if not Auxiliary.GetMustMaterialGroup then
 		Auxiliary.GetMustMaterialGroup=Duel.GetMustMaterial
 	end
+	EFFECT_FLAG_CANNOT_NEGATE=EFFECT_FLAG_CANNOT_NEGATE or 0x200
 	--require("script/procedure.lua")
 end
