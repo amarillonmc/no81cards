@@ -131,7 +131,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 									local sumg=Duel.GetMatchingGroup(Card.IsSummonable,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,true,nil)
 									local b1=(cm[tp]&0x1>0 and #thg>0)
 									local b2=(cm[tp]&0x2>0 and #spg>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)
-									local b3=(cm[tp]&0x4>0)
+									local b3=(cm[tp]&0x4>0 and Duel.GetFlagEffect(tp,m)==0)
 									if not (b1 or b2 or b3) then return end
 									local off=1
 									local ops,opval={},{}
@@ -230,6 +230,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 										end
 									elseif sel==2 then
 										cm[tp]=cm[tp]-4
+										Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,2)
 										local e1=Effect.CreateEffect(e:GetHandler())
 										e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 										e1:SetCode(EVENT_CHAIN_SOLVED)
