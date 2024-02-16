@@ -7,6 +7,7 @@ function cm.initial_effect(c)
 	e1:SetDescription(aux.Stringid(m,1))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
@@ -23,7 +24,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0xf11) and c:GetType()&(TYPE_CONTINUOUS+TYPE_SPELL)>0 and c:IsAbleToHand()
+	return c:IsSetCard(0xf11) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,3,nil) end

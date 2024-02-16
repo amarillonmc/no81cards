@@ -66,7 +66,7 @@ function c67200914.damop(e,tp,eg,ep,ev,re,r,rp)
 			local b2=sc:IsExists(c67200914.spfilter1,1,nil,e,tp)
 			local op=aux.SelectFromOptions(tp,{b1,aux.Stringid(67200914,3)},{b2,1152})
 			if op==1 then
-				Duel.MoveToField(sc:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,false)
+				Duel.MoveToField(sc:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 			end
 			if op==2 then
 				Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)

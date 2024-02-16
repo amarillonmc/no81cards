@@ -59,7 +59,7 @@ function c67200916.damcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local b2=Duel.IsExistingMatchingCard(c67200916.costfilter,tp,LOCATION_HAND,0,1,c)
 	if chk==0 then return c:IsDiscardable() and b2 end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(67200916,3))
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(67200916,4))
 	local g=Duel.SelectMatchingCard(tp,c67200916.costfilter,tp,LOCATION_HAND,0,1,1,c)
 	g:AddCard(c)
 	Duel.SendtoExtraP(g,nil,REASON_COST)
@@ -94,7 +94,7 @@ function c67200916.damop(e,tp,eg,ep,ev,re,r,rp)
 			local b2=sc:IsExists(c67200916.spfilter1,1,nil,e,tp)
 			local op=aux.SelectFromOptions(tp,{b1,aux.Stringid(67200916,3)},{b2,1152})
 			if op==1 then
-				Duel.MoveToField(sc:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,false)
+				Duel.MoveToField(sc:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 			end
 			if op==2 then
 				Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
