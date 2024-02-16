@@ -24,12 +24,12 @@ function c88800025.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c88800025.costfilter(c,tp)
-	return c:IsRace(RACE_WARRIOR) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsType(TYPE_MONSTER) and c:IsReleasable()
+	return c:IsRace(RACE_WARRIOR) and c:IsAttribute(ATTRIBUTE_DARK) and Duel.GetMZoneCount(tp,c)>0
 end
 function c88800025.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c88800025.costfilter,1,e:GetHandler()) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c88800025.costfilter,1,REASON_COST,true,e:GetHandler(),tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroupEx(tp,c88800025.costfilter,1,1,e:GetHandler())
+	local g=Duel.SelectReleaseGroupEx(tp,c88800025.costfilter,1,1,REASON_COST,true,e:GetHandler(),tp)
 	Duel.Release(g,REASON_COST)
 end
 function c88800025.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)

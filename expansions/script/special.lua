@@ -12,7 +12,7 @@ function Auxiliary.PreloadUds()
 		end
 		return require_list[str]
 	end
-	--[[local release_set={"CheckReleaseGroup","SelectReleaseGroup","CheckReleaseGroupEx","SelectReleaseGroupEx"}
+	local release_set={"CheckReleaseGroup","SelectReleaseGroup"}
 	for i,fname in pairs(release_set) do
 		local temp_f=Duel[fname]
 		Duel[fname]=function(...)
@@ -38,7 +38,7 @@ function Auxiliary.PreloadUds()
 						end
 						return temp_f(...)
 					end
-	end--]]
+	end
 	if not Auxiliary.GetMustMaterialGroup then
 		Auxiliary.GetMustMaterialGroup=Duel.GetMustMaterial
 	end

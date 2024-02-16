@@ -39,7 +39,7 @@ end
 function cm.con(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(cm.resfilter,tp,LOCATION_SZONE,0,1,nil)
+	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.IsExistingMatchingCard(cm.resfilter,tp,LOCATION_SZONE,0,1,nil)
 end
 function cm.resfilter(c)
 	return c:GetOriginalType()&TYPE_MONSTER ~=0 and c:IsReleasable() and c:IsType(TYPE_TRAP)

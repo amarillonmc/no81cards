@@ -129,6 +129,6 @@ function cm.act2con(e)
 end
 function cm.ac2limit(e,re,tp)
 	return re:GetHandler():IsType(TYPE_MONSTER) and (re:GetHandler():IsLocation(LOCATION_ONFIELD) or re:GetHandler():IsLocation(LOCATION_GRAVE)) and not (re:IsHasType(EFFECT_TYPE_SINGLE) 
-		and ((bit.band(re:GetCode(),EVENT_SUMMON_SUCCESS)~=0) or (bit.band(re:GetCode(),EVENT_SPSUMMON_SUCCESS)~=0) or (bit.band(re:GetCode(),EVENT_FLIP)~=0))
+		and (re:GetCode()==EVENT_SUMMON_SUCCESS or re:GetCode()==EVENT_SPSUMMON_SUCCESS or re:GetCode()==EVENT_FLIP)
 		and (re:IsHasType(EFFECT_TYPE_TRIGGER_F) or re:IsHasType(EFFECT_TYPE_TRIGGER_O) or re:IsHasType(EFFECT_TYPE_QUICK_F) or re:IsHasType(EFFECT_TYPE_QUICK_O)))
 end
