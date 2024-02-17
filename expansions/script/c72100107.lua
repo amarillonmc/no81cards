@@ -19,7 +19,8 @@ function c72100107.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e3:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e3:SetCode(EVENT_SUMMON_SUCCESS)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,72100107)
 	e3:SetTarget(c72100107.seatg)
 	e3:SetOperation(c72100107.seaop)
@@ -49,11 +50,8 @@ function c72100107.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoGrave(sg,REASON_COST+REASON_DISCARD)
 end
 -----
-function c72100107.filter(c)
-	return c:IsFaceup() and c:IsType(TYPE_MONSTER)
-end
 function c72100107.defval(e,c)
-	return Duel.GetMatchingGroupCount(c72100107.filter,c:GetControler(),LOCATION_GRAVE,0,nil)*800
+	return Duel.GetMatchingGroupCount(Card.IsType,c:GetControler(),LOCATION_GRAVE,0,nil,TYPE_MONSTER)*800
 end
 -----------
 function c72100107.filter(c)
