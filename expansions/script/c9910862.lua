@@ -14,10 +14,9 @@ function c9910862.initial_effect(c)
 	--summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SUMMON)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetHintTiming(0,TIMING_BATTLE_START)
 	e2:SetCondition(c9910862.sumcon)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c9910862.sumtg)
@@ -32,12 +31,12 @@ function c9910862.setfilter(c)
 end
 function c9910862.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local lab=Duel.GetFlagEffectLabel(tp,9910862)
-	local b1=Duel.IsExistingMatchingCard(c9910862.setfilter,tp,0,LOCATION_MZONE,1,nil)
+	local b1=Duel.IsExistingMatchingCard(c9910862.setfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 		and (not lab or bit.band(lab,1)==0)
 	local b2=not lab or bit.band(lab,2)==0
 	local b3=not lab or bit.band(lab,4)==0
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9910862.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9910862.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	if chk==0 then return Duel.IsExistingTarget(c9910862.filter,tp,LOCATIOCN_MZONE,LOCATION_MZONE,1,nil)
 		and (b1 or b2 or b3) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c9910862.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
@@ -54,7 +53,7 @@ function c9910862.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ct=1
 	if Duel.GetFlagEffect(tp,9910859)~=0 then ct=2 end
 	local lab=Duel.GetFlagEffectLabel(tp,9910862)
-	local b1=Duel.IsExistingMatchingCard(c9910862.setfilter,tp,0,LOCATION_MZONE,1,nil)
+	local b1=Duel.IsExistingMatchingCard(c9910862.setfilter,tp,LOATION_MZONE,LOCATION_MZONE,1,nil)
 		and (not lab or bit.band(lab,1)==0)
 	local b2=not lab or bit.band(lab,2)==0
 	local b3=not lab or bit.band(lab,4)==0
@@ -96,7 +95,7 @@ function c9910862.activate(e,tp,eg,ep,ev,re,r,rp)
 	until ct==0 or off<3 or not Duel.SelectYesNo(tp,aux.Stringid(9910862,3))
 	if bit.band(sel,1)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,c9910862.setfilter,tp,0,LOCATION_MZONE,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,c9910862.setfilter,tp,LOATION_MZONE,LOCATION_MZONE,1,1,nil)
 		Duel.HintSelection(g)
 		Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
 		if not lab then
@@ -155,7 +154,7 @@ function c9910862.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910862.sumcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp and (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
+	return Duel.GetTurnPlayer()~=tp
 end
 function c9910862.sumfilter(c)
 	return c:IsSetCard(0xa951) and c:IsSummonable(true,nil)
