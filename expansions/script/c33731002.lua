@@ -46,12 +46,15 @@ end
 function s.xyzcheck(g)
 	return g:GetClassCount(Card.GetLevel)==1
 end
+function s.tgfilter(c)
+	return c:IsSetCard(0x442) and c:IsAbleToGrave()
+end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(s.filter,tp,LOCATION_HAND,0,nil)
 	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)
 	local b1=g:CheckSubGroup(s.syncheck,1,#g,e,tp)
 	local b2=g:CheckSubGroup(s.xyzcheck,2,2) and Duel.IsExistingMatchingCard(s.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
-	local b3=ct>0 and Duel.IsPlayerCanDiscardDeck(tp,ct)
+	local b3=ct>0 and Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil)
 	if chk==0 then
 		return b1 or b2 or b3
 	end
@@ -61,7 +64,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)
 	local b1=g:CheckSubGroup(s.syncheck,1,#g,e,tp)
 	local b2=g:CheckSubGroup(s.xyzcheck,2,2) and Duel.IsExistingMatchingCard(s.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
-	local b3=ct>0 and Duel.IsPlayerCanDiscardDeck(tp,1)
+	local b3=ct>0 and Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil)
 	if not b1 and not b2 and not b3 then return end
 	local opt=aux.Option(tp,id,2,b1,b2,b3)
 	if opt==0 then
@@ -98,8 +101,11 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 	
 	elseif opt==2 then
-		local n=Duel.AnnounceNumberMinMax(tp,1,ct)
-		Duel.DiscardDeck(tp,n,REASON_EFFECT)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_DECK,0,1,ct,nil)
+		if #g>0 then
+			Duel.SendtoGrave(g,REASON_EFFECT)
+		end
 	end
 end
 
