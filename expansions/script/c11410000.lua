@@ -25,7 +25,7 @@ end--]]
 if not aux.GetMustMaterialGroup then
 	aux.GetMustMaterialGroup=Duel.GetMustMaterial
 end
-local release_set={"CheckReleaseGroup","SelectReleaseGroup","CheckReleaseGroupEx","SelectReleaseGroupEx"}
+local release_set={"CheckReleaseGroup","SelectReleaseGroup"}
 for i,fname in pairs(release_set) do
 	local temp_f=Duel[fname]
 	Duel[fname]=function(...)

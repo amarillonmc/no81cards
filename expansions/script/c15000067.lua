@@ -24,7 +24,7 @@ function cm.filter2(c,sc,cd)
 	return c:IsType(TYPE_PENDULUM) and c:IsAbleToHand() and c:GetLeftScale()==sc and not c:IsCode(cd)  
 end  
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_DECK,0,1,nil,tp) and Duel.GetCustomActivityCount(15000067,tp,ACTIVITY_SPSUMMON)==0 end  
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_DECK,0,1,nil,tp) and Duel.GetCustomActivityCount(15000067,tp,ACTIVITY_SPSUMMON)==0 end  
 	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)  
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)  
 end

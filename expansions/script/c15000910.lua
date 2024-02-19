@@ -2,16 +2,6 @@ local m=15000910
 local cm=_G["c"..m]
 cm.name="罪名-『嫉妒』"
 function cm.initial_effect(c)
-	--return
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TODECK)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,15000910)
-	e1:SetCost(cm.cost)
-	e1:SetTarget(cm.target)
-	e1:SetOperation(cm.operation)
-	c:RegisterEffect(e1)
 	--why you
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -46,8 +36,12 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if g:GetCount()==0 then return false end
 	local tg=g:GetMaxGroup(Card.GetAttack)
-	return tg:IsExists(Card.IsControler,1,nil,1-tp)
+	return tg:IsExists(cm.atkfilter,1,nil,1-tp)
+end
+function cm.atkfilter(c,p)
+	return c:IsControler(p)
 end

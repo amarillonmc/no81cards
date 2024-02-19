@@ -2,7 +2,6 @@ local m=15000917
 local cm=_G["c"..m]
 cm.name="传说未来圣罚 圣修暗凯·无限命运"
 function cm.initial_effect(c)
-	aux.AddMaterialCodeList(c,15000907)
 	c:EnableReviveLimit()
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,false)
@@ -62,7 +61,6 @@ function cm.initial_effect(c)
 	e7:SetOperation(cm.atop)
 	c:RegisterEffect(e7)
 end
-cm.material_type=TYPE_SYNCHRO
 function cm.matfilter1(c,syncard)
 	return c:IsSynchroType(TYPE_TUNER) or (c:IsSynchroType(TYPE_PENDULUM) and c:IsSetCard(0x5f3e))
 end
@@ -85,7 +83,7 @@ function cm.valcheck(e,c)
 	local g=c:GetMaterial()
 	local ag=g:Filter(cm.mfilter,nil)
 	if ag:GetCount()~=0 then
-		flag=flag|1
+		flag=1
 	end
 	e:GetLabelObject():SetLabel(flag)
 end
@@ -109,6 +107,9 @@ function cm.tnop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e2)
 		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 	end
+end
+function cm.efilter(e,te)
+	return te:GetOwner()~=e:GetOwner()
 end
 function cm.atkfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x6f3e) and c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_SPELL+TYPE_TRAP)
@@ -142,7 +143,7 @@ function cm.atop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_PHASE+PHASE_BATTLE)
 	e2:SetCountLimit(1)
-	e2:SetReset(RESET_PHASE+PHASE_BATTLE+RESET_PHASE+PHASE_END)
+	e2:SetReset(RESET_PHASE+PHASE_END)
 	e2:SetOperation(cm.ctop)
 	e2:SetLabel(tp)
 	Duel.RegisterEffect(e2,tp)

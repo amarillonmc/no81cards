@@ -3,7 +3,7 @@ local cm=_G["c"..m]
 cm.name="色带神·犹格索托斯"
 function cm.initial_effect(c)
 	--synchro summon  
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x1f33),1)  
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x3f33),1)  
 	c:EnableReviveLimit()
 	--Destroy 
 	local e1=Effect.CreateEffect(c)  
@@ -33,8 +33,6 @@ function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
 		if #g>0 and #g==Duel.GetMatchingGroupCount(cm.filter,tp,LOCATION_MZONE,0,1,nil) then
 			Duel.BreakEffect()
-Debug.Message("Ia，Ia，Y’ghaa，y’gai，gai！")
-Debug.Message("由虚构深渊降临之人啊。镇座于梦之长廊彼方穷极之门的神啊。")
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)

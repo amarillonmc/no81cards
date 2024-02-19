@@ -4,13 +4,6 @@ cm.name="未来圣罚 嗜血狼王·负重"
 function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,true)
-	--spsummon condition
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(cm.fsplimit)
-	c:RegisterEffect(e0)
 	--splimit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -97,22 +90,18 @@ function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) end
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,1,aux.ExceptThisCard(e)) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,1,2,e:GetHandler())
+	local g=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,1,2,aux.ExceptThisCard(e))
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,#g,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local sg=tg:Filter(Card.IsRelateToEffect,nil,e)
-	if sg:GetCount()>0 and Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)~=0 then
-		local g=Duel.GetOperatedGroup()
-		if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
-		local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-		if ct>0 then
-			Duel.BreakEffect()
-			Duel.Draw(tp,1,REASON_EFFECT)
-		end
+	if sg:GetCount()>0 and Duel.SendtoDeck(sg,nil,1,REASON_EFFECT)~=0 then
+		Duel.ShuffleDeck(tp)
+		Duel.BreakEffect()
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end

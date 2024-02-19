@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetTargetRange(1,0)
-	e2:SetValue(2)
+	e2:SetValue(3)
 	c:RegisterEffect(e2)
 end
 function cm.mtcon(e,tp,eg,ep,ev,re,r,rp)

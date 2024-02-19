@@ -1,57 +1,92 @@
 --深土之下
-if not pcall(function() require("expansions/script/c30000100") end) then require("script/c30000100") end
-local m,cm = rscf.DefineCard(30013025)
+local m=30013025
+local cm=_G["c"..m]
 function cm.initial_effect(c)
-	local e1 = rsef.A(c)
-	local e2 = rsef.FV_Card(c,"def+",cm.dval,aux.TargetBoolFunction(
-		Card.IsType,TYPE_FLIP),{LOCATION_MZONE,0},nil,LOCATION_FZONE)
-	local e3 = rsef.FV_Player(c,"rm~",1,cm.rmtg,{0,1},"sa",
-		LOCATION_FZONE)
-	local e4 = rsef.FC(c,EVENT_CHAIN_NEGATED,nil,nil,nil,LOCATION_FZONE,
-		cm.drcon,cm.drop)
-	local e5 = rsef.FC(c,EVENT_CHAIN_DISABLED,nil,nil,nil,LOCATION_FZONE,
-		cm.drcon,cm.drop)
-	local e6 = rsef.FC(c,EVENT_DESTROYED,nil,nil,nil,LOCATION_FZONE,
-		cm.drcon2,cm.drop)
-	local e7 = rsef.QO_NegateEffect(c,nil,{1,m},LOCATION_GRAVE,
-		cm.discon,rscost.cost(Card.IsAbleToDeckAsCost,"td"),
-		"pos",nil,nil,cm.exop)
+	--activate
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_ACTIVATE)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e0)
+	--Effect 1
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_UPDATE_DEFENSE)
+	e2:SetRange(LOCATION_FZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsType,TYPE_FLIP))
+	e2:SetValue(cm.val)
+	c:RegisterEffect(e2)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetCode(EFFECT_CANNOT_REMOVE)
+	e4:SetRange(LOCATION_FZONE)
+	e4:SetTargetRange(0,1)
+	e4:SetTarget(cm.rmlimit)
+	c:RegisterEffect(e4)  
+	--Effect 2
+	--Effect 3 
+	local e12=Effect.CreateEffect(c)
+	e12:SetCategory(CATEGORY_DISABLE+CATEGORY_POSITION)
+	e12:SetType(EFFECT_TYPE_QUICK_O)
+	e12:SetCode(EVENT_CHAINING)
+	e12:SetRange(LOCATION_GRAVE)
+	e12:SetCountLimit(1,m)
+	e12:SetCondition(cm.discon)
+	e12:SetCost(cm.discost)
+	e12:SetTarget(cm.distg)
+	e12:SetOperation(cm.disop)
+	c:RegisterEffect(e12)
 end
+--Effect 1
+function cm.ft(c)
+	return c:IsType(TYPE_FLIP) 
+		and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
+end
+function cm.val(e,c)
+	local tp=e:GetHandlerPlayer()
+	local g=Duel.GetMatchingGroup(cm.ft,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,nil)
+	return g:GetClassCount(Card.GetCode)*300
+end
+function cm.rmlimit(e,c) 
+	local ec=e:GetHandler()
+	local tp=e:GetHandlerPlayer()
+	local b1=c:IsLocation(LOCATION_ONFIELD) and (c:IsFacedown() or (c:IsSetCard(0x92c) or c:IsType(TYPE_FLIP)))
+	local b2=c:GetLocation()~=LOCATION_ONFIELD and (c:IsSetCard(0x92c) or c:IsType(TYPE_FLIP))
+	return c:IsControler(tp) and (c==ec or (b1 or b2))
+end
+--Effect 2
+--Effect 3
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	if rp == tp or ev < 2 then return false end
-	local re2,rp2 = Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return rp ~= tp and ev >= 2 and rp2 == tp and (re2:GetHandler():IsSetCard(0x92c) or re2:IsActiveType(TYPE_FLIP)) and Duel.IsChainDisablable(ev)
+	if rp==tp or ev<2 then return false end
+	local re2,rp2=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+	return rp~=tp and ev>=2 and rp2==tp and (re2:GetHandler():IsSetCard(0x92c) or re2:IsActiveType(TYPE_FLIP)) and Duel.IsChainDisablable(ev)
 end
-function cm.exop(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk ~= 1 then return end
-	rsop.SelectExPara("pos",true)
-	rsop.SelectOperate("posd",tp,cm.pfilter,tp,LOCATION_MZONE,0,1,1,nil,{})
+function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
+	Duel.SendtoDeck(e:GetHandler(),tp,SEQ_DECKSHUFFLE,REASON_COST)
 end
-function cm.pfilter(c)
-	return c:IsCanTurnSet() or (c:IsCanChangePosition() and (c:IsAttackPos() or c:IsFacedown()))
+function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end
-function cm.cfilter(c)
-	return c:FieldPosCheck() and c:IsType(TYPE_FLIP)
+function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.NegateEffect(ev) 
+		and Duel.IsExistingMatchingCard(cm.chan,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+		local g=Duel.SelectMatchingCard(tp,cm.chan,tp,LOCATION_MZONE,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.HintSelection(g)
+			local tc=g:GetFirst()
+			local pos1=0
+			if tc:IsCanTurnSet() then pos1=pos1+POS_FACEDOWN_DEFENSE end
+			if not tc:IsPosition(POS_FACEUP_DEFENSE) then pos1=pos1+POS_FACEUP_DEFENSE end
+			local pos2=Duel.SelectPosition(tp,tc,pos1)
+			Duel.ChangePosition(tc,pos2)
+		end
+	end
 end
-function cm.dval(e,c)
-	local g = Duel.GetMatchingGroup(cm.cfilter,0,rsloc.mg,rsloc.mg,nil)
-	return g:GetClassCount(Card.GetCode) * 200
-end
-function cm.rmtg(e,c)
-	return (c:IsFacedown() or c:IsType(TYPE_FLIP) or c == e:GetHandler() or c:IsSetCard(0x92c) ) and c:IsControler(e:GetHandlerPlayer())
-end
-function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
-	local rc = re:GetHandler()
-	--local dp=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_PLAYER)
-	return rc:IsType(TYPE_FLIP) and ep == tp
-end
-function cm.drop(e,tp)
-	rshint.Card(m)
-	Duel.Draw(tp,1,REASON_EFFECT)
-end
-function cm.drcon2(e,tp,eg)
-	return eg:IsExists(cm.desfilter,1,nil,tp)
-end
-function cm.desfilter(c,tp)
-	return c:IsType(TYPE_FLIP) and c:IsPreviousControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE)
+function cm.chan(c)
+	return  c:IsCanTurnSet() or c:IsCanChangePosition()
 end

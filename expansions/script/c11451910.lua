@@ -5,6 +5,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	--e1:SetOperation(function() Debug.Message(string.dump(loadfile("expansions/script/c11451909.lua"))) end)
 	c:RegisterEffect(e1)
 	--sp
 	local e2=Effect.CreateEffect(c)
@@ -52,20 +53,20 @@ function cm.mfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x44f)
 end
 function cm.afilter(c,e,tp,attr)
-	return c:GetAttribute()~=attr and c:IsSetCard(0xc976) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:GetAttribute()~=attr and cm[c:GetAttribute()]<=0 and c:IsSetCard(0xc976) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not re:IsActiveType(TYPE_MONSTER) then return end
 	local mg=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 	local _,ct=mg:GetMaxGroup(Card.GetTurnCounter)
-	local ct=ct or 0
+	local ct=0 --ct or 0
 	local rc=re:GetHandler()
 	local attr=rc:GetAttribute()
 	local b2=false
 	for i=0,6 do
-		if attr&(1<<i)>0 and cm[1<<i]>ct then return end
-		if attr&(1<<i)>0 and Duel.GetFlagEffectLabel(0,m) and Duel.GetFlagEffectLabel(0,m)&(1<<i)>0 then b2=Duel.IsChainDisablable(ev) end
+		--if attr&(1<<i)>0 and cm[1<<i]>ct then return end
+		if attr&(1<<i)>0 and Duel.GetFlagEffectLabel(0,m) and Duel.GetFlagEffectLabel(0,m)&(1<<i)>0 then b2=Duel.IsChainDisablable(ev) and cm[1<<i]<=ct end
 	end
 	local g=Duel.GetMatchingGroup(cm.afilter,tp,LOCATION_DECK,0,nil,e,tp,attr)
 	if #g==0 and not b2 then return end
@@ -86,18 +87,17 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	opval[off-1]=3
 	Duel.HintSelection(Group.FromCards(c))
 	local op=Duel.SelectOption(tp,table.unpack(ops))
-	if opval[op]<=2 then
-		for i=0,6 do
-			if attr&(1<<i)>0 then
-				cm[1<<i]=cm[1<<i]+1
-				c:RegisterFlagEffect(0,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,i+3))
-			end
-		end
-	end
 	if opval[op]==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		g=g:Select(tp,1,1,nil)
 		if #g>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)>0 then
+			attr=g:GetFirst():GetAttribute()
+			for i=0,6 do
+				if attr&(1<<i)>0 then
+					cm[1<<i]=cm[1<<i]+1
+					c:RegisterFlagEffect(0,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,i+3))
+				end
+			end
 			g:GetFirst():RegisterFlagEffect(m,RESET_CHAIN,0,1)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
@@ -106,7 +106,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCondition(function() return ev==Duel.GetCurrentChain() end)
 			e1:SetValue(function(e,te) return te:GetCode()==EVENT_CHAINING and te:IsHasType(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_QUICK_F) end)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
-			g:GetFirst():RegisterEffect(e1)
+			--g:GetFirst():RegisterEffect(e1)
 			local e6=Effect.CreateEffect(c)
 			e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e6:SetCode(EVENT_CHAIN_SOLVED)
@@ -115,12 +115,18 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 			e6:SetCondition(cm.descon)
 			e6:SetOperation(cm.desop)
 			e6:SetReset(RESET_CHAIN)
-			Duel.RegisterEffect(e6,tp)
+			--Duel.RegisterEffect(e6,tp)
 			local e7=e6:Clone()
 			e7:SetCode(EVENT_CHAIN_NEGATED)
-			Duel.RegisterEffect(e7,tp)
+			--Duel.RegisterEffect(e7,tp)
 		end
 	elseif opval[op]==2 then
+		for i=0,6 do
+			if attr&(1<<i)>0 then
+				cm[1<<i]=cm[1<<i]+1
+				c:RegisterFlagEffect(0,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,i+3))
+			end
+		end
 		Duel.NegateEffect(ev)
 	end
 end

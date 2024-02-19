@@ -72,12 +72,12 @@ function c15000043.desfilter(c,e,tp,ft)
 		and Duel.IsExistingMatchingCard(c15000043.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c:GetCode())
 end  
 function c15000043.spfilter(c,e,tp,code)  
-	return c:IsSetCard(0xf33) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and not c:IsCode(code) and c:IsFaceup() and c:IsType(TYPE_PENDULUM) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+	return c:IsSetCard(0xf33) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and c:IsLevelBelow(5) and not c:IsCode(code) and c:IsFaceup() and c:IsType(TYPE_PENDULUM) and Duel.GetLocationCountFromEx(tp,tp,e:GetHandler(),c)>0
 end  
 function c15000043.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)  
+	local ft=Duel.GetLocationCountFromEx(tp,tp,e:GetHandler(),TYPE_PENDULUM)  
 	if chkc then return chkc:IsLocation(LOCATION_PZONE) and chkc:IsControler(tp) and c15000043.desfilter(chkc,e,tp,ft) end  
-	if chk==0 then return ft>-1 and Duel.IsExistingTarget(c15000043.desfilter,tp,LOCATION_PZONE,0,1,e:GetHandler(),e,tp,ft) end  
+	if chk==0 then return ft>0 and Duel.IsExistingTarget(c15000043.desfilter,tp,LOCATION_PZONE,0,1,e:GetHandler(),e,tp,ft) end  
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)  
 	local g=Duel.SelectTarget(tp,c15000043.desfilter,tp,LOCATION_PZONE,0,1,1,e:GetHandler(),e,tp,ft)  
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)  

@@ -19,9 +19,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--when pzone
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_PZONE)  
-	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetCountLimit(1,15000051)
 	e3:SetCondition(c15000051.spcon)
 	e3:SetOperation(c15000051.spop)  
@@ -40,10 +39,8 @@ function cm.initial_effect(c)
 	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)  
 	e5:SetType(EFFECT_TYPE_IGNITION)  
 	e5:SetProperty(EFFECT_FLAG_CARD_TARGET) 
-	e5:SetCode(EVENT_FREE_CHAIN)  
 	e5:SetRange(LOCATION_MZONE)  
 	e5:SetCountLimit(1,15020051) 
-	e5:SetHintTiming(0,TIMING_MAIN_END)
 	e5:SetTarget(c15000051.sp2tg)
 	e5:SetOperation(c15000051.sp2op)  
 	c:RegisterEffect(e5)
@@ -57,7 +54,7 @@ function c15000051.p1val(e,tp)
 	if g:GetCount()==0 then return 4 end
 	local tc=g:GetFirst()
 	if not tc:GetType(TYPE_PENDULUM) then return 4 end
-	if tc:IsSetCard(0x1f33) then return 4 end
+	if tc:IsSetCard(0x3f33) then return 4 end
 	return tc:GetLeftScale()
 end
 function c15000051.p2val(e,tp)
@@ -65,14 +62,16 @@ function c15000051.p2val(e,tp)
 	if g:GetCount()==0 then return 4 end
 	local tc=g:GetFirst()
 	if not tc:GetType(TYPE_PENDULUM) then return 4 end
-	if tc:IsSetCard(0x1f33) then return 4 end
+	if tc:IsSetCard(0x3f33) then return 4 end
 	return tc:GetRightScale()
 end
 function c15000051.spfilter(c)
-	return c:IsRace(RACE_FIEND) and c:IsType(TYPE_PENDULUM) and c:IsFaceup()
+	return c:IsRace(RACE_FIEND) and c:IsType(TYPE_PENDULUM) and c:IsFaceup() and not c:IsForbidden()
 end
 function c15000051.spcon(e) 
-	return Duel.IsExistingMatchingCard(c15000051.spfilter,e:GetHandlerPlayer(),LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil) and not Duel.IsExistingMatchingCard(nil,e:GetHandlerPlayer(),LOCATION_PZONE,0,1,e:GetHandler())
+	local c=e:GetHandler()
+	local tp=c:GetControler()
+	return Duel.IsExistingMatchingCard(c15000051.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil) and not Duel.IsExistingMatchingCard(nil,e:GetHandlerPlayer(),LOCATION_PZONE,0,1,e:GetHandler())
 end
 function c15000051.spop(e,tp,eg,ep,ev,re,r,rp) 
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(15000051,0))
@@ -83,7 +82,7 @@ function c15000051.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c15000051.sd2filter(c)
-	return c:IsSetCard(0x1f33) and c:IsFaceup()
+	return c:IsSetCard(0x3f33) and c:IsFaceup()
 end
 function c15000051.c3filter(c)  
 	return c:IsType(TYPE_PENDULUM) and c:IsFaceup()
@@ -112,21 +111,7 @@ function c15000051.sp2op(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end 
 	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
-		if not tc:IsSetCard(0xf33) then
-			local e1=Effect.CreateEffect(e:GetHandler())  
-			e1:SetType(EFFECT_TYPE_SINGLE)  
-			e1:SetCode(EFFECT_DISABLE)  
-			e1:SetReset(RESET_EVENT+0x1fe0000)  
-			tc:RegisterEffect(e1,true)  
-			local e2=Effect.CreateEffect(e:GetHandler())  
-			e2:SetType(EFFECT_TYPE_SINGLE)  
-			e2:SetCode(EFFECT_DISABLE_EFFECT)  
-			e2:SetReset(RESET_EVENT+0x1fe0000)  
-			tc:RegisterEffect(e2,true)
-			Duel.SpecialSummonComplete()
-		else
-			Duel.SpecialSummonComplete()
-		end
+		Duel.SpecialSummonComplete()
 	end
 	local e3=Effect.CreateEffect(e:GetHandler())  
 	e3:SetType(EFFECT_TYPE_FIELD)  

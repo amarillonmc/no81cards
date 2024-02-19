@@ -1,10 +1,9 @@
 local m=15000056
 local cm=_G["c"..m]
 cm.name="色带神·莎布尼古拉丝"
-
 function cm.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xf33),aux.NonTuner(Card.IsSynchroType,TYPE_MONSTER),1,99)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xf33),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(m,0))
@@ -43,7 +42,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(LOCATION_MZONE,0)
+	e3:SetTargetRange(LOCATION_PZONE,0)
 	e3:SetTarget(aux.TargetBoolFunction(Card.IsLocation,LOCATION_PZONE))
 	e3:SetValue(cm.efilter)
 	c:RegisterEffect(e3)
@@ -172,7 +171,7 @@ function cm.SynMixOperation(f1,f2,f3,f4,minct,maxc,gc)
 			end
 end
 function cm.SynMixFilter1(c,f1,f2,f3,f4,minc,maxc,syncard,mg,smat,gc,mgchk)
-	return (not f1 or f1(c,syncard)) and mg:IsExists(cm.SynMixFilter2,1,c,f2,f3,f4,minc,maxc,syncard,mg,smat,c,gc,mgchk)
+	return (not f1 or f1(c,syncard)) and mg:IsExists(cm.SynMixFilter2,1,c,f2,f3,f4,minc,maxc,syncard,mg,smat,c,gc,mgchk) and c:IsSynchroType(TYPE_TUNER)
 end
 function cm.SynMixFilter2(c,f2,f3,f4,minc,maxc,syncard,mg,smat,c1,gc,mgchk)
 	if f2 then
@@ -264,16 +263,16 @@ function cm.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
 end
 
 function cm.pcfilter(c)
-	return c:IsType(TYPE_PENDULUM) and (c:IsLocation(LOCATION_DECK) or c:IsFaceup()) and not c:IsForbidden()
+	return c:IsType(TYPE_PENDULUM) and c:IsFaceup() and not c:IsForbidden()
 end
 function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.IsExistingMatchingCard(cm.pcfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil) end
+	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.IsExistingMatchingCard(cm.pcfilter,tp,LOCATION_EXTRA,0,1,nil) end
 end
 function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,cm.pcfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.pcfilter,tp,LOCATION_EXTRA,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end

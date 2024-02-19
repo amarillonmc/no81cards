@@ -39,6 +39,7 @@ function cm.initial_effect(c)
 end
 function cm.hspcon(e,c)
 	if c==nil then return true end
+	local tp=c:GetControler()
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and Duel.IsPlayerAffectedByEffect(tp,40009196)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)

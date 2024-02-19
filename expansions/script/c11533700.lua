@@ -10,7 +10,7 @@ function c11533700.initial_effect(c)
 	c:RegisterEffect(e1) 
 	--rl rm td 
 	local e1=Effect.CreateEffect(c) 
-	e1:SetCategory(CATEGORY_RELEASE+CATEGORY_REMOVE+CATEGORY_TODECK) 
+	e1:SetCategory(CATEGORY_RELEASE+CATEGORY_REMOVE+CATEGORY_TODECK+CATEGORY_DRAW) 
 	e1:SetType(EFFECT_TYPE_QUICK_O) 
 	e1:SetCode(EVENT_FREE_CHAIN) 
 	e1:SetRange(LOCATION_HAND) 
@@ -30,7 +30,7 @@ function c11533700.initial_effect(c)
 	c:RegisterEffect(e2)
 	--rl and disable
 	local e3=Effect.CreateEffect(c) 
-	e3:SetCategory(CATEGORY_RELEASE+CATEGORY_DISABLE)
+	e3:SetCategory(CATEGORY_RELEASE+CATEGORY_REMOVE+CATEGORY_DISABLE)
 	e3:SetType(EFFECT_TYPE_QUICK_O) 
 	e3:SetCode(EVENT_FREE_CHAIN) 
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
@@ -77,15 +77,15 @@ function c11533700.rrfil(c)
 	else return false end 
 end 
 function c11533700.rrttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,5,nil)
-	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,0,LOCATION_GRAVE,1,e:GetHandler()) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,3,nil)
+	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,5,nil) and Duel.IsPlayerCanDraw(tp,2)
+	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,0,LOCATION_GRAVE,1,e:GetHandler()) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,3,nil) and Duel.IsPlayerCanDraw(tp,1)
 	if chk==0 then return b1 or b2 end 
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,LOCATION_GRAVE) 
 end 
 function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
-	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil)
-	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,LOCATION_GRAVE,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,nil)
+	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) and Duel.IsPlayerCanDraw(tp,2)
+	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,LOCATION_GRAVE,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,nil) and Duel.IsPlayerCanDraw(tp,1)
 	local op=0
 			if b1 and b2 then  
 			op=Duel.SelectOption(tp,aux.Stringid(11533700,2),aux.Stringid(11533700,3))
@@ -105,6 +105,8 @@ function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp)
 	if rrg:GetCount()>0 then
 		Duel.SendtoDeck(rrg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		Duel.ShuffleDeck(tp)
+		local ct=rrg:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+		if ct>0 then Duel.Draw(tp,2,REASON_EFFECT) end 
 	end
 	end
 			elseif op==1 then 
@@ -116,12 +118,14 @@ function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp)
 	if rrg:GetCount()>0 then
 		Duel.SendtoDeck(rrg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		Duel.ShuffleDeck(tp)
+		local ct=rrg:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+		if ct>0 then Duel.Draw(tp,1,REASON_EFFECT) end 
 	end
 	end
 	end
 end  
 function c11533700.rlfil(c)  
-	return c:IsReleasable() or c:IsAbleToGrave() 
+	return c:IsReleasable() or c:IsAbleToRemove() 
 end 
 function c11533700.rdistg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chk==0 then return Duel.IsExistingMatchingCard(c11533700.rlfil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end 
@@ -134,7 +138,7 @@ function c11533700.rdisop(e,tp,eg,ep,ev,re,r,rp)
 		local rc=g:Select(tp,1,1,nil):GetFirst()  
 		local x=0 
 			local b1=rc:IsReleasable() 
-			local b2=rc:IsAbleToGrave()
+			local b2=rc:IsAbleToRemove()
 			local op=0  
 			if b1 and b2 then  
 			op=Duel.SelectOption(tp,aux.Stringid(11533700,2),aux.Stringid(11533700,3))
@@ -146,7 +150,7 @@ function c11533700.rdisop(e,tp,eg,ep,ev,re,r,rp)
 			if op==0 then 
 			x=Duel.Release(rc,REASON_EFFECT) 
 			elseif op==1 then 
-			x=Duel.SendtoGrave(rc,REASON_EFFECT) 
+			x=Duel.Remove(rc,POS_FACEUP,REASON_EFFECT) 
 			end 
 		if x>0 and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11533700,1)) then   
 			Duel.BreakEffect()

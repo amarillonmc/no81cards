@@ -100,7 +100,7 @@ function cm.coinop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanSSet(1-tp) end
+	if chk==0 then return Duel.IsPlayerCanSSet(1-tp) and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
 	local tg=Duel.SelectMatchingCard(1-tp,Card.IsSSetable,tp,0,LOCATION_HAND,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SET)
 	if #tg>0 then Duel.SSet(1-tp,tg,1-tp,false) end

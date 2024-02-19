@@ -135,7 +135,6 @@ function c11560715.xxop(e,tp,eg,ep,ev,re,r,rp)
 					end
 				end 
 		elseif tc:IsType(TYPE_SPELL+TYPE_TRAP) then 
-				Duel.SendtoHand(tc,tp,REASON_EFFECT)
 				if Duel.SendtoHand(tc,tp,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(c11560715.gsfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,LOCATION_GRAVE+LOCATION_MZONE,1,c) and c:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(11560715,0)) then 
 						Duel.BreakEffect()
 					local oc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11560715.gsfilter),tp,LOCATION_GRAVE+LOCATION_MZONE,LOCATION_GRAVE+LOCATION_MZONE,1,1,c):GetFirst()  

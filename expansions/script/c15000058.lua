@@ -92,7 +92,7 @@ function cm.p1val(e,tp)
 	if g:GetCount()==0 then return 4 end
 	local tc=g:GetFirst()
 	if not tc:GetType(TYPE_PENDULUM) then return 4 end
-	if tc:IsSetCard(0x1f33) then return 4 end
+	if tc:IsSetCard(0x3f33) then return 4 end
 	return tc:GetLeftScale()
 end
 function cm.p2val(e,tp)
@@ -100,17 +100,20 @@ function cm.p2val(e,tp)
 	if g:GetCount()==0 then return 4 end
 	local tc=g:GetFirst()
 	if not tc:GetType(TYPE_PENDULUM) then return 4 end
-	if tc:IsSetCard(0x1f33) then return 4 end
+	if tc:IsSetCard(0x3f33) then return 4 end
 	return tc:GetRightScale()
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp) 
 	local tp=e:GetHandlerPlayer() 
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)  
 end  
+function cm.discostfilter(c)  
+	return c:IsType(TYPE_PENDULUM) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+end
 function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)  
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,e:GetHandler(),TYPE_PENDULUM) end  
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.discostfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,e:GetHandler()) end  
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)  
-	local g=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,e:GetHandler(),TYPE_PENDULUM)  
+	local g=Duel.SelectMatchingCard(tp,cm.discostfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,e:GetHandler())  
 	Duel.Remove(g,POS_FACEUP,REASON_COST) 
 end
 function cm.c3filter(c)  

@@ -1,6 +1,6 @@
 local m=15000047
 local cm=_G["c"..m]
-cm.name="色带的暗夜·米戈"
+cm.name="色带的侍从·米戈"
 function cm.initial_effect(c)
 	--pendulum summon  
 	aux.EnablePendulumAttribute(c)

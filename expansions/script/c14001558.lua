@@ -38,7 +38,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,1550)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and aux.NegateAnyFilter(chkc) end
+	if chkc then return chkc:IsOnField() and aux.NegateAnyFilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
 	local ct=1
 	if Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE and Duel.GetFlagEffect(tp,m)==0 then

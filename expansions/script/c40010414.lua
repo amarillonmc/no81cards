@@ -9,7 +9,7 @@ function cm.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e4:SetValue(aux.FALSE)
+	e4:SetValue(cm.splimit)
 	c:RegisterEffect(e4)
 	--remove
 	local e1=Effect.CreateEffect(c)
@@ -51,6 +51,9 @@ function cm.initial_effect(c)
 	e5:SetTarget(cm.sptg)
 	e5:SetOperation(cm.spop)
 	c:RegisterEffect(e5)
+end
+function cm.splimit(e,se,sp,st)
+	return aux.AssaultModeLimit(e,se,sp,st) or se:GetHandler()==e:GetHandler()
 end
 function cm.atkcon(e)
 	local c=e:GetHandler()

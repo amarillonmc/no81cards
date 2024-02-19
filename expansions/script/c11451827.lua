@@ -123,8 +123,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetCode(EVENT_MOVE)
 			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e2:SetOperation(function(e)
-				c:SetCardData(CARDDATA_TYPE,TYPE_SPELL)
-				e:Reset()
+				if not c:IsLocation(LOCATION_SZONE) or not c:IsControler(tp) then
+					c:SetCardData(CARDDATA_TYPE,TYPE_SPELL)
+					e:Reset()
+				end
 			end)
 			c:RegisterEffect(e2)
 		end

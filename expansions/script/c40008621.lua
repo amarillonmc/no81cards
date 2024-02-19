@@ -7,7 +7,7 @@ function c40008621.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetValue(aux.FALSE)
+	e1:SetValue(c40008621.splimit)
 	c:RegisterEffect(e1)
 	--negate
 	local e5=Effect.CreateEffect(c)
@@ -48,6 +48,9 @@ function c40008621.initial_effect(c)
 end
 c40008621.card_code_list={80280737,82044279}
 c40008621.assault_name=82044279
+function c40008621.splimit(e,se,sp,st)
+	return aux.AssaultModeLimit(e,se,sp,st) or se:GetHandler()==e:GetHandler()
+end
 function c40008621.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
@@ -69,15 +72,16 @@ function c40008621.spop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c40008621.condition(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev) and re:GetHandler()~=c
-		and bit.band(Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION),LOCATION_ONFIELD)~=0
+	return (re:IsHasType(EFFECT_TYPE_ACTIVATE) or re:IsActiveType(TYPE_MONSTER))
+		and re:GetHandler()~=e:GetHandler() and re:GetHandler():IsLocation(LOCATION_ONFIELD) and Duel.IsChainNegatable(ev)
 end
 function c40008621.condition2(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then return false end
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return tg and tg:IsExists(Card.IsOnField,1,nil) and Duel.IsChainNegatable(ev)
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	if not g or g:GetCount()~=1 then return false end
+	local tc=g:GetFirst()
+	local c=e:GetHandler()
+	return not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
 function c40008621.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

@@ -29,6 +29,15 @@ function c11533701.initial_effect(c)
 	e2:SetTarget(c11533701.rmtg) 
 	e2:SetOperation(c11533701.rmop) 
 	c:RegisterEffect(e2) 
+	--apply effect
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_TODECK)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_REMOVE)
+	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e4:SetTarget(c11533701.efftg)
+	e4:SetOperation(c11533701.effop)
+	c:RegisterEffect(e4)
 	--sp 
 	--local e3=Effect.CreateEffect(c) 
 	--e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DISABLE) 
@@ -42,6 +51,8 @@ function c11533701.initial_effect(c)
 	--e3:SetOperation(c11533701.spdop) 
 	--c:RegisterEffect(e3) 
 end
+Nekroz_discard_effect={}
+Nekroz_discard_effect_card={}
 function c11533701.mat_filter(c)
 	return not c:IsLevel(9) 
 end 
@@ -217,6 +228,52 @@ function c11533701.spdop(e,tp,eg,ep,ev,re,r,rp)
 end 
 
 
+function c11533701.filter(c,tp,e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local eff=Nekroz_discard_effect[c:GetOriginalCode()]
+	if not eff then return false end
+	local target=eff:GetTarget()
+	if target then
+		return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and c:GetTurnID()==Duel.GetTurnCount() and target(e,tp,eg,ep,ev,re,r,rp,0,chkc)
+	end
+	return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and c:GetTurnID()==Duel.GetTurnCount() and Nekroz_discard_effect[c:GetOriginalCode()]
+end
+function c11533701.efftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then
+		local te=e:GetLabelObject()
+		local tg=te:GetTarget()
+		return tg and tg(e,tp,eg,ep,ev,re,r,rp,0,chkc)
+	end
+	if chk==0 then return Duel.IsExistingTarget(c11533701.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp,e,tp,eg,ep,ev,re,r,rp,chk,chkc) end
+	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e:SetCategory(0)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,c11533701.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp,e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local te=Nekroz_discard_effect[g:GetFirst():GetOriginalCode()]
+	Duel.ClearTargetCard()
+	e:SetProperty(te:GetProperty())
+	e:SetLabel(te:GetLabel())
+	e:SetLabelObject(te:GetLabelObject())
+	local tg=te:GetTarget()
+	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
+	te:SetLabel(e:GetLabel())
+	te:SetLabelObject(e:GetLabelObject())
+	e:SetLabelObject(te)
+	Nekroz_discard_effect_card[te]=g:GetFirst()
+	Duel.ClearOperationInfo(0)
+end
+function c11533701.effop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local tc=Nekroz_discard_effect_card[te]
+	if tc and tc:IsRelateToEffect(e) then
+		e:SetLabel(te:GetLabel())
+		e:SetLabelObject(te:GetLabelObject())
+		local op=te:GetOperation()
+		if op then op(e,tp,eg,ep,ev,re,r,rp) end
+		te:SetLabel(e:GetLabel())
+		te:SetLabelObject(e:GetLabelObject())
+	end
+	Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+end
 
 
 

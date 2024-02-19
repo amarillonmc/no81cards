@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
-	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_HAND)
 	e0:SetCondition(cm.hspcon)
 	c:RegisterEffect(e0)	
@@ -51,6 +51,7 @@ function cm.initial_effect(c)
 end
 function cm.hspcon(e,c)
 	if c==nil then return true end
+	local tp=c:GetControler()
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and Duel.IsPlayerAffectedByEffect(tp,40009196)
 end
 function cm.cfilter(c)

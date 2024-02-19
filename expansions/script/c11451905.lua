@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_DESTROYED)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
@@ -69,7 +70,8 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return (c:IsCanBeSpecialSummoned(e,0,tp,false,false) or 1==1) and (c:IsSummonable(true,nil) or (c:IsAbleToHand() and c:IsLocation(LOCATION_MZONE))) end
+	--c:IsCanBeSpecialSummoned(e,0,tp,false,false) or 
+	if chk==0 then return (1==1) and (c:IsSummonable(true,nil) or (c:IsAbleToHand() and c:IsLocation(LOCATION_MZONE))) end
 	if c:IsLocation(LOCATION_HAND) then
 		Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
 	elseif c:IsLocation(LOCATION_MZONE) then

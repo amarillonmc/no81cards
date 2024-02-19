@@ -2,16 +2,6 @@ local m=15000913
 local cm=_G["c"..m]
 cm.name="罪名-『懒惰』"
 function cm.initial_effect(c)
-	--return
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TODECK)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,15000913)
-	e1:SetCost(cm.cost)
-	e1:SetTarget(cm.target)
-	e1:SetOperation(cm.operation)
-	c:RegisterEffect(e1)
 	--attack limit
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_FIELD)

@@ -11,10 +11,9 @@ function c9910855.initial_effect(c)
 	--summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SUMMON)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetHintTiming(0,TIMING_BATTLE_START)
 	e2:SetCondition(c9910855.sumcon)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c9910855.sumtg)
@@ -137,7 +136,7 @@ function c9910855.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910855.sumcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp and (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
+	return Duel.GetTurnPlayer()~=tp
 end
 function c9910855.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910855.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end

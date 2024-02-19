@@ -5,23 +5,6 @@ function cm.initial_effect(c)
 	--xyz summon  
 	c:EnableReviveLimit()  
 	aux.AddXyzProcedureLevelFree(c,c15000044.mfilter,c15000044.xyzcheck,2,4)
-	--spsummon condition
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(aux.xyzlimit)
-	c:RegisterEffect(e0)
-	--spsummon
-	local e1=Effect.CreateEffect(c)  
-	e1:SetType(EFFECT_TYPE_FIELD)  
-	e1:SetCode(EFFECT_SPSUMMON_PROC)  
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)  
-	e1:SetRange(LOCATION_GRAVE)  
-	e1:SetCountLimit(1,15010044)  
-	e1:SetCondition(c15000044.sdcon)
-	e1:SetOperation(c15000044.xzcop)
-	c:RegisterEffect(e1)
 	-- Battle Damage
 	local e2=Effect.CreateEffect(c)  
 	e2:SetType(EFFECT_TYPE_SINGLE)  
@@ -58,8 +41,8 @@ end
 function c15000044.c2filter(c)  
 	return c:IsDestructable()
 end 
-function c15000044.c3filter(c)  
-	return c:IsSetCard(0xf33) and c:IsType(TYPE_MONSTER) and not c:IsCode(15000044)
+function c15000044.c3filter(c,e,tp)  
+	return c:IsSetCard(0xf33) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and not c:IsCode(15000044)
 end
 function c15000044.sdcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c15000044.cfilter,e:GetHandlerPlayer(),LOCATION_PZONE,0,nil)
@@ -102,14 +85,14 @@ function c15000044.desop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then  
 		Duel.Destroy(g,REASON_EFFECT)
 		Duel.BreakEffect()
-		local ag=Duel.GetMatchingGroup(c15000064.c3filter,e:GetHandlerPlayer(),LOCATION_PZONE,0,nil)
+		local ag=Duel.GetMatchingGroup(c15000044.cfilter,e:GetHandlerPlayer(),LOCATION_PZONE,0,nil)
 		if ag:GetCount()==2 then
 			local cc=ag:GetFirst()
 			local lsc=cc:GetLeftScale()
 			local dc=ag:GetNext()
 			local l2sc=dc:GetLeftScale()
-			if (lsc==l2sc or lsc==l2sc-1 or lsc==l2sc+1) and Duel.SelectYesNo(tp,aux.Stringid(15000044,1)) and Duel.GetLocationCount(tp,LOCATION_MZONE)~=0 then  
-				local bg=Duel.SelectMatchingCard(tp,c15000044.c3filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+			if (lsc==l2sc or lsc==l2sc-1 or lsc==l2sc+1) and Duel.GetLocationCount(tp,LOCATION_MZONE)~=0 and Duel.SelectYesNo(tp,aux.Stringid(15000044,1)) then  
+				local bg=Duel.SelectMatchingCard(tp,c15000044.c3filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
 				local tc=bg:GetFirst()
 				if tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) then
 					Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)

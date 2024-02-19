@@ -2,24 +2,34 @@
 function c11533702.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+--	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN) 
-	e1:SetCountLimit(1,11533702) 
-	e1:SetTarget(c11533702.target)
-	e1:SetOperation(c11533702.activate)
+--	e1:SetCountLimit(1,11533702) 
+--	e1:SetTarget(c11533702.target)
+--	e1:SetOperation(c11533702.activate)
 	c:RegisterEffect(e1) 
 	--atk 
 	local e2=Effect.CreateEffect(c) 
 	e2:SetType(EFFECT_TYPE_FIELD) 
 	e2:SetCode(EFFECT_UPDATE_ATTACK) 
-	e2:SetRange(LOCATION_SZONE) 
+	e2:SetRange(LOCATION_FZONE) 
 	e2:SetTargetRange(LOCATION_MZONE,0) 
 	e2:SetTarget(function(e,c) 
 	return c:IsSetCard(0xb4) end) 
 	e2:SetValue(function(e,c) 
 	return c:GetLevel()*100 end) 
 	c:RegisterEffect(e2)
+	--th
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(13035077,0))
+	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e5:SetType(EFFECT_TYPE_IGNITION)
+	e5:SetRange(LOCATION_FZONE)
+	e5:SetCountLimit(1,11533702)
+	e5:SetTarget(c11533702.target)
+	e5:SetOperation(c11533702.activate)
+	c:RegisterEffect(e5)
 	--inactivatable
 	--local e2=Effect.CreateEffect(c)
 	--e2:SetType(EFFECT_TYPE_FIELD)
@@ -90,20 +100,30 @@ function c11533702.initial_effect(c)
 
 end
 function c11533702.filter(c)
-	return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0xb4) and c:IsAbleToHand()
 end
 function c11533702.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11533702.filter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(c11533702.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function c11533702.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c11533702.filter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11533702.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
+
+
+
+
+
+
+
+
+
+
 function c11533702.efilter(e,ct)
 	local p=e:GetHandlerPlayer()
 	local te,tp=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)

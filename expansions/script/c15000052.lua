@@ -36,13 +36,24 @@ function cm.initial_effect(c)
 	e4:SetCondition(c15000052.sd2con) 
 	c:RegisterEffect(e4)
 	--lv change  
-	local e2=Effect.CreateEffect(c)  
-	e2:SetType(EFFECT_TYPE_IGNITION)  
-	e2:SetRange(LOCATION_MZONE)  
-	e2:SetCountLimit(1)  
-	e2:SetTarget(c15000052.lvtg)  
-	e2:SetOperation(c15000052.lvop)  
-	c:RegisterEffect(e2)
+	local e5=Effect.CreateEffect(c)  
+	e5:SetType(EFFECT_TYPE_IGNITION)  
+	e5:SetRange(LOCATION_MZONE)  
+	e5:SetCountLimit(1)  
+	e5:SetTarget(c15000052.lvtg)  
+	e5:SetOperation(c15000052.lvop)  
+	c:RegisterEffect(e5)
+	--nontuner
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE)
+	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCode(EFFECT_NONTUNER)
+	e6:SetValue(c15000052.tnval)
+	c:RegisterEffect(e6)
+end
+function c15000052.tnval(e,c)
+	return e:GetHandler():IsControler(c:GetControler())
 end
 function c15000052.cpcon(e)  
 	local g=Duel.GetMatchingGroup(nil,e:GetHandlerPlayer(),LOCATION_PZONE,0,e:GetHandler())
@@ -53,7 +64,7 @@ function c15000052.p1val(e,tp)
 	if g:GetCount()==0 then return 4 end
 	local tc=g:GetFirst()
 	if not tc:GetType(TYPE_PENDULUM) then return 4 end
-	if tc:IsSetCard(0x1f33) then return 4 end
+	if tc:IsSetCard(0x3f33) then return 4 end
 	return tc:GetLeftScale()
 end
 function c15000052.p2val(e,tp)
@@ -61,7 +72,7 @@ function c15000052.p2val(e,tp)
 	if g:GetCount()==0 then return 4 end
 	local tc=g:GetFirst()
 	if not tc:GetType(TYPE_PENDULUM) then return 4 end
-	if tc:IsSetCard(0x1f33) then return 4 end
+	if tc:IsSetCard(0x3f33) then return 4 end
 	return tc:GetRightScale()
 end
 function c15000052.desfilter(c)
@@ -82,7 +93,7 @@ function c15000052.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 end
 function c15000052.sd2filter(c)
-	return c:IsSetCard(0x1f33) and c:IsFaceup()
+	return c:IsSetCard(0x3f33) and c:IsFaceup()
 end
 function c15000052.c3filter(c)  
 	return c:IsType(TYPE_PENDULUM) and c:IsFaceup()
@@ -105,19 +116,13 @@ function c15000052.lvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	e:SetLabel(x)
 end  
 function c15000052.lvop(e,tp,eg,ep,ev,re,r,rp)  
+	local c=e:GetHandler()
 	if e:GetHandler():IsFaceup() and e:GetHandler():IsRelateToEffect(e) then  
-		local e1=Effect.CreateEffect(e:GetHandler())  
+		local e1=Effect.CreateEffect(c)  
 		e1:SetType(EFFECT_TYPE_SINGLE)  
 		e1:SetCode(EFFECT_CHANGE_LEVEL)  
 		e1:SetValue(e:GetLabel())  
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)  
-		e:GetHandler():RegisterEffect(e1)  
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e2:SetRange(LOCATION_MZONE)
-		e2:SetCode(EFFECT_NONTUNER)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		e:GetHandler():RegisterEffect(e2)
+		c:RegisterEffect(e1)  
 	end  
 end

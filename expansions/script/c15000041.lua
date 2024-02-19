@@ -72,7 +72,7 @@ function c15000041.desfilter(c,e,tp,ft)
 		and Duel.IsExistingMatchingCard(c15000041.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
 end  
 function c15000041.spfilter(c,e,tp,code)  
-	return c:IsSetCard(0xf33) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and not c:IsCode(code)
+	return c:IsSetCard(0xf33) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and c:IsLevelBelow(5) and not c:IsCode(code)
 end  
 function c15000041.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)  

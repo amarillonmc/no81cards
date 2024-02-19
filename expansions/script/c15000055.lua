@@ -3,7 +3,7 @@ local cm=_G["c"..m]
 cm.name="色带·黑山羊的幼崽"
 function cm.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.Tuner(Card.IsSetCard,0xf33),aux.NonTuner(Card.IsSynchroType,TYPE_MONSTER),1,99)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xf33),aux.NonTuner(Card.IsSynchroType,TYPE_MONSTER),1,99)
 	c:EnableReviveLimit()
 	--special summon
 	local e1=Effect.CreateEffect(c)

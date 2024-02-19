@@ -4,13 +4,6 @@ cm.name="未来圣罚 黯帝修罗·缝眼"
 function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,true)
-	--spsummon condition
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(cm.fsplimit)
-	c:RegisterEffect(e0)
 	--splimit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

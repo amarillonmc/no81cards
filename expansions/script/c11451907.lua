@@ -16,6 +16,7 @@ function cm.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetDescription(aux.Stringid(m,1))
 	--e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e3:SetCost(cm.cpcost2)
 	e3:SetTarget(cm.cptg)
 	e3:SetOperation(cm.cpop)
@@ -36,7 +37,7 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_SZONE)
 	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e5:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	--e5:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e5:SetCost(cm.cpcost)
 	e5:SetTarget(cm.cptg)
 	e5:SetOperation(cm.cpop)
@@ -52,6 +53,25 @@ function cm.initial_effect(c)
 	local e7=e6:Clone()
 	e7:SetCode(EVENT_CHAIN_NEGATED)
 	c:RegisterEffect(e7)
+	--hint
+	local e8=Effect.CreateEffect(c)
+	--e8:SetDescription(aux.Stringid(m,7))
+	e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e8:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e8:SetCode(EVENT_ADJUST)
+	e8:SetRange(LOCATION_SZONE+LOCATION_HAND)
+	e8:SetCondition(function() return not pnfl_adjusting end)
+	e8:SetOperation(function(e)
+						local c=e:GetHandler()
+						if Duel.GetFlagEffect(0,m)>0 and c:GetFlagEffect(m-1)==0 then
+							--Debug.Message("r"..c:GetLocation())
+							c:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,7))
+						elseif c:GetFlagEffect(m+1)==0 or (Duel.GetFlagEffect(0,m)==0 and c:GetFlagEffect(m-1)>0) then
+							--Debug.Message("l"..c:GetLocation())
+							c:ResetFlagEffect(m-1)
+						end
+					end)
+	c:RegisterEffect(e8)
 	if not cm.global_check then
 		cm.global_check=true
 		cm.activate_sequence={}
@@ -218,7 +238,10 @@ function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(code)
 		tc1:RegisterEffect(e1)
 		--local c1,c2=tc1:GetCode() Debug.Message(c2)
-		tc1:CopyEffect(code,RESET_EVENT+RESETS_STANDARD)
+		if tc1:GetFlagEffect(0xffffff+code+m)==0 then
+			tc1:CopyEffect(code,RESET_EVENT+RESETS_STANDARD)
+			tc1:RegisterFlagEffect(0xffffff+code+m,RESET_EVENT+RESETS_STANDARD,0,1)
+		end
 	end
 end
 function cm.mfilter(c)
@@ -242,7 +265,7 @@ end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local hg=Duel.GetMatchingGroup(cm.filter11,tp,LOCATION_HAND,0,nil)
-	if c:IsLocation(LOCATION_HAND) and Duel.SelectEffectYesNo(tp,c) then
+	if c:IsLocation(LOCATION_HAND) and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,6)) then
 		Duel.Destroy(c,REASON_EFFECT)
 		--Destroy
 		local e6=Effect.CreateEffect(c)
@@ -256,7 +279,7 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e7,tp)
 		e6:SetLabelObject(e7)
 		e7:SetLabelObject(e6)
-	elseif c:IsLocation(LOCATION_SZONE) and #hg>0 and Duel.SelectEffectYesNo(tp,c) then
+	elseif c:IsLocation(LOCATION_SZONE) and #hg>0 and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,5)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=hg:Select(tp,1,1,nil)
 		Duel.Destroy(dg,REASON_EFFECT)
@@ -311,6 +334,7 @@ function cm.operation4(e,tp,eg,ep,ev,re,r,rp)
 		local e6=Effect.CreateEffect(c)
 		e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e6:SetCode(EVENT_CHAIN_SOLVED)
+		e6:SetLabel(e:GetLabel())
 		e6:SetCondition(function() return Duel.GetCurrentChain()==1 end)
 		e6:SetOperation(cm.operation5)
 		Duel.RegisterEffect(e6,tp)
@@ -332,5 +356,8 @@ function cm.operation5(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=hg:Select(tp,1,1,nil)
 		Duel.Destroy(dg,REASON_EFFECT)
+	end
+	if c:GetFlagEffect(m+1)>0 and c:GetFlagEffectLabel(m+1)==e:GetLabel() then
+		c:ResetFlagEffect(m+1)
 	end
 end

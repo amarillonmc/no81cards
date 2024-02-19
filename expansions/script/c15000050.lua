@@ -58,7 +58,7 @@ function c15000050.p1val(e,tp)
 	if g:GetCount()==0 then return 4 end
 	local tc=g:GetFirst()
 	if not tc:GetType(TYPE_PENDULUM) then return 4 end
-	if tc:IsSetCard(0x1f33) then return 4 end
+	if tc:IsSetCard(0x3f33) then return 4 end
 	return tc:GetLeftScale()
 end
 function c15000050.p2val(e,tp)
@@ -66,7 +66,7 @@ function c15000050.p2val(e,tp)
 	if g:GetCount()==0 then return 4 end
 	local tc=g:GetFirst()
 	if not tc:GetType(TYPE_PENDULUM) then return 4 end
-	if tc:IsSetCard(0x1f33) then return 4 end
+	if tc:IsSetCard(0x3f33) then return 4 end
 	return tc:GetRightScale()
 end
 function c15000050.desfilter(c)
@@ -87,7 +87,7 @@ function c15000050.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c15000050.sd2filter(c)
-	return c:IsSetCard(0x1f33) and c:IsFaceup()
+	return c:IsSetCard(0x3f33) and c:IsFaceup()
 end
 function c15000050.c3filter(c)  
 	return c:IsType(TYPE_PENDULUM) and c:IsFaceup()

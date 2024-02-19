@@ -1,55 +1,145 @@
 --深土之物 来自深谷的侵染
-if not pcall(function() require("expansions/script/c30000100") end) then require("script/c30000100") end
-local m,cm = rscf.DefineCard(30013040)
+local m=30013040
+local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	local e1 = rsef.QO(c,EVENT_CHAINING,"dd",{75,m},"dd","dsp",
-		LOCATION_HAND,cm.ddcon,rscost.cost(0,"dh"),
-		rsop.target(5,"dd"),cm.ddop)
-	local e2 = rsef.STO_Flip(c,"pos",{75,m+100},"pos","de",
-		nil,nil,rsop.target(cm.posfilter,"pos",
-		LOCATION_ONFIELD,LOCATION_ONFIELD),cm.posop)
-	local e3 = rsef.FTO(c,EVENT_PHASE+PHASE_END,"dis",{1,m+200},
-		"dis,se,th",nil,LOCATION_GRAVE,nil,rscost.cost(1,"dh"),
-		rsop.target({aux.disfilter1,"dis",
-		0,LOCATION_ONFIELD },
-		{cm.thfilter,"th",rsloc.dg}),cm.thop)
-	local e4 = rsef.RegisterOPTurn(c,e3,cm.qcon)
+	--Effect 1
+	--Effect 2  
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_POSITION)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,m)
+	e1:SetTarget(cm.sptg)
+	e1:SetOperation(cm.spop)
+	c:RegisterEffect(e1)
+	--Effect 3 
+	local e12=Effect.CreateEffect(c)
+	e12:SetCategory(CATEGORY_DISABLE+CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e12:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_FIELD)
+	e12:SetRange(LOCATION_MZONE)
+	e12:SetCode(EVENT_PHASE+PHASE_END)
+	e12:SetCountLimit(1,m+100)
+	e12:SetCondition(cm.thcon1)
+	e12:SetCost(cm.thcost)
+	e12:SetTarget(cm.thtg)
+	e12:SetOperation(cm.thop)
+	c:RegisterEffect(e12)
+	local e32=Effect.CreateEffect(c)
+	e32:SetCategory(CATEGORY_DISABLE+CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e32:SetType(EFFECT_TYPE_QUICK_O)
+	e32:SetCode(EVENT_FREE_CHAIN)
+	e32:SetRange(LOCATION_MZONE)
+	e32:SetCountLimit(1,m+100)
+	e32:SetCondition(cm.thcon2)
+	e32:SetCost(cm.thcost)
+	e32:SetTarget(cm.thtg)
+	e32:SetOperation(cm.thop)
+	c:RegisterEffect(e32)
 end
-function cm.qcon(e,tp)
-	return Duel.IsPlayerAffectedByEffect(tp,30013020)
+--Effect 2
+function cm.pos(c)
+	return c:IsCanTurnSet() and not c:IsLocation(LOCATION_PZONE)
 end
-function cm.thfilter(c)
-	return c:IsSetCard(0x92c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.pos,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,nil,1,0,0)
 end
-function cm.thop(e,tp)  
-	local c = e:GetHandler()
-	local og,tc = rsop.SelectCards("dis",tp,aux.disfilter1,tp,0,LOCATION_ONFIELD,1,1,nil)
-	if not tc then return end
-	local e1,e2 = rscf.QuickBuff({c,tc},"dis,dise","rst",{rsrst.std_ep,2})
-	Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-	Duel.BreakEffect()
-	if not tc:IsDisabled() then return end
-	rsop.SelectOperate("th",tp,cm.thfilter,tp,rsloc.dg,0,1,1,nil,{ })
-end
-function cm.posfilter(c)
-	return c:IsCanTurnSet() and not c:IsComplexType(TYPE_SPELL+TYPE_PENDULUM)
-end
-function cm.posop(e,tp)
-	local e1 = rscf.GetSelf(e)
-	if rsop.SelectOperate("dpd",tp,cm.posfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil,{ }) <= 0 then return end
-	local sg = Duel.GetOperatedGroup():Filter(Card.IsFacedown,nil)
-	local sg2 = sg:Filter(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP) 
-	if #sg2 > 0 then
-		for tc in aux.Next(sg2) do 
-			local e1 = rscf.QuickBuff({c,tc},"tri~","rst",{RESET_EVENT+0x17a0000+RESET_PHASE+PHASE_END,2})
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+	local g=Duel.SelectMatchingCard(tp,cm.pos,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
+	if #g>0 then
+		Duel.HintSelection(g)
+		local tc=g:GetFirst()
+		local xg=Group.CreateGroup()
+		while tc do   
+			if tc:GetOriginalType()&TYPE_MONSTER==0 and Duel.ChangePosition(tc,POS_FACEDOWN)>0 then
+				xg:AddCard(tc)
+				if tc:IsControler(1-tp) then
+					local e1=Effect.CreateEffect(e:GetHandler())
+					e1:SetDescription(aux.Stringid(m,1))
+					e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_CANNOT_TRIGGER)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+					tc:RegisterEffect(e1)
+				end
+			elseif tc:GetOriginalType()&TYPE_MONSTER>0  then
+				local pos=POS_FACEDOWN
+				if	c:IsLocation(LOCATION_MZONE) then pos=POS_FACEDOWN_DEFENSE end
+				if Duel.ChangePosition(tc,pos)>0 and tc:IsControler(1-tp) and tc:IsAbleToGrave() then
+					Duel.SendtoGrave(tc,REASON_EFFECT)
+				end
+			end 
+			tc=g:GetNext()
 		end
-		Duel.RaiseEvent(sg2,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+		if #xg>0 then
+			Duel.RaiseEvent(xg,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+		end 
 	end
 end
-function cm.ddop(e,tp)
-	Duel.DiscardDeck(tp,5,REASON_EFFECT)
+--Effect 3 
+function cm.thcon1(e)
+	local tsp=e:GetHandler():GetControler()
+	return not Duel.IsPlayerAffectedByEffect(tsp,30013020)
 end
-function cm.ddcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_FLIP)
+function cm.thcon2(e)
+	local tsp=e:GetHandler():GetControler()
+	return Duel.IsPlayerAffectedByEffect(tsp,30013020)
+end
+function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+end
+function cm.th(c)
+	return c:IsAbleToHand() and c:IsType(TYPE_MONSTER) 
+		and c:IsSetCard(0x92c)
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(cm.th,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+	local g=Duel.SelectMatchingCard(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local res=false
+	if #g>0 then
+		local tc=g:GetFirst()
+		Duel.HintSelection(g) 
+		if ((tc:IsFaceup() and not tc:IsDisabled()) or tc:IsType(TYPE_TRAPMONSTER)) then
+			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+			tc:RegisterEffect(e2)
+			if tc:IsType(TYPE_TRAPMONSTER) then
+				local e3=Effect.CreateEffect(c)
+				e3:SetType(EFFECT_TYPE_SINGLE)
+				e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+				e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+				tc:RegisterEffect(e3)
+			end
+			res=true
+			if res~=0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.th),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) then
+				Duel.BreakEffect()
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+				local g1=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.th),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+				if g1:GetCount()>0 then
+					Duel.SendtoHand(g1,nil,REASON_EFFECT)
+					Duel.ConfirmCards(1-tp,g1)
+				end
+			end
+		end 
+	end
 end
