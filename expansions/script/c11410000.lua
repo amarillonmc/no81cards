@@ -160,24 +160,34 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
-	if not KOISHI_CHECK or #g<36 then e:Reset() return end
+	if #g<36 then e:Reset() return end
 	if c:IsLocation(LOCATION_DECK) then
 		Duel.DisableShuffleCheck()
-		Duel.Exile(c,0)
+		if KOISHI_CHECK then
+			Duel.Exile(c,0)
+		else
+			Duel.SendtoGrave(c,REASON_RULE)
+		end
 	elseif c:IsLocation(LOCATION_HAND) then
 		if not cm.r then
 			cm.r=Duel.GetFieldGroup(0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_EXTRA):GetSum(Card.GetCode)
 		end
 		local ct=cm.roll(1,#g)-1
 		local tc=g:Filter(function(c) return c:GetSequence()==ct end,nil):GetFirst()
-		c:SetEntityCode(tc:GetOriginalCode())
-		local ini=cm.initial_effect
-		cm.initial_effect=function() end
-		c:ReplaceEffect(m,0)
-		cm.initial_effect=ini
-		if tc.initial_effect then tc.initial_effect(c) end
-		Duel.DisableShuffleCheck()
-		Duel.Exile(tc,0)
+		if KOISHI_CHECK then
+			c:SetEntityCode(tc:GetOriginalCode())
+			local ini=cm.initial_effect
+			cm.initial_effect=function() end
+			c:ReplaceEffect(m,0)
+			cm.initial_effect=ini
+			if tc.initial_effect then tc.initial_effect(c) end
+			Duel.DisableShuffleCheck()
+			Duel.Exile(tc,0)
+		else
+			Duel.SendtoGrave(c,REASON_RULE)
+			Duel.DisableShuffleCheck()
+			Duel.SendtoHand(tc,nil,REASON_RULE)
+		end
 	end
 	e:Reset()
 end
