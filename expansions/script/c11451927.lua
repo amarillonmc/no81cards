@@ -14,6 +14,19 @@ function cm.initial_effect(c)
 	e0:SetOperation(cm.LinkOperation(nil,2,2))
 	e0:SetValue(SUMMON_TYPE_LINK)
 	c:RegisterEffect(e0)
+	if not cm.global_check then
+		cm.global_check=true
+		function Duel.ChangeChainOperation(ev,...)
+			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
+			if aux.GetValueType(re)=="Effect" then
+				local rc=re:GetHandler()
+				if rc and rc:IsOnField() and re:GetDescription()==aux.Stringid(m,0) then
+					rc:CancelToGrave(false)
+				end
+			end
+			return _ChangeChainOperation(ev,...)
+		end
+	end
 end
 function cm.fdfilter(c)
 	return c:IsFacedown() and c:IsLocation(LOCATION_SZONE) and c:IsSetCard(0x97d) and c:GetActivateEffect()
@@ -28,7 +41,6 @@ function cm.GetLinkMaterials(tp,f,lc)
 	return mg
 end
 function cm.LCheckGoal(sg,tp,lc,gf,lmat)
-	Debug.Message("")
 	return sg:CheckWithSumEqual(Auxiliary.GetLinkCount,lc:GetLink(),#sg,#sg) and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg)) and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp) and (not lmat or sg:IsContains(lmat)) and sg:FilterCount(cm.fdfilter,nil)<=Duel.GetTurnCount()-Duel.GetFlagEffect(tp,m)+1
 end
 function cm.LinkCondition(f,minc,maxc,gf)
@@ -86,9 +98,6 @@ function cm.LinkTarget(f,minc,maxc,gf)
 				if sg then
 					sg:KeepAlive()
 					e:SetLabelObject(sg)
-					if sg:IsExists(cm.fdfilter,1,nil) then
-						for i=1,#sg do Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1) end
-					end
 					return true
 				else return false end
 			end
@@ -100,25 +109,48 @@ function cm.LinkOperation(f,minc,maxc,gf)
 				aux.LExtraMaterialCount(g,c,tp)
 				g1=g:Filter(cm.fdfilter,nil)
 				g:Sub(g1)
+				for i=1,#g1 do Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1) end
 				--Duel.SendtoDeck(g1,nil,2,REASON_MATERIAL+REASON_LINK)
+				c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,c:GetFieldID())
 				for oc in aux.Next(g1) do
-					oc:RegisterFlagEffect(m,0,0,1)
 					local te=oc:GetActivateEffect()
 					local con=te:GetCondition()
 					local tg=te:GetTarget()
 					local op=te:GetOperation()
+					local prop=te:GetProperty()
 					local e1=Effect.CreateEffect(oc)
 					e1:SetDescription(aux.Stringid(m,0))
 					e1:SetCategory(te:GetCategory())
 					e1:SetType(EFFECT_TYPE_QUICK_F)
 					e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-					e1:SetProperty(EFFECT_FLAG_BOTH_SIDE)
+					e1:SetProperty(prop|EFFECT_FLAG_SET_AVAILABLE)
+					e1:SetRange(LOCATION_SZONE)
+					e1:SetLabel(c:GetFieldID())
 					e1:SetLabelObject(c)
 					--if con then e1:SetCondition(con) end
 					e1:SetCost(cm.addcost)
 					if tg then e1:SetTarget(cm.btg(tg)) end
 					if op then e1:SetOperation(op) end
-					Duel.RegisterEffect(e1,tp)
+					e1:SetReset(RESET_PHASE+PHASE_END)
+					oc:RegisterEffect(e1,true)
+					local e2=e1:Clone()
+					e2:SetCode(EVENT_SPSUMMON_NEGATED)
+					oc:RegisterEffect(e2,true)
+				end
+				if #g1>0 then
+					g1:KeepAlive()
+					Duel.ConfirmCards(1-tp,g1)
+					Duel.RaiseEvent(g1,EVENT_CUSTOM+m,e,0,0,0,0)
+					local e4=Effect.CreateEffect(c)
+					e4:SetType(EFFECT_TYPE_FIELD)
+					e4:SetCode(EFFECT_ACTIVATE_COST)
+					--e4:SetRange(LOCATION_SZONE)
+					e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+					e4:SetTargetRange(1,0)
+					e4:SetTarget(function(e,te,tp) e:SetLabelObject(te) return g1:IsContains(te:GetHandler()) end)
+					e4:SetOperation(cm.costop)
+					e4:SetReset(RESET_PHASE+PHASE_END)
+					Duel.RegisterEffect(e4,tp)
 				end
 				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_LINK)
 				g:DeleteGroup()
@@ -126,14 +158,65 @@ function cm.LinkOperation(f,minc,maxc,gf)
 end
 function cm.addcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetLabelObject()
-	if chk==0 then
-		return eg:IsContains(c)
-	end
-	Duel.ChangePosition(e:GetHandler(),POS_FACEUP)
+	if chk==0 then return eg:IsContains(c) and c:GetFlagEffectLabel(m) and c:GetFlagEffectLabel(m)==e:GetLabel() end
+	--Duel.ChangePosition(e:GetHandler(),POS_FACEUP)
 end
 function cm.btg(tg)
-	return function(e,tp,eg,ep,ev,re,r,rp,chk)
+	return function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+				if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc) end
 				if chk==0 then return true end
 				tg(e,tp,eg,ep,ev,re,r,rp,1)
 			end
+end
+function cm.bop(op)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+				_NegateActivation=Duel.NegateActivation
+				Duel.NegateActivation=aux.TRUE
+				op(e,tp,eg,ep,ev,re,r,rp)
+				Duel.NegateActivation=_NegateActivation
+			end
+end
+function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local tc=te:GetHandler()
+	Duel.ChangePosition(tc,POS_FACEUP)
+	tc:SetStatus(STATUS_EFFECT_ENABLED,false)
+	te:SetType(26)
+	tc:CreateEffectRelation(te)
+	local c=e:GetHandler()
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+	e1:SetOperation(cm.rsop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+		_NegateActivation=Duel.NegateActivation
+		Duel.NegateActivation=aux.TRUE
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetCode(EVENT_CHAIN_SOLVED)
+		e1:SetCountLimit(1)
+		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) Duel.NegateActivation=_NegateActivation end)
+		e1:SetReset(RESET_CHAIN)
+		Duel.RegisterEffect(e1,tp)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+		rc:CancelToGrave(false)
+	end
+	--re:Reset() --boom!!!
 end

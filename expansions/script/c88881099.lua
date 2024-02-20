@@ -6,7 +6,7 @@ function s.initial_effect(c)
 	e4:SetDescription(aux.Stringid(id,0))
 	e4:SetType(EFFECT_TYPE_ACTIVATE)
 	e4:SetCode(EVENT_FREE_CHAIN)
-	e4:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
+	e4:SetCountLimit(1,id)
 	e4:SetOperation(s.setop)
 	c:RegisterEffect(e4)
 	--change effect type

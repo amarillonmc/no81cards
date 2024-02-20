@@ -64,8 +64,6 @@ function cm.initial_effect(c)
 		end
 	end
 end
-local KOISHI_CHECK=false
-if Card.SetCardData then KOISHI_CHECK=true end
 function cm.valcheck(e,c)
 	local g=c:GetMaterial()
 	if #g>0 then e:SetLabel(g:GetClassCount(Card.GetCode)) end
@@ -76,13 +74,7 @@ end
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
-		local res=true
-		if KOISHI_CHECK and cm[tp] then
-			res=cm[tp]:GetActivateEffect():IsActivatable(tp,true)
-		else
-			res=(c:CheckActivateEffect(false,false,false)~=nil)
-		end
-		return res
+		return c:CheckActivateEffect(false,false,false)~=nil
 	end
 end
 function cm.filter(c)

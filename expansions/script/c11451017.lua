@@ -142,7 +142,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
 		local res=true
-		if KOISHI_CHECK and cm[tp] then
+		if KOISHI_CHECK and cm[tp] and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
 			res=cm[tp]:GetActivateEffect():IsActivatable(tp,true)
 		else
 			res=(c:CheckActivateEffect(false,false,false)~=nil)
