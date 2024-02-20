@@ -37,39 +37,42 @@ end
 function s.synfilter(c,e,tp,lv)
 	return c:IsSetCard(0x442) and c:IsType(TYPE_SYNCHRO) and c:IsLevel(lv) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function s.syncheck(g,e,tp)
-	return Duel.IsExistingMatchingCard(s.synfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,g:GetSum(Card.GetLevel))
+function s.syncheck(ct)
+	return	function(g,e,tp)
+				local res=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK)<=ct
+				return res and Duel.IsExistingMatchingCard(s.synfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,g:GetSum(Card.GetLevel)), not res
+			end
 end
 function s.xyzfilter(c,e,tp)
 	return c:IsSetCard(0x442) and c:IsType(TYPE_XYZ) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function s.xyzcheck(g)
-	return g:GetClassCount(Card.GetLevel)==1
-end
-function s.tgfilter(c)
-	return c:IsSetCard(0x442) and c:IsAbleToGrave()
+function s.xyzcheck(ct)
+	return	function(g)
+				local res=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK)<=ct and g:GetClassCount(Card.GetLevel)==1
+				return res, not res
+			end
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(s.filter,tp,LOCATION_HAND,0,nil)
 	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)
-	local b1=g:CheckSubGroup(s.syncheck,1,#g,e,tp)
-	local b2=g:CheckSubGroup(s.xyzcheck,2,2) and Duel.IsExistingMatchingCard(s.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
-	local b3=ct>0 and Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil)
+	local loc=ct>0 and LOCATION_DECK|LOCATION_HAND or LOCATION_HAND
+	local g=Duel.GetMatchingGroup(s.filter,tp,loc,0,nil)
+	local b1=aux.SelectUnselectGroup(g,e,tp,1,#g,s.syncheck(ct),0)
+	local b2=aux.SelectUnselectGroup(g,e,tp,2,2,s.xyzcheck(ct),0) and Duel.IsExistingMatchingCard(s.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
 	if chk==0 then
-		return b1 or b2 or b3
+		return b1 or b2
 	end
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.filter,tp,LOCATION_HAND,0,nil)
 	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)
-	local b1=g:CheckSubGroup(s.syncheck,1,#g,e,tp)
-	local b2=g:CheckSubGroup(s.xyzcheck,2,2) and Duel.IsExistingMatchingCard(s.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
-	local b3=ct>0 and Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil)
-	if not b1 and not b2 and not b3 then return end
-	local opt=aux.Option(tp,id,2,b1,b2,b3)
+	local loc=ct>0 and LOCATION_DECK|LOCATION_HAND or LOCATION_HAND
+	local g=Duel.GetMatchingGroup(s.filter,tp,loc,0,nil)
+	local b1=aux.SelectUnselectGroup(g,e,tp,1,#g,s.syncheck(ct),0)
+	local b2=aux.SelectUnselectGroup(g,e,tp,2,2,s.xyzcheck(ct),0) and Duel.IsExistingMatchingCard(s.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
+	if not b1 and not b2 then return end
+	local opt=aux.Option(tp,id,2,b1,b2)
 	if opt==0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local tg=g:SelectSubGroup(tp,s.syncheck,false,1,#g,e,tp)
+		local tg=aux.SelectUnselectGroup(g,e,tp,1,#g,s.syncheck(ct),1,tp,HINTMSG_REMOVE,nil,nil,false)
 		if #tg>0 then
 			local lv=tg:GetSum(Card.GetLevel)
 			if Duel.SendtoGrave(tg,REASON_EFFECT)>0 and tg:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)>0 then
@@ -83,7 +86,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	
 	elseif opt==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local tg=g:SelectSubGroup(tp,s.xyzcheck,false,2,2)
+		local tg=aux.SelectUnselectGroup(g,e,tp,2,2,s.xyzcheck(ct),1,tp,HINTMSG_REMOVE,nil,nil,false)
 		if #tg>0 then
 			if Duel.SendtoGrave(tg,REASON_EFFECT)==2 then
 				local gg=tg:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
@@ -98,13 +101,6 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 					end
 				end
 			end
-		end
-	
-	elseif opt==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_DECK,0,1,ct,nil)
-		if #g>0 then
-			Duel.SendtoGrave(g,REASON_EFFECT)
 		end
 	end
 end
