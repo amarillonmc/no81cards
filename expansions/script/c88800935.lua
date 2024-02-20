@@ -34,14 +34,16 @@ function c88800935.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 	end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
 end
 function c88800935.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.Destroy(eg,REASON_EFFECT)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,c88800935.filter1,tp,LOCATION_MZONE+LOCATION_HAND,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.Destroy(g,REASON_EFFECT)
+		if Duel.Destroy(eg,REASON_EFFECT)~=0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local g=Duel.SelectMatchingCard(tp,c88800935.filter1,tp,LOCATION_MZONE+LOCATION_HAND,0,1,1,nil)
+			if g:GetCount()>0 then
+				Duel.Destroy(g,REASON_EFFECT)
+			end
 		end
 	end
 end
