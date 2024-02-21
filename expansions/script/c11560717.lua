@@ -67,28 +67,28 @@ function c11560717.cncon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
 	local ac=Duel.GetAttacker()
 	local bc=Duel.GetAttackTarget()
-	return ((ac and c==ac) or (bc and c==bc))	
+	return ((ac and c==ac) or (bc and c==bc))   
 end
 function c11560717.cnop(e,tp,eg,ep,ev,re,r,rp) 
-	local c=e:GetHandler() 
-	local x=Duel.TossCoin(tp,1) 
-	if x==1 then 
+	local c=e:GetHandler()
+	local x=Duel.TossCoin(tp,1)
+	if x==1 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL) 
+		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
 		e1:SetRange(LOCATION_MZONE)
-		e1:SetValue(c:GetAttack()*2) 
+		e1:SetValue(c:GetAttack()*2)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL)
-		c:RegisterEffect(e1) 
-	elseif x==0 then 
+		c:RegisterEffect(e1)
+	elseif x==0 and c:GetBaseDefense()>0 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetRange(LOCATION_MZONE)
-		e1:SetValue(c:GetBaseAttack())
+		e1:SetValue(c:GetBaseDefense())
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL)
-		c:RegisterEffect(e1) 
-	end 
+		c:RegisterEffect(e1)
+	end
 end
 function c11560717.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end 
