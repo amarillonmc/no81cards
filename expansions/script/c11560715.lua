@@ -83,6 +83,7 @@ function c11560715.ovop(e,tp,eg,ep,ev,re,r,rp)
 	   local og=g:Select(tp,1,1,nil)
 	   local tc=og:GetFirst()
 	   if tc and not tc:IsImmuneToEffect(e) then
+		tc:CancelToGrave()
 	   Duel.Overlay(c,tc) end
 	end
 	if c:IsRelateToEffect(e) then
@@ -131,6 +132,7 @@ function c11560715.xxop(e,tp,eg,ep,ev,re,r,rp)
 						Duel.BreakEffect()
 					local oc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11560715.mxfilter),tp,LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,1,1,c):GetFirst()  
 					if oc and not oc:IsImmuneToEffect(e) then
+					oc:CancelToGrave()
 					Duel.Overlay(c,oc)
 					end
 				end 

@@ -55,13 +55,18 @@ function c72412160.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c72412160.regop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(tp,72412160,RESET_PHASE+PHASE_END,0,1)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e1:SetCountLimit(1)
+	e1:SetLabel(Duel.GetTurnCount())
 	e1:SetCondition(c72412160.thcon)
 	e1:SetOperation(c72412160.thop)
+	if Duel.GetCurrentPhase()<=PHASE_STANDBY then
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY,2)
+	else
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY)
+	end
 	Duel.RegisterEffect(e1,tp)
 end
 function c72412160.thfilter(c,tp)
@@ -69,8 +74,7 @@ function c72412160.thfilter(c,tp)
 	return (c:IsCode(72412170) or res) and c:IsAbleToHand()
 end
 function c72412160.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c72412160.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
-		and Duel.GetFlagEffect(tp,72412160)==0
+	return Duel.GetTurnCount()~=e:GetLabel() and Duel.IsExistingMatchingCard(c72412160.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
 end
 function c72412160.thop(e,tp,eg,ep,ev,re,r,rp)
 	Effect.Reset(e)
