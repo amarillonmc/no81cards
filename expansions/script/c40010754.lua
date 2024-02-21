@@ -41,7 +41,7 @@ function cm.atkval(e,c)
 	return g:GetClassCount(Card.GetCode)*500
 end
 function cm.filter(c)
-	return c:GetType()&(TYPE_CONTINUOUS+TYPE_SPELL)==TYPE_CONTINUOUS+TYPE_SPELL and c:IsSetCard(0xf11) and c:CheckActivateEffect(true,true,false)~=nil
+	return c:GetType()&(TYPE_CONTINUOUS+TYPE_SPELL)==TYPE_CONTINUOUS+TYPE_SPELL and c:IsSetCard(0xf11) and c:IsFaceup() and c:CheckActivateEffect(true,true,false)~=nil
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then

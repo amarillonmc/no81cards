@@ -26,7 +26,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e2:SetCountLimit(1,m+100)
 	e2:SetCondition(cm.tfcon)
-	e2:SetTarget(cm.thtg)
+	e2:SetTarget(cm.tftg)
 	e2:SetOperation(cm.tfop)
 	c:RegisterEffect(e2)
 end

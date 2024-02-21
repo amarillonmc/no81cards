@@ -76,6 +76,18 @@ function cm.AddSynchroProcedure(c,f1,f2,minc,maxc)
 	e1:SetValue(SUMMON_TYPE_SYNCHRO)
 	c:RegisterEffect(e1)
 end
+local _IsCanBeSynchroMaterial=Card.IsCanBeSynchroMaterial
+function Card.IsCanBeSynchroMaterial(c,...)
+	local ext_params={...}
+	if #ext_params==0 then return _IsCanBeSynchroMaterial(c,...) end
+	local sc=ext_params[1]
+	local tp=sc:GetControler()
+	if c:IsLocation(LOCATION_MZONE) and not c:IsControler(tp) then
+		local mg=Duel.GetSynchroMaterial(tp)
+		return mg:IsContains(c) and _IsCanBeSynchroMaterial(c,sc,...)
+	end
+	return _IsCanBeSynchroMaterial(c,...)
+end
 function cm.SynMaterialFilter(c,syncard)
 	return c:IsFaceup() and c:IsCanBeSynchroMaterial(syncard)
 end

@@ -27,7 +27,7 @@ end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rc = re:GetHandler()
 	if chk == 0 then 
-		return rc:IsFaceup() and rc:IsCanBeEffectTarget(e) and rc:IsSummonType(SUMMON_TYPE_SPECIAL) and re:IsActiveType(TYPE_MONSTER) and rc:IsLocation(LOCATION_MZONE) and rp ~= tp and rc:IsRelateToChain(ev) and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0 
+		return rc:IsFaceup() and rc:IsCanBeEffectTarget(e) and rc:IsSummonType(SUMMON_TYPE_SPECIAL) and re:IsActiveType(TYPE_MONSTER) and rc:IsLocation(LOCATION_MZONE) and rp ~= tp and rc:IsRelateToChain(ev) and Duel.GetLocationCount(tp,LOCATION_SZONE) > 0 and not e:GetHandler():IsStatus(STATUS_CHAINING)
 	end
 	Duel.SetTargetCard(rc)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(),1,0,0)
