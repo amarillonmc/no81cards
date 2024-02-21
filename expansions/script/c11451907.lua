@@ -266,6 +266,7 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local hg=Duel.GetMatchingGroup(cm.filter11,tp,LOCATION_HAND,0,nil)
 	if c:IsLocation(LOCATION_HAND) and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,6)) then
+		Duel.Hint(HINT_CARD,0,m)
 		Duel.Destroy(c,REASON_EFFECT)
 		--Destroy
 		local e6=Effect.CreateEffect(c)
@@ -308,6 +309,7 @@ function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
 	if #hg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=hg:Select(tp,1,1,nil)
+		Duel.Hint(HINT_CARD,0,m)
 		Duel.Destroy(dg,REASON_EFFECT)
 		--Destroy
 		local e6=Effect.CreateEffect(c)
@@ -329,6 +331,7 @@ function cm.operation4(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 	local c=e:GetHandler()
 	if c:GetFlagEffect(m+1)>0 and c:GetFlagEffectLabel(m+1)==e:GetLabel() and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
+		Duel.Hint(HINT_CARD,0,m)
 		Duel.Destroy(c,REASON_EFFECT)
 		--Destroy
 		local e6=Effect.CreateEffect(c)
@@ -355,6 +358,7 @@ function cm.operation5(e,tp,eg,ep,ev,re,r,rp)
 	if #hg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=hg:Select(tp,1,1,nil)
+		Duel.Hint(HINT_CARD,0,m)
 		Duel.Destroy(dg,REASON_EFFECT)
 	end
 	if c:GetFlagEffect(m+1)>0 and c:GetFlagEffectLabel(m+1)==e:GetLabel() then
