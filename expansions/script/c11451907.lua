@@ -160,16 +160,19 @@ function cm.cpcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return ft>0 and Duel.GetFlagEffect(tp,11451902)>0 and e:GetHandler():GetFlagEffect(m)==0 end
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	Duel.ResetFlagEffect(tp,11451902)
-	--change code
-	local e3=Effect.CreateEffect(e:GetHandler())
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_CHANGE_CODE)
-	e3:SetProperty(EFFECT_FLAG_OATH)
-	e3:SetTargetRange(0xff,0xff)
-	e3:SetTarget(function(e,c) return Duel.IsExistingMatchingCard(Card.IsOriginalCodeRule,0,LOCATION_GRAVE,LOCATION_GRAVE,1,c,table.unpack({c:GetOriginalCodeRule()})) end)
-	e3:SetValue(function(e,c) return c:GetSequence()*0xffff+c:GetTurnID()*0xfff+c:GetFieldID()*0xff+c:GetCode()*0xf+c:GetRealFieldID() end)
-	e3:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e3,tp)
+	if Duel.GetFlagEffect(1,11451901)==0 then
+		--change code
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetCode(EFFECT_CHANGE_CODE)
+		e3:SetProperty(EFFECT_FLAG_OATH)
+		e3:SetTargetRange(0xff,0xff)
+		e3:SetTarget(function(e,c) return Duel.IsExistingMatchingCard(Card.IsOriginalCodeRule,0,LOCATION_GRAVE,LOCATION_GRAVE,1,c,table.unpack({c:GetOriginalCodeRule()})) end)
+		e3:SetValue(function(e,c) return c:GetSequence()*0xfff+c:GetTurnID()*0xff+c:GetFieldID()*0xf+c:GetCode()+c:GetRealFieldID() end)
+		e3:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e3,tp)
+	end
+	Duel.RegisterFlagEffect(1,11451901,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function cm.actarget(e,te,tp)
 	e:SetLabelObject(te)

@@ -88,6 +88,7 @@ end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=e:GetLabelObject():Filter(cm.retfilter,nil,e)
 	for tc in aux.Next(tg) do Duel.SendtoHand(tc,tp,REASON_EFFECT) end
+	Duel.ConfirmCards(1-tp,tg)
 	e:GetLabelObject():Clear()
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
