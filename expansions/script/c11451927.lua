@@ -113,7 +113,8 @@ function cm.LinkOperation(f,minc,maxc,gf)
 				--Duel.SendtoDeck(g1,nil,2,REASON_MATERIAL+REASON_LINK)
 				c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,c:GetFieldID())
 				for oc in aux.Next(g1) do
-					local te=oc:GetActivateEffect()
+					local te,te2=oc:GetActivateEffect()
+					if te2 and oc:IsType(TYPE_TRAP) then te=te2 end
 					local con=te:GetCondition()
 					local tg=te:GetTarget()
 					local op=te:GetOperation()
@@ -131,26 +132,26 @@ function cm.LinkOperation(f,minc,maxc,gf)
 					e1:SetCost(cm.addcost)
 					if tg then e1:SetTarget(cm.btg(tg)) end
 					if op then e1:SetOperation(op) end
-					e1:SetReset(RESET_PHASE+PHASE_END)
+					--e1:SetReset(RESET_PHASE+PHASE_END)
 					oc:RegisterEffect(e1,true)
 					local e2=e1:Clone()
 					e2:SetCode(EVENT_SPSUMMON_NEGATED)
 					oc:RegisterEffect(e2,true)
-				end
-				if #g1>0 then
-					g1:KeepAlive()
-					Duel.ConfirmCards(1-tp,g1)
-					Duel.RaiseEvent(g1,EVENT_CUSTOM+m,e,0,0,0,0)
 					local e4=Effect.CreateEffect(c)
 					e4:SetType(EFFECT_TYPE_FIELD)
 					e4:SetCode(EFFECT_ACTIVATE_COST)
 					--e4:SetRange(LOCATION_SZONE)
 					e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 					e4:SetTargetRange(1,0)
-					e4:SetTarget(function(e,te,tp) e:SetLabelObject(te) return g1:IsContains(te:GetHandler()) end)
+					e4:SetTarget(function(e,te,tp) e:SetLabelObject(te) return oc==te:GetHandler() and te:IsHasType(EFFECT_TYPE_QUICK_F) end)
 					e4:SetOperation(cm.costop)
 					e4:SetReset(RESET_PHASE+PHASE_END)
 					Duel.RegisterEffect(e4,tp)
+				end
+				if #g1>0 then
+					--g1:KeepAlive()
+					Duel.ConfirmCards(1-tp,g1)
+					Duel.RaiseEvent(g1,EVENT_CUSTOM+m,e,0,0,0,0)
 				end
 				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_LINK)
 				g:DeleteGroup()
@@ -159,7 +160,6 @@ end
 function cm.addcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetLabelObject()
 	if chk==0 then return eg:IsContains(c) and c:GetFlagEffectLabel(m) and c:GetFlagEffectLabel(m)==e:GetLabel() end
-	--Duel.ChangePosition(e:GetHandler(),POS_FACEUP)
 end
 function cm.btg(tg)
 	return function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -197,13 +197,15 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_CHAIN_NEGATED)
 	Duel.RegisterEffect(e2,tp)
+	e:Reset()
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
-		_NegateActivation=Duel.NegateActivation
+		local _NegateActivation=Duel.NegateActivation
 		Duel.NegateActivation=aux.TRUE
+		local ev0=ev
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)

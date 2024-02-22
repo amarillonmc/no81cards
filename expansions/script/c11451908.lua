@@ -66,7 +66,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		e3:SetProperty(EFFECT_FLAG_OATH)
 		e3:SetTargetRange(0xff,0xff)
 		e3:SetTarget(function(e,c) return Duel.IsExistingMatchingCard(Card.IsOriginalCodeRule,0,LOCATION_GRAVE,LOCATION_GRAVE,1,c,table.unpack({c:GetOriginalCodeRule()})) end)
-		e3:SetValue(function(e,c) return c:GetSequence()*0xfff+c:GetTurnID()*0xff+c:GetFieldID()*0xf+c:GetCode()+c:GetRealFieldID() end)
+		e3:SetValue(function(e,c) return c:GetSequence()*0xfff+c:GetTurnID()*0xff+c:GetFieldID()*0xf+c:GetOriginalCode()+c:GetRealFieldID() end)
 		e3:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e3,tp)
 	end
