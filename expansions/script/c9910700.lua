@@ -57,7 +57,7 @@ function QutryYgzw.SetFilter2(c,e,tp)
 end
 function QutryYgzw.Set(c,e,tp)
 	local op=e:GetHandlerPlayer()
-	local res=Duel.MoveToField(c,op,tp,LOCATION_SZONE,POS_FACEDOWN,true)
+	if not Duel.MoveToField(c,op,tp,LOCATION_SZONE,POS_FACEDOWN,true) then return false end
 	Duel.ConfirmCards(1-tp,c)
 	Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,op,op,0)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -67,7 +67,7 @@ function QutryYgzw.Set(c,e,tp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 	e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
 	c:RegisterEffect(e1)
-	return res
+	return true
 end
 function QutryYgzw.Set2(g,e,tp)
 	local op=e:GetHandlerPlayer()

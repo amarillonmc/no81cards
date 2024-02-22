@@ -51,9 +51,8 @@ function c9910732.somtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	end
 end
 function c9910732.somop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
 		QutryYgzw.Set(tc,e,tp)
 	end
 end

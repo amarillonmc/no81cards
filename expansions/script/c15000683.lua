@@ -211,23 +211,24 @@ end
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetEquipTarget()
 end
-function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,1-tp,LOCATION_ONFIELD)
-end
 function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsCanRemoveCounter(tp,0x1f35,1,REASON_COST) end
 	c:RemoveCounter(tp,0x1f35,1,REASON_COST)
 	Duel.RaiseEvent(e:GetHandler(),EVENT_REMOVE_COUNTER+0x1f35,e,REASON_COST,tp,tp,1)
 end
+function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and chkc:IsAbleToGrave() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
+end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tp=c:GetControler()
+	if not c:IsRelateToEffect(e) then return end
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) then
 		Duel.SendtoGrave(tc,REASON_EFFECT)
 	end
 end

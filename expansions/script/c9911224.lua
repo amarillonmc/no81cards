@@ -62,7 +62,7 @@ end
 function c9911224.csop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	local rc=re:GetHandler()
-	if rc:IsRelateToEffect(re) then
+	if rc:IsRelateToEffect(re) and not rc:IsImmuneToEffect(e) then
 		Duel.MoveToField(rc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
 		Duel.ConfirmCards(1-tp,rc)
 		Duel.RaiseEvent(rc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)

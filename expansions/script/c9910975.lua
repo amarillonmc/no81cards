@@ -110,10 +110,8 @@ function c9910975.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SelectTarget(tp,c9910975.csfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp)
 end
 function c9910975.setop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
+	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) and Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true) then
 		Duel.ConfirmCards(1-tp,tc)
 		Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 		local e1=Effect.CreateEffect(e:GetHandler())

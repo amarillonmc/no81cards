@@ -85,9 +85,9 @@ function c9910767.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910767.setfilter),tp,0,LOCATION_MZONE+LOCATION_GRAVE,1,1,nil)
 	if g2:GetCount()==0 then return end
 	Duel.HintSelection(g2)
+	local res=false
 	local sc=g2:GetFirst()
-	if sc then
-		Duel.MoveToField(sc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	if sc and not sc:IsImmuneToEffect(e) and Duel.MoveToField(sc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -95,8 +95,9 @@ function c9910767.setop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 		sc:RegisterEffect(e1)
+		res=Duel.Draw(1-tp,1,REASON_EFFECT)>0
 	end
-	if Duel.Draw(1-tp,1,REASON_EFFECT)==0 then return end
+	if not res then return end
 	local g=Group.CreateGroup()
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()

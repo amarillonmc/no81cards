@@ -75,7 +75,8 @@ function c9910957.thop(e,tp,eg,ep,ev,re,r,rp)
 	local b2=c:GetCounter(0x6954)>0 and c:IsAbleToRemove()
 	local res=false
 	if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910957,1),aux.Stringid(9910957,2))==0) then
-		res=Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
+		res=not c:IsImmuneToEffect(e) and Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
+		if not res then return end
 		Duel.ConfirmCards(1-tp,c)
 		Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 		local e1=Effect.CreateEffect(e:GetHandler())
