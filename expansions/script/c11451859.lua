@@ -44,15 +44,32 @@ function cm.fselect2(g)
 	local ct3=g:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
 	return ct1%2==0 and ct3%2==0
 end
+function cm.fselect3(g)
+	local ct2=g:FilterCount(cm.sfilter,nil)
+	return #g%2==0 and #g<=2*ct2
+end
+function cm.fselect4(g)
+	return #g%2==0
+end
+function cm.fselect5(g)
+	local ct4=g:FilterCount(cm.mfilter,nil)
+	return #g<=2*ct4
+end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return false end
 	if chk==0 then return (Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,2,c) and Duel.IsExistingTarget(cm.sfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,e)) or (Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_GRAVE,LOCATION_GRAVE,2,nil) and Duel.IsExistingTarget(cm.mfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e)) end
-	local g=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,c,e)
+	--local g=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,c,e)
+	local g1=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c,e)
+	local g2=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e)
+	local g3=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	--aux.GCheckAdditional=cm.fselect
-	local tg=g:SelectSubGroup(tp,cm.fselect,false,2,#g)
-	--aux.GCheckAdditional=nil
+	local tg=g1:SelectSubGroup(tp,cm.fselect3,false,0,#g1)
+	aux.GCheckAdditional=cm.fselect5
+	local tg2=g2:SelectSubGroup(tp,cm.fselect4,false,math.max(0,2-#g1),#g2)
+	aux.GCheckAdditional=nil
+	tg:Merge(tg2)
 	Duel.SetTargetCard(tg)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)

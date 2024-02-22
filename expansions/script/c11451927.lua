@@ -34,8 +34,11 @@ end
 function cm.LConditionFilter(c,f,lc)
 	return (((c:IsFaceup() or not c:IsOnField()) and c:IsCanBeLinkMaterial(lc)) or (Duel.GetFlagEffect(lc:GetControler(),m)<=Duel.GetTurnCount() and cm.fdfilter(c))) and (not f or f(c))
 end
+function cm.LConditionFilter2(c,f,lc)
+	return (((c:IsFaceup() or not c:IsOnField()) and c:IsCanBeLinkMaterial(lc) and c:IsLocation(LOCATION_MZONE)) or (Duel.GetFlagEffect(lc:GetControler(),m)<=Duel.GetTurnCount() and cm.fdfilter(c))) and (not f or f(c))
+end
 function cm.GetLinkMaterials(tp,f,lc)
-	local mg=Duel.GetMatchingGroup(cm.LConditionFilter,tp,LOCATION_ONFIELD,0,nil,f,lc)
+	local mg=Duel.GetMatchingGroup(cm.LConditionFilter2,tp,LOCATION_ONFIELD,0,nil,f,lc)
 	local mg2=Duel.GetMatchingGroup(aux.LExtraFilter,tp,LOCATION_HAND+LOCATION_SZONE,LOCATION_ONFIELD,nil,f,lc,tp)
 	if mg2:GetCount()>0 then mg:Merge(mg2) end
 	return mg

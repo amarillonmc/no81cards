@@ -207,7 +207,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)
 	if #g>0 and Duel.SelectEffectYesNo(tp,e:GetHandler()) then
-		local tc=g:GetFirst()
+		local tg=g
 		if #g>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			tg=g:Select(tp,1,#g,nil)

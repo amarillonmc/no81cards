@@ -108,7 +108,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=te:GetHandler()
 	local prop1,prop2=te:GetProperty()
 	local eset={Duel.IsPlayerAffectedByEffect(tp,m)}
-	if (tc:GetFlagEffect(m)>0 and prop2 and prop2&EFFECT_FLAG2_COF>0) or (tc:IsLocation(LOCATION_SZONE) and tc:IsType(TYPE_QUICKPLAY) and ((#eset>0 and tc:IsStatus(STATUS_SET_TURN) and tc:GetEffectCount(EFFECT_QP_ACT_IN_SET_TURN)<=#eset) or Duel.SelectYesNo(tp,aux.Stringid(m,3)))) then
+	if (tc:GetFlagEffect(m)>0 and prop2 and prop2&EFFECT_FLAG2_COF>0) or (tc:IsLocation(LOCATION_SZONE) and tc:IsType(TYPE_QUICKPLAY) and ((#eset>0 and tc:IsStatus(STATUS_SET_TURN) and tc:GetEffectCount(EFFECT_QP_ACT_IN_SET_TURN)<=#eset) or (Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,3))))) then
 		local ph=Duel.GetCurrentPhase()
 		if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
 		e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+ph,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,15))
@@ -158,7 +158,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			ct=Duel.Remove(sc,POS_FACEUP,REASON_EFFECT)
 		end
 		if ct~=0 and sc:IsLocation(LOCATION_REMOVED) and not sc:IsReason(REASON_REDIRECT) then
-			sc:RegisterFlagEffect(m+4,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,8-flag,aux.Stringid(m+4,math.max(0,8-flag)))
+			sc:RegisterFlagEffect(m+4,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,50-flag,aux.Stringid(m+4,math.max(0,8-flag)))
 			local rc=c
 			if re and re:GetHandler() then rc=re:GetHandler() end
 			local e1=Effect.CreateEffect(rc)
@@ -185,7 +185,7 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local flag=c:GetFlagEffectLabel(m+4)
 	if not flag or e:GetLabel()~=c:GetFieldID() then
 		e:Reset()
-	elseif flag>=9 then
+	elseif flag>=51 then
 		c:ResetFlagEffect(m+4)
 		if c:IsPreviousLocation(LOCATION_ONFIELD) then
 			--Duel.MoveToField(c,tp,c:GetPreviousControler(),c:GetPreviousLocation(),c:GetPreviousPosition(),true)
@@ -199,6 +199,6 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(c,nil,REASON_EFFECT+REASON_TEMPORARY)
 		flag=flag+1
 		c:ResetFlagEffect(m+4)
-		c:RegisterFlagEffect(m+4,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(m+4,flag))
+		c:RegisterFlagEffect(m+4,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(m+4,math.max(0,flag-42)))
 	end
 end

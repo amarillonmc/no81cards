@@ -113,6 +113,7 @@ function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectEffectYesNo(tp,c) then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.SSet(tp,c,tp,true)
+		c:RegisterFlagEffect(m-10,RESET_CHAIN,0,1)
 		cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
@@ -149,7 +150,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.clfilter(c,tp,i)
-	return aux.GetColumn(c,tp)==i and not c:IsStatus(STATUS_SUMMONING)
+	return aux.GetColumn(c,tp)==i and not c:IsStatus(STATUS_SUMMONING) and c:GetFlagEffect(m-10)==0
 end
 function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	local ng=Duel.GetMatchingGroup(cm.clfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,e:GetLabel())
