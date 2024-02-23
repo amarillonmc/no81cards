@@ -46,7 +46,7 @@ function cm.fselect2(g)
 end
 function cm.fselect3(g)
 	local ct2=g:FilterCount(cm.sfilter,nil)
-	return #g%2==0 and #g<=2*ct2
+	return #g<=2*ct2
 end
 function cm.fselect4(g)
 	return #g%2==0
@@ -55,6 +55,52 @@ function cm.fselect5(g)
 	local ct4=g:FilterCount(cm.mfilter,nil)
 	return #g<=2*ct4
 end
+function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
+	Auxiliary.SubGroupCaptured=Group.CreateGroup()
+	local min=min or 1
+	local max=max or #g
+	local ext_params={...}
+	local sg=Group.CreateGroup()
+	local fg=Duel.GrabSelectedCard()
+	if #fg>max or min>max or #(g+fg)<min then return nil end
+	for tc in aux.Next(fg) do
+		fg:SelectUnselect(sg,tp,false,false,min,max)
+	end
+	sg:Merge(fg)
+	local finish=(#sg>=min and #sg<=max and f(sg,...))
+	while #sg<max do
+		local cg=Group.CreateGroup()
+		local eg=g:Clone()
+		for c in aux.Next(g-sg) do
+			if not cg:IsContains(c) then
+				if Auxiliary.CheckGroupRecursiveCapture(c,sg,eg,f,min,max,ext_params) then
+					cg:Merge(Auxiliary.SubGroupCaptured)
+				end
+			end
+		end
+		cg:Sub(sg)
+		finish=(#sg>=min and #sg<=max and f(sg,...))
+		if #cg==0 then break end
+		local cancel=not finish and cancelable
+		local tc=cg:SelectUnselect(sg,tp,finish,cancel,min,max)
+		if not tc then break end
+		if not fg:IsContains(tc) then
+			if not sg:IsContains(tc) then
+				sg:AddCard(tc)
+				if #sg==max then finish=true end
+			else
+				sg:RemoveCard(tc)
+			end
+		elseif cancelable then
+			return nil
+		end
+	end
+	if finish then
+		return sg
+	else
+		return nil
+	end
+end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return false end
@@ -62,12 +108,15 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	--local g=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,c,e)
 	local g1=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c,e)
 	local g2=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e)
-	local g3=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e)
+	--Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,13))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	--aux.GCheckAdditional=cm.fselect
-	local tg=g1:SelectSubGroup(tp,cm.fselect3,false,0,#g1)
+	local min=2
+	if Duel.IsExistingTarget(cm.mfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e) then min=0 end
+	aux.GCheckAdditional=cm.fselect3
+	local tg=cm.SelectSubGroup(g1,tp,cm.fselect4,false,min,#g1)
+	--Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,14))
 	aux.GCheckAdditional=cm.fselect5
-	local tg2=g2:SelectSubGroup(tp,cm.fselect4,false,math.max(0,2-#g1),#g2)
+	local tg2=cm.SelectSubGroup(g2,tp,cm.fselect4,false,math.max(0,2-#tg),#g2)
 	aux.GCheckAdditional=nil
 	tg:Merge(tg2)
 	Duel.SetTargetCard(tg)
@@ -118,35 +167,6 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	g:ForEach(Card.ResetFlagEffect,m)
 	Duel.SendtoHand(g,nil,REASON_EFFECT)
 	pnfl_adjusting=false
-end
-function cm.coincon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetCode()~=EVENT_TOSS_COIN_NEGATE
-end
-function cm.coinop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:GetFlagEffect(m)==0 and Duel.SelectEffectYesNo(tp,c) then
-		Duel.ConfirmCards(1-tp,c)
-		Duel.Hint(HINT_CARD,0,m)	
-		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
-		local res={Duel.GetCoinResult()}
-		local ac=1
-		local ct=ev
-		if ct>1 then
-			--choose the index of results
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,11))
-			local val,idx=Duel.AnnounceNumber(tp,table.unpack(aux.idx_table,1,ct))
-			ac=idx+1
-		end
-		res[ac]=1
-		Duel.SetCoinResult(table.unpack(res))
-		--[[local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_PUBLIC)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e1)
-		cm[c]=e1--]]
-		Duel.RaiseSingleEvent(c,EVENT_CUSTOM+m,e,0,0,0,0)
-	end
 end
 function cm.pzcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsSummonPlayer,1,nil,tp)

@@ -9,6 +9,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
 	local e1=Effect.CreateEffect(c)
@@ -31,7 +32,7 @@ function cm.initial_effect(c)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_SUMMON_SUCCESS)
-		e1:SetProperty(EFFECT_FLAG_DELAY)
+		--e1:SetProperty(EFFECT_FLAG_DELAY)
 		e1:SetCondition(cm.descon)
 		e1:SetOperation(cm.desop2)
 		Duel.RegisterEffect(e1,0)
@@ -73,7 +74,6 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter12,1,nil,e)
 end
 function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
-	if (re and re:GetHandler():GetOriginalCode()==m) then return end
 	Duel.RaiseEvent(eg,EVENT_CUSTOM+11450901,re,r,rp,ep,ev)
 end
 function cm.descon3(e,tp,eg,ep,ev,re,r,rp)
@@ -109,15 +109,20 @@ function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not re:GetHandler():IsSetCard(0x6e) or not c:IsSSetable() or cm.column~=0 then return end
+	if not re:GetHandler():IsSetCard(0x6e) or not c:IsSSetable() or cm.column~=0 or Duel.GetFlagEffect(tp,m)>0 then return end
 	if Duel.SelectEffectYesNo(tp,c) then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.SSet(tp,c,tp,true)
-		c:RegisterFlagEffect(m-10,RESET_CHAIN,0,1)
+		c:RegisterFlagEffect(m-11,RESET_CHAIN,0,1)
 		cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 end
+end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	--if Duel.GetFlagEffect(tp,m)>0 then return end
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local c=e:GetHandler()
 	local fd=Duel.SelectField(tp,2,LOCATION_SZONE,0,~0x1f00)
 	for i=0,4 do
@@ -136,7 +141,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetCode(EVENT_MOVE)
 			e3:SetLabel(i)
 			e3:SetCountLimit(1)
-			e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_NO_TURN_RESET)
+			e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 			e3:SetCondition(cm.thcon2)
 			e3:SetTarget(cm.thtg2)
 			e3:SetOperation(cm.thop2)
@@ -150,7 +155,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.clfilter(c,tp,i)
-	return aux.GetColumn(c,tp)==i and not c:IsStatus(STATUS_SUMMONING) and c:GetFlagEffect(m-10)==0
+	return aux.GetColumn(c,tp)==i and not c:IsStatus(STATUS_SUMMONING) and c:GetFlagEffect(m-11)==0
 end
 function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	local ng=Duel.GetMatchingGroup(cm.clfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,e:GetLabel())
@@ -184,7 +189,7 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	g=g:Filter(Card.IsRelateToEffect,nil,e)
 	if #g==0 then return end
 	g:KeepAlive()
-	g:ForEach(Card.RegisterFlagEffect,m-10,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,EFFECT_FLAG_CLIENT_HINT,1,aux.Stringid(m,10))
+	g:ForEach(Card.RegisterFlagEffect,m-10,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,10))
 	for tc in aux.Next(g) do
 		local ge2=Effect.CreateEffect(c)
 		ge2:SetType(EFFECT_TYPE_SINGLE)
@@ -227,7 +232,7 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local eset={tc:IsHasEffect(EFFECT_FLAG_EFFECT+m)}
 	local te=eset[1]:GetLabelObject()
 	if #eset>1 then
-		Duel.Hint(HINT_SELECTMSG,tp,550)
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,6))
 		local ct=Duel.AnnounceNumber(tp,table.unpack(aux.idx_table,1,#eset))
 		te=eset[ct]:GetLabelObject()
 	end
