@@ -53,7 +53,7 @@ function cm.mfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x44f)
 end
 function cm.afilter(c,e,tp,attr)
-	return c:GetAttribute()~=attr and cm[c:GetAttribute()]<=0 and c:IsSetCard(0xc976) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return c:GetAttribute()~=attr and (not cm[c:GetAttribute()] or cm[c:GetAttribute()]<=0) and c:IsSetCard(0xc976) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -98,7 +98,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 					c:RegisterFlagEffect(0,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,i+3))
 				end
 			end
-			g:GetFirst():RegisterFlagEffect(m,RESET_CHAIN,0,1)
+			g:GetFirst():RegisterFlagEffect(m,RESET_CHAIN+RESET_EVENT+RESETS_STANDARD,0,1)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_CANNOT_TRIGGER)
@@ -115,10 +115,10 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 			e6:SetCondition(cm.descon)
 			e6:SetOperation(cm.desop)
 			e6:SetReset(RESET_CHAIN)
-			--Duel.RegisterEffect(e6,tp)
+			Duel.RegisterEffect(e6,tp)
 			local e7=e6:Clone()
 			e7:SetCode(EVENT_CHAIN_NEGATED)
-			--Duel.RegisterEffect(e7,tp)
+			Duel.RegisterEffect(e7,tp)
 		end
 	elseif opval[op]==2 then
 		for i=0,6 do
