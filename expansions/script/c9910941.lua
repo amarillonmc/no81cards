@@ -89,7 +89,7 @@ function c9910941.disop(e,tp,eg,ep,ev,re,r,rp)
 		local tseq=aux.MZoneSequence(tc:GetSequence())
 		if seq==4-tseq then res=true end
 	end
-	return res
+	if res then Duel.NegateEffect(ev) end
 end
 function c9910941.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,600) end

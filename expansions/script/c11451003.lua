@@ -21,7 +21,12 @@ end
 function cm.filter3(c,ct)
 	return c:GetFlagEffect(m)>ct
 end
+function cm.draw(p,ct)
+	return Duel.Draw(p,ct,REASON_EFFECT)
+end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	local co=coroutine.create(cm.draw)
+	coroutine.resume(co,tp,3)
 	local sg=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_ONFIELD,0,nil,e)
 	if sg:IsExists(cm.filter3,1,nil,1) and not cm[1] then
 		cm[1]=true
