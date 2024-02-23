@@ -77,6 +77,7 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,40009560)>0 or Duel.IsExistingMatchingCard(cm.dfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and aux.NegateAnyFilter(chkc) end
 	if chk==0 then
 		local b

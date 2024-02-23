@@ -64,10 +64,10 @@ function cm.efilter(e,c)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if chk==0 then return ft>-1 and Duel.CheckReleaseGroup(REASON_COST,tp,cm.rfilter,1,nil,e,tp) end
+	if chk==0 then return ft>-1 and Duel.CheckReleaseGroup(tp,cm.rfilter,1,nil,e,tp) end
 	local ct=Duel.GetMatchingGroupCount(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
-	local rg=Duel.SelectReleaseGroup(REASON_COST,tp,cm.rfilter,1,ct,nil,e,tp)
+	local rg=Duel.SelectReleaseGroup(tp,cm.rfilter,1,ct,nil,e,tp)
 	ct=Duel.Release(rg,REASON_COST)
 	e:SetLabel(ct)
 end
