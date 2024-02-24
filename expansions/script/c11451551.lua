@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_ADJUST)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(function() return not pnfl_adjusting end)
 	e1:SetOperation(cm.adjustop)
 	c:RegisterEffect(e1)
 	--special summon
@@ -48,6 +49,8 @@ function cm.equipfd(c,tp,tc)
 	return true
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return end
+	pnfl_adjusting=true
 	local phase=Duel.GetCurrentPhase()
 	local c=e:GetHandler()
 	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL or c:IsStatus(STATUS_BATTLE_DESTROYED) or not Duel.IsPlayerCanSSet(tp) then return end
@@ -57,12 +60,15 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.DisableShuffleCheck()
 		if tc:IsForbidden() then
 			Duel.DiscardDeck(tp,1,REASON_RULE)
-			Duel.Readjust()
+			pnfl_adjusting=false
+			cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		elseif cm.equipfd(c,tp,tc) then
 			Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+			pnfl_adjusting=false
 			Duel.Readjust()
 		end
 	end
+	pnfl_adjusting=false
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsPlayerAffectedByEffect(tp,11451556)

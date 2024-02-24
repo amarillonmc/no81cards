@@ -21,6 +21,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_ADJUST)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(function() return not pnfl_adjusting end)
 	e1:SetOperation(cm.adjustop)
 	c:RegisterEffect(e1)
 	--exchange
@@ -134,6 +135,7 @@ function cm.LinkOperation(f,minc,maxc,gf)
 				aux.LExtraMaterialCount(g,c,tp)
 				g1=g:Filter(cm.fdfilter,nil)
 				g:Sub(g1)
+				--for tc in aux.Next(g1) do if tc:IsCode(m-2) then Debug.Message(tc:IsType(TYPE_LINK)) end end
 				Duel.SendtoDeck(g1,nil,2,REASON_MATERIAL+REASON_LINK)
 				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_LINK)
 				g:DeleteGroup()
@@ -146,7 +148,7 @@ function cm.eqlimit(e,c)
 	return e:GetOwner()==c
 end
 function cm.equipfd(c,tp,tc)
-	if tc:IsPosition(POS_FACEUP) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) return true end
+	if tc:IsPosition(POS_FACEUP) then return Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
 	if not Duel.Equip(tp,tc,c,false) then return false end
 	--Add Equip limit
 	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)
@@ -160,6 +162,8 @@ function cm.equipfd(c,tp,tc)
 	return true
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return end
+	pnfl_adjusting=true
 	local phase=Duel.GetCurrentPhase()
 	local c=e:GetHandler()
 	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL or c:IsStatus(STATUS_BATTLE_DESTROYED) or not Duel.IsPlayerCanSSet(tp) then return end
@@ -169,12 +173,15 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.DisableShuffleCheck()
 		if tc:IsForbidden() then
 			Duel.DiscardDeck(tp,1,REASON_RULE)
-			Duel.Readjust()
+			pnfl_adjusting=false
+			cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		elseif cm.equipfd(c,tp,tc) then
 			Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+			pnfl_adjusting=false
 			Duel.Readjust()
 		end
 	end
+	pnfl_adjusting=false
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsPlayerAffectedByEffect(tp,11451556)

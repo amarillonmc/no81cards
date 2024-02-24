@@ -18,6 +18,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	if not cm.global_check then
 		cm.global_check=true
+		local _Equip=Duel.Equip
+		Duel.Equip=function(p,c,...)
+			c:RegisterFlagEffect(m,RESET_CHAIN,0,1)
+			local res=_Equip(p,c,...)
+			c:ResetFlagEffect(m)
+			return res
+		end
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_SUMMON_SUCCESS)
@@ -51,7 +58,7 @@ function cm.costchk(e,c,tp,st)
 	return false
 end
 function cm.filter(c,e)
-	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED))) then return false end
+	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED) or c:GetFlagEffect(m)>0)) then return false end
 	if e:GetCode()==EVENT_MOVE then
 		local b1,g1=Duel.CheckEvent(EVENT_SUMMON_SUCCESS,true)
 		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
