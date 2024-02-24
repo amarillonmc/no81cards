@@ -285,7 +285,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 						_G["c"..int].__index=_G["c"..int]
 					end
 					GetID=function()
-						return _G["c"..int],int
+						return _G["c"..int],int,int<100000000 and 1 or 100
 					end
 					if pcall(function() dofile("expansions/script/c"..int..".lua") end) or pcall(function() dofile("script/c"..int..".lua") end) then
 						_G["c"..int]=nil
@@ -363,7 +363,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 						_G["c"..int].__index=_G["c"..int]
 					end
 					GetID=function()
-						return _G["c"..int],int
+						return _G["c"..int],int,int<100000000 and 1 or 100
 					end
 					if pcall(function() dofile("expansions/script/c"..int..".lua") end) or pcall(function() dofile("script/c"..int..".lua") end) then
 						_G["c"..int]=nil
@@ -399,8 +399,11 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 						table.insert(afilter,OPCODE_OR)
 					end
 				end
-				Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CODE)
-				local ac=Duel.AnnounceCard(1-tp,table.unpack(afilter))
+				local ac=afilter[1]
+				if not Duel.SelectYesNo(1-tp,aux.Stringid(m,3)) then
+					Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CODE)
+					ac=Duel.AnnounceCard(1-tp,table.unpack(afilter))
+				end
 				--Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
 				--local sg=g2:SelectSubGroup(1-tp,aux.TRUE,false,1,1)
 				ng2=g2:Filter(Card.IsCode,nil,ac)

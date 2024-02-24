@@ -71,7 +71,7 @@ function c9910055.thop(e,tp,eg,ep,ev,re,r,rp)
 	if thct==0 and Duel.IsExistingMatchingCard(c9910055.thfilter2,tp,LOCATION_DECK,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910055,2)) then
 		Duel.BreakEffect()
-		local sg2=Duel.GetFirstMatchingCard(c9910055.thfilter2,tp,LOCATION_DECK,0,nil)
+		local sg2=Duel.SelectMatchingCard(tp,c9910055.thfilter2,tp,LOCATION_DECK,0,1,1,nil)
 		if sg2 then
 			Duel.SendtoHand(sg2,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,sg2)
