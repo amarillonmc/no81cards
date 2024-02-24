@@ -144,7 +144,7 @@ function c67642779.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ct=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local tg=Duel.SelectTarget(tp,c67642779.desfilter,tp,LOCATION_SZONE,0,ct,ct,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tg,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tg,tg:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
 end
 function c67642779.desop(e,tp,eg,ep,ev,re,r,rp)
