@@ -72,7 +72,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		local c=e:GetHandler()
 		Duel.Release(c,REASON_EFFECT)
 		local op=e:GetLabel()
-		if op==0 then
+		if op==1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 			if g:GetCount()>0 then
@@ -85,7 +85,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			if g:GetCount()>0 then
 				Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
 			end
-		elseif op==1 then
+		elseif op==2 then
 			Duel.Draw(tp,1,REASON_EFFECT)
 			if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -93,7 +93,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			if g:GetCount()>0 then
 				Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
 			end
-		elseif op==2 then
+		elseif op==3 then
 			Duel.Recover(tp,2000,REASON_EFFECT)
 			if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

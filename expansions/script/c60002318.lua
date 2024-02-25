@@ -24,7 +24,7 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	local tc=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_DECK,0,nil)
+	local tc=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_DECK,0,nil):Select(tp,1,1,nil)
 	Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetCode(EFFECT_CHANGE_TYPE)

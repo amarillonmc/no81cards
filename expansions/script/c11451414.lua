@@ -98,6 +98,7 @@ function cm.condition4(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.operation4(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():ResetFlagEffect(m)
+	--Duel.Hint(24,0,aux.Stringid(m,0))
 	--effect phase end
 	local e3=Effect.CreateEffect(e:GetHandler())
 	e3:SetDescription(aux.Stringid(m,0))
@@ -111,13 +112,13 @@ function cm.operation4(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.condition3(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsType,1-tp,LOCATION_MZONE+LOCATION_HAND,0,nil,TYPE_MONSTER)
-	g=g:Filter(Card.IsReleasable,nil)
+	g=g:Filter(Card.IsReleasable,nil,REASON_RULE)
 	return #g>0 and cm[tp]>0
 end
 function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 	local g=Duel.GetMatchingGroup(Card.IsType,1-tp,LOCATION_MZONE+LOCATION_HAND,0,nil,TYPE_MONSTER)
-	g=g:Filter(Card.IsReleasable,nil)
+	g=g:Filter(Card.IsReleasable,nil,REASON_RULE)
 	local count=math.min(#g,cm[tp])
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_RELEASE)
 	local g2=g:Select(1-tp,count,count,nil)

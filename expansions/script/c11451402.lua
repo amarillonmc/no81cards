@@ -45,7 +45,7 @@ function cm.costcon(e)
 	return true
 end
 function cm.costchk(e,te,tp)
-	return Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_MZONE,0,1,nil,REASON_RULE)
 end
 function cm.costtg(e,te,tp)
 	e:SetLabelObject(te)

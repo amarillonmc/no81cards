@@ -39,7 +39,7 @@ function cm.dptcheck(g)
 	return g:GetClassCount(Card.GetLevel)==#g
 end
 function cm.cfilter(c)
-	return c:IsLevelAbove(1) and c:IsReleasable()
+	return c:IsLevelAbove(1) and c:IsReleasable(REASON_MATERIAL)
 end
 function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil)
@@ -52,7 +52,7 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=mg:SelectSubGroup(tp,cm.dptcheck,true,2,99)
 	if tg and #tg>0 then
 		c:SetMaterial(tg)
-		Duel.Release(tg,REASON_COST+REASON_MATERIAL)
+		Duel.Release(tg,REASON_MATERIAL)
 		Duel.BreakEffect()
 		Duel.SSet(tp,c)
 	end

@@ -1,6 +1,5 @@
 --珂拉琪的拼图箱庭
-local m=11451528
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -80,7 +79,7 @@ function cm.recon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()==1 and (e:GetHandler():GetFlagEffect(m)>0 or (ep~=tp and e:GetCode()~=EVENT_CHAIN_NEGATED))
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsReleasable,tp,LOCATION_ONFIELD,0,e:GetHandler())
+	local g=Duel.GetMatchingGroup(Card.IsReleasable,tp,LOCATION_ONFIELD,0,e:GetHandler(),REASON_RULE)
 	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local sg=g:Select(tp,1,1,nil)

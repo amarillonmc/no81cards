@@ -42,7 +42,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.filter1(c,tp)
-	return c:IsReleasable() and Duel.GetMZoneCount(1-tp,c,tp)>0
+	return c:IsReleasable(REASON_SPSUMMON) and Duel.GetMZoneCount(1-tp,c,tp)>0
 end
 function cm.filter2(c)
 	return aux.IsCodeListed(c,99518961) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
