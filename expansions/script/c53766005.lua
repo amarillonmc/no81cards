@@ -78,7 +78,7 @@ function s.initial_effect(c)
 			else return _SelectUnselect(cg,sg,sp,finish,cancel,...) end
 		end
 		local originalDuelFunctions={}
-		local DuelFunctionsName={"SelectMatchingCard","SelectTarget","SelectTribute","SelectFusionMaterial","SelectSynchroMaterial","SelectTunerMaterial","SelectXyzMaterial"}
+		local DuelFunctionsName={"SelectMatchingCard","SelectTarget","SelectTribute","SelectFusionMaterial","SelectSynchroMaterial","SelectTunerMaterial","SelectXyzMaterial","SelectReleaseGroup","SelectReleaseGroupEx"}
 		for _,funcName in ipairs(DuelFunctionsName) do
 			originalDuelFunctions[funcName]=Duel[funcName]
 			Duel[funcName]=function(sp,...)
@@ -88,19 +88,6 @@ function s.initial_effect(c)
 					if tg:IsExists(f,1,nil) then table.insert(s.trigger,sp) end
 					return g
 				else return originalDuelFunctions[funcName](sp,...) end
-			end
-		end
-		local originalDuelFunctions2={}
-		local DuelFunctionsName2={"SelectReleaseGroup","SelectReleaseGroupEx"}
-		for _,funcName in ipairs(DuelFunctionsName2) do
-			originalDuelFunctions2[funcName]=Duel[funcName]
-			Duel[funcName]=function(r,sp,...)
-				if Duel.IsPlayerAffectedByEffect(sp,id) and s.chain_solving then 
-					local g=originalDuelFunctions2[funcName](r,sp,...)
-					local tg=Group.__add(g,g)
-					if tg:IsExists(f,1,nil) then table.insert(s.trigger,sp) end
-					return g
-				else return originalDuelFunctions2[funcName](r,sp,...) end
 			end
 		end
 		local originalGroupFunctions={}

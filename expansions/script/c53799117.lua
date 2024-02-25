@@ -75,9 +75,9 @@ function cm.cfilter(c)
 	return not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.CheckReleaseGroup(REASON_COST,tp,cm.cfilter,1,e:GetHandler()) end
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.CheckReleaseGroup(tp,cm.cfilter,1,e:GetHandler()) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-	local g=Duel.SelectReleaseGroup(REASON_COST,tp,cm.cfilter,1,1,e:GetHandler())
+	local g=Duel.SelectReleaseGroup(tp,cm.cfilter,1,1,e:GetHandler())
 	Duel.Release(g,REASON_COST)
 end
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)

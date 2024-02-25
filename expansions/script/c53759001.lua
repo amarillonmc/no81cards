@@ -66,12 +66,12 @@ function cm.spfilter(c,e,tp)
 	return c:IsCode(m+1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_EFFECT,tp,cm.relfilter,1,nil,tp) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.relfilter,1,nil,tp) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
-	local rg=Duel.SelectReleaseGroup(REASON_EFFECT,tp,cm.relfilter,1,1,nil,tp)
+	local rg=Duel.SelectReleaseGroup(tp,cm.relfilter,1,1,nil,tp)
 	if rg:GetCount()==0 then return end
 	if Duel.Release(rg,REASON_EFFECT)==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

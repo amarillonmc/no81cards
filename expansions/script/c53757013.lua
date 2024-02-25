@@ -46,8 +46,8 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil)
 	local b2=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp)
-	if chk==0 then return (b1 or b2) and Duel.CheckReleaseGroup(REASON_COST,tp,cm.cfilter,1,nil,tp,b1) end
-	local g=Duel.SelectReleaseGroup(REASON_COST,tp,cm.cfilter,1,1,nil,tp,b1)
+	if chk==0 then return (b1 or b2) and Duel.CheckReleaseGroup(tp,cm.cfilter,1,nil,tp,b1) end
+	local g=Duel.SelectReleaseGroup(tp,cm.cfilter,1,1,nil,tp,b1)
 	Duel.Release(g,REASON_COST)
 	local b3=b2 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	local off=1

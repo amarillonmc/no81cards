@@ -2661,22 +2661,24 @@ function cm.CyberNCode2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(53702500,15))
 end
 function cm.AllEffectReset(c)
+	if Duel.GetFlagEffect(0,53702700)>0 then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCode(EVENT_ADJUST)
 	e1:SetRange(0xff)
 	e1:SetOperation(cm.AllEffectRstop)
-	e1:SetCountLimit(1,EFFECT_COUNT_CODE_DUEL+53702700)
+	--e1:SetCountLimit(1,EFFECT_COUNT_CODE_DUEL+53702700)
 	c:RegisterEffect(e1)
+	Duel.RegisterFlagEffect(0,53702700,0,0,0)
 end
 function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(0,53702700)>0 then return end
+	--if Duel.GetFlagEffect(0,53702700)>0 then return end
+	--Duel.RegisterFlagEffect(0,53702700,0,0,0)
+	local g=Duel.GetMatchingGroup(function(c)return c:GetFlagEffect(53702700)==0 end,0,0xff,0xff,nil)
+	if #g==0 then return end
 	--Debug.Message(99)
-	Duel.RegisterFlagEffect(0,53702700,0,0,0)
-	local g=Duel.GetMatchingGroup(nil,0,0xff,0xff,nil)
 	local reg=Card.RegisterEffect
-	local rstg=Duel.GetMatchingGroup(function(c)return c.Snnm_Ef_Rst end,0,0xff,0xff,nil)
+	local rstg=Duel.GetMatchingGroup(function(c)return c.Snnm_Ef_Rst and c:GetFlagEffect(53702700)==0 end,0,0xff,0xff,nil)
 	local rstt={}
 	for rstc in aux.Next(rstg) do if not cm.IsInTable(rstc:GetOriginalCode(),rstt) then table.insert(rstt,rstc:GetOriginalCode()) end end
 	if cm.IsInTable(53759012,rstt) then
@@ -2694,7 +2696,7 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 			return c53759012[1](se,le)
 		end
 	end
-	local helltaker=Duel.GetMatchingGroup(function(c)return c.AD_Ht end,0,0xff,0xff,nil)
+	local helltaker=Duel.GetMatchingGroup(function(c)return c.AD_Ht and c:GetFlagEffect(53702700)==0 end,0,0xff,0xff,nil)
 	if #helltaker>0 then
 		AD_Helltaker=Effect.SetLabelObject
 		Effect.SetLabelObject=function(se,le)
@@ -2842,6 +2844,7 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 	if cm.IsInTable(53759012,rstt) then Effect.SetLabelObject=c53759012[1] end
 	if #helltaker>0 then Effect.SetLabelObject=AD_Helltaker end
 	Duel.ResetFlagEffect(0,53764007)
+	g:ForEach(Card.RegisterFlagEffect,53702700,0,0,0)
 	e:Reset()
 end
 function cm.reni(c,sdes,scat,styp,spro,scod,sran,sct,sht,scon,scos,stg,sop)
@@ -5292,7 +5295,7 @@ function cm.MultipleGroupCheck(c)
 			return b
 		end
 		ADIMI_SelectReleaseGroup=Duel.SelectReleaseGroup
-		Duel.SelectReleaseGroup=function(r,p,f,min,max,ex,...)
+		Duel.SelectReleaseGroup=function(p,f,min,max,ex,...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
 			local ly=0
@@ -5306,7 +5309,7 @@ function cm.MultipleGroupCheck(c)
 			cm["Card_Prophecy_L_Check_"..ly]=true
 			ADIMI_GetMatchingGroup(f,p,LOCATION_MZONE,LOCATION_MZONE,ex,...)
 			cm["Card_Prophecy_L_Check_"..ly]=false
-			local b=ADIMI_SelectReleaseGroup(r,p,f,min,max,ex,...)
+			local b=ADIMI_SelectReleaseGroup(p,f,min,max,ex,...)
 			cm["Card_Prophecy_Certain_SP_"..ly]=false
 			cm["Card_Prophecy_Certain_ACST_"..ly]=false
 			cm["Card_Prophecy_Layer_"..ly]=false
@@ -5314,7 +5317,7 @@ function cm.MultipleGroupCheck(c)
 			return b
 		end
 		ADIMI_SelectReleaseGroupEx=Duel.SelectReleaseGroupEx
-		Duel.SelectReleaseGroupEx=function(r,p,f,min,max,ex,...)
+		Duel.SelectReleaseGroupEx=function(p,f,min,max,r,bool,ex,...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
 			local ly=0
@@ -5326,9 +5329,9 @@ function cm.MultipleGroupCheck(c)
 			end
 			cm["Card_Prophecy_Layer_"..ly]=true
 			cm["Card_Prophecy_L_Check_"..ly]=true
-			ADIMI_GetMatchingGroup(f,p,LOCATION_MZONE+LOCATION_HAND,LOCATION_MZONE+LOCATION_HAND,ex,...)
+			if bool then ADIMI_GetMatchingGroup(f,p,LOCATION_MZONE+LOCATION_HAND,LOCATION_MZONE+LOCATION_HAND,ex,...) else ADIMI_GetMatchingGroup(f,p,LOCATION_MZONE,LOCATION_MZONE,ex,...) end
 			cm["Card_Prophecy_L_Check_"..ly]=false
-			local b=ADIMI_SelectReleaseGroupEx(r,p,f,min,max,ex,...)
+			local b=ADIMI_SelectReleaseGroupEx(p,f,min,max,r,bool,ex,...)
 			cm["Card_Prophecy_Certain_SP_"..ly]=false
 			cm["Card_Prophecy_Certain_ACST_"..ly]=false
 			cm["Card_Prophecy_Layer_"..ly]=false

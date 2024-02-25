@@ -45,7 +45,7 @@ function cm.immval(e,te)
 	if not c:IsLocation(LOCATION_FZONE) then return false end
 	local tp=c:GetControler()
 	local eset={c:IsHasEffect(m+50)}
-	local res=te:GetOwner()~=e:GetOwner() and Duel.CheckReleaseGroup(REASON_EFFECT,tp,nil,1,nil)
+	local res=te:GetOwner()~=e:GetOwner() and Duel.CheckReleaseGroup(tp,nil,1,nil)
 	local ctns=false
 	if not te:IsHasType(EFFECT_TYPE_ACTIONS) then
 		for _,se in pairs(eset) do
@@ -70,7 +70,7 @@ function cm.immval(e,te)
 end
 function cm.imcop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	local g=Duel.SelectReleaseGroup(REASON_EFFECT,tp,nil,1,1,nil)
+	local g=Duel.SelectReleaseGroup(tp,nil,1,1,nil)
 	Duel.Release(g,REASON_EFFECT)
 	e:Reset()
 end 

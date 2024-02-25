@@ -77,7 +77,7 @@ function c49811176.drop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Draw(p,d,REASON_EFFECT)
 end
 function c49811176.costfilter(c,tp)
-    return c:IsType(TYPE_PENDULUM) and c:IsControler(tp) and (c:IsSetCard(0xaa) or c:IsSetCard(0xc4))
+    return c:IsType(TYPE_PENDULUM) and c:IsControler(tp) and c:IsReleasable() and (c:IsSetCard(0xaa) or c:IsSetCard(0xc4))
 end
 function c49811176.ngcost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c49811176.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,tp) end

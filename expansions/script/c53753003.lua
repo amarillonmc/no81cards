@@ -21,8 +21,8 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.srop)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,Card.IsSummonType,1,nil,SUMMON_TYPE_NORMAL) end
-	local g=Duel.SelectReleaseGroup(REASON_COST,tp,Card.IsSummonType,1,1,nil,SUMMON_TYPE_NORMAL)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsSummonType,1,nil,SUMMON_TYPE_NORMAL) end
+	local g=Duel.SelectReleaseGroup(tp,Card.IsSummonType,1,1,nil,SUMMON_TYPE_NORMAL)
 	Duel.Release(g,REASON_COST)
 end
 function cm.spfilter(c,e,tp)

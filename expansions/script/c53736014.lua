@@ -132,8 +132,8 @@ function cm.costfilter(c,tp)
 	return c:IsType(TYPE_PENDULUM) and c:IsAttribute(ATTRIBUTE_DARK) and (c:IsControler(tp) or c:IsFaceup())
 end
 function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,cm.costfilter,1,nil,tp) end
-	local sg=Duel.SelectReleaseGroup(REASON_COST,tp,cm.costfilter,1,1,nil,tp)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.costfilter,1,nil,tp) end
+	local sg=Duel.SelectReleaseGroup(tp,cm.costfilter,1,1,nil,tp)
 	Duel.Release(sg,REASON_COST)
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

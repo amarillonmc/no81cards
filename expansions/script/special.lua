@@ -13,16 +13,6 @@ function Auxiliary.PreloadUds()
 		return require_list[str]
 	end
 	local release_set={"CheckReleaseGroup","SelectReleaseGroup"}
-	for i,fname in pairs(release_set) do
-		local temp_f=Duel[fname]
-		Duel[fname]=function(...)
-						local params={...}
-						local old_minc=params[3]
-						local typ=type(old_minc)
-						if #params>2 and typ~="number" then return temp_f(table.unpack(params,2,#params)) end
-						return temp_f(...)
-					end
-	end
 	local release_set2={"CheckReleaseGroupEx","SelectReleaseGroupEx"}
 	for i,fname in pairs(release_set) do
 		local temp_f=Duel[fname]
@@ -31,7 +21,29 @@ function Auxiliary.PreloadUds()
 						local old_minc=params[3]
 						local typ=type(old_minc)
 						if #params>2 and typ~="number" then
+							if params[1]==REASON_COST then
+								return temp_f(table.unpack(params,2,#params))
+							else
+								local fname2=release_set2[i]
+								return Duel[fname2](table.unpack(params,2,i+3),params[1],false,table.unpack(params,i+4,#params))
+							end
+						end
+						return temp_f(...)
+					end
+	end
+	for i,fname in pairs(release_set) do
+		local temp_f=Duel[fname]
+		Duel[fname]=function(...)
+						local params={...}
+						local old_minc=params[3]
+						local typ=type(old_minc)
+						if #params>2 and typ~="number" then
 							local tab={table.unpack(params,2,#params)}
+							table.insert(tab,i+3,REASON_COST)
+							table.insert(tab,i+4,true)
+							return temp_f(table.unpack(tab))
+						elseif #params>=i+3 and type(params[i+3])~="bool" then
+							local tab=params
 							table.insert(tab,i+3,REASON_COST)
 							table.insert(tab,i+4,true)
 							return temp_f(table.unpack(tab))

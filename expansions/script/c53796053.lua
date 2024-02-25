@@ -32,8 +32,8 @@ function cm.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_RITUAL) and c:IsSummonType(SUMMON_TYPE_RITUAL) and c:GetFlagEffect(m)>0
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,cm.filter,1,nil) end
-	local g=Duel.SelectReleaseGroup(REASON_COST,tp,cm.filter,1,1,nil)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.filter,1,nil) end
+	local g=Duel.SelectReleaseGroup(tp,cm.filter,1,1,nil)
 	Duel.Release(g,REASON_COST)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)

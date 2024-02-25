@@ -42,12 +42,12 @@ function cm.con(e,c)
 	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.IsExistingMatchingCard(cm.resfilter,tp,LOCATION_SZONE,0,1,nil)
 end
 function cm.resfilter(c)
-	return c:GetOriginalType()&TYPE_MONSTER ~=0 and c:IsReleasable() and c:IsType(TYPE_TRAP)
+	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsReleasable(REASON_SPSUMMON) and c:IsType(TYPE_TRAP)
 end
 function cm.op(e,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectMatchingCard(tp,cm.resfilter,tp,LOCATION_SZONE,0,1,1,nil)
-	Duel.Release(g,REASON_COST)
+	Duel.Release(g,REASON_SPSUMMON)
 end
 function cm.cfilter(c,e,tp)
 	return c:IsReleasable() and Duel.GetMZoneCount(tp,c,tp)>0
@@ -75,7 +75,7 @@ function cm.spop(e,tp)
 	Duel.RegisterEffect(e1,tp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if #sg>0 and Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)>0 then
 		Duel.ConfirmCards(1-tp,sg)
 	end

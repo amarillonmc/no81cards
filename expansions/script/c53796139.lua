@@ -45,8 +45,8 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,Card.IsRace,1,c,RACE_ZOMBIE) end
-	local rg=Duel.SelectReleaseGroup(REASON_COST,tp,Card.IsRace,1,1,c,RACE_ZOMBIE)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsRace,1,c,RACE_ZOMBIE) end
+	local rg=Duel.SelectReleaseGroup(tp,Card.IsRace,1,1,c,RACE_ZOMBIE)
 	Duel.Release(rg,REASON_COST)
 end
 function cm.tgfilter(c)

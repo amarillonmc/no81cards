@@ -45,8 +45,8 @@ function cm.cfilter(c,tp)
 	return c:IsLinkState() and Duel.GetMZoneCount(tp,c)>0
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,cm.cfilter,1,nil,tp) end
-	local g=Duel.SelectReleaseGroup(REASON_COST,tp,cm.cfilter,1,1,nil,tp)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.cfilter,1,nil,tp) end
+	local g=Duel.SelectReleaseGroup(tp,cm.cfilter,1,1,nil,tp)
 	Duel.Release(g,REASON_COST)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

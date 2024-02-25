@@ -31,10 +31,10 @@ function cm.hspcon(e,c)
 	if c==nil then return true end
 	if c:IsLocation(LOCATION_DECK) and c:IsFacedown() then return end
 	local tp=c:GetControler()
-	return Duel.CheckReleaseGroup(REASON_SPSUMMON,tp,cm.hspfilter,1,nil,tp)
+	return Duel.CheckReleaseGroup(tp,cm.hspfilter,1,nil,tp)
 end
 function cm.hspop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.SelectReleaseGroup(REASON_SPSUMMON,tp,cm.hspfilter,1,1,nil,tp)
+	local g=Duel.SelectReleaseGroup(tp,cm.hspfilter,1,1,nil,tp)
 	Duel.Release(g,REASON_SPSUMMON)
 end
 function cm.effcon(e,tp,eg,ep,ev,re,r,rp)
