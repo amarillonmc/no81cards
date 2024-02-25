@@ -1,7 +1,6 @@
 --方舟骑士-风笛
 c29065549.named_with_Arknight=1
 function c29065549.initial_effect(c)
-	c:EnableCounterPermit(0x10ae)
 	c:SetSPSummonOnce(29065549)
 	--link summon
 	c:EnableReviveLimit()
@@ -15,7 +14,7 @@ function c29065549.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCondition(c29065549.cocon)
 	e1:SetOperation(c29065549.coop)
-	c:RegisterEffect(e1)
+	--c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(3395226,0))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)

@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	e2:SetCondition(aux.bdocon)
 	e2:SetTarget(cm.tg2)
 	e2:SetOperation(cm.op2)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 end
 --e1
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)

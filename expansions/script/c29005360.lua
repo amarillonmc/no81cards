@@ -32,21 +32,36 @@ function cm.initial_effect(c)
 		e2:SetRange(LOCATION_HAND)
 		e2:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 		c:RegisterEffect(e2)
-	end
-	--summon success
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_COUNTER)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	--e2:SetCountLimit(1,m)
-	e2:SetTarget(cm.addct)
-	e2:SetOperation(cm.addc)
-	c:RegisterEffect(e2)
-	local e4=e2:Clone()
-	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e4)
+	end	
+	--Atk up
+	local e29=Effect.CreateEffect(c)
+	e29:SetType(EFFECT_TYPE_FIELD)
+	e29:SetCode(EFFECT_UPDATE_ATTACK)
+	e29:SetRange(LOCATION_MZONE)
+	e29:SetTargetRange(0,LOCATION_MZONE)
+	e29:SetValue(500)
+	e29:SetTarget(aux.TargetBoolFunction(Card.IsCode,29005360))
+	local e31=Effect.CreateEffect(c)
+	e31:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e31:SetRange(LOCATION_MZONE)
+	e31:SetTargetRange(0,LOCATION_MZONE)
+	e31:SetTarget(cm.eftg)
+	e31:SetLabelObject(e29)
+	c:RegisterEffect(e31)
+	--Atk down
+	local e30=Effect.CreateEffect(c)
+	e30:SetType(EFFECT_TYPE_SINGLE)
+	e30:SetCode(EFFECT_UPDATE_ATTACK)
+	e30:SetRange(LOCATION_MZONE)
+	e30:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e30:SetValue(-500)
+	local e33=Effect.CreateEffect(c)
+	e33:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e33:SetRange(LOCATION_MZONE)
+	e33:SetTargetRange(0,LOCATION_MZONE)
+	e33:SetTarget(cm.eftg)
+	e33:SetLabelObject(e30)
+	c:RegisterEffect(e33)
 	--token
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,2))
@@ -67,19 +82,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 cm.kinkuaoi_Akscsst=true
+function cm.eftg(e,c)
+	return c:IsFaceup()
+end
 function cm.rethcon(e,tp)
 	local c=e:GetHandler()
 	return ((c:IsSummonType(SUMMON_TYPE_PENDULUM)) or (c:IsSummonType(SUMMON_TYPE_NORMAL))) and c:IsLocation(LOCATION_MZONE)
-end
-function cm.addct(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x10ae)
-end
-function cm.addc(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsRelateToEffect(e) then
-		local ct  = Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE) + 1
-		e:GetHandler():AddCounter(0x10ae,ct)
-	end
 end
 function cm.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

@@ -28,17 +28,28 @@ function c29065508.initial_effect(c)
 	e3:SetTarget(c29065508.settg)
 	e3:SetOperation(c29065508.setop)
 	c:RegisterEffect(e3)
+	--immune
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_IMMUNE_EFFECT)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCondition(c29065508.imcon)
+	e4:SetValue(c29065508.efilter)
+	c:RegisterEffect(e4)
+	--indes
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e5:SetCondition(c29065508.imcon)
+	e5:SetValue(1)
+	c:RegisterEffect(e5)
 end
-function c29065508.ovfilter(c)
-	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
-end
-function c29065508.cfilter(c)
-	return c:IsDiscardable()
-end
-function c29065508.xyzop(e,tp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29065508.cfilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerAffectedByEffect(tp,29065510) and Duel.GetFlagEffect(tp,29065511)==0 end
-	Duel.DiscardHand(tp,c29065508.cfilter,1,1,REASON_COST+REASON_DISCARD,nil)
-	Duel.RegisterFlagEffect(tp,29065511,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+function c29065508.imcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:GetFlagEffect(id)==1
 end
 function c29065508.ffilter(c,chk)
 	return c:IsCode(29065500) and c:IsFaceup()
@@ -70,7 +81,9 @@ function c29065508.btcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c29065508.bttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
+	c:RegisterFlagEffect(id,RESET_CHAIN,0,1)
 end
 function c29065508.btop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
