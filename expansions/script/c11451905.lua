@@ -49,8 +49,9 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		local code=tc:GetCode()
+		local code,code2=tc:GetCode()
 		PNFL_DESTROY_CHECK[code]=true
+		if code2 then PNFL_DESTROY_CHECK[code2]=true end
 		tc=eg:GetNext()
 	end
 end
@@ -92,7 +93,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.dfilter(c)
-	return PNFL_DESTROY_CHECK[c:GetCode()]
+	local code,code2=c:GetCode()
+	return PNFL_DESTROY_CHECK[code] or (code2 and PNFL_DESTROY_CHECK[code2])
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.dfilter,1,nil)

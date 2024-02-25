@@ -61,14 +61,14 @@ function cm.mfilter(c)
 	return c:IsSetCard(0x97d) and not c:IsType(TYPE_TOKEN)
 end
 function cm.xyzfilter(c,mg,tp)
-	return c:IsXyzSummonable(mg) --and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
+	return c:IsXyzSummonable(mg) or c:IsLinkSummonable(mg) --and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local g=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 		if e:IsHasType(EFFECT_TYPE_QUICK_O) then g:RemoveCard(e:GetHandler()) end
 		for tc in aux.Next(g) do
-			tc:AddMonsterAttribute(TYPE_NORMAL,ATTRIBUTE_DARK,RACE_SPELLCASTER,6,1200,2200)
+			tc:AddMonsterAttribute(TYPE_NORMAL,ATTRIBUTE_DARK,RACE_SPELLCASTER,6,0,0)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -112,7 +112,7 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 	for tc in aux.Next(g) do
-		tc:AddMonsterAttribute(TYPE_NORMAL,ATTRIBUTE_DARK,RACE_SPELLCASTER,6,1200,2200)
+		tc:AddMonsterAttribute(TYPE_NORMAL,ATTRIBUTE_DARK,RACE_SPELLCASTER,6,0,0)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -142,17 +142,21 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if #xyzg>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local xyz=xyzg:Select(tp,1,1,nil):GetFirst()
-		Duel.XyzSummon(tp,xyz,g,1,#g)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-		e1:SetCountLimit(1)
-		e1:SetOperation(cm.handop)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-		local e2=e1:Clone()
-		e2:SetCode(EVENT_SPSUMMON_NEGATED)
-		Duel.RegisterEffect(e2,tp)
+		if xyz:IsLinkSummonable(g) then
+			Duel.LinkSummon(tp,xyz,g)
+		else
+			Duel.XyzSummon(tp,xyz,g,1,#g)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+			e1:SetCountLimit(1)
+			e1:SetOperation(cm.handop)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+			local e2=e1:Clone()
+			e2:SetCode(EVENT_SPSUMMON_NEGATED)
+			Duel.RegisterEffect(e2,tp)
+		end
 	else
 		for tc in aux.Next(g) do
 			tc:AddMonsterAttribute(0,0,0,0,0,0)

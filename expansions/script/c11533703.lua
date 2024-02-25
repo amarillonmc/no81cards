@@ -68,15 +68,18 @@ end
 function c11533703.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11533703.setfilter,tp,LOCATION_DECK,0,1,nil) end
 end
+function c11533703.bgfilter(c)  
+	return c:IsSetCard(0xb4) and c:IsFaceup() and c:IsAbleToGrave()
+end  
 function c11533703.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,c11533703.setfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SSet(tp,g:GetFirst())
+	if g:GetCount()>0 and Duel.SSet(tp,g:GetFirst())~=0 and Duel.SelectYesNo(tp,aux.Stringid(11533703,0)) and Duel.IsExistingMatchingCard(c11533703.bgfilter,tp,LOCATION_REMOVED,0,1,nil) then
+		Duel.BreakEffect() 
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)  
+	local tg=Duel.SelectMatchingCard(tp,c11533703.bgfilter,tp,LOCATION_REMOVED,0,1,1,nil)  
+	if tg:GetCount()>0 then  
+		Duel.SendtoGrave(tg,REASON_EFFECT+REASON_RETURN)  
+	end  
 	end
 end
-
-
-
-
-

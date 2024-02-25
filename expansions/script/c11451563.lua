@@ -4,7 +4,7 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_EQUIP)
+	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_CONTINUOUS_TARGET)
@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_POSITION+CATEGORY_EQUIP)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetRange(LOCATION_SZONE)
-	e3:SetCountLimit(1,m)
+	--e3:SetCountLimit(1,m)
 	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e3:SetCode(EVENT_SUMMON_SUCCESS)
 	e3:SetCost(cm.trcost)
@@ -61,8 +61,11 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.trcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToGraveAsCost() and (c:IsFaceup() or Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil)) and c:GetEquipTarget() end
-	if c:IsFacedown() then Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD) end
+	if chk==0 then return c:IsAbleToGraveAsCost() and c:GetEquipTarget() end
+	if c:IsFacedown() and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11451561,3)) then
+		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+		Duel.SetChainLimit(function(e,ep,tp) return tp==ep end)
+	end
 	e:SetLabelObject(c:GetEquipTarget())
 	Duel.SendtoGrave(c,REASON_COST)
 end
@@ -83,7 +86,19 @@ end
 function cm.eqlimit(e,c)
 	return c==e:GetLabelObject()
 end
+function cm.sfilter(c,e,tp)
+	return c:IsSetCard(0x97e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+end
 function cm.trop(e,tp,eg,ep,ev,re,r,rp)
+	local spg=Duel.GetMatchingGroup(cm.sfilter,tp,LOCATION_HAND,0,nil,e,tp)
+	if #spg>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(11451561,4)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=spg:Select(tp,1,1,nil)
+		if sg and #sg>0 then
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		end
+	end
+	Duel.AdjustAll()
 	local c=e:GetHandler()
 	local rc=e:GetLabelObject()
 	local g=Group.CreateGroup()

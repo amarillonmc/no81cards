@@ -120,9 +120,14 @@ end
 function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local tab=pnflpf.coinsequence
-	if chk==0 then return #tab>0 and ((tab[#tab]==0 and c:IsCanAddCounter(0x973,1)) or (tab[#tab]==1 and c:IsCanAddCounter(0x972,1))) end
+	if chk==0 then
+		local res=#tab>0 and ((tab[#tab]==0 and c:IsCanAddCounter(0x973,1)) or (tab[#tab]==1 and c:IsCanAddCounter(0x972,1)))
+		return res
+	end
+	e:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_UNCOPYABLE)
 	if tab[#tab]==0 then c:AddCounter(0x973,1) end
 	if tab[#tab]==1 then c:AddCounter(0x972,1) end
+	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e:SetLabel(tab[#tab])
 	tab[#tab]=2
 end

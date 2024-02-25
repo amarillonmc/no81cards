@@ -119,9 +119,9 @@ function s.discon(e,tp,eg,ep,ev,re,r,rp)
 	return ep==1-tp and s.effcon(e,tp,eg,ep,ev,re,r,rp) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
 function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,nil,1,nil,tp) end
+	if chk==0 then return Duel.CheckReleaseGroup(tp,nil,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(REASON_COST,tp,nil,1,1,nil,tp)
+	local g=Duel.SelectReleaseGroup(tp,nil,1,1,nil,tp)
 	Duel.Release(g,REASON_COST)
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)

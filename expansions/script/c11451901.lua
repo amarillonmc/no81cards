@@ -55,7 +55,7 @@ function cm.chktg(e,te,tp)
 end
 function cm.check2(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
-	local code=te:GetHandler():GetCode()
+	local code,code2=te:GetHandler():GetCode()
 	table.insert(PNFL_TURN_ACT_CHECK,code)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -64,6 +64,12 @@ function cm.check2(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(cm.reset2)
 	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,0)
+	if code2 then
+		table.insert(PNFL_TURN_ACT_CHECK,code2)
+		local e2=e1:Clone()
+		e2:SetLabel(Duel.GetCurrentChain()+1,#PNFL_TURN_ACT_CHECK)
+		Duel.RegisterEffect(e2,0)
+	end
 end
 function cm.reset2(e,tp,eg,ep,ev,re,r,rp)
 	local ev0,loc=e:GetLabel()
@@ -75,7 +81,9 @@ end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetTurnCount()==0 then return end
-	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+	local op=cm[tp] or Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,8),aux.Stringid(m,9))
+	if op==2 then cm[tp]=0 end
+	if op~=1 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_PUBLIC)

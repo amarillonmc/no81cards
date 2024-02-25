@@ -1,7 +1,6 @@
 --终端逆时者
 --21.04.10
-local m=11451502
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--effect
 	local e1=Effect.CreateEffect(c)

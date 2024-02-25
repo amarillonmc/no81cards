@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
-	e3:SetCountLimit(1,m)
+	--e3:SetCountLimit(1,m)
 	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e3:SetCondition(cm.con)
 	e3:SetCost(cm.trcost)
@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
-	e4:SetCondition(cm.con2)
+	e4:SetCondition(aux.NOT(cm.con))
 	c:RegisterEffect(e4)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -52,13 +52,13 @@ end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsPlayerAffectedByEffect(tp,11451556)
 end
-function cm.con2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,11451556)
-end
 function cm.trcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToGraveAsCost() and (c:IsFaceup() or Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil)) and c:GetEquipTarget() end
-	if c:IsFacedown() then Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD) end
+	if chk==0 then return c:IsAbleToGraveAsCost() and c:GetEquipTarget() end
+	if c:IsFacedown() and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11451561,3)) then
+		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+		Duel.SetChainLimit(function(e,ep,tp) return tp==ep end)
+	end
 	Duel.SendtoGrave(c,REASON_COST)
 end
 function cm.filter(c,e,tp)

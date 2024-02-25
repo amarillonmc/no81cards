@@ -42,7 +42,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_TO_HAND)
 	e3:SetRange(LOCATION_GRAVE)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
+	--e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e3:SetCondition(cm.mrcon)
 	e3:SetTarget(cm.mrtg)
@@ -113,6 +113,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 	end
+	re:Reset()
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)>0 and cm.thcon(e,tp,eg,ep,ev,re,r,rp)
@@ -138,7 +139,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return e:GetValue()==100 or Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
-	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then --and re:GetHandler():IsRelateToEffect(re) then
 		local ev0=Duel.GetCurrentChain()
 		local e1=Effect.CreateEffect(re:GetHandler())
 		e1:SetType(EFFECT_TYPE_QUICK_F)
@@ -171,6 +172,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		ge2:SetRange(0x1c)
 		ge2:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_SET_AVAILABLE)
 		ge2:SetValue(cm.chkval)
+		ge2:SetOwnerPlayer(tp)
 		ge2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		tc:RegisterEffect(ge2,true)
 	end
@@ -184,7 +186,7 @@ function cm.shfilter(c)
 	return c:GetFlagEffect(m)>0
 end
 function cm.chkval(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then
+	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
 		local tp=te:GetOwnerPlayer()
 		local e3=Effect.CreateEffect(e:GetOwner())
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -194,6 +196,19 @@ function cm.chkval(e,te)
 		Duel.RegisterEffect(e3,tp)
 		e:SetValue(aux.FALSE)
 		e:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		if tp==e:GetOwnerPlayer() then
+			if Card.SetCardData then
+				Duel.Hint(24,0,aux.Stringid(m,3))
+			else
+				Debug.Message("「拦截」任务完成！")
+			end
+		else
+			if Card.SetCardData then
+				Duel.Hint(24,0,aux.Stringid(m,4))
+			else
+				Debug.Message("「拦截」任务失败。")
+			end
+		end
 	end
 	return false
 end
@@ -206,7 +221,7 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.mrcon(e,tp,eg,ep,ev,re,r,rp)
-	return r&REASON_EFFECT~=0
+	return r&REASON_EFFECT~=0 and eg:IsExists(Card.IsControler,1,nil,1-tp)
 end
 function cm.mrtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

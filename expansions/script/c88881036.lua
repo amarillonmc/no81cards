@@ -1,8 +1,7 @@
 --雷湮龙-雷龙
 function c88881036.initial_effect(c)
-	 --link summon
-	aux.AddLinkProcedure(c,nil,2,2,c88881036.lcheck)
-	c:EnableReviveLimit()
+	--link summon
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_THUNDER),2,2,c88881036.lcheck)
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(88881036,0))
@@ -26,8 +25,8 @@ function c88881036.initial_effect(c)
 	e2:SetOperation(c88881036.spop)
 	c:RegisterEffect(e2)
 end
-function c88881036.lcheck(g,lc)
-	return g:IsExists(Card.IsLinkRace,1,nil,RACE_THUNDER)
+function c88881036.lcheck(g)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x11c)
 end
 function c88881036.costfilter(c)
 	return c:IsCode(31786629) and c:IsAbleToRemoveAsCost()

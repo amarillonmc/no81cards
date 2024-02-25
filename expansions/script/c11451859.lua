@@ -10,6 +10,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
@@ -20,6 +21,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetCountLimit(1,m+1)
 	e3:SetCondition(cm.pzcon)
 	e3:SetCost(cm.pzcost)
 	e3:SetTarget(cm.pztg)
@@ -108,13 +110,13 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	--local g=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,c,e)
 	local g1=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c,e)
 	local g2=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e)
-	--Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,13))
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,13))
+	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local min=2
 	if Duel.IsExistingTarget(cm.mfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e) then min=0 end
 	aux.GCheckAdditional=cm.fselect3
 	local tg=cm.SelectSubGroup(g1,tp,cm.fselect4,false,min,#g1)
-	--Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,14))
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,14))
 	aux.GCheckAdditional=cm.fselect5
 	local tg2=cm.SelectSubGroup(g2,tp,cm.fselect4,false,math.max(0,2-#tg),#g2)
 	aux.GCheckAdditional=nil
@@ -144,15 +146,25 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e5:SetCondition(function() return not pnfl_adjusting end)
 		e5:SetOperation(cm.acop)
 		Duel.RegisterEffect(e5,tp)
+		local e6=e5:Clone()
+		e6:SetCode(EVENT_CHAIN_SOLVED)
+		e6:SetCondition(aux.TRUE)
+		e6:SetOperation(cm.acop2)
+		Duel.RegisterEffect(e6,tp)
 	end
 end
 function cm.chkval(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then
+	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
 		e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1,e:GetLabel())
 		--Duel.AdjustAll()
 		--Duel.Readjust()
 		e:SetValue(aux.FALSE)
 		e:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		if Card.SetCardData then
+			Duel.Hint(24,0,aux.Stringid(m,15))
+		else
+			Debug.Message("「接引」任务进度更新！")
+		end
 		return true
 	end
 	return false
@@ -167,6 +179,11 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	g:ForEach(Card.ResetFlagEffect,m)
 	Duel.SendtoHand(g,nil,REASON_EFFECT)
 	pnfl_adjusting=false
+end
+function cm.acop2(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil,e:GetLabel())
+	g:ForEach(Card.ResetFlagEffect,m)
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
 end
 function cm.pzcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsSummonPlayer,1,nil,tp)
@@ -183,17 +200,35 @@ end
 function cm.pztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local b1,b2=c:IsAbleToDeck(),c:IsSSetable()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,c,e,tp,b1,b2) end
+	if chk==0 then return c:IsSetCard(0x6e) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,c,e,tp,b1,b2) end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
 end
 function cm.pzop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
+	if not c:IsRelateToEffect(e) or not c:IsSetCard(0x6e) then return end
 	local b1,b2=c:IsAbleToDeck(),c:IsSSetable()
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_GRAVE,0,c,e,tp,b1,b2)
 	if #g>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+		local setg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_GRAVE,0,nil,e,tp,b1,false)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+		local tc=setg:Select(tp,1,1,nil):GetFirst()
+		if c~=tc then
+			if tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (not tc:IsSSetable() or Duel.SelectYesNo(tp,Stringid(m,12))) then
+				Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+				Duel.ConfirmCards(1-tp,tc)
+			else
+				Duel.SSet(tp,tc)
+			end
+			Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
+		else
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+			local tdg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_GRAVE,0,c,e,tp,false,b2)
+			tc=tdg:Select(tp,1,1,nil):GetFirst()
+			Duel.SSet(tp,c)
+			Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
+		end
+		--[[Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
 		local s1=b1 and ((tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or tc:IsSSetable())
 		local s2=b2 and tc:IsAbleToDeck()
@@ -210,6 +245,6 @@ function cm.pzop(e,tp,eg,ep,ev,re,r,rp)
 		else
 			Duel.SSet(tp,c)
 			Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
-		end
+		end--]]
 	end
 end

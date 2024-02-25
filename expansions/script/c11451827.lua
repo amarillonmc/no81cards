@@ -3,7 +3,7 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION+CATEGORY_DECKDES+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCondition(cm.condition)
@@ -72,17 +72,35 @@ end
 function cm.filter(c)
 	return c:IsSetCard(0x97d) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsForbidden() and c:IsHasEffect(EFFECT_REMAIN_FIELD)
 end
+function cm.tfilter(c)
+	return c:IsType(TYPE_COUNTER) and c:IsFaceup()
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local ft=0
+	local rg=Duel.GetMatchingGroup(cm.tfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if chk==0 then return #rg>0 and Duel.IsPlayerCanDiscardDeck(tp,#rg) end
+	--[[local ft=0
 	if not c:IsLocation(LOCATION_SZONE) then ft=1 end
 	local rg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,nil) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
-	if #rg>0 then Duel.SetOperationInfo(0,CATEGORY_TOHAND,rg,1,PLAYER_ALL,LOCATION_ONFIELD) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,nil) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end--]]
+	if #rg>0 then
+		Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,#rg)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,PLAYER_ALL,LOCATION_ONFIELD+LOCATION_GRAVE)
+	end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	local rg=Duel.GetMatchingGroup(cm.tfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if #rg>0 and Duel.DiscardDeck(tp,#rg,REASON_EFFECT)>0 then
+		local g=Duel.GetOperatedGroup()
+		local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
+		if ct>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,#rg,#rg,aux.ExceptThisCard(e))
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
+		end
+	end
+	--[[local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	local rg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 	if ft>0 then
 		local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_HAND,0,nil)
@@ -102,12 +120,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				end
 			end
 		end
-	end
+	end--]]
 	if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
 		Duel.BreakEffect()
 		c:CancelToGrave()
 		Duel.ChangePosition(c,POS_FACEDOWN)
 		Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+		c:ResetFlagEffect(m)
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 		if not KOISHI_CHECK then
 			local e1=Effect.CreateEffect(c)
 			e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -197,6 +217,8 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 		c:CancelToGrave()
 		Duel.ChangePosition(c,POS_FACEDOWN)
 		Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+		c:ResetFlagEffect(m)
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 		if not KOISHI_CHECK then
 			local e1=Effect.CreateEffect(c)
 			e1:SetCode(EFFECT_CHANGE_TYPE)

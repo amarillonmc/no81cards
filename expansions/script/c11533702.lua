@@ -2,12 +2,12 @@
 function c11533702.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
---	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+--  e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN) 
---	e1:SetCountLimit(1,11533702) 
---	e1:SetTarget(c11533702.target)
---	e1:SetOperation(c11533702.activate)
+--  e1:SetCountLimit(1,11533702) 
+--  e1:SetTarget(c11533702.target)
+--  e1:SetOperation(c11533702.activate)
 	c:RegisterEffect(e1) 
 	--atk 
 	local e2=Effect.CreateEffect(c) 
@@ -74,7 +74,7 @@ function c11533702.initial_effect(c)
 	e3:SetCondition(
 		function(e) 
 		local tp=e:GetHandlerPlayer() 
-		return Duel.GetMatchingGroupCount(function(c) return c:IsFaceup() and (c:IsSetCard(0xb4) or c:IsType(TYPE_RITUAL)) end,tp,LOCATION_MZONE,0,nil)>=3 
+		return Duel.GetMatchingGroupCount(function(c) return c:IsFaceup() and (c:IsSetCard(0xb4) or c:IsType(TYPE_RITUAL)) end,tp,LOCATION_MZONE,0,nil)>=2 
 		end)
 	c:RegisterEffect(e3)
 	--immune
@@ -93,7 +93,7 @@ function c11533702.initial_effect(c)
 	e4:SetCondition(
 		function(e) 
 		local tp=e:GetHandlerPlayer() 
-		return Duel.GetMatchingGroupCount(function(c) return c:IsFaceup() and (c:IsSetCard(0xb4) or c:IsType(TYPE_RITUAL)) end,tp,LOCATION_MZONE,0,nil)>=3 
+		return Duel.GetMatchingGroupCount(function(c) return c:IsFaceup() and (c:IsSetCard(0xb4) or c:IsType(TYPE_RITUAL)) end,tp,LOCATION_MZONE,0,nil)>=2 
 		end)
 	c:RegisterEffect(e4)
 

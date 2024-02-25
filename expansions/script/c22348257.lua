@@ -47,7 +47,7 @@ function c22348257.condition(e,tp,eg,ep,ev,re,r,rp)
 	return aux.dsercon(e) and c:IsDualState()
 end
 function c22348257.filter(c)
-	return c:CheckActivateEffect(false,true,false)~=nil and ((c:GetType()==0x20002 and c:IsSetCard(0x370a) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (c:GetType()==0x20004 and c:IsSetCard(0x370a) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (c:GetType()==0x80002 and c:IsCode(22348260)))
+	return c:CheckActivateEffect(false,true,false)~=nil and ((c:GetType()==0x20002 and c:IsSetCard(0xa70a) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (c:GetType()==0x20004 and c:IsSetCard(0xa70a) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (c:GetType()==0x80002 and c:IsCode(22348260)))
 end
 function c22348257.actop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())

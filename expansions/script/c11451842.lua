@@ -65,23 +65,23 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	if not g then return end
 	local sg=g:Filter(cm.filter6,nil)
 	if e:GetLabel()==0 then
-		sg=sg:Filter(Card.IsAbleToDeck,nil)
-		local tg=sg:FilterSelect(tp,Card.IsControler,1,1,nil,tp)
-		local tg2=sg:FilterSelect(1-tp,Card.IsControler,1,1,nil,1-tp)
-		tg:Merge(tg2)
-		Duel.SendtoDeck(tg,nil,2,REASON_EFFECT)
-		e:SetLabel(e:GetLabel()+1)
-	elseif e:GetLabel()==1 then
 		local tg=sg:FilterSelect(tp,Card.IsControler,1,1,nil,tp)
 		local tg2=sg:FilterSelect(1-tp,Card.IsControler,1,1,nil,1-tp)
 		tg:Merge(tg2)
 		Duel.SendtoGrave(tg,REASON_EFFECT+REASON_RETURN)
 		e:SetLabel(e:GetLabel()+1)
-	elseif e:GetLabel()>=2 then
+	elseif e:GetLabel()==1 then
 		sg=sg:Filter(Card.IsAbleToHand,nil)
 		local tg=sg:FilterSelect(tp,Card.IsControler,1,1,nil,tp)
 		local tg2=sg:FilterSelect(1-tp,Card.IsControler,1,1,nil,1-tp)
 		tg:Merge(tg2)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		e:SetLabel(e:GetLabel()+1)
+	elseif e:GetLabel()>=2 then
+		sg=sg:Filter(Card.IsAbleToDeck,nil)
+		local tg=sg:FilterSelect(tp,Card.IsControler,1,1,nil,tp)
+		local tg2=sg:FilterSelect(1-tp,Card.IsControler,1,1,nil,1-tp)
+		tg:Merge(tg2)
+		Duel.SendtoDeck(tg,nil,2,REASON_EFFECT)
 	end
 end

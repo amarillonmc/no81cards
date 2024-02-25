@@ -82,7 +82,7 @@ function c11533706.activate(e,tp,eg,ep,ev,re,r,rp)
 	--end
 end 
 function c11533706.xthfil(c) 
-	return c:IsAbleToHand() and not c:IsCode(11533706) and c:IsSetCard(0xb4) and c:IsType(TYPE_SPELL)  
+	return c:IsAbleToHand() and not c:IsCode(11533706) and c:IsSetCard(0xb4) 
 end 
 function c11533706.xthcon(e,tp,eg,ep,ev,re,r,rp)   
 	local flag=Duel.GetFlagEffectLabel(tp,11533706)
@@ -134,10 +134,10 @@ function c11533706.xthop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT) 
 		Duel.ConfirmCards(1-tp,sg) 
 		local lv=sg:GetCount()*2
-		Duel.Recover(tp,lv*1000,REASON_EFFECT)
+		Duel.Recover(tp,lv*500,REASON_EFFECT)
 		local mg=Duel.GetRitualMaterial(tp):Filter(function(c) return false end,nil) 
 		local dg=Duel.GetMatchingGroup(c11533706.xrlfil,tp,LOCATION_GRAVE,0,nil) 
-		local xxg=Duel.GetMatchingGroup(aux.RitualUltimateFilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,c11533706.xspfil,e,tp,mg,dg,Card.GetLevel,"Equal"):Filter(function(c,lv) return c:IsLevelBelow(lv) end,nil,lv)
+		local xxg=Duel.GetMatchingGroup(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_REMOVED,0,nil,c11533706.xspfil,e,tp,mg,dg,Card.GetLevel,"Equal"):Filter(function(c,lv) return c:IsLevelBelow(lv) end,nil,lv)
 		if xxg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(11533706,0)) then  
 			local tc=xxg:Select(tp,1,1,nil):GetFirst()  
 			local mat=Group.CreateGroup() 

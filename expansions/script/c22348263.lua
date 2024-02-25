@@ -33,7 +33,7 @@ function c22348263.actcon(e)
 	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
 function c22348263.stfilter(c)
-	return ((c:GetType()==0x20002 or c:GetType()==0x20004) and c:IsSetCard(0x370a) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsEnvironment(22348260)) or (c:GetType()==0x80002 and c:IsCode(22348260)) and c:CheckActivateEffect(false,true,false)~=nil
+	return ((c:GetType()==0x20002 or c:GetType()==0x20004) and c:IsSetCard(0xa70a) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsEnvironment(22348260)) or (c:GetType()==0x80002 and c:IsCode(22348260)) and c:CheckActivateEffect(false,true,false)~=nil
 end
 function c22348263.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348263.stfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end
@@ -59,7 +59,7 @@ function c22348263.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function c22348263.cfilter(c,tp,rp)
 	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp) and bit.band(c:GetPreviousTypeOnField(),TYPE_MONSTER)~=0
-		and c:IsPreviousSetCard(0x370a) and (c:IsReason(REASON_BATTLE) or (rp==1-tp and c:IsReason(REASON_EFFECT)))
+		and c:IsPreviousSetCard(0xa70a) and (c:IsReason(REASON_BATTLE) or (rp==1-tp and c:IsReason(REASON_EFFECT)))
 end
 function c22348263.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c22348263.cfilter,1,nil,tp,rp) and not eg:IsContains(e:GetHandler())

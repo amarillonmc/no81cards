@@ -17,8 +17,7 @@ function cm.initial_effect(c)
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_ACTIVATING)
-	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e2:SetCode(EVENT_CUSTOM+m)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
@@ -36,8 +35,21 @@ function cm.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e4:SetValue(1)
 	c:RegisterEffect(e4)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_CHAIN_ACTIVATING)
+		ge2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+		ge2:SetOperation(cm.chkop)
+		Duel.RegisterEffect(ge2,0)
+	end
 end
 cm.toss_coin=true
+function cm.chkop(e,tp,eg,ep,ev,re,r,rp)
+	--if not e:GetHandler():IsOnField() then return end
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m,e,r,rp,ep,ev)
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
@@ -67,15 +79,18 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+function cm.fdfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsFacedown()
+end
 function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_DECK,0,1,1,nil,TYPE_MONSTER):Filter(Card.IsFacedown,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.fdfilter,tp,LOCATION_DECK,0,1,1,nil,TYPE_MONSTER)
 	if #g>0 then
 		local tc=g:GetFirst()
 		Duel.ShuffleDeck(tp)
 		tc:ReverseInDeck()
-		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,c:GetFieldID())
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,c:GetFieldID(),aux.Stringid(m,2))
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,c:GetFieldID())
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

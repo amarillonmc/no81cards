@@ -147,7 +147,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetCode(EVENT_CUSTOM+m)
 		e3:SetCountLimit(1)
 		e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
-		e3:SetCost(cm.thtg2)
+		e3:SetTarget(cm.thtg2)
 		e3:SetOperation(cm.thop2)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e3)
@@ -184,7 +184,7 @@ end
 function cm.distance2(ac,bc,tp)
 	local ax,ay=cm.xylabel(ac,tp)
 	local bx,by=cm.xylabel(bc,tp)
-	return (by-ay)*(by-ay)+(ax-bx)*(ax-bx)
+	return ((by-ay)*(by-ay)+(ax-bx)*(ax-bx))*1000
 end
 function cm.gsfilter(c,tc)
 	return math.abs(c:GetSequence()-tc:GetSequence())==1
@@ -226,9 +226,14 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.chkval(e,te)
-	if e:GetHandler():GetFlagEffect(m-10)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then
+	if e:GetHandler():GetFlagEffect(m-10)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
 		local g=e:GetLabelObject()
 		g:ForEach(Card.ResetFlagEffect,m-10)
+		if Card.SetCardData then
+			Duel.Hint(24,0,aux.Stringid(m,2))
+		else
+			Debug.Message("「强击」任务进度更新！")
+		end
 		local tc=te:GetHandler()
 		local e3=Effect.CreateEffect(tc)
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

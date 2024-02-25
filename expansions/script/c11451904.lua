@@ -25,12 +25,23 @@ function cm.initial_effect(c)
 	e6:SetCode(m)
 	e6:SetRange(LOCATION_MZONE)
 	c:RegisterEffect(e6)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAINING)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RegisterFlagEffect(ep,m,RESET_CHAIN,0,1)
 end
 function cm.filter(c,e,tp)
-	return c:IsControler(tp) and c:IsType(TYPE_MONSTER) and c:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and c:IsAbleToRemove() and c:GetLeaveFieldDest()==0 and not c:IsHasEffect(EFFECT_TO_HAND_REDIRECT) and c:GetDestination()==LOCATION_HAND --and not c:IsType(TYPE_TOKEN)
+	return c:IsControler(tp) and c:IsType(TYPE_MONSTER) and c:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and c:IsAbleToRemove() and not c:IsHasEffect(EFFECT_TO_HAND_REDIRECT) and not c:IsHasEffect(EFFECT_NECRO_VALLEY) and c:GetLeaveFieldDest()==0 and c:GetDestination()==LOCATION_HAND --and not c:IsType(TYPE_TOKEN)
 end
 function cm.filter3(c,e,tp,eg)
-	return (c:GetOriginalCode()==m or c==e:GetHandler()) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and eg:IsExists(cm.filter,1,c,e,tp)
+	return (c:GetOriginalCode()==m or c==e:GetHandler()) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and eg:IsExists(cm.filter,1,c,e,tp) and not c:IsHasEffect(EFFECT_NECRO_VALLEY)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -76,10 +87,11 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.accon(e)
 	cm[0]=false
-	return Duel.GetCurrentChain()==0
+	return Duel.GetFlagEffect(tp,m)==0
 end
 function cm.acfilter(c,tp)
-	return c:IsSetCard(0xc976) and c:IsAbleToGraveAsCost() and Duel.GetFlagEffect(tp,m+c:GetCode()+0xffffff)==0 --and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,c:GetCode())
+	local code,code2=c:GetCode()
+	return c:IsSetCard(0xc976) and c:IsAbleToGraveAsCost() and Duel.GetFlagEffect(0,m+code+0xffffff)==0 and (not code2 or Duel.GetFlagEffect(0,m+code2+0xffffff)==0) --and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,c:GetCode())
 end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	if cm[0] then return end
@@ -88,7 +100,9 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.acfilter,tp,LOCATION_DECK,0,0,1,nil,tp)
 	if #g>0 then
-		Duel.RegisterFlagEffect(tp,m+g:GetFirst():GetCode()+0xffffff,RESET_PHASE+PHASE_END,0,1)
+		local code,code2=g:GetFirst():GetCode()
+		Duel.RegisterFlagEffect(0,m+code+0xffffff,RESET_PHASE+PHASE_END,0,1)
+		if code2 then Duel.RegisterFlagEffect(0,m+code2+0xffffff,RESET_PHASE+PHASE_END,0,1) end
 		Duel.SendtoGrave(g,REASON_COST)
 	else
 		local cg=Duel.GetMatchingGroup(cm.cfilterx,tp,LOCATION_MZONE,0,nil)

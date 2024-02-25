@@ -9,7 +9,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetCountLimit(1,m)
-	e1:SetRange(LOCATION_ONFIELD+LOCATION_HAND)
+	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
 	e1:SetCost(cm.spcost1)
 	e1:SetTarget(cm.sptg1)
 	e1:SetOperation(cm.spop1)
@@ -34,11 +34,10 @@ function cm.cfilter1(c,tp)
 	return c:IsType(TYPE_TUNER) and c:IsAbleToGraveAsCost() and (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and Duel.GetMZoneCount(tp,c)>0
 end
 function cm.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler(),tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_MZONE+LOCATION_HAND,0,1,e:GetHandler(),tp) and e:GetHandler():IsAbleToGraveAsCost() end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.cfilter1,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,e:GetHandler(),tp)
-	g:Merge(c)
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter1,tp,LOCATION_MZONE+LOCATION_HAND,0,1,1,e:GetHandler(),tp)
+	g:AddCard(e:GetHandler())
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function cm.spfilter1(c,e,tp)
@@ -58,8 +57,8 @@ function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsType,1,nil,TYPE_TUNER) end
-	local g=Duel.SelectReleaseGroup(tp,Card.IsType,1,1,nil,TYPE_TUNER)
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,Card.IsType,1,nil,TYPE_TUNER) end
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,Card.IsType,1,1,nil,TYPE_TUNER)
 	Duel.Release(g,REASON_COST)
 end
 function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -29,6 +29,13 @@ function cm.initial_effect(c)
 	end
 	if not PNFL_MOVE_DELAY_CHECK then
 		PNFL_MOVE_DELAY_CHECK=true
+		local _Equip=Duel.Equip
+		Duel.Equip=function(p,c,...)
+			c:RegisterFlagEffect(11451848,RESET_CHAIN,0,1)
+			local res=_Equip(p,c,...)
+			c:ResetFlagEffect(11451848)
+			return res
+		end
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_SUMMON_SUCCESS)
@@ -58,23 +65,32 @@ function cm.initial_effect(c)
 end
 function cm.costchk(e,c,tp,st)
 	if bit.band(st,SUMMON_TYPE_DUAL)~=SUMMON_TYPE_DUAL then return false end
-	if c:GetFlagEffect(11450901)==0 then c:RegisterFlagEffect(11450901,RESET_EVENT+RESETS_STANDARD,0,1) end
+	if c:GetFlagEffect(11451848)==0 then c:RegisterFlagEffect(11451848,RESET_EVENT+RESETS_STANDARD,0,1) end
 	return false
 end
 function cm.filter12(c,e)
-	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED))) then return false end
+	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED) or c:GetFlagEffect(11451848)>0)) then return false end
 	if e:GetCode()==EVENT_MOVE then
 		local b1,g1=Duel.CheckEvent(EVENT_SUMMON_SUCCESS,true)
 		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
-		return not c:IsPreviousLocation(LOCATION_ONFIELD) and (not b1 or not g1:IsContains(c)) and (not b2 or not g2:IsContains(c))
+		return (not b1 or not g1:IsContains(c)) and (not b2 or not g2:IsContains(c)) --and not c:IsPreviousLocation(LOCATION_ONFIELD)
 	end
-	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(11450901)>0)
+	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(11451848)>0)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
+	if 1==0 and eg:GetFirst():IsCode(m-3) and e:GetCode()==EVENT_MOVE then
+		local c=eg:GetFirst()
+		Debug.Message(cm.filter12(c,e))
+		Debug.Message(not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED))))
+		Debug.Message(Duel.CheckEvent(EVENT_SUMMON_SUCCESS,true))
+		Debug.Message(Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true))
+		Debug.Message(not c:IsPreviousLocation(LOCATION_ONFIELD))
+		Debug.Message(not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(11451848)>0))
+	end
 	return eg:IsExists(cm.filter12,1,nil,e)
 end
 function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RaiseEvent(eg,EVENT_CUSTOM+11450901,re,r,rp,ep,ev)
+	Duel.RaiseEvent(eg,EVENT_CUSTOM+11451848,re,r,rp,ep,ev)
 end
 function cm.descon3(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():GetFieldID()==re:GetHandler():GetRealFieldID()
@@ -84,7 +100,7 @@ function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_ACTIVATING)
 	--e1:SetCondition(function() return Duel.GetCurrentChain()==1 end)
-	e1:SetOperation(function(e) Duel.RaiseEvent(eg,EVENT_CUSTOM+11450901,re,r,rp,ep,ev) end)
+	e1:SetOperation(function(e) Duel.RaiseEvent(eg,EVENT_CUSTOM+11451848,re,r,rp,ep,ev) end)
 	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,0)
 	local e2=e1:Clone()
@@ -94,7 +110,13 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if not re:IsHasCategory(CATEGORY_COIN) then return end
-	local se=rc:RegisterFlagEffect(m,RESET_PHASE+PHASE_END,0,2)
+	local se=Effect.CreateEffect(e:GetHandler())
+	se:SetType(EFFECT_TYPE_SINGLE)
+	se:SetCode(0x20000000+m)
+	se:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE)
+	se:SetReset(RESET_PHASE+PHASE_END,2)
+	rc:RegisterEffect(se,true)
+	--rc:RegisterFlagEffect(m,RESET_PHASE+PHASE_END,0,2)
 	se:SetLabelObject(re)
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -121,7 +143,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	--if Duel.GetFlagEffect(tp,m)>0 then return end
+	if Duel.GetFlagEffect(tp,m)>0 then return end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local c=e:GetHandler()
 	local fd=Duel.SelectField(tp,2,LOCATION_SZONE,0,~0x1f00)
@@ -148,23 +170,36 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterEffect(e3,tp)
 			local e4=e3:Clone()
 			e4:SetType(EFFECT_TYPE_QUICK_F)
-			e4:SetCode(EVENT_CUSTOM+11450901)
+			e4:SetCode(EVENT_CUSTOM+11451848)
 			e4:SetCondition(cm.thcon3)
 			Duel.RegisterEffect(e4,tp)
+			e3:SetLabelObject(e4)
+			e4:SetLabelObject(e3)
 		end
 	end
 end
 function cm.clfilter(c,tp,i)
 	return aux.GetColumn(c,tp)==i and not c:IsStatus(STATUS_SUMMONING) and c:GetFlagEffect(m-11)==0
 end
+function cm.clfilter2(c,tp,i)
+	return aux.GetColumn(c,tp)==i
+end
 function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
-	local ng=Duel.GetMatchingGroup(cm.clfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,e:GetLabel())
+	local i=e:GetLabel()
+	local ng=Duel.GetMatchingGroup(cm.clfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,i)
 	local res=#Group.__band(ng,eg)>0
 	if res then
-		local i=e:GetLabel()
 		local cid=i+1
 		if tp==1 then cid=5-i end
+		local cl=cm.column
 		cm.column=cm.column&~(1<<cid)
+		if cl~=0 and cm.column==0 then
+			if Card.SetCardData then
+				Duel.Hint(24,0,aux.Stringid(m,8))
+			else
+				Debug.Message("「巡逻」最终目标确认！")
+			end
+		end
 	end
 	return res
 end
@@ -176,6 +211,9 @@ function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return false end
 	if chk==0 then return true end
+	local te=e:GetLabelObject()
+	e:SetTarget(aux.FALSE)
+	te:SetTarget(aux.FALSE)
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	local ng=Duel.GetMatchingGroup(cm.clfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,e:GetLabel())
@@ -207,10 +245,15 @@ function cm.shfilter(c)
 	return c:GetFlagEffect(m)>0
 end
 function cm.chkval(e,te)
-	if e:GetHandler():GetFlagEffect(m-10)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then
+	if e:GetHandler():GetFlagEffect(m-10)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
 		local tp=e:GetOwnerPlayer()
 		local g=e:GetLabelObject()
 		g:ForEach(Card.ResetFlagEffect,m-10)
+		if Card.SetCardData then
+			Duel.Hint(24,0,aux.Stringid(m,7))
+		else
+			Debug.Message("「巡逻」任务完成！")
+		end
 		local e3=Effect.CreateEffect(e:GetOwner())
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e3:SetCode(EVENT_ADJUST)
@@ -229,7 +272,7 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,5))
 	local tc=sg:Select(tp,1,1,nil):GetFirst()
 	Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
-	local eset={tc:IsHasEffect(EFFECT_FLAG_EFFECT+m)}
+	local eset={tc:IsHasEffect(0x20000000+m)}
 	local te=eset[1]:GetLabelObject()
 	if #eset>1 then
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,6))

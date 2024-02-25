@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	--e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetHintTiming(TIMING_END_PHASE+TIMING_STANDBY_PHASE)
 	e1:SetCondition(function(e,tp) return (Duel.GetCurrentPhase()~=PHASE_MAIN1 and Duel.GetCurrentPhase()~=PHASE_MAIN2) or Duel.GetTurnPlayer()==1-tp end)
 	e1:SetTarget(cm.thtg)
@@ -132,10 +132,15 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e7,tp)
 end
 function cm.chkval(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then
+	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
 		local dg=e:GetLabelObject()
-		if dg:IsContains(te:GetHandler()) and te:GetHandler():IsLocation(LOCATION_DECK) then
+		if dg:IsContains(te:GetHandler()) and te:GetHandler():IsLocation(LOCATION_DECK) and te:GetHandler():GetFlagEffect(m)>0 then
 			te:GetHandler():ResetFlagEffect(m)
+			if Card.SetCardData then
+				Duel.Hint(24,0,aux.Stringid(m,2))
+			else
+				Debug.Message("「急袭」任务完成！")
+			end
 		end
 	end
 	return false
@@ -144,6 +149,14 @@ function cm.filter1(c)
 	return c:GetFlagEffect(m)>0
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject():Filter(aux.NOT(cm.filter1),nil)
+	if not g or #g<=0 then
+		if Card.SetCardData then
+			Duel.Hint(24,0,aux.Stringid(m,3))
+		else
+			Debug.Message("「急袭」任务失败。")
+		end
+	end
 	Duel.DisableShuffleCheck()
 	Duel.SendtoGrave(e:GetLabelObject():Filter(cm.filter1,nil),REASON_EFFECT)
 end

@@ -99,7 +99,7 @@ function c22348265.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348265.spfilter1(c,e,tp)
-	return c:IsSetCard(0x370a) and c:IsType(TYPE_DUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa70a) and c:IsType(TYPE_DUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348265.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -120,7 +120,7 @@ function c22348265.eqcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=Duel.GetAttacker()
 	local bc=c:GetBattleTarget()
 	e:SetLabelObject(bc)
-	return c:IsSetCard(0x370a) and c:IsControler(tp) and c==Duel.GetAttacker() and (c:IsRelateToBattle() or c:IsStatus(STATUS_BATTLE_DESTROYED))
+	return c:IsSetCard(0xa70a) and c:IsControler(tp) and c==Duel.GetAttacker() and (c:IsRelateToBattle() or c:IsStatus(STATUS_BATTLE_DESTROYED))
 		and bc and c:IsStatus(STATUS_OPPO_BATTLE) and bc:IsOnField() and bc:IsRelateToBattle()
 end
 function c22348265.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)

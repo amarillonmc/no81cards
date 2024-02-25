@@ -64,7 +64,7 @@ function c22348258.drop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:GetFirst()
 		Duel.ConfirmCards(1-tp,tc)
 		Duel.BreakEffect()
-		if tc:IsSetCard(0x370a) then
+		if tc:IsSetCard(0xa70a) then
 			local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 			local tc=g:GetFirst()
 			while tc do

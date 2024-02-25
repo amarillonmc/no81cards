@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetCode(EFFECT_ACTIVATE_COST)
-	e4:SetRange(LOCATION_DECK+LOCATION_GRAVE)
+	e4:SetRange(LOCATION_DECK)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e4:SetTargetRange(1,0)
 	e4:SetTarget(cm.actarget)
@@ -78,13 +78,13 @@ function cm.initial_effect(c)
 		local _GetActivateLocation=Effect.GetActivateLocation
 		local _GetActivateSequence=Effect.GetActivateSequence
 		function Effect.GetActivateLocation(e)
-			if e:GetDescription()==aux.Stringid(m,0) then
+			if e:GetDescription()==aux.Stringid(m,0) or e:GetDescription()==aux.Stringid(m,1) then
 				return LOCATION_SZONE
 			end
 			return _GetActivateLocation(e)
 		end
 		function Effect.GetActivateSequence(e)
-			if e:GetDescription()==aux.Stringid(m,0) then
+			if e:GetDescription()==aux.Stringid(m,0) or e:GetDescription()==aux.Stringid(m,1) then
 				return cm.activate_sequence[e]
 			end
 			return _GetActivateSequence(e)
@@ -218,7 +218,7 @@ end
 function cm.cptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	if chk==0 then return Duel.IsExistingTarget(cm.cpfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingTarget(cm.cpfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,cm.cpfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SelectTarget(tp,cm.cpfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 end
@@ -268,7 +268,10 @@ end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local hg=Duel.GetMatchingGroup(cm.filter11,tp,LOCATION_HAND,0,nil)
-	if c:IsLocation(LOCATION_HAND) and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,6)) then
+	if c:IsLocation(LOCATION_HAND) then
+		local op=cm[tp] or Duel.SelectOption(tp,aux.Stringid(m,6),aux.Stringid(m,8),aux.Stringid(m,9))
+		if op==2 then cm[tp]=1 end
+		if op~=0 then return end
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.Destroy(c,REASON_EFFECT)
 		--Destroy
@@ -283,9 +286,14 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e7,tp)
 		e6:SetLabelObject(e7)
 		e7:SetLabelObject(e6)
-	elseif c:IsLocation(LOCATION_SZONE) and #hg>0 and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,5)) then
+	elseif c:IsLocation(LOCATION_SZONE) and #hg>0 then
+		Duel.HintSelection(Group.FromCards(c))
+		local op=cm[tp] or Duel.SelectOption(tp,aux.Stringid(m,5),aux.Stringid(m,8),aux.Stringid(m,9))
+		if op==2 then cm[tp]=1 end
+		if op~=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=hg:Select(tp,1,1,nil)
+		Duel.Hint(HINT_CARD,0,m)
 		Duel.Destroy(dg,REASON_EFFECT)
 		c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,0,1,c:GetFieldID())
 		--Destroy
@@ -304,15 +312,18 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end
 function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
 	local te=e:GetLabelObject()
 	te:Reset()
 	e:Reset()
 	local c=e:GetHandler()
 	local hg=Duel.GetMatchingGroup(cm.filter11,tp,LOCATION_ONFIELD,0,nil):Filter(Card.IsFaceup,nil)
-	if #hg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+	if #hg>0 then
+		local op=cm[tp] or Duel.SelectOption(tp,aux.Stringid(m,2),aux.Stringid(m,8),aux.Stringid(m,9))
+		if op==2 then cm[tp]=1 end
+		if op~=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=hg:Select(tp,1,1,nil)
-		Duel.Hint(HINT_CARD,0,m)
 		Duel.Destroy(dg,REASON_EFFECT)
 		--Destroy
 		local e6=Effect.CreateEffect(c)
@@ -329,42 +340,50 @@ function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.operation4(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
 	local te=e:GetLabelObject()
 	te:Reset()
 	e:Reset()
 	local c=e:GetHandler()
-	if c:GetFlagEffect(m+1)>0 and c:GetFlagEffectLabel(m+1)==e:GetLabel() and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
-		Duel.Hint(HINT_CARD,0,m)
-		Duel.Destroy(c,REASON_EFFECT)
-		--Destroy
-		local e6=Effect.CreateEffect(c)
-		e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e6:SetCode(EVENT_CHAIN_SOLVED)
-		e6:SetLabel(e:GetLabel())
-		e6:SetCondition(function() return Duel.GetCurrentChain()==1 end)
-		e6:SetOperation(cm.operation5)
-		Duel.RegisterEffect(e6,tp)
-		local e7=e6:Clone()
-		e7:SetCode(EVENT_CHAIN_NEGATED)
-		Duel.RegisterEffect(e7,tp)
-		e6:SetLabelObject(e7)
-		e7:SetLabelObject(e6)
+	if c:GetFlagEffect(m+1)>0 and c:GetFlagEffectLabel(m+1)==e:GetLabel() then
+		Duel.HintSelection(Group.FromCards(c))
+		local op=cm[tp] or Duel.SelectOption(tp,aux.Stringid(m,4),aux.Stringid(m,8),aux.Stringid(m,9))
+		if op==2 then cm[tp]=1 end
+		if op==0 then
+			Duel.Destroy(c,REASON_EFFECT)
+			--Destroy
+			local e6=Effect.CreateEffect(c)
+			e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e6:SetCode(EVENT_CHAIN_SOLVED)
+			e6:SetLabel(e:GetLabel())
+			e6:SetCondition(function() return Duel.GetCurrentChain()==1 end)
+			e6:SetOperation(cm.operation5)
+			Duel.RegisterEffect(e6,tp)
+			local e7=e6:Clone()
+			e7:SetCode(EVENT_CHAIN_NEGATED)
+			Duel.RegisterEffect(e7,tp)
+			e6:SetLabelObject(e7)
+			e7:SetLabelObject(e6)
+		end
 	end
 	c:ResetFlagEffect(m+1)
 end
 function cm.operation5(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
 	local te=e:GetLabelObject()
 	te:Reset()
 	e:Reset()
 	local c=e:GetHandler()
 	local hg=Duel.GetMatchingGroup(cm.filter11,tp,LOCATION_DECK,0,nil)
-	if #hg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local dg=hg:Select(tp,1,1,nil)
-		Duel.Hint(HINT_CARD,0,m)
-		Duel.Destroy(dg,REASON_EFFECT)
-	end
 	if c:GetFlagEffect(m+1)>0 and c:GetFlagEffectLabel(m+1)==e:GetLabel() then
 		c:ResetFlagEffect(m+1)
+	end
+	if #hg>0 then
+		local op=cm[tp] or Duel.SelectOption(tp,aux.Stringid(m,3),aux.Stringid(m,8),aux.Stringid(m,9))
+		if op==2 then cm[tp]=1 end
+		if op~=0 then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local dg=hg:Select(tp,1,1,nil)
+		Duel.Destroy(dg,REASON_EFFECT)
 	end
 end

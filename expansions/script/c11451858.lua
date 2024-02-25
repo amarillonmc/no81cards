@@ -42,13 +42,13 @@ function cm.initial_effect(c)
 	e5:SetCondition(function() return not pnfl_adjusting end)
 	e5:SetOperation(cm.acop)
 	c:RegisterEffect(e5)
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e6:SetRange(LOCATION_SZONE)
-	e6:SetProperty(EFFECT_FLAG_DELAY)
-	e6:SetCode(EVENT_CUSTOM+m)
-	e6:SetOperation(cm.spop)
-	c:RegisterEffect(e6)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e7:SetRange(LOCATION_SZONE)
+	e7:SetProperty(EFFECT_FLAG_DELAY)
+	e7:SetCode(EVENT_CUSTOM+m)
+	e7:SetOperation(cm.spop)
+	c:RegisterEffect(e7)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler()==e:GetHandler() or (e:GetCode()==EVENT_CHAINING and rp==1-tp)
@@ -93,10 +93,21 @@ function cm.filter1(c)
 	return false
 end
 function cm.imop(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then
-		if te:GetHandler():IsLocation(LOCATION_DECK) then
-			local e1=te:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
-			e1:SetLabelObject(te)
+	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
+		if te:GetHandler():IsLocation(LOCATION_DECK) and not cm.filter1(te:GetHandler()) then
+			local se=Effect.CreateEffect(e:GetHandler())
+			se:SetType(EFFECT_TYPE_SINGLE)
+			se:SetCode(0x20000000+m)
+			se:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE)
+			se:SetReset(RESET_EVENT+RESETS_STANDARD)
+			te:GetHandler():RegisterEffect(se,true)
+			--local e1=te:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+			se:SetLabelObject(te)
+			if Card.SetCardData then
+				Duel.Hint(24,0,aux.Stringid(m,3))
+			else
+				Debug.Message("「晶核」等级提升！")
+			end
 		end
 	end
 	return false
@@ -110,6 +121,13 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 		tc:ResetFlagEffect(m)
 	end
 	pnfl_adjusting=false
+end
+function cm.acop2(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_DECK,0,nil)
+	for tc in aux.Next(g) do
+		Duel.RaiseEvent(tc,EVENT_CUSTOM+m,cm.filter1(tc),0,0,0,0)
+		tc:ResetFlagEffect(m)
+	end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()

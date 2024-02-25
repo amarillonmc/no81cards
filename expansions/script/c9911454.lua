@@ -33,8 +33,8 @@ function c9911454.thfilter(c)
 end
 function c9911454.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c9911454.thfilter,tp,LOCATION_DECK,0,nil)
-	if chk==0 then return g:GetClassCount(Card.GetCode)>=2 end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_DECK)
+	if chk==0 then return #g>0 end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9911454.filter1(c,e,tp)
 	return c:IsType(TYPE_MONSTER) and (c:IsAbleToGrave() or c9911454.filter2(c,e,tp))
@@ -52,22 +52,22 @@ function c9911454.filter2(c,e,tp)
 end
 function c9911454.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9911454.thfilter,tp,LOCATION_DECK,0,nil)
-	if g:GetClassCount(Card.GetCode)<2 then return end
+	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local sg=g:SelectSubGroup(tp,aux.dncheck,false,2,2)
-	if not sg or Duel.SendtoHand(sg,nil,REASON_EFFECT)==0 then return end
+	local sg=g:Select(tp,1,1,nil)
+	if #sg==0 or Duel.SendtoHand(sg,nil,REASON_EFFECT)==0 or not sg:GetFirst():IsLocation(LOCATION_HAND) then return end
 	Duel.ConfirmCards(1-tp,sg)
 	Duel.ShuffleHand(tp)
 	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local dg=Duel.SelectMatchingCard(tp,c9911454.filter1,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	local dg=Duel.SelectMatchingCard(tp,c9911454.filter1,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,e,tp)
 	local tc=dg:GetFirst()
 	if not tc then return end
+	Duel.HintSelection(dg)
 	if tc:IsAbleToGrave() and (not c9911454.filter2(tc,e,tp) or Duel.SelectOption(tp,1191,aux.Stringid(9911454,0))==0) then
 		Duel.SendtoGrave(tc,REASON_EFFECT)
-	else
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
-		Duel.ConfirmCards(1-tp,tc)
+	elseif not tc:IsImmuneToEffect(e) and Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true) then
+		if tc:IsPreviousLocation(LOCATION_HAND) or tc:IsPreviousPosition(POS_FACEUP) then Duel.ConfirmCards(1-tp,tc) end
 		Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetCode(EFFECT_CHANGE_TYPE)

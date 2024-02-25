@@ -5,6 +5,12 @@ function cm.initial_effect(c)
 		dofile("expansions/script/c11451851.lua")
 		pnfl_prophecy_flight_initial(c)
 	end
+	--check
+	local e0=Effect.CreateEffect(c)
+	e0:SetCode(EVENT_TO_DECK)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetOperation(function(e) cm[e:GetHandler()]=Duel.GetCurrentPhase() end)
+	c:RegisterEffect(e0)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
@@ -49,6 +55,7 @@ function cm.initial_effect(c)
 	local e5=e4:Clone()
 	e5:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
 	e5:SetCountLimit(1)
+	e5:SetCondition(function(e,tp) local c=e:GetHandler() return c:IsFaceup() and Duel.GetDecktopGroup(tp,1):IsContains(c) and (not cm[c] or cm[c]~=Duel.GetCurrentPhase()) end)
 	e5:SetOperation(cm.spop)
 	c:RegisterEffect(e5)
 	local e6=e5:Clone()
@@ -181,7 +188,7 @@ end
 function cm.distance2(ac,bc,tp)
 	local ax,ay=cm.xylabel(ac,tp)
 	local bx,by=cm.xylabel(bc,tp)
-	return (by-ay)*(by-ay)+(ax-bx)*(ax-bx)
+	return ((by-ay)*(by-ay)+(ax-bx)*(ax-bx))*1000
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
@@ -249,6 +256,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if cm[c]==Duel.GetCurrentPhase() then return end
 	if c:GetTurnID()~=Duel.GetTurnCount() or Duel.SelectYesNo(tp,aux.Stringid(11451851,2)) then
 		Duel.DisableShuffleCheck()
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)

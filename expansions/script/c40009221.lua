@@ -7,33 +7,36 @@ function c40009221.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,40009221)
 	e1:SetCondition(c40009221.spcon)
 	e1:SetOperation(c40009221.spop)
 	c:RegisterEffect(e1) 
 	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(40009221,0))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_HANDES)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,40009221)
 	e2:SetTarget(c40009221.target)
 	e2:SetOperation(c40009221.operation)
 	c:RegisterEffect(e2)  
 	--disable attack
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(40009221,1))
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetCountLimit(1,40009222)
+	e3:SetCost(c40009221.spxcost)
 	e3:SetTarget(c40009221.spxtg)
 	e3:SetOperation(c40009221.spxop)
 	c:RegisterEffect(e3) 
 end
 function c40009221.spcfilter(c)
-	return c:IsSetCard(0x307b) and not c:IsPublic()
+	return c:IsSetCard(0x107b) and not c:IsPublic()
 end
 function c40009221.spcon(e,c)
 	if c==nil then return true end
@@ -46,20 +49,35 @@ function c40009221.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.SelectMatchingCard(tp,c40009221.spcfilter,tp,LOCATION_EXTRA,0,1,1,nil)
 	Duel.ConfirmCards(1-tp,g)
 end
-function c40009221.filter(c)
-	return ((c:IsSetCard(0x95) and c:IsType(TYPE_SPELL)) or c:IsCode(8038143) or c:IsCode(59650656) or c:IsCode(89789152)) and c:IsAbleToHand()
+function c40009221.filter(c,code)
+	return c:IsCode(code) and c:IsAbleToHand()
 end
 function c40009221.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,3,tp,LOCATION_DECK)
 end
 function c40009221.operation(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c40009221.filter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
+	local t1=Duel.GetFirstMatchingCard(c40009221.filter,tp,LOCATION_DECK,0,nil,8038143)
+	if not t1 then return end
+	local t2=Duel.GetFirstMatchingCard(c40009221.filter,tp,LOCATION_DECK,0,nil,59650656)
+	if not t2 then return end
+	local t3=Duel.GetFirstMatchingCard(c40009221.filter,tp,LOCATION_DECK,0,nil,89789152)
+	if not t3 then return end
+	local g=Group.FromCards(t1,t2,t3)
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,g)
+	Duel.ShuffleHand(tp)
+	Duel.BreakEffect()
+	Duel.DiscardHand(tp,nil,2,2,REASON_EFFECT+REASON_DISCARD)
+end
+function c40009221.costfilter(c)
+	return c:IsSetCard(0x175) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()
+end
+function c40009221.spxcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c40009221.costfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,c40009221.costfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c40009221.spfilter(c,e,tp)
 	return c:IsCode(88177324) and c:IsType(TYPE_XYZ)

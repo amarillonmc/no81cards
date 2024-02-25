@@ -81,7 +81,14 @@ function c11561016.hxop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.BreakEffect() 
 				local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,a,a,nil)
 				local a1=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
-				aux.PlaceCardsOnDeckTop(tp,sg)
+				local tc=g:GetFirst()
+				while tc do
+				Duel.MoveSequence(tc,SEQ_DECKTOP)
+				tc=g:GetNext()
+				end
+				Duel.SendtoDeck(sg,nil,SEQ_DECKTOP,REASON_EFFECT)
+				Duel.SortDecktop(tp,tp,ct)
+
 				local g2=Duel.GetOperatedGroup()
 				local a2=Group.GetCount(g2) 
 				if not (a2<math.floor(a1/2)) then 

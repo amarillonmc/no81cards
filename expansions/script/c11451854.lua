@@ -5,6 +5,12 @@ function cm.initial_effect(c)
 		dofile("expansions/script/c11451851.lua")
 		pnfl_prophecy_flight_initial(c)
 	end
+	--check
+	local e0=Effect.CreateEffect(c)
+	e0:SetCode(EVENT_TO_DECK)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetOperation(function(e) cm[e:GetHandler()]=Duel.GetCurrentPhase() end)
+	c:RegisterEffect(e0)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_COIN+CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
@@ -48,6 +54,7 @@ function cm.initial_effect(c)
 	local e5=e4:Clone()
 	e5:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
 	e5:SetCountLimit(1)
+	e5:SetCondition(function(e,tp) local c=e:GetHandler() return c:IsFaceup() and Duel.GetDecktopGroup(tp,1):IsContains(c) and (not cm[c] or cm[c]~=Duel.GetCurrentPhase()) end)
 	e5:SetOperation(cm.spop)
 	c:RegisterEffect(e5)
 	local e6=e5:Clone()
@@ -72,7 +79,7 @@ function cm.initial_effect(c)
 end
 cm.toss_coin=true
 function cm.chkval0(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then
+	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
 		if e:GetHandler():GetFlagEffect(11451854)==0 then
 			local prop=EFFECT_FLAG_SET_AVAILABLE
 			if PNFL_INFLUENCED_HINT or PNFL_DEBUG then prop=prop|EFFECT_FLAG_CLIENT_HINT end
@@ -210,7 +217,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		local tg=g
 		if #g>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			tg=g:Select(tp,1,#g,nil)
+			tg=g:Select(tp,1,3,nil)
 		end
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.HintSelection(tg)
@@ -237,6 +244,7 @@ function cm.aclimit(e,re,tp)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if cm[c]==Duel.GetCurrentPhase() then return end
 	if c:GetTurnID()~=Duel.GetTurnCount() or Duel.SelectYesNo(tp,aux.Stringid(11451851,2)) then
 		Duel.DisableShuffleCheck()
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
