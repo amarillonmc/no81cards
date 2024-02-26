@@ -25,7 +25,10 @@ function Auxiliary.PreloadUds()
 								return temp_f(table.unpack(params,2,#params))
 							else
 								local fname2=release_set2[i]
-								return Duel[fname2](table.unpack(params,2,i+3),params[1],false,table.unpack(params,i+4,#params))
+								local tab={table.unpack(params,2,#params)}
+								table.insert(tab,i+3,params[1])
+								table.insert(tab,i+4,false)
+								return Duel[fname2](table.unpack(tab))
 							end
 						end
 						return temp_f(...)
@@ -39,10 +42,10 @@ function Auxiliary.PreloadUds()
 						local typ=type(old_minc)
 						if #params>2 and typ~="number" then
 							local tab={table.unpack(params,2,#params)}
-							table.insert(tab,i+3,REASON_COST)
+							table.insert(tab,i+3,params[1])
 							table.insert(tab,i+4,true)
 							return temp_f(table.unpack(tab))
-						elseif #params>=i+3 and type(params[i+3])~="bool" then
+						elseif #params>=i+3 and type(params[i+3])~="number" then
 							local tab=params
 							table.insert(tab,i+3,REASON_COST)
 							table.insert(tab,i+4,true)
