@@ -27,7 +27,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local codelist2=0
 	while codelist2==0 do
 		local l=Duel.GetRandomNumber(1,999999999)
-		local mt=cm.load_metatable(l)
+		local mt=cm.load_metatable_load(l)
 		if mt then
 			local token=Duel.CreateToken(tp,l)
 			if token and token:IsType(TYPE_MONSTER) and token:IsType(TYPE_EFFECT) and not token:IsForbidden() and token:CheckUniqueOnField(tp) then
@@ -40,6 +40,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 			end
 		end
 	end
+end
+function cm.load_metatable_load(code)
+	local type=Duel.ReadCard(code,CARDDATA_TYPE)
+	return type
 end
 function cm.load_metatable(code)
 	local m1=_G["c"..code]

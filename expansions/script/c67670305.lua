@@ -71,7 +71,7 @@ function c67670305.spop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 --to grave
 function c67670305.costfilter(c)
-	return c:IsSetCard(0x1b7) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x1b7) and c:IsAbleToRemoveAsCost()
 end
 function c67670305.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tp=e:GetHandlerPlayer()
@@ -84,7 +84,7 @@ function c67670305.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(sg,POS_FACEUP,REASON_COST)
 end
 function c67670305.spfilter2(c,e,tp)
-	return c:IsSetCard(0x1b7) and not c:IsCode(67670305) and c:IsAbleToHand()
+	return c:IsSetCard(0x1b7) and not c:IsCode(67670305) and c:IsAbleToGrave()
 end
 function c67670305.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

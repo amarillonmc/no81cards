@@ -67,6 +67,7 @@ function c22348368.efffilter(c,e,tp,eg,ep,ev,re,r,rp)
 	local te=c.bfg_effect
 	if not te then return false end
 	local tg=te:GetTarget()
+	local e=te
 	return not tg or tg and tg(e,tp,eg,ep,ev,re,r,rp,0)
 end
 function c22348368.effctg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -91,8 +92,8 @@ function c22348368.effcop(e,tp,eg,ep,ev,re,r,rp)
 		local te=tc.bfg_effect
 		local op=te:GetOperation()
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end
---		Duel.BreakEffect()
---		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD,nil)
+--	  Duel.BreakEffect()
+--	  Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD,nil)
 	end
 end
 
