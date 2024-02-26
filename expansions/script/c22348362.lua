@@ -99,20 +99,20 @@ function c22348362.ceop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c22348362.sumlimit(e,c)
 	if not c then return false end
-	return c:GetFlagEffectLabel(22349362)
+	return c:GetFlagEffectLabel(22349362)~=0
 end
 function c22348362.fuslimit(e,c,sumtype)
 	if not c then return false end
-	return c:GetFlagEffectLabel(22349362) and sumtype==SUMMON_TYPE_FUSION
+	return c:GetFlagEffectLabel(22349362)~=0 and sumtype==SUMMON_TYPE_FUSION
 end
 
 
 function c22348362.ctcon(e)
 	local c=e:GetHandler()
-	return c:GetFlagEffectLabel(22349362)
+	return c:GetFlagEffectLabel(22349362)~=0
 end
 function c22348362.cttg(e,c)
-	return c:GetFlagEffectLabel(22349362) and c:IsFaceup()
+	return c:GetFlagEffectLabel(22349362)~=0 and c:IsFaceup()
 end
 function c22348362.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) end
@@ -139,12 +139,12 @@ function c22348362.ctgop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c22348362.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsDisabled() and c:GetFlagEffectLabel(22349362) then
+	if not c:IsDisabled() and c:GetFlagEffectLabel(22349362)~=0 then
 		e:SetLabel(1)
 	else e:SetLabel(0) end
 end
 function c22348362.cfilter(c)
-	return c:IsLocation(LOCATION_MZONE) and c:GetFlagEffectLabel(22349362)
+	return c:IsLocation(LOCATION_MZONE) and c:GetFlagEffectLabel(22349362)~=0
 end
 function c22348362.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetHandler():GetCardTarget()
@@ -157,7 +157,7 @@ function c22348362.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=c:GetCardTarget()
 	local cg=Group.__band(g,eg)
-	if cg:IsExists(c22348362.cfilter,1,nil) and c:GetFlagEffectLabel(22349362) then
+	if cg:IsExists(c22348362.cfilter,1,nil) and c:GetFlagEffectLabel(22349362)~=0 then
 		e:SetLabel(1)
 	else e:SetLabel(0) end
 end

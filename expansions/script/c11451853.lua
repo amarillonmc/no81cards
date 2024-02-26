@@ -53,7 +53,7 @@ function cm.initial_effect(c)
 	local e5=e4:Clone()
 	e5:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
 	e5:SetCountLimit(1)
-	e5:SetCondition(function(e,tp) local c=e:GetHandler() return c:IsFaceup() and Duel.GetDecktopGroup(tp,1):IsContains(c) and (not cm[c] or cm[c]~=Duel.GetCurrentPhase()) end)
+	e5:SetCondition(function(e,tp) local c=e:GetHandler() return c:IsFaceup() and Duel.GetDecktopGroup(tp,1):IsContains(c) and not (cm[c] and cm[c]==Duel.GetCurrentPhase() and c:GetTurnID()==Duel.GetTurnCount()) end)
 	e5:SetOperation(cm.spop)
 	c:RegisterEffect(e5)
 	local e6=e5:Clone()
@@ -235,7 +235,6 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if cm[c]==Duel.GetCurrentPhase() then return end
 	if c:GetTurnID()~=Duel.GetTurnCount() or Duel.SelectYesNo(tp,aux.Stringid(11451851,2)) then
 		Duel.DisableShuffleCheck()
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)

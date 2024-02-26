@@ -110,7 +110,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=te:GetHandler()
 	local prop1,prop2=te:GetProperty()
 	local eset={Duel.IsPlayerAffectedByEffect(tp,m)}
-	if te:IsHasType(EFFECT_TYPE_ACTIVATE) and ((tc:GetFlagEffect(m)>0 and prop2 and prop2&EFFECT_FLAG2_COF>0) or (tc:IsLocation(LOCATION_SZONE) and tc:IsType(TYPE_QUICKPLAY) and ((#eset>0 and tc:IsStatus(STATUS_SET_TURN) and tc:GetEffectCount(EFFECT_QP_ACT_IN_SET_TURN)<=#eset) or (Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,3)))))) then
+	if te:IsHasType(EFFECT_TYPE_ACTIVATE) and ((tc:GetFlagEffect(m)>0 and prop2 and prop2&EFFECT_FLAG2_COF>0) or (tc:IsLocation(LOCATION_SZONE) and tc:IsType(TYPE_QUICKPLAY) and ((#eset>0 and tc:IsStatus(STATUS_SET_TURN) and tc:GetEffectCount(EFFECT_QP_ACT_IN_SET_TURN)<=#eset) or (Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and tc:IsFacedown() and Duel.SelectYesNo(tp,aux.Stringid(m,3)))))) then
 		local ph=Duel.GetCurrentPhase()
 		if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
 		e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+ph,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,15))

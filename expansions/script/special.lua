@@ -31,7 +31,7 @@ function Auxiliary.PreloadUds()
 						return temp_f(...)
 					end
 	end
-	for i,fname in pairs(release_set) do
+	for i,fname in pairs(release_set2) do
 		local temp_f=Duel[fname]
 		Duel[fname]=function(...)
 						local params={...}
