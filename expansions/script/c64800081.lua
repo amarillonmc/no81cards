@@ -3,7 +3,7 @@ local m=64800081
 local cm=_G["c"..m]
 function cm.initial_effect(c)
  --link summon
-	aux.AddLinkProcedure(c,nil,3,3,cm.lcheck)
+	aux.AddLinkProcedure(c,nil,3,99,cm.lcheck)
 	c:EnableReviveLimit()
  --atk/def
 	local e2=Effect.CreateEffect(c)  

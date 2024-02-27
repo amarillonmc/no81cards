@@ -90,7 +90,7 @@ function c67200933.stcon(e)
 	return Duel.GetFlagEffect(tp,67200933)==0
 end
 function c67200933.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local dg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+	local dg=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
 	local c=e:GetHandler()
 	if chk==0 then
 		if e:GetLabel()~=100 then return false end
