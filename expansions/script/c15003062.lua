@@ -30,9 +30,6 @@ function cm.lmop(e)
 	Duel.ConfirmCards(1-tp,c)
 	Duel.ConfirmCards(tp,c)
 	if Duel.SelectYesNo(1-tp,aux.Stringid(m,0)) then
-		local tc=Duel.GetFirstMatchingCard(cm.filter,tp,0,LOCATION_DECK+LOCATION_HAND,nil)
-		Duel.ConfirmCards(1-tp,tc)
-		Duel.ConfirmCards(tp,tc)
 		local g=Duel.GetFieldGroup(tp,0xff,0xff)
 		local ec=g:GetFirst()
 		while ec do
