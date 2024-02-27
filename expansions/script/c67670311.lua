@@ -1,7 +1,7 @@
 --重兵装型女子高中生・Arche
 function c67670311.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,c67670311.mfilter,3)
+	aux.AddLinkProcedure(c,c67670311.mfilter,2)
 	c:EnableReviveLimit() 
 	--cannot be material
 	local e1=Effect.CreateEffect(c)
@@ -72,15 +72,15 @@ end
 function c67670311.spfilter1(c)
 	return c:IsSetCard(0x1b7) and c:IsAbleToRemoveAsCost()
 end
-function c67670311.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c67670311.spfilter1,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c67670311.spfilter1,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-end
 function c67670311.spfilter2(c,e,tp)
 	return c:IsSetCard(0x1b7) and not c:IsCode(67670311)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+end
+function c67670311.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c67670311.spfilter1,tp,LOCATION_GRAVE,0,2,nil) and Duel.IsExistingMatchingCard(c67670311.spfilter2,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,c67670311.spfilter1,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c67670311.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c67670311.spfilter2(chkc,e,tp) end

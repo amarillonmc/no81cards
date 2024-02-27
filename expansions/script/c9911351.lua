@@ -69,6 +69,7 @@ function c9911351.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_PUBLIC)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1)
+			Duel.ShuffleHand(tp)
 		end
 	end
 end
