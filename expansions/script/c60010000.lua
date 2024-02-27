@@ -2,20 +2,6 @@
 
 --This is a library of mtc's cards.
 --You can add QQ1252425371 to feedback bugs.
---The following functions are available.
-
---MTC.LHini(c,tp)
---MTC.LHnum(tp)
---MTC.LHSpS(c,num)
-
---MTC.filterEffectSetCode(c,tablename)
---MTC.CheckEffectSetCode(tablename,ccode,excode,...)
---MTC.GetGroupEffectSetcode(tp,tablename,fil,loc1,loc2,ex,...)
---MTC.ApplyEffectSetCode(e,tp,c,tablename,...)
-
---MTC.ActivateEffect(e,tp,oe)
-
---MTC.CycleApplyOp(g,op,...)
 
 --You can view detailed usages below or in mtc's card.
 --A few annotations in Chinese are noted below.
@@ -27,9 +13,10 @@ MTC.loaded_metatable_list={}
 -------------------------------------------------------------------------------------------------------------------------------------
 --系列「传说天」相关函数
 --「传说天」次数检定初始化函数
-function MTC.LHini(c,tp)
+function MTC.LHini(c)
 	if not LHini==true then
 		LHini=true
+		local tp=c:GetOwner()
 		--spsm
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -92,6 +79,7 @@ function MTC.LHSpS(c,num)
 	c:RegisterEffect(e1)
 end
 function MTC.LHcon2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local num=e:GetLabel()
@@ -99,6 +87,7 @@ function MTC.LHcon2(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_HAND,0,num,c)
 end
 function MTC.LHop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local num=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND,0,num,num,c)
@@ -106,6 +95,11 @@ function MTC.LHop2(e,tp,eg,ep,ev,re,r,rp)
 end
 -------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------------------------
+--「马纳历亚」次数检定初始化函数
+--已废弃
+-------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------
+--！！暂时无法正常使用！！
 --塔隆·血魔类效果初始化
 --MTC.CheckEffectSetCode(所使用的表名称,所使用的识别名,不予记录的code,...) ...中记录所需记录效果的event
 function MTC.CheckEffectSetCode(tablename,ccode,excode,...)
@@ -152,6 +146,7 @@ function MTC.filterEffectSetCode(c,tablename)
 	local tablename=_G[tablename]
 	return tablename[c:GetCode()][1]~=nil
 end
+
 --获取区域内有某个event的组（必须先使用MTC.CheckEffectSetCode进行记录）
 --MTC.GetGroupEffectSetcode(tp,所使用的表名称,fil,loc1,loc2,除了xxx之外,...)
 function MTC.GetGroupEffectSetcode(tp,tablename,fil,loc1,loc2,ex,...) --获取符合条件的卡
@@ -224,5 +219,59 @@ function MTC.CycleApplyOp(g,op,...)
 		local c=ac
 		if op then op(...) end
 		ac=g:GetNext()
+	end
+end
+
+--快速单张卡处理
+--MTC.SEffect(c,id记述/code==0时无id效果,诱发事件,执行事件,区域,筛选,最小数量,最大数量)
+--目前执行事件仅支持 加入手卡&送去墓地(加入手卡==1 送去墓地==2)
+function MTC.SEffect(c,code,event,doing,loc,fil,minnum,maxnum)
+	local e1=Effect.CreateEffect(c)
+	if doing==1 then
+		e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	else if doing==2 then
+		e1:SetCategory(CATEGORY_TOGRAVE)
+	end
+	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(event)
+	if code~=0 then
+		e1:SetCountLimit(1,code)
+	end
+	if doing==1 then
+		e1:SetTarget(MTC.sitg1)
+		e1:SetOperation(MTC.sitg1)
+	elseif doing==2 then
+		e1:SetTarget(MTC.sitg2)
+		e1:SetOperation(MTC.sitg2)
+	end
+	e1:SetLabel(loc,fil,minnum,maxnum)
+	c:RegisterEffect(e1)
+end
+function MTC.sitg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	local loc,fil,minnum,maxnum=e:GetLabel()
+	if chk==0 then return Duel.IsExistingMatchingCard(fil,tp,loc,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,loc)
+end
+function MTC.sitg1(e,tp,eg,ep,ev,re,r,rp)
+	local loc,fil,minnum,maxnum=e:GetLabel()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,fil,tp,loc,0,minnum,maxnum,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
+end
+function MTC.sitg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local loc,fil,minnum,maxnum=e:GetLabel()
+	if chk==0 then return Duel.IsExistingMatchingCard(fil,tp,loc,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,loc)
+end
+function MTC.sitg2(e,tp,eg,ep,ev,re,r,rp)
+	local loc,fil,minnum,maxnum=e:GetLabel()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,fil,tp,loc,0,minnum,maxnum,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end

@@ -2,7 +2,7 @@
 Duel.LoadScript("c60010000.lua")
 local cm,m,o=GetID()
 function cm.initial_effect(c)
-	MTC.LHini(c,tp)
+	MTC.LHini(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

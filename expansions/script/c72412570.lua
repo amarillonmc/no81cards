@@ -56,7 +56,7 @@ function c72412570.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x6727)
 end
 function c72412570.discon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c72412490.cfilter,tp,LOCATION_MZONE,0,2,nil)
+	return Duel.IsExistingMatchingCard(c72412570.cfilter,tp,LOCATION_MZONE,0,2,nil)
 end
 function c72412570.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and aux.disfilter1(chkc) end

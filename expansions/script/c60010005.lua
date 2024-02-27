@@ -2,6 +2,7 @@
 Duel.LoadScript("c60010000.lua")
 local cm,m,o=GetID()
 function cm.initial_effect(c)
+	MTC.LHini(c)
 	MTC.LHSpS(c,2)
 	--search
 	local e3=Effect.CreateEffect(c)

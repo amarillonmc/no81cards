@@ -2,6 +2,7 @@
 Duel.LoadScript("c60010000.lua")
 local cm,m,o=GetID()
 function cm.initial_effect(c)
+	MTC.LHini(c)
 	MTC.LHSpS(c,2)
 	--search
 	local e3=Effect.CreateEffect(c)
@@ -19,13 +20,13 @@ function cm.thfil(c)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_ONFIELD)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,0,nil):RandomSelect(tp,1)
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil):RandomSelect(tp,1)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
