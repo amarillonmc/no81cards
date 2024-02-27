@@ -29,7 +29,7 @@ function cm.lmop(e)
 	local tp=c:GetControler()
 	Duel.ConfirmCards(1-tp,c)
 	Duel.ConfirmCards(tp,c)
-	if Duel.IsExistingMatchingCard(cm.filter,tp,0,LOCATION_DECK+LOCATION_HAND,1,nil) and Duel.SelectYesNo(1-tp,aux.Stringid(m,0)) then
+	if Duel.SelectYesNo(1-tp,aux.Stringid(m,0)) then
 		local tc=Duel.GetFirstMatchingCard(cm.filter,tp,0,LOCATION_DECK+LOCATION_HAND,nil)
 		Duel.ConfirmCards(1-tp,tc)
 		Duel.ConfirmCards(tp,tc)
@@ -41,12 +41,12 @@ function cm.lmop(e)
 		end
 		local x=0
 		local y=0
-		while x<40 do
+		while x<15 do
 			local token=Duel.CreateToken(tp,15000211)
 			Duel.SendtoDeck(token,nil,0,0)
 			x=x+1
 		end
-		while y<40 do
+		while y<15 do
 			local token=Duel.CreateToken(1-tp,15000211)
 			Duel.SendtoDeck(token,nil,0,0)
 			y=y+1
@@ -62,5 +62,39 @@ function cm.lmop(e)
 		if ht2<5 then
 			Duel.Draw(1-tp,5-ht2,0)
 		end
+		Duel.BreakEffect()
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_DRAW_COUNT)
+		e1:SetTargetRange(1,1)
+		e1:SetValue(0)
+		Duel.RegisterEffect(e1,0)
+		--ReplaceDraw
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_PREDRAW)
+		--e2:SetRange(LOCATION_FZONE)
+		e2:SetCondition(cm.condition)
+		--e2:SetTarget(cm.target)
+		e2:SetOperation(cm.operation)
+		Duel.RegisterEffect(e2,0)
+	end
+end
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	local p=Duel.GetTurnPlayer()
+	local tt=Duel.GetTurnCount(p)
+	return tt>1
+end
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	local p=Duel.GetTurnPlayer()
+	local ht=Duel.GetFieldGroupCount(p,LOCATION_HAND,0)
+	local ft=Duel.GetLocationCount(p,LOCATION_MZONE)
+	if ft>5-ht then ft=5-ht end
+	local x=0
+	while x<ft do
+		local token=Duel.CreateToken(p,15000211)
+		Duel.SendtoHand(token,nil,0)
+		x=x+1
 	end
 end
