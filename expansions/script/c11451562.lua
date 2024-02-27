@@ -91,7 +91,7 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.MoveToField(tc,tp,1-tp,LOCATION_SZONE,POS_FACEDOWN,false) then
 			tg:AddCard(tc)
 			Duel.Equip(1-tp,tc,rc,false)
-			tc:RegisterFlagEffect(m,RESET_EVENT+RESET_MSCHANGE+RESET_CONTROL+RESET_OVERLAY+RESET_PHASE+PHASE_STANDBY,0,1)
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESET_MSCHANGE+RESET_CONTROL+RESET_OVERLAY,0,1)
 		end
 	end
 	tg=tg:Filter(Card.GetEquipTarget,nil)
