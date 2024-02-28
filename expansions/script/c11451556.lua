@@ -162,14 +162,13 @@ function cm.equipfd(c,tp,tc)
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	if pnfl_adjusting then return end
-	pnfl_adjusting=true
 	local phase=Duel.GetCurrentPhase()
 	local c=e:GetHandler()
-	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL or c:IsStatus(STATUS_BATTLE_DESTROYED) or not Duel.IsPlayerCanSSet(tp) then return end
-	if c:IsLocation(LOCATION_MZONE) and not c:GetEquipGroup():IsExists(cm.eqfilter,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetMatchingGroupCount(nil,tp,LOCATION_DECK,0,nil)>0 then
+	if not ((phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL or c:IsStatus(STATUS_BATTLE_DESTROYED)) and Duel.IsPlayerCanSSet(tp) and c:IsLocation(LOCATION_MZONE) and not c:GetEquipGroup():IsExists(cm.eqfilter,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetMatchingGroupCount(nil,tp,LOCATION_DECK,0,nil)>0 then
 		Duel.Hint(HINT_CARD,0,m)
 		local tc=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil):GetMaxGroup(Card.GetSequence):GetFirst()
 		Duel.DisableShuffleCheck()
+		pnfl_adjusting=true
 		if tc:IsForbidden() then
 			Duel.DiscardDeck(tp,1,REASON_RULE)
 			pnfl_adjusting=false
@@ -179,6 +178,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			pnfl_adjusting=false
 			Duel.Readjust()
 		end
+		pnfl_adjusting=false
 	end
 	pnfl_adjusting=false
 end
