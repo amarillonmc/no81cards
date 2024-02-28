@@ -1,7 +1,7 @@
 --重兵装型女子高中生・Arche
 function c67670311.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,c67670311.mfilter,2)
+	aux.AddLinkProcedure(c,c67670311.mfilter,3)
 	c:EnableReviveLimit() 
 	--cannot be material
 	local e1=Effect.CreateEffect(c)

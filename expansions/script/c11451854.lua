@@ -62,6 +62,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 	if not PNFL_INFLUENCED_CHECK then
 		PNFL_INFLUENCED_CHECK=true
+		PNFL_INFLUENCED_HINT=true
 		--card influenced by effect
 		local ge2=Effect.CreateEffect(c)
 		ge2:SetType(EFFECT_TYPE_SINGLE)

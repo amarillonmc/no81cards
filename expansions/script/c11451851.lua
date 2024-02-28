@@ -8,8 +8,8 @@ function pnfl_prophecy_flight_initial(c)
 	pnflpf[0]=0
 	pnflpf[1]=0
 	pnflpf.coinsequence={}
-	_TossCoin=Duel.TossCoin
-	_SetCoinResult=Duel.SetCoinResult
+	local _TossCoin=Duel.TossCoin
+	local _SetCoinResult=Duel.SetCoinResult
 	function Duel.SetCoinResult(...)
 		local ct0=#pnflpf.coinsequence
 		local res0={Duel.GetCoinResult()}
@@ -428,6 +428,11 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 				end
 		if Duel.GetCurrentChain()==1 then op(e,tp) end
 		e:GetHandler():ResetFlagEffect(11451862)
+		if Card.SetCardData then
+			Duel.Hint(24,0,aux.Stringid(11451862,2))
+		else
+			Debug.Message("「急袭」任务完成！")
+		end
 		local e6=Effect.CreateEffect(e:GetHandler())
 		e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e6:SetCode(EVENT_CHAIN_SOLVED)
