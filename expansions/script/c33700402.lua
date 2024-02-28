@@ -17,12 +17,12 @@ function c33700402.initial_effect(c)
 end
 function c33700402.condition(e,tp,eg,ep,ev,re,r,rp)
 	local ecount = Duel.GetCustomActivityCount(33700302,1-tp,ACTIVITY_CHAIN)
-	return ecount >= 7
+	return ecount >= 7 and Duel.GetCurrentPhase()~=PHASE_END
 end
 function c33700402.operation(e,tp,eg,ep,ev,re,r,rp)
 	local ecount = Duel.GetCustomActivityCount(33700302,1-tp,ACTIVITY_CHAIN)
 	local cph = Duel.GetCurrentPhase()
-	local turn = {PHASE_STANDBY,PHASE_MAIN1,PHASE_BATTLE,PHASE_MAIN2,PHASE_END}
+	local turn = {PHASE_STANDBY,PHASE_MAIN1,PHASE_BATTLE,PHASE_MAIN2}
 	for _,ph in pairs(turn) do
 		if cph <= ph then
 			Duel.SkipPhase(Duel.GetTurnPlayer(),ph,RESET_PHASE+PHASE_END,1)

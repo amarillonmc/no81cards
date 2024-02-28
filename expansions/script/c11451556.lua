@@ -66,7 +66,7 @@ function cm.GetLinkMaterials(tp,f,lc)
 	return mg
 end
 function cm.LCheckGoal(sg,tp,lc,gf,lmat)
-	return sg:CheckWithSumEqual(Auxiliary.GetLinkCount,lc:GetLink(),#sg,#sg) and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg)) and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp) and (not lmat or sg:IsContains(lmat)) and not sg:IsExists(cm.fdfilter,4,nil)
+	return sg:CheckWithSumEqual(Auxiliary.GetLinkCount,lc:GetLink(),#sg,#sg) and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg)) and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp) and (not lmat or sg:IsContains(lmat)) and sg:IsExists(aux.NOT(cm.fdfilter),1,nil)
 end
 function cm.LinkCondition(f,minc,maxc,gf)
 	return  function(e,c,og,lmat,min,max)
@@ -205,6 +205,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(1,0)
 	e1:SetLabel(Duel.GetTurnCount())
 	e1:SetCondition(cm.condition)
+	e1:SetOwnerPlayer(tp)
 	if Duel.GetTurnPlayer()~=tp then
 		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN,2)
 	else
@@ -213,5 +214,5 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.condition(e)
-	return Duel.GetTurnCount()~=e:GetLabel() and Duel.GetTurnPlayer()~=tp
+	return Duel.GetTurnCount()~=e:GetLabel() and Duel.GetTurnPlayer()~=e:GetOwnerPlayer()
 end

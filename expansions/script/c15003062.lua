@@ -25,6 +25,8 @@ function cm.filter(c)
 	return c:IsCode(15003062) and not c:IsPublic()
 end
 function cm.lmop(e)
+	if cm[0] then return end
+	cm[0]=true
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	Duel.ConfirmCards(1-tp,c)
