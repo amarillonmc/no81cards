@@ -201,9 +201,9 @@ function c22348356.filter(c,e,tp)
 	return c:IsSetCard(0xd70a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348356.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c22348356.filter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c22348356.filter,tp,LOCATION_GRAVE,0,1,e:GetHandler(),e,tp) end
+	local c=e:GetHandler()
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c22348356.filter(chkc,e,tp) and chkc~=c end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingTarget(c22348356.filter,tp,LOCATION_GRAVE,0,1,c,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,c22348356.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
@@ -211,6 +211,10 @@ end
 function c22348356.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) end
+	chuoying.gaixiaoguo1(e,tp,res)
+	chuoying.gaixiaoguo2(e,tp,res)
+	chuoying.gaixiaoguo3(e,tp,res)
+	chuoying.gaixiaoguo4(e,tp,res)
 end
 function c22348356.sp2op(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -236,8 +240,4 @@ function c22348356.sp2op2(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		res=Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
-	chuoying.gaixiaoguo1(e,tp,res)
-	chuoying.gaixiaoguo2(e,tp,res)
-	chuoying.gaixiaoguo3(e,tp,res)
-	chuoying.gaixiaoguo4(e,tp,res)
 end
