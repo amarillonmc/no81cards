@@ -1,7 +1,7 @@
 --防火龙·暗流体-负质量
 function c98920389.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_CYBERSE),2,99,c98920389.lcheck)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,99,c98920389.lcheck)
 	c:EnableReviveLimit()
 --negate
 	local e2=Effect.CreateEffect(c)

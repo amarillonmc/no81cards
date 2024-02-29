@@ -6,12 +6,12 @@ function cm.initial_effect(c)
 	local e2=rsef.STO(c,EVENT_DESTROYED,{m,1},{1,m+100},"se,th","de,dsp",cm.thcon,nil,rsop.target(cm.thfilter,"th",LOCATION_DECK),cm.thop)
 	--destroy replace
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_DESTROY_REPLACE)
 	e3:SetRange(LOCATION_GRAVE)
-	e3:SetTarget(cm.reptg)
-	e3:SetValue(cm.repval)
-	e3:SetOperation(cm.repop)
+	e3:SetTarget(cm.desreptg)
+	e3:SetValue(cm.desrepval)
+	e3:SetOperation(cm.desrepop)
 	c:RegisterEffect(e3)
 end
 function cm.desfilter(c,e,tp)
@@ -33,16 +33,16 @@ function cm.thop(e,tp)
 	rsop.SelectToHand(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,{})
 end
 function cm.repfilter(c,tp)
-	return c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)
-		and c:IsControler(tp)
+	return c:IsControler(tp) and c:IsOnField()
+		and c:IsReason(REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
-function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemove() and eg:IsExists(cm.repfilter,1,nil,tp) end
 	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
 end
-function cm.repval(e,c)
+function cm.desrepval(e,c)
 	return cm.repfilter(c,e:GetHandlerPlayer())
 end
-function cm.repop(e,tp,eg,ep,ev,re,r,rp)
+function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT)
 end
