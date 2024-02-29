@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	--e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetHintTiming(TIMING_END_PHASE+TIMING_STANDBY_PHASE+TIMING_DRAW_PHASE+TIMING_BATTLE_END,TIMING_END_PHASE+TIMING_STANDBY_PHASE+TIMING_DRAW_PHASE+TIMING_BATTLE_END+TIMING_MAIN_END)
 	e1:SetCondition(function(e,tp) return (Duel.GetCurrentPhase()~=PHASE_MAIN1 and Duel.GetCurrentPhase()~=PHASE_MAIN2) or Duel.GetTurnPlayer()==1-tp end)
 	e1:SetTarget(cm.thtg)
@@ -85,10 +85,10 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0):Filter(cm.seqfilter,nil)
 	if chkc then return chkc:IsLocation(0x3c) end
-	if chk==0 then return Duel.IsExistingTarget(cm.tgfilter,tp,0x3c,0x3c,1,c,e) and #g==3 and g:FilterCount(Card.IsFacedown,nil)>0 and Duel.GetFlagEffect(m)==0 end
+	if chk==0 then return Duel.IsExistingTarget(cm.tgfilter,tp,0x3c,0x3c,1,c,e) and #g==3 and g:FilterCount(Card.IsFacedown,nil)>0 and Duel.GetFlagEffect(tp,m)==0 end
 	local ph=Duel.GetCurrentPhase()
 	if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+ph,EFFECT_FLAG_OATH,1)
+	--Duel.RegisterFlagEffect(tp,m,RESET_PHASE+ph,EFFECT_FLAG_OATH,1)
 	if not PNFL_ETARGET_HINT then
 		PNFL_ETARGET_HINT=true
 		local shg=Duel.GetMatchingGroup(cm.shfilter,tp,0x3c,0x3c,nil)
