@@ -1,5 +1,5 @@
 --法兰老狼
-if not pcall(function() require("expansions/script/c10171001") end) then require("script/c10171001") end
+if not pcall(function() dofile("expansions/script/c10171001.lua") end) then dofile("script/c10171001.lua") end
 local m,cm=rscf.DefineCard(10171015)
 function cm.initial_effect(c)
 	local e1=rsds.TributeFun(c,m,"se,th",nil,rsop.target(cm.thfilter,"th",LOCATION_DECK),cm.thop,true)

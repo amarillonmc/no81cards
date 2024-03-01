@@ -1,5 +1,5 @@
 --火之传承
-if not pcall(function() require("expansions/script/c10171001") end) then require("script/c10171001") end
+if not pcall(function() dofile("expansions/script/c10171001.lua") end) then dofile("script/c10171001.lua") end
 local m,cm=rscf.DefineCard(10171018)
 function cm.initial_effect(c)
 	local e1=rsef.ACT(c,nil,nil,{1,m},"sp",nil,nil,nil,rsop.target(rscf.spfilter2(Card.IsCode,m-16),"sp",rsloc.hdg),cm.act)

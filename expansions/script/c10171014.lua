@@ -1,5 +1,5 @@
 --沉默骑士 霍拉斯
-if not pcall(function() require("expansions/script/c10171001") end) then require("script/c10171001") end
+if not pcall(function() dofile("expansions/script/c10171001.lua") end) then dofile("script/c10171001.lua") end
 local m,cm=rscf.DefineCard(10171014)
 function cm.initial_effect(c)
 	local e1=rsds.TributeFun(c,m,"sp","tg",rstg.target(rscf.spfilter2(cm.spfilter),"sp",rsloc.gr),cm.spop,true)

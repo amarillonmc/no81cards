@@ -1,5 +1,5 @@
 --火之终结
-if not pcall(function() require("expansions/script/c10171001") end) then require("script/c10171001") end
+if not pcall(function() dofile("expansions/script/c10171001.lua") end) then dofile("script/c10171001.lua") end
 local m,cm=rscf.DefineCard(10171019)
 function cm.initial_effect(c)
 	local e1=rsef.ACT(c,nil,nil,{1,m},"td",nil,nil,nil,rsop.target(cm.tdfilter,"td",rsloc.de),cm.act)

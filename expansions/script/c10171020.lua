@@ -1,5 +1,5 @@
 --初火之炉
-if not pcall(function() require("expansions/script/c10171001") end) then require("script/c10171001") end
+if not pcall(function() dofile("expansions/script/c10171001.lua") end) then dofile("script/c10171001.lua") end
 local m,cm=rscf.DefineCard(10171020)
 function cm.initial_effect(c)
 	local e1=rsef.ACT(c)

@@ -1,5 +1,5 @@
 --监视深渊的薪王
-if not pcall(function() require("expansions/script/c10171001") end) then require("script/c10171001") end
+if not pcall(function() dofile("expansions/script/c10171001.lua") end) then dofile("script/c10171001.lua") end
 local m,cm=rscf.DefineCard(10171009)
 function cm.initial_effect(c)
 	local e1=rsds.ExtraSummonFun(c,m+6,m)

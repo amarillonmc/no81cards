@@ -1,5 +1,5 @@
 --灰烬人
-if not pcall(function() require("expansions/script/c10171001") end) then require("script/c10171001") end
+if not pcall(function() dofile("expansions/script/c10171001.lua") end) then dofile("script/c10171001.lua") end
 local m,cm=rscf.DefineCard(10171002)
 function cm.initial_effect(c)
 	local e1=rsef.I(c,{m,0},{1,m},"sp",nil,LOCATION_HAND+LOCATION_GRAVE,nil,rsds.cost2(1),rsop.target(rscf.spfilter2(),"sp"),cm.spop)
