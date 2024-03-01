@@ -47,10 +47,12 @@ function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk then return Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_HAND,0,1,c) and Duel.IsExistingMatchingCard(cm.filter6,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
-		 if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
-		Duel.SetChainLimit(aux.FALSE)
-	end
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
+	Duel.SetChainLimit(cm.chlimit)
 end
+function cm.chlimit(e,ep,tp)  
+	return tp==ep  
+end 
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)

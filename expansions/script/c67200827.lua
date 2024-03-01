@@ -46,18 +46,17 @@ function c67200827.xyzfilter(c)
 end
 function c67200827.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67200827.xyzfilter,tp,LOCATION_EXTRA,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c67200827.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c67200827.xyzfilter,tp,LOCATION_EXTRA,0,nil)
-	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local tg=g:Select(tp,1,1,nil)
-		if Duel.XyzSummon(tp,tg:GetFirst(),nil)~=0 then
-			Duel.BreakEffect()
-			Duel.Destroy(c,REASON_EFFECT)
+	if Duel.Destroy(c,REASON_EFFECT)~=0 then
+		local g=Duel.GetMatchingGroup(c67200827.xyzfilter,tp,LOCATION_EXTRA,0,nil)
+		if g:GetCount()>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local tg=g:Select(tp,1,1,nil)
+			Duel.XyzSummon(tp,tg:GetFirst(),nil)
 		end
 	end
 end
@@ -84,6 +83,8 @@ function c67200827.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c67200827.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Draw(tp,1,REASON_EFFECT)
+	if e:GetHandler():IsSummonType(TYPE_PENDULUM) then
+		Duel.Draw(tp,1,REASON_EFFECT)
+	end
 end
 

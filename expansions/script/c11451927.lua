@@ -16,6 +16,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e0)
 	if not cm.global_check then
 		cm.global_check=true
+		local _ChangeChainOperation=Duel.ChangeChainOperation
 		function Duel.ChangeChainOperation(ev,...)
 			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
 			if aux.GetValueType(re)=="Effect" then

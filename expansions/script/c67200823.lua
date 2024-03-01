@@ -46,18 +46,17 @@ function c67200823.filter(c)
 end
 function c67200823.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67200823.filter,tp,LOCATION_EXTRA,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c67200823.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c67200823.filter,tp,LOCATION_EXTRA,0,1,1,nil)
-	local tc=g:GetFirst()
-	if tc then
-		if Duel.LinkSummon(tp,tc,nil)~=0 then
-			Duel.BreakEffect()
-			Duel.Destroy(c,REASON_EFFECT)
+	if Duel.Destroy(c,REASON_EFFECT)~=0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,c67200823.filter,tp,LOCATION_EXTRA,0,1,1,nil)
+		local tc=g:GetFirst()
+		if tc then
+			Duel.LinkSummon(tp,tc,nil)  
 		end
 	end
 end
@@ -88,7 +87,7 @@ function c67200823.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	local hg=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	local fg=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
 	local g
-	if #hg>0 and (#fg==0 or Duel.SelectOption(tp,aux.Stringid(67200823,3),aux.Stringid(67200823,4))==0) then
+	if #hg>0 and e:GetHandler():IsSummonType(TYPE_PENDULUM) and (#fg==0 or Duel.SelectOption(tp,aux.Stringid(67200823,3),aux.Stringid(67200823,4))==0) then
 		g=hg:RandomSelect(tp,1)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

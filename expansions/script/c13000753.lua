@@ -126,7 +126,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,cm.filter1,1,1,REASON_COST+REASON_DISCARD,c)
 	end
 	if op==2 then
-		local ta=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_HAND,0,1,1,c)
+		local ta=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_HAND,0,1,1,c):GetFirst()
 		Duel.Remove(ta,POS_FACEUP,REASON_EFFECT)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
