@@ -66,33 +66,38 @@ function cm.rop(e,tp)
 end
 function cm.ttg(e,tp,eg,ep,ev,re,r,rp,chk)
 
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,1) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,1,nil,tp,LOCATION_DECK)
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>2 end
+	--Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,1,nil,tp,LOCATION_DECK)
 end
 function cm.rfilter2(c)
 	return c:IsSetCard(0x442) and c:IsAttackAbove(0)
 end
 function cm.top(e,tp)
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<1 then return end
-	local ac=0
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,5))
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>2 then
-		ac=Duel.AnnounceNumber(tp,1,2,3)
-	elseif Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 then
-		ac=Duel.AnnounceNumber(tp,1,2)
-	elseif Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 then
-		ac=Duel.AnnounceNumber(tp,1)
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<3 then return end
+	--local ac=0
+	--Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,5))
+	--if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>2 then
+	 --   ac=Duel.AnnounceNumber(tp,1,2,3)
+	--elseif Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 then
+	 --   ac=Duel.AnnounceNumber(tp,1,2)
+	--elseif Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 then
+		--ac=Duel.AnnounceNumber(tp,1)
+	--end
+	local sg=Duel.GetDecktopGroup(tp,3)
+	Duel.ConfirmDecktop(tp,3)
+	--local sg=tg:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+	Duel.BreakEffect()
+	if sg:GetClassCount(Card.GetCode)==#sg and sg:IsExists(cm.rfilter2,1,nil) then
+		local rg=sg:Filter(cm.rfilter2,nil) 
+		Duel.Recover(tp,rg:GetSum(Card.GetAttack),REASON_EFFECT)
+	elseif sg:GetClassCount(Card.GetCode)<#sg then
+		Duel.Damage(tp,2000,REASON_EFFECT)
 	end
-	local tg=Duel.GetDecktopGroup(tp,ac)
-	if Duel.SendtoGrave(tg,REASON_EFFECT)~=0 then
-		local g=Duel.GetOperatedGroup()
-		local sg=g:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
-		Duel.BreakEffect()
-		if sg:GetClassCount(Card.GetCode)==#sg and sg:IsExists(cm.rfilter2,1,nil) then
-			local rg=sg:Filter(cm.rfilter2,nil) 
-			Duel.Recover(tp,rg:GetSum(Card.GetAttack),REASON_EFFECT)
-		elseif sg:GetClassCount(Card.GetCode)<#sg then
-			Duel.Damage(tp,#sg*2000,REASON_EFFECT)
+	if sg:GetCount()>0 then
+		if Duel.SelectOption(tp,aux.Stringid(m,3),aux.Stringid(m,4))==0 then
+			Duel.SendtoDeck(sg,nil,SEQ_DECKTOP,REASON_EFFECT)
+		else
+			Duel.SendtoDeck(sg,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
 		end
 	end
 end

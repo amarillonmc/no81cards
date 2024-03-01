@@ -63,48 +63,48 @@ function cm.rop(e,tp)
 	end
 end
 function cm.ttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,1) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,1) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>14 end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,1,nil,tp,LOCATION_DECK)
 end
 function cm.rfilter2(c)
 	return c:IsSetCard(0x442)
 end
 function cm.top(e,tp)
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<1 then return end
-	local ac=0
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,5))
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>2 then
-		ac=Duel.AnnounceNumber(tp,1,2,3)
-	elseif Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 then
-		ac=Duel.AnnounceNumber(tp,1,2)
-	elseif Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 then
-		ac=Duel.AnnounceNumber(tp,1)
-	end
-	local tg=Duel.GetDecktopGroup(tp,ac)
-	if Duel.SendtoGrave(tg,REASON_EFFECT)~=0 then
-		local g=Duel.GetOperatedGroup()
-		local sg=g:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<15 then return end
+	--local ac=0
+	--Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,5))
+	--if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>2 then
+		--ac=Duel.AnnounceNumber(tp,1,2,3)
+	--elseif Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 then
+		--ac=Duel.AnnounceNumber(tp,1,2)
+	--elseif Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 then
+		--ac=Duel.AnnounceNumber(tp,1)
+	--end
+	local sg=Duel.GetDecktopGroup(tp,15)
+	Duel.ConfirmDecktop(tp,15)
+
+	--if Duel.SendtoGrave(tg,REASON_EFFECT)~=0 then
+		--local g=Duel.GetOperatedGroup()
+		--local sg=g:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
 		Duel.BreakEffect()
-		if sg:GetClassCount(Card.GetCode)==#sg then
-			local rct=sg:FilterCount(cm.rfilter2,nil)
-			local num=Duel.GetMatchingGroupCount(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,nil)
-			if rct==0 or num==0 then return end
-			if rct>num then rct=num end
-			if not Duel.SelectYesNo(tp,aux.Stringid(9910024,0)) then return end
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg1=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,rct,nil)
-			if sg1:GetCount()>0 then
-				Duel.SendtoHand(sg1,nil,REASON_EFFECT)
+		if sg:GetClassCount(Card.GetCode)==#sg and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+			local ac=Duel.AnnounceNumber(tp,1,2,3)
+			local gg=sg:RandomSelect(tp,ac)
+			if Duel.SendtoGrave(gg,REASON_EFFECT)~=0 then
+				local thg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+				local num=math.min(#thg,ac)
+				local tg=thg:Select(tp,num,num,nil)
+				Duel.SendtoHand(tg,nil,REASON_EFFECT)
 			end
 		elseif sg:GetClassCount(Card.GetCode)<#sg then
-			local num=Duel.GetMatchingGroupCount(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
-			if num<1 then return end
-			if num>#sg then num=#sg end
+			local num=math.min(Duel.GetMatchingGroupCount(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil),3)
+			--if num<1 then return end
+			--if num>#sg then num=#sg end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 			local sg1=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,num,num,nil)
 			if sg1:GetCount()>0 then
 				Duel.SendtoGrave(sg1,REASON_EFFECT)
 			end
 		end
-	end
+	--end
 end
