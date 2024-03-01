@@ -9,12 +9,6 @@ function cm.initial_effect(c)
 	e0:SetOperation(cm.op)
 	Duel.RegisterEffect(e0,0)
 end
-if not apricot_nightfall then
-	apricot_nightfall=true
-	dofile("expansions/script/special.lua")
-	Auxiliary.PreloadUds()
-	--Debug.Message("Protocol Request Complete. 杏花宵®漏洞解决方案已上线。")
-end
 --[[function aux.GetMustMaterialGroup(tp,code)
 	local g=Group.CreateGroup()
 	local ce={Duel.IsPlayerAffectedByEffect(tp,code)}
@@ -162,4 +156,10 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	e:Reset()
+end
+if not apricot_nightfall then
+	apricot_nightfall=true
+	pcall(dofile,"expansions/script/special.lua")
+	if Auxiliary.PreloadUds then Auxiliary.PreloadUds() end
+	--Debug.Message("Protocol Request Complete. 杏花宵®漏洞解决方案已上线。")
 end

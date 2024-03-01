@@ -62,6 +62,9 @@ c98920143.material_setcode=0xc008
 function c98920143.sprfilter(c,tp,sc)
 	return c:IsFusionCode(40591390) and Duel.GetLocationCountFromEx(tp,tp,c,sc)>0 and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL)
 end
+function c98920143.vfilter(c,tp,sc)
+	return c:IsFaceup() and c:IsSetCard(0xc008)
+end
 function c98920143.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()

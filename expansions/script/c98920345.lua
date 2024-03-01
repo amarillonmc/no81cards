@@ -11,6 +11,7 @@ function c98920345.initial_effect(c)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,98920345)
+	e1:SetCondition(c98920345.descon)
 	e1:SetTarget(c98920345.destg)
 	e1:SetOperation(c98920345.desop)
 	c:RegisterEffect(e1)
@@ -31,6 +32,9 @@ c98920345.material_setcode=0xc008
 function c98920345.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_HAND,0,1,e:GetHandler()) end
 	Duel.DiscardHand(tp,Card.IsAbleToGraveAsCost,1,1,REASON_COST)
+end
+function c98920345.descon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
 function c98920345.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

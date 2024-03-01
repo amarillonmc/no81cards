@@ -91,6 +91,7 @@ function c98920085.activate(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCondition(c98920085.discon)
 		e2:SetTarget(c98920085.distg)
 		e2:SetOperation(c98920085.disop)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e2)
 		tc:RegisterFlagEffect(0,RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(98920085,0))
 	end

@@ -94,6 +94,7 @@ function c98920021.arcanareg(c,coin)
 	e2:SetCost(c98920021.rmcost)
 	e2:SetTarget(c98920021.rmtg)
 	e2:SetOperation(c98920021.rmop)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e2)
 end
 function c98920021.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
