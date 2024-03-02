@@ -39,6 +39,7 @@ function cm.initial_effect(c)
 		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
 	end
+	SNNM.ActivatedAsSpellorTrapCheck(c)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(eg) do

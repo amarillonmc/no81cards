@@ -36,7 +36,7 @@ function cm.fselect(g)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()
-	return Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and Duel.GetCurrentChain()==0 and (e:GetHandler():IsAbleToHand() or (e:GetHandler():IsLocation(LOCATION_HAND) and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK,0,1,nil))) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,nil)
+	return Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and Duel.GetCurrentChain()==0 and (e:GetHandler():IsAbleToHand() or (e:GetHandler():IsLocation(LOCATION_HAND) and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK,0,1,nil))) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,2,nil)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)

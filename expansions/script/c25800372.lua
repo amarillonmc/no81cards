@@ -21,12 +21,13 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.operation)
 	c:RegisterEffect(e3)
 end
-function cm.cfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER)
+function cm.rfilter(c,tp)
+	return c:IsType(TYPE_MONSTER) and c:IsReleasable() 
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,cm.cfilter,2,nil) end
-	local g=Duel.SelectReleaseGroupEx(tp,cm.cfilter,2,2,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.rfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,2,nil,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectMatchingCard(tp,cm.rfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,2,2,nil,tp)
 	Duel.Release(g,REASON_COST)
 end
 function cm.spfilter(c,e,tp)

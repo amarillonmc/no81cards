@@ -132,7 +132,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		if KOISHI_CHECK then
 			Duel.Exile(c,0)
 		else
-			Duel.SendtoGrave(c,REASON_RULE)
+			Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
 		end
 	elseif c:IsLocation(LOCATION_HAND) then
 		if not cm.r then
@@ -150,7 +150,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			Duel.DisableShuffleCheck()
 			Duel.Exile(tc,0)
 		else
-			Duel.SendtoGrave(c,REASON_RULE)
+			Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
 			Duel.DisableShuffleCheck()
 			Duel.SendtoHand(tc,nil,REASON_RULE)
 		end

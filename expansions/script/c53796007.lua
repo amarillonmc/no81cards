@@ -52,12 +52,13 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetOperation(cm.sp)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
+	tc:CreateEffectRelation(e2)
 end
 function cm.sp(e,tp,eg,ep,ev,re,r,rp)
 	local re=e:GetLabelObject()
 	if not re then return end
 	local tc=re:GetLabelObject()
-	if not tc or Duel.GetMZoneCount(tp)==0 or tc:GetLevel()~=Duel.GetFlagEffect(0,m) then return end
+	if not tc or not tc:IsRelateToEffect(e) or Duel.GetMZoneCount(tp)==0 or tc:GetLevel()~=Duel.GetFlagEffect(0,m) then return end
 	Duel.Hint(HINT_CARD,0,m)
 	Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	e:Reset()
