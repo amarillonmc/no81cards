@@ -71,7 +71,11 @@ function s.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
 end
 
 function s.matchtype(c,typ)
-	return ((typ==TYPE_SPELL or typ==TYPE_TRAP) and c:GetType()==typ) or c:GetType()&typ==typ
+	if typ==TYPE_SPELL or typ==TYPE_TRAP then
+		return c:GetType()==typ
+	else
+		return c:GetType()&typ==typ
+	end
 end
 
 s.thchecks=aux.CreateChecks(s.matchtype,{TYPE_NORMAL+TYPE_MONSTER,TYPE_EFFECT+TYPE_MONSTER,TYPE_PENDULUM+TYPE_MONSTER,TYPE_SPELL,TYPE_CONTINUOUS+TYPE_SPELL,TYPE_EQUIP+TYPE_SPELL,TYPE_FIELD+TYPE_SPELL,
