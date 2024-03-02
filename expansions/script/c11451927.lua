@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.fdfilter(c)
-	return c:IsFacedown() and c:IsLocation(LOCATION_SZONE) and c:IsSetCard(0x97d) and c:GetActivateEffect()
+	return c:IsFacedown() and c:IsLocation(LOCATION_SZONE) and c:IsSetCard(0x97d) and c:GetActivateEffect() and not c:GetEquipTarget()
 end
 function cm.LConditionFilter(c,f,lc)
 	return (((c:IsFaceup() or not c:IsOnField()) and c:IsCanBeLinkMaterial(lc)) or (Duel.GetFlagEffect(lc:GetControler(),m)<=Duel.GetTurnCount() and cm.fdfilter(c))) and (not f or f(c))
@@ -115,7 +115,8 @@ function cm.LinkOperation(f,minc,maxc,gf)
 				g:Sub(g1)
 				for i=1,#g1 do Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1) end
 				--Duel.SendtoDeck(g1,nil,2,REASON_MATERIAL+REASON_LINK)
-				c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,c:GetFieldID())
+				local cid=c:GetFieldID()
+				c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,cid)
 				for oc in aux.Next(g1) do
 					local te,te2=oc:GetActivateEffect()
 					if te2 and oc:IsType(TYPE_TRAP) then te=te2 end
@@ -130,10 +131,14 @@ function cm.LinkOperation(f,minc,maxc,gf)
 					e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 					e1:SetProperty(prop|EFFECT_FLAG_SET_AVAILABLE)
 					e1:SetRange(LOCATION_SZONE)
-					e1:SetLabel(c:GetFieldID())
+					--e1:SetLabel(c:GetFieldID())
 					e1:SetLabelObject(c)
 					--if con then e1:SetCondition(con) end
-					e1:SetCost(cm.addcost)
+					--e1:SetCondition(function(e) return e:GetValue()==0 end)
+					e1:SetCost(function(e,tp,eg,ep,ev,re,r,rp,chk)
+									local c=e:GetLabelObject()
+									if chk==0 then return eg:IsContains(c) and c:GetFlagEffectLabel(m) and c:GetFlagEffectLabel(m)==cid end
+								end)
 					if tg then e1:SetTarget(cm.btg(tg)) end
 					if op then e1:SetOperation(op) end
 					--e1:SetReset(RESET_PHASE+PHASE_END)
@@ -147,7 +152,7 @@ function cm.LinkOperation(f,minc,maxc,gf)
 					--e4:SetRange(LOCATION_SZONE)
 					e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 					e4:SetTargetRange(1,0)
-					e4:SetTarget(function(e,te,tp) e:SetLabelObject(te) return oc==te:GetHandler() and te:IsHasType(EFFECT_TYPE_QUICK_F) end)
+					e4:SetTarget(function(e,te,tp) e:SetLabelObject(te) return te==e1 or te==e2 end) --oc==te:GetHandler() and te:IsHasType(EFFECT_TYPE_QUICK_F) end)
 					e4:SetOperation(cm.costop)
 					e4:SetReset(RESET_PHASE+PHASE_END)
 					Duel.RegisterEffect(e4,tp)
@@ -169,6 +174,8 @@ function cm.btg(tg)
 	return function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 				if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc) end
 				if chk==0 then return true end
+				local c=e:GetLabelObject()
+				c:ResetFlagEffect(m)
 				tg(e,tp,eg,ep,ev,re,r,rp,1)
 			end
 end
@@ -205,6 +212,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
+	re:SetType(EFFECT_TYPE_QUICK_F)
 	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 		local _NegateActivation=Duel.NegateActivation
