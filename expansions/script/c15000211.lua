@@ -28,12 +28,12 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	while codelist2==0 do
 		local l=Duel.GetRandomNumber(1,999999999)
 		local mt=cm.load_metatable_load(l)
-		if mt then
-			local token=Duel.CreateToken(tp,l)
+		if mt~=0 then
+			local token=Duel.CreateToken(tp,mt)
 			if token and token:IsType(TYPE_MONSTER) and token:IsType(TYPE_EFFECT) and not token:IsForbidden() and token:CheckUniqueOnField(tp) then
-				c:SetHint(CHINT_CARD,l)
-				Duel.Hint(HINT_CARD,1-tp,l)
-				local tcode=l
+				c:SetHint(CHINT_CARD,mt)
+				Duel.Hint(HINT_CARD,1-tp,mt)
+				local tcode=mt
 				c:SetEntityCode(tcode,true)
 				c:ReplaceEffect(tcode,0,0)
 				codelist2=codelist2+1
@@ -42,8 +42,17 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	end
 end
 function cm.load_metatable_load(code)
-	local type=Duel.ReadCard(code,CARDDATA_TYPE)
-	return type
+	local cc,ca,ctype=Duel.ReadCard(code,CARDDATA_CODE,CARDDATA_ALIAS,CARDDATA_TYPE)
+	local real=0
+	if cc then
+		local dif=cc-ca
+		if dif>-10 and dif<10 then
+			real=ca
+		else
+			real=cc
+		end
+	end
+	return real
 end
 function cm.load_metatable(code)
 	local m1=_G["c"..code]

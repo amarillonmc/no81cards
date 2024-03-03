@@ -66,13 +66,14 @@ function cm.eftg(e,c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsLocation(LOCATION_EXTRA) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_XYZ)
 end
 function cm.xyzfilter(c,e)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsCanBeXyzMaterial(e:GetHandler()) and not c:IsCode(e:GetHandler():GetCode()) --and Duel.GetMZoneCount(tp,c,tp)>0
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsCanBeXyzMaterial(e:GetHandler()) and not c:IsCode(e:GetHandler():GetCode())
 end
 function cm.cfilter(c)
 	return c:IsDiscardable()
 end
-function cm.xyzcon(e,c)
+function cm.xyzcon(e,c,tp)
 	if c==nil then return true end
+	local tp=e:GetHandlerPlayer()
 	return Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_MZONE,0,1,nil,e) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,nil)
 end
 function cm.xyztg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)

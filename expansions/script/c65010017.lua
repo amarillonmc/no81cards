@@ -49,7 +49,7 @@ function c65010017.initial_effect(c)
 	c:RegisterEffect(e4) 
 end
 function c65010017.cfilter(c,tp)
-	return c:IsControler(tp) and c:IsPreviousLocation(LOCATION_DECK)
+	return c:IsControler(tp) --and c:IsPreviousLocation(LOCATION_DECK)
 end
 function c65010017.regcon(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetCurrentPhase()==PHASE_DRAW then return false end

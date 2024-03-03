@@ -45,7 +45,7 @@ function cm.sscon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsType,1,nil,TYPE_SPELL+TYPE_TRAP) and Duel.GetTurnPlayer()~=tp and aux.dscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.cfilter2(c,g)
-	return g:IsExists(Card.IsType,1,nil,c:GetType()&0x6) and c:IsFaceup() and c:IsAbleToGraveAsCost()
+	return g:IsExists(Card.IsType,1,nil,c:GetType()&0x6) and (c:IsFaceup() or c:GetEquipTarget() or c:IsLocation(LOCATION_FZONE)) and c:IsAbleToGraveAsCost()
 end
 function cm.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter2,tp,0,LOCATION_SZONE,1,nil,eg) end

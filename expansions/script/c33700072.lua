@@ -13,7 +13,7 @@ function c33700072.initial_effect(c)
  --deck check
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(4779823,0))
-	e2:SetCategory(CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_HAND)
