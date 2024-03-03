@@ -29,7 +29,8 @@ function c9910937.chainfilter(re,tp,cid)
 	return not re:IsActiveType(TYPE_TRAP)
 end
 function c9910937.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentChain()>1
+	local chain=Duel.GetCurrentChain()
+	return chain>1 or (Duel.GetFlagEffect(tp,9920937)~=0 and chain>0)
 end
 function c9910937.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
