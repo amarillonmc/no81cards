@@ -87,7 +87,7 @@ function cm.initial_effect(c)
 	
 end
 function c22348352.cee4con(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp
+	return rp==1-tp and Duel.IsExistingMatchingCard(c22348352.costfilter4,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 end
 function c22348352.costfilter4(c,e,tp)
 	return e:GetHandler():IsSetCard(0xd70a) and c:IsHasEffect(22348362,tp) and c:IsAbleToRemoveAsCost()
@@ -108,7 +108,7 @@ function c22348352.cfilter3(c,tp)
 	return c:GetReasonPlayer()==1-tp and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c22348352.cee3con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c22348352.cfilter3,1,e:GetHandler(),tp)
+	return eg:IsExists(c22348352.cfilter3,1,e:GetHandler(),tp) and Duel.IsExistingMatchingCard(c22348352.costfilter3,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 end
 function c22348352.costfilter3(c,e,tp)
 	return e:GetHandler():IsSetCard(0xd70a) and c:IsHasEffect(22348361,tp) and c:IsAbleToRemoveAsCost()
@@ -129,7 +129,7 @@ function c22348352.cfilter(c,tp)
 	return c:IsControler(tp) and c:IsPreviousLocation(LOCATION_DECK)
 end
 function c22348352.cee2con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c22348352.cfilter,1,nil,1-tp)
+	return eg:IsExists(c22348352.cfilter,1,nil,1-tp) and Duel.IsExistingMatchingCard(c22348352.costfilter2,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 end
 function c22348352.costfilter2(c,e,tp)
 	return e:GetHandler():IsSetCard(0xd70a) and c:IsHasEffect(22348360,tp) and c:IsAbleToRemoveAsCost()
@@ -148,8 +148,8 @@ end
 function c22348352.thconfilter(c,sp)
 	return c:IsSummonPlayer(sp)
 end
-function c22348352.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c22348352.thconfilter,1,nil,1-tp)
+function c22348352.thcon(e,tp,eg,ep,ev,re,r,rp) 
+	return eg:IsExists(c22348352.thconfilter,1,nil,1-tp) and Duel.IsExistingMatchingCard(c22348352.costfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 end
 function c22348352.costfilter(c,e,tp)
 	return e:GetHandler():IsSetCard(0xd70a) and c:IsHasEffect(22348359,tp) and c:IsAbleToRemoveAsCost()

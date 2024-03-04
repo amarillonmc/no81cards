@@ -78,6 +78,7 @@ function c22348368.effctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	tc:CreateEffectRelation(e)
 	e:SetLabelObject(tc)
 	local te=tc.bfg_effect
+	e:SetProperty(te:GetProperty())
 	local tg=te:GetTarget()
 	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
 end
@@ -87,8 +88,8 @@ function c22348368.effcop(e,tp,eg,ep,ev,re,r,rp)
 		local te=tc.bfg_effect
 		local op=te:GetOperation()
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end
---	Duel.BreakEffect()
---	Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD,nil)
+--  Duel.BreakEffect()
+--  Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD,nil)
 	end
 end
 

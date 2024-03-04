@@ -74,10 +74,10 @@ function cm.distozone2(c,i,j,tp)
 	return math.sqrt((y-j)*(y-j)+(x-i)*(x-i))*1000
 end
 function cm.filter(c,g,i1,j1,i2,j2,tp)
-	return g:IsExists(cm.filter2,1,c,c,i1,j1,i2,j2,tp)
+	return cm.distozone2(c,i1,j1,tp)>0 and cm.distozone2(c,i2,j2,tp)>0 and g:IsExists(cm.filter2,1,c,c,i1,j1,i2,j2,tp)
 end
 function cm.filter2(c,tc,i1,j1,i2,j2,tp)
-	return cm.distozone2(c,i1,j1,tp)+cm.distozone2(c,i2,j2,tp)==cm.distozone2(tc,i1,j1,tp)+cm.distozone2(tc,i2,j2,tp)
+	return cm.distozone2(tc,i1,j1,tp)>0 and cm.distozone2(tc,i2,j2,tp)>0 and cm.distozone2(c,i1,j1,tp)+cm.distozone2(c,i2,j2,tp)==cm.distozone2(tc,i1,j1,tp)+cm.distozone2(tc,i2,j2,tp)
 end
 function cm.filter3(c,tc,i1,j1,i2,j2,tp)
 	return cm.distozone2(c,i1,j1,tp)+cm.distozone2(c,i2,j2,tp)>=cm.distozone2(tc,i1,j1,tp)+cm.distozone2(tc,i2,j2,tp)

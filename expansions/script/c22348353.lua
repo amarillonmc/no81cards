@@ -88,7 +88,7 @@ function cm.initial_effect(c)
 	
 end
 function c22348353.cee4con(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp
+	return rp==1-tp and Duel.IsExistingMatchingCard(c22348353.costfilter4,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 end
 function c22348353.costfilter4(c,e,tp)
 	return e:GetHandler():IsSetCard(0xd70a) and c:IsHasEffect(22348362,tp) and c:IsAbleToRemoveAsCost()
@@ -109,7 +109,7 @@ function c22348353.cfilter3(c,tp)
 	return c:GetReasonPlayer()==1-tp and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c22348353.cee3con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c22348353.cfilter3,1,e:GetHandler(),tp)
+	return eg:IsExists(c22348353.cfilter3,1,e:GetHandler(),tp) and Duel.IsExistingMatchingCard(c22348353.costfilter3,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 end
 function c22348353.costfilter3(c,e,tp)
 	return e:GetHandler():IsSetCard(0xd70a) and c:IsHasEffect(22348361,tp) and c:IsAbleToRemoveAsCost()
@@ -128,7 +128,7 @@ function c22348353.cfilter(c,tp)
 	return c:IsControler(tp) and c:IsPreviousLocation(LOCATION_DECK)
 end
 function c22348353.cee2con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c22348353.cfilter,1,nil,1-tp)
+	return eg:IsExists(c22348353.cfilter,1,nil,1-tp) and Duel.IsExistingMatchingCard(c22348353.costfilter2,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 end
 function c22348353.costfilter2(c,e,tp)
 	return e:GetHandler():IsSetCard(0xd70a) and c:IsHasEffect(22348360,tp) and c:IsAbleToRemoveAsCost()
@@ -148,7 +148,7 @@ function c22348353.thconfilter(c,sp)
 	return c:IsSummonPlayer(sp)
 end
 function c22348353.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c22348353.thconfilter,1,nil,1-tp)
+	return eg:IsExists(c22348353.thconfilter,1,nil,1-tp) and Duel.IsExistingMatchingCard(c22348353.costfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 end
 function c22348353.costfilter(c,e,tp)
 	return e:GetHandler():IsSetCard(0xd70a) and c:IsHasEffect(22348359,tp) and c:IsAbleToRemoveAsCost()
@@ -172,10 +172,13 @@ function c22348353.val(e,c)
 	return Duel.GetMatchingGroupCount(c22348353.atkfilter,c:GetControler(),LOCATION_MZONE,LOCATION_MZONE,nil)*200
 end
 function c22348353.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local aa=nil
+	local c=e:GetHandler()
+	if c:IsType(TYPE_SPELL) then aa=c end
 	if chkc then return chkc:IsOnField() end
-	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,aa) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,aa)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c22348353.desop(e,tp,eg,ep,ev,re,r,rp)

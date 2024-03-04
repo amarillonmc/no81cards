@@ -40,8 +40,12 @@ function c22348358.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	tc:CreateEffectRelation(e)
 	e:SetLabelObject(tc)
 	local te=tc.bfg_effect
+	e:SetProperty(te:GetProperty())
 	local tg=te:GetTarget()
 	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
+
+
+
 end
 function c22348358.effop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
