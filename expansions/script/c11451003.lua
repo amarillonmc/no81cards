@@ -25,7 +25,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_ONFIELD,0,nil,e)
 	if sg:IsExists(cm.filter3,1,nil,1) and not cm[1] then
 		cm[1]=true
-		if KOISHI_CHECK then
+		if 1==0 then
 			Duel.Hint(24,0,aux.Stringid(m,7))
 			Duel.Hint(24,0,aux.Stringid(m,8))
 		else
@@ -34,7 +34,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	elseif sg:IsExists(cm.filter3,1,nil,0) and not cm[0] then
 		cm[0]=true
-		if KOISHI_CHECK then
+		if 1==0 then
 			Duel.Hint(24,0,aux.Stringid(m,5))
 			Duel.Hint(24,0,aux.Stringid(m,6))
 		else

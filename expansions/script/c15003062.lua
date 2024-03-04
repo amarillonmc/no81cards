@@ -19,19 +19,16 @@ end
 function cm.lmcon(e)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
-	return not c:IsPublic()
-end
-function cm.filter(c)
-	return c:IsCode(15003062) and not c:IsPublic()
+	return Duel.GetFlagEffect(0,15003062)==0 and not c:IsPublic()
 end
 function cm.lmop(e)
-	if cm[0] then return end
-	cm[0]=true
+	if Duel.GetFlagEffect(0,15003062)>0 then return end
+	Duel.RegisterFlagEffect(0,15003062,0,0,1)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	Duel.ConfirmCards(1-tp,c)
 	Duel.ConfirmCards(tp,c)
-	if Duel.SelectYesNo(1-tp,aux.Stringid(m,0)) then
+	if Duel.SelectOption(1-tp,aux.Stringid(m,0),aux.Stringid(m,1))==0 then
 		local g=Duel.GetFieldGroup(tp,0xff,0xff)
 		local ec=g:GetFirst()
 		while ec do

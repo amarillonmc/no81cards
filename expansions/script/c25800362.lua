@@ -9,6 +9,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1,m)
+	e1:SetTarget(cm.tg)
 	e1:SetOperation(cm.op)
 	c:RegisterEffect(e1)
 	--tohand
@@ -26,9 +27,11 @@ end
 function cm.filter(c)
 	return c:IsSetCard(0x9212) and c:IsType(TYPE_MONSTER) and c:IsReleasableByEffect()
 end
-
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return  Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,2,nil,tp) end
+end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,2,nil,tp) end
+	Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,2,nil,tp) 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,2,2,nil,tp)
 	if g:GetCount()>0 then

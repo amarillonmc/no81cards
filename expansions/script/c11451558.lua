@@ -68,6 +68,9 @@ end
 function cm.LCheckGoal(sg,tp,lc,gf,lmat)
 	return sg:CheckWithSumEqual(Auxiliary.GetLinkCount,lc:GetLink(),#sg,#sg) and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg)) and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp) and (not lmat or sg:IsContains(lmat)) and not sg:IsExists(cm.fdfilter,4,nil)
 end
+function cm.gcheck(sg)
+	return not sg:IsExists(cm.fdfilter,4,nil)
+end
 function cm.LinkCondition(f,minc,maxc,gf)
 	return  function(e,c,og,lmat,min,max)
 				if c==nil then return true end
@@ -93,7 +96,10 @@ function cm.LinkCondition(f,minc,maxc,gf)
 				local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
 				if fg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
 				Duel.SetSelectedCard(fg)
-				return mg:CheckSubGroup(cm.LCheckGoal,minc,maxc,tp,c,gf,lmat)
+				aux.GCheckAdditional=cm.gcheck
+				local res=mg:CheckSubGroup(cm.LCheckGoal,minc,maxc,tp,c,gf,lmat)
+				aux.GCheckAdditional=nil
+				return res
 			end
 end
 function cm.LinkTarget(f,minc,maxc,gf)
@@ -119,7 +125,9 @@ function cm.LinkTarget(f,minc,maxc,gf)
 				Duel.SetSelectedCard(fg)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
 				local cancel=Duel.IsSummonCancelable()
+				aux.GCheckAdditional=cm.gcheck
 				local sg=mg:SelectSubGroup(tp,cm.LCheckGoal,cancel,minc,maxc,tp,c,gf,lmat)
+				aux.GCheckAdditional=nil
 				if sg then
 					sg:KeepAlive()
 					e:SetLabelObject(sg)
@@ -207,7 +215,8 @@ end
 function cm.exop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	if #g==0 then return end
-	local ag=g:RandomSelect(tp,e:GetLabel())
+	Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(m,1))
+	local ag=g:Select(1-tp,e:GetLabel(),e:GetLabel(),nil)
 	if Duel.SendtoHand(ag,tp,REASON_EFFECT)>0 then
 		Duel.ConfirmCards(1-tp,ag)
 		Duel.ShuffleHand(1-tp)

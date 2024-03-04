@@ -44,19 +44,14 @@ function cm.initial_effect(c)
 	--effc
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_CHAINING)
-	e5:SetCountLimit(1)
+	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCountLimit(1,22349368)
-	e5:SetCondition(c22348368.effccon)
 	e5:SetCost(c22348368.effccost)
 	e5:SetTarget(c22348368.effctg)
 	e5:SetOperation(c22348368.effcop)
 	c:RegisterEffect(e5)
 	
-end
-function c22348368.effccon(e,tp,eg,ep,ev,re,r,rp)
-	return ep==1-tp
 end
 function c22348368.effccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
@@ -92,8 +87,8 @@ function c22348368.effcop(e,tp,eg,ep,ev,re,r,rp)
 		local te=tc.bfg_effect
 		local op=te:GetOperation()
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end
---	  Duel.BreakEffect()
---	  Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD,nil)
+--	Duel.BreakEffect()
+--	Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD,nil)
 	end
 end
 

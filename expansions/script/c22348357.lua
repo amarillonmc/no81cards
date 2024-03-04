@@ -83,7 +83,35 @@ function cm.initial_effect(c)
 	e8:SetCondition(c22348357.cee4con)
 	e8:SetCost(c22348357.cee4cost)
 	c:RegisterEffect(e8)
+	--search
+	local e9=Effect.CreateEffect(c)
+	e9:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e9:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e9:SetCode(EVENT_SUMMON_SUCCESS)
+	e9:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e9:SetCountLimit(1,22349357)
+	e9:SetTarget(c22348357.sctg)
+	e9:SetOperation(c22348357.scop)
+	c:RegisterEffect(e9)
+	local e10=e9:Clone()
+	e10:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e10)
 	
+end
+function c22348357.scfilter(c)
+	return c:IsSetCard(0xb70a) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+end
+function c22348357.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348357.scfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c22348357.scop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c22348357.scfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end
 function c22348357.cee4con(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp

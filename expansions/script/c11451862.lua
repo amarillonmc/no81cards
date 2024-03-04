@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	--e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetHintTiming(TIMING_END_PHASE+TIMING_STANDBY_PHASE+TIMING_DRAW_PHASE+TIMING_BATTLE_END,TIMING_END_PHASE+TIMING_STANDBY_PHASE+TIMING_DRAW_PHASE+TIMING_BATTLE_END+TIMING_MAIN_END)
 	e1:SetCondition(function(e,tp) return (Duel.GetCurrentPhase()~=PHASE_MAIN1 and Duel.GetCurrentPhase()~=PHASE_MAIN2) or Duel.GetTurnPlayer()==1-tp end)
 	e1:SetTarget(cm.thtg)
@@ -88,7 +88,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(cm.tgfilter,tp,0x3c,0x3c,1,c,e) and #g==3 and g:FilterCount(Card.IsFacedown,nil)>0 and Duel.GetFlagEffect(tp,m)==0 end
 	local ph=Duel.GetCurrentPhase()
 	if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
-	--Duel.RegisterFlagEffect(tp,m,RESET_PHASE+ph,EFFECT_FLAG_OATH,1)
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+ph,EFFECT_FLAG_OATH,1)
 	if not PNFL_ETARGET_HINT then
 		PNFL_ETARGET_HINT=true
 		local shg=Duel.GetMatchingGroup(cm.shfilter,tp,0x3c,0x3c,nil)
@@ -140,7 +140,7 @@ function cm.chkval(e,te)
 		local dg=e:GetLabelObject()
 		if dg:IsContains(te:GetHandler()) and te:GetHandler():IsLocation(LOCATION_DECK) and te:GetHandler():GetFlagEffect(m)>0 then
 			te:GetHandler():ResetFlagEffect(m)
-			if Card.SetCardData then
+			if SetCardData then
 				Duel.Hint(24,0,aux.Stringid(m,2))
 			else
 				Debug.Message("「急袭」任务完成！")
@@ -155,7 +155,7 @@ end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject():Filter(aux.NOT(cm.filter1),nil)
 	if not g or #g<=0 then
-		if Card.SetCardData then
+		if SetCardData then
 			Duel.Hint(24,0,aux.Stringid(m,3))
 		else
 			Debug.Message("「急袭」任务失败。")

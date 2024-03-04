@@ -119,10 +119,9 @@ function cm.thop(e,tp)
 	local prepos=tc:GetPosition()
 	if tc:IsFaceup() then 
 		if tc:IsPosition(POS_FACEUP_ATTACK) then
-			if c:IsCanTurnSet() then
-				Duel.SelectPosition(tp,tc,POS_FACEUP_DEFENSE|POS_FACEDOWN_DEFENSE)
-			else
-				Duel.ChangePosition(tc,POS_FACEUP_DEFENSE)
+			if tc:IsCanTurnSet() then
+				local pose=Duel.SelectPosition(tp,tc,POS_FACEUP_DEFENSE|POS_FACEDOWN_DEFENSE)
+				Duel.ChangePosition(tc,pose)
 			end
 		else
 			Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)

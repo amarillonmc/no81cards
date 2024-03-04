@@ -19,7 +19,7 @@ function chuoying.gaixiaoguo2(e,tp,res)
 		if res~=0 then Duel.BreakEffect() end
 		Duel.Hint(HINT_CARD,0,22348360)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local rg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToRemove),tp,0,LOCATION_GRAVE,1,1,nil)
+		local rg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToRemove),tp,0,LOCATION_GRAVE,1,2,nil)
 		Duel.HintSelection(rg)
 		if #rg>0 then
 			Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)

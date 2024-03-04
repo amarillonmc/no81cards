@@ -30,7 +30,7 @@ function c75000801.initial_effect(c)
 	 --phase end
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(75000801,3))
-	e3:SetCategory(CATEGORY_DRAW+CATEGORY_TODECK)
+	e3:SetCategory(CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCode(EVENT_PHASE+PHASE_END)
@@ -83,19 +83,17 @@ function c75000801.tdfilter(c,tp)
 end
 function c75000801.drtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,2)
-		and Duel.IsExistingTarget(c75000801.tdfilter,tp,LOCATION_GRAVE,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingTarget(c75000801.tdfilter,tp,LOCATION_GRAVE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,c75000801.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g2=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,4,4,g)
 	g:Merge(g2)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,5,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
 end
 function c75000801.drop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetTargetsRelateToChain()
-	if #g==0 or aux.PlaceCardsOnDeckBottom(tp,g)==0 then return end
-	Duel.BreakEffect()
-	Duel.Draw(tp,2,REASON_EFFECT)
+	if #g~=0 then
+		aux.PlaceCardsOnDeckBottom(tp,g)
+	end
 end

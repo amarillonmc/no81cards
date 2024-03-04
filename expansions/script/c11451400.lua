@@ -39,7 +39,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		local tc=g:RandomSelect(1-tp,1):GetFirst()
 		Duel.ConfirmCards(1-tp,tc)
-		Duel.ConfirmCards(tp,tc)
 		if cm.filter(tc,e,tp,rc:GetColumnZone(LOCATION_MZONE,tp)) then
 			local rfid=rc:GetRealFieldID()
 			local e1=Effect.CreateEffect(e:GetHandler())
@@ -53,7 +52,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0,rfid)
 				rc:CreateRelation(tc,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 				Duel.SpecialSummonComplete()
-				if KOISHI_CHECK then
+				if 1==0 then
 					Duel.Hint(24,0,aux.Stringid(m,1))
 					Duel.Hint(24,0,aux.Stringid(m,2))
 				else

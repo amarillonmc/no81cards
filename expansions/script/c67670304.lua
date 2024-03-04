@@ -93,7 +93,7 @@ function c67670304.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(sg,POS_FACEUP,REASON_COST)
 end
 function c67670304.imfilter(c,e,tp)
-	return c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsSetCard(0x1b7) and not c:IsType(TYPE_LINK)
+	return c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsSetCard(0x1b7)
 end
 function c67670304.imtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local tp=e:GetHandler():GetControler()

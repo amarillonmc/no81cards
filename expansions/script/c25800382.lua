@@ -9,8 +9,8 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMING_END_PHASE)
 	e1:SetCountLimit(1,m)
-	e1:SetTarget(cm.rstg)
-	e1:SetOperation(cm.rsop)
+	e1:SetTarget(cm.target)
+	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 end
 --e1

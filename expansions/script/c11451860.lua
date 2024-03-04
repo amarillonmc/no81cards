@@ -9,15 +9,16 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	--e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetOperation(cm.dsop)
-	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetRange(LOCATION_HAND)
+	e2:SetOperation(cm.dsop)
+	c:RegisterEffect(e2)
 	if not cm.global_check then
 		cm.global_check=true
 		cm.column=0
@@ -146,6 +147,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,m)>0 then return end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local fd=Duel.SelectField(tp,2,LOCATION_SZONE,0,~0x1f00)
 	for i=0,4 do
 		if fd&(1<<(8+i))>0 then
@@ -194,7 +196,7 @@ function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
 		local cl=cm.column
 		cm.column=cm.column&~(1<<cid)
 		if cl~=0 and cm.column==0 then
-			if Card.SetCardData then
+			if SetCardData then
 				Duel.Hint(24,0,aux.Stringid(m,8))
 			else
 				Debug.Message("「巡逻」最终目标确认！")
@@ -249,7 +251,7 @@ function cm.chkval(e,te)
 		local tp=e:GetOwnerPlayer()
 		local g=e:GetLabelObject()
 		g:ForEach(Card.ResetFlagEffect,m-10)
-		if Card.SetCardData then
+		if SetCardData then
 			Duel.Hint(24,0,aux.Stringid(m,7))
 		else
 			Debug.Message("「巡逻」任务完成！")

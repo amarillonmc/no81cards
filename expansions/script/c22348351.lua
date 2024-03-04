@@ -180,14 +180,18 @@ function c22348351.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c22348351.spop(e,tp,eg,ep,ev,re,r,rp)
 	local res=0
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local g=Duel.GetMatchingGroup(c22348351.filter,tp,LOCATION_HAND,0,nil,e,tp)
+	if ft<1 or g:GetCount()==0 then return end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c22348351.filter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		res=Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,math.min(ft,2))
+	if sg:GetCount()>0 then
+		res=Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
 	chuoying.gaixiaoguo1(e,tp,res)
 	chuoying.gaixiaoguo2(e,tp,res)
 	chuoying.gaixiaoguo3(e,tp,res)
 	chuoying.gaixiaoguo4(e,tp,res)
 end
+

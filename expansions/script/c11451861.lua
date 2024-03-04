@@ -197,13 +197,13 @@ function cm.chkval(e,te)
 		e:SetValue(aux.FALSE)
 		e:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		if tp==e:GetOwnerPlayer() then
-			if Card.SetCardData then
+			if SetCardData then
 				Duel.Hint(24,0,aux.Stringid(m,3))
 			else
 				Debug.Message("「拦截」任务完成！")
 			end
 		else
-			if Card.SetCardData then
+			if SetCardData then
 				Duel.Hint(24,0,aux.Stringid(m,4))
 			else
 				Debug.Message("「拦截」任务失败。")

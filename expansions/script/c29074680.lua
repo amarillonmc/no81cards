@@ -69,6 +69,14 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end
 		Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 	end
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCode(EFFECT_CHANGE_CODE)
+	e1:SetValue(29065500)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e1)
 end
 
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)

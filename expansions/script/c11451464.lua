@@ -70,11 +70,11 @@ function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.filter2(c)
-	return c:IsSetCard(0x97a) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemove()
+function cm.filter2(c,tp)
+	return c:IsSetCard(0x97a) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE) or c:IsControler(tp)) and c:IsAbleToRemove()
 end
-function cm.filter22(c,e)
-	return c:IsSetCard(0x97a) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
+function cm.filter22(c,e,tp)
+	return c:IsSetCard(0x97a) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE) or c:IsControler(tp)) and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
 end
 function cm.filter3(c,e,tp)
 	return c:IsSetCard(0x97a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -147,7 +147,7 @@ function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local mg=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,nil)
+		local mg=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,nil,tp)
 		local sg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_DECK,0,nil,e,tp)
 		local tg=Group.CreateGroup()
 		for sc in aux.Next(sg) do
@@ -163,7 +163,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local mg=Duel.GetMatchingGroup(cm.filter22,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,nil,e)
+	local mg=Duel.GetMatchingGroup(cm.filter22,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD,nil,e,tp)
 	local sg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_DECK,0,nil,e,tp)
 	local tg=Group.CreateGroup()
 	for sc in aux.Next(sg) do
@@ -183,6 +183,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		rg=mg:SelectSubGroup(tp,cm.hspcheck,true,1,#mg,cm.lvplus(tc),tp)
 		aux.GCheckAdditional=nil
 	end
+	Duel.ConfirmCards(1-tp,rg:Filter(Card.IsFacedown,nil))
 	local tg=rg:Filter(cm.filter5,nil)
 	if not tg or #tg==0 then
 		if Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)>0 then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) end

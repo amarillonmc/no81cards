@@ -428,7 +428,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 				end
 		if Duel.GetCurrentChain()==1 then op(e,tp) end
 		e:GetHandler():ResetFlagEffect(11451862)
-		if Card.SetCardData then
+		if SetCardData then
 			Duel.Hint(24,0,aux.Stringid(11451862,2))
 		else
 			Debug.Message("「急袭」任务完成！")

@@ -69,7 +69,7 @@ function c11533703.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11533703.setfilter,tp,LOCATION_DECK,0,1,nil) end
 end
 function c11533703.bgfilter(c)  
-	return c:IsSetCard(0xb4) and c:IsFaceup() and c:IsAbleToGrave()
+	return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsAbleToGrave()
 end  
 function c11533703.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

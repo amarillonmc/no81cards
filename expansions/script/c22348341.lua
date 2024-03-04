@@ -7,13 +7,12 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,22348341+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c22348341.target)
 	e1:SetOperation(c22348341.activate)
 	c:RegisterEffect(e1)
 end
 function c22348341.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (Duel.GetFlagEffect(tp,22348341)~=0 or Duel.GetFlagEffect(tp,22348342)<1)
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,22348342,0,TYPES_TOKEN_MONSTER,800,2000,4,RACE_FIEND,ATTRIBUTE_EARTH) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
@@ -28,6 +27,8 @@ function c22348341.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EVENT_LEAVE_FIELD)
 		e1:SetOperation(c22348341.desop)
 		token:RegisterEffect(e1,true)
+		Duel.RegisterFlagEffect(tp,22348341,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(tp,22348342,RESET_PHASE+PHASE_END,0,2)
 	end
 end
 function c22348341.setfilter(c)

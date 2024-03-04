@@ -37,10 +37,10 @@ function cm.filter(c,tp)
 	return c:IsSetCard(0x97a) and c:IsType(TYPE_MONSTER)
 end
 function cm.filter2(c)
-	return c:IsSetCard(0x97a) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemove()
+	return c:IsSetCard(0x97a) and c:IsAbleToRemove()
 end
 function cm.filter22(c,e)
-	return c:IsSetCard(0x97a) and ((c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)) or (c:IsPublic() and c:IsLocation(LOCATION_HAND)) or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
+	return c:IsSetCard(0x97a) and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
 end
 function cm.filter3(c,e,tp)
 	return c:IsSetCard(0x97a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -127,6 +127,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		rg=mg:SelectSubGroup(tp,cm.hspcheck,true,1,#mg,cm.lvplus(tc),tp)
 		aux.GCheckAdditional=nil
 	end
+	Duel.ConfirmCards(1-tp,rg:Filter(Card.IsFacedown,nil))
 	local tg=rg:Filter(cm.filter5,nil)
 	if not tg or #tg==0 then
 		if Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)>0 then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) end

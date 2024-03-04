@@ -98,13 +98,13 @@ function cm.initial_effect(c)
 	e10:SetCost(c22348356.cee4cost)
 	c:RegisterEffect(e10)
 	--count
-	if not c22348356.global_check then
-		c22348356.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_TO_GRAVE)
-		ge1:SetOperation(c22348356.checkop)
-		Duel.RegisterEffect(ge1,0) end
+--  if not c22348356.global_check then
+--	  c22348356.global_check=true
+--	  local ge1=Effect.CreateEffect(c)
+--	  ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+--	  ge1:SetCode(EVENT_TO_GRAVE)
+--	  ge1:SetOperation(c22348356.checkop)
+--	  Duel.RegisterEffect(ge1,0) end
 	
 end
 function c22348356.checkop(e,tp,eg,ep,ev,re,r,rp)
@@ -198,19 +198,20 @@ function c22348356.val(e,c)
 	return Duel.GetMatchingGroupCount(c22348356.atkfilter,c:GetControler(),LOCATION_MZONE,LOCATION_MZONE,nil)*300
 end
 function c22348356.filter(c,e,tp)
-	return c:IsSetCard(0xd70a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xd70a) and not c:IsCode(22348356) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348356.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c22348356.filter(chkc,e,tp) and chkc~=c end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingTarget(c22348356.filter,tp,LOCATION_GRAVE,0,1,c,e,tp) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c22348356.filter(chkc,e,tp) and chkc~=c end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingTarget(c22348356.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c22348356.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local g=Duel.SelectTarget(tp,c22348356.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function c22348356.spop(e,tp,eg,ep,ev,re,r,rp)
+	local res=0
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) end
+	if tc:IsRelateToEffect(e) then res=Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) end
 	chuoying.gaixiaoguo1(e,tp,res)
 	chuoying.gaixiaoguo2(e,tp,res)
 	chuoying.gaixiaoguo3(e,tp,res)
@@ -227,17 +228,17 @@ function c22348356.sp2op(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function c22348356.filter1(c,e,tp,id)
-	return c:IsSetCard(0xd70a) and c:GetTurnID()==id and not c:IsReason(REASON_RETURN) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c22348356.filter1(c,e,tp)
+	return c:IsSetCard(0xd70a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348356.sp2con2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c22348356.filter1,tp,LOCATION_GRAVE,0,1,nil,e,tp,Duel.GetTurnCount())
+	return Duel.IsExistingMatchingCard(c22348356.filter1,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 end
 function c22348356.sp2op2(e,tp,eg,ep,ev,re,r,rp)
-	local res=0
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348356.filter1),tp,LOCATION_GRAVE,0,1,1,nil,e,tp,Duel.GetTurnCount())
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348356.filter1),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		res=Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

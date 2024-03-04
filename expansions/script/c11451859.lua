@@ -160,7 +160,7 @@ function cm.chkval(e,te)
 		--Duel.Readjust()
 		e:SetValue(aux.FALSE)
 		e:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		if Card.SetCardData then
+		if SetCardData then
 			Duel.Hint(24,0,aux.Stringid(m,15))
 		else
 			Debug.Message("「接引」任务进度更新！")

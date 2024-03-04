@@ -174,6 +174,14 @@ function c22348350.thop(e,tp,eg,ep,ev,re,r,rp)
 	local res=0
 	if Duel.DiscardHand(tp,c22348350.filter,1,1,REASON_EFFECT)~=0 then
 		res=Duel.Draw(tp,1,REASON_EFFECT)
+		if res==0 then return end
+		local dc=Duel.GetOperatedGroup():GetFirst()
+		Duel.ConfirmCards(1-tp,dc)
+		if dc:IsSetCard(0x970a) then
+			Duel.BreakEffect()
+			res=Duel.Draw(tp,1,REASON_EFFECT)
+		end
+		Duel.ShuffleHand(tp)
 	end
 	chuoying.gaixiaoguo1(e,tp,res)
 	chuoying.gaixiaoguo2(e,tp,res)

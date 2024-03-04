@@ -8,7 +8,7 @@ function c9910719.initial_effect(c)
 	QutryYgzw.AddTgFlag(c)
 	--negate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY+CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY+CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -20,7 +20,7 @@ function c9910719.initial_effect(c)
 	c:RegisterEffect(e1)
 	--skip
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910719,1))
+	e2:SetDescription(aux.Stringid(9910719,3))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetCondition(c9910719.descon)
@@ -28,30 +28,47 @@ function c9910719.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910719.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
-		and Duel.IsChainNegatable(ev)
+	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
+		and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function c9910719.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
-	end
 end
 function c9910719.thfilter(c)
 	return c:IsSetCard(0xc950) and c:IsAbleToHand()
 end
 function c9910719.negop(e,tp,eg,ep,ev,re,r,rp)
+	if not Duel.NegateEffect(ev) then return end
 	local rc=re:GetHandler()
-	if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) and Duel.Destroy(rc,REASON_EFFECT)~=0 then
-		local g=Duel.GetMatchingGroup(c9910719.thfilter,tp,LOCATION_DECK,0,nil)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910719,0)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg=g:Select(tp,1,1,nil)
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,sg)
-		end
+	local b=rc:IsRelateToEffect(re) and rc:IsDestructable()
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910719.thfilter),tp,LOCATION_GRAVE,0,nil)
+	local off=1
+	local ops={}
+	local opval={}
+	if b then
+		ops[off]=aux.Stringid(9910719,0)
+		opval[off-1]=1
+		off=off+1
+	end
+	if #g>0 then
+		ops[off]=aux.Stringid(9910719,1)
+		opval[off-1]=2
+		off=off+1
+	end
+	ops[off]=aux.Stringid(9910719,2)
+	opval[off-1]=3
+	off=off+1
+	local op=Duel.SelectOption(tp,table.unpack(ops))
+	if opval[op]==1 then
+		Duel.BreakEffect()
+		Duel.Destroy(rc,REASON_EFFECT)
+	elseif opval[op]==2 then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
 	end
 end
 function c9910719.descon(e,tp,eg,ep,ev,re,r,rp)
