@@ -83,7 +83,7 @@ function cm.fselect(g,ng,goal,tp)
 	elseif g:GetSum(cm.lvplus)==goal and Duel.GetMZoneCount(tp,g)>0 then
 		return true
 	end
-	aux.GCheckAdditional=cm.hspgcheck2
+	aux.GCheckAdditional=cm.hspgcheck2(g,g:GetSum(cm.lvplus)-goal,tp)
 	local tc=ng:CheckSubGroup(cm.fselect3,1,#ng,g,g:GetSum(cm.lvplus)-goal,tp)
 	aux.GCheckAdditional=nil
 	return tc
@@ -91,15 +91,17 @@ end
 function cm.fselect3(g,g1,lv,tp)
 	return g:GetSum(cm.lvplus)==lv and Duel.GetMZoneCount(tp,g+g1)>0
 end
-function cm.hspgcheck(g,c,mg,f,min,max,ext_params)
-	local ng,goal,tp=table.unpack(ext_params)
-	if g:GetSum(cm.lvplus)<=goal then return true end
-	return cm.fselect(g,ng,goal,tp)
+function cm.hspgcheck(ng,goal,tp)
+	return function(g,c,mg)
+			if g:GetSum(cm.lvplus)<=goal then return true end
+			return cm.fselect(g,ng,goal,tp)
+		end
 end
-function cm.hspgcheck2(g,c,mg,f,min,max,ext_params)
-	local g1,lv,tp=table.unpack(ext_params)
-	if g:GetSum(cm.lvplus)<=lv then return true end
-	return cm.fselect3(g,g1,lv,tp)
+function cm.hspgcheck2(ng,goal,tp)
+	return function(g,c,mg)
+			if g:GetSum(cm.lvplus)<=goal then return true end
+			return cm.fselect3(g,ng,goal,tp)
+		end
 end
 function cm.accost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -167,7 +169,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		rg=trg:SelectSubGroup(tp,cm.fselect,true,1,#trg,ng,cm.lvplus(tc),tp)
 		if rg and #rg>0 and rg:GetSum(cm.lvplus)>cm.lvplus(tc) then
 			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,7))
-			aux.GCheckAdditional=cm.hspgcheck2
+			aux.GCheckAdditional=cm.hspgcheck2(rg,rg:GetSum(cm.lvplus)-cm.lvplus(tc),tp)
 			rg2=ng:SelectSubGroup(tp,cm.fselect3,true,1,#ng,rg,rg:GetSum(cm.lvplus)-cm.lvplus(tc),tp)
 			aux.GCheckAdditional=nil
 			if rg2 and #rg2>0 then
