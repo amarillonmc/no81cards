@@ -243,6 +243,7 @@ function s.initial_effect(c)
 					table.remove(zonet,zoneToRemove[i])
 				end
 				zone=zonet[s.roll(1,#zonet)]
+				Duel.Hint(HINT_ZONE,tp,zone)
 			end
 			if zone==nil then zone=0xff end
 			return _SpecialSummonStep(c,sumt,sump,tp,noc,nol,pos,zone)
@@ -288,6 +289,7 @@ function s.initial_effect(c)
 					table.remove(zonet,zoneToRemove[i])
 				end
 				zone=zonet[s.roll(1,#zonet)]
+				Duel.Hint(HINT_ZONE,tp,zone)
 			end
 			if min==nil then min=0 end
 			if zone==nil then zone=0x1f end
@@ -309,6 +311,7 @@ function s.initial_effect(c)
 					table.remove(zonet,zoneToRemove[i])
 				end
 				zone=zonet[s.roll(1,#zonet)]
+				Duel.Hint(HINT_ZONE,tp,zone)
 			end
 			if min==nil then min=0 end
 			if zone==nil then zone=0x1f end
@@ -541,9 +544,7 @@ function s.roll(min,max)
 		for i=0,10 do
 			result=result+(ct[g:RandomSelect(2,1):GetFirst()]<<(3*i))
 		end
-		g:DeleteGroup()
-		
-		s.r=result&0xffffffff
+		s.r=result&0xffffffff	   
 	end
 	min=tonumber(min)
 	max=tonumber(max)
@@ -590,7 +591,7 @@ function s.fuop(e,tp,eg,ep,ev,re,r,rp)
 			local tc=g1:GetFirst()
 			while tc and fg:GetCount()<6 do
 				g1:RemoveCard(tc)
-				if fg:Filter(Card.IsCode,nil,tc:GetCode()):GetCount()==0 then fg:AddCard(Duel.CreateToken(p,tc:GetCode())) end
+				if fg:Filter(Card.IsCode,nil,tc:GetCode()):GetCount()==0 then fg:AddCard(tc) end
 				tc=g1:RandomSelect(p,1):GetFirst()
 			end
 			if fg:GetCount()==6 then

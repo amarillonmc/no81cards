@@ -2,8 +2,10 @@
 local cm,m=GetID()
 cm.named_with_Arknight=1
 function cm.initial_effect(c)
+	aux.AddCodeList(c,29065500)
 	--special summon
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
@@ -84,7 +86,7 @@ function cm.GetCardsInZone(tp,fd)
 		loc=LOCATION_SZONE
 		seq=seq-8
 	end
-	return Duel.GetFieldCard(p,loc,math.floor(seq+0.5))
+	return Duel.GetFieldCard(p,loc,seq)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	local fd,tid=e:GetLabel()
