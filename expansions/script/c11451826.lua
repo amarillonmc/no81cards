@@ -114,8 +114,8 @@ function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	local mg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	cm[0]=0
 	if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-		cm[0]=0
 		te:GetTarget()(te,tp,eg,ep,ev,re,r,rp,1,c,mg,2,2)
 		te:GetOperation()(te,tp,eg,ep,ev,re,r,rp,c,mg,2,2)
 		Duel.SpecialSummon(c,SUMMON_TYPE_XYZ,tp,tp,true,false,POS_FACEUP)

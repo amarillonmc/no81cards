@@ -54,31 +54,30 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter,1,nil,tp)
 end
 
-function cm.thfilter(c,tp,e)
-	return c:IsFaceup() and cm.MagicCombineDemon(c) and c:IsLocation(LOCATION_REMOVED)
-		and c:IsControler(tp) and c:IsCanBeEffectTarget(e) and (c:IsAbleToDeck() or c:IsAbleToExtra())
-end
-function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	if chkc then return eg:IsContains(chkc) and cm.thfilter(chkc,tp,e) end
-	if chk==0 then return true end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=g:FilterSelect(tp,cm.thfilter,1,1,nil,tp,e)
-	Duel.SetTargetCard(sg)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,1,0,0)
+function cm.thfilter(c)
+	return c:IsFaceup() and cm.MagicCombineDemon(c) 
+		and (c:IsAbleToDeck() or c:IsAbleToExtra())
 end
 function cm.spfilter(c,e,tp)
-	return cm.MagicCombineDemon(c) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return cm.MagicCombineDemon(c) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)  and (c:IsLocation(LOCATION_DECK) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+			or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_REMOVED) and cm.thfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_REMOVED,0,1,nil) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_REMOVED,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_EXTRA)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 then
-		local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil,e,tp)
-		if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0  then
+	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and (tc:IsLocation(LOCATION_EXTRA)or tc:IsLocation(LOCATION_DECK)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g2=Duel.SelectMatchingCard(tp,cmspfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,e,tp)
+		if g2:GetCount()>0 then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg=g:Select(tp,1,1,nil)
-			Duel.SpecialSummon(sg,0,tp,tp,true,false,POS_FACEUP)
+			Duel.SpecialSummon(g2,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
 end
