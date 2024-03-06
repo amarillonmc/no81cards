@@ -14,8 +14,9 @@ function c88800012.initial_effect(c)
 	local e3=e1:Clone()
 	e3:SetCode(c88800012.condition1)
 	c:RegisterEffect(e3)
-	--spsummon1
+	--set
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_DAMAGE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_HAND)
@@ -61,12 +62,15 @@ function c88800012.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,c88800012.cfilter,1,1,REASON_COST+REASON_DISCARD,e:GetHandler())
 end
 function c88800012.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(1200)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1200)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSSetable,tp,LOCATION_HAND,0,1,nil) end
 end
 function c88800012.setop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Damage(p,d,REASON_EFFECT)
+	Duel.ShuffleHand(tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,Card.IsSSetable,tp,LOCATION_HAND,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc and Duel.SSet(tp,tc,tp,false)>0 then
+		Duel.BreakEffect()
+		Duel.Damage(1-tp,1200,REASON_EFFECT)
+	end
 end
