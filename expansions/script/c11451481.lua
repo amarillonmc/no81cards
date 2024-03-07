@@ -1,6 +1,5 @@
 --魔人★双子 菈·豪泽尔
-local m=11451481
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--effect1
 	local e1=Effect.CreateEffect(c)
@@ -80,7 +79,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) or Duel.GetLocationCount(tp,LOCATION_MZONE)<2 or not c:IsRelateToEffect(e) or not c:IsCanBeSpecialSummoned(e,0,tp,false,false) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local tg=g:Filter(aux.NecroValleyFilter(cm.spfilter2),nil,e,tp)
+	local tg=g:FilterSelect(tp,aux.NecroValleyFilter(cm.spfilter2),1,1,nil,e,tp)
 	if #tg>0 then
 		tg:AddCard(c)
 		Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
