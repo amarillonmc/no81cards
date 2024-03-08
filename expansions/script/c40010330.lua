@@ -74,10 +74,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and (tc:IsLocation(LOCATION_EXTRA)or tc:IsLocation(LOCATION_DECK)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g2=Duel.SelectMatchingCard(tp,cmspfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,e,tp)
+		local g2=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,e,tp)
 		if g2:GetCount()>0 then
 			Duel.BreakEffect()
-			Duel.SpecialSummon(g2,0,tp,tp,false,false,POS_FACEUP)
+			Duel.SpecialSummon(g2,0,tp,tp,true,false,POS_FACEUP)
 		end
 	end
 end

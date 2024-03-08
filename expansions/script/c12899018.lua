@@ -1,14 +1,16 @@
 --D.H.P.K.-奈娜
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--act limit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	e1:SetCode(EFFECT_CANNOT_TRIGGER)
-	e1:SetRange(0xff)
-	e1:SetCondition(s.actcon)
-	c:RegisterEffect(e1)
+	if not s.global_flag then
+		s.global_flag=true
+		--act limit
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CANNOT_TRIGGER)
+		e1:SetTargetRange(0xff,0xff)
+		e1:SetTarget(s.disable)
+		Duel.RegisterEffect(e1,0)
+	end
 	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(1109)
@@ -34,9 +36,12 @@ function s.initial_effect(c)
 	e3:SetOperation(s.spop)
 	c:RegisterEffect(e3)
 end
-function s.actcon(e)
-	local tp=e:GetHandlerPlayer()
-	return Duel.IsExistingMatchingCard(s.ndcfilter,tp,LOCATION_MZONE,0,1,nil)
+s.limt_name_hpk=id
+function s.disable(e,c)
+	if c.limt_name_hpk~=id then return end
+	local tp=c:GetControler()
+	return (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0)
+		and Duel.IsExistingMatchingCard(s.ndcfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function s.ndcfilter(c)
 	return c:IsFacedown() or not c:IsSetCard(0x5a71)
@@ -71,7 +76,10 @@ function s.spfilter(c,e,tp,ec)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_EFFECT,tp,s.tgfilter,1,c,e,tp) end
+	if chk==0 then 
+		local res=Duel.CheckReleaseGroup(REASON_EFFECT,tp,s.tgfilter,1,c,e,tp)
+		if res==nil then res=Duel.CheckReleaseGroup(tp,s.tgfilter,1,c,e,tp) end
+	return res end
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
@@ -79,6 +87,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectReleaseGroup(REASON_EFFECT,tp,s.tgfilter,1,1,c,e,tp)
+	if g==nil then g=Duel.SelectReleaseGroup(tp,s.tgfilter,1,1,c,e,tp) end
 	local tc=g:GetFirst()
 	if tc and Duel.Release(tc,REASON_EFFECT)~=0 then
 		local sg=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_EXTRA,0,nil,e,tp,tc)

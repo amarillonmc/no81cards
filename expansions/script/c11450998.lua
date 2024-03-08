@@ -97,7 +97,7 @@ function cm.imop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(0x20000000+m)
+	e2:SetCode(0x20000000+m+1)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetTargetRange(1,0)
@@ -105,7 +105,7 @@ function cm.imop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterEffect(e2)
 end
 function cm.flcon(e)
-	return Duel.GetFlagEffect(e:GetHandlerPlayer(),m)~=0
+	return Duel.GetFlagEffect(e:GetHandlerPlayer(),m+1)~=0
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if rp==1-tp and e:GetLabel()==1 then return end

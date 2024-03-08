@@ -45,6 +45,7 @@ function s.mixtg(e,tp,eg,ep,ev,re,r,rp,chk)
 			ctgy = ctgy + CATEGORY_DRAW 
 		end
 		e:SetCategory(ctgy)
+		Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(id,1))
 	end
 	s.chain_id_scl[cct] = op
 end

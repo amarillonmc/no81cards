@@ -46,7 +46,7 @@ end
 function s.Xyzfilter(c,sc)
 	return c:IsFaceup() and c:IsCanBeXyzMaterial(sc) and c:IsXyzLevel(sc,4)
 end
-function s.XyzCondition(e,c,og)
+function s.XyzCondition(e,c,og,min,max)
 	if c==nil then return true end
 	if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 	local tp=c:GetControler()
@@ -59,7 +59,7 @@ function s.XyzCondition(e,c,og)
 	end
 	
 end
-function s.XyzTarget(e,tp,eg,ep,ev,re,r,rp,chk,c,og)
+function s.XyzTarget(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 	local g=Group.CreateGroup()
 	if og then 
 		g=Duel.SelectXyzMaterial(tp,c,aux.TRUE,4,3,3,og)
@@ -76,8 +76,8 @@ function s.XyzTarget(e,tp,eg,ep,ev,re,r,rp,chk,c,og)
 		return true
 	else return false end
 end
-function s.XyzOperation(e,tp,eg,ep,ev,re,r,rp,c,og)
-	if og then
+function s.XyzOperation(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+	if og and not min then
 		local sg=Group.CreateGroup()
 		local tc=og:GetFirst()
 		while tc do
