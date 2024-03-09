@@ -1,6 +1,5 @@
 --abyss of dragon palace
-local m=11451424
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--spsummon
 	local e3=Effect.CreateEffect(c)
@@ -77,6 +76,7 @@ function cm.detg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 	c:SetTurnCounter(0)
 	c:RegisterEffect(e1)
+	e:SetCategory(0)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,6)) then
 		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 		e:GetLabelObject():UseCountLimit(tp)

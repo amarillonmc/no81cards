@@ -2,10 +2,8 @@
 local cm,m=GetID()
 cm.named_with_Arknight=1
 function cm.initial_effect(c)
-	aux.AddCodeList(c,29065500)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
@@ -51,6 +49,9 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local fd=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0xe000e0)
 	Duel.SetTargetParam(fd)
 	Duel.Hint(HINT_ZONE,tp,fd)
+	local fd2=fd
+	if fd>=1<<16 then fd2=fd>>16 else fd2=fd<<16 end
+	Duel.Hint(HINT_ZONE,1-tp,fd2)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -86,7 +87,7 @@ function cm.GetCardsInZone(tp,fd)
 		loc=LOCATION_SZONE
 		seq=seq-8
 	end
-	return Duel.GetFieldCard(p,loc,seq)
+	return Duel.GetFieldCard(p,loc,math.floor(seq+0.5))
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	local fd,tid=e:GetLabel()

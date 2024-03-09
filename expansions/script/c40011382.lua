@@ -75,8 +75,15 @@ end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler()~=e:GetHandler() 
 end
+function cm.cfilter(c)
+	return cm.MagicCombineDemon(c) and c:IsAbleToGraveAsCost()
+end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return not e:GetHandler():IsPublic() end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil) and not e:GetHandler():IsPublic() end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
+
 end
 function cm.thfilter(c)
 	return cm.MagicCombineMagic(c) and c:IsAbleToHand()

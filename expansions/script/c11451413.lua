@@ -86,7 +86,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if r and not e:GetHandler():IsLocation(LOCATION_GRAVE) and not e:GetHandler():IsLocation(LOCATION_REMOVED) then
 		Duel.BreakEffect()
 		local ph=Duel.GetCurrentPhase()
-		if Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)~=0 and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE then
+		if Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)~=0 and e:GetHandler():IsLocation(LOCATION_GRAVE) and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE then
 			Duel.SkipPhase(Duel.GetTurnPlayer(),PHASE_BATTLE,RESET_PHASE+PHASE_BATTLE_STEP,1)
 		end
 	end
