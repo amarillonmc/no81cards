@@ -55,6 +55,9 @@ function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local dg=math.floor(ev/1000)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
 end
+function cm.tgfilter(c)
+	return c:IsType(TYPE_MONSTER) or c:IsCode(40009909)
+end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local dg=math.floor(ev/1000)
@@ -62,7 +65,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,dg)
 	local g=Duel.GetDecktopGroup(tp,dg)
 	if g:GetCount()>0 then 
-		local ct=g:Filter(Card.IsType,nil,TYPE_MONSTER)
+		local ct=g:Filter(cm.tgfilter,nil)
 		if ct:GetFirst():IsAbleToGrave() then
 			local atk=Duel.SendtoGrave(ct,REASON_EFFECT+REASON_REVEAL)
 			local e1=Effect.CreateEffect(c)

@@ -33,7 +33,7 @@ function cm.blaucavalier(c)
 	return m and m.named_with_blaucavalier
 end
 function cm.filter(c)
-	return not c:IsLevel(3) and cm.blaucavalier(c) and c:IsType(TYPE_TUNER) and c:IsAbleToHand()
+	return ((not c:IsLevel(3) and cm.blaucavalier(c) and c:IsType(TYPE_TUNER)) or c:IsCode(40011443)) and c:IsAbleToHand()
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end

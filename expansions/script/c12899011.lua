@@ -24,7 +24,22 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
+	
+	--splimit
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_SPSUMMON_COST)
+	e4:SetCost(cm.lspcost)
+	c:RegisterEffect(e4)
 end
+function cm.ckfilter(c)
+	return c:IsSetCard(0x5a71)) and c:IsFaceup()
+end
+function cm.lspcost(e,c,tp,st)
+	if bit.band(st,SUMMON_TYPE_LINK)~=SUMMON_TYPE_LINK then return true end
+	return Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_MZONE,0,1,nil)
+end
+
 function cm.ckfilter(c)
 	return ((not c:IsSetCard(0x5a71)) and c:IsFaceup()) or c:IsFacedown()
 end

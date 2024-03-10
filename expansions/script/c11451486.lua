@@ -56,7 +56,7 @@ if not Duel.GetMustMaterial then
 	end
 end
 function cm.spfilter(c,sc)
-	return c:IsCanBeXyzMaterial(sc) and ((c:IsFaceup() and (c:IsXyzLevel(sc,8) or (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY)))) or (c:IsLocation(LOCATION_HAND) and (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY))))
+	return c:IsCanBeXyzMaterial(sc) and ((c:IsFaceup() and (c:IsXyzLevel(sc,8) or c:IsRank(8) or (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY)))) or (c:IsLocation(LOCATION_HAND) and (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY))))
 end
 function cm.hand(g)
 	return g:FilterCount(Card.IsLocation,nil,LOCATION_HAND)<=1

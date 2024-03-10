@@ -44,7 +44,8 @@ function c71401014.mfilter(c)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsRank(4)
 end
 function c71401014.chainop(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetHandler():GetOriginalType()&TYPE_MONSTER~=0 and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetActivateLocation()==LOCATION_SZONE and c:IsFaceup() then
+	local rc=re:GetHandler()
+	if rc:GetOriginalType()&TYPE_MONSTER~=0 and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetActivateLocation()==LOCATION_SZONE and rc:IsFaceup() then
 		Duel.SetChainLimit(c71401014.chainlm)
 	end
 end

@@ -31,34 +31,23 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.adop)
 	c:RegisterEffect(e2)  
 end
-function cm.efffilter(c,e,tp,eg,ep,ev,re,r,rp)
-	if not (c:IsLocation(LOCATION_GRAVE) and c:IsCode(40009327)) then return false end
-	local te=c.discard_effect
-	if not te then return false end
-	local tg=te:GetTarget()
-	return not tg or tg and tg(e,tp,eg,ep,ev,re,r,rp,0)
+function cm.efffilter(c)
+	return c:IsCode(40009327)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and cm.efffilter(chkc,e,tp,eg,ep,ev,re,r,rp) and chkc~=e:GetHandler() end
-	if chk==0 then return Duel.IsExistingTarget(cm.efffilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,eg,ep,ev,re,r,rp) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.efffilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(cm.efffilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,cm.efffilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp)
-	local tc=g:GetFirst()
-	Duel.ClearTargetCard()
-	tc:CreateEffectRelation(e)
-	e:SetLabelObject(tc)
-	local te=tc.discard_effect
-	local tg=te:GetTarget()
-	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
+	Duel.SelectTarget(tp,cm.efffilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	local rec=math.abs(8000-Duel.GetLP(tp))
+	Duel.SetTargetParam(rec)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if tc:IsRelateToEffect(e) then
-		Duel.BreakEffect()
-		local te=tc.discard_effect
-		local op=te:GetOperation()
-		if op then op(e,tp,eg,ep,ev,re,r,rp) end
-	end
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	local rec=math.abs(8000-Duel.GetLP(tp))
+	local dam=Duel.Recover(tp,rec,REASON_EFFECT)
+	Duel.BreakEffect()
+	Duel.Damage(tp,dam,REASON_EFFECT)
 end
 function cm.adcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep==tp and ev>=1000
@@ -67,6 +56,9 @@ function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local dg=math.floor(ev/1000)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
 end
+function cm.tgfilter(c)
+	return c:IsType(TYPE_MONSTER) or c:IsCode(40009909)
+end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local dg=math.floor(ev/1000)
@@ -74,7 +66,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,dg)
 	local g=Duel.GetDecktopGroup(tp,dg)
 	if g:GetCount()>0 then 
-		local ct=g:Filter(Card.IsType,nil,TYPE_MONSTER)
+		local ct=g:Filter(cm.tgfilter,nil)
 		if ct:GetFirst():IsAbleToGrave() then
 			local tc=Duel.SendtoGrave(ct,REASON_EFFECT+REASON_REVEAL)
 			if tc==0 then return end

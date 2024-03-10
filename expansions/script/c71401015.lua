@@ -65,7 +65,7 @@ end
 function c71401015.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and not c:IsImmuneToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
-		local ct=c:GetOverlayCount()
+		local ct=c:GetOverlayCount()+1
 		if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -94,7 +94,7 @@ function c71401015.filter3(c)
 	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_XYZ) and Duel.IsExistingMatchingCard(c71401015.filter3a,tp,LOCATION_ONFIELD,0,1,c)
 end
 function c71401015.filter3a(c)
-	return c:IsFaceup() and c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsCanOverlay()
+	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsRace(RACE_SPELLCASTER) and c:IsCanOverlay() and not c:IsForbidden()
 end
 function c71401015.tg3(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c71401015.filter3(chkc) end
@@ -106,7 +106,7 @@ function c71401015.op3(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-		mg=Duel.SelectMatchingCard(tp,c71401015.filter3a,tp,LOCATION_ONFIELD,0,1,tc)
+		mg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71401015.filter3a),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,tc)
 		Duel.Overlay(tc,mg)
 	end
 end

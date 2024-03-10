@@ -9,8 +9,7 @@ function cm.initial_effect(c)
 	--effect
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,m)
@@ -30,6 +29,25 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
+	--negate
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,1))
+	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetRange(LOCATION_HAND)
+	e3:SetCondition(cm.negcon)
+	e3:SetTarget(cm.negtg)
+	e3:SetOperation(cm.negop)
+	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetTargetRange(LOCATION_HAND,0)
+	e4:SetTarget(cm.eftg)
+	e4:SetLabelObject(e3)
+	c:RegisterEffect(e4) 
 end
 cm.material_type=TYPE_SYNCHRO 
 function cm.Relief(c)
@@ -87,40 +105,43 @@ function cm.thfilter(c)
 	return cm.Relief(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsType(TYPE_SYNCHRO+TYPE_FUSION+TYPE_XYZ+TYPE_LINK)  
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local dg=math.floor(ev/3000)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.thfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return dg>0 and Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	local g=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_GRAVE,0,1,dg,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,#g,0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	local c=e:GetHandler()
+	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	if tg:GetCount()>0 then
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+
+		local tc=tg:GetFirst()
+		while tc do
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			tc=tg:GetNext()
+		end
+		tg:KeepAlive()
+
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_PUBLIC)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
-		--Destroy
-		local e4=Effect.CreateEffect(e:GetHandler())
-		e4:SetDescription(aux.Stringid(m,3))
-		e4:SetCategory(CATEGORY_DISABLE+CATEGORY_DESTROY)
-		e4:SetType(EFFECT_TYPE_QUICK_O)
-		e4:SetCode(EVENT_CHAINING)
-		e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-		e4:SetRange(LOCATION_HAND)
-		e4:SetReset(RESET_EVENT+RESET_TOGRAVE+RESET_TURN_SET+RESET_TODECK+RESET_TOFIELD+RESET_TEMP_REMOVE+RESET_REMOVE)
-		e4:SetCondition(cm.negcon)
-		e4:SetCost(cm.negcost)
-		e4:SetTarget(cm.negtg)
-		e4:SetOperation(cm.negop)
-		tc:RegisterEffect(e4)
+		e1:SetLabelObject(tg)
+		--tc:RegisterEffect(e1)
+		Duel.RegisterEffect(e1,tp)
+		Duel.RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
 	end
 end
+
+function cm.eftg(e,c)
+	return e:GetHandler():IsPublic()
+end
+
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and ep~=tp and Duel.IsChainNegatable(ev) and e:GetHandler():IsPublic()
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and ep~=tp and Duel.IsChainNegatable(ev)
 end
 function cm.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
