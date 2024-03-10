@@ -143,11 +143,25 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
+function cm.cfilter(c,syn,mg)
+	return c:IsSetCard(0x6977) and syn:IsLinkSummonable(mg,c)
+end
+function cm.scfilter(c,mg)
+	return mg:IsExists(cm.cfilter,1,nil,c,mg)
+end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,0,nil)
 	local mg2=Duel.GetOverlayGroup(tp,1,1):Filter(cm.matfilter,nil)
 	mg:Merge(mg2)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.GetMatchingGroup(cm.scfilter,tp,LOCATION_EXTRA,0,nil,mg)
+	if #g>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
+		local tg=mg:FilterSelect(tp,cm.cfilter,1,1,nil,sg:GetFirst())
+		Duel.LinkSummon(tp,sg:GetFirst(),mg,tg:GetFirst())
+	end
+	--[[Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	aux.GCheckAdditional=cm.fselect
 	local g=Duel.SelectMatchingCard(tp,Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,1,nil,mg)
 	aux.GCheckAdditional=nil
@@ -163,5 +177,5 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 							return _SendtoGrave(g,r)
 						end
 		Duel.LinkSummon(tp,tc,mg)
-	end
+	end--]]
 end

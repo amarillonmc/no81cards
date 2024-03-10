@@ -15,15 +15,16 @@ function cm.initial_effect(c)
 end
 if not cm.jjygthree then
 	cm.jjygthree=true
-	cm._remove=Duel.Remove
+	local cm_remove=Duel.Remove
 	Duel.Remove=function (c,pos,rea,...)
 		if Duel.GetFlagEffect(tp,m)~=0 and Duel.IsExistingMatchingCard(cm.fil,tp,LOCATION_DECK,0,1,nil) then
 			local ac=Duel.SelectMatchingCard(tp,cm.fil,tp,LOCATION_DECK,0,1,1,nil)
-			cm._remove(ac,pos,rea,...)
+			
 			--Duel.ResetFlagEffect(tp,m)
 			Duel.Hint(HINT_CARD,0,m)
+			return cm_remove(ac,pos,rea,...)
 		else
-			cm._remove(c,pos,rea,...)
+			return cm_remove(c,pos,rea,...)
 		end
 	end
 end

@@ -15,15 +15,16 @@ function cm.initial_effect(c)
 end
 if not cm.jjygfour then
 	cm.jjygfour=true
-	cm._destroy=Duel.Destroy
+	local cm_destroy=Duel.Destroy
 	Duel.Destroy=function (c,rea,...)
 		if Duel.GetFlagEffect(tp,m)~=0 and Duel.IsExistingMatchingCard(cm.fil,tp,LOCATION_DECK,0,1,nil) then
 			local ac=Duel.SelectMatchingCard(tp,cm.fil,tp,LOCATION_DECK,0,1,1,nil)
-			cm._destroy(ac,rea,...)
+			
 			--Duel.ResetFlagEffect(tp,m)
 			Duel.Hint(HINT_CARD,0,m)
+			return cm_destroy(ac,rea,...)
 		else
-			cm._destroy(c,rea,...)
+			return cm_destroy(c,rea,...)
 		end
 	end
 end

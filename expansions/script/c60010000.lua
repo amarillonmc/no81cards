@@ -229,7 +229,7 @@ function MTC.SEffect(c,code,event,doing,loc,fil,minnum,maxnum)
 	local e1=Effect.CreateEffect(c)
 	if doing==1 then
 		e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	else if doing==2 then
+	elseif doing==2 then
 		e1:SetCategory(CATEGORY_TOGRAVE)
 	end
 	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
@@ -248,6 +248,7 @@ function MTC.SEffect(c,code,event,doing,loc,fil,minnum,maxnum)
 	e1:SetLabel(loc,fil,minnum,maxnum)
 	c:RegisterEffect(e1)
 end
+
 function MTC.sitg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local loc,fil,minnum,maxnum=e:GetLabel()
 	if chk==0 then return Duel.IsExistingMatchingCard(fil,tp,loc,0,1,nil) end

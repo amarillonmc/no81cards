@@ -15,15 +15,16 @@ function cm.initial_effect(c)
 end
 if not cm.jjygone then
 	cm.jjygone=true
-	cm._send_to_hand=Duel.SendtoHand
+	local cm_send_to_hand=Duel.SendtoHand
 	Duel.SendtoHand=function (c,tp,rea,...)
 		if Duel.GetFlagEffect(tp,m)~=0 and Duel.IsExistingMatchingCard(cm.fil,tp,LOCATION_DECK,0,1,nil) then
 			local ac=Duel.SelectMatchingCard(tp,cm.fil,tp,LOCATION_DECK,0,1,1,nil)
-			cm._send_to_hand(ac,tp,rea,...)
+			
 			--Duel.ResetFlagEffect(tp,m)
 			Duel.Hint(HINT_CARD,0,m)
+			return cm_send_to_hand(ac,tp,rea,...)
 		else
-			cm._send_to_hand(c,tp,rea,...)
+			return cm_send_to_hand(c,tp,rea,...)
 		end
 	end
 end

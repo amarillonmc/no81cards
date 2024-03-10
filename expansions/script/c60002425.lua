@@ -15,26 +15,33 @@ function cm.initial_effect(c)
 end
 if not cm.jjygtwo then
 	cm.jjygtwo=true
-	cm._special_summon=Duel.SpecialSummon
+	local cm_special_summon=Duel.SpecialSummon
 	Duel.SpecialSummon=function (c,way,tp1,tp2,tf1,tf2,pos,...)
+		--local tp=c:GetOwner()
 		if Duel.GetFlagEffect(tp,m)~=0 and Duel.IsExistingMatchingCard(cm.fil,tp,LOCATION_DECK,0,1,nil) and (c:IsLocation(LOCATION_DECK) or c:IsLocation(LOCATION_EXTRA)) then
 			local ac=Duel.SelectMatchingCard(tp,cm.fil,tp,LOCATION_DECK,0,1,1,nil)
-			cm._special_summon(ac,way,tp1,tp2,tf1,tf2,pos,...)
 			--Duel.ResetFlagEffect(tp,m)
 			Duel.Hint(HINT_CARD,0,m)
+			--local x=
+			--Debug.Message(x)
+			return cm_special_summon(ac,way,tp1,tp2,tf1,tf2,pos,...)
 		else
-			cm._special_summon(c,way,tp1,tp2,tf1,tf2,pos,...)
+			--local x=
+			--Debug.Message(x)
+			return cm_special_summon(c,way,tp1,tp2,tf1,tf2,pos,...)
 		end
 	end
-	cm._special_summon_step=Duel.SpecialSummonStep
+	local cm_special_summon_step=Duel.SpecialSummonStep
 	Duel.SpecialSummonStep=function (c,way,tp1,tp2,tf1,tf2,pos,...)
+		local tp=c:GetOwner()
 		if Duel.GetFlagEffect(tp,m)~=0 and Duel.IsExistingMatchingCard(cm.fil,tp,LOCATION_DECK,0,1,nil) and (c:IsLocation(LOCATION_DECK) or c:IsLocation(LOCATION_EXTRA)) then
 			local ac=Duel.SelectMatchingCard(tp,cm.fil,tp,LOCATION_DECK,0,1,1,nil)
-			cm._special_summon_step(ac,way,tp1,tp2,tf1,tf2,pos,...)
+			
 			--Duel.ResetFlagEffect(tp,m)
 			Duel.Hint(HINT_CARD,0,m)
+			return cm_special_summon_step(ac,way,tp1,tp2,tf1,tf2,pos,...)
 		else
-			cm._special_summon_step(c,way,tp1,tp2,tf1,tf2,pos,...)
+			return cm_special_summon_step(c,way,tp1,tp2,tf1,tf2,pos,...)
 		end
 	end
 end

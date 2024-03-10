@@ -15,15 +15,15 @@ function cm.initial_effect(c)
 end
 if not cm.jjygsix then
 	cm.jjygsix=true
-	cm._release=Duel.Release
+	local cm_release=Duel.Release
 	Duel.Release=function (c,rea,...)
 		if Duel.GetFlagEffect(tp,m)~=0 and Duel.IsExistingMatchingCard(cm.fil,tp,LOCATION_DECK,0,1,nil) then
 			local ac=Duel.SelectMatchingCard(tp,cm.fil,tp,LOCATION_DECK,0,1,1,nil)
-			cm._release(ac,rea,...)
+			cm_release(ac,rea,...)
 			--Duel.ResetFlagEffect(tp,m)
 			Duel.Hint(HINT_CARD,0,m)
 		else
-			cm._release(c,rea,...)
+			cm_release(c,rea,...)
 		end
 	end
 end

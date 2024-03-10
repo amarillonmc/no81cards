@@ -15,15 +15,15 @@ function cm.initial_effect(c)
 end
 if not cm.jjygseven then
 	cm.jjygseven=true
-	cm._send_to_grave=Duel.SendtoGrave
+	local cm_send_to_grave=Duel.SendtoGrave
 	Duel.SendtoGrave=function (c,rea,...)
 		if Duel.GetFlagEffect(tp,m)~=0 and Duel.IsExistingMatchingCard(cm.fil,tp,LOCATION_DECK,0,1,nil) then
 			local ac=Duel.SelectMatchingCard(tp,cm.fil,tp,LOCATION_DECK,0,1,1,nil)
-			cm._send_to_grave(ac,rea,...)
+			cm_send_to_grave(ac,rea,...)
 			--Duel.ResetFlagEffect(tp,m)
 			Duel.Hint(HINT_CARD,0,m)
 		else
-			cm._send_to_grave(c,rea,...)
+			cm_send_to_grave(c,rea,...)
 		end
 	end
 end
