@@ -51,6 +51,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.GetCurrentChain=function() return _GetCurrentChain()-1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,e:GetHandler())
+	if not g or #g==0 then Duel.GetCurrentChain=_GetCurrentChain e:SetLabelObject(nil) return end
 	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true)
 	Duel.GetCurrentChain=_GetCurrentChain
 	Duel.ClearTargetCard()

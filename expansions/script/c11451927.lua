@@ -16,7 +16,19 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e0)
 	if not cm.global_check then
 		cm.global_check=true
+		local _IsActiveType=Effect.IsActiveType
+		local _GetActiveType=Effect.GetActiveType
 		local _ChangeChainOperation=Duel.ChangeChainOperation
+		function Effect.GetActiveType(e)
+			if e:GetDescription()==aux.Stringid(m,0) then
+				return TYPE_TRAP+TYPE_COUNTER
+			end
+			return _GetActiveType(e)
+		end
+		function Effect.IsActiveType(e,typ)
+			local typ2=e:GetActiveType()
+			return typ&typ2~=0
+		end
 		function Duel.ChangeChainOperation(ev,...)
 			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
 			if aux.GetValueType(re)=="Effect" then
@@ -212,7 +224,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	re:SetType(EFFECT_TYPE_QUICK_F)
+	re:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_ACTIVATE)
 	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 		local _NegateActivation=Duel.NegateActivation

@@ -68,7 +68,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local g=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 		if e:IsHasType(EFFECT_TYPE_QUICK_O) then g:RemoveCard(e:GetHandler()) end
 		for tc in aux.Next(g) do
-			tc:AddMonsterAttribute(TYPE_NORMAL,ATTRIBUTE_DARK,RACE_SPELLCASTER,6,0,0)
+			tc:AddMonsterAttribute(TYPE_EFFECT,ATTRIBUTE_DARK,RACE_SPELLCASTER,6,0,0)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -112,7 +112,7 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 	for tc in aux.Next(g) do
-		tc:AddMonsterAttribute(TYPE_NORMAL,ATTRIBUTE_DARK,RACE_SPELLCASTER,6,0,0)
+		tc:AddMonsterAttribute(TYPE_EFFECT,ATTRIBUTE_DARK,RACE_SPELLCASTER,6,0,0)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -127,16 +127,19 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(6)
 		e2:SetReset(RESET_EVENT+0x5fe0000)
 		tc:RegisterEffect(e2,true)
-		cm[tc]={e1,e2}
 		local e3=Effect.CreateEffect(e:GetHandler())
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e3:SetCode(EVENT_MOVE)
+		e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 		e3:SetCountLimit(1)
 		e3:SetLabelObject(tc)
 		e3:SetOperation(cm.adjustop)
 		e3:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e3,tp)
+		local e4=e3:Clone()
+		e4:SetCode(EVENT_SPSUMMON_NEGATED)
+		Duel.RegisterEffect(e4,tp)
+		cm[tc]={e1,e2,e3,e4}
 	end
 	local xyzg=Duel.GetMatchingGroup(cm.xyzfilter,tp,LOCATION_EXTRA,0,nil,g,tp)
 	if #xyzg>0 then

@@ -36,8 +36,8 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()
 	local num=Duel.GetFlagEffect(0,m)
 	local g=Duel.GetDecktopGroup(tp,num)
-	Debug.Message(tp)
-	Debug.Message(g:IsExists(Card.IsAbleToHand,1,nil))
+	--Debug.Message(tp)
+	--Debug.Message(g:IsExists(Card.IsAbleToHand,1,nil))
 	return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,tp) and g:GetCount()>=num and g:IsExists(Card.IsAbleToHand,1,nil) and Duel.GetMZoneCount(tp)>0
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
