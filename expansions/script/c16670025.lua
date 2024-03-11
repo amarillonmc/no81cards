@@ -1,6 +1,7 @@
 --百变怪
 local m=16670025
 local cm=_G["c"..m]
+xpcall(function() dofile("expansions/script/c16670000.lua") end,function() dofile("script/c16670000.lua") end)
 function cm.initial_effect(c)
     --
 	local e1=Effect.CreateEffect(c)
@@ -53,6 +54,13 @@ function cm.initial_effect(c)
 	e6:SetCondition(cm.backon3)
 	e6:SetRange(LOCATION_SZONE)
 	c:RegisterEffect(e6)
+	local l=Effect.IsHasType
+	Effect.IsHasType=function(ea,le)
+		if (ea==e2 or ea==e6) and le==EFFECT_TYPE_ACTIVATE then
+			return true
+		end
+			return l(ea,le)
+		end
 	--模仿开
 	local e27=e2:Clone()
 	e27:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
@@ -70,7 +78,7 @@ function cm.initial_effect(c)
 	ez:SetLabelObject(e27)
 	ez:SetCondition(cm.con)
 	ez:SetOperation(cm.op)
-	c:RegisterEffect(ez)
+	--c:RegisterEffect(ez)
 	local et=ez:Clone()
 	et:SetCode(EVENT_CHAINING)
 	et:SetCondition(cm.con1)
@@ -613,16 +621,26 @@ function cm.backon4(e,tp,eg,ep,ev,re,r,rp)
 	if c:GetOriginalCode()~=m or tp==nil then
 		return false
 	end
+	--[[
 	Duel.DisableActionCheck(true)
 	local dc=Duel.CreateToken(tp,m+1)
 	local res=dc:GetActivateEffect():IsActivatable(tp,false,false)
 	Duel.DisableActionCheck(false)
-    return ((Duel.GetCurrentPhase()~=PHASE_END and Duel.GetCurrentPhase()~=PHASE_BATTLE_START
+	local let={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE)}
+		for _,le in pairs(let) do
+		local cres=it.GetEffectValue(le,c:GetActivateEffect(),tp)
+			if cres and cres~=0 then return false end
+		end
+	]]--
+    return true
+	--[[
+	((Duel.GetCurrentPhase()~=PHASE_END and Duel.GetCurrentPhase()~=PHASE_BATTLE_START
 	and Duel.GetCurrentPhase()~=PHASE_STANDBY and Duel.GetCurrentPhase()~=PHASE_DRAW and
 	(Duel.GetCurrentPhase()~=PHASE_MAIN1 and Duel.GetCurrentPhase()~=PHASE_MAIN2 and Duel.GetTurnPlayer()==tp)
 	)--and Duel.GetCurrentPhase()~=PHASE_BATTLE_STEP)
 	or Duel.GetCurrentChain()~=0)-- or Duel.GetCurrentPhase()~=PHASE_BATTLE_STEP
 	and res
+	]]--
 end
 function cm.backop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -67,7 +67,7 @@ function c9910917.negcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910917.tdfilter1(c,tp)
 	return c:IsFaceup() and c:IsCode(9910917) and c:IsAbleToDeck()
-		and Duel.IsExistingTarget(c9910917.tdfilter,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,1,c)
+		and Duel.IsExistingTarget(c9910917.tdfilter2,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,1,c)
 end
 function c9910917.tdfilter2(c)
 	return c:IsFaceup() and c:IsSetCard(0xc954) and c:IsAbleToDeck()
