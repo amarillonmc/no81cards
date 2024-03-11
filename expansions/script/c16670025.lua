@@ -53,6 +53,7 @@ function cm.initial_effect(c)
 	e6:SetCondition(cm.backon3)
 	e6:SetRange(LOCATION_SZONE)
 	c:RegisterEffect(e6)
+	--模仿开
 	local e27=e2:Clone()
 	e27:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e27:SetRange(LOCATION_SZONE)
@@ -60,6 +61,7 @@ function cm.initial_effect(c)
 	e27:SetCode(m+3)
 	e27:SetCost(cm.cost)
 	c:RegisterEffect(e27)
+	--模仿变
 	local ez=Effect.CreateEffect(c)
 	ez:SetDescription(aux.Stringid(m,2))
 	ez:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
@@ -181,6 +183,8 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(e37,0)
     if not cm.global_check then
 		cm.global_check=true
+		cm.gx=nil
+		cm.gz=nil
 		local ge2=Effect.CreateEffect(c)
 		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge2:SetCode(EVENT_CHAIN_NEGATED)
@@ -273,7 +277,9 @@ end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	--c:RegisterFlagEffect(m+id,RESET_CHAIN,0,1)
+	cm.checkopn(e,tp,c,1)
 	Duel.RegisterFlagEffect(tp,m+2,RESET_EVENT+RESET_CHAIN+EVENT_CHAINING,0,1)
+	--[[
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,0xff,0,1,1,c):GetFirst()
     c:RegisterFlagEffect(m,0,0,1)
     c:SetEntityCode(g:GetOriginalCode(),true)
@@ -299,7 +305,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+0x1fc0000)
 		c:RegisterEffect(e1,true)
 	end
-	if not c:IsType(TYPE_CONTINUOUS) then c:CancelToGrave(false) end
+	if not c:IsType(TYPE_CONTINUOUS) and not c:IsType(TYPE_FIELD) then c:CancelToGrave(false) end
 	if te~=nil and te:GetProperty()~=nil and bit.band(te:GetProperty(),EFFECT_FLAG_CARD_TARGET)~=0 then
 		e:GetLabelObject():SetProperty(EFFECT_FLAG_CARD_TARGET)
 	end
@@ -314,12 +320,78 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	--
 	--
 	e:GetLabelObject():SetLabelObject(g)
-	Duel.RaiseSingleEvent(e:GetHandler(),m+3,re,r,tp,tp,ev)
+	]]--
+	Duel.RaiseSingleEvent(c,m+3,re,r,tp,tp,ev)
+end
+--魔法变相同部分
+function cm.checkopn(e,tp,c,mf)
+	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,0xff,0,1,1,c):GetFirst()
+    c:RegisterFlagEffect(m,0,0,1)
+    c:SetEntityCode(g:GetOriginalCode(),true)
+	local te,ceg,cep,cev,cre,cr,crp=g:CheckActivateEffect(false,true,true)
+	--
+	if c:IsLocation(LOCATION_HAND) and-- (e:GetLabelObject():IsHasType(EFFECT_TYPE_QUICK_O) or e:GetLabelObject():IsHasType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)) and --
+	not e:GetLabelObject():IsHasType(EFFECT_TYPE_ACTIVATE) then
+		if not c:IsType(TYPE_FIELD) then
+			Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		else
+			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+			if fc then
+				Duel.SendtoGrave(fc,REASON_RULE)
+				Duel.BreakEffect()
+			end
+			Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+			Duel.RaiseEvent(c,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+		end
+		if c:IsType(TYPE_MONSTER) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CHANGE_TYPE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetValue(TYPE_CONTINUOUS+TYPE_TRAP+TYPE_QUICKPLAY+TYPE_SPELL)
+			e1:SetReset(RESET_EVENT+0x1fc0000)
+			c:RegisterEffect(e1,true)
+		end
+		if mf~=1 then e:GetLabelObject():SetType(EFFECT_TYPE_ACTIVATE) end
+		if not c:IsType(TYPE_CONTINUOUS) and not c:IsType(TYPE_FIELD) then c:CancelToGrave(false) end
+	end
+	if te~=nil and te:GetProperty()~=nil then--and bit.band(te:GetProperty(),EFFECT_FLAG_CARD_TARGET)~=0 then
+		local p1,p2=te:GetProperty()
+		e:GetLabelObject():SetProperty(p1,p2)
+	else
+		e:GetLabelObject():SetProperty(0)
+	end
+	if te~=nil and te:GetCategory()~=nil then
+		--if tg~=nil then e:GetLabelObject():SetTarget(te:GetTarget()) end
+		e:GetLabelObject():SetCategory(te:GetCategory())
+	else
+		e:GetLabelObject():SetCategory(0)
+	end
+	--
+	--e:GetLabelObject():SetDescription(0)
+	if te~=nil and te:GetDescription()~=nil then
+		e:GetLabelObject():SetDescription(te:GetDescription())
+	else
+		e:GetLabelObject():SetDescription(aux.Stringid(m,2))
+	end
+	--
+	--
+    c:RegisterFlagEffect(m+1,0,0,1)
+	--
+	--local t=Duel.ReadCard(m,CARDDATA_TYPE)
+	--Card.SetCardData(c,CARDDATA_TYPE,TYPE_CONTINUOUS+TYPE_TRAP+TYPE_QUICKPLAY+TYPE_SPELL)
+	--
+	--
+	cm.gx=g
+	cm.gz=g:GetOriginalCode()
+    --Duel.AdjustAll()
 end
 --魔法变
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetLabelObject():GetHandler()
     tp=e:GetLabelObject():GetHandler():GetControler()
+	cm.checkopn(e,tp,c)
+	--[[
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,0xff,0,1,1,c):GetFirst()
     c:RegisterFlagEffect(m,0,0,1)
     c:SetEntityCode(g:GetOriginalCode(),true)
@@ -350,19 +422,26 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 		e:GetLabelObject():SetType(EFFECT_TYPE_ACTIVATE)
 		if not c:IsType(TYPE_CONTINUOUS) and not c:IsType(TYPE_FIELD) then c:CancelToGrave(false) end
 	end
-	if te~=nil and te:GetProperty()~=nil and bit.band(te:GetProperty(),EFFECT_FLAG_CARD_TARGET)~=0 then
-		e:GetLabelObject():SetProperty(EFFECT_FLAG_CARD_TARGET)
+	if te~=nil and te:GetProperty()~=nil then--and bit.band(te:GetProperty(),EFFECT_FLAG_CARD_TARGET)~=0 then
+		local p1,p2=te:GetProperty()
+		e:GetLabelObject():SetProperty(p1,p2)
+	else
+		e:GetLabelObject():SetProperty(0)
 	end
 	if te~=nil and te:GetCategory()~=nil then
 		--if tg~=nil then e:GetLabelObject():SetTarget(te:GetTarget()) end
 		e:GetLabelObject():SetCategory(te:GetCategory())
+	else
+		e:GetLabelObject():SetCategory(0)
 	end
-	--[[
-	e:GetLabelObject():SetDescription(aux.Stringid(m,10))
+	--
+	--e:GetLabelObject():SetDescription(0)
 	if te~=nil and te:GetDescription()~=nil then
 		e:GetLabelObject():SetDescription(te:GetDescription())
+	else
+		e:GetLabelObject():SetDescription(aux.Stringid(m,2))
 	end
-	]]--
+	--
 	--
     c:RegisterFlagEffect(m+1,0,0,1)
 	--
@@ -370,9 +449,9 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	--Card.SetCardData(c,CARDDATA_TYPE,TYPE_CONTINUOUS+TYPE_TRAP+TYPE_QUICKPLAY+TYPE_SPELL)
 	--
 	--
-	e:GetLabelObject():SetLabelObject(g)
-	e:GetLabelObject():SetLabel(g:GetOriginalCode())
+	cm.gz=g:GetOriginalCode()
     --Duel.AdjustAll()
+	]]--
 end
 --怪兽变
 function cm.checkop2(e,tp,eg,ep,ev,re,r,rp)
@@ -487,14 +566,14 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	--e:SetLabel(0)
 	--c:CreateEffectRelation(e)
-	if e:GetLabel()~=nil then
-		local token=Duel.CreateToken(tp,e:GetLabel())
+	if cm.gz~=nil then
+		local token=Duel.CreateToken(tp,cm.gz)
 		local te,ceg,cep,cev,cre,cr,crp=token:CheckActivateEffect(false,true,true)
 		if te~=nil then
 			local tg=te:GetTarget()
 			if te:GetLabelObject()~=nil then e:SetLabelObject(te:GetLabelObject()) end
 			--if te:GetCategory()~=nil then e:SetCategory(te:GetCategory()) end
-			if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp) end
+			if tg and tg(e,tp,ceg,cep,cev,cre,cr,crp,1) then tg(e,tp,ceg,cep,cev,cre,cr,crp) end
 		end
 	end
 	--Duel.RaiseEvent(c,EVENT_CHAINING,te,0,tp,tp,Duel.GetCurrentChain())
@@ -579,28 +658,7 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 		return true--(c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_SZONE,tp,LOCATION_REASON_TOFIELD)>0) or (c:IsLocation(LOCATION_SZONE) and
 		--c:IsFacedown()) 
 	end
-	local c2=e:GetLabelObject()
-	if c2~=nil then
-		if c2:GetFlagEffect(m+1)~=0 then
-			c2=Duel.CreateToken(tp,c2:GetOriginalCode())
-		end
-		local te,ceg,cep,cev,cre,cr,crp=c2:CheckActivateEffect(false,false,true)
-		if te~=nil then
-			local tg=te:GetCost()
-			--if te:GetCategory()~=nil then e:SetCategory(te:GetCategory()) end
-			if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp) end
-		end
-		--if c2:GetFlagEffect(m+1)==0 then
-			local token=Duel.CreateToken(tp,c2:GetOriginalCode())
-			local mt=getmetatable(token)
-			cm.reg =Card.RegisterEffect
-			Card.RegisterEffect = cm.reg2
-			if mt.initial_effect then
-				mt.initial_effect(c)
-			end
-			Card.RegisterEffect = cm.reg
-		--end
-	end
+	cm.costn(e,tp,c)
 	--e:SetLabel(1)local e0000=e0:Clone()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -609,20 +667,11 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetLabelObject(e)
 	Duel.RegisterEffect(e1,tp)
 end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then
-		return true
-	end
+--相同cost
+function cm.costn(e,tp,c)
 	e:SetType(EFFECT_TYPE_ACTIVATE)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAIN_END)
-	e1:SetOperation(cm.reset)
-	e1:SetLabelObject(e)
-	Duel.RegisterEffect(e1,tp)
 	--
-	local c2=e:GetLabelObject()
+	local c2=cm.gx
 	if c2~=nil then
 		if c2:GetFlagEffect(m+1)~=0 then
 			c2=Duel.CreateToken(tp,c2:GetOriginalCode())
@@ -631,7 +680,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		if te~=nil then
 			local tg=te:GetCost()
 			--if te:GetCategory()~=nil then e:SetCategory(te:GetCategory()) end
-			if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp) end
+			if tg and tg(e,tp,ceg,cep,cev,cre,cr,crp,1) then tg(e,tp,ceg,cep,cev,cre,cr,crp) end
 		end
 		--if c2:GetFlagEffect(m+1)==0 then
 			local token=Duel.CreateToken(tp,c2:GetOriginalCode())
@@ -644,6 +693,20 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 			Card.RegisterEffect = cm.reg
 		--end
 	end
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then
+		return true
+	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_END)
+	e1:SetOperation(cm.reset)
+	e1:SetLabelObject(e)
+	Duel.RegisterEffect(e1,tp)
+	--
+	cm.costn(e,tp,c)
 end
 function cm.reset(e,tp,eg,ep,ev,re,r,rp)
 	e:GetLabelObject():SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)

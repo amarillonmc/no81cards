@@ -33,7 +33,7 @@ end
 function c10171001.rstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local b1=Duel.GetMZoneCount(tp,c)>0 and Duel.IsExistingMatchingCard(c10171001.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
-	local b2=Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	local b2=Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
 	if chk==0 then return b1 or b2 end
 	local off=1
 	local ops,opval={},{}
