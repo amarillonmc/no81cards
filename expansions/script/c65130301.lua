@@ -50,45 +50,28 @@ function c65130301.initial_effect(c)
 end
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
-	--random seed
-	--（本段代码出自黑莲的派对狂欢系列，赞美黑莲）
+--random seed
+local A=1103515245
+local B=12345
+local M=32767
+function roll(min,max)
 	if not random_seed then
-		local result=0
-		local g=Duel.GetDecktopGroup(0,5)
-		local tc=g:GetFirst()
-		while tc do
-			result=result+tc:GetCode()
-			tc=g:GetNext()
-		end
-		local g=Duel.GetDecktopGroup(1,5)
-		local tc=g:GetFirst()
-		while tc do
-			result=result+tc:GetCode()
-			tc=g:GetNext()
-		end
-		g:DeleteGroup()
-		random_seed=result
-		function roll(min,max)
-			if min==max then return min end
-			min=tonumber(min)
-			max=tonumber(max)
-			random_seed=(random_seed*16807)%2147484647
-			if min~=nil then
-				if max==nil then
-					local random_number=random_seed/2147484647
-					return math.floor(random_number*min)+1
-				else
-					local random_number=random_seed/2147484647
-					if random_number<min then
-						random_seed=(random_seed*16807)%2147484647
-						random_number=random_seed/2147484647
-					end
-					return math.floor((max-min)*random_number)+1+min
-				end
-			end
-			return random_seed
+		local g=Duel.GetFieldGroup(0,0xff,0xff):RandomSelect(2,1)
+		random_seed=g:GetFirst():GetCode()+Duel.GetTurnCount()+Duel.GetFieldGroupCount(1,LOCATION_GRAVE,0)
+	end
+	min=tonumber(min)
+	max=tonumber(max)
+	random_seed=((random_seed*A+B)%M)/M
+	if min~=nil then
+		if max==nil then
+			return math.floor(random_seed*min)+1
+		else
+			max=max-min+1
+			return math.floor(random_seed*max+min)
 		end
 	end
+	return random_seed
+end
 function c65130301.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_DECK)
 end

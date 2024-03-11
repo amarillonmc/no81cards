@@ -4,29 +4,8 @@ cm.name="次元秽界 赤"
 if not require and dofile then function require(str) return dofile(str..".lua") end end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_ACTIVATE)
-	e0:SetCode(EVENT_FREE_CHAIN)
-	c:RegisterEffect(e0)
-	local e1,e1_1,e2,e3=SNNM.ActivatedAsSpellorTrap(c,0x80002,LOCATION_SZONE,true,true)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
-	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-		return e:GetHandler():GetSequence()<5
-	end)
-	e1:SetLabelObject(e0)
-	e1_1:SetRange(0xff)
-	e1_1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-		return e:GetHandler():IsLocation(LOCATION_SZONE)
-	end)
-	e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-		local c=e:GetLabelObject():GetHandler()
-		return c:IsLocation(LOCATION_SZONE) and c:GetSequence()<5
-	end)
-	e3:SetTarget(cm.actarget)
-	local e5,e6,e6_1=SNNM.DragoronActivate(c)
-	SNNM.Global_in_Initial_Reset(c,{e2,e3,e5,e6,e6_1})
+	local e0,e1,e3,e5,e6,e6_1=SNNM.DragoronActivate(c,m)
+	SNNM.Global_in_Initial_Reset(c,{e3,e5,e6,e6_1})
 	local e9=Effect.CreateEffect(c)
 	e9:SetDescription(aux.Stringid(m,2))
 	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
@@ -56,11 +35,6 @@ function cm.initial_effect(c)
 	e11:SetTarget(cm.cptg)
 	e11:SetOperation(cm.cpop)
 	c:RegisterEffect(e11)
-	SNNM.ActivatedAsSpellorTrapCheck(c)
-end
-function cm.actarget(e,te,tp)
-	local ce=e:GetLabelObject()
-	return te:GetHandler()==e:GetOwner() and te==ce and ce:GetHandler():IsLocation(LOCATION_SZONE) and ce:GetHandler():GetSequence()<5
 end
 function cm.pcon(e,tp,eg,ep,ev,re,r,rp)
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)

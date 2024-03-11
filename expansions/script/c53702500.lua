@@ -6547,7 +6547,30 @@ function cm.HTAmvhint(code)
 	else c:RegisterFlagEffect(code+50,RESET_EVENT+0x7e0000,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(53765000,0)) end
 	end
 end
-function cm.DragoronActivate(c)
+function cm.DragoronActivate(c,code)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_ACTIVATE)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e0)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(code,0))
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_SZONE)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetCountLimit(1,code+EFFECT_COUNT_CODE_OATH)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return e:GetHandler():GetSequence()<5 end)
+	e1:SetLabelObject(e0)
+	c:RegisterEffect(e1)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_ACTIVATE_COST)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e3:SetTargetRange(1,1)
+	e3:SetLabelObject(e1)
+	e3:SetTarget(cm.ADGDactarget)
+	e3:SetOperation(cm.ADGDcostop)
+	Duel.RegisterEffect(e3,0)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e5:SetCode(EFFECT_SEND_REPLACE)
@@ -6579,6 +6602,7 @@ function cm.DragoronActivate(c)
 	e8:SetType(EFFECT_TYPE_SINGLE)
 	e8:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e8:SetCode(53757000)
+	e8:SetLabelObject(e1)
 	e8:SetCondition(function(e)
 		return e:GetHandler():IsLocation(LOCATION_SZONE)
 	end)
@@ -6615,13 +6639,7 @@ function cm.DragoronActivate(c)
 					local mv=Duel.SelectDisableField(tgp,1,LOCATION_SZONE,0,0)
 					Duel.MoveSequence(fc,math.log(mv,2)-8)
 					if fc:IsFacedown() then Duel.ChangePosition(fc,POS_FACEUP) end
-					local e1=Effect.CreateEffect(fc)
-					e1:SetCode(EFFECT_CHANGE_TYPE)
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-					e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-					fc:RegisterEffect(e1,true)
+					cm.ADGDTypeChange(fc)
 				end
 			end
 			local ct=ADGD_SSet(tp,tg,tgp,...)
@@ -6639,13 +6657,7 @@ function cm.DragoronActivate(c)
 					local mv=Duel.SelectDisableField(p,1,LOCATION_SZONE,0,0)
 					Duel.MoveSequence(fc,math.log(mv,2)-8)
 					if fc:IsFacedown() then Duel.ChangePosition(fc,POS_FACEUP) end
-					local e1=Effect.CreateEffect(fc)
-					e1:SetCode(EFFECT_CHANGE_TYPE)
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-					e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-					fc:RegisterEffect(e1)
+					cm.ADGDTypeChange(fc)
 					tg:RemoveCard(fc)
 				end
 			end
@@ -6662,13 +6674,7 @@ function cm.DragoronActivate(c)
 					local mv=Duel.SelectDisableField(p,1,LOCATION_SZONE,0,0)
 					Duel.MoveSequence(fc,math.log(mv,2)-8)
 					if fc:IsFacedown() then Duel.ChangePosition(fc,POS_FACEUP) end
-					local e1=Effect.CreateEffect(fc)
-					e1:SetCode(EFFECT_CHANGE_TYPE)
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-					e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-					fc:RegisterEffect(e1)
+					cm.ADGDTypeChange(fc)
 					tg:RemoveCard(fc)
 				end
 			end
@@ -6685,13 +6691,7 @@ function cm.DragoronActivate(c)
 					local mv=Duel.SelectDisableField(p,1,LOCATION_SZONE,0,0)
 					Duel.MoveSequence(fc,math.log(mv,2)-8)
 					if fc:IsFacedown() then Duel.ChangePosition(fc,POS_FACEUP) end
-					local e1=Effect.CreateEffect(fc)
-					e1:SetCode(EFFECT_CHANGE_TYPE)
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-					e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-					fc:RegisterEffect(e1)
+					cm.ADGDTypeChange(fc)
 					tg:RemoveCard(fc)
 				end
 			end
@@ -6708,13 +6708,7 @@ function cm.DragoronActivate(c)
 					local mv=Duel.SelectDisableField(p,1,LOCATION_SZONE,0,0)
 					Duel.MoveSequence(fc,math.log(mv,2)-8)
 					if fc:IsFacedown() then Duel.ChangePosition(fc,POS_FACEUP) end
-					local e1=Effect.CreateEffect(fc)
-					e1:SetCode(EFFECT_CHANGE_TYPE)
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-					e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-					fc:RegisterEffect(e1)
+					cm.ADGDTypeChange(fc)
 					tg:RemoveCard(fc)
 				end
 			end
@@ -6731,13 +6725,7 @@ function cm.DragoronActivate(c)
 					local mv=Duel.SelectDisableField(p,1,LOCATION_SZONE,0,0)
 					Duel.MoveSequence(fc,math.log(mv,2)-8)
 					if fc:IsFacedown() then Duel.ChangePosition(fc,POS_FACEUP) end
-					local e1=Effect.CreateEffect(fc)
-					e1:SetCode(EFFECT_CHANGE_TYPE)
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-					e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-					fc:RegisterEffect(e1)
+					cm.ADGDTypeChange(fc)
 					tg:RemoveCard(fc)
 				end
 			end
@@ -6750,6 +6738,7 @@ function cm.DragoronActivate(c)
 		end
 		ADGD_CRegisterEffect=Card.RegisterEffect
 		Card.RegisterEffect=function(rc,re,...)
+			if re and re:GetCode()==117 and rc:GetType()==re:GetValue() then return end
 			if Dragoron_Reset_Check then
 				local e1=Effect.CreateEffect(rc)
 				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -6770,16 +6759,32 @@ function cm.DragoronActivate(c)
 		ADGD_MoveToField=Duel.MoveToField
 		Duel.MoveToField=function(mc,p,tgp,dest,...)
 			mc:ResetFlagEffect(53757050)
+			local res=ADGD_MoveToField(mc,p,tgp,dest,...)
 			if dest==LOCATION_FZONE then mc:RegisterFlagEffect(53757050,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1) end
-			return ADGD_MoveToField(mc,p,tgp,dest,...)
+			if dest==LOCATION_SZONE and mc:IsHasEffect(53757000) then cm.ADGDTypeChange(mc) end
+			return res
 		end
 		ADGD_MoveSequence=Duel.MoveSequence
 		Duel.MoveSequence=function(mc,seq)
 			mc:ResetFlagEffect(53757050)
 			return ADGD_MoveSequence(mc,seq)
 		end
+		ADGD_GetActivateEffect=Card.GetActivateEffect
+		Card.GetActivateEffect=function(ac)
+			local re=ADGD_GetActivateEffect(ac)
+			local le={ac:IsHasEffect(53757000)}
+			if #le>0 then
+				le=le[1]
+				re=le:GetLabelObject()
+			end
+			return re
+		end
+		ADGD_GetOriginalType=Card.GetOriginalType
+		Card.GetOriginalType=function(ac)
+			if ac:IsHasEffect(53757000) then return 0x80002 else return ADGD_GetOriginalType(ac) end
+		end
 	end
-	return e5,e6,e6_1
+	return e0,e1,e3,e5,e6,e6_1
 end
 function cm.ADGDresetfil(c,tc)
 	return c==tc and ((c:IsPreviousLocation(LOCATION_FZONE) and not c:IsLocation(LOCATION_FZONE)) or (c:IsLocation(LOCATION_FZONE) and not c:IsPreviousLocation(LOCATION_FZONE)))
@@ -6827,6 +6832,24 @@ end
 function cm.ADGDrepval(e,c)
 	return cm.ADGDrepfilter(c,e:GetLabelObject())
 end
+function cm.ADGDTypeChange(c)
+	c:SetCardData(CARDDATA_TYPE,0x20002)
+	local t={}
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_MOVE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+		e:GetHandler():SetCardData(4,0x80002)
+		for k,v in pairs(t) do v:Reset() end
+	end)
+	c:RegisterEffect(e1,true)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_LEAVE_FIELD_P)
+	e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return e:GetHandler():IsLocation(LOCATION_SZONE) and e:GetHandler():GetSequence()<5 end)
+	c:RegisterEffect(e2,true)
+	t={e1,e2}
+end
 function cm.ADGDrepoperation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetLabelObject()
 	if not c:IsLocation(LOCATION_FZONE) then return end
@@ -6835,13 +6858,7 @@ function cm.ADGDrepoperation(e,tp,eg,ep,ev,re,r,rp)
 	local mv=Duel.SelectDisableField(p,1,LOCATION_SZONE,0,0)
 	Duel.MoveSequence(c,math.log(mv,2)-8)
 	if c:IsFacedown() then Duel.ChangePosition(c,POS_FACEUP) end
-	local e1=Effect.CreateEffect(c)
-	e1:SetCode(EFFECT_CHANGE_TYPE)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-	e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-	c:RegisterEffect(e1)
+	cm.ADGDTypeChange(c)
 end
 function cm.ADGDactarget2(e,te,tp)
 	local c=e:GetLabelObject()
@@ -6853,6 +6870,58 @@ function cm.ADGDactarget3(e,tc,tp)
 	local c=e:GetLabelObject()
 	local p=c:GetControler()
 	return Duel.GetLocationCount(p,LOCATION_SZONE)>0 and tc:IsType(TYPE_FIELD) and c:IsLocation(LOCATION_FZONE) and c:IsControler(p) and tc:GetControler()==p and tc~=c
+end
+function cm.ADGDactarget(e,te,tp)
+	local ce=e:GetLabelObject()
+	return te:GetHandler()==e:GetOwner() and te==ce and ce:GetHandler():IsLocation(LOCATION_SZONE) and ce:GetHandler():GetSequence()<5
+end
+function cm.ADGDcostop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local c=te:GetHandler()
+	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+	if fc then Duel.SendtoGrave(fc,REASON_RULE) end
+	Duel.MoveSequence(c,5)
+	if c:IsFacedown() then Duel.ChangePosition(c,POS_FACEUP) end
+	c:SetStatus(STATUS_EFFECT_ENABLED,false)
+	c:CreateEffectRelation(te)
+	te:SetType(EFFECT_TYPE_ACTIVATE)
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return ev==ev0 end)
+	e1:SetOperation(cm.ADGDrsop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_REMAIN_FIELD)
+	e3:SetProperty(EFFECT_FLAG_OATH+EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetReset(RESET_CHAIN)
+	c:RegisterEffect(e3)
+end
+function cm.ADGDrsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+		rc:CancelToGrave(false)
+	end
+	local e1=Effect.CreateEffect(rc)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_END)
+	e1:SetLabelObject(re)
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)e:GetLabelObject():SetType(EFFECT_TYPE_IGNITION)e:Reset()end)
+	Duel.RegisterEffect(e1,tp)
+	e:Reset()
 end
 function cm.GoronDimensionCopy(c,cd,tab)
 	local cat,type,code,cost,con,tg,op,pro1,pro2=table.unpack(tab)

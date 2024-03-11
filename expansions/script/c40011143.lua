@@ -110,7 +110,7 @@ function cm.actfilter(c)
 	return c:IsType(TYPE_PENDULUM) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
 end
 function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetMatchingGroupCount(cm.actfilter,c:GetControler(),LOCATION_EXTRA,0,nil)<Duel.GetMatchingGroupCount(cm.actfilter,c:GetControler(),LOCATION_GRAVE,0,nil)
+	return Duel.GetMatchingGroupCount(cm.actfilter,e:GetHandler(),LOCATION_EXTRA,0,nil)<Duel.GetMatchingGroupCount(cm.actfilter,e:GetHandler(),LOCATION_GRAVE,0,nil)
 end
 function cm.aclimit(e,re,tp)
 	return re:GetActivateLocation()==LOCATION_GRAVE

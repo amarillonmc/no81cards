@@ -3,7 +3,7 @@ local m=14000229
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,cm.mfilter,10,2,nil,nil,99)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),10,2,nil,nil,99)
 	c:EnableReviveLimit()
 	--to hand
 	local e1=Effect.CreateEffect(c)
