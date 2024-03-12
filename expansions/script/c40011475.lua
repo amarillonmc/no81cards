@@ -2,6 +2,10 @@
 local m=40011475
 local cm=_G["c"..m]
 cm.named_with_MagicCombineMagic=1
+function cm.Spiritualist(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Spiritualist
+end
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_MZONE)
+	e3:SetRange(LOCATION_HAND)
 	e3:SetCost(cm.descost)
 	e3:SetTarget(cm.destg)
 	e3:SetOperation(cm.desop)
@@ -72,5 +72,9 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		if Duel.IsPlayerCanDiscardDeck(1-tp,1) then
+			Duel.BreakEffect()
+			Duel.DiscardDeck(1-tp,3,REASON_EFFECT)
+		end
 	end
 end
