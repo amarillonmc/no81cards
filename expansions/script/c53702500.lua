@@ -6738,7 +6738,6 @@ function cm.DragoronActivate(c,code)
 		end
 		ADGD_CRegisterEffect=Card.RegisterEffect
 		Card.RegisterEffect=function(rc,re,...)
-			if re and re:GetCode()==117 and rc:GetType()==re:GetValue() then return end
 			if Dragoron_Reset_Check then
 				local e1=Effect.CreateEffect(rc)
 				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -6749,6 +6748,7 @@ function cm.DragoronActivate(c,code)
 				Duel.RegisterEffect(e1,rp)
 				Dragoron_Reset_Check=false
 			end
+			if re and re:GetCode()==117 and rc:GetType()==re:GetValue() then return end
 			return ADGD_CRegisterEffect(rc,re,...)
 		end
 		ADGD_DRegisterEffect=Duel.RegisterEffect
@@ -6840,6 +6840,7 @@ function cm.ADGDTypeChange(c)
 	e1:SetCode(EVENT_MOVE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+		if e:GetHandler():IsLocation(LOCATION_SZONE) and e:GetHandler():GetSequence()<5 then return end
 		e:GetHandler():SetCardData(4,0x80002)
 		for k,v in pairs(t) do v:Reset() end
 	end)

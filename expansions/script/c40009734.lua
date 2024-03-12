@@ -82,7 +82,7 @@ function cm.atkval(e,c)
 	return Duel.GetMatchingGroupCount(cm.atkfilter,e:GetHandlerPlayer(),LOCATION_ONFIELD+LOCATION_EXTRA,0,nil)*1000
 end
 function cm.indcon(e)
-	return e:GetHandler():GetAttack()<=4000
+	return e:GetHandler():GetAttack()>=4000
 end
 function cm.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()

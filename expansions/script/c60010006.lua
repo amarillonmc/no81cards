@@ -2,7 +2,7 @@
 Duel.LoadScript("c60010000.lua")
 local cm,m,o=GetID()
 function cm.initial_effect(c)
-	MTC.LHini(c)
+	--MTC.LHini(c)
 	MTC.LHSpS(c,2)
 	--search
 	local e3=Effect.CreateEffect(c)
@@ -14,8 +14,8 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3)
-	if not cm.LHini==true then
-		cm.LHini=true
+	if not cst==true then
+		cst=true
 		--local tp=c:GetOwner()
 		--spsm
 		local e1=Effect.CreateEffect(c)
@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 		e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 		e1:SetCondition(cm.LHcon1)
 		e1:SetOperation(cm.LHop1)
-		Duel.RegisterEffect(e1,tp)
+		Duel.RegisterEffect(e1,0)
 		--spsm
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -32,7 +32,7 @@ function cm.initial_effect(c)
 		e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 		e1:SetCondition(cm.LHcon1)
 		e1:SetOperation(cm.LHop1)
-		Duel.RegisterEffect(e1,tp)
+		Duel.RegisterEffect(e1,0)
 	end
 end
 function cm.thfil(c)
@@ -58,7 +58,8 @@ function cm.LHfil1(c,tp)
 	return c:IsSummonPlayer(tp) and c:IsSetCard(0x630)
 end
 function cm.LHcon1(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(MTC.LHfil1,1,nil,tp)
+	local tp=eg:GetFirst():GetOwner()
+	return eg:IsExists(cm.LHfil1,1,nil,tp)
 end
 function cm.LHop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

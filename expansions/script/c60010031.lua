@@ -60,7 +60,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_FZONE,0,1,nil) and Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) end 
+	if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_FZONE,0,1,nil) and Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil):Select(tp,1,2,nil)
 		Duel.SendtoGrave(g,REASON_EFFECT)
 	else	
