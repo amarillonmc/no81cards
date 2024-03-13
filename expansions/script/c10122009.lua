@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	local e1 = Scl.CreateActivateEffect(c, "FreeChain", "ActivateSpell", nil, "ActivateSpell", nil, nil, nil, { "~Target", "ActivateSpell", s.afilter, "Hand,Deck,GY" }, s.act)
 end
 function s.afilter(c,e,tp)
-	return c:IsSetCard(0xc333) and Scl.IsType(c,0,TYPE_SPELL+TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true)
+	return c:IsSetCard(0xc333) and c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true)
 end
 function s.act(e,tp)
 	Scl.SelectAndOperateCards("ActivateSpell",tp,aux.NecroValleyFilter(s.afilter),tp,"Hand,Deck,GY",0,1,1,nil,e,tp)()

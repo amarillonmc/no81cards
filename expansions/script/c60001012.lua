@@ -199,7 +199,7 @@ function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.con1(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)>0 
+	return Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)==0
 end
 function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)>0 
