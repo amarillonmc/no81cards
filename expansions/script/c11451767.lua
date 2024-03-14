@@ -1,6 +1,12 @@
 --汐击龙的汐叹
 local cm,m=GetID()
 function cm.initial_effect(c)
+	--check
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_REMOVE)
+	e0:SetCondition(aux.ThisCardInGraveAlreadyCheckReg)
+	c:RegisterEffect(e0)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_REMOVE)
@@ -37,6 +43,7 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e5:SetProperty(EFFECT_FLAG_DELAY)
 	e5:SetRange(LOCATION_REMOVED)
+	e5:SetLabelObject(e0)
 	e5:SetCondition(cm.spcon)
 	e5:SetTarget(cm.sptg)
 	e5:SetOperation(cm.spop)
@@ -125,11 +132,13 @@ end
 function cm.spfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x9977)
 end
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.spfilter,1,nil)
+function cm.spfilter(c,se)
+	if not (se==nil or c:GetReasonEffect()~=se) then return false end
+	return c:IsFaceup() and c:IsSetCard(0x9977)
 end
-function cm.refilter(c)
-	return c:IsAbleToRemove() and c:IsSetCard(0x9977)
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local se=e:GetLabelObject():GetLabelObject()
+	return eg:IsExists(cm.spfilter,1,nil,se)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

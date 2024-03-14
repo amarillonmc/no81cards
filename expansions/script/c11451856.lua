@@ -156,12 +156,13 @@ end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
 		if not tc:IsOnField() then
-			if 1==1 then return tc:IsImmuneToEffect(e) end
+			--if 1==1 then return tc:IsImmuneToEffect(e) end
+			local seq=tc:GetSequence()
 			local tg=Duel.GetMatchingGroup(nil,tc:GetControler(),tc:GetLocation(),0,nil)
-			local b1=tc:GetSequence()~=0
-			local b2=tc:GetSequence()~=#tg-1
+			local b1=seq~=0
+			local b2=seq~=#tg-1
 			local op=0
 			if b1 and b2 then
 				op=Duel.SelectOption(tp,aux.Stringid(m,3),aux.Stringid(m,4))
@@ -172,24 +173,43 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 			else
 				return
 			end
-			if op==0 then Duel.MoveSequence(tc,tc:GetSequence()+1) end
-			if op==1 then Duel.MoveSequence(tc,tc:GetSequence()-1) end
+			if op==0 then
+				local sg=tg:Filter(function(c) return c:GetSequence()>seq+1 end,nil)
+				Duel.MoveSequence(tc,0)
+				e:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_IGNORE_IMMUNE)
+				while #sg>0 do
+					local sc=sg:GetMinGroup(Card.GetSequence):GetFirst()
+					Duel.MoveSequence(sc,0)
+					sg:RemoveCard(sc)
+				end
+			end
+			if op==1 then
+				local sg=tg:Filter(function(c) return c:GetSequence()>seq-2 end,tc)
+				e:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_IGNORE_IMMUNE)
+				while #sg>0 do
+					local sc=sg:GetMinGroup(Card.GetSequence):GetFirst()
+					Duel.MoveSequence(sc,0)
+					sg:RemoveCard(sc)
+				end
+			end
+			e:SetProperty(EFFECT_FLAG_CARD_TARGET)
+		else
+			local seq=tc:GetSequence()
+			local p=tc:GetControler()
+			local b1=0
+			if p~=tp then b1=1 end
+			local loc=tc:GetLocation()
+			local b2=0
+			if loc==LOCATION_SZONE then b2=1 end
+			if seq>4 then return end
+			local flag=0
+			if seq>0 and Duel.CheckLocation(p,loc,seq-1) then flag=flag|(1<<(seq-1+16*b1+8*b2)) end
+			if seq<4 and Duel.CheckLocation(p,loc,seq+1) then flag=flag|(1<<(seq+1+16*b1+8*b2)) end
+			if flag==0 then return end
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+			local s=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,LOCATION_ONFIELD,~flag)
+			local nseq=math.log(s,2)-16*b1-8*b2
+			Duel.MoveSequence(tc,nseq)
 		end
-		local seq=tc:GetSequence()
-		local p=tc:GetControler()
-		local b1=0
-		if p~=tp then b1=1 end
-		local loc=tc:GetLocation()
-		local b2=0
-		if loc==LOCATION_SZONE then b2=1 end
-		if seq>4 then return end
-		local flag=0
-		if seq>0 and Duel.CheckLocation(p,loc,seq-1) then flag=flag|(1<<(seq-1+16*b1+8*b2)) end
-		if seq<4 and Duel.CheckLocation(p,loc,seq+1) then flag=flag|(1<<(seq+1+16*b1+8*b2)) end
-		if flag==0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-		local s=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,LOCATION_ONFIELD,~flag)
-		local nseq=math.log(s,2)-16*b1-8*b2
-		Duel.MoveSequence(tc,nseq)
 	end
 end
