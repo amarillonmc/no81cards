@@ -111,6 +111,7 @@ function cm.xyzcon(e,tp,eg,ep,ev,re,r,rp)
 	return cm[0]==1 and cm[1]==2 and e:GetHandler():IsXyzSummonable(mg)
 end
 function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
+	if cm[0]==0 then return end
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	local mg=Duel.GetMatchingGroup(cm.filter3,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
@@ -118,7 +119,8 @@ function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		te:GetTarget()(te,tp,eg,ep,ev,re,r,rp,1,c,mg,2,2)
 		te:GetOperation()(te,tp,eg,ep,ev,re,r,rp,c,mg,2,2)
-		Duel.SpecialSummon(c,SUMMON_TYPE_XYZ,tp,tp,true,false,POS_FACEUP)
+		Duel.SpecialSummon(c,SUMMON_TYPE_XYZ,tp,tp,true,true,POS_FACEUP)
+		c:CompleteProcedure()
 		if mg:IsExists(Card.IsLocation,1,nil,LOCATION_OVERLAY) then Duel.ShuffleHand(tp) end
 		--Duel.XyzSummon(tp,e:GetHandler(),mg,2,2)
 	end
@@ -224,8 +226,10 @@ function cm.leave2(e,tp,eg,ep,ev,re,r,rp)
 	if ft<=0 then return end
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=tg:Select(tp,ft,ft,nil)
-	if #g>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	if #tg>ft then
+		tg=tg:Select(tp,ft,ft,nil)
+	end
+	if #tg>0 then
+		Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

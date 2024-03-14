@@ -95,7 +95,8 @@ function cm.check(e,tp,eg,ep,ev,re,r,rp)
 	end--]]
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_MZONE)
+	local c=e:GetHandler()
+	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_MZONE) and (not eg:IsContains(c) or c:IsLocation(LOCATION_HAND))
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

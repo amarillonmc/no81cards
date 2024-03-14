@@ -81,7 +81,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,tp)
 end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.filter3,1,nil,1-tp) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
+	return eg:IsExists(cm.filter3,1,nil,1-tp) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and not eg:IsContains(e:GetHandler())
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(cm.filter4,tp,LOCATION_DECK,0,1,nil) end
