@@ -36,7 +36,7 @@ function cm.initial_effect(c)
 				Duel.ConfirmCards(0,sg)
 				Duel.ConfirmCards(1,sg)
 				return 0
-			else return cm[3](tg,...) end
+			else tg:ForEach(Card.ResetFlagEffect,m) return cm[3](tg,...) end
 		end
 		cm[4]=Duel.SpecialSummonStep
 		Duel.SpecialSummonStep=function(sc,...)
@@ -46,7 +46,7 @@ function cm.initial_effect(c)
 				Duel.ConfirmCards(0,sg)
 				Duel.ConfirmCards(1,sg)
 				return false
-			else return cm[4](sc,...) end
+			else sc:ResetFlagEffect(m) return cm[4](sc,...) end
 		end
 		cm[5]=Duel.SendtoDeck
 		Duel.SendtoDeck=function(tg,...)
