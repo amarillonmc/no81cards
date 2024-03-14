@@ -49,7 +49,7 @@ end
 function s.limitcheck(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if (Duel.GetTurnPlayer()==1-tc:GetControler() or Duel.GetCurrentPhase()~=PHASE_DRAW) and tc:GetPreviousControler()==tc:GetControler() and tc:GetPreviousLocation()&LOCATION_DECK>0 then
+		if (Duel.GetTurnPlayer()==1-tc:GetControler() or Duel.GetCurrentPhase()~=PHASE_DRAW) and tc:GetPreviousControler()==tc:GetControler() and tc:GetPreviousLocation()&LOCATION_DECK>0 and Duel.GetTurnCount()>0 then
 			Duel.RegisterFlagEffect(tc:GetControler(),id,RESET_PHASE+PHASE_END,0,1)
 		end
 		tc=eg:GetNext()

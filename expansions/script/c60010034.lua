@@ -39,6 +39,7 @@ function cm.oop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local x=Duel.TossDice(tp,1)
 	Duel.Draw(tp,x,REASON_EFFECT)
+	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local hg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_HAND,0,nil):Select(tp,x,x,nil)
 	Duel.SendtoDeck(hg,tp,0,REASON_EFFECT)
@@ -101,6 +102,9 @@ function cm.oop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)
 			Duel.ShuffleHand(1-tp)
 		end
+	end
+	if c:IsRelateToEffect(e) and c:IsLocation(LOCATION_REMOVED) then
+		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
 	end
 end
 function cm.ActivateCard(c,tp,oe)

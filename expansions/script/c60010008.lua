@@ -53,7 +53,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	--local tp=e:GetHandlerPlayer()
+	local p=e:GetHandlerPlayer()
 	local num=Duel.GetFlagEffect(p,60010002)
 	Duel.ConfirmDecktop(p,num)
 	local g=Duel.GetDecktopGroup(p,num)

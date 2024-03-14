@@ -23,12 +23,16 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,m+o)
+	e2:SetCondition(cm.thcon)
 	e2:SetCost(cm.thcost)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
 end
 function cm.lcheck(g)
 	return g:GetClassCount(Card.GetLinkAttribute)==1
+end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function cm.costfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsDiscardable()
