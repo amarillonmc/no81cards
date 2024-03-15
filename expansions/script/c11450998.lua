@@ -110,13 +110,14 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if rp==1-tp and e:GetLabel()==1 then return end
 	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,rp,LOCATION_DECK,0,nil)
-	if #g>0 then--and Duel.SelectYesNo(rp,aux.Stringid(m,1)) then
+	if #g>0 then --and Duel.SelectYesNo(rp,aux.Stringid(m,1)) then
+		Duel.Hint(HINT_CARD,0,m)
 		Duel.Hint(HINT_SELECTMSG,rp,HINTMSG_ATOHAND)
 		local tc=g:Select(rp,0,1,nil):GetFirst()
 		if not tc then return end
 		if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 then
 			Duel.ConfirmCards(1-rp,tc)
-			--Duel.HintSelection(Group.FromCards(tc))
+			Duel.HintSelection(Group.FromCards(tc))
 			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 			local e2=Effect.CreateEffect(e:GetHandler())
 			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -141,5 +142,5 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
+	if tc:GetFlagEffect(m)~=0 then Duel.SendtoDeck(tc,nil,2,REASON_EFFECT) end
 end
