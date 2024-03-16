@@ -43,7 +43,7 @@ function c9910365.checkop1(e,tp,eg,ep,ev,re,r,rp)
 	local tg=eg:Filter(Card.IsOnField,nil)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(9910365,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910365,1))
+			tc:RegisterFlagEffect(9910365,RESET_EVENT+0x1fc0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910365,1))
 		end
 	end
 end
@@ -51,7 +51,7 @@ function c9910365.checkop2(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetMatchingGroup(c9910365.ctgfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(9910365,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910365,1))
+			tc:RegisterFlagEffect(9910365,RESET_EVENT+0x1fc0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910365,1))
 		end
 	end
 end

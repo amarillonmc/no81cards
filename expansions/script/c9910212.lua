@@ -29,7 +29,7 @@ function c9910212.checkop1(e,tp,eg,ep,ev,re,r,rp)
 	local tg=eg:Filter(Card.IsLocation,nil,LOCATION_MZONE)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(9910212,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910212,0))
+			tc:RegisterFlagEffect(9910212,RESET_EVENT+0x1fc0000,EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910212,0))
 		end
 	end
 end
@@ -37,7 +37,7 @@ function c9910212.checkop2(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetMatchingGroup(c9910212.ctgfilter,0,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(9910212,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910212,0))
+			tc:RegisterFlagEffect(9910212,RESET_EVENT+0x1fc0000,EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910212,0))
 		end
 	end
 end

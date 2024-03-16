@@ -338,8 +338,8 @@ function cm.checkopn(e,tp,c,mf)
     c:SetEntityCode(g:GetOriginalCode(),true)
 	local te,ceg,cep,cev,cre,cr,crp=g:CheckActivateEffect(false,true,true)
 	--
-	if c:IsLocation(LOCATION_HAND) and-- (e:GetLabelObject():IsHasType(EFFECT_TYPE_QUICK_O) or e:GetLabelObject():IsHasType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)) and --
-	not e:GetLabelObject():IsHasType(EFFECT_TYPE_ACTIVATE) then
+	if c:IsLocation(LOCATION_HAND) then-- (e:GetLabelObject():IsHasType(EFFECT_TYPE_QUICK_O) or e:GetLabelObject():IsHasType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)) and --
+	--not e:GetLabelObject():IsHasType(EFFECT_TYPE_ACTIVATE) then
 		if not c:IsType(TYPE_FIELD) then
 			Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		else
@@ -360,7 +360,7 @@ function cm.checkopn(e,tp,c,mf)
 			e1:SetReset(RESET_EVENT+0x1fc0000)
 			c:RegisterEffect(e1,true)
 		end
-		if mf~=1 then e:GetLabelObject():SetType(EFFECT_TYPE_ACTIVATE) end
+		--if mf~=1 then e:GetLabelObject():SetType(EFFECT_TYPE_ACTIVATE) end
 		if not c:IsType(TYPE_CONTINUOUS) and not c:IsType(TYPE_FIELD) then c:CancelToGrave(false) end
 	end
 	if te~=nil and te:GetProperty()~=nil then--and bit.band(te:GetProperty(),EFFECT_FLAG_CARD_TARGET)~=0 then
@@ -687,7 +687,7 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 --相同cost
 function cm.costn(e,tp,c)
-	e:SetType(EFFECT_TYPE_ACTIVATE)
+	--e:SetType(EFFECT_TYPE_ACTIVATE)
 	--
 	local c2=cm.gx
 	if c2~=nil then
