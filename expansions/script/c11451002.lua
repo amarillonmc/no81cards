@@ -80,7 +80,8 @@ function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
 	if ev==e:GetLabel() then rc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH+EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1)) end
 end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
-	return ep==tp and e:GetHandler():GetFlagEffect(1)>0
+	local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)
+	return p==tp and loc&LOCATION_ONFIELD~=0 and e:GetHandler():GetFlagEffect(1)>0
 end
 function cm.retfilter2(c,p,loc)
 	if (c:IsPreviousLocation(LOCATION_SZONE) and c:GetPreviousTypeOnField()&TYPE_EQUIP>0) or c:IsPreviousLocation(LOCATION_FZONE) then return false end
@@ -91,10 +92,10 @@ function cm.rffilter(c)
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
-	local tc=g:Select(1-tp,1,1,nil):GetFirst()
+	local tc=g:Select(tp,1,1,nil):GetFirst()
 	local b1=tc:IsFaceup() and not tc:IsStatus(STATUS_EFFECT_ENABLED)
 	if Duel.Remove(tc,nil,REASON_EFFECT+REASON_TEMPORARY)>0 then
 		local fid=c:GetFieldID()

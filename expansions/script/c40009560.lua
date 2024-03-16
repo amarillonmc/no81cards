@@ -2,6 +2,7 @@
 local m=40009560
 local cm=_G["c"..m]
 cm.named_with_Diablotherhood=1
+cm.named_with_Bruce=1
 function cm.Diablotherhood(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Diablotherhood
@@ -62,9 +63,9 @@ function cm.rfilter(c,tp)
 	return Duel.GetMZoneCount(tp,c)>0 and cm.Diablotherhood(c)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.rfilter,1,nil,tp) end
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,cm.rfilter,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(tp,cm.rfilter,1,1,nil,tp)
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,cm.rfilter,1,1,nil,tp)
 	local ct=g:FilterCount(Card.IsCode,nil,m)
 	e:SetValue(ct)
 	if ct>0 then
