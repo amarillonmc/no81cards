@@ -169,7 +169,7 @@ end
 
 function cm.chainop2(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if rc:IsType(0x6) and rc:IsOnField() and rc:IsCanTurnSet() and re:GetActivateLocation()&0x0f~=0 then
+	if rc:IsType(0x6) and rc:IsOnField() and not rc:IsLocation(0x200) and rc:IsRelateToChain(re) and rc:IsCanTurnSet() and re:GetActivateLocation()&0x0f~=0 then
 		if rc:IsStatus(STATUS_LEAVE_CONFIRMED) then
 			rc:CancelToGrave()
 		end

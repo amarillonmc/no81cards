@@ -63,7 +63,7 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0x02,0,1,1,chdck)
 		if #rg>0 and Duel.Remove(rg,POS_FACEUP,REASON_EFFECT) then
-			local g,gc=Duel.GetMatchingGroup(Card.IsCode,tp,0x03,0,1,nil,m),nil
+			local g,gc=Duel.GetMatchingGroup(Card.IsCode,tp,0x03,0,nil,m),nil
 			if #g>0 then
 				if #g==1 then
 					gc=g:GetFirst()

@@ -70,7 +70,6 @@ function c60152905.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetCard(dg)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,ng,ng:GetCount(),0,0)
 end
-end
 function c60152905.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if p==PLAYER_ALL then
