@@ -15,12 +15,19 @@ function cm.initial_effect(c)
 	--to ex sp th 
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_DAMAGE_STEP_END)  
-	e2:SetCondition(aux.dsercon) 
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_MZONE)
 	e2:SetCost(cm.spthcost)
 	e2:SetTarget(cm.spthtg)
 	e2:SetOperation(cm.spthop)
+	c:RegisterEffect(e2)
+	--cannot attack
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCondition(cm.eacon)
+	e2:SetOperation(cm.ealimit)
 	c:RegisterEffect(e2)
 end
 function cm.xxcon(e,tp,eg,ep,ev,re,r,rp)
@@ -109,8 +116,17 @@ function cm.spthop(e,tp,eg,ep,ev,re,r,rp)
 		end 
 	end  
 end 
-
-
+function cm.eacon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
+end
+function cm.ealimit(e,tp,eg,ep,ev,re,r,rp)
+	local e5=Effect.CreateEffect(e:GetHandler())
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_EXTRA_ATTACK)
+	e5:SetValue(1)
+	e5:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	e:GetHandler():RegisterEffect(e5)
+end
 
 
 

@@ -14,7 +14,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1) 
 	--to ex sp th 
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_DAMAGE_STEP_END)  
 	e2:SetCondition(aux.dsercon) 
@@ -58,9 +58,9 @@ function cm.spthtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end 
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,sg,ft,0,0)
 end 
-function cm.sckfil(c) 
-	return c:IsFaceup() and c:IsSetCard(0xcf1a)
-end 
+function cm.spfilter2(c,e,tp)
+	return c:IsSetCard(0xcf1a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
 function cm.spthop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=e:GetLabelObject() 
@@ -72,15 +72,13 @@ function cm.spthop(e,tp,eg,ep,ev,re,r,rp)
 	local ssg=sg:Select(tp,ft,ft,nil) 
 	if Duel.SpecialSummon(ssg,0,tp,tp,false,false,POS_FACEUP_DEFENSE)~=0 then 
 		Duel.BreakEffect()  
-		local x=0
-		while Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(cm.sckfil,tp,LOCATION_MZONE,0,2,nil) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)>2 and x==0 do 
-			if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then 
-				local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_MZONE,0,1,1,nil) 
-				Duel.SendtoHand(tg,nil,REASON_EFFECT) 
-			else 
-				x=1 
-			end  
-		end 
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+		local g=Duel.GetMatchingGroup(cm.spfilter2,tp,LOCATION_HAND,0,nil,e,tp)
+		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sg=g:Select(tp,1,1,nil)
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		end
 	end  
 end 
-

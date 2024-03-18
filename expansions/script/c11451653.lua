@@ -1,6 +1,5 @@
 --corridor of dragon palace
-local m=11451653
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -21,7 +20,7 @@ function cm.initial_effect(c)
 	e4:SetCategory(CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_PHASE+PHASE_END)
-	e4:SetRange(LOCATION_SZONE)
+	e4:SetRange(LOCATION_SZONE+LOCATION_HAND)
 	e4:SetHintTiming(0,TIMING_END_PHASE)
 	e4:SetCondition(cm.condition)
 	e4:SetCost(cm.cost)
@@ -53,6 +52,8 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=g:GetFirst():CheckActivateEffect(true,true,false)
 	e:SetLabelObject(c)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
+	Duel.Hint(HINT_CARD,0,g:GetFirst():GetOriginalCode())
+	Duel.ConfirmCards(1-tp,g)
 	e:SetProperty(c:GetProperty())
 	local target=c:GetTarget()
 	if target then target(e,tp,eg,ep,ev,re,r,rp,1) end

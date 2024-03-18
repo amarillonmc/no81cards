@@ -36,7 +36,7 @@ function c60150507.initial_effect(c)
 	Duel.AddCustomActivityCounter(60150507,ACTIVITY_SPSUMMON,c60150507.counterfilter)
 end
 function c60150507.counterfilter(c)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_FIEND)
+	return (c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_FIEND))
 end
 function c60150507.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(60150507,tp,ACTIVITY_SPSUMMON)==0 end

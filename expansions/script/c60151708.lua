@@ -22,10 +22,10 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_DESTROYED)
-	e3:SetCountLimit(1,m+100)
-	e3:SetCondition(cm.spcon2)
-	e3:SetTarget(cm.sptg2)
-	e3:SetOperation(cm.spop2)
+	e3:SetCountLimit(1,6011708)
+	e3:SetCondition(c60151708.spcon2)
+	e3:SetTarget(c60151708.sptg2)
+	e3:SetOperation(c60151708.spop2)
 	c:RegisterEffect(e3)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -62,22 +62,22 @@ end
 function cm.ffilter(c,e,tp)
 	return c:IsSetCard(0x3b26) and c:IsFaceup()
 end
-function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
+function c60151708.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsReason(REASON_EFFECT)
 end
-function cm.thfilter(c,e,tp)
-	return c:IsSetCard(0x3b26) and not c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c60151708.thfilter(c,e,tp)
+	return c:IsSetCard(0x3b26) and not c:IsCode(60151708) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.thfilter(chkc,e,tp) end
-	if chk==0 then return Duel.GetMZoneCount(tp)>0
-		and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end  
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
-end
-function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
+function c60151708.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c60151708.thfilter(chkc,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(c60151708.thfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	local tc=g:GetFirst()
+	local g=Duel.SelectTarget(tp,c60151708.thfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+end
+function c60151708.spop2(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end

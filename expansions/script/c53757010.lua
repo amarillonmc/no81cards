@@ -31,7 +31,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.trop)
 	c:RegisterEffect(e3)
 	local e4=e3:Clone()
-	e4:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return re and re:GetHandler():IsCode(m-1)end)
+	e4:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return re and (re:GetHandler():IsCode(m-1) or re:GetHandler()==e:GetHandler())end)
 	e4:SetCode(4179255)
 	c:RegisterEffect(e4)
 end
@@ -60,7 +60,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.trcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsCode(m-1)
+	return re and re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:GetHandler():IsCode(m-1) or re:GetHandler()==e:GetHandler())
 end
 function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end

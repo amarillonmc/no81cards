@@ -7,21 +7,16 @@ function c60159910.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,60159910)
-	e1:SetCost(c60159910.cost)
 	e1:SetTarget(c60159910.target)
 	e1:SetOperation(c60159910.activate)
 	c:RegisterEffect(e1)
 end
-function c60159910.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
-end
 function c60159910.filter(c)
-	return c:IsAbleToChangeControler() and not c:IsType(TYPE_PENDULUM)
+	return c:IsFacedown() and c:IsAbleToChangeControler()
 end
 function c60159910.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_SZONE) and chkc:IsControler(1-tp) and c60159910.filter(chkc) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>2 
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>1 
 		and Duel.IsExistingTarget(c60159910.filter,tp,0,LOCATION_SZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectTarget(tp,c60159910.filter,tp,0,LOCATION_SZONE,1,1,nil)

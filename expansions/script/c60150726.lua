@@ -30,7 +30,7 @@ function c60150726.initial_effect(c)
 	e4:SetCode(EVENT_RELEASE)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e4:SetCountLimit(1,6010726)
-	e4:SetCondition(c60150726.spcon)
+	--e4:SetCondition(c60150726.spcon)
 	e4:SetTarget(c60150726.sptg)
 	e4:SetOperation(c60150726.spop)
 	c:RegisterEffect(e4)
@@ -54,8 +54,8 @@ function c60150726.cfilter(c)
 	return c:IsSetCard(0xb22) and c:IsType(TYPE_MONSTER)
 end
 function c60150726.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c60150726.cfilter,1,nil) end
-	local g=Duel.SelectReleaseGroupEx(tp,c60150726.cfilter,1,1,nil)
+	if chk==0 then return Duel.CheckReleaseGroupEx(REASON_COST,tp,c60150726.cfilter,1,nil) end
+	local g=Duel.SelectReleaseGroupEx(REASON_COST,tp,c60150726.cfilter,1,1,nil)
 	Duel.Release(g,REASON_COST)
 end
 function c60150726.filter(c,e,tp)

@@ -110,7 +110,7 @@ function c22348281.splimit2(e,c,sump,sumtype,sumpos,targetp,se)
 	return c:IsCode(22348281)
 end
 function c22348281.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x570a)
+	return c:IsFaceup() and c:IsSetCard(0x670b)
 end
 function c22348281.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -132,10 +132,10 @@ function c22348281.atkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348281.splimit(e,c)
-	return not c:IsSetCard(0x570a)
+	return not c:IsSetCard(0x670b)
 end
 function c22348281.spfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x570a)
+	return c:IsFaceup() and c:IsSetCard(0x670b)
 end
 function c22348281.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
@@ -145,7 +145,7 @@ function c22348281.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and ct<4 and g>0 and not ((ph==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or ph==PHASE_DAMAGE_CAL) and (ph==PHASE_MAIN1 or (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE) or ph==PHASE_MAIN2)
 end
 function c22348281.filter(c,e,tp)
-	return c:IsSetCard(0x570a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
+	return c:IsSetCard(0x670b) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
 function c22348281.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

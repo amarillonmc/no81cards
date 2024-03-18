@@ -52,7 +52,7 @@ function c60159911.spfilter(c)
 end
 function c60159911.spcon(e,c)
 	if c==nil then return true end
-	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 
+	return Duel.GetMZoneCount(c:GetControler())>0 
 		and Duel.IsExistingMatchingCard(c60159911.spfilter,c:GetControler(),LOCATION_MZONE,LOCATION_MZONE,2,nil)
 end
 function c60159911.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
@@ -60,7 +60,6 @@ function c60159911.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
 end
 function c60159911.aclimit(e,re,tp)
 	return bit.band(e:GetHandler():GetSummonType(),SUMMON_TYPE_SPECIAL)==SUMMON_TYPE_SPECIAL and e:GetHandler():GetSummonLocation()==LOCATION_HAND and e:GetHandler():IsFaceup() and re:IsActiveType(TYPE_MONSTER) and bit.band(re:GetHandler():GetSummonLocation(),LOCATION_EXTRA+LOCATION_GRAVE)~=0
-		and not re:GetHandler():IsImmuneToEffect(e)
 end
 function c60159911.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

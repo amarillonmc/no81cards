@@ -52,7 +52,49 @@ function cm.initial_effect(c)
 	e5:SetCondition(c22348050.atkcon)
 	e5:SetOperation(c22348050.atkop)
 	c:RegisterEffect(e5)
+	--cost
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetCode(EFFECT_ACTIVATE_COST)
+	e6:SetRange(LOCATION_EXTRA)
+	e6:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e6:SetTargetRange(1,0)
+	e6:SetTarget(c22348050.actarget)
+	e6:SetOperation(c22348050.costop)
+	c:RegisterEffect(e6)
 	
+end
+function c22348050.actarget(e,te,tp)
+	e:SetLabelObject(te)
+	return te:GetHandler()==e:GetHandler()
+end
+function c22348050.costop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_FZONE,POS_FACEUP,false)
+	e:GetHandler():CreateEffectRelation(te)
+	local c=e:GetHandler()
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+	e1:SetOperation(c22348050.rsop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+end
+function c22348050.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+	end
 end
 
 
@@ -98,7 +140,7 @@ function c22348050.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsType(TYPE_TRAP)
 end
 function c22348050.atkfilter(c)
-	return c:IsSetCard(0x701) and c:IsFaceup()
+	return c:IsFaceup()
 end
 function c22348050.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

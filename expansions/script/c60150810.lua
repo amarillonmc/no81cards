@@ -29,10 +29,25 @@ function c60150810.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 		local tc=Duel.GetFieldCard(tp,LOCATION_DECK,0)
-		if tc:IsAbleToRemove() and Duel.SelectYesNo(tp,aux.Stringid(60150810,0)) then
+		local tc2=Duel.GetFieldCard(1-tp,LOCATION_DECK,0)
+		if (tc:IsAbleToRemove() and tc2:IsAbleToRemove()) and Duel.SelectYesNo(tp,aux.Stringid(60150810,0)) then
+			if Duel.SelectYesNo(tp,aux.Stringid(60150810,1)) then
+				Duel.BreakEffect()
+				Duel.DisableShuffleCheck()
+				Duel.Remove(tc2,POS_FACEUP,REASON_EFFECT)
+			else
+				Duel.BreakEffect()
+				Duel.DisableShuffleCheck()
+				Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+			end
+		elseif (tc:IsAbleToRemove() and not tc2:IsAbleToRemove()) and Duel.SelectYesNo(tp,aux.Stringid(60150810,0)) then
 			Duel.BreakEffect()
 			Duel.DisableShuffleCheck()
 			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		elseif (not tc:IsAbleToRemove() and tc2:IsAbleToRemove()) and Duel.SelectYesNo(tp,aux.Stringid(60150810,0)) then
+			Duel.BreakEffect()
+			Duel.DisableShuffleCheck()
+			Duel.Remove(tc2,POS_FACEUP,REASON_EFFECT)
 		end
 	end
 end

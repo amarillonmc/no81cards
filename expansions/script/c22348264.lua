@@ -45,7 +45,7 @@ function c22348264.actcon(e)
 	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
 function c22348264.cmfilter(c)
-	return c:IsSetCard(0xa70a) and c:IsSummonable(true,nil)
+	return c:IsSetCard(0x570b) and c:IsSummonable(true,nil)
 end
 function c22348264.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348264.cmfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
@@ -101,14 +101,14 @@ function c22348264.efilter(e,re)
 	return re:GetOwnerPlayer()~=e:GetOwnerPlayer() and re:IsActivated()
 end
 function c22348264.opfilter(c,tp)
-	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsSetCard(0xa70a) and c:IsPreviousControler(tp)
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsSetCard(0x570b) and c:IsPreviousControler(tp)
 		and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP)
 end
 function c22348264.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c22348264.opfilter,1,nil,tp)
 end
 function c22348264.spfilter(c,e,tp)
-	return c:IsSetCard(0xa70a) and c:IsType(TYPE_DUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x570b) and c:IsType(TYPE_DUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348264.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

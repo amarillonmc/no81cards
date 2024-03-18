@@ -27,30 +27,30 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(e3,0)
 	end
 	
-	--activate cost
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_ACTIVATE_COST)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e4:SetTargetRange(0,1)
-	e4:SetCondition(c60159914.descon)
-	e4:SetTarget(c60159914.actarget)
-	e4:SetCost(c60159914.costchk)
-	e4:SetOperation(c60159914.costop)
-	c:RegisterEffect(e4)
-	--activate cost
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetCode(EFFECT_ACTIVATE_COST)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e5:SetTargetRange(0,1)
-	e5:SetCondition(c60159914.descon)
-	e5:SetTarget(c60159914.actarget2)
-	e5:SetCost(c60159914.costchk2)
-	e5:SetOperation(c60159914.costop2)
-	c:RegisterEffect(e5)
+    --activate cost
+    local e4=Effect.CreateEffect(c)
+    e4:SetType(EFFECT_TYPE_FIELD)
+    e4:SetCode(EFFECT_ACTIVATE_COST)
+    e4:SetRange(LOCATION_MZONE)
+    e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+    e4:SetTargetRange(0,1)
+    e4:SetCondition(c60159914.descon)
+    e4:SetTarget(c60159914.actarget)
+    e4:SetCost(c60159914.costchk)
+    e4:SetOperation(c60159914.costop)
+    c:RegisterEffect(e4)
+    --activate cost
+    local e5=Effect.CreateEffect(c)
+    e5:SetType(EFFECT_TYPE_FIELD)
+    e5:SetCode(EFFECT_ACTIVATE_COST)
+    e5:SetRange(LOCATION_MZONE)
+    e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+    e5:SetTargetRange(0,1)
+    e5:SetCondition(c60159914.descon)
+    e5:SetTarget(c60159914.actarget2)
+    e5:SetCost(c60159914.costchk2)
+    e5:SetOperation(c60159914.costop2)
+    c:RegisterEffect(e5)
 end
 function cm.dcon1(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(e:GetHandler():GetSummonType(),SUMMON_TYPE_RITUAL)==SUMMON_TYPE_RITUAL and (not re:IsHasType(EFFECT_TYPE_ACTIONS) or re:IsHasType(EFFECT_TYPE_CONTINUOUS))
@@ -101,14 +101,14 @@ function cm.dop(e,tp,eg,ep,ev,re,r,rp)
 		if op=={} then return end
 		local s=Duel.SelectOption(tp,table.unpack(op))
 		if s==0 then
-			if chk1 then cm.cop(tp,g1,t1,1)
-			elseif chk2 then cm.cop(tp,g2,t2,2)
-			else cm.cop(tp,g3,t3,3) end
-		elseif s==1 then
-			if not (chk1 and chk2) then cm.cop(tp,g3,t3,3)
-			else cm.cop(tp,g2,t2,2) end
-		else cm.cop(tp,g3,t3,3) end
-	Duel.ShuffleHand(1-tp)
+            if chk1 then cm.cop(tp,g1,t1,1)
+            elseif chk2 then cm.cop(tp,g2,t2,2)
+            else cm.cop(tp,g3,t3,3) end
+        elseif s==1 then
+            if not (chk1 and chk2) then cm.cop(tp,g3,t3,3)
+            else cm.cop(tp,g2,t2,2) end
+        else cm.cop(tp,g3,t3,3) end
+    Duel.ShuffleHand(1-tp)
 end
 function cm.cop(tp,g,ct,act)
 	Duel.Hint(HINT_SELECTMSG,tp,cm.tb[act])
@@ -127,36 +127,33 @@ end
 cm.tb={[1]=HINTMSG_DESTROY,[2]=HINTMSG_REMOVE,[3]=HINTMSG_TODECK}
 
 function c60159914.descon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_RITUAL
+    return e:GetHandler():GetSummonType()==SUMMON_TYPE_RITUAL
 end
 function c60159914.actarget(e,te,tp)
-	return te:IsActiveType(TYPE_MONSTER)
+    return te:GetHandler():IsType(TYPE_MONSTER)
 end
 function c60159914.cfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()
+    return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()
 end
 function c60159914.costchk(e,te_or_c,tp)
-	return Duel.IsExistingMatchingCard(c60159914.cfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil)
+    return Duel.IsExistingMatchingCard(c60159914.cfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil)
 end
 function c60159914.costop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,60159914)
-	local g=Duel.SelectMatchingCard(tp,c60159914.cfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+    Duel.Hint(HINT_CARD,0,60159914)
+    local g=Duel.SelectMatchingCard(tp,c60159914.cfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
+    Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c60159914.actarget2(e,te,tp)
-	e:SetLabelObject(te:GetHandler())
-	return te:IsActiveType(TYPE_SPELL+TYPE_TRAP)
+    return te:GetHandler():IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function c60159914.cfilter2(c)
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
+    return c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
 end
 function c60159914.costchk2(e,te_or_c,tp)
-	local lc=e:GetLabelObject()
-	return Duel.IsExistingMatchingCard(c60159914.cfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,lc)
+    return Duel.IsExistingMatchingCard(c60159914.cfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)
 end
 function c60159914.costop2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,60159914)
-	local lc=e:GetLabelObject()
-	local g=Duel.SelectMatchingCard(tp,c60159914.cfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,lc)
-	Duel.SendtoDeck(g,nil,2,REASON_COST)
+    Duel.Hint(HINT_CARD,0,60159914)
+    local g=Duel.SelectMatchingCard(tp,c60159914.cfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
+    Duel.SendtoDeck(g,nil,2,REASON_COST)
 end

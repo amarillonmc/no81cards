@@ -17,7 +17,7 @@ function c60152004.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetCountLimit(1,60152004)
-    e1:SetCondition(c60152004.con)
+	e1:SetCondition(c60152004.con)
 	e1:SetTarget(c60152004.target)
 	e1:SetOperation(c60152004.activate)
 	c:RegisterEffect(e1)
@@ -25,18 +25,18 @@ function c60152004.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
 	--
-    local e3=Effect.CreateEffect(c)
-    e3:SetDescription(aux.Stringid(60152004,1))
-    e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(60152004,1))
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-    e3:SetCode(EVENT_RELEASE)
+	e3:SetCode(EVENT_RELEASE)
 	e3:SetCountLimit(1,6012004)
-    e3:SetCondition(c60152004.con)
-    e3:SetOperation(c60152004.activate2)
-    c:RegisterEffect(e3)
+	e3:SetCondition(c60152004.con)
+	e3:SetOperation(c60152004.activate2)
+	c:RegisterEffect(e3)
 end
 function c60152004.con(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0
+	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
 end
 function c60152004.spfilter2(c)
 	return ((c:IsSetCard(0x6b25) and c:IsType(TYPE_MONSTER)) 
@@ -75,21 +75,21 @@ function c60152004.spop2(e,tp,eg,ep,ev,re,r,rp,c)
 	end
 end
 function c60152004.dfilter(c)
-    return c:IsFaceup() and (c:IsType(TYPE_FUSION) or c:IsType(TYPE_SYNCHRO) or c:IsType(TYPE_XYZ) or c:IsType(TYPE_LINK))
+	return c:IsFaceup() and (c:IsType(TYPE_FUSION) or c:IsType(TYPE_SYNCHRO) or c:IsType(TYPE_XYZ) or c:IsType(TYPE_LINK))
 		and not c:IsDisabled()
 end
 function c60152004.target(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(c60152004.spfilter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler())
+	if chk==0 then return Duel.IsExistingMatchingCard(c60152004.spfilter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler())
 		and Duel.IsExistingMatchingCard(c60152004.dfilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(c60152004.spfilter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,1,0,0)
 end
 function c60152004.activate(e,tp,eg,ep,ev,re,r,rp)
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-    local g=Duel.SelectMatchingCard(tp,c60152004.spfilter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler())
-    if g:GetCount()>0 then
-        Duel.HintSelection(g)
-        if Duel.Release(g,REASON_EFFECT)~=0 then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local g=Duel.SelectMatchingCard(tp,c60152004.spfilter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler())
+	if g:GetCount()>0 then
+		Duel.HintSelection(g)
+		if Duel.Release(g,REASON_EFFECT)~=0 then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 			local g2=Duel.SelectMatchingCard(tp,c60152004.dfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
@@ -116,25 +116,25 @@ function c60152004.activate(e,tp,eg,ep,ev,re,r,rp)
 				tc:RegisterEffect(e3)
 			end
 		end
-    end
+	end
 end
 function c60152004.activate2(e,tp,eg,ep,ev,re,r,rp)
-    local e1=Effect.CreateEffect(e:GetHandler())
-    e1:SetType(EFFECT_TYPE_FIELD)
-    e1:SetCode(EFFECT_UPDATE_ATTACK)
-    e1:SetTargetRange(LOCATION_ONFIELD,0)
-    e1:SetTarget(aux.TargetBoolFunction(c60152004.filter2))
-    e1:SetValue(c60152004.atkval)
-    e1:SetReset(RESET_PHASE+PHASE_END)
-    Duel.RegisterEffect(e1,tp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetTargetRange(LOCATION_ONFIELD,0)
+	e1:SetTarget(aux.TargetBoolFunction(c60152004.filter2))
+	e1:SetValue(c60152004.atkval)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
 function c60152004.filter2(c)
 	return ((c:IsSetCard(0x6b25) and c:IsType(TYPE_MONSTER)) 
 		or (c:IsType(TYPE_TOKEN) and c:IsAttribute(ATTRIBUTE_FIRE)))
 end
 function c60152004.atkfilter(c)
-    return c:IsSetCard(0x6b25) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x6b25) and c:IsType(TYPE_MONSTER)
 end
 function c60152004.atkval(e,c)
-    return Duel.GetMatchingGroupCount(c60152004.atkfilter,c:GetControler(),LOCATION_GRAVE,0,nil)*300
+	return Duel.GetMatchingGroupCount(c60152004.atkfilter,c:GetControler(),LOCATION_GRAVE,0,nil)*300
 end

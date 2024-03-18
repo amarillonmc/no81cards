@@ -33,14 +33,14 @@ function c22348266.mfilter(c)
 	return c:IsLinkType(TYPE_DUAL)
 end
 function c22348266.cofilter(c)
-	return c:IsSetCard(0xa70a) and c:IsDiscardable()
+	return c:IsSetCard(0x570b) and c:IsDiscardable()
 end
 function c22348266.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348266.cofilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.DiscardHand(tp,c22348266.cofilter,1,1,REASON_COST+REASON_DISCARD)
 end
 function c22348266.filter(c)
-	return c:IsSetCard(0xa70a) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x570b) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c22348266.target(e,tp,eg,ep,ev,re,r,rp,chk,_,exc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348266.filter,tp,LOCATION_DECK,0,1,exc) end

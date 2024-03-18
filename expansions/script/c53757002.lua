@@ -25,7 +25,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.trop)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
-	e3:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return re and re:GetHandler():IsCode(m-1)end)
+	e3:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return re and (re:GetHandler():IsCode(m-1) or re:GetHandler()==e:GetHandler())end)
 	e3:SetCode(4179255)
 	c:RegisterEffect(e3)
 end
@@ -103,7 +103,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
 end
 function cm.trcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsCode(m-1)
+	return re and re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:GetHandler():IsCode(m-1) or re:GetHandler()==e:GetHandler())
 end
 function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_ONFIELD) and chkc:IsControler(1-tp) and chkc:IsAbleToRemove() end

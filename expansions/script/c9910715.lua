@@ -1,4 +1,4 @@
---远古造物 海口鱼
+--远古造物 昆明鱼
 dofile("expansions/script/c9910700.lua")
 function c9910715.initial_effect(c)
 	--special summon

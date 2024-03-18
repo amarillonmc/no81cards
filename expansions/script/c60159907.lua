@@ -7,7 +7,8 @@ function c60159907.initial_effect(c)
 	e12:SetType(EFFECT_TYPE_SINGLE)
 	e12:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e12:SetCode(EFFECT_ADD_ATTRIBUTE)
-	e12:SetRange(LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA+LOCATION_OVERLAY)
+	e12:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e12:SetRange(LOCATION_MZONE)
 	e12:SetValue(ATTRIBUTE_DARK)
 	c:RegisterEffect(e12)
 	--spsummon condition
@@ -43,7 +44,7 @@ function c60159907.splimit(e,se,sp,st)
 end
 function c60159907.spfilter1(c,tp,fc)
 	return (c:IsAttribute(ATTRIBUTE_LIGHT) or c:IsAttribute(ATTRIBUTE_DARK)) 
-		and c:IsRace(RACE_DRAGON) and c:IsCanBeFusionMaterial(fc) and Duel.CheckReleaseGroup(tp,c60159907.spfilter2,1,c,fc)
+		and c:IsRace(RACE_DRAGON) and c:IsCanBeFusionMaterial(fc) and Duel.CheckReleaseGroup(REASON_COST,tp,c60159907.spfilter2,1,c,fc)
 end
 function c60159907.spfilter2(c,fc)
 	return (c:IsAttribute(ATTRIBUTE_LIGHT) or c:IsAttribute(ATTRIBUTE_DARK)) 
@@ -52,12 +53,12 @@ end
 function c60159907.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>-2
-		and Duel.CheckReleaseGroup(tp,c60159907.spfilter1,1,nil,tp,c)
+	return Duel.GetMZoneCount(tp)>-2
+		and Duel.CheckReleaseGroup(REASON_COST,tp,c60159907.spfilter1,1,nil,tp,c)
 end
 function c60159907.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g1=Duel.SelectReleaseGroup(tp,c60159907.spfilter1,1,1,nil,tp,c)
-	local g2=Duel.SelectReleaseGroup(tp,c60159907.spfilter2,1,1,g1:GetFirst(),c)
+	local g1=Duel.SelectReleaseGroup(REASON_COST,tp,c60159907.spfilter1,1,1,nil,tp,c)
+	local g2=Duel.SelectReleaseGroup(REASON_COST,tp,c60159907.spfilter2,1,1,g1:GetFirst(),c)
 	g1:Merge(g2)
 	c:SetMaterial(g1)
 	Duel.Release(g1,REASON_COST+REASON_FUSION+REASON_MATERIAL)

@@ -1,5 +1,12 @@
 --光与暗的潜行者
 function c60159941.initial_effect(c)
+	--xyzlimit
+	local e11=Effect.CreateEffect(c)
+	e11:SetType(EFFECT_TYPE_SINGLE)
+	e11:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e11:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+	e11:SetValue(1)
+	c:RegisterEffect(e11)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
@@ -17,16 +24,25 @@ function c60159941.initial_effect(c)
 	e1:SetValue(c60159941.linklimit)
 	c:RegisterEffect(e1)
 	--base atk/def
-    local e2=Effect.CreateEffect(c)
-    e2:SetType(EFFECT_TYPE_SINGLE)
-    e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-    e2:SetCode(EFFECT_SET_BASE_ATTACK)
-    e2:SetRange(LOCATION_MZONE)
-    e2:SetValue(c60159941.atkval)
-    c:RegisterEffect(e2)
-    local e3=e2:Clone()
-    e3:SetCode(EFFECT_SET_BASE_DEFENSE)
-    c:RegisterEffect(e3)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetCode(EFFECT_SET_BASE_ATTACK)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetValue(c60159941.atkval)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EFFECT_SET_BASE_DEFENSE)
+	c:RegisterEffect(e3)
+	--attribute light
+	local ea=Effect.CreateEffect(c)
+	ea:SetType(EFFECT_TYPE_SINGLE)
+	ea:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	ea:SetCode(EFFECT_ADD_ATTRIBUTE)
+	ea:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	ea:SetRange(LOCATION_MZONE)
+	ea:SetValue(ATTRIBUTE_DARK)
+	c:RegisterEffect(ea)
 end
 function c60159941.cfilter(c,tp,lc)
 	return c:IsCanBeLinkMaterial(lc) and c:IsFaceup() and c:GetSummonLocation()&(LOCATION_DECK+LOCATION_EXTRA)~=0
@@ -73,5 +89,5 @@ function c60159941.linklimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_XYZ)==SUMMON_TYPE_XYZ
 end
 function c60159941.atkval(e,c)
-    return Duel.GetMatchingGroupCount(nil,c:GetControler(),LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil)*100
+	return Duel.GetMatchingGroupCount(nil,c:GetControler(),LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil)*100
 end

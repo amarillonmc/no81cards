@@ -27,9 +27,8 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.trop)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
-	e3:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return re and re:GetHandler():IsCode(m-1)end)
+	e3:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return re and (re:GetHandler():IsCode(m-1) or re:GetHandler()==e:GetHandler())end)
 	e3:SetCode(4179255)
-	e3:SetCondition(cm.trcon2)
 	c:RegisterEffect(e3)
 end
 function cm.cfilter(c,tp)
@@ -47,7 +46,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
 end
 function cm.trcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsCode(m-1)
+	return re and re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:GetHandler():IsCode(m-1) or re:GetHandler()==e:GetHandler())
 end
 function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil,tp,POS_FACEDOWN) end
@@ -83,7 +82,4 @@ end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	Duel.SendtoHand(tc,1-tp,REASON_EFFECT)
-end
-function cm.trcon2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsCode,1,nil,m-1)
 end

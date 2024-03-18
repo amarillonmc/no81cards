@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa70a))
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x570b))
 	e2:SetValue(c22348262.atkval)
 	c:RegisterEffect(e2)
 	--indes
@@ -32,7 +32,7 @@ function cm.initial_effect(c)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
 	e4:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
-	e4:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa70a))
+	e4:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x570b))
 	c:RegisterEffect(e4)
 	--recover
 	local e5=Effect.CreateEffect(c)
@@ -51,7 +51,7 @@ function c22348262.atkval(e,c)
 	return c:GetLevel()*150
 end
 function c22348262.indtg(e,c)
-	return c:IsFaceup() and (c:IsSetCard(0xa70a) or c:IsCode(22348260))
+	return c:IsFaceup() and (c:IsSetCard(0x570b) or c:IsCode(22348260))
 end
 function c22348262.indct(e,re,r,rp)
 	if bit.band(r,REASON_EFFECT)~=0 then
@@ -62,7 +62,7 @@ function c22348262.cfilter(c,tp)
 	return c:IsSummonPlayer(tp)
 end
 function c22348262.etfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xa70a)
+	return c:IsFaceup() and c:IsSetCard(0x570b)
 end
 function c22348262.reccon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c22348262.cfilter,1,nil,1-tp) and Duel.IsExistingMatchingCard(c22348262.etfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)

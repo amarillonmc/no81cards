@@ -79,7 +79,7 @@ function c75000801.drcon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function c75000801.tdfilter(c,tp)
 	return (aux.IsCodeListed(c,75000812)) and c:IsAbleToDeck()
-		and Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,4,c)
+		and Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,2,c)
 end
 function c75000801.drtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
@@ -87,7 +87,7 @@ function c75000801.drtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,c75000801.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g2=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,4,4,g)
+	local g2=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,2,2,g)
 	g:Merge(g2)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,5,0,0)
 end

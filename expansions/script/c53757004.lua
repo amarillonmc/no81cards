@@ -24,9 +24,8 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.trop)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
-	e3:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return re and re:GetHandler():IsCode(m-1)end)
+	e3:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return re and (re:GetHandler():IsCode(m-1) or re:GetHandler()==e:GetHandler())end)
 	e3:SetCode(4179255)
-	e3:SetCondition(cm.trcon2)
 	c:RegisterEffect(e3)
 end
 function cm.filter(c)
@@ -51,23 +50,35 @@ function cm.pop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.trcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsCode(m-1)
+	return re and re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:GetHandler():IsCode(m-1) or re:GetHandler()==e:GetHandler())
 end
-function cm.rmfilter(c)
-	return c:IsFacedown() and c:IsAbleToRemove()
+function cm.cfilter(c,s)
+	if not c:IsRace(RACE_DRAGON) or not c:GetType()&0x20002~=0x20002 then return false end
+	local seq=c:GetSequence()
+	if c:IsLocation(LOCATION_MZONE) then seq=aux.MZoneSequence(seq) end
+	return seq==s
+end
+function cm.rmfilter(c,s)
+	local seq=c:GetSequence()
+	if c:IsLocation(LOCATION_MZONE) then seq=aux.MZoneSequence(seq) end
+	return seq==s and c:IsAbleToRemove()
 end
 function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.rmfilter,tp,0,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_ONFIELD,nil)
+	local filter=0x1f
+	for i=0,4 do
+		if not (Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_ONFIELD,0,1,nil,i) and Duel.IsExistingMatchingCard(cm.rmfilter,tp,0,LOCATION_ONFIELD,1,nil,4-i)) then filter=filter&(~(1<<i)) end
+	end
+	if chk==0 then return filter~=0x1f end
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
+	local fd=Duel.SelectField(tp,1,LOCATION_SZONE,0,~(filter<<8))
+	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_ONFIELD,nil,4-math.log(fd>>8,2))
+	Duel.SetTargetParam(fd)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.trop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_ONFIELD,nil)
+	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_ONFIELD,nil,4-math.log(Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)>>8,2))
 	if g:GetCount()>0 then
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	end
-end
-function cm.trcon2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsCode,1,nil,m-1)
 end

@@ -58,7 +58,7 @@ function c60151732.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c60151732.mfilter(c)
-	return c:IsType(TYPE_MONSTER) and not c:IsType(TYPE_XYZ)
+	return c:IsType(TYPE_MONSTER) and not (c:IsType(TYPE_XYZ) or c:IsType(TYPE_LINK))
 end
 function c60151732.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60151732.mfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) 

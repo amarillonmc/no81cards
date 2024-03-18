@@ -28,6 +28,7 @@ function cm.initial_effect(c)
 		local _GetActivateSequence=Effect.GetActivateSequence
 		function Effect.GetActivateLocation(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
+				if e:GetHandler():IsType(TYPE_FIELD) then return LOCATION_FZONE end
 				return LOCATION_SZONE
 			end
 			return _GetActivateLocation(e)

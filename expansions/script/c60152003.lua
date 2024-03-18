@@ -17,7 +17,7 @@ function c60152003.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetCountLimit(1,60152003)
-    e1:SetCondition(c60152003.con)
+	e1:SetCondition(c60152003.con)
 	e1:SetTarget(c60152003.target)
 	e1:SetOperation(c60152003.activate)
 	c:RegisterEffect(e1)
@@ -25,20 +25,20 @@ function c60152003.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
 	--
-    local e3=Effect.CreateEffect(c)
-    e3:SetDescription(aux.Stringid(60152003,1))
-    e3:SetCategory(CATEGORY_RELEASE)
-    e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(60152003,1))
+	e3:SetCategory(CATEGORY_RELEASE)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-    e3:SetCode(EVENT_RELEASE)
+	e3:SetCode(EVENT_RELEASE)
 	e3:SetCountLimit(1,6012003)
-    e3:SetCondition(c60152003.con)
-    e3:SetTarget(c60152003.target2)
-    e3:SetOperation(c60152003.activate2)
-    c:RegisterEffect(e3)
+	e3:SetCondition(c60152003.con)
+	e3:SetTarget(c60152003.target2)
+	e3:SetOperation(c60152003.activate2)
+	c:RegisterEffect(e3)
 end
 function c60152003.con(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0
+	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
 end
 function c60152003.spfilter2(c)
 	return ((c:IsSetCard(0x6b25) and c:IsType(TYPE_MONSTER)) 
@@ -87,15 +87,15 @@ function c60152003.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c60152003.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-    local g=Duel.SelectMatchingCard(tp,c60152003.spfilter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler())
-    if g:GetCount()>0 then
-        Duel.HintSelection(g)
-        if Duel.Release(g,REASON_EFFECT)~=0 then
+	local g=Duel.SelectMatchingCard(tp,c60152003.spfilter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler())
+	if g:GetCount()>0 then
+		Duel.HintSelection(g)
+		if Duel.Release(g,REASON_EFFECT)~=0 then
 			Duel.BreakEffect()
 			local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 			Duel.Draw(p,d,REASON_EFFECT)
 		end
-    end
+	end
 end
 function c60152003.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60152003.spfilter2,tp,LOCATION_DECK,0,1,nil) end
@@ -104,8 +104,8 @@ function c60152003.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c60152003.activate2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-    local g=Duel.SelectMatchingCard(tp,c60152003.spfilter2,tp,LOCATION_DECK,0,1,1,nil)
-    if g:GetCount()>0 then
-        Duel.SendtoGrave(g,REASON_EFFECT+REASON_RELEASE)
-    end
+	local g=Duel.SelectMatchingCard(tp,c60152003.spfilter2,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoGrave(g,REASON_EFFECT+REASON_RELEASE)
+	end
 end

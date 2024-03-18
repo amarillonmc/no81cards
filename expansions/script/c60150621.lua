@@ -29,8 +29,8 @@ function c60150621.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
-	e4:SetCondition(c60150621.condition)
 	e4:SetCost(c60150621.cost)
+	e4:SetTarget(c60150621.target)
 	e4:SetOperation(c60150621.activate)
 	c:RegisterEffect(e4)
 end
@@ -64,9 +64,32 @@ function c60150621.seqop(e,tp,eg,ep,ev,re,r,rp)
 		e:GetHandler():RegisterEffect(e5)
 	end
 end
-function c60150621.condition(e,tp,eg,ep,ev,re,r,rp)
-	local seq=e:GetHandler():GetSequence()
-	return Duel.GetFieldCard(1-tp,LOCATION_MZONE,4-seq) or Duel.GetFieldCard(1-tp,LOCATION_SZONE,4-seq)
+function c60150621.thfilter(c,g)
+	return g:IsContains(c)
+end
+function c60150621.thfilter2(c,e,tp)
+	local se=e:GetHandler():GetSequence() 
+	if  se ==5 then
+		se=1
+	elseif se==6 then
+		se=3
+	end
+	local seq=c:GetSequence()
+	if  seq ==5 then
+		seq=1
+	elseif seq==6 then
+		seq=3
+	end
+	if c:IsControler(1-tp) then 
+		seq=math.abs(seq-4)
+	end
+	return math.abs(se-seq)==1--g:IsContains(c)
+end
+function c60150621.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local cg=e:GetHandler():GetColumnGroup()
+	if chk==0 then return Duel.IsExistingMatchingCard(c60150621.thfilter,tp,0,LOCATION_ONFIELD,1,nil,cg) end
+	local g=Duel.GetMatchingGroup(c60150621.thfilter,tp,0,LOCATION_ONFIELD,nil,cg)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function c60150621.cfilter(c)
 	return c:IsSetCard(0x3b21) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckOrExtraAsCost()
@@ -107,24 +130,17 @@ function c60150621.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
 	e:GetHandler():RegisterEffect(e1,true)
 end
+function c60150621.desfilter2(c,s,tp)
+	local seq=c:GetSequence()
+	return math.abs(seq-s)==1 and c:IsControler(tp)
+end
 function c60150621.activate(e,tp,eg,ep,ev,re,r,rp)
-	local seq=e:GetHandler():GetSequence()
-	local g=Group.CreateGroup()
-	local tc=Duel.GetFieldCard(1-tp,LOCATION_MZONE,4-seq)
-	if tc then g:AddCard(tc) end
-	tc=Duel.GetFieldCard(1-tp,LOCATION_SZONE,4-seq)
-	if tc then g:AddCard(tc) end
+    local c=e:GetHandler()
+	local cg=c:GetColumnGroup()
+	local g=Duel.GetMatchingGroup(c60150621.thfilter,tp,0,LOCATION_ONFIELD,nil,cg)
 	if Duel.Destroy(g,REASON_EFFECT)~=0 then
-		local seq=e:GetHandler():GetSequence()
-		local g=Group.CreateGroup()
-		local tc=Duel.GetFieldCard(1-tp,LOCATION_MZONE,3-seq)
-		if tc then g:AddCard(tc) end
-		tc=Duel.GetFieldCard(1-tp,LOCATION_SZONE,3-seq)
-		if tc then g:AddCard(tc) end
-		tc=Duel.GetFieldCard(1-tp,LOCATION_MZONE,5-seq)
-		if tc then g:AddCard(tc) end
-		tc=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5-seq)
-		if tc then g:AddCard(tc) end
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		local g2=Duel.GetMatchingGroup(c60150621.thfilter2,tp,0,LOCATION_ONFIELD,nil,e,tp)
+		Duel.BreakEffect()
+		Duel.SendtoHand(g2,nil,REASON_EFFECT)
 	end
 end

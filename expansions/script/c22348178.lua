@@ -45,8 +45,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	
 end
+function c22348178.lcheckfil(c)
+	return c:IsRace(RACE_MACHINE) and c:IsType(TYPE_TUNER)
+end
 function c22348178.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x705)
+	return g:IsExists(c22348178.lcheckfil,1,nil)
 end
 function c22348178.desfilter(c)
 	return c:IsFaceup() and c:IsCode(22348157)

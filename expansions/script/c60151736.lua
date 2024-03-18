@@ -3,7 +3,7 @@ local m=60151736
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroMixProcedure(c,aux.Tuner(nil),aux.Tuner(nil),nil,aux.NonTuner(Card.IsSetCard,0x3b26),1,99)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3b26),aux.NonTuner(nil),2)
 	c:EnableReviveLimit()
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
@@ -98,6 +98,7 @@ function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g2,1,0,0)
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local tc=Duel.GetFirstTarget()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

@@ -2,14 +2,20 @@
 local m=91000404
 local cm=c91000404
 function c91000404.initial_effect(c)
+	--local e1=Effect.CreateEffect(c)
+	--e1:SetCategory(CATEGORY_EQUIP)
+	--e1:SetType(EFFECT_TYPE_IGNITION)
+	--e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	--e1:SetRange(LOCATION_HAND)
+	--e1:SetCountLimit(1,m)
+	--e1:SetTarget(cm.tg1)
+	--e1:SetOperation(cm.op1)
+	--c:RegisterEffect(e1)
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_EQUIP)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,m)
-	e1:SetTarget(cm.tg1)
-	e1:SetOperation(cm.op1)
+	e1:SetDescription(aux.Stringid(34137269,0))
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SUMMON_PROC)
+	e1:SetCondition(cm.ntcon)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -20,16 +26,7 @@ function c91000404.initial_effect(c)
 	e2:SetCondition(cm.con2)
 	e2:SetTarget(cm.tg2)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_LEAVE_FIELD)
-	e3:SetCountLimit(1,m*3)
-	e3:SetCondition(cm.con3)
-	e3:SetTarget(cm.tg3)
-	e3:SetOperation(cm.op3)
-	c:RegisterEffect(e3)
+	
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_EQUIP)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -47,6 +44,12 @@ function c91000404.initial_effect(c)
 end
 function cm.counterfilter(c)
 	return  c:IsLevel(10)
+end
+function cm.ntcon(e,c,minc)
+	if c==nil then return true end
+	return minc==0 and c:IsLevelAbove(5)
+		and Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)==0
+		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
@@ -75,60 +78,22 @@ end
 function cm.tg2(e,c)
 	return c==e:GetHandler():GetEquipTarget()
 end
-function cm.con3(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_SZONE) and Duel.GetCustomActivityCount(91000404,tp,ACTIVITY_SPSUMMON)==0 
-end
-function cm.tag(e,c)
-return not c:IsLevel(10)
-end
-function cm.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
- if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-end
-function cm.op3(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.tag)
-	Duel.RegisterEffect(e1,tp)
-	local c=e:GetHandler()
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)   
-end
 function cm.thfilter2(c)
-	return c:IsSetCard(0x9d2)and not c:IsForbidden()
+	return c:IsSetCard(0x9d2)and c:IsAbleToGrave()
 end
-function cm.thfilter(c)
-	return  c:IsSetCard(0x9d2) and c:IsAbleToHand() and c:IsFaceup()
+function cm.thfilter(c,e,tp)
+	return  c:IsSetCard(0x9d2) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceup()
 end
 function cm.tg4(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)end   
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tg,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_REMOVED,0,1,nil,e,tp)end   
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tg,0)
 end
 function cm.op4(e,tp,eg,ep,ev,re,r,rp)
-local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
 if g:GetCount()>0 then 
-		if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.thfilter2),tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		local tc=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil):GetFirst()
-		local sc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter2),tp,LOCATION_GRAVE,0,1,1,nil):GetFirst()
-		Duel.Equip(tp,sc,tc)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_EQUIP_LIMIT)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(cm.eqlimit)
-		e1:SetLabelObject(tc)
-		sc:RegisterEffect(e1)
-		end
-		Duel.ConfirmCards(1-tp,g)
-		end
-end
-function cm.eqlimit(e,c)
-	return e:GetLabelObject()==c
+		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		local g2=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	 Duel.SendtoGrave(g2,REASON_EFFECT)
+	end
+  end
 end

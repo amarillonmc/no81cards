@@ -35,6 +35,7 @@ function c11533701.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_REMOVE)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e4:SetCountLimit(1,31533701)  
 	e4:SetTarget(c11533701.efftg)
 	e4:SetOperation(c11533701.effop)
 	c:RegisterEffect(e4)
@@ -233,9 +234,9 @@ function c11533701.filter(c,tp,e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if not eff then return false end
 	local target=eff:GetTarget()
 	if target then
-		return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and c:GetTurnID()==Duel.GetTurnCount() and target(e,tp,eg,ep,ev,re,r,rp,0,chkc)
+		return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and target(e,tp,eg,ep,ev,re,r,rp,0,chkc)
 	end
-	return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and c:GetTurnID()==Duel.GetTurnCount() and Nekroz_discard_effect[c:GetOriginalCode()]
+	return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and Nekroz_discard_effect[c:GetOriginalCode()]
 end
 function c11533701.efftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then

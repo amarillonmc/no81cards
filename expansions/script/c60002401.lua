@@ -48,7 +48,10 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if Duel.Draw(p,d,REASON_EFFECT)~=0 and Duel.IsPlayerCanDiscardDeck(1-tp,1) then
 		Duel.BreakEffect()
-		Duel.DiscardDeck(1-tp,3,REASON_EFFECT)
+		if Duel.DiscardDeck(1-tp,3,REASON_EFFECT)~=0 then
+			local bg=Duel.GetMatchingGroup(nil,p,LOCATION_HAND,0,nil):Select(tp,1,1,nil)
+			Duel.SendtoDeck(bg,1-tp,0,REASON_EFFECT)
+		end
 	end
 end
 function cm.efilter(e,re)

@@ -11,16 +11,16 @@ function c60150811.initial_effect(c)
 	e1:SetOperation(c60150811.spop)
 	c:RegisterEffect(e1)
 	--
-    local e2=Effect.CreateEffect(c)
-    e2:SetCategory(CATEGORY_REMOVE)
-    e2:SetType(EFFECT_TYPE_QUICK_O)
-    e2:SetRange(LOCATION_GRAVE)
-    e2:SetCode(EVENT_FREE_CHAIN)
-    e2:SetCondition(aux.exccon)
-    e2:SetCost(aux.bfgcost)
-    e2:SetTarget(c60150811.target)
-    e2:SetOperation(c60150811.activate2)
-    c:RegisterEffect(e2)
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_REMOVE)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCondition(aux.exccon)
+	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(c60150811.target)
+	e2:SetOperation(c60150811.activate2)
+	c:RegisterEffect(e2)
 end
 function c60150811.spfilter(c,e,tp)
 	return c:IsSetCard(0x3b23) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceup()
@@ -60,6 +60,27 @@ function c60150811.spop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetOperation(c60150811.tdop)
 		e2:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,2)
 		Duel.RegisterEffect(e2,tp)
+		local tc3=Duel.GetFieldCard(tp,LOCATION_DECK,0)
+		local tc2=Duel.GetFieldCard(1-tp,LOCATION_DECK,0)
+		if (tc3:IsAbleToRemove() and tc2:IsAbleToRemove()) and Duel.SelectYesNo(tp,aux.Stringid(60150810,0)) then
+			if Duel.SelectYesNo(tp,aux.Stringid(60150810,1)) then
+				Duel.BreakEffect()
+				Duel.DisableShuffleCheck()
+				Duel.Remove(tc2,POS_FACEUP,REASON_EFFECT)
+			else
+				Duel.BreakEffect()
+				Duel.DisableShuffleCheck()
+				Duel.Remove(tc3,POS_FACEUP,REASON_EFFECT)
+			end
+		elseif (tc3:IsAbleToRemove() and not tc2:IsAbleToRemove()) and Duel.SelectYesNo(tp,aux.Stringid(60150810,0)) then
+			Duel.BreakEffect()
+			Duel.DisableShuffleCheck()
+			Duel.Remove(tc3,POS_FACEUP,REASON_EFFECT)
+		elseif (not tc3:IsAbleToRemove() and tc2:IsAbleToRemove()) and Duel.SelectYesNo(tp,aux.Stringid(60150810,0)) then
+			Duel.BreakEffect()
+			Duel.DisableShuffleCheck()
+			Duel.Remove(tc2,POS_FACEUP,REASON_EFFECT)
+		end
 	end
 end
 function c60150811.valcon(e,re,r,rp)
@@ -74,16 +95,16 @@ function c60150811.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 end
 function c60150811.tgfilter(c)
-    return c:IsAbleToRemove()
+	return c:IsAbleToRemove()
 end
 function c60150811.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chk==0 then return Duel.IsExistingMatchingCard(c60150811.tgfilter,tp,LOCATION_DECK,0,1,nil) end
-    Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(c60150811.tgfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
 function c60150811.activate2(e,tp,eg,ep,ev,re,r,rp)
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-    local g=Duel.SelectMatchingCard(tp,c60150811.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
-    if g:GetCount()>0 then
-        Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-    end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,c60150811.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	end
 end

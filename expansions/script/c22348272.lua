@@ -55,7 +55,7 @@ function c22348272.ctcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function c22348272.actfilter(c)
-	return c:IsFaceup() and c:IsCanAddCounter(0xa70a,1)
+	return c:IsFaceup() and c:IsCanAddCounter(0x570b,1)
 end
 function c22348272.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c22348272.actfilter(chkc) and chkc~=e:GetHandler() end
@@ -65,7 +65,7 @@ function c22348272.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c22348272.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:AddCounter(0xa70a,1) then
+	if tc:IsRelateToEffect(e) and tc:AddCounter(0x570b,1) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_ATTACK_ANNOUNCE)
@@ -75,13 +75,13 @@ function c22348272.ctop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348272.disable(e,c)
-	return (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0) and c:GetCounter(0xa70a)>0
+	return (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0) and c:GetCounter(0x570b)>0
 end
 function c22348272.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 end
 function c22348272.cfilter(c)
-	return c:IsLocation(LOCATION_MZONE) and c:GetCounter(0xa70a)>0
+	return c:IsLocation(LOCATION_MZONE) and c:GetCounter(0x570b)>0
 end
 function c22348272.regop(e,tp,eg,ep,ev,re,r,rp)
 	if eg:IsExists(c22348272.cfilter,1,nil) then
@@ -92,7 +92,7 @@ function c22348272.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetLabelObject():GetLabel()==1
 end
 function c22348272.thfilter(c)
-	return c:IsSetCard(0xa70a) and c:IsAbleToHand()
+	return c:IsSetCard(0x570b) and c:IsAbleToHand()
 end
 function c22348272.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c22348272.thfilter(chkc) end

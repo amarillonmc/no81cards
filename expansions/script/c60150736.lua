@@ -92,7 +92,7 @@ end
 function c60150736.decost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if not Duel.IsExistingMatchingCard(c60150736.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) then
 		if chk==0 then return Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_DECK,0,1,nil) 
-			or Duel.CheckReleaseGroupEx(tp,nil,1,e:GetHandler()) end
+			or Duel.CheckReleaseGroupEx(REASON_COST,tp,nil,1,e:GetHandler()) end
 		local g=Duel.GetMatchingGroup(c60150736.cfilter2,tp,LOCATION_DECK,0,nil)
 		local g2=Duel.GetMatchingGroup(c60150736.cfilter3,tp,LOCATION_HAND,0,nil)
 		if g:GetCount()>0 and g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(60150736,2)) then
@@ -102,12 +102,12 @@ function c60150736.decost(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.SendtoGrave(sg,REASON_RELEASE+REASON_COST)
 			Duel.ShuffleHand(tp)
 		else
-			local g=Duel.SelectReleaseGroupEx(tp,nil,1,1,e:GetHandler())
+			local g=Duel.SelectReleaseGroupEx(REASON_COST,tp,nil,1,1,e:GetHandler())
 			Duel.Release(g,REASON_COST)
 		end
 	else
-		if chk==0 then return Duel.CheckReleaseGroupEx(tp,nil,1,e:GetHandler()) end
-		local g=Duel.SelectReleaseGroupEx(tp,nil,1,1,e:GetHandler())
+		if chk==0 then return Duel.CheckReleaseGroupEx(REASON_COST,tp,nil,1,e:GetHandler()) end
+		local g=Duel.SelectReleaseGroupEx(REASON_COST,tp,nil,1,1,e:GetHandler())
 		Duel.Release(g,REASON_COST)
 	end
 end

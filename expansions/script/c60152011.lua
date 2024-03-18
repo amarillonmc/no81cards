@@ -54,10 +54,10 @@ end
 function c60152011.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>-3
-		and Duel.CheckReleaseGroup(c:GetControler(),c60152011.cfilter,3,nil)
+		and Duel.CheckReleaseGroup(REASON_COST,c:GetControler(),c60152011.cfilter,3,nil)
 end
 function c60152011.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.SelectReleaseGroup(c:GetControler(),c60152011.cfilter,3,3,nil)
+	local g=Duel.SelectReleaseGroup(REASON_COST,c:GetControler(),c60152011.cfilter,3,3,nil)
 	local tc2=g:GetFirst()
 	while tc2 do
 		if not tc2:IsFaceup() then Duel.ConfirmCards(1-tp,tc2) end

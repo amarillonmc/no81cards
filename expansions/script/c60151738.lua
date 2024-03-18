@@ -33,40 +33,46 @@ function cm.initial_effect(c)
 	e4:SetValue(cm.efilter)
 	c:RegisterEffect(e4) 
 	--special summon
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,2))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetCountLimit(1,m+100)
-	e3:SetTarget(cm.target2)
-	e3:SetOperation(cm.operation2)
-	c:RegisterEffect(e3)
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(m,2))
+	e5:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
+	e5:SetType(EFFECT_TYPE_QUICK_O)
+	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCode(EVENT_FREE_CHAIN)
+	e5:SetCountLimit(1,60151738)
+	e5:SetTarget(cm.target2)
+	e5:SetOperation(cm.operation2)
+	c:RegisterEffect(e5)
 end
 function cm.afffilter(c,fc)
-	return c:IsSetCard(0x3b26) and not c:IsSummonableCard() and c:GetSummonLocation()==LOCATION_GRAVE
+	return c:IsSetCard(0x3b26) and c:GetSummonLocation()==LOCATION_GRAVE and (c:IsType(TYPE_FUSION) or c:IsType(TYPE_SYNCHRO) or c:IsType(TYPE_XYZ) or c:IsType(TYPE_LINK))
 end
 function cm.desfilter(c,fc)
 	return c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,60151738)
 	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil) 
-	if #g then
-		Duel.Destroy(g,REASON_EFFECT)
+	local tc=g:GetFirst()
+	if tc and Duel.Destroy(tc,REASON_EFFECT) then
+		local lp=Duel.GetLP(1-tp)
+		Duel.SetLP(1-tp,lp-tc:GetBaseAttack())
 	end
 end
 function cm.desop1(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,60151738)
 	if bit.band(r,REASON_EFFECT)~=0 then
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(500)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e1)
 	end
+	local lp=Duel.GetLP(1-tp)
+	Duel.SetLP(1-tp,lp-500)
 end
 function cm.econ(e,tp)
 	local c=e:GetHandler()
@@ -80,11 +86,9 @@ function cm.filter(c,e,tp)
 end
 function cm.filter2(c,ft)
 	if ft==0 then
-		return c:IsType(TYPE_MONSTER) and c:IsDestructable()
-			and c:IsLocation(LOCATION_MZONE) and c:IsFaceup()
+		return c:IsDestructable() and c:IsLocation(LOCATION_MZONE) and c:IsFaceup()
 	else
-		return c:IsType(TYPE_MONSTER) and c:IsDestructable()
-			and ((c:IsLocation(LOCATION_MZONE) and c:IsFaceup()) or c:IsLocation(LOCATION_HAND))
+		return c:IsDestructable() and ((c:IsLocation(LOCATION_MZONE) and c:IsFaceup()) or c:IsLocation(LOCATION_HAND))
 	end
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -98,6 +102,7 @@ function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g2,1,0,0)
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local tc=Duel.GetFirstTarget()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

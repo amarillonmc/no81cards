@@ -81,9 +81,9 @@ end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetTurnCount()==0 then return end
-	local op=cm[tp] or Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,8),aux.Stringid(m,9))
-	if op==2 then cm[tp]=0 end
-	if op~=1 then
+	local op=cm[tp] or Duel.SelectYesNo(tp,aux.Stringid(m,0))
+	if op and cm[tp]==nil then cm[tp]=Duel.SelectYesNo(tp,aux.Stringid(m,9)) end
+	if op then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_PUBLIC)

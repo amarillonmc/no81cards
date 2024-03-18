@@ -27,7 +27,7 @@ function c60152012.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c60152012.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0
+	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
 end
 function c60152012.filter(c)
 	return c:IsSetCard(0x6b25) and c:IsType(TYPE_MONSTER) and c:IsReleasable()

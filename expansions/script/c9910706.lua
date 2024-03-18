@@ -1,4 +1,4 @@
---远古造物 中华先光海葵
+--远古造物 中华先光虫
 dofile("expansions/script/c9910700.lua")
 function c9910706.initial_effect(c)
 	--special summon
@@ -46,15 +46,26 @@ function c9910706.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and c9910706.tgfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9910706.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c9910706.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectTarget(tp,c9910706.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
 end
 function c9910706.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) then return end
-	if tc:IsAbleToGrave() and (not tc:IsAbleToRemove() or Duel.SelectOption(tp,1191,1192)==0) then
-		Duel.SendtoGrave(tc,REASON_EFFECT)
-	else
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	if #g>0 then
+		local b1=g:FilterCount(Card.IsAbleToGrave,nil)==#g
+		local b2=g:FilterCount(Card.IsAbleToRemove,nil)==#g
+		local opt=-1
+		if b1 and not b2 then
+			opt=Duel.SelectOption(tp,1191)
+		elseif not b1 and b2 then
+			opt=Duel.SelectOption(tp,1192)+1
+		elseif b1 and b2 then
+			opt=Duel.SelectOption(tp,1191,1192)
+		end
+		if opt==0 then
+			Duel.SendtoGrave(g,REASON_EFFECT)
+		elseif opt==1 then
+			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+		end
 	end
 end
 function c9910706.setcon(e,tp,eg,ep,ev,re,r,rp)

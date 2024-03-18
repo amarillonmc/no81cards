@@ -2768,7 +2768,7 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 			_G["c"..sc:GetOriginalCode()].pend_effect=se
 		end
 		end
-		if cm.IsInTable(53796005,rstt) then
+		--[[if cm.IsInTable(53796005,rstt) then
 		local cd,et=se:GetCode(),se:GetType()
 		if (cd==EVENT_SUMMON_SUCCESS or cd==EVENT_FLIP_SUMMON_SUCCESS or cd==EVENT_SPSUMMON_SUCCESS) and et&EFFECT_TYPE_SINGLE and et&(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_TRIGGER_O)~=0 then
 			local ex1=Effect.CreateEffect(sc)
@@ -2805,7 +2805,7 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 			sc:RegisterEffect(ex4)
 			end
 		end
-		end
+		end--]]
 		if cm.IsInTable(53799017,rstt) then
 		if se:GetType()==EFFECT_TYPE_ACTIVATE then
 			local tg=se:GetTarget()
@@ -7399,4 +7399,52 @@ function cm.exop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(val)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_OVERLAY)
 	c:RegisterEffect(e1)
+end
+function cm.BoLiuTuiMi(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_ADJUST)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_DELAY)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCondition(cm.bltmadjustcon)
+	e1:SetOperation(cm.bltmadjustop)
+	c:RegisterEffect(e1)
+end
+function cm.bltmthfilter(c)
+	return c:GetType()&0x82==0x82
+end
+function cm.bltmadjustcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(cm.bltmthfilter,tp,LOCATION_DECK,0,1,nil)
+end
+function cm.bltmadjustop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(cm.bltmthfilter,tp,LOCATION_DECK,0,nil)
+	local c=e:GetHandler()
+	if #g==0 or not c:IsLocation(LOCATION_HAND) then return end
+	Duel.ConfirmCards(1-tp,c)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local tc=g:Select(tp,1,1,nil):GetFirst()
+	local seqc=c:GetSequence()
+	local seqtc=tc:GetSequence()
+	local ct=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
+	local seq=0
+	if seqtc+1<=ct/2 then seq=1 end
+	local mg=Duel.GetMatchingGroup(function(c,b,s)return (b and c:GetSequence()>s) or (not b and c:GetSequence()<s)end,tp,LOCATION_DECK,0,nil,seq==0,seqtc)
+	Duel.DisableShuffleCheck()
+	Duel.SendtoHand(tc,tp,REASON_RULE)
+	Duel.SendtoDeck(c,tp,seq,REASON_RULE)
+	if seq==0 then for tc in aux.Next(mg) do Duel.MoveSequence(tc,0) end else
+		while #mg>0 do
+			local mtc=nil
+			local chc=mg:GetFirst()
+			while chc do
+				mtc=chc
+				chc=mg:GetNext()
+			end
+			Duel.MoveSequence(mtc,1)
+			mg:RemoveCard(mtc)
+		end
+	end
+	Duel.ConfirmCards(1-tp,tc)
+	Duel.ShuffleHand(tp)
+--Duel.ConfirmCards(tp,Duel.GetFieldGroup(tp,LOCATION_DECK,0))
 end

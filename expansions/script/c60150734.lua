@@ -91,7 +91,7 @@ function c60150734.damcon(e,tp,eg,ep,ev,re,r,rp)
 		and e:GetHandler():GetBattleTarget():IsAttribute(ATTRIBUTE_LIGHT)
 end
 function c60150734.damop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ChangeBattleDamage(ep,ev*2)
+	Duel.ChangeBattleDamage(1,ev*2)
 end
 function c60150734.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
@@ -122,8 +122,8 @@ function c60150734.damcon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function c60150734.damop2(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():GetBattleTarget():IsAttribute(ATTRIBUTE_LIGHT) then
-		Duel.ChangeBattleDamage(ep,ev*4)
+		Duel.ChangeBattleDamage(1,ev*4)
 	else
-		Duel.ChangeBattleDamage(ep,ev*2)
+		Duel.ChangeBattleDamage(1,ev*2)
 	end
 end

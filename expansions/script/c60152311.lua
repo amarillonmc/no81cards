@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,60152311)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCost(c60152311.e2cost)
+	--e2:SetCost(c60152311.e2cost)
 	e2:SetTarget(c60152311.e2tg)
 	e2:SetOperation(c60152311.e2op)
 	c:RegisterEffect(e2)
@@ -92,7 +92,7 @@ function c60152311.e2opcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and e:GetHandler():GetBattleTarget()~=nil
 end
 function c60152311.e2opop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ChangeBattleDamage(ep,ev*2)
+	Duel.ChangeBattleDamage(1,ev*2)
 end
 function c60152311.e99tgfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xcb26) and c:IsType(TYPE_MONSTER)

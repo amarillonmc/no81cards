@@ -17,7 +17,7 @@ function c60152009.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetCountLimit(1,60152009)
-    e1:SetCondition(c60152009.con)
+	e1:SetCondition(c60152009.con)
 	e1:SetTarget(c60152009.target)
 	e1:SetOperation(c60152009.activate)
 	c:RegisterEffect(e1)
@@ -32,13 +32,13 @@ function c60152009.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e3:SetCode(EVENT_RELEASE)
 	e3:SetCountLimit(1,6012009)
-    e3:SetCondition(c60152009.con)
+	e3:SetCondition(c60152009.con)
 	e3:SetTarget(c60152009.destg)
 	e3:SetOperation(c60152009.desop)
 	c:RegisterEffect(e3)
 end
 function c60152009.con(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0
+	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
 end
 function c60152009.spfilter2(c)
 	return ((c:IsSetCard(0x6b25) and c:IsType(TYPE_MONSTER)) 
@@ -118,14 +118,14 @@ function c60152009.dfilter(c)
 	return c:IsAttribute(ATTRIBUTE_FIRE) and c:IsReleasableByEffect()
 end
 function c60152009.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c60152009.dfilter,1,nil)
+	if chk==0 then return Duel.CheckReleaseGroupEx(REASON_COST,tp,c60152009.dfilter,1,nil)
 		and Duel.IsExistingMatchingCard(Card.IsDestructable,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(Card.IsDestructable,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c60152009.desop(e,tp,eg,ep,ev,re,r,rp)
 	local ct1=Duel.GetMatchingGroupCount(Card.IsDestructable,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	local rg=Duel.SelectReleaseGroupEx(tp,c60152009.dfilter,1,ct1,nil)
+	local rg=Duel.SelectReleaseGroupEx(REASON_COST,tp,c60152009.dfilter,1,ct1,nil)
 	local ct2=Duel.Release(rg,REASON_EFFECT)
 	if ct2==0 then return end
 	Duel.BreakEffect()

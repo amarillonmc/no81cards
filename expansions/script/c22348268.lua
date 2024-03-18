@@ -100,7 +100,7 @@ function c22348268.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 end
 function c22348268.spfilter1(c,e,tp)
-	return c:IsSetCard(0xa70a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x570b) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348268.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c22348268.spfilter1(chkc,e,tp) end

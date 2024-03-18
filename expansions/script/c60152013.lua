@@ -6,6 +6,7 @@ function c60152013.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,60152013+EFFECT_COUNT_CODE_OATH)
+	e1:SetCondition(c60152013.con)
 	e1:SetCost(c60152013.cost)
 	e1:SetOperation(c60152013.operation)
 	c:RegisterEffect(e1)
@@ -22,6 +23,9 @@ function c60152013.initial_effect(c)
 	e2:SetTarget(c60152013.target)
 	e2:SetOperation(c60152013.activate2)
 	c:RegisterEffect(e2)
+end
+function c60152013.con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
 end
 function c60152013.filter(c)
 	return c:IsSetCard(0x6b25) and c:IsType(TYPE_MONSTER) and c:IsReleasable()

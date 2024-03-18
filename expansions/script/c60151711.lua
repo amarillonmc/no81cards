@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCountLimit(1,m)
+	e1:SetCountLimit(1,60151711)
 	e1:SetCondition(cm.decon)
 	e1:SetTarget(cm.destg)
 	e1:SetOperation(cm.desop)
@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetCountLimit(1,m+100)
+	e1:SetCountLimit(1,6011711)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
@@ -43,14 +43,15 @@ function cm.spreg(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and chkc:IsAbleToHand() end
-	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,nil)
 	if not tc:IsRelateToEffect(e) or Duel.Destroy(tc,REASON_EFFECT,LOCATION_REMOVED)==0 and #g>0  then
 		Duel.Damage(1-tp,2500,REASON_EFFECT)
 	end
@@ -68,23 +69,23 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.thfilter(c,code)
-	return c:IsSetCard(0x3b26)
+	return not c:IsCode(code) and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3b26)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,cm.desfilter,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
-	local tc=g:GetFirst()
-	local code=tc:GetCode()  
 	if c:IsCanBeSpecialSummoned(e,0,tp,false,true) and c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local g=Duel.SelectMatchingCard(tp,cm.desfilter,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
+		local tc=g:GetFirst()
+		local code=tc:GetCode()  
 		if Duel.Destroy(tc,REASON_EFFECT)~=0 then
-			local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil,code)
-			if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+			local g2=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil,code)
+			if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 				Duel.BreakEffect()
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-				g=g:Select(tp,1,1,nil)
-				Duel.Destroy(g,REASON_EFFECT)
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+				g3=g2:Select(tp,1,1,nil)
+				Duel.Destroy(g3,REASON_EFFECT)
 			end
 		end
 	end

@@ -1,38 +1,36 @@
 --魔铳 终结之魔炮
 function c60151907.initial_effect(c)
 	--Activate
-    local e1=Effect.CreateEffect(c)
-    e1:SetCategory(CATEGORY_DAMAGE+CATEGORY_TOGRAVE)
-    e1:SetType(EFFECT_TYPE_ACTIVATE)
-    e1:SetCode(EVENT_FREE_CHAIN)
-    e1:SetCountLimit(1,60151907+EFFECT_COUNT_CODE_OATH)
-    e1:SetCondition(c60151907.e1con)
-    e1:SetOperation(c60151907.e1op)
-    c:RegisterEffect(e1)
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_DAMAGE+CATEGORY_TOGRAVE)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCondition(c60151907.e1con)
+	e1:SetOperation(c60151907.e1op)
+	c:RegisterEffect(e1)
 end
 function c60151907.e1confilter(c)
-    return c:IsFaceup() and c:IsSetCard(0xab26) and c:GetLeftScale()>0
+	return c:IsFaceup() and c:IsSetCard(0xab26) and c:GetLeftScale()>0
 end
 function c60151907.e1con(e,tp,eg,ep,ev,re,r,rp)
-    local ph=Duel.GetCurrentPhase()
-    return Duel.GetTurnPlayer()==tp and Duel.IsExistingMatchingCard(c60151907.e1confilter,tp,LOCATION_PZONE,0,1,nil) 
-		and (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE) and not Duel.CheckPhaseActivity()
+	local ph=Duel.GetCurrentPhase()
+	return Duel.GetTurnPlayer()==tp and Duel.IsExistingMatchingCard(c60151907.e1confilter,tp,LOCATION_PZONE,0,1,nil) 
 end
 function c60151907.e1opfilter(c)
-    return c:IsFaceup() and c:IsSetCard(0xab26) and c:GetLeftScale()>0
+	return c:IsFaceup() and c:IsSetCard(0xab26) and c:GetLeftScale()>0
 end
 function c60151907.e1op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-    local lsc=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
-    local rsc=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
+	local lsc=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
+	local rsc=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
 	local lscs=0
 	local rscs=0
 	if lsc then lscs=lsc:GetLeftScale() end
 	if rsc then rscs=rsc:GetLeftScale() end
-    if lscs>rscs then lscs,rscs=rscs,lscs end
+	if lscs>rscs then lscs,rscs=rscs,lscs end
 	local kds=lscs+rscs
 	if kds<=0 then return end
-    if Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 then
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)
 		if g:GetCount()>0 then
@@ -105,8 +103,8 @@ function c60151907.e1op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Damage(1-tp,kds*500,REASON_EFFECT)
 	end
 	Duel.SkipPhase(tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
-    Duel.SkipPhase(tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
+	Duel.SkipPhase(tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
 end
 function c60151907.skipcon(e)
-    return Duel.GetTurnCount()~=e:GetLabel()
+	return Duel.GetTurnCount()~=e:GetLabel()
 end

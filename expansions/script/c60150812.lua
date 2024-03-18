@@ -7,7 +7,6 @@ function c60150812.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_ACTIVATE)
 	e4:SetCode(EVENT_CHAINING)
 	e4:SetCondition(c60150812.condition2)
-	e4:SetCost(c60150812.cost2)
 	e4:SetTarget(c60150812.target2)
 	e4:SetOperation(c60150812.activate2)
 	c:RegisterEffect(e4)
@@ -18,20 +17,14 @@ function c60150812.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasCategory(CATEGORY_SPECIAL_SUMMON)
 end
 function c60150812.cfilter(c)
-	return c:IsSetCard(0x3b23) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToDeckAsCost()
-end
-function c60150812.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c60150812.cfilter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c60150812.cfilter,tp,LOCATION_HAND,0,1,1,nil)
-	Duel.ConfirmCards(1-tp,g)
-	Duel.SendtoDeck(g,nil,2,REASON_COST)
+	return c:IsSetCard(0x3b23) and c:IsAttribute(ATTRIBUTE_DARK)
 end
 function c60150812.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsExistingMatchingCard(c60150812.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if (re:GetHandler():IsAbleToRemove() or re:GetHandler():IsAbleToGrave())
 		and re:GetHandler():IsRelateToEffect(re) then
+		if e:GetHandler():IsLocation(LOCATION_HAND) and not e:GetHandler():IsFaceup() then Duel.ConfirmCards(1-tp,e:GetHandler()) end
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE+CATEGORY_TOGRAVE,eg,1,0,0)
 	end
 end
@@ -60,5 +53,26 @@ function c60150812.activate2(e,tp,eg,ep,ev,re,r,rp)
 		elseif tc:IsAbleToRemove() and not tc:IsAbleToGrave() then
 			Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)
 		end
+		local tc3=Duel.GetFieldCard(tp,LOCATION_DECK,0)
+		local tc2=Duel.GetFieldCard(1-tp,LOCATION_DECK,0)
+		if (tc3:IsAbleToRemove() and tc2:IsAbleToRemove()) and Duel.SelectYesNo(tp,aux.Stringid(60150810,0)) then
+			if Duel.SelectYesNo(tp,aux.Stringid(60150810,1)) then
+				Duel.BreakEffect()
+				Duel.DisableShuffleCheck()
+				Duel.Remove(tc2,POS_FACEUP,REASON_EFFECT)
+			else
+				Duel.BreakEffect()
+				Duel.DisableShuffleCheck()
+				Duel.Remove(tc3,POS_FACEUP,REASON_EFFECT)
+			end
+		elseif (tc3:IsAbleToRemove() and not tc2:IsAbleToRemove()) and Duel.SelectYesNo(tp,aux.Stringid(60150810,0)) then
+			Duel.BreakEffect()
+			Duel.DisableShuffleCheck()
+			Duel.Remove(tc3,POS_FACEUP,REASON_EFFECT)
+		elseif (not tc3:IsAbleToRemove() and tc2:IsAbleToRemove()) and Duel.SelectYesNo(tp,aux.Stringid(60150810,0)) then
+			Duel.BreakEffect()
+			Duel.DisableShuffleCheck()
+			Duel.Remove(tc2,POS_FACEUP,REASON_EFFECT)
+		end
 	end
-end	
+end 

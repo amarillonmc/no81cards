@@ -53,13 +53,13 @@ function cm.initial_effect(c)
 	
 end
 function c22348260.atktg1(e,c)
-	return c:IsSetCard(0xa70a)
+	return c:IsSetCard(0x570b)
 end
 function c22348260.atktg2(e,c)
 	return c:IsRace(RACE_ZOMBIE)
 end
 function c22348260.indtg(e,c)
-	return c:IsSetCard(0xa70a)
+	return c:IsSetCard(0x570b)
 end
 function c22348260.indct(e,re,r,rp)
 	if bit.band(r,REASON_BATTLE)~=0 then
@@ -69,14 +69,14 @@ end
 function c22348260.doubcon(e,tp,eg,ep,ev,re,r,rp)
 	local a=Duel.GetAttacker()
 	local b=Duel.GetAttackTarget()
-	return (a:IsSetCard(0xa70a) and a:IsControler(tp) and not a:IsDualState() and a:IsType(TYPE_DUAL))
-	or (b and b:IsSetCard(0xa70a) and b:IsControler(tp) and not b:IsDualState() and b:IsType(TYPE_DUAL))
+	return (a:IsSetCard(0x570b) and a:IsControler(tp) and not a:IsDualState() and a:IsType(TYPE_DUAL))
+	or (b and b:IsSetCard(0x570b) and b:IsControler(tp) and not b:IsDualState() and b:IsType(TYPE_DUAL))
 end
 function c22348260.doubop(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_CARD,0,22348260)
 	local a=Duel.GetAttacker()
 	local b=Duel.GetAttackTarget()
-	if a:IsSetCard(0xa70a) and a:IsControler(tp) and not a:IsDualState() and a:IsType(TYPE_DUAL) then
+	if a:IsSetCard(0x570b) and a:IsControler(tp) and not a:IsDualState() and a:IsType(TYPE_DUAL) then
 	local e1=Effect.CreateEffect(a)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_DUAL_STATUS)
@@ -84,7 +84,7 @@ function c22348260.doubop(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	a:RegisterEffect(e1)
 	end
-	if b and b:IsSetCard(0xa70a) and b:IsControler(tp) and not b:IsDualState() and b:IsType(TYPE_DUAL) then
+	if b and b:IsSetCard(0x570b) and b:IsControler(tp) and not b:IsDualState() and b:IsType(TYPE_DUAL) then
 	local e2=Effect.CreateEffect(b)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_DUAL_STATUS)
@@ -94,7 +94,7 @@ function c22348260.doubop(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c22348260.reccon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and eg:GetFirst():IsControler(tp) and eg:GetFirst():IsSetCard(0xa70a) 
+	return ep~=tp and eg:GetFirst():IsControler(tp) and eg:GetFirst():IsSetCard(0x570b) 
 end
 function c22348260.recop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,22348260)

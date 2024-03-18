@@ -51,7 +51,7 @@ function c22348255.condition(e,tp,eg,ep,ev,re,r,rp)
 	return aux.dsercon(e) and c:IsDualState()
 end
 function c22348255.filter(c,e,tp)
-	return c:IsSetCard(0xa70a) and not c:IsCode(22348255) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x570b) and not c:IsCode(22348255) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348255.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

@@ -2,6 +2,8 @@
 function c60151733.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x3b26),aux.AND(aux.FilterBoolFunction(Card.IsFusionSetCard,0x3b26),aux.FilterBoolFunction(Card.IsFusionSetCard,0x3b26)),false)
+	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_MZONE,0,Duel.Release,REASON_COST+REASON_MATERIAL)
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -9,15 +11,6 @@ function c60151733.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e0:SetValue(c60151733.splimit)
 	c:RegisterEffect(e0)
-	--special summon rule
-	local e9=Effect.CreateEffect(c)
-	e9:SetType(EFFECT_TYPE_FIELD)
-	e9:SetCode(EFFECT_SPSUMMON_PROC)
-	e9:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e9:SetRange(LOCATION_EXTRA)
-	e9:SetCondition(c60151733.spcon)
-	e9:SetOperation(c60151733.spop)
-	c:RegisterEffect(e9)
 	--dis
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(60151733,0))

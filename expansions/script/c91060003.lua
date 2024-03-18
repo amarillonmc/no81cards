@@ -2,7 +2,7 @@
 local m=91060003
 local cm=c91060003
 function c91060003.initial_effect(c)
-aux.EnableChangeCode(c,95440946,LOCATION_MZONE+LOCATION_GRAVE)
+	aux.EnableChangeCode(c,95440946,LOCATION_MZONE+LOCATION_GRAVE)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
@@ -11,7 +11,8 @@ aux.EnableChangeCode(c,95440946,LOCATION_MZONE+LOCATION_GRAVE)
 	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.sstg)
 	e1:SetOperation(cm.ssop)
-	c:RegisterEffect(e1)	
+	c:RegisterEffect(e1)  
+
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
@@ -69,7 +70,7 @@ if chk==0 then return  c:IsAbleToHand()  end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()
-if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)~=0 and c:IsLocation(LOCATION_HAND) and Duel.SelectYesNo(tp,aux.Stringid(m,0))then
+if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)~=0 and c:IsLocation(LOCATION_HAND) and Duel.SelectYesNo(tp,aux.Stringid(91060003,0))then
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(cm.filter1,nil,e)
 	local sg1=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
@@ -94,13 +95,13 @@ if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)~=0 and c:IsLoc
 			Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			Duel.BreakEffect()
 		 if Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP) then
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_IMMUNE_EFFECT)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetValue(cm.val)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
+			local e4=Effect.CreateEffect(c)
+			e4:SetType(EFFECT_TYPE_SINGLE)
+			e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+			e4:SetRange(LOCATION_MZONE)
+			e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+			e4:SetValue(aux.tgoval)
+			c:RegisterEffect(e4)
 		 end   
 		else
 			local mat2=Duel.SelectFusionMaterial(tp,tc,mg3,nil,chkf)
@@ -109,9 +110,7 @@ if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)~=0 and c:IsLoc
 		end
 		tc:CompleteProcedure()
 	end
+  end
 end
-end
-function cm.val(e,re)
-return  e:GetOwnerPlayer()~=re:GetOwnerPlayer()
-end
+
 

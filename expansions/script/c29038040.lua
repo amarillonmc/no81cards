@@ -1,7 +1,7 @@
 --方舟骑士-凯尔希·残余
 c29038040.named_with_Arknight=1
 function c29038040.initial_effect(c)
-	aux.AddCodeList(c,29065500,29065502)
+	aux.AddCodeList(c,29065500,29065502,29065578)
 	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(423585,1))
@@ -27,7 +27,7 @@ function c29038040.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c29038040.filter(c,e,tp)
-	return (c:IsCode(c,29065500,29065502) or aux.IsCodeListed(c,29065500) or aux.IsCodeListed(c,29065502)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsCode(c,29065500,29065502,29065578) or aux.IsCodeListed(c,29065500) or aux.IsCodeListed(c,29065502) or aux.IsCodeListed(c,29065578)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c29038040.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

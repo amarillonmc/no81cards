@@ -1,14 +1,14 @@
 --假面的舞踏会
 function c60159909.initial_effect(c)
-    c:SetUniqueOnField(1,1,60159909)
-    --Activate
+	c:SetUniqueOnField(1,1,60159909)
+	--Activate
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
-    e1:SetCountLimit(1,60159909+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,60159909)
     e1:SetHintTiming(0,0x1c0)
     c:RegisterEffect(e1)
-    --adjust
+	--adjust
     local e2=Effect.CreateEffect(c)
     e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
     e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
@@ -16,7 +16,7 @@ function c60159909.initial_effect(c)
     e2:SetRange(LOCATION_SZONE)
     e2:SetOperation(c60159909.adjustop)
     c:RegisterEffect(e2)
-    --disable spsummon
+	--disable spsummon
     local e3=Effect.CreateEffect(c)
     e3:SetType(EFFECT_TYPE_FIELD)
     e3:SetRange(LOCATION_SZONE)
@@ -25,16 +25,16 @@ function c60159909.initial_effect(c)
     e3:SetTargetRange(1,1)
     e3:SetTarget(c60159909.splimit)
     c:RegisterEffect(e3)
-    --
+	--
     local e4=Effect.CreateEffect(c)
     e4:SetDescription(aux.Stringid(60159909,0))
     e4:SetType(EFFECT_TYPE_QUICK_O)
-    e4:SetCode(EVENT_FREE_CHAIN)
-    e4:SetCountLimit(1)
-    e4:SetProperty(EFFECT_FLAG_BOTH_SIDE)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetCountLimit(1)
+	e4:SetProperty(EFFECT_FLAG_BOTH_SIDE)
     e4:SetRange(LOCATION_SZONE)
-    e4:SetHintTiming(0,0x1c0)
-    e4:SetCondition(c60159909.atcon)
+	e4:SetHintTiming(0,0x1c0)
+	e4:SetCondition(c60159909.atcon)
     e4:SetTarget(c60159909.attg)
     e4:SetOperation(c60159909.atop)
     c:RegisterEffect(e4)
@@ -62,13 +62,13 @@ function c60159909.atcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c60159909.attg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil) end
-    Duel.Hint(HINT_SELECTMSG,tp,562)
+	Duel.Hint(HINT_SELECTMSG,tp,562)
     local rc=Duel.AnnounceAttribute(tp,1,0xffff)
     e:SetLabel(rc)
 end
 function c60159909.atop(e,tp,eg,ep,ev,re,r,rp)
     if not e:GetHandler():IsRelateToEffect(e) then return end
-    local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
     local tc=g:GetFirst()
     while tc do
         local e1=Effect.CreateEffect(e:GetHandler())

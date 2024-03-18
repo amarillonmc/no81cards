@@ -28,7 +28,7 @@ function c60152014.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c60152014.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated()
+	return Duel.GetCurrentPhase()~=PHASE_DAMAGE or not Duel.IsDamageCalculated() and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
 end
 function c60152014.filter(c)
 	return c:IsFaceup() and (c:IsSetCard(0x6b25) or (c:IsType(TYPE_TOKEN) and c:IsAttribute(ATTRIBUTE_FIRE)))

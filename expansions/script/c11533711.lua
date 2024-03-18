@@ -5,13 +5,22 @@ function c11533711.initial_effect(c)
 	e1:SetCategory(CATEGORY_DISABLE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE) 
 	e1:SetCode(EVENT_FREE_CHAIN)  
+	e1:SetCost(c11533711.cost)
 	e1:SetTarget(c11533711.actg) 
 	e1:SetOperation(c11533711.acop) 
 	c:RegisterEffect(e1)
 end
+function c11533711.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(1)
+	return true
+end
 function c11533711.actg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local g=Duel.GetFieldGroup(tp,LOCATION_EXTRA,0)
-	if chk==0 then return g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN)>=4 and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end 
+	if chk==0 then
+		if e:GetLabel()~=1 then return false end
+		e:SetLabel(0)
+		return g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN)>=4 and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end 
+	e:SetLabel(0)
 	local x=0 
 	if g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN)>=6 then 
 		x=Duel.AnnounceNumber(tp,4,6)  
@@ -19,10 +28,11 @@ function c11533711.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 		x=Duel.AnnounceNumber(tp,4)   
 	end 
 	local rg=g:RandomSelect(tp,x) 
-	e:SetLabel(Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT))   
+	local rgc=Duel.Remove(rg,POS_FACEDOWN,REASON_COST)
+	e:SetLabel(rgc)   
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,PLAYER_ALL,LOCATION_ONFIELD)  
-	local b=Duel.GetFieldGroupCount(tp,0,LOCATION_EXTRA)  
-	local bx=Duel.GetFieldGroupCount(1-tp,0,LOCATION_EXTRA) 
+	local b=Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)  
+	local bx=Duel.GetFieldGroupCount(1-tp,LOCATION_EXTRA,0) 
 	if bx<=b and e:IsHasType(EFFECT_TYPE_ACTIVATE) then  
 		Duel.SetChainLimit(c11533711.chlimit)
 	end 

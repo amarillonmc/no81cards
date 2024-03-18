@@ -46,17 +46,17 @@ function c60150631.pcfilter(c)
     return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c60150631.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local b1=Duel.CheckLocation(tp,LOCATION_SZONE,6) or Duel.CheckLocation(tp,LOCATION_SZONE,7)
+    local b1=Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)
     if chk==0 then return b1 and Duel.IsExistingMatchingCard(c60150631.pcfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil) end
 end
 function c60150631.pcop(e,tp,eg,ep,ev,re,r,rp)
     if not e:GetHandler():IsRelateToEffect(e) then return end
-    local b1=Duel.CheckLocation(tp,LOCATION_SZONE,6) or Duel.CheckLocation(tp,LOCATION_SZONE,7)
+    local b1=Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)
     if not b1 then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
     local g=Duel.SelectMatchingCard(tp,c60150631.pcfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil)
     if g:GetCount()>0 then
-        Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+        Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
     end
 end
 function c60150631.immuneconfilter(c)

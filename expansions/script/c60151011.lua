@@ -89,14 +89,6 @@ function c60151011.atkop(e,tp,eg,ep,ev,re,r,rp)
 			e4:SetCondition(c60151011.atkcon)
 			e4:SetReset(RESET_EVENT+0x1ff0000+RESET_PHASE+PHASE_END)
 			c:RegisterEffect(e4)
-			--double
-			local e5=Effect.CreateEffect(c)
-			e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-			e5:SetCode(EVENT_PRE_BATTLE_DAMAGE)
-			e5:SetReset(RESET_EVENT+0x1ff0000+RESET_PHASE+PHASE_END)
-			e5:SetCondition(c60151011.damcon)
-			e5:SetOperation(c60151011.damop)
-			c:RegisterEffect(e5)
 		end
 	end
 end
