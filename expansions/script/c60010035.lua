@@ -66,30 +66,20 @@ function cm.oop(e,tp,eg,ep,ev,re,r,rp)
 	if scd==true then
 		Duel.ConfirmDecktop(tp,x)
 		local hhg=Duel.GetDecktopGroup(tp,x)
-		local yy=hhg:Filter(Card.IsType,nil,TYPE_MONSTER):GetCount()
-		Duel.RegisterFlagEffect(e:GetHandler(),m,RESET_PHASE+PHASE_END,0,yy)
-		--negate
-		local e3=Effect.CreateEffect(c)
-		e3:SetCategory(CATEGORY_DISABLE)
-		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e3:SetCode(EVENT_CHAINING)
-		e3:SetOperation(cm.negop1)
-		e3:SetReset(RESET_PHASE+PHASE_END,1)
-		Duel.RegisterEffect(e3,tp) 
+		local num=#hhg:Filter(Card.IsType,nil,TYPE_MONSTER)
+		if num~=0 then
+			local gg=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,num,nil,TYPE_SPELL+TYPE_TRAP)
+			Duel.Remove(gg,POS_FACEUP,REASON_EFFECT)
+		end
 	end
 	if trd==true then
 		Duel.ConfirmDecktop(tp,x)
 		local hhg=Duel.GetDecktopGroup(tp,x)
-		local yy=hhg:Filter(Card.IsType,nil,TYPE_SPELL):GetCount()+hhg:Filter(Card.IsType,nil,TYPE_TRAP):GetCount()
-		Duel.RegisterFlagEffect(e:GetHandler(),m+20000000,RESET_PHASE+PHASE_END,0,yy)
-		--negate
-		local e3=Effect.CreateEffect(c)
-		e3:SetCategory(CATEGORY_DISABLE)
-		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e3:SetCode(EVENT_CHAINING)
-		e3:SetOperation(cm.negop2)
-		e3:SetReset(RESET_PHASE+PHASE_END,1)
-		Duel.RegisterEffect(e3,tp) 
+		local num=#hhg:Filter(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP)
+		if num~=0 then
+			local gg=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,num,nil,TYPE_MONSTER)
+			Duel.Remove(gg,POS_FACEUP,REASON_EFFECT)
+		end
 	end
 	if c:IsRelateToEffect(e) and c:IsLocation(LOCATION_REMOVED) then
 		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)

@@ -88,7 +88,7 @@ function cm.imop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_SOLVING)
-	e1:SetCondition(cm.flcon)
+	--e1:SetCondition(cm.flcon)
 	e1:SetOperation(cm.thop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	if not Duel.SelectYesNo(1-tp,aux.Stringid(m,2)) then

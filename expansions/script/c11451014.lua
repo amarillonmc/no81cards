@@ -199,17 +199,16 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,0,LOCATION_GRAVE,1,1,nil,e,tp)
 	local tc=g:GetFirst()
-	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 then
-		local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,0,aux.ExceptThisCard(e))
-		local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e))
-		if #g1>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local sg=g1:Select(tp,1,1,nil)
-			sg:Merge(g2:Select(tp,1,1,nil))
-			Duel.HintSelection(sg)
-			Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
-		end
+	if tc then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) end
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,0,aux.ExceptThisCard(e))
+	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e))
+	if #g1>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		--Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg=g1:Select(tp,1,1,nil)
+		sg:Merge(g2:Select(tp,1,1,nil))
+		Duel.HintSelection(sg)
+		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	end
 end
 function cm.actarget(e,te,tp)

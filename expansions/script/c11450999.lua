@@ -14,7 +14,35 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_DECK)
 	e2:SetCondition(cm.condition)
 	e2:SetCost(cm.cost)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+	e3:SetRange(LOCATION_DECK)
+	e3:SetOperation(cm.op2)
+	c:RegisterEffect(e3)
+	local e6=e3:Clone()
+	e6:SetCode(EVENT_PHASE_START+PHASE_STANDBY)
+	c:RegisterEffect(e6)
+	local e7=e3:Clone()
+	e7:SetCode(EVENT_PHASE_START+PHASE_MAIN1)
+	c:RegisterEffect(e7)
+	local e8=e3:Clone()
+	e8:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
+	e8:SetCondition(cm.con2)
+	c:RegisterEffect(e8)
+	local e9=e3:Clone()
+	e9:SetCode(EVENT_PHASE_START+PHASE_MAIN2)
+	c:RegisterEffect(e9)
+	local e10=e3:Clone()
+	e10:SetCode(EVENT_PHASE_START+PHASE_END)
+	c:RegisterEffect(e10)
+	local e2=e1:Clone()
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetRange(LOCATION_DECK)
+	e2:SetCondition(cm.condition)
+	e2:SetCost(cm.cost)
+	--c:RegisterEffect(e2)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetCode(EFFECT_ACTIVATE_COST)
@@ -29,7 +57,7 @@ function cm.initial_effect(c)
 	e5:SetCode(EFFECT_SPSUMMON_PROC_G)
 	e5:SetRange(LOCATION_DECK)
 	e5:SetCondition(cm.condition)
-	c:RegisterEffect(e5)
+	--c:RegisterEffect(e5)
 	if not cm.global_check then
 		cm.global_check=true
 		cm.activate_sequence={}
@@ -96,7 +124,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then Duel.SetChainLimit(aux.FALSE) end
+	--if e:IsHasType(EFFECT_TYPE_ACTIVATE) then Duel.SetChainLimit(aux.FALSE) end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local e0=Effect.CreateEffect(e:GetHandler())
@@ -116,6 +144,24 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(cm.drop)
 	Duel.RegisterEffect(e1,tp)
 end
+function cm.con2(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+	return #g>0 and g:FilterCount(Card.IsAbleToDeckAsCost,nil)==#g and Duel.GetFlagEffect(tp,m)==0
+end
+function cm.op2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+	local cp=Duel.GetCurrentPhase()
+	local tab={[1]=1,[2]=2,[4]=3,[8]=4,[256]=5,[512]=6}
+	if #g>0 and g:FilterCount(Card.IsAbleToDeckAsCost,nil)==#g and Duel.GetFlagEffect(tp,m)==0 then
+		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+Duel.GetCurrentPhase(),0,1)
+		if Duel.SelectYesNo(tp,aux.Stringid(m,tab[cp])) then
+			Duel.SendtoDeck(g,nil,2,REASON_COST)
+			Duel.Remove(c,POS_FACEUP,REASON_RULE)
+			cm.op(e,tp,eg,ep,ev,re,r,rp)
+		end
+	end
+end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local phase=Duel.GetCurrentPhase()
 	local c=e:GetHandler()
@@ -126,5 +172,5 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Readjust()
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SetLP(tp,Duel.GetLP(tp)-2000*e:GetLabel())
+	Duel.SetLP(tp,Duel.GetLP(tp)-300*e:GetLabel())
 end
