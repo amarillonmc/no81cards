@@ -62,14 +62,12 @@ function c60152921.e1op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 		local tc2=g:GetFirst()
-		if Duel.GetMatchingGroup(c60152921.filter,tp,LOCATION_GRAVE,0,nil,tc2)>0 then
+		local g2=Duel.GetMatchingGroup(c60152921.filter,tp,LOCATION_GRAVE,0,nil,tc2)
+		if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(3072077,0)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local g3=Duel.SelectMatchingCard(tp,c60152921.filter,tp,LOCATION_GRAVE,0,1,1,nil,tc2)
-			if g3:GetCount()>0 then
-				Duel.SendtoHand(g3,nil,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,g3)
-			end
+			local sg=g2:Select(tp,1,1,nil)
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		end
 	end
 end

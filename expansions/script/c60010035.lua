@@ -30,6 +30,7 @@ function cm.rop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Remove(c,POS_FACEUP,REASON_EFFECT)~=0 and Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_HAND,0)<=1 then
 		Duel.Draw(e:GetHandlerPlayer(),1,REASON_EFFECT)
 	end
+	Duel.Readjust()
 end
 function cm.otg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

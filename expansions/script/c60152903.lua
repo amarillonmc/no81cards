@@ -59,7 +59,7 @@ function c60152903.check(c)
 	return c 
 end
 function c60152903.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if c60152903.check(Duel.GetBattleTarget())~=nil then
+	if c60152903.check(Duel.GetAttacker()) and c60152903.check(Duel.GetAttackTarget()) then
 		Duel.RegisterFlagEffect(tp,60152903,RESET_PHASE+PHASE_END,0,1)
 		Duel.RegisterFlagEffect(1-tp,60152903,RESET_PHASE+PHASE_END,0,1)
 	end

@@ -128,7 +128,7 @@ function c60151909.e1ope5filter(e,re)
 end
 function c60151909.e1ope6tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsSSetable() end
+	if chk==0 then return c:IsCanTurnSet() end
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,c,1,0,0)
 end
 function c60151909.e1ope6op(e,tp,eg,ep,ev,re,r,rp)

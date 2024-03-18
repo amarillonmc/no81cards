@@ -4,7 +4,7 @@ function c60152927.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCondition(c60152925.e1con)
+	e1:SetCondition(c60152927.e1con)
 	c:RegisterEffect(e1)
 	--cannot be target
 	local e2=Effect.CreateEffect(c)
@@ -36,11 +36,11 @@ function c60152927.initial_effect(c)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e5:SetCountLimit(1)
-	e5:SetTarget(c6142488.e5tg)
-	e5:SetOperation(c6142488.e5op)
+	e5:SetTarget(c60152927.e5tg)
+	e5:SetOperation(c60152927.e5op)
 	c:RegisterEffect(e5)
 end
-function c60152925.e1con(e,tp,eg,ep,ev,re,r,rp)
+function c60152927.e1con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
 end
 function c60152927.target(e,c)
@@ -75,7 +75,7 @@ end
 function c60152927.filter(c,e,tp)
 	return c:IsSetCard(0x3b29) and c:IsType(TYPE_RITUAL)
 end
-function c6483224.filter2(c)
+function c60152927.filter2(c)
 	return c:IsFaceup() and (c:IsType(TYPE_FUSION) or c:IsType(TYPE_SYNCHRO) or c:IsType(TYPE_XYZ) or c:IsType(TYPE_LINK))
 end
 function c60152927.e5tg(e,tp,eg,ep,ev,re,r,rp,chk)
