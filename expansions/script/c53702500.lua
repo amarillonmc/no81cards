@@ -6865,13 +6865,13 @@ end
 function cm.ADGDactarget2(e,te,tp)
 	local c=e:GetLabelObject()
 	local p=c:GetControler()
-	return Duel.GetLocationCount(p,LOCATION_SZONE)>0 and te:IsActiveType(TYPE_FIELD) and te:IsHasType(EFFECT_TYPE_ACTIVATE) and c:IsLocation(LOCATION_FZONE) and c:IsControler(p) and p==tp and te:GetHandler()~=c
+	return c:IsLocation(LOCATION_FZONE) and Duel.GetLocationCount(p,LOCATION_SZONE)>0 and te:IsActiveType(TYPE_FIELD) and te:IsHasType(EFFECT_TYPE_ACTIVATE) and c:IsControler(p) and p==tp and te:GetHandler()~=c
 end
 function cm.ADGDactarget3(e,tc,tp)
 	if Dragoron_SSet_Check then return false end
 	local c=e:GetLabelObject()
 	local p=c:GetControler()
-	return Duel.GetLocationCount(p,LOCATION_SZONE)>0 and tc:IsType(TYPE_FIELD) and c:IsLocation(LOCATION_FZONE) and c:IsControler(p) and tc:GetControler()==p and tc~=c
+	return c:IsLocation(LOCATION_FZONE) and Duel.GetLocationCount(p,LOCATION_SZONE)>0 and tc:IsType(TYPE_FIELD) and c:IsControler(p) and tc:GetControler()==p and tc~=c
 end
 function cm.ADGDactarget(e,te,tp)
 	local ce=e:GetLabelObject()

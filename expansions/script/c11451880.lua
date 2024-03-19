@@ -115,6 +115,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabel(lab,eid)
 		e1:SetOperation(cm.adjustop)
 		Duel.RegisterEffect(e1,tp)
+		Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,lab))
+		Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,lab))
 	end
 end
 function cm.nfilter(c,eid)
