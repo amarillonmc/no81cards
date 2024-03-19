@@ -2,7 +2,7 @@
 function c40011411.initial_effect(c)
 	--copy self continuous spell
 	local e1=Effect.CreateEffect(c)
-
+	e1:SetCategory(CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O) 
 	e1:SetCode(EVENT_FREE_CHAIN)   
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)  
@@ -57,6 +57,7 @@ function c40011411.cptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	te:SetLabelObject(e:GetLabelObject())
 	e:SetLabelObject(te)
 	Duel.ClearOperationInfo(0)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 end
 function c40011411.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
@@ -67,6 +68,8 @@ function c40011411.cpop(e,tp,eg,ep,ev,re,r,rp)
 		local op=te:GetOperation()
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	end
+	Duel.BreakEffect()
+	Duel.SendtoGrave(tc,REASON_EFFECT)
 end
 function c40011411.setfilter(c)
 	return c:IsCode(40011407) and c:IsSSetable()

@@ -99,7 +99,7 @@ function c87470001.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if lab1==c:GetFieldID() then cg:AddCard(c) end
 	if lab2==tc:GetFieldID() then cg:AddCard(tc) end
 	Duel.Hint(HINT_CARD,0,87470001) 
-	Duel.SendtoDeck(cg,nil,2,REASON_EFFECT) 
+	if #cg==2 then Duel.SendtoDeck(cg,nil,2,REASON_EFFECT) end
 	e:Reset() 
 end 
 function c87470001.dsrtg(e,c) 

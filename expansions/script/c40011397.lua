@@ -55,6 +55,19 @@ function cm.lvop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(ec:GetLevel())
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 			c:RegisterEffect(e1)
+			if Duel.IsCanRemoveCounter(tp,1,0,0xf11,1,REASON_EFFECT) and Duel.IsPlayerCanSummon(tp) and Duel.IsPlayerCanAdditionalSummon(tp) and Duel.GetFlagEffect(tp,m)==0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+				Duel.BreakEffect()
+				Duel.RemoveCounter(tp,1,0,0xf11,1,REASON_EFFECT)
+				local e2=Effect.CreateEffect(e:GetHandler())
+				e2:SetDescription(aux.Stringid(m,3))
+				e2:SetType(EFFECT_TYPE_FIELD)
+				e2:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
+				e2:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
+				e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xf11))
+				e2:SetReset(RESET_PHASE+PHASE_END)
+				Duel.RegisterEffect(e2,tp)
+				Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+			end
 		end
 	end
 end

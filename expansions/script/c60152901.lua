@@ -1,15 +1,20 @@
 --苍蓝的心意 美树沙耶香
 function c60152901.initial_effect(c)
 	c:EnableReviveLimit()
-	--ritual summon
-	local e1=aux.AddRitualProcGreater2(c,c60152901.e1filter,nil,nil,c60152901.e1matfilter,true)
+	
+	--Activate
+	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(60152901,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetCountLimit(1,60152901)
 	e1:SetCondition(c60152901.e1con)
+	e1:SetTarget(c60152901.e1tg)
+	e1:SetOperation(c60152901.e1op)
 	c:RegisterEffect(e1)
+
 	if not c60152901.global_check then
 		c60152901.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -47,14 +52,63 @@ end
 function c60152901.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
 end
-function c60152901.e1filter(c,e,tp,chk)
-	return c:IsSetCard(0x3b29) and (not chk or c~=e:GetHandler())
-end
-function c60152901.e1matfilter(c,e,tp,chk)
-	return not chk or c~=e:GetHandler()
-end
 function c60152901.e1con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+end
+function c60152901.filter(c,e,tp)
+	return c:IsSetCard(0x3b29) and c:IsType(TYPE_RITUAL)
+end
+function c60152901.RitualUltimateFilter(c,filter,e,tp,m1,m2,level_function,greater_or_equal,chk)
+	if bit.band(c:GetType(),0x81)~=0x81 or (filter and not filter(c,e,tp,chk)) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true,POS_FACEUP) then return false end
+	local mg=m1:Filter(Card.IsCanBeRitualMaterial,c,c)
+	if m2 then
+		mg:Merge(m2)
+	end
+	if c.mat_filter then
+		mg=mg:Filter(c.mat_filter,c,tp)
+	else
+		mg:RemoveCard(c)
+	end
+	local lv=level_function(c)
+	Auxiliary.GCheckAdditional=Auxiliary.RitualCheckAdditional(c,lv,greater_or_equal)
+	local res=mg:CheckSubGroup(Auxiliary.RitualCheck,1,lv,tp,c,lv,greater_or_equal)
+	Auxiliary.GCheckAdditional=nil
+	return res
+end
+function c60152901.e1tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		local mg1=Duel.GetRitualMaterial(tp)
+		return Duel.IsExistingMatchingCard(c60152901.RitualUltimateFilter,tp,LOCATION_HAND,0,1,nil,c60152901.filter,e,tp,mg1,nil,Card.GetLevel,"Greater")
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+end
+function c60152901.e1op(e,tp,eg,ep,ev,re,r,rp)
+	::cancel::
+	local mg1=Duel.GetRitualMaterial(tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c60152901.RitualUltimateFilter),tp,LOCATION_HAND,0,1,1,nil,c60152901.filter,e,tp,mg1,nil,Card.GetLevel,"Greater")
+	local tc=g:GetFirst()
+	if tc then
+		local mg=mg1:Filter(Card.IsCanBeRitualMaterial,tc,tc)
+		if tc.mat_filter then
+			mg=mg:Filter(tc.mat_filter,tc,tp)
+		else
+			mg:RemoveCard(tc)
+		end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		aux.GCheckAdditional=aux.RitualCheckAdditional(tc,tc:GetLevel(),"Greater")
+		local mat=mg:SelectSubGroup(tp,aux.RitualCheck,true,1,tc:GetLevel(),tp,tc,tc:GetLevel(),"Greater")
+		aux.GCheckAdditional=nil
+		if not mat then goto cancel end
+		tc:SetMaterial(mat)
+		Duel.ReleaseRitualMaterial(mat)
+		Duel.BreakEffect()
+		if Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)~=0
+			and tc:IsFacedown() then
+			Duel.ConfirmCards(1-tp,tc)
+		end
+		tc:CompleteProcedure()
+	end
 end
 function c60152901.cfilter(c,tp)
 	return c:IsControler(tp) and c:IsPreviousLocation(LOCATION_DECK)

@@ -9,7 +9,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetCountLimit(1,m)
+	e1:SetCountLimit(1,m+1)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
@@ -24,6 +24,16 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
 	e3:SetValue(cm.atlimit)
 	c:RegisterEffect(e3)
+	--special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	e1:SetCondition(cm.sprcon)
+	e1:SetOperation(cm.sprop)
+	c:RegisterEffect(e1)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0xf11) and not c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -56,4 +66,23 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.atlimit(e,c)
 	return c~=e:GetHandler() and c:IsFaceup() and c:IsSetCard(0xf11)
+end
+function cm.sprfilter(c)
+	return c:IsSetCard(0xf11) and c:IsAbleToDeckAsCost()
+end
+function cm.gcheck(g)
+	return g:IsExists(Card.IsType,1,nil,TYPE_CONTINUOUS)
+end
+function cm.sprcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(cm.sprfilter,tp,LOCATION_GRAVE,0,nil)
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and g:CheckSubGroup(cm.gcheck,2,2)
+end
+function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=Duel.GetMatchingGroup(cm.sprfilter,tp,LOCATION_GRAVE,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local sg=g:SelectSubGroup(tp,cm.gcheck,false,2,2)
+	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end

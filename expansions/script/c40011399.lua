@@ -26,19 +26,22 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
 end
-function cm.filter(c)
-	return c:GetType()&(TYPE_CONTINUOUS+TYPE_SPELL)==TYPE_CONTINUOUS+TYPE_SPELL and c:IsSetCard(0xf11) and c:IsFaceup() and c:CheckActivateEffect(true,true,false)~=nil
+function cm.filter(c,tp)
+	return c:GetType()&(TYPE_CONTINUOUS+TYPE_SPELL)==TYPE_CONTINUOUS+TYPE_SPELL and c:IsSetCard(0xf11) and c:IsFaceup() and c:CheckActivateEffect(true,true,false)~=nil and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,c)
+end
+function cm.thfilter(c,tc)
+	return c:IsSetCard(0xf11) and c:IsAbleToHand() and not c:IsCode(tc:GetCode())
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then
 		local te=e:GetLabelObject()
 		local tg=te:GetTarget()
-		return chkc:IsSetCard(0xf11) and chkc:GetType()&(TYPE_CONTINUOUS+TYPE_SPELL)==TYPE_CONTINUOUS+TYPE_SPELL and tg and tg(e,tp,eg,ep,ev,re,r,rp,0,chkc)
+		return chkc:IsSetCard(0xf11) and chkc:GetType()&(TYPE_CONTINUOUS+TYPE_SPELL)==TYPE_CONTINUOUS+TYPE_SPELL and tg and tg(e,tp,eg,ep,ev,re,r,rp,0,chkc,tp)
 	end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_ONFIELD,0,1,nil,tp) end
 	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
 	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(true,true,true)
 	Duel.ClearTargetCard()
 	g:GetFirst():CreateEffectRelation(e)
@@ -57,6 +60,18 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		e:SetLabelObject(te:GetLabelObject())
 		local op=te:GetOperation()
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end
+		if tc:IsAbleToGrave() and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+			Duel.BreakEffect()
+			if Duel.SendtoGrave(tc,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_GRAVE) then
+			--Duel.SendtoGrave(tc,REASON_EFFECT)
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+				local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,tc)
+				if g:GetCount()>0 then
+					Duel.SendtoHand(g,tp,REASON_EFFECT)
+					Duel.ConfirmCards(1-tp,g)
+				end
+			end
+		end
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)

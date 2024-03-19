@@ -51,8 +51,8 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetRange(LOCATION_MZONE)
 		e1:SetCountLimit(1,6012901)
 		e1:SetCondition(c60152913.con)
-		e1:SetTarget(c60152913.2901e2tg)
-		e1:SetOperation(c60152913.2901e2op)
+		e1:SetTarget(c60152913.e22901tg)
+		e1:SetOperation(c60152913.e22901op)
 		c:RegisterEffect(e1)
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(c60152913,1))
 	end
@@ -65,8 +65,8 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetRange(LOCATION_MZONE)
 		e2:SetCountLimit(1,6012902)
 		e2:SetCondition(c60152913.con)
-		e2:SetTarget(c60152913.2902e2tg)
-		e2:SetOperation(c60152913.2902e2op)
+		e2:SetTarget(c60152913.e22902tg)
+		e2:SetOperation(c60152913.e22902op)
 		c:RegisterEffect(e2)
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60152913,2))
 	end
@@ -79,8 +79,8 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetRange(LOCATION_MZONE)
 		e3:SetCountLimit(1,6012903)
 		e3:SetCondition(c60152913.con)
-		e3:SetTarget(c60152913.2903e2tg)
-		e3:SetOperation(c60152913.2903e2op)
+		e3:SetTarget(c60152913.e22903tg)
+		e3:SetOperation(c60152913.e22903op)
 		c:RegisterEffect(e3)
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60152913,3))
 	end
@@ -93,8 +93,8 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetRange(LOCATION_MZONE)
 		e4:SetCountLimit(1,6012904)
 		e4:SetCondition(c60152913.con)
-		e4:SetTarget(c60152913.2904e2tg)
-		e4:SetOperation(c60152913.2904e2op)
+		e4:SetTarget(c60152913.e22904tg)
+		e4:SetOperation(c60152913.e22904op)
 		c:RegisterEffect(e4)
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60152913,4))
 	end
@@ -107,8 +107,8 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e5:SetRange(LOCATION_MZONE)
 		e5:SetCountLimit(1,6012905)
 		e5:SetCondition(c60152913.con)
-		e5:SetTarget(c60152913.2905e2tg)
-		e5:SetOperation(c60152913.2905e2op)
+		e5:SetTarget(c60152913.e22905tg)
+		e5:SetOperation(c60152913.e22905op)
 		c:RegisterEffect(e5)
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60152913,5))
 	end
@@ -121,8 +121,8 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e6:SetRange(LOCATION_MZONE)
 		e6:SetCountLimit(1,6012906)
 		e6:SetCondition(c60152913.con)
-		e6:SetTarget(c60152913.2906e2tg)
-		e6:SetOperation(c60152913.2906e2op)
+		e6:SetTarget(c60152913.e22906tg)
+		e6:SetOperation(c60152913.e22906op)
 		c:RegisterEffect(e6)
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60152913,6))
 	end
@@ -135,8 +135,8 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e7:SetRange(LOCATION_MZONE)
 		e7:SetCountLimit(1,6012907)
 		e7:SetCondition(c60152913.con)
-		e7:SetTarget(c60152913.2907e2tg)
-		e7:SetOperation(c60152913.2907e2op)
+		e7:SetTarget(c60152913.e22907tg)
+		e7:SetOperation(c60152913.e22907op)
 		c:RegisterEffect(e2)
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60152913,7))
 	end
@@ -144,17 +144,17 @@ end
 function c60152913.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
 end
-function c60152913.2901e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c60152913.e22901tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
 	if chk==0 then return not Duel.GetFlagEffect(tp,60152901)==0 and Duel.GetMatchingGroupCount(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,nil)>0 end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
 end
-function c60152913.2901e2opfilter(c)
+function c60152913.e22901opfilter(c)
 	return c:IsAbleToDeck()
 end
-function c60152913.2901e2op(e,tp,eg,ep,ev,re,r,rp)
+function c60152913.e22901op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if p==PLAYER_ALL then
 		Duel.Damage(0,d,REASON_EFFECT,true)
@@ -166,7 +166,7 @@ function c60152913.2901e2op(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 then
 			Duel.ConfirmCards(tp,g)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local g=Duel.SelectMatchingCard(tp,c60152913.2901e2opfilter,tp,0,LOCATION_HAND,1,1,nil)
+			local g=Duel.SelectMatchingCard(tp,c60152913.e22901opfilter,tp,0,LOCATION_HAND,1,1,nil)
 			if g:GetCount()>0 then
 				Duel.HintSelection(g)
 				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
@@ -175,17 +175,17 @@ function c60152913.2901e2op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c60152913.2902e2opfilter(c)
+function c60152913.e22902opfilter(c)
 	return c:IsFaceup() and not c:IsDisabled()
 end
-function c60152913.2902e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c60152913.e22902tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
 	if chk==0 then return not Duel.GetFlagEffect(1-tp,60152902)==0 end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
 end
-function c60152913.2902e2op(e,tp,eg,ep,ev,re,r,rp)
+function c60152913.e22902op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if p==PLAYER_ALL then
 		Duel.Damage(0,d,REASON_EFFECT,true)
@@ -199,7 +199,7 @@ function c60152913.2902e2op(e,tp,eg,ep,ev,re,r,rp)
 		if s<0 then s=p1-p2 end
 		local d2=math.floor(s/1000)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-		local g=Duel.SelectMatchingCard(tp,c60152913.2902e2opfilter,tp,0,LOCATION_ONFIELD,1,d2,nil)
+		local g=Duel.SelectMatchingCard(tp,c60152913.e22902opfilter,tp,0,LOCATION_ONFIELD,1,d2,nil)
 		local tc=g:GetFirst()
 		while tc do
 			local e1=Effect.CreateEffect(c)
@@ -216,24 +216,24 @@ function c60152913.2902e2op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c60152913.2903e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c60152913.e22903tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
 	if chk==0 then return not Duel.GetFlagEffect(tp,60152903)==0 and Duel.GetMatchingGroupCount(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,nil)>0 end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
 end
-function c60152913.2903e2opfilter(c)
+function c60152913.e22903opfilter(c)
 	return c:IsAbleToDeck()
 end
-function c60152913.2903e2op(e,tp,eg,ep,ev,re,r,rp)
+function c60152913.e22903op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if p==PLAYER_ALL then
 		Duel.Damage(0,d,REASON_EFFECT,true)
 		Duel.Damage(1,d,REASON_EFFECT,true)
 		Duel.RDComplete()
 		Duel.BreakEffect()
-		local g=Duel.GetMatchingGroup(c60152913.2903e2opfilter,tp,LOCATION_MZONE,0,nil)
+		local g=Duel.GetMatchingGroup(c60152913.e22903opfilter,tp,LOCATION_MZONE,0,nil)
 		local tc=g:GetFirst()
 		while tc do
 			local e1=Effect.CreateEffect(e:GetHandler())
@@ -251,17 +251,17 @@ function c60152913.2903e2op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c60152913.2904e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c60152913.e22904tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
 	if chk==0 then return not Duel.GetFlagEffect(1-tp,60152904)==0 end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
 end
-function c60152913.2904e2opfilter(c)
+function c60152913.e22904opfilter(c)
 	return c:IsAbleToDeck()
 end
-function c60152913.2904e2op(e,tp,eg,ep,ev,re,r,rp)
+function c60152913.e22904op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if p==PLAYER_ALL then
 		Duel.Damage(0,d,REASON_EFFECT,true)
@@ -276,7 +276,7 @@ function c60152913.2904e2op(e,tp,eg,ep,ev,re,r,rp)
 		local d2=math.floor(s/1000)
 		if d2>=1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local g=Duel.SelectMatchingCard(tp,c60152913.2904e2opfilter,tp,0,LOCATION_GRAVE,1,d2,nil)
+			local g=Duel.SelectMatchingCard(tp,c60152913.e22904opfilter,tp,0,LOCATION_GRAVE,1,d2,nil)
 			if g:GetCount()>0 then
 				Duel.HintSelection(g)
 				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
@@ -284,7 +284,7 @@ function c60152913.2904e2op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c60152913.2905e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c60152913.e22905tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
 	if chk==0 then return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)~=0 end
 	Duel.SetTargetPlayer(p)
@@ -305,7 +305,7 @@ function c60152913.2905e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetCard(dg)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,ng,ng:GetCount(),0,0)
 end
-function c60152913.2905e2op(e,tp,eg,ep,ev,re,r,rp)
+function c60152913.e22905op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if p==PLAYER_ALL then
 		Duel.Damage(0,d,REASON_EFFECT,true)
@@ -324,16 +324,16 @@ function c60152913.2905e2op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c60152913.2906e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c60152913.e22906tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
-function c60152913.2906e2opfilter(c)
+function c60152913.e22906opfilter(c)
 	return c
 end
-function c60152913.2906e2op(e,tp,eg,ep,ev,re,r,rp)
+function c60152913.e22906op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Recover(p,d,REASON_EFFECT)
 	Duel.BreakEffect()
@@ -345,31 +345,31 @@ function c60152913.2906e2op(e,tp,eg,ep,ev,re,r,rp)
 	local d2=math.floor(s/1000)
 	if d2>=1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,c60152913.2906e2opfilter,tp,0,LOCATION_ONFIELD,1,d2,nil)
+		local g=Duel.SelectMatchingCard(tp,c60152913.e22906opfilter,tp,0,LOCATION_ONFIELD,1,d2,nil)
 		if g:GetCount()>0 then
 			Duel.HintSelection(g)
 			Duel.SendtoGrave(g,REASON_EFFECT)
 		end
 	end
 end
-function c60152913.2907e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c60152913.e22907tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
-function c60152913.2907e2op(e,tp,eg,ep,ev,re,r,rp)
+function c60152913.e22907op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Recover(p,d,REASON_EFFECT)
 	--lose lp
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_SOLVED)
-	e1:SetOperation(c60152913.2907e2opop)
+	e1:SetOperation(c60152913.e22907opop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function c60152913.2907e2opop(e,tp,eg,ep,ev,re,r,rp)
+function c60152913.e22907opop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,60152913)
 	Duel.Damage(tp,500,REASON_EFFECT,true)
 	Duel.Damage(1-tp,500,REASON_EFFECT,true)

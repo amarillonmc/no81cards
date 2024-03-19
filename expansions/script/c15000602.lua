@@ -28,6 +28,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():GetReasonEffect() then return false end
 	return e:GetHandler():GetReasonEffect():GetHandler():IsCode(15000624)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)

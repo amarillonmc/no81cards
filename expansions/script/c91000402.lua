@@ -13,9 +13,13 @@ function c91000402.initial_effect(c)
 	e1:SetTarget(cm.tg1)
 	e1:SetOperation(cm.op1)
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_EQUIP)
-	e2:SetCode(EFFECT_SELF_DESTROY)
+	 local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetCode(EVENT_ADJUST)
+	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e2:SetCondition(cm.con2)
+	e2:SetOperation(cm.op2)
 	c:RegisterEffect(e2)
 	 local e5=Effect.CreateEffect(c)
 	 e5:SetCategory(CATEGORY_EQUIP)
@@ -76,7 +80,13 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e3)
 	end
 end
-
+function cm.con2(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetEquipTarget()
+end
+function cm.op2(e,tp,eg,ep,ev,re,r,rp)
+local g=e:GetHandler():GetEquipTarget()
+Duel.Destroy(g,REASON_EFFECT)
+end
 function cm.eqlimit(e,c)
 	return e:GetLabelObject()==c
 end

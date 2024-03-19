@@ -72,6 +72,10 @@ function s.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	te:SetLabelObject(e:GetLabelObject())
 	e:SetLabelObject(te)
 	Duel.ClearOperationInfo(0)
+	Duel.SetChainLimit(s.chlimit)
+end
+function s.chlimit(e,ep,tp)
+	return tp==ep
 end
 function s.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
@@ -84,13 +88,7 @@ function s.operation2(e,tp,eg,ep,ev,re,r,rp)
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	end
 	if not c:IsRelateToChain() then return end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetValue(1)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,1)
-	c:RegisterEffect(e1)
+
 end
 function s.pfilter(c,tp)
 	return c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0xf11)
