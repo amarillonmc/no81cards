@@ -26,6 +26,7 @@ function cm.initial_effect(c)
 		cm.activate_sequence={}
 		local _GetActivateLocation=Effect.GetActivateLocation
 		local _GetActivateSequence=Effect.GetActivateSequence
+		local _NegateActivation=Duel.NegateActivation
 		function Effect.GetActivateLocation(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
 				if e:GetHandler():IsType(TYPE_FIELD) then return LOCATION_FZONE end
@@ -38,6 +39,17 @@ function cm.initial_effect(c)
 				return cm.activate_sequence[e]
 			end
 			return _GetActivateSequence(e)
+		end
+		function Duel.NegateActivation(ev)
+			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
+			local res=_NegateActivation(ev)
+			if res and aux.GetValueType(re)=="Effect" then
+				local rc=re:GetHandler()
+				if rc and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) and re:GetDescription()==aux.Stringid(m,0) then
+					rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+				end
+			end
+			return res
 		end
 	end
 end

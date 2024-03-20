@@ -58,6 +58,7 @@ function cm.initial_effect(c)
 		cm.activate_sequence={}
 		local _GetActivateLocation=Effect.GetActivateLocation
 		local _GetActivateSequence=Effect.GetActivateSequence
+		local _NegateActivation=Duel.NegateActivation
 		function Effect.GetActivateLocation(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
 				return LOCATION_SZONE
@@ -69,6 +70,17 @@ function cm.initial_effect(c)
 				return cm.activate_sequence[e]
 			end
 			return _GetActivateSequence(e)
+		end
+		function Duel.NegateActivation(ev)
+			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
+			local res=_NegateActivation(ev)
+			if res and aux.GetValueType(re)=="Effect" then
+				local rc=re:GetHandler()
+				if rc and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) and re:GetDescription()==aux.Stringid(m,0) then
+					rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+				end
+			end
+			return res
 		end
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -149,7 +161,7 @@ function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.costcon(e)
-	cm[0]=false
+	cm.costing=false
 	return true
 end
 function cm.actarget2(e,te,tp)
@@ -162,7 +174,7 @@ end
 function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
-	if cm[0] or CONVIATRESS_BUFF[te] then return end
+	if cm.costing or CONVIATRESS_BUFF[te] then return end
 	local tg=te:GetTarget() or aux.TRUE
 	local tg2=function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 				if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,1) end
@@ -229,7 +241,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 			end
 	te:SetTarget(tg2)
 	CONVIATRESS_BUFF[te]=true
-	cm[0]=true
+	cm.costing=true
 end
 function cm.efilter(e,ct)
 	return e:GetLabel()==ct

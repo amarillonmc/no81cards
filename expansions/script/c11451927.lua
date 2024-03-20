@@ -18,6 +18,7 @@ function cm.initial_effect(c)
 		cm.global_check=true
 		local _IsActiveType=Effect.IsActiveType
 		local _GetActiveType=Effect.GetActiveType
+		local _NegateActivation=Duel.NegateActivation
 		local _ChangeChainOperation=Duel.ChangeChainOperation
 		function Effect.GetActiveType(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
@@ -29,11 +30,22 @@ function cm.initial_effect(c)
 			local typ2=e:GetActiveType()
 			return typ&typ2~=0
 		end
+		function Duel.NegateActivation(ev)
+			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
+			local res=_NegateActivation(ev)
+			if res and aux.GetValueType(re)=="Effect" then
+				local rc=re:GetHandler()
+				if rc and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) and re:GetDescription()==aux.Stringid(m,0) then
+					rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+				end
+			end
+			return res
+		end
 		function Duel.ChangeChainOperation(ev,...)
 			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
 			if aux.GetValueType(re)=="Effect" then
 				local rc=re:GetHandler()
-				if rc and rc:IsOnField() and re:GetDescription()==aux.Stringid(m,0) then
+				if rc and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) and re:GetDescription()==aux.Stringid(m,0) then
 					rc:CancelToGrave(false)
 				end
 			end

@@ -10,6 +10,9 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
+	local e3=e1:Clone()
+	e3:SetRange(LOCATION_HAND)
+	--c:RegisterEffect(e3)
 	local e2=e1:Clone()
 	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetRange(LOCATION_DECK)
@@ -41,8 +44,10 @@ function cm.initial_effect(c)
 		cm.activate_sequence={}
 		local _GetActivateLocation=Effect.GetActivateLocation
 		local _GetActivateSequence=Effect.GetActivateSequence
+		local _NegateActivation=Duel.NegateActivation
 		function Effect.GetActivateLocation(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
+				if e:GetHandler():IsType(TYPE_FIELD) then return LOCATION_FZONE end
 				return LOCATION_SZONE
 			end
 			return _GetActivateLocation(e)
@@ -52,6 +57,17 @@ function cm.initial_effect(c)
 				return cm.activate_sequence[e]
 			end
 			return _GetActivateSequence(e)
+		end
+		function Duel.NegateActivation(ev)
+			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
+			local res=_NegateActivation(ev)
+			if res and aux.GetValueType(re)=="Effect" then
+				local rc=re:GetHandler()
+				if rc and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) and re:GetDescription()==aux.Stringid(m,0) then
+					rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+				end
+			end
+			return res
 		end
 	end
 end
@@ -112,7 +128,7 @@ function cm.tdfilter(c)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.IsPlayerCanDraw(tp,1)
+		return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) and e:GetHandler():GetFlagEffect(m)==0
 	end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)

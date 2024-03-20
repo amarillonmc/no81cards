@@ -74,6 +74,23 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(e0,0)
 		local e1=e0:Clone()
 		Duel.RegisterEffect(e1,1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EFFECT_SEND_REPLACE)
+		e2:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
+							local g=eg:Filter(function(c) return c:GetOriginalCode()==m and c:IsStatus(STATUS_ACTIVATE_DISABLED) and c:GetDestination()==LOCATION_GRAVE end,nil)
+							if chk==0 then return #g>0 end
+							for rc in aux.Next(g) do
+								local e1=Effect.CreateEffect(rc)
+								e1:SetType(EFFECT_TYPE_SINGLE)
+								e1:SetCode(EFFECT_CANNOT_TO_DECK)
+								e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+								e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+								rc:RegisterEffect(e1)
+							end
+						end)
+		e2:SetValue(aux.FALSE)
+		Duel.RegisterEffect(e2,0)
 		local _IsActiveType=Effect.IsActiveType
 		local _GetActiveType=Effect.GetActiveType
 		local _GetActivateLocation=Effect.GetActivateLocation
@@ -125,24 +142,20 @@ function cm.initial_effect(c)
 		end
 		function Duel.NegateActivation(ev)
 			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
-			if aux.GetValueType(re)=="Effect" then
+			local res=_NegateActivation(ev)
+			if res and aux.GetValueType(re)=="Effect" then
 				local rc=re:GetHandler()
-				if rc and rc:IsOnField() and re:GetDescription()==aux.Stringid(m,0) then
-					--tograve
-					local e1=Effect.CreateEffect(rc)
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetCode(EFFECT_CANNOT_TO_DECK)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-					rc:RegisterEffect(e1)
+				if rc and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) and re:GetDescription()==aux.Stringid(m,0) then
+					rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 				end
 			end
-			return _NegateActivation(ev)
+			return res
 		end
 		function Duel.ChangeChainOperation(ev,...)
 			local re=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT)
 			if aux.GetValueType(re)=="Effect" then
 				local rc=re:GetHandler()
-				if rc and rc:IsOnField() and re:GetDescription()==aux.Stringid(m,0) then
+				if rc and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) and re:GetDescription()==aux.Stringid(m,0) then
 					rc:CancelToGrave(false)
 				end
 			end
