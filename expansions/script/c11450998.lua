@@ -23,6 +23,9 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetOperation(cm.imop)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_REMOVE)
+	--c:RegisterEffect(e3)
 	--check add count
 	if not cm.global_check then
 		cm.global_check=true
@@ -95,15 +98,14 @@ function cm.imop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabel(1)
 	end
 	Duel.RegisterEffect(e1,tp)
-	--[[local e2=Effect.CreateEffect(e:GetHandler())
+	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(0x20000000+m+1)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetTargetRange(1,0)
+	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e2:SetRange(e:GetHandler():GetLocation())
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	e:GetHandler():RegisterEffect(e2)--]]
-	e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,0,1)
+	e:GetHandler():RegisterEffect(e2)
+	--e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function cm.flcon(e)
 	return e:GetHandler():GetFlagEffect(m+1)>0

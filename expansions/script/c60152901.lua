@@ -15,6 +15,13 @@ function c60152901.initial_effect(c)
 	e1:SetTarget(c60152901.e1tg)
 	e1:SetOperation(c60152901.e1op)
 	c:RegisterEffect(e1)
+	--disable and destroy
+	local e11=Effect.CreateEffect(c)
+	e11:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e11:SetRange(LOCATION_MZONE)
+	e11:SetCode(EVENT_CUSTOM+60152901)
+	e11:SetOperation(c60152901.e11op)
+	c:RegisterEffect(e11)
 
 	if not c60152901.global_check then
 		c60152901.global_check=true
@@ -124,8 +131,12 @@ function c60152901.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return true
 end
 function c60152901.regop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RaiseEvent(eg,EVENT_CUSTOM+60152901,re,r,rp,ep,e:GetLabel())
+end
+function c60152901.e11op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,60152901,RESET_PHASE+PHASE_END,0,1)
 end
+
 function c60152901.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
 	if chk==0 then return not Duel.GetFlagEffect(tp,60152901)==0 and Duel.GetMatchingGroupCount(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,nil)>0 end

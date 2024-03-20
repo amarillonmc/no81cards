@@ -46,7 +46,7 @@ function cm.indcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetHandler():IsCode(15000627) then return false end
-	if not re:GetHandler():IsSetCard(0xf36) then return false end
+	if not re:GetHandler():IsSetCard(0xf36) or not re:IsActiveType(TYPE_MONSTER) then return false end
 	e:SetLabel(rp)
 	return true
 end

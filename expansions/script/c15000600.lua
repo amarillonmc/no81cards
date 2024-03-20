@@ -83,7 +83,7 @@ function cm.splimit(e,c)
 end
 function cm.damval2(e,re,val,r,rp,rc)
 	local c=e:GetHandler()
-	if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 and Duel.GetFlagEffect(e:GetHandlerPlayer(),m)==0 then
+	if bit.band(r,REASON_EFFECT)~=0 and Duel.GetFlagEffect(e:GetHandlerPlayer(),m)==0 then
 		Duel.RegisterFlagEffect(e:GetHandlerPlayer(),m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		return 0
 	end
