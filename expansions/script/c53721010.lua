@@ -56,36 +56,22 @@ function cm.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
-function cm.filter(c)
-	return c:IsFaceup() and c:IsRace(RACE_AQUA) and c:IsType(TYPE_SYNCHRO)
-end
 function cm.imop(e,tp,eg,ep,ev,re,r,rp)
 	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_ADJUST)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_IMMUNE_EFFECT)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetTarget(cm.etg)
+	e2:SetValue(cm.efilter)
 	e2:SetReset(RESET_CHAIN)
-	e2:SetRange(0xff)
-	e2:SetOperation(cm.immop)
-	e:GetHandler():RegisterEffect(e2)
+	Duel.RegisterEffect(e2,tp)
 end
-function cm.immop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_MZONE,0,nil)
-	if #sg==0 then return end
-	for tc in aux.Next(sg) do
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_IMMUNE_EFFECT)
-		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetValue(cm.efilter)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-	end
+function cm.etg(e,c)
+	return c:IsRace(RACE_AQUA) and c:IsType(TYPE_SYNCHRO)
 end
-function cm.efilter(e,te)
+function cm.efilter(e,te,c)
 	if te:GetHandlerPlayer()==e:GetHandlerPlayer() or not te:IsActivated() then return false end
 	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	return not g or not g:IsContains(e:GetHandler())
+	return not g or not g:IsContains(c)
 end

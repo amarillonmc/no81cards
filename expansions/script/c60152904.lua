@@ -32,7 +32,7 @@ function c60152904.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,6012904)
-	e2:SetCondition(c60152904.con)
+	e2:SetCondition(c60152904.e2con)
 	e2:SetTarget(c60152904.e2tg)
 	e2:SetOperation(c60152904.e2op)
 	c:RegisterEffect(e2)
@@ -123,9 +123,12 @@ function c60152904.checkop(e,tp,eg,ep,ev,re,r,rp)
 		tc=g:GetNext()
 	end
 end
+function c60152904.e2con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(1-tp,60152904)>0
+end
 function c60152904.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return not Duel.GetFlagEffect(1-tp,60152904)==0 end
+	if chk==0 then return true end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)

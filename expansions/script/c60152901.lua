@@ -15,20 +15,12 @@ function c60152901.initial_effect(c)
 	e1:SetTarget(c60152901.e1tg)
 	e1:SetOperation(c60152901.e1op)
 	c:RegisterEffect(e1)
-	--disable and destroy
-	local e11=Effect.CreateEffect(c)
-	e11:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e11:SetRange(LOCATION_MZONE)
-	e11:SetCode(EVENT_CUSTOM+60152901)
-	e11:SetOperation(c60152901.e11op)
-	c:RegisterEffect(e11)
 
 	if not c60152901.global_check then
 		c60152901.global_check=true
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_TO_HAND)
-		ge1:SetCondition(c60152901.regcon)
 		ge1:SetOperation(c60152901.regop)
 		Duel.RegisterEffect(ge1,0)
 	end
@@ -40,7 +32,7 @@ function c60152901.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,6012901)
-	e2:SetCondition(c60152901.con)
+	e2:SetCondition(c60152901.e2con)
 	e2:SetTarget(c60152901.e2tg)
 	e2:SetOperation(c60152901.e2op)
 	c:RegisterEffect(e2)
@@ -121,25 +113,25 @@ end
 function c60152901.cfilter(c,tp)
 	return c:IsControler(tp) and c:IsPreviousLocation(LOCATION_DECK)
 end
-function c60152901.regcon(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetCurrentPhase()==PHASE_DRAW or Duel.GetCurrentPhase()==0 then return false end
-	local v=0
-	if eg:IsExists(c60152901.cfilter,1,nil,0) then v=v+1 end
-	if eg:IsExists(c60152901.cfilter,1,nil,1) then v=v+2 end
-	if v==0 then return false end
-	e:SetLabel(({0,1,PLAYER_ALL})[v])
-	return true
-end
 function c60152901.regop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RaiseEvent(eg,EVENT_CUSTOM+60152901,re,r,rp,ep,e:GetLabel())
+	local g=eg:Filter(Card.IsPreviousLocation,nil,LOCATION_DECK)
+	local tc=g:GetFirst()
+	while tc do
+		if not (Duel.GetCurrentPhase()==PHASE_DRAW or Duel.GetCurrentPhase()==0) and Duel.GetFlagEffect(tc:GetControler(),60152901)==0 then
+			Duel.RegisterFlagEffect(tc:GetControler(),60152901,RESET_PHASE+PHASE_END,0,1)
+		end
+		if Duel.GetFlagEffect(0,60152901)>0 and Duel.GetFlagEffect(1,60152901)>0 then
+			break
+		end
+		tc=g:GetNext()
+	end
 end
-function c60152901.e11op(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(tp,60152901,RESET_PHASE+PHASE_END,0,1)
+function c60152901.e2con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(1-tp,60152901)>0
 end
-
 function c60152901.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return not Duel.GetFlagEffect(tp,60152901)==0 and Duel.GetMatchingGroupCount(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,nil)>0 end
+	if chk==0 then return true end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
@@ -155,7 +147,7 @@ function c60152901.e2op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RDComplete()
 		Duel.BreakEffect()
 		local c=e:GetHandler()
-		local g=Duel.GetMatchingGroup(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,nil)
+		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_HAND,nil)
 		if g:GetCount()>0 then
 			Duel.ConfirmCards(tp,g)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)

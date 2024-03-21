@@ -17,21 +17,20 @@ function c21401148.initial_effect(c)
 	e1:SetOperation(s.operation)
 	c:RegisterEffect(e1)
 	--deck normal type
-	--把gettype和istype重写，如果c是id，并且在卡组，就返回原本的函数
 	local ori_GetType = Card.GetType
 	local ori_IsType = Card.IsType
 	Card.GetType = function(c)
-		if c:IsOriginalCodeRule(id) and c:IsLocation(LOCATION_DECK) then
+		if c:IsOriginalCodeRule(id) and c:IsLocation(LOCATION_DECK) and ori_IsType(c,TYPE_EFFECT) then
 			--Debug.Message("gettype")
-			return TYPE_MONSTER + TYPE_NORMAL
+			return ori_GetType(c) ~ TYPE_EFFECT ~ TYPE_NORMAL
 		end
 		return ori_GetType(c)
 	end
 	Card.IsType = function(c,type)
-		if c:IsOriginalCodeRule(id) and type & TYPE_NORMAL and c:IsLocation(LOCATION_DECK) then
-			if not type==TYPE_NORMAL then
+		if c:IsOriginalCodeRule(id) and type & TYPE_NORMAL > 0 and c:IsLocation(LOCATION_DECK) then
+			if type~=TYPE_NORMAL then
 				--Debug.Message("istype_cont")
-				return ori_IsType(c,type~TYPE_NORMAL)
+				return ori_IsType(c,type ~ TYPE_NORMAL)
 			else
 				--Debug.Message("istype_true")
 				return true
@@ -41,7 +40,7 @@ function c21401148.initial_effect(c)
 	end
 end
 
-
+--把gettype和istype重写，如果c是id，并且在卡组，就返回原本的函数
 
 function s.EnableDualAttribute(c)
 	local e1=Effect.CreateEffect(c)

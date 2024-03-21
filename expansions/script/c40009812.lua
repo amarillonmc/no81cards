@@ -154,9 +154,9 @@ end
 function cm.imlimit(e,c)
 	return c:IsFaceup() and cm.SealDragon(c) and c:IsType(TYPE_MONSTER)
 end
-function cm.efilter(e,te,re,rp)
+function cm.efilter(e,te,c)
 	if te:GetHandlerPlayer()==e:GetHandlerPlayer() or not te:IsActivated() then return false end
 	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	return not g or not g:IsContains(e:GetHandler())
+	return not g or not g:IsContains(c)
 end

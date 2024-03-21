@@ -35,11 +35,11 @@ end
 function cm.filter(c)
 	return c:IsType(TYPE_DUAL) or (c:IsType(TYPE_LINK) and c:GetLinkedGroup():IsExists(function(c)return c:IsType(TYPE_DUAL) and c:IsFaceup()end,1,nil))
 end
-function cm.efilter(e,te)
+function cm.efilter(e,te,c)
 	if te:GetHandlerPlayer()==e:GetHandlerPlayer() or not te:IsActivated() then return false end
 	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	return not g or not g:IsExists(cm.filter,1,nil)
+	return not g or not g:IsContains(c)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)

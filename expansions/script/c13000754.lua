@@ -70,11 +70,11 @@ function cm.disop2(e,tp,eg,ep,ev,re,r,rp)
 	local aa=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_REMOVED+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_REMOVED+LOCATION_GRAVE,1,1,nil)
 	Duel.SendtoDeck(aa,tp,0,REASON_EFFECT)
 end
-function cm.efilter(e,te)
+function cm.efilter(e,te,c)
 	if te:GetOwnerPlayer()==e:GetHandlerPlayer() or not te:IsActivated() then return false end
 	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	return not g or not g:IsContains(e:GetHandler())
+	return not g or not g:IsContains(c)
 end
 function cm.eftg(e,c)
 	local seq=e:GetHandler():GetSequence()

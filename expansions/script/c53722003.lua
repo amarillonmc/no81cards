@@ -19,12 +19,12 @@ function cm.econ(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(e:GetHandlerPlayer(),LOCATION_GRAVE,0)
 	return #g>0 and not g:IsExists(aux.NOT(Card.IsSetCard),1,nil,0x3531)
 end
-function cm.efilter(e,te)
+function cm.efilter(e,te,c)
 	local tp=e:GetHandlerPlayer()
 	if te:GetHandlerPlayer()==tp or not te:IsActivated() then return false end
 	if not Duel.IsPlayerCanDiscardDeck(tp,2) then return false end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not g or not g:IsExists(function(c,e,tp)return c:IsFaceup() and c:IsControler(tp) and c:IsSetCard(0x3531) and c:IsType(TYPE_MONSTER) and not c:IsImmuneToEffect(e)end,1,nil,e,tp)  then
+	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not g or not g:IsContains(c) then
 		if Duel.GetFlagEffect(tp,m)==0 then
 			Duel.RegisterFlagEffect(tp,m,0,0,0)
 			local e1=Effect.CreateEffect(e:GetHandler())

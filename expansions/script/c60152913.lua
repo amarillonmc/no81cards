@@ -50,7 +50,7 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EVENT_FREE_CHAIN)
 		e1:SetRange(LOCATION_MZONE)
 		e1:SetCountLimit(1,6012901)
-		e1:SetCondition(c60152913.con)
+		e1:SetCondition(c60152913.e22901con)
 		e1:SetTarget(c60152913.e22901tg)
 		e1:SetOperation(c60152913.e22901op)
 		c:RegisterEffect(e1)
@@ -92,7 +92,7 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetCode(EVENT_FREE_CHAIN)
 		e4:SetRange(LOCATION_MZONE)
 		e4:SetCountLimit(1,6012904)
-		e4:SetCondition(c60152913.con)
+		e4:SetCondition(c60152913.e22904con)
 		e4:SetTarget(c60152913.e22904tg)
 		e4:SetOperation(c60152913.e22904op)
 		c:RegisterEffect(e4)
@@ -144,14 +144,17 @@ end
 function c60152913.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
 end
+function c60152913.e22901con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(1-tp,60152901)>0
+end
 function c60152913.e22901tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return not Duel.GetFlagEffect(tp,60152901)==0 and Duel.GetMatchingGroupCount(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,nil)>0 end
+	if chk==0 then return true end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
 end
-function c60152913.e22901opfilter(c)
+function c60152913.e22901opf(c)
 	return c:IsAbleToDeck()
 end
 function c60152913.e22901op(e,tp,eg,ep,ev,re,r,rp)
@@ -162,11 +165,11 @@ function c60152913.e22901op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RDComplete()
 		Duel.BreakEffect()
 		local c=e:GetHandler()
-		local g=Duel.GetMatchingGroup(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,nil)
+		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_HAND,nil)
 		if g:GetCount()>0 then
 			Duel.ConfirmCards(tp,g)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local g=Duel.SelectMatchingCard(tp,c60152913.e22901opfilter,tp,0,LOCATION_HAND,1,1,nil)
+			local g=Duel.SelectMatchingCard(tp,c60152913.e22901opf,tp,0,LOCATION_HAND,1,1,nil)
 			if g:GetCount()>0 then
 				Duel.HintSelection(g)
 				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
@@ -175,7 +178,7 @@ function c60152913.e22901op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c60152913.e22902opfilter(c)
+function c60152913.e22902opf(c)
 	return c:IsFaceup() and not c:IsDisabled()
 end
 function c60152913.e22902tg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -199,7 +202,7 @@ function c60152913.e22902op(e,tp,eg,ep,ev,re,r,rp)
 		if s<0 then s=p1-p2 end
 		local d2=math.floor(s/1000)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-		local g=Duel.SelectMatchingCard(tp,c60152913.e22902opfilter,tp,0,LOCATION_ONFIELD,1,d2,nil)
+		local g=Duel.SelectMatchingCard(tp,c60152913.e22902opf,tp,0,LOCATION_ONFIELD,1,d2,nil)
 		local tc=g:GetFirst()
 		while tc do
 			local e1=Effect.CreateEffect(c)
@@ -251,14 +254,17 @@ function c60152913.e22903op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+function c60152913.e22904con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(1-tp,60152904)>0
+end
 function c60152913.e22904tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return not Duel.GetFlagEffect(1-tp,60152904)==0 end
+	if chk==0 then return true end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
 end
-function c60152913.e22904opfilter(c)
+function c60152913.e22904opf(c)
 	return c:IsAbleToDeck()
 end
 function c60152913.e22904op(e,tp,eg,ep,ev,re,r,rp)
@@ -276,7 +282,7 @@ function c60152913.e22904op(e,tp,eg,ep,ev,re,r,rp)
 		local d2=math.floor(s/1000)
 		if d2>=1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local g=Duel.SelectMatchingCard(tp,c60152913.e22904opfilter,tp,0,LOCATION_GRAVE,1,d2,nil)
+			local g=Duel.SelectMatchingCard(tp,c60152913.e22904opf,tp,0,LOCATION_GRAVE,1,d2,nil)
 			if g:GetCount()>0 then
 				Duel.HintSelection(g)
 				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
@@ -365,11 +371,11 @@ function c60152913.e22907op(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_SOLVED)
-	e1:SetOperation(c60152913.e22907opop)
+	e1:SetOperation(c60152913.e22907oop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function c60152913.e22907opop(e,tp,eg,ep,ev,re,r,rp)
+function c60152913.e22907oop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,60152913)
 	Duel.Damage(tp,500,REASON_EFFECT,true)
 	Duel.Damage(1-tp,500,REASON_EFFECT,true)

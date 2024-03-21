@@ -94,9 +94,9 @@ end
 function cm.etarget(e,c)
 	return e:GetHandler():GetColumnGroup():IsContains(c)
 end
-function cm.efilter(e,te)
+function cm.efilter(e,te,c)
 	if not te:IsActivated() then return false end
 	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	return not g or not g:IsContains(e:GetHandler())
+	return not g or not g:IsContains(c)
 end
