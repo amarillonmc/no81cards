@@ -42,7 +42,7 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=c:GetMaterial()
 	if #g==0 then return end
-	if g:IsExists(Card.IsOriginalCode,1,nil,60152901) then
+	if g:IsExists(Card.IsOriginalCodeRule,1,nil,60152901) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(60152901,1))
 		e1:SetCategory(CATEGORY_DAMAGE)

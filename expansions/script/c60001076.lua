@@ -53,12 +53,14 @@ function cm.getfusionfilter(c)
 end
 
 function cm.sprcon(e,c,tp)
+	local tp=e:GetHandler()
 	if c==nil then return true end
 	local g=Duel.GetMatchingGroup(cm.getfusionfilter,tp,LOCATION_GRAVE,0,nil)
 	return g:GetClassCount(Card.GetCode)>=5 and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local tp=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.getfusionfilter,tp,LOCATION_GRAVE,0,nil)
 	if g:GetClassCount(Card.GetCode)>=5 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
