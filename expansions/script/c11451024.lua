@@ -65,7 +65,7 @@ function cm.cpfilter2(c,tp,tc)
 	local fg=Group.CreateGroup()
 	if c:IsFacedown() then fg:AddCard(tc) end
 	if tc:IsFacedown() then fg:AddCard(c) end
-	return c:GetOriginalType()&TYPE_LINK==0 and c:GetPosition()~=tc:GetPosition() and Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,fg)
+	return c:GetOriginalType()&TYPE_LINK==0 and c:GetPosition()~=tc:GetPosition() and Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,fg) and not fg:IsExists(function(c) return c:IsFaceup() and not c:IsCanTurnSet() end,1,nil)
 end
 function cm.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) end
