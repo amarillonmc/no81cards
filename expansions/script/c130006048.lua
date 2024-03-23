@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_SUMMON_SUCCESS)
-		e1:SetProperty(EFFECT_FLAG_DELAY)
+		--e1:SetProperty(EFFECT_FLAG_DELAY)
 		e1:SetCondition(cm.descon)
 		e1:SetOperation(cm.desop2)
 		Duel.RegisterEffect(e1,0)
@@ -59,7 +59,7 @@ function cm.filter(c,e)
 		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
 		return c:GetPreviousLocation()==LOCATION_DECK and (not b1 or not g1:IsContains(c)) and (not b2 or not g2:IsContains(c))
 	end
-	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(m)>0)
+	return c:GetPreviousLocation()==LOCATION_DECK and not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(m)>0)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter,1,nil,e)
@@ -68,7 +68,7 @@ function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(eg,EVENT_CUSTOM+m,re,r,rp,ep,ev)
 end
 function cm.descon3(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():GetFieldID()==re:GetHandler():GetRealFieldID()
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():GetFieldID()==re:GetHandler():GetRealFieldID() and re:GetHandler():GetPreviousLocation()==LOCATION_DECK
 end
 function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(eg,EVENT_CUSTOM+m,re,r,rp,ep,ev)

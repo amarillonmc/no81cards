@@ -86,6 +86,7 @@ function c9911357.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local tc=g1:RandomSelect(tp,1):GetFirst()
 		if tc then
+			Duel.ConfirmCards(tp,tc)
 			tc:RegisterFlagEffect(9911357,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,66)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
