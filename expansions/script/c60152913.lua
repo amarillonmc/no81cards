@@ -106,7 +106,7 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e5:SetCode(EVENT_FREE_CHAIN)
 		e5:SetRange(LOCATION_MZONE)
 		e5:SetCountLimit(1,6012905)
-		e5:SetCondition(c60152913.con)
+		e5:SetCondition(c60152913.e22905con)
 		e5:SetTarget(c60152913.e22905tg)
 		e5:SetOperation(c60152913.e22905op)
 		c:RegisterEffect(e5)
@@ -290,9 +290,12 @@ function c60152913.e22904op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+function c60152913.e22905con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCustomActivityCount(60152905,tp,ACTIVITY_CHAIN)>0
+end
 function c60152913.e22905tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)~=0 end
+	if chk==0 then return true end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)

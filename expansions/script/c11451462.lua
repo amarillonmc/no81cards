@@ -71,6 +71,66 @@ function cm.hspgcheck(lv,tp)
 			return cm.fselect(g,lv,tp) --g:CheckSubGroup(cm.fselect,1,#g,lv,tp)
 		end
 end
+function cm.CheckGroupRecursiveCapture(bool,sg,g,f,min,max,ext_params)
+	local eg=g:Clone()
+	if bool then cm.esg=sg:Clone() end
+	for c in aux.Next(g-sg) do
+		sg:AddCard(c)
+		if not Auxiliary.GCheckAdditional or Auxiliary.GCheckAdditional(sg,c,eg,f,min,max,ext_params) then
+			if (#sg>=min and #sg<=max and f(sg,table.unpack(ext_params))) then
+				for sc in aux.Next(sg-cm.esg) do
+					Auxiliary.SubGroupCaptured:Merge(eg:Filter(cm.slfilter,nil,sc))
+				end
+			end
+			if #sg<max then cm.CheckGroupRecursiveCapture(false,sg,eg,f,min,max,ext_params) end
+		end
+		sg:RemoveCard(c)
+		eg:Sub(eg:Filter(cm.slfilter,nil,c))
+	end
+end
+function cm.slfilter(c,sc)
+	return cm.lvplus(c)==cm.lvplus(sc)
+end
+function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
+	local min=min or 1
+	local max=max or #g
+	local ext_params={...}
+	local sg=Group.CreateGroup()
+	local fg=Duel.GrabSelectedCard()
+	if #fg>max or min>max or #(g+fg)<min then return nil end
+	for tc in aux.Next(fg) do
+		fg:SelectUnselect(sg,tp,false,false,min,max)
+	end
+	sg:Merge(fg)
+	local finish=(#sg>=min and #sg<=max and f(sg,...))
+	while #sg<max do
+		Auxiliary.SubGroupCaptured=Group.CreateGroup()
+		cm.CheckGroupRecursiveCapture(true,sg,g,f,min,max,ext_params)
+		local cg=Auxiliary.SubGroupCaptured:Clone()
+		Auxiliary.SubGroupCaptured:Clear()
+		cg:Sub(sg)
+		finish=(#sg>=min and #sg<=max and f(sg,...))
+		if #cg==0 then break end
+		local cancel=not finish and cancelable
+		local tc=cg:SelectUnselect(sg,tp,finish,cancel,min,max)
+		if not tc then break end
+		if not fg:IsContains(tc) then
+			if not sg:IsContains(tc) then
+				sg:AddCard(tc)
+				if #sg==max then finish=true end
+			else
+				sg:RemoveCard(tc)
+			end
+		elseif cancelable then
+			return nil
+		end
+	end
+	if finish then
+		return sg
+	else
+		return nil
+	end
+end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,tp)
@@ -143,7 +203,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		tc=tg:Select(tp,1,1,nil):GetFirst()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		aux.GCheckAdditional=cm.hspgcheck(cm.lvplus(tc),tp)
-		rg=mg:SelectSubGroup(tp,cm.hspcheck,true,1,#mg,cm.lvplus(tc),tp)
+		rg=cm.SelectSubGroup(mg,tp,cm.hspcheck,true,1,#mg,cm.lvplus(tc),tp)
 		aux.GCheckAdditional=nil
 	end
 	Duel.ConfirmCards(1-tp,rg:Filter(Card.IsFacedown,nil))

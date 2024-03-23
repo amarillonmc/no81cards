@@ -61,13 +61,14 @@ function cm.CheckGroupRecursive(sg,g,f,min,max,ext_params)
 end
 function cm.CheckGroupRecursiveCapture(bool,sg,g,f,min,max,ext_params)
 	local eg=g:Clone()
+	if bool then cm.esg=sg:Clone() end
 	for c in aux.Next(g-sg) do
 		if not bool or not Auxiliary.SubGroupCaptured:IsContains(c) then
 			sg:AddCard(c)
 			if not Auxiliary.GCheckAdditional or Auxiliary.GCheckAdditional(sg,c,eg,f,min,max,ext_params) then
 				if (#sg>=min and #sg<=max and f(sg,table.unpack(ext_params))) then -- or (#sg<max and cm.CheckGroupRecursiveCapture(false,sg,eg,f,min,max,ext_params)) then
 					--Debug.Message(cm[0])
-					for sc in aux.Next(sg) do
+					for sc in aux.Next(sg-cm.esg) do
 						Auxiliary.SubGroupCaptured:Merge(eg:Filter(cm.slfilter,nil,sc))
 					end
 				end
