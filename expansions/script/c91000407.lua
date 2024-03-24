@@ -14,6 +14,7 @@ function c91000407.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,m)
+	e2:SetCost(cm.cost)
 	e2:SetTarget(cm.tg2)
 	e2:SetOperation(cm.op2)
 	c:RegisterEffect(e2)
@@ -41,6 +42,20 @@ function c91000407.initial_effect(c)
 end
 function cm.counterfilter(c)
 	return  c:IsLevel(10)
+end
+function cm.counterfilter1(e,c)
+	return  not c:IsLevel(10)
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chk==0 then return Duel.GetCustomActivityCount(91000407,tp,ACTIVITY_SPSUMMON)==0 end
+ local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(cm.counterfilter1)
+	Duel.RegisterEffect(e1,tp)
 end
 function cm.thfilter(c,e,tp)
 	return  c:IsSetCard(0x9d2) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -109,7 +124,7 @@ function cm.op5(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabelObject(tc)
 		sc:RegisterEffect(e1)
 	end
-	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then	 
+	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then   
 	local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.fit),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 		local sc=sg:GetFirst()
 		local tc=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil):GetFirst()

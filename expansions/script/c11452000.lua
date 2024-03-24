@@ -34,26 +34,30 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SetLP(tp,8000)
 		Duel.SetLP(1-tp,8000)
 	end
-	local sg1=Group.CreateGroup()
-	local sg2=Group.CreateGroup()
+	local sg1,sg2,g2r,exg2r=Group.CreateGroup(),Group.CreateGroup(),Group.CreateGroup(),Group.CreateGroup()
 	local g1=Duel.GetFieldGroup(tp,0,LOCATION_DECK)
 	local exg1=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
 	Duel.ConfirmCards(tp,g1+exg1)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
 	local g1r=g1:Select(tp,math.min(15,#g1),math.min(15,#g1),nil)
 	local exg1r=exg1:Select(tp,math.min(5,#exg1),math.min(5,#exg1),nil)
-	if Duel.Remove(g1r+exg1r,POS_FACEUP,REASON_EFFECT)>0 and Duel.SendtoDeck(g1r+exg1r,tp,1,REASON_EFFECT)>0 and Duel.SelectYesNo(1-tp,aux.Stringid(m,0)) then
-		sg1=Duel.GetOperatedGroup()
+	if Duel.SelectYesNo(1-tp,aux.Stringid(m,0)) then
 		local g2=Duel.GetFieldGroup(1-tp,0,LOCATION_DECK)
 		local exg2=Duel.GetFieldGroup(1-tp,0,LOCATION_EXTRA)
 		Duel.ConfirmCards(1-tp,g2+exg2)
 		Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(m,1))
-		local g2r=g2:Select(1-tp,math.min(15,#g2),math.min(15,#g2),nil)
-		local exg2r=exg2:Select(1-tp,math.min(5,#exg2),math.min(5,#exg2),nil)
-		if Duel.Remove(g2r+exg2r,POS_FACEUP,REASON_EFFECT)>0 then
-			Duel.SendtoDeck(g2r+exg2r,1-tp,1,REASON_EFFECT)
-			sg2=Duel.GetOperatedGroup()
-		end
+		g2r=g2:Select(1-tp,math.min(15,#g2),math.min(15,#g2),nil)
+		exg2r=exg2:Select(1-tp,math.min(5,#exg2),math.min(5,#exg2),nil)
+	end
+	if Duel.Remove(g1r+exg1r,POS_FACEUP,REASON_EFFECT)>0 then
+		Duel.SendtoDeck(g1r+exg1r,tp,1,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g1r+exg1r)
+		sg1=Duel.GetOperatedGroup()
+	end
+	if Duel.Remove(g2r+exg2r,POS_FACEUP,REASON_EFFECT)>0 then
+		Duel.SendtoDeck(g2r+exg2r,1-tp,1,REASON_EFFECT)
+		Duel.ConfirmCards(tp,g2r+exg2r)
+		sg2=Duel.GetOperatedGroup()
 	end
 	sg1=sg1:Filter(cm.dfilter,nil,tp)
 	sg2=sg2:Filter(cm.dfilter,nil,1-tp)

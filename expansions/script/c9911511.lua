@@ -1,0 +1,60 @@
+--觅迹人奇境 大西洲海底城
+function c9911511.initial_effect(c)
+	--Activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e1)
+	--change effect type
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCode(9911511)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetTargetRange(1,0)
+	c:RegisterEffect(e2)
+	--effect gain
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(9911511,0))
+	e3:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_SUMMON)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e3:SetCondition(c9911511.dscon)
+	e3:SetTarget(c9911511.dstg)
+	e3:SetOperation(c9911511.dsop)
+	local e4=e3:Clone()
+	e4:SetCode(EVENT_FLIP_SUMMON)
+	local e5=e3:Clone()
+	e5:SetCode(EVENT_SPSUMMON)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e6:SetRange(LOCATION_SZONE)
+	e6:SetTargetRange(LOCATION_MZONE,0)
+	e6:SetTarget(c9911511.eftg)
+	e6:SetLabelObject(e3)
+	c:RegisterEffect(e6)
+	local e7=e6:Clone()
+	e7:SetLabelObject(e4)
+	c:RegisterEffect(e7)
+	local e8=e6:Clone()
+	e8:SetLabelObject(e5)
+	c:RegisterEffect(e8)
+end
+function c9911511.eftg(e,c)
+	return c:IsType(TYPE_EFFECT) and c:IsSetCard(0x5952) and e:GetHandler():GetColumnGroup():IsContains(c)
+end
+function c9911511.dscon(e,tp,eg,ep,ev,re,r,rp)
+	return ep==1-tp and Duel.GetCurrentChain()==0
+end
+function c9911511.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
+end
+function c9911511.dsop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateSummon(eg)
+	Duel.Destroy(eg,REASON_EFFECT)
+end

@@ -3,7 +3,7 @@ local m=11579812
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3)
+	aux.AddLinkProcedure(c,aux.TRUE,2,99,c11579812.lcheck)
 	c:EnableReviveLimit()
 	--immune
 	local e1=Effect.CreateEffect(c)
@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	--destroy
 	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_DESTROY+CATEGORY_REMOVE+CATEGORY_DAMAGE)
+	e4:SetCategory(CATEGORY_DESTROY+CATEGORY_REMOVE)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e4:SetRange(LOCATION_MZONE)
@@ -44,7 +44,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	
 end
-
+function c11579812.lcheck(g)
+	return g:IsExists(Card.IsSummonLocation,1,nil,LOCATION_EXTRA)
+end
 function c11579812.filter(c)
 	return c:IsFaceup()
 end
@@ -58,11 +60,9 @@ function c11579812.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,atk)
 end
 function c11579812.desop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		local atk=math.ceil(tc:GetAttack()/2)
-		if atk<0 then atk=0 end
-		if Duel.Damage(tp,atk,REASON_EFFECT) then
 		local aaa=math.ceil(math.abs(Duel.GetLP(tp)-Duel.GetLP(1-tp))/2)
 		if tc:GetAttack()<=aaa then
 		Duel.Remove(tc,POS_FACEDOWN,REASON_RULE,1-tp)
@@ -70,24 +70,7 @@ function c11579812.desop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.Destroy(tc,REASON_EFFECT)~=0 then
 		Duel.RegisterFlagEffect(tp,11579813,RESET_PHASE+PHASE_END,0,1) end
 		end
-		end
 	end
-end
-
-
-
-function c11579812.drfilter(c)
-	return c:IsOnField() and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
-end
-function c11579812.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(c11579812.drfilter,1,nil,tp) end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
-end
-function c11579812.repval(e,c)
-	return c:IsOnField() and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
-end
-function c11579812.repop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
 	if Duel.GetFlagEffect(tp,11579812)==0 then Duel.RegisterFlagEffect(tp,11579812,0,0,1) end
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -96,6 +79,28 @@ function c11579812.repop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetTargetRange(1,0)
 	e2:SetValue(c11579812.damval1)
 	Duel.RegisterEffect(e2,tp)
+end
+function c11579812.drfilter(c)
+	return c:IsOnField() and c:IsFaceup() and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE) and c:GetBaseAttack()~=0
+end
+function c11579812.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return eg:IsExists(c11579812.drfilter,1,nil) end
+	local tg=eg:Filter(c11579812.drfilter,nil)
+	local tc=tg:GetFirst()
+	local dam=0
+	while tc do
+		dam=dam+tc:GetBaseAttack()
+		tc=tg:GetNext()
+	end
+		e:SetLabel(dam)
+	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+end
+function c11579812.repval(e,c)
+	return c:IsOnField() and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE) and c:IsFaceup() and c:GetBaseAttack()~=0
+end
+function c11579812.repop(e,tp,eg,ep,ev,re,r,rp)
+	local dam=e:GetLabel()
+	Duel.Damage(tp,dam,REASON_EFFECT)
 end
 function c11579812.damval1(e,re,val,r,rp,rc)
 	local c=e:GetHandler()

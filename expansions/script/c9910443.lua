@@ -3,6 +3,13 @@ function c9910443.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,9,2,c9910443.ovfilter,aux.Stringid(9910443,0),2,c9910443.xyzop)
 	c:EnableReviveLimit()
+	--xyzlimit
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+	e1:SetValue(1)
+	c:RegisterEffect(e1)
 	--atk
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -10,7 +17,7 @@ function c9910443.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetCondition(c9910443.atkcon)
-	e2:SetValue(1000)
+	e2:SetValue(2500)
 	c:RegisterEffect(e2)
 	--destroy
 	local e3=Effect.CreateEffect(c)
@@ -25,28 +32,27 @@ function c9910443.initial_effect(c)
 	e3:SetTarget(c9910443.destg)
 	e3:SetOperation(c9910443.desop)
 	c:RegisterEffect(e3)
-	Duel.AddCustomActivityCounter(9910443,ACTIVITY_CHAIN,c9910443.chainfilter)
 end
-function c9910443.chainfilter(re,tp,cid)
-	return not (re:GetHandler():IsSetCard(0x9958) and re:IsActiveType(TYPE_MONSTER)
-		and Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)==LOCATION_HAND)
+function c9910443.filter(c)
+	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:GetOriginalType()&TYPE_MONSTER>0
 end
 function c9910443.ovfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:IsType(TYPE_XYZ)
+	local g=c:GetColumnGroup()
+	g:AddCard(c)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and g:IsExists(c9910443.filter,3,nil)
 end
 function c9910443.xyzop(e,tp,chk)
-	if chk==0 then return (Duel.GetCustomActivityCount(9910443,tp,ACTIVITY_CHAIN)~=0 or Duel.GetCustomActivityCount(9910443,1-tp,ACTIVITY_CHAIN)~=0) and Duel.GetFlagEffect(tp,9910443)==0 end
-	Duel.RegisterFlagEffect(tp,9910443,RESET_PHASE+PHASE_END,0,1)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9910443.atkcon(e)
 	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
 end
 function c9910443.descon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp and re:IsActiveType(TYPE_MONSTER)
-		and Duel.IsChainNegatable(ev)
+	return re:IsActiveType(TYPE_MONSTER)
 end
 function c9910443.cfilter(c)
-	return c:IsSetCard(0x9958) and c:IsAbleToRemoveAsCost()
+	return c:IsRace(RACE_MACHINE) and c:IsAbleToRemoveAsCost()
 end
 function c9910443.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Group.CreateGroup()
@@ -62,12 +68,10 @@ end
 function c9910443.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rc=re:GetHandler()
 	if chk==0 then return rc:IsRelateToEffect(re) and rc:IsDestructable() end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,rc,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 end
 function c9910443.desop(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	if rc:IsRelateToEffect(re) and Duel.Destroy(rc,REASON_EFFECT)~=0 then
-		Duel.NegateActivation(ev)
+	if re:GetHandler():IsRelateToEffect(re) then
+		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end

@@ -1,83 +1,80 @@
 --噩梦回廊的误入者
 function c67200753.initial_effect(c)
-	aux.EnablePendulumAttribute(c)
-	--set field
+	--link summon
+	aux.AddLinkProcedure(c,c67200753.matfilter,1,1)
+	c:EnableReviveLimit()
+	--Remove
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(67200753,0))
+	e1:SetCategory(CATEGORY_TODECK)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,67200753)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCondition(c67200753.rmcon)
+	e1:SetTarget(c67200753.rmtg)
+	e1:SetOperation(c67200753.rmop)
+	c:RegisterEffect(e1)   
+	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(67200753,1))
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_HAND+LOCATION_EXTRA)
-	e2:SetCountLimit(1,67200753)
-	e2:SetTarget(c67200753.sttg)
-	e2:SetOperation(c67200753.stop)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e2:SetCondition(c67200753.spcon)
+	e2:SetTarget(c67200753.sptg)
+	e2:SetOperation(c67200753.spop)
 	c:RegisterEffect(e2)
-	--change effect
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(67200753,2))
-	e3:SetCategory(CATEGORY_TOHAND)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetRange(LOCATION_MZONE)  
-	e3:SetCountLimit(1,67200753)
-	e3:SetCondition(c67200753.cecondition)
-	e3:SetTarget(c67200753.cetarget)
-	e3:SetOperation(c67200753.ceoperation)
-	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetCondition(c67200753.cecon2)
-	c:RegisterEffect(e4)	
 end
---
-function c67200753.plfilter1(c)
-	return c:IsSetCard(0x67d) and not c:IsForbidden()
+function c67200753.matfilter(c)
+	return c:IsLinkSetCard(0x367d) and not c:IsLinkType(TYPE_LINK)
 end
-
-function c67200753.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(c67200753.plfilter1,tp,LOCATION_DECK,0,nil)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>1
-		and g:GetCount()>0 end
+function c67200753.cfilter(c)
+	return c:IsCode(67200755) and c:IsFaceup()
 end
-function c67200753.stop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<2 then return end
-	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,c67200753.plfilter1,tp,LOCATION_DECK,0,1,1,nil)
-	g:AddCard(c)
-	local tc=g:GetFirst()
-	while tc do
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetDescription(aux.Stringid(67200753,3))
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
-		e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		tc:RegisterEffect(e1)
-		tc=g:GetNext()
+function c67200753.rmcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c67200753.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
+end
+function c67200753.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
+end
+function c67200753.rmop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g1=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	g:Merge(g1)
+	if g:GetCount()>0 then
+		Duel.HintSelection(g)
+		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end
 end
 --
-function c67200753.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Damage(1-tp,1000,REASON_EFFECT)
-end
-function c67200753.cfilter(c)
-	return c:IsFaceup() and c:IsCode(67200755)
-end
-function c67200753.cecondition(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL) and Duel.IsExistingMatchingCard(c67200753.cfilter,tp,LOCATION_ONFIELD,0,1,nil) 
-end
-function c67200753.cetarget(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-end
-function c67200753.ceoperation(e,tp,eg,ep,ev,re,r,rp)
-	local g=Group.CreateGroup()
-	Duel.ChangeTargetCard(ev,g)
-	Duel.ChangeChainOperation(ev,c67200753.repop)
-end
 --
-function c67200753.cecon2(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL) and Duel.IsExistingMatchingCard(c67200753.cfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsPlayerAffectedByEffect(tp,67200755)
+function c67200753.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsSummonType(SUMMON_TYPE_LINK)
+		and (c:IsReason(REASON_BATTLE) or c:IsReason(REASON_EFFECT))
+		and c:IsPreviousPosition(POS_FACEUP)
 end
-
+function c67200753.spfilter1(c,e,tp)
+	return c:IsFaceupEx() and c:IsCode(67200760) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c67200753.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c67200753.spfilter1,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_REMOVED+LOCATION_GRAVE)
+end
+function c67200753.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c67200753.spfilter1),tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
 

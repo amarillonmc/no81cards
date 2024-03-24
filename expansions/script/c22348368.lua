@@ -121,10 +121,10 @@ function c22348368.spopd(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348368.cfilter(c)
-	return c:IsReleasable(REASON_SPSUMMON) and c:IsSetCard(0x970a) and c:IsType(TYPE_MONSTER)
+	return c:IsReleasable(REASON_SPSUMMON) and c:IsType(TYPE_MONSTER)
 end
 function c22348368.gcheck(g,e,tp)
-	return Duel.GetMZoneCount(tp,g)>0
+	return Duel.GetMZoneCount(tp,g)>0 and g:IsExists(Card.IsSetCard,1,nil,0x970a)
 end
 function c22348368.spcon(e,c)
 	if c==nil then return true end

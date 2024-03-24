@@ -13,11 +13,9 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
-	e2:SetCondition(c22348379.fscon)
 	e2:SetTarget(c22348379.fstg)
 	e2:SetOperation(c22348379.fsop)
 	c:RegisterEffect(e2)
@@ -29,9 +27,6 @@ function cm.initial_effect(c)
 		ge1:SetOperation(c22348379.checkop)
 		Duel.RegisterEffect(ge1,0)
 	end
-end
-function c22348379.fscon(e,tp,eg,ep,ev,re,r,rp)
-	return ep==1-tp
 end
 function c22348379.fsfilter1(c,e)
 	return c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
