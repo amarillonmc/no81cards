@@ -43,7 +43,7 @@ function chuoying.gaixiaoguo3(e,tp,res)
 	end
 end
 function chuoying.thfilter(c)
-	return (c:IsSetCard(0xb70a) or c:IsCode(22348370)) and c:IsAbleToHand()
+	return (c:IsSetCard(0xb70a) or c:IsCode(22348370)) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
 function chuoying.gaixiaoguo4(e,tp,res)
 	local c=e:GetHandler()
@@ -53,13 +53,16 @@ function chuoying.gaixiaoguo4(e,tp,res)
 		and Duel.SelectYesNo(tp,aux.Stringid(22348362,3)) then
 		if res~=0 then Duel.BreakEffect() end
 		Duel.Hint(HINT_CARD,0,22348362)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 		local tg=Duel.SelectMatchingCard(tp,chuoying.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 		local tc=tg:GetFirst()
 		if tc then
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tc)
+	if tc:IsAbleToHand() and (not tc:IsAbleToGrave() or Duel.SelectOption(tp,1190,1191)==0) then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
+	else
+		Duel.SendtoGrave(tc,REASON_EFFECT)
+	end
 		end
 	end
 end
-

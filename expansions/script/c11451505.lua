@@ -68,7 +68,8 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil)
+	local act=e:IsHasType(EFFECT_TYPE_ACTIVATE)
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil,act)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		local tc=g:Select(tp,1,1,nil):GetFirst()

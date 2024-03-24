@@ -158,7 +158,7 @@ function cm.LinkOperation(f,minc,maxc,gf)
 					--e1:SetLabel(c:GetFieldID())
 					e1:SetLabelObject(c)
 					--if con then e1:SetCondition(con) end
-					--e1:SetCondition(function(e) return e:GetValue()==0 end)
+					--e1:SetCondition(function(e) Debug.Message(oc:GetCode()) return true end)
 					e1:SetCost(function(e,tp,eg,ep,ev,re,r,rp,chk)
 									local c=e:GetLabelObject()
 									if chk==0 then return eg:IsContains(c) and c:GetFlagEffectLabel(m) and c:GetFlagEffectLabel(m)==cid end
@@ -216,7 +216,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=te:GetHandler()
 	Duel.ChangePosition(tc,POS_FACEUP)
 	tc:SetStatus(STATUS_EFFECT_ENABLED,false)
-	te:SetType(26)
+	if tc:IsType(TYPE_COUNTER) then te:SetType(26) else te:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_ACTIVATE) end
 	tc:CreateEffectRelation(te)
 	local c=e:GetHandler()
 	local ev0=Duel.GetCurrentChain()+1
@@ -232,13 +232,18 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_CHAIN_NEGATED)
 	Duel.RegisterEffect(e2,tp)
+	local e3=e1:Clone()
+	e3:SetCode(EVENT_CHAIN_ACTIVATING)
+	e3:SetCondition(aux.TRUE)
+	e3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) te:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_ACTIVATE) end)
+	Duel.RegisterEffect(e3,tp)
 	e:Reset()
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	re:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_ACTIVATE)
+	--re:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_ACTIVATE)
 	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
-		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+		--rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 		local _NegateActivation=Duel.NegateActivation
 		Duel.NegateActivation=aux.TRUE
 		local ev0=ev

@@ -243,7 +243,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetCountLimit(1)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
 	e1:SetOperation(cm.rsop)
@@ -266,12 +266,18 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 		rc:CancelToGrave(false)
+		local e1=Effect.CreateEffect(rc)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_TO_DECK)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		rc:RegisterEffect(e1)
 	end
 	re:Reset()
 end

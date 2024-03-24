@@ -115,7 +115,7 @@ function c88100313.drop(e,tp,eg,ep,ev,re,r,rp)
 			local ct=Duel.GetFieldGroupCount(p,LOCATION_MZONE,0)
 			if ct>0 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-				local g=Duel.GetFieldGroup(p,LOCATION_HAND,0):Select(tp,ct,ct,nil)
+				local g=Duel.GetFieldGroup(p,LOCATION_HAND,0):Select(p,ct,ct,nil)
 				if g:GetCount()>0 then
 					if bk then
 						bk=false

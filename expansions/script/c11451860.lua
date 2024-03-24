@@ -100,6 +100,7 @@ function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_ACTIVATING)
+	e1:SetCountLimit(1)
 	--e1:SetCondition(function() return Duel.GetCurrentChain()==1 end)
 	e1:SetOperation(function(e) Duel.RaiseEvent(eg,EVENT_CUSTOM+11451848,re,r,rp,ep,ev) end)
 	e1:SetReset(RESET_CHAIN)
@@ -136,12 +137,13 @@ function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectEffectYesNo(tp,c) then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.SSet(tp,c,tp,true)
-		c:RegisterFlagEffect(m-11,RESET_CHAIN,0,1)
+		--c:RegisterFlagEffect(m-11,RESET_CHAIN,0,1)
 		cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 end
+	e:GetHandler():SetStatus(STATUS_EFFECT_ENABLED,true)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,m)>0 then return end
@@ -162,7 +164,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			local e3=Effect.CreateEffect(c)
 			e3:SetDescription(aux.Stringid(m,i))
 			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-			e3:SetCode(EVENT_MOVE)
+			e3:SetCode(EVENT_CUSTOM+11451848)
 			e3:SetLabel(i)
 			e3:SetCountLimit(1)
 			e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
@@ -175,13 +177,50 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			e4:SetCode(EVENT_CUSTOM+11451848)
 			e4:SetCondition(cm.thcon3)
 			Duel.RegisterEffect(e4,tp)
+			local e5=Effect.CreateEffect(c)
+			e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e5:SetCode(EVENT_CUSTOM+11451848)
+			e5:SetLabel(i)
+			e5:SetCondition(cm.thcon2)
+			e5:SetOperation(cm.delayop)
+			--Duel.RegisterEffect(e5,tp)
 			e3:SetLabelObject(e4)
 			e4:SetLabelObject(e3)
 		end
 	end
 end
+function cm.delayop(e,tp,eg,ep,ev,re,r,rp)
+	local ge1=Effect.CreateEffect(e:GetHandler())
+	ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	ge1:SetCode(EVENT_CHAIN_SOLVED)
+	ge1:SetCondition(function() return Duel.GetCurrentChain()==1 end)
+	ge1:SetOperation(cm.MergedDelayEventCheck(e,tp,eg,ep,ev,re,r,rp,e:GetLabel()))
+	ge1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(ge1,0)
+	local ge2=ge1:Clone()
+	ge2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(ge2,0)
+	local ge3=Effect.CreateEffect(e:GetHandler())
+	ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	ge3:SetCode(EVENT_CHAIN_END)
+	ge3:SetOperation(cm.MergedDelayEventCheck2(e,tp,eg,ep,ev,re,r,rp,e:GetLabel()))
+	Duel.RegisterEffect(ge3,0)
+end
+function cm.MergedDelayEventCheck(e,tp,eg,ep,ev,re,r,rp,i)
+	return function()
+				Duel.RaiseEvent(eg,EVENT_CUSTOM+11451849,re,i,tp,tp,ev)
+			end
+end
+function cm.MergedDelayEventCheck2(e,tp,eg,ep,ev,re,r,rp,i)
+	return function()
+				Duel.RaiseEvent(eg,EVENT_CUSTOM+11451849,re,i,tp,tp,ev)
+			end
+end
+function cm.thcon4(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetLabel()==r and tp==rp
+end
 function cm.clfilter(c,tp,i)
-	return aux.GetColumn(c,tp)==i and not c:IsStatus(STATUS_SUMMONING) and c:GetFlagEffect(m-11)==0
+	return aux.GetColumn(c,tp)==i and not c:IsStatus(STATUS_SUMMONING) --and c:GetFlagEffect(m-11)==0
 end
 function cm.clfilter2(c,tp,i)
 	return aux.GetColumn(c,tp)==i

@@ -67,18 +67,21 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)  
-	local c=e:GetHandler()
+  local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and tc:IsFaceup()  and tc:IsRelateToEffect(e) then
-		if not Duel.Equip(tp,c,tc) then return end
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or tc:IsFacedown() or not tc:IsRelateToEffect(e) then
+		Duel.SendtoGrave(c,REASON_EFFECT)
+		return
+	end
+	Duel.Equip(tp,c,tc) 
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_SINGLE)
 		e3:SetCode(EFFECT_EQUIP_LIMIT)
 		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e3:SetValue(1)
 		c:RegisterEffect(e3)
-	end
+	
 end
 function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetEquipTarget()

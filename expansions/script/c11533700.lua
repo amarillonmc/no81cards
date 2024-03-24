@@ -2,12 +2,12 @@
 function c11533700.initial_effect(c)
 	c:EnableReviveLimit()
 	--cannot special summon
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetValue(aux.ritlimit)
-	c:RegisterEffect(e1) 
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(aux.ritlimit)
+	c:RegisterEffect(e0) 
 	--rl rm td 
 	local e1=Effect.CreateEffect(c) 
 	e1:SetCategory(CATEGORY_RELEASE+CATEGORY_REMOVE+CATEGORY_TODECK+CATEGORY_DRAW) 
@@ -69,16 +69,9 @@ end
 function c11533700.rrfil2(c)
 	return c:IsSetCard(0xb4) and c:IsAbleToRemove()
 end 
-function c11533700.rrfil(c) 
-	if not c:IsSetCard(0xb4) then return false end  
-	if c:IsLocation(LOCATION_HAND) then 
-	return c:IsReleasable() or c:IsAbleToGrave()  
-	elseif c:IsLocation(LOCATION_GRAVE) then 
-	return c:IsAbleToRemove() and not c:IsCode(11533700)  
-	else return false end 
-end 
 function c11533700.rrttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) and Duel.IsPlayerCanDraw(tp,2)
+
 	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,0,LOCATION_GRAVE,1,e:GetHandler()) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,nil) and Duel.IsPlayerCanDraw(tp,1)
 	if chk==0 then return b1 or b2 end 
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,LOCATION_GRAVE+LOCATION_REMOVED) 

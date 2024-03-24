@@ -79,6 +79,7 @@ function c88100305.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.SelectTarget(tp,c88100305.spfilter,tp,0,LOCATION_GRAVE,1,1,nil,e,tp)
 end
 function c88100305.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		if tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and (not tc:IsAbleToHand(tp) or not Duel.SelectYesNo(tp,aux.Stringid(88100305,3))) then

@@ -28,13 +28,13 @@ function c11533701.initial_effect(c)
 	e2:SetCondition(c11533701.rmcon)
 	e2:SetTarget(c11533701.rmtg) 
 	e2:SetOperation(c11533701.rmop) 
-	c:RegisterEffect(e2) 
+	c:RegisterEffect(e2)
 	--apply effect
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_TODECK)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_REMOVE)
-	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e4:SetProperty( EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e4:SetCountLimit(1,31533701)  
 	e4:SetTarget(c11533701.efftg)
 	e4:SetOperation(c11533701.effop)
@@ -51,6 +51,14 @@ function c11533701.initial_effect(c)
 	--e3:SetTarget(c11533701.spdtg) 
 	--e3:SetOperation(c11533701.spdop) 
 	--c:RegisterEffect(e3) 
+	--adjust
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e0:SetCode(EVENT_ADJUST)
+	e0:SetRange(0xff)
+	e0:SetOperation(c11533701.adjustop)
+	c:RegisterEffect(e0)
 end
 Nekroz_discard_effect={}
 Nekroz_discard_effect_card={}
@@ -227,6 +235,40 @@ function c11533701.spdop(e,tp,eg,ep,ev,re,r,rp)
 		end 
 	end  
 end 
+function c11533701.filter2(c)
+	return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) 
+end
+function c11533701.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	--
+	if not c11533701.globle_check then
+		c11533701.globle_check=true
+		local g=Duel.GetMatchingGroup(c11533701.filter2,0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_HAND,nil)
+		cregister=Card.RegisterEffect
+		cisdiscardable=Card.IsDiscardable
+		table_effect={}
+		Card.IsDiscardable=function(card,reason)
+			Nekroz_discard_effect_check=true
+			return true
+		end
+		Card.RegisterEffect=function(card,effect,flag)
+			if effect and effect:GetCost() then
+				local cost=effect:GetCost()
+				Nekroz_discard_effect_check=false
+				local r=cost(e,tp,eg,ep,ev,re,r,rp,0)
+				if Nekroz_discard_effect_check then
+					Nekroz_discard_effect[card:GetOriginalCode()]=effect:Clone()
+				end
+			end
+			return 
+		end
+		for tc in aux.Next(g) do
+			Duel.CreateToken(0,tc:GetOriginalCode())
+		end
+		Card.RegisterEffect=cregister
+		Card.IsDiscardable=cisdiscardable
+	end
+	e:Reset()
+end
 
 
 function c11533701.filter(c,tp,e,tp,eg,ep,ev,re,r,rp,chk,chkc)

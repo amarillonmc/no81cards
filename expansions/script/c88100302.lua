@@ -83,7 +83,7 @@ function c88100302.thcon2(e,tp,eg,ep,ev,re,r,rp)
 		and c:IsPreviousLocation(LOCATION_OVERLAY)
 end
 function c88100302.filter(c)
-	return c:IsCode(24094653) and c:IsSetCard(0x5590) and c:IsAbleToHand()
+	return c:IsSetCard(0x5590) and c:IsAbleToHand()
 end
 function c88100302.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
