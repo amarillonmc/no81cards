@@ -136,12 +136,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if lab>0 then
 		--adjust
 		local e1=Effect.CreateEffect(e:GetHandler())
-		local eid=e1:GetFieldID()
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_ADJUST)
-		e1:SetLabel(lab,eid)
 		e1:SetOperation(cm.adjustop)
 		Duel.RegisterEffect(e1,tp)
+		local eid=e1:GetFieldID()
+		--Debug.Message(eid)
+		e1:SetLabel(lab,eid)
 		Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,lab))
 		Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,lab))
 	end
@@ -151,7 +152,7 @@ function cm.nfilter(c,eid)
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local lab,eid=e:GetLabel()
-	if lab==100 then e:Reset() return end
+	if lab==100 then return end
 	local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,eid)
 	if g and #g>0 then
 		for tc in aux.Next(g) do
@@ -197,7 +198,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetCountLimit(1)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
 	e1:SetOperation(cm.rsop)
@@ -209,7 +210,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then

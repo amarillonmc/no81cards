@@ -32,14 +32,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(sg,REASON_RULE)
 	else
 		local e1=Effect.CreateEffect(e:GetHandler())
-		local eid=e1:GetFieldID()
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
 		e1:SetTargetRange(0,1)
-		e1:SetValue(function(e,re,tp) return re:GetHandler():GetFlagEffect(m)==0 or re:GetHandler():GetFlagEffectLabel(m)==eid end)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
+		local eid=e1:GetFieldID()
+		e1:SetValue(function(e,re,tp) return re:GetHandler():GetFlagEffect(m)==0 or re:GetHandler():GetFlagEffectLabel(m)==eid end)
 		for tc in aux.Next(sg) do
 			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,2))
 		end

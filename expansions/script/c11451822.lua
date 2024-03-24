@@ -43,12 +43,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetOperation(cm.spop)
 	Duel.RegisterEffect(e2,tp)
 	local e1=Effect.CreateEffect(c)
-	local eid=e1:GetFieldID()
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)
 	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e1:SetLabel(eid)
 	e1:SetLabelObject(e2)
+	Duel.RegisterEffect(e1,tp)
+	local eid=e1:GetFieldID()
+	e1:SetLabel(eid)
 	e1:SetCondition(function(e)
 						local eid=e:GetLabel()
 						local sg=Duel.GetMatchingGroup(cm.cfilter2,0,LOCATION_MZONE,LOCATION_MZONE,nil,eid)
@@ -80,7 +81,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(tg) do
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,0))
 	end
-	Duel.RegisterEffect(e1,tp)
 end
 function cm.cfilter2(c,eid)
 	return c:IsFaceup() and c:GetFlagEffect(m)~=0 and c:GetFlagEffectLabel(m)==eid
