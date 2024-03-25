@@ -163,7 +163,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e8,tp)
 end
 function cm.lockcon(e)
-	return Duel.GetCurrentPhase()~=PHASE_MAIN1 
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 
 end
 function cm.fuslimit(e,c,sumtype)
 	return sumtype==SUMMON_TYPE_FUSION

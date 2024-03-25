@@ -110,7 +110,7 @@ function c28381214.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Damage(1-tp,500,REASON_EFFECT,true)
 		Duel.RDComplete()
 	elseif sel==2 then
-		if not Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then return end
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local g=Duel.SelectMatchingCard(tp,c28381214.hkfilter,tp,LOCATION_HAND,0,2,2,nil)
 		Duel.BreakEffect()

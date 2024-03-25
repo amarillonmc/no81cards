@@ -41,25 +41,23 @@ end
 function cm.lvplus(c)
 	if c:IsType(TYPE_NORMAL) then return c:GetLevel()-3 else return c:GetLevel() end
 end
-function cm.fselect(g,lv,tp)
-	return g:GetSum(Card.GetLevel)<=lv and aux.dncheck(g)
+function cm.fselect(g,lv)
+	return g:GetSum(Card.GetLevel)<=lv
 end
 function cm.hspcheck(g,lv,tp)
-	Duel.SetSelectedCard(g)
-	return g:CheckSubGroup(cm.fselect,1,#g,lv,tp)
+	return g:GetSum(Card.GetLevel)<=lv
 end
-function cm.hspgcheck(g,c,mg,f,min,max,ext_params)
-	local lv,tp=table.unpack(ext_params)
-	if g:GetSum(cm.lvplus)<=lv then return true end
-	Duel.SetSelectedCard(g)
-	return g:CheckSubGroup(cm.fselect,1,#g,lv,tp)
+function cm.hspgcheck(lv)
+	return  function(g)
+				return g:GetSum(cm.lvplus)<=lv and aux.dncheck(g)
+			end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local op,ct,tc=0,0,e:GetLabelObject()
 	local res=false
 	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_GRAVE,0,nil)
 	if tc:IsRelateToEffect(e) then
-		aux.GCheckAdditional=cm.hspgcheck
+		aux.GCheckAdditional=cm.hspgcheck(cm.lvplus(tc))
 		local hastur=g:CheckSubGroup(cm.hspcheck,1,3,cm.lvplus(tc),tp)
 		aux.GCheckAdditional=nil
 		if hastur then res=true end
@@ -79,8 +77,8 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.BreakEffect()
 	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_GRAVE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	aux.GCheckAdditional=cm.hspgcheck
-	local sg=g:SelectSubGroup(tp,cm.hspcheck,false,1,3,tc:GetLevel(),tp)
+	aux.GCheckAdditional=cm.hspgcheck(tc:GetLevel())
+	local sg=g:SelectSubGroup(tp,cm.hspcheck,false,1,3,tc:GetLevel())
 	aux.GCheckAdditional=nil
 	if #sg>0 and Duel.SendtoHand(sg,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,sg)

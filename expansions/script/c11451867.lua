@@ -100,7 +100,7 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 	Duel.Hint(HINT_CARD,0,m)
 	local dr=Duel.IsPlayerCanDraw(tp,1)
-	local sp=c:GetFlagEffect(m)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	local sp=c:GetFlagEffect(m)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	if not dr and not sp then return end
 	local op=aux.SelectFromOptions(tp,{dr,aux.Stringid(m,5)},{sp,aux.Stringid(m,6)})
 	if op==1 then

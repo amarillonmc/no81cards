@@ -1,4 +1,5 @@
 function Auxiliary.PreloadUds()
+	PreloadUds_Done=true
 	function require(str)
 		require_list=require_list or {}
 		if not require_list[str] then
@@ -56,6 +57,12 @@ function Auxiliary.PreloadUds()
 	end
 	if not Auxiliary.GetMustMaterialGroup then
 		Auxiliary.GetMustMaterialGroup=Duel.GetMustMaterial
+	end
+	local _SetRange=Effect.SetRange
+	function Effect.SetRange(e,r,...)
+		table_range=table_range or {}
+		table_range[e]=r
+		return _SetRange(e,r,...)
 	end
 	EFFECT_FLAG_CANNOT_NEGATE=EFFECT_FLAG_CANNOT_NEGATE or 0x200
 	--require("script/procedure.lua")

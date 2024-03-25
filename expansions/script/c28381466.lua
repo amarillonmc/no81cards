@@ -119,7 +119,7 @@ function c28381466.regop(e,tp,eg,ep,ev,re,r,rp)
 			ge2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 			ge2:SetRange(LOCATION_MZONE)
 			ge2:SetTargetRange(LOCATION_MZONE,0)
-			ge2:SetTarget(function(e,c,tp,r)return c:GetControl()==tp and r==REASON_EFFECT and c:IsSetCard(0x283) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup()end)
+			ge2:SetTarget(c28381466.indtg)
 			ge2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			c:RegisterEffect(ge2)
 		end
@@ -204,6 +204,9 @@ function c28381466.regop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.AdjustInstantly(c)
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28381466,5))
 	end
+end
+function c28381466.indtg(e,c,r,tp)
+	return c:IsSetCard(0x283) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and r==REASON_EFFECT and c:GetControl()==tp
 end
 function c28381466.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)

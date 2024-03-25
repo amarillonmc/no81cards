@@ -36,12 +36,6 @@ function Card.IsCanBeSynchroMaterial(c,...)
 	end
 	return _IsCanBeSynchroMaterial(c,...)
 end
-function cm.nfilter(c,g)
-	return g:FilterCount(cm.sfilter,nil,c)<3
-end
-function cm.sfilter(c,sc)
-	return c:GetOriginalCode()==sc:GetOriginalCode()
-end
 local KOISHI_CHECK=false
 if Duel.Exile then KOISHI_CHECK=true end
 local A=1103515245
@@ -62,6 +56,14 @@ function cm.roll(min,max)
 	return cm.r
 end
 --if Duel.GetRandomNumber then cm.roll=Duel.GetRandomNumber end
+if not Effect.GetRange then
+	function Effect.GetRange(e)
+		if table_range and table_range[e] then
+			return table_range[e]
+		end
+		return 0
+	end
+end
 if not require and loadfile then
 	function require(str)
 		require_list=require_list or {}
@@ -174,6 +176,6 @@ end
 if not apricot_nightfall then
 	apricot_nightfall=true
 	pcall(dofile,"expansions/script/special.lua")
-	if Auxiliary.PreloadUds then Auxiliary.PreloadUds() end
+	if Auxiliary.PreloadUds and not PreloadUds_Done then Auxiliary.PreloadUds() end
 	--Debug.Message("Protocol Request Complete. 杏花宵®漏洞解决方案已上线。")
 end
