@@ -32,6 +32,7 @@ function cm.spfilter(c,ft)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
+	if c:IsHasEffect(EFFECT_NECRO_VALLEY) then return false end
 	local tp=c:GetControler()
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	return ft>-1 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_MZONE,0,1,nil,ft) and Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)==0

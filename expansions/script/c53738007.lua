@@ -41,6 +41,7 @@ function cm.rfilter(c,tp)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
+	if c:IsHasEffect(EFFECT_NECRO_VALLEY) then return false end
 	if c:GetFlagEffect(53738000)==0 and c:IsLocation(LOCATION_GRAVE) then return false end
 	local tp=c:GetControler()
 	local rg=Duel.GetReleaseGroup(tp,false,REASON_SPSUMMON):Filter(cm.rfilter,nil,tp)

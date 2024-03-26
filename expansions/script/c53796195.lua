@@ -107,23 +107,31 @@ function s.initial_effect(c)
 		end
 		local f8=Duel.IsPlayerCanSummon
 		Duel.IsPlayerCanSummon=function(tp,type,sc)
-			local ct=sc:GetFlagEffectLabel(id)
-			if ct then return false else return f8(tp,type,sc) end
+			if type then
+				local ct=sc:GetFlagEffectLabel(id)
+				if ct then return false else return f8(tp,type,sc) end
+			else return f8(tp) end
 		end
 		local f9=Duel.IsPlayerCanMSet
 		Duel.IsPlayerCanMSet=function(tp,type,sc)
-			local ct=sc:GetFlagEffectLabel(id)
-			if ct then return false else return f9(tp,type,sc) end
+			if type then
+				local ct=sc:GetFlagEffectLabel(id)
+				if ct then return false else return f9(tp,type,sc) end
+			else return f9(tp) end
 		end
 		local f10=Duel.IsPlayerCanSSet
 		Duel.IsPlayerCanSSet=function(tp,sc)
-			local ct=sc:GetFlagEffectLabel(id)
-			if ct then return false else return f10(tp,sc) end
+			if sc then
+				local ct=sc:GetFlagEffectLabel(id)
+				if ct then return false else return f10(tp,sc) end
+			else return f10(tp) end
 		end
 		local f11=Duel.IsPlayerCanSpecialSummon
 		Duel.IsPlayerCanSpecialSummon=function(p,type,pos,tp,sc)
-			local ct=sc:GetFlagEffectLabel(id)
-			if ct then return false else return f11(p,type,pos,tp,sc) end
+			if type then
+				local ct=sc:GetFlagEffectLabel(id)
+				if ct then return false else return f11(p,type,pos,tp,sc) end
+			else return f11(p) end
 		end
 		local funcs={}
 		local fnames={"SendtoGrave","Destroy","SendtoHand","SendtoExtraP","SendtoDeck","Overlay","SpecialSummon","SpecialSummonStep","MoveToField","ReturnToField","Summon","MSet","SSet","Equip"}

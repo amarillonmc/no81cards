@@ -3,7 +3,7 @@ function c11561008.initial_effect(c)
 	--cancan 
 	local e1=Effect.CreateEffect(c) 
 	e1:SetDescription(aux.Stringid(11561008,1))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_GRAVE_SPSUMMON) 
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_GRAVE_SPSUMMON) 
 	e1:SetType(EFFECT_TYPE_IGNITION) 
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED) 
 	e1:SetCountLimit(1,11561008) 
@@ -76,8 +76,8 @@ function c11561008.canop(e,tp,eg,ep,ev,re,r,rp)
 	local b1=pg and pg:GetClassCount(Card.GetAttribute)==pg:GetCount() 
 	local b2=pg and pg:GetClassCount(Card.GetLevel)==1  
 	if pg and x>0 then 
-		if b1 and Duel.IsExistingMatchingCard(c11561008.spfil,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp,pg) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
-			local sg=Duel.SelectMatchingCard(tp,c11561008.spfil,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp,pg) 
+		if b1 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c11561008.spfil),tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp,pg) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
+			local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11561008.spfil),tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp,pg) 
 			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)   
 		end  
 		if b2 and c:IsRelateToEffect(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
