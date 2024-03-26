@@ -16,7 +16,7 @@ function c60152905.initial_effect(c)
 	e1:SetOperation(c60152905.e1op)
 	c:RegisterEffect(e1)
 
-	Duel.AddCustomActivityCounter(60152905,ACTIVITY_CHAIN,c60152905.chainfilter)
+	Duel.AddCustomActivityCounter(60152905,ACTIVITY_CHAIN,aux.FALSE)
 	
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(60152905,1))
@@ -41,10 +41,6 @@ function c60152905.initial_effect(c)
 	e3:SetTarget(c60152905.e3tg)
 	e3:SetOperation(c60152905.e3op)
 	c:RegisterEffect(e3)
-end
-function c60152905.chainfilter(re,tp,cid)
-	local tp=re:GetControler()
-	return not (re:IsControler(1-tp))
 end
 function c60152905.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
@@ -108,7 +104,7 @@ function c60152905.e1op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60152905.e2con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(60152905,tp,ACTIVITY_CHAIN)>0
+	return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0
 end
 function c60152905.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL

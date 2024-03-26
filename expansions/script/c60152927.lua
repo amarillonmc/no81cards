@@ -82,7 +82,7 @@ function c60152927.e5tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local mg=Duel.GetRitualMaterial(tp)
 		local sg=nil
-		if Duel.IsExistingMatchingCard(c60152927.filter2,c:GetControler(),0,LOCATION_MZONE,1,nil) then
+		if Duel.IsExistingMatchingCard(c60152927.filter2,tp,0,LOCATION_MZONE,1,nil) then
 			sg=Duel.GetMatchingGroup(c60152927.exfilter0,tp,LOCATION_DECK,0,nil)
 		end
 		return Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,c60152927.filter,e,tp,mg,sg,Card.GetLevel,"Greater")
@@ -93,7 +93,7 @@ function c60152927.e5op(e,tp,eg,ep,ev,re,r,rp)
 	::cancel::
 	local mg=Duel.GetRitualMaterial(tp)
 	local sg=nil
-	if Duel.IsExistingMatchingCard(c60152927.filter2,c:GetControler(),0,LOCATION_MZONE,1,nil) then
+	if Duel.IsExistingMatchingCard(c60152927.filter2,tp,0,LOCATION_MZONE,1,nil) then
 		sg=Duel.GetMatchingGroup(c60152927.exfilter0,tp,LOCATION_DECK,0,nil)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

@@ -77,18 +77,7 @@ function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local lv=lc:GetLevel()
 	return c:IsLevelAbove(lv) and Duel.GetFlagEffect(tp,130006118)~=0
 end
-function s.lvfilter(e,c)
-	local p=c:GetControler()
-	local ccode=c:GetCode()
-	local ct=0
-	for _,fcode in ipairs(s[p]) do
-		if fcode==ccode then
-			ct=ct+1
-		end
-	end
-	return ct>0
-end
-function s.lvval(e,c)
+function s.val(e,c)
 	local p=c:GetControler()
 	local ccode=c:GetCode()
 	local ct=0
@@ -99,16 +88,14 @@ function s.lvval(e,c)
 	end
 	return ct*2
 end
+function s.lvfilter(e,c)
+	return s.val(e,c)>0
+end
+function s.lvval(e,c)
+	return s.val(e,c)*2
+end
 function s.atkval(e,c)
-	local p=c:GetControler()
-	local ccode=c:GetCode()
-	local ct=0
-	for _,fcode in ipairs(s[p]) do
-		if fcode==ccode then
-			ct=ct+1
-		end
-	end
-	return ct*500
+	return s.val(e,c)*500
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(eg) do
@@ -204,20 +191,20 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sel=opval[op]
 	if sel==1 then
 		Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
-		sg=Duel.GetMatchingGroup(s.costfilter1,tp,LOCATION_HAND,0,c)
 	elseif sel==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local rc=rg:Select(tp,1,1,nil)
 		Duel.Remove(rc,POS_FACEUP,REASON_COST)
-		sg=Duel.GetMatchingGroup(s.costfilter1,tp,LOCATION_HAND,0,nil)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=sg:Select(tp,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.costfilter1,tp,LOCATION_HAND,0,1,1,nil)
 	local tc=g:GetFirst()
-	local code=tc:GetCode()
-	e:SetLabel(code)
-	Duel.ConfirmCards(1-tp,g)
-	Duel.ShuffleHand(tp)
+	if tc then
+		local code=tc:GetCode()
+		e:SetLabel(code)
+		Duel.ConfirmCards(1-tp,g)
+		Duel.ShuffleHand(tp)
+	end
 end
 function s.filter(c)
 	return c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1)

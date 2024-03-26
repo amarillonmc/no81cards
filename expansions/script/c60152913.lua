@@ -291,7 +291,7 @@ function c60152913.e22904op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60152913.e22905con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(60152905,tp,ACTIVITY_CHAIN)>0
+	return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0
 end
 function c60152913.e22905tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL

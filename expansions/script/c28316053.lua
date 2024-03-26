@@ -1,8 +1,7 @@
 --闪耀的支援者 七草叶月
 function c28316053.initial_effect(c)
-	--atkup
+	--support
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(28316053,0))
 	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -12,27 +11,8 @@ function c28316053.initial_effect(c)
 	e1:SetCondition(aux.dscon)
 	e1:SetCost(c28316053.cost)
 	e1:SetTarget(c28316053.sutg)
-	e1:SetOperation(c28316053.atkop)
+	e1:SetOperation(c28316053.suop)
 	c:RegisterEffect(e1)
-	--indes
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(28316053,1))
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCost(c28316053.cost)
-	e2:SetTarget(c28316053.sutg)
-	e2:SetOperation(c28316053.indop)
-	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetDescription(aux.Stringid(28316053,2))
-	e3:SetOperation(c28316053.nocop)
-	c:RegisterEffect(e3)
-	local e4=e2:Clone()
-	e4:SetDescription(aux.Stringid(28316053,3))
-	e4:SetOperation(c28316053.datop)
-	c:RegisterEffect(e4)
 	--destroy replace
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -56,10 +36,26 @@ function c28316053.sutg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c28316053.cfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c28316053.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	local phase=Duel.GetCurrentPhase()
+	local ops,opval={},{}
+	ops[1]=aux.Stringid(28316053,0)
+	opval[1]=0
+	if phase~=PHASE_DAMAGE then
+		ops[2]=aux.Stringid(28316053,1)
+		opval[2]=1
+		ops[3]=aux.Stringid(28316053,2)
+		opval[3]=2
+		ops[4]=aux.Stringid(28316053,3)
+		opval[4]=3
+	end
+	local op=Duel.SelectOption(tp,table.unpack(ops))+1
+	local sel=opval[op]
+	e:SetLabel(sel)
 end
-function c28316053.atkop(e,tp,eg,ep,ev,re,r,rp)
+function c28316053.suop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
+	local sel=e:GetLabel()
+	if tc:IsFaceup() and tc:IsRelateToEffect(e) and sel==0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
@@ -69,37 +65,35 @@ function c28316053.atkop(e,tp,eg,ep,ev,re,r,rp)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_UPDATE_DEFENSE)
 		tc:RegisterEffect(e2)
-	end
-end
-function c28316053.indop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(1)
-		tc:RegisterEffect(e1)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-		tc:RegisterEffect(e2)
-	end
-end
-function c28316053.nocop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_CANNOT_INACTIVATE)
-		e1:SetLabel(1)
-		e1:SetValue(c28316053.effectfilter)
-		Duel.RegisterEffect(e1,tp)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_CANNOT_DISEFFECT)
-		e2:SetLabel(2)
-		Duel.RegisterEffect(e2,tp)
-		e1:SetLabelObject(e2)
-		e2:SetLabelObject(tc)
+	elseif tc:IsFaceup() and tc:IsRelateToEffect(e) and sel==1 then
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e3:SetValue(1)
+		tc:RegisterEffect(e3)
+		local e4=e3:Clone()
+		e4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+		tc:RegisterEffect(e4)
+	elseif tc:IsFaceup() and tc:IsRelateToEffect(e) and sel==2 then
+		local e5=Effect.CreateEffect(e:GetHandler())
+		e5:SetType(EFFECT_TYPE_FIELD)
+		e5:SetCode(EFFECT_CANNOT_INACTIVATE)
+		e5:SetLabel(1)
+		e5:SetValue(c28316053.effectfilter)
+		Duel.RegisterEffect(e5,tp)
+		local e6=e5:Clone()
+		e6:SetCode(EFFECT_CANNOT_DISEFFECT)
+		e6:SetLabel(2)
+		Duel.RegisterEffect(e6,tp)
+		e5:SetLabelObject(e6)
+		e6:SetLabelObject(tc)
+	elseif tc:IsFaceup() and tc:IsRelateToEffect(e) and sel==3 then
+		local e7=Effect.CreateEffect(e:GetHandler())
+		e7:SetType(EFFECT_TYPE_SINGLE)
+		e7:SetCode(EFFECT_DIRECT_ATTACK)
+		e7:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e7)
 	end
 end
 function c28316053.effectfilter(e,ct)
@@ -112,16 +106,6 @@ function c28316053.effectfilter(e,ct)
 		tc=e:GetLabelObject()
 	end
 	return tc and tc==te:GetHandler()
-end
-function c28316053.datop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DIRECT_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-	end
 end
 function c28316053.repfilter(c,tp)
 	return c:IsFaceup() and c:IsSetCard(0x283) and c:IsLocation(LOCATION_MZONE) and c:IsControler(tp) and c:IsReason(REASON_EFFECT) and not c:IsReason(REASON_REPLACE)

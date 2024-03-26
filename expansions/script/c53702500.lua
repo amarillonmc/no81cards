@@ -5454,7 +5454,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			local xe={rc:IsHasEffect(53765099)}
 			local b=false
 			local seq,typ=0,0
-			for _,v in pairs(xe) do if v:GetLabelObject() and rc==v:GetLabelObject():GetHandler() then b=true seq,typ=v:GetLabel() end end
+			for _,v in pairs(xe) do if v:GetLabelObject() and aux.GetValueType(v:GetLabelObject())=="Effect" and rc==v:GetLabelObject():GetHandler() then b=true seq,typ=v:GetLabel() end end
 			if b and typ and typ~=0 and rc:IsHasEffect(53765098) then
 				local e1=Effect.CreateEffect(rc)
 				e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -7447,4 +7447,75 @@ function cm.bltmadjustop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmCards(1-tp,tc)
 	Duel.ShuffleHand(tp)
 --Duel.ConfirmCards(tp,Duel.GetFieldGroup(tp,LOCATION_DECK,0))
+end
+function cm.Intersection(table1, table2)
+	local commonElements = {}
+	local elementsInTable1 = {}
+	for _, value in ipairs(table1) do
+		elementsInTable1[value] = true
+	end
+	for _, value in ipairs(table2) do
+		if elementsInTable1[value] then
+			table.insert(commonElements, value)
+		end
+	end
+	return #commonElements > 0, commonElements
+end
+function cm.Merge(table1, table2)
+	for _, v in ipairs(table2) do
+		local isDuplicate = false
+		for _, val in ipairs(table1) do
+			if val == v then
+				isDuplicate = true
+				break
+			end
+		end
+		if not isDuplicate then
+			table.insert(table1, v)
+		end
+	end
+end
+function cm.Merged(array1, array2)
+	local merged = {}
+
+	-- 添加第一个数组的元素到 merged 中
+	for _, v in ipairs(array1) do
+		merged[v] = true
+	end
+
+	-- 添加第二个数组的元素到 merged 中
+	for _, v in ipairs(array2) do
+		merged[v] = true
+	end
+
+	-- 构建最终的结果数组
+	local result = {}
+	for k, _ in pairs(merged) do
+		table.insert(result, k)
+	end
+
+	return result
+end
+function cm.Remove(tbl,value)
+	for i=#tbl, 1, -1 do
+		if tbl[i] == value then
+			table.remove(tbl, i)
+		end
+	end
+	return tbl
+end
+function cm.AllExist(table1, table2)
+	for _, value in ipairs(table2) do
+		local found = false
+		for _, v in ipairs(table1) do
+			if v == value then
+				found = true
+				break
+			end
+		end
+		if not found then
+			return false
+		end
+	end
+	return true
 end
