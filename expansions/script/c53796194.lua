@@ -94,13 +94,13 @@ function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_EXTRA,0,1,nil)
 end
 function s.spcfilter(c,e,tp)
-	return c:IsFaceup() and c:IsAbleToExtraAsCost() and Duel.GetLocationCountFromEx(tp,tp,c,e:GetHandler()) and (aux.IsCodeListed(c,53796195) or c:IsType(TYPE_LINK))
+	return c:IsFaceup() and c:IsAbleToExtraAsCost() and Duel.GetLocationCountFromEx(tp,tp,c,e:GetHandler())>0 and (aux.IsCodeListed(c,53796195) or c:IsType(TYPE_LINK))
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.spcfilter,tp,LOCATION_MZONE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,s.spcfilter,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
-	Duel.SendtoDeck(g,nil,REASON_COST)
+	Duel.SendtoDeck(g,nil,0,REASON_COST)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
