@@ -46,6 +46,8 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m-1)==0
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m)==0
 	if chk==0 then return sa or sb end
+	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	if c:IsLocation(LOCATION_HAND) then
 		Duel.RegisterFlagEffect(tp,m-1,RESET_PHASE+PHASE_END,0,1)
 	elseif c:IsLocation(LOCATION_REMOVED) then
@@ -93,6 +95,8 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m-1)==0
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m)==0
 	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_REMOVED,0,1,c,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (sa or sb) end
+	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	if c:IsLocation(LOCATION_HAND) then
 		Duel.RegisterFlagEffect(tp,m-1,RESET_PHASE+PHASE_END,0,1)
 	elseif c:IsLocation(LOCATION_REMOVED) then

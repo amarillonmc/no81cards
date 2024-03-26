@@ -178,14 +178,34 @@ function cm.cpcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 		local e3=Effect.CreateEffect(e:GetHandler())
 		e3:SetType(EFFECT_TYPE_FIELD)
 		e3:SetCode(EFFECT_CHANGE_CODE)
-		e3:SetProperty(EFFECT_FLAG_OATH)
+		e3:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_REPEAT+EFFECT_FLAG_DELAY+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_OATH)
 		e3:SetTargetRange(0xff,0xff)
 		e3:SetTarget(function(e,c) return Duel.IsExistingMatchingCard(Card.IsOriginalCodeRule,0,LOCATION_GRAVE,LOCATION_GRAVE,1,c,table.unpack({c:GetOriginalCodeRule()})) end)
-		e3:SetValue(function(e,c) return c:GetOriginalCode()+0xffffff+c:GetFieldID() end)
+		e3:SetValue(function(e,c) return c:GetOriginalCode()+0x527+c:GetFieldID() end)
 		e3:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e3,tp)
 	end
 	Duel.RegisterFlagEffect(1,11451901,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+end
+function cm.nmfilter(c)
+	return c:GetFlagEffect(11451908)==0 and Duel.IsExistingMatchingCard(Card.IsOriginalCodeRule,0,LOCATION_GRAVE,LOCATION_GRAVE,1,c,table.unpack({c:GetOriginalCodeRule()}))
+end
+function cm.chop2(e,tp,eg,ep,ev,re,r,rp)
+	local nmg=Duel.GetMatchingGroup(cm.nmfilter,tp,0xff,0xff,nil)
+	if #nmg>0 then
+		for sc in aux.Next(nmg) do
+			sc:RegisterFlagEffect(11451908,0,0,0)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+			e1:SetCode(EFFECT_CHANGE_CODE)
+			e1:SetRange(0xff)
+			--e1:SetReset(RESET_PHASE+PHASE_END)
+			e1:SetCondition(function(e) local c=e:GetHandler() return Duel.GetFlagEffect(1,11451901)>0 and Duel.IsExistingMatchingCard(Card.IsOriginalCodeRule,0,LOCATION_GRAVE,LOCATION_GRAVE,1,c,table.unpack({c:GetOriginalCodeRule()})) end)
+			e1:SetValue(function(e) local c=e:GetHandler() return c:GetOriginalCode()+0xffffff+c:GetFieldID() end)
+			sc:RegisterEffect(e1,true)
+		end
+	end
 end
 function cm.actarget(e,te,tp)
 	e:SetLabelObject(te)
@@ -202,7 +222,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetCountLimit(1)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
 	e1:SetOperation(cm.rsop)
@@ -214,7 +234,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then

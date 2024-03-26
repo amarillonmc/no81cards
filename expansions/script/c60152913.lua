@@ -28,7 +28,103 @@ function c60152913.initial_effect(c)
 	e9:SetCondition(c60152913.e3con)
 	e9:SetOperation(c60152913.e3op)
 	c:RegisterEffect(e9)
+
+	if not c60152901.global_check then
+		c60152901.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_TO_HAND)
+		ge1:SetOperation(c60152901.regop)
+		Duel.RegisterEffect(ge1,0)
+	end
+	
+
+	if not c60152902.global_check then
+		c60152902.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SUMMON_SUCCESS)
+		ge1:SetOperation(c60152902.checkop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(ge2,0)
+		local ge3=ge1:Clone()
+		ge3:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
+		Duel.RegisterEffect(ge3,0)
+	end
+	
+
+	if not c60152903.global_check then
+		c60152903.global_check=true
+		local ge1=Effect.GlobalEffect()
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_BATTLED)
+		ge1:SetOperation(c60152903.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+	
+
+	if not c60152904.global_check then
+		c60152904.global_check=true
+		local ge1=Effect.GlobalEffect()
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_TO_GRAVE)
+		ge1:SetOperation(c60152904.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+	
+	Duel.AddCustomActivityCounter(60152905,ACTIVITY_CHAIN,aux.FALSE)
+	
 end
+
+function c60152901.regop(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(Card.IsPreviousLocation,nil,LOCATION_DECK)
+	local tc=g:GetFirst()
+	while tc do
+		if not (Duel.GetCurrentPhase()==PHASE_DRAW or Duel.GetCurrentPhase()==0) and Duel.GetFlagEffect(tc:GetControler(),60152901)==0 then
+			Duel.RegisterFlagEffect(tc:GetControler(),60152901,RESET_PHASE+PHASE_END,0,1)
+		end
+		if Duel.GetFlagEffect(0,60152901)>0 and Duel.GetFlagEffect(1,60152901)>0 then
+			break
+		end
+		tc=g:GetNext()
+	end
+end
+
+function c60152902.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		Duel.RegisterFlagEffect(tc:GetSummonPlayer(),60152902,RESET_PHASE+PHASE_END,0,1)
+		tc=eg:GetNext()
+	end
+end
+
+
+function c60152903.check(c)
+	return c 
+end
+function c60152903.checkop(e,tp,eg,ep,ev,re,r,rp)
+	if c60152903.check(Duel.GetAttacker()) and c60152903.check(Duel.GetAttackTarget()) then
+		Duel.RegisterFlagEffect(tp,60152903,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(1-tp,60152903,RESET_PHASE+PHASE_END,0,1)
+	end
+end
+
+function c60152904.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(Card.IsType,nil,TYPE_MONSTER)
+	local tc=g:GetFirst()
+	while tc do
+		if Duel.GetFlagEffect(tc:GetControler(),60152904)==0 then
+			Duel.RegisterFlagEffect(tc:GetControler(),60152904,RESET_PHASE+PHASE_END,0,1)
+		end
+		if Duel.GetFlagEffect(0,60152904)>0 and Duel.GetFlagEffect(1,60152904)>0 then
+			break
+		end
+		tc=g:GetNext()
+	end
+end
+
 function c60152913.e1tg(e,c)
 	return c:IsSetCard(0x3b29)
 end
@@ -183,7 +279,7 @@ function c60152913.e22902opf(c)
 end
 function c60152913.e22902tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return not Duel.GetFlagEffect(1-tp,60152902)==0 end
+	if chk==0 then return Duel.GetFlagEffect(1-tp,60152902)>0 end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
@@ -221,7 +317,7 @@ function c60152913.e22902op(e,tp,eg,ep,ev,re,r,rp)
 end
 function c60152913.e22903tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return not Duel.GetFlagEffect(tp,60152903)==0 and Duel.GetMatchingGroupCount(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,nil)>0 end
+	if chk==0 then return Duel.GetFlagEffect(tp,60152903)>0 and Duel.GetMatchingGroupCount(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,nil)>0 end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
@@ -303,7 +399,7 @@ function c60152913.e22905tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local dg=Group.CreateGroup()
 	for i=1,ev do
 		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-		if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(i) then
+		if tgp~=tp and Duel.IsChainNegatable(i) then
 			local tc=te:GetHandler()
 			ng:AddCard(tc)
 			if tc:IsOnField() and tc:IsRelateToEffect(te) and tc:IsAbleToDeck() then
@@ -324,7 +420,7 @@ function c60152913.e22905op(e,tp,eg,ep,ev,re,r,rp)
 		local dg=Group.CreateGroup()
 		for i=1,ev do
 			local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-			if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.NegateActivation(i) then
+			if tgp~=tp and Duel.NegateActivation(i) then
 				local tc=te:GetHandler()
 				if tc:IsRelateToEffect(e) and tc:IsRelateToEffect(te) and tc:IsAbleToDeck() then
 					dg:AddCard(tc)

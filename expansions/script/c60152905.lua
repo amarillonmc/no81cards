@@ -109,23 +109,20 @@ end
 function c60152905.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
 	if chk==0 then return true end
-	Duel.SetTargetPlayer(p)
-	Duel.SetTargetParam(1000)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
 	local ng=Group.CreateGroup()
 	local dg=Group.CreateGroup()
 	for i=1,ev do
 		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-		if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(i) then
+		if tgp~=tp and Duel.IsChainNegatable(i) then
 			local tc=te:GetHandler()
 			ng:AddCard(tc)
-			if tc:IsOnField() and tc:IsRelateToEffect(te) and tc:IsAbleToDeck() then
-				dg:AddCard(tc)
-			end
 		end
 	end
 	Duel.SetTargetCard(dg)
+	Duel.SetTargetPlayer(p)
+	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,ng,ng:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
 end
 function c60152905.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
@@ -137,7 +134,7 @@ function c60152905.e2op(e,tp,eg,ep,ev,re,r,rp)
 		local dg=Group.CreateGroup()
 		for i=1,ev do
 			local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-			if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.NegateActivation(i) then
+			if tgp~=tp and Duel.NegateActivation(i) then
 				local tc=te:GetHandler()
 				if tc:IsRelateToEffect(e) and tc:IsRelateToEffect(te) and tc:IsAbleToDeck() then
 					dg:AddCard(tc)
