@@ -54,14 +54,12 @@ function c71401019.filter2a(c,code)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsLevel(4) and not c:IsCode(code)
 end
 function c71401019.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	e:SetLabel(100)
 	return true
 end
 function c71401019.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then
-		if e:GetLabel()~=100 then return false end
-		e:SetLabel(0)
-		return Duel.IsPlayerCanAdditionalSummon(tp) and Duel.GetFlagEffect(tp,71401019)==0
+		return e:IsCostChecked() and Duel.IsPlayerCanAdditionalSummon(tp)
+			and Duel.GetFlagEffect(tp,71401019)==0
 			and Duel.IsExistingMatchingCard(c71401019.filterc2,tp,LOCATION_MZONE,0,1,nil,tp,e:GetHandler())
 			and Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0
 	end

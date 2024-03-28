@@ -68,7 +68,8 @@ function cm.cpfilter2(c,tp,tc)
 	return c:GetOriginalType()&TYPE_LINK==0 and c:GetPosition()~=tc:GetPosition() and Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,fg) and not fg:IsExists(function(c) return c:IsFaceup() and not c:IsCanTurnSet() end,1,nil)
 end
 function cm.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) and e:GetHandler():GetFlagEffect(m)==0 end
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
 	local tc=Duel.SelectMatchingCard(tp,cm.cpfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp):GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
@@ -78,8 +79,7 @@ function cm.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.ChangePosition(tc2,pos)
 end
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) and e:GetHandler():GetFlagEffect(m)==0 end
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function cm.smfilter(c)

@@ -147,7 +147,7 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 		opval[off-1]=2
 		off=off+1
 	end
-	if Duel.GetTurnPlayer()~=tp and aux.bpcon() then
+	if aux.bpcon() then
 		ops[off]=aux.Stringid(m,2)
 		opval[off-1]=3
 		off=off+1

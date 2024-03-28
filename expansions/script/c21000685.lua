@@ -9,7 +9,6 @@ function s.initial_effect(c)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,id)
-	e1:SetCost(s.thcost)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.prop)
 	c:RegisterEffect(e1)
@@ -29,10 +28,6 @@ function s.initial_effect(c)
 	e2:SetTarget(s.target2)
 	e2:SetOperation(s.prop2)
 	c:RegisterEffect(e2)
-	Duel.AddCustomActivityCounter(id,ACTIVITY_SPSUMMON,s.counterfilter)
-end
-function s.counterfilter(c)
-	return c:IsSetCard(0x605)
 end
 
 function s.filter(c,e,tp)
@@ -40,17 +35,6 @@ function s.filter(c,e,tp)
 end
 function s.filter111(c,e,tp)
 	return c:IsSetCard(0x603) and c:IsAbleToRemove() and c:IsType(TYPE_MONSTER)
-end
-function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_SPSUMMON)==0 end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(s.splimit)
-	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c)
 	return not c:IsSetCard(0x605)
@@ -103,7 +87,7 @@ end
 
 function s.cfilter(c,tp,rp)
 	local ph=Duel.GetCurrentPhase()
-	return c:IsPreviousPosition(POS_FACEUP) and c:IsSetCard(0x605) and ((c:IsReason(REASON_BATTLE)) or (rp==1-tp and c:IsReason(REASON_EFFECT))) and c:IsControler(tp)
+	return c:IsPreviousPosition(POS_FACEUP) and c:IsRace(RACE_PSYCHO) and c:IsLevelBelow(6) and ((c:IsReason(REASON_BATTLE)) or (rp==1-tp and c:IsReason(REASON_EFFECT))) and c:IsControler(tp)
 end
 function s.con2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter,1,nil,tp,rp) and not eg:IsContains(e:GetHandler())

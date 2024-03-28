@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_TO_HAND)
-	e1:SetCondition(cm.condition)
+	--e1:SetCondition(cm.condition)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -17,14 +17,35 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_TO_HAND)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCost(cm.cost)
+	c:RegisterEffect(e2)
 	local e5=e2:Clone()
 	e5:SetDescription(aux.Stringid(m,1))
 	e5:SetCode(EVENT_CUSTOM+11451902)
 	e5:SetCondition(aux.TRUE)
 	e5:SetCost(aux.TRUE)
-	e5:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk) Duel.RegisterFlagEffect(0,11451901,RESET_CHAIN,0,1) return false end)
+	e5:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
+						Duel.RegisterFlagEffect(0,11451901,RESET_CHAIN,0,1)
+						--e:GetLabelObject():SetLabel(0)
+						return false end)
 	c:RegisterEffect(e5)
-	c:RegisterEffect(e2)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e6:SetCode(EVENT_CUSTOM+11451902)
+	e6:SetOperation(function(e,tp,eg,ep,ev,re,r,rp,chk)
+						--local flag=Duel.RegisterFlagEffect(0,11451901,0,0,1)
+						e:SetLabel(100)
+						local lab=2
+						if (Duel.GetCurrentChain()==0 or (Duel.GetCurrentChain()==1 and (Duel.CheckEvent(EVENT_CHAIN_SOLVED) or Duel.CheckEvent(EVENT_CHAIN_NEGATED)))) then lab=1 end
+						if Duel.GetCurrentChain()~=0 then
+							local ge2=e:Clone()
+							ge2:SetCode(EVENT_ADJUST)
+							ge2:SetOperation(function() if Duel.GetCurrentChain()==0 then Duel.RaiseEvent(c,EVENT_CUSTOM+11451902,e,0,0,0,0) e:Reset() end end)
+							Duel.RegisterEffect(ge2,0)
+						end
+					end)
+	Duel.RegisterEffect(e6,0)
+	e2:SetLabelObject(e6)
+	e5:SetLabelObject(e6)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetCode(EFFECT_ACTIVATE_COST)
@@ -99,11 +120,12 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if chk==0 then
+		--if e:GetLabelObject():GetLabel()==100 then e:GetLabelObject():SetLabel(0) return true end
 		--local eset={e:GetHandler():GetActivateEffect()}
 		--Debug.Message(eset[3]:IsActivatable(tp,false,true))
 		--local se=e:GetHandler():CheckActivateEffect(true,true,true)
 		--Debug.Message(Duel.GetFlagEffect(0,11451901))
-		return Duel.GetFlagEffect(0,11451901)>0 and ft>0 and Duel.GetFlagEffect(tp,11451902)>0
+		return (Duel.GetFlagEffect(0,11451901)>0 or Duel.CheckEvent(EVENT_CUSTOM+11451902)) and ft>0 and Duel.GetFlagEffect(tp,11451902)>0
 	end
 	Duel.ResetFlagEffect(tp,11451902)
 	if Duel.GetFlagEffect(1,11451901)==0 then

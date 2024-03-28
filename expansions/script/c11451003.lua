@@ -88,7 +88,7 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetHandler():IsImmuneToEffect(e) then return end
-	local op=re:GetOperation()
+	local op=re:GetOperation() or aux.TRUE
 	local op2=function(e,...) e:SetOperation(op)  op(e,...) op(e,...) end
 	re:SetOperation(op2)
 	local e1=Effect.CreateEffect(e:GetHandler())

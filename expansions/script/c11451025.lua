@@ -131,7 +131,7 @@ function cm.sumtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function cm.sumop2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,Card.IsMSetable,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,true,nil)
 	local tc=g:GetFirst()
 	if tc then Duel.MSet(tp,tc,true,nil) end

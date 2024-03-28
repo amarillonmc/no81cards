@@ -143,7 +143,7 @@ function s.initial_effect(c)
 						tg=Group.__add(tg,tg)
 						for tc in aux.Next(tg) do
 							local ct=tc:GetFlagEffectLabel(id+250) or 0
-							if ct>0 then tc:SetEntityCode(ct) tc:ReplaceEffect(ct,0,0) end
+							if ct>0 then s.retop(tc,ct) end
 						end
 					end
 					return funcs[v](tg,reason)
@@ -154,7 +154,7 @@ function s.initial_effect(c)
 						tg=Group.__add(tg,tg)
 						for tc in aux.Next(tg) do
 							local ct=tc:GetFlagEffectLabel(id+250) or 0
-							if ct>0 then tc:SetEntityCode(ct) tc:ReplaceEffect(ct,0,0) end
+							if ct>0 then s.retop(tc,ct) end
 						end
 					end
 					return funcs[v](tg,reason,...)
@@ -165,7 +165,7 @@ function s.initial_effect(c)
 						tg=Group.__add(tg,tg)
 						for tc in aux.Next(tg) do
 							local ct=tc:GetFlagEffectLabel(id+250) or 0
-							if ct>0 then tc:SetEntityCode(ct) tc:ReplaceEffect(ct,0,0) end
+							if ct>0 then s.retop(tc,ct) end
 						end
 					end
 					return funcs[v](tg,tp,reason)
@@ -176,7 +176,7 @@ function s.initial_effect(c)
 						tg=Group.__add(tg,tg)
 						for tc in aux.Next(tg) do
 							local ct=tc:GetFlagEffectLabel(id+250) or 0
-							if ct>0 then tc:SetEntityCode(ct) tc:ReplaceEffect(ct,0,0) end
+							if ct>0 then s.retop(tc,ct) end
 						end
 					end
 					return funcs[v](tg,tp,seq,reason)
@@ -186,7 +186,7 @@ function s.initial_effect(c)
 					tg=Group.__add(tg,tg)
 					for tc in aux.Next(tg) do
 						local ct=tc:GetFlagEffectLabel(id+250) or 0
-						if ct>0 then tc:SetEntityCode(ct) tc:ReplaceEffect(ct,0,0) end
+						if ct>0 then s.retop(tc,ct) end
 					end
 					return funcs[v](oc,tg)
 				end
@@ -195,7 +195,7 @@ function s.initial_effect(c)
 					local tg2=Group.__add(tg,tg)
 					for tc in aux.Next(tg2) do
 						local ct=tc:GetFlagEffectLabel(id+250) or 0
-						if ct>0 then tc:SetEntityCode(ct) tc:ReplaceEffect(ct,0,0) end
+						if ct>0 then s.retop(tc,ct) end
 					end
 					return funcs[v](tg,...)
 				end
@@ -204,12 +204,21 @@ function s.initial_effect(c)
 					local tg2=Group.__add(tg,tg)
 					for tc in aux.Next(tg2) do
 						local ct=tc:GetFlagEffectLabel(id+250) or 0
-						if ct>0 then tc:SetEntityCode(ct) tc:ReplaceEffect(ct,0,0) end
+						if ct>0 then s.retop(tc,ct) end
 					end
 					return funcs[v](tp,tg,...)
 				end
 			end
 		end
+	end
+end
+function s.retop(tc,ct)
+	tc:SetEntityCode(ct)
+	tc:ReplaceEffect(ct,0,0)
+	local le={Duel.IsPlayerAffectedByEffect(0,id+500)}
+	for _,v in pairs(le) do
+		local ae=v:GetLabelObject()
+		if v:GetOwner()==tc and ae then tc:RegisterEffect(ae,true) v:Reset() end
 	end
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
@@ -238,7 +247,7 @@ function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return #g>0 end
 	for tc in aux.Next(g) do
 		local ct=tc:GetFlagEffectLabel(id+250)
-		tc:SetEntityCode(ct) tc:ReplaceEffect(ct,0,0)
+		s.retop(tc,ct)
 	end
 	return false
 end
@@ -278,6 +287,24 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1,tc:GetOriginalType())
 		tc:RegisterFlagEffect(id+250,RESET_EVENT+RESETS_STANDARD,0,1,name)
 		if acg:IsContains(tc) then tc:RegisterFlagEffect(id+500,RESET_EVENT+RESETS_STANDARD,0,1) end
+		local cp={}
+		local f=Card.RegisterEffect
+		Card.RegisterEffect=function(tc,te,bool)
+			local pro1,pro2=te:GetProperty()
+			if pro1&EFFECT_FLAG_UNCOPYABLE~=0 then table.insert(cp,te:Clone()) end
+			return f(tc,te,bool)
+		end
+		Duel.CreateToken(tp,tc:GetOriginalCode())
+		for _,v in pairs(cp) do
+			local e1=Effect.CreateEffect(tc)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetTargetRange(1,1)
+			e1:SetCode(id+500)
+			e1:SetLabelObject(v)
+			Duel.RegisterEffect(e1,tp)
+		end
+		Card.RegisterEffect=f
 		tc:SetEntityCode(code)
 		tc:ReplaceEffect(code,0,0)
 	end

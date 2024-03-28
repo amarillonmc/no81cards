@@ -42,7 +42,7 @@ function cm.initial_effect(c)
 	ge2:SetCode(EVENT_CHAIN_SOLVED)
 	ge2:SetOperation(cm.MergedDelayEventCheck2)
 	Duel.RegisterEffect(ge2,0)
-	local ge3=ge1:Clone()
+	local ge3=ge2:Clone()
 	ge3:SetCode(EVENT_CHAIN_NEGATED)
 	Duel.RegisterEffect(ge3,0)
 end
@@ -53,7 +53,7 @@ function cm.MergedDelayEventCheck1(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
 	g:Merge(eg2)
 	--if c:IsLocation(LOCATION_MZONE) and c:IsFaceup() then c:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD,0,1) end
-	if Duel.GetCurrentChain()==0 and #g>0 then
+	if (Duel.GetCurrentChain()==0 or (Duel.GetCurrentChain()==1 and (Duel.CheckEvent(EVENT_CHAIN_SOLVED) or Duel.CheckEvent(EVENT_CHAIN_NEGATED)))) and #g>0 then
 		local _eg=g:Clone()
 		Duel.RaiseEvent(_eg,EVENT_CUSTOM+e:GetLabel(),re,r,rp,ep,ev)
 		g:Clear()

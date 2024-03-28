@@ -84,7 +84,7 @@ end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsSetCard(0x611) then
+		if tc:IsSetCard(0x601) then
 			Duel.RegisterFlagEffect(0,id,RESET_PHASE+PHASE_END,0,1)
 		end
 		tc=eg:GetNext()
