@@ -41,45 +41,8 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
-	if not cm.global_check then
-		cm.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_CHAINING)
-		ge1:SetOperation(cm.count)
-		Duel.RegisterEffect(ge1,0)
-		local ge2=Effect.CreateEffect(c)
-		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge2:SetCode(EVENT_CHAIN_END)
-		ge2:SetOperation(cm.reset)
-		Duel.RegisterEffect(ge2,0)
-		local ge3=Effect.CreateEffect(c)
-		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge3:SetCode(EVENT_SPSUMMON_SUCCESS)
-		ge3:SetOperation(cm.seteg)
-		Duel.RegisterEffect(ge3,0)
-	end
-end
-function cm.count(e,tp,eg,ep,ev,re,r,rp)
-	cm.chain=true
-end
-function cm.seteg(e,tp,eg,ep,ev,re,r,rp)
-	if cm.chain==true then
-		local g=Group.CreateGroup()
-		if cm[0] then g=cm[0] end
-		g:Merge(eg)
-		g:KeepAlive()
-		cm[0]=g
-	end
-	if cm.chain==false then
-		Duel.RaiseEvent(eg,EVENT_CUSTOM+m,re,r,rp,ep,ev)
-	end
-end
-function cm.reset(e,tp,eg,ep,ev,re,r,rp)
-	cm.chain=false
-	if not cm[0] then return end
-	Duel.RaiseEvent(cm[0],EVENT_CUSTOM+m,re,r,rp,ep,ev)
-	cm[0]=nil
+	local g=Group.CreateGroup()
+	aux.RegisterMergedDelayedEvent(c,m,EVENT_SPSUMMON_SUCCESS,g)
 end
 function cm.filter(c,fc)
 	return c:IsCanBeFusionMaterial(fc,SUMMON_TYPE_SPECIAL) and c:IsAbleToGraveAsCost()
