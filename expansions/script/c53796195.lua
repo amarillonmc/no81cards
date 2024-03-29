@@ -1,8 +1,9 @@
 if not require and dofile then function require(str) return dofile(str..".lua") end end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local s,id,o=GetID()
-s.alc_taisa=true
 function s.initial_effect(c)
+	Duel.EnableGlobalFlag(GLOBALFLAG_DECK_REVERSE_CHECK)
+	--SNNM.AllEffectReset(c)
 	aux.AddCodeList(c,53796195)
 	aux.EnablePendulumAttribute(c)
 	local e0=Effect.CreateEffect(c)
@@ -17,7 +18,7 @@ function s.initial_effect(c)
 	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMING_STANDBY_PHASE+TIMINGS_CHECK_MONSTER+TIMING_MAIN_END+TIMING_END_PHASE)
+	e1:SetHintTiming(TIMING_DRAW_PHASE+TIMING_STANDBY_PHASE+TIMINGS_CHECK_MONSTER+TIMING_MAIN_END+TIMING_END_PHASE)
 	e1:SetRange(LOCATION_HAND+LOCATION_DECK)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return #(s[tp])>0 end)
 	e1:SetCost(s.cost)
@@ -159,7 +160,7 @@ function s.initial_effect(c)
 					end
 					return funcs[v](tg,reason,...)
 				end
-			elseif k<5 then
+			elseif k==3 then
 				Duel[v]=function(tg,tp,reason)
 					if reason&REASON_RULE~=0 then
 						tg=Group.__add(tg,tg)
@@ -167,6 +168,15 @@ function s.initial_effect(c)
 							local ct=tc:GetFlagEffectLabel(id+250) or 0
 							if ct>0 then s.retop(tc,ct) end
 						end
+					end
+					return funcs[v](tg,tp,reason)
+				end
+			elseif k==4 then
+				Duel[v]=function(tg,tp,reason)
+					tg=Group.__add(tg,tg)
+					for tc in aux.Next(tg) do
+						local ct=tc:GetFlagEffectLabel(id+250) or 0
+						if ct>0 then s.retop(tc,ct) end
 					end
 					return funcs[v](tg,tp,reason)
 				end
@@ -210,15 +220,98 @@ function s.initial_effect(c)
 				end
 			end
 		end
+		s.func1=Card.RegisterEffect
+		s.tempreset={}
+		local echk=Effect.SetReset
+		Effect.SetReset=function(se,reset,ct)
+			s.tempreset={reset,ct}
+			return echk(se,reset,ct)
+		end
+		Card.RegisterEffect=function(sc,se,bool)
+			local tempr=s.tempreset
+			s.tempreset={}
+			if not sc:IsStatus(STATUS_INITIALIZING) and SNNM.IsInTable(se:GetCode(),s.event) then
+				local e1=Effect.CreateEffect(sc)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetRange(0xff)
+				e1:SetCode(id+250)
+				e1:SetLabelObject(se)
+				if #tempr>0 then e1:SetReset(table.unpack(tempr)) end
+				s.func1(sc,e1,true)
+			end
+			return s.func1(sc,se,bool)
+		end
+		local tempf1=Effect.Reset
+		Effect.Reset=function(se)
+			local sc=se:GetHandler()
+			local le={sc:IsHasEffect(id+250)}
+			for _,v in pairs(le) do if v:GetLabelObject()==se then tempf1(v) end end
+			return tempf1(se)
+		end
+		local tempf2=Card.ReplaceEffect
+		Card.ReplaceEffect=function(sc,...)
+			local le={sc:IsHasEffect(id+250)}
+			for _,v in pairs(le) do tempf1(v) end
+			if sc:GetFlagEffect(53702700)>0 then
+				local le={sc:IsHasEffect(id+750)}
+				for _,v in pairs(le) do v:GetLabelObject():Reset() v:Reset() end
+				return 0
+			else return tempf2(sc,...) end
+		end
 	end
 end
+s.resettable={}
+s.event={EVENT_TO_DECK,EVENT_TO_HAND,EVENT_MOVE}
 function s.retop(tc,ct)
 	tc:SetEntityCode(ct)
-	tc:ReplaceEffect(ct,0,0)
+	tc:ReplaceEffect(ct,0)
+	local loc=tc:GetPreviousLocation()
 	local le={Duel.IsPlayerAffectedByEffect(0,id+500)}
 	for _,v in pairs(le) do
 		local ae=v:GetLabelObject()
-		if v:GetOwner()==tc and ae then tc:RegisterEffect(ae,true) v:Reset() end
+		if v:GetOwner()==tc and ae then if tc:GetFlagEffect(53702700)==0 then s.func1(tc,ae,true) end v:Reset() end
+	end
+	local res=false
+	local f=Card.RegisterEffect
+	Card.RegisterEffect=function(tc,te,bool)
+		s.tempreset={}
+		local event=te:GetCode()
+		if te:GetType()&EFFECT_TYPE_SINGLE~=0 and ((event==EVENT_TO_DECK and loc==LOCATION_DECK) or (event==EVENT_TO_HAND and loc==LOCATION_HAND) or event==EVENT_MOVE) then res=true end
+		return s.func1(tc,te,bool)
+	end
+	Duel.CreateToken(tp,tc:GetOriginalCode())
+	if res then
+		local evt={}
+		Card.RegisterEffect=function(tc,te,bool)
+			s.tempreset={}
+			local event=te:GetCode()
+			local e1=Effect.CreateEffect(tc)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetRange(0xff)
+			e1:SetCode(id+750)
+			e1:SetLabelObject(te)
+			s.func1(tc,e1,true)
+			if te:GetType()&EFFECT_TYPE_SINGLE~=0 and ((event==EVENT_TO_DECK and loc==LOCATION_DECK) or (event==EVENT_TO_HAND and loc==LOCATION_HAND) or event==EVENT_MOVE) then table.insert(evt,te) end
+			return s.func1(tc,te,bool)
+		end
+		if tc.initial_effect then
+			local ini=s.initial_effect
+			s.initial_effect=function() end
+			tc:ReplaceEffect(id,0)
+			s.initial_effect=ini
+			tc.initial_effect(tc)
+			tc:RegisterFlagEffect(53702700,0,0,0)
+		end
+		Card.RegisterEffect=f
+		local evrt={}
+		for k,v in pairs(evt) do
+			local con=v:GetCondition() or aux.TRUE
+			table.insert(evrt,con)
+			v:SetCondition(aux.FALSE)
+		end
+		s.resettable={evt,evrt}
 	end
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
@@ -260,9 +353,9 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoExtraP(c,tp,REASON_COST)
 end
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0xff,0,#(s[tp]),e:GetHandler(),tp,POS_FACEDOWN) end
+	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0x41,0,#(s[tp]),e:GetHandler(),tp,POS_FACEDOWN) end
 	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+SNNM.GetCurrentPhase(),0,1)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,0xff)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,0x41)
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
@@ -270,7 +363,7 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsLocation(LOCATION_EXTRA) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0xff,0,#(s[tp]),#(s[tp]),c,tp,POS_FACEDOWN)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0x41,0,#(s[tp]),#(s[tp]),c,tp,POS_FACEDOWN)
 	if #g==0 then return end
 	local acg=Group.CreateGroup()
 	for tc in aux.Next(g) do if tc:GetFlagEffect(id+750)>0 or tc:GetEquipTarget() or tc:IsHasEffect(EFFECT_REMAIN_FIELD) then acg:AddCard(tc) end end
@@ -287,26 +380,31 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1,tc:GetOriginalType())
 		tc:RegisterFlagEffect(id+250,RESET_EVENT+RESETS_STANDARD,0,1,name)
 		if acg:IsContains(tc) then tc:RegisterFlagEffect(id+500,RESET_EVENT+RESETS_STANDARD,0,1) end
-		local cp={}
-		local f=Card.RegisterEffect
-		Card.RegisterEffect=function(tc,te,bool)
-			local pro1,pro2=te:GetProperty()
-			if pro1&EFFECT_FLAG_UNCOPYABLE~=0 then table.insert(cp,te:Clone()) end
-			return f(tc,te,bool)
+		if tc:GetFlagEffect(53702700)==0 then
+			local cp={}
+			local f=Card.RegisterEffect
+			Card.RegisterEffect=function(tc,te,bool)
+				local pro1,pro2=te:GetProperty()
+				if pro1&EFFECT_FLAG_UNCOPYABLE~=0 then table.insert(cp,te:Clone()) end
+				return s.func1(tc,te,bool)
+			end
+			Duel.CreateToken(tp,tc:GetOriginalCode())
+			for _,v in pairs(cp) do
+				local e1=Effect.CreateEffect(tc)
+				e1:SetType(EFFECT_TYPE_FIELD)
+				e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+				e1:SetTargetRange(1,1)
+				e1:SetCode(id+500)
+				e1:SetLabelObject(v)
+				Duel.RegisterEffect(e1,tp)
+			end
+			Card.RegisterEffect=f
 		end
-		Duel.CreateToken(tp,tc:GetOriginalCode())
-		for _,v in pairs(cp) do
-			local e1=Effect.CreateEffect(tc)
-			e1:SetType(EFFECT_TYPE_FIELD)
-			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e1:SetTargetRange(1,1)
-			e1:SetCode(id+500)
-			e1:SetLabelObject(v)
-			Duel.RegisterEffect(e1,tp)
-		end
-		Card.RegisterEffect=f
 		tc:SetEntityCode(code)
-		tc:ReplaceEffect(code,0,0)
+		local ini=s.initial_effect
+		s.initial_effect=function() end
+		tc:ReplaceEffect(id,0)
+		s.initial_effect=ini
 	end
 	Duel.ConfirmCards(tp,Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil))
 	og:KeepAlive()
@@ -317,7 +415,7 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetLabelObject(og)
 	e1:SetCondition(s.tdcon)
 	e1:SetOperation(s.tdop)
-	c:RegisterEffect(e1,true)
+	s.func1(c,e1,true)
 	Duel.ConfirmCards(tp,og)
 end
 function s.tdcon(e,tp,eg,ep,ev,re,r,rp)
@@ -326,8 +424,63 @@ end
 function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject():Filter(Card.IsRelateToCard,nil,e:GetHandler())
 	if #g==0 then return end
+	local exg=Group.__sub(Duel.GetFieldGroup(0,0xff,0xff),g)
+	local evg=Group.CreateGroup()
+	local evc=nil
+	local f=Card.RegisterEffect
+	Card.RegisterEffect=function(tc,te,bool)
+		s.tempreset={}
+		if te:GetType()&(EFFECT_TYPE_FIELD+EFFECT_TYPE_ACTIVATE)~=0 and SNNM.IsInTable(te:GetCode(),s.event) and evc:IsLocation(te:GetRange()) then evg:AddCard(evc) end
+		return s.func1(tc,te,bool)
+	end
+	for tc in aux.Next(exg) do
+		evc=tc
+		Duel.CreateToken(tp,tc:GetOriginalCode())
+	end
+	local evt={}
+	Card.RegisterEffect=function(tc,te,bool)
+		s.tempreset={}
+		local e1=Effect.CreateEffect(tc)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetRange(0xff)
+		e1:SetCode(id+750)
+		e1:SetLabelObject(te)
+		s.func1(tc,e1,true)
+		if te:GetType()&(EFFECT_TYPE_FIELD+EFFECT_TYPE_ACTIVATE)~=0 and SNNM.IsInTable(te:GetCode(),s.event) and tc:IsLocation(te:GetRange()) then
+			table.insert(evt,te)
+		end
+		return s.func1(tc,te,bool)
+	end
+	for tc in aux.Next(evg) do
+		if tc.initial_effect then
+			local ini=s.initial_effect
+			s.initial_effect=function() end
+			tc:ReplaceEffect(id,0)
+			s.initial_effect=ini
+			tc.initial_effect(tc)
+			tc:RegisterFlagEffect(53702700,0,0,0)
+		end
+	end
+	Card.RegisterEffect=f
+	local evrt={}
+	for k,v in pairs(evt) do
+		local con=v:GetCondition() or aux.TRUE
+		table.insert(evrt,con)
+		v:SetCondition(aux.FALSE)
+	end
+	local others1,others2={},{}
+	for tc in aux.Next(exg) do
+		for _,v in pairs({tc:IsHasEffect(id+250)}) do
+			local ae=v:GetLabelObject()
+			local con=ae:GetCondition() or aux.TRUE
+			table.insert(others1,ae)
+			table.insert(others2,con)
+			ae:SetCondition(aux.FALSE)
+		end
+	end
 	local sg=g:Filter(function(c)return c:GetFlagEffect(id+500)>0 end,nil)
-	Duel.SendtoGrave(sg,REASON_RULE)
+	if #sg>0 then Duel.SendtoGrave(sg,REASON_RULE+REASON_RETURN) end
 	g:Sub(sg)
 	sg=g:Filter(Card.IsReason,nil,REASON_TEMPORARY)
 	for tc in aux.Next(sg) do
@@ -337,13 +490,26 @@ function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	g:Sub(sg)
 	sg=g:Filter(Card.IsPreviousLocation,nil,LOCATION_HAND)
-	Duel.SendtoHand(sg,tp,REASON_EFFECT)
+	if #sg>0 then Duel.SendtoHand(sg,tp,REASON_EFFECT) end
 	g:Sub(sg)
+	sg=g:Filter(function(c)return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_EXTRA)end,nil)
+	local tempsg1=sg:Clone()
+	g:Sub(sg)
+	sg=g:Filter(function(c)return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_DECK)end,nil)
+	local tempsg2=sg:Clone()
 	sg=g:Filter(Card.IsPreviousLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-	Duel.SendtoDeck(sg,tp,2,REASON_EFFECT)
+	if #sg>0 then Duel.SendtoDeck(sg,tp,2,REASON_EFFECT) if #tempsg2>0 then tempsg2:ForEach(Card.ReverseInDeck) end end
+	if #tempsg1>0 then Duel.SendtoExtraP(tempsg1,tp,REASON_EFFECT) end
 	g:Sub(sg)
 	sg=g:Filter(Card.IsPreviousLocation,nil,LOCATION_GRAVE)
-	Duel.SendtoGrave(sg,REASON_EFFECT)
+	if #sg>0 then Duel.SendtoGrave(sg,REASON_EFFECT+REASON_RETURN) end
+	for k,v in pairs(evt) do v:SetCondition(evrt[k]) end
+	for k,v in pairs(others1) do v:SetCondition(others2[k]) end
+	if #(s.resettable)>0 then
+		local rst1,rst2=s.resettable[1],s.resettable[2]
+		for k,v in pairs(rst1) do v:SetCondition(rst2[k]) end
+	end
+	s.resettable={}
 end
 function s.filter(c,code)
 	return c:IsFacedown() and c:GetOriginalCode()~=code
@@ -366,7 +532,12 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterFlagEffect(id+250,RESET_EVENT+RESETS_STANDARD,0,1,name)
 		end
 		tc:SetEntityCode(ac)
-		tc:ReplaceEffect(ac,0,0)
+		local ini=s.initial_effect
+		s.initial_effect=function() end
+		tc:ReplaceEffect(id,0)
+		s.initial_effect=ini
+		local le={tc:IsHasEffect(id+500)}
+		for _,v in pairs(le) do v:GetLabelObject():Reset() v:Reset() end
 		Duel.ConfirmCards(tp,Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil))
 	end
 end

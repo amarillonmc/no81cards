@@ -33,9 +33,9 @@ function c71401002.filter2a(c)
 end
 function c71401002.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local check=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		return Duel.IsExistingMatchingCard(c71401002.filter2a,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(c71401002.filter2,tp,LOCATION_DECK,0,1,nil,tp,check)
+		return Duel.IsExistingMatchingCard(c71401002.filter2a,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
 	end
+	return true
 end
 function c71401002.op2(e,tp,eg,ep,ev,re,r,rp)
 	local check=Duel.GetLocationCount(tp,LOCATION_SZONE)>0

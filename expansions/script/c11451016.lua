@@ -117,6 +117,7 @@ function cm.atktg(e,c)
 	return cm.atkfilter(c)
 end
 function cm.atkval(e,c)
+	local tp=e:GetHandlerPlayer()
 	return 500*Duel.GetMatchingGroupCount(cm.atkfilter,tp,LOCATION_MZONE,0,nil)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)

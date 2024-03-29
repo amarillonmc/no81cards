@@ -124,6 +124,7 @@ function cm.initial_effect(c)
 			if res and aux.GetValueType(re)=="Effect" then
 				local rc=re:GetHandler()
 				if rc and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) and re:GetDescription()==aux.Stringid(m,0) then
+					rc:ResetFlagEffect(m)
 					rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 				end
 			end
@@ -217,7 +218,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetCountLimit(1)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
 	e1:SetOperation(cm.rsop)
@@ -240,10 +241,9 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
-	if e:GetCode()==EVENT_CHAIN_NEGATED then rc:ResetFlagEffect(m) end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 		rc:CancelToGrave(false)
@@ -261,6 +261,8 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.mvfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local tc=Duel.SelectMatchingCard(tp,cm.mvfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp):GetFirst()
+	local prop=e:GetProperty()
+	e:SetProperty(prop|EFFECT_FLAG_IGNORE_IMMUNE)
 	if tc and tc:IsControler(tp) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
@@ -269,6 +271,7 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	elseif tc then
 		Duel.GetControl(tc,tp)
 	end
+	e:SetProperty(prop)
 end
 function cm.d2hmatchfilter(c,cd)
 	return c:IsFaceup() and c:IsCode(cd)

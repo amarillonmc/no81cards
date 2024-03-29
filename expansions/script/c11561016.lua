@@ -75,6 +75,7 @@ function c11561016.hxop(e,tp,eg,ep,ev,re,r,rp)
 					chk=1 
 				end 
 			end 
+					Duel.DisableShuffleCheck()
 			Duel.SendtoHand(msg,tp,REASON_EFFECT) 
 			Duel.ConfirmCards(1-tp,msg)   
 			if a>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,a,nil) then 
@@ -91,7 +92,7 @@ function c11561016.hxop(e,tp,eg,ep,ev,re,r,rp)
 
 				local g2=Duel.GetOperatedGroup()
 				local a2=Group.GetCount(g2) 
-				if not (a2<math.floor(a1/2)) then 
+				if not (a2<math.floor(a1/2)) then
 					Duel.Draw(tp,1,REASON_EFFECT) end
 			end 
 		end 

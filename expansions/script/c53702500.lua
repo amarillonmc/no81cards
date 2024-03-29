@@ -2824,7 +2824,14 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		end
-		reg(sc,se,bool)
+		local e1=Effect.CreateEffect(sc)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetRange(0xff)
+		e1:SetCode(53702701)
+		e1:SetLabelObject(se)
+		reg(sc,e1,true)
+		return reg(sc,se,bool)
 	end
 	--[[AD_Avoid_RegisterEffect=Duel.RegisterEffect
 	Duel.RegisterEffect=function(...)
@@ -2834,7 +2841,11 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 		if tc.initial_effect then
 			local ini=cm.initial_effect
 			cm.initial_effect=function() end
-			tc:ReplaceEffect(m,0)
+			if tc:GetFlagEffect(53702700)>0 then
+				local le={tc:IsHasEffect(53702701)}
+				for _,v in pairs(le) do v:GetLabelObject():Reset() v:Reset() end
+				return 0
+			else return tc:ReplaceEffect(m,0) end
 			cm.initial_effect=ini
 			tc.initial_effect(tc)
 		end
