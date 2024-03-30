@@ -52,7 +52,7 @@ function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_EXTRA,0,1,nil)
 end
 function s.spfilter(c,e,tp,tc)
-	return c:IsFaceup() and (aux.IsCodeListed(c,53796195) or c:IsType(0x40)) and c:IsCanBeXyzMaterial(tc) and Duel.GetLocationCountFromEx(tp,tp,c,tc)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsFaceup() and (aux.IsCodeListed(c,53796195) or c:IsType(TYPE_XYZ)) and c:IsCanBeXyzMaterial(tc) and Duel.GetLocationCountFromEx(tp,tp,c,tc)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.spfilter2(c,e,tp,tc)
 	return s.spfilter(c,e,tp,tc) and not c:IsImmuneToEffect(e)

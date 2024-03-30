@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.setfilter(c)
-	return c:GetType()&0x100004==0x100004 and c:IsSSetable()
+	return c:GetType()&0x100004==0x100004 and c:IsSSetable(true)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasCategory(CATEGORY_SEARCH) or re:IsHasCategory(CATEGORY_TOHAND) or re:IsHasCategory(CATEGORY_DRAW)

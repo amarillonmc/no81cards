@@ -277,7 +277,7 @@ function s.retop(tc,ct)
 	Card.RegisterEffect=function(tc,te,bool)
 		s.tempreset={}
 		local event=te:GetCode()
-		if te:GetType()&EFFECT_TYPE_SINGLE~=0 and ((event==EVENT_TO_DECK and loc==LOCATION_DECK) or (event==EVENT_TO_HAND and loc==LOCATION_HAND) or event==EVENT_MOVE) then res=true end
+		if te:GetType()&EFFECT_TYPE_SINGLE~=0 and ((event==EVENT_TO_DECK and loc&0x41~=0) or (event==EVENT_TO_HAND and loc==LOCATION_HAND) or event==EVENT_MOVE) then res=true end
 		return s.func1(tc,te,bool)
 	end
 	Duel.CreateToken(tp,tc:GetOriginalCode())
@@ -293,7 +293,7 @@ function s.retop(tc,ct)
 			e1:SetCode(id+750)
 			e1:SetLabelObject(te)
 			s.func1(tc,e1,true)
-			if te:GetType()&EFFECT_TYPE_SINGLE~=0 and ((event==EVENT_TO_DECK and loc==LOCATION_DECK) or (event==EVENT_TO_HAND and loc==LOCATION_HAND) or event==EVENT_MOVE) then table.insert(evt,te) end
+			if te:GetType()&EFFECT_TYPE_SINGLE~=0 and ((event==EVENT_TO_DECK and loc&0x41~=0) or (event==EVENT_TO_HAND and loc==LOCATION_HAND) or event==EVENT_MOVE) then table.insert(evt,te) end
 			return s.func1(tc,te,bool)
 		end
 		if tc.initial_effect then

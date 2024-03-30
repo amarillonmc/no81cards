@@ -2844,8 +2844,7 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 			if tc:GetFlagEffect(53702700)>0 then
 				local le={tc:IsHasEffect(53702701)}
 				for _,v in pairs(le) do v:GetLabelObject():Reset() v:Reset() end
-				return 0
-			else return tc:ReplaceEffect(m,0) end
+			else tc:ReplaceEffect(m,0) end
 			cm.initial_effect=ini
 			tc.initial_effect(tc)
 		end
