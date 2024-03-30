@@ -70,19 +70,19 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local se=e:GetLabelObject():GetLabelObject()
 	return eg:IsExists(cm.spfilter,1,nil,se)
 end
-function cm.refilter(c)
-	return c:IsAbleToRemove() and c:IsSetCard(0x9977) and c:IsFaceup()
+function cm.refilter(c,tp)
+	return c:IsAbleToRemove() and c:IsSetCard(0x9977) and c:IsFaceup() and (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or c:IsLocation(LOCATION_SZONE))
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_ONFIELD,0,1,nil) and c:IsSSetable() and c:GetFlagEffect(m-10)==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_ONFIELD,0,1,nil,tp) and c:IsSSetable(true) and c:GetFlagEffect(m-10)==0 end
 	c:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_ONFIELD)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
 	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 and c:IsRelateToEffect(e) then
 		Duel.SSet(tp,c)
 	end

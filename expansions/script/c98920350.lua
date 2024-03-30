@@ -61,13 +61,13 @@ end
 function c98920350.regop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabelObject():GetLabel()
 	e:GetLabelObject():SetLabel(ct+1)
-	if rp~=tp and re:GetHandler():IsType(e:GetLabel()) then
+	if rp~=tp and re:IsActiveType(e:GetLabel()) then
 		e:GetHandler():RegisterFlagEffect(98920350,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
 	end
 end
 function c98920350.damcon1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return ep~=tp and c:GetFlagEffect(98920350)~=0 and re:GetHandler():IsType(e:GetLabel())
+	return ep~=tp and c:GetFlagEffect(98920350)~=0 and re:IsActiveType(e:GetLabel())
 end
 function c98920350.damop1(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabelObject():GetLabel()

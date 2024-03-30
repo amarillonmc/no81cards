@@ -93,6 +93,20 @@ function cm.GetHandEffect(c,tc)
 	if cm.urara_cache[code] then return cm.urara_cache[code] end
 	local eset={}
 	local temp=Card.RegisterEffect
+	local _SetRange=Effect.SetRange
+	function Effect.SetRange(e,r,...)
+		table_range=table_range or {}
+		table_range[e]=r
+		return _SetRange(e,r,...)
+	end
+	if not Effect.GetRange then
+		function Effect.GetRange(e)
+			if table_range and table_range[e] then
+				return table_range[e]
+			end
+			return 0
+		end
+	end
 	Card.RegisterEffect=function(tc,e,f)
 		if (e:GetRange()&LOCATION_HAND)>0 and e:IsHasType(EFFECT_TYPE_IGNITION+EFFECT_TYPE_QUICK_F+EFFECT_TYPE_QUICK_O+EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_TRIGGER_O) then
 			local found=false

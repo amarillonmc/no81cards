@@ -26,14 +26,14 @@ function cm.initial_effect(c)
 		e11:SetCode(EVENT_PHASE+PHASE_DRAW)
 		e11:SetCountLimit(1)
 		e11:SetOperation(cm.thop)
-	--	Duel.RegisterEffect(e11,0)
+	--  Duel.RegisterEffect(e11,0)
 	end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local s=math.random(0,9)
-    local s1=s*1000000
-    local s2=s1+999999
+	local s1=s*1000000
+	local s2=s1+999999
 	for i=1,9999999 do
 		local mt1=cm.load_metatable(i)
 		if mt1 then
@@ -58,55 +58,55 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	e:SetLabel(0)
 	local c=e:GetHandler()
 	--[[
-    local codelist={}
-    local s=math.random(0,9)
-    local s1=s*1000000
-    local s2=s1+999999
+	local codelist={}
+	local s=math.random(0,9)
+	local s1=s*1000000
+	local s2=s1+999999
 	math.randomseed(tostring(os.time()):reverse():sub(1, 6))
 	]]--
-    local codelist2=0
+	local codelist2=0
 	for i=1,9999999 do
-        if codelist2~=0 then
-            break
-        end
-		local l=Duel.GetRandomNumber(1,9999999)--math.random(1,9999999)
+		if codelist2~=0 then
+			break
+		end
+		local l=Duel.GetRandomNumber(1,99999999)--math.random(1,9999999)
 		--local l=math.random(1,#cm.loaded_metatable_list2)
-        --local mt=cm.load_metatable(l)
+		--local mt=cm.load_metatable(l)
 		local mt=cm.load_metatable_load(l)
-        if mt then
-                local token=Duel.CreateToken(tp,l)
-                if token and (token:IsType(TYPE_SPELL) or token:IsType(TYPE_TRAP)) and not token:IsType(TYPE_EQUIP)
+		if mt then
+				local token=Duel.CreateToken(tp,l)
+				if token and (token:IsType(TYPE_SPELL) or token:IsType(TYPE_TRAP)) and not token:IsType(TYPE_EQUIP)
 				and-- not token:IsType(TYPE_CONTINUOUS) and 
 				not token:IsType(TYPE_FIELD)
-                -- and not token:IsType(TYPE_FIELD) and not token:IsType(TYPE_CONTINUOUS)
-                and token:CheckActivateEffect(false,true,false)~=nil
-                and token:CheckActivateEffect(false,true,false):GetOperation()~=nil then
-					--    table.insert(codelist,i)
+				-- and not token:IsType(TYPE_FIELD) and not token:IsType(TYPE_CONTINUOUS)
+				and token:CheckActivateEffect(false,true,false)~=nil
+				and token:CheckActivateEffect(false,true,false):GetOperation()~=nil then
+					--	table.insert(codelist,i)
 					--[[local ab=codelist--cm.get_announce(codelist)
 					for i=1,5 do
 					local p=math.random(1,#ab)
 					table.insert(codelist2,1,ab[p])
 				end
 				local ac=codelist2[1] ]]--
-        --if token:CheckActivateEffect(true,true,false)==nil then
-        --    e:SetLabelObject(nil)
-        --    else
-            --    c:SetHint(CHINT_CARD,l)
-                Duel.Hint(HINT_CARD,tp,l)
-                Duel.Hint(HINT_CODE,1-tp,l)
-                Duel.Hint(HINT_CODE,tp,l)
-                local te,ceg,cep,cev,cre,cr,crp=token:CheckActivateEffect(true,true,true)
-                e:SetProperty(te:GetProperty())
+		--if token:CheckActivateEffect(true,true,false)==nil then
+		--	e:SetLabelObject(nil)
+		--	else
+			--	c:SetHint(CHINT_CARD,l)
+				Duel.Hint(HINT_CARD,tp,l)
+				Duel.Hint(HINT_CODE,1-tp,l)
+				Duel.Hint(HINT_CODE,tp,l)
+				local te,ceg,cep,cev,cre,cr,crp=token:CheckActivateEffect(true,true,true)
+				e:SetProperty(te:GetProperty())
 				c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1,0,0)
-                local tg=te:GetTarget()
-                if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
-                te:SetLabelObject(e:GetLabelObject())
-                e:SetLabelObject(te)
-                Duel.ClearOperationInfo(0)
-                --end
-                codelist2=codelist2+1
-            end
-        end
+				local tg=te:GetTarget()
+				if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
+				te:SetLabelObject(e:GetLabelObject())
+				e:SetLabelObject(te)
+				Duel.ClearOperationInfo(0)
+				--end
+				codelist2=codelist2+1
+			end
+		end
 	end
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -128,7 +128,7 @@ end
 function cm.get_announce(t)
 	local rt={t[1],OPCODE_ISCODE}
 	for i=2,#t do
-        if not t[i] then break end
+		if not t[i] then break end
 		table.insert(rt,t[i])
 		table.insert(rt,OPCODE_ISCODE)
 		table.insert(rt,OPCODE_OR)
@@ -151,7 +151,7 @@ function cm.load_metatable(code)
 		local mt=_G["c"..code]
 		_G["c"..code]=nil
 		if mt then
-		--	cm.loaded_metatable_list[code]=mt
+		--  cm.loaded_metatable_list[code]=mt
 			return mt
 		end
 	else

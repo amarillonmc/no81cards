@@ -53,7 +53,7 @@ function c9911510.limop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetCurrentChain()==0 then
 		Duel.SetChainLimitTillChainEnd(c9911510.chainlm)
 	elseif Duel.GetCurrentChain()==1 then
-		e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
+		e:GetHandler():RegisterFlagEffect(9911510,RESET_EVENT+RESETS_STANDARD,0,1)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_CHAINING)
@@ -66,14 +66,14 @@ function c9911510.limop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9911510.resetop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():ResetFlagEffect(id)
+	e:GetHandler():ResetFlagEffect(9911510)
 	e:Reset()
 end
 function c9911510.limop2(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():GetFlagEffect(id)~=0 then
+	if e:GetHandler():GetFlagEffect(9911510)~=0 then
 		Duel.SetChainLimitTillChainEnd(c9911510.chainlm)
 	end
-	e:GetHandler():ResetFlagEffect(id)
+	e:GetHandler():ResetFlagEffect(9911510)
 end
 function c9911510.chainlm(e,rp,tp)
 	return tp==rp
