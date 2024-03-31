@@ -116,40 +116,13 @@ function cm.initial_effect(c)
 	end
 	if not PTFL_SUMMONRULE_CHECK then
 		PTFL_SUMMONRULE_CHECK=true
-		local _Summon=Duel.Summon
-		local _MSet=Duel.MSet
-		local _SpecialSummonRule=Duel.SpecialSummonRule
-		local _SynchroSummon=Duel.SynchroSummon
-		local _XyzSummon=Duel.XyzSummon
-		local _XyzSummonByRose=Duel.XyzSummonByRose
-		local _LinkSummon=Duel.LinkSummon
-		Duel.Summon=function(p,c,...)
-			_Summon(p,c,...)
-			if Duel.GetCurrentChain()==1 then c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1) end
-		end
-		Duel.MSet=function(p,c,...)
-			_MSet(p,c,...)
-			if Duel.GetCurrentChain()==1 then c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1) end
-		end
-		Duel.SpecialSummonRule=function(p,c,...)
-			_SpecialSummonRule(p,c,...)
-			if Duel.GetCurrentChain()==1 then c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1) end
-		end
-		Duel.SynchroSummon=function(p,c,...)
-			_SynchroSummon(p,c,...)
-			if Duel.GetCurrentChain()==1 then c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1) end
-		end
-		Duel.XyzSummon=function(p,c,...)
-			_XyzSummon(p,c,...)
-			if Duel.GetCurrentChain()==1 then c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1) end
-		end
-		Duel.XyzSummonByRose=function(p,c,...)
-			_XyzSummonByRose(p,c,...)
-			if Duel.GetCurrentChain()==1 then c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1) end
-		end
-		Duel.LinkSummon=function(p,c,...)
-			_LinkSummon(p,c,...)
-			if Duel.GetCurrentChain()==1 then c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1) end
+		local summon_set={"Summon","MSet","SpecialSummonRule","SynchroSummon","XyzSummon","XyzSummonByRose","LinkSummon"}
+		for i,fname in pairs(summon_set) do
+			local temp_f=Duel[fname]
+			Duel[fname]=function(p,c,...)
+				temp_f(p,c,...)
+				c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1)
+			end
 		end
 	end
 end
