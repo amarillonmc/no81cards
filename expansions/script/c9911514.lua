@@ -46,7 +46,8 @@ function c9911514.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local g=Duel.GetDecktopGroup(1-tp,1)
-	return Duel.IsExistingMatchingCard(c9911514.costfilter,tp,LOCATION_DECK,0,1,nil) and g:GetFirst():IsAbleToGraveAsCost()
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9911514.costfilter,tp,LOCATION_DECK,0,1,nil) and g:GetFirst():IsAbleToGraveAsCost()
 end
 function c9911514.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

@@ -45,7 +45,8 @@ end
 function c9911512.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(c9911512.costfilter1,tp,LOCATION_HAND,0,1,c)
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9911512.costfilter1,tp,LOCATION_HAND,0,1,c)
 		and Duel.IsExistingMatchingCard(c9911512.costfilter2,tp,0,LOCATION_HAND,1,nil)
 end
 function c9911512.sprop(e,tp,eg,ep,ev,re,r,rp,c)
