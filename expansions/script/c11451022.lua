@@ -67,7 +67,7 @@ function cm.cpfilter(c,tp)
 end
 function cm.cpfilter2(c,tp,tc)
 	local fg=Group.FromCards(c,tc)
-	return c:IsFacedown() and c:IsAbleToHandAsCost() and Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,fg)
+	return c:IsFacedown() and c:IsAbleToHandAsCost() and Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,fg,e,tp,fg)
 end
 function cm.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp) and e:GetHandler():GetFlagEffect(m)==0 end
@@ -77,18 +77,64 @@ function cm.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local tc2=Duel.SelectMatchingCard(tp,cm.cpfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,tp,tc):GetFirst()
 	local fg=Group.FromCards(tc,tc2)
+	--Debug.Message(Duel.GetMatchingGroupCount(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,fg,e,tp,fg))
 	Duel.SendtoHand(fg,nil,REASON_COST)
 end
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return e:IsCostChecked() end --Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
-function cm.smfilter(c)
+function cm.smfilter(c,e,tp,fg)
+	local eset1={c:IsHasEffect(EFFECT_LIMIT_SUMMON_PROC)}
+	local eset2={c:IsHasEffect(EFFECT_SUMMON_PROC)}
+	local eset3={c:IsHasEffect(EFFECT_SET_PROC)}
+	local e1,e2=Effect.CreateEffect(c),Effect.CreateEffect(c)
+	local _CheckTribute=Duel.CheckTribute
+	if aux.GetValueType(fg)=="Group" then
+		function Duel.CheckTribute(c,mi,ma,mg,top,...) 
+			local g=mg or Duel.GetTributeGroup(c)
+			return _CheckTribute(c,mi,ma,g-fg,top,...)
+		end
+	end
+	if #eset1==0 and #eset2==0 and #eset3==0 then
+		local mi,ma=c:GetTributeRequirement()
+		--summon
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_LIMIT_SUMMON_PROC)
+		e1:SetLabelObject(fg)
+		e1:SetCondition(cm.ttcon)
+		if mi>0 then e1:SetValue(SUMMON_TYPE_ADVANCE) end
+		c:RegisterEffect(e1,true)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_LIMIT_SET_PROC)
+		e2:SetLabelObject(fg)
+		e2:SetCondition(cm.ttcon)
+		c:RegisterEffect(e2,true)
+	end
+	local res=c:IsSummonable(true,nil) or c:IsMSetable(true,nil)
+	Duel.CheckTribute=_CheckTribute
+	e1:Reset()
+	e2:Reset()
+	return res
+end
+function cm.ttcon(e,c,minc)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local mi,ma=c:GetTributeRequirement()
+	local mg=Duel.GetTributeGroup(c)
+	local fg=e:GetLabelObject()
+	--if mi>0 then Debug.Message(c:GetCode()) Debug.Message(Duel.CheckTribute(c,mi,ma,mg)) end
+	if mi>0 then return Duel.CheckTribute(c,mi,ma,mg) end
+	return Duel.GetMZoneCount(tp,fg)>0
+end
+function cm.smfilter2(c)
 	return c:IsSummonable(true,nil) or c:IsMSetable(true,nil)
 end
 function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.smfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then
 		local s1=tc:IsSummonable(true,nil)

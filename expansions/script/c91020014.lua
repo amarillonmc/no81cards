@@ -3,25 +3,22 @@ local m=91020014
 local cm=c91020014
 function c91020014.initial_effect(c)
 --ruler
-	c:EnableReviveLimit() 
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetValue(cm.splimit)
-	c:RegisterEffect(e1)
+	 c:EnableReviveLimit()
+	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsSetCard,0x9d1),3,true)
+	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_ONFIELD,0,Duel.Release,POS_FACEUP,REASON_COST)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	c:RegisterEffect(e3)
 --release
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(91020014,1))
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetCountLimit(2)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetTarget(cm.target)
-	e2:SetOperation(cm.op)
-	c:RegisterEffect(e2)
+   local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_IMMUNE_EFFECT)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetValue(cm.efilter)
+	c:RegisterEffect(e3)
 --release2
 	local e21=Effect.CreateEffect(c)
 	e21:SetDescription(aux.Stringid(91020014,2))
@@ -34,55 +31,29 @@ function c91020014.initial_effect(c)
 	e21:SetTarget(cm.target1)
 	e21:SetOperation(cm.ope)
 	c:RegisterEffect(e21)
-  --destroy
-	local e7=Effect.CreateEffect(c)
-	e7:SetDescription(aux.Stringid(91020014,0))
-	e7:SetCategory(CATEGORY_DESTROY)
-	e7:SetType(EFFECT_TYPE_IGNITION)
-	e7:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e7:SetRange(LOCATION_MZONE)
-	e7:SetCost(c91020014.descost)
-	e7:SetTarget(c91020014.destg)
-	e7:SetOperation(c91020014.desop)
-	c:RegisterEffect(e7)
-	local e8=Effect.CreateEffect(c)
-	e8:SetDescription(aux.Stringid(91020014,6))
-	e8:SetCategory(CATEGORY_DESTROY)
-	e8:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e8:SetRange(LOCATION_MZONE)   
-	e8:SetType(EFFECT_TYPE_QUICK_O)
-	e8:SetCode(EVENT_FREE_CHAIN)
-	e8:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)  
-	e8:SetCountLimit(1)
-	e8:SetCondition(cm.con8)
-	e8:SetCost(c91020014.descost)
-	e8:SetTarget(c91020014.destg)
-	e8:SetOperation(c91020014.desop)
-	c:RegisterEffect(e8)
+  --destroy   
 	 local e10=Effect.CreateEffect(c) 
-	e10:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e10:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e10:SetCountLimit(1,m+EFFECT_COUNT_CODE_DUEL)
+	e10:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e10:SetCountLimit(1)
 	e10:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e10:SetCode(EVENT_LEAVE_FIELD)
 	e10:SetTarget(cm.tg1)
 	e10:SetOperation(cm.op1)
 	c:RegisterEffect(e10)
 end
-function cm.filter(c,e,tp)
-	return c:IsCode(91020013) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+function cm.efilter(e,te)
+	return te:IsActiveType(TYPE_TRAP)
+end
+function cm.filter(c)
+	return c:IsCode(10000090) and c:IsAbleToGrave()
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
-		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
-	Duel.SetChainLimit(aux.FALSE)
+	if chk==0 then return  Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,nil)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
-	  if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp) 
-	Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil) 
+	Duel.SendtoGrave(g,REASON_EFFECT)
 end
 --summon
 function cm.splimit(e,se,sp,st)
@@ -132,12 +103,11 @@ end
 --Release2
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsOnField() and chkc~=c end
-	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) end  
+	if chkc then return chkc:IsOnField() end
+	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end  
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
+	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,1,0,0)
-	Duel.SetChainLimit(aux.FALSE)
 end
 
 function cm.ope(e,tp,eg,ep,ev,re,r,rp)

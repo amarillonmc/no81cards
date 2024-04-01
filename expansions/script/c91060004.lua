@@ -23,15 +23,6 @@ function c91060004.initial_effect(c)
 	e2:SetCondition(cm.sprcon)
 	e2:SetOperation(cm.sprop)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetCategory(CATEGORY_ATKCHANGE)
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,m*4)
-	e3:SetCost(cm.cost3)
-	e3:SetOperation(cm.op3)
-	c:RegisterEffect(e3)
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,2))
 	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -39,6 +30,7 @@ function c91060004.initial_effect(c)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCountLimit(1,m*2)
 	e5:SetCost(cm.srcost)
+	e5:SetTarget(cm.tag5)
 	e5:SetOperation(cm.op5)
 	c:RegisterEffect(e5)
 	local e6=Effect.CreateEffect(c)
@@ -115,7 +107,8 @@ function cm.srcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(tc,POS_FACEUP,REASON_COST)
 end
 function cm.tag5(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.srfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end   
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.srfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end   
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0)
 end
 function cm.op5(e,tp,eg,ep,ev,re,r,rp)
 if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end   
@@ -127,7 +120,7 @@ if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 end
 --e6 
 function cm.costfit1(c)
-return c:IsSetCard(0x1142)or c:IsSetCard(0x143)or c:IsSetCard(0x2142)
+return c:IsSetCard(0x1142)or  c:IsSetCard(0x2142)
 end
 function cm.cost6(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfit1,tp,LOCATION_REMOVED,0,1,nil) end

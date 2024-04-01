@@ -297,9 +297,9 @@ function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
-	re:SetCategory(re:GetCategory()|CATEGORY_DAMAGE)
-	if re:GetLabel()&0xbf~=0 then re:SetLabel(re:GetLabel()|0x20) return end
-	re:SetLabel(re:GetLabel()|0x20)
+	re:SetCategory(re:GetCategory()|CATEGORY_HANDES)
+	if re:GetLabel()&0xbf~=0 then re:SetLabel(re:GetLabel()|0x8) return end
+	re:SetLabel(re:GetLabel()|0x8)
 	local op=re:GetOperation()
 	local repop=function(e,tp,eg,ep,ev,re,r,rp)
 		op(e,tp,eg,ep,ev,re,r,rp)

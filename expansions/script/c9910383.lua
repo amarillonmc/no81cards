@@ -65,12 +65,16 @@ function c9910383.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g2,1,0,0)
 end
+function c9910383.ogfilter(c)
+	return c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT)
+end
 function c9910383.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,3,nil)
 	if g2:GetCount()==0 then return end
 	Duel.HintSelection(g2)
 	if Duel.Remove(g2,POS_FACEUP,REASON_EFFECT)==0 then return end
+	local ct=Duel.GetOperatedGroup():FilterCount(c9910383.ogfilter,nil)
 	local g=Group.CreateGroup()
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
@@ -79,5 +83,15 @@ function c9910383.rmop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.BreakEffect()
 		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+	end
+	if ct>0 then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_HAND_LIMIT)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(0,1)
+		e1:SetValue(ct)
+		e1:SetReset(RESET_PHASE+PHASE_DRAW)
+		Duel.RegisterEffect(e1,tp)
 	end
 end

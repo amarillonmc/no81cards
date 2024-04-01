@@ -21,7 +21,7 @@ function c67200757.initial_effect(c)
 	c:RegisterEffect(e2)
 	--
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(67200755,1))
+	e3:SetDescription(aux.Stringid(67200757,1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
@@ -38,17 +38,17 @@ function c67200757.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67200757.filter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function c3285551.setfilter(c)
-	return c:IsCode(39568067) and not c:IsForbidden()
+function c67200757.setfilter(c)
+	return c:IsCode(67200755) and not c:IsForbidden()
 end
 function c67200757.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local gg=Duel.SelectMatchingCard(tp,c67200757.filter,tp,LOCATION_DECK,0,1,1,nil)
-	local g=Duel.GetMatchingGroup(c3285551.setfilter,tp,LOCATION_DECK,0,nil)
+	local g=Duel.GetMatchingGroup(c67200757.setfilter,tp,LOCATION_DECK,0,nil)
 	if gg:GetCount()>0 then
 		Duel.SendtoHand(gg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,gg)
-		if e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.GetCurrentChain()>2 and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(67200757,0)) then
+		if e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.GetCurrentChain()>2 and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(67200757,2)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 			local sg=g:Select(tp,1,1,nil)

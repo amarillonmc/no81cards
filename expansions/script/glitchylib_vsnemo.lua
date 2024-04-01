@@ -88,6 +88,7 @@ RESETS_REDIRECT_FIELD 			= 0x047e0000
 RESETS_STANDARD_UNION 			= RESETS_STANDARD&(~(RESET_TOFIELD|RESET_LEAVE))
 RESETS_STANDARD_TOFIELD 		= RESETS_STANDARD&(~(RESET_TOFIELD))
 RESETS_STANDARD_EXC_GRAVE 		= RESETS_STANDARD&~(RESET_LEAVE|RESET_TOGRAVE)
+RESETS_STANDARD_FACEDOWN 		= RESETS_STANDARD&(~(RESET_TURN_SET))
 
 --timings
 RELEVANT_TIMINGS = TIMINGS_CHECK_MONSTER|TIMING_MAIN_END|TIMING_END_PHASE
@@ -132,9 +133,27 @@ RESET_TURN_OPPO = RESET_OPPO_TURN
 --Nemo's archetypes and constants
 ARCHE_ANIFRIENDS = 0x442
 
+ARCHE_KEY			=	0x460
+ARCHE_KEY_FRAGMENTS	=	0x3460
+ARCHE_KEY_MEMORIA	=	0x5460
+ARCHE_KEY_CLIMAX	=	0x6460
+ARCHE_KEY_MOMENT	=	0x9460
+ARCHE_KEY_LBO		=	0xa460
+ARCHE_KEY_ETC		=	0xc460
+
 ARCHE_SANDSTAR = {33700058,33700945,33731003,33731004,33731005}
 
-COUNTER_SPARKLE = 0x443
+CARD_KEY_FRAGMENTS_RIKI					= 33730131
+CARD_KEY_FRAGMENTS_RIN					= 33730133
+CARD_KEY_MEMORIA_HANABI 				= 33730159
+CARD_KEY_MEMORIA_JUST_ONE_MAGIC_WORD 	= 33730161
+
+COUNTER_SPARKLE 		= 0x443
+COUNTER_LBO_HAPPINESS	= 0x440
+
+TOKEN_BELKA		=	33730163
+TOKEN_STRELKA	=	33730162
+
 
 function Card.IsHardCodedSetCard(c,...)
 	local x={...}
@@ -647,6 +666,27 @@ function Auxiliary.ReturnLabelObjectToFieldOp(id,lingering_effect_to_reset)
 				end
 				g:DeleteGroup()
 			end
+end
+
+--Effect Building
+Auxiliary.TargetRangeTable={}
+
+local effect_set_target_range = Effect.SetTargetRange
+
+Effect.SetTargetRange=function(e,self,oppo)
+	local table_oppo = oppo
+	if type(oppo)==nil then
+		table_oppo=false
+	end
+	Auxiliary.TargetRangeTable[e]={self,table_oppo}
+	return effect_set_target_range(e,self,oppo)
+end
+
+function Effect.GLGetTargetRange(e)
+	if not Auxiliary.TargetRangeTable[e] then return false,false end
+	local s=Auxiliary.TargetRangeTable[e][1]
+	local o=Auxiliary.TargetRangeTable[e][2]
+	return s,o
 end
 
 --For cards that equip other cards to themselves ONLY
@@ -1657,6 +1697,10 @@ function Card.HasFlagEffect(c,id,...)
 	
 	return false
 end
+function Card.HasFlagEffectHigher(c,id,val)
+	return c:GetFlagEffect(id)>val
+end
+
 function Duel.PlayerHasFlagEffect(p,id,...)
 	local flags={...}
 	if id then
@@ -2108,6 +2152,57 @@ function Auxiliary.GetMustMaterialGroup(p,eff)
 	return Duel.GetMustMaterial(p,eff)
 end
 
+--Can't be used for any ED materials
+Auxiliary.CannotBeEDMatCodes = {}
+table.insert(Auxiliary.CannotBeEDMatCodes,EFFECT_CANNOT_BE_FUSION_MATERIAL)
+table.insert(Auxiliary.CannotBeEDMatCodes,EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+table.insert(Auxiliary.CannotBeEDMatCodes,EFFECT_CANNOT_BE_XYZ_MATERIAL)
+table.insert(Auxiliary.CannotBeEDMatCodes,EFFECT_CANNOT_BE_LINK_MATERIAL)
+function Auxiliary.CannotBeEDMaterial(c,f,range,isrule,reset,owner,prop,allow_customs,forced)
+	if not owner then owner=c end
+	local property = type(prop)=="number" and prop or 0
+	if (isrule == nil or isrule == true) then
+		property = property|EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_UNCOPYABLE
+	end
+	if range ~=nil then
+		property = property|EFFECT_FLAG_SINGLE_RANGE
+	end
+	local allow_customs = type(allow_customs)=="nil" or allow_customs
+	for _,val in ipairs(Auxiliary.CannotBeEDMatCodes) do
+		if allow_customs or val==EFFECT_CANNOT_BE_FUSION_MATERIAL or val==EFFECT_CANNOT_BE_SYNCHRO_MATERIAL or val==EFFECT_CANNOT_BE_XYZ_MATERIAL or val==EFFECT_CANNOT_BE_LINK_MATERIAL then
+			local restrict = Effect.CreateEffect(owner)
+			restrict:SetType(EFFECT_TYPE_SINGLE)
+			restrict:SetCode(val)
+			if (property ~= 0) then
+				restrict:SetProperty(property)
+			end
+			if range~=nil then
+				restrict:SetRange(range)
+			end
+			if f==nil then
+				restrict:SetValue(1)
+			else
+				restrict:SetValue(Auxiliary.FilterToCannotValue(f))
+			end
+			if reset~=nil then
+				local rct=1
+				if type(reset)=="table" then
+					rct=reset[2]
+					reset=reset[1]
+				end
+				restrict:SetReset(reset,rct)
+			end
+			c:RegisterEffect(restrict,forced)
+		end
+	end
+end
+function Auxiliary.FilterToCannotValue(f)
+	return function (e,c)
+		if not c then return false end
+		return not f(c)
+	end
+end
+
 --Normal Summon/set
 function Card.IsSummonableOrSettable(c)
 	return c:IsSummonable(true,nil) or c:IsMSetable(true,nil)
@@ -2202,6 +2297,12 @@ function Effect.SHOPT(e,oath)
 	end
 	
 	return e:SetCountLimit(1,cid+flag)
+end
+
+--OpInfo
+function Duel.SetCardOperationInfo(g,cat)
+	if aux.GetValueType(g)=="Card" then g=Group.FromCards(g) end
+	return Duel.SetOperationInfo(0,cat,g,#g,g:GetFirst():GetControler(),g:GetFirst():GetLocation())
 end
 
 --Phases

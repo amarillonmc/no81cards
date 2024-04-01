@@ -1,7 +1,6 @@
 --traveler saga kyoukaisen
 --21.04.10
-local m=11451408
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -47,20 +46,21 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		return
 	end
 	local mg=Duel.GetDecktopGroup(tp,seq):Filter(cm.mfilter,nil)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_ADD_TYPE)
+	e1:SetValue(TYPE_RITUAL)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+	tc:RegisterEffect(e1,true)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and #mg>=tc:GetLevel() then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local g1=mg:Select(tp,tc:GetLevel(),tc:GetLevel(),nil)
 		tc:SetMaterial(g1)
 		Duel.SendtoGrave(g1,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL+REASON_REVEAL)
 		Duel.BreakEffect()
-		Duel.SpecialSummonStep(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_ADD_TYPE)
-		e1:SetValue(TYPE_RITUAL)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1,true)
-		Duel.SpecialSummonComplete()
+		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+	else
+		e1:Reset()
 	end
 	Duel.ShuffleDeck(tp)
 end

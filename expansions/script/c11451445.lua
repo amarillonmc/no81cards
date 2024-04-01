@@ -53,7 +53,7 @@ function cm.filter(c,e,tp,bool)
 	e1:SetCode(EFFECT_CHANGE_RACE)
 	e1:SetValue(RACE_WARRIOR)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
-	c:RegisterEffect(e1)
+	c:RegisterEffect(e1,true)
 	local res=c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 	e1:Reset()
 	return res

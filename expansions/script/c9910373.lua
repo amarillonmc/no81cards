@@ -14,6 +14,7 @@ function c9910373.initial_effect(c)
 	c:RegisterEffect(e1)
 	--handes
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9910373,1))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK+CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
@@ -63,21 +64,22 @@ end
 function c9910373.hdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910373.spellfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9910373.spellfilter,tp,LOCATION_ONFIELD,0,1,nil)
-		and Duel.IsExistingMatchingCard(c9910373.thfilter,tp,LOCATION_DECK,0,1,nil) end
+		and Duel.IsExistingMatchingCard(c9910373.thfilter,tp,LOCATION_DECK,0,1,nil)
+		and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910373,0))
 	local g=Duel.SelectTarget(tp,c9910373.spellfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	g:AddCard(e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function c9910373.locfilter(c,sp)
-	return c:IsLocation(LOCATION_DECK) and c:IsControler(sp)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
 end
 function c9910373.hdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g2=Duel.SelectMatchingCard(tp,c9910373.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g2:GetCount()==0 or Duel.SendtoHand(g2,nil,REASON_EFFECT)==0 then return end
+	if #g2==0 or Duel.SendtoHand(g2,nil,REASON_EFFECT)==0 or not g2:GetFirst():IsLocation(LOCATION_HAND) then return end
 	Duel.ConfirmCards(1-tp,g2)
+	local g3=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil):RandomSelect(tp,1)
+	if #g3==0 or Duel.Remove(g3,POS_FACEUP,REASON_EFFECT)==0 then return end
 	local g=Group.CreateGroup()
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
@@ -86,12 +88,5 @@ function c9910373.hdop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.BreakEffect()
 		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
-		local ct=Duel.GetOperatedGroup():FilterCount(c9910373.locfilter,nil,tp)
-		if ct~=2 then return end
-		local g3=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
-		if g3:GetCount()>0 then
-		local sg=g3:RandomSelect(tp,1)
-			Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
-		end
 	end
 end

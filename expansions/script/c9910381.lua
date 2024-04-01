@@ -62,12 +62,13 @@ end
 function c9910381.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910381.spellfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9910381.spellfilter,tp,LOCATION_ONFIELD,0,1,nil)
-		and Duel.IsPlayerCanDraw(tp,1) end
+		and Duel.IsPlayerCanDraw(tp,2) end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910381,0))
 	local g=Duel.SelectTarget(tp,c9910381.spellfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	g:AddCard(e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 end
 function c9910381.drop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -75,10 +76,12 @@ function c9910381.drop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x5951))
-	e1:SetValue(600)
+	e1:SetValue(1000)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-	if Duel.Draw(tp,1,REASON_EFFECT)==0 then return end
+	if Duel.Draw(tp,2,REASON_EFFECT)==0 then return end
+	Duel.ShuffleHand(tp)
+	if Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)==0 then return end
 	local g=Group.CreateGroup()
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()

@@ -74,13 +74,14 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(c,REASON_EFFECT)
 		return
 	end
-	Duel.Equip(tp,c,tc) 
+	 Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) 
+		Duel.Equip(tp,tc,c)   
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_SINGLE)
 		e3:SetCode(EFFECT_EQUIP_LIMIT)
 		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e3:SetValue(1)
-		c:RegisterEffect(e3)
+		tc:RegisterEffect(e3)
 	
 end
 function cm.con2(e,tp,eg,ep,ev,re,r,rp)

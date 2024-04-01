@@ -14,6 +14,7 @@ function c9910385.initial_effect(c)
 	c:RegisterEffect(e1)
 	--disable
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9910385,1))
 	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
@@ -64,16 +65,12 @@ function c9910385.spellfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_SPELL) and c:IsAbleToDeck()
 end
 function c9910385.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local g2=Duel.GetMatchingGroup(aux.NegateEffectMonsterFilter,tp,0,LOCATION_MZONE,nil)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910385.spellfilter(chkc) end
-	local g2=eg:Filter(c9910385.cfilter,nil,tp)
-	if chk==0 then return Duel.IsExistingTarget(c9910385.spellfilter,tp,LOCATION_ONFIELD,0,1,nil)
-		and g2:IsExists(aux.disfilter1,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(c9910385.spellfilter,tp,LOCATION_ONFIELD,0,1,nil) and #g2>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910385,0))
 	local g=Duel.SelectTarget(tp,c9910385.spellfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	g:AddCard(e:GetHandler())
-	for rc in aux.Next(eg) do
-		rc:CreateEffectRelation(e)
-	end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g2,g2:GetCount(),0,0)
 end
@@ -81,20 +78,28 @@ function c9910385.locfilter(c,sp)
 	return c:IsLocation(LOCATION_DECK) and c:IsControler(sp)
 end
 function c9910385.disop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(0,1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 	local c=e:GetHandler()
-	local g2=eg:Filter(c9910385.cfilter2,nil,tp,e)
+	local g2=Duel.GetMatchingGroup(aux.NegateEffectMonsterFilter,tp,0,LOCATION_MZONE,nil)
+	if #g2==0 then return end
 	for tc2 in aux.Next(g2) do
 		Duel.NegateRelatedChain(tc2,RESET_TURN_SET)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc2:RegisterEffect(e1)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e2:SetCode(EFFECT_DISABLE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc2:RegisterEffect(e2)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_DISABLE_EFFECT)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc2:RegisterEffect(e3)
 	end
 	local g=Group.CreateGroup()
 	local tc=Duel.GetFirstTarget()
@@ -105,12 +110,5 @@ function c9910385.disop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 		local ct=Duel.GetOperatedGroup():FilterCount(c9910385.locfilter,nil,tp)
 		if ct==2 then return end
-	end
-	for tc2 in aux.Next(g2) do
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetCode(EFFECT_CANNOT_ATTACK)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc2:RegisterEffect(e3)
 	end
 end

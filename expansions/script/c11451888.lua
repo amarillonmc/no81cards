@@ -15,7 +15,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,4) end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(4)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,3,tp,LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,4,tp,LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,4)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -24,9 +24,9 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ShuffleHand(p)
 		Duel.BreakEffect()
 		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,p,LOCATION_HAND,0,nil)
-		if #g>=3 then
+		if #g>=4 then
 			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
-			local sg=g:Select(p,3,3,nil)
+			local sg=g:Select(p,4,4,nil)
 			Duel.ConfirmCards(1-p,sg)
 			Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 			--match kill

@@ -50,28 +50,33 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetTarget(cm.counterfilter1)
 	Duel.RegisterEffect(e1,tp)
 end
+function cm.tgfilter2(c)
+	return c:IsSetCard(0x9d2) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() and chkc:IsControler(1-tp) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and cm.tgfilter(chkc) and chkc:IsControler(tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
+		and Duel.IsExistingTarget(cm.tgfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil)
+	Duel.SelectTarget(tp,cm.tgfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	if not c:IsRelateToEffect(e) then return end
 	local tc=Duel.GetFirstTarget()
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or tc:IsFacedown() or not tc:IsRelateToEffect(e) then
-		Duel.SendtoGrave(c,REASON_EFFECT)
+	   
 		return
 	end
-		Duel.Equip(tp,c,tc)   
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) 
+		local sc=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil):GetFirst()
+		Duel.Equip(tp,tc,sc)   
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_SINGLE)
 		e3:SetCode(EFFECT_EQUIP_LIMIT)
 		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e3:SetValue(1)
-		c:RegisterEffect(e3)
+		tc:RegisterEffect(e3)
 		
 end
 function cm.con4(e,tp,eg,ep,ev,re,r,rp)
@@ -105,6 +110,9 @@ end
 function cm.tgfilter(c)
 	return c:IsSetCard(0x9d2) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
+function cm.thfilter2(c)
+	return  c:IsSetCard(0x9d2)  and c:IsType(TYPE_MONSTER)and not c:IsForbidden()
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return cm.tgfilter(chkc) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingTarget(cm.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,LOCATION_MZONE)>1 end
@@ -116,7 +124,7 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,tc)
 	local tc2=g:GetFirst()
 	if tc:IsRelateToEffect(e)  and tc2:IsFaceup() then
 		if not Duel.Equip(tp,tc2,tc,false) then return end
@@ -127,8 +135,22 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(cm.eqlimit)
 		tc2:RegisterEffect(e1)
-	end
+		 if Duel.SelectYesNo(tp,aux.Stringid(m,0)) and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.thfilter2),tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0  then   
+		local tc=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil):GetFirst()
+		local sc=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_GRAVE,0,1,1,nil):GetFirst()
+		Duel.Equip(tp,sc,tc)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_EQUIP_LIMIT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(cm.eqlimit)
+		e1:SetLabelObject(tc)
+		sc:RegisterEffect(e1)
+		end 
+   end
 end
+	
 function cm.eqlimit(e,c)
 	return e:GetOwner()==c
 end

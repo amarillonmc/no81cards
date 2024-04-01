@@ -153,11 +153,11 @@ function s.initial_effect(c)
 		local f6=Duel.MoveToField
 		Duel.MoveToField=function(mc,...)
 			local res=f6(mc,...)
-			if s.check then sc:RegisterFlagEffect(id,RESET_EVENT+0x1fc0000,0,1) end
+			if s.check then mc:RegisterFlagEffect(id,RESET_EVENT+0x1fc0000,0,1) end
 			return res
 		end
 		local f7=Duel.Equip
-		Duel.MoveToField=function(p,ec,...)
+		Duel.Equip=function(p,ec,...)
 			local res=f7(p,ec,...)
 			if s.check then ec:RegisterFlagEffect(id,RESET_EVENT+0x1fc0000,0,1) end
 			return res
@@ -176,14 +176,13 @@ function s.initial_effect(c)
 			return res
 		end
 		local originalEffCheckFunctions={}
-		local EffCheckFunctionsName={"IsAbleToHand","IsAbleToDeck","IsAbleToGrave","IsPlayerCanSendtoHand","IsPlayerCanSendtoDeck","IsPlayerCanSendtoGrave","IsPlayerCanDiscardDeck","IsPlayerCanDraw"}
+		local EffCheckFunctionsName={"IsAbleToDeck","IsAbleToGrave","IsAbleToHand","IsPlayerCanSendtoHand","IsPlayerCanSendtoDeck","IsPlayerCanSendtoGrave","IsPlayerCanDiscardDeck","IsPlayerCanDraw"}
 		for i,funcName in ipairs(EffCheckFunctionsName) do
 			local tab=Duel
 			if i<4 then tab=Card end
 			originalEffCheckFunctions[funcName]=tab[funcName]
-			tab[funcName]=function(other,sc,...)
-				if s.check then sc:RegisterFlagEffect(id,RESET_EVENT+0xfc0000,0,1) end
-				return originalEffCheckFunctions[funcName](other,sc,...) and (not Duel.IsPlayerAffectedByEffect(0,id) or s.effcheck)
+			tab[funcName]=function(...)
+				return originalEffCheckFunctions[funcName](...) and (not Duel.IsPlayerAffectedByEffect(0,id) or s.effcheck)
 			end
 		end
 		local originalDuelFunctions={}
@@ -198,7 +197,7 @@ function s.initial_effect(c)
 	end
 end
 function s.cfilter(c,re)
-	return c:GetLocation()~=c:GetPreviousLocation() and ((c:IsReason(REASON_EFFECT+REASON_REDIRECT) and (not re or re:IsActivated())) or (c:GetSpecialSummonInfo(SUMMON_INFO_REASON_EFFECT) and not c:GetSpecialSummonInfo(SUMMON_INFO_REASON_EFFECT):IsActivated()))
+	return c:GetLocation()~=c:GetPreviousLocation() and ((c:IsReason(REASON_EFFECT+REASON_REDIRECT) and (not re or not re:IsActivated())) or (c:GetSpecialSummonInfo(SUMMON_INFO_REASON_EFFECT) and not c:GetSpecialSummonInfo(SUMMON_INFO_REASON_EFFECT):IsActivated()))
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	s.mvcheck=true

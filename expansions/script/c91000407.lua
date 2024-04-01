@@ -17,11 +17,7 @@ function c91000407.initial_effect(c)
 	e2:SetCost(cm.cost)
 	e2:SetTarget(cm.tg2)
 	e2:SetOperation(cm.op2)
-	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_EQUIP)
-	e3:SetCode(EFFECT_CANNOT_DISABLE)
-	c:RegisterEffect(e3)	
+	c:RegisterEffect(e2)   
 	local e5=Effect.CreateEffect(c)
 	e5:SetCategory(CATEGORY_EQUIP)
 	e5:SetType(EFFECT_TYPE_IGNITION)
@@ -63,35 +59,27 @@ end
 function cm.thfilter2(c)
 	return  c:IsSetCard(0x9d2)and not c:IsForbidden() and c:IsType(TYPE_MONSTER)
 end
-function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp)end 
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+	Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,e:GetHandler())
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
-local c=e:GetHandler()
-local g=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_DECK,0,1,1,nil)
-if g:GetCount()>0 then 
-		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.thfilter2),tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0   then
-		if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		local tc=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil):GetFirst()
-		local sc=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_GRAVE,0,1,1,nil):GetFirst()
-		Duel.Equip(tp,sc,tc)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_EQUIP_LIMIT)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(cm.eqlimit)
-		e1:SetLabelObject(tc)
-		sc:RegisterEffect(e1)
-		end 
-	 end
-   end
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	local tc=Duel.GetFirstTarget()
+	if c:IsRelateToEffect(e) and tc:IsFaceup()  and tc:IsRelateToEffect(e) then
+		if not Duel.Equip(tp,c,tc) then return end
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_EQUIP_LIMIT)
+		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e3:SetValue(1)
+		c:RegisterEffect(e3)
+	end
 end
-function cm.eqlimit(e,c)
-	return e:GetLabelObject()==c
-end
-
 function cm.cval(e,c)
 	return e:GetHandlerPlayer()
 end

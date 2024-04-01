@@ -9,12 +9,25 @@ function c67200761.initial_effect(c)
 	e1:SetCost(c67200761.stcost)
 	e1:SetTarget(c67200761.sttg)
 	e1:SetOperation(c67200761.stop)
-	c:RegisterEffect(e1)	
+	c:RegisterEffect(e1)  
+	--zha shi
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(67200761,1))
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION+CATEGORY_GRAVE_SPSUMMON)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCountLimit(1,67200750)
+	e3:SetCost(c67200761.tscost)
+	e3:SetTarget(c67200761.tstg)
+	e3:SetOperation(c67200761.tsop)
+	c:RegisterEffect(e3)  
 end
 function c67200761.stcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(c,REASON_COST)
+	if chk==0 then return c:IsReleasable() end
+	Duel.Release(c,REASON_COST)
 end
 function c67200761.stfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x367d) and c:IsSSetable()
@@ -62,5 +75,34 @@ function c67200761.stop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c67200761.rmtarget(e,c)
-	return c:GetOriginalType()&TYPE_TRAP~=0
+	return c:GetOriginalType()&TYPE_SPELL~=0
+end
+--
+function c67200761.costfilter(c)
+	return c:IsSetCard(0x367d) and c:IsAbleToRemoveAsCost()
+end
+function c67200761.tscost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c67200761.costfilter,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,c67200761.costfilter,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function c67200761.tstg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToHand()
+		or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)) end
+end
+function c67200761.tsop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	if aux.NecroValleyNegateCheck(c) then return end
+	if not aux.NecroValleyFilter()(c) then return end
+	local b1=c:IsAbleToHand()
+	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	local op=aux.SelectFromOptions(tp,{b1,1190},{b2,1152})
+	if op==1 then
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
+	end
+	if op==2 then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
 end

@@ -42,6 +42,17 @@ function cm.initial_effect(c)
 		ge2:SetOperation(cm.clear)
 		Duel.RegisterEffect(ge2,0)
 	end
+	if not PTFL_SUMMONRULE_CHECK then
+		PTFL_SUMMONRULE_CHECK=true
+		local summon_set={"Summon","MSet","SpecialSummonRule","SynchroSummon","XyzSummon","XyzSummonByRose","LinkSummon"}
+		for i,fname in pairs(summon_set) do
+			local temp_f=Duel[fname]
+			Duel[fname]=function(p,c,...)
+				temp_f(p,c,...)
+				c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1)
+			end
+		end
+	end
 end
 function cm.check(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(eg) do
@@ -113,15 +124,21 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if rp==1-tp and e:GetLabel()==1 then return end
 	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,rp,LOCATION_DECK,0,nil)
-	if #g>0 then --and Duel.SelectYesNo(rp,aux.Stringid(m,1)) then
+	if Duel.GetFlagEffect(rp,m+2)==0 and #g>0 then --and Duel.SelectYesNo(rp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.Hint(HINT_SELECTMSG,rp,HINTMSG_ATOHAND)
 		local tc=g:Select(rp,0,1,nil):GetFirst()
-		if not tc then return end
+		if not tc then
+			if cm[rp+10]==nil then
+				cm[rp+10]=Duel.SelectYesNo(rp,aux.Stringid(m,3))
+			end
+			if cm[rp+10] then Duel.RegisterFlagEffect(rp,m+2,RESET_CHAIN,0,1) end
+			return
+		end
 		if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 then
 			Duel.ConfirmCards(1-rp,tc)
 			Duel.HintSelection(Group.FromCards(tc))
-			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
 			local e2=Effect.CreateEffect(e:GetHandler())
 			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e2:SetCode(EVENT_CHAIN_SOLVED)
@@ -145,5 +162,5 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	if tc:GetFlagEffect(m)~=0 then Duel.SendtoDeck(tc,nil,2,REASON_EFFECT) end
+	if tc:GetFlagEffect(m)~=0 and tc:GetFlagEffect(11451905)==0 then Duel.SendtoDeck(tc,nil,2,REASON_EFFECT) end
 end

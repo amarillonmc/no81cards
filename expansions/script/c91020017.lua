@@ -9,33 +9,26 @@ function c91020017.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetTargetRange(POS_FACEDOWN_DEFENSE,0)   
 	e1:SetCountLimit(1,m*3)
+	e1:SetCost(cm.cost)
 	e1:SetCondition(cm.con1)
 	e1:SetOperation(cm.op1)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e2:SetCode(EVENT_FLIP)
-	e2:SetProperty(EFFECT_FLAG_DELAY) 
+	e2:SetCode(EVENT_RELEASE)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e2:SetTarget(cm.tg2)
 	e2:SetCountLimit(1,m)
 	e2:SetOperation(cm.op2)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCategory(CATEGORY_RELEASE)
-	e3:SetCode(EVENT_RELEASE)
-	c:RegisterEffect(e3)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_FLIP)
-	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e4:SetOperation(cm.flipop)
-	c:RegisterEffect(e4)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetCategory(CATEGORY_SEARCH)
-	e5:SetRange(LOCATION_MZONE)
+	e5:SetRange(LOCATION_GRAVE)
 	e5:SetCountLimit(1,m*2)
 	e5:SetCondition(cm.condition)
+	e5:SetCost(aux.bfgcost)
 	e5:SetTarget(cm.tg5)
 	e5:SetOperation(cm.op5)
 	c:RegisterEffect(e5)
@@ -43,21 +36,19 @@ function c91020017.initial_effect(c)
 end
 --e4
 function cm.counterfilter(c)
-	return  c:IsSetCard(0x9d0) or  c:IsSetCard(0x9d1)
-end
-function cm.flipop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(91020017,RESET_EVENT+RESETS_STANDARD,0,1)
+	return c:IsSetCard(0x9d0) or c:IsSetCard(0x9d1) or  c:IsRace(RACE_DIVINE) 
 end
 --e1
 function cm.tag(e,c)
-return not (c:IsSetCard(0x9d0) or  c:IsSetCard(0x9d1))
+return not (c:IsSetCard(0x9d0) or c:IsSetCard(0x9d1) or  c:IsRace(RACE_DIVINE))
 end
 function cm.con1(e,c)
 if c==nil then return true end  
-return  Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0 and Duel.GetCustomActivityCount(91020017,tp,ACTIVITY_SPSUMMON)==0 
+return  Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and  Duel.GetCustomActivityCount(91020017,tp,ACTIVITY_SPSUMMON)==0 
 end
-function cm.op1(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chk==0 then return true end
+ local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
@@ -65,7 +56,9 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(1,0)
 	e1:SetTarget(cm.tag)
 	Duel.RegisterEffect(e1,tp)
-	local c=e:GetHandler()	  
+end
+function cm.op1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()  
 	Duel.ConfirmCards(1-tp,c)
 end
 --e2
@@ -82,51 +75,22 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.fit,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)	  
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)  
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
 --e5
-function cm.fit2(c,e,tp)
-	return c:IsSetCard(0x9d0) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function cm.fit2(c)
+	return c:IsSetCard(0x9d0) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-local c=e:GetHandler()
- return c:IsFaceup() and c:GetFlagEffect(91020017)>0 and  not c:IsDisabled()
+	return  Duel.IsExistingMatchingCard(Card.IsRace,tp,LOCATION_MZONE,0,1,nil,RACE_DIVINE)
 end
 function cm.tg5(e,tp,eg,ep,ev,re,r,rp,chk)
-if chk==0 then return Duel.IsExistingMatchingCard(cm.fit2,tp,LOCATION_DECK,0,1,nil,e,tp) end
+if chk==0 then return Duel.IsExistingMatchingCard(cm.fit2,tp,LOCATION_DECK,0,1,nil) end
   Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.op5(e,tp,eg,ep,ev,re,r,rp)
-Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-local g=Duel.GetMatchingGroup(cm.fit2,tp,LOCATION_DECK,0,nil,e,tp)
-	if g:GetCount()>0 then
-	local sg=g:RandomSelect(tp,1)
-	  Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP) 
-	 local tc=sg:GetFirst()
-	tc:RegisterFlagEffect(91000001,RESET_EVENT+RESETS_STANDARD,0,1)
-	local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e2:SetCode(EVENT_PHASE+PHASE_END)
-		e2:SetCountLimit(1)
-		e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e2:SetLabelObject(tc)
-		e2:SetCondition(cm.descon)
-		e2:SetOperation(cm.desop)
-		Duel.RegisterEffect(e2,tp)
- end
-end
-function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if tc:GetFlagEffect(9100001)~=0 then
-		return true
-	else
-		e:Reset()
-		return false
-	end
-end
-function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	Duel.SendtoHand(tc,tp,REASON_EFFECT)
+local g=Duel.SelectMatchingCard(tp,cm.fit2,tp,LOCATION_DECK,0,1,1,nil)
+	Duel.SendtoHand(g,nil,REASON_EFFECT)   
 end

@@ -118,7 +118,7 @@ function c91020009.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		if b3 then
 			ops[off]=aux.Stringid(91020009,4)
 			opval[off-1]=3
-			off=off+1
+			off=off+1 
 		end
 		local op=Duel.SelectOption(tp,table.unpack(ops))
 		if opval[op]==1 then
@@ -138,32 +138,30 @@ function c91020009.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local g=Duel.GetMatchingGroup(c91020009.filter,tp,0,LOCATION_MZONE,nil)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 	end
+	if bit.band(sel,1)~=0 then
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,0,LOCATION_GRAVE)
+	end
 end
 function c91020009.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sel=e:GetLabel()
 	if bit.band(sel,1)~=0 and c:IsFaceup() and c:IsRelateToEffect(e) then
-		local lv=e:GetLabelObject():GetLabel()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(lv*100)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		c:RegisterEffect(e1)
+	local g=Duel.SelectMatchingCard(tp,aux.FilterBoolFunction(Card.IsSetCard,0x9d1),tp,LOCATION_GRAVE,0,1,1,nil)
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 	end
 	if bit.band(sel,2)~=0 then
 		local g=Duel.GetMatchingGroup(c91020009.filter,tp,0,LOCATION_MZONE,nil)
 		local dg=Group.CreateGroup()		
 		local tc=g:GetFirst()
-		while tc do				 
+		while tc do		   
 			if  tc:GetAttack()<=e:GetHandler():GetAttack() then dg:AddCard(tc) end
-		tc=g:GetNext()	  
+		tc=g:GetNext()  
 		end 
 		Duel.Destroy(dg,REASON_EFFECT)
 	end
 	if bit.band(sel,4)~=0 then
 		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
-		local tc=e:GetHandler()	  
+		local tc=e:GetHandler()   
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_EXTRA_ATTACK)
@@ -179,7 +177,7 @@ function c91020009.operation(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(1)
 		e2:SetCondition(c91020009.actcon)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e2,tp)				
+		Duel.RegisterEffect(e2,tp)			
 	end
 end
 function c91020009.actcon(e)

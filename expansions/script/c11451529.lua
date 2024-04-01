@@ -1,9 +1,8 @@
 --方舟骑士-阿
 --21.04.29
-local m=11451529
-local cm=_G["c"..m]
+local cm,m=GetID()
 cm.named_with_Arknight=1
-function cm.initial_effect(c) 
+function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_CONTROL)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
@@ -33,7 +32,7 @@ function cm.caop(e,tp,eg,ep,ev,re,r,rp)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_DIRECT_ATTACK)
-	c:RegisterEffect(e0)
+	c:RegisterEffect(e0,true)
 	local _,res=c:GetAttackableTarget()
 	if not c:IsRelateToEffect(e) or not c:IsAttackable() or not res or c:IsControler(tp) or c:IsImmuneToEffect(e) then e0:Reset() return end
 	e0:Reset()

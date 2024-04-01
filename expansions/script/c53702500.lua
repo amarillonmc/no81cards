@@ -1394,6 +1394,7 @@ function cm.HTFPlacePZone(c,lv,loc,lab,event,code,tp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.HTFPlaceFilter(c,lv,lab)
+--Debug.Message(c:IsType(TYPE_EFFECT))
 	return c:IsType(TYPE_PENDULUM) and c:IsLevelBelow(lv) and not c:IsType(TYPE_EFFECT) and not c:IsForbidden() and (c:IsFaceup() or lab==0)
 end
 function cm.HTFPlaceCondition(lv,loc,lab)
@@ -2831,22 +2832,36 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(53702701)
 		e1:SetLabelObject(se)
 		reg(sc,e1,true)
+		--if se:GetCode()==EFFECT_ADD_TYPE then Debug.Message(sc:GetCode()) end
 		return reg(sc,se,bool)
 	end
 	--[[AD_Avoid_RegisterEffect=Duel.RegisterEffect
 	Duel.RegisterEffect=function(...)
 		return
 	end--]]
+--local cscs=g:GetFirst()
 	for tc in aux.Next(g) do
 		if tc.initial_effect then
+--Debug.Message(tc:GetCode())
 			local ini=cm.initial_effect
 			cm.initial_effect=function() end
+			--if cscs:IsCode(53715006) then Debug.Message(cscs:IsType(TYPE_EFFECT)) end
 			if tc:GetFlagEffect(53702700)>0 then
 				local le={tc:IsHasEffect(53702701)}
 				for _,v in pairs(le) do v:GetLabelObject():Reset() v:Reset() end
-			else tc:ReplaceEffect(m,0) end
+			else
+				if tc:GetOriginalType()&0x1~=0 and tc:GetOriginalType()&0x20==0 then
+					local le1={tc:IsHasEffect(EFFECT_ADD_TYPE)}
+					tc:ReplaceEffect(m,0)
+					local le2={tc:IsHasEffect(EFFECT_ADD_TYPE)}
+					cm.RemoveElements(le1,le2)
+					for _,v in pairs(le2) do v:Reset() end
+				else tc:ReplaceEffect(m,0) end
+			end
+			--if cscs:IsCode(53715006) then Debug.Message(cscs:IsType(TYPE_EFFECT)) end
 			cm.initial_effect=ini
 			tc.initial_effect(tc)
+			--if cscs:IsCode(53715006) then Debug.Message(cscs:IsType(TYPE_EFFECT)) end
 		end
 	end
 	Card.RegisterEffect=reg
@@ -7528,4 +7543,14 @@ function cm.AllExist(table1, table2)
 		end
 	end
 	return true
+end
+function cm.RemoveElements(table1, table2)
+	for key, value in pairs(table1) do
+		for k, v in pairs(table2) do
+			if v == value then
+				table.remove(table2, k) -- 从table2中移除相应的元素
+				break -- 跳出内层循环，继续下一个元素的检查
+			end
+		end
+	end
 end

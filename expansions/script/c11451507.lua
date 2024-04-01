@@ -224,9 +224,9 @@ function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
-	re:SetCategory(re:GetCategory()|CATEGORY_DRAW)
-	if re:GetLabel()&0xbf~=0 then re:SetLabel(re:GetLabel()|0x4) return end
-	re:SetLabel(re:GetLabel()|0x4)
+	re:SetCategory(re:GetCategory()|CATEGORY_REMOVE)
+	if re:GetLabel()&0xbf~=0 then re:SetLabel(re:GetLabel()|0x10) return end
+	re:SetLabel(re:GetLabel()|0x10)
 	local op=re:GetOperation()
 	local repop=function(e,tp,eg,ep,ev,re,r,rp)
 		op(e,tp,eg,ep,ev,re,r,rp)

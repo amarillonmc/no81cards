@@ -47,15 +47,39 @@ function cm.cost5(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,cm.costfilter,1,1,REASON_COST+REASON_DISCARD,nil) 
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)  end
+	if chk==0 then
+		if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<4 then return false end
+		local g=Duel.GetDecktopGroup(tp,4)
+		local result=g:FilterCount(Card.IsAbleToHand,nil)>0
+		return result
+	end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+ function cm.tdfilter(c)
+	return c:IsAbleToHand() and c:IsSetCard(0x9d2) 
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)	   
-end
+	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	Duel.ConfirmDecktop(p,4)
+	local g=Duel.GetDecktopGroup(p,4)
+	if not g or #g<4 then return end
+	g=g:Filter(cm.tdfilter,nil)
+	local ct=4
+	if #g>0 and Duel.SelectYesNo(p,aux.Stringid(m,1)) then
+		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
+		local sg=g:Select(p,1,1,nil)
+		Duel.DisableShuffleCheck()
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-p,sg)
+		Duel.ShuffleHand(p)
+		ct=ct-1
+	end
+	Duel.SortDecktop(p,p,ct)
+	for i=1,ct do
+		local mg=Duel.GetDecktopGroup(p,1)
+		Duel.MoveSequence(mg:GetFirst(),SEQ_DECKTOP)
+	end
+end   
 function cm.sfilter(c,e,tp)
 	return c:GetOriginalType()&TYPE_MONSTER>0 and c:GetType()&TYPE_EQUIP+TYPE_SPELL==TYPE_EQUIP+TYPE_SPELL
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
