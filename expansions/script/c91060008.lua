@@ -75,7 +75,7 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 			local cost=te:GetCost()
 			local target=te:GetTarget()
 			local operation=te:GetOperation()
-			if te:GetCode()==EVENT_FREE_CHAIN and te:IsActivatable(tep)
+			if te:GetCode()==EVENT_FREE_CHAIN 
 				and (not condition or condition(te,tep,eg,ep,ev,re,r,rp))
 				and (not cost or cost(te,tep,eg,ep,ev,re,r,rp,0))
 				and (not target or target(te,tep,eg,ep,ev,re,r,rp,0)) then
