@@ -33,7 +33,7 @@ function c67200756.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c67200756.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x67d) and c:IsType(TYPE_LINK)
+	return c:IsFaceup() and c:IsSetCard(0x367d) and c:IsType(TYPE_LINK)
 end
 function c67200756.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c67200756.cfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -43,7 +43,7 @@ function c67200756.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 end
-function c67200756.operation(e,tp,eg,ep,ev,re,r,rp)
+function c67200756.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateActivation(ev)
 end
 --

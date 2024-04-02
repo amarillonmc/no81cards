@@ -76,7 +76,7 @@ function s.tscon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsPreviousLocation(LOCATION_ONFIELD)
 end
-function s.tsfilter(c)
+function s.tsfilter(c,tp)
 	return c:IsSetCard(0x541a) and c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsAbleToRemove() and 
 	Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,c:GetCode())
 end
@@ -84,13 +84,13 @@ function s.thfilter(c,code)
 	return c:IsSetCard(0x541a) and not c:IsCode(code) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
 function s.tstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.tsfilter,tp,LOCATION_EXTRA,0,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.tsfilter,tp,LOCATION_EXTRA,0,1,e:GetHandler(),tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function s.tsop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(s.tsfilter,tp,LOCATION_EXTRA,0,1,e:GetHandler()) then return end
+	if not Duel.IsExistingMatchingCard(s.tsfilter,tp,LOCATION_EXTRA,0,1,e:GetHandler(),tp) then return end
 	 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,s.tsfilter,tp,LOCATION_EXTRA,0,1,1,e:GetHandler())
+	local g=Duel.SelectMatchingCard(tp,s.tsfilter,tp,LOCATION_EXTRA,0,1,1,e:GetHandler(),tp)
 	local tc=g:GetFirst()
 	if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 then  
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)

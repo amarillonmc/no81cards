@@ -144,7 +144,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EFFECT_EQUIP_LIMIT)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(cm.eqlimit)
+		e1:SetValue(cm.eqlimit2)
 		e1:SetLabelObject(tc)
 		sc:RegisterEffect(e1)
 		end 
@@ -153,5 +153,8 @@ end
 	
 function cm.eqlimit(e,c)
 	return e:GetOwner()==c
+end
+function cm.eqlimit2(e,c)
+	return e:GetLabelObject()==c
 end
 	

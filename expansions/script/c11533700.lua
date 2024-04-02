@@ -81,7 +81,7 @@ function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp)
 	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) and Duel.IsPlayerCanDraw(tp,2)
 	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,LOCATION_GRAVE,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,nil) and Duel.IsPlayerCanDraw(tp,1)
 	local op=0
-			if b1 and b2 then  
+			if b1 or b2 then  
 			op=Duel.SelectOption(tp,aux.Stringid(11533700,2),aux.Stringid(11533700,3))
 			elseif b1 then 
 			op=Duel.SelectOption(tp,aux.Stringid(11533700,2))
