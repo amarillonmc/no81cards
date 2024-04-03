@@ -242,7 +242,7 @@ function c11533701.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	--
 	if not c11533701.globle_check then
 		c11533701.globle_check=true
-		local g=Duel.GetMatchingGroup(c11533701.filter2,0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_HAND,nil)
+		local g=Duel.GetMatchingGroup(c11533701.filter2,0,0xff,0xff,nil)
 		cregister=Card.RegisterEffect
 		cisdiscardable=Card.IsDiscardable
 		table_effect={}
@@ -267,7 +267,6 @@ function c11533701.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		Card.RegisterEffect=cregister
 		Card.IsDiscardable=cisdiscardable
 	end
-	e:Reset()
 end
 
 
@@ -293,7 +292,7 @@ function c11533701.efftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.SelectTarget(tp,c11533701.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp,e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local te=Nekroz_discard_effect[g:GetFirst():GetOriginalCode()]
 	Duel.ClearTargetCard()
-	e:SetProperty(te:GetProperty())
+	e:SetProperty(te:GetProperty()+EFFECT_FLAG_DELAY)
 	e:SetLabel(te:GetLabel())
 	e:SetLabelObject(te:GetLabelObject())
 	local tg=te:GetTarget()
