@@ -29,56 +29,44 @@ function c60152913.initial_effect(c)
 	e9:SetOperation(c60152913.e3op)
 	c:RegisterEffect(e9)
 
-	if not c60152901.global_check then
-		c60152901.global_check=true
+	if not c60152913.global_check then
+		c60152913.global_check=true
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_TO_HAND)
-		ge1:SetOperation(c60152901.regop)
+		ge1:SetOperation(c60152913.regop)
 		Duel.RegisterEffect(ge1,0)
-	end
-	
 
-	if not c60152902.global_check then
-		c60152902.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_SUMMON_SUCCESS)
-		ge1:SetOperation(c60152902.checkop)
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_SUMMON_SUCCESS)
+		ge2:SetOperation(c60152913.checkop2)
 		Duel.RegisterEffect(ge1,0)
-		local ge2=ge1:Clone()
-		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
-		Duel.RegisterEffect(ge2,0)
-		local ge3=ge1:Clone()
-		ge3:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
+		local ge3=ge2:Clone()
+		ge3:SetCode(EVENT_SPSUMMON_SUCCESS)
 		Duel.RegisterEffect(ge3,0)
-	end
-	
+		local ge4=ge1:Clone()
+		ge4:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
+		Duel.RegisterEffect(ge4,0)
 
-	if not c60152903.global_check then
-		c60152903.global_check=true
-		local ge1=Effect.GlobalEffect()
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_BATTLED)
-		ge1:SetOperation(c60152903.checkop)
-		Duel.RegisterEffect(ge1,0)
-	end
-	
+		local ge5=Effect.GlobalEffect()
+		ge5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge5:SetCode(EVENT_BATTLED)
+		ge5:SetOperation(c60152913.checkop3)
+		Duel.RegisterEffect(ge5,0)
 
-	if not c60152904.global_check then
-		c60152904.global_check=true
-		local ge1=Effect.GlobalEffect()
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_TO_GRAVE)
-		ge1:SetOperation(c60152904.checkop)
-		Duel.RegisterEffect(ge1,0)
+		local ge6=Effect.GlobalEffect()
+		ge6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge6:SetCode(EVENT_TO_GRAVE)
+		ge6:SetOperation(c60152913.checkop4)
+		Duel.RegisterEffect(ge6,0)
 	end
 	
 	Duel.AddCustomActivityCounter(60152905,ACTIVITY_CHAIN,aux.FALSE)
 	
 end
 
-function c60152901.regop(e,tp,eg,ep,ev,re,r,rp)
+function c60152913.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(Card.IsPreviousLocation,nil,LOCATION_DECK)
 	local tc=g:GetFirst()
 	while tc do
@@ -92,7 +80,7 @@ function c60152901.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function c60152902.checkop(e,tp,eg,ep,ev,re,r,rp)
+function c60152913.checkop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
 		Duel.RegisterFlagEffect(tc:GetSummonPlayer(),60152902,RESET_PHASE+PHASE_END,0,1)
@@ -101,17 +89,17 @@ function c60152902.checkop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 
-function c60152903.check(c)
+function c60152913.check(c)
 	return c 
 end
-function c60152903.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if c60152903.check(Duel.GetAttacker()) and c60152903.check(Duel.GetAttackTarget()) then
+function c60152913.checkop3(e,tp,eg,ep,ev,re,r,rp)
+	if c60152913.check(Duel.GetAttacker()) and c60152913.check(Duel.GetAttackTarget()) then
 		Duel.RegisterFlagEffect(tp,60152903,RESET_PHASE+PHASE_END,0,1)
 		Duel.RegisterFlagEffect(1-tp,60152903,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 
-function c60152904.checkop(e,tp,eg,ep,ev,re,r,rp)
+function c60152913.checkop4(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(Card.IsType,nil,TYPE_MONSTER)
 	local tc=g:GetFirst()
 	while tc do
