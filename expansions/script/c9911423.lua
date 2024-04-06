@@ -27,9 +27,6 @@ function c9911423.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.PayLPCost(tp,2000)
 end
 function c9911423.effilter(c)
-	return c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_SPECIAL)
-end
-function c9911423.effilter(c)
 	return c:IsType(TYPE_EFFECT) and c:GetTurnID()==Duel.GetTurnCount() and not c:IsReason(REASON_RETURN)
 end
 function c9911423.efop(e,tp,eg,ep,ev,re,r,rp)
@@ -55,7 +52,8 @@ function c9911423.discon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)&LOCATION_ONFIELD~=0
 end
 function c9911423.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() and Duel.GetFlagEffect(tp,9911423)==0 end
+	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()
+		and Duel.GetFlagEffect(tp,9911423)==0 and Duel.GetFlagEffect(1-tp,9911423)==0 end
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 	Duel.RegisterFlagEffect(tp,9911423,RESET_CHAIN,0,1)
 end

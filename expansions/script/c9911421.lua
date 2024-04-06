@@ -61,7 +61,8 @@ function c9911421.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler()) and eg:IsExists(Card.IsControler,1,nil,tp)
 end
 function c9911421.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() and Duel.GetFlagEffect(tp,9911421)==0 end
+	if chk==0 then return e:GetHandler():IsReleasable()
+		and Duel.GetFlagEffect(tp,9911421)==0 and Duel.GetFlagEffect(1-tp,9911421)==0 end
 	Duel.Release(e:GetHandler(),REASON_COST)
 	Duel.RegisterFlagEffect(tp,9911421,RESET_CHAIN,0,1)
 end

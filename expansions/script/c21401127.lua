@@ -55,8 +55,8 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) > 0 and #eg>0 then
-		local mg = eg:Filter(s.spfilter,nil)
-		local mg = eg
+		--local mg = eg:Filter(s.spfilter,nil)
+		local mg = eg:Filter(Card.IsLocation,nil,LOCATION_REMOVED)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
