@@ -69,7 +69,7 @@ function s.descon(e,tp)
 	return not Duel.IsExistingMatchingCard(Card.IsFaceup,0,LOCATION_SZONE,LOCATION_SZONE,1,g)
 end
 function s.efilter(e,te)
-	return te:GetOwner()~=e:GetOwner()
+	return e:GetHandlerPlayer()~=re:GetOwnerPlayer()
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("在嘈杂的哭喊中，在惊恐的尖叫中，有人大声喊道：") 

@@ -60,9 +60,6 @@ end
 function cm.filter1(c)
 	return c:IsRace(RACE_DIVINE) and c:IsFaceup()
 end
-function cm.fit(c,e,tp)
-	return c:IsCode(91020015) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
 function cm.con1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_MZONE,0,1,nil)
 end
@@ -79,20 +76,20 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
   
 end
 --e2
-function cm.thfilter2(c)
-	return  c:IsAbleToHand() and (c:IsSetCard(0x9d0) or c:IsSetCard(0x9d1))
+function cm.fit(c,e,tp)
+	return c:IsCode(91020015) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK,0,1,nil)  end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.fit,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,cm.fit,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,e,tp)
+	 Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 end
 --e3
 function cm.desrepval(e,c)

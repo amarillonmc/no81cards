@@ -36,7 +36,7 @@ function c79200714.regop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c79200714.opdisable(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if ep==tp or c:GetDefense()<400 or c:GetAttack()<400 then
+	if ep==tp or c:GetDefense()<600 or c:GetAttack()<600 then
 		return
 	end
 	if Duel.NegateEffect(ev) then
@@ -45,14 +45,14 @@ function c79200714.opdisable(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_COPY_INHERIT)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(-400)
+		e1:SetValue(-600)
 		c:RegisterEffect(e1)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetProperty(EFFECT_FLAG_COPY_INHERIT)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		e2:SetCode(EFFECT_UPDATE_DEFENSE)
-		e2:SetValue(-400)
+		e2:SetValue(-600)
 		c:RegisterEffect(e2)
 	end
 end
@@ -68,19 +68,18 @@ function c79200714.spfilter(c,e,tp)
 end
 function c79200714.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c79200714.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
+		and Duel.IsExistingMatchingCard(c79200714.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) end
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE,0,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),tp,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c79200714.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE,0,nil)
-	if g:GetCount()>0 then
-	   Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-	end
+	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	Duel.BreakEffect()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tc=Duel.SelectMatchingCard(tp,c79200714.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c79200714.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp):GetFirst()
 	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		tc:RegisterFlagEffect(79200714,RESET_EVENT+RESETS_STANDARD,0,1)
 		local e2=Effect.CreateEffect(e:GetHandler())

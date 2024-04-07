@@ -31,15 +31,34 @@ function c28360113.initial_effect(c)
 	e3:SetLabel(4)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
-	--immune
+	--atk
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_IMMUNE_EFFECT)
+	e4:SetCode(EFFECT_UPDATE_ATTACK)
 	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(c28360113.indcon)
-	e4:SetValue(c28360113.efilter)
+	e4:SetCondition(c28360113.atkcon)
+	e4:SetLabel(4)
+	e4:SetValue(1000)
 	c:RegisterEffect(e4)
+	--immune
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_IMMUNE_EFFECT)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCondition(c28360113.indcon)
+	e5:SetValue(c28360113.efilter)
+	c:RegisterEffect(e5)
+	--Straylight counter
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e6:SetProperty(EFFECT_FLAG_DELAY)
+	e6:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCondition(c28360113.sctcon)
+	e6:SetOperation(c28360113.sctop)
+	c:RegisterEffect(e6)
 end
 function c28360113.matfilter(c)
 	return c:GetCounter(0x1283)>0 or c:IsLinkSetCard(0x288)
@@ -71,4 +90,13 @@ function c28360113.indcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c28360113.efilter(e,re)
 	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
+end
+function c28360113.cfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x283)
+end
+function c28360113.sctcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c28360113.cfilter,1,nil)
+end
+function c28360113.sctop(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():AddCounter(0x1283,1)
 end

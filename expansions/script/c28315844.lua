@@ -64,6 +64,7 @@ function c28315844.deop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 		if g:GetCount()>0 then
+			Duel.BreakEffect()
 			Duel.HintSelection(g)
 			Duel.Destroy(g,REASON_EFFECT)
 		end

@@ -38,7 +38,7 @@ function c28315943.initial_effect(c)
 end
 function c28315943.hspcon(e,c)
 	if c==nil then return true end
-   return Duel.GetLP(e:GetHandlerPlayer())>=9000 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+   return Duel.GetLP(e:GetHandlerPlayer())>=9000 and Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_MZONE)>0
 end
 function c28315943.alfilter(c)
 	return c:IsSetCard(0x287) and c:IsFaceup()
@@ -46,7 +46,7 @@ end
 function c28315943.gspcon(e,c)
 	if c==nil then return true end
 	local p=e:GetHandlerPlayer()
-	return Duel.GetLP(p)>=9000 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c28315943.alfilter,p,LOCATION_MZONE,0,1,nil)
+	return Duel.GetLP(p)>=9000 and Duel.GetLocationCount(p,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c28315943.alfilter,p,LOCATION_MZONE,0,1,nil)
 end
 function c28315943.chkfilter(c)
 	return c:IsCode(28335405) and not c:IsPublic()

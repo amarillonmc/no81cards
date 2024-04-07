@@ -1,0 +1,3 @@
+--天兔的蛋
+--Everything has been taken away from me.
+--But that means I have nothing to lose.

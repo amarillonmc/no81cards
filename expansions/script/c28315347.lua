@@ -79,7 +79,7 @@ function c28315347.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
 		Duel.BreakEffect()
-		c:AddCounter(0x1283,1)
+		c:AddCounter(0x1283,2)
 	end
 end
 function c28315347.thcost(e,tp,eg,ep,ev,re,r,rp,chk)

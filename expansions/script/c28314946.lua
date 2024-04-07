@@ -54,8 +54,8 @@ function c28314946.recop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c28314946.cfilter,tp,LOCATION_MZONE,0,nil)
 	if Duel.Recover(tp,500,REASON_EFFECT)>0 and g:GetClassCount(Card.GetAttribute)>=3 and Duel.SelectYesNo(tp,aux.Stringid(28314946,2)) then
 		Duel.BreakEffect()
-		Duel.Recover(tp,1000,REASON_EFFECT,true)
-		Duel.Recover(1-tp,1000,REASON_EFFECT,true)
+		Duel.Recover(tp,1500,REASON_EFFECT,true)
+		Duel.Recover(1-tp,1500,REASON_EFFECT,true)
 		Duel.RDComplete()
 	end
 end

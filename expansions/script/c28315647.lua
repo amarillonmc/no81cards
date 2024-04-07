@@ -23,6 +23,17 @@ function c28315647.initial_effect(c)
 	e2:SetTarget(c28315647.tdtg)
 	e2:SetOperation(c28315647.tdop)
 	c:RegisterEffect(e2)
+	--CoMETIK search
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_HAND)
+	e3:SetCountLimit(1,48315647)
+	e3:SetCondition(c28315647.thcon)
+	e3:SetCost(c28315647.thcost)
+	e3:SetTarget(c28315647.thtg)
+	e3:SetOperation(c28315647.thop)
+	c:RegisterEffect(e3)
 end
 function c28315647.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsLocation(LOCATION_REMOVED) and re:GetHandler():IsSetCard(0x283) and e:GetHandler():IsReason(REASON_EFFECT)
@@ -76,5 +87,35 @@ function c28315647.tdop(e,tp,eg,ep,ev,re,r,rp)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_UPDATE_RANK)
 		tg:GetFirst():RegisterEffect(e2)
+		local e3=e1:Clone()
+		e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+		tg:GetFirst():RegisterEffect(e3)
+		tg:GetFirst():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28315647,3))
+	end
+end
+function c28315647.cfilter(c)
+	return c:IsSetCard(0x283) and c:IsFaceup()
+end
+function c28315647.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c28315647.cfilter,tp,LOCATION_MZONE,0,1,nil)
+end
+function c28315647.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsDiscardable() end
+	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
+end
+function c28315647.thfilter(c)
+	return c:IsSetCard(0x283) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+end
+function c28315647.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28315647.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c28315647.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local tg=Duel.SelectMatchingCard(tp,c28315647.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if tg then
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 	end
 end

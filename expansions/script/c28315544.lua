@@ -54,9 +54,12 @@ function c28315544.recop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c28315544.cfilter,tp,LOCATION_MZONE,0,nil)
 	if Duel.Recover(tp,500,REASON_EFFECT)>0 and g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28315544,2)) then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-		Duel.HintSelection(tg)
-		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		local g=Group.CreateGroup()
+		repeat
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+			g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,2,nil)
+		until g:FilterCount(Card.IsControler,nil,1-tp)<2
+		Duel.HintSelection(g)
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
 	end
 end

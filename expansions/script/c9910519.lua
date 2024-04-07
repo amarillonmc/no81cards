@@ -1,7 +1,7 @@
 --桃绯斋巫女 椎叶千波矢
 function c9910519.initial_effect(c)
 	aux.EnablePendulumAttribute(c,false)
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1,1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--copy ritual spell
 	local e1=Effect.CreateEffect(c)

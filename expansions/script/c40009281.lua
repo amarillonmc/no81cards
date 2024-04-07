@@ -1,5 +1,5 @@
 --机械加工 敲击南洋大兜虫
-if not pcall(function() require("expansions/script/c40008000") end) then require("script/c40008000") end
+if not pcall(function() dofile("expansions/script/c40008000") end) then dofile("script/c40008000") end
 local m,cm=rscf.DefineCard(40009281)
 local m=40009281
 local cm=_G["c"..m]
@@ -43,9 +43,9 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local flag=e:GetLabel()
 	local c=e:GetHandler()
 	local lg=c:GetLinkedGroup()
-	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.cfilter,1,nil,lg,flag) end
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,cm.cfilter,1,nil,lg,flag) end
 	if flag == 100 then
-		local g=Duel.SelectReleaseGroup(tp,cm.cfilter,1,1,nil,lg,flag)
+		local g=Duel.SelectReleaseGroup(REASON_COST,tp,cm.cfilter,1,1,nil,lg,flag)
 		Duel.Release(g,REASON_COST)
 	end
 	rshint.Select(tp,"des")

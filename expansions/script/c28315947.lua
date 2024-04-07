@@ -13,7 +13,7 @@ function c28315947.initial_effect(c)
 	c:RegisterEffect(e1)
 	--noctchill dice
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DICE+CATEGORY_TOGRAVE+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_DICE+CATEGORY_TOGRAVE+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_LEAVE_GRAVE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38315947)
@@ -53,18 +53,18 @@ function c28315947.pfilter(c)
 	return c:IsCode(28346765) and c:IsAbleToGrave()
 end
 function c28315947.dctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28315947.pfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(c28315947.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c28315947.pfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(c28315947.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
 end
 function c28315947.dcop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(c28315947.pfilter,tp,LOCATION_MZONE,0,1,nil) then return end
-	if Duel.TossDice(tp,1)==6 and Duel.IsExistingMatchingCard(c28315947.thfilter,tp,LOCATION_DECK,0,1,nil) then
+	if Duel.TossDice(tp,1)==6 and Duel.IsExistingMatchingCard(c28315947.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) then
 		Duel.Hint(HINT_OPSELECTED,tp,HINTMSG_TOGRAVE)
 		local p=Duel.SelectMatchingCard(tp,c28315947.pfilter,tp,LOCATION_MZONE,0,1,1,nil)
 		if Duel.SendtoGrave(p,REASON_EFFECT)==0 then return end
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c28315947.thfilter,tp,LOCATION_DECK,0,1,2,nil)
+		local g=Duel.SelectMatchingCard(tp,c28315947.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,2,nil)
 		if g:GetCount()>0 then
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)

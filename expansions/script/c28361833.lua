@@ -1,7 +1,7 @@
 --闪耀的放课后 五色的笑颜
 function c28361833.initial_effect(c)
 	--Synchro summon
-	aux.AddSynchroMixProcedure(c,aux.Tuner(Card.IsSetCard,0x283),aux.NonTuner(Card.IsSetCard,0x283),nil,c28361833.mfilter,0,99)
+	aux.AddSynchroMixProcedure(c,aux.Tuner(Card.IsSetCard,0x283),aux.NonTuner(Card.IsSetCard,0x283),c28361833.mfilter,c28361833.mfilter,0,99)
 	c:EnableReviveLimit()
 	--synchro level
 	local ge0=Effect.CreateEffect(c)

@@ -2,202 +2,110 @@
 local m=91020009
 local cm=c91020009
 function c91020009.initial_effect(c)
-	--summon with 3 tribute
+	c:EnableReviveLimit()
+	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsSetCard,0x9d1),2,true)
+	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_ONFIELD,0,Duel.Release,POS_FACEUP,REASON_COST,cm.op1)
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(91020009,0))
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_SUMMON_PROC)
-	e1:SetCondition(c91020009.ttcon)
-	e1:SetOperation(c91020009.ttop)
-	e1:SetValue(SUMMON_TYPE_ADVANCE+SUMMON_VALUE_SELF)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetRange(LOCATION_GRAVE)
+	e1:SetCountLimit(1,m)
+	e1:SetCondition(cm.spcon)
+	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
-	--summon with 1 tribute
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(91020009,1))
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	 local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_SUMMON_PROC)
-	e2:SetCondition(c91020009.otcon)
-	e2:SetOperation(c91020009.otop)
-	e2:SetValue(SUMMON_TYPE_ADVANCE)
+	e2:SetCode(EFFECT_PIERCE)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(91020009,6))
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_SUMMON_SUCCESS)
-	e3:SetCondition(c91020009.condition)
-	e3:SetTarget(c91020009.target)
-	e3:SetOperation(c91020009.operation)
-	c:RegisterEffect(e3)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_MATERIAL_CHECK)
-	e4:SetValue(c91020009.valcheck)
-	c:RegisterEffect(e4)
-	e3:SetLabelObject(e4)
-	e4:SetLabelObject(e3)
 	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(91020009,7))
-	e5:SetCategory(CATEGORY_SUMMON)
-	e5:SetType(EFFECT_TYPE_IGNITION)
-	e5:SetRange(LOCATION_HAND+LOCATION_GRAVE)
-	e5:SetCountLimit(1,m+1)
-	e5:SetTarget(cm.sumtg)
-	e5:SetOperation(cm.sumop)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e5:SetCode(EVENT_DAMAGE_STEP_END)
+	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e5:SetCountLimit(1,m*2)
+	e5:SetTarget(cm.settg)
+	e5:SetOperation(cm.setop)
 	c:RegisterEffect(e5)
+			 
 end
-function c91020009.ttcon(e,c,minc)
+function cm.setfilter(c)
+	return c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSSetable() and c:IsSetCard(0x9d0)
+end
+function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.setfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(cm.setfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectTarget(tp,cm.setfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
+end
+function cm.setop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.SSet(tp,tc)
+	end
+end
+function cm.spcon(e,c)
 	if c==nil then return true end
-	return minc<=3 and Duel.CheckTribute(c,3)
+	local tp=e:GetHandlerPlayer()
+	local g=Duel.GetMatchingGroup(Card.IsReleasable,tp,LOCATION_MZONE,0,nil)
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and g:IsExists(aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_DIVINE),1,nil) and g:GetCount()>1 
 end
-function c91020009.ttop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectTribute(tp,c,3,3)
-	c:SetMaterial(g)
-	Duel.Release(g,REASON_SUMMON+REASON_MATERIAL)
+function cm.fselect(g)
+	return g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_DIVINE)
 end
-function c91020009.otfilter(c,tp)
-	return (c:IsSetCard(0x9d0)or c:IsSetCard(0x9d1)) and (c:IsControler(tp) or c:IsFaceup())
+function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local d=Duel.GetAttackTarget()
+	if chk==0 then return Duel.GetAttacker()==e:GetHandler() and d  end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,d,1,0,0)
 end
-function c91020009.otcon(e,c,minc)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	local mg=Duel.GetMatchingGroup(c91020009.otfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
-	return c:IsLevelAbove(7) and minc<=1 and Duel.CheckTribute(c,1,1,mg)
-end
-function c91020009.otop(e,tp,eg,ep,ev,re,r,rp,c)
-	local mg=Duel.GetMatchingGroup(c91020009.otfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
-	local sg=Duel.SelectTribute(tp,c,1,1,mg)
-	c:SetMaterial(sg)
-	Duel.Release(sg,REASON_SUMMON+REASON_MATERIAL)
-end
-function cm.fit(c)
-return c:IsSetCard(0x9d0) or c:IsSetCard(0x9d1)
-end
-function c91020009.valcheck(e,c)
-	local g=c:GetMaterial()
-	local ct=g:FilterCount(cm.fit,nil)
-	local lv=0
-	local tc=g:GetFirst()
-	while tc do
-		lv=lv+tc:GetLevel()
-		tc=g:GetNext()
-	end
-	e:SetLabel(lv)
-	e:GetLabelObject():SetLabel(ct)
-end
-function c91020009.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE)
-end
-function c91020009.filter(c)
-	return c:IsFaceup()
-end
-function c91020009.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=e:GetLabel()
-	local b1=e:GetLabelObject():GetLabel()>0
-	local b2=Duel.IsExistingMatchingCard(c91020009.filter,tp,0,LOCATION_MZONE,1,nil)
-	local b3=Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil)
-	if chk==0 then return ct>0 and (b1 or b2 or b3) end
-	local sel=0
-	local off=0
-	repeat
-		local ops={}
-		local opval={}
-		off=1
-		if b1 then
-			ops[off]=aux.Stringid(91020009,2)
-			opval[off-1]=1
-			off=off+1
+function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
+		local d=Duel.GetAttackTarget()
+		if d:IsRelateToBattle()  then
+			Duel.SendtoGrave(d,REASON_EFFECT)
 		end
-		if b2 then
-			ops[off]=aux.Stringid(91020009,3)
-			opval[off-1]=2
-			off=off+1
-		end
-		if b3 then
-			ops[off]=aux.Stringid(91020009,4)
-			opval[off-1]=3
-			off=off+1 
-		end
-		local op=Duel.SelectOption(tp,table.unpack(ops))
-		if opval[op]==1 then
-			sel=sel+1
-			b1=false
-		elseif opval[op]==2 then
-			sel=sel+2
-			b2=false
-		else
-			sel=sel+4
-			b3=false
-		end
-		ct=ct-1
-	until ct==0 or off<3 or not Duel.SelectYesNo(tp,aux.Stringid(91020009,5))
-	e:SetLabel(sel)
-	if bit.band(sel,2)~=0 then
-		local g=Duel.GetMatchingGroup(c91020009.filter,tp,0,LOCATION_MZONE,nil)
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-	end
-	if bit.band(sel,1)~=0 then
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,0,LOCATION_GRAVE)
-	end
 end
-function c91020009.operation(e,tp,eg,ep,ev,re,r,rp)
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local sel=e:GetLabel()
-	if bit.band(sel,1)~=0 and c:IsFaceup() and c:IsRelateToEffect(e) then
-	local g=Duel.SelectMatchingCard(tp,aux.FilterBoolFunction(Card.IsSetCard,0x9d1),tp,LOCATION_GRAVE,0,1,1,nil)
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
-	end
-	if bit.band(sel,2)~=0 then
-		local g=Duel.GetMatchingGroup(c91020009.filter,tp,0,LOCATION_MZONE,nil)
-		local dg=Group.CreateGroup()		
-		local tc=g:GetFirst()
-		while tc do		   
-			if  tc:GetAttack()<=e:GetHandler():GetAttack() then dg:AddCard(tc) end
-		tc=g:GetNext()  
-		end 
-		Duel.Destroy(dg,REASON_EFFECT)
-	end
-	if bit.band(sel,4)~=0 then
-		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
-		local tc=e:GetHandler()   
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_EXTRA_ATTACK)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetValue(2)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_FIELD)
-		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e2:SetCode(EFFECT_CANNOT_ACTIVATE)
-		e2:SetTargetRange(0,1)
-		e2:SetValue(1)
-		e2:SetCondition(c91020009.actcon)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e2,tp)			
+	local g=Duel.GetMatchingGroup(Card.IsReleasable,tp,LOCATION_MZONE,0,nil)
+	local g2=g:SelectSubGroup(tp,cm.fselect,false,2,2)
+	Duel.Release(g2,REASON_COST)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_EXTRA_ATTACK)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetValue(2)
+	c:RegisterEffect(e3)
+		 local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e6:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e6:SetTargetRange(0,1)
+	e6:SetValue(1)
+	e6:SetCondition(cm.actcon)
+	c:RegisterEffect(e6) 
+	 local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_TOGRAVE)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_BATTLE_START)
+	e4:SetTarget(cm.tgtg)
+	e4:SetOperation(cm.tgop)
+	c:RegisterEffect(e4)
+end
+function cm.filter(c)
+	return (aux.IsCodeListed(c,10000000) or c:IsCode(79339613) or  c:IsCode(79868386) or  c:IsCode(85182315) )  and c:IsAbleToHand() 
+end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
+end
+function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c91020009.actcon(e)
+function cm.actcon(e)
 	return Duel.GetAttacker()==e:GetHandler()
-end
-function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1) end
-	Duel.SetOperationInfo(0,CATEGORY_SUMMON,c,1,0,0)
-end
-function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local pos=0
-	if c:IsSummonable(true,nil,1) then pos=pos+POS_FACEUP_ATTACK end
-	if c:IsMSetable(true,nil,1) then pos=pos+POS_FACEDOWN_DEFENSE end
-	if pos==0 then return end
-	if Duel.SelectPosition(tp,c,pos)==POS_FACEUP_ATTACK then
-		Duel.Summon(tp,c,true,nil,1)
-	else
-		Duel.MSet(tp,c,true,nil,1)
-	end
 end

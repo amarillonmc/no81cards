@@ -8,9 +8,9 @@ function c28303030.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
-	e0:SetCondition(Auxiliary.XyzLevelFreeCondition(aux.FilterBoolFunction(Card.IsSetCard,0x283),c28303030.xyzcheck,2,2))
-	e0:SetTarget(Auxiliary.XyzLevelFreeTarget(aux.FilterBoolFunction(Card.IsSetCard,0x283),c28303030.xyzcheck,2,2))
-	e0:SetOperation(c28303030.Operation(aux.FilterBoolFunction(Card.IsSetCard,0x283),c28303030.xyzcheck,2,2))
+	e0:SetCondition(Auxiliary.XyzLevelFreeCondition(aux.FilterBoolFunction(Card.IsSetCard,0x283),c28303030.xyzcheck,2,99))
+	e0:SetTarget(Auxiliary.XyzLevelFreeTarget(aux.FilterBoolFunction(Card.IsSetCard,0x283),c28303030.xyzcheck,2,99))
+	e0:SetOperation(c28303030.Operation(aux.FilterBoolFunction(Card.IsSetCard,0x283),c28303030.xyzcheck,2,99))
 	e0:SetValue(SUMMON_TYPE_XYZ)
 	c:RegisterEffect(e0)
 	--rank set
@@ -50,6 +50,17 @@ function c28303030.initial_effect(c)
 	e4:SetTarget(c28303030.suptg)
 	e4:SetOperation(c28303030.supop)
 	c:RegisterEffect(e4)
+	--atk
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e5:SetCode(EFFECT_UPDATE_ATTACK)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetValue(c28303030.atkval)
+	c:RegisterEffect(e5)
+	local e6=e5:Clone()
+	e6:SetCode(EFFECT_UPDATE_DEFENSE)
+	c:RegisterEffect(e6)
 end
 --xyz↓
 function c28303030.xyzcheck(g)
@@ -103,7 +114,7 @@ function c28303030.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,1,nil,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,nil,tp)
-	if g1:GetCount()>0 or g2:GetCount()>0 then
+	if g1:GetCount()>0 and g2:GetCount()>0 then
 		local rg=g1+g2
 		Duel.HintSelection(rg)
 		Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
@@ -175,4 +186,7 @@ function c28303030.supop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+end
+function c28303030.atkval(e,c)
+	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_REMOVED,LOCATION_REMOVED)*100
 end

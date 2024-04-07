@@ -1,0 +1,5 @@
+--诞地树种衍生物
+--We are always singing, even if we have long forgotten what we were singing for.
+--What I care about, what I lose, what I gain.
+--My heart has long been filled with all this, and I am no longer afraid of all suffering.
+--I love you, world.

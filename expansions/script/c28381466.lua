@@ -48,15 +48,20 @@ function c28381466.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c28381466.matfilter(c,fc,sub,mg,sg)
-	return c:IsFusionSetCard(0x283) and c:IsRace(RACE_FAIRY) and (c:IsFusionType(TYPE_FUSION) or c:IsFusionType(TYPE_SYNCHRO) or c:IsFusionType(TYPE_XYZ) or c:IsFusionType(TYPE_LINK)) and (not sg or not sg:IsExists(Card.IsFusionCode,1,c,c:GetFusionCode())) and c:IsCanBeFusionMaterial()
+	return c:IsFusionSetCard(0x283) and c:IsRace(RACE_FAIRY) and c:IsFusionType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK) and (not sg or not sg:IsExists(Card.IsFusionCode,1,c,c:GetFusionCode())) and c:IsCanBeFusionMaterial()
+end
+function c28381466.hmfilter(c)
+	return c:IsFusionSetCard(0x283) and c:IsRace(RACE_FAIRY) and c:IsFusionType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK) and c:IsCanBeFusionMaterial() and c:IsAbleToRemoveAsCost()
 end
 function c28381466.hspcon(e,c)
 	if c==nil then return true end
-	local mg=Duel.GetMatchingGroup(c28381466.matfilter,c:GetOwner(),LOCATION_MZONE+LOCATION_GRAVE,0,nil)
-	return mg:FilterCount(Card.IsAbleToRemoveAsCost,nil)>=4
+	local mg=Duel.GetMatchingGroup(c28381466.hmfilter,c:GetOwner(),LOCATION_MZONE+LOCATION_GRAVE,0,nil)
+	return mg:GetClassCount(Card.GetFusionCode,nil)>=4
 end
 function c28381466.hspop(e,tp,eg,ep,ev,re,r,rp,c)
-	local mg=Duel.SelectMatchingCard(tp,c28381466.matfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,4,99,nil)
+	local g=Duel.GetMatchingGroup(c28381466.hmfilter,c:GetOwner(),LOCATION_MZONE+LOCATION_GRAVE,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local mg=g:SelectSubGroup(tp,aux.dncheck,false,4,99)
 	c:SetMaterial(mg)
 	Duel.Remove(mg,POS_FACEUP,REASON_COST+REASON_MATERIAL)
 end
@@ -195,18 +200,41 @@ function c28381466.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if bit.band(att,ATTRIBUTE_WIND)~=0 then
 		local e6=Effect.CreateEffect(c)
-		e6:SetType(EFFECT_TYPE_FIELD)
-		e6:SetCode(EFFECT_MUST_ATTACK)
+		e6:SetType(EFFECT_TYPE_SINGLE)
+		e6:SetCode(EFFECT_IMMUNE_EFFECT)
+		e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 		e6:SetRange(LOCATION_MZONE)
-		e6:SetTargetRange(0,LOCATION_MZONE)
+		e6:SetValue(c28381466.efilter)
 		e6:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e6)
+		if ct>=8 then
+			local ge6=Effect.CreateEffect(c)
+			ge6:SetType(EFFECT_TYPE_SINGLE)
+			ge6:SetCode(EFFECT_IMMUNE_EFFECT)
+			ge6:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+			ge6:SetRange(LOCATION_MZONE)
+			ge6:SetValue(c28381466.efilter)
+			--effect gain
+			local e0=Effect.CreateEffect(c)
+			e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+			e0:SetRange(LOCATION_MZONE)
+			e0:SetTargetRange(LOCATION_MZONE,0)
+			e0:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x283))
+			e0:SetLabelObject(ge6)
+			c:RegisterEffect(e0)
+		end
 		Duel.AdjustInstantly(c)
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28381466,5))
 	end
 end
 function c28381466.indtg(e,c,r,tp)
 	return c:IsSetCard(0x283) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and r==REASON_EFFECT and c:GetControl()==tp
+end
+function c28381466.efilter(e,te)
+	if te:GetOwnerPlayer()==e:GetHandlerPlayer() or not te:IsActivated() then return false end
+	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and te:IsActiveType(TYPE_MONSTER) then return true end
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	return not g or not g:IsContains(e:GetHandler())
 end
 function c28381466.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)

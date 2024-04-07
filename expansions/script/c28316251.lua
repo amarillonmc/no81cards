@@ -103,5 +103,6 @@ function c28316251.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetCode(EFFECT_UPDATE_LEVEL)
 		e3:SetValue(1)
 		tc:RegisterEffect(e3)
+		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28316251,5))
 	end
 end

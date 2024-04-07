@@ -9,6 +9,19 @@ function c28362146.initial_effect(c)
 	e1:SetTarget(c28362146.target)
 	e1:SetOperation(c28362146.activate)
 	c:RegisterEffect(e1)
+	--to hand
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_TOHAND)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,28362146+EFFECT_COUNT_CODE_DUEL)
+	e2:SetCondition(c28362146.thcon)
+	e2:SetTarget(c28362146.thtg)
+	e2:SetOperation(c28362146.thop)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetRange(LOCATION_REMOVED)
+	c:RegisterEffect(e3)
 end
 function c28362146.cfilter(c)
 	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
@@ -90,10 +103,24 @@ function c28362146.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_ONFIELD)
+	Duel.RegisterFlagEffect(tp,28362146,0,0,0)
 end
 function c28362146.disop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil,tp)
 	if Duel.NegateEffect(ev) and #g>0 then
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	end
+end
+function c28362146.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(tp,28381466)==0 and Duel.IsExistingMatchingCard(c28362146.filter,tp,LOCATION_MZONE,0,1,nil) end
+end
+function c28362146.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToHand() end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+end
+function c28362146.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
 	end
 end

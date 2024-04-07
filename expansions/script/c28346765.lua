@@ -57,17 +57,6 @@ function c28346765.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local sc=Duel.SelectMatchingCard(tp,c28346765.setfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if sc then Duel.SSet(tp,sc) end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c28346765.splimit)
-	Duel.RegisterEffect(e1,tp)
-end
-function c28346765.splimit(e,c)
-	return not c:IsSetCard(0x283)
 end
 function c28346765.spfilter(c,e,tp)
 	return c:IsSetCard(0x283) and c:GetOriginalLevel()<=4 and c:GetOriginalLevel()>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

@@ -35,6 +35,18 @@ function c28316144.initial_effect(c)
 	e3:SetTarget(c28316144.tdtg)
 	e3:SetOperation(c28316144.tdop)
 	c:RegisterEffect(e3)
+	--CoMETIK search-luka
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(28316144,4))
+	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_HAND)
+	e4:SetCountLimit(1,48316144)
+	e4:SetCondition(c28316144.thcon)
+	e4:SetCost(c28316144.thcost)
+	e4:SetTarget(c28316144.thtg)
+	e4:SetOperation(c28316144.thop)
+	c:RegisterEffect(e4)
 end
 function c28316144.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsLocation(LOCATION_REMOVED) and re:GetHandler():IsSetCard(0x283) and e:GetHandler():IsReason(REASON_EFFECT)
@@ -95,5 +107,32 @@ function c28316144.tdop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.HintSelection(tc)
 			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 		end
+	end
+end
+function c28316144.cfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x283) and c:IsAttribute(ATTRIBUTE_WATER)
+end
+function c28316144.thcon(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+	return #g==0 or (#g==1 and g:IsExists(c28316144.cfilter,1,nil))
+end
+function c28316144.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsDiscardable() end
+	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
+end
+function c28316144.thfilter(c)
+	return c:IsSetCard(0x283) and not c:IsCode(28335405) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+end
+function c28316144.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28316144.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c28316144.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local tg=Duel.SelectMatchingCard(tp,c28316144.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if tg then
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 	end
 end

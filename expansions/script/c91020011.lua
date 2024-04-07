@@ -3,7 +3,7 @@ local m=91020011
 local cm=c91020011
 function c91020011.initial_effect(c)
 	 c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsSetCard,0x9d1),3,true)
+	aux.AddFusionProcCodeFun(c,91020009,aux.FilterBoolFunction(Card.IsSetCard,0x9d1),1,true,true)
 	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_ONFIELD,0,Duel.Release,POS_FACEUP,REASON_COST,cm.op1)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -19,18 +19,6 @@ function c91020011.initial_effect(c)
 	e5:SetValue(cm.eval)
 	c:RegisterEffect(e5)
 	--destroy
-	local e7=Effect.CreateEffect(c)
-	e7:SetDescription(aux.Stringid(91020011,1))
-	e7:SetCategory(CATEGORY_DESTROY)
-	e7:SetType(EFFECT_TYPE_QUICK_O)
-	e7:SetCode(EVENT_FREE_CHAIN)
-	e7:SetCountLimit(1,m)
-	e7:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e7:SetRange(LOCATION_MZONE)
-	e7:SetCost(c91020011.descost)
-	e7:SetTarget(c91020011.destg)
-	e7:SetOperation(c91020011.desop)
-	c:RegisterEffect(e7)
 	--battle
 	local e14=Effect.CreateEffect(c)
 	e14:SetDescription(aux.Stringid(m,0))
@@ -69,45 +57,20 @@ function c91020011.setcon(e,c,minc)
 	if not c then return true end
 	return false
 end
---Destroy
-function c91020011.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return  Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_MZONE,0,2,nil) end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	e:GetHandler():RegisterEffect(e1)
-	local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_MZONE,0,2,2,nil)
-	Duel.Release(g,REASON_COST)
-end
-function c91020011.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-end
-function c91020011.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
-	Duel.Destroy(g,REASON_EFFECT)
-end
-function cm.tgtg(e,c)
-	return not (c:IsCode(91020011) and c:IsFaceup())
-end
 --battle
 function cm.rfilter(c)
 	return c:IsAttribute(ATTRIBUTE_DIVINE)
 end
 function cm.bacost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return  Duel.IsExistingMatchingCard(cm.rfilter,tp,LOCATION_MZONE,0,2,nil) end
+	if chk==0 then return  Duel.IsExistingMatchingCard(cm.rfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,cm.rfilter,tp,LOCATION_MZONE,0,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.rfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.Release(g,REASON_COST)
 	
 end
 function cm.batg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
-	local g=Duel.GetMatchingGroup(Card.IsDefensePos,tp,0,LOCATION_MZONE,nil)
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE,e:GetHandler(),1,0,LOCATION_MZONE)
 end
 function cm.baop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -146,16 +109,7 @@ function cm.baop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetCode(EFFECT_MUST_ATTACK_MONSTER)
 	e3:SetReset(RESET_PHASE+PHASE_END)
 	e3:SetValue(cm.atklimit1)
-	Duel.RegisterEffect(e3,tp)
-	local e8=Effect.CreateEffect(c)
-	e8:SetType(EFFECT_TYPE_FIELD)
-	e8:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e8:SetRange(LOCATION_MZONE)
-	e8:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE)
-	e8:SetTargetRange(LOCATION_ONFIELD,0)
-	e8:SetTarget(cm.tgtg)
-	e8:SetValue(aux.tgoval)
-	c:RegisterEffect(e8)   
+	Duel.RegisterEffect(e3,tp) 
 	 if  (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase() <=PHASE_BATTLE) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
