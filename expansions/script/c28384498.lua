@@ -29,7 +29,7 @@ function c28384498.condition(e,tp,eg,ep,ev,re,r,rp)
 	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
 end
 function c28384498.filter(c)
-	return c:IsSetCard(0x283) and c:IsAbleToDeck() and c:IsLevelAbove(1) and Duel.IsExistingMatchingCard(c28384498.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetLevel(),c:GetAttribute())
+	return c:IsSetCard(0x283) and c:IsAbleToDeck() and c:IsLevelAbove(1) and Duel.IsExistingMatchingCard(c28384498.thfilter,c:GetControler(),LOCATION_DECK,0,1,nil,c:GetLevel(),c:GetAttribute())
 end
 function c28384498.thfilter(c,lv,attr)
 	return c:IsLevel(lv) and not c:IsAttribute(attr) and c:IsSetCard(0x283) and c:IsAbleToHand()
@@ -104,7 +104,7 @@ function c28384498.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 			local sc=Duel.SelectMatchingCard(tp,c28384498.setfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-			if tc then
+			if sc then
 				Duel.SSet(tp,sc)
 			end
 		end

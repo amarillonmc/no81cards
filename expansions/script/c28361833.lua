@@ -139,7 +139,7 @@ function c28361833.discon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c28361833.disop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsFaceup() then
-		e:GetHandler():IsCanAddCounter(0x1283,1)
+		e:GetHandler():AddCounter(0x1283,1)
 	end
 end
 function c28361833.cfilter(c)

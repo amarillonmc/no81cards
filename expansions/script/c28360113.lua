@@ -64,7 +64,7 @@ function c28360113.matfilter(c)
 	return c:GetCounter(0x1283)>0 or c:IsLinkSetCard(0x288)
 end
 function c28360113.ctcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and e:GetHandler():GetMutualLinkedGroupCount()>0
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and e:GetHandler():GetMutualLinkedGroupCount()>0 and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_GRAVE,0,1,nil,0x288)
 end
 function c28360113.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -92,10 +92,10 @@ function c28360113.efilter(e,re)
 	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
 end
 function c28360113.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x283)
+	return c:IsFaceup() and c:IsSetCard(0x288)
 end
 function c28360113.sctcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c28360113.cfilter,1,nil)
+	return eg:IsExists(c28360113.cfilter,1,e:GetHandler())
 end
 function c28360113.sctop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():AddCounter(0x1283,1)

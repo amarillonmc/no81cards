@@ -182,7 +182,7 @@ function c7210001.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_CANNOT_SUMMON)
-	c:RegisterEffect(e2)
+	e:GetHandler():RegisterEffect(e2)
 end
 function c7210001.smlimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not c:IsSetCard(0x6f8)

@@ -112,7 +112,7 @@ function c28362146.disop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28362146.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,28381466)==0 and Duel.IsExistingMatchingCard(c28362146.filter,tp,LOCATION_MZONE,0,1,nil) end
+	return Duel.GetFlagEffect(tp,28381466)==0 and Duel.IsExistingMatchingCard(c28362146.filter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c28362146.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToHand() end

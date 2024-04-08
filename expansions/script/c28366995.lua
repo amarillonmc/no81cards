@@ -51,7 +51,7 @@ function c28366995.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLP(tp)>=9000
 end
 function c28366995.thfilter(c)
-	return c:IsSetCard(0x287,0x289) and c:IsAbleToHand()
+	return c:IsSetCard(0x286,0x289) and c:IsAbleToHand()
 end
 function c28366995.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28366995.thfilter,tp,LOCATION_DECK,0,1,nil) end
