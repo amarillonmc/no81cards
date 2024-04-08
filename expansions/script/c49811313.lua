@@ -28,6 +28,7 @@ function c49811313.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function c49811313.idcon(e) 
+	local tp=e:GetHandlerPlayer()
 	local g=Duel.GetMatchingGroup(function(c) return c:IsFaceup() and c:IsSetCard(0x3e) and c:IsType(TYPE_MONSTER) end,tp,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	return g:GetCount()>0 and g:GetClassCount(Card.GetCode)==g:GetCount()  
 end 
