@@ -31,14 +31,14 @@ function c60153216.filter2(c,e,tp,code)
 end
 function c60153216.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60153216.filter,tp,LOCATION_MZONE,0,1,nil,e,tp)  end
-	local g=Duel.GetMatchingGroup(c60153216.filter,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(c60153216.filter,tp,LOCATION_MZONE,0,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c60153216.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c60153216.filter,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c60153216.filter,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.HintSelection(g)

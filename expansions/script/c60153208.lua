@@ -34,8 +34,29 @@ function c60153208.initial_effect(c)
 	e2:SetCost(c60153208.e2cost)
 	e2:SetOperation(c60153208.e2op)
 	c:RegisterEffect(e2)
+	
+	--cannot material
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e5:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+	e5:SetValue(c60153208.fuslimit)
+	c:RegisterEffect(e5)
+	local e6=e5:Clone()
+	e6:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+	e6:SetValue(1)
+	c:RegisterEffect(e6)
+	local e7=e6:Clone()
+	e7:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+	c:RegisterEffect(e7)
+	local e8=e6:Clone()
+	e8:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	c:RegisterEffect(e8)
 end
 
+function c60153208.fuslimit(e,c,sumtype)
+	return sumtype==SUMMON_TYPE_FUSION
+end
 function c60153208.mfilter(c,fc,sub,mg,sg)
 	return c:IsFusionSetCard(0x3b2a) and (not sg or not sg:IsExists(Card.IsCode,1,c,c:GetCode()))
 end
@@ -126,7 +147,8 @@ end
 function c60153208.e2cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local eqg=c:GetEquipGroup()
-	if chk==0 then return eqg:IsExists(c60153208.e2costf,1,nil,tp) end
+	if chk==0 then return eqg:IsExists(c60153208.e2costf,1,nil,tp) and c:GetFlagEffect(60153208)==0 end
+	c:RegisterFlagEffect(60153208,RESET_CHAIN,0,1)
 end
 function c60153208.e2opf(c,tp)
 	return c:IsControler(1-tp)
@@ -134,7 +156,7 @@ end
 function c60153208.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local eqg=c:GetEquipGroup()
-	if eqg>0 then
+	if eqg:GetCount()>0 then
 		local g=eqg:FilterSelect(tp,c60153208.e2costf,1,1,nil,tp)
 		local tc=g:GetFirst()
 		local g2=tc:GetColumnGroup()
