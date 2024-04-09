@@ -49,7 +49,7 @@ function cm.initial_effect(c)
 	end
 end
 function c22348389.repfilter(c,tp)
-	return c:IsOnField() and (c:IsFacedown() or c:IsSetCard(0x370b))
+	return c:IsOnField() and c:IsControler(tp) and (c:IsFacedown() or c:IsSetCard(0x370b))
 		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function c22348389.reefilter(c)

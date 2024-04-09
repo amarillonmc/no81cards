@@ -80,7 +80,7 @@ function c60153207.splimit(e,se,sp,st)
 end
 
 function c60153207.e1tgf(c)
-	return c:IsSetCard(0x3b2a) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0x3b2a) and c:IsType(TYPE_MONSTER) and not c:IsForbidden() and c:IsFaceup()
 end
 function c60153207.e1tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c60153207.e1tgf(chkc) end

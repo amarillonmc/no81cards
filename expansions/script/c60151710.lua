@@ -30,11 +30,11 @@ function cm.decon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_ONFIELD,0,1,nil,tp)
 end
 function cm.desfilter(c,tp)
-	return Duel.GetMZoneCount(tp,c)>0 and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3b26) and c:IsFaceup()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3b26) and c:IsFaceup()
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,true)
-		and Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_ONFIELD,0,1,nil,tp) end
+		and Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_ONFIELD,0,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end

@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	--fs
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(22348388,1))
-	e4:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_SUMMON_SUCCESS)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
