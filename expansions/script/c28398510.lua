@@ -47,7 +47,7 @@ function c28398510.activate(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 				e1:SetTargetRange(0,1)
 				e1:SetTarget(c28398510.sumlimit)
-				e1:SetLabel(tc:GetCode())
+				e1:SetLabel(tc:GetOriginalCode())
 				e1:SetReset(RESET_PHASE+PHASE_END)
 				Duel.RegisterEffect(e1,tp)
 				local e2=e1:Clone()
@@ -62,13 +62,13 @@ function c28398510.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28398510.sumlimit(e,c)
-	return c:IsCode(e:GetLabel())
+	return c:IsOriginalCodeRule(e:GetLabel())
 end
 function c28398510.aclimit(e,re,tp)
 	return re:GetHandler():IsCode(e:GetLabel()) and re:IsActiveType(TYPE_MONSTER)
 end
 function c28398510.rmfilter(c)
-	return c:IsSetCard(0x283) and c:IsAbleToRemove()
+	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
 end
 function c28398510.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28398510.rmfilter,tp,LOCATION_DECK,0,1,nil) end

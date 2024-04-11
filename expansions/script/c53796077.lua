@@ -91,7 +91,7 @@ function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		g=Duel.SelectTarget(tp,cm.remfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
 	end
 	local sg=e:GetLabelObject():GetLabelObject()
-	if sg:IsContains(g:GetFirst()) then e:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE) else e:SetProperty(EFFECT_FLAG_CARD_TARGET) end
+	if sg:IsContains(g:GetFirst()) then e:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN) else e:SetProperty(EFFECT_FLAG_CARD_TARGET) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
@@ -191,7 +191,7 @@ function cm.adjustop1(e,tp,eg,ep,ev,re,r,rp)
 	for _,te4 in pairs(re4) do
 		local tg=te4:GetTarget()
 		local o,h=te4:GetOwner(),te4:GetHandler()
-		if tg(te4,c,tp,tp,POS_FACEUP)==true then
+		if tg(te4,c,tp,SUMMON_TYPE_SPECIAL,POS_FACEUP,tp,e)==true then
 			if h then g:AddCard(h) else g:AddCard(o) end
 			te4:SetTarget(cm.chtg3(tg))
 		end
@@ -210,6 +210,7 @@ function cm.adjustop2(e,tp,eg,ep,ev,re,r,rp)
 	local re1={c:IsHasEffect(EFFECT_CANNOT_TRIGGER)}
 	local re2={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE)}
 	local re3={Duel.IsPlayerAffectedByEffect(tp,EFFECT_ACTIVATE_COST)}
+	local again=false
 	for _,te1 in pairs(re1) do
 		if te1:GetType()==EFFECT_TYPE_SINGLE then
 			local con=te1:GetCondition()
@@ -245,14 +246,17 @@ function cm.adjustop2(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	for _,te3 in pairs(re3) do
-		local tg=te3:GetTarget()
-		local o,h=te3:GetOwner(),te3:GetHandler()
-		if not tg then
-			if h then g:AddCard(h) else g:AddCard(o) end
-			te3:SetTarget(cm.chtg2(aux.TRUE))
-		elseif tg(te3,e,tp)==true then
-			if h then g:AddCard(h) else g:AddCard(o) end
-			te3:SetTarget(cm.chtg2(tg))
+		local cost=te3:GetCost()
+		if cost and cost(te3,e,tp)==false then
+			local tg=te3:GetTarget()
+			local o,h=te3:GetOwner(),te3:GetHandler()
+			if not tg then
+				if h then g:AddCard(h) else g:AddCard(o) end
+				te3:SetTarget(cm.chtg2(aux.TRUE))
+			elseif tg(te3,e,tp)==true then
+				if h then g:AddCard(h) else g:AddCard(o) end
+				te3:SetTarget(cm.chtg2(tg))
+			end
 		end
 	end
 	c:ResetFlagEffect(m+500)
@@ -304,7 +308,7 @@ end
 function cm.chval(_val)
 	return function(e,re,...)
 				local x=re:GetHandler()
-				if x:IsHasEffect(m) and x:GetFlagEffect(m)<1 then return false end
+				if x:IsHasEffect(m) and x:GetFlagEffect(m+500)<1 then return false end
 				return _val(e,re,...)
 			end
 end

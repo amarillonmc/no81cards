@@ -1,6 +1,5 @@
 --洗衣龙女呼唤
-local m=11451687
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DRAW+CATEGORY_TODECK)
@@ -76,6 +75,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 					e3:SetCode(EFFECT_CANNOT_TRIGGER)
 					e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 					tc:RegisterEffect(e3)
+					Duel.ConfirmCards(1-tp,tc)
 				end
 			end
 		end

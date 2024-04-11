@@ -124,6 +124,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 							e1:SetCode(EFFECT_PUBLIC)
 							e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 							g:GetFirst():RegisterEffect(e1)
+							Duel.ConfirmCards(1-tp,g:GetFirst())
 						else
 							Duel.Remove(g,POS_FACEUP,REASON_COST)
 						end

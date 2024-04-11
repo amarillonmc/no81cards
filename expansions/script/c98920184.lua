@@ -43,7 +43,7 @@ function c98920184.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c98920184.cfilter(c)
-	return c:GetType()~=TYPE_SPIRIT 
+	return c:IsType(TYPE_SPIRIT) 
 end
 function c98920184.condition(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_MONSTER)

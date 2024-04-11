@@ -49,7 +49,7 @@ function c28316144.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c28316144.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsLocation(LOCATION_REMOVED) and re:GetHandler():IsSetCard(0x283) and e:GetHandler():IsReason(REASON_EFFECT)
+	return e:GetHandler():IsLocation(LOCATION_REMOVED) and (re and re:GetHandler():IsSetCard(0x283)) and e:GetHandler():IsReason(REASON_EFFECT)
 end
 function c28316144.cfilter(c)
 	return c:IsAttribute(ATTRIBUTE_WATER) and c:IsSetCard(0x283) and c:IsFaceup()

@@ -83,5 +83,6 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EFFECT_PUBLIC)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		dc:RegisterEffect(e1,true)
+		Duel.ConfirmCards(1-tp,dc)
 	end
 end
