@@ -1,4 +1,4 @@
-S--闪耀的集合 多彩的天空
+--闪耀的集合 多彩的天空
 function c28318424.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)

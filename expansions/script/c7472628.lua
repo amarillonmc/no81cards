@@ -1,5 +1,19 @@
 --幻兽机 金雕白矛隼
 local s,id,o=GetID()
+--Bug repair
+local _IsCanBeSynchroMaterial=Card.IsCanBeSynchroMaterial
+function Card.IsCanBeSynchroMaterial(c,...)
+	local ext_params={...}
+	if #ext_params==0 then return _IsCanBeSynchroMaterial(c,...) end
+	local sc=ext_params[1]
+	local tp=sc:GetControler()
+	if c:IsLocation(LOCATION_MZONE) and not c:IsControler(tp) then
+		local mg=Duel.GetSynchroMaterial(tp)
+		return mg:IsContains(c) and _IsCanBeSynchroMaterial(c,sc,...)
+	end
+	return _IsCanBeSynchroMaterial(c,...)
+end
+--
 function s.initial_effect(c)
 	--synchro summon
 	local e1=Effect.CreateEffect(c)
