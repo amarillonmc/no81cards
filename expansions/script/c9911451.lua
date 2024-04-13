@@ -97,7 +97,7 @@ function c9911451.thop(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then return end
 	local tc1=g:GetMinGroup(Card.GetSequence):GetFirst()
 	local tc2=Duel.GetFieldCard(tp,LOCATION_GRAVE,0)
-	if tc1 and tc2 then
+	if tc1 and tc2 and aux.NecroValleyFilter()(tc2) then
 		local sg=Group.FromCards(tc1,tc2)
 		Duel.DisableShuffleCheck()
 		if Duel.SendtoHand(sg,tp,REASON_EFFECT)>0 then

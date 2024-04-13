@@ -72,7 +72,7 @@ end
 function c71401019.op2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,71401019)~=0 then return end
 	local code=e:GetLabel()
-	local g=Duel.GetMatchingGroup(c71401019.filter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,code)
+	local g=Duel.GetMatchingGroup(c71401019.filter2,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,code)
 	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401019,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
 		local tc=g:Select(tp,1,1,nil):GetFirst()

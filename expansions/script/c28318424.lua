@@ -1,4 +1,4 @@
---闪耀的集合 多彩的天空
+S--闪耀的集合 多彩的天空
 function c28318424.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -38,7 +38,7 @@ function c28318424.lkfilter(c,mg)
 end
 function c28318424.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mg=Duel.GetMatchingGroup(c28318424.matfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
-	local g=Duel.GetMatchingGroup(Card.IsCanBeFusionMaterial,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
+	local g=Duel.GetMatchingGroup(Card.IsCanBeFusionMaterial,tp,LOCATION_MZONE+LOCATION_HAND,0,nil):Filter(Card.IsType,nil,TYPE_MONSTER)
 	local b1=Duel.IsExistingMatchingCard(c28318424.fsfilter,tp,LOCATION_EXTRA,0,1,nil,g,e,tp)
 	 and g:GetCount()>1
 	local b2=Duel.IsExistingMatchingCard(c28318424.syfilter,tp,LOCATION_EXTRA,0,1,nil,mg)
