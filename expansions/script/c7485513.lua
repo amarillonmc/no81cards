@@ -27,7 +27,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x90) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
+	return c:IsSetCard(0x90) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function s.thfilter(c)
 	return c:IsRace(RACE_PLANT) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsFaceup()

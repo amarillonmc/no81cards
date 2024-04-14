@@ -50,8 +50,8 @@ function c98920590.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c98920590.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAttackPos,tp,0,LOCATION_SZONE,1,nil) end
-	local g=Duel.GetMatchingGroup(Card.IsAttackPos,tp,0,LOCATION_SZONE,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_ONFIELD,1,nil,TYPE_SPELL+TYPE_TRAP) end
+	local g=Duel.GetMatchingGroup(Card.IsType,tp,0,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 	Duel.SetChainLimit(c98920590.chlimit)
 end
@@ -59,7 +59,7 @@ function c98920590.chlimit(e,ep,tp)
 	return tp==ep
 end
 function c98920590.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsAttackPos,tp,0,LOCATION_SZONE,nil)
+	local g=Duel.GetMatchingGroup(Card.IsType,tp,0,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
 	if g:GetCount()>0 then
 		Duel.Destroy(g,REASON_EFFECT)
 	end
@@ -94,22 +94,27 @@ function c98920590.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
+function c98920590.filter2(c,e,tp,mc)
+	if not (c:IsLevelBelow(8) and c:IsSetCard(0x1045) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)) then return false end
+	if c:IsLocation(LOCATION_EXTRA) then
+		return Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
+	else
+		return Duel.GetMZoneCount(tp,mc)>0
+	end
+end
 function c98920590.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98920590.filter2,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(c98920590.filter2,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp,c) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA+LOCATION_GRAVE)
 end
 function c98920590.negop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	if Duel.NegateActivation(ev) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g2=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c98920590.filter2),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e,tp)
+		local g2=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c98920590.filter2),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e,tp,nil)
 		if g2:GetCount()>0 then
 			Duel.BreakEffect()
 			Duel.SpecialSummon(g2,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
-end
-function c98920590.filter2(c,e,tp)
-	return c:IsLevelBelow(8) and c:IsSetCard(0x1045) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
