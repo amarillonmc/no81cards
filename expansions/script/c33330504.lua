@@ -28,7 +28,7 @@ function c33330504.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function c33330504.desfilter(c,e,tp)
-	return c:IsDestructable(e) and Duel.IsExistingMatchingCard(c33330504.resfilter,tp,LOCATION_ONFIELD,0,1,c)
+	return Duel.IsExistingMatchingCard(c33330504.resfilter,tp,LOCATION_ONFIELD,0,1,c)
 end
 function c33330504.resfilter(c)
 	return c:IsAbleToRemove()
