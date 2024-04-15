@@ -12,9 +12,9 @@ function s.initial_effect(c)
 	e1:SetOperation(s.operation)
 	c:RegisterEffect(e1)
 	--get effect
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAINING)
+	local e2=Effect.CreateEffect(c) 
+	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)  
+	e2:SetCode(EVENT_CHAIN_SOLVED)
 	e2:SetCondition(s.condition)
 	e2:SetOperation(s.atkop)
 	c:RegisterEffect(e2)
@@ -27,11 +27,11 @@ function s.initial_effect(c)
 end
 
 function s.filter(c,sc)
-	return c:IsSetCard(0x6223) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_XYZ) and sc:IsCanBeXyzMaterial(c)
+	return c:IsSetCard(0x223) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_XYZ) and sc:IsCanBeXyzMaterial(c)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,0,1,nil,e:GetHandler()) and Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,0,1,nil,e:GetHandler()) 
+	end
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -42,10 +42,14 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not tc then return end
 	Duel.HintSelection(tg)
 	Duel.Overlay(tc,c)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local tg2=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
-	Duel.HintSelection(tg2)
-	Duel.Destroy(tg2,REASON_EFFECT)
+		local dg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+		if dg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local des=dg:Select(tp,1,1,nil)
+			Duel.HintSelection(des)
+			Duel.BreakEffect()
+			Duel.Destroy(des,REASON_EFFECT)
+	end
 end
 
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
@@ -57,20 +61,23 @@ function s.atkval(e,c)
 end
 
 function s.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
 	if rp==1-tp and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) then
-		Duel.Hint(HINT_CARD,0,id)
-		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
-		local tg=g:RandomSelect(tp,1)
-		local tc=tg:GetFirst()
-		Duel.HintSelection(tg)
+	Duel.Hint(HINT_CARD,0,id)
+	local tg=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+	local dg=Group.CreateGroup()
+	local c=e:GetHandler()
+	local tc=tg:GetFirst()
+	while tc do
 		local preatk=tc:GetAttack()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(-300)
+		e1:SetValue(-200)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-		if preatk~=0 and tc:IsAttack(0) then Duel.Destroy(tc,REASON_EFFECT) end
+		if preatk~=0 and tc:IsAttack(0) then dg:AddCard(tc) end
+		tc=tg:GetNext()
+	end
+	Duel.Destroy(dg,REASON_EFFECT)
 	end
 end

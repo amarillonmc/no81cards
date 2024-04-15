@@ -142,12 +142,15 @@ function c60153208.rstop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c60153208.e2costf(c,tp)
-	return c:GetFlagEffect(60153208)~=0 and c:IsControler(tp) and c:IsLocation(LOCATION_SZONE)
+	return c:GetFlagEffect(60153208)~=0 and c:IsControler(tp) and c:IsLocation(LOCATION_SZONE) and c:GetColumnGroup():IsExists(c60153208.e2costff,1,nil,tp)
+end
+function c60153208.e2costff(c,tp)
+	return c:IsControler(1-tp)
 end
 function c60153208.e2cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local eqg=c:GetEquipGroup()
-	if chk==0 then return eqg:IsExists(c60153208.e2costf,1,nil,tp) and c:GetFlagEffect(60153208)==0 end
+	if chk==0 then return eqg:GetCount()>0 and eqg:IsExists(c60153208.e2costf,1,nil,tp) and c:GetFlagEffect(60153208)==0 end
 	c:RegisterFlagEffect(60153208,RESET_CHAIN,0,1)
 end
 function c60153208.e2opf(c,tp)
@@ -156,7 +159,7 @@ end
 function c60153208.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local eqg=c:GetEquipGroup()
-	if eqg:GetCount()>0 then
+	if eqg:GetCount()>0 and eqg:IsExists(c60153208.e2costf,1,nil,tp) then
 		local g=eqg:FilterSelect(tp,c60153208.e2costf,1,1,nil,tp)
 		local tc=g:GetFirst()
 		local g2=tc:GetColumnGroup()

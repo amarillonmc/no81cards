@@ -16,20 +16,6 @@ function c60153218.initial_effect(c)
 	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3b2a))
 	e2:SetValue(-3)
 	c:RegisterEffect(e2)
-	
-	--Decrease Atk
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_ATKCHANGE)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetRange(LOCATION_FZONE)
-	e3:SetTargetRange(0,LOCATION_MZONE)
-	e3:SetValue(700)
-	c:RegisterEffect(e3)
-	--Decrease Atk
-	local e4=e3:Clone()
-	e4:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e4)
 	--draw
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(60153218,1))

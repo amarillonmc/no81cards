@@ -6,6 +6,7 @@ function c60153220.initial_effect(c)
 	e1:SetCategory(CATEGORY_NEGATE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
+	e1:SetCountLimit(1,60153220)
 	e1:SetCondition(c60153220.condition)
 	e1:SetTarget(c60153220.target)
 	e1:SetOperation(c60153220.activate)
@@ -18,7 +19,7 @@ function c60153220.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
-	e2:SetCondition(aux.exccon)
+	e2:SetCountLimit(1,6013220)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c60153220.e2tg)
 	e2:SetOperation(c60153220.e2op)
@@ -60,28 +61,22 @@ end
 function c60153220.e2tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	if chk==0 then
-		return Duel.IsExistingTarget(c60153220.e2tgf,tp,LOCATION_DECK,0,1,nil,e,tp)
+		return Duel.IsExistingMatchingCard(c60153220.e2tgf,tp,LOCATION_DECK,0,1,nil,e,tp)
 			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-			and Duel.IsExistingTarget(c60153220.e2tgf,1-tp,LOCATION_DECK,0,1,nil,e,1-tp)
+			and Duel.IsExistingMatchingCard(c60153220.e2tgf,1-tp,LOCATION_DECK,0,1,nil,e,1-tp)
 			and Duel.GetLocationCount(1-tp,LOCATION_MZONE,1-tp)>0
 	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg=Duel.SelectTarget(tp,c60153220.e2tgf,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SPSUMMON)
-	local og=Duel.SelectTarget(1-tp,c60153220.e2tgf,1-tp,LOCATION_DECK,0,1,1,nil,e,1-tp)
-	local sc=sg:GetFirst()
-	local oc=og:GetFirst()
-	local g=Group.FromCards(sc,oc)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,2,0,0)
-	e:SetLabelObject(sc)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,1-tp,LOCATION_DECK)
 end
 function c60153220.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local sc=e:GetLabelObject()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local oc=g:GetFirst()
-	if oc==sc then oc=g:GetNext() end
-	if sc:IsRelateToEffect(e) then
+	local g=Duel.GetMatchingGroup(c60153220.e2tgf,tp,LOCATION_DECK,0,nil,e,tp)
+	local g2=Duel.GetMatchingGroup(c60153220.e2tgf,1-tp,LOCATION_DECK,0,nil,e,tp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and g:GetCount()>0 and g2:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=g:Select(tp,1,1,nil)
+		local sc=sg:GetFirst()
 		Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -126,8 +121,9 @@ function c60153220.e2op(e,tp,eg,ep,ev,re,r,rp)
 		e9:SetValue(LOCATION_REMOVED)
 		sc:RegisterEffect(e9,true)
 		sc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60153220,2))
-	end
-	if oc:IsRelateToEffect(e) then
+		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SPSUMMON)
+		local sg2=g2:Select(1-tp,1,1,nil)
+		local oc=sg2:GetFirst()
 		Duel.SpecialSummonStep(oc,0,1-tp,1-tp,false,false,POS_FACEDOWN_DEFENSE)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -172,8 +168,8 @@ function c60153220.e2op(e,tp,eg,ep,ev,re,r,rp)
 		e9:SetValue(LOCATION_REMOVED)
 		oc:RegisterEffect(e9,true)
 		oc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60153220,2))
+		Duel.SpecialSummonComplete()
 	end
-	Duel.SpecialSummonComplete()
 end
 function c60153220.fuslimit(e,c,st)
 	return st==SUMMON_TYPE_FUSION

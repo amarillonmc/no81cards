@@ -30,21 +30,35 @@ function c9910552.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910552.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsAbleToGrave() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+		and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_EXTRA,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectTarget(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 end
+function c9910552.thfilter(c)
+	return c:IsSetCard(0x3951) and c:IsAbleToHand()
+end
 function c9910552.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Group.CreateGroup()
 	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) then return end
-	local res=tc:IsAbleToGrave() and Duel.SendtoGrave(tc,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_GRAVE)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_HAND,0,nil)
-	if res and g:GetCount()>0 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(9910552,1)) then
+	if tc:IsRelateToEffect(e) then g:AddCard(tc) end
+	if Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_EXTRA,0,1,nil) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local sc=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_EXTRA,0,1,1,nil):GetFirst()
+		g:AddCard(sc)
+	end
+	if #g==0 or Duel.SendtoGrave(g,REASON_EFFECT)==0 or not g:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) then return end
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_HAND,0,nil)
+	local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910552.thfilter),tp,LOCATION_GRAVE,0,nil)
+	if #g1>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(9910552,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg=g:Select(tp,1,1,nil)
-		if Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)==0 then return end
-		Duel.Draw(tp,1,REASON_EFFECT)
+		local sg1=g1:Select(tp,1,1,nil)
+		if Duel.Remove(sg1,POS_FACEUP,REASON_EFFECT)==0 then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg2=g2:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg2,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg2)
 	end
 end

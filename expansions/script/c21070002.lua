@@ -16,7 +16,7 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,id+o)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -63,5 +63,16 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD)
+	e7:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e7:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e7:SetTargetRange(1,0)
+	e7:SetTarget(s.splimit)
+	e7:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e7,tp)
+end
+function s.splimit(e,c)
+	return not aux.IsCodeListed(c,21070001)
 end
 

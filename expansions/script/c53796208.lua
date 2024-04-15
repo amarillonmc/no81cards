@@ -51,40 +51,44 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(ge4,0)
 		local f1=Card.RegisterEffect
 		Card.RegisterEffect=function(tc,te,bool)
-			local tg=te:GetTarget()
-			if tg then
-				te:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-					if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,chkc) end
-					if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) end
+			if te:IsActivated() or te:IsHasType(EFFECT_TYPE_CONTINUOUS) then
+				local tg=te:GetTarget()
+				if tg then
+					te:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+						if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,chkc) end
+						if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) end
+						s.check=e
+						tg(e,tp,eg,ep,ev,re,r,rp,1)
+						s.check=false
+					end)
+				end
+				local op=te:GetOperation()
+				te:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 					s.check=e
-					tg(e,tp,eg,ep,ev,re,r,rp,1)
-					s.check=false
+					if op then op(e,tp,eg,ep,ev,re,r,rp) end
 				end)
 			end
-			local op=te:GetOperation()
-			te:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-				s.check=e
-				if op then op(e,tp,eg,ep,ev,re,r,rp) end
-			end)
 			return f1(tc,te,bool)
 		end
 		local f2=Duel.RegisterEffect
 		Duel.RegisterEffect=function(se,sp)
-			local tg=se:GetTarget()
-			if tg then
-				se:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-					if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,chkc) end
-					if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) end
+			if se:IsActivated() or se:IsHasType(EFFECT_TYPE_CONTINUOUS) then
+				local tg=se:GetTarget()
+				if tg then
+					se:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+						if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,chkc) end
+						if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) end
+						s.check=e
+						tg(e,tp,eg,ep,ev,re,r,rp,1)
+						s.check=false
+					end)
+				end
+				local op=se:GetOperation()
+				se:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 					s.check=e
-					tg(e,tp,eg,ep,ev,re,r,rp,1)
-					s.check=false
+					if op then op(e,tp,eg,ep,ev,re,r,rp) end
 				end)
 			end
-			local op=se:GetOperation()
-			se:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
-				s.check=e
-				if op then op(e,tp,eg,ep,ev,re,r,rp) end
-			end)
 			return f2(se,sp)
 		end
 		local f3=Duel.SetChainLimitTillChainEnd

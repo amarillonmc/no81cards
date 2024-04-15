@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCondition(cm.condition)
+	--e1:SetCondition(cm.condition)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 end
@@ -40,9 +40,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_REMOVE)
+	e1:SetCondition(cm.spcon)
 	e1:SetOperation(cm.spop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+end
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==tp
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	for i=1,#eg do

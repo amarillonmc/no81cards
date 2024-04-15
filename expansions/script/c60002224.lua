@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.cfilter(c)
-	return c:IsType(TYPE_FIELD) and c:IsDiscardable()
+	return c:IsType(TYPE_SPELL) and c:IsDiscardable()
 end
 function cm.cfilter2(c)
 	return (c:IsType(TYPE_FIELD)) or (c:IsRace(RACE_WARRIOR) and c:IsLevel(4) and c:IsAttribute(ATTRIBUTE_LIGHT)) and c:IsDiscardable()

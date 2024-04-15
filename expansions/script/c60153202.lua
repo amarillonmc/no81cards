@@ -35,7 +35,7 @@ function c60153202.initial_effect(c)
 	--3效果
 	
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(60153201,2))
+	e3:SetDescription(aux.Stringid(60153202,2))
 	e3:SetCategory(CATEGORY_REMOVE+CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_LEAVE_FIELD)
@@ -47,14 +47,23 @@ end
 
 --1效果
 
+function c60153202.e1conf(c)
+	return c:IsFaceup() and c:IsCode(60153218) and not c:IsDisabled()
+end
 function c60153202.e1con(e,c)
 	if c==nil then return true end
 	if c:IsHasEffect(EFFECT_NECRO_VALLEY) then return false end
 	local tp=c:GetControler()
-	return Duel.CheckLPCost(tp,1000)
+	if not Duel.IsExistingMatchingCard(c60153202.e1conf,tp,LOCATION_FZONE,0,1,nil) then
+		return Duel.CheckLPCost(tp,1000)
+	else
+		return true
+	end
 end
 function c60153202.e1pop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.PayLPCost(tp,1000)
+	if not Duel.IsExistingMatchingCard(c60153202.e1conf,tp,LOCATION_FZONE,0,1,nil) then
+		Duel.PayLPCost(tp,1000)
+	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UNRELEASABLE_SUM)

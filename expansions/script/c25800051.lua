@@ -1,94 +1,113 @@
---海伦娜
-local m=25800051
-local cm=_G["c"..m]
+--舰娘-海伦娜
+local m = 25800051
+local cm = _G["c"..m]
 function cm.initial_effect(c)
+	aux.AddCodeList(c,25800023)
+	c:EnableReviveLimit()
+	--tohand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_COIN+CATEGORY_ATKCHANGE)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1)
-	e1:SetHintTiming(TIMING_DAMAGE_STEP)
-	e1:SetCost(cm.atkcost)
-	e1:SetTarget(cm.atktg)
-	e1:SetOperation(cm.atkop)
+	e1:SetCost(cm.thcost)
+	e1:SetTarget(cm.thtg)
+	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
+	local e4=e1:Clone()
+	e4:SetCode(EVENT_PHASE+PHASE_END)
+	c:RegisterEffect(e4)
 
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,m)
-	e2:SetTarget(cm.target)
-	e2:SetOperation(cm.operation)
+	e2:SetCondition(cm.thcon)
+	e2:SetTarget(cm.thtg2)
+	e2:SetOperation(cm.thop2)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	--
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,0))
+	e3:SetCategory(CATEGORY_DICE)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCountLimit(1,m-1)
+	e3:SetTarget(cm.damtg)
+	e3:SetOperation(cm.damop)
 	c:RegisterEffect(e3)
-
 end
 cm.toss_coin=true
-function cm.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
-function cm.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x211)
+function cm.thfilter(c)
+	if not c:IsCode(25800023) then return false end
+	return c:IsAbleToHand() or c:IsSSetable()
 end
-function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.atkfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.atkfilter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,cm.atkfilter,tp,LOCATION_MZONE,0,1,1,nil)
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		if tc:IsAbleToHand() and (not tc:IsSSetable() or Duel.SelectOption(tp,1190,1153)==0) then
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
+		else
+			Duel.SSet(tp,tc)
+		end
+	end
+end
+----2
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
+end
+function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_ONFIELD)
+end
+function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	if g:GetCount()>0 or g2:GetCount()>0 then
+		local g1=g+g2
+		Duel.HintSelection(g1)
+		Duel.SendtoHand(g1,nil,REASON_EFFECT)
+	end
+end
+----3
+function cm.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 end
-function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		local res=Duel.TossCoin(tp,1)
+function cm.damop(e,tp,eg,ep,ev,re,r,rp)
+	local res=Duel.TossCoin(tp,1)
+	if res==1 then
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Damage(p,d,REASON_EFFECT)
 		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)   
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		if res==1 then
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-		e1:SetValue(tc:GetAttack()*2)
-		else
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(1000)
-		end
-		tc:RegisterEffect(e1)
-		
-   end
-end
-------2
-function cm.filter(c,e,tp)
-	return  c:IsSetCard(0xa211)  and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToHand()
-		  and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) 
-		  and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,c,1,0,0)
-end
-function cm.thfilter2(c)
-	return c:IsFaceup()  and c:IsCode(25800051)
-end
-function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-	if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then 
-	if  not Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_MZONE,0,2,nil) then		   
-				 Duel.SendtoHand(c,nil,REASON_EFFECT)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CHANGE_DAMAGE)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(0,1)
+		e1:SetValue(cm.damval)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
 	end
-	end
-	end
+end
+function cm.damval(e,re,val,r,rp,rc)
+	if  bit.band(r,REASON_BATTLE+REASON_EFFECT)==0 then return val end
+	return val*2
 end

@@ -42,14 +42,23 @@ end
 
 --1效果
 
+function c60153206.e1conf(c)
+	return c:IsFaceup() and c:IsCode(60153218) and not c:IsDisabled()
+end
 function c60153206.e1con(e,c)
 	if c==nil then return true end
 	if c:IsHasEffect(EFFECT_NECRO_VALLEY) then return false end
 	local tp=c:GetControler()
-	return Duel.CheckLPCost(tp,1000)
+	if not Duel.IsExistingMatchingCard(c60153206.e1conf,tp,LOCATION_FZONE,0,1,nil) then
+		return Duel.CheckLPCost(tp,1000)
+	else
+		return true
+	end
 end
 function c60153206.e1pop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.PayLPCost(tp,1000)
+	if not Duel.IsExistingMatchingCard(c60153206.e1conf,tp,LOCATION_FZONE,0,1,nil) then
+		Duel.PayLPCost(tp,1000)
+	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UNRELEASABLE_SUM)
@@ -112,8 +121,7 @@ function c60153206.e4op(e,tp,eg,ep,ev,re,r,rp)
 					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 					tc:RegisterEffect(e1)
 				end
-			end
-			if tc:IsLocation(LOCATION_REMOVED) and Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)~=0 then
+			elseif tc:IsLocation(LOCATION_REMOVED) and Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)~=0 then
 				if tc:IsLocation(LOCATION_GRAVE) then
 					local e1=Effect.CreateEffect(e:GetHandler())
 					e1:SetType(EFFECT_TYPE_SINGLE)

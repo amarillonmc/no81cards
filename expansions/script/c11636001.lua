@@ -110,8 +110,7 @@ function s.discon(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	return c:IsSetCard(0x6223)
 		and not c:IsStatus(STATUS_BATTLE_DESTROYED) and ep==1-tp
-		and re:IsActiveType(TYPE_TRAP) and Duel.IsChainNegatable(ev)
-		and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
+		and Duel.IsChainNegatable(ev) and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
 		and tg and tg:IsContains(c)
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)

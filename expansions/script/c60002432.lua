@@ -92,7 +92,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			return
 		end
 		if rm and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-			Duel.Draw(tp,1,REASON_EFFECT)
+			Duel.Draw(tp,2,REASON_EFFECT)
 		end
 	end
 end
