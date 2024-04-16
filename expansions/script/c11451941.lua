@@ -86,7 +86,7 @@ function cm.adop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if not tc then return end
 	local rg=Group.FromCards(c,tc)
-	if Duel.SendtoHand(rg,nil,REASON_EFFECT)~=0 then
+	if Duel.SendtoHand(rg,nil,REASON_EFFECT)>0 and Duel.GetOperatedGroup():IsExists(Card.IsLocation,1,nil,LOCATION_HAND) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 		if sg:GetCount()>0 then

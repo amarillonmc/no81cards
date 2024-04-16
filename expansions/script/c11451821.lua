@@ -101,14 +101,14 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
-		if #cm[0]==0 then return false end
+		if #cm[0]==0 or not c:IsCanBeSpecialSummoned(e,0,tp,false,false) then return false end
 		for tc in aux.Next(cm[0]) do
 			--local cn=_G["c"..code]
 			local con=tc.condition3
 			local op=tc.operation3
 			local ft=0
 			if tc:GetOriginalCode()==11451412 then ft=1 end
-			if con and op and con(e,tp,eg,ep,ev,re,r,rp) then return Duel.GetLocationCount(tp,LOCATION_MZONE)>ft and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+			if con and op and con(e,tp,eg,ep,ev,re,r,rp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>ft then return true end
 		end
 		return false
 	end

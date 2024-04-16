@@ -41,9 +41,9 @@ function c67200909.initial_effect(c)
 end
 function c67200909.filter(c,tp)
 	local r=LOCATION_REASON_TOFIELD
-	if not c:IsControler(c:GetOwner()) then r=LOCATION_REASON_CONTROL end
+	--if not c:IsControler(c:GetOwner()) then r=LOCATION_REASON_CONTROL end
 	return c:IsType(TYPE_PENDULUM) and c:IsFaceupEx()
-		and Duel.GetLocationCount(c:GetOwner(),LOCATION_PZONE,tp,r)>0
+		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
 end
 function c67200909.mvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_MZONE) and c67200909.filter(chkc,tp) end

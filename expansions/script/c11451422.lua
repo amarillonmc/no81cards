@@ -1,6 +1,5 @@
 --anger of dragon palace
-local m=11451422
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,22702055)
 	--Activate
@@ -35,7 +34,7 @@ function cm.filter(c)
 	return (c:IsSetCard(0x6978) or c:IsRace(RACE_SEASERPENT)) and not c:IsPublic()
 end
 function cm.filter2(c)
-	return c:IsSetCard(0x6978) and c:IsAbleToDeck() and not c:IsCode(m)
+	return c:IsSetCard(0x6978) and c:IsAbleToDeckAsCost() and not c:IsCode(m)
 end
 function cm.filter3(c,tp)
 	return c:IsCode(22702055) and c:IsType(TYPE_FIELD) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true)
@@ -92,6 +91,7 @@ function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g2=g:SelectSubGroup(tp,aux.dncheck,false,3,3)
 	g2:AddCard(e:GetHandler())
 	Duel.SendtoDeck(g2,nil,2,REASON_COST)
+	Duel.ConfirmCards(1-tp,e:GetHandler())
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_DECK,0,1,nil,tp) end

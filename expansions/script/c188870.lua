@@ -3,7 +3,7 @@ local cm=_G["c"..m]
 cm.name="神意之枯骸-米蕾"
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,function(c,fc,sub,mg,sg)return not sg or not sg:IsExists(Card.IsLevel,1,c,c:GetLevel())end,3,false)
+	aux.AddFusionProcFunRep(c,function(c,fc,sub,mg,sg)return c:GetLevel()>0 and (not sg or not sg:IsExists(Card.IsLevel,1,c,c:GetLevel()))end,3,false)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)

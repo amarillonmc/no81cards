@@ -3,7 +3,6 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	--Activate
 	local e0=Effect.CreateEffect(c)
-	e0:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
