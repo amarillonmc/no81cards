@@ -26,7 +26,7 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(e3,0)
 		local e4=Effect.CreateEffect(c)
 		e4:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		e4:SetCode(EVENT_CHAINING)
+		e4:SetCode(EVENT_CHAIN_SOLVING)
 		e4:SetOperation(cm.checkop)
 		Duel.RegisterEffect(e4,0)
 	end

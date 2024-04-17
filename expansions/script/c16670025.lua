@@ -3,17 +3,17 @@ local m=16670025
 local cm=_G["c"..m]
 xpcall(function() dofile("expansions/script/c16670000.lua") end,function() dofile("script/c16670000.lua") end)
 function cm.initial_effect(c)
-    --
+	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	c:RegisterEffect(e1)
-    --
-    local e11=Effect.CreateEffect(c)
+	--
+	local e11=Effect.CreateEffect(c)
 	e11:SetType(EFFECT_TYPE_SINGLE)
 	e11:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 	c:RegisterEffect(e11)
-    --
+	--
 	local e111=Effect.CreateEffect(c)
 	e111:SetType(EFFECT_TYPE_SINGLE)
 	e111:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	e22:SetValue(TYPE_PENDULUM)
 	--c:RegisterEffect(e22)
 	--魔法发动
-    local e2=Effect.CreateEffect(c)
+	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,2))
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_HAND)
@@ -47,7 +47,7 @@ function cm.initial_effect(c)
 	e2:SetCondition(cm.backon4)
 	e2:SetCost(cm.cost1)
 	e2:SetTarget(cm.target)
-    e2:SetOperation(cm.backop2)
+	e2:SetOperation(cm.backop2)
 	c:RegisterEffect(e2)
 	local e6=e2:Clone()
 	e6:SetType(EFFECT_TYPE_ACTIVATE+EFFECT_TYPE_QUICK_O)
@@ -83,8 +83,8 @@ function cm.initial_effect(c)
 	et:SetCode(EVENT_CHAINING)
 	et:SetCondition(cm.con1)
 	--c:RegisterEffect(et)
-    --变回去
-    local e0=Effect.CreateEffect(c)
+	--变回去
+	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e0:SetCode(EVENT_ADJUST)
 	e0:SetRange(LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_HAND+LOCATION_EXTRA)
@@ -107,7 +107,7 @@ function cm.initial_effect(c)
 	e0000:SetCondition(cm.backon2)
 	e0000:SetOperation(cm.backop3)
 	--c:RegisterEffect(e0000)
-    --[[
+	--[[
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_LEAVE_FIELD_P)
@@ -152,9 +152,9 @@ function cm.initial_effect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD)
 		ge1:SetCode(EFFECT_ACTIVATE_COST)
 		ge1:SetLabelObject(e2)
-        ge1:SetTargetRange(1,1)
-        ge1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-        ge1:SetTarget(cm.actarget)
+		ge1:SetTargetRange(1,1)
+		ge1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		ge1:SetTarget(cm.actarget)
 		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
 		local e7=ge1:Clone()
@@ -181,15 +181,15 @@ function cm.initial_effect(c)
 		ge13:SetType(EFFECT_TYPE_FIELD)
 		ge13:SetCode(EFFECT_ACTIVATE_COST)
 		ge13:SetLabelObject(e17)
-        ge13:SetTargetRange(1,1)
-        ge13:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-        ge13:SetTarget(cm.actarget)
+		ge13:SetTargetRange(1,1)
+		ge13:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		ge13:SetTarget(cm.actarget)
 		ge13:SetOperation(cm.checkop2)
 		Duel.RegisterEffect(ge13,0)
 		local e37=ge13:Clone()
 		e37:SetLabelObject(e19)
 		Duel.RegisterEffect(e37,0)
-    if not cm.global_check then
+	if not cm.global_check then
 		cm.global_check=true
 		cm.gx=nil
 		cm.gz=nil
@@ -203,11 +203,11 @@ function cm.initial_effect(c)
 		local ge12=Effect.CreateEffect(c)
 		ge12:SetType(EFFECT_TYPE_FIELD)
 		ge12:SetCode(EFFECT_ACTIVATE_COST)
-        ge12:SetTargetRange(1,1)
-        ge12:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		ge12:SetTargetRange(1,1)
+		ge12:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		ge12:SetTarget(cm.spcon12)
 		ge12:SetOperation(cm.dp1)
-		Duel.RegisterEffect(ge12,0)
+		--Duel.RegisterEffect(ge12,0)
 		--
 	end
 end
@@ -289,8 +289,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,m+2,RESET_EVENT+RESET_CHAIN+EVENT_CHAINING,0,1)
 	--[[
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,0xff,0,1,1,c):GetFirst()
-    c:RegisterFlagEffect(m,0,0,1)
-    c:SetEntityCode(g:GetOriginalCode(),true)
+	c:RegisterFlagEffect(m,0,0,1)
+	c:SetEntityCode(g:GetOriginalCode(),true)
 	local te,ceg,cep,cev,cre,cr,crp=g:CheckActivateEffect(false,true,true)
 	--
 	if not c:IsType(TYPE_FIELD) then
@@ -321,7 +321,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		--if tg~=nil then e:GetLabelObject():SetTarget(te:GetTarget()) end
 		e:GetLabelObject():SetCategory(te:GetCategory())
 	end
-    c:RegisterFlagEffect(m+1,0,0,1)
+	c:RegisterFlagEffect(m+1,0,0,1)
 	--
 	--local t=Duel.ReadCard(m,CARDDATA_TYPE)
 	--Card.SetCardData(c,CARDDATA_TYPE,TYPE_CONTINUOUS+TYPE_TRAP+TYPE_QUICKPLAY+TYPE_SPELL)
@@ -334,8 +334,8 @@ end
 --魔法变相同部分
 function cm.checkopn(e,tp,c,mf)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,0xff,0,1,1,c):GetFirst()
-    c:RegisterFlagEffect(m,0,0,1)
-    c:SetEntityCode(g:GetOriginalCode(),true)
+	c:RegisterFlagEffect(m,0,0,1)
+	c:SetEntityCode(g:GetOriginalCode(),true)
 	local te,ceg,cep,cev,cre,cr,crp=g:CheckActivateEffect(false,true,true)
 	--
 	if c:IsLocation(LOCATION_HAND) then-- (e:GetLabelObject():IsHasType(EFFECT_TYPE_QUICK_O) or e:GetLabelObject():IsHasType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)) and --
@@ -384,7 +384,7 @@ function cm.checkopn(e,tp,c,mf)
 	end
 	--
 	--
-    c:RegisterFlagEffect(m+1,0,0,1)
+	c:RegisterFlagEffect(m+1,0,0,1)
 	--
 	--local t=Duel.ReadCard(m,CARDDATA_TYPE)
 	--Card.SetCardData(c,CARDDATA_TYPE,TYPE_CONTINUOUS+TYPE_TRAP+TYPE_QUICKPLAY+TYPE_SPELL)
@@ -392,17 +392,17 @@ function cm.checkopn(e,tp,c,mf)
 	--
 	cm.gx=g
 	cm.gz=g:GetOriginalCode()
-    --Duel.AdjustAll()
+	--Duel.AdjustAll()
 end
 --魔法变
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetLabelObject():GetHandler()
-    tp=e:GetLabelObject():GetHandler():GetControler()
+	local c=e:GetLabelObject():GetHandler()
+	tp=e:GetLabelObject():GetHandler():GetControler()
 	cm.checkopn(e,tp,c)
 	--[[
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,0xff,0,1,1,c):GetFirst()
-    c:RegisterFlagEffect(m,0,0,1)
-    c:SetEntityCode(g:GetOriginalCode(),true)
+	c:RegisterFlagEffect(m,0,0,1)
+	c:SetEntityCode(g:GetOriginalCode(),true)
 	local te,ceg,cep,cev,cre,cr,crp=g:CheckActivateEffect(false,true,true)
 	--
 	if c:IsLocation(LOCATION_HAND) and e:GetLabelObject():IsHasType(EFFECT_TYPE_QUICK_O) and not
@@ -451,29 +451,29 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	--
 	--
-    c:RegisterFlagEffect(m+1,0,0,1)
+	c:RegisterFlagEffect(m+1,0,0,1)
 	--
 	--local t=Duel.ReadCard(m,CARDDATA_TYPE)
 	--Card.SetCardData(c,CARDDATA_TYPE,TYPE_CONTINUOUS+TYPE_TRAP+TYPE_QUICKPLAY+TYPE_SPELL)
 	--
 	--
 	cm.gz=g:GetOriginalCode()
-    --Duel.AdjustAll()
+	--Duel.AdjustAll()
 	]]--
 end
 --怪兽变
 function cm.checkop2(e,tp,eg,ep,ev,re,r,rp)
 	local ha=e:GetLabelObject()
-    local c=ha:GetHandler()
-    tp=ha:GetHandler():GetControler()
+	local c=ha:GetHandler()
+	tp=ha:GetHandler():GetControler()
 	local tp2=tp
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter2,tp,0xff,0,1,1,c):GetFirst()
-    c:RegisterFlagEffect(m,0,0,1)
+	c:RegisterFlagEffect(m,0,0,1)
 	if c:IsDiscardable() and Duel.SelectYesNo(tp,aux.Stringid(m,5)) then
 		c:RegisterFlagEffect(m+2,0,0,1)
 	end
 	c:RegisterFlagEffect(m+3,0,0,1)
-    c:SetEntityCode(g:GetOriginalCode(),true)
+	c:SetEntityCode(g:GetOriginalCode(),true)
 	local token=Duel.CreateToken(tp2,g:GetOriginalCode())
 	local mt=getmetatable(token)
 	local te=nil
@@ -506,7 +506,7 @@ function cm.checkop2(e,tp,eg,ep,ev,re,r,rp)
 	if te~=nil and te:GetCategory()~=nil then
 		ha:SetCategory(te:GetCategory())
 	end
-    c:RegisterFlagEffect(m+1,0,0,1)
+	c:RegisterFlagEffect(m+1,0,0,1)
 	--
 	ha:SetLabelObject(te)
 	--[[
@@ -559,13 +559,13 @@ end
 function cm.pr(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.actarget(e,te,tp)
-    local c=te:GetHandler()
+	local c=te:GetHandler()
 	local e1=e:GetLabelObject()
 	return c:IsOriginalCodeRule(m) and e1==te-- and ((te:IsHasType(EFFECT_TYPE_QUICK_O) and c:IsLocation(LOCATION_HAND)) or
 	--(te:IsHasType(EFFECT_TYPE_ACTIVATE) and c:IsLocation(LOCATION_SZONE)))
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
+	local c=e:GetHandler()
 	tp=c:GetControler()
 	if chk==0 then
 		--if e:GetLabel()==0 then return false end
@@ -614,7 +614,7 @@ function cm.backon3(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsFaceup() then
 		return false
 	end
-    return true
+	return true
 end
 function cm.backon4(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -632,7 +632,7 @@ function cm.backon4(e,tp,eg,ep,ev,re,r,rp)
 			if cres and cres~=0 then return false end
 		end
 	]]--
-    return true
+	return true
 	--[[
 	((Duel.GetCurrentPhase()~=PHASE_END and Duel.GetCurrentPhase()~=PHASE_BATTLE_START
 	and Duel.GetCurrentPhase()~=PHASE_STANDBY and Duel.GetCurrentPhase()~=PHASE_DRAW and
@@ -644,25 +644,25 @@ function cm.backon4(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.backop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-    c:ResetFlagEffect(m)
-    c:ResetFlagEffect(m+1)
+	c:ResetFlagEffect(m)
+	c:ResetFlagEffect(m+1)
 	c:RegisterFlagEffect(m+1,0,0,1)
 	c:SetEntityCode(m)
 	--if c:IsFacedown() then
-	--	Duel.ConfirmCards(tp,Group.FromCards(c))
-	--	Duel.ConfirmCards(1-tp,Group.FromCards(c))
+	--  Duel.ConfirmCards(tp,Group.FromCards(c))
+	--  Duel.ConfirmCards(1-tp,Group.FromCards(c))
 	--end
 end
 function cm.backop3(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-    local e1=e:GetLabelObject()
+	local e1=e:GetLabelObject()
 	e1:SetCategory(0)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetProperty(0)
 end
 function cm.backop4(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-    local e1=e:GetLabelObject()
+	local e1=e:GetLabelObject()
 	if e1:GetCategory()~=nil or e1:IsHasType(EFFECT_TYPE_ACTIVATE) then
 		e1:SetCategory(0)
 		e1:SetType(EFFECT_TYPE_QUICK_O)
