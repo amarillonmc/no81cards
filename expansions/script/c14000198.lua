@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	--destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e2:SetCode(EVENT_BATTLED)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetOperation(cm.desop)
@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	--summon success
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetCondition(cm.sumcon)
 	e3:SetOperation(cm.sumsuc)
@@ -57,11 +57,11 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.sumcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsAttackable() and Duel.GetFlagEffect(tp,14000206)>0
+	return Duel.GetFlagEffect(tp,14000206)>0
 end
 function cm.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsAttackable() or not c:IsRelateToEffect(e) then return end 
+	--if not c:IsAttackable() or not c:IsRelateToEffect(e) then return end 
 	value=c:GetAttack()
 	ef=c:IsHasEffect(EFFECT_DEFENSE_ATTACK)
 	if ef and ef:GetValue()==1 then 
