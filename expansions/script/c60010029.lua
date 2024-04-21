@@ -14,27 +14,19 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,1)
 	c:RegisterEffect(e2)
-	--spsm
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
-	e1:SetCountLimit(1,m)
-	e1:SetRange(LOCATION_FZONE)
-	e1:SetCondition(cm.spcon)
-	e1:SetOperation(cm.spop)
-	c:RegisterEffect(e1,tp)
-	
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
-	e1:SetCountLimit(1,m+10000000)
-	e1:SetRange(LOCATION_FZONE)
-	e1:SetCondition(cm.spcon2)
-	e1:SetOperation(cm.spop2)
-	c:RegisterEffect(e1,tp)
-
+	--to hand 
+	local e2=Effect.CreateEffect(c) 
+	e2:SetCategory(CATEGORY_DRAW) 
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F) 
+	e2:SetCode(EVENT_SUMMON_SUCCESS) 
+	e2:SetProperty(EFFECT_FLAG_DELAY) 
+	e2:SetRange(LOCATION_FZONE) 
+	--e2:SetTarget(cm.srtg) 
+	e2:SetOperation(cm.srop) 
+	c:RegisterEffect(e2)  
+	local e3=e2:Clone() 
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS) 
+	c:RegisterEffect(e3) 
 	--search
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
@@ -47,22 +39,12 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3)
 end
-function cm.cfilter(c,tp)
-	return c:IsSummonPlayer(tp)
-end
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,tp)
-end
-function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Draw(tp,1,REASON_EFFECT)
-end
-
-function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil,1-tp)
-end
-function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Draw(1-tp,1,REASON_EFFECT)
-end
+function cm.srop(e,tp,eg,ep,ev,re,r,rp) 
+	if Duel.GetFlagEffect(rp,m)==0 then 
+		Duel.Draw(rp,1,REASON_EFFECT)
+		Duel.RegisterFlagEffect(rp,m,RESET_PHASE+PHASE_END,0,1)
+	end 
+end 
 
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.GetType,tp,LOCATION_HAND,0,nil,TYPE_MONSTER)
@@ -70,6 +52,7 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.rcheck(c)
+	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(Card.GetType,tp,LOCATION_HAND,0,nil,TYPE_MONSTER)
 	local tf=false
 	if g:GetCount()>=3 then
@@ -88,9 +71,22 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local lg=Duel.GetMatchingGroup(nil,tp,LOCATION_HAND,0,nil)
 	Duel.ConfirmCards(1-tp,lg)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.rcheck,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	local g=Duel.GetMatchingGroup(Card.GetType,tp,LOCATION_HAND,0,nil,TYPE_MONSTER)
+	local dg=Duel.GetMatchingGroup(Card.GetType,tp,LOCATION_DECK,0,nil,TYPE_MONSTER)
+	local ac=dg:GetFirst()
+	local cg=Group.CreateGroup()
+	for i=1,#dg do
+		g:AddCard(ac)
+		if g:GetClassCount(Card.GetRace)==g:GetCount() and g:GetClassCount(Card.GetAttribute)==g:GetCount() then
+			cg:AddCard(ac)
+			Debug.Message("1")
+		end
+		g:RemoveCard(ac)
+		ac=dg:GetNext()
+	end
+	local mg=cg:Select(tp,1,1,nil)
+	if mg:GetCount()>0 then
+		Duel.SendtoHand(mg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,mg)
 	end
 end

@@ -95,14 +95,15 @@ function c65130318.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 end
 function c65130318.decon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsOnField() and re:GetHandler():IsRelateToEffect(re) and re:IsActiveType(TYPE_MONSTER)	   
+	return re:GetHandler():IsOnField() and re:GetHandler():IsRelateToEffect(re) and re:IsActiveType(TYPE_MONSTER)	  
 end
 function c65130318.decost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function c65130318.detg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return re:GetHandler():IsDestructable() end
+	local rc=re:GetHandler()
+	if chk==0 then return rc:IsDestructable() and rc~=e:GetHandler() end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 end
 function c65130318.deop(e,tp,eg,ep,ev,re,r,rp)

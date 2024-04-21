@@ -58,6 +58,7 @@ function cm.equipfd(c,tp,tc)
 	if not Duel.Equip(tp,tc,c,false) then return false end
 	--Add Equip limit
 	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)
+	Duel.ConfirmCards(1-tp,tc)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
@@ -113,8 +114,8 @@ function cm.fdfilter(c)
 	return c:GetEquipTarget() and c:IsFacedown()
 end
 function cm.atkval(e,c)
-	return Duel.GetMatchingGroupCount(cm.fdfilter,c:GetControler(),LOCATION_ONFIELD,0,nil)*400
+	return Duel.GetMatchingGroupCount(cm.fdfilter,c:GetControler(),LOCATION_ONFIELD,LOCATION_ONFIELD,nil)*400
 end
 function cm.exval(e,c)
-	return Duel.GetMatchingGroupCount(cm.fdfilter,c:GetControler(),LOCATION_ONFIELD,0,nil)-1
+	return Duel.GetMatchingGroupCount(cm.fdfilter,c:GetControler(),LOCATION_ONFIELD,LOCATION_ONFIELD,nil)-1
 end

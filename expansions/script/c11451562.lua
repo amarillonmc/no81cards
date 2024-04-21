@@ -96,6 +96,7 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	tg=tg:Filter(Card.GetEquipTarget,nil)
 	if #tg==0 then return end
+	Duel.ConfirmCards(tp,tg)
 	tg:KeepAlive()
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetDescription(aux.Stringid(m,3))
@@ -168,6 +169,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=e:GetLabelObject():Filter(cm.tgfilter,nil):Filter(aux.IsInGroup,nil,eg)
 	local dg=Group.CreateGroup()
 	for tc in aux.Next(tg) do
+		tc:ResetFlagEffect(m)
 		local g=Duel.GetMatchingGroup(cm.seqfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tc,tp)
 		dg:Merge(g)
 	end

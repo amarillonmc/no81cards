@@ -40,7 +40,7 @@ function cm.mattg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local races=e:GetHandler():GetRace()
 	local attrs=e:GetHandler():GetAttribute()
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.matfilter(chkc,races,attrs) end
-	if chk==0 then return Duel.IsExistingTarget(cm.matfilter,tp,LOCATION_MZONE,0,1,nil,races,attrs) end
+	if chk==0 then return Duel.IsExistingTarget(cm.matfilter,tp,LOCATION_MZONE,0,1,nil,races,attrs) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,cm.matfilter,tp,LOCATION_MZONE,0,1,1,nil,races,attrs)
 end
@@ -51,7 +51,8 @@ function cm.matop(e,tp,eg,ep,ev,re,r,rp)
 	local attro=tc:GetAttribute()
 	local races=e:GetHandler():GetRace()
 	local attrs=e:GetHandler():GetAttribute()
-	
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then return end
+	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	local i=0
 	while i<=0xffff do
 		if tc:IsSetCard(i) then
@@ -67,14 +68,14 @@ function cm.matop(e,tp,eg,ep,ev,re,r,rp)
 		i=i+1
 	end
 	
-	if Duel.IsExistingMatchingCard(cm.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,raceo,attro,races,attrs) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	if Duel.IsExistingMatchingCard(cm.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,raceo,attro,races,attrs) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		local sc=Duel.GetMatchingGroup(cm.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,raceo,attro,races,attrs):Select(tp,1,1,nil)
 		Duel.BreakEffect()
 		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP) 
 	end
 end
 function cm.spfil(c,raceo,attro,races,attrs)
-	return not c:IsRace(raceo) and not c:IsAttribute(attro) and not c:IsRace(races) and not c:IsAttribute(attrs)
+	return not c:IsRace(raceo) and not c:IsAttribute(attro) and not c:IsRace(races) and not c:IsAttribute(attrs) and c:IsType(TYPE_MONSTER)
 end
 function cm.repfilter(c,tp,races,attrs)
 	return c:IsControler(tp) and c:IsOnField() and not c:IsAttribute(races) and not c:IsRace(attrs)

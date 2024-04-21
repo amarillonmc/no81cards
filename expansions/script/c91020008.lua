@@ -2,9 +2,7 @@
 local m=91020008
 local cm=c91020008
 function c91020008.initial_effect(c)
-	aux.AddCodeList(c,10000000)
 	aux.AddCodeList(c,10000010)
-	aux.AddCodeList(c,10000020)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -30,28 +28,52 @@ function c91020008.initial_effect(c)
 	e4:SetTarget(cm.tg4)
 	e4:SetLabelObject(e3)
 	c:RegisterEffect(e4)
-end
-function cm.fit1(c)
-	return c:IsCode(91020010) or c:IsCode(91020011) or c:IsCode(91020014) and c:IsReleasable()
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(m,0))
+	e5:SetCategory(CATEGORY_DRAW)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_DELAY)
+	e5:SetCode(EVENT_DESTROYED)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCondition(cm.drcon)
+	e5:SetTarget(cm.drtg)
+	e5:SetOperation(cm.drop)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e6:SetRange(LOCATION_SZONE)
+	e6:SetTargetRange(LOCATION_MZONE,0)
+	e6:SetTarget(cm.tg6)
+	e6:SetLabelObject(e5)
+	c:RegisterEffect(e6)
+	local e7=Effect.CreateEffect(c)
+	e7:SetDescription(aux.Stringid(m,1))
+	e7:SetCategory(CATEGORY_DESTROY)
+	e7:SetType(EFFECT_TYPE_QUICK_O)
+	e7:SetCode(EVENT_FREE_CHAIN)
+	e7:SetRange(LOCATION_MZONE)
+	e7:SetCountLimit(1,m)
+	e7:SetCost(cm.descost)
+	e7:SetTarget(cm.destg)
+	e7:SetOperation(cm.desop)
+	c:RegisterEffect(e7)
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e8:SetRange(LOCATION_SZONE)
+	e8:SetTargetRange(LOCATION_MZONE,0)
+	e8:SetTarget(cm.tg8)
+	e8:SetLabelObject(e7)
+	c:RegisterEffect(e8)
 end
 function cm.fit0(c,eg)
-	return (c:IsCode(10000010) and eg:IsExists(aux.FilterBoolFunction(Card.IsCode,91020014),1,nil)) or (c:IsCode(10000000) and eg:IsExists(aux.FilterBoolFunction(Card.IsCode,91020011),1,nil)) or (c:IsCode(10000020) and eg:IsExists(aux.FilterBoolFunction(Card.IsCode,91020010),1,nil)) 
+	return (c:IsCode(10000010) and eg:IsExists(aux.FilterBoolFunction(Card.IsCode,91020014),1,nil)) 
 end
 function cm.cfilter(c,tp)
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp) and (c:IsCode(91020011) and Duel.IsExistingMatchingCard(aux.FilterBoolFunction(Card.IsCode,10000000),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,nil)) or (c:IsCode(91020014) and Duel.IsExistingMatchingCard(aux.FilterBoolFunction(Card.IsCode,10000010),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,nil)) or (c:IsCode(91020010) and Duel.IsExistingMatchingCard(aux.FilterBoolFunction(Card.IsCode,10000020),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,nil)) 
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp) and  (c:IsCode(91020014) and Duel.IsExistingMatchingCard(aux.FilterBoolFunction(Card.IsCode,10000010),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,nil)) 
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp)
 end
-function cm.fit(c,e,tp)
-	return c:IsCode(10000000) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function cm.fit11(c,e,tp)
-	return c:IsCode(10000010) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
-end
-function cm.fit21(c,e,tp)
-	return c:IsCode(10000020) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
-end
+
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND)
@@ -87,4 +109,43 @@ return c:IsAttribute(ATTRIBUTE_DIVINE)
 end
 function cm.val(e,te)
 return  te:IsActiveType(TYPE_MONSTER) and (te:GetHandler():IsLevelBelow(10) or te:GetHandler():IsRankBelow(10)) and te:GetOwner()~=e:GetOwner() 
+end
+function cm.tg6(e,c)
+return c:IsCode(91020010)
+end
+function cm.fitl(c,e)
+return c:GetReason()&REASON_EFFECT~=0 and c:GetReasonEffect():GetHandler()==e:GetHandler()
+end
+function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
+return  eg:IsExists(cm.fitl,1,nil,e)
+end
+function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
+end
+function cm.tg8(e,c)
+return c:IsCode(91020011)
+end
+function cm.desfit(c)
+	return c:IsReleasable() and c:IsFaceup()
+end
+function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local g=Duel.SelectMatchingCard(tp,cm.desfit,tp,LOCATION_ONFIELD,0,3,3,nil)
+	Duel.Release(g,REASON_COST)
+end
+function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+end
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+	Duel.Destroy(g,REASON_EFFECT)
 end

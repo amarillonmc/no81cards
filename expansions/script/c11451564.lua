@@ -80,7 +80,7 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	Duel.AdjustAll()
-	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,0,nil)
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	local ct=0
 	if #g>0 and Duel.SendtoDeck(g,nil,2,REASON_EFFECT)>0 then
 		ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK)

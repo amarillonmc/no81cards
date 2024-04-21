@@ -204,7 +204,7 @@ function cm.thfilter(c,tp)
 	return c:IsLocation(LOCATION_HAND) and c:IsControler(1-tp)
 end
 function cm.excost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,0,nil)
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if chk==0 then return #g>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
 	local cg=g:Select(tp,1,#g,nil)

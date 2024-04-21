@@ -62,7 +62,8 @@ end
 c11560706.SetCard_SR_Saier=true  
 function c11560706.dacon(e,tp,eg,ep,ev,re,r,rp) 
 	local x=0 
-	local tc=eg:Filter(Card.IsSummonPlayer,nil,1-tp):GetFirst() 
+	local tg=eg:Filter(Card.IsSummonPlayer,nil,1-tp)
+	local tc=tg:GetFirst() 
 	while tc do 
 	if tc:IsLevelAbove(1) then 
 	x=x+tc:GetLevel() 
@@ -73,14 +74,15 @@ function c11560706.dacon(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsLinkAbove(1) then 
 	x=x+tc:GetLink() 
 	end 
-	tc=eg:GetNext() 
+	tc=tg:GetNext()
 	end 
 	return x>0 
 end 
 function c11560706.daop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
 	local x=0 
-	local tc=eg:Filter(Card.IsSummonPlayer,nil,1-tp):GetFirst() 
+	local tg=eg:Filter(Card.IsSummonPlayer,nil,1-tp)
+	local tc=tg:GetFirst() 
 	while tc do 
 	if tc:IsLevelAbove(1) then 
 	x=x+tc:GetLevel() 
@@ -91,10 +93,10 @@ function c11560706.daop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsLinkAbove(1) then 
 	x=x+tc:GetLink() 
 	end 
-	tc=eg:GetNext() 
+	tc=tg:GetNext() 
 	end  
 	Duel.Hint(HINT_CARD,0,11560706) 
-	Duel.Damage(1-tp,x*100,REASON_EFFECT) 
+	Duel.Damage(1-tp,x*200,REASON_EFFECT) 
 end 
 function c11560706.seqcost(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end 

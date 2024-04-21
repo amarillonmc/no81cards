@@ -192,9 +192,9 @@ function cm.filter(c)
 	return c:GetEquipTarget() and c:IsFacedown() and c:IsAbleToRemoveAsCost()
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,0,3,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,3,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,0,3,3,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,3,3,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)

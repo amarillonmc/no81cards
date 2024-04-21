@@ -11,10 +11,10 @@ function c91020020.initial_effect(c)
 	e1:SetOperation(cm.op1)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e2:SetCode(EVENT_RELEASE)
-	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
-	e2:SetTarget(cm.tg2)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_BE_MATERIAL)
+	e2:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
+	e2:SetCondition(cm.drcon)
 	e2:SetOperation(cm.op2)
 	c:RegisterEffect(e2)
 	local e5=Effect.CreateEffect(c)
@@ -53,26 +53,40 @@ function cm.splimit(e,c)
 	return not c:IsSetCard(0x9d0) and c:IsLocation(LOCATION_EXTRA)
 end
 --e2
-function cm.filter(c)
-	return c:IsFaceup() 
-end
-function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,1,0,0)
+function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return  c:GetReasonCard():IsRace(RACE_DIVINE) and e:GetHandler():IsLocation(LOCATION_GRAVE)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() then
-	if Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)==0 and Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) then 
-	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-	local tc2=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
-	Duel.Remove(tc2,POS_FACEDOWN,REASON_EFFECT) 
-			end
-		end
-	end
+	local c=e:GetHandler()
+	local rc=c:GetReasonCard()
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(91020020,1))
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCountLimit(1)
+	e4:SetCondition(cm.spcon)
+	e4:SetTarget(cm.tgf)
+	e4:SetOperation(cm.opf)
+	e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+	rc:RegisterEffect(e4,true)
+	rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
+end
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()~=tp  
+end
+function cm.thfilter1(c)
+	return  c:IsFaceup()
+end
+function cm.tgf(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter1,tp,0,LOCATION_MZONE,1,nil) end
+end
+function cm.opf(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.SelectMatchingCard(tp,cm.thfilter1,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
+	local atk=tc:GetAttack()
+	Duel.Recover(tp,atk,REASON_EFFECT)
 end
 --e1
 function cm.fit(c,e,tp)

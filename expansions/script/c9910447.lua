@@ -170,5 +170,5 @@ function c9910447.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function c9910447.splimit(e,c)
-	return not c:IsSetCard(0x3950)
+	return not c:IsSetCard(0x3950) and not c:IsLocation(LOCATION_EXTRA)
 end

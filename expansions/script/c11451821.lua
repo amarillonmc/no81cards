@@ -94,9 +94,12 @@ function cm.check(e,tp,eg,ep,ev,re,r,rp)
 		table.insert(cm[0],tc:GetOriginalCode())
 	end--]]
 end
+function cm.lfilter(c,tp)
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:GetReasonPlayer()==1-tp
+end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_MZONE) and (not eg:IsContains(c) or c:IsLocation(LOCATION_HAND))
+	return eg:IsExists(cm.lfilter,1,nil,tp) and (not eg:IsContains(c) or c:IsLocation(LOCATION_HAND))
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

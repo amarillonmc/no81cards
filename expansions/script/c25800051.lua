@@ -72,20 +72,23 @@ end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
 end
+function cm.srfilter(c)
+	return c:IsSetCard(0x211)  and c:IsAbleToHand()
+end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_ONFIELD)
 end
 function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
+	local g1=Duel.SelectMatchingCard(tp,cm.srfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
+	if #g1==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-	if g:GetCount()>0 or g2:GetCount()>0 then
-		local g1=g+g2
+	if #g2==0 then return end
+	g1:Merge(g2)
 		Duel.HintSelection(g1)
 		Duel.SendtoHand(g1,nil,REASON_EFFECT)
-	end
 end
 ----3
 function cm.damtg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -70,7 +70,7 @@ function cm.trcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(c,REASON_COST)
 end
 function cm.filter(c,tp)
-	return c:IsFaceup() and c:IsSummonPlayer(1-tp) and c:IsCanTurnSet()
+	return c:IsFaceup() and c:IsControler(1-tp) and c:IsCanTurnSet()
 end
 function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp) and not eg:IsContains(e:GetHandler():GetEquipTarget()) end
@@ -119,6 +119,7 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 			if Duel.Equip(tp,tc,rc,false,true) then
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 				e1:SetCode(EFFECT_EQUIP_LIMIT)
 				e1:SetLabelObject(rc)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)

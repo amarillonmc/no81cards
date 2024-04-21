@@ -1,6 +1,5 @@
 --dragon-king palace, the crystal city
-local m=11451415
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,22702055)
 	--activate
@@ -15,6 +14,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetCondition(cm.condition)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.operation)
@@ -52,7 +52,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=true--Duel.IsExistingMatchingCard(cm.sfilter2,tp,LOCATION_DECK,0,1,nil)
 	local b2=(Duel.GetCurrentPhase()~=PHASE_END)
-	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) end
+	if chk==0 then return true end
 	local op=1
 	if b1 and b2 then
 		op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1),aux.Stringid(m,2))
@@ -100,7 +100,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e8,turnp)
 		local e6=Effect.CreateEffect(e:GetHandler())
 		e6:SetType(EFFECT_TYPE_FIELD)
-		e6:SetCode(EFFECT_SKIP_M1)
+		e6:SetCode(EFFECT_SKIP_TURN)
 		e6:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e6:SetTargetRange(1,0)
 		if Duel.GetTurnPlayer()==tp then
@@ -113,7 +113,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e6,tp)
 		local e7=e6:Clone()
 		e7:SetCode(EFFECT_SKIP_M2)
-		Duel.RegisterEffect(e7,tp)
+		--Duel.RegisterEffect(e7,tp)
 	end
 end
 function cm.skip(e)

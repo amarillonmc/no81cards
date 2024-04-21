@@ -71,8 +71,7 @@ function c11560704.sbop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(0,1)
-	e2:SetValue(function(e,re,tp)
-	return re:IsActiveType(TYPE_MONSTER) end)
+	e2:SetValue(1)
 	e2:SetCondition(c11560704.actcon) 
 	e2:SetReset(RESET_PHASE+PHASE_END,3) 
 	Duel.RegisterEffect(e2,tp)
@@ -121,9 +120,7 @@ function c11560704.xspop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end 
 function c11560704.disop(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler() 
-	if c:CheckRemoveOverlayCard(tp,1,REASON_COST) then
-		if c:RemoveOverlayCard(tp,1,1,REASON_COST) then 
+	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
@@ -141,7 +138,7 @@ function c11560704.disop(e,tp,eg,ep,ev,re,r,rp,chk)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	e2:SetLabel(c:GetFieldID())
 	Duel.RegisterEffect(e2,tp)
-	c:RegisterFlagEffect(11560704,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE,0,1,c:GetFieldID()) end end
+	c:RegisterFlagEffect(11560704,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE,0,1,c:GetFieldID())
 end 
 function c11560704.aclimit(e,re,tp)
 	local rc=re:GetHandler()

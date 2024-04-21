@@ -73,10 +73,10 @@ function c60153207.fuslimit(e,c,sumtype)
 	return sumtype==SUMMON_TYPE_FUSION
 end
 function c60153207.mfilter(c,fc,sub,mg,sg)
-	return c:IsFusionSetCard(0x3b2a) and (not sg or not sg:IsExists(Card.IsCode,1,c,c:GetCode()))
+	return c:IsFusionSetCard(0x3b2a) and c:IsType(TYPE_MONSTER) and (not sg or not sg:IsExists(Card.IsCode,1,c,c:GetCode()))
 end
 function c60153207.splimit(e,se,sp,st)
-	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or aux.fuslimit(e,se,sp,st)
+	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 
 function c60153207.e1tgf(c)

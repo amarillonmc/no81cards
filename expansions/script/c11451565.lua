@@ -22,14 +22,14 @@ function cm.initial_effect(c)
 	--activate
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	--e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetRange(LOCATION_GRAVE+LOCATION_HAND)
 	e3:SetCountLimit(1,m)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_LEAVE_FIELD)
 	e3:SetCondition(cm.accon)
-	e3:SetCost(cm.accost)
+	--e3:SetCost(cm.accost)
 	e3:SetTarget(cm.actg)
 	e3:SetOperation(cm.acop)
 	c:RegisterEffect(e3)
@@ -59,11 +59,13 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Draw(tp,1,REASON_EFFECT)>0 and tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsPlayerCanSSet(tp) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local ec=Duel.SelectMatchingCard(tp,cm.nffilter,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
+		if ec then Duel.BreakEffect() end
 		if ec and ec:IsPublic() then Duel.MoveToField(ec,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
 		if ec and Duel.Equip(tp,ec,tc,false) then
 			Duel.RaiseEvent(ec,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e1:SetCode(EFFECT_EQUIP_LIMIT)
 			e1:SetLabelObject(tc)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
@@ -73,7 +75,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.acfilter(c,tp)
-	return c:IsPreviousControler(tp) and c:GetPreviousEquipTarget()
+	return c:IsPreviousControler(tp) and c:GetEquipTarget()
 end
 function cm.accon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.acfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
@@ -88,12 +90,12 @@ function cm.spfilter(c,e,tp)
 end
 function cm.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
-	if chk==0 then return c:IsType(TYPE_FIELD) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true) and not c:IsHasEffect(EFFECT_NECRO_VALLEY) and #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_DECK,0,nil,0x97e)
+	if chk==0 then return c:IsType(TYPE_FIELD) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true) and #g>0 end
 	if c:IsLocation(LOCATION_GRAVE) then
 		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,c,1,0,0)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_DECK)
+	--Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_DECK)
 	Duel.SetTargetCard(c)
 end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
@@ -112,11 +114,18 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 		local cost=te:GetCost()
 		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 		Duel.RaiseEvent(c,4179255,te,0,tp,tp,Duel.GetCurrentChain())
-		local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
-		if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+		local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_DECK,0,nil,0x97e)
+		if #g>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			local tc=g:Select(tp,1,1,nil):GetFirst()
+			Duel.ShuffleDeck(tp)
+			Duel.MoveSequence(tc,SEQ_DECKTOP)
+			Duel.ConfirmDecktop(tp,1)
+		end
+		--[[if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local tg=g:Select(tp,1,1,nil)
 			Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
-		end
+		end--]]
 	end
 end

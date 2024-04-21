@@ -21,8 +21,8 @@ function c60153203.initial_effect(c)
 	e4:SetCode(EVENT_BATTLE_DESTROYING)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
-	e4:SetTarget(c60153203.e4tg)
-	e4:SetOperation(c60153203.e4op)
+	e4:SetTarget(c60153203.catg)
+	e4:SetOperation(c60153203.caop)
 	c:RegisterEffect(e4)
 	
 	--3效果
@@ -59,15 +59,12 @@ function c60153203.e1pop(e,tp,eg,ep,ev,re,r,rp,c)
 	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_UNRELEASABLE_SUM)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e1:SetReset(RESET_EVENT+0xff0000)
 	e1:SetValue(1)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_UNRELEASABLE_NONSUM)
-	c:RegisterEffect(e2)
 	local e3=e1:Clone()
 	e3:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
 	e3:SetValue(c60153203.lim)
@@ -78,17 +75,14 @@ function c60153203.e1pop(e,tp,eg,ep,ev,re,r,rp,c)
 	local e5=e1:Clone()
 	e5:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
 	c:RegisterEffect(e5)
-	local e6=e1:Clone()
-	e6:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-	c:RegisterEffect(e6)
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_SINGLE)
 	e7:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
 	e7:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e7:SetReset(RESET_EVENT+RESETS_REDIRECT)
+	e7:SetReset(RESET_EVENT+0xff0000)
 	e7:SetValue(LOCATION_REMOVED)
 	c:RegisterEffect(e7)
-	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60153203,0))
+	c:RegisterFlagEffect(0,RESET_EVENT+0xff0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60153203,0))
 end
 function c60153203.lim(e,c,st)
 	return st==SUMMON_TYPE_FUSION
@@ -96,15 +90,15 @@ end
 
 --2效果
 
-function c60153203.e4tgf(c,tp)
+function c60153203.afilter(c,tp)
 	return c:IsControler(tp) and c:IsChainAttackable()
 end
-function c60153203.e4tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(c60153203.e4tgf,1,nil,tp) end
-	local a=eg:Filter(c60153203.e4tgf,nil,tp):GetFirst()
+function c60153203.catg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return eg:IsExists(c60153203.afilter,1,nil,tp) end
+	local a=eg:Filter(c60153203.afilter,nil,tp):GetFirst()
 	Duel.SetTargetCard(a)
 end
-function c60153203.e4op(e,tp,eg,ep,ev,re,r,rp)
+function c60153203.caop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:GetFlagEffect(60153203)==0 then
@@ -120,22 +114,10 @@ function c60153203.e4op(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 		e2:SetRange(LOCATION_MZONE)
 		e2:SetCode(EFFECT_SET_ATTACK_FINAL)
-		e2:SetCondition(c60153203.atkcon)
-		e2:SetValue(c60153203.atkval)
+		e2:SetValue(tc:GetAttack()*2)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
 		tc:RegisterEffect(e2)
 	end
-end
-function c60153203.atkcon(e)
-	local ph=Duel.GetCurrentPhase()
-	if (ph==PHASE_DAMAGE or ph==PHASE_DAMAGE_CAL) and Duel.GetAttacker()==e:GetHandler() then
-		e:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE+PHASE_BATTLE)
-		return true
-	end
-	return false
-end
-function c60153203.atkval(e,c)
-	return e:GetHandler():GetAttack()*2
 end
 
 --3效果

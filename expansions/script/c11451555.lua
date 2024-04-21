@@ -86,19 +86,22 @@ function cm.desfilter(c,tp,seq)
 	return aux.GetColumn(c,tp)==seq
 end
 function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,0,nil)
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if chk==0 then return #g>0 and not g:IsExists(cm.ncfilter,1,nil) end
 	local dg=Group.CreateGroup()
-	local lab=0
+	local lab,lab2=0,0
 	for tc in aux.Next(g) do
+		local tseq=tc:GetSequence()
+		if tc:IsControler(1-tp) then tseq=4-tseq end
 		dg:Merge(tc:GetColumnGroup())
-		lab=lab|1<<tc:GetSequence()
+		if lab&(1<<tseq)>0 then lab2=lab2|1<<tseq end
+		lab=lab|1<<tseq
 	end
 	dg:Sub(g)
 	dg:KeepAlive()
 	e:SetLabelObject(dg)
 	local num=Duel.SendtoGrave(g,REASON_COST)
-	e:SetLabel(lab,num)
+	e:SetLabel(lab,num,lab2)
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -114,8 +117,10 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	for i=0,4 do
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
 		if tab[1]&(1<<i)~=0 then
+			local mt=1
+			if tab[3]&(1<<i)~=0 then mt=2 end
 			local g=Duel.GetMatchingGroup(cm.desfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,i)
-			if #g>0 then dg:Merge(g:Select(tp,0,1,nil)) end
+			if #g>0 then dg:Merge(g:Select(tp,0,mt,nil)) end
 		end
 	end
 	Duel.Destroy(dg,REASON_EFFECT)
