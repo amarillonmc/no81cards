@@ -84,6 +84,10 @@ function c11560715.ovop(e,tp,eg,ep,ev,re,r,rp)
 	   local tc=og:GetFirst()
 	   if tc and not tc:IsImmuneToEffect(e) then
 		tc:CancelToGrave()
+		local og=tc:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
 	   Duel.Overlay(c,tc) end
 	end
 	if c:IsRelateToEffect(e) then
@@ -133,6 +137,10 @@ function c11560715.xxop(e,tp,eg,ep,ev,re,r,rp)
 					local oc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11560715.mxfilter),tp,LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,1,1,c):GetFirst()  
 					if oc and not oc:IsImmuneToEffect(e) then
 					oc:CancelToGrave()
+		local og=oc:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
 					Duel.Overlay(c,oc)
 					end
 				end 
@@ -141,6 +149,10 @@ function c11560715.xxop(e,tp,eg,ep,ev,re,r,rp)
 						Duel.BreakEffect()
 					local oc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11560715.gsfilter),tp,LOCATION_GRAVE+LOCATION_MZONE,LOCATION_GRAVE+LOCATION_MZONE,1,1,c):GetFirst()  
 					if oc and not oc:IsImmuneToEffect(e) then
+		local og=oc:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
 					Duel.Overlay(c,oc)
 					end
 				end 
