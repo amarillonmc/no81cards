@@ -24,7 +24,7 @@ function c98920723.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_CHANGE_RACE)
-	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCondition(c98920723.con)
 	e2:SetValue(RACE_DRAGON)
 	c:RegisterEffect(e2)
 	--negate
@@ -64,6 +64,9 @@ function c98920723.initial_effect(c)
 	e6:SetTarget(c98920723.eftg)
 	e6:SetLabelObject(e4)
 	c:RegisterEffect(e6)
+end
+function c98920723.con(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsLocation(LOCATION_GRAVE)
 end
 function c98920723.eftg(e,c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x4093) and c:GetEquipGroup():IsContains(e:GetHandler())
