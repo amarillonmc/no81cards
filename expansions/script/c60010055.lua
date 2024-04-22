@@ -41,7 +41,7 @@ if not cm.lblsz then
 				c=c+b
 			end
 			for i=1,c do
-				table.insert(rt,3)
+				table.insert(rt,4)
 			end
 			return table.unpack(rt)
 		else
