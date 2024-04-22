@@ -72,7 +72,7 @@ function c87490445.sxxop2(e,tp,eg,ep,ev,re,r,rp,chk)
 end 
 function c87490445.discon(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
-	return c:GetFlagEffect(87490445)<2 and re:GetHandlerPlayer()~=tp and Duel.IsChainDisablable(ev) and c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT) and re:IsActiveType(TYPE_MONSTER)   
+	return c:GetFlagEffect(87490445)<2 and rp==1-tp and Duel.IsChainDisablable(ev) and c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT) and re:IsActiveType(TYPE_MONSTER)   
 end 
 function c87490445.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 

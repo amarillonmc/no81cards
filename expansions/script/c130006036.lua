@@ -17,7 +17,12 @@ function s.mixtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local cct = Duel.GetCurrentChain()
 	local b1 = (c:IsOnField() or c:IsPublic()) and c:GetFlagEffect(id) < s.get_count(LOCATION_DECK)
 	local b2 = c:IsLocation(LOCATION_HAND) and c:GetFlagEffect(id + 100) == 0  and ev > 1
-	if chk == 0 then return b1 or b2 end
+	if chk == 0 then
+		local res=(b1 or b2) and c:GetFlagEffect(id + 200)==0
+		if res then c:RegisterFlagEffect(id + 200, RESET_CHAIN, 0, 1) end
+		return res
+	end
+	c:ResetFlagEffect(id + 200)
 	b2 =  c:IsLocation(LOCATION_HAND) and c:GetFlagEffect(id + 100) == 0  and cct > 2
 	--local op = b1 and 1 or 2
 	--if b1 and b2 then 
@@ -42,7 +47,9 @@ function s.mixtg(e,tp,eg,ep,ev,re,r,rp,chk)
 			ctgy = ctgy + CATEGORY_DISABLE 
 		end
 		e:SetCategory(ctgy)
+		Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(id,1))
 		Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(id,1))
+		c:RegisterFlagEffect(0, RESET_CHAIN, EFFECT_FLAG_CLIENT_HINT, 1,0,aux.Stringid(id,1))
 	end
 	s.chain_id_scl[cct] = op
 end

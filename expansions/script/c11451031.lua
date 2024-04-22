@@ -208,7 +208,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 		PNFL_MIRROR_COPIED[tp][te]=ce
 		local ccode=te:GetHandler():GetOriginalCode()
 		PNFL_MIRROR_COPY[1-tp][ce]=te:GetHandler()
-		PNFL_MIRROR_COPY[tp][ce]=te:GetHandler()
+		--PNFL_MIRROR_COPY[tp][ce]=te:GetHandler()
 		PNFL_MIRROR_HINTED[te]=ccode
 		local tg=ce:GetTarget() or aux.TRUE
 		local tg2=function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
