@@ -69,7 +69,7 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	if bc:IsRelateToBattle() then   
 		if Duel.SendtoHand(bc,nil,REASON_EFFECT)>0 and bc:IsLocation(LOCATION_HAND) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(65130321,1))then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local tg=Duel.SelectMatchingCard(tp,s.spfilter,p,LOCATION_HAND,0,1,1,nil,e,p)
+			local tg=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 			Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
