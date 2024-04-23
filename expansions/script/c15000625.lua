@@ -166,7 +166,7 @@ function cm.disable(e,c)
 	if loc==LOCATION_SZONE then x=0x1000000 end
 	local seq=c:GetSequence()
 	if seq<=4 then seq=4-seq end
-	if seq=5 then seq=6 elseif seq=6 then seq=5 end
+	if seq==5 then seq=6 elseif seq==6 then seq=5 end
 	return c:IsFaceup() and c:IsLocation(loc) and (bit.band(zone,(1<<seq)*x)~=0 or (loc==LOCATION_FZONE and c:IsLocation(LOCATION_FZONE)))
 end
 function cm.dis2op(e,tp,eg,ep,ev,re,r,rp)
