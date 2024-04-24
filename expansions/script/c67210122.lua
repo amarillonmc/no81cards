@@ -51,10 +51,10 @@ function c67210122.plop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 		e2:SetTarget(c67210122.thtg)
 		e2:SetOperation(c67210122.thop)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e2)
 	end
 end
---
 function c67210122.thfilter(c)
 	return c:IsSetCard(0x567e) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end

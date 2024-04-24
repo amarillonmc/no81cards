@@ -46,14 +46,15 @@ function c67210112.plop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetType(EFFECT_TYPE_QUICK_O)
 		e2:SetRange(LOCATION_SZONE)
 		e2:SetCode(EVENT_FREE_CHAIN)
+		e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 		e2:SetCountLimit(1)
 		e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 		e2:SetTarget(c67210112.destg)
 		e2:SetOperation(c67210112.desop)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e2)
 	end
 end
---
 function c67210112.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) end
 	if chk==0 then return Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(c67210112.filter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end

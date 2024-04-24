@@ -112,13 +112,15 @@ function cm.filterz(c)
 end
 function cm.zdistg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filterz,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,cm.filterz,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,1-tp,LOCATION_GRAVE+LOCATION_REMOVED)
+	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	--local g=Duel.SelectMatchingCard(tp,cm.filterz,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil)
+	--Duel.SetTargetCard(g)
+	--Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,1-tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function cm.zdisop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
+	--local tc=Duel.GetFirstTarget()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local tc=Duel.SelectMatchingCard(tp,cm.filterz,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil):GetFirst()
 	if Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_DECK) then
 	Debug.Message("睡吧。愿所有人都能在雨声里做个好梦。")
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(79029350,2))

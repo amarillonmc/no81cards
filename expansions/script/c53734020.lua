@@ -90,7 +90,7 @@ function s.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,tc:GetPreviousPosition(),false,e:GetLabel())
+	Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,tc:GetPreviousPosition(),true,e:GetLabel())
 	e:Reset()
 end
 function s.tffilter(c,tp)
