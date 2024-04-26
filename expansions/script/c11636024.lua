@@ -25,24 +25,37 @@ end
 function s.filter(c,e,tp)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6223) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end  
+function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
-end 
+end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	local tc=Duel.GetFirstTarget()
-	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.ovfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,tc)
-	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0
-		and g:GetCount()>0 and Duel.CheckLPCost(tp,2000)and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-		Duel.PayLPCost(tp,2000)
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-		local sg=g:Select(tp,2,2,nil)
-		Duel.Overlay(tc,sg)
+	local ct=e:GetLabel()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,e:GetHandler())
+	if #g>0 then
+		local tc=g:GetFirst()
+		local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.ovfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,tc,e)
+		if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 
+			and #mg>0 and Duel.CheckLPCost(tp,2000)and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+			Duel.PayLPCost(tp,2000)
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+			local xg=mg:Select(tp,2,2,nil)
+			local tc1=xg:GetFirst()
+			while tc1 do
+				tc1:CancelToGrave()
+				local og=tc1:GetOverlayGroup()
+				if #og>0 then
+					Duel.SendtoGrave(og,REASON_RULE)
+				end
+				tc1=xg:GetNext()
+			end
+			Duel.Overlay(tc,xg)
+		end
 	end
 end
-
 
 function s.ovfilter(c)
 	return c:IsFaceup() and c:IsCanOverlay() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3223) 
@@ -53,14 +66,15 @@ end
 function s.posfilter2(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x223) and c:IsCanChangePosition()
 end
-function s.postg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.posfilter,tp,LOCATION_MZONE,0,1,nil) end
-	local g=Duel.GetMatchingGroup(s.posfilter,tp,LOCATION_MZONE,0,nil)
+function s.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and s.posfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(s.posfilter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+	local g=Duel.SelectTarget(tp,s.posfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,1,0,0)
 end
 function s.posop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-	local g=Duel.SelectMatchingCard(tp,s.posfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if g:GetCount()>0 and Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)~=0 then
 		local tg=Duel.GetMatchingGroup(s.posfilter2,tp,LOCATION_MZONE,0,nil)
 		if Duel.CheckLPCost(tp,1000)and Duel.SelectYesNo(tp,aux.Stringid(id,2))then

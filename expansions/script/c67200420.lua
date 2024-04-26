@@ -21,9 +21,9 @@ function c67200420.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_PZONE)
 	e2:SetCode(EVENT_TO_HAND)
-	e2:SetCondition(c67200400.ctcon)
-	--e2:SetTarget(c67200400.cttg)
-	e2:SetOperation(c67200400.ctop)
+	e2:SetCondition(c67200420.ctcon)
+	--e2:SetTarget(c67200420.cttg)
+	e2:SetOperation(c67200420.ctop)
 	c:RegisterEffect(e2)  
 	--pendulum scale up
 	local e3=Effect.CreateEffect(c)
@@ -31,7 +31,7 @@ function c67200420.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetCode(EFFECT_UPDATE_LSCALE)
 	e3:SetRange(LOCATION_PZONE)
-	e3:SetValue(c67200400.scaledown)
+	e3:SetValue(c67200420.scaledown)
 	c:RegisterEffect(e3)
 	local e4=e3:Clone()
 	e4:SetCode(EFFECT_UPDATE_RSCALE)
@@ -62,21 +62,21 @@ function c67200420.pcop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
-function c67200400.ctfilter(c,tp)
+function c67200420.ctfilter(c,tp)
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp)
 		and c:IsType(TYPE_PENDULUM) and c:IsPreviousSetCard(0x5671)
 end
-function c67200400.ctcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c67200400.ctfilter,1,nil,tp)
+function c67200420.ctcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c67200420.ctfilter,1,nil,tp)
 end
-function c67200400.actfilter(c)
+function c67200420.actfilter(c)
 	return c:IsSetCard(0x3671) and not c:IsForbidden()
 end
 
-function c67200400.ctop(e,tp,eg,ep,ev,re,r,rp)
+function c67200420.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	e:GetHandler():AddCounter(0x671,2)
-	if Duel.IsPlayerCanDraw(tp,1) and c:GetCounter(0x671)>5 and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and c:IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(67200400,2)) then
+	if Duel.IsPlayerCanDraw(tp,1) and c:GetCounter(0x671)>5 and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and c:IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(67200420,2)) then
 		Duel.BreakEffect()
 		if Duel.Draw(tp,1,REASON_EFFECT)~=0 then
 			Duel.SendtoHand(c,nil,REASON_EFFECT)
@@ -84,7 +84,7 @@ function c67200400.ctop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
-function c67200400.scaledown(e,c)
+function c67200420.scaledown(e,c)
 	local count=c:GetCounter(0x671)
 	local a=0
 	if count>6 then

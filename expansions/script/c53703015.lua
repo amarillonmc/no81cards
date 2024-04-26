@@ -66,13 +66,13 @@ function cm.aclimit(e,re,tp)
 	local rc=re:GetHandler()
 	return rc:IsLocation(LOCATION_GRAVE) and rc:GetFlagEffect(m)>0
 end
-function cm.cfilter(c)
+function cm.costfilter(c)
 	return c:IsFaceup() and c:IsCode(m-2) and c:IsAbleToHandAsCost()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SendtoHand(g,nil,REASON_COST)
 end
 function cm.actarget(e,te,tp)

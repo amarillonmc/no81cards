@@ -41,7 +41,8 @@ function cm.aclimit(e,re,tp)
 	return re:GetCode()==1100 or re:GetCode()==1101 or re:GetCode()==1102
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(function(c)return c:GetFlagEffect(m)==0 end,0,0xff,0xff,nil)
+	local sg=Group.__add(Duel.GetMatchingGroup(nil,0,0xff,0xff,nil),Duel.GetOverlayGroup(tp,1,1))
+	local g=sg:Filter(function(c)return c:GetFlagEffect(m)==0 end,nil)
 	if #g==0 then return end
 	local cp={}
 	local f=Card.RegisterEffect
