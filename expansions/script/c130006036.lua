@@ -1,4 +1,19 @@
 --炼击帝-大洋神女
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			pcall(require_list[str])
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 if not pcall(function() require("expansions/script/c130001000") end) then require("script/c130001000") end
 local s,id = Scl.SetID(130006036, "LordOfChain")
 function s.initial_effect(c)

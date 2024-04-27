@@ -7,7 +7,6 @@ function cm.initial_effect(c)
 	aux.AddXyzProcedure(c,nil,4,3,nil,nil,99)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetDescription(aux.Stringid(22348194,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)

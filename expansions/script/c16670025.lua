@@ -211,6 +211,7 @@ function cm.initial_effect(c)
 		--
 	end
 end
+if not Card.SetEntityCode then Card.SetEntityCode=aux.TRUE end
 function cm.spfilter(c,e,tp)
 	return c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)
 end
@@ -267,19 +268,19 @@ function cm.checkop1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.con(e,tp)
-	Duel.DisableActionCheck(true)
+	pcall(Duel.DisableActionCheck,true)
 	local dc=Duel.CreateToken(tp,m+1)
 	local res=dc:GetActivateEffect():IsActivatable(tp,false,false)
-	Duel.DisableActionCheck(false)
+	pcall(Duel.DisableActionCheck,false)
 	return res and Duel.GetCurrentPhase()~=PHASE_DAMAGE_CAL
 	and Duel.GetCurrentPhase()~=PHASE_DAMAGE-- and Duel.GetCurrentPhase()~=PHASE_BATTLE_STEP
 	and Duel.GetFlagEffect(tp,m+2)==0
 end
 function cm.con1(e,tp)
-	Duel.DisableActionCheck(true)
+	pcall(Duel.DisableActionCheck,true)
 	local dc=Duel.CreateToken(tp,m+1)
 	local res=dc:GetActivateEffect():IsActivatable(tp,false,false)
-	Duel.DisableActionCheck(false)
+	pcall(Duel.DisableActionCheck,false)
 	return res and Duel.SelectYesNo(tp,aux.Stringid(m,3))
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
@@ -532,7 +533,8 @@ function cm.reg2(c,e,ob)
 	--
 	e:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 	e:SetOperation(cm.pr)
-	local qi,da=e:GetCountLimit()
+	local qi,da=nil,nil
+	if Effect.GetCountLimit then qi,da=e:GetCountLimit() end
 	if qi~=nil and da==nil then
 		e:SetCountLimit(qi)
 	elseif qi~=nil and da~=nil then
