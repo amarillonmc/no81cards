@@ -21,14 +21,14 @@ function c9910564.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
 	return re:IsActiveType(TYPE_MONSTER) and (LOCATION_HAND+LOCATION_GRAVE)&loc~=0
 end
-function c9910564.costfilter(c)
-	return c:IsSetCard(0x3951) and c:IsDiscardable()
+function c9910564.costfilter(c,e)
+	return c:IsSetCard(0x3951) and c:IsDiscardable() and c~=e:GetHandler()
 end
 function c9910564.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsDiscardable() and Duel.IsExistingMatchingCard(c9910564.costfilter,tp,LOCATION_HAND,0,1,c) end
+	if chk==0 then return c:IsDiscardable() and Duel.IsExistingMatchingCard(c9910564.costfilter,tp,LOCATION_HAND,0,1,c,re) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	local g=Duel.SelectMatchingCard(tp,c9910564.costfilter,tp,LOCATION_HAND,0,1,1,c)
+	local g=Duel.SelectMatchingCard(tp,c9910564.costfilter,tp,LOCATION_HAND,0,1,1,c,re)
 	g:AddCard(c)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end

@@ -64,7 +64,7 @@ function c11579812.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		local aaa=math.ceil(math.abs(Duel.GetLP(tp)-Duel.GetLP(1-tp))/2)
-		if tc:GetAttack()<=aaa then
+		if tc:GetAttack()<aaa then
 		Duel.Remove(tc,POS_FACEDOWN,REASON_RULE,1-tp)
 		else 
 		if Duel.Destroy(tc,REASON_EFFECT)~=0 then

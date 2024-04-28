@@ -58,7 +58,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local g=eg:Filter(cm.filter1,nil,tp)
 		local s={}
-		for tc in aux.Next(g) do table.insert(s,4-tc:GetSequence()) end
+		for tc in aux.Next(g) do table.insert(s,4-aux.MZoneSequence(tc:GetSequence())) end
 		return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,tp,table.unpack(s))
 	end
 	Duel.SetTargetCard(eg)
@@ -71,8 +71,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(cm.filter2,nil,e,tp)
 	local z,s=0,{}
 	for tc in aux.Next(g) do
-		z=z|(1<<(4-tc:GetSequence()))
-		table.insert(s,4-tc:GetSequence())
+		z=z|(1<<(4-aux.MZoneSequence(tc:GetSequence())))
+		table.insert(s,4-aux.MZoneSequence(tc:GetSequence()))
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tc=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,tp,table.unpack(s)):GetFirst()

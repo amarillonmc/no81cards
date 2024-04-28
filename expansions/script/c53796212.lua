@@ -1,5 +1,6 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
+	Duel.EnableGlobalFlag(GLOBALFLAG_SELF_TOGRAVE)
 	aux.AddCodeList(c,67073561)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
