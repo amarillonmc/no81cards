@@ -119,12 +119,14 @@ end
 function c22348400.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1= not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
 	local b2= Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0
-	if chk==0 then return (not b1 and not b2) or (b1 and not b2 and Duel.IsPlayerCanDraw(tp,1)) or (b2 and not b1 and Duel.IsPlayerCanDraw(tp,1)) or (b1 and b2 and Duel.IsPlayerCanDraw(tp,2)) end
+	if chk==0 then return (not b1 and not b2 and Duel.IsPlayerCanDraw(tp,1)) or (b1 and not b2 and Duel.IsPlayerCanDraw(tp,2)) or (b2 and not b1 and Duel.IsPlayerCanDraw(tp,2)) or (b1 and b2 and Duel.IsPlayerCanDraw(tp,3)) end
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1200)
 end
 function c22348400.recop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Recover(tp,1200,REASON_EFFECT)
-	if Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0 then
+	if Duel.Recover(tp,1200,REASON_EFFECT)~=0 then
+	Duel.Draw(tp,1,REASON_EFFECT)
+	end
+	if Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==1 then
 	Duel.Draw(tp,1,REASON_EFFECT)
 	end
 	if not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) then

@@ -45,10 +45,31 @@ function c11526301.disop(e,tp,eg,ep,ev,re,r,rp)
 				end
 			end
 		end 
+		local fid=c:GetFieldID()
+		c:RegisterFlagEffect(11526301,RESET_EVENT+RESETS_STANDARD,0,1,fid)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAIN_END)
+		e1:SetCountLimit(1)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetLabel(fid)
+		e1:SetLabelObject(c)
+		e1:SetCondition(c11526301.thcon)
+		e1:SetOperation(c11526301.thop)
+		Duel.RegisterEffect(e1,tp)
 	end
 end
 function c11526301.thfilter(c)
 	return c.SetCard_Carbonic_Acid_Girl and c:IsAbleToHand()
 end
-
+function c11526301.thcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffectLabel(11526301)~=e:GetLabel() then
+		e:Reset()
+		return false
+	else return true end
+end
+function c11526301.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SendtoDeck(e:GetLabelObject(),nil,2,REASON_EFFECT)
+end
 

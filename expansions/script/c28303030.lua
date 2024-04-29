@@ -179,11 +179,9 @@ function c28303030.supop(e,tp,eg,ep,ev,re,r,rp)
 		local tg=Group.Select(gg,tp,2,2,nil)
 		if Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)==2 then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-			local g=Duel.SelectMatchingCard(tp,c28303030.shfilter,tp,LOCATION_DECK,0,1,1,nil)
-			if g:GetCount()>0 then
-				Duel.SendtoExtraP(g,nil,REASON_EFFECT)
-			end
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+			local tc=Duel.SelectMatchingCard(tp,c28303030.shfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
+			if tc then Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) end
 		end
 	end
 end

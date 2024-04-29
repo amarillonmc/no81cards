@@ -55,13 +55,13 @@ function c11560312.initial_effect(c)
 end
 c11560312.SetCard_XdMcy=true 
 function c11560312.actg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local g=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)  
+	local g=Duel.GetFieldGroup(tp,LOCATION_GRAVE,LOCATION_GRAVE)  
 	if chk==0 then return g:GetCount()==g:FilterCount(Card.IsAbleToRemove,nil) end  
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 end 
 function c11560312.acop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
-	local g=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)  
+	local g=Duel.GetFieldGroup(tp,LOCATION_GRAVE,LOCATION_GRAVE)  
 	if g:GetCount()==g:FilterCount(Card.IsAbleToRemove,nil) then 
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT) 
 	--if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11560312,0)) then 

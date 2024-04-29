@@ -1,5 +1,5 @@
-local m=42621012
-local cm=_G["c"..m]
+--学园孤岛 佐仓慈
+local cm,m=GetID()
 
 function cm.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
@@ -12,6 +12,7 @@ function cm.initial_effect(c)
     e0:SetCountLimit(1,m)
     e0:SetCondition(cm.mvcon)
 	e0:SetOperation(cm.mvop)
+	e0:SetValue(m)
 	c:RegisterEffect(e0)
 	--pzone
 	local e1=Effect.CreateEffect(c)
@@ -48,17 +49,23 @@ function cm.initial_effect(c)
 end
 
 function cm.mvcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsPreviousLocation,1,nil,0x200)
+	local c=e:GetHandler()
+	local chdck=nil
+	if c:IsLocation(0x02) and not Duel.IsExistingMatchingCard(Card.IsCode,tp,0x03,0,1,c,m) then chdck=c end
+    local lpck=Duel.GetLocationCount(tp,0x08,tp,0x1,0x11)>0 or Duel.GetLocationCount(1-tp,0x08,tp,0x1,0x11)>0
+    local rck=eg:IsExists(Card.IsPreviousLocation,1,nil,0x200)
+	local cck=(not c:IsForbidden()) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0x02,0,1,chdck) and lpck
+    local pck=(Duel.GetFlagEffect(tp,m+1)==0 and e:GetValue()==m) or Duel.GetFlagEffectLabel(tp,m+1)==e:GetValue()+1
+	return rck and cck and pck
 end
 
 function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local lpck0=Duel.GetLocationCount(tp,0x08,tp,0x1,0x11)>0
-	local lpck1=Duel.GetLocationCount(1-tp,0x08,tp,0x1,0x11)>0
-	local chdck=nil
-	if c:IsLocation(0x02) and not Duel.IsExistingMatchingCard(Card.IsCode,tp,0x03,0,1,c,m) then chdck=c end
-	local cck=(not c:IsForbidden()) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0x02,0,1,chdck) and (lpck0 or lpck1)
-	if cck and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+	if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+		local c=e:GetHandler()
+		local lpck0=Duel.GetLocationCount(tp,0x08,tp,0x1,0x11)>0
+		local lpck1=Duel.GetLocationCount(1-tp,0x08,tp,0x1,0x11)>0
+		local chdck=nil
+		if c:IsLocation(0x02) and not Duel.IsExistingMatchingCard(Card.IsCode,tp,0x03,0,1,c,m) then chdck=c end
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0x02,0,1,1,chdck)
@@ -88,6 +95,24 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.MoveToField(gc,tp,lpck,0x200,POS_FACEUP,true)
 			end
 		end
+	else
+		if Duel.GetFlagEffect(0,m)==0 then
+			Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1,42621200)
+		end
+		local previousm=Duel.GetFlagEffectLabel(0,m)
+		if Duel.GetFlagEffect(tp,m+1)==0 then
+			Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1,previousm)
+		end
+		local e1=e:Clone()
+		e1:SetCountLimit(1,previousm)
+		e1:SetValue(previousm)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		local g=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,0,0xff,0xff,nil,m)
+		for tc in aux.Next(g) do
+			tc:RegisterEffect(e1)
+		end
+		Duel.SetFlagEffectLabel(0,m,previousm+1)
+		Duel.SetFlagEffectLabel(tp,m+1,previousm+1)
 	end
 end
 
@@ -100,13 +125,9 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,0x01)
 end
 
-function cm.thop(c)
-	return c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
-end
-
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thop,tp,0x01,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,0x01,0,1,1,nil)
 	if #g>0 and Duel.SendtoHand(g,nil,REASON_EFFECT) then
 		Duel.ConfirmCards(1-tp,g)
 		if Duel.GetFlagEffect(tp,m)==0 then
@@ -138,19 +159,37 @@ function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(1-tp,1,REASON_EFFECT)
 end
 
+function cm.tgrfilter(c)
+    return c:IsAbleToHand() and c:IsFacedown()
+end
+
 function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0x200,0x200,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,PLAYER_ALL,0x200)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0x200,0x200,1,nil) or Duel.IsExistingMatchingCard(cm.tgrfilter,tp,0x08,0x08,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,4,PLAYER_ALL,0x208)
 end
 
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0x200,0x200,1,1,nil)
-	if #g>0 then
-		Duel.HintSelection(g)
-		Duel.SendtoHand(g,tp,REASON_EFFECT)
-		if g:GetFirst():IsLocation(0x02) then
-			Duel.ConfirmCards(1-tp,g)
-		end
-	end
+    local g=Duel.GetMatchingGroup(cm.tgrfilter,tp,0x08,0x08,nil)
+    local b1=Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0x200,0x200,1,nil)
+    local b2=#g>0
+    if b1 or b2 then
+        if b1 and (not b2 or Duel.SelectYesNo(m,3)) then
+            Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+            local hg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0x200,0x200,1,1,nil)
+            if #hg>0 then
+                Duel.HintSelection(hg)
+                Duel.SendtoHand(hg,tp,REASON_EFFECT)
+                if hg:GetFirst():IsLocation(0x02) then
+                    Duel.ConfirmCards(1-tp,hg)
+                end
+            end
+        else
+            Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+            g=g:Select(tp,1,math.min(#g,4),nil)
+            if #g>0 then
+                Duel.HintSelection(g)
+                Duel.SendtoHand(g,tp,REASON_EFFECT)
+            end
+        end
+    end
 end

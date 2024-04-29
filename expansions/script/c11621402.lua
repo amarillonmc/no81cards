@@ -25,6 +25,7 @@ function c11621402.initial_effect(c)
 	--set1
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,1))
+	e5:SetCategory(CATEGORY_TOHAND)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_MZONE)
@@ -83,24 +84,32 @@ end
 function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroupCount(cm.setfilter,tp,LOCATION_ONFIELD,0,nil)
 	local loc=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if chk==0 then return loc>=g and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+end
+function cm.thfilter(c)
+	return c:IsFacedown() and c:IsAbleToHand() 
 end
 function cm.setfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_TRAP) and c:IsSSetable() and c:IsSetCard(0x5220)
+	return c:IsSSetable() and c:IsSetCard(0x5220) and c:IsType(TYPE_TRAP)
 end
-function cm.stop(e,tp,eg,ep,ev,re,r,rp)
-	local rg=Duel.GetMatchingGroup(cm.setfilter,tp,LOCATION_ONFIELD,0,nil)
-	local loc=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if rg:GetCount()<=loc then 
-		Duel.SSet(tp,rg)
-		for tc in aux.Next(rg) do
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-		end
+function cm.stop(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_ONFIELD,0,nil) 
+	if g:GetCount()>0 then  
+		local rg=g:Select(tp,1,99,nil) 
+		if Duel.SendtoHand(rg,nil,REASON_EFFECT)~=0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then 
+			local ft=Duel.GetLocationCount(tp,LOCATION_SZONE) 
+			local sg=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_HAND,0,1,ft,nil) 
+			Duel.SSet(tp,sg) 
+			for tc in aux.Next(sg) do
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1)
+			end 
+		end 
 	end
 end
 --03

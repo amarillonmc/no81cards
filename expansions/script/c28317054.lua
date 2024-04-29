@@ -16,7 +16,7 @@ function c28317054.initial_effect(c)
 	--shhis spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28317054,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,38317054)

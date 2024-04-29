@@ -1,5 +1,5 @@
-local m=42621006
-local cm=_G["c"..m]
+--学园孤岛 直树美纪
+local cm,m=GetID()
 
 function cm.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
@@ -17,7 +17,7 @@ function cm.initial_effect(c)
 	--leftp
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_RECOVER)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_HAND)
@@ -36,11 +36,20 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
+function cm.costcfilterg(c,tp)
+    return c:IsCode(42621003) and (c:IsControler(tp) or c:IsFaceup())
+end
+
+function cm.costcfilter(g,tp)
+    return g:IsExists(cm.costcfilterg,1,nil,tp)
+end
+
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsReleasable() and Duel.IsExistingMatchingCard(Card.IsReleasable,tp,0x200,0x200,1,c) end
+    local g=Duel.GetMatchingGroup(Card.IsReleasable,tp,0x200,0x200,c)
+	if chk==0 then return c:IsReleasable() and g:CheckSubGroup(cm.costcfilter,2,2,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,0x200,0x200,1,1,c)
+	g=g:SelectSubGroup(tp,cm.costcfilter,false,2,2,tp)
 	g:AddCard(c)
 	Duel.Release(g,REASON_COST)
 end
@@ -51,16 +60,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
-	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e1:SetTargetRange(1,1)
-	e1:SetValue(cm.aclimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-	Duel.BreakEffect()
-	if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0x0c,0x0c,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,5)) then
+    if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0x0c,0x0c,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,5)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0x0c,0x0c,1,1,nil)
 		if #g>0 then
@@ -68,6 +68,14 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 		end
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetTargetRange(1,1)
+	e1:SetValue(cm.aclimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
 
 function cm.aclimit(e,re,tp)
@@ -103,32 +111,19 @@ end
 
 function cm.lptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0x01,0,1,nil) end
+    Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,100+Duel.GetMatchingGroup(Card.IsFaceup,tp,0x200,0x200,nil):GetSum(Card.GetLeftScale)*1000)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,0x01)
 end
 
 function cm.lpop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,0x01,0,nil)
-	if #g>0 then
-		g=g:RandomSelect(tp,1)
-		if Duel.SendtoHand(g,nil,REASON_EFFECT) then
-			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e2:SetCode(EVENT_CHAINING)
-			e2:SetOperation(cm.chainop)
-			e2:SetReset(RESET_PHASE+PHASE_END)
-			Duel.RegisterEffect(e2,tp)
-		end
-	end
-end
-
-function cm.chainop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetCurrentChain()==2 then
-		Duel.SetChainLimit(cm.chainlm)
-	end
-end
-
-function cm.chainlm(e,rp,tp)
-	return tp==rp
+    local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,0x01,0,nil)
+    if #g>0 then
+        g=g:RandomSelect(tp,1)
+        if Duel.SendtoHand(g,nil,REASON_EFFECT) then
+            local num=Duel.GetMatchingGroup(Card.IsFaceup,tp,0x200,0x200,nil):GetSum(Card.GetLeftScale)
+            Duel.Recover(tp,100+num*1000,REASON_EFFECT)
+        end
+    end
 end
 
 function cm.rpcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -159,33 +154,43 @@ function cm.rpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function cm.rpop(e,tp,eg,ep,ev,re,r,rp)
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetOperation(cm.chainop2)
-	e2:SetReset(RESET_PHASE+PHASE_END)
+    local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_ADJUST)
+	e1:SetOperation(cm.adjustop)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_TO_GRAVE)
 	Duel.RegisterEffect(e2,tp)
+	Duel.AdjustAll()
 end
 
-function cm.chainop2(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	if rc:IsType(0x6) and rc:IsOnField() and not rc:IsLocation(0x200) and rc:IsCanTurnSet() and re:GetActivateLocation()&0x0f~=0 then
-		if rc:IsStatus(STATUS_LEAVE_CONFIRMED) then
-			rc:CancelToGrave()
-		end
-		if rc:IsLocation(0x04) then
-			Duel.ChangePosition(rc,POS_FACEDOWN_DEFENSE)
-		end
-		if rc:IsLocation(0x08) then
-			Duel.ChangePosition(rc,POS_FACEDOWN)
-		end
-		Duel.RaiseEvent(rc,EVENT_SSET,e,REASON_EFFECT,tp,0,0)
-		if rc:IsOnField() and rc:IsFacedown() then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CANNOT_TRIGGER)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			rc:RegisterEffect(e1)
-		end
-	end
+function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+    local removen=Duel.GetFieldGroupCount(tp,0,0x10)-Duel.GetFieldGroupCount(tp,0,0x20)
+    if removen<=0 then return false end
+    local deckg=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,0,0x01,nil,0xa)
+    local extrag=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,0,0x40,nil,0xa)
+    local handg=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,0,0x02,nil,0xa)
+    local deckgn,extragn,handgn=#deckg,#extrag,#handg
+    if deckgn+extragn+handgn==0 then
+        return false
+    else
+        local g=Group.CreateGroup()
+        if removen<=deckgn then
+            g=deckg:RandomSelect(1-tp,removen)
+        elseif removen<=deckgn+extragn then
+            g=extrag:RandomSelect(1-tp,removen-deckgn)
+            g:Merge(deckg)
+        elseif removen<deckgn+extragn+handgn then
+            g=handg:RandomSelect(1-tp,removen-deckgn-extragn)
+            g:Merge(deckg)
+            g:Merge(extrag)
+        else
+            g=deckg:__add(extrag:__add(handg))
+        end
+        Duel.Remove(g,POS_FACEDOWN,REASON_RULE)
+        Duel.Readjust()
+    end
 end

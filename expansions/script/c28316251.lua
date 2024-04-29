@@ -36,7 +36,7 @@ function c28316251.slfilter(c)
 	return c:IsFaceup() and (c:GetCounter(0x1283)>0 or (c:IsSetCard(0x288) and c:IsLocation(LOCATION_MZONE)))
 end
 function c28316251.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c28316251.slfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+	return Duel.IsExistingMatchingCard(c28316251.slfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c28316251.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -65,8 +65,8 @@ function c28316251.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28316251.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,1,0x1283,3,REASON_COST) end
-	Duel.RemoveCounter(tp,1,1,0x1283,3,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1283,3,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x1283,3,REASON_COST)
 end
 function c28316251.thfilter(c)
 	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

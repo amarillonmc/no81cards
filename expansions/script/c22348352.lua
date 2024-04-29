@@ -85,6 +85,51 @@ function cm.initial_effect(c)
 	e8:SetCost(c22348352.cee4cost)
 	c:RegisterEffect(e8)
 	
+	--cee5
+	local e9=e4:Clone()
+	e9:SetDescription(aux.Stringid(22348413,2))
+	e9:SetType(EFFECT_TYPE_QUICK_O)
+	e9:SetCode(EVENT_CHAINING)
+	e9:SetCondition(c22348352.cee5con)
+	e9:SetCost(c22348352.cee5cost)
+	c:RegisterEffect(e9)
+	--cee6
+	local e10=e4:Clone()
+	e10:SetDescription(aux.Stringid(22348414,2))
+	e10:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e10:SetCondition(c22348352.cee6con)
+	e10:SetCost(c22348352.cee6cost)
+	c:RegisterEffect(e10)
+
+	
+end
+function c22348352.cee6con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c22348352.costfilter6,tp,LOCATION_GRAVE,0,1,nil,e,tp)
+end
+function c22348352.costfilter6(c,e,tp)
+	return e:GetHandler():IsSetCard(0xd70a) and c:IsHasEffect(22348414,tp) and c:IsAbleToRemoveAsCost()
+end
+function c22348352.cee6cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348352.costfilter6,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local tg=Duel.SelectMatchingCard(tp,c22348352.costfilter6,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local te=tg:GetFirst():IsHasEffect(22348414,tp)
+	te:UseCountLimit(tp)
+	Duel.Remove(tg,POS_FACEUP,REASON_REPLACE)
+end
+function c22348352.cee5con(e,tp,eg,ep,ev,re,r,rp)
+	return  rp==1-tp and re:IsActiveType(TYPE_MONSTER) and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE and Duel.IsExistingMatchingCard(c22348352.costfilter5,tp,LOCATION_GRAVE,0,1,nil,e,tp)
+end
+function c22348352.costfilter5(c,e,tp)
+	return e:GetHandler():IsSetCard(0xd70a) and c:IsHasEffect(22348413,tp) and c:IsAbleToRemoveAsCost()
+end
+function c22348352.cee5cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348352.costfilter5,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local tg=Duel.SelectMatchingCard(tp,c22348352.costfilter5,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local te=tg:GetFirst():IsHasEffect(22348413,tp)
+	te:UseCountLimit(tp)
+	Duel.Remove(tg,POS_FACEUP,REASON_REPLACE)
 end
 function c22348352.cee4con(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and Duel.IsExistingMatchingCard(c22348352.costfilter4,tp,LOCATION_GRAVE,0,1,nil,e,tp)
@@ -190,4 +235,6 @@ function c22348352.tgop(e,tp,eg,ep,ev,re,r,rp)
 	chuoying.gaixiaoguo2(e,tp,res)
 	chuoying.gaixiaoguo3(e,tp,res)
 	chuoying.gaixiaoguo4(e,tp,res)
+	chuoying.gaixiaoguo5(e,tp,res)
+	chuoying.gaixiaoguo6(e,tp,res)
 end

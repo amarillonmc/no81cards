@@ -1,4 +1,11 @@
 --新宇宙勇机 雄伟单调士
+local m=9310022
+local cm=_G["c"..m]
+cm.named_with_CosmosHero=1
+function cm.CosmosHero(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_CosmosHero
+end
 function c9310022.initial_effect(c)
 	--special Summon
 	local e1=Effect.CreateEffect(c)

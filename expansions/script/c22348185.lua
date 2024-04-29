@@ -1,15 +1,15 @@
---遥 远 之 民 回 响 幻 歌
+--遥远的星灵 伊斯特利
 local m=22348185
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--special summon rule
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_FIELD)
-	e0:SetCode(EFFECT_SPSUMMON_PROC)
-	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e0:SetRange(LOCATION_HAND)
-	e0:SetCondition(c22348185.sprcon)
-	c:RegisterEffect(e0)
+--	local e0=Effect.CreateEffect(c)
+--	e0:SetType(EFFECT_TYPE_FIELD)
+--	e0:SetCode(EFFECT_SPSUMMON_PROC)
+--	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+--	e0:SetRange(LOCATION_HAND)
+--	e0:SetCondition(c22348185.sprcon)
+--	c:RegisterEffect(e0)
 	--effect gain
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(22348185,0))
@@ -104,7 +104,7 @@ end
 function c22348185.eftg(e,c)
 	local seq=c:GetSequence()
 	return c:IsType(TYPE_EFFECT) and c:IsOriginalSetCard(0x706)
-		and seq<5 and e:GetHandler():GetSequence()<seq
+		and seq<5 and e:GetHandler():GetSequence()<=seq
 end
 function c22348185.tgfilter(c)
 	return c:IsSetCard(0x706) and c:IsAbleToDeck()

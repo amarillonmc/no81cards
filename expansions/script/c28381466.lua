@@ -63,7 +63,7 @@ function c28381466.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local mg=g:SelectSubGroup(tp,aux.dncheck,false,4,99)
 	c:SetMaterial(mg)
-	Duel.Remove(mg,POS_FACEUP,REASON_COST+REASON_MATERIAL)
+	Duel.Remove(mg,POS_FACEUP,REASON_FUSION+REASON_COST+REASON_MATERIAL)
 end
 function c28381466.valcheck(e,c)
 	local g=c:GetMaterial()

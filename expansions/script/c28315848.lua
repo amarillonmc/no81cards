@@ -17,7 +17,7 @@ function c28315848.initial_effect(c)
 	--shhis spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28315848,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_PZONE)
 	e2:SetCountLimit(1,38315848)
@@ -56,6 +56,7 @@ function c28315848.reop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.DiscardHand(tp,c28315848.disfilter,1,1,REASON_EFFECT+REASON_DISCARD)
 		else
+			Duel.BreakEffect()
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetCode(EFFECT_DISABLE)
@@ -68,6 +69,9 @@ end
 function c28315848.cfilter(c)
 	return c:IsAttribute(ATTRIBUTE_WATER) and c:IsSetCard(0x283) and c:IsFaceup()
 end
+function c28315848.nckfilter(c)
+	return c:IsCode(28317054) and c:IsFaceup()
+end
 function c28315848.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c28315848.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
@@ -75,6 +79,9 @@ function c28315848.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	if Duel.IsExistingMatchingCard(c28315848.nckfilter,tp,LOCATION_MZONE,0,1,nil) then
+		e:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_NEGATE)
+	end
 end
 function c28315848.tgfilter(c)
 	return c:IsSetCard(0x283) and c:IsAbleToGrave()

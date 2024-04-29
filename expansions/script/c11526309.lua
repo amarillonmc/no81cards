@@ -22,12 +22,12 @@ function c11526309.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>=3
 end
 function c11526309.costfilter(c)
-	return c.SetCard_Carbonic_Acid_Girl and c:IsAbleToHandAsCost() 
+	return c.SetCard_Carbonic_Acid_Girl and c:IsAbleToGraveAsCost() 
 end
 function c11526309.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local chain=Duel.GetCurrentChain()
-	if chk==0 then return Duel.IsExistingMatchingCard(c11526309.costfilter,tp,LOCATION_GRAVE,0,chain,c) end
-	local g2=Duel.GetMatchingGroup(c11526309.costfilter,tp,LOCATION_GRAVE,0,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c11526309.costfilter,tp,LOCATION_DECK,0,chain,c) end
+	local g2=Duel.GetMatchingGroup(c11526309.costfilter,tp,LOCATION_DECK,0,nil)
 	local tc=g2:Select(tp,chain,chain,nil)
 	Duel.SendtoDeck(tc,nil,2,REASON_COST)
 end

@@ -23,7 +23,7 @@ function c28361833.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetValue(aux.synlimit)
+	e1:SetValue(c28361833.synlimit)
 	c:RegisterEffect(e1)
 	--hokura power
 	local e2=Effect.CreateEffect(c)
@@ -61,6 +61,9 @@ function c28361833.synclv(e,c)
 end
 function c28361833.mfilter(c,syncard)
 	return (c:IsTuner(syncard) or c:IsNotTuner(syncard)) and c:IsSetCard(0x283)
+end
+function c28361833.synlimit(e,se,sp,st)
+	return st&SUMMON_TYPE_SYNCHRO==SUMMON_TYPE_SYNCHRO and not se
 end
 function c28361833.valcheck(e,c)
 	local val=c:GetMaterial():GetClassCount(Card.GetAttribute)

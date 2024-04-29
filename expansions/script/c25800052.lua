@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 			--search
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,2))
-	e3:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_HANDES)
+	e3:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SUMMON_SUCCESS)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
@@ -114,6 +114,8 @@ function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 	local g=g1+g2
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
-		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local g3=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Select(tp,1,1,nil)
+		Duel.SendtoDeck(g3,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end

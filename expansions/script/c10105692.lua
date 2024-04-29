@@ -1,0 +1,76 @@
+function c10105692.initial_effect(c)
+	--link summon
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_ZOMBIE),2,2,c10105692.lcheck)
+	c:EnableReviveLimit()
+    --change name
+	aux.EnableChangeCode(c,95440946)
+   	local e1=Effect.CreateEffect(c)  
+	e1:SetDescription(aux.Stringid(10105692,1))  
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EVENT_CHAINING)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,10105692)
+	e1:SetCondition(c10105692.spcon1)   
+	e1:SetTarget(c10105692.settg)  
+	e1:SetOperation(c10105692.setop)  
+	c:RegisterEffect(e1)  
+    	--recover
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(10105692,2))
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,101056920)
+	e2:SetCondition(c10105692.atkcon)
+	e2:SetOperation(c10105692.atkop)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e3)
+    end
+function c10105692.lcheck(g,lc)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x1142)
+end
+function c10105692.spcon1(e,tp,eg,ep,ev,re,r,rp)
+	return  re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL)
+end
+function c10105692.setfilter(c)  
+	return c:IsSetCard(0x143,0x2142) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() 
+end  
+function c10105692.settg(e,tp,eg,ep,ev,re,r,rp,chk)  
+	if chk==0 then return Duel.IsExistingMatchingCard(c10105692.setfilter,tp,LOCATION_DECK,0,1,nil) end  
+end  
+function c10105692.setop(e,tp,eg,ep,ev,re,r,rp)  
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)  
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c10105692.setfilter),tp,LOCATION_DECK,0,1,1,nil)  
+	local tc=g:GetFirst()  
+	if tc and Duel.SSet(tp,tc)~=0 then  
+		local e1=Effect.CreateEffect(e:GetHandler())  
+		e1:SetType(EFFECT_TYPE_SINGLE)  
+		e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)  
+		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)  
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)  
+		tc:RegisterEffect(e1)  
+	end  
+end
+function c10105692.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	return not eg:IsContains(e:GetHandler()) and eg:IsExists(Card.IsRace,1,nil,RACE_ZOMBIE)
+end
+function c10105692.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_ZOMBIE))
+	e1:SetValue(300)
+	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_UPDATE_DEFENSE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_ZOMBIE))
+	e2:SetValue(300)
+	Duel.RegisterEffect(e2,tp)
+end

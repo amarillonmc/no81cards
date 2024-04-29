@@ -29,7 +29,7 @@ function c28316053.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c28316053.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x283) and c:GetOriginalLevel()<=4 and c:GetOriginalLevel()>0
+	return c:IsFaceup() and c:IsSetCard(0x283)
 end
 function c28316053.sutg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c28316053.cfilter(chkc) end

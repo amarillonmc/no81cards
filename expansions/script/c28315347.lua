@@ -83,8 +83,8 @@ function c28315347.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28315347.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,1,0x1283,3,REASON_COST) end
-	Duel.RemoveCounter(tp,1,1,0x1283,3,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1283,3,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x1283,3,REASON_COST)
 end
 function c28315347.thfilter(c)
 	return c:IsSetCard(0x283) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()

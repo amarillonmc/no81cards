@@ -79,8 +79,56 @@ function cm.initial_effect(c)
 	e8:SetCondition(c22348350.cee4con)
 	e8:SetCost(c22348350.cee4cost)
 	c:RegisterEffect(e8)
+	--cee5
+	local e9=e4:Clone()
+	e9:SetDescription(aux.Stringid(22348413,2))
+	e9:SetType(EFFECT_TYPE_QUICK_O)
+	e9:SetCode(EVENT_CHAINING)
+	e9:SetCondition(c22348350.cee5con)
+	e9:SetCost(c22348350.cee5cost)
+	c:RegisterEffect(e9)
+	--cee6
+	local e10=e4:Clone()
+	e10:SetDescription(aux.Stringid(22348414,2))
+	e10:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e10:SetCondition(c22348350.cee6con)
+	e10:SetCost(c22348350.cee6cost)
+	c:RegisterEffect(e10)
+
 	
 end
+function c22348350.cee6con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c22348350.costfilter6,tp,LOCATION_GRAVE,0,1,nil,e,tp)
+end
+function c22348350.costfilter6(c,e,tp)
+	return e:GetHandler():IsSetCard(0xd70a) and c:IsHasEffect(22348414,tp) and c:IsAbleToRemoveAsCost()
+end
+function c22348350.cee6cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348350.costfilter6,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local tg=Duel.SelectMatchingCard(tp,c22348350.costfilter6,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local te=tg:GetFirst():IsHasEffect(22348414,tp)
+	te:UseCountLimit(tp)
+	Duel.Remove(tg,POS_FACEUP,REASON_REPLACE)
+end
+
+
+function c22348350.cee5con(e,tp,eg,ep,ev,re,r,rp)
+	return  rp==1-tp and re:IsActiveType(TYPE_MONSTER) and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE and Duel.IsExistingMatchingCard(c22348350.costfilter5,tp,LOCATION_GRAVE,0,1,nil,e,tp)
+end
+function c22348350.costfilter5(c,e,tp)
+	return e:GetHandler():IsSetCard(0xd70a) and c:IsHasEffect(22348413,tp) and c:IsAbleToRemoveAsCost()
+end
+function c22348350.cee5cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348350.costfilter5,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local tg=Duel.SelectMatchingCard(tp,c22348350.costfilter5,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local te=tg:GetFirst():IsHasEffect(22348413,tp)
+	te:UseCountLimit(tp)
+	Duel.Remove(tg,POS_FACEUP,REASON_REPLACE)
+end
+
+
 function c22348350.cee4con(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and Duel.IsExistingMatchingCard(c22348350.costfilter4,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 end
@@ -172,9 +220,7 @@ function c22348350.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c22348350.thop(e,tp,eg,ep,ev,re,r,rp)
 	local res=0
-	if Duel.DiscardHand(tp,c22348350.filter,1,1,REASON_EFFECT)~=0 then
-		res=Duel.Draw(tp,1,REASON_EFFECT)
-		if res==0 then return end
+	if Duel.DiscardHand(tp,c22348350.filter,1,1,REASON_EFFECT)~=0 and Duel.Draw(tp,1,REASON_EFFECT)~=0 then
 		local dc=Duel.GetOperatedGroup():GetFirst()
 		Duel.ConfirmCards(1-tp,dc)
 		if dc:IsSetCard(0x970a) then
@@ -187,5 +233,6 @@ function c22348350.thop(e,tp,eg,ep,ev,re,r,rp)
 	chuoying.gaixiaoguo2(e,tp,res)
 	chuoying.gaixiaoguo3(e,tp,res)
 	chuoying.gaixiaoguo4(e,tp,res)
+	chuoying.gaixiaoguo5(e,tp,res)
+	chuoying.gaixiaoguo6(e,tp,res)
 end
-

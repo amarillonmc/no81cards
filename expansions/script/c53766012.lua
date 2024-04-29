@@ -101,6 +101,13 @@ function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
+	if tc and tc:IsRelateToEffect(e) then Duel.Destroy(tc,REASON_EFFECT) end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_INACTIVATE)
+	e1:SetValue(s.efilter)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 	--[[if tc and tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)==0 and tc:IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(id,4)) then
 		local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,tc)
 		local thg=Group.FromCards(tc)
@@ -111,7 +118,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 			thg:Merge(sg)
 		end
 		if Duel.SendtoHand(thg,nil,REASON_EFFECT)~=0 and thg:IsExists(Card.IsLocation,1,nil,LOCATION_HAND) then Duel.SkipPhase(Duel.GetTurnPlayer(),Duel.GetCurrentPhase(),RESET_PHASE+Duel.GetCurrentPhase(),1,1) end
-	end--]]
+	end
 	if tc and tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)==0 and tc:IsOnField() and (tc:IsAbleToHand() or tc:IsAbleToDeck()) and Duel.SelectYesNo(tp,aux.Stringid(id,6)) then
 		local g=Duel.GetMatchingGroup(function(c)return c:IsAbleToDeck() or c:IsAbleToHand()end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 		if #g>1 then
@@ -123,7 +130,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 				if op==1 then Duel.SendtoHand(sc,nil,REASON_EFFECT) elseif op==2 then Duel.SendtoDeck(sc,nil,2,REASON_EFFECT) end
 			end
 		end
-	end
+	end--]]
 end
 function s.acfilter(c,tp,g)
 	if c:GetFlagEffect(id+33)>0 then return false end

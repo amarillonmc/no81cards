@@ -18,23 +18,25 @@ function c11560307.initial_effect(c)
 	e1:SetOperation(c11560307.desop)
 	c:RegisterEffect(e1)  
 	--Activate
-	local e1=Effect.CreateEffect(c) 
-	e1:SetType(EFFECT_TYPE_ACTIVATE) 
-	e1:SetCode(EVENT_FREE_CHAIN) 
-	c:RegisterEffect(e1)
+	local e11=Effect.CreateEffect(c) 
+	e11:SetType(EFFECT_TYPE_ACTIVATE) 
+	e11:SetCode(EVENT_FREE_CHAIN) 
+	e11:SetCountLimit(1,11560307)
+	e11:SetTarget(c11560307.rmtg) 
+	e11:SetOperation(c11560307.rmop) 
+	c:RegisterEffect(e11)
 	--remove
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e2:SetCode(EFFECT_TO_GRAVE_REDIRECT)
 	e2:SetRange(LOCATION_FZONE)
-	e2:SetTargetRange(0xff,0xfe) 
+	e2:SetTargetRange(0xff,0xff) 
 	e2:SetValue(LOCATION_REMOVED)
-	e2:SetTarget(c11560307.xrmtg)
 	c:RegisterEffect(e2)  
 	--remove 
 	local e3=Effect.CreateEffect(c) 
-	e3:SetCategory(CATEGORY_REMOVE) 
+	e3:SetCategory(CATEGORY_REMOVE+CATEGORY_SEARCH+CATEGORY_TOHAND) 
 	e3:SetType(EFFECT_TYPE_QUICK_O) 
 	e3:SetCode(EVENT_FREE_CHAIN) 
 	e3:SetRange(LOCATION_FZONE)   
@@ -69,9 +71,6 @@ function c11560307.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	else Duel.Destroy(c,REASON_COST) end
 end
-function c11560307.xrmtg(e,c)
-	return c:GetOwner()==e:GetHandlerPlayer()
-end 
 function c11560307.rmfil(c,tp) 
 	return c:IsAbleToRemove() and Duel.IsExistingMatchingCard(c11560307.thfil,tp,LOCATION_REMOVED+LOCATION_DECK,0,1,nil,c)  
 end  
@@ -108,7 +107,7 @@ function c11560307.rgck(g)
 end 
 function c11560307.rthtg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local g=Duel.GetMatchingGroup(Card.IsAbleToDeckAsCost,tp,LOCATION_REMOVED,0,e:GetHandler())
-	if chk==0 then return g:CheckSubGroup(c11560307.rgck,3,3) and e:GetHandler():IsAbleToHand() end 
+	if chk==0 then return g:CheckSubGroup(c11560307.rgck,3,3) and e:GetHandler():CheckActivateEffect(false,true,false)~=nil end 
 	local sg=g:SelectSubGroup(tp,c11560307.rgck,false,3,3) 
 	Duel.SendtoDeck(sg,nil,2,REASON_COST) 
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)  
@@ -122,6 +121,10 @@ function c11560307.rthop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 		end 
 		Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		local te=c:GetActivateEffect()
+		local tep=c:GetControler()
+		local cost=te:GetCost()
+		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 	end 
 end 
 

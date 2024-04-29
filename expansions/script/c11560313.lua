@@ -118,13 +118,16 @@ end
 function c11560313.dspfil(c,e,tp) 
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevelBelow(4) 
 end 
+function c11560313.actfilter(e) 
+	return c:IsAttackBelow(2400) or c:IsDefenseBelow(2400)
+end 
 function c11560313.dsptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and Duel.IsExistingMatchingCard(Card.IsAttackBelow,tp,0,LOCATION_MZONE,1,nil,2400) end 
+	if chk==0 then return Duel.IsExistingMatchingCard(c11560313.actfilter,tp,0,LOCATION_MZONE,1,nil) end 
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_MZONE) 
 end 
 function c11560313.dspop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g1=Duel.GetMatchingGroup(Card.IsAttackBelow,tp,0,LOCATION_MZONE,nil,2400) 
+	local g1=Duel.GetMatchingGroup(c11560313.actfilter,tp,0,LOCATION_MZONE,nil) 
 	local g2=Duel.GetMatchingGroup(c11560313.dspfil,tp,LOCATION_HAND,0,nil,e,tp)
 	if g1:GetCount()<=0 then return end 
 	local dg=g1:Select(tp,1,1,nil)  

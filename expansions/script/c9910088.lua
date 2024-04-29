@@ -34,7 +34,7 @@ function c9910088.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
 		if tc:IsLocation(LOCATION_GRAVE) and tc:IsType(TYPE_MONSTER) then
-			tc:RegisterFlagEffect(9910550,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910088,1))
+			tc:RegisterFlagEffect(9910088,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910088,1))
 		end
 		tc=eg:GetNext()
 	end

@@ -52,15 +52,27 @@ function c11560306.initial_effect(c)
 	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler() end) 
 	c:RegisterEffect(e4)
 	--sp
+--	local e5=Effect.CreateEffect(c) 
+--	e5:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
+--   e5:SetType(EFFECT_TYPE_QUICK_O)  
+--	e5:SetCode(EVENT_FREE_CHAIN) 
+--	e5:SetHintTiming(0,TIMING_END_PHASE) 
+--	e5:SetRange(LOCATION_MZONE)
+--	e5:SetCountLimit(1,13760306) 
+--	e5:SetTarget(c11560306.sptg) 
+--	e5:SetOperation(c11560306.spop)
+--	c:RegisterEffect(e5)
+
 	local e5=Effect.CreateEffect(c) 
-	e5:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
+	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e5:SetType(EFFECT_TYPE_QUICK_O)  
 	e5:SetCode(EVENT_FREE_CHAIN) 
 	e5:SetHintTiming(0,TIMING_END_PHASE) 
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1,13760306) 
-	e5:SetTarget(c11560306.sptg) 
-	e5:SetOperation(c11560306.spop)
+	e5:SetRange(LOCATION_REMOVED)
+	e5:SetCountLimit(1,13760306)
+	e5:SetCost(c11560306.sspcost) 
+	e5:SetTarget(c11560306.ssptg) 
+	e5:SetOperation(c11560306.sspop)
 	c:RegisterEffect(e5)
 end
 c11560306.SetCard_XdMcy=true  
@@ -69,7 +81,7 @@ function c11560306.atkval(e)
 	return Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,0)*300 
 end 
 function c11560306.tgcost(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local g=Duel.GetFieldGroup(tp,LOCATION_HAND+LOCATION_GRAVE,0) 
+	local g=Duel.GetFieldGroup(tp,LOCATION_GRAVE,LOCATION_GRAVE) 
 	if chk==0 then return Duel.CheckLPCost(tp,1000) and g:GetCount()>0 and g:GetCount()==g:FilterCount(Card.IsAbleToRemoveAsCost,nil) and Duel.IsPlayerCanDiscardDeck(1-tp,g:GetCount()) end 
 	Duel.PayLPCost(tp,1000)
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT) 
@@ -150,6 +162,42 @@ end
 
 
 
+function c11560306.sspcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
+	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_COST)
+end
+function c11560306.sspfilter(c,e,tp)
+	return c.SetCard_XdMcy and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c11560306.gselect(g,ft)
+	local aaa=3
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ft<=0 then return end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
+	if ft>3 then ft=3 end 
+	if aaa>ft then aaa=ft end
+	return g:CheckWithSumEqual(Card.GetLevel,12,1,aaa) and 
+	  g:GetCount()<=ft and g:GetSum(Card.GetLevel)<=12
+end
+function c11560306.ssptg(e,tp,eg,ep,ev,re,r,rp,chk)
+--	local aaa=3
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local g=Duel.GetMatchingGroup(c11560306.sspfilter,tp,LOCATION_REMOVED,0,e:GetHandler(),e,tp)
+	if chk==0 then return g:CheckSubGroup(c11560306.gselect,1,3,ft) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_REMOVED)
+end
+function c11560306.sspop(e,tp,eg,ep,ev,re,r,rp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ft<=0 then return end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
+	if ft>3 then ft=3 end 
+	local sg=Duel.GetMatchingGroup(c11560306.sspfilter,tp,LOCATION_REMOVED,0,nil,e,tp)
+	if sg:GetCount()==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local tg=sg:SelectSubGroup(tp,c11560306.gselect,false,1,ft,ft)
+	Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
+end
 
 
 

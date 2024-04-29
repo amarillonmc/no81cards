@@ -23,7 +23,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,2))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+	e3:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_GRAVE)
@@ -62,17 +62,17 @@ end
 function s.filter(c,e)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsCanBeEffectTarget(e)
 end
-function s.mfilter(c,tseq,seq)
+function s.mfilter(c,tseq,seq,e)
 	local res=false
 	local cseq=c:GetSequence()
-	return cseq>math.min(tseq,seq) and cseq<math.max(tseq,seq) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove()
+	return cseq>math.min(tseq,seq) and cseq<math.max(tseq,seq) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove() and (not e or not c:IsImmuneToEffect(e))
 end
 function s.ffilter(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and c:IsRace(RACE_INSECT) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function s.filter2(c,e,tp,seq)
 	local chkf=tp
-	local mg1=Duel.GetMatchingGroup(s.mfilter,tp,LOCATION_GRAVE,0,nil,c:GetSequence(),seq)
+	local mg1=Duel.GetMatchingGroup(s.mfilter,tp,LOCATION_GRAVE,0,nil,c:GetSequence(),seq,nil)
 	local le={}
 	for mtc in aux.Next(mg1) do
 		local e1=Effect.CreateEffect(e:GetHandler())
@@ -108,7 +108,7 @@ function s.fstg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return #tg>0 and c:IsAbleToRemove() and c:IsCanBeEffectTarget(e) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELF)
 	local sg=tg:Select(tp,1,1,nil)
-	local mg=Duel.GetMatchingGroup(s.mfilter,tp,LOCATION_GRAVE,0,nil,sg:GetFirst():GetSequence(),seq)
+	local mg=Duel.GetMatchingGroup(s.mfilter,tp,LOCATION_GRAVE,0,nil,sg:GetFirst():GetSequence(),seq,nil)
 	sg:AddCard(c)
 	Duel.SetTargetCard(sg)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
@@ -118,7 +118,7 @@ function s.fsop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetTargetsRelateToChain()
 	if #tg~=2 then return end
 	local chkf=tp
-	local mg1=Duel.GetMatchingGroup(s.mfilter,tp,LOCATION_GRAVE,0,nil,tg:GetFirst():GetSequence(),tg:GetNext():GetSequence())
+	local mg1=Duel.GetMatchingGroup(s.mfilter,tp,LOCATION_GRAVE,0,nil,tg:GetFirst():GetSequence(),tg:GetNext():GetSequence(),e)
 	local le={}
 	for mtc in aux.Next(mg1) do
 		local e1=Effect.CreateEffect(e:GetHandler())

@@ -44,7 +44,7 @@ end
 function c28385399.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	local mg=Duel.SelectMatchingCard(tp,c28385399.matfilter,tp,LOCATION_MZONE,0,2,99,nil)
 	c:SetMaterial(mg)
-	Duel.SendtoDeck(mg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT+REASON_MATERIAL)
+	Duel.SendtoDeck(mg,nil,SEQ_DECKSHUFFLE,REASON_COST+REASON_FUSION+REASON_MATERIAL)
 end
 function c28385399.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)

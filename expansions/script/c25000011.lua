@@ -72,13 +72,13 @@ function s.lzop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,tp)
 end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) and Duel.GetDecktopGroup(tp,1):FilterCount(Card.IsDestructable,nil,e)>0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE,0,1,nil) and Duel.GetDecktopGroup(tp,1):FilterCount(Card.IsDestructable,nil,e)>0 end
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_DECK,0,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tl=Duel.GetMatchingGroupCount(nil,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	local tl=Duel.GetMatchingGroupCount(nil,tp,LOCATION_MZONE,0,nil)
 	local lvt={}
 	local pc=1
 	for i=1,tl do
@@ -131,7 +131,7 @@ function s.penop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
 		if #g==0 then return end
 		Duel.HintSelection(g)
 		Duel.Destroy(g,REASON_EFFECT)

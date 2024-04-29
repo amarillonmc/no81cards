@@ -24,7 +24,7 @@ function c11560305.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,11560305)
+	e2:SetCountLimit(1)
 	e2:SetCondition(c11560305.ngcon)
 	e2:SetCost(c11560305.ngcost)
 	e2:SetTarget(c11560305.ngtg)
@@ -86,23 +86,23 @@ function c11560305.ngtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c11560305.ngop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.IsChainDisablable(0) then
-		local sel=1
-		local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND+LOCATION_ONFIELD,nil)
-		Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(11560305,0))
-		if g:GetCount()>0 then
-			sel=Duel.SelectOption(1-tp,1213,1214)
-		else
-			sel=Duel.SelectOption(1-tp,1214)+1
-		end
-		if sel==0 then
-			Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
-			local sg=g:Select(1-tp,1,1,nil)
-			Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
-			Duel.NegateEffect(0)
-			return
-		end
-	end
+--	if Duel.IsChainDisablable(0) then
+--		local sel=1
+--		local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND+LOCATION_ONFIELD,nil)
+--		Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(11560305,0))
+--		if g:GetCount()>0 then
+--			sel=Duel.SelectOption(1-tp,1213,1214)
+--		else
+--			sel=Duel.SelectOption(1-tp,1214)+1
+--		end
+--		if sel==0 then
+--			Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
+--			local sg=g:Select(1-tp,1,1,nil)
+--			Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+--			Duel.NegateEffect(0)
+--			return
+--		end
+--	end
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
 	end
@@ -112,13 +112,13 @@ function c11560305.rspcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and te and te:GetHandler().SetCard_XdMcy and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end 
 function c11560305.rsptg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end   
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end   
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0) 
-end 
+end
 function c11560305.rspop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()   
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
-	Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP) 
+	Duel.SpecialSummon(c,SUMMON_TYPE_RITUAL,tp,tp,true,false,POS_FACEUP)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT) 
 	end 

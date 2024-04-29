@@ -46,20 +46,30 @@ function c11526300.disop(e,tp,eg,ep,ev,re,r,rp)
 				end  
 			end
 		end 
+		local fid=c:GetFieldID()
+		c:RegisterFlagEffect(11526300,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_CANNOT_DISEFFECT)
-		e1:SetValue(c11526300.effectfilter)
-		e1:SetReset(RESET_CHAIN)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAIN_END)
+		e1:SetCountLimit(1)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetLabel(fid)
+		e1:SetLabelObject(c)
+		e1:SetCondition(c11526300.thcon)
+		e1:SetOperation(c11526300.thop)
 		Duel.RegisterEffect(e1,tp)
-		Duel.RegisterFlagEffect(tp,11526300,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 function c11526300.thfilter(c)
 	return c.SetCard_Carbonic_Acid_Girl and c:IsAbleToHand()
 end
-function c11526300.effectfilter(e,ct)
-	local te=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT)
-	local tc=te:GetHandler()
-	return tc.SetCard_Carbonic_Acid_Girl
+function c11526300.thcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffectLabel(11526300)~=e:GetLabel() then
+		e:Reset()
+		return false
+	else return true end
+end
+function c11526300.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SendtoDeck(e:GetLabelObject(),nil,2,REASON_EFFECT)
 end

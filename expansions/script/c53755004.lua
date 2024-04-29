@@ -5,7 +5,8 @@ cm.Rabbit_Team_Number_4=true
 if not require and dofile then function require(str) return dofile(str..".lua") end end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
-	SNNM.RabbitTeam(c)
+	local e0=SNNM.RabbitTeam(c)
+	e0:SetValue(LOCATION_DECKBOT)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_ATKCHANGE)

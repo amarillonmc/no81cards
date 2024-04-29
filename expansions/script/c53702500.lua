@@ -4334,10 +4334,11 @@ function cm.RabbitTeam(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
 	e3:SetCondition(cm.RabbitTeamrecon)
 	e3:SetValue(LOCATION_DECK)
 	c:RegisterEffect(e3)
+	return e3
 end
 function cm.RabbitTeamspcon(e,c)
 	if c==nil then return true end

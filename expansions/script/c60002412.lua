@@ -50,8 +50,8 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local bg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_REMOVED,0,nil)
-	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		Duel.SendtoDeck(bg,nil,2,REASON_EFFECT)
 	end
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)

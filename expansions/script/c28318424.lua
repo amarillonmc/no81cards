@@ -40,7 +40,6 @@ function c28318424.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mg=Duel.GetMatchingGroup(c28318424.matfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
 	local g=Duel.GetMatchingGroup(Card.IsCanBeFusionMaterial,tp,LOCATION_MZONE+LOCATION_HAND,0,nil):Filter(Card.IsType,nil,TYPE_MONSTER)
 	local b1=Duel.IsExistingMatchingCard(c28318424.fsfilter,tp,LOCATION_EXTRA,0,1,nil,g,e,tp)
-	 and g:GetCount()>1
 	local b2=Duel.IsExistingMatchingCard(c28318424.syfilter,tp,LOCATION_EXTRA,0,1,nil,mg)
 	local b3=Duel.IsExistingMatchingCard(c28318424.lkfilter,tp,LOCATION_EXTRA,0,1,nil,mg)
 	if chk==0 then return b1 or b2 or b3 end
