@@ -85,7 +85,7 @@ function c28333396.fthop(e,tp,eg,ep,ev,re,r,rp)
 	if tg:GetCount()>0 then Duel.SendtoHand(tg,nil,REASON_EFFECT) end
 end
 function c28333396.cfilter(c,tp)
-	return ((c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and c:GetReasonPlayer()==1-tp
+	return (c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and c:GetReasonPlayer()==1-tp
 	and not ((c:IsLocation(LOCATION_REMOVED) and c:IsFacedown()) or c:IsLocation(LOCATION_HAND)) or (c:IsLocation(LOCATION_GRAVE) and c:IsReason(REASON_MATERIAL))) and c:IsSetCard(0x283) and c:IsAbleToHand()
 end
 function c28333396.cfilter1(c,tp)

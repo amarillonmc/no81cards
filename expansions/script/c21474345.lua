@@ -22,7 +22,7 @@ function c21474345.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,0,0,0)
 end
 function c21474345.sumfilter(c)
-	return c:IsSummonable(true,nil) and c:IsRace(RACE_SPELLCASTER) and(c:IsAttack(2100) or c:IsAttack(1500)) and (c:IsDefense(1500) or c:IsDefense(2100))
+	return c:IsSummonable(true,nil) and c:IsRace(RACE_SPELLCASTER) and(c:IsAttack(2100)) and (c:IsDefense(1500))
 end
 function c21474345.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

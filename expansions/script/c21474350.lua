@@ -46,7 +46,7 @@ function s.thop(f)
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	return  rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_TRAP)
+	return  rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL)
 		and rc:GetType()==TYPE_TRAP and rc:IsRelateToEffect(re) and rc:IsCanTurnSet() and rc:IsStatus(STATUS_LEAVE_CONFIRMED) and rc:IsCode(40383551)
 end
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
