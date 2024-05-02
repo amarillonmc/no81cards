@@ -59,10 +59,11 @@ function c28381214.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SendtoHand(tg,nil,REASON_EFFECT)==0 then return end
 	Duel.ConfirmCards(1-tp,tg)
 	if tc:IsRelateToEffect(e) then Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT) end
-	local b1=Duel.IsExistingMatchingCard(c28381214.ilfilter,tp,LOCATION_HAND,0,2,nil) and Duel.IsExistingMatchingCard(c28381214.tgfilter,tp,LOCATION_DECK,0,1,nil)
-	local b2=Duel.IsExistingMatchingCard(c28381214.anfilter,tp,LOCATION_HAND,0,2,nil)
-	local b3=Duel.IsExistingMatchingCard(c28381214.hkfilter,tp,LOCATION_HAND,0,2,nil) and Duel.IsExistingMatchingCard(c28381214.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-	local b4=Duel.IsExistingMatchingCard(c28381214.alfilter,tp,LOCATION_HAND,0,2,nil)
+	local b1,b2,b3,b4=false
+	if Duel.IsExistingMatchingCard(c28381214.ilfilter,tp,LOCATION_HAND,0,2,nil) and Duel.IsExistingMatchingCard(c28381214.tgfilter,tp,LOCATION_DECK,0,1,nil) then b1=true end
+	if Duel.IsExistingMatchingCard(c28381214.anfilter,tp,LOCATION_HAND,0,2,nil) then b2=true end
+	if Duel.IsExistingMatchingCard(c28381214.hkfilter,tp,LOCATION_HAND,0,2,nil) and Duel.IsExistingMatchingCard(c28381214.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then b3=true end
+	if Duel.IsExistingMatchingCard(c28381214.alfilter,tp,LOCATION_HAND,0,2,nil) then b4=true end
 	if not (b1 or b2 or b3 or b4) then return end
 	local off=1
 	local ops,opval={},{}

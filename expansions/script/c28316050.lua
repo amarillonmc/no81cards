@@ -62,7 +62,7 @@ function c28316050.thfilter(c)
 	return c:IsSetCard(0x286,0x289) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c28316050.dctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(c28316050.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(c28316050.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
 end
 function c28316050.dcop(e,tp,eg,ep,ev,re,r,rp)

@@ -63,7 +63,7 @@ function s.repcon(e)
 	return e:GetHandler():GetFlagEffect(id)>0
 end
 function s.repfilter(c,tp,re)
-	return c:IsLocation(LOCATION_MZONE) and c:IsControler(tp) and c:IsReason(REASON_COST) and re and re:IsActivated() and c==re:GetHandler() and not c:IsReason(REASON_REPLACE)
+	return c:IsLocation(LOCATION_MZONE) and c:IsControler(tp) and c:IsReason(REASON_RELEASE) and re and re:IsActivated() and c==re:GetHandler() and not c:IsReason(REASON_REPLACE)
 end
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(s.repfilter,1,nil,tp,re) end
