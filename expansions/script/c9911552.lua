@@ -49,7 +49,7 @@ function c9911552.pstg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c9911552.desfilter,tp,LOCATION_ONFIELD,0,1,nil,check)
 		and Duel.IsExistingMatchingCard(c9911552.psfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,c9911552.desfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,c9911552.desfilter,tp,LOCATION_ONFIELD,0,1,1,nil,check)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c9911552.tefilter(c,ls,rs)
