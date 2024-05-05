@@ -3,7 +3,6 @@ local m=91030023
 local cm=c91030023
 function c91030023.initial_effect(c)
 	--fusion material
-	 c:SetSPSummonOnce(m)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,cm.matfilter,1,1)
 	--to hand
@@ -28,6 +27,29 @@ function c91030023.initial_effect(c)
 	e2:SetTarget(cm.thtg2)
 	e2:SetOperation(cm.thop2)
 	c:RegisterEffect(e2)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e5:SetOperation(cm.regop)
+	c:RegisterEffect(e5)
+end
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if e:GetHandler():IsSummonLocation(LOCATION_EXTRA) then 
+	local e1=Effect.CreateEffect(c)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(cm.splimit)
+	e1:SetLabelObject(c)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	end
+end
+function cm.splimit(e,c)
+	local tc=e:GetLabelObject()
+	return c:IsOriginalCodeRule(tc:GetOriginalCodeRule()) and c:IsLocation(LOCATION_EXTRA) 
 end
 function cm.matfilter(c)
 	return c:IsLinkSetCard(0x9d3) and c:IsLinkAttribute(ATTRIBUTE_ALL&~ATTRIBUTE_WATER)

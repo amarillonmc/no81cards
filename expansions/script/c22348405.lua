@@ -39,7 +39,7 @@ function cm.initial_effect(c)
 	
 end
 function c22348405.ffilter(c)
-	return c:IsAttackAbove(2000) and c:IsOnField()
+	return c:IsAttackAbove(2000) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsOnField()
 end
 function c22348405.actcon(e)
 	return Duel.GetAttacker()==e:GetHandler()

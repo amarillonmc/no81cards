@@ -276,3 +276,116 @@ function MTC.sitg2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end
+
+--「无色之白」的手续召唤
+function MTC.WhiteSum(c,code,num)
+	--summon proc
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(60010000,0))
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_SUMMON_PROC)
+	e0:SetLabel(num)
+	e0:SetCondition(MTC.Whitecon)
+	e0:SetOperation(MTC.Whiteop)
+	e0:SetValue(SUMMON_TYPE_ADVANCE)
+	c:RegisterEffect(e0)
+end
+
+function MTC.Whitefil(c)
+	return c:IsSetCard(0x646) and not c:IsPublic()
+end
+function MTC.Whitecon(e,c)
+	local tp=e:GetHandler():GetControler()
+	local num=e:GetLabel()
+	return Duel.IsExistingMatchingCard(MTC.Whitefil,tp,LOCATION_HAND,0,num,c)
+end
+function MTC.Whiteop(e,tp,eg,ep,ev,re,r,rp,c)
+	local num=e:GetLabel()
+	local c=e:GetHandler()
+	local g=Duel.SelectMatchingCard(tp,MTC.Whitefil,tp,LOCATION_HAND,0,num,num,c)
+	local oc=g:GetFirst()
+	for i=1,num do
+		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(60010000,2))
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_PUBLIC)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		oc:RegisterEffect(e1)
+		oc=g:GetNext()
+	end
+end
+
+--「无色之白」的效果回收
+function MTC.WhiteBack(c,code)
+	Duel.AddCustomActivityCounter(code,ACTIVITY_CHAIN,MTC.Whitecf)
+	--back
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(60010000,1))
+	e3:SetCategory(CATEGORY_TOHAND)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_LEAVE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1,code+10000000)
+	e3:SetCost(MTC.WhiteZS)
+	e3:SetCondition(MTC.Whitecon2)
+	e3:SetTarget(MTC.Whitetg2)
+	e3:SetOperation(MTC.Whiteop2)
+	c:RegisterEffect(e3)
+end
+function MTC.Whitecf(re,tp,cid)
+	return re:GetHandler():IsSetCard(0x646)
+end
+function MTC.Whitefil2(c,tp)
+	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD) 
+end
+function MTC.Whitecon2(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
+	local g=Duel.GetMatchingGroup(Card.IsPublic,tp,LOCATION_HAND,0,nil)
+	return eg:IsExists(MTC.Whitefil2,1,nil,tp)
+	
+end
+function MTC.Whitetg2(e,tp,eg,ep,ev,re,r,rp,chk) 
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(Card.IsPublic,tp,LOCATION_HAND,0,nil)
+	if chk==0 then return c:IsAbleToHand() and #g>0 end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
+end
+function MTC.Whiteop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT) then
+		local g=Duel.GetMatchingGroup(Card.IsPublic,tp,LOCATION_HAND,0,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+		local sc=g:Select(tp,1,1,nil):GetFirst()
+		sc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+		local eset={sc:IsHasEffect(EFFECT_PUBLIC)}
+		if #eset>0 then
+			for _,ae in pairs(eset) do
+				if ae:IsHasType(EFFECT_TYPE_SINGLE) then
+					ae:Reset()
+				else
+					local tg=ae:GetTarget() or aux.TRUE
+					ae:SetTarget(function(e,c,...) return tg(e,c,...) and c:GetFlagEffect(m)==0 end)
+				end
+			end
+		end
+	end
+end
+
+function MTC.WhiteZS(e,tp,eg,ep,ev,re,r,rp,chk)
+	local code=e:GetHandler():GetCode()
+	if chk==0 then return Duel.GetCustomActivityCount(code,tp,ACTIVITY_CHAIN)==0 end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(MTC.Whiteacl)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function MTC.Whiteacl(e,re,tp)
+	return not re:GetHandler():IsSetCard(0x646)
+end

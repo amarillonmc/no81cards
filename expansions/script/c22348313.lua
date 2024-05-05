@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-  aux.AddLinkProcedure(c,c22348313.matfilter,2)
+	aux.AddLinkProcedure(c,nil,2,99,c22348313.lcheck)
 	--atkup
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
@@ -42,6 +42,9 @@ function cm.initial_effect(c)
 	e4:SetOperation(c22348313.desop)
 	c:RegisterEffect(e4)
 	
+end
+function c22348313.lcheck(g)
+	return g:IsExists(c22348313.matfilter,1,nil)
 end
 function c22348313.matfilter(c)
 	return c:IsSummonLocation(LOCATION_EXTRA)

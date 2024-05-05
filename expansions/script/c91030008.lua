@@ -79,7 +79,6 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(sg,nil,SEQ_DECKTOP,REASON_EFFECT)
 	local og=Duel.GetOperatedGroup()
 	local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK)
-	if ct==0 then Duel.Draw(tp,1,REASON_EFFECT) end
 	Duel.SortDecktop(tp,tp,ct)
 	for i=1,ct do
 		local mg=Duel.GetDecktopGroup(tp,1)

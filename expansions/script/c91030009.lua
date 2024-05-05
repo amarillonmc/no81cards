@@ -9,8 +9,8 @@ function c91030009.initial_effect(c)
 	e1:SetHintTiming(TIMING_END_PHASE+TIMING_DRAW_PHASE,TIMING_END_PHASE)
 	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(cm.con)
-	e1:SetTarget(cm.target)
-	e1:SetOperation(cm.activate)
+	e1:SetTarget(cm.sptg)
+	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
@@ -20,53 +20,51 @@ function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x9d3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and Duel.GetLocationCountFromEx(tp,tp,nil,c,0x60)>0
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+function cm.filter1(c,e,tp)
+	return c:IsLevel(4) and c:IsSetCard(0x9d3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.filter2(c,e,tp)
+	return c:IsType(TYPE_LINK) and c:IsSetCard(0x9d3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.filter1(chkc,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) or  Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil) or Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_GRAVE,0,1,nil,e,tp)   end
+	local b1=Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_GRAVE,0,1,nil,e,tp) 
 	local b2=Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
 	local b3=Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil)
 	 local op=aux.SelectFromOptions(tp,
-			{true,aux.Stringid(m,0)},
+			{b1,aux.Stringid(m,0)},
 			{b2,aux.Stringid(m,1)},
 			{b3,aux.Stringid(m,2)})
-	if op==1 then
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,0)
+	if op==1 then 
+	local g=Duel.SelectTarget(tp,cm.filter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)	
 	e:GetHandler():RegisterFlagEffect(1,RESET_PHASE+PHASE_END,0,1)
 	elseif op==2 then
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e:GetHandler():RegisterFlagEffect(2,RESET_PHASE+PHASE_END,0,1)
 	elseif op==3 then
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e:GetHandler():RegisterFlagEffect(3,RESET_PHASE+PHASE_END,0,1)
 	end
 end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+function cm.filter(c)
+return c:IsSetCard(0x9d3) and c:IsAbleToGrave()
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:GetFlagEffect(1)>0  then
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetCondition(cm.regcon)
-	e1:SetOperation(cm.regop1)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_NEGATED)
-	e2:SetCondition(cm.regcon)
-	e2:SetOperation(cm.regop2)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_PHASE+PHASE_END)
-	e3:SetCountLimit(1)
-	e3:SetCondition(cm.effcon)
-	e3:SetOperation(cm.effop)
-	e3:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e3,tp)
-	e1:SetLabelObject(e3)
-	e2:SetLabelObject(e3)
-   c:ResetFlagEffect(1)
+	 local tc=Duel.GetFirstTarget()
+	if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and
+		 Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_QUICKPLAY)>=3
+		and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_GRAVE,0,1,nil,e,tp)
+		and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		local g=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
+	c:ResetFlagEffect(1)
 	elseif c:GetFlagEffect(2)>0  then
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP,0x60)

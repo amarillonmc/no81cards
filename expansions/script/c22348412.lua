@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	aux.EnableUnionAttribute(c,c22348412.filter)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_DRAGON),1)
+	aux.AddLinkProcedure(c,c22348412.matfilter,1)
 	c:EnableReviveLimit()
 	--cannot be link material
 	local e1=Effect.CreateEffect(c)
@@ -42,6 +42,9 @@ function cm.initial_effect(c)
 	e5:SetLabelObject(e4)
 	c:RegisterEffect(e5)
 	
+end
+function c22348412.matfilter(c)
+	return c:IsLinkRace(RACE_DRAGON) and (c:IsLevel(8) or c:IsRank(8))
 end
 function c22348412.filter(c)
 	return c:IsRace(RACE_DRAGON) and c:IsType(TYPE_XYZ)

@@ -48,9 +48,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	 local g1=Duel.GetDecktopGroup(tp,2)
 	if Duel.SendtoGrave(g1,REASON_EFFECT)~=0 and
 		 Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_QUICKPLAY)>=3
-		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil)
+		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil)
 		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 	c:ResetFlagEffect(1)

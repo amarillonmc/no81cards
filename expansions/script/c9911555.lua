@@ -2,7 +2,7 @@
 function c9911555.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
-	--pendulum set
+	--to grave
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
 	e1:SetType(EFFECT_TYPE_IGNITION)
@@ -22,17 +22,17 @@ function c9911555.initial_effect(c)
 	e2:SetCost(c9911555.imcost)
 	e2:SetOperation(c9911555.imop)
 	c:RegisterEffect(e2)
-	--draw
+	--remove
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DRAW)
+	e3:SetCategory(CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,9911557)
-	e3:SetCondition(c9911555.drcon)
-	e3:SetTarget(c9911555.drtg)
-	e3:SetOperation(c9911555.drop)
+	e3:SetCondition(c9911555.rmcon)
+	e3:SetTarget(c9911555.rmtg)
+	e3:SetOperation(c9911555.rmop)
 	c:RegisterEffect(e3)
 	if not c9911555.global_check then
 		c9911555.global_check=true
@@ -95,17 +95,16 @@ function c9911555.imop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAINING)
-	e1:SetCountLimit(1)
 	e1:SetCondition(c9911555.imcon2)
 	e1:SetOperation(c9911555.imop2)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9911555.imcon2(e,tp,eg,ep,ev,re,r,rp)
-	local tp=e:GetLabel()
-	return rp==1-tp and re:IsActivated()
+	return rp==1-tp and re:IsActivated() and Duel.GetFlagEffect(tp,9911556)==0 and Duel.GetFlagEffect(tp,9911557)==0
 end
 function c9911555.imop2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RegisterFlagEffect(tp,9911556,RESET_PHASE+PHASE_END,0,1)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)
@@ -118,23 +117,31 @@ function c9911555.imop2(e,tp,eg,ep,ev,re,r,rp)
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_CHAIN_SOLVING)
-	e2:SetCountLimit(1)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	e2:SetCondition(c9911555.spcon)
 	e2:SetOperation(c9911555.spop)
 	e2:SetLabelObject(re)
 	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(e:GetHandler())
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAIN_NEGATED)
+	e3:SetCondition(c9911555.spcon)
+	e3:SetOperation(c9911555.resetop)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e3,tp)
 end
 function c9911555.efilter(e,te)
 	return te==e:GetLabelObject()
 end
 function c9911555.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and e:GetLabelObject() and re==e:GetLabelObject()
+	return rp==1-tp and Duel.GetFlagEffect(tp,9911557)==0
 end
 function c9911555.spfilter(c,e,tp)
 	return c:GetFlagEffect(9911555)~=0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9911555.spop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RegisterFlagEffect(tp,9911557,RESET_PHASE+PHASE_END,0,1)
+	if not (re and e:GetLabelObject() and re==e:GetLabelObject()) then return end
 	Duel.Hint(HINT_CARD,0,9911555)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local tg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9911555.spfilter),tp,LOCATION_GRAVE,0,nil,e,tp)
@@ -145,39 +152,21 @@ function c9911555.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function c9911555.drcon(e,tp,eg,ep,ev,re,r,rp)
+function c9911555.resetop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ResetFlagEffect(tp,9911556)
+end
+function c9911555.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:GetCount()>1 and eg:IsContains(e:GetHandler())
 end
-function c9911555.cfilter(c,e)
-	return c:IsFaceup() and c:GetLevel()>0 and c:IsCanBeEffectTarget(e)
+function c9911555.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+	if chk==0 then return g:IsExists(Card.IsAbleToRemove,1,nil,tp,POS_FACEDOWN) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
 end
-function c9911555.fselect(g,tp)
-	local lv1=g:GetFirst():GetLevel()
-	local lv2=g:GetNext():GetLevel()
-	local num=math.floor(math.abs(lv1-lv2)/2)
-	return num>0 and Duel.IsPlayerCanDraw(tp,num)
-end
-function c9911555.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	local g=eg:Filter(c9911555.cfilter,nil,e)
-	if chk==0 then return #g>1 and g:CheckSubGroup(c9911555.fselect,2,2,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g1=g:SelectSubGroup(tp,c9911555.fselect,false,2,2,tp)
-	Duel.SetTargetCard(g1)
-	local lv1=g1:GetFirst():GetLevel()
-	local lv2=g1:GetNext():GetLevel()
-	local num=math.floor(math.abs(lv1-lv2)/2)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,num)
-end
-function c9911555.cfilter2(c,e)
-	return c:IsRelateToEffect(e) and c:IsFaceup()
-end
-function c9911555.drop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(c9911555.cfilter2,nil,e)
-	if #g~=2 then return end
-	local lv1=g:GetFirst():GetLevel()
-	local lv2=g:GetNext():GetLevel()
-	local num=math.floor(math.abs(lv1-lv2)/2)
-	if num<1 then return end
-	Duel.Draw(tp,num,REASON_EFFECT)
+function c9911555.rmop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TODECK)
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):FilterSelect(1-tp,Card.IsAbleToRemove,1,1,nil,tp,POS_FACEDOWN)
+	if #g>0 then
+		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
+	end
 end

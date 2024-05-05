@@ -48,7 +48,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if g1:GetCount()<1 or g2<1 then return end
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then g2=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local dg=g1:Select(tp,1,g2,nil) 
+	local dg=g1:Select(tp,1,2,nil) 
 	Duel.SpecialSummon(dg,0,tp,tp,false,false,POS_FACEUP)
 	local tc=dg:GetFirst()
 	while tc do
@@ -87,8 +87,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
-	if chk==0 then return  Duel.CheckReleaseGroup(tp,Card.IsSetCard,1,nil,0xdd) end
-	local g=Duel.SelectReleaseGroup(tp,Card.IsSetCard,1,6,nil,0xdd)
+	if chk==0 then return  Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0xdd) end
+	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_MZONE,0,1,6,nil,0xdd)
 	e:SetLabel(#g)
 	Duel.Release(g,REASON_COST)
 end

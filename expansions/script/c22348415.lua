@@ -81,7 +81,7 @@ function c22348415.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 end
 function c22348415.spfilter(c,e,tp)
-	return c:IsCode(22348402,22348401) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(22348402,22348401) and c:IsFaceupEx() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348415.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

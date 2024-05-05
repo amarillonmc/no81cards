@@ -58,7 +58,7 @@ function cm.initial_effect(c)
 	
 end
 function c22348404.ovfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_DRAGON) and c:IsType(TYPE_XYZ) and c:GetOverlayCount()==0
+	return c:IsFaceup() and c:IsRank(8) and c:IsRace(RACE_DRAGON) and c:IsType(TYPE_XYZ) and c:GetOverlayCount()==0
 end
 function c22348404.yhycon(e)
 	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0x107b)

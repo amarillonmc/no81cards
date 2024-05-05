@@ -37,9 +37,11 @@ if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and
 	 e:GetHandler():RegisterFlagEffect(1,RESET_PHASE+PHASE_END,0,1)
 	elseif op==2 then
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	 e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e:GetHandler():RegisterFlagEffect(2,RESET_PHASE+PHASE_END,0,1)
 	elseif op==3 then
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e:GetHandler():RegisterFlagEffect(3,RESET_PHASE+PHASE_END,0,1)
 	end
 end

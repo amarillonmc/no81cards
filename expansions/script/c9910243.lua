@@ -1,4 +1,4 @@
---高塔的魔导城 都灵
+--魔导玻纤都市
 function c9910243.initial_effect(c)
 	aux.AddCodeList(c,9910871)
 	c:EnableCounterPermit(0x1)

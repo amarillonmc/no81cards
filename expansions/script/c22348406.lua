@@ -5,6 +5,13 @@ function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,10,2,c22348406.ovfilter,aux.Stringid(22348406,0),2,c22348406.xyzop)
 	c:EnableReviveLimit()
+	--xyzlimit
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+	e0:SetValue(1)
+	c:RegisterEffect(e0)
 	--cannot be effect target
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -40,7 +47,7 @@ function cm.initial_effect(c)
 end
 	
 function c22348406.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x10e5)
+	return c:IsFaceup() and c:IsSetCard(0x10e5) and c:IsType(TYPE_XYZ) 
 end
 function c22348406.xyzop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,22348406)==0 end

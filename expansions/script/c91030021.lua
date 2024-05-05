@@ -2,7 +2,6 @@
 local m=91030021
 local cm=c91030021
 function c91030021.initial_effect(c)
-	c:SetSPSummonOnce(m)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,cm.matfilter,1,1)
 	--tohand
@@ -19,11 +18,14 @@ function c91030021.initial_effect(c)
 	c:RegisterEffect(e1)
 	--immune
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetCategory(CATEGORY_DAMAGE)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_BATTLE_DAMAGE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetValue(1)
+	e2:SetCondition(cm.condition)
+	e2:SetTarget(cm.target2)
+	e2:SetOperation(cm.operation2)
 	c:RegisterEffect(e2)
 	--destroy
 	local e3=Effect.CreateEffect(c)
@@ -37,19 +39,49 @@ function c91030021.initial_effect(c)
 	c:RegisterEffect(e3)
 	 local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetOperation(cm.regop)
 	c:RegisterEffect(e4)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(28373620,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	local c=e:GetHandler()
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	if e:GetHandler():IsSummonLocation(LOCATION_EXTRA) then 
+	local e1=Effect.CreateEffect(c)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(cm.splimit)
+	e1:SetLabelObject(c)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	end
+end
+function cm.splimit(e,c)
+	local tc=e:GetLabelObject()
+	return c:IsOriginalCodeRule(tc:GetOriginalCodeRule()) and c:IsLocation(LOCATION_EXTRA) 
+end
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	return ep~=tp 
+end
+function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,PLAYER_ALL,LOCATION_MZONE)
+end
+function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_MZONE,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.HintSelection(g)
+		Duel.SendtoGrave(g,REASON_EFFECT)
+	end
 end
 function cm.matfilter(c)
 	return c:IsLinkSetCard(0x9d3) and c:IsLinkAttribute(ATTRIBUTE_ALL&~ATTRIBUTE_FIRE)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonLocation(LOCATION_EXTRA) and e:GetHandler():GetFlagEffect(28373620)~=0
+	return e:GetHandler():IsSummonLocation(LOCATION_EXTRA) and e:GetHandler():GetFlagEffect(91030021)~=0
 end
 function cm.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)

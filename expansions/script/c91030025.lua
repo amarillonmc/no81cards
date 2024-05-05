@@ -2,44 +2,63 @@
 local m=91030025
 local cm=c91030025
 function c91030025.initial_effect(c)
-	c:SetSPSummonOnce(91030025)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,nil,2,2,c91030025.lcheck)
+	aux.AddLinkProcedure(c,nil,2,3,c91030025.lcheck)
 	--spsummon condition
-	local e1=Effect.CreateEffect(c)
+	 local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetValue(aux.linklimit)
 	c:RegisterEffect(e1)
 	--remove
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1)
-	e2:SetCondition(cm.rmcon)
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetCountLimit(1,m)
+	e2:SetRange(LOCATION_MZONE)
 	e2:SetCost(cm.cpcost)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.operation)
 	c:RegisterEffect(e2)
 	--to grave
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_DESTROYED)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCondition(cm.condition2)
-	e3:SetTarget(cm.sptg)
-	e3:SetOperation(cm.spop)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x9d3))
+	e3:SetTargetRange(LOCATION_HAND,0)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,1))
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_PHASE+PHASE_END)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCountLimit(1,m*2)
+	e4:SetTarget(cm.sptg)
+	e4:SetOperation(cm.spop)
+	c:RegisterEffect(e4)
+end
+function cm.filter(c)
+	return c:IsSetCard(0x9d3) and c:IsSSetable() and c:IsType(TYPE_QUICKPLAY)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk) 
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and cm.filter(chkc) and chkc:IsControler(tp) end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
+	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	Duel.SelectTarget(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,e:GetHandler())
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	Duel.SSet(tp,tc)
 end
 function c91030025.lcheck(g,lc)
 	return g:IsExists(Card.IsLinkSetCard,1,nil,0x9d3)
-end
-function c91030025.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function cm.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
@@ -80,20 +99,4 @@ end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsReason(REASON_BATTLE+REASON_EFFECT)
-end
-function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x9d3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler(),e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
-end
-function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,1,1,e:GetHandler(),e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	end
 end
