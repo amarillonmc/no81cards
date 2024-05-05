@@ -17,7 +17,7 @@ function c11560304.initial_effect(c)
 	--c:RegisterEffect(e1)  
 	--SpecialSummon
 	local e2=Effect.CreateEffect(c)   
-	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW+CATEGORY_TOGRAVE)
+	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW+CATEGORY_HANDES)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS) 
 	e2:SetProperty(EFFECT_FLAG_DELAY)   
@@ -50,9 +50,9 @@ function c11560304.spop(e,tp,eg,ep,ev,re,r,rp)
 		local oc=Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 		if oc>0 then
 		Duel.Draw(tp,oc,REASON_EFFECT) 
-		local xg=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_HAND,nil) 
-		if Duel.IsExistingMatchingCard(nil,tp,LOCATION_REMOVED,0,10,nil) and xg:GetCount()>0  and Duel.IsPlayerCanDraw(1-tp) then 
-		local x=Duel.SendtoGrave(xg,REASON_EFFECT)  
+		local xg=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+		if Duel.IsExistingMatchingCard(nil,tp,LOCATION_REMOVED,0,10,nil) and xg:GetCount()>0 and Duel.IsPlayerCanDraw(1-tp) then 
+		local x=Duel.SendtoGrave(xg,REASON_EFFECT+REASON_DISCARD) 
 		Duel.Draw(1-tp,x,REASON_EFFECT)
 		end 
 		end

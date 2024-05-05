@@ -45,14 +45,23 @@ function c11560318.initial_effect(c)
 	e2:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)  
 	c:RegisterEffect(e2)
 	--special summon
+	--local e3=Effect.CreateEffect(c) 
+	--e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
+	--e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	--e3:SetProperty(EFFECT_FLAG_DELAY)
+	--e3:SetCode(EVENT_REMOVE)
+	--e3:SetCountLimit(1,21560318)
+	--e3:SetCondition(c11560318.regcon)
+	--e3:SetOperation(c11560318.regop)
+	--c:RegisterEffect(e3)
+	--special summon
 	local e3=Effect.CreateEffect(c) 
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_REMOVE)
 	e3:SetCountLimit(1,21560318)
-	--e3:SetCondition(c11560318.regcon)
-	e3:SetOperation(c11560318.regop)
+	e3:SetOperation(c11560318.regop2)
 	c:RegisterEffect(e3)
 	if not c11560318.global_check then
 		c11560318.global_check=true
@@ -64,6 +73,41 @@ function c11560318.initial_effect(c)
 	end 
 end
 c11560318.SetCard_XdMcy=true  
+function c11560318.regop2(e,tp,eg,ep,ev,re,r,rp)   
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	end
+
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+		e1:SetCountLimit(1)
+		if Duel.GetCurrentPhase()==PHASE_STANDBY then
+			e1:SetLabel(Duel.GetTurnCount())
+			e1:SetCondition(c11560318.retcon)
+			e1:SetReset(RESET_PHASE+PHASE_STANDBY,2)
+		else
+			e1:SetReset(RESET_PHASE+PHASE_STANDBY)
+		end
+		e1:SetOperation(c11560318.spop2)
+		Duel.RegisterEffect(e1,tp)
+end 
+function c11560318.retcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnCount()~=e:GetLabel()
+end
+function c11560318.spfilter2(c,e,tp)
+	return c:IsCode(11560318) and c:IsCanBeSpecialSummoned(e,0,tp,false,true) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+end
+function c11560318.spop2(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsExistingMatchingCard(c11560318.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp) then 
+		Duel.Hint(HINT_CARD,0,11560318) 
+		local g=Duel.SelectMatchingCard(tp,c11560318.spfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+		local tc=g:GetFirst()  
+		Duel.SpecialSummon(tc,0,tp,tp,false,true,POS_FACEUP) 
+		e:Reset()
+	end 
+end
 function c11560318.mfilter(c) 
 	return c.SetCard_XdMcy  
 end 
