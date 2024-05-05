@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.cpfilter(c)
-	return c:GetType()==TYPE_TRAP and c:IsAbleToGraveAsCost()
+	return c:GetType()==TYPE_TRAP and c:IsAbleToGraveAsCost() and c:IsSetCard(0x17e)
 		and c:CheckActivateEffect(true,true,false)~=nil
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)

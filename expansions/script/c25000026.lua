@@ -39,7 +39,7 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
 function s.filter(c)
-	return aux.IsCodeListed(c,25000028) and not c:IsCode(13650422) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or c:IsAbleToGrave())
+	return aux.IsCodeListed(c,25000028) and not c:IsCode(id) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
 function s.thfilter(c,tp)
 	return c:IsAbleToHand() and c:IsHasEffect(25000027,tp)
