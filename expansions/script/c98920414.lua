@@ -184,7 +184,7 @@ function c98920414.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function c98920414.spfilter(c,e,tp)
-	return c:IsCode(68406755) and Duel.GetMZoneCount(tp,e:GetHandler())>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(68406755) and Duel.GetMZoneCount(tp,e:GetHandler())>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,aux.TriamidSpSummonType(c))
 end
 function c98920414.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
@@ -196,7 +196,10 @@ function c98920414.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,c98920414.spfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+			local sc=g:GetFirst()
+			if Duel.SpecialSummon(g,0,tp,tp,false,aux.TriamidSpSummonType(sc),POS_FACEUP) and aux.TriamidSpSummonType(sc) then
+				sc:CompleteProcedure()
+			end
 		end
 	end
 end

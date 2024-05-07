@@ -33,6 +33,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			{b3,aux.Stringid(m,2)})
 	if op==1 then 
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND+CATEGORY_SEARCH,nil,1,tp,LOCATION_DECK)
+	e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	if Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_SPELL)>=3 then
 		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW)
 	end
