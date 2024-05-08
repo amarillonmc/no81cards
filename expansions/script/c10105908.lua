@@ -19,20 +19,20 @@ function c10105908.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,10105908)
 	e2:SetCondition(c10105908.spcon) 
-	e2:SetCost(c10105908.cost)
+	e2:SetCost(c10105908.spcost)
 	e2:SetTarget(c10105908.sptg)
 	e2:SetOperation(c10105908.spop)
 	c:RegisterEffect(e2)
-	--SpecialSummon 
-	local e3=Effect.CreateEffect(c) 
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(10105908,1))
 	e3:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCountLimit(1,20105908)
-	e3:SetCost(c10105908.cost)
-	e3:SetTarget(c10105908.gsptg)
-	e3:SetOperation(c10105908.gspop)
+	e3:SetCountLimit(1,101059080)
+	e3:SetCost(c10105908.spcost)
+	e3:SetTarget(c10105908.sptg2)
+	e3:SetOperation(c10105908.spop2)
 	c:RegisterEffect(e3)
 	Duel.AddCustomActivityCounter(10105908,ACTIVITY_SPSUMMON,c10105908.counterfilter)
 end
@@ -42,8 +42,8 @@ end
 function c10105908.lcheck(g)
 	return g:IsExists(Card.IsLinkRace,1,nil,RACE_INSECT+RACE_PLANT+RACE_REPTILE)
 end   
-function c10105908.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(10105908,tp,ACTIVITY_SPSUMMON)==0 end
+function c10105908.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_SPSUMMON)==0 end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
@@ -82,7 +82,9 @@ end
 function c10105908.tdfilter(c,tp)
 	return c:IsFaceup() and c:IsRace(RACE_INSECT+RACE_PLANT+RACE_REPTILE) and Duel.GetMZoneCount(tp,c)>0 and c:IsAbleToDeck()
 end
-function c10105908.gsptg(e,tp,eg,ep,ev,re,r,rp,chk) 
+function c10105908.sptg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c10105908.tdfilter(chkc,tp) end
 	if chk==0 then return Duel.IsExistingTarget(c10105908.tdfilter,tp,LOCATION_MZONE,0,1,nil,tp)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
@@ -90,14 +92,12 @@ function c10105908.gsptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,#g,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
-function c10105908.gspop(e,tp,eg,ep,ev,re,r,rp)
+function c10105908.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsType(TYPE_MONSTER) and Duel.SendtoDeck(tc,nil,SEQ_DECKBOTTOM,REASON_EFFECT)~=0
 		and tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	end 
+	end
 end
-
-
