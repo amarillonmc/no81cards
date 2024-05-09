@@ -17,6 +17,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_CUSTOM+m)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_SZONE)
+	e1:SetCost(cm.thcost)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
@@ -53,6 +54,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
 		e:GetHandler():AddCounter(0x626,3)
 	end
+end
+function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x626,1,REASON_COST) end
+	e:GetHandler():RemoveCounter(tp,0x626,1,REASON_COST)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
