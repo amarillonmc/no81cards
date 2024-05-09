@@ -46,7 +46,7 @@ function cm.hspfilter2(c,tp,sc,tc)
 	local g=Group.CreateGroup()
 	g:AddCard(tc)
 	g:AddCard(c)
-	return c:IsSetCard(0xa341) 
+	return c:IsSetCard(0xa341) and Duel.GetFlagEffect(tp,c:GetCode()+10000)==0
 		and c:IsControler(tp) and Duel.GetLocationCountFromEx(tp,tp,g,sc)>0 and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL) 
 end
 function cm.hspcon(e,c)
@@ -135,11 +135,8 @@ function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 			local tg=cg:Select(tp,1,1,nil)
 			Duel.SendtoHand(tg,nil,REASON_EFFECT)
 		end
-	else
-		if Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil)	   
-		and Duel.SelectYesNo(tp,aux.Stringid(m,2))then 
-		   if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD,nil)~=0 then 
+	elseif Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,2))then 
+		if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD,nil)~=0 then 
 		   local sg=Duel.GetOperatedGroup()
 		   local sc=sg:GetFirst()
 		   Duel.Draw(tp,2,REASON_EFFECT)	  

@@ -45,7 +45,7 @@ function cm.hspfilter2(c,tp,sc,tc)
 	local g=Group.CreateGroup()
 	g:AddCard(tc)
 	g:AddCard(c)
-	return c:IsSetCard(0xa341) 
+	return c:IsSetCard(0xa341) and Duel.GetFlagEffect(tp,c:GetCode()+10000)==0
 		and c:IsControler(tp) and Duel.GetLocationCountFromEx(tp,tp,g,sc)>0 and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL) 
 end
 function cm.hspcon(e,c)

@@ -46,7 +46,7 @@ function cm.hspfilter2(c,tp,sc,tc)
 	local g=Group.CreateGroup()
 	g:AddCard(tc)
 	g:AddCard(c)
-	return c:IsSetCard(0xa341) 
+	return c:IsSetCard(0xa341) and Duel.GetFlagEffect(tp,c:GetCode()+10000)==0
 		and c:IsControler(tp) and Duel.GetLocationCountFromEx(tp,tp,g,sc)>0 and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL) 
 end
 function cm.hspcon(e,c)
@@ -107,8 +107,8 @@ end
 function cm.tgfilter(e,c)
 	return c:IsSetCard(0xa341) and c:IsLocation(LOCATION_MZONE)
 end
-function cm.imfilter(e,re)
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()and not  e:GetHandler():GetColumnGroup():IsContains(re:GetHandler())
+function cm.imfilter(e,c)
+	return  not  e:GetHandler():GetColumnGroup():IsContains(c)
 end
 
 function cm.stcon(e,tp,eg,ep,ev,re,r,rp)
