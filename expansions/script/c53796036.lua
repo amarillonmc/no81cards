@@ -2,7 +2,7 @@ local m=53796036
 local cm=_G["c"..m]
 cm.name="埃里"
 function cm.initial_effect(c)
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_EARTH),aux.NonTuner(Card.IsAttribute,ATTRIBUTE_EARTH),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_FIRE),aux.NonTuner(Card.IsAttribute,ATTRIBUTE_FIRE),1)
 	c:EnableReviveLimit()
 	local e0=Effect.CreateEffect(c)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)

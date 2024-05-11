@@ -7,17 +7,18 @@ function c10105679.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(aux.MaskChangeLimit)
 	c:RegisterEffect(e1)
-    	--copy effect
+	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(10105679,0))
-	e2:SetCategory(CATEGORY_TODECK)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetHintTiming(0,TIMING_END_PHASE)
+	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
-	e2:SetTarget(c10105679.cptg)
-	e2:SetOperation(c10105679.cpop)
+	e2:SetCost(c10105679.spcost)
+	e2:SetTarget(c10105679.sptg)
+	e2:SetOperation(c10105679.spop)
 	c:RegisterEffect(e2)
     	--atk
 	local e3=Effect.CreateEffect(c)
@@ -40,37 +41,26 @@ function c10105679.initial_effect(c)
 	e5:SetOperation(c10105679.repop)
 	c:RegisterEffect(e5)
 end
-function c10105679.cpfilter(c)
-	return c:IsSetCard(0xa5) and c:IsType(TYPE_SPELL+TYPE_QUICKPLAY) and c:IsAbleToDeck() and c:CheckActivateEffect(false,true,false)~=nil
+function c10105679.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsReleasable() end
+	Duel.Release(e:GetHandler(),REASON_COST)
 end
-function c10105679.cptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then
-		local te=e:GetLabelObject()
-		local tg=te:GetTarget()
-		return tg and tg(e,tp,eg,ep,ev,re,r,rp,0,chkc)
+function c10105679.spfilter(c,e,tp)
+	return c:IsSetCard(0xa008) and not c:IsCode(10105679)  and c:IsType(TYPE_MONSTER) and c:IsLevelBelow(8) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+end
+function c10105679.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler())>0
+		and Duel.IsExistingMatchingCard(c10105679.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function c10105679.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c10105679.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
+		g:GetFirst():CompleteProcedure()
 	end
-	if chk==0 then return Duel.IsExistingTarget(c10105679.cpfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c10105679.cpfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true)
-	Duel.ClearTargetCard()
-	g:GetFirst():CreateEffectRelation(e)
-	local tg=te:GetTarget()
-	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
-	te:SetLabelObject(e:GetLabelObject())
-	e:SetLabelObject(te)
-	Duel.ClearOperationInfo(0)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
-end
-function c10105679.cpop(e,tp,eg,ep,ev,re,r,rp)
-	local te=e:GetLabelObject()
-	if not te then return end
-	if not te:GetHandler():IsRelateToEffect(e) then return end
-	e:SetLabelObject(te:GetLabelObject())
-	local op=te:GetOperation()
-	if op then op(e,tp,eg,ep,ev,re,r,rp) end
-	Duel.BreakEffect()
-	Duel.SendtoDeck(te:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end
 function c10105679.atkval(e,c)
 	return Duel.GetFieldGroupCount(c:GetControler(),0,LOCATION_ONFIELD)*300

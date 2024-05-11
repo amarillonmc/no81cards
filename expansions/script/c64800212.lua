@@ -44,7 +44,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 			if g:IsExists(s.thfilter,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 				local sg=g:FilterSelect(tp,s.thfilter,1,1,nil,e,tp)
-				Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)			
+				Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)		   
 				g:Sub(sg)
 			end
 			Duel.Destroy(g,REASON_EFFECT)
@@ -53,10 +53,12 @@ end
 
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsStatus(STATUS_BATTLE_DESTROYED) or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
+	if rp==tp then return false end
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true 
+	elseif re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	return g and not g:IsContains(c)
+	end
 end
 function s.desfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_FIRE)
@@ -74,7 +76,7 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 and Duel.Destroy(g,REASON_EFFECT)~=0 then
 		if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
-		end	
+		end 
 	end
 	
 end

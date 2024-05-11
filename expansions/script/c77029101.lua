@@ -125,7 +125,7 @@ function c77029101.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c77029101.splimit(e,c)
-	return not c:IsSetCard(0xa991) and not c:IsSetCard(0x115)
+	return not c:IsSetCard(0xa991) and not c:IsSetCard(0x115) and not c:IsCode(52340445)
 end
 function c77029101.ovfil(c)
 	return c:IsSetCard(0xa991,0x115) and c:IsCanOverlay()
