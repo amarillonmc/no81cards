@@ -61,7 +61,7 @@ function cm.atkval(e,c)
 	return Duel.GetMatchingGroupCount(cm.rmfilter,c:GetControler(),LOCATION_REMOVED,0,nil)*200
 end
 function cm.cfilter(c)
-	return c:IsFacedown() or not c:IsSetCard(0x876)
+	return c:IsFaceup() and not c:IsSetCard(0x876)
 end
 function cm.cpcon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil)

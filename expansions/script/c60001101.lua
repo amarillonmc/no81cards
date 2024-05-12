@@ -70,33 +70,33 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 
-function cm.tgsfilter(c,e,tp)
+function cm.tgsfilter1(c,e,tp)
 	return c:IsLevel(1) and c:IsSetCard(0x115) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
-function cm.tgtfilter(c)
+function cm.tgtfilter2(c)
 	return c:IsLevel(1) and c:IsSetCard(0x115) and c:IsAbleToHand()
 end
 
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return (Duel.IsExistingMatchingCard(cm.tgsfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or Duel.IsExistingMatchingCard(cm.tgtfilter,tp,LOCATION_DECK,0,1,nil) end
-	if Duel.IsExistingMatchingCard(cm.tgsfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return (Duel.IsExistingMatchingCard(cm.tgsfilter1,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or Duel.IsExistingMatchingCard(cm.tgtfilter2,tp,LOCATION_DECK,0,1,nil) end
+	if Duel.IsExistingMatchingCard(cm.tgsfilter1,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if (Duel.IsExistingMatchingCard(cm.tgsfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) and (not Duel.IsExistingMatchingCard(cm.tgtfilter,tp,LOCATION_DECK,0,1,nil) 
+	if (Duel.IsExistingMatchingCard(cm.tgsfilter1,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) and (not Duel.IsExistingMatchingCard(cm.tgtfilter2,tp,LOCATION_DECK,0,1,nil) 
 	or Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))==1) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,tgsfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+		local g=Duel.SelectMatchingCard(tp,tgsfilter1,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,tgtfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+		local g=Duel.SelectMatchingCard(tp,tgtfilter2,tp,LOCATION_DECK,0,1,1,nil)
 		if g:GetCount()>0 then
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)

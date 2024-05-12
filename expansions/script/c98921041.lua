@@ -66,7 +66,7 @@ function c98921041.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
-		if not (tc:IsLocation(LOCATION_HAND+LOCATION_DECK) or tc:IsLocation(LOCATION_REMOVED) and tc:IsFacedown()) and Duel.IsPlayerCanSpecialSummonMonster(tp,98921041,0,TYPES_NORMAL_TRAP_MONSTER,1200,0,2,RACE_AQUA,ATTRIBUTE_WATER) and Duel.SelectYesNo(tp,aux.Stringid(98921041,1)) then
+		if not (tc:IsLocation(LOCATION_HAND+LOCATION_DECK) or tc:IsLocation(LOCATION_REMOVED) and tc:IsFacedown()) and Duel.IsPlayerCanSpecialSummonMonster(tp,tc:GetCode(),0,TYPES_NORMAL_TRAP_MONSTER,1200,0,2,RACE_AQUA,ATTRIBUTE_WATER) and Duel.SelectYesNo(tp,aux.Stringid(98921041,1)) then
 		   tc:AddMonsterAttribute(TYPE_NORMAL)
 		   Duel.SpecialSummonStep(tc,0,tp,tp,true,false,POS_FACEUP)
 		   local e1=Effect.CreateEffect(tc)
