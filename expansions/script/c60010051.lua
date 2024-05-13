@@ -1,6 +1,7 @@
 --砂金-囚石铸金-
 local cm,m,o=GetID()
 function cm.initial_effect(c)
+	aux.AddCodeList(c,60010029)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -13,12 +14,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--negate
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(27548199,1))
+	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e2:SetRange(LOCATION_MZONE)
+	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e2:SetCountLimit(1,m)
 	e2:SetCondition(cm.discon)
 	e2:SetTarget(cm.distg)
@@ -32,6 +32,9 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local d1,d2,d3=Duel.TossDice(tp,3)
+	Debug.Message(d1)
+	Debug.Message(d2)
+	Debug.Message(d3)
 	local i=0
 	if d1==6 then
 		i=i+1
@@ -93,7 +96,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev) and Duel.GetTurnPlayer()==1-tp
+	return rp==tp and Duel.IsChainNegatable(ev) and Duel.GetTurnPlayer()==1-tp
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -103,6 +106,12 @@ end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) and Duel.IsExistingMatchingCard(cm.ffil,tp,LOCATION_FZONE,0,1,nil) then
+			Duel.Recover(tp,3000,REASON_EFFECT)
+		end
 	end
+end
+
+function cm.ffil(c)
+	return c:IsCode(60010029) and c:IsFaceup()
 end

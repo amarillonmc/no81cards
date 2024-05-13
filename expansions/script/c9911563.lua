@@ -24,7 +24,7 @@ function c9911563.initial_effect(c)
 	e3:SetTarget(c9911563.sptg)
 	e3:SetOperation(c9911563.spop)
 	c:RegisterEffect(e3)
-	--search
+	--to hand
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(9911563,0))
 	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION+CATEGORY_SPECIAL_SUMMON)

@@ -1,6 +1,7 @@
 --黄泉-远辞畴昔-
 local cm,m,o=GetID()
 function cm.initial_effect(c)
+	aux.AddCodeList(c,60010029)
 	--
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -30,6 +31,9 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
+function cm.ffil(c)
+	return c:IsCode(60010029) and c:IsFaceup()
+end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if rp==tp then
 		Duel.RegisterFlagEffect(rp,m,RESET_PHASE+PHASE_END,0,1)
@@ -40,9 +44,10 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp,tc)
 	return Duel.GetFlagEffect(tp,m)>=9 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetTurnPlayer()==tp
 end
 function cm.retop1(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-		if #g~=0 then
+		if #g~=0 and Duel.IsExistingMatchingCard(cm.ffil,tp,LOCATION_FZONE,0,1,nil) then
 			Duel.SendtoGrave(g,REASON_EFFECT)
 			if #Duel.GetOperatedGroup()>=5 then
 				Duel.SelectOption(tp,aux.Stringid(m,0))
@@ -52,6 +57,7 @@ function cm.retop1(e,tp,eg,ep,ev,re,r,rp)
 				e:GetHandler():SetCardData(CARDDATA_CODE,m+1) 
 			end
 		end
+	end
 	end
 end
 

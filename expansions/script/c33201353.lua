@@ -18,7 +18,7 @@ local m=33201353
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/c33201350") end,function() require("script/c33201350") end)
 function cm.initial_effect(c)
-	VHisc_CNTdb.the(c,m,0x1000,0x10000)
+	VHisc_CNTdb.the(c,m,0x200+0x1000,0x10000)
 	--destroy replace
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -104,15 +104,20 @@ function cm.posfilter(c)
 	return c:IsPosition(POS_FACEUP_ATTACK) and c:IsCanChangePosition()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and VHisc_CNTdb.spck(e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,nil,nil,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if g:GetCount()>0 and e:GetHandler():IsRelateToEffect(e) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-		local sg=g:Select(tp,1,99,nil)
-		Duel.HintSelection(sg)
-		Duel.ChangePosition(sg,POS_FACEUP_DEFENSE)
+		local c=e:GetHandler()
+		if c:IsRelateToEffect(e) then 
+			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+			local sg=g:Select(tp,1,99,nil)
+			Duel.HintSelection(sg)
+			Duel.ChangePosition(sg,POS_FACEUP_DEFENSE)
+		end
 	end
 end

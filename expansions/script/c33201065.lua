@@ -46,7 +46,7 @@ function s.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,e:GetHandler(),0,0x32b)
 end
 function s.ctop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Damage(1-tp,1000,REASON_EFFECT) then
+	if e:GetHandler():IsRelateToEffect(e) and Duel.Damage(1-tp,1000,REASON_EFFECT) then
 		e:GetHandler():AddCounter(0x32b,2)
 	end
 end
@@ -75,6 +75,13 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RaiseEvent(e:GetHandler(),EVENT_REMOVE_COUNTER+0x32b,e,REASON_EFFECT,tp,tp,ev)
 		tc:AddCounter(0x32b,ct)
 		Duel.BreakEffect()
-		Duel.Recover(tp,ct*500,REASON_EFFECT)
+		Duel.Recover(tp,ct*800,REASON_EFFECT)
+		if Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+			and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+			Duel.HintSelection(g)
+			Duel.Destroy(g,REASON_EFFECT)
+		end
 	end
 end

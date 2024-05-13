@@ -120,9 +120,9 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,sg)
 			local tc=sg:GetFirst()
 	----------------code table add code----------------------
-			if not VHisc_CNTdb.codeck(VHisc_CNTN,tc) then
-				VHisc_CNTN[#VHisc_CNTN+1]=tc:GetOriginalCode()
-			end
+ --		   if not VHisc_CNTdb.codeck(VHisc_CNTN,tc) then
+--			   VHisc_CNTN[#VHisc_CNTN+1]=tc:GetOriginalCode()
+ --		   end
 		end
 	end
 end

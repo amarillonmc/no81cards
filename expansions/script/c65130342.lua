@@ -1,20 +1,19 @@
 --天井伊吕波
-function c65130342.initial_effect(c)
+local s,id,o=GetID()
+function s.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 	--SpecialSummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(65130342,2))
+	e1:SetDescription(aux.Stringid(id,2))
 	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetHintTiming(TIMINGS_CHECK_MONSTER)
-	e1:SetCountLimit(1,65130342)
-	e1:SetCost(c65130342.spcost)
-	e1:SetCondition(c65130342.spcon)
-	e1:SetTarget(c65130342.sptg)
-	e1:SetOperation(c65130342.spop)
+	e1:SetCountLimit(1,id)
+	e1:SetTarget(s.sptg)
+	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
 	--scale
 	local e2=Effect.CreateEffect(c)
@@ -22,104 +21,68 @@ function c65130342.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_LSCALE)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetRange(LOCATION_PZONE)
-	e2:SetCondition(c65130342.sccon)
-	e2:SetValue(c65130342.scvl)
+	e2:SetCondition(s.sccon)
+	e2:SetValue(s.scvl)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
 	e3:SetCode(EFFECT_UPDATE_RSCALE)
-	e3:SetValue(c65130342.scvr)
+	e3:SetValue(s.scvr)
 	c:RegisterEffect(e3)
 end
-function c65130342.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return true
-end
-function c65130342.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToExtra() end
-	Duel.SendtoExtraP(c,1-tp,REASON_COST)
+	if chk==0 then return c:IsAbleToExtra() and (Duel.GetLocationCountFromEx(1-tp,1-tp,nil,TYPE_PENDULUM)>0 or c:IsAbleToGrave()) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,1-tp,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,c,1,1-tp,0)
 end
-function c65130342.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCountFromEx(1-tp,1-tp,nil,TYPE_PENDULUM)>0 or Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,1-tp,LOCATION_EXTRA)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,1-tp,LOCATION_EXTRA)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_MZONE)
-end
-function c65130342.spfilter(c,e,tp)
+function s.spfilter(c,e,tp)
 	return c:IsFaceup() and c:IsType(TYPE_PENDULUM)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
-function c65130342.spop(e,tp,eg,ep,ev,re,r,rp)
+function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local b1=Duel.GetLocationCountFromEx(1-tp,1-tp,nil,c)>0 and c:IsCanBeSpecialSummoned(e,0,1-tp,false,false)
-	local b2=c:IsAbleToGrave()
-	local s=0
-	if b1 and not b2 then
-		s=Duel.SelectOption(1-tp,aux.Stringid(65130342,3))
-	end
-	if not b1 and b2 then
-		s=Duel.SelectOption(1-tp,aux.Stringid(65130342,4))+1
-	end
-	if b1 and b2 then
-		s=Duel.SelectOption(1-tp,aux.Stringid(65130342,3),aux.Stringid(65130342,4))
-	end
-	if not b1 and not b2 then return end
-	if s==0 then
-		if c then
-			Duel.SpecialSummonStep(c,0,1-tp,1-tp,false,false,POS_FACEDOWN_DEFENSE)
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-			e1:SetValue(LOCATION_HAND)
-			c:RegisterEffect(e1)
-			Duel.SpecialSummonComplete()			
+	if Duel.SendtoExtraP(c,1-tp,REASON_COST)>0 and c:IsLocation(LOCATION_EXTRA) then
+		local b1=Duel.GetLocationCountFromEx(1-tp,1-tp,nil,c)>0 and c:IsCanBeSpecialSummoned(e,0,1-tp,false,false,POS_FACEDOWN_DEFENSE)
+		local b2=c:IsAbleToGrave()
+		local op=aux.SelectFromOptions(1-tp,{b1,aux.Stringid(id,3)},{b2,aux.Stringid(id,4)})
+		if op==1 then
+			Duel.SpecialSummon(c,0,1-tp,1-tp,false,false,POS_FACEDOWN_DEFENSE)
 		end
-	end
-	if s==1 then
-		if c and Duel.SendtoGrave(c,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(65130342,0)) then
-			local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil):GetFirst()
-			local val=aux.SequenceToGlobal(tc:GetControler(),LOCATION_MZONE,tc:GetSequence())
-			if Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
-				local e1=Effect.CreateEffect(e:GetHandler())
+		if op==2 then
+			if Duel.SendtoGrave(c,REASON_EFFECT)~=0 then
+				local e1=Effect.CreateEffect(c)
+				e1:SetCategory(CATEGORY_DISABLE_SUMMON)
 				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-				e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
-				e1:SetReset(RESET_PHASE+PHASE_STANDBY)
-				e1:SetLabelObject(tc)
+				e1:SetCode(EVENT_SPSUMMON)
 				e1:SetCountLimit(1)
-				e1:SetOperation(c65130342.retop)
+				e1:SetLabel(c:GetDefense())
+				e1:SetReset(RESET_PHASE+PHASE_END)
+				e1:SetCondition(s.necon)
+				e1:SetOperation(s.neop)
 				Duel.RegisterEffect(e1,tp)
-				local e2=Effect.CreateEffect(e:GetHandler())
-				e2:SetType(EFFECT_TYPE_FIELD)
-				e2:SetCode(EFFECT_DISABLE_FIELD)
-				e2:SetLabelObject(tc)
-				e2:SetCondition(c65130342.discon)
-				e2:SetValue(val)
-				Duel.RegisterEffect(e2,tp)
 			end
 		end
 	end
 end
-function c65130342.retop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ReturnToField(e:GetLabelObject())
+function s.nefilter(c,e)
+	return not (c:GetDefense()>e:GetLabel())
 end
-function c65130342.discon(e,c)
-	if e:GetLabelObject():IsLocation(LOCATION_REMOVED) then
-		return true
-	else
-		e:Reset()
-		return false
-	end
+function s.necon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(s.nefilter,1,nil,e)
 end
-function c65130342.sccon(e)
+function s.neop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,id)
+	Duel.NegateSummon(eg:Filter(s.nefilter,nil,e))
+end
+function s.sccon(e)
 	return Duel.IsExistingMatchingCard(nil,e:GetHandlerPlayer(),LOCATION_PZONE,0,1,e:GetHandler())
 end
-function c65130342.scvl(e)
+function s.scvl(e)
 	local tc=Duel.GetMatchingGroup(nil,e:GetHandlerPlayer(),LOCATION_PZONE,0,e:GetHandler()):GetFirst()
 	if tc then return -tc:GetLeftScale() end
 	return 0
 end
-function c65130342.scvr(e)
+function s.scvr(e)
 	local tc=Duel.GetMatchingGroup(nil,e:GetHandlerPlayer(),LOCATION_PZONE,0,e:GetHandler()):GetFirst()   
 	if tc then return -tc:GetRightScale() end
 	return 0

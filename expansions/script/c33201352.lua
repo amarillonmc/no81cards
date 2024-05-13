@@ -60,50 +60,40 @@ cm.VHisc_CNTreasure=true
 
 --e1
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,2,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,2,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,3,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,3,tp,LOCATION_DECK)
 end
 function cm.tgfilter(c)
 	return VHisc_CNTdb.nck(c) and c:IsAbleToGrave() and not c:IsCode(m)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,2,2,nil)
-	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)>0 then
-		for tc in aux.Next(g) do
-			--to grave
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetCategory(CATEGORY_TOGRAVE)
-			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e1:SetRange(LOCATION_GRAVE)
-			e1:SetCountLimit(1)
-			e1:SetCode(EVENT_PHASE+PHASE_END)
-			e1:SetOperation(cm.tgop)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOGRAVE+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
-			tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD-RESET_TOGRAVE+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
-		end
-	end
+	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,3,3,nil)
 	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKBOTTOM,REASON_EFFECT)
-end
-function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SendtoHand(e:GetHandler(),tp,REASON_EFFECT)
 end
 
 --e0
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local hlp=Duel.GetFlagEffect(tp,m)*1200+1200
+	if chk==0 then return VHisc_CNTdb.spck(e,tp) end
+	local hlp=1200
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(hlp)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,hlp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Recover(p,d,REASON_EFFECT)
-end
-function cm.acop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetLabelObject()==re and e:GetHandler():GetFlagEffect(1)>0 then
-		Duel.RegisterFlagEffect(tp,m,nil,EFFECT_FLAG_OATH,1)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then 
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		Duel.Recover(p,d,REASON_EFFECT)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
+		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e2:SetTargetRange(1,0)
+		e2:SetValue(HALF_DAMAGE)
+		e2:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+		Duel.RegisterEffect(e2,tp)
 	end
 end

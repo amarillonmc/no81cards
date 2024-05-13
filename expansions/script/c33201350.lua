@@ -24,6 +24,20 @@ function VHisc_CNTdb.spck(e,tp)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
+-------------grave act limit------------------
+function VHisc_CNTdb.glm(e,tp)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+		e1:SetTargetRange(1,0)
+		e1:SetValue(VHisc_CNTdb.aclimit)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+end
+function VHisc_CNTdb.aclimit(e,re,tp)
+	return re:GetActivateLocation()==LOCATION_GRAVE
+end
 
 -------------code check------------------
 function VHisc_CNTdb.nck(c)
@@ -61,7 +75,7 @@ local m=33201350
 local cm=_G["c"..m]
 if not cm then return end
 function cm.initial_effect(c)
-	VHisc_CNTdb.the(c,m,0x200,0x10000)
+	VHisc_CNTdb.the(c,m,0x1+0x200,0x10000)
 	--deckes
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -93,7 +107,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.ShuffleDeck(tp)
 	local desg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
-	if tgc==5 and desg:GetCount()>0 then
+	if tgc>4 and desg:GetCount()>0 then
 		Duel.Destroy(desg,REASON_EFFECT)
 	end
 end
@@ -107,31 +121,12 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	end
-	--atk up
-	local e12=Effect.CreateEffect(e:GetHandler())
-	e12:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e12:SetCode(EVENT_PHASE+PHASE_END)
-	e12:SetLabel(500)
-	e12:SetCountLimit(1)
-	e12:SetOperation(cm.turnop)
-	Duel.RegisterEffect(e12,tp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetLabelObject(e12)
-	e1:SetValue(cm.atkval)
-	Duel.RegisterEffect(e1,tp)
-	e12:SetLabelObject(e1)
-end
-function cm.atkval(e,c)
-	return e:GetLabelObject():GetLabel()
-end
-function cm.turnop(e,tp,eg,ep,ev,re,r,rp)
-	e:SetLabel(e:GetLabel()-100)
-	if e:GetLabel()<=0 then 
-		e:GetLabelObject():Reset()
-		e:Reset()
+		local dg=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		if dg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local sg=dg:Select(tp,1,1,nil)
+			Duel.HintSelection(sg)
+			Duel.Destroy(sg,REASON_EFFECT)
+		end
 	end
 end

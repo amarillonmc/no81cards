@@ -1,6 +1,7 @@
 --花火-焰锦游鱼-
 local cm,m,o=GetID()
 function cm.initial_effect(c)
+	aux.AddCodeList(c,60010029)
 	--material
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(31755044,0))

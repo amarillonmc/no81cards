@@ -64,6 +64,6 @@ function s.reop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,3))
 		local rect=Duel.AnnounceNumber(tp,table.unpack(t))
 		Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,rect,REASON_EFFECT)
-		Duel.Recover(tp,rect*500,REASON_EFFECT)
+		Duel.Recover(tp,rect*800,REASON_EFFECT)
 	end
 end

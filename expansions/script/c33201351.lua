@@ -18,7 +18,7 @@ local m=33201351
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/c33201350") end,function() require("script/c33201350") end)
 function cm.initial_effect(c)
-	VHisc_CNTdb.the(c,m,0x200,0x10000)
+	VHisc_CNTdb.the(c,m,0x40+0x200,0x10000)
 	--tohand
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_TODECK)
@@ -64,15 +64,19 @@ end
 
 --e0
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return VHisc_CNTdb.spck(e,tp) end
+	if chk==0 then return VHisc_CNTdb.spck(e,tp) and Duel.IsPlayerCanDiscardDeck(tp,3) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,3)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) and Duel.IsPlayerCanDiscardDeck(tp,1) then
+		Duel.BreakEffect()
+		Duel.DiscardDeck(tp,3,REASON_EFFECT)
+		VHisc_CNTdb.glm(e,tp)
 	end
 end
+
 
 --e3
 function cm.destg(e,c)

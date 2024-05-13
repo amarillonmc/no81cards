@@ -21,7 +21,7 @@ function cm.spfilter(c,e,tp)
 		and Duel.GetLocationCountFromEx(tp,tp,nil,c,0x60)>0
 end
 function cm.fit(c)
-return c:IsFaceup() and c:IsSetCard(0x9d3)
+return c:IsFaceup() and c:IsSetCard(0x9d3) 
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsSetCard(0x9d3) and chkc:IsControler(tp) and chkc:IsFaceup() end

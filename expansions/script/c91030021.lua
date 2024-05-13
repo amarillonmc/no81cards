@@ -81,7 +81,8 @@ function cm.matfilter(c)
 	return c:IsLinkSetCard(0x9d3) and c:IsLinkAttribute(ATTRIBUTE_ALL&~ATTRIBUTE_FIRE)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonLocation(LOCATION_EXTRA) and e:GetHandler():GetFlagEffect(91030021)~=0
+	local ph=Duel.GetCurrentPhase()
+	return e:GetHandler():IsSummonLocation(LOCATION_EXTRA) and e:GetHandler():GetFlagEffect(91030021)~=0 and ((ph>PHASE_BATTLE_START and ph<PHASE_BATTLE) or (ph==PHASE_END)) and Duel.GetTurnPlayer()==tp
 end
 function cm.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)

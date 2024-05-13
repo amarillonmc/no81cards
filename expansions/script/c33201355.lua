@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_TOGRAVE)
+	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e2:SetCode(EVENT_CUSTOM+33201355)
@@ -58,8 +58,9 @@ function cm.tgfilter(c)
 	return VHisc_CNTdb.nck(c) and c:IsAbleToGrave() and not c:IsCode(m)
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():IsAbleToGrave() end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():IsAbleToGrave() and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,2,tp,LOCATION_DECK+LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -67,6 +68,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		g:AddCard(e:GetHandler())
 		Duel.SendtoGrave(g,REASON_EFFECT)
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
 
@@ -86,13 +88,13 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.HintSelection(g)
 	local tc=g:GetFirst()
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_LEAVE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetLabel(tp)
-	e1:SetOperation(cm.lfop)
-	tc:RegisterEffect(e1,true)
+--  local e1=Effect.CreateEffect(e:GetHandler())
+--  e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+--  e1:SetCode(EVENT_LEAVE_FIELD)
+--  e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+--  e1:SetLabel(tp)
+--  e1:SetOperation(cm.lfop)
+--  tc:RegisterEffect(e1,true)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_DISABLE)
@@ -105,9 +107,9 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 	tc:RegisterEffect(e3)
 ----------------code table add code----------------------
-	if not VHisc_CNTdb.codeck(VHisc_CNTN,tc) then
-		VHisc_CNTN[#VHisc_CNTN+1]=tc:GetOriginalCode()
-	end
+--  if not VHisc_CNTdb.codeck(VHisc_CNTN,tc) then
+--	  VHisc_CNTN[#VHisc_CNTN+1]=tc:GetOriginalCode()
+--  end
 end
 function cm.lfop(e,tp,eg,ep,ev,re,r,rp)
 	local tdp=e:GetLabel()

@@ -3,7 +3,7 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,s.matfilter,5,true)
+	aux.AddFusionProcFunRep(c,s.matfilter,3,true)
 	aux.AddContactFusionProcedure(c,s.matfilter2,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_EXTRA,0,aux.tdcfop(c))
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
@@ -12,24 +12,13 @@ function s.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(s.splimit)
 	c:RegisterEffect(e1)
-	--effect gain
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(65130321,0))
-	e2:SetCategory(CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_BATTLE_START)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(s.retcon)
-	e2:SetCost(s.retcost)
-	e2:SetTarget(s.rettg)
-	e2:SetOperation(s.retop)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetTarget(s.eftg)
-	e3:SetLabelObject(e2)
-	c:RegisterEffect(e3)
+	--attack cost
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_ATTACK_COST)
+	e1:SetCost(s.atcost)
+	e1:SetOperation(s.atop)
+	c:RegisterEffect(e1)
 end
 function s.matfilter(c)
 	return c:IsAttack(878) and c:IsDefense(1157)
@@ -43,34 +32,38 @@ end
 function s.eftg(e,c)
 	return c:GetBaseAttack()==878
 end
-function s.retcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local bc=c:GetBattleTarget()
-	return bc and c:IsRelateToBattle() and bc:IsRelateToBattle()
+function s.tdfilter(c,atk)
+	return c:IsAbleToDeckAsCost() and c:IsAttack(atk) and c:IsFaceup() and c:GetOriginalType()&TYPE_MONSTER>0
 end
-function s.retcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToHandAsCost() or c:IsAbleToExtraAsCost() end
-	if c:IsAbleToHandAsCost() then Duel.SendtoHand(c,nil,REASON_COST)
-	elseif c:IsAbleToExtraAsCost() then Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST) end
+function s.atcost(e,c,tp)
+	return Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil,c:GetAttack())
 end
-function s.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.atop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if chk==0 then return true end  
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler():GetBattleTarget(),1,0,0)
-end
-function s.spfilter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function s.retop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local bc=c:GetBattleTarget()
-	if bc:IsRelateToBattle() then   
-		if Duel.SendtoHand(bc,nil,REASON_EFFECT)>0 and bc:IsLocation(LOCATION_HAND) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(65130321,1))then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local tg=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-			Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
+	local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil,c:GetAttack())
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_ACTION)
+	local tg=Duel.GetOperatedGroup()
+	local sg=Group.CreateGroup()
+	for tc in aux.Next(tg) do
+		if not sg:IsExists(Card.IsCode,1,nil,tc:GetCode()) then
+			sg:AddCard(tc)
+			--damage change
+			local e1=Effect.CreateEffect(c)
+			e1:SetDescription(aux.Stringid(id,0))
+			e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+			e1:SetCode(EVENT_PRE_BATTLE_DAMAGE)
+			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+			e1:SetLabel(tc:GetCode())
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			e1:SetOperation(s.damop)
+			c:RegisterEffect(e1)
 		end
 	end
+end
+function s.damcon(e,tp,eg,ep,ev,re,r,rp)
+	return ep~=tp
+end
+function s.damop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,e:GetLabel())
+	Duel.Damage(1-tp,ev,REASON_EFFECT)
 end

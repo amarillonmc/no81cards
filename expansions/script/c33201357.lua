@@ -18,7 +18,7 @@ local m=33201357
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/c33201350") end,function() require("script/c33201350") end)
 function cm.initial_effect(c)
-	VHisc_CNTdb.the(c,m,0x200+0x4,0x10000)
+	VHisc_CNTdb.the(c,m,0x200+0x40,0x10000)
 	--Equip
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -116,11 +116,14 @@ end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return VHisc_CNTdb.spck(e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,3)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and Duel.IsPlayerCanDiscardDeck(tp,1) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		Duel.DiscardDeck(tp,3,REASON_EFFECT)
+		VHisc_CNTdb.glm(e,tp)
 		local g=Duel.GetMatchingGroup(cm.ffilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 		if g:GetClassCount(Card.GetCode)>=4 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.BreakEffect()

@@ -1,10 +1,12 @@
 --米莎-美梦华侍-
 local cm,m,o=GetID()
-function cm.initial_effect(c)
+function cm.initial_effect(c)   
+	aux.AddCodeList(c,60010029)
 	--special summon  
 	local e1=Effect.CreateEffect(c)  
 	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)  
-	e1:SetType(EFFECT_TYPE_IGNITION)  
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,m)   
 	e1:SetCondition(cm.con)

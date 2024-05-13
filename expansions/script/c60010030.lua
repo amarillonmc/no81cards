@@ -1,6 +1,7 @@
 --黑天鹅-镜映婆娑-
 local cm,m,o=GetID()
 function cm.initial_effect(c)
+	aux.AddCodeList(c,60010029)
 	--spsummon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
@@ -25,11 +26,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.spcfilter(c,tp)
-	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)	   
+	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD) 
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()
-	--Debug.Message(eg:IsExists(cm.spcfilter,1,nil,tp))
 	return eg:IsExists(cm.spcfilter,1,nil,tp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

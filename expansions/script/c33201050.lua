@@ -81,14 +81,14 @@ function s.filter(c,e,tp)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and s.filter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,3,REASON_EFFECT) and Duel.IsExistingTarget(s.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,1,REASON_EFFECT) and Duel.IsExistingTarget(s.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,s.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and aux.NecroValleyFilter()(tc) and Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,3,REASON_EFFECT) and Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,3,REASON_EFFECT) then
+	if tc:IsRelateToEffect(e) and aux.NecroValleyFilter()(tc) and Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,1,REASON_EFFECT) and Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,1,REASON_EFFECT) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
@@ -134,9 +134,9 @@ end
 function XY_VHisc.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,4,REASON_COST) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,2,REASON_COST) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function XY_VHisc.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,4,REASON_COST) end
-	Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,4,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,2,REASON_COST) end
+	Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x32b,2,REASON_COST)
 end
