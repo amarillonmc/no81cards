@@ -143,7 +143,11 @@ function c11500100.ovop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,11500100) 
 	Duel.Hint(HINT_MESSAGE,0,aux.Stringid(11500100,2))
 	Duel.Hint(HINT_MESSAGE,1,aux.Stringid(11500100,2))
-	Duel.Overlay(c,bc) 
+		local og=bc:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
+		Duel.Overlay(c,bc)
 end 
 function c11500100.xovtg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local g=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,e:GetHandler()) 

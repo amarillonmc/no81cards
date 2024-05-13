@@ -25,14 +25,20 @@ function c11560702.initial_effect(c)
 	e1:SetTargetRange(0,1)
 	e1:SetValue(1)
 	e1:SetCondition(c11560702.actcon)
-	c:RegisterEffect(e1) 
-	local e1=Effect.CreateEffect(c) 
-	e1:SetType(EFFECT_TYPE_FIELD) 
-	e1:SetCode(EFFECT_DISABLE) 
-	e1:SetRange(LOCATION_MZONE) 
-	e1:SetTargetRange(0,LOCATION_ONFIELD) 
-	e1:SetCondition(c11560702.actcon) 
-	c:RegisterEffect(e1) 
+	c:RegisterEffect(e1)
+
+	--Disable
+	local e13=Effect.CreateEffect(c)
+	e13:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e13:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e13:SetRange(LOCATION_MZONE)
+	e13:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e13:SetCondition(c11560702.discon)
+	e13:SetOperation(c11560702.disop)
+	c:RegisterEffect(e13)
+	local e14=e13:Clone()
+	e14:SetCode(EVENT_BE_BATTLE_TARGET)
+	c:RegisterEffect(e14)
 	--double 
 	--local e2=Effect.CreateEffect(c)
 	--e2:SetCategory(CATEGORY_ATKCHANGE)
@@ -154,6 +160,37 @@ function c11560702.desop(e,tp,eg,ep,ev,re,r,rp)
 end 
 
 
+function c11560702.ddcon(e,c)
+	return Duel.GetFlagEffect(tp,11560702)>0
+end
+function c11560702.discon(e,tp,eg,ep,ev,re,r,rp)
+	local c=Duel.GetAttackTarget()
+	if not c then return false end
+	if c:IsControler(1-tp) then c=Duel.GetAttacker() end
+	return c and c==e:GetHandler()
+end
+function c11560702.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+
+	local g=Duel.GetMatchingGroup(aux.NegateMonsterFilter,tp,0,LOCATION_ONFIELD,c)
+	local tc=g:GetFirst()
+	while tc do
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
+		tc:RegisterEffect(e1)
+		if tc:IsType(TYPE_TRAPMONSTER) then
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+			tc:RegisterEffect(e2)
+		end
+		tc=g:GetNext()
+	end
+
+end
 
 
 
