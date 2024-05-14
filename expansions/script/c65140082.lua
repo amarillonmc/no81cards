@@ -36,7 +36,7 @@ function s.initial_effect(c)
 end
 function s.regcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil):GetMaxGroup(Card.GetAttack)
-	return Group.__band(g,eg):GetCount()>0
+	return g and eg and Group.__band(g,eg):GetCount()>0
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(eg,EVENT_CUSTOM+id,re,r,rp,ep,ev)
