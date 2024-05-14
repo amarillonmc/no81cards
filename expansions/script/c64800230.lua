@@ -50,7 +50,7 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 then
 			local tgc=g:GetFirst()
 			Duel.HintSelection(g)
-			if Duel.SendtoGrave(tgc,REASON_EFFECT) and rc:IsSSetable(true) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0 and not tgc:IsForbidden() and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+			if Duel.SendtoGrave(tgc,REASON_EFFECT) and tgc:IsSSetable(true) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0 and not tgc:IsForbidden() and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 				Duel.BreakEffect()
 				if tgc:IsType(TYPE_CONTINUOUS) then
 					Duel.MoveToField(tgc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)

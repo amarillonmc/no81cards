@@ -4,6 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.TRUE,2,99,c11579812.lcheck)
+	aux.AddLinkProcedure(c,aux.TRUE,2,99,nil)
 	c:EnableReviveLimit()
 	--immune
 	local e1=Effect.CreateEffect(c)
@@ -104,12 +105,12 @@ function c11579812.repop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c11579812.damval1(e,re,val,r,rp,rc)
 	local c=e:GetHandler()
+	Duel.RegisterFlagEffect(tp,11580812,RESET_PHASE+PHASE_END,0,1)
 	if Duel.GetFlagEffect(tp,11579812)~=0 then
 		Duel.ResetFlagEffect(tp,11579812)
 		return val*2
 	end
 	return val
-	Duel.RegisterFlagEffect(tp,11580812,RESET_PHASE+PHASE_END,0,1)
 end
 
    
