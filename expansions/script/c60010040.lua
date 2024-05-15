@@ -1,12 +1,12 @@
 --白银之城的纤茶壶
 local cm,m,o=GetID()
 function cm.initial_effect(c)
-	
+	--position
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_POSITION)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_HAND)  
+	e1:SetRange(LOCATION_HAND)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1,m+10000000)
 	e1:SetCost(cm.cost)
@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--to hand or spsummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION+CATEGORY_GRAVE_SPSUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_TO_GRAVE)
@@ -26,19 +26,10 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.tstg)
 	e2:SetOperation(cm.tsop)
 	c:RegisterEffect(e2)
-	--to hand
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,2))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION+CATEGORY_GRAVE_SPSUMMON)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_LEAVE_FIELD)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,m)
-	e2:SetCondition(cm.thcon)
-	e2:SetTarget(cm.tstg)
-	e2:SetOperation(cm.tsop)
-	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_LEAVE_FIELD)
+	e3:SetCondition(cm.thcon)
+	c:RegisterEffect(e3)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -49,15 +40,17 @@ function cm.stfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x17e) and c:IsSSetable()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.stfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.stfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil)
+		and Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local gg=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil)
-	if gg:GetFirst():IsFaceup() and gg:GetFirst():IsRelateToEffect(e) then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+	local gg=Duel.SelectMatchingCard(tp,Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	if #gg>0 then
+		Duel.HintSelection(gg)
 		if Duel.ChangePosition(gg,POS_FACEDOWN_DEFENSE)~=0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-			local g=Duel.SelectMatchingCard(tp,cm.stfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)
+			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.stfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)
 			if g:GetCount()>0 then
 				Duel.SSet(tp,g:GetFirst())
 			end

@@ -2,24 +2,13 @@ local m=53728003
 local cm=_G["c"..m]
 cm.name="征啼鸟 猎人"
 function cm.initial_effect(c)
-	aux.EnableUnionAttribute(c,function(e,c)return c:IsRace(RACE_MACHINE) or e:GetHandler():GetEquipTarget()==c end)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetCategory(CATEGORY_EQUIP)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetTarget(cm.eqtg)
-	e1:SetOperation(cm.eqop)
-	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetTarget(cm.sptg)
-	e2:SetOperation(cm.spop)
-	c:RegisterEffect(e2)
+	local f1=aux.UnionEquipTarget
+	local f2=aux.UnionUnequipTarget
+	aux.UnionEquipTarget=cm.UnionEquipTarget
+	aux.UnionUnequipTarget=cm.UnionUnequipTarget
+	aux.EnableUnionAttribute(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE))
+	aux.UnionEquipTarget=f1
+	aux.UnionUnequipTarget=f2
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,2))
 	e3:SetCategory(CATEGORY_DESTROY)
@@ -31,31 +20,24 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.desop)
 	c:RegisterEffect(e3)
 end
-function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if eg then
-		Debug.Message(114)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_CHAIN_END)
-		e1:SetOperation(cm.trgop)
-		Duel.RegisterEffect(e1,e:GetHandler():GetControler())
-	end
+function cm.UnionEquipTarget(equip_filter)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+				local c=e:GetHandler()
+				if chkc then return chkc:IsLocation(LOCATION_MZONE) and equip_filter(chkc,tp) end
+				if chk==0 then return c:GetFlagEffect(FLAG_ID_UNION)<2 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+					and Duel.IsExistingTarget(equip_filter,tp,LOCATION_MZONE,0,1,c,tp) end
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+				local g=Duel.SelectTarget(tp,equip_filter,tp,LOCATION_MZONE,0,1,1,c,tp)
+				Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,0,0)
+				c:RegisterFlagEffect(FLAG_ID_UNION,RESET_EVENT+0x7e0000+RESET_PHASE+PHASE_END,0,1)
+			end
 end
-function cm.trgop(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message(114)
-	Duel.RaiseSingleEvent(e:GetHandler(),EVENT_CUSTOM+53728000,re,r,rp,0,0)
-end
-function cm.filter(c)
-	local ct1,ct2=c:GetUnionCount()
-	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and ct2==0
-end
-function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.filter(chkc) end
-	if chk==0 then return e:GetHandler():GetFlagEffect(m)<2 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,0,1,1,e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,0,0)
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0x7e0000+RESET_PHASE+PHASE_END,0,1)
+function cm.UnionUnequipTarget(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(FLAG_ID_UNION)<2 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and c:GetEquipTarget() and c:IsCanBeSpecialSummoned(e,0,tp,true,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	c:RegisterFlagEffect(FLAG_ID_UNION,RESET_EVENT+0x7e0000+RESET_PHASE+PHASE_END,0,1)
 end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
