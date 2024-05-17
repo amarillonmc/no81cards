@@ -89,9 +89,10 @@ function c9911018.thfilter(c)
 end
 function c9911018.atttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	if chk==0 then return c:IsFaceup() and not c:IsAttribute(ATTRIBUTE_EARTH)
 		and Duel.IsExistingMatchingCard(c9911018.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9911018.attop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
