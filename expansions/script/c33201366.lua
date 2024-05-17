@@ -33,6 +33,9 @@ function cm.initial_effect(c)
 end
 cm.VHisc_CNTreasure=true
 
+function cm.matfilter(c)
+	return VHisc_CNTdb.nck(c) and not c:IsLinkCode(m)
+end
 --e2
 function cm.thfilter(c)
 	return VHisc_CNTdb.nck(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

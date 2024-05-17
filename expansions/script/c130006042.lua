@@ -120,13 +120,13 @@ end
 function c130006042.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep==tp and bit.band(r,REASON_BATTLE)~=0
 end
-function c130006042.thfilter(c)
+function c130006042.thfilter(c,tp)
 	return c:IsFaceupEx() and Duel.IsExistingMatchingCard(c130006042.thfilter2,tp,LOCATION_GRAVE+LOCATION_DECK,LOCATION_GRAVE,2,nil,c:GetCode())
 end
 function c130006042.thfilter2(c,code)
 	return c:IsAbleToHand() and c:IsCode(code)
 end
-function c130006042.thfilter3(c,codes)
+function c130006042.thfilter3(c,tp,codes)
 	return c:IsAbleToHand() and Duel.IsExistingMatchingCard(c130006042.thfilter2,tp,LOCATION_GRAVE+LOCATION_DECK,LOCATION_GRAVE,2,nil,c:GetCode()) and c:IsCode(table.unpack(codes))
 end
 function c130006042.gcheck(g,e,tp)
@@ -134,7 +134,7 @@ function c130006042.gcheck(g,e,tp)
 end
 function c130006042.drop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Recover(tp,2000,REASON_EFFECT)~=0 then
-	local tg=Duel.GetMatchingGroup(c130006042.thfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,nil)
+	local tg=Duel.GetMatchingGroup(c130006042.thfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,nil,tp)
 	local ag=Group.CreateGroup()
 	local codes={}
 	for c in aux.Next(tg) do
@@ -144,7 +144,7 @@ function c130006042.drop(e,tp,eg,ep,ev,re,r,rp)
 			table.insert(codes,code)
 		end
 	end
-	local tgg=Duel.GetMatchingGroup(c130006042.thfilter3,tp,LOCATION_GRAVE+LOCATION_DECK,0,nil,codes)
+	local tgg=Duel.GetMatchingGroup(c130006042.thfilter3,tp,LOCATION_GRAVE+LOCATION_DECK,0,nil,tp,codes)
 	if tgg:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=tgg:SelectSubGroup(tp,c130006042.gcheck,false,2,2,e,tp)
