@@ -5,7 +5,7 @@ function c67200302.initial_effect(c)
 	--spsummon and to deck
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(67200302,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_LEAVE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -29,7 +29,6 @@ function c67200302.initial_effect(c)
 	e2:SetOperation(c67200302.ctop)
 	c:RegisterEffect(e2)  
 end
-
 --
 function c67200302.spfilter(c,tp)
 	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD) and (c:IsSetCard(0x675) or c:IsSetCard(0x3674)) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
@@ -41,10 +40,17 @@ function c67200302.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
+function c67200302.setfilter(c)
+	return (c:IsSetCard(0x675) or c:IsSetCard(0x3674)) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+end
 function c67200302.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		Duel.SendtoDeck(eg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and and Duel.IsExistingMatchingCard(c67200302.setfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(67200302,2)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local g=Duel.SelectMatchingCard(tp,c67200302.setfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,2,nil)
+		if g:GetCount()>0 then
+			Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+		end  
 	end
 end
 --
@@ -55,14 +61,11 @@ function c67200302.ctcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
-function c67200302.filter(c,tp)
-	return c:IsFaceup()
-end
 function c67200302.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(1-tp) and c67200302.filter(chkc,tp) end
-	if chk==0 then return Duel.IsExistingTarget(c67200302.filter,tp,0,LOCATION_ONFIELD,1,nil,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
-	local g=Duel.SelectTarget(tp,c67200302.filter,tp,0,LOCATION_ONFIELD,1,1,nil,tp)
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(1-tp) end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c67200302.ctop(e,tp,eg,ep,ev,re,r,rp)

@@ -4,7 +4,6 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.TRUE,2,99,c11579812.lcheck)
-	aux.AddLinkProcedure(c,aux.TRUE,2,99,nil)
 	c:EnableReviveLimit()
 	--immune
 	local e1=Effect.CreateEffect(c)
@@ -65,7 +64,7 @@ function c11579812.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		local aaa=math.ceil(math.abs(Duel.GetLP(tp)-Duel.GetLP(1-tp))/2)
-		if tc:GetAttack()<aaa or Duel.GetFlagEffect(tp,11580812)>1 then
+		if tc:GetAttack()<aaa and tc:GetFlagEffect(11580812)>1 then
 		Duel.Remove(tc,POS_FACEDOWN,REASON_RULE,1-tp)
 		else 
 		if Duel.Destroy(tc,REASON_EFFECT)~=0 then
@@ -91,6 +90,7 @@ function c11579812.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local dam=0
 	while tc do
 		dam=dam+tc:GetBaseAttack()
+		tc:RegisterFlagEffect(11580812,RESET_PHASE+PHASE_END,0,1)
 		tc=tg:GetNext()
 	end
 		e:SetLabel(dam)
@@ -105,7 +105,6 @@ function c11579812.repop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c11579812.damval1(e,re,val,r,rp,rc)
 	local c=e:GetHandler()
-	Duel.RegisterFlagEffect(tp,11580812,RESET_PHASE+PHASE_END,0,1)
 	if Duel.GetFlagEffect(tp,11579812)~=0 then
 		Duel.ResetFlagEffect(tp,11579812)
 		return val*2

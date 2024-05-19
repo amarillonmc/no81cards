@@ -7,10 +7,32 @@ function c9911021.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCountLimit(1,9911021+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c9911021.target)
 	e1:SetOperation(c9911021.activate)
 	c:RegisterEffect(e1)
+	--act in set turn
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetCondition(c9911021.actcon)
+	c:RegisterEffect(e2)
+	if not c9911021.global_check then
+		c9911021.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SSET)
+		ge1:SetOperation(c9911021.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function c9911021.checkop(e,tp,eg,ep,ev,re,r,rp)
+	if not re or not re:GetHandler():IsSetCard(0x6954) then return end
+	local tc=eg:GetFirst()
+	while tc do
+		tc:RegisterFlagEffect(9911017,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		tc=eg:GetNext()
+	end
 end
 function c9911021.filter(c,e,tp)
 	return c:IsFaceup() and c:GetLevel()>1 and c:IsReleasableByEffect()
@@ -53,4 +75,7 @@ function c9911021.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ChangePosition(c,POS_FACEDOWN)
 		Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 	end
+end
+function c9911021.actcon(e)
+	return e:GetHandler():GetFlagEffect(9911017)>0
 end

@@ -2,7 +2,7 @@
 local m=11561046
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	aux.AddCodeList(c,11561046)
+	aux.AddCodeList(c,6007213,32491822,69890967)
 	aux.EnableChangeCode(c,11561046,LOCATION_MZONE+LOCATION_GRAVE)
 	--to hand
 	local e1=Effect.CreateEffect(c)

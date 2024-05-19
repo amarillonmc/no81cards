@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x1)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_ZOMBIE+RACE_FIEND),2,4)
+	aux.AddLinkProcedure(c,nil,2,4,c11561048.lcheck)
 	c:EnableReviveLimit()
 	--count
 	local e1=Effect.CreateEffect(c)
@@ -43,6 +43,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	
 	
+end
+function c11561048.lcheck(g,lc)
+	return g:IsExists(Card.IsLinkRace,1,nil,RACE_ZOMBIE+RACE_FIEND)
 end
 function c11561048.decost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1,3,REASON_COST) end

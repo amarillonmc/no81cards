@@ -9,7 +9,7 @@ function c28384498.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetHintTiming(0,TIMING_MAIN_END)
-	e1:SetCountLimit(1,28384498)
+	e1:SetCountLimit(1)
 	e1:SetCondition(c28384498.condition)
 	e1:SetTarget(c28384498.target)
 	e1:SetOperation(c28384498.operation)
@@ -19,7 +19,7 @@ function c28384498.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,38384498)
+	e2:SetCountLimit(1)
 	e2:SetCondition(c28384498.nccon)
 	e2:SetOperation(c28384498.ncop)
 	c:RegisterEffect(e2)
@@ -38,25 +38,15 @@ function c28384498.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
 	local b2=Duel.IsExistingTarget(c28384498.filter,tp,LOCATION_GRAVE,0,1,nil)
 	if chk==0 then return b1 or b2 end
-	local off=1
-	local ops,opval={},{}
-	if b1 then
-		ops[off]=aux.Stringid(28384498,0)
-		opval[off]=0
-		off=off+1
-	end
-	if b2 then
-		ops[off]=aux.Stringid(28384498,1)
-		opval[off]=1
-		off=off+1
-	end
-	local op=Duel.SelectOption(tp,table.unpack(ops))+1
-	local sel=opval[op]
-	e:SetLabel(sel)
-	if sel==0 then
+	local op=aux.SelectFromOptions(tp,
+		{b1,aux.Stringid(28384498,0)},
+		{b2,aux.Stringid(28384498,1)})
+	e:SetLabel(op)
+	if sel==1 then
 		e:SetCategory(CATEGORY_DESTROY+CATEGORY_REMOVE)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,b1,1,0,0)
 	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local tc=Duel.SelectTarget(tp,c28384498.filter,tp,LOCATION_GRAVE,0,1,1,nil)
 		e:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_SEARCH)
 		Duel.SetOperationInfo(0,CATEGORY_TODECK,tc,1,tp,LOCATION_GRAVE)
@@ -90,22 +80,9 @@ function c28384498.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local g=Duel.SelectMatchingCard(tp,c28384498.thfilter,tp,LOCATION_DECK,0,1,1,nil,lv,attr)
-			if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
+			if #g>0 then
+				Duel.SendtoHand(g,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,g)
-			elseif Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingTarget(c28384498.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28384498,2)) then
-				Duel.BreakEffect()
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-				local sc=Duel.SelectMatchingCard(tp,c28384498.setfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-				if sc then
-					Duel.SSet(tp,sc)
-				end
-			end
-		elseif Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingTarget(c28384498.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28384498,2)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-			local sc=Duel.SelectMatchingCard(tp,c28384498.setfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-			if sc then
-				Duel.SSet(tp,sc)
 			end
 		end
 	end

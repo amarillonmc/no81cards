@@ -1,7 +1,7 @@
 --闪耀的放课后 五色的笑颜
 function c28361833.initial_effect(c)
 	--Synchro summon
-	aux.AddSynchroMixProcedure(c,aux.Tuner(Card.IsSetCard,0x283),aux.NonTuner(Card.IsSetCard,0x283),c28361833.mfilter,c28361833.mfilter,0,99)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x283),aux.FilterBoolFunction(Card.IsSetCard,0x283),2)
 	c:EnableReviveLimit()
 	--synchro level
 	local ge0=Effect.CreateEffect(c)
@@ -23,7 +23,7 @@ function c28361833.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetValue(c28361833.synlimit)
+	e1:SetValue(aux.synlimit)
 	c:RegisterEffect(e1)
 	--hokura power
 	local e2=Effect.CreateEffect(c)
@@ -40,11 +40,10 @@ function c28361833.initial_effect(c)
 	c:RegisterEffect(e3)
 	--to hand
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(28361833,4))
 	e4:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,28361833)
+	e4:SetCountLimit(1)
 	e4:SetTarget(c28361833.thtg)
 	e4:SetOperation(c28361833.thop)
 	c:RegisterEffect(e4)
@@ -59,14 +58,8 @@ function c28361833.synclv(e,c)
 		return lv
 	end
 end
-function c28361833.mfilter(c,syncard)
-	return (c:IsTuner(syncard) or c:IsNotTuner(syncard)) and c:IsSetCard(0x283)
-end
-function c28361833.synlimit(e,se,sp,st)
-	return st&SUMMON_TYPE_SYNCHRO==SUMMON_TYPE_SYNCHRO and not se
-end
 function c28361833.valcheck(e,c)
-	local val=c:GetMaterial():GetClassCount(Card.GetAttribute)
+	local val=c:GetMaterial():GetClassCount(Card.GetOriginalAttribute)
 	e:SetLabel(val)
 end
 function c28361833.regcon(e,tp,eg,ep,ev,re,r,rp)
@@ -148,28 +141,23 @@ end
 function c28361833.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x283)
 end
-function c28361833.dthfilter(c)
+function c28361833.thfilter(c)
 	return c:IsSetCard(0x283) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
-function c28361833.gthfilter(c)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
-end
 function c28361833.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28361833.dthfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c28361833.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c28361833.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c28361833.cfilter,tp,LOCATION_MZONE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local dtg=Duel.SelectMatchingCard(tp,c28361833.dthfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if #dtg>0 then
-		Duel.SendtoHand(dtg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,dtg)
-		if g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(c28361833.gthfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28361833,5)) then
+	local tg=Duel.SelectMatchingCard(tp,c28361833.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if #tg>0 then
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
+		if g:GetClassCount(Card.GetAttribute)>=3 and Duel.SelectYesNo(tp,aux.Stringid(28361833,4)) then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local gtg=Duel.SelectMatchingCard(tp,c28361833.gthfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-			Duel.SendtoHand(gtg,nil,REASON_EFFECT)
+			Duel.Recover(tp,500,REASON_EFFECT)
 		end
 	end
 end

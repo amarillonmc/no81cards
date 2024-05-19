@@ -1,10 +1,8 @@
 --轨道清理员 寰界星澄号
 function c9910667.initial_effect(c)
-	local g=Group.CreateGroup()
-	g:KeepAlive()
-	--xyz summon
-	aux.AddXyzProcedure(c,nil,5,2)
 	c:EnableReviveLimit()
+	--xyz summon
+	aux.AddXyzProcedureLevelFree(c,c9910667.mfilter,aux.TRUE,2,2)
 	--remove onfield
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910667,0))
@@ -13,84 +11,94 @@ function c9910667.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCost(c9910667.rmcost)
-	e1:SetTarget(c9910667.rmtg1)
-	e1:SetOperation(c9910667.rmop1)
-	e1:SetLabelObject(g)
+	e1:SetTarget(c9910667.rmtg)
+	e1:SetOperation(c9910667.rmop)
 	c:RegisterEffect(e1)
-	--remove grave
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(9910667,1))
-	e3:SetCategory(CATEGORY_REMOVE)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
-	e3:SetTarget(c9910667.rmtg2)
-	e3:SetOperation(c9910667.rmop2)
-	e3:SetLabelObject(g)
-	c:RegisterEffect(e3)
+	--to hand/remove
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9910667,1))
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_REMOVE+CATEGORY_GRAVE_ACTION)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1)
+	e2:SetTarget(c9910667.thtg)
+	e2:SetOperation(c9910667.thop)
+	c:RegisterEffect(e2)
+	if not c9910667.global_check then
+		c9910667.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_REMOVE)
+		ge1:SetOperation(c9910667.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function c9910667.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		if tc:IsReason(REASON_EFFECT) and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsType(TYPE_XYZ)
+			and not tc:IsReason(REASON_REDIRECT) then
+			tc:RegisterFlagEffect(9910667,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910667,3))
+		end
+		tc=eg:GetNext()
+	end
+end
+function c9910667.mfilter(c,xyzc)
+	return c:IsXyzLevel(xyzc,5) or c:IsXyzLevel(xyzc,10)
 end
 function c9910667.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function c9910667.rmtg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c9910667.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsAbleToRemove() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
-function c9910667.rmop1(e,tp,eg,ep,ev,re,r,rp)
+function c9910667.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+	end
+end
+function c9910667.thfilter(c,tp)
+	if not c:IsRace(RACE_MACHINE) then return false end
+	return c:IsAbleToHand() or c9910667.rmfilter(c,tp)
+end
+function c9910667.rmfilter(c,tp)
+	return c:IsAbleToRemove() and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil)
+end
+function c9910667.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910667.thfilter(chkc,tp) end
+	if chk==0 then return Duel.IsExistingTarget(c9910667.thfilter,tp,LOCATION_GRAVE,0,1,nil,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,c9910667.thfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
+end
+function c9910667.disfilter(c)
+	return c:IsFaceup() and c:GetFlagEffect(9910667)~=0
+end
+function c9910667.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0
-		and tc:IsLocation(LOCATION_REMOVED) then
-		if c:IsRelateToEffect(e) then
-			local sg=e:GetLabelObject()
-			if c:GetFlagEffect(9910667)==0 then
-				sg:Clear()
-				c:RegisterFlagEffect(9910667,RESET_EVENT+RESETS_STANDARD,0,1)
-			end
-			sg:AddCard(tc)
-			tc:CreateRelation(c,RESET_EVENT+RESETS_STANDARD)
+	if tc:IsRelateToEffect(e) and not aux.NecroValleyNegateCheck(tc) and aux.NecroValleyFilter()(tc) then
+		if tc:IsAbleToHand() and (not c9910667.rmfilter(tc,tp) or Duel.SelectOption(tp,1190,aux.Stringid(9910667,2))==0) then
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		elseif c9910667.rmfilter(tc,tp) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
+			Duel.HintSelection(g)
+			g:AddCard(tc)
+			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 		end
 	end
-end
-function c9910667.rmfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsAbleToRemove()
-end
-function c9910667.rmtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(c9910667.rmfilter,tp,LOCATION_GRAVE,0,1,nil)
-		and Duel.IsExistingTarget(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g1=Duel.SelectTarget(tp,c9910667.rmfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g2=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,1,nil)
-	g1:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g1,g1:GetCount(),0,0)
-end
-function c9910667.rmop2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-	local rg=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
-	if rg:GetCount()==0 then return end
-	local tc=rg:GetFirst()
-	while tc do
-		tc:CreateRelation(c,RESET_EVENT+RESETS_STANDARD)
-		tc=rg:GetNext()
-	end
-	local sg=e:GetLabelObject()
-	if c:GetFlagEffect(9910667)==0 then
-		sg:Clear()
-		c:RegisterFlagEffect(9910667,RESET_EVENT+RESETS_STANDARD,0,1)
-	end
-	sg:Merge(rg)
+	local sg=Duel.GetMatchingGroup(c9910667.disfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 	for sc in aux.Next(sg) do
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)

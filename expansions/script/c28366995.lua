@@ -2,7 +2,7 @@
 function c28366995.initial_effect(c)
 	--synchro summon
 	c:EnableReviveLimit()
-	aux.AddSynchroMixProcedure(c,c28366995.matfilter1,nil,nil,aux.NonTuner(Card.IsSetCard,0x283),1,1)
+	aux.AddSynchroMixProcedure(c,c28366995.matfilter,nil,nil,aux.FilterBoolFunction(Card.IsSetCard,0x283),1,1)
 	--recover
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND)
@@ -33,8 +33,8 @@ function c28366995.initial_effect(c)
 	e3:SetOperation(c28366995.indop)
 	c:RegisterEffect(e3)
 end
-function c28366995.matfilter1(c,syncard)
-	return c:IsTuner(syncard) or (c:IsSetCard(0x287) and Duel.GetLP(c:GetControler())>=9000)
+function c28366995.matfilter(c,syncard)
+	return c:IsTuner(syncard) or Duel.GetLP(c:GetControler())>=9000
 end
 function c28366995.recon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
@@ -43,15 +43,15 @@ function c28366995.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
-function c28366995.cfilter(c)
-	return c:IsAbleToHand() and c:IsLocation(LOCATION_GRAVE)
+function c28366995.cfilter(c,tp)
+	return c:IsAbleToHand() and c:IsLocation(LOCATION_GRAVE) and c:IsControler(tp)
 end
 function c28366995.reop(e,tp,eg,ep,ev,re,r,rp)
 	local mg=e:GetHandler():GetMaterial()
-	if Duel.Recover(tp,1000,REASON_EFFECT)>0 and Duel.GetLP(tp)>=10000 and mg:IsExists(c28366995.cfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28366995,0)) then
+	if Duel.Recover(tp,1000,REASON_EFFECT)>0 and Duel.GetLP(tp)>=10000 and mg:IsExists(c28366995.cfilter,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(28366995,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tg=mg:Filter(c28366995.cfilter,nil):Select(tp,1,1,nil)
+		local tg=mg:Filter(c28366995.cfilter,nil,tp):Select(tp,1,1,nil)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 	end
 end
@@ -75,7 +75,7 @@ function c28366995.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28366995.indcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetReasonCard():IsSetCard(0x283) and e:GetHandler():GetReasonCard():IsType(TYPE_FUSION+TYPE_XYZ+TYPE_LINK)
+	return e:GetHandler():GetReasonCard():IsType(TYPE_FUSION+TYPE_XYZ+TYPE_LINK)
 end
 function c28366995.indop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
