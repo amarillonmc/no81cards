@@ -94,7 +94,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		aux.GCheckAdditional=nil
 		if not mat or mat:GetCount()==0 then return end
 		tc:SetMaterial(mat)
-		local mat2=mat:Filter(Card.IsLocation,nil,LOCATION_DECK):Filter(s.mfilter,nil)
+		local mat2=mat:Filter(Card.IsLocation,nil,LOCATION_DECK+LOCATION_GRAVE):Filter(s.mfilter,nil)
 		mat:Sub(mat2)
 		Duel.ReleaseRitualMaterial(mat)
 		Duel.SendtoGrave(mat2,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)

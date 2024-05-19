@@ -75,6 +75,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,0,1,1,nil)
 	if Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
 		Duel.BreakEffect()
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD)
 		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)

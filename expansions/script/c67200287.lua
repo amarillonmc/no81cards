@@ -29,7 +29,7 @@ function c67200287.initial_effect(c)
 	e3:SetRange(LOCATION_EXTRA)
 	e3:SetCountLimit(1,67200287+EFFECT_COUNT_CODE_OATH)
 	e3:SetCondition(c67200287.spcon2)
-	e3:SetOperation(c67200287.spop2)
+	e3:SetOperation(c67200287.spop2)	
 	c:RegisterEffect(e3) 
 	--Equip
 	local e4=Effect.CreateEffect(c)
@@ -51,7 +51,7 @@ function c67200287.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return eg:IsExists(c67200287.repfilter,1,nil,tp) end
 	if Duel.SelectYesNo(tp,aux.Stringid(67200287,1)) then
-		Duel.SendtoExtraP(c,tp,REASON_EFFECT)
+		Duel.SendtoExtraP(c,tp,REASON_EFFECT+REASON_REPLACE)
 		return true
 	else return false end
 end
@@ -97,19 +97,20 @@ function c67200287.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Release(g,REASON_COST)
 end
 --
-function c67200287.spfilter2(c,tp,spsummoncard)
-	return Duel.GetLocationCountFromEx(tp,tp,c,spsummoncard)>0 and c:IsSetCard(0x674) and c:IsReleasable() and c:IsFaceup()
+function c67200287.spfilter2(c,tp,mc)
+	return Duel.GetLocationCountFromEx(tp,tp,Group.FromCards(c,mc))>0 and c:IsSetCard(0x674) and c:IsReleasable() and c:IsFaceup()
 end
 function c67200287.spcon2(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c67200287.spfilter2,tp,LOCATION_ONFIELD,0,nil,tp,c)
-	return #g>0
+	local g=Duel.GetMatchingGroup(c67200287.spfilter2,tp,LOCATION_ONFIELD,0,nil)
+	return g:IsExists(c67200287.spfilter2,1,nil,tp,g)
 end
 function c67200287.spop2(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetMatchingGroup(c67200287.spfilter2,tp,LOCATION_ONFIELD,0,nil,tp,c)
+	local g=Duel.GetMatchingGroup(c67200287.spfilter2,tp,LOCATION_ONFIELD,0,nil,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g1=g:Select(tp,1,1,nil)
+	local g1=g:FilterSelect(tp,c67200287.spfilter2,1,1,nil,tp,g)
+
 	Duel.Release(g1,REASON_COST)
 end
 --

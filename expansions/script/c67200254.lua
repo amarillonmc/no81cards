@@ -41,8 +41,8 @@ function c67200254.spfilter1(c,tp)
 	return c:IsFaceup() and c:IsSetCard(0x674) and c:IsReleasable()
 end
 function c67200254.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,c67200254.spfilter1,1,nil) end
-	local sg=Duel.SelectReleaseGroup(REASON_COST,tp,c67200254.spfilter1,1,1,nil)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,c67200254.spfilter1,1,nil) end
+	local sg=Duel.SelectReleaseGroup(tp,c67200254.spfilter1,1,1,nil)
 	Duel.Release(sg,REASON_COST)
 end
 function c67200254.thfilter(c)
