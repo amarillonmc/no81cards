@@ -44,7 +44,8 @@ function c9910656.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_COST)
 end
 function c9910656.setfilter(c)
-	return c:IsCode(9910654,9910655) and c:IsSSetable()
+	--return c:IsCode(9910654,9910655) and c:IsSSetable()
+	return c:IsCode(9910655) and c:IsSSetable()
 end
 function c9910656.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910656.setfilter,tp,LOCATION_DECK,0,1,nil) end

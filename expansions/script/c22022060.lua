@@ -40,7 +40,7 @@ function c22022060.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SpecialSummon(c,0,tp,1-tp,false,false,POS_FACEUP)~=0 then
 		local tc=Duel.GetFirstTarget()
 		if tc:IsRelateToEffect(e) then
-			Duel.SendtoGrave(tc,nil,REASON_EFFECT)
+			Duel.SendtoGrave(tc,REASON_EFFECT)
 		end
 	end
 end

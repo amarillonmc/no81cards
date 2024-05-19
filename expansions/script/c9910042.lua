@@ -29,7 +29,7 @@ function c9910042.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910042.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 	local tc=g:GetFirst()
 	while tc do
 		local e1=Effect.CreateEffect(c)
