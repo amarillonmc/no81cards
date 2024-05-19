@@ -54,7 +54,7 @@ function cm.retop1(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(m,0))
 				Duel.SelectOption(tp,aux.Stringid(m,1))
 				Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(m,1))
-				e:GetHandler():SetCardData(CARDDATA_CODE,m+1) 
+				--e:GetHandler():SetCardData(CARDDATA_CODE,m+1) 
 			end
 		end
 	end
@@ -88,5 +88,5 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end  
 function cm.indtg(e,c)
-	return c:IsFacedown()
+	return c:IsFaceup()
 end
