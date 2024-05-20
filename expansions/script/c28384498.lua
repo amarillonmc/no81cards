@@ -42,7 +42,7 @@ function c28384498.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		{b1,aux.Stringid(28384498,0)},
 		{b2,aux.Stringid(28384498,1)})
 	e:SetLabel(op)
-	if sel==1 then
+	if op==1 then
 		e:SetCategory(CATEGORY_DESTROY+CATEGORY_REMOVE)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,b1,1,0,0)
 	else
@@ -58,7 +58,7 @@ function c28384498.setfilter(c)
 end
 function c28384498.operation(e,tp,eg,ep,ev,re,r,rp)
 	local sel=e:GetLabel()
-	if sel==0 then
+	if sel==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
 		Duel.HintSelection(dg)
