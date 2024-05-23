@@ -26,17 +26,17 @@ function c91030020.initial_effect(c)
 	e2:SetOperation(c91030020.spop2)
 	c:RegisterEffect(e2)
 end
-function c91030020.lfilter(c)
-	return c:IsLinkSummonable(nil)
-end
 function c91030020.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c91030020.spop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c91030020.lfilter,tp,LOCATION_EXTRA,0,1,1,nil)
-	   Duel.LinkSummon(tp,g:GetFirst(),nil)
+	local g=Duel.SelectMatchingCard(tp,Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,1,nil,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.LinkSummon(tp,tc,nil)
+	end
 end
 function c91030020.cfilter(c,tp,rp)
 	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp) and bit.band(c:GetPreviousTypeOnField(),TYPE_LINK)~=0

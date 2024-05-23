@@ -144,6 +144,8 @@ function s.PendCondition()
 				return g:IsExists(s.PConditionFilter,1,nil,e,tp,lscale,rscale,eset)
 			end
 end
+local KOISHI_CHECK=false
+if Card.SetCardData then KOISHI_CHECK=true end
 function s.PendOperation()
 	return  function(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 				local rpz=Duel.GetMatchingGroup(s.rpzfilter,tp,LOCATION_SZONE,0,nil):GetFirst()
@@ -205,63 +207,105 @@ function s.PendOperation()
 					aux.PendulumChecklist=aux.PendulumChecklist|(0x1<<tp)
 				end
 				sg:Merge(g)
+				if KOISHI_CHECK then 
+					c:SetCardData(CARDDATA_LSCALE,6)
+					rpz:SetCardData(CARDDATA_LSCALE,8)
+				end
 				Duel.HintSelection(Group.FromCards(c))
 				Duel.HintSelection(Group.FromCards(rpz))
 				--
 				local spellg=sg:Filter(s.spellfilter,nil)
 				local exgc=sg:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)
 				for tc in aux.Next(spellg) do
-					 --spsummon limit
-					 --local e0=Effect.CreateEffect(tc)
-					 --e0:SetType(EFFECT_TYPE_SINGLE)
-					 --e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+ EFFECT_FLAG_UNCOPYABLE)
-					 --e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-					 --e0:SetReset(RESET_EVENT+0x47c0000)
-					 --e0:SetValue(aux.penlimit)
-					 --tc:RegisterEffect(e0,true)
-					 --local mt=getmetatable(tc)
-					 --local loc=mt.psummonable_location
-					 --if loc==nil then 
-					 --	loc=0xff 
-					 --	mt.psummonable_location=loc
-					 --end
-					 local zone=0xff
-					 if exgc>=Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM) then
-						 local lzone=Duel.GetLinkedZone(tp)
-						 zone=zone~lzone
-					 end
-					 local e1=Effect.CreateEffect(tc)
-					 e1:SetType(EFFECT_TYPE_SINGLE)
-					 e1:SetCode(EFFECT_CHANGE_TYPE)
-					 e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-					 e1:SetValue(TYPE_NORMAL+TYPE_MONSTER)
-					 e1:SetReset(RESET_EVENT+0x47c0000)
-					 tc:RegisterEffect(e1,true)
-					 local e2=e1:Clone()
-					 e2:SetCode(EFFECT_ADD_RACE)
-					 e2:SetValue(RACE_SPELLCASTER)
-					 tc:RegisterEffect(e2,true)
-					 local e3=e1:Clone()
-					 e3:SetCode(EFFECT_ADD_ATTRIBUTE)
-					 e3:SetValue(ATTRIBUTE_LIGHT)
-					 tc:RegisterEffect(e3,true)
-					 local e4=e1:Clone()
-					 e4:SetCode(EFFECT_SET_BASE_ATTACK)
-					 e4:SetValue(0)
-					 tc:RegisterEffect(e4,true)
-					 local e5=e1:Clone()
-					 e5:SetCode(EFFECT_SET_BASE_DEFENSE)
-					 e5:SetValue(0)
-					 tc:RegisterEffect(e5,true)
-					 local e6=e1:Clone()
-					 e6:SetCode(EFFECT_CHANGE_LEVEL)
-					 e6:SetValue(7)
-					 tc:RegisterEffect(e6,true)
-					 Duel.SpecialSummonStep(tc,0,tp,tp,true,false,POS_FACEUP,zone)
+					--spsummon limit
+					--local e0=Effect.CreateEffect(tc)
+					--e0:SetType(EFFECT_TYPE_SINGLE)
+					--e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+ EFFECT_FLAG_UNCOPYABLE)
+					--e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+					--e0:SetReset(RESET_EVENT+0x47c0000)
+					--e0:SetValue(aux.penlimit)
+					--tc:RegisterEffect(e0,true)
+					--local mt=getmetatable(tc)
+					--local loc=mt.psummonable_location
+					--if loc==nil then 
+					-- loc=0xff 
+					-- mt.psummonable_location=loc
+					--end
+					if KOISHI_CHECK then
+						tc:RegisterFlagEffect(id+2,0,0,1,tc:GetOriginalType())
+						tc:SetCardData(CARDDATA_TYPE,TYPE_NORMAL+TYPE_MONSTER)
+					end
+					local e1=Effect.CreateEffect(tc)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_CHANGE_TYPE)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e1:SetValue(TYPE_NORMAL+TYPE_MONSTER)
+					e1:SetReset(RESET_EVENT+0x47c0000)
+					tc:RegisterEffect(e1,true)
+					local e2=e1:Clone()
+					e2:SetCode(EFFECT_ADD_RACE)
+					e2:SetValue(RACE_SPELLCASTER)
+					tc:RegisterEffect(e2,true)
+					local e3=e1:Clone()
+					e3:SetCode(EFFECT_ADD_ATTRIBUTE)
+					e3:SetValue(ATTRIBUTE_LIGHT)
+					tc:RegisterEffect(e3,true)
+					local e4=e1:Clone()
+					e4:SetCode(EFFECT_SET_BASE_ATTACK)
+					e4:SetValue(0)
+					tc:RegisterEffect(e4,true)
+					local e5=e1:Clone()
+					e5:SetCode(EFFECT_SET_BASE_DEFENSE)
+					e5:SetValue(0)
+					tc:RegisterEffect(e5,true)
+					local e6=e1:Clone()
+					e6:SetCode(EFFECT_CHANGE_LEVEL)
+					e6:SetValue(7)
+					tc:RegisterEffect(e6,true)
+					--tc:SetStatus(STATUS_EFFECT_ENABLED,true)
+					--tc:SetStatus(STATUS_PROC_COMPLETE,true)
+					--tc:SetStatus(STATUS_SUMMONING,true)
+					if not KOISHI_CHECK then
+						local zone=0xff
+						if exgc>=Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM) then
+							local lzone=Duel.GetLinkedZone(tp)
+							zone=zone~lzone
+						end
+						Duel.SpecialSummonStep(tc,0,tp,tp,true,false,POS_FACEUP,zone)
+					end
 				end
-				Duel.SpecialSummonComplete()
+				if #spellg>0 and KOISHI_CHECK then
+					--summon cost
+					local ge0=Effect.CreateEffect(c)
+					ge0:SetType(EFFECT_TYPE_FIELD)
+					ge0:SetCode(EFFECT_SPSUMMON_COST)
+					ge0:SetTargetRange(LOCATION_HAND,0)
+					ge0:SetLabelObject(spellg)
+					ge0:SetCost(s.costchk)
+					ge0:SetOperation(s.costop)
+					Duel.RegisterEffect(ge0,tp)
+					spellg:KeepAlive()
+				end
+				if not KOISHI_CHECK then
+					Duel.SpecialSummonComplete()
+				end
 				--Duel.SpecialSummon(spellg,SUMMON_TYPE_PENDULUM,tp,tp,true,false,POS_FACEUP)
 			end
+end
+function s.costchk(e,c,tp)
+	return true
+end
+function s.costop(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	if #g>0 then 
+		for tc in aux.Next(g) do
+			if tc:GetFlagEffect(id+2)~=0 then
+				tc:SetCardData(CARDDATA_TYPE,tc:GetFlagEffectLabel(id+2))
+				tc:ResetFlagEffect(id+2)
+			end
+		end
+	end
+	e:Reset()
 end
 function s.spellfilter(c)
 	return c:IsSetCard(0x106e) and c:IsType(TYPE_SPELL)

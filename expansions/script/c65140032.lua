@@ -89,7 +89,7 @@ function s.scop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsSpecialSummonable,tp,LOCATION_EXTRA,0,nil,c)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g:Select(tp,1,1,nil)
+		local sc=g:Select(tp,1,1,nil):GetFirst()
 		Duel.SpecialSummonRule(tp,sc)
 	end
 end
