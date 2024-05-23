@@ -71,18 +71,20 @@ function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 				local eff=effect:Clone()
 				if s.GetRange(effect)==LOCATION_MZONE and (effect:IsHasType(EFFECT_TYPE_QUICK_O) or effect:IsHasType(EFFECT_TYPE_TRIGGER_O) or effect:IsHasType(EFFECT_TYPE_TRIGGER_F) or effect:IsHasType(EFFECT_TYPE_IGNITION)) then
 					eff:SetValue(id)
-					esetrange(eff,LOCATION_HAND+LOCATION_MZONE)
+					esetrange(eff,LOCATION_HAND)
+					table.insert(table_effect,eff)
 				end
-				table.insert(table_effect,eff)
 			end
 			return 
 		end
 		for tc in aux.Next(g) do
 			table_effect={}
-			tc:ReplaceEffect(id,0)
+			--tc:ReplaceEffect(id,0)
 			Duel.CreateToken(0,tc:GetOriginalCode())
-			for key,eff in ipairs(table_effect) do
-				cregister(tc,eff)
+			if #table_effect>0 then
+				for key,eff in ipairs(table_effect) do
+					cregister(tc,eff)
+				end
 			end
 		end
 		Card.RegisterEffect=cregister
