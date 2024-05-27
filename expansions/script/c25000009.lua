@@ -80,20 +80,21 @@ function s.ratg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,s.filter1,tp,LOCATION_MZONE,0,1,1,nil,tp)
 	local tc=g:GetFirst()
+	tc:RegisterFlagEffect(id,RESET_CHAIN,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,s.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,tc,tc:GetRace(),tc:GetAttribute())
 end
 function s.filter(c,e)
 	return c:IsRelateToEffect(e) and c:IsFaceup()
 end
-function s.upfilter(c,g)
+function s.upfilter(c,g,tp)
 	return g:FilterCount(s.filter2,c,c:GetRace(),c:GetAttribute())>0
+		and c:GetFlagEffect(id)~=0 and c:IsControler(tp)
 end
 function s.raop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(s.filter,nil,e)
 	if #g==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,2))
-		local hc=g:FilterSelect(tp,s.upfilter,1,1,nil,g):GetFirst()
+		local hc=g:Filter(s.upfilter,nil,g,tp):GetFirst()
 		if not hc then return end
 		local tc=g:Filter(aux.TRUE,hc):GetFirst()
 		local e1=Effect.CreateEffect(e:GetHandler())

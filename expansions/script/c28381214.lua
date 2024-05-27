@@ -41,16 +41,16 @@ function c28381214.spfilter(c,e,tp)
 	return c:IsSetCard(0x283) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c28381214.ilfilter(c)
-	return c:IsSetCard(0x284) and not c:IsPublic()
+	return c:IsSetCard(0x284) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
 end
 function c28381214.anfilter(c)
-	return c:IsSetCard(0x285) and not c:IsPublic()
+	return c:IsSetCard(0x285) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
 end
 function c28381214.hkfilter(c)
-	return c:IsSetCard(0x286) and not c:IsPublic()
+	return c:IsSetCard(0x286) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
 end
 function c28381214.alfilter(c)
-	return c:IsSetCard(0x287) and not c:IsPublic()
+	return c:IsSetCard(0x287) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
 end
 function c28381214.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

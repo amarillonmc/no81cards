@@ -1,94 +1,119 @@
 --光影捕捉者 弥界星烛号
 function c9910652.initial_effect(c)
-	--special summon
+	--spsummon rule
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910652,2))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_CUSTOM+9910652)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,9910652)
-	e1:SetTarget(c9910652.sptg)
-	e1:SetOperation(c9910652.spop)
+	e1:SetCondition(c9910652.sprcon)
+	e1:SetTarget(c9910652.sprtg)
+	e1:SetOperation(c9910652.sprop)
 	c:RegisterEffect(e1)
-	--negate
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DISABLE)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,9910653)
-	e1:SetCondition(c9910652.negcon)
-	e1:SetTarget(c9910652.negtg)
-	e1:SetOperation(c9910652.negop)
-	c:RegisterEffect(e1)
-	if not c9910652.global_check then
-		c9910652.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		ge1:SetCode(EVENT_CHAIN_SOLVED)
-		ge1:SetCondition(c9910652.regcon)
-		ge1:SetOperation(c9910652.regop)
-		Duel.RegisterEffect(ge1,0)
-	end
+	--spsummon from ex
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e2:SetCountLimit(1,9910652)
+	e2:SetTarget(c9910652.sptg)
+	e2:SetOperation(c9910652.spop)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e3)
+	--material
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_CHAINING)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCountLimit(1,9910653)
+	e4:SetCondition(c9910652.xmcon)
+	e4:SetTarget(c9910652.xmtg)
+	e4:SetOperation(c9910652.xmop)
+	c:RegisterEffect(e4)
 end
-function c9910652.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsType(TYPE_XYZ)
+function c9910652.sprfilter(c)
+	return (c:IsRace(RACE_MACHINE) or c:IsSetCard(0xa952)) and c:IsDiscardable()
 end
-function c9910652.regop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RaiseEvent(re:GetHandler(),EVENT_CUSTOM+9910652,re,r,rp,ep,ev)
+function c9910652.sprcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9910652.sprfilter,tp,LOCATION_HAND,0,1,c)
 end
-function c9910652.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+function c9910652.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetMatchingGroup(c9910652.sprfilter,tp,LOCATION_HAND,0,c)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
+	if tc then
+		e:SetLabelObject(tc)
+		return true
+	else return false end
 end
-function c9910652.spfilter(c,e,tp)
-	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c9910652.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	Duel.SendtoGrave(g,REASON_SPSUMMON+REASON_DISCARD)
+end
+function c9910652.spfilter1(c,e,tp)
+	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_LIGHT)
+		and Duel.IsExistingMatchingCard(c9910652.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)
+		and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
+end
+function c9910652.spfilter2(c,e,tp,mc)
+	return c:IsType(TYPE_XYZ) and c:IsSetCard(0xa952) and mc:IsCanBeXyzMaterial(c)
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
+end
+function c9910652.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9910652.spfilter1(chkc,e,tp) end
+	if chk==0 then return Duel.IsExistingTarget(c9910652.spfilter1,tp,LOCATION_MZONE,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	Duel.SelectTarget(tp,c9910652.spfilter1,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c9910652.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
-	local g=Duel.GetMatchingGroup(c9910652.spfilter,tp,LOCATION_HAND,0,nil,e,tp)
-	if g:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.SelectYesNo(tp,aux.Stringid(9910652,0)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	local tc=Duel.GetFirstTarget()
+	if not aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) then return end
+	if tc:IsFacedown() or not tc:IsRelateToEffect(e) or tc:IsControler(1-tp) or tc:IsImmuneToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c9910652.spfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc)
+	local sc=g:GetFirst()
+	if sc then
+		local mg=tc:GetOverlayGroup()
+		if mg:GetCount()~=0 then
+			Duel.Overlay(sc,mg)
+		end
+		sc:SetMaterial(Group.FromCards(tc))
+		Duel.Overlay(sc,Group.FromCards(tc))
+		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
+		sc:CompleteProcedure()
 	end
 end
-function c9910652.negcon(e,tp,eg,ep,ev,re,r,rp)
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return bit.band(loc,LOCATION_SZONE)~=0 and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
-		and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
+function c9910652.xmcon(e,tp,eg,ep,ev,re,r,rp)
+	return re:GetHandler():IsRelateToEffect(re) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
-function c9910652.xfilter(c)
+function c9910652.xmfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ)
 end
-function c9910652.xfilter2(c,e)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and not c:IsImmuneToEffect(e)
-end
-function c9910652.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9910652.xmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rc=re:GetHandler()
-	if chk==0 then return rc:IsCanOverlay()
-		and Duel.IsExistingMatchingCard(c9910652.xfilter,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910652.xmfilter,tp,LOCATION_MZONE,0,1,nil) and rc:IsCanOverlay(tp) end
+	if rc:IsLocation(LOCATION_GRAVE) then
+		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,rc,1,0,0)
+	end
 end
-function c9910652.negop(e,tp,eg,ep,ev,re,r,rp)
+function c9910652.xmop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if rc:IsRelateToEffect(re) and not rc:IsImmuneToEffect(e)
-		and Duel.IsExistingMatchingCard(c9910652.xfilter2,tp,LOCATION_MZONE,0,1,nil,e) then
+	if not rc:IsRelateToEffect(re) or rc:IsImmuneToEffect(e) then return end
+	if Duel.IsExistingMatchingCard(c9910652.xmfilter,tp,LOCATION_MZONE,0,1,nil) and rc:IsCanOverlay(tp) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-		local sg=Duel.SelectMatchingCard(tp,c9910652.xfilter2,tp,LOCATION_MZONE,0,1,1,nil,e)
-		local sc=sg:GetFirst()
+		local tg=Duel.SelectMatchingCard(tp,c9910652.xmfilter,tp,LOCATION_MZONE,0,1,1,nil)
+		Duel.HintSelection(tg)
+		if tg:GetFirst():IsImmuneToEffect(e) then return end
+		local og=rc:GetOverlayGroup()
+		if #og>0 then Duel.SendtoGrave(og,REASON_RULE) end
 		rc:CancelToGrave()
-		Duel.Overlay(sc,Group.FromCards(rc))
-		if Duel.SelectYesNo(tp,aux.Stringid(9910652,1)) then
-			Duel.BreakEffect()
-			Duel.NegateActivation(ev)
-		end
+		Duel.Overlay(tg:GetFirst(),Group.FromCards(rc))
 	end
 end

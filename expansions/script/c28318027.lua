@@ -1,0 +1,179 @@
+--微光的一等星 闪耀的准备
+function c28318027.initial_effect(c)
+	--xyz summon
+	c:EnableReviveLimit()
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(1165)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetRange(LOCATION_EXTRA)
+	e0:SetCondition(Auxiliary.XyzLevelFreeCondition(aux.FilterBoolFunction(Card.IsSetCard,0x284),c28318027.xyzcheck,2,99))
+	e0:SetTarget(Auxiliary.XyzLevelFreeTarget(aux.FilterBoolFunction(Card.IsSetCard,0x284),c28318027.xyzcheck,2,99))
+	e0:SetOperation(c28318027.Operation(aux.FilterBoolFunction(Card.IsSetCard,0x284),c28318027.xyzcheck,2,99))
+	e0:SetValue(SUMMON_TYPE_XYZ)
+	c:RegisterEffect(e0)
+	--rank set
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCondition(c28318027.rscon)
+	e1:SetOperation(c28318027.rsop)
+	c:RegisterEffect(e1)
+	--search
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(28318027,0))
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,28318027)
+	e2:SetCost(c28318027.thcost)
+	e2:SetTarget(c28318027.thtg)
+	e2:SetOperation(c28318027.thop)
+	c:RegisterEffect(e2)
+	--rank change
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(28318027,1))
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetCountLimit(1)
+	e3:SetTarget(c28318027.rctg)
+	e3:SetOperation(c28318027.rcop)
+	c:RegisterEffect(e3)
+	--atk
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCode(EFFECT_UPDATE_ATTACK)
+	e4:SetValue(c28318027.atkval)
+	c:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetCode(EFFECT_UPDATE_DEFENSE)
+	c:RegisterEffect(e5)
+end
+--xyz↓
+function c28318027.xyzcheck(g)
+	return g:GetClassCount(Card.GetLevel)==1 and not g:IsExists(Card.IsType,1,nil,TYPE_LINK+TYPE_XYZ)
+end
+function c28318027.Operation(f,gf,minct,maxct)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+				if og and not min then
+					local sg=Group.CreateGroup()
+					local tc=og:GetFirst()
+					while tc do
+						local sg1=tc:GetOverlayGroup()
+						sg:Merge(sg1)
+						tc=og:GetNext()
+					end
+					Duel.SendtoGrave(sg,REASON_RULE)
+					c:SetMaterial(og)
+					c:RegisterFlagEffect(28318027,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,og:GetFirst():GetLevel())
+					Duel.Overlay(c,og)
+				else
+					local mg=e:GetLabelObject()
+					if e:GetLabel()==1 then
+						local mg2=mg:GetFirst():GetOverlayGroup()
+						if mg2:GetCount()~=0 then
+							Duel.Overlay(c,mg2)
+						end
+					else
+						local sg=Group.CreateGroup()
+						local tc=mg:GetFirst()
+						while tc do
+							local sg1=tc:GetOverlayGroup()
+							sg:Merge(sg1)
+							tc=mg:GetNext()
+						end
+						Duel.SendtoGrave(sg,REASON_RULE)
+					end
+					c:SetMaterial(mg)
+					c:RegisterFlagEffect(28318027,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,mg:GetFirst():GetLevel())
+					Duel.Overlay(c,mg)
+					mg:DeleteGroup()
+				end
+			end
+end
+function c28318027.rscon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetFlagEffect(28318027)~=0
+end
+function c28318027.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local xlv=c:GetFlagEffectLabel(28318027)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_CHANGE_RANK)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e1:SetValue(xlv)
+	c:RegisterEffect(e1)
+end
+--xyz↑
+function c28318027.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) end
+	Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_COST)
+end
+function c28318027.thfilter(c)
+	return c:IsSetCard(0x284) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+end
+function c28318027.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28318027.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c28318027.tgfilter(c)
+	return c:IsSetCard(0x284) and c:IsAbleToGrave()
+end
+function c28318027.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local tg=Duel.SelectMatchingCard(tp,c28318027.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if tg then
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
+	end
+	if e:GetHandler():IsRankAbove(8) and Duel.IsExistingMatchingCard(c28318027.tgfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28318027,2)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local gg=Duel.SelectMatchingCard(tp,c28318027.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+		Duel.SendtoGrave(gg,REASON_EFFECT)
+	end
+end
+function c28318027.rcfilter(c,rk)
+	return c:IsFaceup() and c:IsSetCard(0x284) and not c:IsRank(rk) and c:IsRankAbove(1)
+end
+function c28318027.rctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c28318027.rcfilter(chkc,e:GetHandler():GetRank()) end
+	if chk==0 then return Duel.IsExistingTarget(c28318027.rcfilter,tp,LOCATION_MZONE,0,1,nil,e:GetHandler():GetRank()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,c28318027.rcfilter,tp,LOCATION_MZONE,0,1,1,nil,e:GetHandler():GetRank())
+end
+function c28318027.rcop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	local b1,b2=false
+	if c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsFaceup() then b1=true end
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() and c:IsFaceup() then b2=true end
+	if not (b1 or b2) then return end
+	if c:GetRank()==tc:GetRank() then return end
+	local op=aux.SelectFromOptions(tp,
+		{b1,aux.Stringid(28318027,3)},
+		{b2,aux.Stringid(28318027,4)})
+	if op==1 then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CHANGE_RANK)
+		e1:SetValue(tc:GetRank())
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		c:RegisterEffect(e1)
+	else
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_CHANGE_RANK)
+		e2:SetValue(c:GetRank())
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		tc:RegisterEffect(e2)
+	end
+end
+function c28318027.atkval(e,c)
+	return c:GetRank()*100
+end

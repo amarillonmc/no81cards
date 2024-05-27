@@ -30,9 +30,12 @@ end
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ck1=Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_SZONE,1,nil)
 	local ck2=Duel.IsExistingMatchingCard(s.mf,tp,0,LOCATION_MZONE,1,nil)
-	if chk==0 then return (ck1 and Duel.IsExistingMatchingCard(s.df1,tp,LOCATION_HAND,0,1,e:GetHandler())) or (ck2 and Duel.IsExistingMatchingCard(s.df2,tp,LOCATION_HAND,0,1,e:GetHandler())) end
+	if chk==0 then return (ck1 and Duel.IsExistingMatchingCard(s.df1,tp,LOCATION_HAND,0,1,e:GetHandler())) or (ck2 and (Duel.IsExistingMatchingCard(s.df2,tp,LOCATION_HAND,0,1,e:GetHandler()) or Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_FZONE,0,1,e:GetHandler(),64800236)) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	local tc=Duel.SelectMatchingCard(tp,s.df3,tp,LOCATION_HAND,0,1,1,nil,ck1,ck2):GetFirst()
+	local sg=Duel.GetMatchingGroup(s.df3,tp,LOCATION_HAND,0,nil,ck1,ck2)
+	local fg=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_FZONE,0,nil,64800236)
+	sg:Merge(fg)
+	local tc=sg:Select(tp,1,1,nil):GetFirst()
 	Duel.SendtoGrave(tc,REASON_DISCARD+REASON_COST)
 	if tc:IsType(TYPE_MONSTER) then
 		e:SetLabel(0)

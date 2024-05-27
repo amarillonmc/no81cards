@@ -1,103 +1,104 @@
---超界星暴
+--拉尼亚凯亚之飓风
 function c9910658.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetOperation(c9910658.activate)
 	c:RegisterEffect(e1)
-	--remove
+	--to grave
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e2:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+	e2:SetDescription(aux.Stringid(9910658,0))
+	e2:SetCategory(CATEGORY_TOGRAVE)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetTargetRange(0,LOCATION_ONFIELD)
-	e2:SetCondition(c9910658.condition)
-	e2:SetValue(LOCATION_REMOVED)
+	e2:SetCountLimit(1,9910658)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetTarget(c9910658.tgtg)
+	e2:SetOperation(c9910658.tgop)
 	c:RegisterEffect(e2)
-	--to hand
+	--destroy
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TOHAND)
+	e3:SetDescription(aux.Stringid(9910658,1))
+	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_SZONE)
+	e3:SetCountLimit(1,9910658)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetCondition(c9910658.thcon)
-	e3:SetCost(c9910658.thcost)
-	e3:SetTarget(c9910658.thtg)
-	e3:SetOperation(c9910658.thop)
+	e3:SetTarget(c9910658.xmtg)
+	e3:SetOperation(c9910658.xmop)
 	c:RegisterEffect(e3)
+	--xyz summon
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetRange(LOCATION_GRAVE)
+	e4:SetCountLimit(1,9910675)
+	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e4:SetCost(aux.bfgcost)
+	e4:SetTarget(c9910658.xyztg)
+	e4:SetOperation(c9910658.xyzop)
+	c:RegisterEffect(e4)
+end
+function c9910658.tgfilter(c)
+	return c:IsSetCard(0xa952) and c:IsAbleToGrave()
+end
+function c9910658.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910658.tgfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+end
+function c9910658.tgop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9910658.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoGrave(g,REASON_EFFECT)
+	end
 end
 function c9910658.cfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsAbleToRemove()
+	return c:IsFaceup() and c:IsSetCard(0xa952)
 end
-function c9910658.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Group.CreateGroup()
-	local g1=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
-	local g2=Duel.GetOverlayGroup(tp,1,0)
-	if g1:GetCount()>0 then g:Merge(g1) end
-	if g2:GetCount()>0 then g:Merge(g2) end
-	if Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil)
-		and g:IsExists(c9910658.cfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(9910658,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local tc=g:FilterSelect(tp,c9910658.cfilter,1,1,nil):GetFirst()
-		if tc and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local sg=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
-			Duel.HintSelection(sg)
-			Duel.Destroy(sg,REASON_EFFECT)
-		end
-	end
-end
-function c9910658.cfilter2(c)
+function c9910658.xmfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ)
 end
-function c9910658.condition(e)
-	return Duel.IsExistingMatchingCard(c9910658.cfilter2,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
-end
-function c9910658.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==0
-end
-function c9910658.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
-end
-function c9910658.thfilter1(c)
-	return c:GetLevel()>0 and c:IsAbleToHand() and Duel.IsExistingTarget(c9910658.thfilter2,tp,LOCATION_GRAVE,0,1,c,c:GetLevel())
-end
-function c9910658.thfilter2(c,lv)
-	return c:IsLevel(lv) and c:IsAbleToHand()
-end
-function c9910658.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(c9910658.thfilter1,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g1=Duel.SelectTarget(tp,c9910658.thfilter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	local tc1=g1:GetFirst()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g2=Duel.SelectTarget(tp,c9910658.thfilter2,tp,LOCATION_GRAVE,0,1,1,tc1,tc1:GetLevel(),e,tp)
-	g1:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,2,0,0)
-end
-function c9910658.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
-	if sg:GetCount()>0 then
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,sg)
+function c9910658.xmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local loc=LOCATION_GRAVE
+	if Duel.IsExistingMatchingCard(c9910658.cfilter,tp,LOCATION_MZONE,0,1,nil) then loc=LOCATION_ONFIELD+LOCATION_GRAVE end
+	if chkc then return (chkc:IsLocation(LOCATION_GRAVE) or (chkc:IsLocation(loc) and chkc:IsControler(1-tp)))
+		and chkc:IsCanOverlay(tp) end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsCanOverlay,tp,LOCATION_GRAVE,loc,1,nil,tp)
+		and Duel.IsExistingMatchingCard(c9910658.xmfilter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	local g=Duel.SelectTarget(tp,Card.IsCanOverlay,tp,LOCATION_GRAVE,loc,1,1,nil,tp)
+	if g:GetFirst():IsLocation(LOCATION_GRAVE) then
+		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
 	end
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTargetRange(1,0)
-	e2:SetTarget(c9910658.splimit)
-	e2:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e2,tp)
 end
-function c9910658.splimit(e,c)
-	return not c:IsType(TYPE_XYZ) and c:IsLocation(LOCATION_EXTRA)
+function c9910658.xmop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) or tc:IsImmuneToEffect(e) then return end
+	if Duel.IsExistingMatchingCard(c9910658.xmfilter,tp,LOCATION_MZONE,0,1,nil) and tc:IsCanOverlay(tp) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		local tg=Duel.SelectMatchingCard(tp,c9910658.xmfilter,tp,LOCATION_MZONE,0,1,1,nil)
+		Duel.HintSelection(tg)
+		if tg:GetFirst():IsImmuneToEffect(e) then return end
+		local og=tc:GetOverlayGroup()
+		if #og>0 then Duel.SendtoGrave(og,REASON_RULE) end
+		tc:CancelToGrave()
+		Duel.Overlay(tg:GetFirst(),Group.FromCards(tc))
+	end
+end
+function c9910658.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,nil,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function c9910658.xyzop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,nil,nil)
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local tg=g:Select(tp,1,1,nil)
+		Duel.XyzSummon(tp,tg:GetFirst(),nil)
+	end
 end

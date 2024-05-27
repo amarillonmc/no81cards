@@ -61,11 +61,40 @@ function c28366684.xyzcheck(g)
 end
 function c28366684.Operation(f,gf,minct,maxct)
 	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
-				local mg=e:GetLabelObject()
-				c:SetMaterial(mg)
-				c:RegisterFlagEffect(28366684,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,mg:GetFirst():GetLevel())
-				Duel.Overlay(c,mg)
-				mg:DeleteGroup()
+				if og and not min then
+					local sg=Group.CreateGroup()
+					local tc=og:GetFirst()
+					while tc do
+						local sg1=tc:GetOverlayGroup()
+						sg:Merge(sg1)
+						tc=og:GetNext()
+					end
+					Duel.SendtoGrave(sg,REASON_RULE)
+					c:SetMaterial(og)
+					c:RegisterFlagEffect(28366684,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,og:GetFirst():GetLevel())
+					Duel.Overlay(c,og)
+				else
+					local mg=e:GetLabelObject()
+					if e:GetLabel()==1 then
+						local mg2=mg:GetFirst():GetOverlayGroup()
+						if mg2:GetCount()~=0 then
+							Duel.Overlay(c,mg2)
+						end
+					else
+						local sg=Group.CreateGroup()
+						local tc=mg:GetFirst()
+						while tc do
+							local sg1=tc:GetOverlayGroup()
+							sg:Merge(sg1)
+							tc=mg:GetNext()
+						end
+						Duel.SendtoGrave(sg,REASON_RULE)
+					end
+					c:SetMaterial(mg)
+					c:RegisterFlagEffect(28366684,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,mg:GetFirst():GetLevel())
+					Duel.Overlay(c,mg)
+					mg:DeleteGroup()
+				end
 			end
 end
 function c28366684.rscon(e,tp,eg,ep,ev,re,r,rp)

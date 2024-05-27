@@ -31,7 +31,7 @@ function s.lcheck(g)
 	return g:GetClassCount(Card.GetLinkAttribute)==g:GetCount()
 end
 function s.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(id)==0
+	return Deul.GetFlagEffect(tp,id)==0
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetMatchingGroupCount(nil,tp,0,LOCATION_HAND,e:GetHandler())-Duel.GetMatchingGroupCount(nil,tp,LOCATION_HAND,0,nil)
@@ -45,10 +45,7 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	if ct>0 then
 		Duel.Draw(p,ct,REASON_EFFECT)
 	end
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
-	end
+	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,2)
 end
 function s.cfilter(c)
 	return c:IsPreviousLocation(LOCATION_DECK)

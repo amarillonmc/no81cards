@@ -9,9 +9,12 @@ function c117837139.initial_effect(c)
     c:RegisterEffect(e0)
     --special summon rule
     local e1=Effect.CreateEffect(c)
-    e1:SetType(EFFECT_TYPE_IGNITION+EFFECT_TYPE_CONTINUOUS)
+    e1:SetType(EFFECT_TYPE_FIELD)
+    e1:SetCode(EFFECT_SPSUMMON_PROC)
+    e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SPSUM_PARAM)
     e1:SetRange(LOCATION_EXTRA)
-    e1:SetTarget(c117837139.sumtg)
+    e1:SetTargetRange(POS_FACEUP,1)
+    e1:SetCondition(c117837139.sumcon)
     e1:SetOperation(c117837139.sumop)
     c:RegisterEffect(e1)
     --cannot release
@@ -93,39 +96,39 @@ function c117837139.initial_effect(c)
 end
 
 --special summon rule
+
 function c117837139.sumfilter(c,e,tp)
-    return c:IsCode(78371393,4779091,31764700,117837139) and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP_ATTACK,tp)
+    return c:IsSetCard(0x1a5) and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP_ATTACK,tp)
 end
-function c117837139.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
-    if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.IsPlayerCanSpecialSummonCount(tp,2) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCountFromEx(1-tp,tp,nil,c)>0 and Duel.IsExistingMatchingCard(c117837139.sumfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,1-tp,true,false) end
+function c117837139.sumcon(e,c)
+    if c==nil then return true end
+    local tp=c:GetControler()
+    return not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.IsPlayerCanSpecialSummonCount(tp,2) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCountFromEx(1-tp,tp,nil,c)>0 and Duel.IsExistingMatchingCard(c117837139.sumfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,true,false)
 end
-function c117837139.sumop(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
+function c117837139.sumop(e,tp,eg,ep,ev,re,r,rp,c)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
     local g=Duel.SelectMatchingCard(tp,c117837139.sumfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-    if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP_ATTACK)==1 then
-        Duel.SpecialSummon(c,0,1-tp,1-tp,true,false,POS_FACEUP)
-        c:CompleteProcedure()
+    if g:GetCount()>0 then
+        Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP_ATTACK)
     end
 end
 
 function c117837139.target(e,c)
-    return c:IsCode(4779091,31764700,78371393,117837139)
+    return c:IsSetCard(0x1a5)
 end
 
 function c117837139.cfilter(c)
-    return c:IsFaceup() and c:IsCode(4779091,31764700,78371393,117837139)
+    return c:IsFaceup() and c:IsSetCard(0x1a5)
 end
 function c117837139.atkcon(e,tp,eg,ep,ev,re,r,rp)
     return Duel.IsExistingMatchingCard(c117837139.cfilter,tp,0,LOCATION_MZONE,1,nil)
 end
 function c117837139.atlimit(e,c)
-    return not (c:IsFaceup() and c:IsCode(4779091,31764700,78371393,117837139))
+    return not (c:IsFaceup() and c:IsSetCard(0x1a5))
 end
 
 function c117837139.spfilter(c,e,tp)
-    return c:IsCode(4779091,31764700,78371393,117837139) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+    return c:IsSetCard(0x1a5) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function c117837139.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

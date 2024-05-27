@@ -2,7 +2,7 @@
 function c75000857.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x756),1)
-	c:EnableReviveLimit()	
+	c:EnableReviveLimit()   
 	--add
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(75000857,0))
@@ -24,8 +24,11 @@ function c75000857.initial_effect(c)
 	--Special Summon 
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_EQUIP)
-	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e3:SetCountLimit(1,75000858)
 	e3:SetTarget(c75000857.sptg2)
 	e3:SetOperation(c75000857.spop2)
@@ -66,27 +69,29 @@ function c75000857.sptg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c75000857.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
+	local c=e:GetHandler()
 	if tc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) and tc:IsFaceup() and c:IsRelateToEffect(e) and c:IsControler(tp) then
-		if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
-		if not Duel.Equip(tp,c,tc,false) then return end
-		--equip limit
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetCode(EFFECT_EQUIP_LIMIT)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetLabelObject(tc)
-		e1:SetValue(c31374201.eqlimit)
-		c:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_EQUIP)
-		e2:SetCode(EFFECT_UPDATE_ATTACK)
-		e2:SetValue(1300)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e2)
+		if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and tc:IsFaceup() and c:IsRelateToEffect(e) and c:IsControler(tp) then
+			if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
+			if not Duel.Equip(tp,c,tc,false) then return end
+			--equip limit
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetCode(EFFECT_EQUIP_LIMIT)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetLabelObject(tc)
+			e1:SetValue(c75000857.eqlimit)
+			c:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_EQUIP)
+			e2:SetCode(EFFECT_UPDATE_ATTACK)
+			e2:SetValue(1300)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			c:RegisterEffect(e2)
+		end
 	end
 end
-function c31374201.eqlimit(e,c)
+function c75000857.eqlimit(e,c)
 	return c==e:GetLabelObject()
 end

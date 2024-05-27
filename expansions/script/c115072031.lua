@@ -36,7 +36,7 @@ function c115072031.initial_effect(c)
     e4:SetType(EFFECT_TYPE_SINGLE)
     e4:SetCode(EFFECT_ADD_FUSION_SETCODE)
     e4:SetRange(LOCATION_MZONE)
-    e4:SetValue(0xad)
+    e4:SetValue(0xa008)
     c:RegisterEffect(e4)
 end
 

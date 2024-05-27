@@ -30,12 +30,12 @@ function c75000862.spfilter(c,e,tp)
 		and Duel.IsExistingMatchingCard(c75000862.cfilter,tp,LOCATION_EXTRA,0,1,nil,c) and c:IsSetCard(0x756)
 end
 function c75000862.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c75000862.spfilter(chkc,e,tp) end
+	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c75000862.spfilter(chkc,e,tp) end
 	if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,2)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c75000862.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+		and Duel.IsExistingTarget(c75000862.spfilter,tp,LOCATION_REMOVED,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c75000862.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local g=Duel.SelectTarget(tp,c75000862.spfilter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,2,tp,LOCATION_EXTRA)
 end
 function c75000862.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -64,14 +64,13 @@ function c75000862.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75000862.cfilter1(c)
-	return c:IsSetCard(0x756) c:IsAbleToRemove()
-		and not c:IsCode(75000862)
+	return c:IsSetCard(0x756) and c:IsAbleToRemove() and not c:IsCode(75000862)
 end
 function c75000862.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c75000862.cfilter1(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c75000862.cfilter1,tp,LOCATION_GRAVE,0,1,nil)
 		and Duel.IsPlayerCanDraw(tp,1) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectTarget(tp,c75000862.cfilter1,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end

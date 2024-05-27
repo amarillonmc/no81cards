@@ -2,10 +2,9 @@
 function c9910649.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_GRAVE_ACTION)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910649)
 	e1:SetCondition(c9910649.spcon)
@@ -27,47 +26,30 @@ function c9910649.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SPSUMMON)
 	c:RegisterEffect(e3)
-	if not c9910649.global_check then
-		c9910649.global_check=true
-		local ge1=Effect.GlobalEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_BATTLED)
-		ge1:SetOperation(c9910649.checkop)
-		Duel.RegisterEffect(ge1,0)
-	end
-end
-function c9910649.check(c)
-	return c and c:IsType(TYPE_XYZ)
-end
-function c9910649.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if c9910649.check(Duel.GetAttacker()) or c9910649.check(Duel.GetAttackTarget()) then
-		Duel.RegisterFlagEffect(tp,9910649,RESET_PHASE+PHASE_END,0,1)
-		Duel.RegisterFlagEffect(1-tp,9910649,RESET_PHASE+PHASE_END,0,1)
-	end
 end
 function c9910649.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
-		and Duel.GetFlagEffect(tp,9910649)>0
+	return Duel.GetAttackTarget()
+		and (Duel.GetAttacker():IsControler(tp) and Duel.GetAttacker():IsType(TYPE_XYZ)
+			or Duel.GetAttackTarget():IsControler(tp) and Duel.GetAttackTarget():IsType(TYPE_XYZ))
 end
 function c9910649.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function c9910649.thfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToHand()
-end
 function c9910649.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 then
-		local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910649.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-		if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910649,0)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			sg=sg:Select(tp,1,1,nil)
-			Duel.BreakEffect()
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,sg)
-		end
+	if not c:IsRelateToEffect(e) then return end
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		local tc=Duel.GetAttacker()
+		if tc:IsControler(1-tp) then tc=Duel.GetAttackTarget() end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(3000)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
 	end
 end
 function c9910649.dscon(e,tp,eg,ep,ev,re,r,rp)

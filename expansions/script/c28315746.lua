@@ -17,7 +17,7 @@ function c28315746.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1,38315746)
+	e2:SetCountLimit(1)
 	e2:SetTarget(c28315746.lvtg)
 	e2:SetOperation(c28315746.lvop)
 	c:RegisterEffect(e2)
@@ -28,7 +28,7 @@ function c28315746.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCondition(c28315746.atkcon)
-	e3:SetValue(500)
+	e3:SetValue(c28315746.atkval)
 	c:RegisterEffect(e3)
 	--indes
 	local e4=Effect.CreateEffect(c)
@@ -45,9 +45,9 @@ function c28315746.tdfilter(c)
 end
 function c28315746.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return (chkc:IsLocation(LOCATION_REMOVED) or chkc:IsLocation(LOCATION_GRAVE)) and chkc:IsControler(tp) and c28315746.tdfilter(chkc) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(aux.NecroValleyFilter(c28315746.tdfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c28315746.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,aux.NecroValleyFilter(c28315746.tdfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,2,nil)
+	local g=Duel.SelectTarget(tp,c28315746.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,3,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 end
@@ -80,7 +80,7 @@ end
 function c28315746.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_LEVEL)
@@ -98,9 +98,12 @@ function c28315746.lvop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28315746.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x284) and not c:IsCode(28315746)
+	return c:IsFaceup() and c:IsSetCard(0x284)
 end
 function c28315746.atkcon(e)
 	local c=e:GetHandler()
-	return Duel.IsExistingMatchingCard(c28315746.atkfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(c28315746.atkfilter,c:GetControler(),LOCATION_MZONE,0,1,c)
+end
+function c28315746.atkval(e,c)
+	return c:GetLevel()*100
 end

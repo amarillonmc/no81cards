@@ -22,17 +22,17 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.drop)
 	c:RegisterEffect(e2)
 end
-function cm.thfil(c,ec)
+function cm.thfil0(c,ec)
 	return  (c:IsCode(m-9) or c:IsCode(m-8)) and c:IsAbleToHand() 
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfil,tp,LOCATION_DECK,0,1,nil,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfil0,tp,LOCATION_DECK,0,1,nil,e:GetHandler()) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfil,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.thfil0,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		if Duel.SendtoHand(g,tp,REASON_EFFECT)~=0 then
 			Duel.ConfirmCards(1-tp,g)
@@ -45,9 +45,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetTarget(cm.tg)
+	e2:SetTarget(cm.tg0)
 	e2:SetValue(1)
 	e2:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e2,tp)
@@ -63,7 +62,7 @@ end
 function cm.splimit(e,c)
 	return c:IsLocation(LOCATION_EXTRA) 
 end
-function cm.tg(e,c)
+function cm.tg0(e,c)
 	return c:IsType(TYPE_RITUAL) and c:IsFaceup()
 end
 

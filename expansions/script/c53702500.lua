@@ -4657,16 +4657,19 @@ function cm.Tentuthop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT) end
 end
 --1
-function cm.ActivatedAsSpellorTrap(c,otyp,loc,setava)
-	local e1=Effect.CreateEffect(c)
-	if otyp&(TYPE_TRAP+TYPE_QUICKPLAY)~=0 then
-		e1:SetType(EFFECT_TYPE_QUICK_O)
-		e1:SetCode(EVENT_FREE_CHAIN)
-		e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	else e1:SetType(EFFECT_TYPE_IGNITION) end
-	e1:SetRange(loc)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
-	c:RegisterEffect(e1)
+function cm.ActivatedAsSpellorTrap(c,otyp,loc,setava,owne)
+	local e1=nil
+	if owne then e1=owne else
+		local e1=Effect.CreateEffect(c)
+		if otyp&(TYPE_TRAP+TYPE_QUICKPLAY)~=0 then
+			e1:SetType(EFFECT_TYPE_QUICK_O)
+			e1:SetCode(EVENT_FREE_CHAIN)
+			e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+		else e1:SetType(EFFECT_TYPE_IGNITION) end
+		e1:SetRange(loc)
+		e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+		c:RegisterEffect(e1)
+	end
 	local e1_1=Effect.CreateEffect(c)
 	local e2=Effect.CreateEffect(c)
 	local e3=Effect.CreateEffect(c)
@@ -4729,21 +4732,23 @@ function cm.ActivatedAsSpellorTrap(c,otyp,loc,setava)
 	e2_1:SetLabel(otyp)
 	e2_1:SetLabelObject(e2)
 	c:RegisterEffect(e2_1)
-	return e1,e1_1,e2,e3
+	if owne then return e1_1,e2,e3,e2_1 else return e1,e1_1,e2,e3 end
 end
 function cm.AASTadjustop(otyp,ext)
 	return
 	function(e,tp,eg,ep,ev,re,r,rp)
 	local adjt={}
 	if ext then adjt=ext else adjt={e:GetLabelObject()} end
+	if #adjt==0 then e:Reset() return end
 	for _,te in pairs(adjt) do
 	--local te=e:GetLabelObject()
 	--if not te then Debug.Message(e:GetLabel()) return else Debug.Message(555) return end
 	--if aux.GetValueType(te)~="Effect" then Debug.Message(aux.GetValueType(te)) return end
 	--Debug.Message(#te)
 	--Debug.Message(te:GetOwner():GetCode())
+	
 	local c=te:GetHandler()
-	if not c:IsStatus(STATUS_CHAINING) then
+	if not c:IsStatus(STATUS_CHAINING) and c:IsStatus(STATUS_EFFECT_ENABLED) then
 		local xe={c:IsHasEffect(53765099)}
 		for _,v in pairs(xe) do v:Reset() end
 	end
@@ -4884,19 +4889,24 @@ end
 function cm.AASTactarget(e,te,tp)
 	if e:GetRange()==0 then
 		local ce=e:GetLabelObject()
-		return te:GetHandler()==e:GetOwner() and te==ce and ce:GetHandler():IsLocation(e:GetLabel())
+		return te:GetHandler()==e:GetOwner() and ce and te==ce and ce:GetHandler():IsLocation(e:GetLabel())
 	else return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject() end
 end
 function cm.AASTcostchk(otyp)
-	return
-	function(e,te,tp)
-	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or otyp&0x80000~=0
+	return  function(e,te,tp)
+--Debug.Message(9999)
+				if e:GetRange()==0 then
+					local ce=e:GetLabelObject()
+					if ce then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or ce:GetHandler():IsLocation(LOCATION_SZONE) or otyp&0x80000~=0 else e:Reset() return true end
+				else return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or e:GetHandler():IsLocation(LOCATION_SZONE) or otyp&0x80000~=0 end
 	end
 end
 function cm.AASTcostop(otyp)
 	return
 	function(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
+--Debug.Message(9999)
+--Debug.Message(aux.GetValueType(te))
 	local c=te:GetHandler()
 	local xe1=cm.AASTregi(c,te)
 	if otyp&0x80000~=0 then
@@ -7556,4 +7566,23 @@ function cm.RemoveElements(table1, table2)
 			end
 		end
 	end
+end
+function cm.IsActivatable(e,p)
+	local check=true
+	if e:GetHandler():IsHasEffect(EFFECT_CANNOT_TRIGGER) then check=false end
+	local p=e:GetHandlerPlayer()
+	local le1={Duel.IsPlayerAffectedByEffect(p,EFFECT_CANNOT_ACTIVATE)}
+	for _,v in pairs(le1) do
+		local val=v:GetValue()
+		if aux.GetValueType(val)=="number" or val(v,e,p) then check=false end
+	end
+	local le2={Duel.IsPlayerAffectedByEffect(p,EFFECT_ACTIVATE_COST)}
+	for _,v in pairs(le2) do
+		local cost=v:GetCost()
+		if cost and not cost(v,e,p) then
+			local tg=v:GetTarget()
+			if not tg or tg(v,e,p) then check=false end
+		end
+	end
+	return check
 end
