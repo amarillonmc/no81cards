@@ -44,14 +44,14 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=3 then return end
 	Duel.ConfirmDecktop(tp,4)
 	local g=Duel.GetDecktopGroup(tp,4)
+	local g1=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,0,nil)
+	g:Merge(g1)   
 	local ct=g:GetCount()
 	local spsum=0
 	local istear=0
 	local acg=g
-	if ct>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		local mg=g:Filter(cm.filter0,nil,e)
-		local mg1=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_MZONE,0,nil,e)
-		mg:Merge(mg1)	
+	if ct>0  then
+		local mg=g:Filter(cm.filter0,nil,e)	   
 		local sg1=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_EXTRA,0,nil,e,tp,mg,nil,chkf)
 		local mg2=nil
 		local sg2=nil
@@ -84,7 +84,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				fop(ce,e,tp,tc,mat2)
 				acg:Sub(mat2)
 			end
-			tc:CompleteProcedure()	
+			tc:CompleteProcedure()  
 		end
 			Duel.ShuffleDeck(tp)
 	   local e1=Effect.CreateEffect(e:GetHandler())

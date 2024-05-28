@@ -67,10 +67,11 @@ function cm.tg0(e,c)
 end
 
 function cm.thfil(c,tp)
-	return  c:IsCode(m-1) and c:GetActivateEffect():IsActivatable(tp,true,true)
+	return  c:IsCode(m-1) --and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.SelectMatchingCard(tp,cm.thfil,tp,LOCATION_DECK,0,1,1,nil,tp)
+	local g=Duel.GetMatchingGroup(cm.thfil,tp,LOCATION_DECK,0,1,1,nil,tp)
+	Debug.Message(#g)
 	if chk==0 then return #g>0 end
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)

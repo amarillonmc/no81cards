@@ -63,16 +63,15 @@ function c33200522.tzcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler():GetFlagEffect(33200500)>0 and re:IsActiveType(TYPE_MONSTER) and rp==tp
 end
 function c33200522.tztg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_HAND,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CARDTYPE)
 	e:SetLabel(Duel.AnnounceType(tp))
 end
 function c33200522.tzop(e,tp,eg,ep,ev,re,r,rp)
 	local typ=e:GetLabel()
 	local c=e:GetHandler()
-	if not Duel.IsExistingMatchingCard(c33200522.exfilter2,tp,0,LOCATION_HAND,1,nil) then return end
-	local g=Duel.SelectMatchingCard(c33200522.exfilter2,tp,0,LOCATION_HAND,1,1,nil)
-	if g>GetCount()>0 then 
+	local g=Duel.GetMatchingGroup(c33200522.exfilter2,tp,0,LOCATION_HAND,nil,typ)
+	if g:GetCount()>0 then 
 		for tc in aux.Next(g) do
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)

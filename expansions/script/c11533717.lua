@@ -60,8 +60,7 @@ function c11533717.filter(c,e,tp)
 	return c:IsSetCard(0x3a) and c:IsLevelBelow(2) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c11533717.ssptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler())>0 and
- Duel.IsExistingMatchingCard(c11533717.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler())>0 and Duel.IsExistingMatchingCard(c11533717.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c11533717.sspop(e,tp,eg,ep,ev,re,r,rp)
@@ -74,10 +73,6 @@ end
 function c11533717.condition(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	return (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
-end
-function c11533717.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsDiscardable() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c11533717.target(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chk==0 then return true end 
@@ -109,6 +104,7 @@ function c11533717.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end 
 function c11533717.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end 
 	--immune
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
