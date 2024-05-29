@@ -1,15 +1,15 @@
+--欲望的故乡
 function c10105561.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(10105561,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,10105561)
+	e1:SetCountLimit(1,10105561+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c10105561.sptg)
 	e1:SetOperation(c10105561.spop)
 	c:RegisterEffect(e1)
-    end
+end
 function c10105561.spfilter(c,e,tp)
 	return c:IsSetCard(0x7cdd) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
