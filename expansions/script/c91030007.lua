@@ -32,6 +32,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			{b3,aux.Stringid(m,2)})
 	if op==1 then
 	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	Duel.HintSelection(g)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 	e:GetHandler():RegisterFlagEffect(1,RESET_PHASE+PHASE_END,0,1)
 	elseif op==2 then

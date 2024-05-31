@@ -34,7 +34,8 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 			{b2,aux.Stringid(m,1)},
 			{b3,aux.Stringid(m,2)})
 	if op==1 then 
-	Duel.SelectTarget(tp,cm.fit,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,cm.fit,tp,LOCATION_ONFIELD,0,1,1,nil)
+	Duel.HintSelection(g)
 	e:GetHandler():RegisterFlagEffect(1,RESET_PHASE+PHASE_END,0,1)
 	elseif op==2 then
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)

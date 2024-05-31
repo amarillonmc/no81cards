@@ -9,7 +9,6 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_PZONE)
 	e2:SetCode(EVENT_CHAINING)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetCountLimit(1,id)
 	e2:SetCondition(s.condition)
 	e2:SetTarget(s.target)
@@ -30,6 +29,7 @@ function s.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e3:SetCountLimit(1,id+20000)
 	e3:SetCondition(s.chcon)
 	e3:SetTarget(s.chtg)
@@ -86,13 +86,11 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
+function s.chcon(e,tp,eg,ep,ev,re,r,rp)
+	return  ep~=tp 
+end
 function s.dsfilter(c)
 	return c:IsType(TYPE_PENDULUM)  and c:IsFaceup()
-end
-function s.chcon(e,tp,eg,ep,ev,re,r,rp)
-	local rep=re:GetOperation()
-	if not rep then return true end
-	return (re:IsActiveType(TYPE_SPELL) or re:IsActiveType(TYPE_TRAP))
 end
 function s.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.dsfilter,rp,0,LOCATION_ONFIELD,1,nil) end

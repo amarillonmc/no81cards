@@ -13,7 +13,6 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
  --spsummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,2))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
@@ -59,11 +58,11 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.desfilter(c,e,tp)
-	return  Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA+LOCATION_REMOVED,0,1,nil,e,tp,Group.FromCards(c))
+	return c:IsSetCard(0x541a) and c:IsType(TYPE_PENDULUM)and  Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA+LOCATION_REMOVED,0,1,nil,e,tp,Group.FromCards(c))
 end
 function s.spfilter(c,e,tp,dg)
 	local tc=dg:GetFirst()
-	return  c:IsFaceup() and (not c:IsCode(tc:GetCode()) and c:IsSetCard(0x541a)) and ((c:IsLocation(LOCATION_EXTRA)  and Duel.GetLocationCountFromEx(tp,tp,dg,c)>0 ) or (c:IsLocation(LOCATION_REMOVED)  and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 or tc:GetSequence()<5)))   and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return	c:IsFaceup() and (not c:IsCode(tc:GetCode()) and c:IsSetCard(0x541a)) and ((c:IsLocation(LOCATION_EXTRA)  and Duel.GetLocationCountFromEx(tp,tp,dg,c)>0 ) or (c:IsLocation(LOCATION_REMOVED)  and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 or tc:GetSequence()<5)))   and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function s.spfilter2(c,e,tp,code)
 	return  c:IsFaceup() and (not c:IsCode(code) and c:IsSetCard(0x541a)) and ((c:IsLocation(LOCATION_EXTRA)  and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 ) or (c:IsLocation(LOCATION_REMOVED)  and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 or tc:GetSequence()<5)))   and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)

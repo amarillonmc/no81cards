@@ -37,6 +37,7 @@ local spchk=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 			{b3,aux.Stringid(m,2)})
 	if op==1 then
 	local g=Duel.SelectTarget(tp,cm.filter,tp,0,LOCATION_GRAVE,1,1,nil,e,tp,spchk)
+	Duel.HintSelection(g)
 	e:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_ACTION+CATEGORY_GRAVE_SPSUMMON)
 	e:GetHandler():RegisterFlagEffect(1,RESET_PHASE+PHASE_END,0,1)
 	elseif op==2 then

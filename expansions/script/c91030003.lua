@@ -30,7 +30,8 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 			{b2,aux.Stringid(m,1)},
 			{b3,aux.Stringid(m,2)})
 	if op==1 then
-	Duel.SelectTarget(tp,aux.NegateEffectMonsterFilter,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,aux.NegateEffectMonsterFilter,tp,0,LOCATION_MZONE,1,1,nil)
+	Duel.HintSelection(g)
 	e:SetCategory(CATEGORY_DISABLE)
 	if Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_QUICKPLAY)>=3 then
 		e:SetCategory(CATEGORY_DISABLE+CATEGORY_CONTROL) end
@@ -38,7 +39,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	elseif op==2 then
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 	   e:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e:GetHandler():RegisterFlagEffect(2,RESET_PHASE+PHASE_END,0,1)
+	e:GetHandler():RegisterFlagEffect(2,RESET_PHASE+PHASE_END,0,1)  
 	elseif op==3 then
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 	e:SetCategory(CATEGORY_SPECIAL_SUMMON)
