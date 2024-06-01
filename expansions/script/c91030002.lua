@@ -30,12 +30,15 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			{b3,aux.Stringid(m,2)})
 	if op==1 then 
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+	e:SetCategory(CATEGORY_TOGRAVE)
 	e:GetHandler():RegisterFlagEffect(1,RESET_PHASE+PHASE_END,0,1)
 	elseif op==2 then
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e:GetHandler():RegisterFlagEffect(2,RESET_PHASE+PHASE_END,0,1)
 	elseif op==3 then
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e:GetHandler():RegisterFlagEffect(3,RESET_PHASE+PHASE_END,0,1)
 	end
 end

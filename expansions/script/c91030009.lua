@@ -39,6 +39,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if op==1 then 
 	local g=Duel.SelectTarget(tp,cm.filter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	Duel.HintSelection(g)
+	e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)	
 	e:GetHandler():RegisterFlagEffect(1,RESET_PHASE+PHASE_END,0,1)
 	elseif op==2 then
