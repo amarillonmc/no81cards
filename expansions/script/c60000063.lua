@@ -1,5 +1,4 @@
-if not pcall(function() require("expansions/script/c60002290") end) then require("script/c60002290") end
-local cm,m=lanp.U("设置卡","黄昏+黄昏骑士","黄昏刹那")
+local cm,m,o=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e0=Effect.CreateEffect(c)
@@ -30,7 +29,7 @@ function cm.handcon(e)
 end
 --Effect 1
 function cm.todeckfilter(c)
-	return lanc.IsSeries(c,"黄昏骑士") and c:IsAbleToDeck()
+	return c:IsSetCard(0x3626) and c:IsAbleToDeck()
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.todeckfilter,tp,LOCATION_GRAVE,0,3,nil) and e:GetHandler():GetFlagEffect(m)==0 and Duel.IsPlayerCanDraw(tp,1) end

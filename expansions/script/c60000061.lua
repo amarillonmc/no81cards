@@ -1,5 +1,4 @@
-if not pcall(function() require("expansions/script/c60002290") end) then require("script/c60002290") end
-local cm,m=lanp.U("设置卡","黄昏+黄昏骑士","黎明与黄昏相依")
+local cm,m,o=GetID()
 function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
@@ -64,7 +63,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function cm.cfilter(c)
-	return lanc.IsSeries(c,"黄昏") and c:IsFaceup()
+	return c:IsSetCard(0x626) or c:IsFacedown()
 end
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	if not (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) then return false end
@@ -84,7 +83,7 @@ function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 end
 --Effect 2
 function cm.thfilter1(c)
-	return lanc.IsSeries(c,"黄昏骑士") and c:IsAbleToHand()
+	return c:IsSetCard(0x3626) and c:IsAbleToHand()
 end
 function cm.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter1,tp,LOCATION_DECK,0,1,nil) end
@@ -127,7 +126,7 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 		if c:IsLocation(LOCATION_EXTRA) then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD)
-			e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+			e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 			e1:SetTargetRange(LOCATION_MZONE,0)
 			e1:SetTarget(cm.indtg)
 			e1:SetReset(RESET_PHASE+PHASE_END)

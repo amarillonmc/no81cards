@@ -1,5 +1,4 @@
-if not pcall(function() require("expansions/script/c60002290") end) then require("script/c60002290") end
-local cm,m=lanp.U("设置卡","黄昏+黄昏骑士","旭日与黄昏同在")
+local cm,m,o=GetID()
 function cm.initial_effect(c)
 	--Effect 1
 	local e0=Effect.CreateEffect(c)
@@ -46,7 +45,7 @@ function cm.initial_effect(c)
 end
 --Effect 1
 function cm.cfilter(c)
-	return lanc.IsSeries(c,"黄昏") and c:IsFaceup()
+	return c:IsSetCard(0x626) or c:IsFacedown()
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	if not (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) then return false end
@@ -71,16 +70,16 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --Effect 2
 function cm.togfilter(c)
-	return lanc.IsSeries(c,"黄昏骑士") and c:IsAbleToGrave()
+	return c:IsSetCard(0x3626) and c:IsAbleToGrave()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return  Duel.IsExistingMatchingCard(cm.togfilter,tp,LOCATION_DECK,0,1,nil)
-	and not e:GetHandler():IsAttack(2500)
+	and not e:GetHandler():IsAttack(2000)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.IsExistingMatchingCard(cm.togfilter,tp,LOCATION_DECK,0,1,nil)
-		and not c:IsAttack(2500) 
+		and not c:IsAttack(2000) 
 		and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -91,7 +90,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_SET_ATTACK_FINAL)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-				e1:SetValue(2500)
+				e1:SetValue(2000)
 				c:RegisterEffect(e1)
 			end
 		end
@@ -102,7 +101,7 @@ function cm.con1(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and lanc.IsSeries(c,"黄昏骑士") and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3626) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

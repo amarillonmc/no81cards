@@ -40,6 +40,7 @@ function c117179181.initial_effect(c)
     --monster effect
     --activate from hand
     local e4=Effect.CreateEffect(c)
+    e4:SetDescription(aux.Stringid(117179181,4))
     e4:SetType(EFFECT_TYPE_FIELD)
     e4:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
     e4:SetRange(LOCATION_MZONE)

@@ -1,10 +1,9 @@
-if not pcall(function() require("expansions/script/c60002290") end) then require("script/c60002290") end
-local cm,m=lanp.U("设置卡","黄昏+黄昏骑士","永夜与黄昏相伴")
+local cm,m,o=GetID()
 function cm.initial_effect(c)
 	c:SetSPSummonOnce(60000060)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsSeries,"黄昏骑士"),5,true)
+	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsSetCard,0x3626),5,true)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -48,7 +47,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.check(c)
-	return c and lanc.IsSeries(c,"黄昏骑士")
+	return c and c:IsSetCard(0x3626)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if cm.check(Duel.GetAttacker()) or cm.check(Duel.GetAttackTarget()) then
@@ -57,7 +56,7 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cfilter(c)
-	return lanc.IsSeries(c,"黄昏骑士") and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x3626) and c:IsAbleToGraveAsCost()
 end
 function cm.fspcon(e,c)
 	if c==nil then return true end
@@ -75,7 +74,7 @@ function cm.incon(e)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)>=15
 end
 function cm.spfilter3(c,tp)
-	return c:IsFaceup() and c:IsControler(tp) and lanc.IsSeries(c,"黄昏骑士")
+	return c:IsFaceup() and c:IsControler(tp) and c:IsSetCard(0x3626)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.spfilter3,1,nil,tp)

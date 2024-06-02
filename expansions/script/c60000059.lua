@@ -1,5 +1,4 @@
-if not pcall(function() require("expansions/script/c60002290") end) then require("script/c60002290") end
-local cm,m=lanp.U("设置卡","黄昏+黄昏骑士","幽冥与黄昏游戈")
+local cm,m,o=GetID()
 function cm.initial_effect(c)
 	--Effect 1
 	local e0=Effect.CreateEffect(c)
@@ -38,7 +37,7 @@ function cm.initial_effect(c)
 end
 --Effect 1
 function cm.cfilter(c)
-	return lanc.IsSeries(c,"黄昏") and c:IsFaceup()
+	return c:IsSetCard(0x626) or c:IsFacedown()
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	if not (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE) then return false end

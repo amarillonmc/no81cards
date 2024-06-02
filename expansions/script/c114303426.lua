@@ -126,3 +126,12 @@ function c114303426.operation2(e,tp,eg,ep,ev,re,r,rp)
     Duel.ConfirmCards(1-tp,Duel.GetFieldGroup(tp,LOCATION_EXTRA,0))
     c114303426.operation(e,tp,eg,ep,ev,re,r,rp)
 end
+
+local re=Duel.RegisterEffect
+Duel.RegisterEffect=function(e,tp)
+    if e:GetOwner():IsOriginalCodeRule(51194046) and e:GetCode()==EFFECT_MATERIAL_CHECK 
+    then
+        e:SetTargetRange(LOCATION_HAND+LOCATION_DECK,LOCATION_HAND+LOCATION_DECK)
+    end
+    return re(e,tp)
+end

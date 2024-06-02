@@ -90,6 +90,9 @@ function c111443942.disop(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 
+function c111443942.sdfilter(c)
+    return not c:IsOriginalCodeRule(23912837)
+end
 function c111443942.sdop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler():GetOwner()
     local g=Duel.GetMatchingGroup(c111443942.filter,c,LOCATION_DECK,LOCATION_DECK,nil)
@@ -98,13 +101,15 @@ function c111443942.sdop(e,tp,eg,ep,ev,re,r,rp)
         if tc:GetFlagEffect(111443942)==0 then
             local code=tc:GetOriginalCode()
             local ae=tc:GetActivateEffect()
+            local oath=0
+            if c111443942.sdfilter(tc) then oath=EFFECT_COUNT_CODE_OATH end
             local e1=Effect.CreateEffect(tc)
             e1:SetType(EFFECT_TYPE_ACTIVATE)
             e1:SetCode(ae:GetCode())
             e1:SetCategory(ae:GetCategory())
             e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+ae:GetProperty())
             e1:SetRange(LOCATION_DECK)
-            e1:SetCountLimit(1,code+EFFECT_COUNT_CODE_OATH)
+            e1:SetCountLimit(1,code+oath)
             e1:SetCondition(c111443942.sfcon)
             e1:SetTarget(c111443942.sftg)
             e1:SetOperation(c111443942.sfop)
