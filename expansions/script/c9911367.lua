@@ -105,7 +105,7 @@ function c9911367.setg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and chkc:IsSetCard(0xc956) end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsSetCard,tp,LOCATION_GRAVE,0,2,nil,0xc956) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	g=Duel.SelectTarget(tp,Card.IsSetCard,tp,LOCATION_GRAVE,0,2,2,nil,0xc956)
+	local g=Duel.SelectTarget(tp,Card.IsSetCard,tp,LOCATION_GRAVE,0,2,2,nil,0xc956)
 	local opt=0
 	if g:FilterCount(Card.IsAbleToRemove,nil)~=#g
 		or not Duel.IsExistingMatchingCard(c9911367.synfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) then
