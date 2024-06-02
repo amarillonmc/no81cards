@@ -89,6 +89,7 @@ RESETS_STANDARD_UNION 			= RESETS_STANDARD&(~(RESET_TOFIELD|RESET_LEAVE))
 RESETS_STANDARD_TOFIELD 		= RESETS_STANDARD&(~(RESET_TOFIELD))
 RESETS_STANDARD_EXC_GRAVE 		= RESETS_STANDARD&~(RESET_LEAVE|RESET_TOGRAVE)
 RESETS_STANDARD_FACEDOWN 		= RESETS_STANDARD&(~(RESET_TURN_SET))
+RESETS_STANDARD_ACTIVATION 		= RESETS_STANDARD&~(RESET_TOFIELD|RESET_LEAVE|RESET_TOGRAVE)
 
 --timings
 RELEVANT_TIMINGS = TIMINGS_CHECK_MONSTER|TIMING_MAIN_END|TIMING_END_PHASE
@@ -146,19 +147,23 @@ ARCHE_KEY_ETC		=	0xc460
 
 ARCHE_SANDSTAR = {33700058,33700945,33731003,33731004,33731005}
 
+CARD_ANIFRIENDS_SERVAL					= 33700055
 CARD_DESPERADO_HEART					= 33720100
 CARD_DESPERADO_TRICKSTER_THE_FORERUNNER	= 33720106
 CARD_KEY_FRAGMENTS_RIKI					= 33730131
 CARD_KEY_FRAGMENTS_RIN					= 33730133
 CARD_KEY_MEMORIA_HANABI 				= 33730159
 CARD_KEY_MEMORIA_JUST_ONE_MAGIC_WORD 	= 33730161
+CARD_ZEORYMER_OF_THE_SKY				= 112312313--33701376
 
 COUNTER_GEAS							= 0x1461
 COUNTER_COMPASSION_OF_DESPERADO_HEART	= 0x462
 COUNTER_CONNECTION_OF_DESPERADO_HEART	= 0x463
 COUNTER_KARMA_OF_DESPERADO_HEART		= 0x464
-COUNTER_SPARKLE 						= 0x443
 COUNTER_LBO_HAPPINESS					= 0x440
+COUNTER_LORE							= 0x246
+COUNTER_SAN								= 0x465
+COUNTER_SPARKLE 						= 0x443
 
 TOKEN_BELKA				=	33730163
 TOKEN_DESPERADO_HEART	=	33720101
@@ -438,6 +443,20 @@ function Duel.SetAdditionalOperationInfo(ch,cat,g,ct,p,val,...)
 	Duel.RegisterEffect(e1,0)
 	table.insert(global_additional_info_table[chain],{cat,g,ct,p,val,table.unpack(extra)})
 end
+function Duel.SetConditionalOperationInfo(f,ch,cat,g,ct,p,val,...)
+	if f then
+		Duel.SetOperationInfo(ch,cat,g,ct,p,val)
+	else
+		Duel.SetPossibleOperationInfo(ch,cat,g,ct,p,val,...)
+	end
+end
+function Duel.SetConditionalCustomOperationInfo(f,ch,cat,g,ct,p,val,...)
+	if f then
+		Duel.SetCustomOperationInfo(ch,cat,g,ct,p,val,...)
+	else
+		Duel.SetPossibleCustomOperationInfo(ch,cat,g,ct,p,val,...)
+	end
+end
 
 --Announce
 function Duel.AnnounceNumberMinMax(p,min,max,f)
@@ -510,6 +529,10 @@ function Duel.Banish(g,pos,r)
 	if not pos then pos=POS_FACEUP end
 	if not r then r=REASON_EFFECT end
 	return Duel.Remove(g,pos,r)
+end
+function Card.IsAbleToRemoveFacedown(c,tp,r)
+	if not r then r=REASON_EFFECT end
+	return c:IsAbleToRemove(tp,POS_FACEDOWN,r)
 end
 function Card.IsAbleToRemoveTemp(c,tp,r)
 	if not r then r=REASON_EFFECT end
@@ -776,7 +799,9 @@ end
 function Card.CheckNegateConjunction(c,e1,e2,e3)
 	return not c:IsImmuneToEffect(e1) and not c:IsImmuneToEffect(e2) and (not e3 or not c:IsImmuneToEffect(e3))
 end
-function Duel.Negate(tc,e,reset,notfield,forced,typ)
+
+TYPE_NEGATE_ALL = TYPE_MONSTER|TYPE_SPELL|TYPE_TRAP
+function Duel.Negate(g,e,reset,notfield,forced,typ,cond)
 	local rct=1
 	if not reset then
 		reset=0
@@ -785,41 +810,65 @@ function Duel.Negate(tc,e,reset,notfield,forced,typ)
 		reset=reset[1]
 	end
 	if not typ then typ=0 end
-	Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetCode(EFFECT_DISABLE)
-	e1:SetReset(RESET_EVENT|RESETS_STANDARD|reset,rct)
-	tc:RegisterEffect(e1,forced)
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e2:SetCode(EFFECT_DISABLE_EFFECT)
-	if not notfield then
-		e2:SetValue(RESET_TURN_SET)
+	
+	local returntype=aux.GetValueType(g)
+	if returntype=="Card" then
+		g=Group.FromCards(g)
 	end
-	e2:SetReset(RESET_EVENT|RESETS_STANDARD|reset,rct)
-	tc:RegisterEffect(e2,forced)
-	if not notfield and typ&TYPE_TRAP>0 and tc:IsType(TYPE_TRAPMONSTER) then
-		local e3=Effect.CreateEffect(e:GetHandler())
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD+reset,rct)
-		tc:RegisterEffect(e3,forced)
-		local res=tc:CheckNegateConjunction(e1,e2,e3)
+	local check=0
+	local c=e:GetHandler()
+	for tc in aux.Next(g) do
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetCode(EFFECT_DISABLE)
+		if cond then
+			e1:SetCondition(cond)
+		end
+		e1:SetReset(RESET_EVENT|RESETS_STANDARD|reset,rct)
+		tc:RegisterEffect(e1,forced)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		if cond then
+			e2:SetCondition(cond)
+		end
+		if not notfield then
+			e2:SetValue(RESET_TURN_SET)
+		end
+		e2:SetReset(RESET_EVENT|RESETS_STANDARD|reset,rct)
+		tc:RegisterEffect(e2,forced)
+		if not notfield and typ&TYPE_TRAP>0 and tc:IsType(TYPE_TRAPMONSTER) then
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+			if cond then
+				e3:SetCondition(cond)
+			end
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD+reset,rct)
+			tc:RegisterEffect(e3,forced)
+			local res=tc:CheckNegateConjunction(e1,e2,e3)
+			if res then
+				Duel.AdjustInstantly(tc)
+			end
+			return e1,e2,e3,res
+		end
+		local res=tc:CheckNegateConjunction(e1,e2)
 		if res then
 			Duel.AdjustInstantly(tc)
 		end
-		return e1,e2,e3,res
+		if returntype=="Card" then
+			return e1,e2,res
+		elseif res then
+			check=check+1
+		end
 	end
-	local res=tc:CheckNegateConjunction(e1,e2)
-	if res then
-		Duel.AdjustInstantly(tc)
-	end
-	return e1,e2,res
+	return check
 end
+
 function Duel.NegateInGY(tc,e,reset)
 	if not reset then reset=0 end
 	Duel.NegateRelatedChain(tc,RESET_TURN_SET)
@@ -915,6 +964,9 @@ function Auxiliary.BecauseOfThisEffect(e)
 	return	function(c)
 				return c:IsReason(REASON_EFFECT) and not c:IsReason(REASON_REDIRECT) and c:GetReasonEffect()==e
 			end
+end
+function Duel.GetGroupOperatedByThisEffect(e,exc)
+	return Duel.GetOperatedGroup():Filter(aux.BecauseOfThisEffect(e),exc)
 end
 function Auxiliary.AfterShuffle(g)
 	for p=0,1 do
@@ -1099,15 +1151,15 @@ function Card.GetRating(c)
 end
 function Card.GetRatingAuto(c)
 	if c:HasLevel() then
-		return c:GetLevel()
+		return c:GetLevel(),0
 	end
 	if c:IsOriginalType(TYPE_XYZ) then
-		return c:GetRank()
+		return c:GetRank(),TYPE_XYZ
 	end
 	if c:IsOriginalType(TYPE_LINK) then
-		return c:GetLink()
+		return c:GetLink(),TYPE_LINK
 	end
-	return 0
+	return 0,nil
 end
 function Card.GetOriginalRating(c)
 	local list={false,false,false}
@@ -1124,15 +1176,15 @@ function Card.GetOriginalRating(c)
 end
 function Card.GetOriginalRatingAuto(c)
 	if c:HasLevel(true) then
-		return c:GetOriginalLevel()
+		return c:GetOriginalLevel(),0
 	end
 	if c:IsOriginalType(TYPE_XYZ) then
-		return c:GetOriginalRank()
+		return c:GetOriginalRank(),TYPE_XYZ
 	end
 	if c:IsOriginalType(TYPE_LINK) then
-		return c:GetOriginalLink()
+		return c:GetOriginalLink(),TYPE_LINK
 	end
-	return 0
+	return 0,nil
 end
 	
 function Card.IsRating(c,rtyp,...)
@@ -1670,6 +1722,11 @@ function Auxiliary.ChkfMMZ(sumcount)
 	return	function(sg,e,tp,mg)
 				return Duel.GetMZoneCount(tp,sg)>=sumcount
 			end
+end
+
+--Equip
+function Auxiliary.IsEquippedCond(e)
+	return e:GetHandler():GetEquipTarget()
 end
 
 --Excavate
@@ -2210,7 +2267,7 @@ function Duel.GetGYCount(p)
 	if not p then
 		return Duel.GetFieldGroupCount(0,LOCATION_GRAVE,LOCATION_GRAVE)
 	else
-		return Duel.GetFieldGroupCount(LOCATION_GRAVE)
+		return Duel.GetFieldGroupCount(p,LOCATION_GRAVE,0)
 	end
 end
 function Duel.GetBanishment(p)
@@ -2249,7 +2306,35 @@ function Auxiliary.GetMustMaterialGroup(p,eff)
 	return Duel.GetMustMaterial(p,eff)
 end
 
---Can't be used for any ED materials
+function Auxiliary.CannotBeTributeOrMaterial(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EFFECT_UNRELEASABLE_SUM)
+	e1:SetValue(1)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_UNCOPYABLE)
+	e3:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+	e3:SetValue(1)
+	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+	e4:SetValue(1)
+	c:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+	c:RegisterEffect(e5)
+	local e6=e4:Clone()
+	e6:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	c:RegisterEffect(e6)
+end
+
 Auxiliary.CannotBeEDMatCodes = {}
 table.insert(Auxiliary.CannotBeEDMatCodes,EFFECT_CANNOT_BE_FUSION_MATERIAL)
 table.insert(Auxiliary.CannotBeEDMatCodes,EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
@@ -2401,6 +2486,7 @@ function Duel.SetCardOperationInfo(g,cat)
 	if aux.GetValueType(g)=="Card" then g=Group.FromCards(g) end
 	return Duel.SetOperationInfo(0,cat,g,#g,g:GetFirst():GetControler(),g:GetFirst():GetLocation())
 end
+
 
 --Phases
 function Duel.IsDrawPhase(tp)
@@ -2669,6 +2755,11 @@ Card.IsRelateToChain = function(c,...)
 	end
 end
 
+function Auxiliary.RelationTarget(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	e:GetHandler():CreateEffectRelation(e)
+end
+
 --Remain on field
 function Auxiliary.RemainOnFieldCost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -2716,6 +2807,32 @@ function Duel.SSetAndFastActivation(p,g,e)
 			tc:RegisterEffect(e1)
 		end
 	end
+end
+
+--Special Summon Procedures and After Effect Resolution
+function Auxiliary.ApplyEffectImmediatelyAfterChainResolution(f,c,e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_END)
+	e1:SetLabelObject(e)
+	e1:SetOperation(function(_e,_tp,_eg,_ep,_ev,_re,_r,_rp)
+		f(e,tp,eg,ep,ev,re,r,rp,_e)
+		_e:Reset()
+	end
+	)
+	e1:SetOwnerPlayer(tp)
+	Duel.RegisterEffect(e1,tp)
+	return e1
+end
+
+--Summoning Conditions
+function Auxiliary.MustBeSpecialSummoned(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	c:RegisterEffect(e1)
+	return e1
 end
 
 --Update stats

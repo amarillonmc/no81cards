@@ -12,11 +12,13 @@ function c91040033.initial_effect(c)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
 	 local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TODECK)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_REMOVE)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetRange(LOCATION_REMOVED)
 	e3:SetCountLimit(1,m*2)
+	e3:SetCondition(cm.drcon)
 	e3:SetTarget(cm.drtg)
 	e3:SetOperation(cm.drop)
 	c:RegisterEffect(e3)
@@ -92,26 +94,24 @@ end
 function cm.splimit(e,c)
 	return not c:IsRace(RACE_ZOMBIE)
 end
+function cm.thfilter(c,tp)
+	return c:IsFaceup() and c:IsRace(RACE_ZOMBIE)  and c:IsType(TYPE_FUSION)
+		 and c:IsControler(tp)
+end
+function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.thfilter,1,nil,tp)
+end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_REMOVED)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.fit2(c)
 	return c:IsAbleToDeck() and c:IsRace(RACE_ZOMBIE)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,cm.fit2,tp,LOCATION_REMOVED,0,1,2,nil)
-		if g:GetCount()>0 then
-			if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then
-				Duel.SendtoDeck(g,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
-			else
-				local opt=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))
-				if opt==0 then
-					Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT)
-				else
-					Duel.SendtoDeck(g,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
-				end
-			end
-		end
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
 end

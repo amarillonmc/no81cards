@@ -45,6 +45,18 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.hsop)
 	c:RegisterEffect(e2)
 end
+cm.is_fusion=true
+if not changefusion then
+	changefusion=true
+	cm.is_type=Card.IsType
+	Card.IsType=function(car,typ,...)
+		if typ&TYPE_FUSION>0 then
+			return cm.is_type(car,typ,...) or car.is_fusion
+		else
+			return cm.is_type(car,typ,...)
+		end
+	end
+end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
 	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)

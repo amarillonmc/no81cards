@@ -45,6 +45,18 @@ function cm.initial_effect(c)
 	e7:SetOperation(cm.drop)
 	c:RegisterEffect(e7)
 end
+cm.is_fusion=true
+if not changefusion then
+	changefusion=true
+	cm.is_type=Card.IsType
+	Card.IsType=function(car,typ,...)
+		if typ&TYPE_FUSION>0 then
+			return cm.is_type(car,typ,...) or car.is_fusion
+		else
+			return cm.is_type(car,typ,...)
+		end
+	end
+end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end

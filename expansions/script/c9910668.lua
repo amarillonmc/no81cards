@@ -1,7 +1,7 @@
---调时鸟
+--拉尼亚凯亚之腾蛇
 function c9910668.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,5,4)
+	aux.AddXyzProcedure(c,nil,5,3)
 	c:EnableReviveLimit()
 	--disable
 	local e1=Effect.CreateEffect(c)
@@ -83,6 +83,9 @@ function c9910668.damop(e,tp,eg,ep,ev,re,r,rp)
 	tc:ResetFlagEffect(9910668)
 	e:Reset()
 end
+function c9910668.dsfilter(c)
+	return c:IsType(TYPE_XYZ) and c:IsRankAbove(5)
+end
 function c9910668.dscon(e)
-	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsRank,1,nil,5)
+	return e:GetHandler():GetOverlayGroup():IsExists(c9910668.dsfilter,1,nil)
 end

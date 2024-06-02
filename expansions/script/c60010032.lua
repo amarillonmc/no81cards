@@ -86,8 +86,7 @@ function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local races=e:GetHandler():GetRace()
 	local attrs=e:GetHandler():GetAttribute()
-	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,tp,races,attrs)
-		and c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT) end
+	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,tp,races,attrs) end
 	return Duel.SelectEffectYesNo(tp,c,96)
 end
 function cm.desrepval(e,c)

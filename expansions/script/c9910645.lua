@@ -1,4 +1,4 @@
---航线设计师 法夸尔
+--拉尼亚凯亚之先导
 function c9910645.initial_effect(c)
 	--remove
 	local e1=Effect.CreateEffect(c)
@@ -13,6 +13,16 @@ function c9910645.initial_effect(c)
 	e1:SetTarget(c9910645.rmtg)
 	e1:SetOperation(c9910645.rmop)
 	c:RegisterEffect(e1)
+	--spsummon
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,9910645)
+	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(c9910645.sptg)
+	e2:SetOperation(c9910645.spop)
+	c:RegisterEffect(e2)
 end
 function c9910645.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>0
@@ -80,4 +90,34 @@ function c9910645.retop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910645.aclimit(e,re,tp)
 	return re:GetHandler():IsOnField() and re:IsHasType(EFFECT_TYPE_SINGLE) and re:GetCode() and re:GetCode()==EVENT_REMOVE
+end
+function c9910645.spfilter(c,e,tp)
+	return c:IsSetCard(0xa952) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+end
+function c9910645.filter(c)
+	return c:IsSetCard(0xa952) and not c:IsReason(REASON_RETURN) and c:IsCanOverlay()
+end
+function c9910645.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910645.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
+		and Duel.IsExistingMatchingCard(c9910645.filter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
+	local g=Duel.GetMatchingGroup(c9910645.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function c9910645.gselect(g)
+	return g:GetClassCount(Card.GetTurnID)==#g
+end
+function c9910645.spop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sg=Duel.SelectMatchingCard(tp,c9910645.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+	local sc=sg:GetFirst()
+	if sc and Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)>0 then
+		local g=Duel.GetMatchingGroup(c9910645.filter,tp,LOCATION_GRAVE,0,nil)
+		local mg=g:SelectSubGroup(tp,c9910645.gselect,false,1,#g)
+		if #mg>0 then
+			Duel.HintSelection(mg)
+			Duel.Overlay(sc,mg)
+		end
+	end
 end

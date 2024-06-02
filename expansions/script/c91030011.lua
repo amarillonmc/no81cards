@@ -25,8 +25,8 @@ return c:IsFaceup() and c:IsSetCard(0x9d3)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsSetCard(0x9d3) and chkc:IsControler(tp) and chkc:IsFaceup() end
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) or  Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil) or Duel.IsExistingTarget(cm.fit,tp,LOCATION_ONFIELD,0,1,nil) end
-	local b1=Duel.IsExistingTarget(cm.fit,tp,LOCATION_ONFIELD,0,1,nil) 
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) or  Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil) or Duel.IsExistingTarget(cm.fit,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	local b1=Duel.IsExistingTarget(cm.fit,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) 
 	local b2=Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
 	local b3=Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil)
 	 local op=aux.SelectFromOptions(tp,
@@ -34,7 +34,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 			{b2,aux.Stringid(m,1)},
 			{b3,aux.Stringid(m,2)})
 	if op==1 then 
-	local g=Duel.SelectTarget(tp,cm.fit,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,cm.fit,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
 	Duel.HintSelection(g)
 	e:GetHandler():RegisterFlagEffect(1,RESET_PHASE+PHASE_END,0,1)
 	elseif op==2 then
@@ -53,19 +53,21 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
 		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(m,4))
 		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)
 		e1:SetValue(cm.efilter)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
 		if Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_QUICKPLAY)>=3 and Duel.SelectYesNo(tp,aux.Stringid(m,3))then
-			 local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-	e1:SetValue(LOCATION_HAND)
-	tc:RegisterEffect(e1)
+			 local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetReset(RESET_EVENT+RESETS_REDIRECT)
+	e2:SetValue(LOCATION_HAND)
+	tc:RegisterEffect(e2)
 		end
 	end
 	Duel.ResetFlagEffect(c,1)

@@ -26,7 +26,7 @@ function cm.initial_effect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_HAND)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetTarget(cm.tgtg)
 	e1:SetOperation(cm.tgop)
 	c:RegisterEffect(e1)
@@ -40,6 +40,18 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.hstg)
 	e2:SetOperation(cm.hsop)
 	c:RegisterEffect(e2)
+end
+cm.is_fusion=true
+if not changefusion then
+	changefusion=true
+	cm.is_type=Card.IsType
+	Card.IsType=function(car,typ,...)
+		if typ&TYPE_FUSION>0 then
+			return cm.is_type(car,typ,...) or car.is_fusion
+		else
+			return cm.is_type(car,typ,...)
+		end
+	end
 end
 function cm.afil1(c)
 	return (c:IsCode(60002335) or c:IsCode(60002336)) and c:IsAbleToGrave()

@@ -88,15 +88,11 @@ end
 function s.spcfilter2(c,e,tp)
 	return c:IsSetCard(0x9221) and c:IsAbleToDeckOrExtraAsCost() and c:IsFaceup() and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)
 end
-function s.spfilter2(c,e,tp,v)
+function s.spfilter2(c,e,tp,tc)
 	local t=Auxiliary.GetValueType(v)
-	local lv=0
-	local tc=nil
-	if t=='Card' then 
-		lv=v:GetLevel()
-		tc=v
-	else lv=v end
-	return c:IsSetCard(0x9221) and c:IsLevel(lv) and Duel.GetLocationCountFromEx(tp,tp,tc,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	local lv=tc:GetLevel()
+	local code=tc:GetCode()
+	return c:IsSetCard(0x9221) and c:IsLevel(lv) and not c:IsCode(code) and Duel.GetLocationCountFromEx(tp,tp,tc,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
@@ -111,14 +107,14 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local tc=Duel.SelectMatchingCard(tp,s.spcfilter2,tp,LOCATION_MZONE,0,1,1,e:GetHandler(),e,tp):GetFirst()
-	e:SetLabel(tc:GetLevel())
+	e:SetLabelObject(tc)
 	Duel.SendtoDeck(tc,nil,2,REASON_COST)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	local lv=e:GetLabel()
-	if not lv then return end
+	local tc=e:GetLabelObject()
+	if not tc then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sc=Duel.SelectMatchingCard(tp,s.spfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,lv):GetFirst()
+	local sc=Duel.SelectMatchingCard(tp,s.spfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc):GetFirst()
 	if not sc then return end
 	Duel.SpecialSummon(sc,0,tp,tp,true,false,POS_FACEUP)
 end

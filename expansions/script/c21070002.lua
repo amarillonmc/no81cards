@@ -19,7 +19,6 @@ function s.initial_effect(c)
 	e2:SetType(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,id+o)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCost(aux.bfgcost)
 	e1:SetCondition(s.condition1)
 	e2:SetTarget(s.drtg)
@@ -72,7 +71,7 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	e7:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e7,tp)
 end
-function s.splimit(e,c)
+function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not aux.IsCodeListed(c,21070001)
 end
 
