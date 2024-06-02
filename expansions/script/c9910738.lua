@@ -6,7 +6,7 @@ function c9910738.initial_effect(c)
 	c:EnableReviveLimit()
 	--flag
 	QutryYgzw.AddTgFlag(c)
-	--remove
+	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
@@ -30,7 +30,7 @@ function c9910738.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910738.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
+	return Duel.GetAttacker():IsControler(1-tp)
 end
 function c9910738.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
