@@ -56,6 +56,9 @@ function c11561058.xbop(e,tp,eg,ep,ev,re,r,rp)
 	local ac=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 	local g=Duel.GetMatchingGroup(Card.IsCode,tp,0,LOCATION_HAND,nil,ac)
 	local ct
+	local hg=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+	if hg:GetCount()==0 then return end
+	Duel.ConfirmCards(tp,hg)
 	if g:GetCount()>0 then
 		ct=Duel.SendtoGrave(g,REASON_EFFECT+REASON_DISCARD)
 		c11561058[1-tp]=c11561058[1-tp]+ct

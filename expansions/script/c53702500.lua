@@ -4660,7 +4660,7 @@ end
 function cm.ActivatedAsSpellorTrap(c,otyp,loc,setava,owne)
 	local e1=nil
 	if owne then e1=owne else
-		local e1=Effect.CreateEffect(c)
+		e1=Effect.CreateEffect(c)
 		if otyp&(TYPE_TRAP+TYPE_QUICKPLAY)~=0 then
 			e1:SetType(EFFECT_TYPE_QUICK_O)
 			e1:SetCode(EVENT_FREE_CHAIN)
@@ -4936,6 +4936,7 @@ function cm.AASTcostop(otyp)
 	elseif not c:IsLocation(LOCATION_SZONE) then
 		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
 	end
+	if c:IsPreviousLocation(LOCATION_HAND) then c:SetStatus(STATUS_ACT_FROM_HAND,true) end
 	xe1:SetLabel(c:GetSequence()+1,otyp)
 	e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 	c:CreateEffectRelation(te)
@@ -5608,9 +5609,25 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			end
 			return table.unpack(t)
 		end
+		ADIMI_NegateActivation=Duel.NegateActivation
+		Duel.NegateActivation=function(chainc)
+			local re=ADIMI_GetChainInfo(chainc,CHAININFO_TRIGGERING_EFFECT)
+			local xe={}
+			if re and re:GetHandler() then xe={re:GetHandler():IsHasEffect(53765099)} end
+			local b=false
+			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
+			local res=ADIMI_NegateActivation(chainc)
+			if res and b then
+				local rc=re:GetHandler()
+				if rc and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
+					rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+				end
+			end
+			return res
+		end
 		ADIMI_ChangeChainOperation=Duel.ChangeChainOperation
 		Duel.ChangeChainOperation=function(chainc,...)
-			local re=Duel.GetChainInfo(chainc,CHAININFO_TRIGGERING_EFFECT)
+			local re=ADIMI_GetChainInfo(chainc,CHAININFO_TRIGGERING_EFFECT)
 			local xe={}
 			if re and re:GetHandler() then xe={re:GetHandler():IsHasEffect(53765099)} end
 			local b=false
