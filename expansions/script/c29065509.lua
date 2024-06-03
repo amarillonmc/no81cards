@@ -1,6 +1,7 @@
 --方舟骑士-煌
 c29065509.named_with_Arknight=1
 function c29065509.initial_effect(c)
+	aux.AddCodeList(c,29065500) 
 	--xyz summon
 	aux.AddXyzProcedureLevelFree(c,c29065509.mfilter,aux.TRUE,2,2)
 	c:EnableReviveLimit()

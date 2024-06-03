@@ -1,12 +1,12 @@
 --甜食派对 百江渚
-Duel.LoadScript("c60152900.lua")
+dofile("expansions/script/c60152900.lua")
 local s,id,o = GetID()
 function s.initial_effect(c)
 	local ge1 = Scl.SetGlobalFieldTriggerEffect(0, "BeSpecialSummoned", id,
 		nil, s.regop)
 	local e1 = Scl.CreateIgnitionEffect(c, "SpecialSummon", nil, "SpecialSummon",
-		nil, "Hand,MonsterZone", s.spcon, { "Cost", s.rfilter, "Tribute" },
-		{"~Target", s.spfilter, "SpecialSummon", "Deck,GY"}, s.spop)
+		nil, "Hand,MonsterZone", s.spcon, s.spcost,
+		{"~Target", "SpecialSummon", s.spfilter, "Deck,GY"}, s.spop)
 	local e2 = Scl.CreateQuickOptionalEffect_NegateActivation(c, "Dummy", nil,
 		"GY", s.rmcon, aux.bfgcost)
 	s.LimitCost(e1, e2)
@@ -44,6 +44,11 @@ function s.cfilter(c)
 end
 function s.spcon(e,tp)
 	return not Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
+end
+function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0 end
+	Duel.Release(c,REASON_COST)
 end
 function s.spfilter(c,e,tp)
 	return Scl.IsCanBeSpecialSummonedNormaly(c,e,tp) and c:IsType(TYPE_NORMAL)

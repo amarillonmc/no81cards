@@ -1,12 +1,16 @@
 --美味诱惑 百江渚
-Duel.LoadScript("c60152900.lua")
+dofile("expansions/script/c60152900.lua")
 local s,id,o = GetID()
 function s.initial_effect(c)
 	local e1 = Scl.CreateIgnitionEffect(c, "Search", {1, id}, "Search,Add2Hand",
-		nil, "Hand,MonsterZone", nil, { "Cost", Card.IsReleasable, "Tribute" },
-		{"~Target", s.thfilter, "Add2Hand", "Deck"}, s.thop)
+		nil, "Hand,MonsterZone", nil, s.thcost,
+		{"~Target", "Add2Hand", s.thfilter, "Deck"}, s.thop)
 	local e2 = Scl.CreateQuickOptionalEffect(c, nil, {id, 1}, {1, id + 100}, nil, 
 		nil, "GY", nil, aux.bfgcost, nil, s.buffop)
+end
+function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsReleasable() end
+	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function s.thfilter(c)
 	return not c:IsCode(id) and c:IsSetCard(0x6b29) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
@@ -20,7 +24,7 @@ end
 function s.buffop(e,tp)
 	local c = e:GetHandler()
 	local e1 = Scl.CreateFieldBuffEffect({c,tp}, "!BeEffectTarget", 1, s.tg, {"MonsterZone", 0}, nil, nil, RESET_EP_SCL)
-	local e2 = Scl.CreateFieldBuffEffect({c,tp}, "!BeDestroyedByEffect", 1, s.tg, {"MonsterZone", 0}, nil, nil, RESET_EP_SCL)
+	local e2 = Scl.CreateFieldBuffEffect({c,tp}, "!BeDestroyedByEffects", 1, s.tg, {"MonsterZone", 0}, nil, nil, RESET_EP_SCL)
 	local e3 = Scl.CreateFieldBuffEffect({c,tp}, "!NegateEffect", 1, s.tg, {"MonsterZone", 0}, nil, nil, RESET_EP_SCL)
 	local e4 = Scl.CreateEffectBuffEffect({c,tp}, "!NegateActivatedEffect", s.val, nil, nil, RESET_EP_SCL)
 end

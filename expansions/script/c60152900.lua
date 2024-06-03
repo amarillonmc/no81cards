@@ -1,5 +1,6 @@
 --LaBil的外包，很新很亮
-Duel.LoadScript("c10100000.lua")
+if B2Sayaka then return end
+dofile("expansions/script/c10100000.lua")
 local s = {}
 --What a fvvvvvck nice new library, it seems soooooooooooo cooooooool!
 B2Sayaka = {}
