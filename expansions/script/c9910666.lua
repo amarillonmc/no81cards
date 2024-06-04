@@ -29,7 +29,7 @@ function c9910666.initial_effect(c)
 	e4:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e4:SetCountLimit(1,9910674)
 	e4:SetCondition(c9910666.spcon)
-	e4:SetTarget(c9910666.spcon)
+	e4:SetTarget(c9910666.sptg)
 	e4:SetOperation(c9910666.spop)
 	c:RegisterEffect(e4)
 end
