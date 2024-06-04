@@ -42,7 +42,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	g1:Merge(g2)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,2,0,0)
 end
-function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_MZONE,0,1,nil,TYPE_TOKEN) and Duel.GetFieldGroupCount(1-tp,LOCATION_ONFIELD,0)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local g1=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_MZONE,0,1,1,nil,TYPE_TOKEN)
