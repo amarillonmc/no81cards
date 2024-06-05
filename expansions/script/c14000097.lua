@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_CANNOT_CHANGE_POS_E)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCondition(cm.poscon)
 	c:RegisterEffect(e1)
@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(cm.poscon)
 	c:RegisterEffect(e2)
@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_SET_POSITION)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTarget(function(e,c) return c==e:GetHandler() end)
@@ -44,12 +44,13 @@ function cm.initial_effect(c)
 	--set
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,1))
+	e5:SetCategory(CATEGORY_SUMMON)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_TO_GRAVE)
 	e5:SetProperty(EFFECT_FLAG_DELAY)
-	e5:SetCondition(cm.setcon)
-	e5:SetTarget(cm.settg)
-	e5:SetOperation(cm.setop)
+	e5:SetCondition(cm.sumcon)
+	e5:SetTarget(cm.sumtg)
+	e5:SetOperation(cm.sumop)
 	c:RegisterEffect(e5)
 end
 function cm.BRAVE(c)
@@ -83,24 +84,31 @@ end
 function cm.setfilter(c,e,tp)
 	return c:IsFaceup() and c:GetSequence()<5
 end
-function cm.setcon(e)
+function cm.sumcon(e)
 	local tp=e:GetHandlerPlayer()
 	return not Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_SZONE,0,1,nil)
 end
-function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanTurnSet() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+function cm.sumfilter(c,tp)
+	if not cm.BRAVE(c) then return false end
+	if c:IsLocation(LOCATION_SZONE) and c:IsLevelAbove(5) then
+		local min,max=c:GetTributeRequirement()
+		local ct=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
+		local ct1=Duel.GetReleaseGroupCount(tp)
+		ct=ct+ct1
+		if ct<1 or ct<min then return false end
+	end
+	return c:IsSummonable(true,nil,1)
 end
-function cm.setop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
-	Duel.ConfirmCards(1-tp,c)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetCode(EFFECT_CHANGE_TYPE)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-	e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-	c:RegisterEffect(e1)
+function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return eg:IsExists(cm.sfilter,1,nil,nil,tp) and Duel.IsExistingMatchingCard(cm.sumfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
+end
+function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+	local g=Duel.SelectMatchingCard(tp,cm.sumfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,1,nil,tp)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.Summon(tp,tc,true,nil,1)
+	end
 end

@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_CANNOT_CHANGE_POS_E)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e0:SetRange(LOCATION_MZONE)
 	e0:SetCondition(cm.poscon)
 	c:RegisterEffect(e0)
@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(cm.poscon)
 	c:RegisterEffect(e2)
@@ -32,7 +32,7 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_SET_POSITION)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTarget(function(e,c) return c==e:GetHandler() end)
@@ -77,9 +77,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	while tc do
 		bool1=1
-		if not tc:IsImmuneToEffect(e) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0
-			and not tc:IsType(TYPE_PENDULUM+TYPE_TOKEN) then
-			if Duel.MoveToField(tc,tp,1-tp,LOCATION_SZONE,POS_FACEDOWN,true)~=0 then
+		if Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0 and tc:IsCanTurnSet() and not tc:IsType(TYPE_PENDULUM+TYPE_TOKEN) then
+			if Duel.MoveToField(tc,tp,1-tp,LOCATION_SZONE,POS_FACEDOWN,true)~=0  then
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetCode(EFFECT_CHANGE_TYPE)
 				e1:SetType(EFFECT_TYPE_SINGLE)
@@ -88,9 +87,11 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 				tc:RegisterEffect(e1)
 				bool1=0
+			else
+				Duel.Remove(tc,POS_FACEDOWN,REASON_RULE)
 			end
 		end
-		if tc:IsAbleToRemove(tp,POS_FACEDOWN,REASON_RULE) and bool1==1 then
+		if not tc:IsType(TYPE_TOKEN) and (tc:IsFaceup() or not tc:IsLocation(LOCATION_REMOVED)) and bool1==1 then
 			Duel.Remove(tc,POS_FACEDOWN,REASON_RULE)
 		end
 		tc=g:GetNext()

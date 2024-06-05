@@ -2,6 +2,21 @@
 local m=14000508
 local cm=_G["c"..m]
 cm.named_with_Spositch=1
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 xpcall(function() require("expansions/script/c14000501") end,function() require("script/c14000501") end)
 function cm.initial_effect(c)
 	--xyz summon
@@ -11,7 +26,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_INACTIVATE)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
