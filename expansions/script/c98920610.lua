@@ -65,7 +65,7 @@ function c98920610.gfilter(c)
 end
 function c98920610.condition(e,tp,eg,ep,ev,re,r,rp)
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return loc==LOCATION_GRAVE or loc==LOCATION_HAND or loc==LOCATION_REMOVED 
+	return ep==1-tp and (loc==LOCATION_GRAVE or loc==LOCATION_HAND or loc==LOCATION_REMOVED) 
 end
 function c98920610.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)

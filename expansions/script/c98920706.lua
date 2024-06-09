@@ -48,7 +48,7 @@ function c98920706.damcon2(e,tp,eg,ep,ev,re,r,rp)
 	return rp==tp
 end
 function c98920706.damtg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:GetCount()==1 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and eg:GetCount()==1 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	local g=eg:Filter(c98920706.sfilter,nil)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
