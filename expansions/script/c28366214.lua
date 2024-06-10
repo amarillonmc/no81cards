@@ -61,7 +61,7 @@ function c28366214.activate(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCondition(c28366214.actcon)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		Duel.RegisterEffect(e2,tp)
-		if Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.SelectYesNo(tp,aux.Stringid(28366214,2)) end
+		if Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28366214,2)) then
 			Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD)
 			local e3=Effect.CreateEffect(e:GetHandler())
 			e3:SetType(EFFECT_TYPE_SINGLE)

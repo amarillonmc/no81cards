@@ -184,7 +184,7 @@ function c11561057.desop(e,tp,eg,ep,ev,re,r,rp)
 		local cg=c:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
 		if #cg==0 then return end
 		res=Duel.Destroy(cg,REASON_EFFECT)
-	elseif  c:IsRelateToEffect(e) and at==2 and #cg21>0 and Duel.SelectYesNo(tp,aux.Stringid(11561057,5)) then
+	elseif  c:IsRelateToEffect(e) and at==2 and #cg2>0 and Duel.SelectYesNo(tp,aux.Stringid(11561057,5)) then
 		local cg=Duel.GetMatchingGroup(c11561057.desfilther1,tp,0,LOCATION_MZONE,nil,e)
 		local cg2=c:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
 		if #cg==0 then return end

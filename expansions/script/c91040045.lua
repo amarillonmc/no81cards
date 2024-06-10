@@ -95,7 +95,6 @@ function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 			local sg2=Duel.SelectMatchingCard(1-tp,cm.fit21,1-tp,LOCATION_DECK,0,1,1,nil)
 			Duel.SendtoHand(sg2,nil,REASON_EFFECT)
 		end
-	end
 end
 function cm.cttg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
