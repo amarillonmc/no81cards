@@ -11,6 +11,7 @@ function c9911510.initial_effect(c)
 	e2:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetProperty(EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetTarget(c9911510.cdstg)
 	c:RegisterEffect(e2)
 	--actlimit
 	local e3=Effect.CreateEffect(c)
@@ -45,6 +46,9 @@ function c9911510.initial_effect(c)
 	e6:SetTarget(c9911510.eftg)
 	e6:SetLabelObject(e5)
 	c:RegisterEffect(e6)
+end
+function c9911510.cdstg(e,c)
+	return c:IsControler(e:GetHandlerPlayer())
 end
 function c9911510.limcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsSummonPlayer,1,e:GetHandler(),tp)

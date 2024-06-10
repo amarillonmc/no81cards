@@ -75,5 +75,5 @@ function c10150046.ovfilter(c)
 end
 function c10150046.xyzop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,10150046)==0 end
-	Duel.RegisterFlagEffect(tp,10150046,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,10150046,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
