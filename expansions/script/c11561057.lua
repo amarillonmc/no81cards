@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e3:SetCost(c11561057.descost)
-	e3:SetTarget(c11561057.destg)
+	e3:SetTarget(c11561057.destg2)
 	e3:SetOperation(c11561057.desop)
 	c:RegisterEffect(e3)
 	--spsummon
@@ -85,28 +85,28 @@ function c11561057.spop(e,tp,eg,ep,ev,re,r,rp,c)
 		e:GetHandler():AddCounter(0x1,ct)
 		if Duel.GetLP(tp)<2001 then 
 			Duel.BreakEffect()
-		local cg1=c:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
-		local cg2=Duel.GetMatchingGroup(c11561057.desfilther1,tp,0,LOCATION_MZONE,nil,e)
+		local cg1=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil,e)
+		local cg2=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_SZONE,nil,e)
 		local off=1
 		local ops={}
 		local opval={}
 		local res
 		if #cg1>0 then
-			ops[off]=aux.Stringid(11561057,1)
+			ops[off]=aux.Stringid(11561057,6)
 			opval[off-1]=1
 			off=off+1
 		end
 		if #cg2>0 then
-			ops[off]=aux.Stringid(11561057,2)
+			ops[off]=aux.Stringid(11561057,7)
 			opval[off-1]=2
 			off=off+1
 		end
 		if off==1 then return end
 		local op=Duel.SelectOption(tp,table.unpack(ops))
 		if opval[op]==1 then
-		res=Duel.Destroy(cg,REASON_EFFECT)
+		res=Duel.Destroy(cg1,REASON_EFFECT)
 		elseif opval[op]==2 then
-		res=Duel.Destroy(cg,REASON_EFFECT)
+		res=Duel.Destroy(cg2,REASON_EFFECT)
 		end
 		local flag=Duel.GetFlagEffectLabel(tp,11561051)
 		local dun=res*500
@@ -125,15 +125,12 @@ function c11561057.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
 	return true
 end
-function c11561057.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c11561057.destg2(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local c=e:GetHandler()
-	local cg1=c:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
-	local cg2=Duel.GetMatchingGroup(c11561057.desfilther1,tp,0,LOCATION_MZONE,nil,e)
-	local cg3=Duel.GetMatchingGroup(c11561057.desfilther1,tp,0,LOCATION_ONFIELD,nil,e)
-  --  Group.Merge(cg2,cg1)
-	local b1= #cg1>0 and Duel.IsCanRemoveCounter(tp,1,0,0x1,1,REASON_COST)
-	local b2= #cg2>0 and Duel.IsCanRemoveCounter(tp,1,0,0x1,2,REASON_COST)
-	local b3= #cg3>0 and Duel.IsCanRemoveCounter(tp,1,0,0x1,3,REASON_COST)
+	local seq=c:GetSequence()
+	local b1=Duel.IsCanRemoveCounter(tp,1,0,0x1,1,REASON_COST)
+	local b2=Duel.IsCanRemoveCounter(tp,1,0,0x1,2,REASON_COST)
+	local b3= Duel.IsCanRemoveCounter(tp,1,0,0x1,3,REASON_COST)
 	if chk==0 then
 		if e:GetLabel()~=1 then return false end
 		e:SetLabel(0)
@@ -158,8 +155,19 @@ function c11561057.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	num=Duel.AnnounceNumber(tp,table.unpack(ops))
 	Duel.RemoveCounter(tp,1,0,0x1,num,REASON_COST)
 	e:SetLabel(num)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,0,1,0,0)
-end
+	if ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)) or (seq==5 and (Duel.CheckLocation(tp,LOCATION_MZONE,0) or Duel.CheckLocation(tp,LOCATION_MZONE,2))) or (seq==6 and (Duel.CheckLocation(tp,LOCATION_MZONE,2) or Duel.CheckLocation(tp,LOCATION_MZONE,4)))) and Duel.SelectYesNo(tp,aux.Stringid(11561057,4)) then 
+		local flag=0
+		if seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1) then flag=flag|(1<<(seq-1)) end
+		if seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1) then flag=flag|(1<<(seq+1)) end
+		if seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,0) then flag=flag|(1<<(0)) end
+		if seq==5 or seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,2) then flag=flag|(1<<(2)) end
+		if seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,4) then flag=flag|(1<<(4)) end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,~flag)
+		local nseq=math.log(s,2)
+		Duel.MoveSequence(c,nseq) 
+	end  
+end  
 function c11561057.desfilther1(c,e)
 	local seq=c:GetSequence()
 	local sseq=e:GetHandler():GetSequence()
@@ -169,27 +177,30 @@ function c11561057.desop(e,tp,eg,ep,ev,re,r,rp)
 	local at=e:GetLabel()
 	local c=e:GetHandler()
 	local res
-	if c:IsRelateToEffect(e) and at==1 then
+	local cg1=c:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
+	local cg2=Duel.GetMatchingGroup(c11561057.desfilther1,tp,0,LOCATION_MZONE,nil,e)
+	local cg3=Duel.GetMatchingGroup(c11561057.desfilther1,tp,0,LOCATION_ONFIELD,nil,e)
+	if c:IsRelateToEffect(e) and at==1 and #cg1>0 and Duel.SelectYesNo(tp,aux.Stringid(11561057,5)) then
 		local cg=c:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
 		if #cg==0 then return end
 		res=Duel.Destroy(cg,REASON_EFFECT)
-	elseif  c:IsRelateToEffect(e) and at==2 then
+	elseif  c:IsRelateToEffect(e) and at==2 and #cg21>0 and Duel.SelectYesNo(tp,aux.Stringid(11561057,5)) then
 		local cg=Duel.GetMatchingGroup(c11561057.desfilther1,tp,0,LOCATION_MZONE,nil,e)
 		local cg2=c:GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
-	   -- Group.Merge(cg,cg2)
 		if #cg==0 then return end
 		res=Duel.Destroy(cg,REASON_EFFECT)
-	elseif  c:IsRelateToEffect(e) and at==3 then
+	elseif  c:IsRelateToEffect(e) and at==3 and #cg3>0 and Duel.SelectYesNo(tp,aux.Stringid(11561057,5)) then
 		local cg=Duel.GetMatchingGroup(c11561057.desfilther1,tp,0,LOCATION_ONFIELD,nil,e)
 		if #cg==0 then return end
 		res=Duel.Destroy(cg,REASON_EFFECT) end
-   
+	if res then
 	local flag=Duel.GetFlagEffectLabel(tp,11561051)
 	local dun=res*500
 	if flag then
 		Duel.SetFlagEffectLabel(tp,11561051,flag+dun)
 	else
 		Duel.RegisterFlagEffect(tp,11561051,RESET_EVENT+RESETS_STANDARD,0,1,dun)
+	end
 	end
 end
 

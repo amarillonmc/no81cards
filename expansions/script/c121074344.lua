@@ -32,7 +32,7 @@ function c121074344.discost(e,tp,eg,ep,ev,re,r,rp,chk)
     local g=Duel.SelectMatchingCard(tp,c121074344.costfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,c,tp)
     local tc=g:GetFirst()
     if tc:IsLocation(LOCATION_DECK) then
-        Duel.RegisterFlagEffect(tp,10458,RESET_PHASE+PHASE_END,0,1)
+        Duel.RegisterFlagEffect(tp,117960683,RESET_PHASE+PHASE_END,0,1)
     end 
     g:AddCard(c)
     Duel.SendtoGrave(g,REASON_COST)

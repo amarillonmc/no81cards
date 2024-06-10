@@ -9,7 +9,6 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCountLimit(1,id+10000)
 	e1:SetTarget(s.tg)
 	e1:SetOperation(s.op)
 	c:RegisterEffect(e1)
@@ -133,8 +132,8 @@ function VHisc_Paladin.delayef(ce,cid,time,efcate)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e1:SetLabel(cid,time)
-	e1:SetCountLimit(1,cid)
 	e1:SetCondition(VHisc_Paladin.dycon)
 	e1:SetTarget(VHisc_Paladin.dytg)
 	e1:SetOperation(VHisc_Paladin.dyop)
@@ -185,7 +184,8 @@ end
 --Register atk down effect
 function VHisc_Paladin.atkdef(ce)
 	local e2=Effect.CreateEffect(ce)
-	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetDescription(aux.Stringid(33201200,2))
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetRange(LOCATION_MZONE)
@@ -215,5 +215,16 @@ function VHisc_Paladin.atkdop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 	e2:SetValue(-500)
 	c:RegisterEffect(e2)
-	if c:IsAttack(0) then Duel.Destroy(c,REASON_EFFECT) end
+	if c:IsAttack(0) then
+		Duel.Destroy(c,REASON_EFFECT)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local thg=Duel.SelectMatchingCard(tp,VHisc_Paladin.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		if #thg>0 then
+			Duel.SendtoHand(thg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,thg)
+		end
+	end
+end
+function VHisc_Paladin.thfilter(c)
+	return c.VHisc_RustyPaladin and c:IsAbleToHand()
 end

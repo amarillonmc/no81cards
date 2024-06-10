@@ -66,7 +66,7 @@ function c117179181.initial_effect(c)
     --atk gain
     local e7=Effect.CreateEffect(c)
     e7:SetDescription(aux.Stringid(117179181,3))
-    e7:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+    e7:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
     e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
     e7:SetProperty(EFFECT_FLAG_DELAY)
     e7:SetCode(EVENT_CHAIN_SOLVING)

@@ -4,11 +4,12 @@ local cm=c91040043
 function c91040043.initial_effect(c)
 aux.AddCodeList(c,35405755)
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,2))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_CHAINING)
-	e1:SetRange(LOCATION_HAND)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.spcon1)
 	e1:SetTarget(cm.sptg1)
@@ -30,9 +31,7 @@ aux.AddCodeList(c,35405755)
 	c:RegisterEffect(e4)
 end
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	local tc=re:GetHandler()
-	return tc:IsControler(1-tp) and loc==LOCATION_MZONE and re:IsActiveType(TYPE_MONSTER)   
+	return rp==1-tp and re:IsActiveType(TYPE_MONSTER)
 end
 function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0
@@ -51,10 +50,11 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local ts=e:GetHandler():GetOwner()
 	local tc=Duel.SelectMatchingCard(ts,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil):GetFirst()
 		 local e2=Effect.CreateEffect(c)
+		e2:SetDescription(aux.Stringid(m,0))
 		e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 		e2:SetType(EFFECT_TYPE_IGNITION)
-		e2:SetRange(LOCATION_MZONE)	
-		e2:SetProperty(EFFECT_FLAG_BOTH_SIDE)
+		e2:SetRange(LOCATION_MZONE) 
+		e2:SetProperty(EFFECT_FLAG_BOTH_SIDE+EFFECT_FLAG_CLIENT_HINT)
 		e2:SetCountLimit(1)
 		e2:SetTarget(cm.thtg2)
 		e2:SetOperation(cm.thop2)
@@ -80,6 +80,22 @@ Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
+		Duel.BreakEffect()
+		if Duel.SelectYesNo(1-tp,aux.Stringid(m,1)) then  Duel.ConfirmDecktop(1-tp,3)
+		local g2=Duel.GetDecktopGroup(1-tp,3)
+			if g2:GetCount()>0 then
+				Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
+				local sg=g2:Select(1-tp,1,1,nil)
+				if sg:GetFirst():IsAbleToHand() then
+					Duel.SendtoHand(sg,nil,REASON_EFFECT)
+					Duel.ConfirmCards(tp,sg)
+					Duel.ShuffleHand(1-tp)
+				else
+					Duel.SendtoGrave(sg,REASON_RULE)
+				end
+				Duel.ShuffleDeck(1-tp)
+			end
+		end
 	end
 end
 function cm.rthtg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -64,7 +64,7 @@ function c9911370.ctgfilter(c)
 	return c:GetOwnerTargetCount()>0 and c:GetFlagEffect(9911370)==0
 end
 function c9911370.cffilter(c)
-	return c:IsAttribute(ATTRIBUTE_WATER) and not c:IsPublic()
+	return c:IsSetCard(0xc956) and not c:IsPublic()
 end
 function c9911370.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

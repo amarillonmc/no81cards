@@ -1,0 +1,295 @@
+--血腥蔷薇
+local s,id,o=GetID()
+function s.initial_effect(c)
+	aux.EnablePendulumAttribute(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetRange(LOCATION_PZONE)
+	e1:SetCode(EVENT_SPSUMMON)
+	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.discon)
+	e1:SetOperation(s.disop)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,0))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_PZONE)
+	e2:SetTarget(s.sptg)
+	e2:SetOperation(s.spop)
+	c:RegisterEffect(e2)
+end
+function s.cfilter(c)
+	return c:IsSummonType(SUMMON_TYPE_PENDULUM)
+end
+function s.discon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentChain()==0 and Duel.GetFlagEffect(tp,id)==0
+		and eg:IsExists(s.cfilter,1,nil)
+end
+function s.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+		Duel.Hint(HINT_CARD,0,id)
+		Duel.NegateSummon(eg)
+		Duel.SendtoHand(eg,nil,REASON_EFFECT)
+	end
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,4))
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_EXTRA_PENDULUM_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetCountLimit(1,29432356)
+	e1:SetValue(aux.TRUE)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,rp)
+	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
+end
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
+		and Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_EXTRA,0,1,nil)
+		and Duel.IsPlayerCanSpecialSummon(tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function s.filter1(c,e)
+	return not c:IsImmuneToEffect(e)
+end
+function s.filter2(c,e,tp,m,f,chkf)
+	return c:IsType(TYPE_FUSION) and (not f or f(c))
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
+end
+function s.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not Duel.IsPlayerCanSpecialSummon(tp)
+		or Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0 then return end
+	Duel.ShuffleExtra(tp)
+	Duel.ConfirmExtratop(tp,1)
+	local rm=false
+	local tc=Duel.GetExtraTopGroup(tp,1):GetFirst()
+	if tc:IsType(TYPE_FUSION) then
+		local chkf=tp
+		local mg1=Duel.GetFusionMaterial(tp)
+		local res=s.filter2(tc,e,tp,mg1,nil,chkf)
+		if not res then
+			local ce=Duel.GetChainMaterial(tp)
+			if ce~=nil then
+				local fgroup=ce:GetTarget()
+				local mg2=fgroup(ce,e,tp)
+				local mf=ce:GetValue()
+				res=s.filter2(tc,e,tp,mg2,mf,chkf)
+			end
+		end
+		if res then
+			if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
+				local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
+				tc:SetMaterial(mat1)
+				Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
+				Duel.BreakEffect()
+				Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
+			else
+				local mat2=Duel.SelectFusionMaterial(tp,tc,mg2,nil,chkf)
+				local fop=ce:GetOperation()
+				fop(ce,e,tp,tc,mat2)
+			end
+			rm=true
+			local fid=e:GetHandler():GetFieldID()
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+			e1:SetCode(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+EVENT_PHASE+PHASE_END)
+			e1:SetCountLimit(1)
+			e1:SetLabel(fid)
+			e1:SetLabelObject(tc)
+			e1:SetCondition(s.tdcon)
+			e1:SetOperation(s.tdop)
+			Duel.RegisterEffect(e1,tp)
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_FIELD)
+			e3:SetCode(EFFECT_CANNOT_INACTIVATE)
+			e3:SetLabel(3)
+			e3:SetValue(s.effectfilter)
+			Duel.RegisterEffect(e3,tp)
+			local e4=e3:Clone()
+			e4:SetCode(EFFECT_CANNOT_DISEFFECT)
+			e4:SetLabel(4)
+			Duel.RegisterEffect(e4,tp)
+			e3:SetLabelObject(e4)
+			e4:SetLabelObject(tc)
+			local e0=Effect.CreateEffect(c)
+			e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+			e0:SetCode(EVENT_LEAVE_FIELD_P)
+			e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+			e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+			e0:SetLabelObject(e3)
+			e0:SetOperation(s.chk)
+			tc:RegisterEffect(e0)
+			tc:CompleteProcedure()
+			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(id,2))
+		end
+	elseif tc:IsType(TYPE_SYNCHRO) then
+		if tc:IsSynchroSummonable(nil) then
+			rm=true
+			local fid=e:GetHandler():GetFieldID()
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+			e1:SetCode(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+EVENT_PHASE+PHASE_END)
+			e1:SetCountLimit(1)
+			e1:SetLabel(fid)
+			e1:SetLabelObject(tc)
+			e1:SetCondition(s.tdcon)
+			e1:SetOperation(s.tdop)
+			Duel.RegisterEffect(e1,tp)
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_FIELD)
+			e3:SetCode(EFFECT_CANNOT_INACTIVATE)
+			e3:SetLabel(3)
+			e3:SetValue(s.effectfilter)
+			Duel.RegisterEffect(e3,tp)
+			local e4=e3:Clone()
+			e4:SetCode(EFFECT_CANNOT_DISEFFECT)
+			e4:SetLabel(4)
+			Duel.RegisterEffect(e4,tp)
+			e3:SetLabelObject(e4)
+			e4:SetLabelObject(tc)
+			local e0=Effect.CreateEffect(c)
+			e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+			e0:SetCode(EVENT_LEAVE_FIELD_P)
+			e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+			e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD-RESET_TURN_SET)
+			e0:SetLabelObject(e3)
+			e0:SetOperation(s.chk)
+			tc:RegisterEffect(e0)
+			tc:CompleteProcedure()
+			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(id,2))
+			Duel.SynchroSummon(tp,tc,nil)
+		end
+	elseif tc:IsType(TYPE_XYZ) then
+		if tc:IsXyzSummonable(nil) then
+			rm=true
+			local fid=e:GetHandler():GetFieldID()
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+			e1:SetCode(EVENT_PHASE+PHASE_END)
+			e1:SetCountLimit(1)
+			e1:SetLabel(fid)
+			e1:SetLabelObject(tc)
+			e1:SetCondition(s.tdcon)
+			e1:SetOperation(s.tdop)
+			Duel.RegisterEffect(e1,tp)
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_FIELD)
+			e3:SetCode(EFFECT_CANNOT_INACTIVATE)
+			e3:SetLabel(3)
+			e3:SetValue(s.effectfilter)
+			Duel.RegisterEffect(e3,tp)
+			local e4=e3:Clone()
+			e4:SetCode(EFFECT_CANNOT_DISEFFECT)
+			e4:SetLabel(4)
+			Duel.RegisterEffect(e4,tp)
+			e3:SetLabelObject(e4)
+			e4:SetLabelObject(tc)
+			local e0=Effect.CreateEffect(c)
+			e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+			e0:SetCode(EVENT_LEAVE_FIELD_P)
+			e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+			e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD-RESET_TURN_SET)
+			e0:SetLabelObject(e3)
+			e0:SetOperation(s.chk)
+			tc:RegisterEffect(e0)
+			tc:CompleteProcedure()
+			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(id,2))
+			Duel.XyzSummon(tp,tc,nil)
+		end
+	elseif tc:IsType(TYPE_LINK) then
+		if tc:IsLinkSummonable(nil) then
+			rm=true
+			local fid=e:GetHandler():GetFieldID()
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+			e1:SetCode(EVENT_PHASE+PHASE_END)
+			e1:SetCountLimit(1)
+			e1:SetLabel(fid)
+			e1:SetLabelObject(tc)
+			e1:SetCondition(s.tdcon)
+			e1:SetOperation(s.tdop)
+			Duel.RegisterEffect(e1,tp)
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_FIELD)
+			e3:SetCode(EFFECT_CANNOT_INACTIVATE)
+			e3:SetLabel(3)
+			e3:SetValue(s.effectfilter)
+			Duel.RegisterEffect(e3,tp)
+			local e4=e3:Clone()
+			e4:SetCode(EFFECT_CANNOT_DISEFFECT)
+			e4:SetLabel(4)
+			Duel.RegisterEffect(e4,tp)
+			e3:SetLabelObject(e4)
+			e4:SetLabelObject(tc)
+			local e0=Effect.CreateEffect(c)
+			e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+			e0:SetCode(EVENT_LEAVE_FIELD_P)
+			e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+			e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD-RESET_TURN_SET)
+			e0:SetLabelObject(e3)
+			e0:SetOperation(s.chk)
+			tc:RegisterEffect(e0)
+			tc:CompleteProcedure()
+			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(id,2))
+			Duel.LinkSummon(tp,tc,nil)
+		end
+	end
+	if c:IsRelateToEffect(e) and rm==true then
+		Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)
+	end
+end
+function s.tdcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffectLabel(id)~=e:GetLabel() then
+		e:Reset()
+		return false
+	else return true end
+end
+function s.tdop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+end
+function s.effectfilter(e,ct)
+	local te=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT)
+	local label=e:GetLabel()
+	local tc
+	if label==3 then
+		tc=e:GetLabelObject():GetLabelObject()
+	else
+		tc=e:GetLabelObject()
+	end
+	return tc and tc==te:GetHandler()
+end
+function s.chk(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e3=e:GetLabelObject()
+	local e4=e3:GetLabelObject()
+	local te=c:GetReasonEffect()
+	if c:GetFlagEffect(id)==0 or not te or not te:IsActivated() or te:GetHandler()~=c then
+		e3:Reset()
+		e4:Reset()
+	else
+		--reset
+		local e0=Effect.CreateEffect(c)
+		e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e0:SetCode(EVENT_CHAIN_END)
+		e0:SetLabelObject(e3)
+		e0:SetOperation(s.resetop)
+		Duel.RegisterEffect(e0,tp)
+	end
+end
+function s.resetop(e,tp,eg,ep,ev,re,r,rp)
+	local e3=e:GetLabelObject()
+	local e4=e3:GetLabelObject()
+	e3:Reset()
+	e4:Reset()
+	e:Reset()
+end

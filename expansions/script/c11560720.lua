@@ -86,7 +86,7 @@ function c11560720.ovfil(c,tp)
 end 
 function c11560720.ovcon(e,tp,eg,ep,ev,re,r,rp) 
 	local g=eg:Filter(c11560720.ovfil,nil,tp)
-	return g:GetCount()>0 and e:GetHandler():IsType(TYPE_XYZ)
+	return g:GetCount()>0 and e:GetHandler():IsType(TYPE_XYZ) and r&0x20000==0
 end 
 function c11560720.ovop(e,tp,eg,ep,ev,re,r,rp)   
 	local c=e:GetHandler() 
@@ -96,11 +96,16 @@ function c11560720.ovop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:GetFirst() 
 		while tc do 
 		local og=tc:GetOverlayGroup()
+		local oc=Duel.GetFieldGroup(tp,LOCATION_DECK,LOCATION_DECK):GetFirst()
 		if og:GetCount()>0 then
-			Duel.SendtoGrave(og,REASON_RULE) 
-			Duel.Overlay(c,og)
+			--Duel.SendtoGrave(og,REASON_RULE+REASON_RETURN)
+			if oc then
+				Duel.Overlay(oc,og)
+			else
+				Duel.Overlay(c,og)
+			end
 		end 
-		Duel.Overlay(c,tc) 
+		Duel.Overlay(c,tc)
 		tc=g:GetNext() 
 		end 
 		if c:GetSequence()==2 then 

@@ -24,8 +24,16 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) or Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	local cg=Duel.GetMatchingGroup(Card.IsAbleToGraveAsCost,tp,LOCATION_ONFIELD,0,e:GetHandler())
+	local cg2=Duel.GetMatchingGroup(Card.IsDiscardable,tp,LOCATION_HAND,0,e:GetHandler())
+	cg:Merge(cg2)
+	local tc=cg:Select(tp,1,1,nil):GetFirst()
+	if tc:IsLocation(LOCATION_HAND) then
+		Duel.SendtoGrave(tc,REASON_COST+REASON_DISCARD)
+	else
+		Duel.SendtoGrave(tc,REASON_COST)
+	end
 end
 function cm.filter(c,tp)
 	return c:IsSetCard(0x5411) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

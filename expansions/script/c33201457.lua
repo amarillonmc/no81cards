@@ -45,6 +45,7 @@ function s.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,s.filter,tp,0,LOCATION_MZONE,1,1,nil)
 	local tc=Duel.GetFirstTarget()
+	e:SetLabel(0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,nil)
 	if VHisc_HDST.nck(tc) then
 		e:SetLabel(1)
@@ -86,7 +87,7 @@ end
 
 --e3
 function s.thfilter(c)
-	return VHisc_HDST.nck(c) and c:IsAbleToHand()
+	return VHisc_HDST.nck(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end

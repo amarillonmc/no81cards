@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	e3:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e3:SetTarget(c22348131.settg)
 	e3:SetOperation(c22348131.setop)
-	c:RegisterEffect(e3)
+  --  c:RegisterEffect(e3)
 	
 end
 function c22348131.filter1(c)

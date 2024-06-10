@@ -2,6 +2,8 @@
 local m=22348403
 local cm=_G["c"..m]
 function cm.initial_effect(c)
+	--pendulum summon
+	aux.EnablePendulumAttribute(c)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(22348403,0))
@@ -17,16 +19,16 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
-	e2:SetRange(LOCATION_MZONE)
+	e2:SetRange(LOCATION_PZONE)
 	e2:SetTargetRange(LOCATION_MZONE,0)
 	e2:SetTarget(aux.TargetBoolFunction(Card.IsType,TYPE_NORMAL))
-	e2:SetValue(1200)
+	e2:SetValue(500)
 	c:RegisterEffect(e2)
 	--destroy replace
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_DESTROY_REPLACE)
-	e3:SetRange(LOCATION_MZONE)
+	e3:SetRange(LOCATION_PZONE)
 	e3:SetTarget(c22348403.desreptg)
 	e3:SetValue(c22348403.desrepval)
 	e3:SetOperation(c22348403.desrepop)
@@ -36,14 +38,40 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetCode(EFFECT_ADD_TYPE)
 	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e4:SetRange(LOCATION_GRAVE)
+	e4:SetRange(LOCATION_GRAVE+LOCATION_MZONE)
 	e4:SetValue(TYPE_NORMAL)
 	c:RegisterEffect(e4)
 	local e5=e4:Clone()
 	e5:SetCode(EFFECT_REMOVE_TYPE)
 	e5:SetValue(TYPE_EFFECT)
 	c:RegisterEffect(e5)
+	--special summon
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetCode(EFFECT_SPSUMMON_PROC)
+	e6:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e6:SetRange(LOCATION_EXTRA)
+	e6:SetCondition(c22348403.sprcon)
+	e6:SetOperation(c22348403.sprop)
+	c:RegisterEffect(e6)
 	
+end
+function c22348403.spexfilter(c)
+	return c:IsFaceup() and c:IsCode(22348402,22348401) and c:IsAbleToDeckAsCost()
+end
+function c22348403.sprcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(c22348403.spexfilter,tp,LOCATION_EXTRA,0,nil)
+	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and g:CheckSubGroup(aux.dncheck,2,2)
+end
+function c22348403.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=Duel.GetMatchingGroup(c22348403.spexfilter,tp,LOCATION_EXTRA,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local sg=g:SelectSubGroup(tp,aux.dncheck,false,2,2)
+	local hg=sg:Filter(Card.IsLocation,nil,LOCATION_HAND)
+		Duel.HintSelection(sg)
+	Duel.SendtoDeck(sg,nil,2,REASON_COST)
 end
 function c22348403.costfilter(c)
 	return c:IsAbleToGraveAsCost()
@@ -95,8 +123,7 @@ function c22348403.sp2op2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348403.repfilter(c,tp)
-	return c:IsControler(tp) and c:IsOnField()
-		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+	return c:IsControler(tp) and c:IsOnField() and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function c22348403.spfilter(c,e,tp)
 	return c:IsFaceupEx() and c:IsCode(22348402,22348401) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -105,7 +132,7 @@ function c22348403.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(c22348403.spfilter,tp,LOCATION_PZONE+LOCATION_DECK+LOCATION_EXTRA,0,nil,e,tp)
 	Group.Sub(g,eg)
-	if chk==0 then return eg:IsExists(c22348403.repfilter,1,c,tp) and c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsReleasable() and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133) and g:CheckSubGroup(aux.dncheck,2,2) end
+	if chk==0 then return eg:IsExists(c22348403.repfilter,1,c,tp) and c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_PZONE) and c:IsReleasable() and not c:IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133) and g:CheckSubGroup(aux.dncheck,2,2) end
 	return Duel.SelectEffectYesNo(tp,c,96)
 end
 function c22348403.desrepval(e,c)

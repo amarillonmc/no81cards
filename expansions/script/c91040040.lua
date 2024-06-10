@@ -4,6 +4,7 @@ local cm=c91040040
 function c91040040.initial_effect(c)
 	aux.AddCodeList(c,35405755)
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,2))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_CHAINING)
@@ -47,7 +48,7 @@ end
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
 	local tc=re:GetHandler()
-	return tc:IsControler(1-tp) and loc==LOCATION_MZONE and re:IsActiveType(TYPE_MONSTER)	 
+	return loc==LOCATION_MZONE and re:IsActiveType(TYPE_MONSTER)	
 end
 function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

@@ -30,6 +30,7 @@ function s.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,s.filter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	local tc=Duel.GetFirstTarget()
+	e:SetLabel(0)
 	if VHisc_HDST.nck(tc) then
 		e:SetLabel(1)
 		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)

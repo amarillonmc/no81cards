@@ -31,6 +31,7 @@ function s.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
 	Duel.SelectTarget(tp,s.posfilter,tp,0,LOCATION_MZONE,1,1,nil)
 	local tc=Duel.GetFirstTarget()
+	e:SetLabel(0)
 	if VHisc_HDST.nck(tc) and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) then
 		e:SetLabel(1)
 		Duel.SetOperationInfo(0,CATEGORY_SEARCH,nil,0,tp,1)

@@ -31,6 +31,7 @@ function s.rettg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,s.retfilter1,tp,0,LOCATION_MZONE,1,1,nil)
 	local tc=Duel.GetFirstTarget()
+	e:SetLabel(0)
 	if VHisc_HDST.nck(tc) then
 		e:SetLabel(1)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,0,tp,1)

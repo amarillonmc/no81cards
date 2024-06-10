@@ -9,7 +9,6 @@ function c9910258.initial_effect(c)
 	e1:SetCountLimit(1,9910258)
 	e1:SetCondition(c9910258.condition)
 	e1:SetCost(c9910258.cost)
-	e1:SetTarget(c9910258.target)
 	e1:SetOperation(c9910258.operation)
 	c:RegisterEffect(e1)
 	--remove
@@ -23,21 +22,43 @@ function c9910258.initial_effect(c)
 	e2:SetOperation(c9910258.rmop)
 	c:RegisterEffect(e2)
 end
+function c9910258.cfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0xa956)
+end
 function c9910258.condition(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsOnField() and re:GetHandler():IsRelateToEffect(re) and (re:IsActiveType(TYPE_MONSTER)
-		or (re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not re:IsHasType(EFFECT_TYPE_ACTIVATE)))
+	local res=false
+	for i=1,ev do
+		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+		local tc=te:GetHandler()
+		if tgp~=tp and tc:IsRelateToEffect(te) and tc:IsFaceup() and tc:IsStatus(STATUS_EFFECT_ENABLED)
+			and not tc:IsStatus(STATUS_LEAVE_CONFIRMED) then
+			res=true
+		end
+	end
+	return res and Duel.IsExistingMatchingCard(c9910258.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c9910258.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
-function c9910258.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return re:GetHandler():IsDestructable() end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
-end
 function c9910258.operation(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetHandler():IsRelateToEffect(re) then
-		Duel.Destroy(eg,REASON_EFFECT)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetCondition(c9910258.descon)
+	e2:SetOperation(c9910258.desop)
+	e2:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e2,tp)
+end
+function c9910258.descon(e,tp,eg,ep,ev,re,r,rp)
+	return ep~=tp
+end
+function c9910258.desop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if rc:IsRelateToEffect(re) and rc:IsFaceup() and rc:IsStatus(STATUS_EFFECT_ENABLED)
+		and not rc:IsStatus(STATUS_LEAVE_CONFIRMED) then
+		Duel.Hint(HINT_CARD,0,9910258)
+		Duel.Destroy(rc,REASON_EFFECT)
 	end
 end
 function c9910258.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
