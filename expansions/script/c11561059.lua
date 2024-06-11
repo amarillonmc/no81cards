@@ -38,7 +38,7 @@ function c11561059.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c11561059.filter(c,e,tp)
-	return c:IsSetCard(0x11c) and not c:IsCode(29596581) and ((c:IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)) or ((c:IsType(TYPE_FIELD) or (c:IsType(TYPE_TRAP+TYPE_SPELL) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0)) and c:IsSSetable(true)))
+	return c:IsSetCard(0x11c) and not c:IsCode(11561059) and ((c:IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)) or ((c:IsType(TYPE_FIELD) or (c:IsType(TYPE_TRAP+TYPE_SPELL) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0)) and c:IsSSetable(true)))
 end
 function c11561059.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11561059.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
