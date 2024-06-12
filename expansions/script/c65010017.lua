@@ -48,14 +48,11 @@ function c65010017.initial_effect(c)
 	e4:SetOperation(c65010017.tdop)
 	c:RegisterEffect(e4) 
 end
-function c65010017.cfilter(c,tp)
-	return c:IsControler(tp) --and c:IsPreviousLocation(LOCATION_DECK)
-end
 function c65010017.regcon(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetCurrentPhase()==PHASE_DRAW then return false end
+	if Duel.GetCurrentPhase()==PHASE_DRAW or Duel.GetCurrentPhase()==0 then return false end
 	local v=0
-	if eg:IsExists(c65010017.cfilter,1,nil,0) then v=v+1 end
-	if eg:IsExists(c65010017.cfilter,1,nil,1) then v=v+2 end
+	if eg:IsExists(Card.IsControler,1,nil,0) then v=v+1 end
+	if eg:IsExists(Card.IsControler,1,nil,1) then v=v+2 end
 	if v==0 then return false end
 	e:SetLabel(({0,1,PLAYER_ALL})[v])
 	return true

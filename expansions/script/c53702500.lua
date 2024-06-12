@@ -517,12 +517,12 @@ function cm.ALCYakuNew(c,code,cf,loc,t)
 	e1:SetTarget(cm.NALCTtg(code,loc,t))
 	e1:SetOperation(cm.NALCTac(code,cf,t))
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
+	--[[local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e2:SetCode(EVENT_ADJUST)
 	e2:SetRange(0x7f)
 	e2:SetOperation(cm.ALCReload)
-	c:RegisterEffect(e2)
+	c:RegisterEffect(e2)--]]
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
@@ -530,7 +530,7 @@ function cm.ALCYakuNew(c,code,cf,loc,t)
 	e3:SetCondition(cm.ALCYakuActCondition)
 	c:RegisterEffect(e3)
 end
-function cm.ALCReload(e,tp)
+--[[function cm.ALCReload(e,tp)
 	aux.AddFusionProcCode2=_tmp
 	aux.AddFusionProcCode2FunRep=_tmp_1
 	aux.AddFusionProcCode3=_tmp_2
@@ -757,7 +757,7 @@ function aux.AddFusionProcShaddoll(c,att)
 		ccodem.fst=2
 	end
 	return _tmp_1_4(c,att)
-end
+end--]]
 function cm.NALCTtg(code,loc,t)
 	return
 	function(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -790,15 +790,17 @@ function cm.NALCTac(code,cf,t)
 			e1:SetReset(RESET_EVENT+0x7e0000)
 			c:RegisterEffect(e1)
 			local chkf=tp
-			local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-			local mtf=function(c,e,tp)return bit.band(c:GetOriginalType(),TYPE_TRAP)~=0 and c:IsType(TYPE_MONSTER) and c:CheckUniqueOnField(tp) and not c:IsForbidden() and not c:IsImmuneToEffect(e)end
-			local fuf=function(c,e,tp,m,f,chkf,ft)
-						  return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf) and (not c.fst or ft>=c.fst)
-					  end
-			local zck=function(g,c,chkf,ft)return c:CheckFusionMaterial(g,nil,chkf) and ft>=#g end
-			local mg1=Duel.GetFusionMaterial(tp):Filter(Card.IsOnField,nil):Filter(mtf,nil,e,tp)
-			if #mg1==0 then return end
-			local sg1=Duel.GetMatchingGroup(fuf,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf,ft)
+			local mtf=function(c,e,tp)return c:IsLocation(LOCATION_MZONE) and bit.band(c:GetOriginalType(),TYPE_TRAP)~=0 and c:CheckUniqueOnField(tp) and not c:IsForbidden() and not c:IsImmuneToEffect(e)end
+			local fuf=function(c,e,tp,m,f,chkf,ft)return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)end
+			local fchk=function(tp,sg,fc)
+				local mt=getmetatable(fc)
+				local t=mt.material_count
+				local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+				return not t or ft>=t[1]
+			end
+			local mg1=Duel.GetFusionMaterial(tp):Filter(mtf,nil,e,tp)
+			aux.FCheckAdditional=fchk
+			local sg1=Duel.GetMatchingGroup(fuf,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 			local mg2=nil
 			local sg2=nil
 			local ce=Duel.GetChainMaterial(tp)
@@ -806,9 +808,9 @@ function cm.NALCTac(code,cf,t)
 				local fgroup=ce:GetTarget()
 				mg2=fgroup(ce,e,tp)
 				local mf=ce:GetValue()
-				sg2=Duel.GetMatchingGroup(fuf,tp,LOCATION_EXTRA,0,nil,e,tp,mg2,mf,chkf,114)
+				sg2=Duel.GetMatchingGroup(fuf,tp,LOCATION_EXTRA,0,nil,e,tp,mg2,mf,chkf)
 			end
-			if (#sg1>0 or (sg2~=nil and sg2:GetCount()>0)) and Duel.SelectYesNo(tp,aux.Stringid(code,0)) then
+			if (sg1:GetCount()>0 or (sg2~=nil and sg2:GetCount()>0)) and Duel.SelectYesNo(tp,aux.Stringid(code,0)) then
 				Duel.BreakEffect()
 				local sg=sg1:Clone()
 				if sg2 then sg:Merge(sg2) end
@@ -816,13 +818,9 @@ function cm.NALCTac(code,cf,t)
 				local tg=sg:Select(tp,1,1,nil)
 				local tc=tg:GetFirst()
 				if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
-					if tc.fst then
-						Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(53702600,3))
-						local mat1=mg1:SelectSubGroup(tp,zck,false,tc.fst,#mg1,tc,chkf,ft)
-						--local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
-						tc:SetMaterial(mat1)
-						for mvc in aux.Next(mat1) do Duel.MoveToField(mvc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) end
-					end
+					local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
+					tc:SetMaterial(mat1)
+					for mvc in aux.Next(mat1) do Duel.MoveToField(mvc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) mvc:SetReason(REASON_EFFECT+REASON_MATERIAL+REASON_FUSION) end
 					Duel.BreakEffect()
 					Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
 				else
@@ -831,6 +829,7 @@ function cm.NALCTac(code,cf,t)
 					fop(ce,e,tp,tc,mat2)
 				end
 				tc:CompleteProcedure()
+				aux.FCheckAdditional=nil
 			end
 		end
 	end
