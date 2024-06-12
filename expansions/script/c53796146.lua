@@ -22,16 +22,12 @@ function cm.initial_effect(c)
 		ge1:SetCode(EVENT_SUMMON_SUCCESS)
 		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
+		local ge1_1=ge1:Clone()
+		ge1_1:SetCode(EVENT_MSET)
+		Duel.RegisterEffect(ge1_1,0)
 		local ge2=ge1:Clone()
 		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
 		Duel.RegisterEffect(ge2,0)
-		local ge3=Effect.CreateEffect(c)
-		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge3:SetCode(EVENT_ADJUST)
-		ge3:SetOperation(cm.adjustop)
-		Duel.RegisterEffect(ge3,0)
-		local ge4=ge3:Clone()
-		Duel.RegisterEffect(ge4,1)
 		local ge5=Effect.CreateEffect(c)
 		ge5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge5:SetCode(EVENT_CHANGE_POS)
@@ -124,16 +120,15 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,m+500)>0 then
 		for tc in aux.Next(fg) do
 			if tc:IsFacedown() then
-				if tc:GetFlagEffectLabel(m)==1100 then tc:SetStatus(STATUS_SUMMON_TURN,false) else tc:SetStatus(STATUS_SPSUMMON_TURN,false) end
+				if tc:GetFlagEffectLabel(m)==1100 or tc:GetFlagEffectLabel(m)==1106 then tc:SetStatus(STATUS_SUMMON_TURN,false) else tc:SetStatus(STATUS_SPSUMMON_TURN,false) end
 			else
-				if tc:GetFlagEffectLabel(m)==1100 then tc:SetStatus(STATUS_SUMMON_TURN,true) else tc:SetStatus(STATUS_SPSUMMON_TURN,true) end
+				if tc:GetFlagEffectLabel(m)==1100 or tc:GetFlagEffectLabel(m)==1106 then tc:SetStatus(STATUS_SUMMON_TURN,true) else tc:SetStatus(STATUS_SPSUMMON_TURN,true) end
 			end
 		end
 	else
 		for tc in aux.Next(fg) do
-			if tc:GetFlagEffectLabel(m)==1100 then tc:SetStatus(STATUS_SUMMON_TURN,true) else tc:SetStatus(STATUS_SPSUMMON_TURN,true) end
+			if tc:GetFlagEffectLabel(m)==1100 or tc:GetFlagEffectLabel(m)==1106 then tc:SetStatus(STATUS_SUMMON_TURN,true) else tc:SetStatus(STATUS_SPSUMMON_TURN,true) end
 		end
 		e:Reset()
-		Duel.Readjust()
 	end
 end

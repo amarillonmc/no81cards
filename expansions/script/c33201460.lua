@@ -3,7 +3,7 @@ local s,id,o=GetID()
 Duel.LoadScript("c33201450.lua")
 function s.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,2,2,s.ovfilter,aux.Stringid(id,0),99,s.xyzop)
+	aux.AddXyzProcedure(c,nil,2,2,s.ovfilter,aux.Stringid(id,0),2,s.xyzop)
 	c:EnableReviveLimit()
 	--remove
 	local e1=Effect.CreateEffect(c)
@@ -11,8 +11,8 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(s.rmcon)
 	e1:SetCost(s.rmcost)
+	e1:SetCondition(s.rmcon)
 	e1:SetTarget(s.rmtg)
 	e1:SetOperation(s.rmop)
 	c:RegisterEffect(e1)
@@ -43,7 +43,7 @@ function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rg=e:GetHandler():GetOverlayGroup()
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and  Duel.GetMatchingGroupCount(s.exfilter,tp,0,LOCATION_HAND,nil)>0 end
 	local hc=Duel.GetMatchingGroupCount(s.exfilter,tp,0,LOCATION_HAND,nil)
-	if rg:GetCount()<hc then hc=rg:GetCount() end
+	if rg:GetCount()<hc then hc=rg end
 	local ct=e:GetHandler():RemoveOverlayCard(tp,1,hc,REASON_COST)
 	e:SetLabel(ct)
 end
@@ -55,11 +55,10 @@ function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
-	local g=Duel.GetMatchingGroup(s.exfilter,tp,0,LOCATION_HAND,nil)
-	if g:GetCount()>0 and ct then
+	local sg=Duel.GetMatchingGroup(s.exfilter,tp,0,LOCATION_HAND,nil)
+	if sg:GetCount()>0 and ct then
 		local sg=g:RandomSelect(tp,ct)
 		Duel.ConfirmCards(tp,sg)
-		Duel.ShuffleHand(1-tp)
 		local tc=sg:GetFirst()
 		while tc do
 			if VHisc_HDST.nck(tc) then Duel.Destroy(tc,REASON_EFFECT) end
@@ -69,7 +68,7 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 				local fg=Duel.GetMatchingGroup(s.fgfilter,tp,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK+LOCATION_EXTRA+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK+LOCATION_EXTRA+LOCATION_REMOVED,nil,code)
 				for fc in aux.Next(fg) do
 					if fc:GetFlagEffect(33201450)==0 then
-						fc:RegisterFlagEffect(33201450,nil,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(33201450,3))
+						fc:RegisterFlagEffect(33201450,nil,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
 					end
 				end
 			end
