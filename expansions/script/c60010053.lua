@@ -41,10 +41,10 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retcon(e,tp,eg,ep,ev,re,r,rp,tc)
 	local tp=e:GetHandlerPlayer()
-	return Duel.GetFlagEffect(tp,m)>=9 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetTurnPlayer()==tp
+	return Duel.GetFlagEffect(tp,m)>=9 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2))
 end
 function cm.retop1(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+	local c=e:GetHandler()
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 		if #g~=0 and Duel.IsExistingMatchingCard(cm.ffil,tp,LOCATION_FZONE,0,1,nil) then
@@ -58,10 +58,10 @@ function cm.retop1(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	end
 end
 
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
 	local ag=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 	return ag:GetClassCount(Card.GetRace)==ag:GetCount() and ag:GetClassCount(Card.GetAttribute)==ag:GetCount()
 end

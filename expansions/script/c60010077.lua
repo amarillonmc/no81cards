@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_DAMAGE+CATEGORY_DEFCHANGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
