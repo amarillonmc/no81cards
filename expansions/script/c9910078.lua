@@ -35,6 +35,7 @@ end
 function c9910078.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and c:IsFaceup() and Duel.ChangePosition(c,POS_FACEDOWN_DEFENSE)~=0 then
+		Duel.AdjustAll()
 		local g=Duel.GetMatchingGroup(c9910078.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil,e,tp)
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910078,0)) then
 			Duel.BreakEffect()

@@ -79,12 +79,14 @@ function c9911452.spfilter(c,e,tp)
 end
 function c9911452.rlop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if Duel.Release(g,REASON_EFFECT)~=0 and e:GetLabel()==1
-		and Duel.IsExistingMatchingCard(c9911452.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
-		and Duel.SelectYesNo(tp,aux.Stringid(9911452,1)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=Duel.SelectMatchingCard(tp,c9911452.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+	if Duel.Release(g,REASON_EFFECT)~=0 and e:GetLabel()==1 then
+		Duel.AdjustAll()
+		if Duel.IsExistingMatchingCard(c9911452.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
+			and Duel.SelectYesNo(tp,aux.Stringid(9911452,1)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sg=Duel.SelectMatchingCard(tp,c9911452.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+		end
 	end
 end

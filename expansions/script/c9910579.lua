@@ -86,13 +86,15 @@ function c9910579.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ChangeChainOperation(ct-1,c9910579.repop)
 		end
 	end
-	if e:GetLabel()==1 and #g2>0 and Duel.ChangePosition(g2,POS_FACEDOWN_DEFENSE)>0
-		and Duel.IsExistingMatchingCard(c9910579.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
-		and Duel.SelectYesNo(tp,aux.Stringid(9910579,3)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c9910579.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	if e:GetLabel()==1 and #g2>0 and Duel.ChangePosition(g2,POS_FACEDOWN_DEFENSE)>0 then
+		Duel.AdjustAll()
+		if Duel.IsExistingMatchingCard(c9910579.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
+			and Duel.SelectYesNo(tp,aux.Stringid(9910579,3)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local g=Duel.SelectMatchingCard(tp,c9910579.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		end
 	end
 end
 function c9910579.repop(e,tp,eg,ep,ev,re,r,rp)

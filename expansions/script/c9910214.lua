@@ -36,6 +36,7 @@ function c9910214.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0
 		and e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.GetCurrentChain()>2 then
+		Duel.AdjustAll()
 		local g=Duel.GetMatchingGroup(c9910214.linkfilter,tp,LOCATION_EXTRA,0,nil)
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910214,0)) then
 			Duel.BreakEffect()

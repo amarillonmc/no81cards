@@ -70,6 +70,7 @@ function c9911463.spop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		if Duel.Release(g,REASON_EFFECT)~=0 then
+			Duel.AdjustAll()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local sg=Duel.SelectMatchingCard(tp,c9911463.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp)
 			if sg:GetCount()>0 then

@@ -56,6 +56,7 @@ function c9910735.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.HintSelection(sg)
 	if Duel.Destroy(sg,REASON_EFFECT)==0 then return end
 	local og=Duel.GetOperatedGroup()
+	Duel.AdjustAll()
 	if #og>0 and og:IsExists(c9910735.cfilter2,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9910735.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910735,1)) then

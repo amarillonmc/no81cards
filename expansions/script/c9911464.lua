@@ -58,6 +58,7 @@ end
 function c9911464.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT) and tc:IsLocation(LOCATION_REMOVED) then
+		Duel.AdjustAll()
 		local p=tc:GetControler()
 		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9911464.spfilter),p,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,p)
 		if Duel.GetLocationCount(p,LOCATION_MZONE)>0 and #g>0 and Duel.SelectYesNo(p,aux.Stringid(9911464,0)) then

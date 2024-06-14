@@ -37,6 +37,7 @@ end
 function c9910352.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	Duel.AdjustAll()
 	if Duel.IsExistingMatchingCard(c9910352.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910352,0)) then
 		Duel.BreakEffect()

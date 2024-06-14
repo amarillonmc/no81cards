@@ -37,6 +37,7 @@ end
 function c9910063.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		Duel.AdjustAll()
 		local g=Duel.GetMatchingGroup(c9910063.linkfilter,tp,LOCATION_EXTRA,0,nil)
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910063,1)) then
 			Duel.BreakEffect()
