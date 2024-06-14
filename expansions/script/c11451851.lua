@@ -403,7 +403,7 @@ end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)
-	if #g>0 and Duel.SelectEffectYesNo(tp,e:GetHandler()) then
+	if #g>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(11451858,4)) then
 		local fd=0
 		for tc in aux.Next(g) do
 			fd=fd|cm.getzone(tc,tp)
@@ -426,12 +426,15 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 					local tc=cm.GetCardsInZone(tp,fd)
 					if tc then Duel.Destroy(tc,REASON_EFFECT) end
 				end
-		if Duel.GetCurrentChain()==1 then op(e,tp) end
-		e:GetHandler():ResetFlagEffect(11451862)
-		if SetCardData then
-			Duel.Hint(24,0,aux.Stringid(11451862,2))
+		if Duel.GetCurrentChain()==1 then
+			op(e,tp)
 		else
-			Debug.Message("「急袭」任务完成！")
+			e:GetHandler():ResetFlagEffect(11451862)
+			if SetCardData then
+				Duel.Hint(24,0,aux.Stringid(11451862,2))
+			else
+				Debug.Message("「急袭」任务完成！")
+			end
 		end
 		local e6=Effect.CreateEffect(e:GetHandler())
 		e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

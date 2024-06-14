@@ -208,7 +208,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local fg=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	local ng=Duel.GetMatchingGroup(cm.dsfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	g=g:Filter(cm.nfilter,nil,ng)
-	if #g>0 and Duel.SelectEffectYesNo(tp,e:GetHandler()) then
+	if #g>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(11451858,4)) then
 		local tc=g:GetFirst()
 		if #g>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

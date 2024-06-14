@@ -106,7 +106,8 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.rfilter),tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
-	if #rg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	local rg2=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.rfilter),tp,LOCATION_GRAVE,0,nil)
+	if #rg>0 and ((#rg2==0 and Duel.SelectYesNo(tp,aux.Stringid(m,3))) or Duel.SelectYesNo(tp,aux.Stringid(m,1))) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.rfilter),tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
 		if #g>0 then
@@ -214,7 +215,7 @@ end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)
-	if #g>0 and Duel.SelectEffectYesNo(tp,e:GetHandler()) then
+	if #g>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(11451858,4)) then
 		local tg=g
 		if #g>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -235,6 +236,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetLabelObject(tc)
 				Duel.RegisterEffect(e1,tp)
 				tc:CreateEffectRelation(e1)
+				tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,0,1,0,aux.Stringid(m,4))
 			end
 		end
 	end
