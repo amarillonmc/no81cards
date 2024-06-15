@@ -1,6 +1,6 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddFusionProcCodeFunRep(c,s.matfilter,aux.FilterBoolFunction(Card.IsRace,RACE_INSECT),1,63,true,true)
+	aux.AddFusionProcCodeFunRep(c,s.matfilter,aux.FilterBoolFunction(Card.IsRace,RACE_INSECT),2,63,true,true)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)

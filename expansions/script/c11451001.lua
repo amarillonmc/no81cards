@@ -400,7 +400,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 					end
 				end
 				local ac=afilter[1]
-				if not Duel.SelectYesNo(1-tp,aux.Stringid(m,3)) then
+				if cm[3-tp] or not Duel.SelectYesNo(1-tp,aux.Stringid(m,3)) then
+					cm[3-tp]=true
 					Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CODE)
 					ac=Duel.AnnounceCard(1-tp,table.unpack(afilter))
 				end

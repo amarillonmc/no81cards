@@ -9,7 +9,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCost(cm.thcost)
+	--e1:SetCost(cm.thcost)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
@@ -17,26 +17,28 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
-	e2:SetCondition(cm.hand)
+	e2:SetDescription(aux.Stringid(m,3))
+	e2:SetCost(cm.hand)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
+	e3:SetDescription(aux.Stringid(m,4))
 	e3:SetRange(LOCATION_HAND)
 	e3:SetTargetRange(LOCATION_HAND,0)
-	e3:SetCondition(cm.hand2)
+	e3:SetCost(cm.hand2)
 	e3:SetTarget(function(e,c) return c~=e:GetHandler() end)
 	c:RegisterEffect(e3)
 	local e4=e3:Clone()
 	e4:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	c:RegisterEffect(e4)
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(m)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetTargetRange(1,0)
+	--e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	--e3:SetTargetRange(1,0)
 	e3:SetRange(LOCATION_HAND)
-	e3:SetCondition(cm.hand2)
+	--e3:SetCondition(cm.hand2)
 	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
@@ -44,6 +46,7 @@ function cm.initial_effect(c)
 	e4:SetRange(LOCATION_HAND)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e4:SetTargetRange(1,0)
+	e4:SetCondition(cm.costcon)
 	e4:SetCost(cm.costchk)
 	e4:SetTarget(cm.actarget)
 	e4:SetOperation(cm.costop)
@@ -77,15 +80,34 @@ function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if ev==e:GetLabel() then rc:ResetFlagEffect(m) end
 end
-function cm.hand(e,tp,eg,ep,ev,re,r,rp)
+function cm.hand(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tp=e:GetHandlerPlayer()
 	local sc=Duel.GetDecktopGroup(tp,1):GetFirst()
-	return sc and sc:IsFaceup() and Duel.IsExistingMatchingCard(Card.IsSSetable,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.GetLocationCount(tp,LOCATION_SZONE)>1
+	if chk==0 then return sc and sc:IsFaceup() and Duel.IsExistingMatchingCard(Card.IsSSetable,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.GetLocationCount(tp,LOCATION_SZONE)>1 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local tc=Duel.SelectMatchingCard(tp,Card.IsSSetable,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
+	Duel.SSet(tp,tc,tp,false)
 end
-function cm.hand2(e,tp,eg,ep,ev,re,r,rp)
+function cm.similarfilter(c,tp)
+	return c:IsHasEffect(m) and c:IsSSetable()
+end
+function cm.hand2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	local tp=e:GetHandlerPlayer()
 	local sc=Duel.GetDecktopGroup(tp,1):GetFirst()
-	return sc and sc:IsFaceup() and e:GetHandler():IsSSetable() and Duel.GetLocationCount(tp,LOCATION_SZONE)>1
+	if chk==0 then return sc and sc:IsFaceup() and e:GetHandler():IsSSetable() and Duel.GetLocationCount(tp,LOCATION_SZONE)>1 end
+	local g=Duel.GetMatchingGroup(cm.similarfilter,tp,LOCATION_HAND,0,c,tp)
+	if #g>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+		local tc=(g+c):Select(tp,1,1,nil):GetFirst()
+		Duel.SSet(tp,tc,tp,true)
+	else
+		Duel.SSet(tp,c,tp,true)
+	end
+end
+function cm.costcon(e)
+	cm[0]=false
+	return true
 end
 function cm.costchk(e,te,tp)
 	return true
@@ -98,6 +120,7 @@ function cm.thfilter(c)
 	return c:IsSetCard(0x6e) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	if cm[0] then return end
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	local tc=te:GetHandler()
@@ -106,16 +129,35 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local case1=tc:IsType(TYPE_SPELL) and not tc:IsType(TYPE_QUICKPLAY)
 	local case2=tc:IsType(TYPE_QUICKPLAY)
 	local case3=tc:IsType(TYPE_TRAP)
-	if cm.hand2(e) and tc:IsLocation(LOCATION_HAND) and te:IsHasType(EFFECT_TYPE_ACTIVATE) and tc~=e:GetHandler() and ((case2 and tc:GetEffectCount(EFFECT_QP_ACT_IN_NTPHAND)<=#eset) or (case3 and tc:GetEffectCount(EFFECT_TRAP_ACT_IN_HAND)<=#eset) or Duel.SelectYesNo(tp,aux.Stringid(m,0))) then
+	local sc=Duel.GetDecktopGroup(tp,1):GetFirst()
+	if sc and sc:IsFaceup() and Duel.GetLocationCount(tp,LOCATION_SZONE)>1 and tc:IsLocation(LOCATION_HAND) and te:IsHasType(EFFECT_TYPE_ACTIVATE) and not ((case2 and Duel.GetTurnPlayer()==1-tp) or case3) and ((tc:IsHasEffect(m) and tc==c and Duel.IsExistingMatchingCard(Card.IsSSetable,tp,LOCATION_HAND,0,1,c)) or (not tc:IsHasEffect(m) and c:IsSSetable())) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		local cost=te:GetCost() or aux.TRUE
 		local cost2=function(e,tp,eg,ep,ev,re,r,rp,chk)
 						if chk==0 then return cost(e,tp,eg,ep,ev,re,r,rp,0) end
 						cost(e,tp,eg,ep,ev,re,r,rp,1)
 						e:SetCost(cost)
-						Duel.SSet(tp,c,tp,true)
+						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+						local tc=Duel.SelectMatchingCard(tp,Card.IsSSetable,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
+						Duel.SSet(tp,tc,tp,false)
 					end
+		if not tc:IsHasEffect(m) then
+			cost2=function(e,tp,eg,ep,ev,re,r,rp,chk)
+						if chk==0 then return cost(e,tp,eg,ep,ev,re,r,rp,0) end
+						cost(e,tp,eg,ep,ev,re,r,rp,1)
+						e:SetCost(cost)
+						local g=Duel.GetMatchingGroup(cm.similarfilter,tp,LOCATION_HAND,0,c,tp)
+						if #g>0 then
+							Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+							local tc=(g+c):Select(tp,1,1,nil):GetFirst()
+							Duel.SSet(tp,tc,tp,true)
+						else
+							Duel.SSet(tp,c,tp,true)
+						end
+					end
+		end
 		te:SetCost(cost2)
 	end
+	cm[0]=true
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
