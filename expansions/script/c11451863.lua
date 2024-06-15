@@ -150,7 +150,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetTarget(cm.thtg2)
 		e3:SetOperation(cm.thop2)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e3)
+		tc:RegisterEffect(e3,true)
 	end
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
