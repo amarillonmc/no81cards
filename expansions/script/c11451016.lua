@@ -38,6 +38,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e4:SetCondition(cm.hand)
+	e4:SetDescription(aux.Stringid(m,3))
 	c:RegisterEffect(e4)
 end
 function cm.hand(e,tp,eg,ep,ev,re,r,rp)

@@ -29,6 +29,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCode(EFFECT_SEND_REPLACE)
+	e2:SetCondition(s.repcon)
 	e2:SetTarget(s.reptg)
 	e2:SetValue(s.repval)
 	c:RegisterEffect(e2)
@@ -42,10 +43,9 @@ function s.initial_effect(c)
 	e3:SetOperation(s.drop)
 	c:RegisterEffect(e3)
 end
-s.Is_Dark_Sea=true
 
 function s.filter(c)
-	return _G["c"..c:GetCode()].Is_Dark_Sea and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0xa220) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(s.filter,tp,LOCATION_DECK,0,nil)
@@ -55,6 +55,17 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,sg)
 	end
+end
+--
+function s.filter2(c)
+	return c:IsSetCard(0xa220) and c:IsType(TYPE_MONSTER)
+end
+function s.repcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ct=Duel.GetMatchingGroupCount(s.filter2,tp,LOCATION_MZONE,0,nil)
+	local check=Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_MZONE,0,1,nil)
+	if check then return c:GetFlagEffect(11633046)<ct
+	else return false end
 end
 function s.repfilter(c,tp)
 	return c:IsLocation(LOCATION_ONFIELD) and c:GetDestination()==LOCATION_GRAVE and c:IsType(TYPE_MONSTER)
@@ -82,6 +93,7 @@ function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			tc:RegisterEffect(e1)
 			tc=g:GetNext()
 		end
+		c:RegisterFlagEffect(11633046,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		return true
 	else return false end
 end

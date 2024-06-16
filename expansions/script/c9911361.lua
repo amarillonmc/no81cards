@@ -2,7 +2,7 @@
 function c9911361.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -25,42 +25,42 @@ function c9911361.initial_effect(c)
 	e2:SetOperation(c9911361.dcop)
 	c:RegisterEffect(e2)
 end
-function c9911361.thfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xc956)
+function c9911361.tgfilter1(c,tp)
+	return c:IsFaceupEx() and c:IsSetCard(0xc956) and c:IsType(TYPE_MONSTER)
+		and Duel.IsExistingMatchingCard(c9911361.tgfilter2,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,c:GetCode())
+end
+function c9911361.tgfilter2(c,cd)
+	return c:IsCode(cd) and c:IsAbleToGrave()
 end
 function c9911361.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(c9911361.thfilter,tp,LOCATION_MZONE,0,1,nil)
-		and Duel.IsExistingTarget(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELF)
-	local g1=Duel.SelectTarget(tp,c9911361.thfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	e:SetLabelObject(g1:GetFirst())
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPPO)
-	local g2=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g2,1,0,0)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and chkc:IsControler(tp) and c9911361.tgfilter1(chkc,tp) end
+	if chk==0 then return Duel.IsExistingTarget(c9911361.tgfilter1,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	Duel.SelectTarget(tp,c9911361.tgfilter1,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil,tp)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK+LOCATION_EXTRA)
 end
 function c9911361.activate(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local tc1=e:GetLabelObject()
-	local tc2=g:GetFirst()
-	if tc2==tc1 then tc2=g:GetNext() end
-	if tc1:IsRelateToEffect(e) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetDescription(aux.Stringid(9911361,0))
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-		e1:SetValue(LOCATION_HAND)
-		tc1:RegisterEffect(e1,true)
-		if tc2 and tc2:IsRelateToEffect(e) and Duel.SendtoHand(tc2,nil,REASON_EFFECT)>0 and tc2:IsLocation(LOCATION_HAND) then
-			tc2:RegisterFlagEffect(9911361,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,66)
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_PUBLIC)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc2:RegisterEffect(e1)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(tp,c9911361.tgfilter2,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,tc:GetCode())
+		if #g>0 and Duel.SendtoGrave(g,REASON_EFFECT)>0 and g:GetFirst():IsLocation(LOCATION_GRAVE)
+			and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+			and Duel.SelectYesNo(tp,aux.Stringid(9911361,0)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+			local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,aux.ExceptThisCard(e))
+			if #sg>0 then
+				Duel.HintSelection(sg)
+				local sc=sg:GetFirst()
+				if Duel.SendtoHand(sc,nil,REASON_EFFECT)>0 and sc:IsLocation(LOCATION_HAND) then
+					sc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,66)
+					local e1=Effect.CreateEffect(e:GetHandler())
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_PUBLIC)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					sc:RegisterEffect(e1)
+				end
+			end
 		end
 	end
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then

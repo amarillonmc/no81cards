@@ -80,6 +80,7 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
 			end
 			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetDescription(aux.Stringid(m,2))
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1)
 		end

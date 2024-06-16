@@ -21,7 +21,7 @@ function c9911375.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,9911376)
+	e2:SetCountLimit(1)
 	e2:SetTarget(c9911375.cttg)
 	e2:SetOperation(c9911375.ctop)
 	c:RegisterEffect(e2)
@@ -92,7 +92,8 @@ function c9911375.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9911375.ctfilter(c)
-	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER) and c:IsControlerCanBeChanged()
+	local i=aux.MZoneSequence(c:GetSequence())
+	return c:IsFaceup() and c:IsSetCard(0xc956) and c:IsControlerCanBeChanged(true,1<<(4-i))
 end
 function c9911375.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9911375.ctfilter(chkc) end
@@ -104,28 +105,10 @@ end
 function c9911375.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsControler(tp) and Duel.GetControl(tc,1-tp)>0 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
-		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e1:SetTargetRange(0,LOCATION_MZONE)
-		e1:SetTarget(c9911375.ftarget)
-		e1:SetLabel(tc:GetFieldID())
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_FIELD)
-		e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-		e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-		e2:SetTargetRange(LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE)
-		e2:SetTarget(c9911375.ftarget)
-		e2:SetValue(aux.tgoval)
-		e2:SetLabel(tc:GetFieldID())
-		e2:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e2,tp)
+	if tc:IsRelateToEffect(e) and tc:IsControler(tp) then
+		local i=aux.MZoneSequence(tc:GetSequence())
+		local dc=Duel.GetFieldCard(1-tp,LOCATION_MZONE,4-i)
+		if dc then Duel.Destroy(dc,REASON_RULE) end
+		Duel.GetControl(tc,1-tp,0,0,1<<(4-i))
 	end
-end
-function c9911375.ftarget(e,c)
-	return e:GetLabel()~=c:GetFieldID()
 end

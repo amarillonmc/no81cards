@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e0:SetCondition(cm.hand)
+	e0:SetDescription(aux.Stringid(m,3))
 	c:RegisterEffect(e0)
 	--activate
 	local e1=Effect.CreateEffect(c)

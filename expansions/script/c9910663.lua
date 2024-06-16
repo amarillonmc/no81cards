@@ -43,13 +43,26 @@ function c9910663.spfilter(c,e,tp)
 end
 function c9910663.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) or Duel.Destroy(tc,REASON_EFFECT)==0 then return end
-	local p=tc:GetControler()
-	local g=Duel.GetMatchingGroup(c9910663.spfilter,p,LOCATION_DECK+LOCATION_REMOVED,0,nil,e,p)
-	if Duel.GetLocationCount(p,LOCATION_MZONE)>0 and #g>0 and Duel.SelectYesNo(p,aux.Stringid(9910663,0)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
-		local sg=g:Select(p,1,1,nil)
-		Duel.SpecialSummon(sg,0,p,p,false,false,POS_FACEUP)
+	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)>0 then
+		Duel.AdjustAll()
+		local p=tc:GetControler()
+		local g=Duel.GetMatchingGroup(c9910663.spfilter,p,LOCATION_DECK+LOCATION_REMOVED,0,nil,e,p)
+		if Duel.GetLocationCount(p,LOCATION_MZONE)>0 and #g>0 and Duel.SelectYesNo(p,aux.Stringid(9910663,0)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
+			local sg=g:Select(p,1,1,nil)
+			Duel.SpecialSummon(sg,0,p,p,false,false,POS_FACEUP)
+		end
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c9910663.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c9910663.splimit(e,c)
+	return not c:IsType(TYPE_XYZ) and c:IsLocation(LOCATION_EXTRA)
 end

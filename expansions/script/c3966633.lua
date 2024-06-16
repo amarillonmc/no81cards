@@ -11,6 +11,7 @@ function c3966633.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetCost(c3966633.drcost)
+	e2:SetCondition(c3966633.drcon)
 	e2:SetTarget(c3966633.drtg)
 	e2:SetOperation(c3966633.drop)
 	c:RegisterEffect(e2)
@@ -33,6 +34,9 @@ function c3966633.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetCode(EFFECT_SKIP_DP)
 	e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,2)
 	Duel.RegisterEffect(e1,tp)
+end
+function c3966633.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c3966633.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

@@ -1,5 +1,5 @@
 --Sepialife - Blank Scherzo
---Scripted by AlphaKretin
+--Scripted by AlphaKretin cover bibeakwill
 --For Nemoma
 local s = c33701015
 local id = 33701015
@@ -7,7 +7,7 @@ function s.initial_effect(c)
 	c:SetSPSummonOnce(id)
 	--Special Summon
 	local e1 = Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
 	e1:SetDescription(aux.Stringid(id, 0))
 	e1:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_PHASE + PHASE_END)
@@ -47,16 +47,22 @@ end
 function s.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
 	local c = e:GetHandler()
 	if chk == 0 then
-		return Duel.GetLocationCount(tp, LOCATION_MZONE) > 0 and c:IsCanBeSpecialSummoned(e, 0, tp, false, false) and
-			Duel.IsPlayerCanDraw(tp, 2)
+		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 	end
 	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, c, 1, 0, 0)
-	Duel.SetOperationInfo(0, CATEGORY_DRAW, nil, 2, 0, 0)
+	Duel.SetOperationInfo(0, CATEGORY_DRAW, nil, 1, 0, 0)
+end
+function s.cfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x144e)
 end
 function s.spop(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c, 0, tp, tp, false, false, POS_FACEUP_ATTACK) ~= 0 then
-		Duel.Draw(tp, 2, REASON_EFFECT)
+	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		local ct=Duel.GetMatchingGroupCount(s.cfilter,tp,LOCATION_MZONE,0,c)
+		if ct>2 then ct=2 end
+		if ct>0 then
+			Duel.Draw(tp,ct,REASON_EFFECT)
+		end
 	end
 end
 function s.ctfilter(c,tp)

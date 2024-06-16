@@ -7,6 +7,7 @@ function cm.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 	e0:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e0:SetDescription(aux.Stringid(m,2))
 	e0:SetCondition(cm.actcon)
 	c:RegisterEffect(e0)
 	--Activate

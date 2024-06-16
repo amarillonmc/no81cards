@@ -6,6 +6,7 @@ function cm.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e0:SetCondition(cm.hand)
+	e3:SetDescription(aux.Stringid(m,3))
 	c:RegisterEffect(e0)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -41,19 +42,20 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.desfilter(c)
-	return c:IsCode(14532163) and c:IsAbleToHand()
+	return c:IsCode(12580477,14532163,69162969) and c:IsAbleToHand()
 end
 function cm.destg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)<5 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.desfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)<5 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.desfilter),tp,LOCATION_DECK,0,1,nil) end
 end
 function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.desfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.desfilter),tp,LOCATION_DECK,0,nil)
 	local ct=math.min(5-Duel.GetFieldGroupCount(tp,LOCATION_HAND,0),#g)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local sg=g:Select(tp,ct,ct,nil)
 	if Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 then
 		Duel.ConfirmCards(1-tp,sg)
+		Debug.Message("I am the Storm That is Approaching.")
 		if e:GetHandler():GetFlagEffect(m)>0 then Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT) end
 	end
 end

@@ -15,6 +15,7 @@ function cm.initial_effect(c)
 	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e0:SetCondition(cm.hand)
 	e0:SetLabelObject(e1)
+	e0:SetDescription(aux.Stringid(m,3))
 	c:RegisterEffect(e0)
 	--spsummon
 	local e2=Effect.CreateEffect(c)

@@ -43,7 +43,8 @@ function cm.initial_effect(c)
 	e6:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e6:SetRange(LOCATION_FZONE)
 	e6:SetTargetRange(LOCATION_SZONE,0)
-	e6:SetCondition(cm.con)
+	e6:SetDescription(aux.Stringid(m,0))
+	e6:SetCost(cm.costt)
 	c:RegisterEffect(e6)
 	local e7=e6:Clone()
 	e7:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
@@ -87,14 +88,32 @@ function cm.efop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.con(e,tp,eg,ep,ev,re,r,rp)
+function cm.con(e,tp,eg,ep,ev,re,r,rp,chk)
 	return e:GetHandler():GetFlagEffect(m+1)==0
+end
+function cm.costt(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():GetFlagEffect(m+1)==0 and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 end
+	local ph=Duel.GetCurrentPhase()
+	if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
+	e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+ph,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,15))
+	if Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)~=0 and e:GetHandler():GetFlagEffect(m+2)==0 then
+		local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
+		if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			g=g:Select(tp,1,1,nil)
+			if #g>0 then
+				Duel.SendtoHand(g,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,g)
+			end
+			e:GetHandler():RegisterFlagEffect(m+2,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
+		end
+	end
 end
 function cm.costchk(e,te,tp)
 	local tc=te:GetHandler()
 	local prop1,prop2=te:GetProperty()
 	local eset={Duel.IsPlayerAffectedByEffect(tp,m)}
-	if te:IsHasType(EFFECT_TYPE_ACTIVATE) and ((tc:GetFlagEffect(m)>0 and prop2 and prop2&EFFECT_FLAG2_COF>0) or (tc:IsLocation(LOCATION_SZONE) and tc:IsType(TYPE_QUICKPLAY) and #eset>0 and tc:IsStatus(STATUS_SET_TURN) and tc:GetEffectCount(EFFECT_QP_ACT_IN_SET_TURN)<=#eset)) then
+	if te:IsHasType(EFFECT_TYPE_ACTIVATE) and ((tc:GetFlagEffect(m)>0 and prop2 and prop2&EFFECT_FLAG2_COF>0)) then -- or (tc:IsLocation(LOCATION_SZONE) and tc:IsType(TYPE_QUICKPLAY) and #eset>0 and tc:IsStatus(STATUS_SET_TURN) and tc:GetEffectCount(EFFECT_QP_ACT_IN_SET_TURN)<=#eset)) then
 		return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0
 	else return true end
 end
@@ -110,7 +129,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=te:GetHandler()
 	local prop1,prop2=te:GetProperty()
 	local eset={Duel.IsPlayerAffectedByEffect(tp,m)}
-	if te:IsHasType(EFFECT_TYPE_ACTIVATE) and ((tc:GetFlagEffect(m)>0 and prop2 and prop2&EFFECT_FLAG2_COF>0) or (tc:IsLocation(LOCATION_SZONE) and tc:IsType(TYPE_QUICKPLAY) and ((#eset>0 and tc:IsStatus(STATUS_SET_TURN) and tc:GetEffectCount(EFFECT_QP_ACT_IN_SET_TURN)<=#eset) or (Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and tc:IsFacedown() and Duel.SelectYesNo(tp,aux.Stringid(m,3)))))) then
+	if te:IsHasType(EFFECT_TYPE_ACTIVATE) and ((tc:GetFlagEffect(m)>0 and prop2 and prop2&EFFECT_FLAG2_COF>0) or (tc:IsLocation(LOCATION_SZONE) and tc:IsType(TYPE_QUICKPLAY) and not tc:IsStatus(STATUS_SET_TURN) and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and tc:IsFacedown() and Duel.SelectYesNo(tp,aux.Stringid(m,3)))) then
 		local ph=Duel.GetCurrentPhase()
 		if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
 		e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+ph,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,15))
@@ -160,7 +179,9 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			ct=Duel.Remove(sc,POS_FACEUP,REASON_EFFECT)
 		end
 		if ct~=0 and sc:IsLocation(LOCATION_REMOVED) and not sc:IsReason(REASON_REDIRECT) then
-			sc:RegisterFlagEffect(m+4,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1010-flag*3,aux.Stringid(m+4,math.max(0,8-flag)))
+			local cid=11451859
+			if c:IsPreviousLocation(LOCATION_ONFIELD) then cid=11451718 end
+			sc:RegisterFlagEffect(m+4,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1010-flag*3,aux.Stringid(cid,math.max(0,8-flag)))
 			local rc=c
 			if re and re:GetHandler() then rc=re:GetHandler() end
 			local e1=Effect.CreateEffect(rc)
@@ -201,6 +222,8 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(c,nil,REASON_EFFECT+REASON_TEMPORARY)
 		flag=flag+1
 		c:ResetFlagEffect(m+4)
-		c:RegisterFlagEffect(m+4,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(m+4,math.max(0,flag-1000)))
+		local cid=11451859
+		if c:IsPreviousLocation(LOCATION_ONFIELD) then cid=11451718 end
+		c:RegisterFlagEffect(m+4,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(cid,math.max(0,flag-1000)))
 	end
 end

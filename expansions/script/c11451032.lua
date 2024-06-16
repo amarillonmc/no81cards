@@ -242,6 +242,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 					local e1=Effect.CreateEffect(oc)
 					e1:SetType(EFFECT_TYPE_SINGLE)
 					e1:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+					e1:SetDescription(aux.Stringid(11451031,5))
 					e1:SetLabel(11451031)
 					oc:RegisterEffect(e1,true)
 				elseif loc&LOCATION_SZONE==0 then

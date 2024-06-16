@@ -1,8 +1,4 @@
 --暗海
-function Dark_Sea_counterfilter(c)
-	return c:IsAttribute(ATTRIBUTE_WATER)
-end
-Duel.AddCustomActivityCounter(11633000,ACTIVITY_SPSUMMON,Dark_Sea_counterfilter)
 function Dark_Sea_Effect(c,id)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)

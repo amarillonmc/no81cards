@@ -7,6 +7,7 @@ function cm.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e0:SetCondition(cm.handcon)
+	e0:SetDescription(aux.Stringid(m,3))
 	c:RegisterEffect(e0)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -83,7 +84,7 @@ function cm.initial_effect(c)
 end
 function cm.handcon(e)
 	local tp=e:GetHandlerPlayer()
-	return Duel.GetMatchingGroupCount(cm.desfilter,tp,LOCATION_ONFIELD,0,1,nil)<Duel.GetMatchingGroupCount(cm.desfilter,tp,0,LOCATION_ONFIELD,1,nil)
+	return Duel.GetMatchingGroupCount(cm.desfilter2,tp,LOCATION_SZONE,0,1,nil)<Duel.GetMatchingGroupCount(cm.desfilter2,tp,0,LOCATION_SZONE,1,nil)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetDecktopGroup(e:GetHandlerPlayer(),1):IsContains(e:GetHandler()) and cm.handcon(e)
@@ -120,7 +121,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetCountLimit(1)
 	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
 	e1:SetOperation(cm.rsop)
@@ -132,7 +133,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
@@ -224,6 +225,9 @@ function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.desfilter(c)
 	return (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsOnField()) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_DECK) and c:IsAbleToGrave())
+end
+function cm.desfilter2(c)
+	return c:GetSequence()<5
 end
 function cm.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_DECK+LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.GetCurrentChain()<=2 end

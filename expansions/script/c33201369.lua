@@ -1,0 +1,60 @@
+--六合精工 商鞅方升
+local s,id,o=GetID()
+Duel.LoadScript("c33201370.lua")
+function s.initial_effect(c)
+	--xyz summon
+	aux.AddXyzProcedure(c,nil,4,2)
+	c:EnableReviveLimit()
+	--tohand
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,1))
+	e1:SetCategory(CATEGORY_RELEASE+CATEGORY_TOGRAVE)
+	e1:SetType(EFFECT_TYPE_QUICK_F)
+	e1:SetCode(EVENT_CHAINING)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(s.retcon)
+	e1:SetOperation(s.retop)
+	c:RegisterEffect(e1)
+	--atk/def
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_SET_ATTACK_FINAL)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(0,LOCATION_MZONE)
+	e2:SetValue(1500)
+	c:RegisterEffect(e2)
+	local e3=Effect.Clone(e2)
+	e3:SetCode(EFFECT_SET_DEFENSE_FINAL)
+	c:RegisterEffect(e3)
+end
+s.VHisc_HYZQ=true
+s.VHisc_CNTreasure=true
+
+function s.retcon(e,tp,eg,ep,ev,re,r,rp)
+	local rg=e:GetHandler():GetOverlayGroup()
+	return re:GetHandler()~=e:GetHandler() and re:GetHandler():IsType(TYPE_SPELL+TYPE_RITUAL) and ep==tp and re:IsActiveType(TYPE_SPELL) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and rg:GetCount()>0
+end
+function s.matfilter(c)
+	return c:IsCanOverlay() and not c:IsStatus(STATUS_LEAVE_CONFIRMED)
+end
+function s.retop(e,tp,eg,ep,ev,re,r,rp)
+	local rg1=e:GetHandler():GetOverlayGroup()
+	if rg1:GetCount()>0 then
+		e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_RELEASE)
+		local rg2=e:GetHandler():GetOverlayGroup()
+		if rg2:GetCount()==0 and Duel.IsExistingMatchingCard(s.matfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,2,e:GetHandler()) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+			local g=Duel.SelectMatchingCard(tp,s.matfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,2,2,e:GetHandler())
+			if g:GetCount()>0 then
+				for mc in aux.Next(g) do
+					local mg=mc:GetOverlayGroup()
+					if mg:GetCount()~=0 then
+						Duel.Overlay(e:GetHandler(),mg)
+					end
+				end
+				Duel.Overlay(e:GetHandler(),g)
+			end
+		end
+	end
+end

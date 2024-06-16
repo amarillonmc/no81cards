@@ -1,0 +1,36 @@
+local s,id,o=GetID()
+function s.initial_effect(c)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	c:EnableReviveLimit()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(s.reccon)
+	e1:SetOperation(s.recop)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e3:SetCode(EFFECT_CHANGE_RACE)
+	e3:SetCondition(s.raccon)
+	e3:SetValue(RACE_PLANT)
+	c:RegisterEffect(e3)
+end
+function s.cfilter(c)
+	return not c:IsRace(RACE_PLANT) or c:IsFacedown()
+end
+function s.reccon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(s.cfilter,1,nil) and not eg:IsContains(e:GetHandler())
+end
+function s.recop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,id)
+	Duel.Recover(tp,500,REASON_EFFECT)
+end
+function s.raccon(e)
+	return Duel.GetLP(e:GetHandlerPlayer())-Duel.GetLP(1-e:GetHandlerPlayer())>=2000
+end

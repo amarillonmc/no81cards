@@ -3,22 +3,19 @@ local m=91040044
 local cm=c91040044
 function c91040044.initial_effect(c)
 aux.AddCodeList(c,35405755)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,2))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	 local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SPSUM_PARAM)
+	e1:SetTargetRange(POS_FACEUP,1)
 	e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.spcon1)
-	e1:SetTarget(cm.sptg1)
-	e1:SetOperation(cm.spop1)
+	e1:SetCondition(cm.spcon)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetCountLimit(1,m*2)
+	e2:SetCountLimit(1,m+100)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
@@ -31,17 +28,9 @@ aux.AddCodeList(c,35405755)
 	e4:SetOperation(cm.desop)
 	c:RegisterEffect(e4)
 end
-function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return   rp==1-tp and re:IsActiveType(TYPE_MONSTER)
-end
-function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-end
-function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	 Duel.SpecialSummon(c,0,tp,1-tp,false,false,POS_FACEUP)
+function cm.spcon(e,c)
+	 if c==nil then return true end
+	return  Duel.GetLocationCount(1-c:GetControler(),LOCATION_MZONE)>0
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

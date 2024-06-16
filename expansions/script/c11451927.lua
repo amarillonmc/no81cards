@@ -14,6 +14,13 @@ function cm.initial_effect(c)
 	e0:SetOperation(cm.LinkOperation(nil,2,2))
 	e0:SetValue(SUMMON_TYPE_LINK)
 	c:RegisterEffect(e0)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCondition(cm.effcon)
+	e1:SetOperation(cm.regop)
+	c:RegisterEffect(e1)
 	if not cm.global_check then
 		cm.global_check=true
 		local _IsActiveType=Effect.IsActiveType
@@ -262,4 +269,36 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 		rc:CancelToGrave(false)
 	end
 	--re:Reset() --boom!!!
+end
+function cm.effcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and Duel.GetTurnPlayer()==tp
+end
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	--activate from hand
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e1:SetDescription(aux.Stringid(m,2))
+	e1:SetCountLimit(1)
+	e1:SetTargetRange(LOCATION_HAND,0)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	Duel.RegisterEffect(e2,1-tp)
+	--disable
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAIN_SOLVING)
+	e3:SetCondition(cm.discon)
+	e3:SetOperation(cm.disop)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e3,tp)
+end
+function cm.discon(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsActiveType(TYPE_SPELL)
+end
+function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
+	end
 end

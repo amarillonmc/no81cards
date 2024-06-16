@@ -1,0 +1,16 @@
+local s,id,o=GetID()
+function s.initial_effect(c)
+	aux.AddLinkProcedure(c,aux.NOT(aux.FilterBoolFunction(Card.IsLinkType,TYPE_TOKEN)),2,2)
+	c:EnableReviveLimit()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EFFECT_CANNOT_REMOVE)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetTargetRange(0xff,0xff)
+	e1:SetTarget(s.target)
+	c:RegisterEffect(e1)
+end
+function s.target(e,c)
+	return c:GetReasonCard()==e:GetHandler() and c:IsType(TYPE_MONSTER)
+end

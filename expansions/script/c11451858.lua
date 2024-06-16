@@ -83,7 +83,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	g1=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	if #g1==3 then
-		g1=g1:Select(tp,1,1,nil)
+		g1=g1:FilterSelect(Card.IsAbleToHand,tp,1,1,nil)
 		Duel.SendtoHand(g1,nil,REASON_EFFECT)
 	end
 end

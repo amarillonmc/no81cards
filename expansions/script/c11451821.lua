@@ -95,7 +95,7 @@ function cm.check(e,tp,eg,ep,ev,re,r,rp)
 	end--]]
 end
 function cm.lfilter(c,tp)
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:GetReasonPlayer()==1-tp
+	return c:IsPreviousLocation(LOCATION_MZONE) --and c:GetReasonPlayer()==1-tp
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -15,6 +15,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e2:SetCondition(cm.handcon)
+	e2:SetDescription(aux.Stringid(m,0))
 	c:RegisterEffect(e2)
 	if not cm.global_check then
 		cm.global_check=true

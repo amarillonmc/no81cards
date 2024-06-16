@@ -8,22 +8,24 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(TIMING_ATTACK,0x11e0)
 	e1:SetCondition(cm.condition)
-	e1:SetCost(cm.cost)
+	--e1:SetCost(cm.cost)
 	e1:SetOperation(cm.execution)
 	c:RegisterEffect(e1)
 	--act in hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	e2:SetCondition(cm.hand)
+	e2:SetDescription(aux.Stringid(m,4))
+	e2:SetCost(cm.hand)
 	c:RegisterEffect(e2)
 end
 cm.toss_coin=true
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
 end
-function cm.hand(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsSSetable,e:GetHandlerPlayer(),LOCATION_HAND,0,1,e:GetHandler()) and Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_SZONE)>1
+function cm.hand(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSSetable,e:GetHandlerPlayer(),LOCATION_HAND,0,1,e:GetHandler()) and Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_SZONE)>1 end
+	cm.cost(e,tp,eg,ep,ev,re,r,rp,1)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -41,6 +43,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 			if tc:IsType(TYPE_QUICKPLAY) then e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN) end
 			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE)
 			e1:SetCondition(cm.actcon)
+			e1:SetDescription(aux.Stringid(m,5))
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e1,true)
 			local e2=Effect.CreateEffect(c)

@@ -1,7 +1,6 @@
 --破坏剑-幻境破坏之剑
 --21.08.26
-local m=11451604
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--equip
 	local e1=Effect.CreateEffect(c)
@@ -16,6 +15,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetDescription(aux.Stringid(m,3))
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetTargetRange(LOCATION_HAND,0)
 	e2:SetCondition(function(e) return e:GetHandler():GetEquipTarget() end)

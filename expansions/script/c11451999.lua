@@ -16,6 +16,7 @@ function cm.initial_effect(c)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE)
 	e5:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e5:SetDescription(aux.Stringid(m,3))
 	c:RegisterEffect(e5)
 	if cm.counter==nil then
 		cm.counter=true

@@ -23,7 +23,7 @@ function c67200823.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE+TIMING_STANDBY_PHASE)
-	e2:SetCountLimit(1,67200823)
+	e2:SetCountLimit(2,67200823)
 	e2:SetCost(c67200823.thcost)
 	e2:SetTarget(c67200823.thtg)
 	e2:SetOperation(c67200823.thop)
@@ -32,6 +32,7 @@ function c67200823.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetCountLimit(2,67200823)
 	e3:SetOperation(c67200823.sumsuc)
 	c:RegisterEffect(e3)	
 end
@@ -83,11 +84,12 @@ function c67200823.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c67200823.sumsuc(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsSummonType(SUMMON_TYPE_PENDULUM) then return end 
 	local c=e:GetHandler()
 	local hg=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	local fg=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
 	local g
-	if #hg>0 and e:GetHandler():IsSummonType(TYPE_PENDULUM) and (#fg==0 or Duel.SelectOption(tp,aux.Stringid(67200823,3),aux.Stringid(67200823,4))==0) then
+	if #hg>0 and (#fg==0 or Duel.SelectOption(tp,aux.Stringid(67200823,3),aux.Stringid(67200823,4))==0) then
 		g=hg:RandomSelect(tp,1)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

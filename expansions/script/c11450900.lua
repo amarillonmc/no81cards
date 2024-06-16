@@ -15,6 +15,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetDescription(aux.Stringid(m,4))
 	c:RegisterEffect(e2)
 	if not cm.global_check then
 		cm.global_check=true
@@ -276,13 +277,31 @@ function cm.evoperation(e,tp,eg,ep,ev,re,r,rp)
 							if p==tp then
 								Duel.MoveToField(tg:GetFirst(),p,p,LOCATION_SZONE,POS_FACEDOWN,false,zone>>8)
 								--Duel.SSet(p,tg:GetFirst())
+								tg:GetFirst():SetStatus(STATUS_SET_TURN,true)
 								Duel.RaiseEvent(tg:GetFirst(),EVENT_SSET,e,REASON_EFFECT,p,p,0)
 								Duel.ConfirmCards(1-p,tg)
+								local e1=Effect.CreateEffect(c)
+								e1:SetType(EFFECT_TYPE_SINGLE)
+								e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+								if tg:GetFirst():IsType(TYPE_QUICKPLAY) then e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN) end
+								e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE)
+								e1:SetDescription(aux.Stringid(m,5))
+								e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+								tg:GetFirst():RegisterEffect(e1,true)
 							else
 								Duel.MoveToField(tg:GetFirst(),p,p,LOCATION_SZONE,POS_FACEDOWN,false,zone>>24)
 								--Duel.SSet(p,tg:GetFirst())
+								tg:GetFirst():SetStatus(STATUS_SET_TURN,true)
 								Duel.RaiseEvent(tg:GetFirst(),EVENT_SSET,e,REASON_EFFECT,p,p,0)
 								Duel.ConfirmCards(1-p,tg)
+								local e1=Effect.CreateEffect(c)
+								e1:SetType(EFFECT_TYPE_SINGLE)
+								e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+								if tg:GetFirst():IsType(TYPE_QUICKPLAY) then e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN) end
+								e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE)
+								e1:SetDescription(aux.Stringid(m,5))
+								e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+								tg:GetFirst():RegisterEffect(e1,true)
 							end
 						end
 					end

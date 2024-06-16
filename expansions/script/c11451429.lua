@@ -87,6 +87,7 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCondition(cm.qpcon)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x115))
 	e1:SetCountLimit(1)
+	e1:SetDescription(aux.Stringid(m,3))
 	e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2)
 	Duel.RegisterEffect(e1,tp)
 end

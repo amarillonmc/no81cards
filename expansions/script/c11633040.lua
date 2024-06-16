@@ -44,12 +44,11 @@ function s.initial_effect(c)
 	e3:SetOperation(s.addop)
 	c:RegisterEffect(e3)
 end
-s.Is_Dark_Sea=true 
 function s.drfilter(c)
 	return c:IsAttribute(ATTRIBUTE_WATER) and bit.band(c:GetType(),0x81)==0x81
 end
 function s.drfilter2(c)
-	return _G["c"..c:GetCode()].Is_Dark_Sea and bit.band(c:GetType(),0x81)==0x81
+	return c:IsSetCard(0xa220) and bit.band(c:GetType(),0x81)==0x81
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.drfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -64,18 +63,33 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	if Duel.Draw(p,d,REASON_EFFECT)>0 then
-		Duel.BreakEffect()
-		local dg=Duel.GetFieldGroup(tp,LOCATION_MZONE,0):Filter(s.drfilter2,nil)
+	if Duel.Draw(p,d,REASON_EFFECT)>0 then	  
+		local c=e:GetHandler()
+		if c:IsRelateToEffect(e) then
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e2:SetCode(EVENT_CHAIN_END)
+			e2:SetReset(RESET_EVENT+RESET_PHASE+PHASE_END)
+			e2:SetOperation(s.tgop)
+			e2:SetCountLimit(1)
+			Duel.RegisterEffect(e2,tp)
+		end
+	end
+end
+function s.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local dg=Duel.GetFieldGroup(tp,LOCATION_MZONE,0):Filter(s.drfilter2,nil)	   
+	if  Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local num=math.max(4-dg:GetCount(),0)
+		local num=math.max(3-dg:GetCount(),0)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,num,99,nil)
 		if g:GetCount()>=num then
 			Duel.ConfirmCards(1-tp,g)
 			Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		end
 	end
-end
+	e:Reset()
+end   
+--
 function s.addop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ResetFlagEffect(tp,11633002)
 	if Duel.GetFlagEffect(tp,11633001)==2 then

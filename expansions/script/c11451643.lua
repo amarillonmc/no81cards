@@ -1,7 +1,6 @@
 --救祓少女·阿瑞尤谢尔
 --21.12.31
-local m=11451643
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,cm.matfilter,1,1)
@@ -98,6 +97,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
 		end
 		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e1:SetDescription(aux.Stringid(m,3))
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		hc:RegisterEffect(e1)
 		local e2=Effect.CreateEffect(c)
