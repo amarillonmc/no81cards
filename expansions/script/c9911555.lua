@@ -134,13 +134,13 @@ function c9911555.efilter(e,te)
 	return te==e:GetLabelObject()
 end
 function c9911555.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and Duel.GetFlagEffect(tp,9911557)==0
+	return rp==1-tp
 end
 function c9911555.spfilter(c,e,tp)
 	return c:GetFlagEffect(9911555)~=0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9911555.spop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(tp,9911557,RESET_PHASE+PHASE_END,0,1)
+	if Duel.GetFlagEffect(tp,9911557)==0 then Duel.RegisterFlagEffect(tp,9911557,RESET_PHASE+PHASE_END,0,1) end
 	if not (re and e:GetLabelObject() and re==e:GetLabelObject()) then return end
 	Duel.Hint(HINT_CARD,0,9911555)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
