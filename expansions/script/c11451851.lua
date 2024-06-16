@@ -428,7 +428,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 				end
 		if Duel.GetCurrentChain()==1 then
 			op(e,tp)
-		else
+		elseif e:GetHandler():GetFlagEffect(11451862)>0 then
 			e:GetHandler():ResetFlagEffect(11451862)
 			if SetCardData then
 				Duel.Hint(24,0,aux.Stringid(11451862,2))
