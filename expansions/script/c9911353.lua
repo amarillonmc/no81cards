@@ -57,6 +57,7 @@ function c9911353.repop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9911353.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
 	c:RegisterFlagEffect(9911354,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9911353,1))
