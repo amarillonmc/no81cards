@@ -27,7 +27,7 @@ end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.filter),tp,LOCATION_GRAVE,0,nil)
 	if g:GetCount()>1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local tg=g:Select(tp,1,5,nil)
 		local tdc=Duel.SendtoDeck(tg,nil,2,REASON_EFFECT)
 		if tdc>=1 then 
@@ -45,7 +45,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		if tdc>=5 and Duel.GetMatchingGroup(s.thft,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil):GetCount()>1 then 
 			local thg=Duel.GetMatchingGroup(s.thft,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg=thg:Select(tp,1,5,nil)
+			local sg=thg:Select(tp,1,2,nil)
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		end
 	end
