@@ -138,7 +138,7 @@ function cm.fccon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.mfilter(c)
 	local code=c:GetOriginalCode()
-	return code>=11451031 and code<=11451033
+	return code>=11451031 and code<=11451037
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	pnfl_adjusting=true
@@ -231,9 +231,10 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 		else
 			local loc=te:GetHandler():GetLocation()
 			if te:GetHandler():IsFaceup() and te:GetHandler():IsOnField() then loc=te:GetHandler():GetPreviousLocation() end
-			ce:SetRange(loc)
-			local g=Duel.GetMatchingGroup(function(c) return cm.mfilter(c) and c:IsType(TYPE_SPELL+TYPE_TRAP) end,0,0xff,0xff,nil)
-			local og=Duel.GetOverlayGroup(0,1,1):Filter(function(c) return cm.mfilter(c) and c:IsType(TYPE_SPELL+TYPE_TRAP) end,nil)
+			ce:SetDescription(aux.Stringid(m,1))
+			ce:SetRange(loc|LOCATION_SZONE|LOCATION_HAND)
+			local g=Duel.GetMatchingGroup(function(c) return cm.mfilter(c) and c:IsType(TYPE_SPELL+TYPE_TRAP+TYPE_PENDULUM) end,0,0xff,0xff,nil)
+			local og=Duel.GetOverlayGroup(0,1,1):Filter(function(c) return cm.mfilter(c) and c:IsType(TYPE_SPELL+TYPE_TRAP+TYPE_PENDULUM) end,nil)
 			g:Merge(og)
 			for oc in aux.Next(g) do
 				local ce2=ce:Clone()
