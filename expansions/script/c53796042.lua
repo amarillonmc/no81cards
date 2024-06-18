@@ -14,7 +14,7 @@ cm[0]=0
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
-	local s=Duel.SelectField(tp,1,LOCATION_MZONE,0,0)
+	local s=Duel.SelectField(tp,1,LOCATION_MZONE,0,0x60)
 	e:SetLabel(s,tp)
 	Duel.Hint(HINT_ZONE,tp,s)
 end

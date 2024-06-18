@@ -1,6 +1,7 @@
 --战吼的岩城
 local s,id,o=GetID()
 function s.initial_effect(c)
+	--c:SetCardData(CARDDATA_TYPE,TYPE_SPELL+TYPE_FIELD+TYPE_QUICKPLAY)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -15,6 +16,12 @@ function s.initial_effect(c)
 	e0:SetHintTiming(TIMING_BATTLE_PHASE+TIMING_BATTLE_START+TIMING_BATTLE_END)
 	e0:SetCondition(s.condition)
 	c:RegisterEffect(e0)
+	local Effect_IsHasType=Effect.IsHasType
+	function Effect.IsHasType(e,type)
+		if e==e0 and type==EFFECT_TYPE_ACTIVATE then return true end
+		if e==e0 and type==EFFECT_TYPE_QUICK_O then return false end
+		return Effect_IsHasType(e,type)
+	end
 	--immune
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -39,14 +46,14 @@ function s.initial_effect(c)
 	--
 	if not s.globle_check then
 		s.globle_check=true
-		local ge0=Effect.CreateEffect(c)
+		--[[local ge0=Effect.CreateEffect(c)
 		ge0:SetType(EFFECT_TYPE_FIELD)
 		ge0:SetCode(EFFECT_ACTIVATE_COST)
 		ge0:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
 		ge0:SetCost(aux.FALSE)
 		ge0:SetTargetRange(1,1)
 		ge0:SetTarget(s.actarget)
-		Duel.RegisterEffect(ge0,0)
+		Duel.RegisterEffect(ge0,0)]]
 		--Activate to field
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD)
@@ -66,18 +73,22 @@ function s.actarget(e,te,tp)
 end
 function s.actarget2(e,te,tp)
 	local tc=te:GetHandler()
-	e:SetLabelObject(te)
-	return tc:GetOriginalCode()==id and te:IsHasType(EFFECT_TYPE_QUICK_O) and tc:IsLocation(LOCATION_HAND) and tc:IsType(TYPE_SPELL)
+	if tc:GetOriginalCode()==id and te:IsHasType(EFFECT_TYPE_QUICK_O) and tc:IsLocation(LOCATION_HAND) and tc:IsType(TYPE_SPELL) then
+		--Debug.Message("0")
+		e:SetLabelObject(te)
+		return true
+	end
+	return false
 end
 function s.costop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
 	local tc=te:GetHandler()
 	local tp=te:GetHandlerPlayer()
-	local te2=te:Clone()
-	tc:RegisterEffect(te2)
-	te2:UseCountLimit(tp)
-	te:SetValue(id)
-	te:SetType(EFFECT_TYPE_ACTIVATE)
+	--local te2=te:Clone()
+	--tc:RegisterEffect(te2)
+	--te2:UseCountLimit(tp)
+	--te:SetValue(id)
+	--te:SetType(EFFECT_TYPE_ACTIVATE)
 	if tc:IsType(TYPE_FIELD) then
 		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 		if fc then
