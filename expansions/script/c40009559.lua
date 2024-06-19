@@ -88,7 +88,7 @@ end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local at=Duel.GetAttacker()
-	if not Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 then return end
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return end
 	Duel.ConfirmDecktop(tp,1)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
