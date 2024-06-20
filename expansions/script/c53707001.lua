@@ -57,7 +57,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()~=100 then return false end
 		e:SetLabel(0)
-		return #g>0 and count>math.min(3,#g) and Duel.GetDecktopGroup(tp,math.min(3,count)):IsExists(Card.IsAbleToHand,1,nil) and Duel.GetDecktopGroup(tp,math.min(3,count)):IsExists(Card.IsAbleToRemove,1,nil,POS_FACEDOWN)
+		return #g>0 and count>math.min(3,#g) and Duel.GetDecktopGroup(tp,math.min(3,count)):IsExists(Card.IsAbleToHand,1,nil) and Duel.GetDecktopGroup(tp,math.min(3,count)):IsExists(Card.IsAbleToRemove,1,nil,tp,POS_FACEDOWN)
 	end
 	SNNM.UpConfirm(tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)

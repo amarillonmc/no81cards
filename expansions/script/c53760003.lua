@@ -96,10 +96,10 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chk==0 then
 		if c:GetFlagEffect(m)==0 then c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) end
-		return c:GetFlagEffectLabel(m)&(1<<(tp+1))==0 and eg:IsExists(Card.IsAbleToRemove,1,nil,pos)
+		return c:GetFlagEffectLabel(m)&(1<<(tp+1))==0 and eg:IsExists(Card.IsAbleToRemove,1,nil,tp,pos)
 	end
 	c:SetFlagEffectLabel(m,1<<(tp+1))
-	local g=eg:Filter(Card.IsAbleToRemove,nil,pos)
+	local g=eg:Filter(Card.IsAbleToRemove,nil,tp,pos)
 	Duel.SetTargetCard(eg)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 end
@@ -109,7 +109,7 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local pos=POS_FACEUP
 	if Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil) then pos=POS_FACEDOWN end
-	local g=Duel.GetTargetsRelateToChain():Filter(Card.IsAbleToRemove,nil,pos)
+	local g=Duel.GetTargetsRelateToChain():Filter(Card.IsAbleToRemove,nil,tp,pos)
 	if #g==0 then return end
 	Duel.Remove(g,pos,REASON_EFFECT)
 end

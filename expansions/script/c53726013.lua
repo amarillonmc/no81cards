@@ -58,7 +58,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) then
+	if Duel.NegateActivation(ev) and e:GetLabel()==1 then
 		local b1=Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil)
 		local b2=Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,nil)
 		local off=1

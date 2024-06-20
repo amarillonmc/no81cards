@@ -26,10 +26,10 @@ function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
 		if g:GetCount()==0 then return false end
 		local tc=g:GetMinGroup(Card.GetSequence):GetFirst()
-		return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,POS_FACEDOWN) and tc:IsAbleToRemove(POS_FACEDOWN)
+		return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,tp,POS_FACEDOWN) and tc:IsAbleToRemove(tp,POS_FACEDOWN)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,POS_FACEDOWN)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,tp,POS_FACEDOWN)
 	Duel.Remove(g,POS_FACEDOWN,REASON_COST)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)

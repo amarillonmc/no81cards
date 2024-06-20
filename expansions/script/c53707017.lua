@@ -50,7 +50,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local ct=g:GetCount()-1
 	if ct>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg=g:FilterSelect(tp,Card.IsAbleToRemove,ct,ct,nil,tp,nil)
+		local sg=g:FilterSelect(tp,Card.IsAbleToRemove,ct,ct,nil,tp,POS_FACEDOWN)
 		Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
 	end
 end

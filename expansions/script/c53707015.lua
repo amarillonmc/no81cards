@@ -38,7 +38,7 @@ function cm.dspop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_DECK,0,3,3,c,e)
 	Duel.ConfirmCards(1-tp,g)
-	Duel.Remove(g,POS_FACEDOWN,REASON_COST)
+	Duel.Remove(g,POS_FACEDOWN,REASON_SPSUMMON)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END+RESET_SELF_TURN,0,2)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)

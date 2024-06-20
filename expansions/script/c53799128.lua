@@ -22,10 +22,10 @@ function cm.chainfilter(re,tp,cid)
 	return not re:IsActiveType(TYPE_SPELL)
 end
 function cm.cpfilter(c)
-	return c:IsType(TYPE_SPELL) and c:IsAbleToGraveAsCost() and c:IsAbleToRemove(POS_FACEDOWN) and c:CheckActivateEffect(false,true,false)~=nil and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND+LOCATION_DECK,0,2,c,c:GetCode())
+	return c:IsType(TYPE_SPELL) and c:IsAbleToGraveAsCost() and c:IsAbleToRemove(tp,POS_FACEDOWN) and c:CheckActivateEffect(false,true,false)~=nil and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND+LOCATION_DECK,0,2,c,c:GetCode())
 end
 function cm.filter(c,code)
-	return c:IsCode(code) and c:IsAbleToGraveAsCost() and c:IsAbleToRemove(POS_FACEDOWN)
+	return c:IsCode(code) and c:IsAbleToGraveAsCost() and c:IsAbleToRemove(tp,POS_FACEDOWN)
 end
 function cm.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
