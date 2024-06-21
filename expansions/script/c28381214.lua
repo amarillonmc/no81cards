@@ -58,7 +58,6 @@ function c28381214.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28381214.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,2,2,nil)
 	if Duel.SendtoHand(tg,nil,REASON_EFFECT)==0 then return end
 	Duel.ConfirmCards(1-tp,tg)
-	Duel.ShuffleHand(tp)
 	if tc:IsRelateToEffect(e) then Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT) end
 	local b1,b2,b3,b4=false
 	local b5=true
@@ -73,10 +72,14 @@ function c28381214.thop(e,tp,eg,ep,ev,re,r,rp)
 		{b3,aux.Stringid(28381214,2)},
 		{b4,aux.Stringid(28381214,3)},
 		{b5,aux.Stringid(28381214,4)})
-	if op~=5 then Duel.BreakEffect() end
+	if op~=5 then
+		Duel.BreakEffect()
+		Duel.ShuffleHand(tp)
+	end
 	if op==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local g=Duel.SelectMatchingCard(tp,c28381214.ilfilter,tp,LOCATION_HAND,0,2,2,nil)
+		Duel.ConfirmCards(1-tp,g)
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local g=Duel.SelectMatchingCard(tp,c28381214.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
@@ -84,6 +87,7 @@ function c28381214.thop(e,tp,eg,ep,ev,re,r,rp)
 	elseif op==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local g=Duel.SelectMatchingCard(tp,c28381214.anfilter,tp,LOCATION_HAND,0,2,2,nil)
+		Duel.ConfirmCards(1-tp,g)
 		Duel.BreakEffect()
 		Duel.Damage(tp,500,REASON_EFFECT,true)
 		Duel.Damage(1-tp,500,REASON_EFFECT,true)
@@ -92,6 +96,7 @@ function c28381214.thop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local g=Duel.SelectMatchingCard(tp,c28381214.hkfilter,tp,LOCATION_HAND,0,2,2,nil)
+		Duel.ConfirmCards(1-tp,g)
 		Duel.BreakEffect()
 		Duel.ShuffleHand(tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -100,6 +105,7 @@ function c28381214.thop(e,tp,eg,ep,ev,re,r,rp)
 	elseif op==4 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local g=Duel.SelectMatchingCard(tp,c28381214.alfilter,tp,LOCATION_HAND,0,2,2,nil)
+		Duel.ConfirmCards(1-tp,g)
 		Duel.BreakEffect()
 		Duel.Recover(tp,500,REASON_EFFECT)
 	end

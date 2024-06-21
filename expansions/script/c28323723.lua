@@ -65,7 +65,6 @@ function c28323723.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28323723.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,2,2,nil)
 	if Duel.SendtoHand(tg,nil,REASON_EFFECT)==0 then return end
 	Duel.ConfirmCards(1-tp,tg)
-	Duel.ShuffleHand(tp)
 	if tc:IsRelateToEffect(e) then Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT) end
 	local b1,b2,b3,b4=false
 	local b5=true
@@ -80,10 +79,14 @@ function c28323723.thop(e,tp,eg,ep,ev,re,r,rp)
 		{b3,aux.Stringid(28323723,2)},
 		{b4,aux.Stringid(28323723,3)},
 		{b5,aux.Stringid(28323723,4)})
-	if op~=5 then Duel.BreakEffect() end
+	if op~=5 then
+		Duel.BreakEffect()
+		Duel.ShuffleHand(tp)
+	end
 	if op==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local g=Duel.SelectMatchingCard(tp,c28323723.stfilter,tp,LOCATION_HAND,0,2,2,nil)
+		Duel.ConfirmCards(1-tp,g)
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 		local g=Duel.SelectMatchingCard(tp,c28323723.ctfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
@@ -91,6 +94,7 @@ function c28323723.thop(e,tp,eg,ep,ev,re,r,rp)
 	elseif op==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local g=Duel.SelectMatchingCard(tp,c28323723.nofilter,tp,LOCATION_HAND,0,2,2,nil)
+		Duel.ConfirmCards(1-tp,g)
 		Duel.BreakEffect()
 		Duel.ShuffleHand(tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
@@ -104,6 +108,7 @@ function c28323723.thop(e,tp,eg,ep,ev,re,r,rp)
 	elseif op==3 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local g=Duel.SelectMatchingCard(tp,c28323723.shfilter,tp,LOCATION_HAND,0,2,2,nil)
+		Duel.ConfirmCards(1-tp,g)
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c28323723.exfilter,tp,LOCATION_EXTRA,0,1,1,nil)
@@ -114,6 +119,7 @@ function c28323723.thop(e,tp,eg,ep,ev,re,r,rp)
 	elseif op==4 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local g=Duel.SelectMatchingCard(tp,c28323723.cofilter,tp,LOCATION_HAND,0,2,2,nil)
+		Duel.ConfirmCards(1-tp,g)
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local g=Duel.SelectMatchingCard(tp,c28323723.rmfilter,tp,LOCATION_GRAVE,0,1,1,nil)

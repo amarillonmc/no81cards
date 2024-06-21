@@ -40,6 +40,7 @@ function c28346765.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28346765.cfilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(28346765,0))
 	local pc=Duel.SelectMatchingCard(tp,c28346765.cfilter,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
+	Duel.ConfirmCards(1-tp,pc)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_PUBLIC)
@@ -59,7 +60,7 @@ function c28346765.setop(e,tp,eg,ep,ev,re,r,rp)
 	if sc then Duel.SSet(tp,sc) end
 end
 function c28346765.spfilter(c,e,tp)
-	return c:IsSetCard(0x283) and c:GetOriginalLevel()<=4 and c:GetOriginalLevel()>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x283) and c:IsSummonableCard() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c28346765.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c28346765.spfilter(chkc,e,tp) end
