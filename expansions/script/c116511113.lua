@@ -27,7 +27,7 @@ function c116511113.initial_effect(c)
     c:RegisterEffect(e3)
     local e4=Effect.CreateEffect(c)
     e4:SetCategory(CATEGORY_SUMMON)
-    e4:SetDescription(aux.Stringid(116511113,1))
+    e4:SetDescription(aux.Stringid(116511113,0))
     e4:SetType(EFFECT_TYPE_QUICK_O)
     e4:SetHintTiming(0,TIMING_END_PHASE)
     e4:SetCode(EVENT_FREE_CHAIN)
@@ -39,7 +39,7 @@ function c116511113.initial_effect(c)
     c:RegisterEffect(e4)
     local e5=Effect.CreateEffect(c)
     e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
-    e5:SetDescription(aux.Stringid(116511113,2))
+    e5:SetDescription(aux.Stringid(116511113,1))
     e5:SetType(EFFECT_TYPE_QUICK_O)
     e5:SetHintTiming(0,TIMING_END_PHASE)
     e5:SetCode(EVENT_FREE_CHAIN)
@@ -78,7 +78,7 @@ function c116511113.xyzcon1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c116511113.xyzop1(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    if Duel.GetFlagEffect(tp,116511113)==0 and Duel.SelectYesNo(tp,aux.Stringid(116511113,0)) then
+    if Duel.GetFlagEffect(tp,116511113)==0 and Duel.SelectYesNo(tp,aux.Stringid(116511113,3)) then
         Duel.RegisterFlagEffect(tp,116511113,RESET_CHAIN,0,1)
         local mg=Group.CreateGroup()
         local rc=re:GetHandler()
@@ -106,7 +106,7 @@ end
 function c116511113.xyzop2(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     if not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,true,false) then return end
-    if Duel.GetFlagEffect(tp,116511113)==0 and Duel.SelectYesNo(tp,aux.Stringid(116511113,0)) then
+    if Duel.GetFlagEffect(tp,116511113)==0 and Duel.SelectYesNo(tp,aux.Stringid(116511113,3)) then
         Duel.RegisterFlagEffect(tp,116511113,RESET_CHAIN,0,1)
         local mg=Group.CreateGroup()
         local rc=Duel.GetAttacker()
