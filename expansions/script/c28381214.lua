@@ -109,4 +109,5 @@ function c28381214.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		Duel.Recover(tp,500,REASON_EFFECT)
 	end
+	Duel.ShuffleHand(tp)
 end

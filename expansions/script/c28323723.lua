@@ -125,4 +125,5 @@ function c28323723.thop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,c28323723.rmfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	end
+	Duel.ShuffleHand(tp)
 end

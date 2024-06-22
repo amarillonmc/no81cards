@@ -65,7 +65,7 @@ function c28315548.spop(e,tp,eg,ep,ev,re,r,rp)
 		local e0=Effect.CreateEffect(c)
 		e0:SetType(EFFECT_TYPE_SINGLE)
 		e0:SetCode(EFFECT_UPDATE_LEVEL)
-		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		e0:SetValue(ct)
 		c:RegisterEffect(e0)
 	end
