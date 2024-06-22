@@ -164,7 +164,7 @@ function c9911555.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
 end
 function c9911555.rmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TODECK)
+	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):FilterSelect(1-tp,Card.IsAbleToRemove,1,1,nil,tp,POS_FACEDOWN)
 	if #g>0 then
 		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
