@@ -3,7 +3,7 @@ function c10105695.initial_effect(c)
 	aux.AddFusionProcFunFun(c,aux.FilterBoolFunction(Card.IsFusionCode,13171876),c10105695.ffilter,1,true)
 	aux.AddContactFusionProcedure(c,c10105695.cfilter,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED,0,aux.tdcfop(c))
     	--code
-	aux.EnableChangeCode(c,13171876,LOCATION_MZONE+LOCATION_GRAVE)
+	aux.EnableChangeCode(c,13171876,LOCATION_MZONE)
 	c:SetSPSummonOnce(10105695)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -35,7 +35,7 @@ function c10105695.filter2(c,lv1,slv)
 	return c:IsFaceup() and lv2>0 and lv1+lv2>=slv
 end
 function c10105695.spfilter(c,e,tp,lv)
-	return c:IsRace(RACE_DRAGON) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (not lv or c:IsLevelBelow(lv))
+	return c:IsSetCard(0x133) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (not lv or c:IsLevelBelow(lv))
 end
 function c10105695.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
