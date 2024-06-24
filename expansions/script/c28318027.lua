@@ -27,7 +27,7 @@ function c28318027.initial_effect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,28318027)
+	e2:SetCountLimit(1)
 	e2:SetCost(c28318027.thcost)
 	e2:SetTarget(c28318027.thtg)
 	e2:SetOperation(c28318027.thop)
@@ -116,7 +116,7 @@ function c28318027.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_COST)
 end
 function c28318027.thfilter(c)
-	return c:IsSetCard(0x284) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:IsSetCard(0x284) and c:IsType(TYPE_SPELL) and (c:IsAbleToHand() or c:IsSSetable())
 end
 function c28318027.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28318027.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -126,11 +126,13 @@ function c28318027.tgfilter(c)
 	return c:IsSetCard(0x284) and c:IsAbleToGrave()
 end
 function c28318027.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tg=Duel.SelectMatchingCard(tp,c28318027.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if tg then
-		Duel.SendtoHand(tg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tg)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local tc=Duel.SelectMatchingCard(tp,c28318027.thfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
+	if tc and tc:IsAbleToHand() and (not tc:IsSSetable() or Duel.SelectOption(tp,1190,1153)==0) then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
+	else
+		Duel.SSet(tp,tc)
 	end
 	if e:GetHandler():IsRankAbove(8) and Duel.IsExistingMatchingCard(c28318027.tgfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28318027,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

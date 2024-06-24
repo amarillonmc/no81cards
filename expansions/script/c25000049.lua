@@ -4,7 +4,6 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetTarget(s.target)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
@@ -46,35 +45,15 @@ function s.initial_effect(c)
 	e6:SetTargetRange(LOCATION_EXTRA,LOCATION_EXTRA)
 	e6:SetValue(s.frcval)
 	c:RegisterEffect(e6)
-end
-function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	e:GetHandler():SetTurnCounter(0)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetCode(EVENT_PHASE+PHASE_END)
-	e1:SetCountLimit(1)
-	e1:SetRange(LOCATION_SZONE)
-	e1:SetCondition(s.descon)
-	e1:SetOperation(s.desop)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN,3)
-	e:GetHandler():RegisterEffect(e1)
-	e:GetHandler():RegisterFlagEffect(1082946,RESET_PHASE+PHASE_END+RESET_OPPO_TURN,0,3)
-	s[e:GetHandler()]=e1
-end
-function s.descon(e,tp,eg,ep,ev,re,r,rp)
-	return tp==Duel.GetTurnPlayer()
-end
-function s.desop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local ct=c:GetTurnCounter()
-	ct=ct+1
-	c:SetTurnCounter(ct)
-	if ct==3 then
-		Duel.Destroy(c,REASON_RULE)
-		c:ResetFlagEffect(1082946)
-	end
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e7:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e7:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e7:SetRange(LOCATION_SZONE)
+	e7:SetCountLimit(1)
+	e7:SetCondition(s.mtcon)
+	e7:SetOperation(s.mtop)
+	c:RegisterEffect(e7)
 end
 function s.ntcon(e,c,minc)
 	if c==nil then return true end
@@ -101,4 +80,14 @@ function s.ruleop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.frcval(e,c,fp,rp,r)
 	return Duel.GetLinkedZone(0)+(Duel.GetLinkedZone(1)<<0x10) | 0x600060
+end
+function s.mtcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
+end
+function s.mtop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.CheckLPCost(tp,800) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+		Duel.PayLPCost(tp,800)
+	else
+		Duel.Destroy(e:GetHandler(),REASON_COST)
+	end
 end

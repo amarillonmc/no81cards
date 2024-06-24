@@ -42,17 +42,17 @@ end
 function cm.fselect(g,tp)
 	return Duel.GetMZoneCount(1-tp,g,tp)>0 
 end
-function cm.fit0(c)
-	return  c:IsReleasable() and aux.IsCodeListed(c,35405755)
+function cm.fit0(c,tp)
+	return  c:IsReleasable() and aux.IsCodeListed(c,35405755) and c:GetOwner()==tp
 end
 function cm.spcon0(e,c)
 	if c==nil then return true end
-	local tp=c:GetControler()
-	local rg=Duel.GetMatchingGroup(cm.fit0,tp,LOCATION_MZONE,LOCATION_MZONE,nil,REASON_SPSUMMON)
+	local tp=e:GetHandlerPlayer()
+	local rg=Duel.GetMatchingGroup(cm.fit0,tp,LOCATION_MZONE,LOCATION_MZONE,nil,e:GetHandlerPlayer())
 	return rg:CheckSubGroup(cm.fselect,2,2,tp)
 end
 function cm.sptg0(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local rg=Duel.GetMatchingGroup(cm.fit0,tp,LOCATION_MZONE,LOCATION_MZONE,nil,REASON_SPSUMMON)
+	local rg=Duel.GetMatchingGroup(cm.fit0,tp,LOCATION_MZONE,LOCATION_MZONE,nil,e:GetHandlerPlayer())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local sg=rg:SelectSubGroup(tp,cm.fselect,true,2,2,tp)
 	if sg then
@@ -65,6 +65,19 @@ function cm.spop0(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=e:GetLabelObject()
 	Duel.Release(g,REASON_SPSUMMON)
 	g:DeleteGroup()
+	local e1=Effect.CreateEffect(e:GetHandler())
+		 local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_MUST_USE_MZONE)
+		e1:SetRange(LOCATION_EXTRA)
+		e1:SetTargetRange(LOCATION_EXTRA,0)
+		e1:SetTarget(cm.limit)
+		e1:SetValue(0x1f0000)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		Duel.RegisterEffect(e1,tp)  
+end
+function cm.limit(e,c)
+	return c==e:GetHandler()
 end
 function cm.filter(c,e,ts)
 	return aux.IsCodeListed(c,35405755) and c:IsCanBeSpecialSummoned(e,0,ts,false,false) 

@@ -54,23 +54,40 @@ function c9910914.cfilter(c)
 	return c:IsSetCard(0xc954) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c9910914.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910914.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9910914.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,e:GetHandler())
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	local c=e:GetHandler()
+	local b1=Duel.IsExistingMatchingCard(c9910914.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,c)
+	local b2=Duel.IsPlayerAffectedByEffect(tp,9910682) and Duel.CheckLPCost(tp,2000)
+	if chk==0 then return b1 or b2 end
+	if b2 and (not b1 or Duel.SelectYesNo(tp,aux.Stringid(9910682,0))) then
+		Duel.PayLPCost(tp,2000)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local g=Duel.SelectMatchingCard(tp,c9910914.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,c)
+		Duel.Remove(g,POS_FACEUP,REASON_COST)
+	end
 end
 function c9910914.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+	local b1=Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,nil)
+	local b2=Duel.IsPlayerAffectedByEffect(tp,9910682) and Duel.CheckLPCost(tp,2000)
+	if chk==0 then return b1 or b2 end
+	if b2 and (not b1 or Duel.SelectYesNo(tp,aux.Stringid(9910682,0))) then
+		Duel.PayLPCost(tp,2000)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,1,nil)
+		Duel.Remove(g,POS_FACEUP,REASON_COST)
+	end
 end
 function c9910914.setfilter(c,e,tp)
-	if c:IsCode(9910914) and not c:IsSetCard(0xc954) then return false end
-	return (c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)) or c:IsSSetable()
+	return c:IsSetCard(0xc954) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) or c:IsSSetable())
+end
+function c9910914.setfilter2(c)
+	return c:IsType(TYPE_MONSTER) and c:IsLevelBelow(4)
 end
 function c9910914.fselect(g,tp)
 	local ct1=g:FilterCount(Card.IsType,nil,TYPE_MONSTER)
 	local ct2=g:FilterCount(Card.IsType,nil,TYPE_FIELD)
-	return aux.gffcheck(g,Card.IsCode,9910914,Card.IsSetCard,0xc954) and ct1<=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	return g:IsExists(c9910914.setfilter2,1,nil) and ct1<=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		and ct2<=1 and #g-ct1-ct2<=Duel.GetLocationCount(tp,LOCATION_SZONE)
 end
 function c9910914.settg(e,tp,eg,ep,ev,re,r,rp,chk)

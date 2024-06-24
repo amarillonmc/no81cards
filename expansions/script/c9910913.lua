@@ -54,10 +54,17 @@ function c9910913.cfilter(c)
 	return c:IsSetCard(0xc954) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c9910913.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910913.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9910913.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,e:GetHandler())
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	local c=e:GetHandler()
+	local b1=Duel.IsExistingMatchingCard(c9910913.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,c)
+	local b2=Duel.IsPlayerAffectedByEffect(tp,9910682) and Duel.CheckLPCost(tp,2000)
+	if chk==0 then return b1 or b2 end
+	if b2 and (not b1 or Duel.SelectYesNo(tp,aux.Stringid(9910682,0))) then
+		Duel.PayLPCost(tp,2000)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local g=Duel.SelectMatchingCard(tp,c9910913.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,c)
+		Duel.Remove(g,POS_FACEUP,REASON_COST)
+	end
 end
 function c9910913.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end

@@ -66,3 +66,9 @@ function c22510002.lkop(e,tp,eg,ep,ev,re,r,rp)
     Duel.SpecialSummon(tc,SUMMON_TYPE_LINK,tp,tp,true,true,POS_FACEUP)
     tc:CompleteProcedure()
 end
+
+local re=Card.IsSetCard
+Card.IsSetCard=function(c,name)
+    if name==0xec0 and c:IsCode(34442949,22512237) then return true end
+    return re(c,name)
+end

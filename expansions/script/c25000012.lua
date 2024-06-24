@@ -11,7 +11,7 @@ function s.initial_effect(c)
 	e1:SetCode(EVENT_CUSTOM+id)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_PZONE)
-	e1:SetCountLimit(1,id+o)
+	e1:SetCountLimit(1,id)
 	e1:SetTarget(s.rmtg)
 	e1:SetOperation(s.rmop)
 	c:RegisterEffect(e1)
@@ -46,7 +46,7 @@ function s.initial_effect(c)
 			else
 				Remove_To_Field(card,int_pos,int_zone)
 			end
-			if card:IsLocation(LOCATION_ONFIELD) then
+			if card:IsLocation(LOCATION_ONFIELD) and card:IsType(TYPE_MONSTER) then
 				Duel.RaiseEvent(card,EVENT_CUSTOM+id,e,0,0,0,0)
 			end
 		end

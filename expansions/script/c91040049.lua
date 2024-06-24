@@ -8,7 +8,7 @@ function c91040049.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_CHAINING)
@@ -19,43 +19,36 @@ function c91040049.initial_effect(c)
 	e2:SetTarget(cm.sptg1)
 	e2:SetOperation(cm.spop1)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_RELEASE)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetRange(LOCATION_SZONE)
-	e3:SetCountLimit(1)
-	e3:SetCondition(cm.spcon1)
-	e3:SetTarget(cm.sptg2)
-	e3:SetOperation(cm.spop2)
-	c:RegisterEffect(e3)
+	 local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,0))
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e4:SetCountLimit(1)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetCondition(cm.condition)
+	e4:SetTarget(cm.target)
+	e4:SetOperation(cm.operation)
+	c:RegisterEffect(e4)
 end
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return   rp==1-tp and re:IsActiveType(TYPE_MONSTER)
 end
-function cm.thfilter3(c)
-	return aux.IsCodeListed(c,35405755)  and c:IsReleasable()
-end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-	Duel.Release(g,REASON_COST)
-end
+
 function cm.spfilter(c,e,tp)
 	return aux.IsCodeListed(c,35405755) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,LOCATION_GRAVE+LOCATION_HAND)
+		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
 	   Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP) 
 end
+
 function cm.filter0(c,e)
 	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and not c:IsImmuneToEffect(e)
 end
@@ -64,6 +57,33 @@ function cm.filter1(c,e,tp,m,f,chkf)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false)) then return false end
 	local res=c:CheckFusionMaterial(m,nil,chkf)
 	return res
+end
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetAttacker()
+	return  aux.IsCodeListed(tc,35405755) 
+end
+function cm.thfilter3(c)
+	local tc=Duel.GetAttacker()
+	return aux.IsCodeListed(tc,35405755)  and tc:IsReleasable()
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	Duel.Release(g,REASON_COST)
+end
+function cm.spfilter2(c)
+	return c:IsSpecialSummonable(c) and c:IsType(TYPE_FUSION)
+end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_EXTRA,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,cm.spfilter2,tp,LOCATION_EXTRA,0,1,1,nil)
+   if g:GetCount()>0 then
+	Duel.SpecialSummonRule(tp,g:GetFirst())
+   end
 end
 function cm.fdfilter(c)
 	return c:IsLocation(LOCATION_MZONE) and c:IsFacedown() or c:IsLocation(LOCATION_HAND)

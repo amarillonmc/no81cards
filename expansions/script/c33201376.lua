@@ -5,10 +5,12 @@ function s.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCost(s.cost)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
@@ -25,44 +27,42 @@ end
 s.VHisc_HYZQ=true
 s.VHisc_CNTreasure=true
 
+function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(1)
+	return true
+end
 function s.cfilter(c)
-	return c.VHisc_HYZQ and not c:IsCode(id)
+	return c.VHisc_HYZQ and c:IsType(TYPE_SPELL) and c:CheckActivateEffect(true,true,false)~=nil and not c:IsCode(id)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and s.cfilter(chkc) end
 	if chk==0 then
-		local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_DECK,0,nil)
-		return g:GetClassCount(Card.GetCode)>=3
+		if e:GetLabel()==0 then return false end
+		e:SetLabel(0)
+		return Duel.IsExistingTarget(s.cfilter,tp,LOCATION_GRAVE,0,1,nil)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,0,LOCATION_DECK)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,1))
+	local g=Duel.SelectTarget(tp,s.cfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	local te=g:GetFirst():CheckActivateEffect(true,true,false)
+	e:SetLabelObject(te)
+	e:SetProperty(te:GetProperty())
+	local tg=te:GetTarget()
+	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
+	Duel.ClearOperationInfo(0)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_DECK,0,nil)
-	if g:GetClassCount(Card.GetCode)>=3 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local sg1=g:SelectSubGroup(tp,aux.dncheck,false,3,3)
-		Duel.ConfirmCards(1-tp,sg1)
-		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_RELEASE)
-		local tg=sg1:Select(1-tp,1,1,nil)
-		local tc=tg:GetFirst()
-		Duel.SendtoGrave(tc,REASON_RELEASE)
-		Duel.ShuffleDeck(tp)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		e1:SetTargetRange(LOCATION_MZONE,0)
-		e1:SetValue(1)
-		e1:SetReset(RESET_PHASE+PHASE_END,2)
-		Duel.RegisterEffect(e1,tp)
-	end
+	local te=e:GetLabelObject()
+	if not te then return end
+	local op=te:GetOperation()
+	if op then op(e,tp,eg,ep,ev,re,r,rp) end
 end
 
 --Release effect
 function s.rltg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chkc then return chkc:IsFaceup() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
+	if chkc then return chkc:IsOnField() and aux.NegateAnyFilter(chkc) and chkc~=c end
+	if chk==0 then return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
+	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
 	local tc=g:GetFirst()
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end

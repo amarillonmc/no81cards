@@ -41,11 +41,19 @@ function cm.lmop(e)
 			local token=Duel.CreateToken(tp,15000211)
 			Duel.SendtoDeck(token,nil,0,0)
 			x=x+1
+			if x==15 then
+				local token2=Duel.CreateToken(tp,15000213)
+				Duel.SendtoDeck(token2,nil,0,0)
+			end
 		end
 		while y<15 do
 			local token=Duel.CreateToken(1-tp,15000211)
 			Duel.SendtoDeck(token,nil,0,0)
 			y=y+1
+			if y==15 then
+				local token2=Duel.CreateToken(1-tp,15000213)
+				Duel.SendtoDeck(token2,nil,0,0)
+			end
 		end
 		Duel.BreakEffect()
 		Duel.ShuffleDeck(tp)

@@ -4,7 +4,7 @@ function c9910915.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_HAND)
+	e2:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e2:SetCountLimit(1,9910915)
 	e2:SetCost(c9910915.thcost)
 	e2:SetTarget(c9910915.thtg)
@@ -13,32 +13,33 @@ function c9910915.initial_effect(c)
 end
 function c9910915.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsDiscardable()
-		and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,c) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	local g=Duel.SelectMatchingCard(tp,Card.IsDiscardable,tp,LOCATION_HAND,0,1,1,c)
-	g:AddCard(c)
-	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
+	local b1=Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,c)
+	local b2=Duel.IsPlayerAffectedByEffect(tp,9910682) and Duel.CheckLPCost(tp,2000)
+	if chk==0 then return b1 or b2 end
+	if b2 and (not b1 or Duel.SelectYesNo(tp,aux.Stringid(9910682,0))) then
+		Duel.PayLPCost(tp,2000)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,1,c)
+		Duel.Remove(g,POS_FACEUP,REASON_COST)
+	end
 end
 function c9910915.thfilter(c)
-	return c:IsSetCard(0xc954) and not c:IsCode(9910915) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsLevelAbove(2) and c:IsSetCard(0xc954) and c:IsAbleToHand()
 end
 function c9910915.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910915.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	local c=e:GetHandler()
+	if chk==0 then return c:IsReleasableByEffect() and Duel.IsExistingMatchingCard(c9910915.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,c,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function c9910915.cfilter(c)
-	return c:IsFacedown() or not c:IsSetCard(0xc954)
 end
 function c9910915.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) or Duel.Release(c,REASON_EFFECT)==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c9910915.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
-	if Duel.IsExistingMatchingCard(c9910915.cfilter,tp,LOCATION_MZONE,0,1,nil) then return end
+	if #g==0 or Duel.SendtoHand(g,nil,REASON_EFFECT)==0 or not g:GetFirst():IsLocation(LOCATION_HAND) then return end
+	Duel.ConfirmCards(1-tp,g)
 	local off=1
 	local ops={}
 	local opval={}

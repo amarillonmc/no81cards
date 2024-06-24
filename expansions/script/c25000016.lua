@@ -58,36 +58,39 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
+	local ct=Duel.GetMatchingGroupCount(nil,tp,0,LOCATION_HAND,nil)*1000
+	if chk==0 then return Duel.CheckLPCost(tp,ct) end
+	Duel.PayLPCost(tp,ct)
 end
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=Duel.GetMatchingGroupCount(nil,tp,0,LOCATION_ONFIELD,nil)-Duel.GetMatchingGroupCount(nil,tp,LOCATION_ONFIELD,0,nil)
-	if chk==0 then return ct>=0 end
-	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD+LOCATION_HAND,nil)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_HAND,nil)
+	if chk==0 then return g:GetCount()>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local ct=Duel.GetMatchingGroupCount(nil,tp,0,LOCATION_ONFIELD,nil)-Duel.GetMatchingGroupCount(nil,tp,LOCATION_ONFIELD,0,nil)
-	local res=false
-	while ct>=0 do
-		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(1-tp,nil,1-tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.HintSelection(g)
-			Duel.SendtoGrave(g,REASON_RULE,1-tp)
+	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(1-tp,Card.IsAbleToGrave,1-tp,LOCATION_HAND,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.HintSelection(g)
+		Duel.SendtoGrave(g,REASON_EFFECT,1-tp)
+		local res1=false
+		if Duel.GetLP(tp)>1000 then return end
+		while (not res1 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,1-tp,LOCATION_HAND,0,1,nil)) do
+			Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
+			local g=Duel.SelectMatchingCard(1-tp,Card.IsAbleToGrave,1-tp,LOCATION_HAND,0,1,1,nil)
+			local tc=g:GetFirst()
+			if tc then
+				Duel.HintSelection(g)
+				Duel.SendtoGrave(tc,REASON_EFFECT,1-tp)
+			end
+			if not res1 and tc:IsType(TYPE_MONSTER) and tc:IsLocation(LOCATION_GRAVE) then
+				res1=true
+			end
 		end
-		if not res then
-			res=true
-		end
-		ct=Duel.GetMatchingGroupCount(nil,tp,0,LOCATION_ONFIELD,nil)-Duel.GetMatchingGroupCount(nil,tp,LOCATION_ONFIELD,0,nil)
-		if ct>=0 then
+		if res1 and c:IsRelateToEffect(e) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
+			Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 		end
-	end
-	if res and c:IsRelateToEffect(e) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-		Duel.BreakEffect()
-		Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 end

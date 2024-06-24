@@ -8,80 +8,94 @@ function cm.KeterSanctuary(c)
 end
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.EnableChangeCode(c,40009559,LOCATION_MZONE+LOCATION_GRAVE)
-	--cannot special summon
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	c:RegisterEffect(e1)
-	--special summon
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_SPSUMMON_PROC)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCondition(cm.sprcon)
-	e2:SetOperation(cm.sprop)
-	c:RegisterEffect(e2)	
-	--attribute
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_CHANGE_LEVEL)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetTarget(cm.indtg)
-	e3:SetTargetRange(LOCATION_MZONE+LOCATION_HAND,0)
-	e3:SetValue(8)
-	c:RegisterEffect(e3) 
-	--atk/def up
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_UPDATE_ATTACK)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetTargetRange(LOCATION_MZONE,0)
-	e4:SetTarget(cm.indtg)
-	e4:SetValue(800)
-	c:RegisterEffect(e4)
 	--spsummon
-	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(m,0))
-	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e5:SetType(EFFECT_TYPE_IGNITION)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1,m)
-	e5:SetCost(cm.spcost)
-	e5:SetTarget(cm.sptg)
-	e5:SetOperation(cm.spop)
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCountLimit(1,m)
+	e1:SetTarget(cm.sptg1)
+	e1:SetOperation(cm.spop1)
+	c:RegisterEffect(e1)
+
+	--spsummon
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_RELEASE)
+	e2:SetCountLimit(1,m+100)
+	e2:SetTarget(cm.sptg2)
+	e2:SetOperation(cm.spop2)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_BE_MATERIAL)
+	e3:SetCondition(cm.drcon1)
+	c:RegisterEffect(e3)
+	local e4=e2:Clone()
+	e4:SetCode(EVENT_TO_GRAVE)
+	e4:SetCondition(cm.drcon2)
+	c:RegisterEffect(e4)
+	local e5=e2:Clone()
+	e5:SetCode(EVENT_REMOVE)
+	e5:SetCondition(cm.drcon2)
 	c:RegisterEffect(e5)
 end
-function cm.sprfilter(c,ft,tp)
-	return c:IsRace(RACE_WARRIOR)
-		and (ft>0 or (c:IsControler(tp) and c:GetSequence()<5)) and (c:IsControler(tp) or c:IsFaceup())
+function cm.spfilter1(c)
+	return not c:IsLevel(8) and c:IsFaceup()
 end
-function cm.sprcon(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	return ft>-1 and Duel.CheckReleaseGroup(tp,cm.sprfilter,1,nil,ft,tp)
+function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.spfilter1(chkc) end
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingTarget(cm.spfilter1,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	Duel.SelectTarget(tp,cm.spfilter1,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
-function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local g=Duel.SelectReleaseGroup(tp,cm.sprfilter,1,1,nil,ft,tp)
-	Duel.Release(g,REASON_COST)
+function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		if tc:IsRelateToEffect(e) and tc:IsFaceup() and not tc:IsImmuneToEffect(e) then
+			local g=Group.FromCards(c)
+			if tc:IsRelateToEffect(e) then g:AddCard(tc) end
+			g=g:Filter(Card.IsFaceup,nil)
+			for oc in aux.Next(g) do
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_CHANGE_LEVEL)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetValue(8)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				oc:RegisterEffect(e1)
+			end
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e2:SetReset(RESET_EVENT+RESETS_REDIRECT)
+			e2:SetValue(LOCATION_REMOVED)
+			c:RegisterEffect(e2,true)
+		end
+	end
 end
-function cm.indtg(e,c)
-	return c:IsRace(RACE_WARRIOR) and c:IsLevelBelow(7)
+function cm.drcon1(e,tp,eg,ep,ev,re,r,rp)
+	return bit.band(r,REASON_FUSION+REASON_SYNCHRO+REASON_LINK)~=0
 end
-function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() end
-	Duel.Release(e:GetHandler(),REASON_COST)
+function cm.drcon2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsReason(REASON_COST) and re:IsActivated() and re:IsActiveType(TYPE_XYZ)
+		and c:IsPreviousLocation(LOCATION_OVERLAY)
 end
-function cm.spfilter(c,e,tp)
+function cm.spfilter2(c,e,tp)
 	return c:IsCode(40009559) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler())>0
-		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function cm.cfilter(c)
@@ -90,10 +104,10 @@ end
 function cm.setfilter(c)
 	return cm.KeterSanctuary(c) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
-function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp)
+		local g=Duel.SelectMatchingCard(tp,cm.spfilter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
 			if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)>0 and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,3,nil) and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 				Duel.BreakEffect()

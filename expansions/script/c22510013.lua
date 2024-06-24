@@ -1,7 +1,7 @@
 --机械崩溃
 function c22510013.initial_effect(c)
     local e1=Effect.CreateEffect(c)
-    e1:SetCategory(CATEGORY_DESTROY+CATEGORY_TOGRAVE)
+    e1:SetCategory(CATEGORY_DESTROY+CATEGORY_DECKDES)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
     e1:SetCode(EVENT_FREE_CHAIN)

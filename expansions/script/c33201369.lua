@@ -32,7 +32,8 @@ s.VHisc_CNTreasure=true
 
 function s.retcon(e,tp,eg,ep,ev,re,r,rp)
 	local rg=e:GetHandler():GetOverlayGroup()
-	return re:GetHandler()~=e:GetHandler() and re:GetHandler():IsType(TYPE_SPELL+TYPE_RITUAL) and ep==tp and re:IsActiveType(TYPE_SPELL) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and rg:GetCount()>0
+	local tc=re:GetHandler()
+	return re:GetHandler()~=e:GetHandler() and re:GetHandler():IsType(TYPE_SPELL+TYPE_RITUAL) and ep==tp and re:IsActiveType(TYPE_SPELL) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and tc.VHisc_HYZQ and rg:GetCount()>0
 end
 function s.matfilter(c)
 	return c:IsCanOverlay() and not c:IsStatus(STATUS_LEAVE_CONFIRMED)

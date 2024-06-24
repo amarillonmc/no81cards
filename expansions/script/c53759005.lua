@@ -5,11 +5,6 @@ cm.Card_Prophecy_LV2=true
 if not require and dofile then function require(str) return dofile(str..".lua") end end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_MONSTER_SSET)
-	e0:SetValue(0x10002)
-	c:RegisterEffect(e0)
 	local e1,e1_1,e2,e3=SNNM.ActivatedAsSpellorTrap(c,0x10002,LOCATION_HAND+LOCATION_SZONE,true)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CARD_TARGET)
@@ -18,7 +13,7 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	e1_1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	e1_1:SetRange(0xff)
-	SNNM.Global_in_Initial_Reset(c,{e2,e3})
+	--SNNM.Global_in_Initial_Reset(c,{e2,e3})
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
@@ -28,24 +23,7 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.spop)
 	c:RegisterEffect(e4)
 	SNNM.ActivatedAsSpellorTrapCheck(c)
-	if not Card_Prophecy_Cheat_2 then
-		Card_Prophecy_Cheat_2=true
-		cm[1]=Card.IsSSetable
-		Card.IsSSetable=function(sc,bool)
-			local ly=0
-			for i=1,114 do
-				if not SNNM["Card_Prophecy_Layer_"..i] then
-					ly=i-1
-					break
-				end
-			end
-			local b=true
-			if sc.Card_Prophecy_LV2 and (ly>0 or Duel.GetFlagEffectLabel(0,53759000)==0) then
-				if ly>0 then SNNM["Card_Prophecy_Certain_ACST_"..ly]=true end
-			else b=cm[1](sc,bool) end
-			return b
-		end
-	end
+	SNNM.SetAsSpellorTrapCheck(c,0x10002)
 end
 cm.lvup={m-4}
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)

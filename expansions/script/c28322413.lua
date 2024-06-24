@@ -27,22 +27,21 @@ function c28322413.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,28322413)
 	e2:SetCondition(c28322413.tdcon)
 	e2:SetCost(c28322413.tdcost)
 	e2:SetTarget(c28322413.tdtg)
 	e2:SetOperation(c28322413.tdop)
 	c:RegisterEffect(e2)
-	--spsummon
+	--rank up
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetCategory(CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
 	e3:SetCondition(c28322413.rankcon)
 	e3:SetLabel(4)
-	e3:SetTarget(c28322413.sptg)
-	e3:SetOperation(c28322413.spop)
+	e3:SetTarget(c28322413.rutg)
+	e3:SetOperation(c28322413.ruop)
 	c:RegisterEffect(e3)
 	--cannot target
 	local e4=Effect.CreateEffect(c)
@@ -158,36 +157,32 @@ end
 function c28322413.rankcon(e)
 	return e:GetHandler():GetRank()>=e:GetLabel()
 end
-function c28322413.cfilter(c,e,tp)
-	return c:IsSetCard(0x284) and c:IsLevelAbove(1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and Duel.IsExistingMatchingCard(c28322413.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c)
-end
 function c28322413.tdfilter(c)
 	return c:IsSetCard(0x284) and c:IsAbleToDeck() and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
 end
-function c28322413.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c28322413.cfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+function c28322413.rutg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28322413.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
-function c28322413.spfilter(c,e,tp)
-	return c:IsSetCard(0x284) and c:IsLevelAbove(1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
-end
-function c28322413.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sc=Duel.SelectMatchingCard(tp,c28322413.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
-	if sc and Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP) and Duel.IsExistingMatchingCard(c28322413.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local tg=Duel.SelectTarget(tp,aux.NecroValleyFilter(c28315443.tdfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,99,nil)
-		Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		local ct=tg:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-		local e0=Effect.CreateEffect(e:GetHandler())
-		e0:SetType(EFFECT_TYPE_SINGLE)
-		e0:SetCode(EFFECT_UPDATE_LEVEL)
-		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e0:SetValue(ct)
-		sc:RegisterEffect(e0)
+function c28322413.ruop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28322413.tdfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,99,nil)
+	if g:GetCount()==0 then return end
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	local og=Duel.GetOperatedGroup()
+	local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+	if ct>0 then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_UPDATE_LEVEL)
+		e1:SetTargetRange(LOCATION_MZONE,0)
+		e1:SetValue(ct)
+		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+		e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x284))
+		Duel.RegisterEffect(e1,tp)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_UPDATE_RANK)
+		Duel.RegisterEffect(e2,tp)
 	end
 end
 function c28322413.immunefilter(e,te)

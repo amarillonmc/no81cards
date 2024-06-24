@@ -91,10 +91,10 @@ function cm.sprop1(e,tp,eg,ep,ev,re,r,rp,c)
 end
 function cm.sprcon2(e,c)
 	if c==nil then return true end
-	return Duel.CheckReleaseGroup(c:GetControler(),Card.IsCode,1,nil,40009559)
+	return Duel.CheckReleaseGroup(REASON_COST,c:GetControler(),Card.IsCode,1,nil,40009559)
 end
 function cm.sprop2(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.SelectReleaseGroup(tp,Card.IsCode,1,1,nil,40009559)
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,Card.IsCode,1,1,nil,40009559)
 	Duel.Release(g,REASON_COST)
 end
 

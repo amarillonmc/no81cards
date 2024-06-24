@@ -6,46 +6,31 @@ function c11561044.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,c11561044.mfilter,1)
 	--counter 
-	local e1=Effect.CreateEffect(c) 
-	e1:SetCategory(CATEGORY_COUNTER)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(c11561044.ctcon)
-	e1:SetTarget(c11561044.cttg)
+	local e1=Effect.CreateEffect(c)  
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS) 
+	e1:SetCondition(c11561044.ctcon) 
 	e1:SetOperation(c11561044.ctop)
 	c:RegisterEffect(e1)	
 end
 function c11561044.mfilter(c)
 	return c:IsLinkType(TYPE_LINK) and c:GetLink()>=2
 end
-function c11561044.ctcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
-end
 function c11561044.ctfilter(c,e)
 	return c:IsType(TYPE_LINK) 
 end
-function c11561044.cttg(e,tp,eg,ep,ev,re,r,rp,chk) 
+function c11561044.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	local mg=e:GetHandler():GetMaterial()
 	if mg:GetCount()<1 then return false end   
 	local g=mg:Filter(c11561044.ctfilter,1,nil,e) 
 	local lk=g:GetSum(Card.GetLink)
-	if chk==0 then return g:GetCount()>0 and e:GetHandler():IsCanAddCounter(0x1,lk) end 
-	e:SetCategory(CATEGORY_COUNTER) 
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x1) 
-	if lk>=2 then 
-		e:SetCategory(e:GetCategory()+CATEGORY_RECOVER)
-		Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1200)
-	end 
-	if lk>=3 then 
-		e:SetCategory(e:GetCategory()+CATEGORY_DRAW)
-		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1) 
-	end 
-end
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and g:GetCount()>0 and e:GetHandler():IsCanAddCounter(0x1,lk)
+end 
 function c11561044.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local mg=e:GetHandler():GetMaterial()
-	if mg:GetCount()<1 then return false end   
+	if mg:GetCount()<1 then return false end  
+	Duel.Hint(HINT_CARD,0,11561044) 
 	local g=mg:Filter(c11561044.ctfilter,1,nil,e) 
 	local lk=g:GetSum(Card.GetLink)
 	if c:IsRelateToEffect(e) then 

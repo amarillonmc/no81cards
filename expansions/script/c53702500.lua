@@ -5379,6 +5379,33 @@ function cm.MultipleGroupCheck(c)
 	end
 end
 --2
+function cm.SetAsSpellorTrapCheck(c,type)
+	local mt=getmetatable(c)
+	mt.SSetableMonster=true
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_MONSTER_SSET)
+	e0:SetValue(type)
+	c:RegisterEffect(e0)
+	if not AD_SetAsSpellorTrap_Check then
+		AD_SetAsSpellorTrap_Check=true
+		ADIMI_IsSSetable=Card.IsSSetable
+		Card.IsSSetable=function(sc,bool)
+			local ly=0
+			for i=1,114 do
+				if not cm["Card_Prophecy_Layer_"..i] then
+					ly=i-1
+					break
+				end
+			end
+			local b=true
+			if sc.SSetableMonster and (ly>0 or Duel.GetFlagEffectLabel(0,53759000)==0) then
+				if ly>0 then cm["Card_Prophecy_Certain_ACST_"..ly]=true end
+			else b=ADIMI_IsSSetable(sc,bool) end
+			return b
+		end
+	end
+end
 function cm.ActivatedAsSpellorTrapCheck(c)
 	if not AD_ActivatedAsSpellorTrap_Check then
 		AD_ActivatedAsSpellorTrap_Check=true

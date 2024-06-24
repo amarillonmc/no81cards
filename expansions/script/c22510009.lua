@@ -62,7 +62,7 @@ function c22510009.setop(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.SelectMatchingCard(tp,c22510009.setfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
     local tc=g:GetFirst()
     if tc then
-        local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+        local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
         if fc then
             Duel.SendtoGrave(fc,REASON_RULE)
             Duel.BreakEffect()

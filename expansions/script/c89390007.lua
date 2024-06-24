@@ -82,12 +82,13 @@ function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
         for k,v in pairs(copyt) do
             if k and v then exg:AddCard(k) end
         end
-        if exg:GetClassCount(Card.GetOriginalCode)>=3 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-            local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil,tp)
+        local cd=c89390009.cd or 3
+        if exg:GetClassCount(Card.GetOriginalCode)>=cd and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+            local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND,LOCATION_HAND,nil,tp)
             if g:GetCount()>0 then
-                local rg=g:RandomSelect(tp,1)
-                local tc=rg:GetFirst()
-                Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+                Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+                local tc=g:Select(tp,1,1,nil):GetFirst()
+                Duel.Remove(tc,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)
                 tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
                 local e1=Effect.CreateEffect(c)
                 e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

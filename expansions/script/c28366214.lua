@@ -67,6 +67,7 @@ function c28366214.activate(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetType(EFFECT_TYPE_SINGLE)
 			e3:SetCode(EFFECT_IMMUNE_EFFECT)
 			e3:SetValue(c28366214.efilter)
+			e3:SetOwnerPlayer(tp)
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e3)
 		end
@@ -87,7 +88,7 @@ function c28366214.actcon(e)
 	return Duel.GetAttacker()==e:GetLabelObject()
 end
 function c28366214.efilter(e,re)
-	return e:GetHandler()~=re:GetOwner()
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function c28366214.atktg(e,c)
 	return e:GetLabel()~=c:GetFieldID()

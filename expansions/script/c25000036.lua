@@ -1,7 +1,8 @@
---核成兽的融合
+--核成兽的融核
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,36623431)
+	aux.EnableChangeCode(c,36623431,LOCATION_HAND+LOCATION_GRAVE)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -10,34 +11,31 @@ function s.initial_effect(c)
 	e1:SetTarget(s.ftg)
 	e1:SetOperation(s.fop)
 	c:RegisterEffect(e1)
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(id,0))
-	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCountLimit(1,id+o*10000)
-	e3:SetCost(aux.bfgcost)
-	e3:SetTarget(s.thtg)
-	e3:SetOperation(s.thop)
-	c:RegisterEffect(e3)
 end
 function s.filter0(c)
-	return c:IsLocation(LOCATION_HAND) and c:IsAbleToRemove()
+	return c:IsAbleToRemove()
 end
 function s.filter1(c,e)
-	return c:IsLocation(LOCATION_HAND) and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
+	return c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
 end
 function s.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x1d) and (not f or f(c))
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
+	if not (c:IsType(TYPE_FUSION) and c:IsSetCard(0x1d) and (not f or f(c))
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false)) then return false end
+	aux.FCheckAdditional=c.cyber_fusion_check or s.fcheck
+	local res=c:CheckFusionMaterial(m,nil,chkf)
+	aux.FCheckAdditional=nil
+	return res
 end
 function s.filter3(c)
 	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove()
 end
+function s.fcheck(tp,sg,fc)
+	return sg:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)==1 and sg:FilterCount(Card.IsLocation,nil,LOCATION_DECK)==1
+end
 function s.ftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
-		local mg1=Duel.GetFusionMaterial(tp):Filter(s.filter0,nil)
+		local mg1=Duel.GetMatchingGroup(s.filter0,tp,LOCATION_DECK,0,nil)
 		local mg2=Duel.GetMatchingGroup(s.filter3,tp,LOCATION_GRAVE,0,nil)
 		mg1:Merge(mg2)
 		local res=Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
@@ -54,16 +52,13 @@ function s.ftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_ONFIELD+LOCATION_GRAVE)
-	if Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_MZONE,0,nil)<Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_MZONE,nil) then
-		e:SetLabel(100)
-	end
 end
 function s.sspfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.fop(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
-	local mg1=Duel.GetFusionMaterial(tp):Filter(s.filter1,nil,e)
+		local mg1=Duel.GetMatchingGroup(s.filter1,tp,LOCATION_DECK,0,nil,e)
 	local mg2=Duel.GetMatchingGroup(s.filter3,tp,LOCATION_GRAVE,0,nil)
 	mg1:Merge(mg2)
 	local sg1=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
@@ -95,32 +90,18 @@ function s.fop(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
-		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-		local ssg=mat1:Filter(s.sspfilter,nil,e,tp)
-		if ft<=0 or ssg:GetCount()==0 then return end
-		if e:GetLabel()==100 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-			e:SetLabel(0)
-			if ssg:GetCount()<ft then ft=ssg:GetCount() end
-			if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local spg=ssg:Select(tp,ft,ft,nil)
+		if (not Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE,0,1,tc) or Duel.GetMatchingGroupCount(nil,tp,0,LOCATION_MZONE,nil)>0) and Duel.IsExistingMatchingCard(s.rthfilter,tp,LOCATION_REMOVED,0,1,nil)
+			and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
-			Duel.SpecialSummon(spg,0,tp,tp,false,false,POS_FACEUP)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_REMOVED,0,1,1,nil)
+			if #g>0 then
+				Duel.SendtoHand(g,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,g)
+			end
 		end
 	end
 end
 function s.thfilter(c)
-	return c:IsCode(36623431) and c:IsAbleToHand()
-end
-function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if #g>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
+	return c:IsSetCard(0x1d) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end

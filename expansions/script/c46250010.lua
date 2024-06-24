@@ -96,3 +96,9 @@ function c46250010.spop(e,tp,eg,ep,ev,re,r,rp)
         Duel.ConfirmCards(1-tp,tg)
     end
 end
+
+local re=Card.IsSetCard
+Card.IsSetCard=function(c,name)
+    if name==0xfc0 and c:IsCode(35089369) then return true end
+    return re(c,name)
+end

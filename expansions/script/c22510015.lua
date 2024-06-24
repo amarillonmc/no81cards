@@ -21,7 +21,7 @@ function c22510015.initial_effect(c)
     c:RegisterEffect(e6)
 end
 function c22510015.cfilter(c)
-    return c:IsSetCard(0xec0) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+    return c:IsSetCard(0xec0) and c:IsType(TYPE_MONSTER) and (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsAbleToGraveAsCost()
 end
 function c22510015.cost(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c22510015.cfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end

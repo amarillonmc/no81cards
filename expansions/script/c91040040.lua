@@ -16,26 +16,27 @@ function c91040040.initial_effect(c)
 	e1:SetOperation(cm.spop1)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMING_BATTLE_START)
-	e2:SetCountLimit(1,m*2)
+	e2:SetCountLimit(1,m+100)
 	e2:SetCondition(cm.spcon2)
 	e2:SetTarget(cm.sptg2)
 	e2:SetOperation(cm.spop2)
 	c:RegisterEffect(e2)
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_EQUIP)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_BATTLE_DESTROYED)
-	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(cm.damcon)
-	e4:SetTarget(cm.damtg)
-	e4:SetOperation(cm.damop)
-	c:RegisterEffect(e4)
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_ATKCHANGE)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(cm.atkcon)
+	e2:SetCost(cm.atkcost)
+	e2:SetTarget(cm.atktg)
+	e2:SetOperation(cm.atkop)
+	c:RegisterEffect(e2)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
@@ -79,6 +80,47 @@ Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.SpecialSummonRule(tp,g:GetFirst())
 		end
+	end
+end
+function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetAttacker():IsCode(35405755)
+end
+function cm.atkfilter(c,tp)
+	return aux.IsCodeListed(c,35405755) and c:GetTextAttack()>0 and (c:IsControler(tp) or c:IsFaceup())
+end
+function cm.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(100,0)
+	local g=Duel.GetReleaseGroup(tp):Filter(cm.atkfilter,nil,tp)
+	if chk==0 then return g:GetCount()>0 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local rg=g:Select(tp,1,g:GetCount(),nil)
+	aux.UseExtraReleaseCount(rg,tp)
+	Duel.Release(rg,REASON_COST)
+	local atk=rg:GetSum(Card.GetTextAttack)
+	e:SetLabel(100,atk)
+end
+function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local label,atk=e:GetLabel()
+	if chk==0 then
+		e:SetLabel(0,0)
+		if label~=100 then return false end
+		return true
+	end
+	e:SetLabel(0,0)
+	Duel.SetTargetParam(atk)
+end
+function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetAttacker()
+	if tc:IsFaceup()  then
+		local atk=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(atk)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
 	end
 end
 function cm.damcon(e,tp,eg,ep,ev,re,r,rp)

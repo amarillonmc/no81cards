@@ -42,7 +42,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		if tdc>=3 and VHisc_HYZQ.mck(tp,id) then 
 			VHisc_HYZQ.mop(e,tp,id)
 		end
-		if tdc>=5 and Duel.GetMatchingGroup(s.thft,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil):GetCount()>1 then 
+		if tdc>=5 and Duel.GetMatchingGroup(s.thft,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil):GetCount()>1 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then 
 			local thg=Duel.GetMatchingGroup(s.thft,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=thg:Select(tp,1,2,nil)

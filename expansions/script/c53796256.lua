@@ -59,7 +59,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function s.check(n)
-	if n%6==0 then return true end
+	if n%600==0 then return true end
 	while n>0 do
 		if n%10==6 then return true end
 		n=math.floor(n/10)

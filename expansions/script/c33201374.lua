@@ -45,8 +45,8 @@ end
 function s.rlop(e,tp,eg,ep,ev,re,r,rp)
 	local dc=Duel.GetDecktopGroup(tp,1):GetFirst()
 	Duel.Draw(tp,1,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,dc)
 	if VHisc_CNTdb.nck(dc) then
-		Duel.ConfirmCards(1-tp,dc)
 		Duel.ShuffleHand(tp)
 		local e2=Effect.CreateEffect(e:GetHandler())
 		e2:SetType(EFFECT_TYPE_FIELD)
