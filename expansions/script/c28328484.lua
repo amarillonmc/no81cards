@@ -72,17 +72,17 @@ function c28328484.dthop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoHand(tg,nil,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,tg)
 end
-function c28328484.cfilter(c,re)
-	return c:IsSetCard(0x284) and c:IsType(TYPE_MONSTER) and c:IsReason(REASON_COST) and re:IsActivated() and re:IsActiveType(TYPE_XYZ) and c:IsPreviousLocation(LOCATION_OVERLAY) and c:IsLocation(LOCATION_GRAVE) and c:IsAbleToHand()
+function c28328484.cfilter(c,re,tp)
+	return c:IsSetCard(0x284) and c:IsType(TYPE_MONSTER) and c:IsReason(REASON_COST) and re:IsActivated() and re:IsActiveType(TYPE_XYZ) and c:IsPreviousLocation(LOCATION_OVERLAY) and c:IsLocation(LOCATION_GRAVE) and c:IsAbleToHand() and c:IsControler(tp)
 end
 function c28328484.gthtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=eg:Filter(c28328484.cfilter,nil,re)
+	local g=eg:Filter(c28328484.cfilter,nil,re,tp)
 	if chk==0 then return #g>0 end
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,nil)
 end
 function c28328484.gthop(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(c28328484.cfilter,nil,re)
+	local g=eg:Filter(c28328484.cfilter,nil,re,tp)
 	local mg=g:Filter(Card.IsRelateToChain,nil)
 	if #mg>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
