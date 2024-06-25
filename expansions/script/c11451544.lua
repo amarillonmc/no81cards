@@ -61,6 +61,7 @@ function cm.adcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local sc=g:Select(tp,1,1,nil):GetFirst()
 	sc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+	sc:ResetFlagEffect(9822220)
 	local eset={sc:IsHasEffect(EFFECT_PUBLIC)}
 	if #eset>0 then
 		for _,ae in pairs(eset) do

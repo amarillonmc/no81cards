@@ -14,12 +14,12 @@ function s.spfilter(c,e,tp,g)
 	return c:IsType(TYPE_FUSION) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial() and g:CheckSubGroup(s.gcheck,min,math.min(max,#g),tp,e:GetHandler(),c)
 end
 function s.gcheck(g,tp,ec,sc)
-	return Duel.GetLocationCountFromEx(tp,tp,g+ec,sc)>0
+	return g:IsContains(ec) and Duel.GetLocationCountFromEx(tp,tp,g,sc)>0
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetReleaseGroup(tp,true,REASON_EFFECT)
-	if chk==0 then return c:IsReleasableByEffect() and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,g) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,g) end
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,2,0,0)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -31,7 +31,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not tc then return end
 	local min,max=aux.GetMaterialListCount(tc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local sg=g:SelectSubGroup(tp,s.gcheck,false,min,math.min(max,#g),tp,c,tc)+c
+	local sg=g:SelectSubGroup(tp,s.gcheck,false,min,math.min(max,#g),tp,c,tc)
 	if Duel.Release(sg,REASON_EFFECT)>0 then
 		Duel.SpecialSummonStep(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
 		local e1=Effect.CreateEffect(c)

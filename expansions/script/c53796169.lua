@@ -34,10 +34,10 @@ function s.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 s.toss_coin=true
-function s.mfilter1(c,fc)
+function s.matfilter1(c,fc)
 	return c:IsFusionCode(87751584) and c:IsSummonType(SUMMON_TYPE_FUSION) and c:IsLocation(LOCATION_MZONE)
 end
-function s.mfilter2(c,fc)
+function s.matfilter2(c,fc)
 	return c:IsFusionAttribute(ATTRIBUTE_DARK) and c:IsRace(RACE_MACHINE)
 end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)

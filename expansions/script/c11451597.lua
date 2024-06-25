@@ -69,6 +69,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 			local sc=pg:Select(tp,1,1,nil):GetFirst()
 			sc:RegisterFlagEffect(11451544,RESET_EVENT+RESETS_STANDARD,0,1)
+			sc:ResetFlagEffect(9822220)
 			local eset={sc:IsHasEffect(EFFECT_PUBLIC)}
 			if #eset>0 then
 				for _,ae in pairs(eset) do
