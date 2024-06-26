@@ -82,7 +82,8 @@ function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
         for k,v in pairs(copyt) do
             if k and v then exg:AddCard(k) end
         end
-        local cd=c89390009.cd or 3
+        local cd=3
+        if c89390009 then cd=c89390009.cd end
         if exg:GetClassCount(Card.GetOriginalCode)>=cd and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
             local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND,LOCATION_HAND,nil,tp)
             if g:GetCount()>0 then

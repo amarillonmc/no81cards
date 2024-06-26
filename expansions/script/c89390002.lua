@@ -84,7 +84,8 @@ function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
         for k,v in pairs(copyt) do
             if k and v then exg:AddCard(k) end
         end
-        local cd=c89390009.cd or 3
+        local cd=3
+        if c89390009 then cd=c89390009.cd end
         if exg:GetClassCount(Card.GetOriginalCode)>=cd then
             local mg2=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_DECK,0,nil,tp,exg)
             mg1:Merge(mg2)
@@ -155,7 +156,8 @@ function cm.ckecktarget(e,tp)
     for k,v in pairs(copyt) do
         if k and v then exg:AddCard(k) end
     end
-    local cd=c89390009.cd or 3
+    local cd=3
+    if c89390009 then cd=c89390009.cd end
     if exg:GetClassCount(Card.GetOriginalCode)>=cd then
         local mg2=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_DECK,0,nil,tp,exg)
         mg1:Merge(mg2)

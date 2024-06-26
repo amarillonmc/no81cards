@@ -48,7 +48,7 @@ function c9910070.splimit(e,se,sp,st)
 	return se:IsHasType(EFFECT_TYPE_ACTIONS)
 end
 function c9910070.sprfilter1(c,sc)
-	return c:IsReleasable() and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL)
+	return c:IsReleasable(REASON_SPSUMMON) and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL)
 		and c:IsFusionAttribute(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)
 end
 function c9910070.sprfilter2(g,tp,sc)
@@ -67,7 +67,7 @@ function c9910070.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local sg=g:SelectSubGroup(tp,c9910070.sprfilter2,false,2,2,tp,c)
 	c:SetMaterial(sg)
-	Duel.Release(sg,REASON_COST)
+	Duel.Release(sg,REASON_SPSUMMON+REASON_MATERIAL)
 end
 function c9910070.cfilter(c)
 	return c:IsFaceup() and (c:IsLevelAbove(6) or c:IsRankAbove(6))
