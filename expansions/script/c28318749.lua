@@ -143,6 +143,12 @@ function c28318749.tdop(e,tp,eg,ep,ev,re,r,rp)
 		if tc:IsRelateToEffect(e) then
 			Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		end
+		if Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) and Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_EFFECT) and Duel.SelectYesNo(tp,aux.Stringid(28318749,0) then
+			Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_EFFECT)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+			local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil)
+			Duel.SendtoDeck(g2,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		end
 	end
 end
 function c28318749.immcon(e)
