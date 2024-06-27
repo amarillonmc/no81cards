@@ -91,7 +91,7 @@ function s.rtop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.geop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=e:GetLabelObject()
-	local g=Duel.GetMatchingGroup(nil,0,0xff,0xff,g)
+	local g=Duel.GetMatchingGroup(nil,0,0xff,0xff,sg)
 	if #g==0 then return end
 	sg:Merge(g)
 	local cp={}
@@ -106,5 +106,4 @@ function s.geop(e,tp,eg,ep,ev,re,r,rp)
 		cp={}
 	end
 	Card.RegisterEffect=f
-	e:Reset()
 end
