@@ -19,7 +19,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x9520) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0xa520) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)

@@ -28,7 +28,7 @@ function s.initial_effect(c)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and aux.IsCodeListed(rc,25000028) and not rc:IsCode(id)
+	return re:IsActiveType(TYPE_MONSTER) and aux.IsCodeListed(rc,25000028)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -36,18 +36,18 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function s.filter(c,tp)
-	return c:IsAbleToHand() and not c:IsCode(id) and (aux.IsCodeListed(c,25000028) or c:IsCode(25000028))
+	return c:IsAbleToHand() and not c:IsCode(id) and (aux.IsCodeListed(c,25000028) and c:IsType(TYPE_MONSTER) or c:IsCode(25000028))
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local b1=Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil)
+		local b1=Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil,tp)
 		local b2=Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
 		if b1 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
 			if b1 and (not b2 or not Duel.SelectYesNo(tp,aux.Stringid(25000027,2))) then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-				local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK,0,1,1,nil)
+				local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK,0,1,1,nil,tp)
 				if g:GetCount()>0 then
 					Duel.SendtoHand(g,nil,REASON_EFFECT)
 					Duel.ConfirmCards(1-tp,g)

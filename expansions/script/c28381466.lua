@@ -114,7 +114,7 @@ function c28381466.regop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e2:SetRange(LOCATION_MZONE)
 		e2:SetTargetRange(1,1)
-		e2:SetTarget(function(e,c,tp,r)return r==REASON_EFFECT and c==e:GetHandler()end)
+		e2:SetTarget(function(e,c,tp,r)return c==e:GetHandler()end)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e2)
 		if ct>=8 then
@@ -228,7 +228,7 @@ function c28381466.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28381466.indtg(e,c,r,tp)
-	return c:IsSetCard(0x283) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and r==REASON_EFFECT and c:GetControl()==tp
+	return c:IsSetCard(0x283) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:GetControl()==tp
 end
 function c28381466.efilter(e,te)
 	if te:GetOwnerPlayer()==e:GetHandlerPlayer() or not te:IsActivated() then return false end

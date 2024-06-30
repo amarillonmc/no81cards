@@ -98,7 +98,7 @@ function cm.synop(e,tp,eg,ep,ev,re,r,rp,syncard,f,min,max)
 	Duel.SetSynchroMaterial(g)
 end
 function cm.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xef1a)
+	return c:IsFaceup() and c:IsSetCard(0x6f1a)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
@@ -110,14 +110,14 @@ function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsLocation(LOCATION_GRAVE) and r==REASON_SYNCHRO
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0xef1a) and c:IsAbleToGrave() and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x6f1a) and c:IsAbleToGrave() and c:IsType(TYPE_MONSTER)
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function cm.pfilter(c,tp)
-	return c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0x1f1b)
+	return c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0x9f1b)
 		and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)

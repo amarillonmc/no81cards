@@ -44,7 +44,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x1f1b) and c:IsAbleToHand()
+	return c:IsSetCard(0x9f1b) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -59,13 +59,13 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x1f1b)
+	return c:IsFaceup() and c:IsSetCard(0x9f1b)
 end
 function cm.val(e,c)
 	return Duel.GetMatchingGroupCount(cm.atkfilter,c:GetControler(),LOCATION_ONFIELD,0,nil)*1200
 end
 function cm.desfilter(c)
-	return c:IsSetCard(0x1f1b) and c:IsFaceup()
+	return c:IsSetCard(0x9f1b) and c:IsFaceup()
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_SZONE,0,1,nil)

@@ -18,7 +18,7 @@ function s.filter1(c,e,tp)
 end
 function s.filter2(c,e,tp,mc)
 	return c:GetRank()>mc:GetRank() and mc:IsCanBeXyzMaterial(c)
-		and c:IsRace(mc:GetRace()) and c:IsAttribute(c:GetAttribute())
+		and (c:IsRace(mc:GetRace()) or c:IsAttribute(c:GetAttribute()))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

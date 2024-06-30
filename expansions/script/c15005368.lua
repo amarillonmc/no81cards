@@ -134,6 +134,7 @@ end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)

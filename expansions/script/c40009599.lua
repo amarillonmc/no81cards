@@ -41,12 +41,12 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return c:IsDiscardable() end
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
-function cm.spfilter(c,e,tp,ctype)
-	return c:IsType(ctype) and c:IsCanBeSpecialSummoned(e,nil,tp,true,true) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and cm.MagicCombineDemon(c) 
+function cm.spfilter(c,e,tp,ctype,tgc)
+	return c:IsType(ctype) and c:IsCanBeSpecialSummoned(e,nil,tp,true,false) and cm.MagicCombineDemon(c) and Duel.GetLocationCountFromEx(tp,tp,tgc,c)>0
 end
 function cm.tgfilter(c,e,tp)
 	local ctype=bit.band(c:GetType(),TYPE_RITUAL+TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK)
-	return c:IsFaceup() and ctype~=0 and c:IsAbleToGrave() and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp,ctype)
+	return c:IsFaceup() and ctype~=0 and c:IsAbleToGrave() and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp,ctype,c) 
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp) end
@@ -63,7 +63,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=dg:GetFirst()
 	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		if Duel.SpecialSummonStep(tc,nil,tp,tp,true,true,POS_FACEUP)~=0 then
+		if Duel.SpecialSummonStep(tc,nil,tp,tp,true,false,POS_FACEUP)~=0 then
 			local ra=g:GetFirst():GetRace()
 			local att=g:GetFirst():GetAttribute()
 			local e1=Effect.CreateEffect(c)

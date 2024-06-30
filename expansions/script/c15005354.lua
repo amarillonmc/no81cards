@@ -132,6 +132,7 @@ function cm.xfilter2(c)
 end
 function cm.xtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.xfilter2,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,nil,e:GetHandler()) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.xop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

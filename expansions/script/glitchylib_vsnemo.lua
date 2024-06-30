@@ -131,6 +131,18 @@ REASON_EXCAVATE	= REASON_REVEAL
 RESET_TURN_SELF = RESET_SELF_TURN
 RESET_TURN_OPPO = RESET_OPPO_TURN
 
+--Strings
+STRING_ADD_TO_HAND						=	1190
+STRING_BANISH							=	1102
+STRING_DRAW								=	1108
+STRING_PLACE_IN_PZONE					=	1160
+STRING_RECOVER							=	1123
+STRING_SEND_TO_DECK						=	1193
+STRING_SEND_TO_EXTRA					=	1006
+STRING_SEND_TO_GY						=	1191
+STRING_SET								=	1153
+STRING_SPECIAL_SUMMON					=	1152
+
 --Nemo's archetypes and constants
 ARCHE_ANIFRIENDS = 0x442
 
@@ -145,6 +157,8 @@ ARCHE_KEY_MOMENT	=	0x9460
 ARCHE_KEY_LBO		=	0xa460
 ARCHE_KEY_ETC		=	0xc460
 
+ARCHE_SEPIALIFE		=	0x144e
+
 ARCHE_SANDSTAR = {33700058,33700945,33731003,33731004,33731005}
 
 CARD_ANIFRIENDS_SERVAL					= 33700055
@@ -154,11 +168,12 @@ CARD_KEY_FRAGMENTS_RIKI					= 33730131
 CARD_KEY_FRAGMENTS_RIN					= 33730133
 CARD_KEY_MEMORIA_HANABI 				= 33730159
 CARD_KEY_MEMORIA_JUST_ONE_MAGIC_WORD 	= 33730161
-CARD_ZEORYMER_OF_THE_SKY				= 112312313--33701376
+CARD_ZEORYMER_OF_THE_SKY				= 33701376
 
 COUNTER_GEAS							= 0x1461
 COUNTER_COMPASSION_OF_DESPERADO_HEART	= 0x462
 COUNTER_CONNECTION_OF_DESPERADO_HEART	= 0x463
+COUNTER_H_ANIFRIENDS_OINARI_SAMA		= 0x466
 COUNTER_KARMA_OF_DESPERADO_HEART		= 0x464
 COUNTER_LBO_HAPPINESS					= 0x440
 COUNTER_LORE							= 0x246
@@ -221,7 +236,7 @@ end
 function Auxiliary.Necro(f)
 	return aux.NecroValleyFilter(f)
 end
-function Card.Activation(c,oath,cond,cost,tg,op)
+function Card.Activation(c,oath,cond,cost,tg,op,stop)
 	local e1=Effect.CreateEffect(c)
 	if c:IsOriginalType(TYPE_PENDULUM) then
 		e1:SetDescription(STRING_ACTIVATE_PENDULUM)
@@ -243,7 +258,9 @@ function Card.Activation(c,oath,cond,cost,tg,op)
 	if op then
 		e1:SetOperation(op)
 	end
-	c:RegisterEffect(e1)
+	if not stop then
+		c:RegisterEffect(e1)
+	end
 	return e1
 end
 function Effect.SetFunctions(e,cond,cost,tg,op,val)
@@ -458,6 +475,29 @@ function Duel.SetConditionalCustomOperationInfo(f,ch,cat,g,ct,p,val,...)
 	end
 end
 
+--Alternative Actions
+function Duel.ToHandOrSpecialSummon(c,e,tp)
+	local b1=c:IsAbleToHand()
+	local b2=Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	if not b1 and not b2 then return end
+	local opt=aux.Option(tp,nil,nil,{b1,STRING_ADD_TO_HAND},{b2,STRING_SPECIAL_SUMMON})
+	if opt==0 then
+		return Duel.Search(c,tp)
+	elseif opt==1 then
+		return Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+function Duel.ToHandOrGrave(c,tp,p)
+	local b1=c:IsAbleToHand()
+	local b2=c:IsAbleToGrave()
+	if not b1 and not b2 then return end
+	local opt=aux.Option(tp,nil,nil,{b1,STRING_ADD_TO_HAND},{b2,STRING_SEND_TO_GY})
+	if opt==0 then
+		return Duel.Search(c,nil,p)
+	elseif opt==1 then
+		return Duel.SendtoGrave(c,REASON_EFFECT)
+	end
+end
 --Announce
 function Duel.AnnounceNumberMinMax(p,min,max,f)
 	local tab={}
@@ -502,13 +542,25 @@ function Auxiliary.FindBitInTable(tab,a,...)
 	
 	return false
 end
+function Auxiliary.ClearTable(tab)
+	local size=#tab
+	if size>0 then
+		for k=1,size do
+			table.remove(tab)
+		end
+	end
+end
 
 --Card Actions
-function Duel.Attach(c,xyz)
+function Duel.Attach(c,xyz,transfer)
 	if aux.GetValueType(c)=="Card" then
 		local og=c:GetOverlayGroup()
-		if og:GetCount()>0 then
-			Duel.SendtoGrave(og,REASON_RULE)
+		if #og>0 then
+			if transfer then
+				Duel.Overlay(xyz,og)
+			else
+				Duel.SendtoGrave(og,REASON_RULE)
+			end
 		end
 		Duel.Overlay(xyz,Group.FromCards(c))
 		return xyz:GetOverlayGroup():IsContains(c)
@@ -516,8 +568,12 @@ function Duel.Attach(c,xyz)
 	elseif aux.GetValueType(c)=="Group" then
 		for tc in aux.Next(c) do
 			local og=tc:GetOverlayGroup()
-			if og:GetCount()>0 then
-				Duel.SendtoGrave(og,REASON_RULE)
+			if #og>0 then
+				if transfer then
+					Duel.Overlay(xyz,og)
+				else
+					Duel.SendtoGrave(og,REASON_RULE)
+				end
 			end
 		end
 		Duel.Overlay(xyz,c)
@@ -889,24 +945,44 @@ end
 function Duel.PositionChange(c)
 	return Duel.ChangePosition(c,POS_FACEUP_DEFENSE,POS_FACEDOWN_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
 end
-function Duel.Search(g,tp,p)
+function Duel.Search(g,_,p,r)
 	if aux.GetValueType(g)=="Card" then g=Group.FromCards(g) end
-	local ct=Duel.SendtoHand(g,p,REASON_EFFECT)
-	local cg=g:Filter(aux.PLChk,nil,tp,LOCATION_HAND)
+	if not r then r=REASON_EFFECT end
+	local ct=Duel.SendtoHand(g,p,r)
+	local cg=g:Filter(aux.PLChk,nil,p,LOCATION_HAND)
 	if #cg>0 then
-		Duel.ConfirmCards(1-tp,cg)
+		if p then
+			Duel.ConfirmCards(1-p,cg)
+		else
+			for tp=0,1 do
+				local pg=cg:Filter(Card.IsControler,nil,tp)
+				if #pg>0 then
+					Duel.ConfirmCards(1-tp,pg)
+				end
+			end
+		end
 	end
 	return ct,#cg,cg
 end
-function Duel.SearchAndCheck(g,tp,p,brk)
+function Duel.SearchAndCheck(g,_,p,brk,r)
 	if aux.GetValueType(g)=="Card" then g=Group.FromCards(g) end
-	local ct=Duel.SendtoHand(g,p,REASON_EFFECT)
-	local cg=g:Filter(aux.PLChk,nil,tp,LOCATION_HAND)
+	if not r then r=REASON_EFFECT end
+	local ct=Duel.SendtoHand(g,p,r)
+	local cg=g:Filter(aux.PLChk,nil,p,LOCATION_HAND)
 	if #cg>0 then
 		if brk then
 			Duel.BreakEffect()
 		end
-		Duel.ConfirmCards(1-tp,cg)
+		if p then
+			Duel.ConfirmCards(1-p,cg)
+		else
+			for tp=0,1 do
+				local pg=cg:Filter(Card.IsControler,nil,tp)
+				if #pg>0 then
+					Duel.ConfirmCards(1-tp,pg)
+				end
+			end
+		end
 	end
 	return ct>0 and #cg>0
 end
@@ -1259,6 +1335,24 @@ function Card.IsStatAbove(c,rtyp,...)
 	local def=rtyp&STAT_DEFENSE>0
 	for i,n in ipairs(x) do
 		if (not atk or (c:HasAttack() and c:IsAttackAbove(n))) or (not def or (c:HasDefense() and c:IsDefenseAbove(n))) then
+			return true
+		end
+	end
+	return false
+end
+function Card.IsTextAttack(c,...)
+	local vals={...}
+	for _,atk in ipairs(vals) do
+		if c:GetTextAttack()==atk then
+			return true
+		end
+	end
+	return false
+end
+function Card.IsTextDefense(c,...)
+	local vals={...}
+	for _,def in ipairs(vals) do
+		if c:GetTextDefense()==def then
 			return true
 		end
 	end
@@ -1619,7 +1713,15 @@ function Duel.RegisterHint(p,flag,reset,rct,id,desc,prop)
 	if not reset then reset=PHASE_END end
 	if not rct then rct=1 end
 	if not prop then prop=0 end
-	return Duel.RegisterFlagEffect(p,flag,RESET_PHASE+reset,EFFECT_FLAG_CLIENT_HINT|prop,rct,0,aux.Stringid(id,desc))
+	local e=Effect.GlobalEffect()
+	e:Desc(desc,id)
+	e:SetType(EFFECT_TYPE_FIELD)
+	e:SetProperty(EFFECT_FLAG_CLIENT_HINT|EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_PLAYER_TARGET|prop)
+	e:SetCode(EFFECT_FLAG_EFFECT|id)
+	e:SetTargetRange(1,0)
+	e:SetReset(RESET_PHASE|reset,rct)
+	Duel.RegisterEffect(e,p)
+	return e
 end
 
 --EDOPro Imports
@@ -1730,6 +1832,20 @@ function Auxiliary.IsEquippedCond(e)
 end
 
 --Excavate
+function Auxiliary.excthfilter(c,tp)
+	if not Duel.IsPlayerCanSendtoHand(tp,c) then return false end
+	if not c:IsHasEffect(EFFECT_CANNOT_TO_HAND) then return true end
+	local eset={c:IsHasEffect(EFFECT_CANNOT_TO_HAND)}
+	for _,e in ipairs(eset) do
+		if e:GetOwner()~=c then
+			return false
+		end
+	end
+	return true
+end
+function Duel.IsPlayerCanExcavateAndSearch(tp,ct)
+	return Duel.GetDecktopGroup(tp,ct):FilterCount(aux.excthfilter,nil,tp)>0
+end
 function Duel.IsPlayerCanExcavateAndSpecialSummon(tp)
 	return Duel.IsPlayerCanSpecialSummon(tp) and not Duel.IsPlayerAffectedByEffect(tp,CARD_EHERO_BLAZEMAN)
 end
@@ -2032,7 +2148,57 @@ function Card.DeactivateLinkMarker(c,markers,e,tp,r,reset,rc)
 	end
 	c:RegisterEffect(e1)
 end
-
+function Card.GetGlitchyLinkedGroup(c)
+	if (not c:IsType(TYPE_LINK) or not c:IsLocation(LOCATION_MZONE)) and (not c:IsHasEffect(EFFECT_LINK_SPELL_KOISHI) or not c:IsLocation(LOCATION_SZONE)) then return end
+	local g0=c:GetLinkedGroup()
+	if c:IsInEMZ() then
+		return g0
+	else
+		local p=c:GetControler()
+		local seq=c:GetSequence()
+		local g1=Group.CreateGroup()
+		if c:IsLocation(LOCATION_MZONE) then
+			if c:IsLinkMarker(LINK_MARKER_BOTTOM_LEFT) then
+				local column_szone=Duel.GetColumnZoneFromSequence(seq-1,LOCATION_SZONE,LOCATION_MZONE)
+				local lkg=Duel.GetCardsInZone(column_szone,p,LOCATION_SZONE)
+				if #lkg>0 then
+					g1:Merge(lkg)
+				end
+			end
+			if c:IsLinkMarker(LINK_MARKER_BOTTOM) then
+				local column_szone=Duel.GetColumnZoneFromSequence(seq,LOCATION_SZONE,LOCATION_MZONE)
+				local lkg=Duel.GetCardsInZone(column_szone,p,LOCATION_SZONE)
+				if #lkg>0 then
+					g1:Merge(lkg)
+				end
+			end
+			if c:IsLinkMarker(LINK_MARKER_BOTTOM_RIGHT) then
+				local column_szone=Duel.GetColumnZoneFromSequence(seq+1,LOCATION_SZONE,LOCATION_MZONE)
+				local lkg=Duel.GetCardsInZone(column_szone,p,LOCATION_SZONE)
+				if #lkg>0 then
+					g1:Merge(lkg)
+				end
+			end
+		elseif c:IsLocation(LOCATION_SZONE) then
+			if c:IsLinkMarker(LINK_MARKER_LEFT) then
+				local column_szone=Duel.GetColumnZoneFromSequence(seq-1,LOCATION_SZONE,LOCATION_SZONE)
+				local lkg=Duel.GetCardsInZone(column_szone,p,LOCATION_SZONE)
+				if #lkg>0 then
+					g1:Merge(lkg)
+				end
+			end
+			if c:IsLinkMarker(LINK_MARKER_RIGHT) then
+				local column_szone=Duel.GetColumnZoneFromSequence(seq+1,LOCATION_SZONE,LOCATION_SZONE)
+				local lkg=Duel.GetCardsInZone(column_szone,p,LOCATION_SZONE)
+				if #lkg>0 then
+					g1:Merge(lkg)
+				end
+			end
+		end
+		local g=g0+g1
+		return g,g0,g1
+	end
+end
 --LP
 function Duel.LoseLP(p,val)
 	return Duel.SetLP(tp,Duel.GetLP(tp)-math.abs(val))
@@ -2244,11 +2410,18 @@ end
 
 --Location Groups
 function Duel.GetHand(p)
-	local g=Duel.GetFieldGroup(p,LOCATION_HAND,0)
-	return g,#g
+	if not p then
+		return Duel.GetFieldGroup(0,LOCATION_HAND,LOCATION_HAND)
+	else
+		return Duel.GetFieldGroup(p,LOCATION_HAND,0)
+	end
 end
 function Duel.GetHandCount(p)
-	return Duel.GetFieldGroupCount(p,LOCATION_HAND,0)
+	if not p then
+		return Duel.GetFieldGroupCount(0,LOCATION_HAND,LOCATION_HAND)
+	else
+		return Duel.GetFieldGroupCount(p,LOCATION_HAND,0)
+	end
 end
 function Duel.GetDeck(p)
 	return Duel.GetFieldGroup(p,LOCATION_DECK,0)
@@ -2508,7 +2681,7 @@ function Duel.IsEndPhase(tp)
 end
 
 function Duel.GetNextPhaseCount(ph,p)
-	if Duel.GetCurrentPhase()==ph and (not p or Duel.GetTurnPlayer()==tp) then
+	if Duel.GetCurrentPhase()==ph and (not p or Duel.GetTurnPlayer()==p) then
 		return 2
 	else
 		return 1
@@ -2837,7 +3010,7 @@ end
 
 --Update stats
 function Card.UpdateATK(c,atk,reset,rc,range,cond,prop,desc)
-	local typ = (SCRIPT_AS_EQUIP==true) and EFFECT_TYPE_EQUIP or EFFECT_TYPE_SINGLE
+	local typ = EFFECT_TYPE_SINGLE
 	if not reset and not range then
 		range = c:GetOriginalType()&TYPE_FIELD>0 and LOCATION_FZONE or c:GetOriginalType()&TYPE_ST>0 and LOCATION_SZONE or LOCATION_MZONE
 	end
@@ -2860,7 +3033,7 @@ function Card.UpdateATK(c,atk,reset,rc,range,cond,prop,desc)
 	local att=c:GetAttack()
 	local e=Effect.CreateEffect(rc)
 	e:SetType(typ)
-	if range and not SCRIPT_AS_EQUIP then
+	if range then
 		prop=prop|EFFECT_FLAG_SINGLE_RANGE
 		e:SetRange(range)
 	end
@@ -2893,7 +3066,7 @@ function Card.UpdateATK(c,atk,reset,rc,range,cond,prop,desc)
 	end
 end
 function Card.UpdateDEF(c,def,reset,rc,range,cond,prop,desc)
-	local typ = (SCRIPT_AS_EQUIP==true) and EFFECT_TYPE_EQUIP or EFFECT_TYPE_SINGLE
+	local typ = EFFECT_TYPE_SINGLE
 	if not reset and not range then
 		range = c:GetOriginalType()&TYPE_FIELD>0 and LOCATION_FZONE or c:GetOriginalType()&TYPE_ST>0 and LOCATION_SZONE or LOCATION_MZONE
 	end
@@ -2908,7 +3081,7 @@ function Card.UpdateDEF(c,def,reset,rc,range,cond,prop,desc)
 	local df=c:GetDefense()
 	local e=Effect.CreateEffect(rc)
 	e:SetType(typ)
-	if range and not SCRIPT_AS_EQUIP then
+	if range then
 		prop=prop|EFFECT_FLAG_SINGLE_RANGE
 		e:SetRange(range)
 	end
@@ -2939,7 +3112,7 @@ function Card.UpdateDEF(c,def,reset,rc,range,cond,prop,desc)
 	end
 end
 function Card.UpdateATKDEF(c,atk,def,reset,rc,range,cond,prop,desc)
-	local typ = (SCRIPT_AS_EQUIP==true) and EFFECT_TYPE_EQUIP or EFFECT_TYPE_SINGLE
+	local typ = EFFECT_TYPE_SINGLE
 	if not reset and not range then
 		range = c:GetOriginalType()&TYPE_FIELD>0 and LOCATION_FZONE or c:GetOriginalType()&TYPE_ST>0 and LOCATION_SZONE or LOCATION_MZONE
 	end
@@ -2969,7 +3142,7 @@ function Card.UpdateATKDEF(c,atk,def,reset,rc,range,cond,prop,desc)
 	local e=Effect.CreateEffect(rc)
 	e:SetType(typ)
 	
-	if range and not SCRIPT_AS_EQUIP then
+	if range then
 		prop=prop|EFFECT_FLAG_SINGLE_RANGE
 		e:SetRange(range)
 	end
@@ -3008,6 +3181,121 @@ function Card.UpdateATKDEF(c,atk,def,reset,rc,range,cond,prop,desc)
 	else
 		return e,e1x,c:GetAttack()-oatk,c:GetDefense()-odef
 	end
+end
+
+--Protections
+function Card.CannotBeDestroyedByBattle(c,val,cond,reset,rc,range,prop,desc)
+	local typ = EFFECT_TYPE_SINGLE
+	
+	local donotdisable=false
+	local rc = rc and rc or c
+    local rct=1
+    if type(reset)=="table" then
+        rct=reset[2]
+        reset=reset[1]
+    end
+	
+	if type(rc)=="table" then
+        donotdisable=rc[2]
+        rc=rc[1]
+    end
+	
+	if not prop then prop=0 end
+	
+	if not val then val=1 end
+	
+	local e=Effect.CreateEffect(rc)
+	e:SetType(typ)
+	if range then
+		prop=prop|EFFECT_FLAG_SINGLE_RANGE
+		e:SetRange(range)
+	end
+	e:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e:SetValue(val)
+	if cond then
+		e:SetCondition(cond)
+	end
+	
+	if reset then
+		if type(reset)~="number" then reset=0 end
+		prop=prop|EFFECT_FLAG_CANNOT_DISABLE
+		e:SetReset(RESET_EVENT|RESETS_STANDARD|reset,rct)
+	end
+	
+	if prop~=0 then
+		e:SetProperty(prop)
+	end
+	
+	c:RegisterEffect(e)
+	
+	return e
+end
+
+--Protections: Immunity
+UNAFFECTED_OTHER	= 0x1
+UNAFFECTED_OPPO		= 0x2
+
+function Auxiliary.imother(e,te)
+	return e:GetOwner()~=te:GetOwner()
+end
+function Auxiliary.imoval(e,te)
+	return e:GetOwnerPlayer()~=te:GetOwnerPlayer()
+end
+
+Auxiliary.UnaffectedProtections={
+	[UNAFFECTED_OTHER]	= aux.imother;
+	[UNAFFECTED_OPPO]	= aux.imoval;
+}
+function Card.Unaffected(c,immunity,cond,reset,rc,range,prop,desc)
+	local typ = EFFECT_TYPE_SINGLE
+	if not reset and not range then
+		range = c:GetOriginalType()&TYPE_FIELD>0 and LOCATION_FZONE or c:GetOriginalType()&TYPE_ST>0 and LOCATION_SZONE or LOCATION_MZONE
+	end
+	
+	local donotdisable=false
+	local rc = rc and rc or c
+    local rct=1
+    if type(reset)=="table" then
+        rct=reset[2]
+        reset=reset[1]
+    end
+	
+	if type(rc)=="table" then
+        donotdisable=rc[2]
+        rc=rc[1]
+    end
+	
+	if not prop then prop=0 end
+	
+	if type(immunity)=="number" then
+		immunity=aux.UnaffectedProtections[immunity]
+	end
+	
+	local e=Effect.CreateEffect(rc)
+	e:SetType(typ)
+	if range then
+		prop=prop|EFFECT_FLAG_SINGLE_RANGE
+		e:SetRange(range)
+	end
+	e:SetCode(EFFECT_IMMUNE_EFFECT)
+	e:SetValue(immunity)
+	if cond then
+		e:SetCondition(cond)
+	end
+	
+	if reset then
+		if type(reset)~="number" then reset=0 end
+		prop=prop|EFFECT_FLAG_CANNOT_DISABLE
+		e:SetReset(RESET_EVENT|RESETS_STANDARD|reset,rct)
+	end
+	
+	if prop~=0 then
+		e:SetProperty(prop)
+	end
+	
+	c:RegisterEffect(e)
+	
+	return e
 end
 
 --Location Check
@@ -3096,7 +3384,7 @@ function Auxiliary.AddThisCardInSZoneAlreadyCheck(c,setf,getf)
 	c:RegisterEffect(e1)
 	return e1
 end
-function Auxiliary.AddThisCardInPZoneAlreadyCheck(c,pos,setf,getf)
+function Auxiliary.AddThisCardInPZoneAlreadyCheck(c,setf,getf)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -3175,6 +3463,11 @@ function Auxiliary.ThisCardInLocationAlreadyReset2(getf)
 				e1:Reset()
 				e:Reset()
 			end
+end
+
+--Subgroup checks
+function Auxiliary.sncheck(g)
+	return g:GetClassCount(Card.GetCode)==1
 end
 
 --Glitchylib_cond imports
@@ -3259,6 +3552,21 @@ end
 function Auxiliary.LabelCost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
 	if chk==0 then return true end
+end
+function Auxiliary.DiscardFilter(f,cost)
+	local r = (not cost) and REASON_EFFECT or REASON_COST
+	return	function(c)
+				return (not f or f(c)) and c:IsDiscardable(r)
+			end
+end
+function Auxiliary.DiscardCost(f,min,max,exc)
+	if not min then min=1 end
+	if not max then max=min end
+	return	function(e,tp,eg,ep,ev,re,r,rp,chk)
+				local exc=exc and exc or nil
+				if chk==0 then return Duel.IsExistingMatchingCard(aux.DiscardFilter(f,true),tp,LOCATION_HAND,0,min,exc) end
+				Duel.DiscardHand(tp,aux.DiscardFilter(f,true),min,max,REASON_COST|REASON_DISCARD,exc)
+			end
 end
 
 ----Self as Cost
@@ -3690,6 +3998,30 @@ function Auxiliary.SimultaneousEventGroupCheck(g,simult_check,og)
 	end
 	return true
 end
+function Auxiliary.SelectSimultaneousEventGroup(g,flag,ct,e,excflag)
+	local ct=ct and ct or 1
+	local fid=e and e:GetHandler():GetFieldID() or 0
+	if excflag then
+		g=g:Filter(aux.NOT(Card.HasFlagEffectLabel),nil,excflag,fid)
+	end
+	if #g>1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+		local tg=g:SelectSubGroup(tp,aux.SimultaneousEventGroupCheck,false,ct,#g,flag,g)
+		Duel.HintSelection(tg)
+		if excflag then
+			for tc in aux.Next(tg) do
+				tc:RegisterFlagEffect(excflag,RESET_CHAIN,0,1,fid)
+			end
+		end
+		return tg
+	else
+		Duel.HintSelection(g)
+		if excflag then
+			g:GetFirst():RegisterFlagEffect(excflag,RESET_CHAIN,0,1,fid)
+		end
+		return g
+	end
+end
 
 ---------------------------------------------------------------------------------
 -------------------------------CONTACT FUSION---------------------------------
@@ -3711,7 +4043,7 @@ function Auxiliary.AddContactFusionProcedureGlitchy(c,desc,rule,sumtype,filter,s
 		prop=prop|EFFECT_FLAG_CANNOT_DISABLE
 	end
 	local e2=Effect.CreateEffect(c)
-	e2:Desc(desc)
+	e2:SetDescription(desc)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_SPSUMMON_PROC)
 	e2:SetProperty(prop)
@@ -3755,6 +4087,13 @@ function Auxiliary.ContactFusionOperationGlitchy(filter,self_location,opponent_l
 	end
 end
 
+function Auxiliary.ContactFusionMaterialsToGrave(g,_,tp)
+	local cg=g:Filter(Card.IsFacedown,nil)
+	if cg:GetCount()>0 then
+		Duel.ConfirmCards(1-tp,cg)
+	end
+	Duel.SendtoGrave(g,REASON_COST)
+end
 function Auxiliary.ContactFusionMaterialsToDeck(g,_,tp)
 	local cg=g:Filter(Card.IsFacedown,nil)
 	if cg:GetCount()>0 then
@@ -3763,163 +4102,44 @@ function Auxiliary.ContactFusionMaterialsToDeck(g,_,tp)
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 
---EFFECT TABLES
---Global Card Effect Table
-if not global_card_effect_table_global_check then
-	global_card_effect_table_global_check=true
-	global_card_effect_table={}
-	Card.register_global_card_effect_table = Card.RegisterEffect
-	function Card:RegisterEffect(e,forced)
-		if not global_card_effect_table[self] then global_card_effect_table[self]={} end
-		table.insert(global_card_effect_table[self],e)
-		
-		local condition,cost,tg,op,val=e:GetCondition(),e:GetCost(),e:GetTarget(),e:GetOperation(),e:GetValue()
-		if condition and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()==EFFECT_TYPE_XMATERIAL or e:GetType()==EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD or e:GetType()&EFFECT_TYPE_GRANT~=0)) then	
-			local newcon =	function(...)
-								self_reference_effect=e
-								local x={...}
-								if type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-									self_reference_tp = x[2]
-								end
-								return condition(...)
-							end
-			e:SetCondition(newcon)
-		end
-		if cost and not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()==EFFECT_TYPE_XMATERIAL or e:GetType()==EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD or e:GetType()&EFFECT_TYPE_GRANT~=0) then
-			local newcost =	function(...)
-								self_reference_effect=e
-								local x={...}
-								if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-									self_reference_tp = x[2]
-								end
-								return cost(...)
-							end
-			e:SetCost(newcost)
-		end
-		if tg then
-			if e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G then
-				local newtg =	function(...)
-									self_reference_effect=e
-									local x={...}
-									if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-										self_reference_tp = x[2]
-									end
-									return tg(...)
-								end
-				e:SetTarget(newtg)
-			elseif not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()==EFFECT_TYPE_XMATERIAL or e:GetType()==EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD or e:GetType()&EFFECT_TYPE_GRANT~=0) then
-				local newtg =	function(...)
-									self_reference_effect=e
-									local x={...}
-									if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-										self_reference_tp = x[2]
-									end
-									return tg(...)
-								end
-				e:SetTarget(newtg)
-			end
-		end
-		if op and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()==EFFECT_TYPE_XMATERIAL or e:GetType()==EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD or e:GetType()&EFFECT_TYPE_GRANT~=0)) then
-			local newop =	function(...)
-								self_reference_effect=e
-								local x={...}
-								if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-									self_reference_tp = x[2]
-								end
-								return op(...)
-							end
-			e:SetOperation(newop)
-		end
-		if val then
-			if type(val)=="function" and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()==EFFECT_TYPE_XMATERIAL or e:GetType()==EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD or e:GetType()&EFFECT_TYPE_GRANT~=0)) then
-				local newval =	function(...)
-									self_reference_effect=e
-									return val(...)
-								end
-				e:SetValue(newval)
-				
-			end
-		end
-		return self.register_global_card_effect_table(self,e,forced)
-	end
+--EFFECTS THAT CAN BE ACTIVATED BY AFFECTING THE CARD USED AS COST, EVEN WHEN THERE ARE NO OTHER VALID TARGETS
+aux.LocationAfterCostEffects = {}
+
+local _IsLocation, _GetLocation = Card.IsLocation, Card.GetLocation
+
+function Card.SetLocationAfterCost(c,loc)
+	local s=getmetatable(c)
+	s.LocationAfterCost=loc
+end
+function Card.IsLocationAfterCost(c,loc)
+	if not c.LocationAfterCost then return _IsLocation(c,loc) end
+	local s=getmetatable(c)
+	return s.LocationAfterCost&loc~=0
+end
+function Card.GetLocationAfterCost(c)
+	local s=getmetatable(c)
+	if not s.LocationAfterCost then return _GetLocation(c) end
+	return s.LocationAfterCost
 end
 
---Global Card Effect Table (for Duel.RegisterEffect)
-if not global_duel_effect_table_global_check then
-	global_duel_effect_table_global_check=true
-	global_duel_effect_table={}
-	Duel.register_global_duel_effect_table = Duel.RegisterEffect
-	Duel.RegisterEffect = function(e,tp)
-							if not global_duel_effect_table[tp] then global_duel_effect_table[tp]={} end
-							table.insert(global_duel_effect_table[tp],e)
-							
-							local condition,cost,tg,op,val=e:GetCondition(),e:GetCost(),e:GetTarget(),e:GetOperation(),e:GetValue()
-							if condition and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()&EFFECT_TYPE_GRANT~=0)) then
-								local newcon =	function(...)
-													self_reference_effect=e
-													local x={...}
-													if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-														self_reference_tp = x[2]
-													end
-													return condition(...)
-												end
-								e:SetCondition(newcon)
-							end
-							if cost and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()&EFFECT_TYPE_GRANT~=0)) then
-								local newcost =	function(...)
-													self_reference_effect=e
-													local x={...}
-													if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-														self_reference_tp = x[2]
-													end
-													return cost(...)
-												end
-								e:SetCost(newcost)
-							end
-							if tg then
-								if e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G then
-									local newtg =	function(...)
-														self_reference_effect=e
-														local x={...}
-														if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-															self_reference_tp = x[2]
-														end
-														return tg(...)
-													end
-									e:SetTarget(newtg)
-								elseif not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()&EFFECT_TYPE_GRANT~=0) then
-									local newtg =	function(...)
-														self_reference_effect=e
-														local x={...}
-														if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-															self_reference_tp = x[2]
-														end
-														return tg(...)
-													end
-									e:SetTarget(newtg)
-								end
-							end
-							if op and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()&EFFECT_TYPE_GRANT~=0)) then
-								local newop =	function(...)
-													self_reference_effect=e
-													local x={...}
-													if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-														self_reference_tp = x[2]
-													end
-													return op(...)
-												end
-								e:SetOperation(newop)
-							end
-							if val then
-								if type(val)=="function" and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()&EFFECT_TYPE_GRANT~=0)) then
-									local newval =	function(...)
-														self_reference_effect=e
-														return val(...)
-													end
-									e:SetValue(newval)
-								
-								end
-							end
-							return Duel.register_global_duel_effect_table(e,tp)
+Card.IsLocation = function(c,loc)
+	if self_reference_effect and c.LocationAfterCost then
+		local code=self_reference_effect:GetCode()
+		if aux.LocationAfterCostEffects[code]==true then
+			return c:IsLocationAfterCost(loc)
+		end
 	end
+	return _IsLocation(c,loc)
 end
+Card.GetLocation = function(c)
+	local locs=_GetLocation(c)
+	if self_reference_effect and c.LocationAfterCost then
+		local code=self_reference_effect:GetCode()
+		if aux.LocationAfterCostEffects[code]==true then
+			locs=locs|c:GetLocationAfterCost()
+		end
+	end
+	return locs
+end
+
+Duel.LoadScript("glitchylib_regeff.lua")

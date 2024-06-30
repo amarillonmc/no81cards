@@ -202,7 +202,13 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 			local tab={Duel.IsPlayerAffectedByEffect(ep,id)}
 			local dam=math.max(0,ev-(a-b)*800)
 			if dam>0 then
+				aux.IsChangedDamage=true
 				Duel.Damage(ep,dam,r)
+				aux.IsChangedDamage=false
+				if r==REASON_BATTLE then
+					Duel.RaiseSingleEvent(rc,EVENT_BATTLE_DAMAGE,nil,0,rp,ep,dam)
+					Duel.RaiseEvent(rc,EVENT_BATTLE_DAMAGE,nil,0,rp,ep,dam)
+				end
 			end
 			if #tab==0 then
 				for tc in aux.Next(s.AppliedGroup) do

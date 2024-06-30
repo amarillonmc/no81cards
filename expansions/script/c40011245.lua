@@ -49,16 +49,16 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and
-		Duel.IsPlayerCanSpecialSummonMonster(tp,40011246,0xef1a,TYPES_TOKEN_MONSTER,1200,1200,4,RACE_MACHINE,ATTRIBUTE_LIGHT) end
+		Duel.IsPlayerCanSpecialSummonMonster(tp,40011246,0x6f1a,TYPES_TOKEN_MONSTER,1200,1200,4,RACE_MACHINE,ATTRIBUTE_LIGHT) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0xef1a) and c:IsAbleToHand()
+	return c:IsSetCard(0x6f1a) and c:IsAbleToHand()
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(1-tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,40011246,0xef1a,TYPES_TOKEN_MONSTER,1200,1200,4,RACE_MACHINE,ATTRIBUTE_LIGHT) then return end
+		or not Duel.IsPlayerCanSpecialSummonMonster(tp,40011246,0x6f1a,TYPES_TOKEN_MONSTER,1200,1200,4,RACE_MACHINE,ATTRIBUTE_LIGHT) then return end
 	local token=Duel.CreateToken(tp,40011246)
 	Duel.SpecialSummon(token,0,tp,1-tp,false,false,POS_FACEUP)
 	if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil)
@@ -77,7 +77,7 @@ function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=eg:GetFirst()
 	return rc:IsRelateToBattle() and rc:IsStatus(STATUS_OPPO_BATTLE)
-		and rc:IsFaceup() and rc:IsSetCard(0xef1a) and rc:IsControler(tp)
+		and rc:IsFaceup() and rc:IsSetCard(0x6f1a) and rc:IsControler(tp)
 
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -51,6 +51,10 @@ function cm.hsptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 		return true
 	else return false end
 end
+function cm.hspop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	Duel.Release(g,REASON_SPSUMMON)
+end
 function cm.filter(c,tp)
 	return c:IsPreviousLocation(LOCATION_GRAVE) and c:IsPreviousControler(tp) and c:IsType(TYPE_SPELL)
 end

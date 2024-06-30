@@ -14,13 +14,9 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,s.chainfilter)
-end
-function s.chainfilter(re,tp,cid)
-	return not (bit.band(re:GetHandler():GetType(),TYPE_TRAP+TYPE_COUNTER)==TYPE_TRAP+TYPE_COUNTER)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)>0 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function s.costfilter(c)
 	return bit.band(c:GetType(),TYPE_TRAP+TYPE_COUNTER)==TYPE_TRAP+TYPE_COUNTER and c:IsAbleToRemoveAsCost()
@@ -69,28 +65,38 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		local op=te:GetOperation()
 		Duel.Hint(HINT_CARD,0,te:GetHandler():GetCode())
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end
-		if not Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_SZONE,0,1,nil) and Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+		if Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,c) and Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-			local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_DECK,0,1,1,nil)
+			local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil)
 			local dc=g:GetFirst()
 			if Duel.SSet(tp,dc,tp,false)==0 then return end
 			if dc:IsType(TYPE_QUICKPLAY) then
 				local e1=Effect.CreateEffect(c)
+				e1:SetDescription(aux.Stringid(id,1))
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 				e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+				e1:SetCondition(s.accon)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				dc:RegisterEffect(e1)
 			end
 			if dc:IsType(TYPE_TRAP) then
 				local e1=Effect.CreateEffect(c)
+				e1:SetDescription(aux.Stringid(id,1))
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+				e1:SetCondition(s.accon)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				dc:RegisterEffect(e1)
 			end
 		end
 	end
+end
+function s.cfilter(c)
+	return c:IsRace(RACE_FAIRY) and c:IsLevel(8)
+end
+function s.accon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_SZONE,0,nil,e:GetHandler())
 end

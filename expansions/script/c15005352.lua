@@ -133,6 +133,7 @@ function cm.srfilter(c)
 end
 function cm.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.srfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.srop(e,tp,eg,ep,ev,re,r,rp)

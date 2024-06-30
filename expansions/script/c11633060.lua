@@ -148,14 +148,8 @@ function s.initial_effect(c)
 	e1:SetTarget(s.tdtg)
 	e1:SetOperation(s.tdop)
 	c:RegisterEffect(e1)
---
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e2:SetValue(aux.tgoval)
-	c:RegisterEffect(e2)
+	--can not be effect target 
+	
 	--must attack
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)

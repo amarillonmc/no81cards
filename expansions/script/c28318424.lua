@@ -133,7 +133,7 @@ function c28318424.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c28318424.filter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,16,nil)
 end
 function c28318424.cfilter(c)
-	return c:IsAbleToGraveAsCost() and c:IsType(TYPE_MONSTER) and c:GetOriginalLevel()<=4 and c:GetOriginalLevel()>0 and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
+	return c:IsAbleToGraveAsCost() and c:IsSummonableCard() and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
 end
 function c28318424.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28318424.cfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
@@ -149,15 +149,4 @@ function c28318424.thop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
 		Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTarget(c28318424.splimit)
-	Duel.RegisterEffect(e1,tp)
-end
-function c28318424.splimit(e,c)
-	return not c:IsSetCard(0x283) and c:IsLocation(LOCATION_EXTRA)
 end

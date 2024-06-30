@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.filter(c)
-	return c:IsSetCard(0xef1a) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(m)
+	return c:IsSetCard(0x6f1a) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.rgfilter(c)
 	return c:IsCode(40011246) and c:IsFaceup()
@@ -45,7 +45,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,g)
 		if not Duel.IsExistingMatchingCard(cm.rgfilter,tp,0,LOCATION_MZONE,1,nil)and Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,40011246,0xef1a,TYPES_TOKEN_MONSTER,1200,1200,4,RACE_MACHINE,ATTRIBUTE_LIGHT) then
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,40011246,0x6f1a,TYPES_TOKEN_MONSTER,1200,1200,4,RACE_MACHINE,ATTRIBUTE_LIGHT) then
 			Duel.BreakEffect()
 			local token=Duel.CreateToken(tp,40011246)
 			Duel.SpecialSummon(token,0,tp,1-tp,false,false,POS_FACEUP)
@@ -53,7 +53,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.effilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xef1a) or c:IsSetCard(0x1f1b)
+	return c:IsFaceup() and c:IsSetCard(0x6f1a) or c:IsSetCard(0x9f1b)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and cm.effilter(chkc) end

@@ -155,7 +155,7 @@ function s.initial_effect(c)
 	e2:SetTargetRange(LOCATION_MZONE,0)
 	e2:SetTarget(aux.TargetBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER))
 	e2:SetValue(function (e)
-		return Duel.GetFlagEffect(0,id)*100
+		return Duel.GetFlagEffect(0,id)*50
 	end)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()

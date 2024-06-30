@@ -134,6 +134,7 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp)>0
 		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)

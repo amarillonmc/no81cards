@@ -8,10 +8,9 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
-	e1:SetRange(LOCATION_HAND)
+	e1:SetRange(LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE)
 	e1:SetCountLimit(1,id)
-	e1:SetCondition(s.setcon)
-	e1:SetCost(s.setcost)
+	e1:SetCost(aux.bfgcost)
 	e1:SetTarget(s.settg)
 	e1:SetOperation(s.setop)
 	c:RegisterEffect(e1)
@@ -22,13 +21,6 @@ function s.initial_effect(c)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
 end
-function s.setcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
-end
-function s.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
-end
 function s.setfilter(c)
 	return c:IsCode(84749824) and c:IsSSetable()
 end
@@ -38,7 +30,6 @@ function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.spfilter(c,e,tp)
 	return c:IsLevel(8) and c:IsRace(RACE_FAIRY) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
-		and not Duel.IsExistingMatchingCard(s.attfilter,tp,LOCATION_MZONE,0,1,nil,c:GetAttribute())
 end
 function s.attfilter(c,att)
 	return c:IsAttribute(att) and c:IsFaceup()
@@ -49,27 +40,30 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc and Duel.SSet(tp,tc)~=0 then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CANNOT_TRIGGER)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetCondition(s.ccon)
-		tc:RegisterEffect(e1,true)
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.spfilter),tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then 
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+			and not Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_SZONE,0,2,nil)
+			and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.spfilter),tp,LOCATION_GRAVE,0,1,nil,e,tp)
+			and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then 
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 			local tc=g:GetFirst()
-			if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
-				local e1=Effect.CreateEffect(e:GetHandler())
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-				e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-				e1:SetValue(LOCATION_REMOVED)
-				tc:RegisterEffect(e1,true)
-			end
-			Duel.SpecialSummonComplete()
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		end
+	end
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_LPCOST_CHANGE)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,0)
+	e2:SetValue(s.costchange)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+end
+function s.costchange(e,re,rp,val)
+	if re and (re:IsHasType(EFFECT_TYPE_ACTIVATE) or re:GetCode()==EFFECT_TRAP_ACT_IN_HAND or re:GetCode()==EFFECT_TRAP_ACT_IN_SET_TURN) and re:GetHandler():IsType(TYPE_TRAP) and re:GetHandler():IsType(TYPE_COUNTER) then
+		return 0
+	else
+		return val
 	end
 end
 function cfilter(c)
