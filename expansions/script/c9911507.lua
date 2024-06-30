@@ -63,17 +63,23 @@ function c9911507.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
 	return true
 end
+function c9911507.deckfilter(c,tp)
+	return c:IsSetCard(0x5952) and c:IsType(TYPE_MONSTER) and c:IsReleasable()
+		and Duel.IsExistingMatchingCard(c9911507.thfilter,tp,LOCATION_DECK,0,1,c)
+end
 function c9911507.thfilter(c)
 	return c:IsSetCard(0x5952) and c:IsAbleToHand()
 end
 function c9911507.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
+	local fe=Duel.IsPlayerAffectedByEffect(tp,9911520)
+	local b0=fe and Duel.IsExistingMatchingCard(c9911507.deckfilter,tp,LOCATION_DECK,0,1,nil,tp)
 	local g=Duel.GetMatchingGroup(c9911507.thfilter,tp,LOCATION_DECK,0,nil)
 	if chk==0 then
 		if e:GetLabel()~=0 then
 			e:SetLabel(0)
-			return c:IsAbleToRemoveAsCost() and rc:IsRelateToEffect(re) and rc:IsReleasable() and #g>0
+			return c:IsAbleToRemoveAsCost() and rc:IsRelateToEffect(re) and #g>0 and (rc:IsReleasable() or b0)
 		else
 			return #g>0
 		end
@@ -81,7 +87,16 @@ function c9911507.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if e:GetLabel()~=0 then
 		e:SetLabel(0)
 		Duel.Remove(c,POS_FACEUP,REASON_COST)
-		Duel.Release(rc,REASON_COST)
+		if b0 and Duel.SelectYesNo(tp,aux.Stringid(9911520,1)) then
+			Duel.Hint(HINT_CARD,0,9911520)
+			fe:UseCountLimit(tp)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+			local dg=Duel.SelectMatchingCard(tp,c9911507.deckfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
+			Duel.Release(dg,REASON_COST)
+			Duel.SendtoGrave(dg,REASON_RELEASE+REASON_COST)
+		else
+			Duel.Release(rc,REASON_COST)
+		end
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
@@ -93,25 +108,26 @@ function c9911507.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c9911507.tgcfilter1(c,check)
-	return c:IsOnField() and (check or (c:IsFaceup() and c:IsSetCard(0x5952)))
-end
-function c9911507.tgcfilter2(c,re)
-	return c:IsRelateToEffect(re) and c:IsReleasable()
+function c9911507.tgcfilter1(c,check,re)
+	if not c:IsOnField() or not c:IsRelateToEffect(re) then return false end
+	local b0=c:IsFaceup() and c:IsSetCard(0x5952)
+	return (b0 and c:IsControler(tp)) or (not b0 and check)
 end
 function c9911507.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	local check=Duel.IsPlayerAffectedByEffect(tp,9911509)
-	return eg:FilterCount(c9911507.tgcfilter1,nil,check)>0
+	return eg:FilterCount(c9911507.tgcfilter1,nil,check,re)>0
 end
 function c9911507.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local check=Duel.IsPlayerAffectedByEffect(tp,9911509)
-	local sg=eg:Filter(c9911507.tgcfilter1,nil,check)
+	local sg=eg:Filter(c9911507.tgcfilter1,nil,check,re)
+	local fe=Duel.IsPlayerAffectedByEffect(tp,9911520)
+	local b0=fe and Duel.IsExistingMatchingCard(c9911507.deckfilter,tp,LOCATION_DECK,0,1,nil,tp)
 	local g=Duel.GetMatchingGroup(c9911507.thfilter,tp,LOCATION_DECK,0,nil)
 	if chk==0 then
 		if e:GetLabel()~=0 then
 			e:SetLabel(0)
-			return c:IsAbleToRemoveAsCost() and sg:FilterCount(c9911507.tgcfilter2,nil,re)>0 and #g>0
+			return c:IsAbleToRemoveAsCost() and #g>0 and (sg:FilterCount(Card.IsReleasable,nil,re)>0 or b0)
 		else
 			return #g>0
 		end
@@ -119,9 +135,18 @@ function c9911507.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if e:GetLabel()~=0 then
 		e:SetLabel(0)
 		Duel.Remove(c,POS_FACEUP,REASON_COST)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local rg=sg:FilterSelect(tp,c9911507.tgcfilter2,1,1,nil,re)
-		Duel.Release(rg,REASON_COST)
+		if b0 and Duel.SelectYesNo(tp,aux.Stringid(9911520,1)) then
+			Duel.Hint(HINT_CARD,0,9911520)
+			fe:UseCountLimit(tp)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+			local dg=Duel.SelectMatchingCard(tp,c9911507.deckfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
+			Duel.Release(dg,REASON_COST)
+			Duel.SendtoGrave(dg,REASON_RELEASE+REASON_COST)
+		else
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+			local rg=sg:FilterSelect(tp,Card.IsReleasable,1,1,nil)
+			Duel.Release(rg,REASON_COST)
+		end
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end

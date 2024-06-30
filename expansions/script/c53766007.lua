@@ -2,7 +2,7 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_COUNTER+HINTMSG_DESTROY+CATEGORY_ATKCHANGE)
+	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -34,9 +34,10 @@ function s.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local tc=Duel.SelectTarget(tp,s.ctfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler()):GetFirst()
 	e:SetLabel(0)
+	e:SetCategory(CATEGORY_TOHAND)
 	for i=1,Duel.GetCurrentChain()-1 do
 		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
-		if te and te:GetHandler() and te:GetHandler()==tc then e:SetLabel(1) break end
+		if te and te:GetHandler() and te:GetHandler()==tc then e:SetLabel(1) e:SetCategory(CATEGORY_TOHAND+CATEGORY_DISABLE) break end
 	end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
