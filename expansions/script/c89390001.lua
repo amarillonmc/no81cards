@@ -69,9 +69,8 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function cm.srettg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
-    if chk==0 then return c:IsAbleToDeck() end
-    Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
+    if chk==0 then return true end
+    Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
     Duel.SetChainLimit(aux.FALSE)
 end
 function cm.sretop(e,tp,eg,ep,ev,re,r,rp)

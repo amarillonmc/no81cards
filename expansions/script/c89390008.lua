@@ -22,12 +22,18 @@ function cm.initial_effect(c)
     e1:SetTarget(cm.target)
     e1:SetOperation(cm.activate)
     c:RegisterEffect(e1)
+    local e2=Effect.CreateEffect(c)
+    e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+    e2:SetCode(EVENT_REMOVE)
+    e2:SetOperation(cm.rmop)
+    c:RegisterEffect(e2)
     local e3=Effect.CreateEffect(c)
     e3:SetCategory(CATEGORY_TOHAND)
     e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
     e3:SetCode(EVENT_PHASE+PHASE_END)
     e3:SetRange(LOCATION_REMOVED)
     e3:SetCountLimit(1,m)
+    e3:SetCondition(cm.thcon)
     e3:SetTarget(cm.thtg)
     e3:SetOperation(cm.thop)
     c:RegisterEffect(e3)
@@ -82,6 +88,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
             Duel.ConfirmCards(1-tp,sg)
         end
     end
+end
+function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
+    if e:GetHandler():IsFacedown() then return end
+    e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+    return e:GetHandler():GetFlagEffect(m)~=0
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()

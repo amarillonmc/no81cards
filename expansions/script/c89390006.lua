@@ -36,6 +36,11 @@ function cm.initial_effect(c)
     e3:SetTarget(cm.thtg)
     e3:SetOperation(cm.thop)
     c:RegisterEffect(e3)
+    local e7=Effect.CreateEffect(c)
+    e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+    e7:SetCode(EVENT_SPSUMMON_SUCCESS)
+    e7:SetOperation(cm.atklimit)
+    c:RegisterEffect(e7)
     if not cm.global_check then
         cm.global_check=true
         cm[0]={}
@@ -114,19 +119,26 @@ end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
     local tid=Duel.GetTurnCount()
-    if chk==0 then return e:GetHandler():IsAbleToDeck() and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c,e,tp,tid) end
+    if chk==0 then return e:GetHandler():IsAbleToDeck() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c,e,tp,tid) end
     Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     local tid=Duel.GetTurnCount()
-    if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,2,REASON_EFFECT)==1 and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c,e,tp,tid) then
+    if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,2,REASON_EFFECT)==1 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c,e,tp,tid) then
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
         local tg=Duel.SelectMatchingCard(tp,cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,c,e,tp,tid)
         if tg:GetCount()<=0 then return end
         Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
     end
+end
+function cm.atklimit(e,tp,eg,ep,ev,re,r,rp)
+    local e1=Effect.CreateEffect(e:GetHandler())
+    e1:SetType(EFFECT_TYPE_SINGLE)
+    e1:SetCode(EFFECT_NO_BATTLE_DAMAGE)
+    e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+    e:GetHandler():RegisterEffect(e1)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
     if re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsRace(RACE_PSYCHO) then
