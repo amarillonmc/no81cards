@@ -1,45 +1,46 @@
 --阴郁展开伊吕波
-function c65130325.initial_effect(c)
+local s,id,o=GetID()
+function s.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(65130325,0))
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_TO_GRAVE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,65130325)
-	e1:SetCondition(c65130325.spcon)
-	e1:SetTarget(c65130325.sptg)
-	e1:SetOperation(c65130325.spop)
+	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.spcon)
+	e1:SetTarget(s.sptg)
+	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
 	--disable
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_CHAIN_SOLVING)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetOperation(c65130325.disop)
+	e2:SetOperation(s.disop)
 	c:RegisterEffect(e2)
 end
-function c65130325.disop(e,tp,eg,ep,ev,re,r,rp)
+function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local ex,tg,ct,p,v=Duel.GetOperationInfo(ev,CATEGORY_SPECIAL_SUMMON)
 	if not ex then return end
-	if Duel.IsChainDisablable(ev) and v==LOCATION_EXTRA and ct>0 then 
+	if Duel.IsChainDisablable(ev) and (tg and tg:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)>0 or v==LOCATION_EXTRA) then 
 		Duel.NegateEffect(ev,true)
 	end
 end
-function c65130325.spfilter(c,tp)
+function s.spfilter(c,tp)
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP)
 end
-function c65130325.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c65130325.spfilter,1,nil,tp)
+function s.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(s.spfilter,1,nil,tp)
 end
-function c65130325.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function c65130325.spop(e,tp,eg,ep,ev,re,r,rp)
+function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then return end
 	if c:IsRelateToEffect(e) then
