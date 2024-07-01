@@ -85,10 +85,11 @@ function c78307733.eccost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c78307733.ecop(e,tp,eg,ep,ev,re,r,rp)
 	local op0=re:GetOperation() or (function() end)
-		local op1=function(e,tp,eg,ep,ev,re,r,rp)
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-				local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil)
-				if #dg>0 then Duel.Destroy(dg,REASON_EFFECT) end
-			end
+	local op1=function(e,tp,eg,ep,ev,re,r,rp)
+			op0(e,tp,eg,ep,ev,re,r,rp)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil)
+			if #dg>0 then Duel.Destroy(dg,REASON_EFFECT) end
+		end
 		re:SetOperation(op1)
 end

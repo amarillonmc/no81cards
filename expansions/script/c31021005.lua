@@ -34,8 +34,9 @@ function c31021005.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c31021005.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) then
+	if tc and tc:IsRelateToEffect(e) and c:IsRelateToEffect(e) then
 		local c=e:GetHandler()
 		if Duel.SpecialSummon(c,nil,tp,tp,false,false,POS_FACEUP) and c:IsCanAddCounter(0x1894,1) then
 			tc:AddCounter(0x1894,1)

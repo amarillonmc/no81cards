@@ -52,7 +52,7 @@ function c31021017.exfilter(c,tp)
 	return c:IsSummonLocation(LOCATION_EXTRA) and c:IsSummonPlayer(tp) and c:IsSetCard(0x893) and c:IsFaceup()
 end
 function c31021017.setcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c31021017.exfilter,1,nil,tp)
+	return eg:IsExists(c31021017.exfilter,1,nil,tp) and aux.exccon(e)
 end
 function c31021017.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsSSetable() end

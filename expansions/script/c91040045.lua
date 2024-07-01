@@ -67,7 +67,7 @@ function cm.fit2(c,e,tp)
 	return aux.IsCodeListed(c,35405755) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.fit21(c,e,tp)
-	return aux.IsCodeListed(c,35405755) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsAttackBelow(2500)
+	return  c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsAttackBelow(2500)
 end
 function cm.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 if chk==0 then return Duel.IsExistingMatchingCard(cm.fit2,tp,LOCATION_DECK,0,1,nil,e,tp) end
