@@ -69,6 +69,8 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+    local c=e:GetHandler()
+    if not c:IsRelateToEffect(e) or not c:IsFaceup() then return end
     local res=true
     local i=1
     while type(cm[i])=="table" do
@@ -78,13 +80,11 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
         i=i+1
     end
     if not res then return end
-    local c=e:GetHandler()
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
     local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
     if not g or g:GetCount()<=0 then return end
     local tc=g:GetFirst()
     if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)<1 then return end
-    if not c:IsRelateToEffect(e) or not c:IsFaceup() then return end
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_SINGLE)
     e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)

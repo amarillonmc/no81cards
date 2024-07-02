@@ -26,9 +26,18 @@ function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
     local rc=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil):GetFirst()
     if rc and Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c,e,tp,rc) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+        Duel.BreakEffect()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-        local tg=Duel.SelectMatchingCard(tp,cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,c,e,tp,rc)
-        if tg:GetCount()<=0 then return end
-        Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
+        local tc=Duel.SelectMatchingCard(tp,cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,c,e,tp,rc):GetFirst()
+        if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+            local e1=Effect.CreateEffect(c)
+            e1:SetType(EFFECT_TYPE_SINGLE)
+            e1:SetCode(EFFECT_ADD_TYPE)
+            e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+            e1:SetValue(TYPE_TUNER)
+            e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+            tc:RegisterEffect(e1)
+            Duel.SpecialSummonComplete()
+        end
     end
 end

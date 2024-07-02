@@ -45,7 +45,7 @@ function c22348405.actcon(e)
 	return Duel.GetAttacker()==e:GetHandler()
 end
 function c22348405.thfilter(c)
-	return c:IsFaceup() and c:IsAbleToHand() and c:GetBaseAttack~=0
+	return c:IsFaceup() and c:IsAbleToHand() and c:GetBaseAttack()~=0
 end
 function c22348405.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c22348405.thfilter(chkc) end

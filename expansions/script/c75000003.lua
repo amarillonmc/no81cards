@@ -1,5 +1,6 @@
 --救世神龙 传承琉迩
 function c75000003.initial_effect(c)
+	aux.AddCodeList(c,75000001)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCode2FunRep(c,21159309,75000001,aux.FilterBoolFunction(Card.IsFusionSetCard,0x751),1,1,true,true)
