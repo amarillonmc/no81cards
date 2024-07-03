@@ -105,7 +105,7 @@ function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
     local tc=e:GetLabelObject()
-    Duel.SendtoHand(tc,1-tp,REASON_EFFECT)
+    Duel.SendtoHand(tc,tc:GetOwner(),REASON_EFFECT)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
     local rc=re:GetHandler()
