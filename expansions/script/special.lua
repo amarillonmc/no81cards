@@ -64,6 +64,10 @@ function Auxiliary.PreloadUds()
 		table_range[e]=r
 		return _SetRange(e,r,...)
 	end
+	local _IsCanTurnSet=Card.IsCanTurnSet
+	function Card.IsCanTurnSet(c)
+		return (c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)) or ((_IsCanTurnSet(c) and not c:IsLocation(LOCATION_SZONE)))
+	end
 	EFFECT_FLAG_CANNOT_NEGATE=EFFECT_FLAG_CANNOT_NEGATE or 0x200
 	--require("script/procedure.lua")
 end

@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x1)
 	--link summon
-	aux.AddLinkProcedure(c,nil,2,4,c11561048.lcheck)
+	aux.AddLinkProcedure(c,nil,2,4,c11561051.lcheck)
    -- aux.AddLinkProcedure(c,nil,2)
 	c:EnableReviveLimit()
 	--add counter

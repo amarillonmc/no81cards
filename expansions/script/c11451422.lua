@@ -70,7 +70,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.HintSelection(g2)
 			if Duel.SendtoGrave(g2,REASON_EFFECT)==0 then
 				local c=e:GetHandler()
-				if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
+				if c:IsRelateToEffect(e) and c:IsSSetable(true) then
 					c:CancelToGrave()
 					Duel.ChangePosition(c,POS_FACEDOWN)
 					Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
@@ -78,7 +78,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			end
 		else
 			local c=e:GetHandler()
-			if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
+			if c:IsRelateToEffect(e) and c:IsSSetable(true) then
 				c:CancelToGrave()
 				Duel.ChangePosition(c,POS_FACEDOWN)
 				Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)

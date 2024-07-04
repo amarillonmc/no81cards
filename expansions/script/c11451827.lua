@@ -102,7 +102,7 @@ function cm.rscon2(e,tp,eg,ep,ev,re,r,rp)
 	return ev==e:GetLabel()
 end
 function cm.rsop2(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsRelateToEffect(re) and e:GetHandler():IsFaceup() and e:GetHandler():IsCanTurnSet() then
+	if e:GetHandler():IsRelateToEffect(re) and e:GetHandler():IsFaceup() and e:GetHandler():IsSSetable(true) then
 		e:GetHandler():CancelToGrave()
 		Duel.ChangePosition(e:GetHandler(),POS_FACEDOWN)
 	else
@@ -142,7 +142,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end--]]
-	if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
+	if c:IsRelateToEffect(e) and c:IsSSetable(true) then
 		Duel.BreakEffect()
 		c:CancelToGrave()
 		Duel.ChangePosition(c,POS_FACEDOWN)
@@ -177,7 +177,7 @@ function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsType(TYPE_TRAP) and rp==tp
 end
 function cm.filter2(c)
-	return c:IsType(TYPE_COUNTER) and c:IsFaceup() and ((c:IsLocation(LOCATION_MZONE) and ((bit.band(c:GetOriginalType(),TYPE_SPELL+TYPE_TRAP)~=0 and (not c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsCanTurnSet()) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and c:IsCanTurnSet())) or (bit.band(c:GetOriginalType(),TYPE_SPELL+TYPE_TRAP)==0 and c:IsCanTurnSet()))) or (c:IsLocation(LOCATION_SZONE) and c:IsSSetable(true))) and not (c:IsType(TYPE_PENDULUM) and c:IsLocation(LOCATION_PZONE))
+	return c:IsType(TYPE_COUNTER) and c:IsFaceup() and c:IsSSetable(true)
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
@@ -234,7 +234,7 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
+	if c:IsRelateToEffect(e) and c:IsSSetable(true) then
 		Duel.BreakEffect()
 		c:CancelToGrave()
 		Duel.ChangePosition(c,POS_FACEDOWN)

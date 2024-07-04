@@ -26,7 +26,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,g)
-			if c:IsRelateToEffect(e) and c:IsCanTurnSet() and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+			if c:IsRelateToEffect(e) and c:IsSSetable(true) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.BreakEffect()
 			Duel.ChangePosition(c,POS_FACEDOWN)
 			Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)

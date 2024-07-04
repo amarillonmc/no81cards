@@ -121,7 +121,7 @@ function cm.initial_effect(c)
 			rpz:RegisterEffect(e4)--]]
 			return sg
 		end
-	end	  
+	end   
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -159,13 +159,13 @@ function cm.tdfilter(c,tp)
 end
 function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local set=(c:IsCanTurnSet() and c:IsLocation(LOCATION_SZONE)) or c:IsSSetable()
+	local set=(c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)) or c:IsSSetable()
 	local de,dp=Duel.GetChainInfo(ev,CHAININFO_DISABLE_REASON,CHAININFO_DISABLE_PLAYER)
 	return rp==tp and de and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():GetReasonEffect()==de and set and cm.tdfilter(re:GetHandler(),tp) and dp==1-tp
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local set=(c:IsCanTurnSet() and c:IsLocation(LOCATION_SZONE)) or c:IsSSetable()
+	local set=(c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)) or c:IsSSetable()
 	local rc=re:GetHandler()
 	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) and Duel.SendtoHand(rc,nil,REASON_EFFECT) and set then
 		if c:IsLocation(LOCATION_SZONE) then
@@ -222,7 +222,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmCards(1-tp,g)
 	Duel.ShuffleHand(tp)
 	local c=e:GetHandler()
-	local set=(c:IsCanTurnSet() and c:IsLocation(LOCATION_SZONE)) or c:IsSSetable()
+	local set=(c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)) or c:IsSSetable()
 	if set then
 		if c:IsLocation(LOCATION_SZONE) then
 			Duel.ChangePosition(c,POS_FACEDOWN)

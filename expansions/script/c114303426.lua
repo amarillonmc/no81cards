@@ -127,11 +127,11 @@ function c114303426.operation2(e,tp,eg,ep,ev,re,r,rp)
     c114303426.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 
-local re=Duel.RegisterEffect
-Duel.RegisterEffect=function(e,tp)
-    if e:GetOwner():IsOriginalCodeRule(51194046) and e:GetCode()==EFFECT_MATERIAL_CHECK 
-    then
-        e:SetTargetRange(LOCATION_HAND+LOCATION_DECK,LOCATION_HAND+LOCATION_DECK)
+local st=Effect.SetTargetRange
+Effect.SetTargetRange=function(e,s,o)
+    if e:GetOwner():IsOriginalCodeRule(51194046) and e:GetCode()==EFFECT_MATERIAL_CHECK then
+        return st(e,LOCATION_HAND+LOCATION_DECK,LOCATION_HAND+LOCATION_DECK)
+    else
+        return st(e,s,o)
     end
-    return re(e,tp)
 end

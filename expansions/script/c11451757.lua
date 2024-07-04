@@ -68,7 +68,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler())
 end
 function cm.dsfilter(c)
-	return c:IsFaceup() and c:IsCanTurnSet()
+	return c:IsFaceup() and (c:IsCanTurnSet() or (c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)))
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

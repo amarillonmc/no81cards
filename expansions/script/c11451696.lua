@@ -59,7 +59,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)>0 then
 		local ct=Duel.GetFlagEffect(tp,m)
 		local rflag=false
-		if ct>=1 and c:IsRelateToEffect(e) and c:IsCanTurnSet() then
+		if ct>=1 and c:IsRelateToEffect(e) and c:IsSSetable(true) then
 			c:CancelToGrave()
 			Duel.ChangePosition(c,POS_FACEDOWN)
 			Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
