@@ -66,7 +66,7 @@ function c9911014.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if #sg==0 or Duel.Destroy(sg,REASON_EFFECT)==0 then return end
 	local dg=Duel.GetOperatedGroup():Filter(c9911014.disfilter,nil)
-	if (lab==1 or lab==3) and c:IsRelateToEffect(e) and c:IsCanTurnSet()
+	if (lab==1 or lab==3) and c:IsRelateToEffect(e) and c:IsSSetable(true)
 		and Duel.SelectYesNo(tp,aux.Stringid(9911014,0)) then
 		Duel.BreakEffect()
 		c:CancelToGrave()

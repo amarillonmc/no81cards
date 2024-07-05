@@ -56,7 +56,7 @@ function c9910868.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910868.setop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if rc:IsRelateToEffect(re) and rc:IsCanTurnSet() then
+	if rc:IsRelateToEffect(re) and rc:IsSSetable(true) then
 		rc:CancelToGrave()
 		if Duel.ChangePosition(rc,POS_FACEDOWN)==0 then return end
 		Duel.RaiseEvent(rc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)

@@ -57,7 +57,7 @@ function c9911212.setcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9911212.setfilter(c)
 	local b1=c:IsLocation(LOCATION_HAND) and c:IsSSetable()
-	local b2=c:IsLocation(LOCATION_SZONE) and c:IsCanTurnSet()
+	local b2=c:IsLocation(LOCATION_SZONE) and c:IsSSetable(true)
 	return c:IsType(TYPE_TRAP) and (b1 or b2)
 end
 function c9911212.settg(e,tp,eg,ep,ev,re,r,rp,chk)

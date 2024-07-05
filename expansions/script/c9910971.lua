@@ -96,7 +96,7 @@ function c9910971.repfilter(c,tp)
 end
 function c9910971.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return eg:IsExists(c9910971.repfilter,1,nil,tp) and c:IsCanTurnSet() end
+	if chk==0 then return eg:IsExists(c9910971.repfilter,1,nil,tp) and c:IsSSetable(true) end
 	return true
 end
 function c9910971.desrepval(e,c)

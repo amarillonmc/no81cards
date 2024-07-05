@@ -44,7 +44,7 @@ function c9910923.activate(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if Duel.NegateEffect(ev) and c:IsRelateToEffect(e) then
 		c:CancelToGrave()
-		local b1=c:IsCanTurnSet()
+		local b1=c:IsSSetable(true)
 		local b2=c:IsAbleToDeck() and rc:IsRelateToEffect(re) and rc:IsLocation(LOCATION_MZONE)
 			and rc:IsControler(1-tp) and rc:IsControlerCanBeChanged()
 		if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910923,0),aux.Stringid(9910923,1))==0) then

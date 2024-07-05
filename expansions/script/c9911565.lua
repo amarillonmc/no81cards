@@ -211,7 +211,7 @@ function c9911565.activate2(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetCode(EFFECT_UPDATE_DEFENSE)
 			tc:RegisterEffect(e3)
 		end
-		if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
+		if c:IsRelateToEffect(e) and c:IsSSetable(true) then
 			Duel.BreakEffect()
 			c:CancelToGrave()
 			Duel.ChangePosition(c,POS_FACEDOWN)

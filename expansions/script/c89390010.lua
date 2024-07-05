@@ -25,7 +25,12 @@ function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
     local rc=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil):GetFirst()
-    if rc and Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c,e,tp,rc) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+    if not rc then
+        Duel.ConfirmCards(1-tp,Duel.GetFieldGroup(tp,LOCATION_HAND,0))
+        Duel.ShuffleHand(tp)
+        return
+    end
+    if Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c,e,tp,rc) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
         Duel.BreakEffect()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
         local tc=Duel.SelectMatchingCard(tp,cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,c,e,tp,rc):GetFirst()

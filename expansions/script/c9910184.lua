@@ -57,7 +57,7 @@ function c9910184.activate(e,tp,eg,ep,ev,re,r,rp)
 		and c:IsRelateToEffect(e) then
 		c:CancelToGrave()
 		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910184.thfilter),tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
-		local b1=c:IsCanTurnSet()
+		local b1=c:IsSSetable(true)
 		local b2=c:IsAbleToDeck() and g:GetCount()>0
 		if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910184,0),aux.Stringid(9910184,1))==0) then
 			Duel.BreakEffect()

@@ -53,7 +53,7 @@ function c9910931.activate(e,tp,eg,ep,ev,re,r,rp)
 		and ct>0 and Duel.Damage(1-tp,ct*300,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) then
 		c:CancelToGrave()
 		local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
-		local b1=c:IsCanTurnSet()
+		local b1=c:IsSSetable(true)
 		local b2=c:IsAbleToDeck() and g:GetCount()>0
 		if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910931,0),aux.Stringid(9910931,1))==0) then
 			Duel.BreakEffect()

@@ -24,10 +24,14 @@ function c9910264.condition(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function c9910264.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return aux.nbcon(tp,re)
-		and Duel.IsExistingMatchingCard(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,1,nil,0x956,1) end
+	if chk==0 then
+		local b1=Duel.IsExistingMatchingCard(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,1,nil,0x956,1)
+		local b2=Duel.GetCounter(tp,1,0,0x956)>=6 and aux.nbcon(tp,re)
+		local b3=Duel.GetCounter(tp,1,0,0x956)<6
+		return b1 or b2 or b3
+	end
 	local g=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,nil,0x956,1)
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,g,#g,0,0)
+	if #g>0 then Duel.SetOperationInfo(0,CATEGORY_COUNTER,g,#g,0,0) end
 end
 function c9910264.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -49,7 +53,7 @@ function c9910264.activate(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	else
-		if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
+		if c:IsRelateToEffect(e) and c:IsSSetable(true) then
 			if chk then Duel.BreakEffect() end
 			c:CancelToGrave()
 			Duel.ChangePosition(c,POS_FACEDOWN)

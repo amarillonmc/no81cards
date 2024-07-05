@@ -58,7 +58,7 @@ function c9910926.activate(e,tp,eg,ep,ev,re,r,rp)
 		if not c:IsRelateToEffect(e) then return end
 		c:CancelToGrave()
 		local sg=eg:Filter(c9910926.cfilter2,nil,tp,e)
-		local b1=c:IsCanTurnSet()
+		local b1=c:IsSSetable(true)
 		local b2=c:IsAbleToDeck() and sg:GetCount()>0
 		if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910926,0),aux.Stringid(9910926,1))==0) then
 			Duel.BreakEffect()
