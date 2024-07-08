@@ -16,17 +16,17 @@ function c9910917.initial_effect(c)
 	e2:SetCondition(c9910917.spcon)
 	e2:SetCost(c9910917.spcost)
 	c:RegisterEffect(e2)
-	--negate
+	--disable
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TODECK+CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e3:SetCategory(CATEGORY_TODECK+CATEGORY_DISABLE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
-	e3:SetCondition(c9910917.negcon)
-	e3:SetTarget(c9910917.negtg)
-	e3:SetOperation(c9910917.negop)
+	e3:SetCondition(c9910917.discon)
+	e3:SetTarget(c9910917.distg)
+	e3:SetOperation(c9910917.disop)
 	c:RegisterEffect(e3)
 end
 function c9910917.rmfilter(c)
@@ -68,37 +68,41 @@ function c9910917.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.Remove(g,POS_FACEUP,REASON_COST)
 	end
 end
-function c9910917.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp
-		and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
+function c9910917.discon(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	return ep==1-tp and rc:IsControler(1-tp) and rc:IsLocation(LOCATION_MZONE)
+		and rc:IsRelateToEffect(re) and re:IsActiveType(TYPE_MONSTER)
 end
-function c9910917.tdfilter1(c,tp)
-	return c:IsFaceup() and c:IsCode(9910917) and c:IsAbleToDeck()
-		and Duel.IsExistingTarget(c9910917.tdfilter2,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,1,c)
-end
-function c9910917.tdfilter2(c)
+function c9910917.tdfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xc954) and c:IsAbleToDeck()
 end
-function c9910917.negtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(c9910917.tdfilter1,tp,LOCATION_MZONE+LOCATION_REMOVED,0,1,nil,tp) end
+function c9910917.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_REMOVED) and chkc:IsControler(tp) and c9910917.tdfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910917.tdfilter,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,2,nil)
+		and aux.NegateMonsterFilter(re:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g1=Duel.SelectTarget(tp,c9910917.tdfilter1,tp,LOCATION_MZONE+LOCATION_REMOVED,0,1,1,nil,tp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g2=Duel.SelectTarget(tp,c9910917.tdfilter2,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,1,1,g1:GetFirst())
-	g1:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g1,2,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
-	end
+	local g=Duel.SelectTarget(tp,c9910917.tdfilter,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,2,2,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,re:GetHandler(),1,0,0)
 end
-function c9910917.negop(e,tp,eg,ep,ev,re,r,rp)
+function c9910917.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 then
 		if not Duel.GetOperatedGroup():IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) then return end
-		if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-			Duel.Destroy(eg,REASON_EFFECT)
+		local rc=re:GetHandler()
+		if rc:IsControler(1-tp) and rc:IsRelateToEffect(re) and rc:IsCanBeDisabledByEffect(e) then
+			Duel.NegateRelatedChain(rc,RESET_TURN_SET)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			rc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			rc:RegisterEffect(e2)
 		end
 	end
 end

@@ -86,7 +86,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetType(EFFECT_TYPE_FIELD)
 			e2:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
 			e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e2:SetTargetRange(1,0)
+			e2:SetTargetRange(1,1)
 			e2:SetReset(RESET_PHASE+PHASE_DAMAGE)
 			Duel.RegisterEffect(e2,tp)
 		end
@@ -115,7 +115,7 @@ function s.penop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.indcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsSummonType(SUMMON_TYPE_XYZ) and c:GetMaterial():IsExists(Card.IsLevelAbove,1,nil,8)
+	return c:IsSummonType(SUMMON_TYPE_XYZ) and not re
 end
 function s.indop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -31,28 +31,19 @@ function s.xyzcheck(g)
 end
 function s.sdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return false end
-	local ct=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)==0 then return false end
+	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
 	ct=e:GetHandler():RemoveOverlayCard(tp,1,ct,REASON_COST)
 	e:SetLabel(ct)
 end
 function s.sdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 end
 end
 function s.sdop(e,tp,eg,ep,ev,re,r,rp)
 	local at=e:GetLabel()
-	local ct=math.min(at,Duel.GetFieldGroupCount(tp,LOCATION_DECK,0))
-	if ct>0 then
-		local t={}
-		for i=1,ct do
-			t[i]=i
-		end
-		local ac=1
-		if ct>1 then
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,2))
-			ac=Duel.AnnounceNumber(tp,table.unpack(t))
-		end
-		Duel.SortDecktop(tp,tp,ac)
+	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
+	if at<=ct then
+		Duel.SortDecktop(tp,tp,at)
 	end
 end
 function s.mttg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -67,19 +58,18 @@ function s.ovfilter(c)
 end
 function s.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local cl=Duel.GetCurrentChain()
+	if not c:IsRelateToEffect(e) then return end
 	local ac=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 	Duel.ConfirmDecktop(tp,1)
-	local g=Duel.GetDecktopGroup(tp,1)
+	local g=Duel.GetDecktopGroup(1-tp,1)
 	if g:GetCount()>0 then
 		local xc=g:GetFirst()
 		Duel.Overlay(c,g)
-		Debug.Message(cl)
-		Debug.Message(ac)
-		if cl>=2 and xc:IsCode(ac) and Duel.IsExistingMatchingCard(s.ovfilter,tp,0,LOCATION_ONFIELD,1,nil,e:GetHandler()) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+		if xc:IsCode(ac) and Duel.IsExistingMatchingCard(s.ovfilter,tp,0,LOCATION_ONFIELD,1,nil,e:GetHandler()) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 			local sg=Duel.GetMatchingGroup(s.ovfilter,tp,0,LOCATION_ONFIELD,c)
+			local os=c:GetOverlayCount()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-			local tg=sg:Select(tp,1,1,nil)
+			local tg=sg:Select(tp,1,os,nil)
 			Duel.HintSelection(tg)
 			local tc=tg:GetFirst()
 			if not tc:IsImmuneToEffect(e) then

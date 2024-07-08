@@ -9,23 +9,14 @@ function c91030022.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(91030022,0))
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCondition(c91030022.rmcon)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,91030022)
 	e1:SetTarget(c91030022.rmtg)
 	e1:SetOperation(c91030022.rmop)
 	c:RegisterEffect(e1)
 	--damage val
-	  local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DAMAGE)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_BATTLE_DAMAGE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(cm.condition)
-	e2:SetTarget(cm.target)
-	e2:SetOperation(cm.operation)
-	c:RegisterEffect(e2)
+
 	--tohand
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(91030022,1))
@@ -33,7 +24,7 @@ function c91030022.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_DESTROYED)
-	e4:SetCountLimit(1,91030022)
+	e4:SetCountLimit(1,91030022+100)
 	e4:SetCondition(c91030022.thcon)
 	e4:SetTarget(c91030022.thtg)
 	e4:SetOperation(c91030022.thop)
@@ -65,24 +56,7 @@ end
 function cm.matfilter(c)
 	return c:IsLinkSetCard(0x9d3) and c:IsLinkAttribute(ATTRIBUTE_ALL&~ATTRIBUTE_WIND)
 end
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp 
-end
-function cm.fit(c)
-	return c:IsAbleToGrave() and c:IsType(TYPE_SPELL+TYPE_TRAP)
-end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.fit,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,PLAYER_ALL,LOCATION_MZONE)
-end
-function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.fit,tp,0,LOCATION_ONFIELD,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.HintSelection(g)
-		Duel.SendtoGrave(g,REASON_EFFECT)
-	end
-end
+
 function c91030022.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonLocation(LOCATION_EXTRA)
 end
@@ -101,7 +75,7 @@ function c91030022.rmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c91030022.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+	return  bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c91030022.thfilter(c)
 	return c:IsSetCard(0x9d3) and c:IsType(TYPE_QUICKPLAY) and c:IsAbleToHand()

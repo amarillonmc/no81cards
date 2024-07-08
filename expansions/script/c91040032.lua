@@ -17,15 +17,40 @@ function c91040032.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCountLimit(1,m*2)
+	e3:SetCountLimit(1,m+100)
+	e3:SetCost(cm.cost)
 	e3:SetCondition(cm.drcon)
 	e3:SetTarget(cm.drtg)
 	e3:SetOperation(cm.drop)
 	c:RegisterEffect(e3)
+Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTarget(cm.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)  
+end
+function cm.counterfilter(c)
+	return c:IsRace(RACE_ZOMBIE)
+end
+function cm.splimit(e,c)
+	return not c:IsRace(RACE_ZOMBIE)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
+	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() and Duel.GetActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTarget(cm.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp) 
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 end
@@ -114,5 +139,6 @@ function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
+if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
 end

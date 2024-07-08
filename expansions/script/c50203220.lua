@@ -65,7 +65,6 @@ function c50203220.setfilter(c,tp)
 end
 function c50203220.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c50203220.setfilter,1,nil,tp)
-		and Duel.GetTurnCount()~=e:GetHandler():GetTurnID() or e:GetHandler():IsReason(REASON_RETURN)
 end
 function c50203220.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsSSetable() end

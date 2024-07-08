@@ -85,7 +85,7 @@ function s.mtcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
 function s.mtop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.CheckLPCost(tp,800) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+	if Duel.CheckLPCost(tp,800) then
 		Duel.PayLPCost(tp,800)
 	else
 		Duel.Destroy(e:GetHandler(),REASON_COST)

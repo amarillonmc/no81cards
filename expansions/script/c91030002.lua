@@ -20,8 +20,8 @@ function cm.spfilter(c,e,tp)
 		and Duel.GetLocationCountFromEx(tp,tp,nil,c,0x60)>0
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) or  Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil) or Duel.IsPlayerCanDiscardDeck(tp,2)   end
-	local b1=Duel.IsPlayerCanDiscardDeck(tp,2)   
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) or  Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil) or Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil)   end
+	local b1=Duel.IsExistingMatchingCard(cm.filtern,tp,LOCATION_DECK,0,1,nil)
 	local b2=Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
 	local b3=Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil)
 	 local op=aux.SelectFromOptions(tp,
@@ -31,6 +31,10 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if op==1 then 
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 	e:SetCategory(CATEGORY_TOGRAVE)
+	if Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_QUICKPLAY)>=3 then
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,LOCATION_GRAVE+LOCATION_REMOVED)
+	end
 	e:GetHandler():RegisterFlagEffect(1,RESET_PHASE+PHASE_END,0,1)
 	elseif op==2 then
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
@@ -45,16 +49,28 @@ end
 function cm.filter(c)
 return c:IsSetCard(0x9d3) and c:IsAbleToGrave()
 end
+function cm.filter2(c)
+return  c:IsSetCard(0x9d3) and c:IsSSetable() and c:IsType(TYPE_QUICKPLAY)
+end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:GetFlagEffect(1)>0  then
-	 local g1=Duel.GetDecktopGroup(tp,2)
+	 local g1=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
 	if Duel.SendtoGrave(g1,REASON_EFFECT)~=0 and
 		 Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_QUICKPLAY)>=3
-		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil)
-		and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil)
-		Duel.SendtoGrave(g,REASON_EFFECT)
+		and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.filter2),tp,LOCATION_GRAVE,0,1,nil)
+		and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter2),tp,LOCATION_GRAVE,0,1,1,nil)
+		if g:GetCount()>0 then
+		local tc=g:GetFirst()
+		 Duel.SSet(tp,tc)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetValue(LOCATION_REMOVED)
+		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+		tc:RegisterEffect(e1) end
 	end
 	c:ResetFlagEffect(1)
 	elseif c:GetFlagEffect(2)>0  then

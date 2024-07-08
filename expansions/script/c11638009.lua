@@ -73,8 +73,11 @@ end
 function cm.ninjafilter(c)
 	return c:IsFaceup() and c:IsCode(11638001)
 end
+function cm.filter3(c)
+	return not c:IsCode(11638001) or c:IsFacedown()
+end
 function cm.con2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1 and Duel.IsExistingMatchingCard(cm.ninjafilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 and Duel.IsExistingMatchingCard(cm.ninjafilter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)<Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE) and not Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0

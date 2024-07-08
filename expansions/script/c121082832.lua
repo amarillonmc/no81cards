@@ -182,3 +182,43 @@ end
 function c121082832.nofilter(e,re,tp)
     return re:GetHandler():IsCode(73468603)
 end
+
+local st=Effect.SetTarget
+Effect.SetTarget=function(e,tg)
+    if e:GetOwner():IsOriginalCodeRule(92746535) and e:GetCategory()==CATEGORY_TOHAND+CATEGORY_SEARCH then
+        return st(e,c121082832.thtg)
+    else
+        return st(e,tg)
+    end
+end
+local so=Effect.SetOperation
+Effect.SetOperation=function(e,op)
+    if e:GetOwner():IsOriginalCodeRule(92746535) and e:GetCategory()==CATEGORY_TOHAND+CATEGORY_SEARCH then
+        return so(e,c121082832.thop)
+    else
+        return so(e,op)
+    end
+end
+
+function c121082832.thfilter(c,code)
+    return c:IsCode(code) and c:IsAbleToHand()
+end
+function c121082832.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+    local sc=Duel.GetFirstMatchingCard(nil,tp,LOCATION_PZONE,0,e:GetHandler())
+    if chk==0 then return Duel.IsExistingMatchingCard(c121082832.thfilter,tp,LOCATION_DECK,0,1,nil,sc:GetCode()) end
+    Duel.SetTargetCard(sc)
+    Duel.SetOperationInfo(0,CATEGORY_DESTROY,sc,1,0,0)
+    Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c121082832.thop(e,tp,eg,ep,ev,re,r,rp)
+    if not e:GetHandler():IsRelateToEffect(e) then return end
+    local tc=Duel.GetFirstTarget()
+    if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+        local g=Duel.SelectMatchingCard(tp,c121082832.thfilter,tp,LOCATION_DECK,0,1,1,nil,tc:GetCode())
+        if g:GetCount()>0 then
+            Duel.SendtoHand(g,nil,REASON_EFFECT)
+            Duel.ConfirmCards(1-tp,g)
+        end
+    end
+end

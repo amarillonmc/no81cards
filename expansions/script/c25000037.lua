@@ -14,6 +14,11 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
+	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,s.chainfilter)
+end
+function s.chainfilter(re,tp,cid)
+	local rc=re:GetHandler()
+	return re:IsActiveType(TYPE_TRAP) and rc:IsType(TYPE_COUNTER)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
@@ -25,9 +30,10 @@ end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_GRAVE,0,1,1,e:GetHandler())
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	Duel.HintSelection(g)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 	local tc=g:GetFirst()
 	local te,ceg,cev,cre,cr,crp=tc:CheckActivateEffect(false,true,true)
 	Duel.ClearTargetCard()
@@ -65,7 +71,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		local op=te:GetOperation()
 		Duel.Hint(HINT_CARD,0,te:GetHandler():GetCode())
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end
-		if Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,c) and Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+		if Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)~=0 and Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 			local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil)

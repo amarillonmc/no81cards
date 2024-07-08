@@ -5,20 +5,8 @@ function c91030021.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,cm.matfilter,1,1)
 	--tohand
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCost(cm.cpcost)
-	e1:SetCountLimit(1)
-	e1:SetCondition(cm.thcon)
-	e1:SetTarget(cm.target)
-	e1:SetOperation(cm.operation)
-	c:RegisterEffect(e1)
 	--immune
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DAMAGE)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_BATTLE_DAMAGE)
@@ -32,8 +20,9 @@ function c91030021.initial_effect(c)
 	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetCode(EVENT_BATTLE_DESTROYED)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetCondition(cm.descon)
 	e3:SetTarget(cm.dstg)
 	e3:SetOperation(cm.dsop)
 	c:RegisterEffect(e3)
@@ -66,12 +55,12 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp 
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_MZONE,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,PLAYER_ALL,LOCATION_MZONE)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,0,LOCATION_ONFIELD)
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		Duel.SendtoGrave(g,REASON_EFFECT)
@@ -115,6 +104,9 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		local op=te:GetOperation()
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	end
+end
+function cm.descon(e,tp,eg,ep,ev,re,r,rp)
+	return  e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function cm.dstg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end

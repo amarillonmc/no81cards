@@ -45,7 +45,7 @@ function c10202929.nttg(e,c)
 end
 --2
 function c10202929.chainop(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetHandler():IsCodeListed(c,22702055) and ep==tp then
+	if re:GetHandler():IsAttribute(ATTRIBUTE_WATER) and ep==tp then
 		Duel.SetChainLimit(c10202929.chainlm)
 	end
 end
@@ -59,9 +59,9 @@ end
 function c10202929.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c10202929.tdfilter(chkc) end
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,2)
-		and Duel.IsExistingTarget(c10202929.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,4,nil) end
+		and Duel.IsExistingTarget(c10202929.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c10202929.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,4,4,nil)
+	local g=Duel.SelectTarget(tp,c10202929.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,3,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
@@ -74,6 +74,6 @@ function c10202929.drop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 	if ct>0 then
 		Duel.BreakEffect()
-		Duel.Draw(tp,1,REASON_EFFECT)
+		Duel.Draw(tp,2,REASON_EFFECT)
 	end
 end

@@ -8,6 +8,7 @@ function c91040030.initial_effect(c)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,m)
+	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
@@ -19,11 +20,29 @@ function c91040030.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_BE_MATERIAL)
-	e3:SetCountLimit(1,m*2)
+	e3:SetCountLimit(1,m+100)
+	e3:SetCost(cm.cost)
 	e3:SetCondition(cm.drcon)
 	e3:SetTarget(cm.drtg)
 	e3:SetOperation(cm.drop)
 	c:RegisterEffect(e3)
+Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
+end
+function cm.counterfilter(c)
+	return c:IsRace(RACE_ZOMBIE)
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTarget(cm.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)  
+end
+function cm.splimit(e,c)
+	return not c:IsRace(RACE_ZOMBIE)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>3 end
@@ -51,7 +70,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local istear=0
 	local acg=g
 	if ct>0  then
-		local mg=g:Filter(cm.filter0,nil,e)	   
+		local mg=g:Filter(cm.filter0,nil,e) 
 		local sg1=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_EXTRA,0,nil,e,tp,mg,nil,chkf)
 		local mg2=nil
 		local sg2=nil
@@ -108,11 +127,12 @@ function cm.fit2(c,e,tp)
 	return c:IsRace(RACE_ZOMBIE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.fit2,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.fit2,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_MZONE)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
+if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local g2=Duel.SelectMatchingCard(tp,cm.fit2,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g2:GetCount()<1 then return end
 		if Duel.SpecialSummon(g2,0,tp,tp,false,false,POS_FACEUP)==1 then

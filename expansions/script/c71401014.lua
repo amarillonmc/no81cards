@@ -59,7 +59,7 @@ end
 function c71401014.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and not c:IsImmuneToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
-		local ct=c:GetOverlayCount()
+		local ct=c:GetOverlayCount()+1
 		if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetCode(EFFECT_CHANGE_TYPE)

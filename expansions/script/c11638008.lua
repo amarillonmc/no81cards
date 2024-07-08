@@ -62,22 +62,29 @@ function cm.activate1(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+function cm.filter2(c)
+	return c:IsCode(11638001) and c:IsFaceup()
+end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ph=Duel.GetCurrentPhase()
-	if chk==0 then return Duel.IsAbleToEnterBP() or (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_MZONE,0,1,nil) and Duel.IsAbleToEnterBP() or (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local tc=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
+	if not tc then return end
+	Duel.HintSelection(Group.FromCards(tc))
 	--extra attack
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_EXTRA_ATTACK)
-	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetTarget(cm.exatktg)
-	e2:SetValue(cm.exatkval)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_EXTRA_ATTACK_MONSTER)
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e1:SetDescription(aux.Stringid(m,4))
+	e1:SetValue(cm.exatkval)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	tc:RegisterEffect(e1)
 	if Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
 		Duel.BreakEffect()
 		local tc=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
@@ -111,7 +118,7 @@ function cm.deffilter(c)
 end
 function cm.exatkval(e)
 	local tp=e:GetHandlerPlayer()
-	local g=Duel.GetMatchingGroup(cm.deffilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	local g=Duel.GetMatchingGroup(cm.deffilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	return #g-1
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
@@ -131,7 +138,7 @@ function cm.target3(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local b=(Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)>0
 		and not Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_MZONE,0,1,nil))
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.filter1(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter1,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) and (Duel.IsAbleToEnterBP() or (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)) and b end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter1,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_MZONE,0,1,nil) and (Duel.IsAbleToEnterBP() or (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)) and b end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELF)
 	local g=Duel.SelectTarget(tp,cm.filter1,tp,LOCATION_MZONE,0,1,1,nil)
@@ -157,15 +164,19 @@ function cm.activate3(e,tp,eg,ep,ev,re,r,rp)
 			Duel.CalculateDamage(c1,c2,true)
 		end
 	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local tc=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
+	if not tc then return end
+	Duel.HintSelection(Group.FromCards(tc))
 	--extra attack
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_EXTRA_ATTACK)
-	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetTarget(cm.exatktg)
-	e2:SetValue(cm.exatkval)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_EXTRA_ATTACK_MONSTER)
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e1:SetDescription(aux.Stringid(m,4))
+	e1:SetValue(cm.exatkval)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	tc:RegisterEffect(e1)
 	if Duel.IsExistingMatchingCard(cm.noatkfilter,tp,0,LOCATION_MZONE,1,c1) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
 		Duel.BreakEffect()
 		local tc=Duel.SelectMatchingCard(tp,cm.noatkfilter,tp,0,LOCATION_MZONE,1,1,c1):GetFirst()

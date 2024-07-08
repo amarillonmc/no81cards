@@ -133,6 +133,7 @@ function s.cptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local te,ceg,cev,cre,cr,crp=c:CheckActivateEffect(false,true,true)
 	Duel.ClearTargetCard()
 	c:CreateEffectRelation(e)
+	e:SetProperty(te:GetProperty())
 	local tg=te:GetTarget()
 	if tg then tg(e,tp,ceg,cev,cre,cr,crp,1) end
 	te:SetLabelObject(e:GetLabelObject())

@@ -54,7 +54,6 @@ function c28366501.activate(e,tp,eg,ep,ev,re,r,rp)
 		local e2=Effect.CreateEffect(e:GetHandler())
 		e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 		e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-		e2:SetCountLimit(1)
 		e2:SetOperation(c28366501.checkop)
 		e2:SetLabel(tc:GetOriginalCode())
 		e2:SetReset(RESET_PHASE+PHASE_END)
@@ -62,14 +61,20 @@ function c28366501.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28366501.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return c:IsLocation(LOCATION_EXTRA) and Duel.GetFlagEffect(tp,28366501)~=0
+	return c:IsLocation(LOCATION_EXTRA) and Duel.GetFlagEffectLabel(c:GetControler(),28366501)==1
 end
-function c28366501.cfilter(c,tp,code)
+function c28366501.cfilter0(c,tp,code)
+	return c:IsSummonPlayer(tp) and c:IsPreviousLocation(LOCATION_EXTRA) and c:GetMaterial():IsExists(Card.IsOriginalCodeRule,1,nil,code)
+end
+function c28366501.cfilter1(c,tp,code)
 	return c:IsSummonPlayer(tp) and c:IsPreviousLocation(LOCATION_EXTRA) and not c:GetMaterial():IsExists(Card.IsOriginalCodeRule,1,nil,code)
 end
 function c28366501.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if eg:IsExists(c28366501.cfilter,1,nil,tp,e:GetLabel()) then
-		Duel.RegisterFlagEffect(tp,28366501,RESET_PHASE+PHASE_END,0,1)
+	if Duel.GetFlagEffectLabel(tp,28366501)==0 then return end
+	if eg:IsExists(c28366501.cfilter0,1,nil,tp,e:GetLabel()) then
+		Duel.RegisterFlagEffect(tp,28366501,RESET_PHASE+PHASE_END,0,1,0)
+	elseif eg:IsExists(c28366501.cfilter1,1,nil,tp,e:GetLabel()) then
+		Duel.RegisterFlagEffect(tp,28366501,RESET_PHASE+PHASE_END,0,1,1)
 	end
 end
 function c28366501.thcon(e,tp,eg,ep,ev,re,r,rp)
@@ -89,17 +94,49 @@ function c28366501.thop(e,tp,eg,ep,ev,re,r,rp)
 		{b2,aux.Stringid(28366501,1)})
 	if op==1 then
 		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_UPDATE_LEVEL)
-		e1:SetTargetRange(LOCATION_MZONE,0)
-		e1:SetValue(1)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_ADJUST)
+		e1:SetCondition(c28366501.adcon)
 		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
-		e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x284))
+		e1:SetOperation(c28366501.adop)
+		e1:SetLabelObject(c)
 		Duel.RegisterEffect(e1,tp)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_UPDATE_RANK)
-		Duel.RegisterEffect(e2,tp)
+		table.insert(c28366501.et,{e1})
 	else
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
 	end
+end
+function c28366501.adcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c28366501.adf,tp,LOCATION_MZONE,0,1,nil,e)
+end
+function c28366501.adop(e,tp,eg,ep,ev,re,r,rp)
+	local c,g= e:GetLabelObject(),Duel.GetMatchingGroup(c28366501.adf,tp,LOCATION_MZONE,0,nil,e)
+	for xc in aux.Next(g) do
+		local x
+		if xc:GetLevel()>0 then x=EFFECT_UPDATE_LEVEL
+		elseif xc:GetRank()>0 then x=EFFECT_UPDATE_RANK end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(x)
+		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+		e1:SetValue(1)
+		xc:RegisterEffect(e1)
+		table.insert(c28366501.get(e),xc)
+	end
+end
+c28366501.et = { }
+function c28366501.get(v)
+	for _,i in ipairs(c28366501.et) do
+		if i[1]==v then return i end
+	end
+end
+function c28366501.ck(e,c)
+	local t = c28366501.get(e)
+	for _,v in ipairs(t) do
+		if v == c then return false end
+	end
+	return true
+end
+function c28366501.adf(c,e)
+	return c:IsSetCard(0x284) and (c:GetLevel()>0 or c:GetRank()>0) and c28366501.ck(e,c)
 end
