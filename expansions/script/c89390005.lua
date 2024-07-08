@@ -55,7 +55,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
             Duel.ShuffleHand(tp)
             Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
         else
-            Duel.SendtoGrave(Duel.GetFieldGroup(p,LOCATION_HAND,0),REASON_EFFECT)
+            Duel.SendtoGrave(Duel.GetFieldGroup(tp,LOCATION_HAND,0),REASON_EFFECT)
         end
     end
 end

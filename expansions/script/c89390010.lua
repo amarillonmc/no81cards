@@ -30,10 +30,10 @@ function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
         Duel.ShuffleHand(tp)
         return
     end
-    if Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c,e,tp,rc) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+    if Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp,rc) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
         Duel.BreakEffect()
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-        local tc=Duel.SelectMatchingCard(tp,cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,c,e,tp,rc):GetFirst()
+        local tc=Duel.SelectMatchingCard(tp,cm.spfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp,rc):GetFirst()
         if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
             local e1=Effect.CreateEffect(c)
             e1:SetType(EFFECT_TYPE_SINGLE)

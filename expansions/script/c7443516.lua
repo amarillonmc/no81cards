@@ -13,6 +13,7 @@ function s.initial_effect(c)
 	local e0=e1:Clone()
 	e0:SetType(EFFECT_TYPE_QUICK_O)
 	e0:SetRange(LOCATION_HAND)
+	e0:SetValue(id)
 	e0:SetHintTiming(TIMING_BATTLE_PHASE+TIMING_BATTLE_START+TIMING_BATTLE_END)
 	e0:SetCondition(s.condition)
 	c:RegisterEffect(e0)
@@ -73,7 +74,8 @@ function s.actarget(e,te,tp)
 end
 function s.actarget2(e,te,tp)
 	local tc=te:GetHandler()
-	if tc:GetOriginalCode()==id and te:IsHasType(EFFECT_TYPE_QUICK_O) and tc:IsLocation(LOCATION_HAND) and tc:IsType(TYPE_SPELL) then
+	if tc:GetOriginalCode()==id and te:GetValue()==id --and te:IsHasType(EFFECT_TYPE_QUICK_O) 
+		and tc:IsLocation(LOCATION_HAND) and tc:IsType(TYPE_SPELL) then
 		--Debug.Message("0")
 		e:SetLabelObject(te)
 		return true
