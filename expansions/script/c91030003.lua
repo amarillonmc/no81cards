@@ -32,6 +32,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if op==1 then
 	local g=Duel.SelectTarget(tp,aux.NegateEffectMonsterFilter,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.HintSelection(g)
+	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e:SetCategory(CATEGORY_DISABLE)
 	if Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_QUICKPLAY)>=3 then
 		e:SetCategory(CATEGORY_DISABLE+CATEGORY_CONTROL) end

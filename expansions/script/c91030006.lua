@@ -38,6 +38,7 @@ local spchk=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	if op==1 then
 	local g=Duel.SelectTarget(tp,cm.filter,tp,0,LOCATION_GRAVE,1,1,nil,e,tp,spchk)
 	Duel.HintSelection(g)
+	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_ACTION+CATEGORY_GRAVE_SPSUMMON)
 	e:GetHandler():RegisterFlagEffect(1,RESET_PHASE+PHASE_END,0,1)
 	elseif op==2 then
@@ -61,17 +62,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			and (not tc:IsAbleToRemove() or Duel.SelectYesNo(tp,aux.Stringid(m,3))) then
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 			local fid=e:GetHandler():GetFieldID()
-		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,fid)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetCountLimit(1)
-		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-		e1:SetLabel(fid)
-		e1:SetLabelObject(tc)
-		e1:SetCondition(cm.tgcon)
-		e1:SetOperation(cm.tgop)
-		Duel.RegisterEffect(e1,tp)
+		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,fid)		
 		else
 			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 		end
@@ -86,6 +77,16 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	   if #g>0 then Duel.LinkSummon(tp,g:GetFirst(),nil) end
 	c:ResetFlagEffect(3)
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetCountLimit(1)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetLabel(fid)
+		e1:SetLabelObject(tc)
+		e1:SetCondition(cm.tgcon)
+		e1:SetOperation(cm.tgop)
+		Duel.RegisterEffect(e1,tp)
 end
 function cm.lfilter(c)
 	return c:IsLinkSummonable(nil)
