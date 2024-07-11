@@ -118,11 +118,16 @@ function c28366501.adop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(x)
-		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
 		e1:SetValue(1)
+		e1:SetCondition(c28366501.efcon)
+		e1:SetOwnerPlayer(tp)
 		xc:RegisterEffect(e1)
 		table.insert(c28366501.get(e),xc)
 	end
+end
+function c28366501.efcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetControler()==e:GetOwnerPlayer()
 end
 c28366501.et = { }
 function c28366501.get(v)

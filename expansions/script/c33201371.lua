@@ -37,7 +37,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.ft(c)
-	return c.VHisc_HYZQ and not c:IsCode(33201371) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),nil,TYPES_NORMAL_TRAP_MONSTER,1500,1500,4,RACE_ROCK,ATTRIBUTE_EARTH)
+	return c.VHisc_HYZQ and c:IsType(TYPE_SPELL) and not c:IsCode(33201371) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),nil,TYPES_NORMAL_TRAP_MONSTER,1500,1500,4,RACE_ROCK,ATTRIBUTE_EARTH)
 end
 
 --Release effect
