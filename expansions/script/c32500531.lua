@@ -17,17 +17,9 @@ function c32500531.initial_effect(c)
 	--atkup
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_UPDATE_ATTACK)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetValue(1000)
+	e2:SetCode(EFFECT_MATERIAL_CHECK)
+	e2:SetValue(c32500531.matcheck)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_MATERIAL_CHECK)
-	e3:SetValue(c32500531.valcheck)
-	e3:SetLabelObject(e2)
-	c:RegisterEffect(e3)
 	--special summon
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(32500529,0))
@@ -42,18 +34,16 @@ end
 function c32500531.actcon(e)
 	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()
 end
-function c32500531.atkcon(e)
-	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
-end
-function c32500531.mfilter(c)
-	return c:GetOriginalRace()~=TYPE_SYNCHRO
-end
-function c32500531.valcheck(e,c)
-	local g=c:GetMaterial()
-	if g:IsExists(c32500531.mfilter,1,nil) then
-		e:GetLabelObject():SetLabel(1)
-	else
-		e:GetLabelObject():SetLabel(0)
+function c32500531.matcheck(e,c)
+	local mg=c:GetMaterial()
+	if mg:GetCount()>0 and mg:IsExists(Card.IsType,1,nil,TYPE_SYNCHRO) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(1000)
+		c:RegisterEffect(e1)
 	end
 end
 function c32500531.filter(c,e,tp)
