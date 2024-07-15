@@ -71,18 +71,32 @@ function cm.ninja0filter(c)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local val=Duel.GetMatchingGroupCount(cm.ninja0filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)*300
+	local val=Duel.GetMatchingGroupCount(cm.ninja0filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)*400
 	local x=Duel.Recover(p,val,REASON_EFFECT)
 	if x<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local a=Duel.SelectMatchingCard(tp,cm.ninjafilter,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
 	if not a then return end
+	local atk1=a:GetAttack()
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetValue(x)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	a:RegisterEffect(e1)
+	local atk2=a:GetAttack()
+	if atk2>atk1 then
+		local val2=math.floor((atk2-atk1)/1000)
+		local count=Duel.GetDrawCount(tp)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_DRAW_COUNT)
+		e1:SetTargetRange(1,0)
+		e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
+		e1:SetValue(count+val2)
+		Duel.RegisterEffect(e1,tp)
+	end
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local de,dp=Duel.GetChainInfo(ev,CHAININFO_DISABLE_REASON,CHAININFO_DISABLE_PLAYER)

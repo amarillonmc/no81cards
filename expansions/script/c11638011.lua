@@ -12,24 +12,53 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	--ninja all
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_ADD_SETCODE)
-	e4:SetRange(LOCATION_FZONE)
-	e4:SetTargetRange(0,LOCATION_MZONE+LOCATION_GRAVE)
-	e4:SetTarget(aux.TargetBoolFunction(Card.IsFaceup))
-	e4:SetValue(0x2b)
-	c:RegisterEffect(e4)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_ADD_SETCODE)
+	e3:SetRange(LOCATION_FZONE)
+	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e3:SetTargetRange(0,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_EXTRA)
+	e3:SetTarget(cm.njfilter)
+	e3:SetValue(0x2b)
+	c:RegisterEffect(e3)
 	--destroy
 	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_ATKCHANGE)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	--e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_ATKCHANGE)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetRange(LOCATION_FZONE)
-	e4:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e4:SetCode(EVENT_CUSTOM+11638011)
 	e4:SetCondition(cm.atkcon)
-	e4:SetTarget(cm.atktg)
+	--e4:SetTarget(cm.atktg)
 	e4:SetOperation(cm.atkop)
 	c:RegisterEffect(e4)
+	if not cm.global_check then
+		cm.global_check=true
+		cm[0]=0
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
+		ge1:SetCondition(cm.regcon)
+		ge1:SetOperation(cm.regop)
+		Duel.RegisterEffect(ge1,0)
+		_NinJaCalculateDamage=Duel.CalculateDamage
+		function Duel.CalculateDamage(c1,c2,bool)
+			if not bool then bool=false end
+			_NinJaCalculateDamage(c1,c2,bool)
+			Duel.RaiseEvent(Group.FromCards(c1,c2),EVENT_CUSTOM+11638011,nil,0,0,0,0)
+		end
+	end
+end
+function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
+	local a,b=Duel.GetBattleMonster(tp)
+	return ((a and a:IsCode(11638001)) or (b and b:IsCode(11638001)))
+	--return cm[0]==1
+end
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	local a,b=Duel.GetBattleMonster(tp)
+	Duel.RaiseEvent(Group.FromCards(a,b),EVENT_CUSTOM+11638011,e,0,0,0,0)
+end
+function cm.njfilter(e,c)
+	return c:IsFaceup() or c:IsLocation(LOCATION_EXTRA)
 end
 function cm.thfilter(c)
 	return aux.IsCodeListed(c,11638001) and c:IsAbleToHand()
@@ -61,7 +90,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetAttacker():IsCode(11638001)
+	return eg:IsExists(Card.IsCode,1,nil,11638001)
 end
 function cm.th2filter(c)
 	return aux.IsCodeListed(c,11638001) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
@@ -72,14 +101,24 @@ function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local a=Duel.GetAttacker()
-	if not a:IsRelateToEffect(e) then return end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetValue(300)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	a:RegisterEffect(e1)
+	Duel.Hint(HINT_CARD,1-tp,11638011)
+	local a,b=Duel.GetBattleMonster(tp)
+	if a and a:IsCode(11638001) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(300)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		a:RegisterEffect(e1)
+	end
+	if b and b:IsCode(11638001) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(300)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		b:RegisterEffect(e1)
+	end
 	if Duel.GetFlagEffect(tp,11638011)<2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,cm.th2filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)

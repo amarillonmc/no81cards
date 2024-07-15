@@ -5,13 +5,11 @@ function s.initial_effect(c)
 	--change
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,1))
-	e1:SetCategory(CATEGORY_CONTROL+CATEGORY_DISABLE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_NO_TURN_RESET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,id)
-	e1:SetCost(s.crcost)
 	e1:SetCondition(s.crcon)
 	e1:SetTarget(s.crtg)
 	e1:SetOperation(s.crop)
@@ -36,43 +34,32 @@ end
 function s.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_EFFECT) and not c:IsDisabled()
 end
-function s.costfilter(c,tp)
-	return Duel.GetMZoneCount(tp,c,tp,LOCATION_REASON_CONTROL)>0
-end
-function s.crcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,s.costfilter,1,nil,tp) end
-	local g=Duel.SelectReleaseGroup(tp,s.costfilter,1,1,nil,tp)
-	Duel.Release(g,REASON_COST)
-end
 function s.crtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return re:GetHandler():IsControlerCanBeChanged(true) and Duel.GetLocationCount(tp,LOCATION_MZONE)>=0 end
-	e:SetCategory(CATEGORY_DISABLE+CATEGORY_CONTROL)
+	if chk==0 then return re:GetHandler():IsAbleToGrave() and re:GetHandler():IsRelateToEffect(re) end
 end
 function s.crop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Group.CreateGroup()
+	Duel.ChangeTargetCard(ev,g)
+	Duel.ChangeChainOperation(ev,s.repop)
+end
+function s.lvcheck(c)
+	return c:IsFaceup() and c:IsLevelAbove(1) and not c:IsLevel(10)
+end
+function s.repop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=re:GetHandler()
-	if tc:IsFaceup() and tc:IsLocation(LOCATION_MZONE) and tc:IsType(TYPE_MONSTER) and not tc:IsDisabled() then
-		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetValue(RESET_TURN_SET)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e2)
-		if tc:IsControler(1-tp) and tc:IsControlerCanBeChanged() then
-			if Duel.GetControl(tc,tp,PHASE_END,1) and tc:IsLevelAbove(1) and not tc:IsLevel(10) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-				Duel.BreakEffect()
-				local e3=Effect.CreateEffect(c)
-				e3:SetType(EFFECT_TYPE_SINGLE)
-				e3:SetCode(EFFECT_CHANGE_LEVEL)
-				e3:SetValue(10)
-				e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-				tc:RegisterEffect(e3)
+	if c:IsRelateToEffect(re) then
+		if Duel.SendtoGrave(c,REASON_EFFECT) and Duel.IsExistingMatchingCard(s.lvcheck,tp,0,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(1-tp,aux.Stringid(id,3)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,4))
+			local tg=Duel.SelectMatchingCard(tp,s.lvcheck,tp,0,LOCATION_MZONE,1,1,nil)
+			local tc=tg:GetFirst()
+			if tc then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_CHANGE_LEVEL)
+				e1:SetValue(10)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1)
 			end
 		end
 	end

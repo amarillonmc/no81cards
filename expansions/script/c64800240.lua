@@ -33,24 +33,32 @@ function s.chcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()~=LOCATION_ONFIELD
 end
 function s.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return re:GetHandler():IsCanBeSpecialSummoned(re,0,rp,false,false) and re:GetHandler():IsRelateToEffect(re) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	if chk==0 then return re:GetHandler():IsAbleToDeck() and re:GetHandler():IsRelateToEffect(re) end
 end
 function s.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
 	Duel.ChangeTargetCard(ev,g)
 	Duel.ChangeChainOperation(ev,s.repop)
 end
+function s.lvcheck(c)
+	return c:IsFaceup() and c:IsLevelAbove(1) and not c:IsLevel(10)
+end
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 then
-		if Duel.SpecialSummon(c,0,tp,1-tp,false,false,POS_FACEUP) and c:IsLevelAbove(1) and not c:IsLevel(10) and Duel.SelectYesNo(1-tp,aux.Stringid(id,3)) then
+	if c:IsRelateToEffect(re) then
+		if Duel.SendtoDeck(c,nil,2,REASON_EFFECT) and Duel.IsExistingMatchingCard(s.lvcheck,tp,0,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(1-tp,aux.Stringid(id,3)) then
 			Duel.BreakEffect()
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CHANGE_LEVEL)
-			e1:SetValue(10)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-			c:RegisterEffect(e1)
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,4))
+			local tg=Duel.SelectMatchingCard(tp,s.lvcheck,tp,0,LOCATION_MZONE,1,1,nil)
+			local tc=tg:GetFirst()
+			if tc then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_CHANGE_LEVEL)
+				e1:SetValue(10)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1)
+			end
 		end
 	end
 end

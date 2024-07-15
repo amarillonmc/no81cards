@@ -72,8 +72,13 @@ end
 function c11533701.srfil(c)  
 	return c:IsAbleToHand() and c:IsSetCard(0xb4)   
 end 
-function c11533701.rrfil(c)
-	return c:IsReleasable() and c:IsType(TYPE_MONSTER) 
+function c11533701.rrfil(c,tp)
+	local re=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
+	local val=nil
+	if re then
+		val=re:GetValue()
+	end
+	return c:IsReleasable() or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_HAND) and (val==nil or val(re,c)~=true))
 end 
 function c11533701.rrttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11533701.srfil,tp,LOCATION_DECK,0,1,nil) end 
@@ -86,16 +91,16 @@ function c11533701.rrtop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:Select(tp,1,1,nil) 
 		Duel.SendtoHand(sg,tp,REASON_EFFECT) 
 		Duel.ConfirmCards(1-tp,sg) 
-		if Duel.IsExistingMatchingCard(c11533701.rrfil,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11533701,0)) then 
+		if Duel.IsExistingMatchingCard(c11533701.rrfil,tp,LOCATION_HAND,0,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(11533701,0)) then 
 		Duel.BreakEffect() 
-		local tc=Duel.SelectMatchingCard(tp,c11533701.rrfil,tp,LOCATION_HAND,0,1,1,nil):GetFirst()  
-		Duel.Release(tc,REASON_EFFECT)   
+		local tc=Duel.SelectMatchingCard(tp,c11533701.rrfil,tp,LOCATION_HAND,0,1,1,nil,tp):GetFirst()  
+		Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RELEASE) 
 		end 
 	end 
-end 
+end
 function c11533701.rmcon(e,tp,eg,ep,ev,re,r,rp) 
-	local mg=e:GetHandler():GetMaterial()
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and mg and mg:FilterCount(Card.IsSetCard,nil,0xb4)==mg:GetCount()  
+	--local mg=e:GetHandler():GetMaterial()
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) --and mg and mg:FilterCount(Card.IsSetCard,nil,0xb4)==mg:GetCount()  
 end
 function c11533701.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_DECK,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_EXTRA,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_GRAVE,0,1,nil) end 

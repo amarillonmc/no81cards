@@ -1,8 +1,10 @@
 --业狱火 障目侍
 local s,id,o=GetID()
 function s.initial_effect(c)
+	c:SetSPSummonOnce(id)
+	aux.AddCodeList(c,12844101)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_FIRE),4,3,s.ovfilter,aux.Stringid(id,0),3,s.xyzop)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_FIRE),4,3,s.ovfilter,aux.Stringid(id,0),3)
 	c:EnableReviveLimit()
 	--hand link
 	local e1=Effect.CreateEffect(c)
@@ -21,7 +23,7 @@ function s.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCountLimit(1,id+100)
-	e5:SetCondition(s.thcon)
+	--e5:SetCondition(s.thcon)
 	e5:SetCost(s.thcost)
 	e5:SetTarget(s.thtg)
 	e5:SetOperation(s.thop)
@@ -45,7 +47,7 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.ovfilter(c)
-	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsType(TYPE_LINK)
+	return c:IsFaceup() and c:IsSetCard(0xa77) and c:IsType(TYPE_LINK)
 end
 function s.xyzop(e,tp,chk)
 	if chk==0 then 

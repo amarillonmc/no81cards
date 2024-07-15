@@ -314,7 +314,7 @@ function cm.spcop(e,tp,eg,ep,ev,re,r,rp,c)
 	if not sc then return end
 	if c:IsFacedown() then Duel.ConfirmCards(1-tp,Group.FromCards(c)) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,2))
-	Duel.ConfirmCards(1-tp,Group.FromCards(sc))
+	if not sc:IsOnField() then Duel.ConfirmCards(1-tp,Group.FromCards(sc)) end
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE)
 	e5:SetCode(EFFECT_SUMMON_COST)

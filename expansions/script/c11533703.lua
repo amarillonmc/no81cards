@@ -2,6 +2,12 @@
 function c11533703.initial_effect(c)
 	--spirit return
 	aux.EnableSpiritReturn(c,EVENT_SUMMON_SUCCESS,EVENT_FLIP)
+	--ritual level
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_RITUAL_LEVEL)
+	e0:SetValue(c11533703.rlevel)
+	c:RegisterEffect(e0)
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
@@ -32,6 +38,11 @@ function c11533703.initial_effect(c)
 	e3:SetOperation(c11533703.setop)
 	c:RegisterEffect(e3)
 end
+function c11533703.rlevel(e,c)
+	local lv=aux.GetCappedLevel(e:GetHandler())
+	local clv=c:GetLevel()
+	return (lv<<16)+clv
+end
 function c11533703.thfilter(c)
 	return c:IsSetCard(0xb4) and c:IsAbleToHand()
 end
@@ -46,15 +57,15 @@ function c11533703.thop(e,tp,eg,ep,ev,re,r,rp)
 	if tc then 
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc) 
-		if tc:IsType(TYPE_MONSTER) then 
+		--if tc:IsType(TYPE_MONSTER) then 
 			--ritual level
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_RITUAL_LEVEL)
-			e2:SetValue(c11533703.rlevel) 
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END) 
-			c:RegisterEffect(e2)
-		end 
+			--local e2=Effect.CreateEffect(c)
+			--e2:SetType(EFFECT_TYPE_SINGLE)
+			--e2:SetCode(EFFECT_RITUAL_LEVEL)
+			--e2:SetValue(c11533703.rlevel) 
+			--e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END) 
+			--c:RegisterEffect(e2)
+		--end 
 	end
 end 
 function c11533703.rlevel(e,c)

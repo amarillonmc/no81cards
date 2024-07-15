@@ -30,7 +30,7 @@ function s.xyzcheck(g)
 	return g:GetClassCount(Card.GetLevel)==1
 end
 function s.sdcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ) and e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	if Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)==0 then return false end
 	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
 	ct=e:GetHandler():RemoveOverlayCard(tp,1,ct,REASON_COST)
@@ -40,10 +40,21 @@ function s.sdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 end
 end
 function s.sdop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local at=e:GetLabel()
 	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
 	if at<=ct then
-		Duel.SortDecktop(tp,tp,at)
+		Duel.ConfirmDecktop(1-tp,at)
+		local g=Duel.GetDecktopGroup(1-tp,at)
+		if not c:IsRelateToEffect(e) then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+		Duel.PreserveSelectDeckSequence(true)
+		local sg=g:FilterSelect(tp,s.ovfilter,1,1,nil,tp)
+		Duel.PreserveSelectDeckSequence(false)
+		if #sg>0 then
+			Duel.DisableShuffleCheck(true)
+			Duel.Overlay(c,sg)
+		end
 	end
 end
 function s.mttg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -67,9 +78,8 @@ function s.mtop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Overlay(c,g)
 		if xc:IsCode(ac) and Duel.IsExistingMatchingCard(s.ovfilter,tp,0,LOCATION_ONFIELD,1,nil,e:GetHandler()) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 			local sg=Duel.GetMatchingGroup(s.ovfilter,tp,0,LOCATION_ONFIELD,c)
-			local os=c:GetOverlayCount()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-			local tg=sg:Select(tp,1,os,nil)
+			local tg=sg:Select(tp,1,1,nil)
 			Duel.HintSelection(tg)
 			local tc=tg:GetFirst()
 			if not tc:IsImmuneToEffect(e) then
