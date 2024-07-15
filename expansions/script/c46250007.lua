@@ -51,9 +51,9 @@ function c46250007.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
     local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
     local g=nil
     if ft>-1 then
-        g=Duel.GetMatchingGroup(c46250007.desfilter,tp,LOCATION_ONFIELD,0,c)
+        g=Duel.GetMatchingGroup(c46250007.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
     else
-        g=Duel.GetMatchingGroup(c46250007.desfilter,tp,LOCATION_MZONE,0,c)
+        g=Duel.GetMatchingGroup(c46250007.desfilter,tp,LOCATION_MZONE,0,nil)
     end
     if chk==0 then return ft>-2 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
         and g:GetCount()>=2
@@ -68,9 +68,9 @@ function c46250007.spop(e,tp,eg,ep,ev,re,r,rp)
     local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
     local g=nil
     if ft>-1 then
-        g=Duel.GetMatchingGroup(c46250007.desfilter,tp,LOCATION_ONFIELD,0,c)
+        g=Duel.GetMatchingGroup(c46250007.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
     else
-        g=Duel.GetMatchingGroup(c46250007.desfilter2,tp,LOCATION_MZONE,0,c)
+        g=Duel.GetMatchingGroup(c46250007.desfilter,tp,LOCATION_MZONE,0,nil)
     end
     if g:GetCount()<2 then return end
     local g1=nil

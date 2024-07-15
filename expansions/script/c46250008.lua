@@ -18,11 +18,10 @@ function c46250008.initial_effect(c)
     e2:SetOperation(c46250008.spop)
     c:RegisterEffect(e2)
     local e4=Effect.CreateEffect(c)
-    e1:SetDescription(aux.Stringid(46250008,0))
     e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN+CATEGORY_DESTROY+CATEGORY_REMOVE)
     e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
     e4:SetCode(EVENT_SUMMON_SUCCESS)
-    e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+    e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
     e4:SetTarget(c46250008.tsptg)
     e4:SetOperation(c46250008.tspop)
     c:RegisterEffect(e4)
@@ -30,7 +29,6 @@ function c46250008.initial_effect(c)
     e5:SetCode(EVENT_SPSUMMON_SUCCESS)
     c:RegisterEffect(e5)
     local e3=Effect.CreateEffect(c)
-    e3:SetDescription(aux.Stringid(46250008,1))
     e3:SetCategory(CATEGORY_DESTROY)
     e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
     e3:SetCode(EVENT_DESTROYED)
@@ -46,7 +44,7 @@ end
 function c46250008.spcon(e,tp,eg,ep,ev,re,r,rp)
     local a=Duel.GetAttacker()
     local d=Duel.GetAttackTarget()
-    return a and a:IsControler(tp) and a:IsSetCard(0xfc0) or d and d:IsControler(tp) and d:IsSetCard(0xfc0)
+    return a and a:IsSetCard(0xfc0) or d and d:IsSetCard(0xfc0)
 end
 function c46250008.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
@@ -61,22 +59,47 @@ function c46250008.spop(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function c46250008.spfilter(c,atk)
-    return c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsAttackBelow(atk) and c:IsDestructable() and c:IsAbleToRemove()
+    return c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:GetAttack()<atk and c:IsDestructable() and c:IsAbleToRemove()
+end
+function c46250008.mzfilter(c,tp)
+    return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:GetSequence()<5
 end
 function c46250008.tsptg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(c46250008.spfilter,tp,LOCATION_MZONE+LOCATION_EXTRA,LOCATION_MZONE+LOCATION_EXTRA,1,nil,e:GetHandler():GetAttack()) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+    if chk==0 then return Duel.IsExistingMatchingCard(c46250008.spfilter,tp,LOCATION_MZONE+LOCATION_EXTRA,LOCATION_MZONE+LOCATION_EXTRA,1,nil,e:GetHandler():GetAttack())
         and Duel.IsPlayerCanSpecialSummonMonster(tp,46250001,0x1fc0,0x4011,1000,0,3,RACE_WYRM,ATTRIBUTE_DARK)end
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
     Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c46250008.tspop(e,tp,eg,ep,ev,re,r,rp)
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-    local n=math.min(Duel.GetLocationCount(tp,LOCATION_MZONE),2)
+    local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+    local n=2
     if Duel.IsPlayerAffectedByEffect(tp,59822133) then n=1 end
-    local g=Duel.SelectMatchingCard(tp,c46250008.spfilter,tp,LOCATION_MZONE+LOCATION_EXTRA,LOCATION_MZONE+LOCATION_EXTRA,1,n,nil,e:GetHandler():GetAttack())
+    local g=Duel.GetMatchingGroup(c46250008.spfilter,tp,LOCATION_MZONE+LOCATION_EXTRA,LOCATION_MZONE+LOCATION_EXTRA,nil,e:GetHandler():GetAttack())
     if not g then return end
-    n=math.min(Duel.Destroy(g,REASON_EFFECT,LOCATION_REMOVED),n)
+    local dg=nil
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+    if ft==1 then
+        dg=g:Select(tp,1,1,nil)
+        local tc=dg:GetFirst()
+        if n==2 and g:IsExists(c46250008.mzfilter,1,tc,tp)
+            and Duel.SelectYesNo(tp,aux.Stringid(46250008,0)) then
+            if c46250008.mzfilter(tc,tp) then
+                Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+                local dg2=g:Select(tp,1,1,tc)
+                dg:Merge(dg2)
+            else
+                Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+                local dg2=g:FilterSelect(tp,c46250008.mzfilter,1,1,tc)
+                dg:Merge(dg2)
+            end
+        end
+    elseif ft==0 then
+        dg=g:FilterSelect(tp,c46250008.mzfilter,1,n,nil)
+    else
+        dg=g:Select(tp,1,n,nil)
+    end
+    n=Duel.Destroy(dg,REASON_EFFECT,LOCATION_REMOVED)
     if n>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,46250001,0x1fc0,0x4011,1000,0,3,RACE_WYRM,ATTRIBUTE_DARK) then
         Duel.BreakEffect()
         for i=1,n do

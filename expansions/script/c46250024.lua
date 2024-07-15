@@ -1,7 +1,7 @@
 --骸星装-端枪
 function c46250024.initial_effect(c)
     c:EnableReviveLimit()
-    c:SetUniqueOnField(1,0,46250024,LOCATION_MZONE)
+    c:SetUniqueOnField(1,0,46250024)
     aux.AddSynchroMixProcedure(c,c46250024.matfilter1,nil,nil,aux.NonTuner(nil),1,99)
     local e5=Effect.CreateEffect(c)
     e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -37,11 +37,11 @@ function c46250024.chainop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     local atk=c:GetAttack()
     if re:GetHandler():IsSetCard(0xfc0) then
-        Duel.SetChainLimit(function(e,rp,np) return tp==rp or e:GetHandler():GetBaseAttack()>atk end)
+        Duel.SetChainLimit(function(e,rp,np) return tp==rp or e:GetHandler():GetBaseAttack()>=atk end)
     end
 end
 function c46250024.attg(e,c)
-    return e:GetHandler():IsAttackAbove(c:GetBaseAttack())
+    return e:GetHandler():GetAttack()>c:GetBaseAttack()
 end
 function c46250024.atlimit(e,c)
     return c~=e:GetHandler()
@@ -50,7 +50,7 @@ function c46250024.tgfilter(c)
     return bit.band(c:GetSummonLocation(),LOCATION_EXTRA)==LOCATION_EXTRA
 end
 function c46250024.tgcon(e,tp,eg,ep,ev,re,r,rp)
-    return not eg:IsContains(e:GetHandler()) and eg:IsExists(c46250024.tgfilter,1,nil)
+    return eg:IsExists(c46250024.tgfilter,1,e:GetHandler())
 end
 function c46250024.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
@@ -58,7 +58,7 @@ function c46250024.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.Release(c,REASON_COST)
 end
 function c46250024.spfilter(c,e,tp)
-    return c:IsSetCard(0x1fc0) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsLevel(6)
+    return c:IsSetCard(0x1fc0) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c46250024.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then 
@@ -117,7 +117,11 @@ function c46250024.tgop(e,tp,eg,ep,ev,re,r,rp)
         e1:SetType(EFFECT_TYPE_FIELD)
         e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
         e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-        e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
+        if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()<=PHASE_STANDBY then
+            e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2)
+        else
+            e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
+        end
         e1:SetLabelObject(sg1)
         e1:SetTargetRange(1,0)
         e1:SetTarget(c46250024.sumlimit)
@@ -126,7 +130,11 @@ function c46250024.tgop(e,tp,eg,ep,ev,re,r,rp)
         e2:SetType(EFFECT_TYPE_FIELD)
         e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
         e2:SetCode(EFFECT_CANNOT_ACTIVATE)
-        e2:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
+        if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()<=PHASE_STANDBY then
+            e2:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2)
+        else
+            e2:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
+        end
         e2:SetLabelObject(sg1)
         e2:SetTargetRange(1,0)
         e2:SetValue(c46250024.tgval)

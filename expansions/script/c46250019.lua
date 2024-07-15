@@ -24,7 +24,7 @@ function c46250019.initial_effect(c)
     c:RegisterEffect(e3)
 end
 function c46250019.lkfilter0(c,e,tp)
-    return c:IsFaceup() and c46250019.lkfilter2(c) and Duel.IsExistingMatchingCard(c46250019.lkfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)
+    return c:IsFaceup() and c:IsSetCard(0x1fc0) and c:IsAbleToGrave() and Duel.IsExistingMatchingCard(c46250019.lkfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)
 end
 function c46250019.lkfilter(c,e,tp,mc)
     return c:IsSetCard(0x2fc0) and c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,true,true) and c:GetLink()>=2 and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0 and Duel.IsExistingMatchingCard(c46250019.lkfilter2,tp,LOCATION_DECK,0,c:GetLink()-1,nil)
@@ -34,9 +34,11 @@ function c46250019.lkfilter2(c)
 end
 function c46250019.lktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return false end
-    if chk==0 then return Duel.IsExistingTarget(c46250019.lkfilter0,tp,LOCATION_MZONE,0,1,nil,e,tp) end
-    local g=Duel.SelectTarget(tp,c46250019.lkfilter0,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
-    Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,e:GetHandler():GetLink(),tp,LOCATION_MZONE+LOCATION_DECK)
+    if chk==0 then return Duel.IsExistingTarget(c46250019.lkfilter0,tp,LOCATION_ONFIELD,0,1,nil,e,tp) end
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+    local g=Duel.SelectTarget(tp,c46250019.lkfilter0,tp,LOCATION_ONFIELD,0,1,1,nil,e,tp)
+    Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,g,0,0)
+    Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c46250019.lkop(e,tp,eg,ep,ev,re,r,rp)
@@ -52,9 +54,9 @@ function c46250019.lkop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
     local tg=Duel.SelectMatchingCard(tp,c46250019.lkfilter2,tp,LOCATION_DECK,0,tc:GetLink()-1,tc:GetLink()-1,nil)
     if not tg then return end
-    tg:AddCard(fc)
-    if Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)==tg:GetCount() then
+    if Duel.SendtoGrave(fc,REASON_SPSUMMON+REASON_MATERIAL)>0 and Duel.Remove(tg,POS_FACEUP,REASON_SPSUMMON+REASON_MATERIAL)==tg:GetCount() then
         Duel.SpecialSummon(tc,SUMMON_TYPE_LINK,tp,tp,true,true,POS_FACEUP)
+        tg:AddCard(fc)
         tc:SetMaterial(tg)
         tc:CompleteProcedure()
     end

@@ -85,7 +85,7 @@ function c46250012.negcon(e,tp,eg,ep,ev,re,r,rp)
     return eg and eg:IsExists(Card.IsSetCard,1,nil,0x1fc0) and re:GetActivateLocation()==LOCATION_GRAVE and Duel.IsChainNegatable(ev)
 end
 function c46250012.rfilter(c)
-    return c:IsSetCard(0xfc0) and c:IsAbleToDeckOrExtraAsCost()
+    return c:IsSetCard(0xfc0) and c:IsAbleToDeckAsCost()
 end
 function c46250012.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()

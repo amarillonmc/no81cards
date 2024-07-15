@@ -1,8 +1,9 @@
 --骸星装-端杯
 function c46250022.initial_effect(c)
+    aux.AddCodeList(c,46250022)
     aux.EnablePendulumAttribute(c)
     c:EnableReviveLimit()
-    c:SetUniqueOnField(1,0,46250022,LOCATION_MZONE)
+    c:SetUniqueOnField(1,0,46250022)
     local e1=Effect.CreateEffect(c)
     e1:SetDescription(aux.Stringid(46250022,0))
     e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_RELEASE)
@@ -24,7 +25,7 @@ function c46250022.initial_effect(c)
     e5:SetCategory(CATEGORY_REMOVE)
     e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
     e5:SetCode(EVENT_SUMMON_SUCCESS)
-    e5:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+    e5:SetProperty(EFFECT_FLAG_DELAY)
     e5:SetRange(LOCATION_MZONE)
     e5:SetCountLimit(1,46250022)
     e5:SetTarget(c46250022.tgtg)
@@ -118,14 +119,15 @@ function c46250022.lvop(e,tp,eg,ep,ev,re,r,rp)
     Duel.RegisterEffect(e2,tp)
 end
 function c46250022.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local g=eg:Filter(Card.IsAbleToRemove,nil)
-    if chk==0 then return not eg:IsContains(e:GetHandler()) and g and g:GetCount()>0 and Duel.CheckReleaseGroup(tp,aux.TRUE,1,g) end
+    local g=eg:Filter(Card.IsAbleToRemove,e:GetHandler())
+    if chk==0 then return #g>0 and Duel.CheckReleaseGroup(tp,aux.TRUE,1,g) end
     Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 end
 function c46250022.tgop(e,tp,eg,ep,ev,re,r,rp)
     local g=eg:Filter(Card.IsAbleToRemove,e:GetHandler())
-    if not g or g:GetCount()==0 then return end
+    if #g==0 then return end
     local tg=Duel.SelectReleaseGroup(tp,aux.TRUE,1,1,g)
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
     Duel.Release(tg,REASON_EFFECT)
     Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
 end

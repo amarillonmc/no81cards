@@ -1,9 +1,9 @@
 --骸星装-端铠
 function c46250023.initial_effect(c)
     c:EnableReviveLimit()
-    c:SetUniqueOnField(1,0,46250023,LOCATION_MZONE)
+    c:SetUniqueOnField(1,0,46250023)
     aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionAttribute,ATTRIBUTE_DARK),aux.NOT(aux.FilterBoolFunction(Card.IsFusionAttribute,ATTRIBUTE_DARK)),true)
-    aux.AddContactFusionProcedure(c,Card.IsAbleToGrave,LOCATION_MZONE,0,Duel.SendtoGrave,REASON_COST+REASON_MATERIAL)
+    aux.AddContactFusionProcedure(c,Card.IsAbleToGrave,LOCATION_MZONE,0,Duel.SendtoGrave,REASON_SPSUMMON+REASON_MATERIAL)
     local e3=Effect.CreateEffect(c)
     e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
     e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
@@ -67,7 +67,7 @@ function c46250023.op(e,tp,eg,ep,ev,re,r,rp)
 end
 function c46250023.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
-    if chk==0 then return c:IsReleasable() and Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_MZONE+LOCATION_SZONE,LOCATION_MZONE+LOCATION_SZONE,1,c) end
+    if chk==0 then return c:IsReleasable() and Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
     local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_MZONE+LOCATION_SZONE,LOCATION_MZONE+LOCATION_SZONE,1,1,c)
     g:AddCard(c)
@@ -90,7 +90,11 @@ function c46250023.operation(e,tp,eg,ep,ev,re,r,rp)
     e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
     e1:SetTargetRange(1,1)
     e1:SetValue(c46250023.tgval)
-    e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
+    if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()<=PHASE_STANDBY then
+        e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2)
+    else
+        e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
+    end
     Duel.RegisterEffect(e1,tp)
 end
 function c46250023.tgval(e,re,rp)

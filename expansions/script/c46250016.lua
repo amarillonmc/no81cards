@@ -86,21 +86,10 @@ function c46250016.sumop(e,tp,eg,ep,ev,re,r,rp)
         e1:SetReset(RESET_EVENT+RESETS_STANDARD)
         e1:SetValue(c46250016.eqlimit)
         tc:RegisterEffect(e1)
-        local e2=Effect.CreateEffect(c)
-        e2:SetType(EFFECT_TYPE_SINGLE)
-        e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-        e2:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
-        e2:SetRange(LOCATION_SZONE)
-        e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-        e2:SetValue(c46250016.matval)
-        tc:RegisterEffect(e2)
     end
 end
 function c46250016.eqlimit(e,c)
     return e:GetOwner()==c
-end
-function c46250016.matval(e,c,mg)
-    return c:IsRace(RACE_WYRM) and c:IsControler(e:GetHandlerPlayer())
 end
 function c46250016.atkval(e,c)
     return Group.GetSum(c:GetEquipGroup():Filter(Card.IsSetCard,nil,0x1fc0),Card.GetTextAttack)
