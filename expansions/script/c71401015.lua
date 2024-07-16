@@ -91,14 +91,15 @@ function c71401015.con3(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_TRAP+TYPE_CONTINUOUS
 end
 function c71401015.filter3(c)
-	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_XYZ) and Duel.IsExistingMatchingCard(c71401015.filter3a,tp,LOCATION_ONFIELD,0,1,c)
+	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_XYZ)
 end
 function c71401015.filter3a(c)
 	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsRace(RACE_SPELLCASTER) and c:IsCanOverlay() and not c:IsForbidden()
 end
 function c71401015.tg3(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c71401015.filter3(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c71401015.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(c71401015.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+		and Duel.IsExistingMatchingCard(c71401015.filter3a,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,c71401015.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 end
@@ -106,7 +107,7 @@ function c71401015.op3(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-		mg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71401015.filter3a),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,tc)
+		mg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71401015.filter3a),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
 		Duel.Overlay(tc,mg)
 	end
 end

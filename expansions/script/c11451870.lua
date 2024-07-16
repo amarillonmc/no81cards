@@ -19,7 +19,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return #g>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,0,1-tp,LOCATION_ONFIELD)
 	if cm.condition(e,tp,eg,ep,ev,re,r,rp) then
-		e:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_NEGATE)
+		e:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+0x200)
 	else e:SetProperty(0) end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)

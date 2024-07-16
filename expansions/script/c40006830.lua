@@ -84,7 +84,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.splimit1(e,c)
-	return not c:IsLevelAbove(1) and c:IsLocation(LOCATION_EXTRA)
+	return c:IsLevelAbove(1) and c:IsLocation(LOCATION_EXTRA)
 end
 function cm.btfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ)

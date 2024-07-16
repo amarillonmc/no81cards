@@ -7,12 +7,11 @@ function s.initial_effect(c)
 	c:EnableReviveLimit()
 	--remove
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCost(s.rmcost)
 	e1:SetCondition(s.rmcon)
+	e1:SetCost(s.rmcost)
 	e1:SetTarget(s.rmtg)
 	e1:SetOperation(s.rmop)
 	c:RegisterEffect(e1)
@@ -26,7 +25,6 @@ function s.initial_effect(c)
 	e2:SetOperation(s.tgop)
 	c:RegisterEffect(e2)
 end
-s.VHisc_hdst=true
 
 function s.ovfilter(c)
 	return c:IsFaceup() and VHisc_HDST.nck(c) and not c:IsCode(id)
@@ -41,9 +39,9 @@ function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rg=e:GetHandler():GetOverlayGroup()
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and  Duel.GetMatchingGroupCount(s.exfilter,tp,0,LOCATION_HAND,nil)>0 end
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.GetMatchingGroupCount(s.exfilter,tp,0,LOCATION_HAND,nil)>0 end
 	local hc=Duel.GetMatchingGroupCount(s.exfilter,tp,0,LOCATION_HAND,nil)
-	if rg:GetCount()<hc then hc=rg end
+	if rg:GetCount()<hc then hc=rg:GetCount() end
 	local ct=e:GetHandler():RemoveOverlayCard(tp,1,hc,REASON_COST)
 	e:SetLabel(ct)
 end
@@ -55,8 +53,8 @@ function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
-	local sg=Duel.GetMatchingGroup(s.exfilter,tp,0,LOCATION_HAND,nil)
-	if sg:GetCount()>0 and ct then
+	local g=Duel.GetMatchingGroup(s.exfilter,tp,0,LOCATION_HAND,nil)
+	if g:GetCount()>0 and ct then
 		local sg=g:RandomSelect(tp,ct)
 		Duel.ConfirmCards(tp,sg)
 		local tc=sg:GetFirst()
@@ -68,12 +66,13 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 				local fg=Duel.GetMatchingGroup(s.fgfilter,tp,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK+LOCATION_EXTRA+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK+LOCATION_EXTRA+LOCATION_REMOVED,nil,code)
 				for fc in aux.Next(fg) do
 					if fc:GetFlagEffect(33201450)==0 then
-						fc:RegisterFlagEffect(33201450,nil,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
+						fc:RegisterFlagEffect(33201450,nil,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(33201450,3))
 					end
 				end
 			end
 			tc=sg:GetNext()
 		end
+		Duel.ShuffleHand(1-tp)
 	end 
 end
 function s.fgfilter(c,code)

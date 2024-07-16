@@ -88,24 +88,35 @@ function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
             if g:GetCount()>0 then
                 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
                 local tc=g:Select(tp,1,1,nil):GetFirst()
+                local fid=c:GetFieldID()
                 Duel.Remove(tc,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)
-                tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+                tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
                 local e1=Effect.CreateEffect(c)
                 e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
                 e1:SetCode(EVENT_PHASE+PHASE_END)
                 e1:SetCountLimit(1)
+                e1:SetLabel(fid)
                 e1:SetLabelObject(tc)
                 e1:SetReset(RESET_PHASE+PHASE_END)
+                e1:SetCondition(cm.retcon)
                 e1:SetOperation(cm.retop)
                 Duel.RegisterEffect(e1,tp)
-                Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
             end
         end
     end
 end
+function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
+    local tc=e:GetLabelObject()
+    if tc:GetFlagEffectLabel(m)==e:GetLabel() then
+        return true
+    else
+        e:Reset()
+        return false
+    end
+end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
     local tc=e:GetLabelObject()
-    Duel.SendtoHand(tc,tc:GetOwner(),REASON_EFFECT)
+    Duel.SendtoHand(tc,nil,REASON_EFFECT)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
     local rc=re:GetHandler()
