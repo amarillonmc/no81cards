@@ -1,5 +1,5 @@
 --差错之魂 恐惧
-local m=m
+local m=33350013
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon

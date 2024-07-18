@@ -132,10 +132,9 @@ function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsStatus(STATUS_BATTLE_DESTROYED) or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
+	if c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return g and not g:IsContains(c)
+	return g and Duel.IsChainNegatable(ev) and not g:IsContains(c)
 end
 function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

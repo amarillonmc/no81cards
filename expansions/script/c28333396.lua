@@ -8,8 +8,8 @@ function c28333396.initial_effect(c)
 	--indes
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_FZONE)
 	e1:SetCondition(c28333396.indescon)
 	e1:SetValue(1)
@@ -17,8 +17,8 @@ function c28333396.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_CANNOT_REMOVE)
-	e2:SetRange(LOCATION_FZONE)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetRange(LOCATION_FZONE)
 	e2:SetTargetRange(1,1)
 	e2:SetTarget(c28333396.rmlimit)
 	e2:SetCondition(c28333396.indescon)
@@ -85,15 +85,15 @@ function c28333396.fthop(e,tp,eg,ep,ev,re,r,rp)
 	if tg:GetCount()>0 then Duel.SendtoHand(tg,nil,REASON_EFFECT) end
 end
 function c28333396.cfilter(c,tp)
-	return (c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and c:GetReasonPlayer()==1-tp
+	return (c:IsPreviousLocation(LOCATION_MZONE) and c:IsControler(tp) and c:GetReasonPlayer()==1-tp
 	and not ((c:IsLocation(LOCATION_REMOVED) and c:IsFacedown()) or c:IsLocation(LOCATION_HAND)) or (c:IsLocation(LOCATION_GRAVE) and c:IsReason(REASON_MATERIAL))) and c:IsSetCard(0x283) and c:IsAbleToHand()
 end
 function c28333396.cfilter1(c,tp)
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and c:GetReasonPlayer()==1-tp
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsControler(tp) and c:GetReasonPlayer()==1-tp
 	and not ((c:IsLocation(LOCATION_REMOVED) and c:IsFacedown()) or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0x283) and c:IsAbleToHand()
 end
 function c28333396.cfilter2(c,tp)
-	return c:IsLocation(LOCATION_GRAVE) and c:IsReason(REASON_MATERIAL) and c:IsSetCard(0x283) and c:IsAbleToHand()
+	return c:IsLocation(LOCATION_GRAVE) and c:IsControler(tp) and c:IsReason(REASON_MATERIAL) and c:IsSetCard(0x283) and c:IsAbleToHand()
 end
 function c28333396.gthcon1(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c28333396.cfilter1,1,nil,tp)

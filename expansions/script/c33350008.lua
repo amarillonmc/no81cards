@@ -1,9 +1,8 @@
 --传说之魂的羁绊
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
 local m=33350008
 local cm=_G["c"..m]
+local s,id,o=GetID()
 function c33350008.initial_effect(c)
-    local e2=rsef.I(c,{m,0},nil,"sp","tg",LOCATION_GRAVE,nil,aux.bfgcost,rstg.target2(cm.fun,rsop.list(cm.xyzfilter,nil,LOCATION_MZONE)),cm.xyzop)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -15,6 +14,17 @@ function c33350008.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
+	--Activate
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,0))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,m+1000000)
+	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(s.ovtg)
+	e2:SetOperation(s.ovop)
+	c:RegisterEffect(e2)
 
 end
 cm.setname="TaleSouls"
@@ -22,7 +32,7 @@ function cm.fun(g,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_GRAVE)
 end
 function cm.xyzfilter(c,e,tp)
-	return c.setname=="TaleSouls" and c:IsType(TYPE_XYZ) and c:GetOverlayCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return c.setname=="TaleSouls" and c:IsType(TYPE_XYZ) and c:GetOverlayCount()>0
 end
 function cm.xyzop(e,tp)
 	rsof.SelectHint(tp,HINTMSG_SELF)
@@ -90,5 +100,26 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+
+--
+function s.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_EFFECT) end
+end
+function s.ovop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DEATTACHFROM)
+	local sg=Duel.SelectMatchingCard(tp,cm.xyzfilter,tp,LOCATION_MZONE,0,1,1,nil,tp,1,REASON_EFFECT)
+	if sg:GetCount()==0 then return end
+	if sg:GetFirst():RemoveOverlayCard(tp,1,1,REASON_EFFECT) then
+		local tc=Duel.GetOperatedGroup():GetFirst()
+		if tc and tc:IsControler(tp) and tc:IsLocation(LOCATION_GRAVE) and aux.NecroValleyFilter()(tc) then
+			if tc:IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+				and tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+				and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+				Duel.BreakEffect()
+				Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+			end
+		end
 	end
 end

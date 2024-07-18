@@ -7,7 +7,6 @@ function cm.KeterSanctuary(c)
 	return m and m.named_with_KeterSanctuary
 end
 function cm.initial_effect(c)
-	c:EnableReviveLimit()
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -18,7 +17,6 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.sptg1)
 	e1:SetOperation(cm.spop1)
 	c:RegisterEffect(e1)
-
 	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -26,7 +24,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_RELEASE)
-	e2:SetCountLimit(1,m+100)
+	e2:SetCountLimit(1,m+1)
 	e2:SetTarget(cm.sptg2)
 	e2:SetOperation(cm.spop2)
 	c:RegisterEffect(e2)
@@ -43,42 +41,45 @@ function cm.initial_effect(c)
 	e5:SetCondition(cm.drcon2)
 	c:RegisterEffect(e5)
 end
-function cm.spfilter1(c)
-	return not c:IsLevel(8) and c:IsFaceup()
+function cm.spfilter(c)
+	return c:IsFaceup() and c:IsRace(RACE_WARRIOR) and not c:IsLevel(8) and c:IsLevelAbove(1)
 end
 function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.spfilter1(chkc) end
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingTarget(cm.spfilter1,tp,LOCATION_MZONE,0,1,nil)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,cm.spfilter1,tp,LOCATION_MZONE,0,1,1,nil)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.spfilter(chkc) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(cm.spfilter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,cm.spfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		if tc:IsRelateToEffect(e) and tc:IsFaceup() and not tc:IsImmuneToEffect(e) then
-			local g=Group.FromCards(c)
-			if tc:IsRelateToEffect(e) then g:AddCard(tc) end
-			g=g:Filter(Card.IsFaceup,nil)
-			for oc in aux.Next(g) do
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_CHANGE_LEVEL)
-				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-				e1:SetValue(8)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				oc:RegisterEffect(e1)
-			end
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e2:SetReset(RESET_EVENT+RESETS_REDIRECT)
-			e2:SetValue(LOCATION_REMOVED)
-			c:RegisterEffect(e2,true)
+	if c:IsRelateToEffect(e) then
+	   if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) then
+		   if tc:IsFaceup() and tc:IsRelateToEffect(e) and not tc:IsLevel(8) then
+		   local e1=Effect.CreateEffect(c)
+			   e1:SetType(EFFECT_TYPE_SINGLE)
+			   e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			   e1:SetCode(EFFECT_CHANGE_LEVEL)
+			   e1:SetValue(8)
+			   e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			   tc:RegisterEffect(e1)
+			   local e2=Effect.CreateEffect(c)
+			   e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			   e2:SetType(EFFECT_TYPE_SINGLE)
+			   e2:SetCode(EFFECT_CHANGE_LEVEL)
+			   e2:SetValue(8)
+			   e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			   c:RegisterEffect(e2)
+		   end
+		   local e3=Effect.CreateEffect(c)
+		   e3:SetType(EFFECT_TYPE_SINGLE)
+		   e3:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+		   e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		   e3:SetReset(RESET_EVENT+RESETS_REDIRECT)
+		   e3:SetValue(LOCATION_REMOVED)
+		   c:RegisterEffect(e3,true)
 		end
 	end
 end
@@ -99,7 +100,7 @@ function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function cm.cfilter(c)
-	return c:IsFaceup() and c:IsLevelAbove(8)
+	return c:IsFaceup() and (c:IsLevelAbove(8) or c:IsRankAbove(8))
 end
 function cm.setfilter(c)
 	return cm.KeterSanctuary(c) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
