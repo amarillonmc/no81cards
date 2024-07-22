@@ -14,6 +14,8 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
+	cm.hand_effect=cm.hand_effect or {}
+    cm.hand_effect[c]=e1
 	--effect2
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -111,8 +113,8 @@ function cm.operation4(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,tp)
 end
 function cm.condition3(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsType,1-tp,LOCATION_MZONE+LOCATION_HAND,0,nil,TYPE_MONSTER)
-	g=g:Filter(Card.IsReleasable,nil,REASON_RULE)
+	local g=Duel.GetMatchingGroup(aux.TRUE,1-tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
+	--g=g:Filter(Card.IsReleasable,nil,REASON_RULE)
 	return #g>0 and cm[tp]>0
 end
 function cm.operation3(e,tp,eg,ep,ev,re,r,rp)

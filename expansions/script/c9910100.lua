@@ -138,3 +138,95 @@ end
 function QutryZcd.MFilter2(c,xyzc,tp)
 	return Duel.GetLocationCountFromEx(tp,tp,c,xyzc)>0
 end
+function QutryZcd.SelfSpsummonEffect(c,extag,exchk1,exchk2,beftd1,beftd2,afttd1,afttd2)
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+extag)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,c:GetOriginalCode())
+	e1:SetCost(QutryZcd.SpCost())
+	e1:SetTarget(QutryZcd.SpTg(exchk1,exchk2))
+	e1:SetOperation(QutryZcd.SpOp(beftd1,beftd2,afttd1,afttd2))
+	c:RegisterEffect(e1)
+end
+function QutryZcd.SpCost()
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk)
+				if chk==0 then return not e:GetHandler():IsPublic() end
+			end
+end
+function QutryZcd.XFilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ)
+end
+function QutryZcd.SpTg(exchk1,exchk2)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk)
+				local c=e:GetHandler()
+				local check=Duel.IsPlayerAffectedByEffect(tp,9910113) and c:IsCanOverlay()
+					and Duel.IsExistingMatchingCard(QutryZcd.XFilter,tp,LOCATION_MZONE,0,1,nil,nil)
+				if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
+					and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+					and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsAbleToDeck() or check)
+					and (exchk1 or exchk2(e,tp)) end
+				Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+			end
+end
+function QutryZcd.SpOp(beftd1,beftd2,afttd1,afttd2)
+	return  function(e,tp,eg,ep,ev,re,r,rp)
+				local c=e:GetHandler()
+				if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return end
+				Duel.ConfirmDecktop(tp,1)
+				local g=Duel.GetDecktopGroup(tp,1)
+				local tc=g:GetFirst()
+				if tc:IsSetCard(0x9958) and tc:IsType(TYPE_MONSTER) then
+					if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0
+						and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not tc:IsForbidden() then
+						Duel.DisableShuffleCheck()
+						Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+						local e1=Effect.CreateEffect(c)
+						e1:SetCode(EFFECT_CHANGE_TYPE)
+						e1:SetType(EFFECT_TYPE_SINGLE)
+						e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+						e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+						e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+						tc:RegisterEffect(e1)
+					end
+				else
+					local flag=false
+					if not beftd1 then
+						flag=beftd2(e,tp)
+						if not flag then return end
+					end
+					local off=1
+					local ops={}
+					local opval={}
+					local b1=c:IsAbleToDeck()
+					local check=Duel.IsPlayerAffectedByEffect(tp,9910113) and c:IsCanOverlay()
+					local xg=Duel.GetMatchingGroup(QutryZcd.XFilter,tp,LOCATION_MZONE,0,nil)
+					if c:IsAbleToDeck() then
+						ops[off]=aux.Stringid(9910100,1)
+						opval[off-1]=1
+						off=off+1
+					end
+					if check and #xg>0 then
+						ops[off]=aux.Stringid(9910100,2)
+						opval[off-1]=2
+						off=off+1
+					end
+					if off==1 then return end
+					local op=Duel.SelectOption(tp,table.unpack(ops))
+					if opval[op]==1 then
+						if flag then Duel.BreakEffect() end
+						flag=Duel.SendtoDeck(c,nil,0,REASON_EFFECT)>0
+					elseif opval[op]==2 then
+						if flag then Duel.BreakEffect() end
+						Duel.Hint(HINT_CARD,0,9910113)
+						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+						local sg=xg:Select(tp,1,1,nil)
+						Duel.HintSelection(sg)
+						if sg:GetFirst():IsImmuneToEffect(e) then return end
+						Duel.Overlay(sg:GetFirst(),Group.FromCards(c))
+						flag=true
+					end
+					if flag and not afttd1 then afttd2(e,tp) end
+				end
+			end
+end

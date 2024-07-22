@@ -39,14 +39,17 @@ function c9910121.tttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c9910121.ttop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910121,3))
-	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,nil,0x9958)
-	local tc=g:GetFirst()
-	if tc then
+	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,3,nil,0x9958)
+	if g:GetCount()>0 then
+		Duel.ConfirmCards(1-tp,g)
 		Duel.ShuffleDeck(tp)
-		Duel.MoveSequence(tc,0)
-		Duel.ConfirmDecktop(tp,1)
+		local tc=g:GetFirst()
+		while tc do
+			Duel.MoveSequence(tc,SEQ_DECKTOP)
+			tc=g:GetNext()
+		end
+		Duel.SortDecktop(tp,tp,g:GetCount())
 	end
 end
 function c9910121.drcon(e,tp,eg,ep,ev,re,r,rp)

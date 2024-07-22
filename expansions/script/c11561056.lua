@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--Remove
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DESTROY)
+	e3:SetCategory(CATEGORY_DISABLE+CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_MZONE)
@@ -88,7 +88,7 @@ function c11561056.wxop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_DISABLE)
-	e1:SetTargetRange(0,LOCATION_ONFIELD)
+	e1:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTarget(c11561056.distg2)
 	e1:SetReset(RESET_PHASE+PHASE_END,2)
@@ -96,7 +96,7 @@ function c11561056.wxop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterFlagEffect(11591056,RESET_PHASE+PHASE_END,0,2)
 end
 function c11561056.distg2(e,c)
-	return (c:IsType(TYPE_MONSTER+TYPE_EFFECT) or c:IsType(TYPE_TRAP+TYPE_SPELL)) and e:GetHandler():GetColumnGroup():IsContains(c)
+	return (c:IsType(TYPE_MONSTER+TYPE_EFFECT) or c:IsType(TYPE_TRAP+TYPE_SPELL)) and e:GetHandler():GetColumnGroup():IsContains(c) 
 end
 function c11561056.discon(e,tp,eg,ep,ev,re,r,rp)
 	return not re:GetHandler():IsLocation(0x16) and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainDisablable(ev)
@@ -106,9 +106,17 @@ function c11561056.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RegisterFlagEffect(11581056,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11581056,3))
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+11561056,e,0,0,0,0)
+	if re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
+	end
 end
-function c11561056.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateEffect(ev)
+function c11561056.disop(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler()
+	local ec=re:GetHandler()
+	if Duel.NegateActivation(ev) and ec:IsRelateToEffect(re) then
+		ec:CancelToGrave()
+		Duel.SendtoDeck(ec,nil,SEQ_DECKSHUFFLE,REASON_EFFECT) 
+	end
 end
 function c11561056.remcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsLocation(0x12) and re:IsActiveType(TYPE_MONSTER)
@@ -116,11 +124,12 @@ end
 function c11561056.remtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(11571056)==0 and eg:GetFirst():IsAbleToRemove() end
 	e:GetHandler():RegisterFlagEffect(11571056,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11581056,1))
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+11561056,e,0,0,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
 end
 function c11561056.remop(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetHandler():IsRelateToEffect(re) then
+	if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
 	end
 end

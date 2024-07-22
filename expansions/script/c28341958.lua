@@ -61,6 +61,7 @@ function c28341958.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 			local cg=Duel.GetMatchingGroup(c28341958.cfilter,tp,LOCATION_MZONE,0,nil)
 			if cg:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(c28341958.tgfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28341958,2)) then
+				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 				local tg=Duel.SelectMatchingCard(tp,c28341958.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 				Duel.SendtoGrave(tg,REASON_EFFECT)

@@ -100,7 +100,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.dfilter,1,nil)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x44f) and c:IsAbleToHand()
+	return c:IsType(TYPE_FIELD) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

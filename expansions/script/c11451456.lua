@@ -85,10 +85,10 @@ function cm.filter(c)
 	return c:IsFaceup() and c:GetLevel()>0
 end
 function cm.filter2(c)
-	return c:IsFaceup() and c:IsRace(RACE_PSYCHO) and c:IsPreviousLocation(LOCATION_HAND)
+	return c:IsFaceup() and c:IsPreviousLocation(LOCATION_HAND)
 end
 function cm.filter3(c)
-	return c:IsRace(RACE_PSYCHO) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsRace(RACE_PSYCHO) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.lvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.filter(chkc) end

@@ -67,7 +67,7 @@ function cm.GetLinkMaterials(tp,f,lc)
 	return mg
 end
 function cm.LCheckGoal(sg,tp,lc,gf,lmat)
-	return sg:CheckWithSumEqual(Auxiliary.GetLinkCount,lc:GetLink(),#sg,#sg) and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg)) and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp) and (not lmat or sg:IsContains(lmat)) and sg:IsExists(aux.NOT(cm.fdfilter),1,nil)
+	return sg:CheckWithSumEqual(Auxiliary.GetLinkCount,lc:GetLink(),#sg,#sg) and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg)) and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp) and (not lmat or sg:IsContains(lmat)) and not sg:IsExists(cm.fdfilter,Duel.GetTurnCount()+1,nil)
 end
 function cm.LinkCondition(f,minc,maxc,gf)
 	return  function(e,c,og,lmat,min,max)

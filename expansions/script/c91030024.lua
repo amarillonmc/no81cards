@@ -8,7 +8,7 @@ function c91030024.initial_effect(c)
 	--remove
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_RECOVER+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
@@ -59,40 +59,23 @@ end
 function cm.matfilter(c)
 	return c:IsLinkSetCard(0x9d3) and c:IsLinkAttribute(ATTRIBUTE_ALL&~ATTRIBUTE_EARTH)
 end
-function cm.filter(c)
-	return c:IsFaceup() and c:IsAbleToRemove()
-end
+
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and cm.rfilter(chkc) end
+	if chkc then return false end
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToRemove() and Duel.IsExistingTarget(cm.filter,tp,0,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,0,LOCATION_MZONE,1,1,nil)
-	g:AddCard(c)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,2,0,0)
+	if chk==0 then return  Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,nil) end
+	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,12,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	local g1=g:GetCount()*800
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,g1)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) or not c:IsRelateToEffect(e) then return end
-	local g=Group.FromCards(tc,c)
-	if Duel.Remove(g,0,REASON_EFFECT+REASON_TEMPORARY)~=0 and g:IsExists(Card.IsLocation,1,nil,LOCATION_REMOVED) then
-		local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
-		for tc in aux.Next(og) do
-			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-		end
-		og:KeepAlive()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabelObject(og)
-		e1:SetCountLimit(1)
-		e1:SetCondition(cm.retcon)
-		e1:SetOperation(cm.retop)
-		Duel.RegisterEffect(e1,tp)
-	end
+	local tg=Duel.GetTargetsRelateToChain()
+	if #tg==0 then return end
+local dt=Duel.Destroy(tg,REASON_EFFECT)
+		if dt>0 then
+	Duel.Recover(tp,dt*800,REASON_EFFECT) end
 end
 function cm.retfilter(c)
 	return c:GetFlagEffect(m)~=0

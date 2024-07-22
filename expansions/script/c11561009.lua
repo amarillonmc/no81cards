@@ -6,7 +6,7 @@ function c11561009.initial_effect(c)
 	--to grave fusion 
 	local e1=Effect.CreateEffect(c)  
 	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES+CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F) 
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS) 
 	e1:SetProperty(EFFECT_FLAG_DELAY) 
 	e1:SetCountLimit(1,11561009) 
@@ -45,7 +45,7 @@ function c11561009.filter3(c)
 end
 function c11561009.tgop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	if Duel.IsPlayerCanDiscardDeck(tp,3) and Duel.DiscardDeck(tp,3,REASON_EFFECT)~=0 then	 
+	if Duel.IsPlayerCanDiscardDeck(tp,3) and Duel.DiscardDeck(tp,3,REASON_EFFECT)~=0 then	
 		local chkf=tp
 		local mg1=Duel.GetFusionMaterial(tp):Filter(c11561009.filter1,nil,e)
 		local mg2=Duel.GetMatchingGroup(c11561009.filter3,tp,LOCATION_GRAVE,0,nil)

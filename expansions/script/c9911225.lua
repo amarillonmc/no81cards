@@ -30,7 +30,7 @@ function c9911225.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c9911225.thfilter(c,tp)
-	return c:IsFaceup() and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsType(TYPE_TRAP) and c:IsAbleToHand(tp)
 end
 function c9911225.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9911225.thfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil) end

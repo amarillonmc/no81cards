@@ -1,6 +1,5 @@
 --波动场·二象
-local m=11451457
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -54,7 +53,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if e:GetLabel()>0 then Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,tp,LOCATION_DECK) end
 end
 function cm.filter(c,num)
-	return c:IsRace(RACE_PSYCHO) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsLevel(num)
+	return c:IsRace(RACE_PSYCHO) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsLevel(num)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp,chk)
 	if e:GetHandler():IsRelateToEffect(e) and e:GetLabel()>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e:GetLabel()) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
@@ -72,13 +71,13 @@ end
 function cm.filter2(c,e,tp,rc)
 	if not (c:IsType(TYPE_SYNCHRO) and (rc%c:GetLevel()==0) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0) then return false end
 	--continuously updating
-	local tab={14000248,14010109,79029117,90700065,90700066,90700067,90700068,90700069,92361302,92361306,98731001}
+	local tab={14000248,14010109,33730071,79029117,90700065,90700066,90700067,90700068,90700069,92361302,92361306,98731001}
 	for _,code in pairs(tab) do
 		if c:GetOriginalCode()==code then return true end
 	end
 	local eset={c:IsHasEffect(EFFECT_SPSUMMON_CONDITION)}
 	for _,te in pairs(eset) do
-		if te:GetOwner()==c and te:GetValue()==0 then return true end
+		if te:GetOwner()==c and (te:GetValue()==0 or te:GetValue()==aux.FALSE) then return true end
 	end
 	return false
 end

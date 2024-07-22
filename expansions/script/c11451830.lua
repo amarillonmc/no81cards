@@ -1,7 +1,6 @@
 --结界守护灵 加丝缇
 local cm,m=GetID()
 function cm.initial_effect(c)
-	aux.AddCodeList(c,11451599)
 	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
@@ -92,9 +91,36 @@ function cm.adcon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter,1,nil,tp,se)
 end
 function cm.adcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,nil) end
 	local pg=Duel.GetMatchingGroup(Card.IsPublic,tp,LOCATION_HAND,0,nil)
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,1,nil)
+	if Duel.Remove(g,POS_FACEUP,REASON_COST+REASON_TEMPORARY)>0 then
+		local fid=c:GetFieldID()
+		local og1=Duel.GetOperatedGroup()
+		if og1:IsExists(cm.retfilter2,1,nil,tp,LOCATION_HAND) then Duel.ShuffleHand(tp) end
+		if og1:IsExists(cm.retfilter2,1,nil,1-tp,LOCATION_HAND) then Duel.ShuffleHand(1-tp) end
+		local og=og1:Filter(cm.rffilter,nil)
+		if og and #og>0 then
+			for oc in aux.Next(og) do
+				oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
+			end
+			og:KeepAlive()
+			local e1=Effect.CreateEffect(c)
+			e1:SetDescription(aux.Stringid(11451461,0))
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+			e1:SetCode(EVENT_PHASE+PHASE_END)
+			e1:SetCountLimit(1)
+			e1:SetLabel(fid)
+			e1:SetLabelObject(og)
+			e1:SetCondition(cm.retcon)
+			e1:SetOperation(cm.retop)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+		end
+	end
 	local dc=Duel.GetOperatedGroup():GetFirst()
 	if dc and not pg:IsContains(dc) then e:SetLabel(1) else e:SetLabel(0) end
 end
@@ -114,10 +140,10 @@ function cm.adop2(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 			e1:SetCode(EFFECT_PUBLIC)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e:GetHandler():RegisterEffect(e1)
 		elseif e:GetLabel()==0 then
-			e:GetHandler():RegisterFlagEffect(11451544,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+			e:GetHandler():RegisterFlagEffect(11451544,RESET_EVENT+RESETS_STANDARD,0,1)
 			local eset={e:GetHandler():IsHasEffect(EFFECT_PUBLIC)}
 			if #eset>0 then
 				for _,ae in pairs(eset) do
@@ -129,6 +155,93 @@ function cm.adop2(e,tp,eg,ep,ev,re,r,rp)
 					end
 				end
 			end
+		end
+	end
+end
+function cm.retfilter2(c,p,loc)
+	if (c:IsPreviousLocation(LOCATION_SZONE) and c:GetPreviousTypeOnField()&TYPE_EQUIP>0) or c:IsPreviousLocation(LOCATION_FZONE) then return false end
+	return c:IsPreviousControler(p) and c:IsPreviousLocation(loc)
+end
+function cm.rffilter(c)
+	return c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT)
+end
+function cm.returntofield(tc)
+	if tc:IsPreviousLocation(LOCATION_FZONE) then
+		local p=tc:GetPreviousControler()
+		local gc=Duel.GetFieldCard(p,LOCATION_FZONE,0)
+		if gc then
+			Duel.SendtoGrave(gc,REASON_RULE)
+			Duel.BreakEffect()
+		end
+	end
+	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then
+		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)
+	else
+		Duel.ReturnToField(tc)
+	end
+end
+function cm.filter6(c,e)
+	return c:GetFlagEffectLabel(m)==e:GetLabel()
+end
+function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	if not g:IsExists(cm.filter6,1,nil,e) then
+		g:DeleteGroup()
+		e:Reset()
+		return false
+	else return true end
+end
+function cm.retop(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	local sg=g:Filter(cm.filter6,nil,e)
+	g:DeleteGroup()
+	local ft,mg,pft,pmg={},{},{},{}
+	ft[1]=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	ft[2]=Duel.GetLocationCount(1-tp,LOCATION_MZONE)
+	ft[3]=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	ft[4]=Duel.GetLocationCount(1-tp,LOCATION_SZONE)
+	pft[3],pft[4]=0,0
+	if Duel.CheckLocation(tp,LOCATION_PZONE,0) then pft[3]=pft[3]+1 end
+	if Duel.CheckLocation(tp,LOCATION_PZONE,1) then pft[3]=pft[3]+1 end
+	if Duel.CheckLocation(1-tp,LOCATION_PZONE,0) then pft[4]=pft[4]+1 end
+	if Duel.CheckLocation(1-tp,LOCATION_PZONE,1) then pft[4]=pft[4]+1 end
+	mg[1]=sg:Filter(cm.retfilter2,nil,tp,LOCATION_MZONE)
+	mg[2]=sg:Filter(cm.retfilter2,nil,1-tp,LOCATION_MZONE)
+	mg[3]=sg:Filter(cm.retfilter2,nil,tp,LOCATION_SZONE)
+	mg[4]=sg:Filter(cm.retfilter2,nil,1-tp,LOCATION_SZONE)
+	pmg[3]=sg:Filter(cm.retfilter2,nil,tp,LOCATION_PZONE)
+	pmg[4]=sg:Filter(cm.retfilter2,nil,1-tp,LOCATION_PZONE)
+	for i=1,2 do
+		if #mg[i]>ft[i] then
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451461,7))
+			local tg=mg[i]:Select(tp,ft[i],ft[i],nil)
+			for tc in aux.Next(tg) do cm.returntofield(tc) end
+			sg:Sub(tg)
+		end
+	end
+	for i=3,4 do
+		if #mg[i]>ft[i] then
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451461,7))
+			local ct=math.min(#(mg[i]-pmg[i])+pft[i],ft[i])
+			local tg=mg[i]:SelectSubGroup(tp,cm.fselect2,false,ct,ct,pft[i])
+			local ptg=tg:Filter(Card.IsPreviousLocation,nil,LOCATION_PZONE)
+			for tc in aux.Next(ptg) do cm.returntofield(tc) end
+			for tc in aux.Next(tg-ptg) do cm.returntofield(tc) end
+			sg:Sub(tg)
+		elseif #pmg[i]>pft[i] then
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451461,7))
+			local tg=pmg[i]:Select(tp,pft[i],pft[i],nil)
+			for tc in aux.Next(tg) do cm.returntofield(tc) end
+			sg:Sub(tg)
+		end
+	end
+	local psg=sg:Filter(Card.IsPreviousLocation,nil,LOCATION_PZONE)
+	for tc in aux.Next(psg) do cm.returntofield(tc) end
+	for tc in aux.Next(sg-psg) do
+		if tc:GetPreviousLocation()&LOCATION_ONFIELD>0 then
+			cm.returntofield(tc)
+		elseif tc:IsPreviousLocation(LOCATION_HAND) then
+			Duel.SendtoHand(tc,tc:GetPreviousControler(),REASON_EFFECT)
 		end
 	end
 end

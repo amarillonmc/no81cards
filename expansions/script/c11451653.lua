@@ -27,6 +27,8 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.target)
 	e4:SetOperation(cm.operation)
 	c:RegisterEffect(e4)
+	cm.hand_effect=cm.hand_effect or {}
+    cm.hand_effect[c]=e4
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)==0

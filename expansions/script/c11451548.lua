@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.cfilter(c,tp)
-	return c:IsRace(RACE_PSYCHO) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(1) and not c:IsPublic() and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,c:GetLevel())
+	return c:IsType(TYPE_MONSTER) and c:IsLevelAbove(1) and not c:IsPublic() and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,c:GetLevel())
 end
 function cm.filter(c,lv)
 	return c:IsLevelAbove(1) and c:IsFaceup() and not c:IsLevel(lv)
@@ -52,7 +52,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.copyfilter(c,tp)
-	return c:IsFaceup() and c:IsLevelAbove(1) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_PSYCHO) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,c,c:GetLevel())
+	return c:IsFaceup() and c:IsLevelAbove(1) and c:IsRace(RACE_PSYCHO) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,c,c:GetLevel())
 end
 function cm.filter2(c,lv)
 	return c:IsFaceup() and c:IsLevel(lv) and c:IsType(TYPE_EFFECT)

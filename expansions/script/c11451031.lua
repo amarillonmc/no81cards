@@ -63,6 +63,10 @@ function cm.initial_effect(c)
 		PNFL_MIRROR_ACTIVATED={}
 		PNFL_MIRROR_ACTIVATED[0]={}
 		PNFL_MIRROR_ACTIVATED[1]={}
+		for code=11451031,11451037 do
+			PNFL_MIRROR_ACTIVATED[0][code]={}
+			PNFL_MIRROR_ACTIVATED[1][code]={}
+		end
 		PNFL_MIRROR_ACTIVATE={}
 		PNFL_MIRROR_ACTIVATE[0]={}
 		PNFL_MIRROR_ACTIVATE[1]={}
@@ -132,7 +136,7 @@ function cm.fccon(e,tp,eg,ep,ev,re,r,rp)
 		local tg=ce:GetTarget() or aux.TRUE
 		if aux.GetValueType(ce)=="Effect" and aux.GetValueType(tc)=="Card" then
 			local ccode=tc:GetOriginalCode()
-			if not PNFL_MIRROR_ACTIVATED[tp][ccode] and Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0,1,nil) then return true end
+			if Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0xff,1,nil) then return true end --not PNFL_MIRROR_ACTIVATED[tp][ccode] and
 		end
 	end
 	return false
@@ -148,7 +152,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		local tg=ce:GetTarget() or aux.TRUE
 		if aux.GetValueType(ce)=="Effect" and aux.GetValueType(tc)=="Card" then
 			local ccode=tc:GetOriginalCode()
-			if not PNFL_MIRROR_ACTIVATED[tp][ccode] and Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0,1,nil) then g:AddCard(tc) end
+			if Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0xff,1,nil) then g:AddCard(tc) end --not PNFL_MIRROR_ACTIVATED[tp][ccode] and
 		end
 	end
 	if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(11451031,0)) then
@@ -212,12 +216,13 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 		PNFL_MIRROR_HINTED[te]=ccode
 		local tg=ce:GetTarget() or aux.TRUE
 		local tg2=function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+					local code=e:GetHandler():GetOriginalCode()
 					if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,1) end
 					if chk==0 then
-						return tg(e,tp,eg,ep,ev,re,r,rp,0) and not PNFL_MIRROR_ACTIVATED[tp][ccode] and PNFL_MIRROR_ACTIVATE[tp][ccode]
+						return tg(e,tp,eg,ep,ev,re,r,rp,0) and PNFL_MIRROR_ACTIVATED[tp][code] and not PNFL_MIRROR_ACTIVATED[tp][code][ccode] and PNFL_MIRROR_ACTIVATE[tp][ccode]
 					end
 					tg(e,tp,eg,ep,ev,re,r,rp)
-					PNFL_MIRROR_ACTIVATED[tp][ccode]=true
+					PNFL_MIRROR_ACTIVATED[tp][code][ccode]=true
 					Duel.Hint(HINT_CODE,tp,ccode)
 					Duel.Hint(HINT_CODE,1-tp,ccode)
 				end
@@ -315,6 +320,7 @@ function cm.spcop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
 	local sc=g:Select(tp,1,1,nil):GetFirst()
 	if not sc then return end
+	if c:IsFacedown() then Duel.ConfirmCards(1-tp,Group.FromCards(c)) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,2))
 	if not sc:IsOnField() then Duel.ConfirmCards(1-tp,Group.FromCards(sc)) end
 	local e1=Effect.CreateEffect(c)

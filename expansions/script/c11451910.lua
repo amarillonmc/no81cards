@@ -35,7 +35,7 @@ function cm.filter(c)
 	local re=c:GetReasonEffect()
 	if not (c:IsType(TYPE_MONSTER) and not c:IsStatus(STATUS_TO_HAND_WITHOUT_CONFIRM) and re) then return false end
 	local rc=re:GetOwner()
-	return rc:IsOriginalSetCard(0xc976) and rc:GetOriginalType()&0x1>0
+	return rc:IsOriginalSetCard(0xc976) --and rc:GetOriginalType()&0x1>0
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(cm.filter,nil)

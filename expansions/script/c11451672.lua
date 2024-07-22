@@ -3,6 +3,7 @@
 local cm,m=GetID()
 function cm.initial_effect(c)
 	--fusion material
+	c:EnableReviveLimit()
 	aux.AddFusionProcCodeFun(c,m-40,aux.FilterBoolFunction(Card.IsType,TYPE_SPELL+TYPE_TRAP),1,true,true)
 	aux.AddContactFusionProcedure(c,cm.cfilter,LOCATION_REMOVED,0,cm.tdcfop(c)):SetCountLimit(1,11451631+EFFECT_COUNT_CODE_OATH)
 	--spsummon condition
@@ -44,7 +45,7 @@ function cm.tdcfop(c)
 			end
 end
 function cm.cfilter(c)
-	return (c:IsFusionCode(m-40) or c:IsType(TYPE_SPELL+TYPE_TRAP)) and c:IsAbleToDeckOrExtraAsCost()
+	return (c:IsFusionCode(m-40) or c:IsType(TYPE_SPELL+TYPE_TRAP)) and c:IsAbleToDeckAsCost() and c:IsFaceup()
 end
 function cm.splimit(e,se,sp,st)
 	return se:IsHasType(EFFECT_TYPE_ACTIONS)

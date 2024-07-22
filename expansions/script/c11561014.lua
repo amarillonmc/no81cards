@@ -68,8 +68,8 @@ function c11561014.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end 
 function c11561014.tktg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local zone=e:GetHandler():GetLinkedZone()  
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)>0 and Duel.IsExistingTarget(c11561014.tkfil,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp) end 
-	local g=Duel.SelectTarget(tp,c11561014.tkfil,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)>0 and Duel.IsExistingTarget(c11561014.tkfil,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,nil,e,tp) end 
+	local g=Duel.SelectTarget(tp,c11561014.tkfil,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)  
 end

@@ -54,7 +54,7 @@ function cm.matfilter(c)
 	return c:IsType(TYPE_EFFECT) or cm.fdfilter(c)
 end
 function cm.fdfilter(c)
-	return c:IsFacedown() and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsType(TYPE_EQUIP)
 end
 function cm.LConditionFilter(c,f,lc)
 	return (((c:IsFaceup() or not c:IsOnField()) and c:IsCanBeLinkMaterial(lc)) or (Duel.GetFlagEffect(lc:GetControler(),m)==0 and cm.fdfilter(c))) and (not f or f(c))
@@ -66,7 +66,7 @@ function cm.GetLinkMaterials(tp,f,lc)
 	return mg
 end
 function cm.LCheckGoal(sg,tp,lc,gf,lmat)
-	return sg:CheckWithSumEqual(Auxiliary.GetLinkCount,lc:GetLink(),#sg,#sg) and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg)) and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp) and (not lmat or sg:IsContains(lmat)) and not sg:IsExists(cm.fdfilter,4,nil)
+	return sg:CheckWithSumEqual(Auxiliary.GetLinkCount,lc:GetLink(),#sg,#sg) and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg)) and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp) and (not lmat or sg:IsContains(lmat)) and not sg:IsExists(cm.fdfilter,Duel.GetTurnCount()+1,nil)
 end
 function cm.gcheck(sg)
 	return not sg:IsExists(cm.fdfilter,4,nil)
@@ -141,10 +141,10 @@ function cm.LinkOperation(f,minc,maxc,gf)
 				local g=e:GetLabelObject()
 				c:SetMaterial(g)
 				aux.LExtraMaterialCount(g,c,tp)
-				g1=g:Filter(cm.fdfilter,nil)
-				g:Sub(g1)
+				--g1=g:Filter(cm.fdfilter,nil)
+				--g:Sub(g1)
 				--for tc in aux.Next(g1) do if tc:IsCode(m-2) then Debug.Message(tc:IsType(TYPE_LINK)) end end
-				Duel.SendtoDeck(g1,nil,2,REASON_MATERIAL+REASON_LINK)
+				--Duel.SendtoDeck(g1,nil,2,REASON_MATERIAL+REASON_LINK)
 				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_LINK)
 				g:DeleteGroup()
 			end
@@ -216,7 +216,7 @@ function cm.exop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(m,1))
-	local ag=g:Select(1-tp,e:GetLabel(),e:GetLabel(),nil)
+	local ag=g:RandomSelect(1-tp,e:GetLabel())
 	if Duel.SendtoHand(ag,tp,REASON_EFFECT)>0 then
 		Duel.ConfirmCards(1-tp,ag)
 		Duel.ShuffleHand(1-tp)

@@ -54,19 +54,21 @@ function cm.matfilter(c)
 	return c:IsRace(RACE_WARRIOR) or cm.fdfilter(c)
 end
 function cm.fdfilter(c)
-	return c:IsFacedown() and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsType(TYPE_EQUIP) and c:IsAbleToDeckOrExtraAsCost()
 end
 function cm.LConditionFilter(c,f,lc)
 	return (((c:IsFaceup() or not c:IsOnField()) and c:IsCanBeLinkMaterial(lc)) or (Duel.GetFlagEffect(lc:GetControler(),m)==0 and cm.fdfilter(c))) and (not f or f(c))
 end
 function cm.GetLinkMaterials(tp,f,lc)
-	local mg=Duel.GetMatchingGroup(cm.LConditionFilter,tp,LOCATION_ONFIELD,0,nil,f,lc)
+	local mg=Duel.GetMatchingGroup(cm.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc)
 	local mg2=Duel.GetMatchingGroup(aux.LExtraFilter,tp,LOCATION_HAND+LOCATION_SZONE,LOCATION_ONFIELD,nil,f,lc,tp)
 	if mg2:GetCount()>0 then mg:Merge(mg2) end
+	local mg3=Duel.GetMatchingGroup(cm.fdfilter,tp,LOCATION_GRAVE,0,nil)
+	if Duel.GetFlagEffect(lc:GetControler(),m)==0 and #mg3>0 then mg:Merge(mg3) end
 	return mg
 end
 function cm.LCheckGoal(sg,tp,lc,gf,lmat)
-	return sg:CheckWithSumEqual(Auxiliary.GetLinkCount,lc:GetLink(),#sg,#sg) and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg)) and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp) and (not lmat or sg:IsContains(lmat)) and sg:IsExists(aux.NOT(cm.fdfilter),1,nil)
+	return sg:CheckWithSumEqual(Auxiliary.GetLinkCount,lc:GetLink(),#sg,#sg) and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg)) and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp) and (not lmat or sg:IsContains(lmat)) and not sg:IsExists(cm.fdfilter,Duel.GetTurnCount()+1,nil)
 end
 function cm.LinkCondition(f,minc,maxc,gf)
 	return  function(e,c,og,lmat,min,max)

@@ -1,6 +1,5 @@
 --狂喜的牛头人
-local m=11451681
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--effect1
 	local e1=Effect.CreateEffect(c)

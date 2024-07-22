@@ -144,7 +144,11 @@ function cm.disop2(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local tc=sg:Select(tp,1,1,nil):GetFirst()
 			for _,sumtype in pairs({0,SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ,SUMMON_TYPE_LINK,SUMMON_TYPE_SPECIAL,SUMMON_VALUE_SELF}) do
-				if tc:IsSpecialSummonable(sumtype) then Duel.SpecialSummonRule(tp,tc,sumtype) end
+				if tc:IsSpecialSummonable(sumtype) then
+					Duel.BreakEffect()
+					Duel.SpecialSummonRule(tp,tc,sumtype)
+					break
+				end
 			end
 		end
 	end   

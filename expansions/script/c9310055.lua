@@ -89,11 +89,12 @@ function c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
 		local opval={}
 		local b1=e:GetLabel()&0x1>0
 		local b2=e:GetLabel()&0x2>0 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
-		local b3=e:GetLabel()&0x4>0 and Duel.IsPlayerCanDraw(tp,1)
-		local b4=e:GetLabel()&0x8>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
-		local b5=e:GetLabel()&0x10>0 and re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsAbleToRemove()
-		local b6=e:GetLabel()&0x20>0
-		local b7=e:GetLabel()&0x80>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)
+		local b3=e:GetLabel()&0x4>0 and re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsAbleToRemove()
+		local b4=e:GetLabel()&0x8>0
+		local b5=e:GetLabel()&0x10>0 and Duel.IsPlayerCanDraw(tp,1)
+		local b6=e:GetLabel()&0x20>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
+		local b7=e:GetLabel()&0x40>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)
+		local b8=e:GetLabel()&0x80>0
 		if b1 then
 			ops[off]=aux.Stringid(11451505,1)
 			opval[off-1]=1
@@ -128,6 +129,9 @@ function c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
 			ops[off]=aux.Stringid(9310055,1)
 			opval[off-1]=7
 			off=off+1
+		end
+		if b8 then
+			c9310055.regsop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		if off==1 then break end
 		ops[off]=aux.Stringid(11451505,2)
@@ -164,18 +168,18 @@ function c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 		elseif opval[op]==3 then
 			e:SetLabel(e:GetLabel()&~0x4)
-			Duel.Draw(tp,1,REASON_EFFECT)
+			Duel.Remove(re:GetHandler(),POS_FACEUP,REASON_EFFECT)
 		elseif opval[op]==4 then
 			e:SetLabel(e:GetLabel()&~0x8)
-			Duel.DiscardHand(1-tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
+			Duel.Damage(ep,2200,REASON_EFFECT)
 		elseif opval[op]==5 then
 			e:SetLabel(e:GetLabel()&~0x10)
-			Duel.Remove(re:GetHandler(),POS_FACEUP,REASON_EFFECT)
+			Duel.Draw(tp,1,REASON_EFFECT)
 		elseif opval[op]==6 then
 			e:SetLabel(e:GetLabel()&~0x20)
-			Duel.Damage(ep,2200,REASON_EFFECT)
+			Duel.DiscardHand(1-tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
 		elseif opval[op]==7 then
-			e:SetLabel(e:GetLabel()&~0x80)
+			e:SetLabel(e:GetLabel()&~0x40)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE,LOCATION_GRAVE,1,2,nil)
 			if #g>0 then
@@ -185,10 +189,56 @@ function c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
 		elseif opval[op]==8 then break end
 	end
 end
+function c9310055.regsop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if Duel.GetFlagEffect(tp,11451928)>0 then return end
+	Duel.RegisterFlagEffect(tp,11451928,RESET_PHASE+PHASE_END,0,1)
+	--activate from hand
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e1:SetDescription(aux.Stringid(11451927,2))
+	e1:SetCountLimit(1)
+	e1:SetTargetRange(LOCATION_HAND,0)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	Duel.RegisterEffect(e2,1-tp)
+	--disable
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAIN_SOLVING)
+	e3:SetCondition(c9310055.disscon)
+	e3:SetOperation(c9310055.dissop)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e3,tp)
+	--indes
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e4:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e4:SetTarget(c9310055.indtg)
+	e4:SetValue(function() e:SetLabel(1) return 1 end)
+	e4:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e4,tp)
+end
+function c9310055.indtg(e,c)
+	local tc=e:GetHandler()
+	return (c==tc or c==tc:GetBattleTarget()) and c:IsFaceup() and e:GetLabel()==0
+end
+function c9310055.disscon(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsActiveType(TYPE_SPELL)
+end
+function c9310055.dissop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.Remove(re:GetHandler(),POS_FACEUP,REASON_EFFECT)
+	end
+	e:Reset()
+end
 function c9310055.chop(e,tp,eg,ep,ev,re,r,rp)
 	re:SetCategory(re:GetCategory()|CATEGORY_TODECK|CATEGORY_LEAVE_GRAVE)
-	if re:GetLabel()&0xbf~=0 then re:SetLabel(re:GetLabel()|0x80) return end
-	re:SetLabel(re:GetLabel()|0x80)
+	if re:GetLabel()&0xbf~=0 then re:SetLabel(re:GetLabel()|0x40) return end
+	re:SetLabel(re:GetLabel()|0x40)
 	local op=re:GetOperation()
 	local repop=function(e,tp,eg,ep,ev,re,r,rp)
 		op(e,tp,eg,ep,ev,re,r,rp)

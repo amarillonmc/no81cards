@@ -4666,7 +4666,7 @@ function cm.ActivatedAsSpellorTrap(c,otyp,loc,setava,owne)
 			e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 		else e1:SetType(EFFECT_TYPE_IGNITION) end
 		e1:SetRange(loc)
-		e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 		c:RegisterEffect(e1)
 	end
 	local e1_1=Effect.CreateEffect(c)
@@ -7629,3 +7629,129 @@ function cm.IsActivatable(e,p)
 	end
 	return check
 end
+-----------
+--[[				local dam=tc:GetAttack()
+				local seta={tc:IsHasEffect(EFFECT_SET_BATTLE_ATTACK)}
+				if #seta>0 then
+					seta=seta[#seta]
+					dam=seta:GetValue()
+					if aux.GetValueType(dam)=="function" then val=val(dam) end
+				end
+				local le={tc:IsHasEffect(EFFECT_DEFENSE_ATTACK)}
+				local val=0
+				for _,v in pairs(le) do
+					val=v:GetValue()
+					if aux.GetValueType(val)=="function" then val=val(e) end
+				end
+				if val==1 then
+					local setd={tc:IsHasEffect(EFFECT_SET_BATTLE_DEFENSE)}
+					if #setd>0 then
+						setd=setd[#setd]
+						dam=setd:GetValue()
+						if aux.GetValueType(dam)=="function" then val=val(dam) end
+					end
+				end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(id)
+	e1:SetRange(LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE)
+	c:RegisterEffect(e1)
+	if not s.global_check then
+		s.global_check=true
+		local ge0=Effect.GlobalEffect()
+		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge0:SetCode(EVENT_ADJUST)
+		ge0:SetLabelObject(sg)
+		ge0:SetOperation(s.geop)
+		Duel.RegisterEffect(ge0,0)
+		s.OAe={}
+	end
+end
+function s.geop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(function(c)return c:IsOriginalCodeRule(46173679) and c:GetActivateEffect()end,0,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,nil)
+	for tc in aux.Next(g) do
+		local le={tc:GetActivateEffect()}
+		for _,v in pairs(le) do
+			if v:GetRange()&0x10a~=0 and not SNNM.IsInTable(v,s.OAe) then
+				table.insert(s.OAe,v)
+				local e1=v:Clone()
+				e1:SetRange(LOCATION_DECK+LOCATION_GRAVE)
+				e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+				tc:RegisterEffect(e1,true)
+				local e2=SNNM.Act(tc,e1)
+				e2:SetRange(LOCATION_DECK+LOCATION_GRAVE)
+				e2:SetCost(s.costchk)
+				e2:SetOperation(s.costop2)
+				tc:RegisterEffect(e2,true)
+				local e3=Effect.CreateEffect(tc)
+				e3:SetType(EFFECT_TYPE_FIELD)
+				e3:SetCode(EFFECT_ACTIVATE_COST)
+				e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
+				e3:SetRange(LOCATION_HAND)
+				e3:SetLabelObject(v)
+				e3:SetTargetRange(1,0)
+				e3:SetTarget(s.costtg)
+				e3:SetOperation(s.costop1)
+				tc:RegisterEffect(e3,true)
+			end
+		end
+	end
+end
+function s.costchk(e,te,tp)
+	return Duel.IsExistingMatchingCard(Card.IsHasEffect,tp,0xff,0,1,nil,id)
+end
+function s.costtg(e,te,tp)
+	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject() and Duel.IsExistingMatchingCard(Card.IsHasEffect,tp,0xff,0,nil,id)
+end
+function s.costop1(e,tp,eg,ep,ev,re,r,rp)
+	if not Duel.SelectYesNo(tp,aux.Stringid(id,0)) then return end
+	s.costop(e,tp,eg,ep,ev,re,r,rp)
+end
+function s.costop2(e,tp,eg,ep,ev,re,r,rp)
+	s.costop(e,tp,eg,ep,ev,re,r,rp)
+	SNNM.BaseActOp(e,tp,eg,ep,ev,re,r,rp)
+end
+function s.costop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,1))
+	local tc=Duel.SelectMatchingCard(tp,Card.IsHasEffect,tp,0xff,0,1,1,nil,id):GetFirst()
+	Duel.ConfirmCards(1-tp,tc)
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetLabelObject(tc)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return ev==ev0 end)
+	e1:SetOperation(s.op)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	tc:CreateEffectRelation(e1)
+end
+function s.op(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if not tc:IsRelateToEffect(e) then return end
+	local le={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_SUMMON)}
+	for _,v in pairs(le) do
+		if v:GetOwner()==e:GetOwner() then
+			local tg=v:GetTarget() or aux.TRUE
+			if tg(v,tc,tp,SUMMON_TYPE_ADVANCE,POS_FACEUP,tp,e) then v:SetTarget(s.chtg(tg,tc)) end
+		end
+	end
+	if not (tc:IsAbleToHand() or tc:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1)) or not Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,tc,REASON_EFFECT) or not Duel.SelectYesNo(tp,aux.Stringid(id,2)) then return end
+	if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD,tc)==0 then return end
+	if not tc:IsLocation(LOCATION_HAND) then Duel.SendtoHand(tc,nil,REASON_EFFECT) else
+		local s1=tc:IsSummonable(true,nil,1)
+		local s2=tc:IsMSetable(true,nil,1)
+		if (s1 and s2 and Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
+			Duel.Summon(tp,tc,true,nil,1)
+		else
+			Duel.MSet(tp,tc,true,nil,1)
+		end
+	end
+end
+function s.chtg(_tg,tc)
+	return  function(e,c,...)
+				return _tg(e,c,...) and c~=tc
+			end
+end--]]

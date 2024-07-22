@@ -20,6 +20,8 @@ function cm.initial_effect(c)
 	e4:SetCode(0)
 	e4:SetCondition(cm.condition0)
 	c:RegisterEffect(e4)
+	cm.hand_effect=cm.hand_effect or {}
+    cm.hand_effect[c]=e1
 	--effect2
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)

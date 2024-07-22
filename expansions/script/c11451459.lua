@@ -1,6 +1,5 @@
 --波动反制装置·干扰线圈
-local m=11451459
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -34,7 +33,7 @@ function cm.initial_effect(c)
 	e5:SetCode(EFFECT_UPDATE_LEVEL)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e5:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_PSYCHO))
+	--e5:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_PSYCHO))
 	e5:SetValue(cm.val)
 	c:RegisterEffect(e5)
 	--check

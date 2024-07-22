@@ -86,7 +86,7 @@ function cm.cfilter2(c,eid)
 	return c:IsFaceup() and c:GetFlagEffect(m)~=0 and c:GetFlagEffectLabel(m)==eid
 end
 function cm.spfilter(c,e,tp)
-	if not (c:IsRace(RACE_PSYCHO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)) then return false end
+	if not c:IsCanBeSpecialSummoned(e,0,tp,false,false) then return false end
 	for _,lv in pairs({e:GetLabel()}) do
 		if c:IsLevel(lv) then return false end
 	end

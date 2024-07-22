@@ -1,0 +1,97 @@
+local s,id,o=GetID()
+function s.initial_effect(c)
+	c:EnableReviveLimit()
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsAttackBelow,2000),2,5)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_REMOVE)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCost(s.poscost)
+	e1:SetTarget(s.postg)
+	e1:SetOperation(s.posop)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetHintTiming(TIMING_POS_CHANGE)
+	e2:SetTarget(s.cptg)
+	e2:SetOperation(s.cpop)
+	c:RegisterEffect(e2)
+end
+function s.cfilter(c,g)
+	return g:IsContains(c)
+end
+function s.poscost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local lg=e:GetHandler():GetLinkedGroup()
+	if chk==0 then return Duel.CheckReleaseGroup(tp,s.cfilter,1,nil,lg) end
+	local g=Duel.SelectReleaseGroup(tp,s.cfilter,1,1,nil,lg)
+	Duel.Release(g,REASON_COST)
+end
+function s.filter(c)
+	return c:IsPosition(POS_FACEUP_ATTACK) and c:IsCanChangePosition()
+end
+function s.postg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,0,LOCATION_MZONE,1,nil) end
+	local g=Duel.GetMatchingGroup(s.filter,tp,0,LOCATION_MZONE,nil)
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
+end
+function s.posop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(s.filter,tp,0,LOCATION_MZONE,nil)
+	Duel.ChangePosition(g,POS_FACEUP_DEFENSE)
+	local tg=Group.__sub(g,Duel.GetOperatedGroup())
+	for tc in aux.Next(tg) do
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e2)
+		local e3=Effect.CreateEffect(c)
+		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_SET_ATTACK_FINAL)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e3:SetValue(0)
+		tc:RegisterEffect(e3)
+	end
+end
+function s.cpfilter(c)
+	local te=c:GetActivateEffect()
+	return c:GetType()==TYPE_TRAP and te and te:GetCode()==EVENT_CHANGE_POS and c:IsAbleToRemoveAsCost() and c:CheckActivateEffect(false,true,false)~=nil
+end
+function s.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:IsCostChecked() and Duel.IsExistingMatchingCard(s.cpfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,s.cpfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	e:SetProperty(te:GetProperty())
+	local tg=te:GetTarget()
+	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
+	te:SetLabelObject(e:GetLabelObject())
+	e:SetLabelObject(te)
+	Duel.ClearOperationInfo(0)
+end
+function s.cpop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	if not te then return end
+	e:SetLabelObject(te:GetLabelObject())
+	local op=te:GetOperation()
+	if op then op(e,tp,eg,ep,ev,re,r,rp) end
+end

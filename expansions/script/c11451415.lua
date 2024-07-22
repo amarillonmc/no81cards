@@ -44,7 +44,7 @@ function cm.mfilter(c)
 	return c:IsRace(RACE_SEASERPENT) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.rfilter(c,e,tp)
-	return c:IsSetCard(0x6978) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,true)
+	return c:IsSetCard(0x6978) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp)

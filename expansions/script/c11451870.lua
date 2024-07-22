@@ -10,14 +10,14 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	local ct=math.abs(Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)-Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD))
-	return ct>=3
+	local ct=math.abs(Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)-Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD))
+	return ct<=3
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
 	if chk==0 then return #g>0 end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,0,1-tp,LOCATION_ONFIELD)
+	--Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,0,1-tp,LOCATION_ONFIELD)
 	if cm.condition(e,tp,eg,ep,ev,re,r,rp) then
 		e:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+0x200)
 	else e:SetProperty(0) end
@@ -29,7 +29,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local sg=g:Select(tp,1,#g,nil)
 	Duel.HintSelection(sg)
 	if aux.SelectFromOptions(1-tp,{true,aux.Stringid(m,0)},{true,aux.Stringid(m,1)})==1 then
-		Duel.SendtoGrave(sg,REASON_RULE)
+		Duel.SendtoHand(sg,nil,REASON_RULE)
 	else
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)

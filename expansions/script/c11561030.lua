@@ -9,7 +9,7 @@ function c11561030.initial_effect(c)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT) 
 	e1:SetRange(LOCATION_MZONE) 
 	e1:SetValue(function(e,te) 
-	return te:GetOwnerPlayer()~=e:GetOwnerPlayer() and te:IsActiveType(TYPE_SPELL) end) 
+	return te:GetOwnerPlayer()~=e:GetOwnerPlayer() and te:IsActiveType(TYPE_SPELL+TYPE_TRAP) end) 
 	c:RegisterEffect(e1) 
 	--effect gain
 	local e2=Effect.CreateEffect(c)

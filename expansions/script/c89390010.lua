@@ -19,7 +19,7 @@ function cm.rmfilter(c)
     return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
 end
 function cm.spfilter1(c,e,tp,tc)
-    return c:IsRace(tc:GetRace()) and not c:IsCode(tc:GetCode()) and c:IsLevelAbove(0) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+    return c:IsRace(tc:GetRace()) and not c:IsCode(tc:GetCode()) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sretop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()

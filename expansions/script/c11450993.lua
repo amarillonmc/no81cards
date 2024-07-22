@@ -112,7 +112,9 @@ function cm.spfilter2(c,e,tp,bool)
 							end
 							return 0
 						end
+	--local nm=tc:IsType(TYPE_NORMAL)
 	tc.initial_effect(tc)
+	--if nm then Debug.Message(tc:IsType(TYPE_EFFECT)) end
 	local res=false
 	for _,sumtype in pairs({0,SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ,SUMMON_TYPE_LINK,SUMMON_TYPE_SPECIAL,SUMMON_VALUE_SELF}) do
 		if tc:IsSpecialSummonable(sumtype) then res=true end
@@ -204,7 +206,10 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,tc)
 		end
 		for _,sumtype in pairs({0,SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ,SUMMON_TYPE_LINK,SUMMON_TYPE_SPECIAL,SUMMON_VALUE_SELF}) do
-			if tc:IsSpecialSummonable(sumtype) then Duel.SpecialSummonRule(tp,tc,sumtype) end
+			if tc:IsSpecialSummonable(sumtype) then
+				Duel.SpecialSummonRule(tp,tc,sumtype)
+				break
+			end
 		end
 		cm[3-tp]=nil
 		if (not cm[tp] and not cm[3-tp]) then

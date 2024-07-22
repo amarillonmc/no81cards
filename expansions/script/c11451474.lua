@@ -77,12 +77,15 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and tc==c then c:CancelToGrave() end
 	if Duel.SendtoHand(tc,1-tp,REASON_EFFECT)>0 then
 		if tc:IsPreviousLocation(LOCATION_HAND) then Duel.ShuffleHand(tp) end
-		if not tc:IsLocation(LOCATION_HAND) or not tc:IsControler(1-tp) then return end
-		Duel.ShuffleHand(1-tp)
+		if not tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA) or not tc:IsControler(1-tp) then return end
+		if tc:IsLocation(LOCATION_HAND) then Duel.ShuffleHand(1-tp) end
 		Duel.ConfirmCards(tp,tc)
-		if tc:IsSpecialSummonable(0) then
-			Duel.BreakEffect()
-			Duel.SpecialSummonRule(1-tp,tc,0)
+		for _,sumtype in pairs({0,SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ,SUMMON_TYPE_LINK,SUMMON_TYPE_SPECIAL,SUMMON_VALUE_SELF}) do
+			if tc:IsSpecialSummonable(sumtype) then
+				Duel.BreakEffect()
+				Duel.SpecialSummonRule(1-tp,tc,sumtype)
+				break
+			end
 		end
 	end
 end

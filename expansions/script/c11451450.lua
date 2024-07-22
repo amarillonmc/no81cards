@@ -1,6 +1,5 @@
 --镇压革命
-local m=11451450
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,99518961)
 	--activate

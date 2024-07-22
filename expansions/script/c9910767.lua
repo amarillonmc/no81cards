@@ -79,25 +79,33 @@ function c9910767.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	g:AddCard(e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
 end
+function c9910767.gselect(g)
+	return g:GetClassCount(Card.GetLocation)==g:GetCount()
+end
 function c9910767.setop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+	local ft=math.min((Duel.GetLocationCount(tp,LOCATION_SZONE)),2)
+	local g1=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910767.setfilter),tp,0,LOCATION_MZONE+LOCATION_GRAVE,nil)
+	if ft<=0 or #g1==0 then return end
+	local res=false
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g2=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910767.setfilter),tp,0,LOCATION_MZONE+LOCATION_GRAVE,1,1,nil)
+	local g2=g1:SelectSubGroup(tp,c9910767.gselect,false,1,ft)
 	if g2:GetCount()==0 then return end
 	Duel.HintSelection(g2)
-	local res=false
-	local sc=g2:GetFirst()
-	if sc and not sc:IsImmuneToEffect(e) and Duel.MoveToField(sc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-		sc:RegisterEffect(e1)
-		res=Duel.Draw(1-tp,1,REASON_EFFECT)>0
+	if g2 and #g2>0 then
+		for sc in aux.Next(g2) do
+			if sc and not sc:IsImmuneToEffect(e) and Duel.MoveToField(sc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetCode(EFFECT_CHANGE_TYPE)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+				e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+				sc:RegisterEffect(e1)
+				res=true
+			end
+		end
 	end
-	if not res then return end
+	if not res or Duel.Draw(1-tp,1,REASON_EFFECT)==0 then return end
 	local g=Group.CreateGroup()
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()

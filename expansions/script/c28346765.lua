@@ -28,7 +28,7 @@ function c28346765.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28346765.matfilter(c)
-	return c:IsLinkSetCard(0x283) and c:IsLinkRace(RACE_FAIRY)
+	return c:IsLinkSetCard(0x283)
 end
 function c28346765.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
