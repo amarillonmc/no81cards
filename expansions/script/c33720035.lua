@@ -1,7 +1,9 @@
 --Sepialife District
 --Scripted by:XGlitchy30
-local id=33720035
-local s=_G["c"..tostring(id)]
+local s,id=GetID()
+if not GLITCHYLIB_LOADED then
+	Duel.LoadScript("glitchylib_vsnemo.lua")
+end
 function s.initial_effect(c)
 	c:SetUniqueOnField(1,1,id)
 	--Activate
@@ -83,11 +85,13 @@ end
 function s.cfilter(c,e,tp)
 	return c:IsSetCard(0x144e) and c:IsAbleToRemoveAsCost(POS_FACEDOWN)
 end
+function s.rescon(g,e,tp,mg,c)
+	return g:GetClassCount(Card.GetCode)==#g, c and g:GetClassCount(Card.GetCode)~=#g
+end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_DECK,0,nil)
-	if chk==0 then return g:GetClassCount(Card.GetCode)>=6 end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local tg=g:SelectSubGroup(tp,aux.dncheck,false,6,6)
+	if chk==0 then return aux.SelectUnselectGroup(g,e,tp,6,6,s.rescon,0) end
+	local tg=aux.SelectUnselectGroup(g,e,tp,6,6,s.rescon,1,tp,HINTMSG_REMOVE,s.rescon)
 	if #tg>0 then
 		Duel.Remove(tg,POS_FACEDOWN,REASON_COST)
 	end
