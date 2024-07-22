@@ -43,10 +43,10 @@ end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local c=e:GetHandler()
-	if tc:IsRelateToEffect(e) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT) then
+	--fixing
+		if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT) and tc:IsRelateToEffect(e) then
 			Duel.ConfirmCards(1-tp,g)
 			local e5=Effect.CreateEffect(c)
 			e5:SetType(EFFECT_TYPE_SINGLE)
@@ -68,7 +68,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e8)
 			tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,1))
 		end
-	end
+
 end
 function s.fuslimit(e,c,sumtype)
 	return sumtype==SUMMON_TYPE_FUSION

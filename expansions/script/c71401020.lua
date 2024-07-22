@@ -187,7 +187,7 @@ function c71401020.op3(e,tp,eg,ep,ev,re,r,rp)
 	else if #ct_table==0 then return
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(71401020,1))
-		local ct=Duel.AnnounceNumber(tp,table.unpack(ct_table)
+		ct=Duel.AnnounceNumber(tp,table.unpack(ct_table))
 	end
 	local rg=Duel.GetDecktopGroup(tp,ct)
 	Duel.DisableShuffleCheck()
