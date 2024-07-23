@@ -4004,7 +4004,14 @@ function Auxiliary.SelectSimultaneousEventGroup(g,flag,ct,e,excflag)
 	if excflag then
 		g=g:Filter(aux.NOT(Card.HasFlagEffectLabel),nil,excflag,fid)
 	end
-	if #g>1 then
+	if #g==0 then return end
+	if #g==1 then
+		Duel.HintSelection(g)
+		if excflag then
+			g:GetFirst():RegisterFlagEffect(excflag,RESET_CHAIN,0,1,fid)
+		end
+		return g
+	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 		local tg=g:SelectSubGroup(tp,aux.SimultaneousEventGroupCheck,false,ct,#g,flag,g)
 		Duel.HintSelection(tg)
@@ -4014,12 +4021,6 @@ function Auxiliary.SelectSimultaneousEventGroup(g,flag,ct,e,excflag)
 			end
 		end
 		return tg
-	else
-		Duel.HintSelection(g)
-		if excflag then
-			g:GetFirst():RegisterFlagEffect(excflag,RESET_CHAIN,0,1,fid)
-		end
-		return g
 	end
 end
 

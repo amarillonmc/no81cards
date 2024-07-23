@@ -38,24 +38,28 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		return true
 	end
-	local g=aux.SelectSimultaneousEventGroup(eg,id+100,1,e,id+200)
-	Duel.SetTargetCard(g)
 	local opinfochk=false
-	local g=Duel.GetDecktopGroup(1-tp,1)
-	if g and #g>0 then
-		local tc=g:GetFirst()
-		if tc:IsPublic() or Duel.IsPlayerAffectedByEffect(tp,EFFECT_REVERSE_DECK) then
-			opinfochk=true
-			if tc:IsSetCard(ARCHE_SEPIALIFE) then
-				Duel.SetOperationInfo(0,CATEGORY_TODECK,g,#g,0,0)
-				Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,2)
-			else
-				Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+	local g=aux.SelectSimultaneousEventGroup(eg,id+100,1,e,id+200)
+	if not g or #g==0 then
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,0,LOCATION_MZONE)
+	else
+		Duel.SetTargetCard(g)
+		local g=Duel.GetDecktopGroup(1-tp,1)
+		if g and #g>0 then
+			local tc=g:GetFirst()
+			if tc:IsPublic() or Duel.IsPlayerAffectedByEffect(tp,EFFECT_REVERSE_DECK) then
+				opinfochk=true
+				if tc:IsSetCard(ARCHE_SEPIALIFE) then
+					Duel.SetOperationInfo(0,CATEGORY_TODECK,g,#g,0,0)
+					Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,2)
+				else
+					Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+				end
 			end
 		end
 	end
 	if opinfochk then return end
-	Duel.SetPossibleOperationInfo(0,CATEGORY_TODECK,g,#g,0,0)
+	Duel.SetPossibleOperationInfo(0,CATEGORY_TODECK,g and g or nil,g and #g or 0,0,0)
 	Duel.SetPossibleOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,2)
 	Duel.SetPossibleOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
@@ -67,7 +71,9 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=top:GetFirst()
 	if tc:IsSetCard(ARCHE_SEPIALIFE) then
 		local og=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+		if not og or #og==0 then return end
 		local g=og:Filter(Card.IsRelateToChain,nil)
+		if #g==0 then return end
 		g:AddCard(tc)
 		local tg=g:Filter(Card.IsAbleToDeck,nil)
 		if #tg==#og+1 and Duel.ShuffleIntoDeck(tg,tp,nil,SEQ_DECKTOP)>0 then
