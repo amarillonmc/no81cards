@@ -30,7 +30,7 @@ function c71401020.initial_effect(c)
 	e1b:SetRange(LOCATION_MZONE)
 	e1b:SetCondition(c71401020.discon)
 	e1b:SetOperation(c71401020.disop)
-	c:RegisterEffect(e5)
+	c:RegisterEffect(e1b)
 	--disable
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71401020,0))
