@@ -54,7 +54,7 @@ function cm.eqlimit(e,c)
 	return e:GetOwner()==c
 end
 function cm.equipfd(c,tp,tc)
-	if tc:IsPosition(POS_FACEUP) then return Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
+	if tc:IsPosition(POS_FACEUP) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
 	if not Duel.Equip(tp,tc,c,false) then return false end
 	--Add Equip limit
 	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)

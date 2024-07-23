@@ -18,7 +18,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	--negate
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(27548199,1))
+	e2:SetDescription(1131)
 	e2:SetCategory(CATEGORY_NEGATE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
@@ -60,7 +60,7 @@ end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 	if ct~=Duel.GetMatchingGroupCount(s.cfilter,tp,LOCATION_MZONE,0,nil) then return false end
-	return rp==1-tp and Duel.IsChainNegatable(ev) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+	return rp==1-tp and Duel.IsChainNegatable(ev) and re:IsActiveType(TYPE_MONSTER)
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

@@ -51,10 +51,10 @@ end
 function c25244555.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(c25244555.cfilter,tp,LOCATION_MZONE,0,1,c)
+	if chk==0 then return Duel.IsExistingTarget(c25244555.cfilter,tp,LOCATION_ONFIELD,0,1,c)
 		and Duel.IsExistingTarget(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELF)
-	local g1=Duel.SelectTarget(tp,c25244555.cfilter,tp,LOCATION_MZONE,0,1,1,c)
+	local g1=Duel.SelectTarget(tp,c25244555.cfilter,tp,LOCATION_ONFIELD,0,1,1,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPPO)
 	local g2=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,1,nil)
 	g1:Merge(g2)

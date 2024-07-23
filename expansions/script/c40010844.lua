@@ -10,7 +10,7 @@ function cm.initial_effect(c)
 	c:SetUniqueOnField(1,0,m)
 	--activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+	--e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
@@ -31,6 +31,7 @@ function cm.initial_effect(c)
 	e3:SetCode(EVENT_FLIP)
 	c:RegisterEffect(e3)  
 end
+cm.has_text_type=TYPE_SPIRIT 
 function cm.thfilter(c)
 	return c:IsCode(40010592) and c:IsSSetable()
 end
@@ -44,7 +45,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local tg=eg:GetFirst()
-	return tg:IsType(TYPE_SPIRIT) and tg:GetSummonPlayer()==tp 
+	return eg:GetCount()==1 and tg~=e:GetHandler() 
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerCanDraw(1-tp,1) end

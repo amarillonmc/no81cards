@@ -28,6 +28,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.actop)
 	c:RegisterEffect(e2)
 end
+cm.has_text_type=TYPE_SPIRIT 
 function cm.filter(c)
 	return cm.WorldTreemarchingband(c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
