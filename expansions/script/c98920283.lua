@@ -74,7 +74,7 @@ function c98920283.desop(e,tp,eg,ep,ev,re,r,rp)
 			end
 			local g2=Duel.GetMatchingGroup(c98920283.thfilter,tp,LOCATION_DECK,0,nil)
 			if ct1>0 and g2:GetCount()>=ct1 then 
-			   local sg=Duel.SelectMatchingCard(tp,c98920283.filter,tp,LOCATION_DECK,0,ct1,ct1,nil)
+			   local sg=Duel.SelectMatchingCard(tp,c98920283.thfilter,tp,LOCATION_DECK,0,ct1,ct1,nil)
 			   Duel.SendtoHand(sg,nil,REASON_EFFECT)
 			   Duel.ConfirmCards(1-tp,sg)
 		   end

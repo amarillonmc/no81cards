@@ -23,7 +23,7 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e2:SetCode(EVENT_ADJUST)
+	e2:SetCode(EVENT_MOVE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetOperation(s.adjustop)
 	c:RegisterEffect(e2)
@@ -76,10 +76,10 @@ end
 function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_MZONE,0,nil)
 	if #sg>1 then
-		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_FACEUP)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 		local sc=sg:Select(tp,1,1,nil):GetFirst()
 		sg:RemoveCard(sc)
 		Duel.SendtoGrave(sg,REASON_RULE)
-		Duel.Readjust()
+		--Duel.Readjust()
 	end
 end

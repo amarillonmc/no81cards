@@ -79,7 +79,7 @@ function s.teop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(7984540,1))
 	local sc=sg:Select(tp,1,3,nil)
 	if #sc~=0 then
-		Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		Duel.SendtoDeck(sc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end
 
