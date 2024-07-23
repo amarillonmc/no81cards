@@ -1,8 +1,8 @@
 --绘舞华·星彩之缤色花
 --21.07.29
-local m=11451610
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
+	aux.AddCodeList(c,11451610)
 	--link summon
 	aux.AddLinkProcedure(c,nil,3,3,cm.lcheck)
 	c:EnableReviveLimit()
