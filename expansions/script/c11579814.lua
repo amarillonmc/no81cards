@@ -47,17 +47,41 @@ function c11579814.effilter(c)
 end
 function c11579814.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
-	local ct=c:GetOverlayGroup()
+	local ct=c:GetOverlayGroup() 
 	local wg=ct:Filter(c11579814.effilter,nil,tp)
 	local wbc=wg:GetFirst()
 	while wbc do
 		local code=wbc:GetOriginalCode()
 		if c:GetFlagEffect(code)==0 then
-		c:CopyEffect(code,RESET_EVENT+0x1fe0000+EVENT_CHAINING,1)
-		c:RegisterFlagEffect(code,RESET_EVENT+0x1fe0000+EVENT_CHAINING,0,1)  
+			local cid=c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD,1)
+			c:RegisterFlagEffect(code,RESET_EVENT+RESETS_STANDARD,0,1,cid)
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e3:SetRange(LOCATION_MZONE)
+			e3:SetCode(EVENT_ADJUST)
+			e3:SetLabel(code,cid)
+			e3:SetCondition(c11579814.regcon)
+			e3:SetOperation(c11579814.regop)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+			c:RegisterEffect(e3)
 		end 
 		wbc=wg:GetNext()
 	end  
+end
+function c11579814.regcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=c:GetOverlayGroup()
+	local code,cid=e:GetLabel()
+	return not g or not g:IsExists(aux.FilterEqualFunction(Card.GetOriginalCode,code),1,nil)
+end
+function c11579814.regop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=c:GetOverlayGroup()
+	local code,cid=e:GetLabel()
+	--if tc and tc:GetOriginalCode()==c:GetFlagEffectLabel(11579814) then return end
+	--local cid=c:GetFlagEffectLabel(code)
+	c:ResetEffect(cid,RESET_COPY)
+	c:ResetFlagEffect(code)
 end
 function c11579814.ovcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsControler,1,nil,tp) 
