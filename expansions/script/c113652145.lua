@@ -141,9 +141,7 @@ function c113652145.eqfilter(c,tc)
 end
 function c113652145.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c113652145.tgfilter(chkc) end
-    if chk==0 then return e:GetHandler():IsRelateToEffect(e)
-        and Duel.IsExistingMatchingCard(c113652145.eqfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,eg:GetFirst()) 
-        and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+    if chk==0 then return e:GetHandler():IsRelateToEffect(e) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
     Duel.SelectTarget(tp,c113652145.tgfilter,tp,LOCATION_MZONE,0,1,1,nil)
 end
@@ -155,7 +153,10 @@ function c113652145.tgop(e,tp,eg,ep,ev,re,r,rp)
     if tc:IsFacedown() or not tc:IsRelateToEffect(e) or tc:GetEquipCount()>0 then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
     local sg=Duel.SelectMatchingCard(tp,c113652145.eqfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,eg:GetFirst())
-    if sg:GetCount()==0 then return end
+    if sg:GetCount()==0 then
+        Duel.ConfirmCards(1-tp,Duel.GetFieldGroup(tp,LOCATION_DECK+LOCATION_EXTRA,0))
+        return
+    end
     local sc=sg:GetFirst()
     Duel.Equip(tp,sc,tc,true)
     local e1=Effect.CreateEffect(c)
@@ -174,7 +175,7 @@ function c113652145.tgop(e,tp,eg,ep,ev,re,r,rp)
     sc:RegisterEffect(e2)
     local e3=e2:Clone()
     e3:SetCode(EFFECT_CHANGE_TYPE)
-    e3:SetValue(TYPE_XYZ)
+    e3:SetValue(TYPE_XYZ+TYPE_MONSTER)
     sc:RegisterEffect(e3)
     local e4=Effect.CreateEffect(c)
     e4:SetCategory(CATEGORY_POSITION)
