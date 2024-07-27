@@ -90,7 +90,7 @@ function c9910142.discon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910142.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local dt=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)
+	local dt=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
 	if chk==0 then return c:IsAbleToRemoveAsCost() and dt>0 and Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) end
 	Duel.Remove(c,POS_FACEUP,REASON_COST)
 	local ct=Duel.RemoveOverlayCard(tp,1,0,1,dt,REASON_COST)
