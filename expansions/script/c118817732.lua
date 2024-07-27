@@ -107,7 +107,7 @@ function c118817732.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
     e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c118817732.spfilter(c,ft,e,tp)
-    return c:IsSetCard(0xdd) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
+    return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xdd) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c118817732.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then

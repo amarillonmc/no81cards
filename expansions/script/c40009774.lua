@@ -26,14 +26,14 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.damop)
 	c:RegisterEffect(e2)  
 end
-function cm.mifilter(c)
+function cm.milfilter(c)
 	return c:IsRace(RACE_WARRIOR) and c:IsLevelAbove(8) and c:IsAbleToHand()
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<3 then return end
 	local g=Duel.GetDecktopGroup(tp,3)
 	Duel.ConfirmCards(tp,g)
-	if g:IsExists(cm.milfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+	if g:IsExists(cm.milfilter,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:FilterSelect(tp,cm.milfilter,1,1,nil)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)

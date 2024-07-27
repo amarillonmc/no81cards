@@ -67,10 +67,15 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	local tc=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
+	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) then
+		Duel.ConfirmCards(1-tp,tc)
+		Duel.ShuffleHand(tp)
+		if c:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+			Duel.SendtoHand(c,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,c)
+		end
 	end
 end
