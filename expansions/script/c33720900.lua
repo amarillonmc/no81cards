@@ -96,6 +96,9 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local tc=g:GetFirst()
 		while tc do
 			local sg=g:Filter(s.hasSameCodeButNotOtherOnes,nil,tc:GetCode())
+			if not sg:IsContains(tc) then
+				sg:AddCard(tc)
+			end
 			local nrg=sg:Filter(aux.NOT(Card.IsAbleToRemove),nil)
 			if #nrg>0 then
 				if #nrg>=2 then
@@ -122,6 +125,9 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:GetFirst()
 		while tc do
 			local sg=g:Filter(s.hasSameCodeButNotOtherOnes,nil,tc:GetCode())
+			if not sg:IsContains(tc) then
+				sg:AddCard(tc)
+			end
 			local nrg=sg:Filter(aux.NOT(Card.IsAbleToRemove),nil)
 			if #nrg>0 then
 				if #nrg>=2 then
