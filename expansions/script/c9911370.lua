@@ -83,7 +83,10 @@ function c9911370.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c9911370.filter1(c,tp)
-	return c:IsFaceup() and Duel.IsExistingTarget(aux.NegateEffectMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
+	return c:IsFaceup() and c:IsType(TYPE_EFFECT) and Duel.IsExistingTarget(c9911370.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
+end
+function c9911370.filter2(c)
+	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
 end
 function c9911370.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
@@ -91,17 +94,17 @@ function c9911370.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectTarget(tp,c9911370.filter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,aux.NegateEffectMonsterFilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,g)
+	Duel.SelectTarget(tp,c9911370.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,g)
 end
 function c9911370.filter2(c,e)
 	return c:IsRelateToEffect(e) and c:IsFaceup()
 end
 function c9911370.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(c9911370.filter2,nil,e)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e):Filter(Card.IsFaceup,nil)
 	if #g==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-		local tc1=g:FilterSelect(tp,aux.NegateEffectMonsterFilter,1,1,nil):GetFirst()
+		local tc1=g:Select(tp,1,1,nil):GetFirst()
 		if tc1 then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)

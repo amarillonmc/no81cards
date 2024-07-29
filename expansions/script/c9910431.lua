@@ -43,11 +43,14 @@ function c9910431.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local cg=Duel.SelectMatchingCard(tp,c9910431.cfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
 	Duel.Remove(cg,POS_FACEUP,REASON_COST)
 end
+function c9910431.disfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
+end
 function c9910431.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and aux.NegateEffectMonsterFilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(aux.NegateEffectMonsterFilter,tp,0,LOCATION_MZONE,1,nil) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c9910431.disfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910431.disfilter,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-	local g=Duel.SelectTarget(tp,aux.NegateEffectMonsterFilter,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,c9910431.disfilter,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
 function c9910431.disop(e,tp,eg,ep,ev,re,r,rp)

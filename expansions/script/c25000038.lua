@@ -59,10 +59,10 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cfilter(c)
+function s.cfilter(c)
 	return c:IsLevel(8) and c:IsFaceup() and c:IsRace(RACE_FAIRY)
 end
-function rmfilter(c)
+function s.rmfilter(c)
 	return not (c:IsStatus(STATUS_SPSUMMON_TURN) or c:IsStatus(STATUS_SUMMON_TURN)
 		or c:IsStatus(STATUS_FLIP_SUMMON_TURN)) or c:IsFacedown()
 end
