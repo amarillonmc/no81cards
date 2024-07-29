@@ -57,48 +57,30 @@ function s.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 --E1
-function s.hascopy(c,g)
+function s.rmfilter(c,g)
 	return g:IsExists(Card.IsCode,1,c,c:GetCode())
 end
-function s.namecheck(g)
-	local c1,c2=g:GetFirst(),g:GetNext()
-	return c1:IsCode(c2:GetCode())
-end
-function s.gcheck(og)
+function s.rescon(og)
 	return	function(g,e,tp,mg,c)
-				for tc in aux.Next(og) do
-					local codes={tc:GetCode()}
-					for _,code in ipairs(codes) do
-						local ct=g:FilterCount(Card.IsCode,nil,code)
-						local ct1=og:FilterCount(Card.IsCode,nil,code)
-						if ct~=ct1-1 then
-							return false,ct>ct1-1
-						end
-					end
+				local cg=og:Filter(aux.TRUE,g)
+				if c and not cg:IsExists(Card.IsCode,1,nil,c:GetCode()) then
+					return false,true
 				end
-				local cg=og:Clone()
-				cg:Sub(g)
-				local res=cg:CheckSubGroup(s.namecheck,2,2)
-				return not res, not c:IsAbleToRemove()
+				return true
 			end
 end
-function s.finishcon(og)
+function s.finishcon(ct,og)
 	return	function(g,e,tp,mg)
-				for tc in aux.Next(og) do
-					local codes={tc:GetCode()}
-					for _,code in ipairs(codes) do
-						local ct=g:FilterCount(Card.IsCode,nil,code)
-						local ct1=og:FilterCount(Card.IsCode,nil,code)
-						if ct~=ct1-1 then
-							return false
-						end
-					end
-				end
-				local cg=og:Clone()
-				cg:Sub(g)
-				local res=cg:CheckSubGroup(s.namecheck,2,2)
-				return not res
+				local cg=og:Filter(aux.TRUE,g)
+				local dnct=g:GetClassCount(Card.GetCode)
+				local cdnct=cg:GetClassCount(Card.GetCode)
+				return dnct==ct and cdnct==ct
 			end
+end
+function s.hasSameCodeButNotOtherOnes(c,code)
+	local codes={c:GetCode()}
+	if #codes>1 then return false end
+	return codes[1]==code
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -108,20 +90,56 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 			return false
 		end
 		local gy=Duel.GetGY(1-tp)
-		local g=gy:Filter(s.hascopy,nil,gy)
-		if #g==0 then return false end
-		return aux.SelectUnselectGroup(g,e,tp,1,#g-1,s.gcheck(g),0)
+		local g=gy:Filter(s.rmfilter,nil,gy)
+		local ct=#g
+		if ct<=0 then return false end
+		local tc=g:GetFirst()
+		while tc do
+			local sg=g:Filter(s.hasSameCodeButNotOtherOnes,nil,tc:GetCode())
+			local nrg=sg:Filter(aux.NOT(Card.IsAbleToRemove),nil)
+			if #nrg>0 then
+				if #nrg>=2 then
+					return false
+				end
+				g:Sub(nrg)
+				tc=g:GetFirst()
+			else
+				tc=g:GetNext()
+			end
+		end
+		return true
 	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
+	local b1=true
 	local gy=Duel.GetGY(1-tp)
-	local g=gy:Filter(s.hascopy,nil,gy)
-	if #g>0 then
-		local rg=aux.SelectUnselectGroup(g,e,tp,1,#g-1,s.gcheck(g),1,tp,HINTMSG_REMOVE,s.finishcon(g))
+	local g=gy:Filter(s.rmfilter,nil,gy)
+	local ct=#g
+	if ct<=0 then b1=false end
+	if b1 then
+		local tc=g:GetFirst()
+		while tc do
+			local sg=g:Filter(s.hasSameCodeButNotOtherOnes,nil,tc:GetCode())
+			local nrg=sg:Filter(aux.NOT(Card.IsAbleToRemove),nil)
+			if #nrg>0 then
+				if #nrg>=2 then
+					b1=false
+					break
+				end
+				g:Sub(nrg)
+				tc=g:GetFirst()
+			else
+				tc=g:GetNext()
+			end
+		end
+	end
+	if b1 and #g>0 then
+		local dnct=g:GetClassCount(Card.GetCode)
+		local rescon=s.rescon(g)
+		local rg=aux.SelectUnselectGroup(g,e,tp,ct-dnct,ct-1,rescon,1,tp,HINTMSG_REMOVE,s.finishcon(dnct,g))
 		if #rg>0 then
-			Duel.HintSelection(rg)
 			Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 		end
 	end
@@ -140,7 +158,7 @@ function s.damcon(e)
 end
 
 --E6
-function s.sgcheck(g)
+function s.srescon(g)
 	local c1,c2=g:GetFirst(),g:GetNext()
 	return c1:IsCode(c2:GetCode())
 end
@@ -148,5 +166,5 @@ function s.sdcon(e)
 	if not aux.ProcSummonedCond(e) then return false end
 	local tp=e:GetHandlerPlayer()
 	local sg=Duel.GetGY(tp)
-	return not sg:CheckSubGroup(s.sgcheck,2,2)
+	return not sg:CheckSubGroup(s.srescon,2,2)
 end
