@@ -66,6 +66,7 @@ function c9910953.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc and Duel.SSet(tp,tc,tp,false)>0 and c:IsRelateToChain() and c:GetCounter(0x6954)>0 then
 		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(9910953,2))
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)

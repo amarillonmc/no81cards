@@ -215,7 +215,7 @@ end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)
-	if #g>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(11451858,4)) then
+	if #g>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(11451858,7)) then
 		local tg=g
 		if #g>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -233,7 +233,8 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 				e1:SetTargetRange(0,1)
 				e1:SetValue(cm.aclimit)
-				e1:SetLabelObject(tc)
+				e1:SetLabel(tc:GetCode())
+				e1:SetReset(RESET_PHASE+PHASE_END,2)
 				Duel.RegisterEffect(e1,tp)
 				tc:CreateEffectRelation(e1)
 				tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,0,1,0,aux.Stringid(m,4))
@@ -242,8 +243,8 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.aclimit(e,re,tp)
-	local tc=e:GetLabelObject()
-	return re:GetHandler():IsCode(tc:GetCode()) and tc:IsRelateToEffect(e)
+	local code=e:GetLabel()
+	return re:GetHandler():IsCode(code) --and tc:IsRelateToEffect(e)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

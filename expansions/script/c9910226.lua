@@ -15,6 +15,7 @@ function c9910226.initial_effect(c)
 	c:RegisterEffect(e1)
 	--act qp in hand
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9910226,0))
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	e2:SetRange(LOCATION_MZONE)

@@ -64,6 +64,7 @@ function c9910868.setop(e,tp,eg,ep,ev,re,r,rp)
 		local fid=c:GetFieldID()
 		rc:RegisterFlagEffect(9910868,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(9910868,0))
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		if rc:IsType(TYPE_TRAP) then
 			e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)

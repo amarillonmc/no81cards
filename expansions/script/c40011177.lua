@@ -112,9 +112,10 @@ function cm.costfilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_PLANT) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.dacost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.costfilter,1,nil) end
-	local sg=Duel.SelectReleaseGroup(tp,cm.costfilter,1,1,nil)
-	Duel.Release(sg,REASON_COST)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsRace,1,nil,RACE_PLANT) end
+	local rg=Duel.SelectReleaseGroup(tp,Card.IsRace,1,1,nil,RACE_PLANT)
+	Duel.Release(rg,REASON_COST)
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

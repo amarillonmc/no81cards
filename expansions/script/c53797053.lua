@@ -79,6 +79,7 @@ function s.initial_effect(c)
 	end
 end
 function s.ffilter(c,fc,sub,mg,sg)
+	if c:IsControler(1-fc:GetControler()) then return false end
 	return not sg or sg:FilterCount(aux.TRUE,c)==0
 		or (not sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute())
 			and not sg:IsExists(Card.IsLevel,1,c,c:GetLevel()))

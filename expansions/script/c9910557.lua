@@ -62,6 +62,7 @@ end
 function c9910557.actop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,9910557)~=0 then return end
 	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(9910557,0))
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3951))

@@ -24,6 +24,7 @@ function c9910029.initial_effect(c)
 	c:RegisterEffect(e2)
 	--act in set turn
 	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(9910029,2))
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
 	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)

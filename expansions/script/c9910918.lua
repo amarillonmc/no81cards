@@ -92,6 +92,7 @@ function c9910918.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc and Duel.SSet(tp,tc)~=0 and tc:IsCode(9910871) then
 		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(9910918,2))
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)

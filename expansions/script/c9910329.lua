@@ -5,6 +5,7 @@ function c9910329.initial_effect(c)
 	c:EnableReviveLimit()
 	--activate from hand
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9910329,0))
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	e1:SetRange(LOCATION_MZONE)

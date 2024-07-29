@@ -135,7 +135,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 		e2:SetTarget(s.stg)
 		e2:SetOperation(s.sop)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e2)
 	end
 end

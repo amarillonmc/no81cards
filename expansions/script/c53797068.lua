@@ -10,7 +10,7 @@ function s.initial_effect(c)
 	e1:SetRange(LOCATION_EXTRA)
 	e1:SetCondition(s.SynMixCondition)
 	e1:SetTarget(s.SynMixTarget)
-	e1:SetOperation(aux.SynMixOperation(s.f1,nil,nil,s.f4,1,1,nil))
+	e1:SetOperation(aux.SynMixOperation(s.f1,nil,nil,s.f4,1,1,s.syncheck))
 	e1:SetValue(SUMMON_TYPE_SYNCHRO)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
@@ -93,6 +93,7 @@ function s.SynMixCondition(e,c,smat,mg1,min,max)
 	if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 	local minc=2
 	local maxc=2
+	local gc=s.syncheck
 	if min then
 		if min>minc then minc=min end
 		if max<maxc then maxc=max end
@@ -109,11 +110,12 @@ function s.SynMixCondition(e,c,smat,mg1,min,max)
 		mg=s.GetSynMaterials(tp,c)
 	end
 	if smat~=nil then mg:AddCard(smat) end
-	return mg:IsExists(s.SynMixFilter1,1,nil,s.f1,nil,nil,s.f4,minc,maxc,c,mg,smat,nil,mgchk)
+	return mg:IsExists(s.SynMixFilter1,1,nil,s.f1,nil,nil,s.f4,minc,maxc,c,mg,smat,gc,mgchk)
 end
 function s.SynMixTarget(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg1,min,max)
 	local minc=2
 	local maxc=2
+	local gc=s.syncheck
 	if min then
 		if min>minc then minc=min end
 		if max<maxc then maxc=max end
@@ -139,9 +141,9 @@ function s.SynMixTarget(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg1,min,max)
 	for i=0,maxc-1 do
 		local mg2=mg:Clone()
 		mg2=mg2:Filter(s.f4,g,c,c1,nil,nil)
-		local cg=mg2:Filter(s.SynMixCheckRecursive,g4,tp,g4,mg2,i,minc,maxc,c,g,smat,nil,mgchk)
+		local cg=mg2:Filter(s.SynMixCheckRecursive,g4,tp,g4,mg2,i,minc,maxc,c,g,smat,gc,mgchk,c1)
 		if cg:GetCount()==0 then break end
-		local finish=s.SynMixCheckGoal(tp,g4,minc,i,c,g,smat,nil,mgchk)
+		local finish=s.SynMixCheckGoal(tp,g4,minc,i,c,g,smat,gc,mgchk,c1)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
 		local c4=cg:SelectUnselect(g+g4,tp,finish,cancel,minc,maxc)
 		if not c4 then
@@ -191,22 +193,22 @@ function s.SynMixFilter4(c,f4,minc,maxc,syncard,mg1,smat,c1,c2,c3,gc,mgchk)
 	else
 		mg:Sub(sg)
 	end
-	local res=s.SynMixCheck(mg,sg,minc-1,maxc-1,syncard,smat,gc,mgchk)
+	local res=s.SynMixCheck(mg,sg,minc-1,maxc-1,syncard,smat,gc,mgchk,c1)
 	if e1 then e1:Reset() end
 	return res
 end
-function s.SynMixCheck(mg,sg1,minc,maxc,syncard,smat,gc,mgchk)
+function s.SynMixCheck(mg,sg1,minc,maxc,syncard,smat,gc,mgchk,c1)
 	local tp=syncard:GetControler()
 	local sg=Group.CreateGroup()
-	if minc<=0 and s.SynMixCheckGoal(tp,sg1,0,0,syncard,sg,smat,gc,mgchk) then return true end
+	if minc<=0 and s.SynMixCheckGoal(tp,sg1,0,0,syncard,sg,smat,gc,mgchk,c1) then return true end
 	if maxc==0 then return false end
-	return mg:IsExists(s.SynMixCheckRecursive,1,nil,tp,sg,mg,0,minc,maxc,syncard,sg1,smat,gc,mgchk)
+	return mg:IsExists(s.SynMixCheckRecursive,1,nil,tp,sg,mg,0,minc,maxc,syncard,sg1,smat,gc,mgchk,c1)
 end
-function s.SynMixCheckRecursive(c,tp,sg,mg,ct,minc,maxc,syncard,sg1,smat,gc,mgchk)
+function s.SynMixCheckRecursive(c,tp,sg,mg,ct,minc,maxc,syncard,sg1,smat,gc,mgchk,c1)
 	sg:AddCard(c)
 	ct=ct+1
-	local res=s.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
-		or (ct<maxc and mg:IsExists(s.SynMixCheckRecursive,1,sg,tp,sg,mg,ct,minc,maxc,syncard,sg1,smat,gc,mgchk))
+	local res=s.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk,c1)
+		or (ct<maxc and mg:IsExists(s.SynMixCheckRecursive,1,sg,tp,sg,mg,ct,minc,maxc,syncard,sg1,smat,gc,mgchk,c1))
 	sg:RemoveCard(c)
 	ct=ct-1
 	return res
@@ -219,12 +221,12 @@ function s.GetSynchroLevel(c,syncard,hg)
 	elseif c:IsLocation(LOCATION_DECK) then lv=1 end
 	return lv
 end
-function s.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
+function s.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk,c1)
 	if ct<minc then return false end
 	local g=sg:Clone()
 	g:Merge(sg1)
+	if not gc(Group.__sub(g,c1)) then return false end
 	if Duel.GetLocationCountFromEx(tp,tp,g,syncard)<=0 then return false end
-	if gc and not gc(g) then return false end
 	if smat and not g:IsContains(smat) then return false end
 	if not aux.MustMaterialCheck(g,tp,EFFECT_MUST_BE_SMATERIAL) then return false end
 	local t={}
@@ -267,6 +269,9 @@ function s.f1(c,syncard)
 end
 function s.f4(c,syncard,c1,c2,c3)
 	return c:IsTuner(syncard) or (c1 and aux.IsCodeListed(c1,c:GetCode()))
+end
+function s.syncheck(g)
+	return g:GetClassCount(Card.GetCode)==#g
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 	local t={}

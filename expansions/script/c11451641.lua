@@ -5,18 +5,18 @@ function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DRAW)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_GRAVE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCost(cm.thcost)
 	e1:SetTarget(cm.tg)
 	e1:SetOperation(cm.op)
 	c:RegisterEffect(e1)
 	--tohand
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_GRAVE_ACTION)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCost(cm.thcost)
+	e2:SetType(EFFECT_TYPE_ACTIVATE)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
@@ -32,7 +32,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.geop(e,tp,eg,ep,ev,re,r,rp)
-	for _,code in ipairs{11451578,11451579,11451580} do
+	for _,code in ipairs{11451578,11451579,11451580,11451610} do
 		if not _G["c"..code] then Duel.CreateToken(0,code) end
 	end
 	e:Reset()
@@ -59,7 +59,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.filter(c)
 	for _,code in ipairs{11451578,11451579,11451580,11451610} do
-		if _G["c"..code].card_code_list[c:GetCode()] then return c:IsAbleToHand() end
+		if _G["c"..code].card_code_list and _G["c"..code].card_code_list[c:GetCode()] then return c:IsAbleToHand() end
 	end
 	return false
 end

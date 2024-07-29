@@ -65,37 +65,52 @@ function cm.spfilter3(c,e,tp,g)
 	return cm.spfilter1(c,e,tp) and g:FilterCount(cm.spfilter2,c,e,tp)==#g-1
 end
 function cm.spfilter4(c,e,tp)
-	return cm.spfilter1(c,e,tp) and c:IsLevel(8)
+	return cm.spfilter(c,e,tp) and c:IsLevel(8)
 end
 function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
 	if chk==0 then
 		if g:IsExists(cm.spfilter4,1,nil,e,tp) then return true end
-		local ft=Duel.GetMZoneCount(tp)
-		return not Duel.IsPlayerAffectedByEffect(tp,59822133) and g:CheckSubGroup(cm.fselect,1,math.min(#g,ft+1),e,tp)
+		local ft1=Duel.GetMZoneCount(1-tp)
+		local ft2=Duel.GetMZoneCount(tp)
+		local ft=ft1+ft2
+		return not Duel.IsPlayerAffectedByEffect(tp,59822133) and g:CheckSubGroup(cm.fselect,2,math.min(#g,ft),e,tp,ft1,ft2)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
-function cm.fselect(g,e,tp)
-	return g:GetSum(Card.GetLevel)==8 and g:IsExists(cm.spfilter3,1,nil,e,tp,g) 
+function cm.fselect(g,e,tp,ft1,ft2)
+	return g:GetSum(Card.GetLevel)==8 and g:CheckSubGroup(cm.fselect1,math.max(0,#g-ft2),math.min(#g,ft1),e,tp,g,ft1,ft2) 
+end
+function cm.fselect1(g,e,tp,mg,ft1,ft2)
+	local g2=mg-g
+	return g:FilterCount(cm.spfilter1,nil,e,tp)==#g and g2:FilterCount(cm.spfilter2,nil,e,tp)==#g2
 end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
-	local ft=Duel.GetMZoneCount(tp)
-	if g:IsExists(cm.spfilter4,1,nil,e,tp) or (not Duel.IsPlayerAffectedByEffect(tp,59822133) and g:CheckSubGroup(cm.fselect,1,math.min(#g,ft+1),e,tp)) then
+	local ft1=Duel.GetMZoneCount(1-tp)
+	local ft2=Duel.GetMZoneCount(tp)
+	local ft=ft1+ft2
+	if g:IsExists(cm.spfilter4,1,nil,e,tp) or (not Duel.IsPlayerAffectedByEffect(tp,59822133) and g:CheckSubGroup(cm.fselect,2,math.min(#g,ft),e,tp,ft1,ft2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g:SelectSubGroup(tp,cm.fselect,false,1,math.min(#g,ft+1),e,tp)
+		local sg=g:SelectSubGroup(tp,cm.fselect,false,1,math.min(#g,ft),e,tp,ft1,ft2)
 		local tg=sg
-		if #sg>1 then
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
-			tg=sg:FilterSelect(tp,cm.spfilter3,1,1,nil,e,tp,sg)
-		end
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
+		tg=sg:FilterSelect(tp,cm.spfilter1,math.max(0,#sg-ft2),math.min(#sg,ft1),nil,e,tp,sg,ft1,ft2)
 		sg:Sub(tg)
-		Duel.SpecialSummonStep(tg:GetFirst(),0,tp,1-tp,false,false,POS_FACEUP)
+		for tc in aux.Next(tg) do
+			Duel.SpecialSummonStep(tc,0,tp,1-tp,false,false,POS_FACEUP)
+		end
 		for sc in aux.Next(sg) do
 			Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP)
 		end
 		Duel.SpecialSummonComplete()
+		local g1=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,nil)
+		if g1:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,5)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sc=g1:Select(tp,1,1,nil):GetFirst()
+			Duel.SynchroSummon(tp,sc,nil)
+		end
 	end
 end
 function cm.adcon2(e,tp,eg,ep,ev,re,r,rp)

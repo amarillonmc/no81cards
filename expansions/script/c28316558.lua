@@ -28,8 +28,9 @@ end
 function c28316558.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.CheckLPCost(tp,1500)
 	local b2=Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,500)
+	local b3=Duel.IsPlayerAffectedByEffect(tp,28368431)
 	if chk==0 then return b1 or b2 end
-	if not b1 or (b2 and Duel.SelectYesNo(tp,aux.Stringid(28316558,4))) then
+	if b3 or not b1 or (b2 and Duel.SelectYesNo(tp,aux.Stringid(28316558,4))) then
 		Duel.PayLPCost(tp,500)
 	else
 		Duel.PayLPCost(tp,1500)
@@ -72,7 +73,8 @@ function c28316558.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28316558.thop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	if Duel.Damage(p,d,REASON_EFFECT)~=0 and Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(c28316558.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28316558,2)) then
+	Duel.Damage(p,d,REASON_EFFECT)
+	if Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(c28316558.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28316558,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c28316558.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 		if g:GetCount()>0 then

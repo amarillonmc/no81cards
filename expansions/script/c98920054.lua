@@ -48,7 +48,7 @@ function c98920054.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c98920054.mfilter(c)
-	return c:IsLinkType(TYPE_LINK) and c:IsLinkRace(RACE_PLANT)
+	return c:IsLinkType(TYPE_LINK)
 end
 function c98920054.cfilter(c,tp)
 	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp) and c:IsReason(REASON_EFFECT)

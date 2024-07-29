@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1,m)
+	--e2:SetCountLimit(1)
 	e2:SetCost(cm.cost)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.operation)
@@ -53,7 +53,7 @@ function cm.filter(c,ec)
 	return (c:GetType()&TYPE_QUICKPLAY>0 or c:GetType()==TYPE_TRAP) and not c:IsReason(REASON_RETURN) and cm.fieldid(c)<cm.fieldid(ec)
 end
 function cm.filter2(c,ec,sc)
-	return cm.filter(c,ec) and cm.fieldid(c)==cm.fieldid(sc) and c:IsAbleToRemoveAsCost() and ((c:GetType()&TYPE_QUICKPLAY>0 and c:CheckActivateEffect(true,true,false)~=nil) or (c:GetType()==TYPE_TRAP>0 and c:CheckActivateEffect(false,true,false)~=nil))
+	return cm.filter(c,ec) and cm.fieldid(c)==cm.fieldid(sc) and c:IsAbleToRemoveAsCost() and ((c:GetType()&TYPE_QUICKPLAY>0 and c:CheckActivateEffect(true,true,false)~=nil) or (c:GetType()&TYPE_TRAP>0 and c:CheckActivateEffect(false,true,false)~=nil))
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
@@ -66,7 +66,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local c=e:GetHandler()
 		if c:GetFlagEffect(m)==0 then return end
 		local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_GRAVE,0,nil,e:GetHandler())
-		if #g<=0 then return end
+		if #g<=Duel.GetCurrentChain() then return end
 		local ct=math.min(#g,Duel.GetCurrentChain()+1)
 		local maxc=g:GetMaxGroup(cm.fieldid):GetFirst()
 		for i=1,ct do

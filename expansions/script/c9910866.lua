@@ -35,6 +35,7 @@ function c9910866.actcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910866.actop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(9910866,1))
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa951))

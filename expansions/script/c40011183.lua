@@ -2,7 +2,7 @@
 local m=40011183
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	aux.AddCodeList(c,40011177)	   
+	aux.AddCodeList(c,40011177) 
 	--synchro summon
 	aux.AddSynchroMixProcedure(c,cm.matfilter1,nil,nil,cm.matfilter2,1,99)
 	c:EnableReviveLimit()
@@ -85,13 +85,13 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeTargetCard(ev,g)
 	Duel.ChangeChainOperation(ev,cm.repop)
 end
+
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsReleasable,1-tp,LOCATION_MZONE,0,nil,REASON_EFFECT)
+	local g=Duel.SelectReleaseGroup(1-tp,LOCATION_MZONE,1,1,REASON_EFFECT,true,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_RELEASE)
-		local sg=g:Select(1-tp,1,1,nil)
-		Duel.HintSelection(sg)
-		Duel.Release(sg,REASON_EFFECT)
+		Duel.HintSelection(g)
+		Duel.Release(g,REASON_EFFECT)
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)

@@ -69,9 +69,13 @@ function cm.costfilter(c)
 	return c:IsCode(40010878) 
 end
 function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.costfilter,1,nil) end
-	local g=Duel.SelectReleaseGroup(tp,cm.costfilter,1,1,nil)
-	Duel.Release(g,REASON_COST)
+
+
+	local c=e:GetHandler()
+	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsCode,1,nil,40010878) end
+	local rg=Duel.SelectReleaseGroup(tp,Card.IsCode,1,1,nil,40010878)
+	Duel.Release(rg,REASON_COST)
+
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end

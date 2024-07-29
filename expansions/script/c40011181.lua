@@ -48,6 +48,9 @@ function cm.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectReleaseGroup(tp,Card.IsType,1,10,e:GetHandler(),TYPE_MONSTER)
 	local ct=Duel.Release(g,REASON_COST)
 	e:SetLabel(ct)
+
+
+
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
