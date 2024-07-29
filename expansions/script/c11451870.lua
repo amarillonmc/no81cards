@@ -28,7 +28,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local sg=g:Select(tp,1,#g,nil)
 	Duel.HintSelection(sg)
-	if aux.SelectFromOptions(1-tp,{true,aux.Stringid(m,0)},{true,aux.Stringid(m,1)})==1 then
+	if aux.SelectFromOptions(1-tp,{sg:IsExists(Card.IsAbleToHand,1,nil),aux.Stringid(m,0)},{true,aux.Stringid(m,1)})==1 then
 		Duel.SendtoHand(sg,nil,REASON_RULE)
 	else
 		local e1=Effect.CreateEffect(e:GetHandler())

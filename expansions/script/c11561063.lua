@@ -25,6 +25,7 @@ function cm.initial_effect(c)
 	--CANNOT be tg
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(11561063,2))
+	e3:SetCategory(CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCost(c11561063.cost)
@@ -186,7 +187,7 @@ function c11561063.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
 end
 function c11561063.filter(c)
-	return (c:IsRankBelow(9) or c:IsLevelBelow(9)) and c:IsAttribute(ATTRIBUTE_LIGHT) and (c:IsAbleToExtra() or c:IsAbleToDeck())
+	return (c:IsRankBelow(9) or c:IsLevelBelow(9)) and c:IsAttribute(ATTRIBUTE_LIGHT) and (c:IsAbleToExtra() or c:IsAbleToHand())
 end
 function c11561063.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -207,7 +208,7 @@ function c11561063.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local g=Duel.SelectMatchingCard(tp,c11561063.filter,tp,LOCATION_GRAVE,0,1,1,nil)
 		if #g==0 then return end
-		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
 	end
 end
 

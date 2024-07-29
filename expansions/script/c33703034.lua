@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(cm.actfilter,tp,LOCATION_MZONE,0,1,nil) 
+	return not Duel.IsExistingMatchingCard(cm.actfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
 function cm.actfilter(c)
 	return c:IsType(TYPE_EFFECT) and c:IsFaceup()

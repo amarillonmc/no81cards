@@ -153,7 +153,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local fd=Duel.SelectField(tp,2,LOCATION_SZONE,0,~0x1f00)
 	for i=0,4 do
 		if fd&(1<<(8+i))>0 then
-			local table={1<<0|1<<8|1<<20|1<<28,1<<1|1<<9|1<<19|1<<27|1<<5|1<<22,1<<2|1<<10|1<<18|1<<26,1<<3|1<<11|1<<17|1<<25|1<<6|1<<21,1<<4|1<<12|1<<16|1<<24}
+			local table={1<<0|1<<28,1<<1|1<<27,1<<2|1<<26,1<<3|1<<25,1<<4|1<<24}
 			for j=0,32 do
 				if (1<<j)&(table[i+1])~=0 then
 					local fd1=1<<j

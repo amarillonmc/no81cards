@@ -58,7 +58,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.ConfirmCards(1-tp,e:GetHandler())
 end
 function cm.filter(c)
-	for _,code in ipairs{11451578,11451579,11451580} do
+	for _,code in ipairs{11451578,11451579,11451580,11451610} do
 		if _G["c"..code].card_code_list[c:GetCode()] then return c:IsAbleToHand() end
 	end
 	return false
