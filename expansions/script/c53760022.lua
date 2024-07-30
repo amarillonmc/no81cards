@@ -3,7 +3,15 @@ local cm=_G["c"..m]
 cm.name="梦魂支配者 哆来咪·苏伊特"
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep2(c,cm.ffilter,4,99,true)
+	local mt=getmetatable(c)
+	if mt.material_count==nil then mt.material_count={4,127} end
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_FUSION_MATERIAL)
+	e0:SetCondition(cm.fscon)
+	e0:SetOperation(cm.fsop)
+	c:RegisterEffect(e0)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -102,7 +110,38 @@ function cm.initial_effect(c)
 	end--]]
 end
 function cm.ffilter(c,fc,sub,mg,sg)
-	return c:IsType(TYPE_TOKEN) and (not sg or not sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()))
+	return c:IsType(TYPE_TOKEN) and (not sg or not sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute())) and not c:IsHasEffect(6205579)
+end
+function cm.fcheck(sg,tp,fc,sub,chkfnf)
+	local chkf=chkfnf&0xff
+	local concat_fusion=chkfnf&0x200>0
+	if not concat_fusion and sg:IsExists(aux.TuneMagicianCheckX,1,nil,sg,EFFECT_TUNE_MAGICIAN_F) then return false end
+	if not aux.MustMaterialCheck(sg,tp,EFFECT_MUST_BE_FMATERIAL) then return false end
+	local g=Group.CreateGroup()
+	return sg:GetClassCount(Card.GetFusionAttribute)==#sg and not sg:IsExists(Card.IsHasEffect,1,nil,6205579) and (chkf==PLAYER_NONE or Duel.GetLocationCountFromEx(tp,tp,sg,fc)>0) and (not aux.FCheckAdditional or aux.FCheckAdditional(tp,sg,fc)) and (not aux.FGoalCheckAdditional or aux.FGoalCheckAdditional(tp,sg,fc))
+end
+function cm.fscon(e,g,gc,chkfnf)
+	if g==nil then return Auxiliary.MustMaterialCheck(nil,e:GetHandlerPlayer(),EFFECT_MUST_BE_FMATERIAL) end
+	if gc then return false end
+	local c=e:GetHandler()
+	local tp=c:GetControler()
+	local notfusion=chkfnf&0x100>0
+	local concat_fusion=chkfnf&0x200>0
+	local sub2=notfusion and not concat_fusion
+	local mg=g:Filter(aux.FConditionFilterMix,c,c,sub2,concat_fusion,cm.ffilter)
+	local sg=Group.CreateGroup()
+	return mg:CheckSubGroup(cm.fcheck,4,127,tp,c,sub2,chkfnf)
+end
+function cm.fsop(e,tp,eg,ep,ev,re,r,rp,gc,chkfnf)
+	local c=e:GetHandler()
+	local notfusion=chkfnf&0x100>0
+	local concat_fusion=chkfnf&0x200>0
+	local sub2=notfusion and not concat_fusion
+	local mg=eg:Filter(aux.FConditionFilterMix,c,c,sub2,concat_fusion,cm.ffilter)
+	if gc then Duel.SetSelectedCard(gc) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FMATERIAL)
+	local sg=mg:SelectSubGroup(tp,cm.fcheck,false,4,127,tp,c,sub2,chkfnf)
+	Duel.SetFusionMaterial(sg)
 end
 function cm.count(e,tp,eg,ep,ev,re,r,rp)
 	cm.chaining=true
