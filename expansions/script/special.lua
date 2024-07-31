@@ -13,18 +13,20 @@ function Auxiliary.PreloadUds()
 		end
 		return require_list[str]
 	end
+	local _dofile=dofile
+	local _loadfile=loadfile
 	function dofile(str)
 		if string.find(str,"%.") then
-			return dofile(str)
+			return _dofile(str)
 		else
-			return dofile(str..".lua")
+			return _dofile(str..".lua")
 		end
 	end
 	function loadfile(str)
 		if string.find(str,"%.") then
-			return loadfile(str)
+			return _loadfile(str)
 		else
-			return loadfile(str..".lua")
+			return _loadfile(str..".lua")
 		end
 	end
 	local release_set={"CheckReleaseGroup","SelectReleaseGroup"}
