@@ -110,6 +110,8 @@ function cm.nnfilter(c,ec)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
+	Duel.ResetTimeLimit(0,360)
+	Duel.ResetTimeLimit(1,360)
 	local ag=Duel.GetMatchingGroup(cm.nnfilter,0,0xff,0xff,nil)
 	local _TGetID=GetID
 	local stack={}

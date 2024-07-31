@@ -13,6 +13,20 @@ function Auxiliary.PreloadUds()
 		end
 		return require_list[str]
 	end
+	function dofile(str)
+		if string.find(str,"%.") then
+			return dofile(str)
+		else
+			return dofile(str..".lua")
+		end
+	end
+	function loadfile(str)
+		if string.find(str,"%.") then
+			return loadfile(str)
+		else
+			return loadfile(str..".lua")
+		end
+	end
 	local release_set={"CheckReleaseGroup","SelectReleaseGroup"}
 	local release_set2={"CheckReleaseGroupEx","SelectReleaseGroupEx"}
 	for i,fname in pairs(release_set) do
@@ -70,6 +84,4 @@ function Auxiliary.PreloadUds()
 	end--]]
 	EFFECT_FLAG_CANNOT_NEGATE=EFFECT_FLAG_CANNOT_NEGATE or 0x200
 	--require("script/procedure.lua")
-	Duel.ResetTimeLimit(0,360)
-	Duel.ResetTimeLimit(1,360)
 end
