@@ -1,5 +1,5 @@
 --机械加工·坏
-if not pcall(function() dofile("expansions/script/c40008000") end) then dofile("script/c40008000") end
+if not pcall(function() require("expansions/script/c40008000") end) then require("script/c40008000") end
 local m,cm=rscf.DefineCard(40009426)
 local m=40009426
 local cm=_G["c"..m]

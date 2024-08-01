@@ -12,7 +12,7 @@ function cm.initial_effect(c)
 	--limit 
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	--e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
@@ -37,8 +37,8 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local lg=c:GetLinkedGroup()
-	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.cfilter,3,nil,lg) end
-	local g=Duel.SelectReleaseGroup(tp,cm.cfilter,3,3,nil,lg)
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_COST,tp,cm.cfilter,3,nil,lg) end
+	local g=Duel.SelectReleaseGroup(REASON_COST,tp,cm.cfilter,3,3,nil,lg)
 	local ct=g:FilterCount(Card.IsType,nil,TYPE_NORMAL)
 	e:SetValue(ct)
 	if ct>0 then

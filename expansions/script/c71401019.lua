@@ -65,13 +65,12 @@ function c71401019.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local rc=Duel.SelectMatchingCard(tp,c71401019.filterc2,tp,LOCATION_MZONE,0,1,1,nil,tp,e:GetHandler()):GetFirst()
-	e:SetLabel(rc:GetCode())
+	Duel.SetTargetParam(rc:GetCode())
 	Duel.SendtoHand(rc,nil,REASON_COST)
 	yume.RegButterflyCostLimit(e,tp)
 end
 function c71401019.op2(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,71401019)~=0 then return end
-	local code=e:GetLabel()
+	local code=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 	local g=Duel.GetMatchingGroup(c71401019.filter2,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,code)
 	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401019,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
@@ -80,6 +79,7 @@ function c71401019.op2(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Summon(tp,tc,true,nil)
 		end
 	end
+	if Duel.GetFlagEffect(tp,71401019)~=0 then return end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetDescription(aux.Stringid(71401019,2))
 	e1:SetType(EFFECT_TYPE_FIELD)

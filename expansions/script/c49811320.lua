@@ -47,7 +47,7 @@ function cm.f(c)
 end
 function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(cm.rf,1,nil)
-		and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_GRAVE,0,1,nil) and not e:GetHandler():IsStatus(STATUS_DESTROY_CONFIRMED+STATUS_BATTLE_DESTROYED) end
+		and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_GRAVE,0,1,nil) end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_GRAVE,0,1,1,nil)
@@ -60,7 +60,7 @@ function cm.rval(e,c)
 	return cm.rf(c,e:GetHandlerPlayer())
 end
 function cm.rf(c,tp)
-	return c:IsFaceup() and (c:IsRace(RACE_AQUA) or c:IsRace(RACE_FISH) or c:IsRace(RACE_SEASERPENT)) and not c:IsReason(REASON_REPLACE)
+	return c:IsControler(tp) and c:IsFaceup() and (c:IsRace(RACE_AQUA) or c:IsRace(RACE_FISH) or c:IsRace(RACE_SEASERPENT)) and not c:IsReason(REASON_REPLACE)
 end
 function cm.rop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
@@ -84,7 +84,7 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_GRAVE+LOCATION_ONFIELD,1,1,nil)
 			if #sg>0 then
-				Duel.SendtoDeck(sg,1-tp,2,REASON_EFFECT)
+				Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 			end
 		end
 	end
