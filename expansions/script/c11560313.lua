@@ -118,7 +118,7 @@ end
 function c11560313.dspfil(c,e,tp) 
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevelBelow(4) 
 end 
-function c11560313.actfilter(e) 
+function c11560313.actfilter(c) 
 	return c:IsAttackBelow(2400) or c:IsDefenseBelow(2400)
 end 
 function c11560313.dsptg(e,tp,eg,ep,ev,re,r,rp,chk)
