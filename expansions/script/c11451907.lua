@@ -80,8 +80,8 @@ function cm.initial_effect(c)
 		local _NegateActivation=Duel.NegateActivation
 		function Effect.GetActivateLocation(e)
 			if e:GetDescription()==aux.Stringid(m,0) or e:GetDescription()==aux.Stringid(m,1) then
-				if e:GetHandler():IsType(TYPE_FIELD) then return LOCATION_FZONE end
-				return LOCATION_SZONE
+				if e:GetHandler():IsType(TYPE_FIELD) then return _GetActivateLocation(e) end
+				return _GetActivateLocation(e)
 			end
 			return _GetActivateLocation(e)
 		end

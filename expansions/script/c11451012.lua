@@ -10,6 +10,7 @@ function cm.initial_effect(c)
 	e1:SetRange(LOCATION_HAND+LOCATION_EXTRA)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	--e1:SetProperty(0,EFFECT_FLAG2_SPOSITCH)
 	e1:SetHintTiming(TIMING_DRAW_PHASE,TIMING_DRAW_PHASE+TIMING_TOHAND)
 	--e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetCost(cm.cost)
@@ -119,7 +120,7 @@ function cm.initial_effect(c)
 		end
 		function Effect.GetActivateLocation(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
-				return LOCATION_MZONE
+				return _GetActivateLocation(e)
 			end
 			return _GetActivateLocation(e)
 		end

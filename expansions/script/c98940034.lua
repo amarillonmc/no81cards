@@ -1,6 +1,6 @@
 --黑羽-顺风之赛克罗
 function c98940034.initial_effect(c)
-	SetSPSummonOnce(c,98940034)
+	c:SetSPSummonOnce(c,98940034)
 	 --link summon
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x33),2,2)

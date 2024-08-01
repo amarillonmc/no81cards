@@ -12,7 +12,8 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
-	cm.hand_effect=e1
+	cm.hand_effect=cm.hand_effect or {}
+	cm.hand_effect[c]=e1
 	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -102,8 +103,9 @@ function cm.efffilter(c,tp,eg,ep,ev,re,r,rp)
 	if not (c:IsSetCard(0x3978) and c:IsType(TYPE_MONSTER)) then return false end
 	local te=c.hand_effect
 	if not te then return false end
+	te=c.hand_effect[c]
 	local tg=te:GetTarget()
-	return not tg or (tg and tg(te,tp,eg,ep,ev,re,r,rp,0))
+	return not tg or (tg and tg(te,tp,eg,ep,ev,re,r,rp,0,100))
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -117,7 +119,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and c:GetColumnGroupCount()==0 and #hg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
 		local tc=hg:Select(tp,1,1,nil):GetFirst()
-		local te=tc.hand_effect
+		local te=tc.hand_effect[tc]
 		local op=te:GetOperation()
 		if op then
 			tc:CreateEffectRelation(te)

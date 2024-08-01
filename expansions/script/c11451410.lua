@@ -53,7 +53,7 @@ function cm.initial_effect(c)
 		local _NegateActivation=Duel.NegateActivation
 		function Effect.GetActivateLocation(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
-				return LOCATION_SZONE
+				return _GetActivateLocation(e)
 			end
 			return _GetActivateLocation(e)
 		end
@@ -130,7 +130,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
 	if te:IsHasType(EFFECT_TYPE_QUICK_O) then
 		c:CancelToGrave(false)
 		local te2=te:Clone()
@@ -150,7 +150,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
 		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
 	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then

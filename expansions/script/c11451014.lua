@@ -110,7 +110,7 @@ function cm.initial_effect(c)
 		end
 		function Effect.GetActivateLocation(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
-				return LOCATION_MZONE
+				return _GetActivateLocation(e)
 			end
 			return _GetActivateLocation(e)
 		end

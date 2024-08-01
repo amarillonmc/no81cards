@@ -29,7 +29,8 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.sumtg)
 	e3:SetOperation(cm.sumop)
 	c:RegisterEffect(e3)
-	cm.hand_effect=e3
+	cm.hand_effect=cm.hand_effect or {}
+	cm.hand_effect[c]=e3
 end
 function cm.filter(c)
 	return c:GetOriginalType()&TYPE_LINK==0
@@ -80,9 +81,12 @@ function cm.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	--Debug.Message(Duel.GetMatchingGroupCount(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,fg,e,tp,fg))
 	Duel.SendtoHand(fg,nil,REASON_COST)
 end
-function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:IsCostChecked() end --Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,e,tp) end
+function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk,exchk)
+	if chk==0 then return e:IsCostChecked() or (exchk==100 and Duel.IsExistingMatchingCard(cm.smfilter11,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)) end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
+end
+function cm.smfilter11(c)
+	return c:IsSummonable(true,nil) or c:IsMSetable(true,nil)
 end
 function cm.smfilter(c,e,tp,fg)
 	local eset1={c:IsHasEffect(EFFECT_LIMIT_SUMMON_PROC)}

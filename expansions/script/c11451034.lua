@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 		local _NegateActivation=Duel.NegateActivation
 		function Effect.GetActivateLocation(e)
 			if e:GetHandler():GetOriginalCode()==m then
-				return LOCATION_SZONE+LOCATION_PZONE
+				return _GetActivateLocation(e)
 			end
 			return _GetActivateLocation(e)
 		end
