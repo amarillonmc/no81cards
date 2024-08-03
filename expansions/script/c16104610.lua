@@ -92,6 +92,25 @@ function c16104610.filter4(c)
 	return c:IsFacedown()
 end
 function c16104610.hspop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	 local e0=Effect.CreateEffect(c)
+		e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		e0:SetCode(EVENT_SUMMON_SUCCESS)
+		e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_OATH)
+		e0:SetCountLimit(1,98500520)
+		e0:SetReset(RESET_EVENT+0x7e0000)
+		e0:SetOperation(c16104610.efilter)
+		c:RegisterEffect(e0)
+	local e4=Effect.CreateEffect(c)
+		e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		e4:SetCode(EVENT_MSET)
+		e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_OATH)
+		e4:SetCountLimit(1,98500520)
+		e4:SetReset(RESET_PHASE+PHASE_END)
+	 -- e4:SetLabelObject(c)
+		e4:SetOperation(c16104610.efilter)
+		Duel.RegisterEffect(e4,tp)
+	Duel.BreakEffect()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return false end
 	local ts={}
 	local index=1
@@ -113,11 +132,13 @@ function c16104610.hspop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		if Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)~=0 then
-			Duel.BreakEffect()
-			local g2=Duel.GetMatchingGroup(c16104610.filter4,tp,LOCATION_MZONE,0,nil)
-				Duel.ShuffleSetCard(g2)
+		   
 		end
 	end
+end
+function c16104610.efilter(e,tp,eg,ep,ev,re,r,rp)
+	local g2=Duel.GetMatchingGroup(c16104610.filter4,tp,LOCATION_MZONE,0,nil)
+			 Duel.ShuffleSetCard(g2)
 end
 function c16104610.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -133,7 +154,7 @@ function c16104610.desop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			if Duel.IsExistingTarget(c16104610.filter4,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(16104610,4)) then
 				local g2=Duel.SelectMatchingCard(tp,c16104610.filter,tp,0,LOCATION_MZONE,1,1,nil)
-				local tc2=g2:GetFirst()	   
+				local tc2=g2:GetFirst() 
 					Duel.GetControl(tc2,tp,PHASE_END,1)
 				
 			end

@@ -38,7 +38,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spfilter0(c,loc)
-	return not c:IsLocation(loc) and c:IsPreviousLocation(loc)
+	return c:IsPreviousLocation(loc) and not (c:IsLocation(loc) and c:IsControler(c:GetPreviousControler()))
 end
 function cm.adcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsType,1,nil,TYPE_MONSTER)

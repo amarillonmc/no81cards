@@ -67,7 +67,7 @@ function c50203210.sccon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp)
 end
 function c50203210.mfilter(c)
-	return c:IsSetCard(0x3b) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x3b) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
 function c50203210.cfilter(c,syn)
 	return syn:IsSynchroSummonable(c)

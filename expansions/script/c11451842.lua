@@ -17,6 +17,7 @@ function cm.initial_effect(c)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost(POS_FACEDOWN) end
+	Duel.ConfirmCards(1-tp,e:GetHandler())
 	Duel.Remove(e:GetHandler(),POS_FACEDOWN,REASON_COST)
 end
 function cm.filter(c,code)

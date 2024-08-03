@@ -1,6 +1,5 @@
 --革命的准备
-local m=11451448
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,99518961)
 	--activate
@@ -35,7 +34,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SendtoHand(sg1,nil,REASON_EFFECT)>0 then
 			Duel.ConfirmCards(1-tp,sg1)
 			local ct=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)-Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
-			if ct>0 and Duel.IsPlayerCanDraw(1-tp,ct) then
+			if ct>0 then --and Duel.IsPlayerCanDraw(1-tp,ct) then
 				Duel.Draw(1-tp,ct,REASON_EFFECT)
 			end
 		end

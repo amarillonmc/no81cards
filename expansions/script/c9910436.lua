@@ -21,18 +21,16 @@ function c9910436.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910436.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_LINK and Duel.IsAbleToEnterBP()
-end
-function c9910436.cfilter(c,e)
-	return c:IsAbleToGrave() and not c:IsImmuneToEffect(e)
+	return e:GetHandler():GetSummonType()==SUMMON_TYPE_LINK
 end
 function c9910436.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.IsExistingMatchingCard(c9910436.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c,e)
+	if Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c)
 		and c:IsFaceup() and Duel.SelectYesNo(tp,aux.Stringid(9910436,0)) then
 		Duel.Hint(HINT_CARD,0,9910436)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local cg=Duel.SelectMatchingCard(tp,c9910436.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,63,c,e)
+		local cg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,63,c)
+		Duel.HintSelection(cg)
 		Duel.SendtoGrave(cg,REASON_EFFECT)
 		local oc=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
 		local e1=Effect.CreateEffect(c)

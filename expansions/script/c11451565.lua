@@ -78,7 +78,7 @@ function cm.acfilter(c,tp)
 	return c:IsPreviousControler(tp) and c:GetEquipTarget()
 end
 function cm.accon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.acfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
+	return eg:IsExists(cm.acfilter,1,nil,tp) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND))
 end
 function cm.accost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local exc=(e:GetHandler():IsLocation(LOCATION_HAND) and not e:GetHandler():IsAbleToGraveAsCost()) and e:GetHandler() or nil

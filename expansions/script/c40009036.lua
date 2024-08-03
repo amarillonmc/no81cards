@@ -81,6 +81,7 @@ function c40009036.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsLocation(LOCATION_SZONE) then return end
 	if not c:IsRelateToEffect(e) or c:IsStatus(STATUS_LEAVE_CONFIRMED) then return end
 		Duel.BreakEffect()
+		Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_BATTLE_STEP,1)
 		Duel.Equip(tp,c,tc)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_EQUIP)
