@@ -10,15 +10,15 @@ function c9910324.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetOperation(c9910324.atkop)
 	c:RegisterEffect(e1)
-	--can not activate effect
+	--destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910324,0))
+	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_EQUIP)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1)
-	e2:SetTarget(c9910324.acttg)
-	e2:SetOperation(c9910324.actop)
+	e2:SetOperation(c9910324.desop)
 	c:RegisterEffect(e2)
 	--to extra
 	local e3=Effect.CreateEffect(c)
@@ -89,4 +89,20 @@ function c9910324.teop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	e1:SetTargetRange(1,0)
 	Duel.RegisterEffect(e1,tp)
+end
+function c9910324.desop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	e1:SetOperation(c9910324.desop2)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c9910324.desop2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,9910324)
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+	if g:GetCount()>0 then
+		Duel.Destroy(g,REASON_EFFECT)
+	end
 end

@@ -44,14 +44,14 @@ function c28368431.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28368431.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.CheckLPCost(tp,1500)
+	local b1=Duel.CheckLPCost(tp,2000)
 	local b2=Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,500)
 	local b3=Duel.IsPlayerAffectedByEffect(tp,28368431)
 	if chk==0 then return b1 or b2 end
 	if b3 or not b1 or (b2 and Duel.SelectYesNo(tp,aux.Stringid(28368431,0))) then
 		Duel.PayLPCost(tp,500)
 	else
-		Duel.PayLPCost(tp,1500)
+		Duel.PayLPCost(tp,2000)
 	end
 end
 function c28368431.activate(e,tp,eg,ep,ev,re,r,rp)

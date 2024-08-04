@@ -48,10 +48,10 @@ function c98920522.initial_effect(c)
 	e3:SetOperation(c98920522.disop)
 	c:RegisterEffect(e3)
 end
-c58206034.lvup={58206034}
-c58206034.lvdn={58206034,85313220,12817939}
+c98920522.lvup={98920522}
+c98920522.lvdn={98920522,85313220,12817939}
 function c98920522.cfilter(c,tp)
-	return c:IsCode(58206034) and c:IsAbleToGrave()
+	return c:IsCode(98920522) and c:IsAbleToGrave()
 		and Duel.GetMZoneCount(tp,c)>0
 end
 function c98920522.spcon(e,c)

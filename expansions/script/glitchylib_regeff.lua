@@ -1,5 +1,54 @@
+EFFECT_NO_RECOVER = 33720228	--Affected player cannot gain LP by card effects
+
+aux.EnabledRegisteredEffectMods={}
+
 --EFFECT TABLES
+
+function Auxiliary.CheckAlreadyRegisteredEffects()
+	if aux.CheckAlreadyRegisteredEffectsFlag then return end
+	aux.CheckAlreadyRegisteredEffectsFlag=true
+	local e1=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
+	e1:SetCode(EVENT_PREDRAW)
+	e1:OPT()
+	e1:SetOperation(function(e)
+		local g=Duel.Group(aux.TRUE,0,LOCATION_ALL,LOCATION_ALL,nil)
+		for tc in aux.Next(g) do
+			if not global_card_effect_table[tc] then
+				local code=tc:GetOriginalCode()
+				Duel.SetMetatable(tc, _G["c"..code])
+				tc:ReplaceEffect(CARD_CYBER_HARPIE_LADY,0,0)
+				tc:SetStatus(STATUS_EFFECT_REPLACED,false)
+				local s=getmetatable(c)
+				s.initial_effect(tc)
+			end
+		end
+	end)
+	Duel.RegisterEffect(e1,0)
+end
+
+function Effect.GLGetTargetRange(e)
+	if not global_target_range_effect_table[e] then return false,false end
+	local s=global_target_range_effect_table[e][1]
+	local o=global_target_range_effect_table[e][2]
+	return s,o
+end
+
 --Global Card Effect Table
+function Card.GetEffects(c)
+	local eset=global_card_effect_table[c]
+	if not eset then return {} end
+	-- local ct=#eset
+	-- for i = 1,ct do
+		-- local e=eset[i]
+		-- if e and e:WasReset(c) then
+			-- table.remove(global_card_effect_table[c],i)
+		-- end
+	-- end
+	return global_card_effect_table[c]
+end
+
 if not global_card_effect_table_global_check then
 	global_card_effect_table_global_check=true
 	global_card_effect_table={}
@@ -9,10 +58,53 @@ if not global_card_effect_table_global_check then
 		table.insert(global_card_effect_table[self],e)
 		
 		local code=e:GetCode()
+		local selfp,oppo=e:GLGetTargetRange()
 		local condition,cost,tg,op,val=e:GetCondition(),e:GetCost(),e:GetTarget(),e:GetOperation(),e:GetValue()
 		
 		--Damage Replacement Effects (necessary for cards like Sepialife - Passive On Pink)
-		if code==EFFECT_REVERSE_DAMAGE or code==EFFECT_REFLECT_DAMAGE then
+		if code==EFFECT_REVERSE_DAMAGE then
+			local newcon =	function(e)
+								local tp=e:GetHandlerPlayer()
+								return (not condition or condition(e)) and not aux.IsChangedDamage and not aux.IsReplacedDamage
+							end
+			e:SetCondition(newcon)
+			
+			--Fix interaction between EFFECT_NO_RECOVER and damage-recovery swap effects (such as Muscle Medic)
+			if aux.EnabledRegisteredEffectMods[EFFECT_NO_RECOVER] then
+				local newval =	function(e,re,r,rp,rc)
+									local res0=val
+									if type(val)=="function" then
+										res0=val(e,re,r,rp,rc)
+									end
+									if aux.IsDamageFunctionCalled then
+										return res0
+									end
+									
+									local tp=e:GetHandlerPlayer()
+									local dam0,dam1=Duel.GetBattleDamage(0),Duel.GetBattleDamage(1)
+									
+									local p=dam0>0 and 0 or dam1>0 and 1 or nil
+									if not p then return res0 end
+									
+									local eset={Duel.IsPlayerAffectedByEffect(p,EFFECT_NO_RECOVER)}
+									if #eset==0 then
+										return res0
+									else
+										if (selfp==0 and p==tp) or (oppo==0 and p==1-tp) then return res0 end
+										for _,ce in ipairs(eset) do
+											local res=ce:Evaluate(p,0,r)
+											if res then
+												return false
+											end
+										end
+										return res0
+									end
+								end
+				
+				e:SetValue(newval)
+			end
+			
+		elseif code==EFFECT_REFLECT_DAMAGE then
 			local newcon =	function(...)
 								return (not condition or condition(...)) and not aux.IsChangedDamage and not aux.IsReplacedDamage
 							end
@@ -99,6 +191,7 @@ if not global_card_effect_table_global_check then
 				
 			end
 		end
+		if aux.PreventSecondRegistration then return end
 		return self.register_global_card_effect_table(self,e,forced)
 	end
 end
@@ -116,11 +209,20 @@ if not global_duel_effect_table_global_check then
 							local condition,cost,tg,op,val=e:GetCondition(),e:GetCost(),e:GetTarget(),e:GetOperation(),e:GetValue()
 							
 							--Damage Replacement Effects
-							if code==EFFECT_REVERSE_DAMAGE or code==EFFECT_REFLECT_DAMAGE then
+							if code==EFFECT_REVERSE_DAMAGE then
+								local newcon =	function(e,...)
+													local tp=e:GetHandlerPlayer()
+													return (not condition or condition(...)) and not aux.IsChangedDamage and not aux.IsReplacedDamage
+														and not Duel.IsPlayerAffectedByEffect(tp,EFFECT_NO_RECOVER)
+												end
+								e:SetCondition(newcon)
+								
+							elseif code==EFFECT_REFLECT_DAMAGE then
 								local newcon =	function(...)
 													return (not condition or condition(...)) and not aux.IsChangedDamage and not aux.IsReplacedDamage
 												end
 								e:SetCondition(newcon)
+								
 							elseif code==EFFECT_CHANGE_DAMAGE then
 								local newcon =	function(...)
 													return (not condition or condition(...)) and not aux.IsReplacedDamage
@@ -202,6 +304,7 @@ if not global_duel_effect_table_global_check then
 								
 								end
 							end
+							if aux.PreventSecondRegistration then return end
 							return Duel.register_global_duel_effect_table(e,tp)
 	end
 end

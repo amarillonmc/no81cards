@@ -21,18 +21,18 @@ function c28362718.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28362718.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.CheckLPCost(tp,1500)
+	local b1=Duel.CheckLPCost(tp,2000)
 	local b2=Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,500)
 	local b3=Duel.IsPlayerAffectedByEffect(tp,28368431)
 	if chk==0 then return b1 or b2 end
 	if b3 or not b1 or (b2 and Duel.SelectYesNo(tp,aux.Stringid(28362718,0))) then
 		Duel.PayLPCost(tp,500)
 	else
-		Duel.PayLPCost(tp,1500)
+		Duel.PayLPCost(tp,2000)
 	end
 end
 function c28362718.thfilter(c)
-	return c:IsSetCard(0x285) and c:IsType(TYPE_SPELL) and (c:IsAbleToHand() or c:IsSSetable())
+	return c:IsSetCard(0x285) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsAbleToHand() or c:IsSSetable())
 end
 function c28362718.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28362718.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -47,15 +47,19 @@ function c28362718.activate(e,tp,eg,ep,ev,re,r,rp)
 	else
 		Duel.SSet(tp,tc)
 	end
-	if Duel.GetLP(tp)<=3000 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(28362718,1)) then
-		Duel.Draw(tp,1,REASON_EFFECT)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_CANNOT_DRAW)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetTargetRange(1,0)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
+	if Duel.GetLP(tp)<=3000 and Duel.Draw(tp,1,REASON_EFFECT)~=0 then
+		Duel.BreakEffect()
+		if Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT) and Duel.SelectYesNo(tp,aux.Stringid(28362718,1)) then
+			Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD)
+		else
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_CANNOT_DRAW)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetTargetRange(1,0)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+		end
 	end
 end
 function c28362718.filter1(c,e)

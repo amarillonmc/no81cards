@@ -2,7 +2,7 @@
 function c28372877.initial_effect(c)
 	--Activate
 	local e0=Effect.CreateEffect(c)
-	e0:SetCategory(CATEGORY_RECOVER+CATEGORY_DAMAGE)
+	e0:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	e0:SetOperation(c28372877.activate)
@@ -48,13 +48,24 @@ function c28372877.initial_effect(c)
 	e5:SetOperation(c28372877.tdop)
 	c:RegisterEffect(e5)
 end
+function c28372877.filter(c)
+	return c:IsSetCard(0x285) and c:IsAbleToDeck()
+end
+function c28372877.thfilter(c)
+	return c:IsSetCard(0x285) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
 function c28372877.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.SelectOption(tp,aux.Stringid(28372877,0),aux.Stringid(28372877,1))==0 then
-		Duel.Recover(tp,500,REASON_EFFECT)
-	else
-		Duel.Damage(tp,500,REASON_EFFECT,true)
-		Duel.Damage(1-tp,500,REASON_EFFECT,true)
-		Duel.RDComplete()
+	local g1=Duel.GetMatchingGroup(c28372877.filter,tp,LOCATION_HAND,0,nil)
+	local g2=Duel.GetMatchingGroup(c28372877.thfilter,tp,LOCATION_DECK,0,nil)
+	if #g1>0 and #g2>1 and Duel.SelectYesNo(tp,aux.Stringid(28372877,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local tg=g1:Select(tp,1,1,nil)
+		Duel.ConfirmCards(1-tp,tg)
+		Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g2:Select(tp,2,2,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
 	end
 end
 function c28372877.indescon(e,tp,eg,ep,ev,re,r,rp)

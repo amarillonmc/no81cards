@@ -77,7 +77,7 @@ function c9910313.eqop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetLabelObject(ec)
 	sc:RegisterEffect(e1)
 	local g=Duel.GetMatchingGroup(c9910313.tgfilter,tp,LOCATION_DECK,0,nil)
-	if c:GetEquipTarget():IsCode(9910301) and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910313,0)) then
+	if ec:IsAttribute(ATTRIBUTE_WIND) and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910313,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local sg=g:Select(tp,1,1,nil)

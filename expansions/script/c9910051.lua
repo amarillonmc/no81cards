@@ -34,14 +34,19 @@ function c9910051.filter(c,tp)
 	return res1 and res2
 end
 function c9910051.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then
 		if e:GetLabel()==0 then return false end
 		e:SetLabel(0)
-		return e:GetHandler():IsAbleToDeckAsCost()
+		return Duel.IsExistingMatchingCard(Card.IsAbleToDeckAsCost,tp,LOCATION_HAND,0,1,c) and c:IsAbleToDeckAsCost()
 			and Duel.IsExistingMatchingCard(c9910051.filter,tp,LOCATION_EXTRA,0,1,nil,tp)
 	end
 	e:SetLabel(0)
-	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
+	Duel.ConfirmCards(1-tp,c)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeckAsCost,tp,LOCATION_HAND,0,1,1,c)
+	g:AddCard(c)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c9910051.filter,tp,LOCATION_EXTRA,0,1,1,nil,tp)
 	Duel.SendtoGrave(g,REASON_COST)

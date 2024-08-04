@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local s,id,o=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
@@ -26,6 +28,11 @@ function s.rttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_REMOVED,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_REMOVED)
 end
+function s.fselect(g)
+	if #g==1 then return true end
+	local loc1,loc2=g:GetFirst():GetLocation()|0xc,g:GetNext():GetLocation()|0xc
+	return loc1~=loc2
+end
 function s.rtop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local tc=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_REMOVED,0,1,1,nil):GetFirst()
@@ -39,18 +46,18 @@ function s.rtop(e,tp,eg,ep,ev,re,r,rp)
 		res=ct>0 and tc:IsLocation(LOCATION_GRAVE)
 	end
 	local g1=Duel.GetMatchingGroup(Card.IsAbleToGrave,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	local g2=Duel.GetMatchingGroup(function(c)return c:GetType()&0x20002==0x20002 and c:IsAbleToGrave()end,0,LOCATION_DECK,0,nil)
+	local g2=Duel.GetMatchingGroup(function(c)return c:GetType()&0x20002==0x20002 and c:IsAbleToGrave()end,tp,LOCATION_DECK,0,nil)
 	g1:Merge(g2)
 	if res and #g1>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sg1=g1:SelectSubGroup(tp,function(g)return g:GetClassCount(Card.GetLocation)==#g end,false,1,2)
-		Duel.SendtoGrave(sg1,REASON_EFFECT)
-		local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+		local sg1=g1:SelectSubGroup(tp,s.fselect,false,1,2)
+		local og=SNNM.WhitkinsToGrave(sg1,REASON_EFFECT):Filter(Card.IsLocation,nil,LOCATION_GRAVE)
 		local oc=og:Filter(Card.IsPreviousLocation,nil,LOCATION_DECK):GetFirst()
 		if oc and oc:GetType()&0x20002==0x20002 then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_ADD_TYPE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e1:SetValue(TYPE_TRAP)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			oc:RegisterEffect(e1,true)
@@ -74,37 +81,32 @@ function s.rtop(e,tp,eg,ep,ev,re,r,rp)
 				table.insert(rt,e2)
 			end
 			local e4=Effect.CreateEffect(e:GetHandler())
-			oc:CreateEffectRelation(e4)
 			e4:SetType(EFFECT_TYPE_FIELD)
 			e4:SetCode(EFFECT_CANNOT_ACTIVATE)
-			e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
+			e4:SetRange(LOCATION_GRAVE)
 			e4:SetTargetRange(1,1)
-			e4:SetCondition(function(e)
-				if not oc:IsRelateToEffect(e) then
-					e:Reset()
-					return false
-				end
-				return true
-			end)
 			e4:SetValue(function(e,re,tp)
-				return re:GetHandler()==oc and re:GetType()==0x4a
+				return re:GetHandler()==e:GetHandler() and re:GetType()==0x4a
 			end)
-			Duel.RegisterEffect(e4,tp)
+			e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+			oc:RegisterEffect(e4,true)
 			table.insert(rt,e4)
 			local e3=Effect.CreateEffect(e:GetHandler())
-			oc:CreateEffectRelation(e3)
 			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e3:SetCode(EVENT_CHAINING)
+			e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e3:SetRange(LOCATION_GRAVE)
 			e3:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-				return re:GetHandler()==oc or not oc:IsRelateToEffect(e)
+				return re:GetHandler()==e:GetHandler()
 			end)
 			e3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 				for _,v in pairs(rt) do v:Reset() end
-				for _,v in pairs(cp) do oc:RegisterEffect(v,true) end
 				oc:ResetFlagEffect(id)
 				e:Reset()
 			end)
-			Duel.RegisterEffect(e3,tp)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+			oc:RegisterEffect(e3,true)
 		end
 		local g3=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsAbleToRemove),0,LOCATION_GRAVE,LOCATION_GRAVE,nil)
 		if #og~=0 and #g3>0 then

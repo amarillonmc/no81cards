@@ -3,10 +3,13 @@ function c67200761.initial_effect(c)
 	--set
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(67200761,0))
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetCountLimit(1,67200761)
 	e1:SetCost(c67200761.stcost)
+	e1:SetCondition(c67200761.tfcon)
 	e1:SetTarget(c67200761.sttg)
 	e1:SetOperation(c67200761.stop)
 	c:RegisterEffect(e1)  
@@ -29,17 +32,23 @@ function c67200761.stcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return c:IsReleasable() end
 	Duel.Release(c,REASON_COST)
 end
+function c67200761.tfcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
+end
 function c67200761.stfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x367d) and c:IsSSetable()
 end
 function c67200761.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67200761.stfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
 end
+function c67200761.cfilter(c)
+	return c:IsFaceup() and c:IsCode(67200755)
+end
 function c67200761.checkfilter1(c,tp)
-	return c:IsPreviousLocation(LOCATION_HAND) and c:IsType(TYPE_TRAP)
+	return Duel.IsExistingMatchingCard(c67200761.cfilter,tp,LOCATION_ONFIELD,0,1,nil) and c:IsType(TYPE_TRAP)
 end
 function c67200761.checkfilter2(c,tp)
-	return c:IsPreviousLocation(LOCATION_HAND) and c:IsType(TYPE_QUICKPLAY)
+	return Duel.IsExistingMatchingCard(c67200761.cfilter,tp,LOCATION_ONFIELD,0,1,nil) and c:IsType(TYPE_QUICKPLAY)
 end
 function c67200761.stop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

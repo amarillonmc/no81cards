@@ -11,6 +11,7 @@ function c28366277.initial_effect(c)
 	c:RegisterEffect(e1)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(28366277,3))
 	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -22,14 +23,14 @@ function c28366277.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28366277.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.CheckLPCost(tp,1500)
+	local b1=Duel.CheckLPCost(tp,2000)
 	local b2=Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,500)
 	local b3=Duel.IsPlayerAffectedByEffect(tp,28368431)
 	if chk==0 then return b1 or b2 end
 	if b3 or not b1 or (b2 and Duel.SelectYesNo(tp,aux.Stringid(28366277,0))) then
 		Duel.PayLPCost(tp,500)
 	else
-		Duel.PayLPCost(tp,1500)
+		Duel.PayLPCost(tp,2000)
 	end
 end
 function c28366277.thfilter(c)

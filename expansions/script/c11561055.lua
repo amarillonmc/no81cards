@@ -113,10 +113,13 @@ function c11561055.lfilter(c)
 end
 function c11561055.nafilter(c)
 	local tp=c:GetControler()
-	return c:IsType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(c11561055.nafilter2,tp,0x77,0,2,nil,c:GetCode())
+	return c:IsType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(c11561055.nafilter2,tp,0x77,0,3,nil,c:GetCode())
 end
 function c11561055.nafilter2(c,code)
 	return c:IsCode(code)
+end
+function c11561055.nafilter3(c,tp,ccodes)
+	return Duel.IsExistingMatchingCard(c11561055.nafilter2,tp,0x77,0,3,nil,c:GetCode()) and c:IsCode(table.unpack(ccodes))
 end
 function c11561055.xyzcheck(g,tp,xyzc)
 	return g:GetClassCount(Card.GetCode)==1 and Duel.GetLocationCountFromEx(tp,tp,g,xyzc)>0 and g:Filter(c11561055.lfilter,nil):GetClassCount(Card.GetLocation)==g:FilterCount(c11561055.lfilter,nil)
@@ -128,7 +131,14 @@ function c11561055.xyzcondition(e,c,og,min,max)
 	if og then
 		mg=og
 	else
-		mg=Duel.GetMatchingGroup(c11561055.nafilter,tp,0x77,0,nil)
+		--mg=Duel.GetMatchingGroup(c11561055.nafilter,tp,0x77,0,nil)
+		local tg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil,tp)
+		local ccodes={}
+		for tc in aux.Next(tg) do
+			local code=tc:GetCode()
+			table.insert(ccodes,code)
+		end
+		mg=Duel.GetMatchingGroup(c11561055.nafilter3,tp,0x77,0,nil,tp,ccodes)
 	end
 	local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 	if sg:IsExists(Auxiliary.MustMaterialCounterFilter,1,nil,mg) then return false end
@@ -145,7 +155,15 @@ function c11561055.xyztarget(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 	if og then
 		mg=og 
 	else
-		mg=Duel.GetMatchingGroup(c11561055.nafilter,tp,0x77,0,nil)
+		--mg=Duel.GetMatchingGroup(c11561055.nafilter,tp,0x77,0,nil)
+		--local tg=Duel.GetMatchingGroup(c11561055.nafilter,tp,LOCATION_MZONE,0,nil,tp,codes)
+		local tg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil,tp)
+		local ccodes={}
+		for tc in aux.Next(tg) do
+			local code=tc:GetCode()
+			table.insert(ccodes,code)
+		end
+		mg=Duel.GetMatchingGroup(c11561055.nafilter3,tp,0x77,0,nil,tp,ccodes)
 	end
 	local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 	Duel.SetSelectedCard(sg)

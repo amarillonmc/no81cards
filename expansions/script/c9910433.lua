@@ -54,7 +54,7 @@ function c9910433.rmop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)
 	end
 	local ct=Duel.GetOperatedGroup():FilterCount(c9910433.ogfilter,nil)
-	if ct<3 then return end
+	if ct<4 then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
@@ -68,7 +68,7 @@ function c9910433.rmop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetValue(1)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e2)
-	if ct<5 then return end
+	if ct<7 then return end
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
@@ -84,7 +84,7 @@ function c9910433.rmop(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetTargetRange(1,1)
 	e4:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e4,tp)
-	if ct~=7 then return end
+	if ct<10 then return end
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e5:SetCode(EVENT_CHAIN_SOLVING)

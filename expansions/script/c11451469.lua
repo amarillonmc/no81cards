@@ -12,7 +12,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_BE_MATERIAL)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_EVENT_PLAYER)
 	e2:SetOperation(cm.efop)
-	--c:RegisterEffect(e2)
+	c:RegisterEffect(e2)
 	--change code
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)

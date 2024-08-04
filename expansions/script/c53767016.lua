@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local s,id,o=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
@@ -20,49 +22,32 @@ function s.initial_effect(c)
 	e2:SetTarget(s.tgtg)
 	e2:SetOperation(s.tgop)
 	c:RegisterEffect(e2)
+	local g=Group.CreateGroup()
+	g:KeepAlive()
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetOperation(s.mop)
-	c:RegisterEffect(e3)
-	local g=Group.CreateGroup()
-	g:KeepAlive()
 	e3:SetLabelObject(g)
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(id,1))
-	e4:SetCategory(CATEGORY_TOHAND)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCode(EVENT_CHAIN_SOLVED)
-	e4:SetCountLimit(1,id+50)
-	e4:SetLabelObject(e3)
-	e4:SetTarget(s.thtg)
-	e4:SetOperation(s.thop)
+	e3:SetOperation(s.mop1)
+	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EVENT_CHAIN_END)
+	e4:SetOperation(s.mop2)
 	c:RegisterEffect(e4)
-	if s.global_effect==nil then
-		s.global_effect=true
-		local ge0=Effect.CreateEffect(c)
-		ge0:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		ge0:SetCode(EVENT_CHAIN_SOLVING)
-		ge0:SetOperation(s.checkop1)
-		Duel.RegisterEffect(ge0,0)
-		Duel.RegisterFlagEffect(0,id+50,0,0,0,0)
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		ge1:SetCode(EVENT_CHAIN_END)
-		ge1:SetOperation(s.checkop2)
-		Duel.RegisterEffect(ge1,0)
-	end
-end
-function s.checkop1(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(rp,id,RESET_PHASE+PHASE_END,0,1)
-end
-function s.checkop2(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetFlagEffectLabel(0,id+50)
-	Duel.SetFlagEffectLabel(0,id+50,ct+1)
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(id,1))
+	e5:SetCategory(CATEGORY_TOHAND)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetProperty(EFFECT_FLAG_DELAY)
+	e5:SetCode(EVENT_CUSTOM+id)
+	e5:SetCountLimit(1,id+50)
+	e5:SetTarget(s.thtg)
+	e5:SetOperation(s.thop)
+	c:RegisterEffect(e5)
+	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,aux.FALSE)
 end
 function s.sumop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+0x1fc0000+RESET_PHASE+PHASE_END,0,1)
@@ -74,16 +59,16 @@ function s.tgfilter(c)
 	return c:IsRace(RACE_INSECT) and c:IsType(TYPE_TUNER) and c:IsAbleToGrave()
 end
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(1-tp,id)>0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil) and Duel.GetCustomActivityCount(id,1-tp,ACTIVITY_CHAIN)>0 end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetMatchingGroup(s.tgfilter,tp,LOCATION_DECK,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=tg:SelectSubGroup(tp,aux.dncheck,false,1,Duel.GetFlagEffect(1-tp,id))
-	if g and Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
-		local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+	local g=tg:SelectSubGroup(tp,aux.dncheck,false,1,Duel.GetCustomActivityCount(id,1-tp,ACTIVITY_CHAIN))
+	if g then
+		local og=SNNM.WhitkinsToGrave(g,REASON_EFFECT):Filter(Card.IsLocation,nil,LOCATION_GRAVE)
 		if #og>1 and og:IsExists(Card.IsCanBeSpecialSummoned,1,nil,e,0,tp,false,false) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
 			local sp=og:FilterSelect(tp,Card.IsCanBeSpecialSummoned,1,1,nil,e,0,tp,false,false)
@@ -94,18 +79,34 @@ end
 function s.acfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsFaceupEx() or c:IsLocation(LOCATION_SZONE))
 end
-function s.mop(e,tp,eg,ep,ev,re,r,rp)
+function s.mop1(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
-	local ct=Duel.GetFlagEffectLabel(0,id+50) or 0
-	if ct~=e:GetLabel() then g:Clear() e:SetLabel(ct) end
 	if re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then
 		local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-		if tg and tg:IsExists(s.acfilter,1,nil) then g:Merge(tg:Filter(s.acfilter,nil)) end
+		if not tg then return end
+		local mg=tg:Filter(s.acfilter,nil)
+		if #mg>0 then
+			g:Merge(mg)
+			mg:ForEach(Card.RegisterFlagEffect,id+50,RESET_EVENT+RESETS_STANDARD,0,1,e:GetHandler():GetFieldID())
+		end
 	end
 end
+function s.mop2(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	if #g>0 then
+		local _eg=g:Clone()
+		Duel.RaiseEvent(_eg,EVENT_CUSTOM+id,e,r,rp,ep,ev)
+		g:Clear()
+	end
+end
+function s.thfilter(c,fid)
+	local res=false
+	for _,flag in ipairs({c:GetFlagEffectLabel(id+50)}) do if flag==fid then res=true end end
+	return res and c:IsAbleToHand()
+end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=e:GetLabelObject():GetLabelObject()
-	if chk==0 then return g:IsExists(Card.IsAbleToHand,1,nil) end
+	local g=eg:Filter(s.thfilter,nil,e:GetHandler():GetFieldID())
+	if chk==0 then return re:GetHandler()==e:GetHandler() and #g>0 end
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end

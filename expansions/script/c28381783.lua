@@ -9,7 +9,6 @@ function c28381783.initial_effect(c)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
 	e0:SetValue(SUMMON_TYPE_FUSION)
-	e0:SetCountLimit(1,28381783+EFFECT_COUNT_CODE_OATH)
 	e0:SetCondition(c28381783.hspcon)
 	e0:SetOperation(c28381783.hspop)
 	c:RegisterEffect(e0)
@@ -50,7 +49,7 @@ function c28381783.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c28381783.matfilter(c)
-	return c:IsAbleToDeckOrExtraAsCost() and c:IsFusionSetCard(0x285) and c:IsCanBeFusionMaterial()
+	return c:IsAbleToDeckAsCost() and c:IsFusionSetCard(0x285) and c:IsCanBeFusionMaterial()
 end
 function c28381783.hspcon(e,c)
 	if c==nil then return true end

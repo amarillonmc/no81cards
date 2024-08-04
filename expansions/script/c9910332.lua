@@ -30,12 +30,13 @@ function c9910332.spcon(e,c)
 end
 function c9910332.spfilter(c,e,tp)
 	return c:IsSetCard(0x3956) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and (c:IsLevelBelow(4) or c:IsLocation(LOCATION_DECK))
 end
 function c9910332.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local rc=c:GetReasonCard()
-	local res=c:IsReason(REASON_MATERIAL+REASON_SYNCHRO) and rc and rc:IsCode(9910302)
-	local loc=LOCATION_HAND
+	local res=c:IsReason(REASON_MATERIAL+REASON_SYNCHRO) and rc and rc:IsAttribute(ATTRIBUTE_LIGHT)
+	local loc=LOCATION_HAND+LOCATION_GRAVE
 	if res then loc=loc+LOCATION_DECK end
 	if chk==0 then
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return false end
@@ -50,10 +51,10 @@ function c9910332.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910332.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	local loc=LOCATION_HAND
+	local loc=LOCATION_HAND+LOCATION_GRAVE
 	if e:GetLabel()==1 then loc=loc+LOCATION_DECK end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c9910332.spfilter,tp,loc,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910332.spfilter),tp,loc,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end

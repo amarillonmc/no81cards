@@ -1,0 +1,22 @@
+--pvz bt z 大篷车僵尸
+Duel.LoadScript("c57300400.lua")
+local s,id,o=GetID()
+function s.initial_effect(c)
+	Zombie_Characteristics_X(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_CANNOT_ATTACK)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(LOCATION_ONFIELD,0)
+	e2:SetTarget(s.indtg)
+	e2:SetValue(aux.indoval)
+	c:RegisterEffect(e2)
+end
+function s.indtg(e,c)
+	return c~=e:GetHandler()
+end

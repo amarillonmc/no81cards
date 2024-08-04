@@ -21,7 +21,9 @@ local e3=Effect.CreateEffect(c)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY) 
 	e3:SetCountLimit(1,m)
 	e3:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(13000750,1-tp,ACTIVITY_CHAIN)>2 or Duel.GetCustomActivityCount(13000750,tp,ACTIVITY_CHAIN)>2 end)
+local ct1=Duel.GetCustomActivityCount(13000750,1-tp,ACTIVITY_CHAIN)
+	local ct2=Duel.GetCustomActivityCount(13000750,tp,ACTIVITY_CHAIN)
+	return (ct1+ct2)>=4 end)
 	e3:SetTarget(cm.adtg2)
 	e3:SetOperation(cm.adop2) 
 	c:RegisterEffect(e3)
@@ -32,7 +34,9 @@ local e4=Effect.CreateEffect(c)
 	e4:SetRange(LOCATION_EXTRA)
 	e4:SetCountLimit(1,m+2000)
 	e4:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-	return (Duel.GetCustomActivityCount(13000750,1-tp,ACTIVITY_CHAIN)>1 or Duel.GetCustomActivityCount(13000750,tp,ACTIVITY_CHAIN)>1) and e:GetHandler():IsFaceup() end)
+	local ct1=Duel.GetCustomActivityCount(13000750,1-tp,ACTIVITY_CHAIN)
+	local ct2=Duel.GetCustomActivityCount(13000750,tp,ACTIVITY_CHAIN)
+	return (ct1+ct2)>=3 end)
 	e4:SetOperation(cm.disop)
 	c:RegisterEffect(e4)
  if not cm.global_check then
@@ -55,7 +59,7 @@ end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,4,nil)
+	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,5,nil)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -83,11 +87,11 @@ end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local h=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 	local h2=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
-	if h<3 then
-	Duel.Draw(tp,3-h,REASON_EFFECT)
+	if h<2 then
+	Duel.Draw(tp,2-h,REASON_EFFECT)
 end
-	if h2<3 then
-	Duel.Draw(1-tp,3-h2,REASON_EFFECT)
+	if h2<2 then
+	Duel.Draw(1-tp,2-h2,REASON_EFFECT)
 end
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
@@ -111,17 +115,7 @@ function cm.adop2(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 		e1:SetValue(cm.efilter)
 		tc:RegisterEffect(e1)   
-   local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
-	e1:SetCountLimit(1,m+1000)
-	e1:SetCondition(cm.spcon2)
-	e1:SetTarget(cm.sptg)
-	e1:SetOperation(cm.spop2)
-	c:RegisterEffect(e1)
+   
 end
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -166,12 +160,12 @@ function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return false
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,4,4,nil,e)
+	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,5,5,nil,e)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	Duel.Release(g,REASON_RULE)
 end
-function cm.efilter(e,re)
-	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
+function cm.efilter(e,te)
+	return te:GetOwner()~=e:GetOwner()
 end
 function cm.spfilter(c,e)
 	return not c:IsImmuneToEffect(e)

@@ -98,7 +98,10 @@ function Duel.Transform(c,side,e,tp,r)
 			Duel.CreateToken(0,tcode)
 		end
 		Duel.SetMetatable(c, _G["c"..tcode])
-		c:ReplaceEffect(tcode,0,0)
+		c:ReplaceEffect(CARD_CYBER_HARPIE_LADY,0,0)
+		c:SetStatus(STATUS_EFFECT_REPLACED,false)
+		s=getmetatable(c)
+		s.initial_effect(c)
 		c:ResetFlagEffect(FLAG_ALLOW_DOUBLESIDED_REVERSE_REGISTRATION)
 		Duel.RaiseEvent(c,EVENT_TRANSFORMED,e,r,tp,tp,0)
 		Duel.RaiseSingleEvent(c,EVENT_TRANSFORMED,e,r,tp,tp,0)
@@ -203,7 +206,10 @@ function Auxiliary.RevertToObverseSideOperation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.CreateToken(0,tcode)
 	end
 	Duel.SetMetatable(c,_G["c"..tcode])
-	c:ReplaceEffect(tcode,0,0)
+	c:ReplaceEffect(CARD_CYBER_HARPIE_LADY,0,0)
+	c:SetStatus(STATUS_EFFECT_REPLACED,false)
+	s=getmetatable(c)
+	s.initial_effect(c)
 	c:ResetFlagEffect(FLAG_ALLOW_DOUBLESIDED_REVERSE_REGISTRATION)
 end
 

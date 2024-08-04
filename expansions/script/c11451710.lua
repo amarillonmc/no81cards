@@ -63,7 +63,7 @@ function cm.initial_effect(c)
 					end
 				end
 			end
-			_RegisterEffect(c,e,bool)
+			return _RegisterEffect(c,e,bool)
 		end
 	end
 end

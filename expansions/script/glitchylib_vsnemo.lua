@@ -2,10 +2,22 @@ GLITCHYLIB_LOADED					= true
 self_reference_effect				= nil
 self_reference_tp					= nil
 
+Duel.LoadScript("glitchylib_regeff.lua")
+
+--Glitchylib imports
+EFFECT_CHANGE_RECOVER					= 1508
+
 --Modified functions
 local duel_recover, duel_damage, aux_damcon1 = Duel.Recover, Duel.Damage, Auxiliary.damcon1
 
 Duel.Recover = function(p,v,r,...)
+	aux.IsRecoverFunctionCalled=true
+	for _,e in ipairs({Duel.IsPlayerAffectedByEffect(p,EFFECT_NO_RECOVER)}) do
+		if e:Evaluate(p,v,r,...) then
+			aux.IsRecoverFunctionCalled=false
+			return 0
+		end
+	end
 	if Duel.IsPlayerAffectedByEffect(p,EFFECT_CHANGE_RECOVER) then
 		for _,e in ipairs({Duel.IsPlayerAffectedByEffect(p,EFFECT_CHANGE_RECOVER)}) do
 			local val=e:GetValue()
@@ -13,26 +25,41 @@ Duel.Recover = function(p,v,r,...)
 				if aux.GetValueType(val)~="number" then
 					val=val(e,r,v)
 				end
-				return duel_recover(p,val,r,...)
+				
+				local res=duel_recover(p,val,r,...)
+				aux.IsRecoverFunctionCalled=false
+				return res
 			end
 		end
 	else
-		return duel_recover(p,v,r,...)
+		local res=duel_recover(p,v,r,...)
+		aux.IsRecoverFunctionCalled=false
+		return res
 	end
 end
 Duel.Damage = function(p,v,r,...)
+	aux.IsDamageFunctionCalled=true
 	if Duel.IsPlayerAffectedByEffect(p,EFFECT_REVERSE_DAMAGE) and Duel.IsPlayerAffectedByEffect(p,EFFECT_CHANGE_RECOVER) then
+		for _,e in ipairs({Duel.IsPlayerAffectedByEffect(p,EFFECT_NO_RECOVER)}) do
+			if e:Evaluate(p,v,r,...) then
+				return 0
+			end
+		end
 		for _,e in ipairs({Duel.IsPlayerAffectedByEffect(p,EFFECT_CHANGE_RECOVER)}) do
 			local val=e:GetValue()
 			if val and (aux.GetValueType(val)=="number" or val(e,r|REASON_RDAMAGE,v)) then
 				if aux.GetValueType(val)~="number" then
 					val=val(e,r|REASON_RDAMAGE,v)
 				end
-				return duel_damage(p,val,r,...)
+				local res=duel_damage(p,val,r,...)
+				aux.IsDamageFunctionCalled=false
+				return res
 			end
 		end
 	else
-		return duel_damage(p,v,r,...)
+		local res=duel_damage(p,v,r,...)
+		aux.IsDamageFunctionCalled=false
+		return res
 	end
 end
 Auxiliary.damcon1 = function(e,tp,eg,ep,ev,re,r,rp)
@@ -52,12 +79,17 @@ Auxiliary.damcon1 = function(e,tp,eg,ep,ev,re,r,rp)
 	if ex and (cp==tp or cp==PLAYER_ALL) and not rd and takedamcheck then
 		return true
 	end
+	
 	ex,cg,ct,cp,cv=Duel.GetOperationInfo(ev,CATEGORY_RECOVER)
-	return ex and (cp==tp or cp==PLAYER_ALL) and rr and takedamcheck
+	local recovercheck=true
+	for _,e in ipairs({Duel.IsPlayerAffectedByEffect(p,EFFECT_NO_RECOVER)}) do
+		if e:Evaluate(ep,ev,r) then
+			recovercheck=false
+			break
+		end
+	end
+	return ex and (cp==tp or cp==PLAYER_ALL) and rr and recovercheck and takedamcheck
 end
-
---Glitchylib imports
-EFFECT_CHANGE_RECOVER					= 1508
 
 
 --Rating types
@@ -93,6 +125,7 @@ RESETS_STANDARD_ACTIVATION 		= RESETS_STANDARD&~(RESET_TOFIELD|RESET_LEAVE|RESET
 
 --timings
 RELEVANT_TIMINGS = TIMINGS_CHECK_MONSTER|TIMING_MAIN_END|TIMING_END_PHASE
+RELEVANT_BATTLE_TIMINGS = TIMING_BATTLE_PHASE|TIMING_BATTLE_END|TIMING_ATTACK|TIMING_BATTLE_START|TIMING_BATTLE_STEP_END
 
 --win
 WIN_REASON_CUSTOM = 0xff
@@ -113,6 +146,8 @@ ARCHE_FUSION		= 0x46
 CARD_ANCIENT_PIXIE_DRAGON				= 4179255
 CARD_BLACK_AND_WHITE_WAVE				= 31677606
 CARD_BLUEEYES_SPIRIT					= 59822133
+CARD_CYBER_DRAGON						= 70095154
+CARD_CYBER_HARPIE_LADY					= 80316585
 CARD_DESPAIR_FROM_THE_DARK				= 71200730
 CARD_EHERO_BLAZEMAN						= 63060238
 CARD_MONSTER_REBORN						= 83764718
@@ -121,7 +156,7 @@ CARD_NUMBER_39_UTOPIA					= 84013237
 CARD_ROTA								= 32807846
 CARD_UMI								= 22702055
 
-LOCATION_ALL = LOCATION_DECK|LOCATION_HAND|LOCATION_MZONE|LOCATION_SZONE|LOCATION_GRAVE|LOCATION_REMOVED|LOCATION_EXTRA
+LOCATION_ALL = LOCATION_DECK|LOCATION_HAND|LOCATION_MZONE|LOCATION_SZONE|LOCATION_GRAVE|LOCATION_REMOVED|LOCATION_EXTRA|LOCATION_OVERLAY
 LOCATION_GB  = LOCATION_GRAVE|LOCATION_REMOVED
 
 MAX_RATING = 14
@@ -182,6 +217,7 @@ COUNTER_SPARKLE 						= 0x443
 
 TOKEN_BELKA				=	33730163
 TOKEN_DESPERADO_HEART	=	33720101
+TOKEN_MONSTER_UNIVERSE	=	33720246
 TOKEN_STRELKA			=	33730162
 
 
@@ -993,11 +1029,11 @@ function Duel.Bounce(g)
 	return ct,#cg,cg
 end
 
-function Duel.ShuffleIntoDeck(g,p,loc,seq,r)
+function Duel.ShuffleIntoDeck(g,p,loc,seq,r,...)
 	if not loc then loc=LOCATION_DECK|LOCATION_EXTRA end
 	if not seq then seq=SEQ_DECKSHUFFLE end
 	if not r then r=REASON_EFFECT end
-	local ct=Duel.SendtoDeck(g,p,seq,r)
+	local ct=Duel.SendtoDeck(g,p,seq,r,...)
 	if ct>0 then
 		if seq==SEQ_DECKSHUFFLE then
 			aux.AfterShuffle(g)
@@ -1524,6 +1560,108 @@ function Card.GlitchyGetPreviousColumnGroup(c,left,right,without_center)
 	end
 end
 
+--Continuous Effects
+function Auxiliary.RegisterMaxxCEffect(c,id,p,range,event,cond,outchainop,inchainop,flaglabel,reset,flagreset,label)
+	local rct,flagrct=1,1
+	if type(reset)=="table" then
+		rct=reset[2]
+		reset=reset[1]
+	end
+	if type(flagreset)=="table" then
+		flagrct=flagreset[2]
+		flagreset=flagreset[1]
+	end
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(event)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCondition(aux.OutsideChainMaxxCCondition(cond))
+	e2:SetOperation(outchainop)
+	if label then
+		e2:SetLabel(label)
+	end
+	if reset then
+		e2:SetReset(reset,rct)
+	end
+	if p then
+		Duel.RegisterEffect(e2,p)
+	else
+		e2:SetRange(range)
+		c:RegisterEffect(e2)
+	end
+	--
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_CONTINUOUS|EFFECT_TYPE_FIELD)
+	e3:SetCode(event)
+	e3:SetCondition(aux.InsideChainMaxxCCondition(cond))
+	e3:SetOperation(aux.RegisterMaxxCFlag(id,flaglabel,flagreset,flagrct))
+	if label then
+		e3:SetLabel(label)
+	end
+	if reset then
+		e3:SetReset(reset,rct)
+	end
+	if p then
+		Duel.RegisterEffect(e3,p)
+	else
+		e3:SetRange(range)
+		c:RegisterEffect(e3)
+	end
+	--
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_CONTINUOUS|EFFECT_TYPE_FIELD)
+	e4:SetCode(EVENT_CHAIN_SOLVED)
+	e4:SetCondition(aux.MaxxCFlagCondition(id,cond))
+	e4:SetOperation(aux.ResolvedChainMaxxCOperation(id,inchainop))
+	if label then
+		e4:SetLabel(label)
+	end
+	if reset then
+		e4:SetReset(reset,rct)
+	end
+	if p then
+		Duel.RegisterEffect(e4,p)
+	else
+		e4:SetRange(range)
+		c:RegisterEffect(e4)
+	end
+	
+	return e2,e3,e4
+end
+function Auxiliary.OutsideChainMaxxCCondition(cond)
+	return	function(e,tp,eg,ep,ev,re,r,rp)
+				return (not cond or cond(e,tp,eg,ep,ev,re,r,rp)) and not Duel.IsChainSolving()
+			end
+end
+function Auxiliary.InsideChainMaxxCCondition(cond)
+	return	function(e,tp,eg,ep,ev,re,r,rp)
+				return (not cond or cond(e,tp,eg,ep,ev,re,r,rp)) and Duel.IsChainSolving()
+			end
+end
+function Auxiliary.RegisterMaxxCFlag(id,flaglabel,reset,rct)
+	if not reset then reset=0 end
+	local resets=RESET_CHAIN|reset
+	return	function(e,tp,eg,ep,ev,re,r,rp)
+				local lab=0
+				if flaglabel then
+					lab=flaglabel(e,tp,eg,ep,ev,re,r,rp)
+				end
+				Duel.RegisterFlagEffect(tp,id,resets,0,rct,lab)
+			end
+end
+function Auxiliary.MaxxCFlagCondition(id)
+	return	function(e,tp,eg,ep,ev,re,r,rp)
+				return (not cond or cond(e,tp,eg,ep,ev,re,r,rp)) and Duel.PlayerHasFlagEffect(tp,id)
+			end
+end
+function Auxiliary.ResolvedChainMaxxCOperation(id,op)
+	return	function(e,tp,eg,ep,ev,re,r,rp)
+				local n=Duel.GetFlagEffect(tp,id)
+				op(e,tp,eg,ep,ev,re,r,rp,n)
+				Duel.ResetFlagEffect(tp,id)
+			end
+end
+
 --Counters
 RELEVANT_REMOVE_EVENT_COUNTERS = {0x100e}
 COUNTED_COUNTERS_FOR_REMOVE_EVENT = {}
@@ -1642,9 +1780,6 @@ end
 function Effect.Desc(e,id,...)
 	local x = {...}
 	local c=e:GetOwner()
-	if aux.GetValueType(aux.EffectBeingApplied)=="Effect" and aux.GetValueType(aux.ProxyEffect)=="Effect" and aux.ProxyEffect:GetOwner()==c then
-		c=aux.EffectBeingApplied:GetOwner()
-	end
 	local code = #x>0 and x[1] or c:GetOriginalCode()
 	if id<16 then
 		return e:SetDescription(aux.Stringid(code,id))
@@ -1653,9 +1788,6 @@ function Effect.Desc(e,id,...)
 	end
 end
 function Card.AskPlayer(c,tp,desc)
-	if aux.GetValueType(aux.EffectBeingApplied)=="Effect" and aux.GetValueType(aux.ProxyEffect)=="Effect" and aux.ProxyEffect:GetHandler()==c then
-		c=aux.EffectBeingApplied:GetHandler()
-	end
 	local string = desc<=15 and aux.Stringid(c:GetOriginalCode(),desc) or desc
 	return Duel.SelectYesNo(tp,string)
 end
@@ -1709,7 +1841,7 @@ function Auxiliary.Option(id,tp,desc,...)
 	return sel
 end
 
-function Duel.RegisterHint(p,flag,reset,rct,id,desc,prop)
+function Duel.RegisterHint(p,flag,reset,rct,id,desc,prop,refeff)
 	if not reset then reset=PHASE_END end
 	if not rct then rct=1 end
 	if not prop then prop=0 end
@@ -1717,11 +1849,23 @@ function Duel.RegisterHint(p,flag,reset,rct,id,desc,prop)
 	e:Desc(desc,id)
 	e:SetType(EFFECT_TYPE_FIELD)
 	e:SetProperty(EFFECT_FLAG_CLIENT_HINT|EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_PLAYER_TARGET|prop)
-	e:SetCode(EFFECT_FLAG_EFFECT|id)
+	e:SetCode(EFFECT_FLAG_EFFECT|flag)
 	e:SetTargetRange(1,0)
+	if refeff then
+		e:SetLabelObject(refeff)
+		e:SetCondition(aux.ResetHintCondition)
+	end
 	e:SetReset(RESET_PHASE|reset,rct)
 	Duel.RegisterEffect(e,p)
 	return e
+end
+function Auxiliary.ResetHintCondition(e)
+	local refeff=e:GetLabelObject()
+	if not refeff then
+		e:Reset()
+		return false
+	end
+	return true
 end
 
 --EDOPro Imports
@@ -2040,6 +2184,10 @@ function Effect.SetRelevantTimings(e,extra_timings)
 	if not extra_timings then extra_timings=0 end
 	return e:SetHintTiming(extra_timings,RELEVANT_TIMINGS|extra_timings)
 end
+function Effect.SetRelevantBattleTimings(e,extra_timings)
+	if not extra_timings then extra_timings=0 end
+	return e:SetHintTiming(extra_timings,RELEVANT_BATTLE_TIMINGS|extra_timings)
+end
 
 
 --Labels
@@ -2053,6 +2201,19 @@ function Effect.SetLabelPair(e,l1,l2)
 		local o1,_=e:GetLabel()
 		e:SetLabel(o1,l2)
 	end
+end
+function Effect.SetSpecificLabel(e,l,pos)
+	if not pos then pos=1 end
+	local tab={e:GetLabel()}
+	if #tab<pos then
+		for i=1,pos-#tab-1 do
+			table.insert(tab,0)
+		end
+		table.insert(tab,l)
+	else
+		tab[pos]=l
+	end
+	e:SetLabel(table.unpack(tab))
 end
 function Effect.GetSpecificLabel(e,pos)
 	if not pos then pos=1 end
@@ -2681,7 +2842,8 @@ function Duel.IsEndPhase(tp)
 end
 
 function Duel.GetNextPhaseCount(ph,p)
-	if Duel.GetCurrentPhase()==ph and (not p or Duel.GetTurnPlayer()==p) then
+	if not ph and not p then return 1 end
+	if (not ph or Duel.GetCurrentPhase()==ph) and (not p or Duel.GetTurnPlayer()==p) then
 		return 2
 	else
 		return 1
@@ -3184,8 +3346,12 @@ function Card.UpdateATKDEF(c,atk,def,reset,rc,range,cond,prop,desc)
 end
 
 --Protections
-function Card.CannotBeDestroyedByBattle(c,val,cond,reset,rc,range,prop,desc)
-	local typ = EFFECT_TYPE_SINGLE
+function Card.CannotBeDestroyedByBattle(c,val,cond,reset,rc,range,prop,desc,forced,typ)
+	if not typ and c:IsOriginalType(TYPE_EQUIP) and not range then
+		typ = EFFECT_TYPE_EQUIP
+	else
+		typ = typ or EFFECT_TYPE_SINGLE
+	end
 	
 	local donotdisable=false
 	local rc = rc and rc or c
@@ -3226,14 +3392,15 @@ function Card.CannotBeDestroyedByBattle(c,val,cond,reset,rc,range,prop,desc)
 		e:SetProperty(prop)
 	end
 	
-	c:RegisterEffect(e)
+	c:RegisterEffect(e,forced)
 	
 	return e
 end
 
 --Protections: Immunity
-UNAFFECTED_OTHER	= 0x1
-UNAFFECTED_OPPO		= 0x2
+UNAFFECTED_OTHER		= 0x1
+UNAFFECTED_OPPO			= 0x2
+UNAFFECTED_OTHER_EQUIP	= 0x100
 
 function Auxiliary.imother(e,te)
 	return e:GetOwner()~=te:GetOwner()
@@ -3241,14 +3408,24 @@ end
 function Auxiliary.imoval(e,te)
 	return e:GetOwnerPlayer()~=te:GetOwnerPlayer()
 end
+function Auxiliary.imothereq(e,te)
+	local owner,affecting_owner=e:GetOwner(),te:GetOwner()
+	return owner~=affecting_owner and affecting_owner~=owner:GetEquipTarget()
+end
 
 Auxiliary.UnaffectedProtections={
-	[UNAFFECTED_OTHER]	= aux.imother;
-	[UNAFFECTED_OPPO]	= aux.imoval;
+	[UNAFFECTED_OTHER]			= aux.imother;
+	[UNAFFECTED_OPPO]			= aux.imoval;
+	[UNAFFECTED_OTHER_EQUIP]	= aux.imothereq;
 }
-function Card.Unaffected(c,immunity,cond,reset,rc,range,prop,desc)
-	local typ = EFFECT_TYPE_SINGLE
-	if not reset and not range then
+function Card.Unaffected(c,immunity,cond,reset,rc,range,prop,desc,forced,typ)
+	if not typ and c:IsOriginalType(TYPE_EQUIP) and not range then
+		typ = EFFECT_TYPE_EQUIP
+	else
+		typ = typ or EFFECT_TYPE_SINGLE
+	end
+	
+	if typ==EFFECT_TYPE_SINGLE and not reset and not range then
 		range = c:GetOriginalType()&TYPE_FIELD>0 and LOCATION_FZONE or c:GetOriginalType()&TYPE_ST>0 and LOCATION_SZONE or LOCATION_MZONE
 	end
 	
@@ -3272,6 +3449,10 @@ function Card.Unaffected(c,immunity,cond,reset,rc,range,prop,desc)
 	end
 	
 	local e=Effect.CreateEffect(rc)
+	if desc then
+		e:SetDescription(desc)
+		prop=prop|EFFECT_FLAG_CLIENT_HINT
+	end
 	e:SetType(typ)
 	if range then
 		prop=prop|EFFECT_FLAG_SINGLE_RANGE
@@ -3293,7 +3474,7 @@ function Card.Unaffected(c,immunity,cond,reset,rc,range,prop,desc)
 		e:SetProperty(prop)
 	end
 	
-	c:RegisterEffect(e)
+	c:RegisterEffect(e,forced)
 	
 	return e
 end
@@ -3301,6 +3482,12 @@ end
 --Location Check
 EFFECT_CARD_HAS_RESOLVED = 47987298
 
+function Auxiliary.AlreadyInRangeCondition(e,re,se)
+	local se=e and e:GetLabelObject():GetLabelObject() or se
+	return	function(c,...)
+				return se==nil or re~=se
+			end
+end
 function Auxiliary.AlreadyInRangeFilter(e,f,se)
 	local se=e and e:GetLabelObject():GetLabelObject() or se
 	return	function(c,...)
@@ -3567,6 +3754,17 @@ function Auxiliary.DiscardCost(f,min,max,exc)
 				if chk==0 then return Duel.IsExistingMatchingCard(aux.DiscardFilter(f,true),tp,LOCATION_HAND,0,min,exc) end
 				Duel.DiscardHand(tp,aux.DiscardFilter(f,true),min,max,REASON_COST|REASON_DISCARD,exc)
 			end
+end
+function Auxiliary.PayLPCost(lp)
+	if not lp then lp=1000 end
+	return	function(e,tp,eg,ep,ev,re,r,rp,chk)
+				if chk==0 then return Duel.CheckLPCost(tp,lp) end
+				Duel.PayLPCost(tp,lp)
+			end
+end
+function Auxiliary.PayHalfLPCost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 end
 
 ----Self as Cost
@@ -4142,5 +4340,3 @@ Card.GetLocation = function(c)
 	end
 	return locs
 end
-
-Duel.LoadScript("glitchylib_regeff.lua")
