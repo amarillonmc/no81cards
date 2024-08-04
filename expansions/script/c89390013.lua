@@ -12,23 +12,25 @@ function cm.initial_effect(c)
     local e3=Effect.CreateEffect(c)
     e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE+CATEGORY_FUSION_SUMMON)
     e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-    e3:SetCode(EVENT_PHASE+PHASE_END)
+    e3:SetCode(EVENT_PHASE+PHASE_STANDBY)
     e3:SetRange(LOCATION_REMOVED)
     e3:SetCountLimit(1,m)
     e3:SetCondition(cm.thcon)
     e3:SetTarget(cm.sptg)
     e3:SetOperation(cm.spop)
+    e3:SetLabelObject(e2)
     c:RegisterEffect(e3)
 end
 function cm.mfilter(c)
     return c:IsLinkRace(RACE_PSYCHO) and c:IsLinkAttribute(ATTRIBUTE_DARK)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
-    if e:GetHandler():IsFacedown() then return end
-    e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+    local ct=Duel.GetTurnCount()
+    e:SetLabel(ct)
+    e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-    return e:GetHandler():GetFlagEffect(m)~=0
+    return e:GetLabelObject():GetLabel()~=Duel.GetTurnCount() and e:GetHandler():GetFlagEffect(m)>0
 end
 function cm.spfilter(c,e,tp)
     return c:IsFaceup() and c:IsRace(RACE_PSYCHO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

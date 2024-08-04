@@ -69,6 +69,9 @@ function c98941050.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>ct
 		and (Duel.CheckReleaseGroupEx(tp,Card.IsReleasable,1,e:GetHandler()) or Duel.GetTurnPlayer()==tp)
 end
+function c98941050.rrfilter(c,e,tp)
+	return c:IsSetCard(0xb4) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,true)
+end
 function c98941050.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
@@ -77,16 +80,20 @@ function c98941050.spop(e,tp,eg,ep,ev,re,r,rp)
 	   Duel.SpecialSummon(c,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 	   c:CompleteProcedure()
 	else
+	   local sg=Duel.SelectMatchingCard(tp,c98941050.rrfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	   tc=sg:GetFirst()
+	   if not tc then return false end
 	   if ft>0 then
-		  g=Duel.SelectReleaseGroupEx(tp,Card.IsReleasableByEffect,1,1,REASON_EFFECT,true,e:GetHandler())
+		  g=Duel.SelectReleaseGroupEx(tp,Card.IsReleasableByEffect,1,1,REASON_EFFECT,true,tc)
 	   else
 		  g=Duel.SelectReleaseGroupEx(tp,c98941050.hspfilter,1,1,REASON_EFFECT,false,nil,tp)
 	   end
+	   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	   c:SetMaterial(g)
 	   Duel.ReleaseRitualMaterial(g)
 	   Duel.BreakEffect()
-	   Duel.SpecialSummon(c,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-	   c:CompleteProcedure()
+	   Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,true,true,POS_FACEUP)
+	   tc:CompleteProcedure()
    end
 end
 function c98941050.spfilter(c,tp,re)
@@ -150,24 +157,6 @@ function c98941050.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterEffect(e0,tp)
 		end
 	end
-		--cannot attack
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e3:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
-	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetCondition(c98941050.atklimitcon)
-	e3:SetTarget(c98941050.atklimittg)
-	e3:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e3,tp)
-	--check
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e4:SetOperation(c98941050.checkop)
-	e4:SetLabelObject(e3)
-	e4:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e4,tp)
 end
 function c98941050.thlimit(e,c,tp,re)
 	return c:IsCode(e:GetLabel()) and re and re:GetHandler():IsCode(98941050)
