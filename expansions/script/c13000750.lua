@@ -36,7 +36,7 @@ local e4=Effect.CreateEffect(c)
 	e4:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
 	local ct1=Duel.GetCustomActivityCount(13000750,1-tp,ACTIVITY_CHAIN)
 	local ct2=Duel.GetCustomActivityCount(13000750,tp,ACTIVITY_CHAIN)
-	return (ct1+ct2)>=3 end)
+	return (ct1+ct2)>=3 and e:GetHandler():IsFaceup() end)
 	e4:SetOperation(cm.disop)
 	c:RegisterEffect(e4)
  if not cm.global_check then
