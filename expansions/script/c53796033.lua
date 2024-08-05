@@ -22,6 +22,6 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	e1:SetTargetRange(1,1)
-	e1:SetTarget(function(e,c,sump,sumtype,sumpos,targetp,se)return se and se:IsHasType(EFFECT_TYPE_ACTIONS) and c:IsType(TYPE_MONSTER) and c==se:GetHandler()end)
+	e1:SetTarget(function(e,c,sump,sumtype,sumpos,targetp,se)return se and c==se:GetHandler() and not (not c:IsSummonableCard() and se:GetCode()==EFFECT_SPSUMMON_PROC)end)
 	Duel.RegisterEffect(e1,tp)
 end
