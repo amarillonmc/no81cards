@@ -69,7 +69,8 @@ end
 function c64800124.syop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() and not tc:IsType(TYPE_TUNER) then
+	if not tc:IsRelateToEffect(e) or tc:IsFacedown() then return end
+	if not tc:IsType(TYPE_TUNER) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_ADD_TYPE)
