@@ -270,10 +270,13 @@ function cm.chkval(e,te)
 	if e:GetHandler():GetFlagEffect(m-10)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
 		local g=e:GetLabelObject()
 		g:ForEach(Card.ResetFlagEffect,m-10)
-		if SetCardData then
-			Duel.Hint(24,0,aux.Stringid(m,2))
-		else
-			Debug.Message("「强击」任务进度更新！")
+		if Duel.GetFlagEffect(tp,0xffff+m)==0 then
+			Duel.RegisterFlagEffect(tp,0xffff+m,RESET_CHAIN,0,1)
+			if SetCardData then
+				Duel.Hint(24,0,aux.Stringid(m,2))
+			else
+				Debug.Message("「强击」任务进度更新！")
+			end
 		end
 		local tc=te:GetHandler()
 		local e3=Effect.CreateEffect(tc)
