@@ -112,7 +112,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c,tp)
-	return c:IsCode(11451631) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or (Duel.IsPlayerAffectedByEffect(tp,11451676) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0)) and (c:GetActivateEffect():IsActivatable(tp,true,true) or c:CheckActivateEffect(false,false,false)~=nil)
+	return c:IsCode(11451631) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or (Duel.IsPlayerAffectedByEffect(tp,11451676) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0)) and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
 function cm.filter0(c)
 	return c:IsCanBeFusionMaterial() --and (not c:IsLocation(LOCATION_REMOVED) or c:IsFaceup())
