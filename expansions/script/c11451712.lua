@@ -94,18 +94,20 @@ function cm.mvop1(e,tp,eg,ep,ev,re,r,rp)
 	local n=11451718
 	local cn=_G["c"..n]
 	local chk=false
+	local c=e:GetHandler()
+	local lab=c:GetFlagEffectLabel(11451717)
 	while 1==1 do
 		local off=1
 		local ops={} 
 		local opval={}
-		if cm.mvop(e,tp,eg,ep,ev,re,r,rp,2) and not chk then
+		if cm.mvop(e,tp,eg,ep,ev,re,r,rp,2,lab) and not chk then
 			ops[off]=aux.Stringid(n,10)
 			opval[off-1]=1
 			off=off+1
 		end
 		for i=11451711,11451715 do
 			local ci=_G["c"..i]
-			if ci and cn and cn[i] and Duel.GetFlagEffect(0,0xffffff+i)==0 and ci.mvop and ci.mvop(e,tp,eg,ep,ev,re,r,rp,2) then
+			if ci and cn and cn[i] and Duel.GetFlagEffect(tp,0xffffff+i)==0 and ci.mvop and ci.mvop(e,tp,eg,ep,ev,re,r,rp,2,lab) then
 				ops[off]=aux.Stringid(i,3)
 				opval[off-1]=i-11451709
 				off=off+1
@@ -136,11 +138,11 @@ function cm.mvop1(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		if opval[op]==1 then
-			cm.mvop(e,tp,eg,ep,ev,re,r,rp,0)
+			cm.mvop(e,tp,eg,ep,ev,re,r,rp,0,lab)
 			chk=true
 		elseif opval[op]>=2 and opval[op]<=6 then
 			local ci=_G["c"..opval[op]+11451709]
-			ci.mvop(e,tp,eg,ep,ev,re,r,rp,1)
+			ci.mvop(e,tp,eg,ep,ev,re,r,rp,1,lab)
 		elseif opval[op]==7 then break end
 	end
 end
@@ -190,7 +192,7 @@ function cm.fselect(g,c)
 	end
 	return true --g:GetClassCount(cm.direction,c,0)==1 or (g:IsContains(c) and #g>1 and g:GetClassCount(cm.direction,c,0)==2)
 end
-function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt)
+function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
 	local g2=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
@@ -198,17 +200,19 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt)
 	local b1=0
 	local fid=e:GetLabel()
 	if fid~=0 then b1=1 end
-	if ct<c:GetFlagEffectLabel(11451717) then
+	if ct<lab then
 		if opt==2 then return true end
+		if not c:IsLocation(LOCATION_MZONE) then return end
 		Duel.HintSelection(Group.FromCards(c))
 		--if Duel.SelectYesNo(tp,aux.Stringid(m,4+b1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local tg=g2:SelectSubGroup(tp,cm.fselect,false,1,5,c)
+			--if tg and #tg>0 then Duel.HintSelection(tg) end
 			Duel.Destroy(tg,REASON_EFFECT)
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
-			if opt==1 then Duel.RegisterFlagEffect(0,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
+			if opt==1 then Duel.RegisterFlagEffect(tp,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
 		--end
-	elseif ct>=c:GetFlagEffectLabel(11451717) and g and #g>0 then
+	elseif ct>=lab and g and #g>0 then
 		if opt==2 then return true end
 		Duel.HintSelection(Group.FromCards(c))
 		--if Duel.SelectYesNo(tp,aux.Stringid(m,b1)) then
@@ -216,7 +220,7 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt)
 			local tg=g:Select(tp,1,1,nil)
 			Duel.Destroy(tg,REASON_EFFECT)
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
-			if opt==1 then Duel.RegisterFlagEffect(0,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
+			if opt==1 then Duel.RegisterFlagEffect(tp,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
 		--end
 	end
 	--c:ResetFlagEffect(11451717)

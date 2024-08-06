@@ -95,18 +95,20 @@ function cm.mvop1(e,tp,eg,ep,ev,re,r,rp)
 	local n=11451718
 	local cn=_G["c"..n]
 	local chk=false
+	local c=e:GetHandler()
+	local lab=c:GetFlagEffectLabel(11451717)
 	while 1==1 do
 		local off=1
 		local ops={} 
 		local opval={}
-		if cm.mvop(e,tp,eg,ep,ev,re,r,rp,2) and not chk then
+		if cm.mvop(e,tp,eg,ep,ev,re,r,rp,2,lab) and not chk then
 			ops[off]=aux.Stringid(n,10)
 			opval[off-1]=1
 			off=off+1
 		end
 		for i=11451711,11451715 do
 			local ci=_G["c"..i]
-			if ci and cn and cn[i] and Duel.GetFlagEffect(0,0xffffff+i)==0 and ci.mvop and ci.mvop(e,tp,eg,ep,ev,re,r,rp,2) then
+			if ci and cn and cn[i] and Duel.GetFlagEffect(tp,0xffffff+i)==0 and ci.mvop and ci.mvop(e,tp,eg,ep,ev,re,r,rp,2,lab) then
 				ops[off]=aux.Stringid(i,3)
 				opval[off-1]=i-11451709
 				off=off+1
@@ -137,11 +139,11 @@ function cm.mvop1(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		if opval[op]==1 then
-			cm.mvop(e,tp,eg,ep,ev,re,r,rp,0)
+			cm.mvop(e,tp,eg,ep,ev,re,r,rp,0,lab)
 			chk=true
 		elseif opval[op]>=2 and opval[op]<=6 then
 			local ci=_G["c"..opval[op]+11451709]
-			ci.mvop(e,tp,eg,ep,ev,re,r,rp,1)
+			ci.mvop(e,tp,eg,ep,ev,re,r,rp,1,lab)
 		elseif opval[op]==7 then break end
 	end
 end
@@ -207,9 +209,9 @@ function cm.retop3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
 	e:Reset()
 end
-function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt)
+function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	local c=e:GetHandler()
-	local ct=c:GetFlagEffectLabel(11451717)//3
+	local ct=lab//3
 	--c:ResetFlagEffect(11451717)
 	local b1=0
 	local fid=e:GetLabel()
@@ -226,7 +228,7 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt)
 			ct=ct-#sg
 			chk=true
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
-			if opt==1 then Duel.RegisterFlagEffect(0,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
+			if opt==1 then Duel.RegisterFlagEffect(tp,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		end
 	end
@@ -238,7 +240,7 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 			local sg=g1:Select(tp,1,ct,nil)
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
-			if opt==1 then Duel.RegisterFlagEffect(0,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
+			if opt==1 then Duel.RegisterFlagEffect(tp,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
 			sg:ForEach(cm.returntofield,e)
 			Duel.RaiseEvent(sg,m,e,0,0,0,0)
 		end
