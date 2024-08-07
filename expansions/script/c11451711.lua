@@ -44,7 +44,7 @@ function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	for i=1,7 do t[i]=i+2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_NUMBER)
 	e:SetLabel(Duel.AnnounceNumber(tp,table.unpack(t)))
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0x56e0000+RESET_PHASE+PHASE_END,0,1)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0x56e0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451911,0))
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),0,0,0)
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)

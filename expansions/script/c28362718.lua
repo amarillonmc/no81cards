@@ -30,9 +30,12 @@ function c28362718.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	else
 		Duel.PayLPCost(tp,2000)
 	end
+	Debug.Message(b1)
+	Debug.Message(b2)
+	Debug.Message(b3)
 end
 function c28362718.thfilter(c)
-	return c:IsSetCard(0x285) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsAbleToHand() or c:IsSSetable())
+	return c:IsSetCard(0x285) and not c:IsCode(28362718) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsAbleToHand() or c:IsSSetable())
 end
 function c28362718.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28362718.thfilter,tp,LOCATION_DECK,0,1,nil) end

@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 			if c:IsHasEffect(m) then
 				return
 			elseif c:GetOriginalCode()==m then
-				if not cm.spcost(nil,nil,tp) then return end
+				if not cm.spcost(nil,nil,tp,c) then return end
 				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
 			end
 			return _MoveToField(c,tp,...)
@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 			if c:IsHasEffect(m) then
 				return
 			elseif c:GetOriginalCode()==m then
-				if not cm.spcost(nil,nil,tp) then return end
+				if not cm.spcost(nil,nil,tp,c) then return end
 				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
 			end
 			return _ReturnToField(c,...)
@@ -46,7 +46,7 @@ function cm.initial_effect(c)
 			if c:IsHasEffect(m) then
 				return
 			elseif c:GetOriginalCode()==m then
-				if not cm.spcost(nil,nil,tp) then return end
+				if not cm.spcost(nil,nil,tp,c) then return end
 				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
 			end
 			return _Equip(tp,c,mc,...)
@@ -299,8 +299,9 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 	end
 end
-function cm.spcost(e,c,tp)
-	local g=Duel.GetMatchingGroup(cm.sfilter,tp,0xf3,0xf3,nil,tp)
+function cm.spcost(e,c,tp,sc)
+	local c=sc or e:GetHandler()
+	local g=Duel.GetMatchingGroup(cm.sfilter,tp,0xf3,0xf3,c,tp)
 	return #g>0
 end
 function cm.sptg(e,c,tp)

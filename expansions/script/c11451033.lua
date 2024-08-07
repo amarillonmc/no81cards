@@ -36,7 +36,7 @@ function cm.initial_effect(c)
 			if c:IsHasEffect(m) then
 				return
 			elseif c:GetOriginalCode()==m then
-				if not cm.spcost(nil,nil,tp) then return end
+				if not cm.spcost(nil,nil,tp,c) then return end
 				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
 			end
 			return _MoveToField(c,tp,...)
@@ -46,7 +46,7 @@ function cm.initial_effect(c)
 			if c:IsHasEffect(m) then
 				return
 			elseif c:GetOriginalCode()==m then
-				if not cm.spcost(nil,nil,tp) then return end
+				if not cm.spcost(nil,nil,tp,c) then return end
 				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
 			end
 			return _ReturnToField(c,...)
@@ -55,7 +55,7 @@ function cm.initial_effect(c)
 			if c:IsHasEffect(m) then
 				return
 			elseif c:GetOriginalCode()==m then
-				if not cm.spcost(nil,nil,tp) then return end
+				if not cm.spcost(nil,nil,tp,c) then return end
 				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
 			end
 			return _Equip(tp,c,mc,...)
@@ -308,8 +308,9 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 	end
 end
-function cm.spcost(e,c,tp)
-	local g=Duel.GetMatchingGroup(cm.sfilter,tp,LOCATION_EXTRA,LOCATION_EXTRA,nil,tp)
+function cm.spcost(e,c,tp,sc)
+	local c=sc or e:GetHandler()
+	local g=Duel.GetMatchingGroup(cm.sfilter,tp,LOCATION_EXTRA,LOCATION_EXTRA,c,tp)
 	return #g>0
 end
 function cm.sptg(e,c,tp)
@@ -365,10 +366,10 @@ function cm.spcop(e,tp,eg,ep,ev,re,r,rp,c)
 	sc:RegisterEffect(e1,true)
 end
 function cm.filter1(c)
-	return c:IsLocation(LOCATION_EXTRA) and (c:IsHasEffect(m) or (c:GetOriginalCode()==m and not cm.spcost(nil,nil,c:GetControler())))
+	return c:IsLocation(LOCATION_EXTRA) and (c:IsHasEffect(m) or (c:GetOriginalCode()==m and not cm.spcost(nil,nil,c:GetControler(),c)))
 end
 function cm.filter2(c)
-	return c:IsLocation(LOCATION_EXTRA) and (c:GetOriginalCode()==m and cm.spcost(nil,nil,c:GetControler()))
+	return c:IsLocation(LOCATION_EXTRA) and (c:GetOriginalCode()==m and cm.spcost(nil,nil,c:GetControler(),c))
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

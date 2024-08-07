@@ -3,6 +3,13 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	aux.EnablePendulumAttribute(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetCode(EFFECT_INDESTRUCTABLE)
+	e1:SetValue(1)
+	e1:SetCondition(function(e) return not cm.spcost(e,nil,e:GetHandlerPlayer()) end)
+	c:RegisterEffect(e1)
 	if not cm.global_check then
 		--replace
 		local e3=Effect.CreateEffect(c)
@@ -227,7 +234,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 		else
 			local loc=te:GetHandler():GetLocation()
 			if te:GetHandler():IsFaceup() and te:GetHandler():IsOnField() then loc=te:GetHandler():GetPreviousLocation() end
-			ce:SetDescription(aux.Stringid(m,1))
+			ce:SetDescription(aux.Stringid(11451034,1))
 			ce:SetRange(loc|LOCATION_SZONE|LOCATION_HAND)
 			local g=Duel.GetMatchingGroup(function(c) return cm.mfilter(c) and c:IsType(TYPE_SPELL+TYPE_TRAP+TYPE_PENDULUM) end,0,0xff,0xff,nil)
 			local og=Duel.GetOverlayGroup(0,1,1):Filter(function(c) return cm.mfilter(c) and c:IsType(TYPE_SPELL+TYPE_TRAP+TYPE_PENDULUM) end,nil)
@@ -290,8 +297,9 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 	end
 end
-function cm.spcost(e,c,tp)
-	local g=Duel.GetMatchingGroup(cm.sfilter,tp,0xff,0xff,nil,tp)
+function cm.spcost(e,c,tp,sc)
+	local c=sc or e:GetHandler()
+	local g=Duel.GetMatchingGroup(cm.sfilter,tp,0xff,0xff,c,tp)
 	return #g>0
 end
 function cm.sptg(e,c,tp)
@@ -312,27 +320,23 @@ function cm.spcop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,2))
 	if not sc:IsOnField() then Duel.ConfirmCards(1-tp,Group.FromCards(sc)) end
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,2))
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CLIENT_HINT)
 	e1:SetCode(EFFECT_INDESTRUCTABLE)
 	e1:SetValue(1)
 	e1:SetCondition(function(e) if not cm.sfilter(sc,tp) then e:SetProperty(0) e:SetLabel(100) end return e:GetLabel()==0 end)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	sc:RegisterEffect(e1,true)
 end
-function cm.filter1(c)
-	return (c:IsHasEffect(m) or (c:GetOriginalCode()==m and not cm.spcost(nil,nil,c:GetControler())))
-end
 function cm.filter2(c)
-	return (c:GetOriginalCode()==m and cm.spcost(nil,nil,c:GetControler()))
+	return c:IsReason(REASON_DESTROY) and (c:GetOriginalCode()==m and cm.spcost(nil,nil,c:GetControler(),c))
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
-	local g1=eg:Filter(cm.filter1,nil)
 	local g2=eg:Filter(cm.filter2,nil)
-	if chk==0 then return #g1>0 or #g2>0 end
-	for tc in aux.Next(g1) do tc:RegisterFlagEffect(m,RESET_CHAIN,0,1) Duel.ConfirmCards(1-tp,tc) end
+	if chk==0 then return #g2>0 end
 	for tc in aux.Next(g2) do cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c) end
 	return true
 end

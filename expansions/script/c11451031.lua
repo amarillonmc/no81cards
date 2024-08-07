@@ -239,7 +239,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 		else
 			local loc=te:GetHandler():GetLocation()
 			if te:GetHandler():IsFaceup() and te:GetHandler():IsOnField() then loc=te:GetHandler():GetPreviousLocation() end
-			ce:SetDescription(aux.Stringid(m,1))
+			ce:SetDescription(aux.Stringid(11451034,1))
 			ce:SetRange(loc|LOCATION_SZONE|LOCATION_HAND)
 			local g=Duel.GetMatchingGroup(function(c) return cm.mfilter(c) and c:IsType(TYPE_SPELL+TYPE_TRAP+TYPE_PENDULUM) end,0,0xff,0xff,nil)
 			local og=Duel.GetOverlayGroup(0,1,1):Filter(function(c) return cm.mfilter(c) and c:IsType(TYPE_SPELL+TYPE_TRAP+TYPE_PENDULUM) end,nil)
@@ -303,7 +303,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcost(e,c,tp)
-	local g=Duel.GetMatchingGroup(cm.sfilter,tp,0xff,0xff,nil,tp)
+	local g=Duel.GetMatchingGroup(cm.sfilter,tp,0xff,0xff,e:GetHandler(),tp)
 	return #g>0
 end
 function cm.sptg(e,te,tp)

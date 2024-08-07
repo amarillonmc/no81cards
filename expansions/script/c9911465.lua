@@ -1,7 +1,6 @@
 --闪蝶幻乐手 极强音
 function c9911465.initial_effect(c)
 	--fusion summon
-	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x3952),aux.FilterBoolFunction(Card.IsFusionAttribute,ATTRIBUTE_LIGHT+ATTRIBUTE_DARK),true)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)

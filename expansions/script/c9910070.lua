@@ -1,7 +1,6 @@
 --璞玉雕琢之月神
 function c9910070.initial_effect(c)
 	--fusion material
-	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionAttribute,ATTRIBUTE_LIGHT),aux.FilterBoolFunction(Card.IsFusionAttribute,ATTRIBUTE_DARK),true)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
