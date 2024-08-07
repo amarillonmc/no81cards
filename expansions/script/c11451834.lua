@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD)
 	e5:SetCode(EFFECT_ADD_CODE)
-	e5:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
+	e5:SetTargetRange(0,LOCATION_ONFIELD)
 	e5:SetCondition(function(e) return e:GetHandler():GetSequence()<5 end)
 	e5:SetTarget(function(e,c) return aux.GetColumn(c) and math.abs(aux.GetColumn(c)-aux.GetColumn(e:GetHandler()))==1 end)
 	e5:SetValue(11451631)
@@ -167,6 +167,29 @@ function cm.thfilter(c)
 	return c:IsAbleToHand() and c:IsSetCard(0x979)
 end
 function cm.actop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e1:SetCountLimit(1)
+	if Duel.GetCurrentPhase()==PHASE_STANDBY then
+		e1:SetLabel(Duel.GetTurnCount())
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY,2)
+	else
+		e1:SetLabel(0)
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY)
+	end
+	e1:SetCondition(cm.descon2)
+	e1:SetTarget(cm.destg2)
+	e1:SetOperation(cm.desop2)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.descon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnCount()~=e:GetLabel()
+end
+function cm.destg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
+end
+function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
 	if #g>0 then

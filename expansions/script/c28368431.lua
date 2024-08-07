@@ -91,7 +91,7 @@ function c28368431.costchange(e,re,rp,val)
 	end
 end
 function c28368431.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(tp)<=3000
+	return Duel.GetLP(e:GetHandlerPlayer())<=3000
 end
 function c28368431.rccon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,28368431)>0

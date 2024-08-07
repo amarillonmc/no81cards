@@ -76,7 +76,6 @@ function cm.tnop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetCode(EVENT_CHAINING)
 		e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_NO_TURN_RESET)
 		e3:SetRange(LOCATION_MZONE)
-		e3:SetCountLimit(1)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e3:SetCondition(cm.discon)
 		e3:SetTarget(cm.distg)
@@ -144,7 +143,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if ft>=1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local spcg=Group.CreateGroup()
-			if ft<=Duel.GetLocationCount(tp,LOCATION_MZONE) then
+			if ft>=spg:GetCount() then
 				spcg=spg
 			else
 				spcg=spg:Select(tp,ft,ft,nil)

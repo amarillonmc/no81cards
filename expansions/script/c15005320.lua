@@ -127,13 +127,13 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
 		local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp,c)
-		return e:GetHandler():IsReleasable() and Duel.IsPlayerCanSpecialSummon(tp) and g:CheckSubGroup(cm.spgcheck) and not Duel.IsPlayerAffectedByEffect(tp,63060238) and not Duel.IsPlayerAffectedByEffect(tp,97148796)
+		return e:GetHandler():IsReleasable(REASON_EFFECT) and Duel.IsPlayerCanSpecialSummon(tp) and g:CheckSubGroup(cm.spgcheck) and not Duel.IsPlayerAffectedByEffect(tp,63060238) and not Duel.IsPlayerAffectedByEffect(tp,97148796)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not (c:IsRelateToEffect(e) and c:IsReleasable()) then return end
+	if not (c:IsRelateToEffect(e) and c:IsReleasable(REASON_EFFECT)) then return end
 	if Duel.Release(c,REASON_EFFECT)~=0 and Duel.IsPlayerCanSpecialSummon(tp) then
 		local ct=1
 		local dcount=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
@@ -160,7 +160,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if ft>=1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local spcg=Group.CreateGroup()
-			if ft<=Duel.GetLocationCount(tp,LOCATION_MZONE) then
+			if ft>=spg:GetCount() then
 				spcg=spg
 			else
 				spcg=spg:Select(tp,ft,ft,nil)

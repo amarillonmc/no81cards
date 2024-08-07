@@ -135,7 +135,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if ft>=1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local spcg=Group.CreateGroup()
-			if ft<=Duel.GetLocationCount(tp,LOCATION_MZONE) then
+			if ft>=spg:GetCount() then
 				spcg=spg
 			else
 				spcg=spg:Select(tp,ft,ft,nil)

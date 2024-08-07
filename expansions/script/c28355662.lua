@@ -5,6 +5,7 @@ function c28355662.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e0:SetCondition(c28355662.excondition)
+	e0:SetCost(c28355662.excost)
 	e0:SetDescription(aux.Stringid(28355662,2))
 	c:RegisterEffect(e0)
 	--Activate
@@ -31,14 +32,15 @@ end
 function c28355662.excondition(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,2500)) or (Duel.GetLP(tp)>3000 and Duel.CheckLPCost(tp,4000))
 end
+function c28355662.excost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.PayLPCost(tp,2000)
+end
 function c28355662.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.CheckLPCost(tp,2000)
 	local b2=Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,500)
 	local b3=Duel.IsPlayerAffectedByEffect(tp,28368431)
 	if chk==0 then return b1 or b2 end
-	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
-		Duel.PayLPCost(tp,2000)
-	end
 	if b3 or not b1 or (b2 and Duel.SelectYesNo(tp,aux.Stringid(28355662,0))) then
 		Duel.PayLPCost(tp,500)
 	else
