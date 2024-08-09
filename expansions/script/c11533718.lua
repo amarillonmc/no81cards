@@ -4,27 +4,27 @@ function c11533718.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 	--splimit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetRange(LOCATION_PZONE)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(function(e,c,tp,sumtp,sumpos)
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_FIELD)
+	e10:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e10:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
+	e10:SetRange(LOCATION_PZONE)
+	e10:SetTargetRange(1,0)
+	e10:SetTarget(function(e,c,tp,sumtp,sumpos)
 	return not c:IsSetCard(0xb4,0xc4) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM end) 
-	c:RegisterEffect(e1) 
+	c:RegisterEffect(e10) 
 	--SpecialSummon
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_CHAINING)  
-	e2:SetProperty(EFFECT_FLAG_DELAY) 
-	e2:SetRange(LOCATION_PZONE)
-	e2:SetCountLimit(1,11533718) 
-	e2:SetCondition(c11533718.ricon)
-	e2:SetTarget(c11533718.ritg)
-	e2:SetOperation(c11533718.riop)
-	c:RegisterEffect(e2) 
+	local e20=Effect.CreateEffect(c)
+	e20:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e20:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e20:SetCode(EVENT_CHAINING)  
+	e20:SetProperty(EFFECT_FLAG_DELAY) 
+	e20:SetRange(LOCATION_PZONE)
+	e20:SetCountLimit(1,11533718) 
+	e20:SetCondition(c11533718.ricon)
+	e20:SetTarget(c11533718.ritg)
+	e20:SetOperation(c11533718.riop)
+	c:RegisterEffect(e20) 
 	--Negate Activation
 	local e1=Effect.CreateEffect(c) 
 	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_NEGATE+CATEGORY_RELEASE)
@@ -139,12 +139,20 @@ function c11533718.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
-function c11533718.negcfilter(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0xb4) and c:IsReleasable()
-end
+--function c11533718.negcfilter(c)
+--	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0xb4) and c:IsReleasable()
+--end
+function c11533718.rrfil(c,tp)
+	local re=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
+	local val=nil
+	if re then
+		val=re:GetValue()
+	end
+	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0xb4) and (c:IsReleasable() or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_HAND) and (val==nil or val(re,c)~=true)))
+end 
 function c11533718.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11533718.negcfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler()) end
-	local g=Duel.GetMatchingGroup(c11533718.negcfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler())
+	if chk==0 then return Duel.IsExistingMatchingCard(c11533718.rrfil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler()) end
+	local g=Duel.GetMatchingGroup(c11533718.rrfil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
@@ -153,8 +161,8 @@ function c11533718.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c11533718.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,c11533718.negcfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,e:GetHandler())
-	if #g>0 and Duel.Release(g,REASON_EFFECT)~=0 and Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+	local g=Duel.SelectMatchingCard(tp,c11533718.rrfil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,e:GetHandler())
+	if #g>0 and Duel.SendtoGrave(g,REASON_EFFECT+REASON_RELEASE) ~=0 and Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT) 
 	end
 end

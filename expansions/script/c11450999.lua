@@ -140,7 +140,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Debug.Message(e:GetActivateLocation())
+	--Debug.Message(e:GetActivateLocation())
 	--if e:IsHasType(EFFECT_TYPE_ACTIVATE) then Duel.SetChainLimit(aux.FALSE) end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)

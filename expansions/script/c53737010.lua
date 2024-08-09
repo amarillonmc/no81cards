@@ -66,13 +66,13 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=not b and ft>0
 	local b2=b and ft==1 and st-ft>0
 	local b3=b and ft==2
-	local res=Duel.IsPlayerCanRelease(tp,nil,REASON_EFFECT)
+	local res=Duel.IsPlayerCanRelease(tp)
 	if chk==0 then return (b1 or b2 or b3) and Duel.IsExistingMatchingCard(cm.penfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,res) end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local res=Duel.IsPlayerCanRelease(tp,nil,REASON_EFFECT)
+	local res=Duel.IsPlayerCanRelease(tp)
 	local tc=Duel.SelectMatchingCard(tp,cm.penfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,res):GetFirst()
 	if tc and Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
 		local e1=Effect.CreateEffect(e:GetHandler())

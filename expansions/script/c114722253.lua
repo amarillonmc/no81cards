@@ -21,20 +21,16 @@ function c114722253.initial_effect(c)
     local e3=Effect.CreateEffect(c)
     e3:SetType(EFFECT_TYPE_QUICK_O)
     e3:SetCode(EVENT_FREE_CHAIN)
-    e3:SetCountLimit(1,114722253)
     e3:SetRange(LOCATION_FZONE)
+    e3:SetCountLimit(1,114722253)
     e3:SetCondition(c114722253.stcon)
+    e3:SetCost(c114722253.stcost)
     e3:SetTarget(c114722253.sttg)
     e3:SetOperation(c114722253.stop)
     c:RegisterEffect(e3)
-    local e4=Effect.CreateEffect(c)
-    e4:SetType(EFFECT_TYPE_QUICK_O)
-    e4:SetRange(LOCATION_FZONE)
+    local e4=e3:Clone()
     e4:SetCode(EVENT_CHAINING)
-    e4:SetCountLimit(1,114722253)
-    e4:SetCondition(c114722253.stcon)
     e4:SetTarget(c114722253.sttg2)
-    e4:SetOperation(c114722253.stop)
     c:RegisterEffect(e4)
 end
 c114722253.card_code_list={46986414}
@@ -93,22 +89,28 @@ function c114722253.stfilter(c,tp,eg,ep,ev,re,r,rp)
 end
 ]]
 
+function c114722253.stcost(e,tp,eg,ep,ev,re,r,rp,chk)
+    e:SetLabel(1)
+    return true
+end
 function c114722253.sefilter(c)
     local te=c:GetActivateEffect()
     if not te then return false end
     local op=te:GetOperation()
-    return c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(TYPE_EQUIP) and not c:IsCode(114722253) and c:IsAbleToGraveAsCost()
-        and c:CheckActivateEffect(false,false,false)~=nil and op
+    return c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(TYPE_EQUIP) and not c:IsCode(114722253) and c:IsAbleToGraveAsCost() and c:CheckActivateEffect(false,true,false)~=nil and c:CheckActivateEffect(false,false,false)~=nil and op
 end
 function c114722253.sttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chk==0 then return Duel.IsExistingMatchingCard(c114722253.sefilter,tp,LOCATION_DECK,0,1,nil)
-        and not Duel.CheckEvent(EVENT_CHAINING) end
+    if chk==0 then
+        if e:GetLabel()==0 then return false end
+        e:SetLabel(0)
+        return Duel.IsExistingMatchingCard(c114722253.sefilter,tp,LOCATION_DECK,0,1,nil) and not Duel.CheckEvent(EVENT_CHAINING)
+    end
+    e:SetLabel(0)
     local g=Duel.SelectMatchingCard(tp,c114722253.sefilter,tp,LOCATION_DECK,0,1,1,nil)
     Duel.SendtoGrave(g,REASON_COST)
     Duel.ShuffleDeck(tp)
     Duel.BreakEffect()
-    local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,false,false)
-    e:SetCategory(te:GetCategory())
+    local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,false) and g:GetFirst():CheckActivateEffect(false,false,false)
     e:SetProperty(te:GetProperty())
     local fcos=te:GetCost()
     local tg=te:GetTarget()
@@ -116,6 +118,7 @@ function c114722253.sttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
     te:SetLabelObject(e:GetLabelObject())
     e:SetLabelObject(te)
+    Duel.ClearOperationInfo(0)
 end
 function c114722253.stop(e,tp,eg,ep,ev,re,r,rp)
     if not e:GetHandler():IsRelateToEffect(e) then return end
@@ -143,7 +146,12 @@ function c114722253.sefilter2(c,e,tp,eg,ep,ev,re,r,rp)
     else return false end
 end
 function c114722253.sttg2(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(c114722253.sefilter2,tp,LOCATION_DECK,0,1,nil,e,tp,eg,ep,ev,re,r,rp) end
+    if chk==0 then
+        if e:GetLabel()==0 then return false end
+        e:SetLabel(0)
+        return Duel.IsExistingMatchingCard(c114722253.sefilter2,tp,LOCATION_DECK,0,1,nil,e,tp,eg,ep,ev,re,r,rp)
+    end
+    e:SetLabel(0)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
     local g=Duel.SelectMatchingCard(tp,c114722253.sefilter2,tp,LOCATION_DECK,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp)
     Duel.SendtoGrave(g,REASON_COST)
@@ -157,7 +165,6 @@ function c114722253.sttg2(e,tp,eg,ep,ev,re,r,rp,chk)
     else
         te=tc:GetActivateEffect()
     end
-    e:SetCategory(te:GetCategory())
     e:SetProperty(te:GetProperty())
     local tg=te:GetTarget()
     local fcos=te:GetCost()
@@ -171,4 +178,5 @@ function c114722253.sttg2(e,tp,eg,ep,ev,re,r,rp,chk)
     end
     te:SetLabelObject(e:GetLabelObject())
     e:SetLabelObject(te)
+    Duel.ClearOperationInfo(0)
 end

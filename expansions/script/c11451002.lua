@@ -92,10 +92,10 @@ function cm.rffilter(c)
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
 	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
-	local tc=g:Select(tp,1,1,nil):GetFirst()
+	local tc=g:Select(1-tp,1,1,nil):GetFirst()
 	local b1=tc:IsFaceup() and not tc:IsStatus(STATUS_EFFECT_ENABLED)
 	if Duel.Remove(tc,nil,REASON_EFFECT+REASON_TEMPORARY)>0 then
 		local fid=c:GetFieldID()
@@ -134,17 +134,17 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.returntofield(tc)
-	if tc:IsPreviousLocation(LOCATION_FZONE) then
-		local p=tc:GetPreviousControler()
-		local gc=Duel.GetFieldCard(p,LOCATION_FZONE,0)
-		if gc then
-			Duel.SendtoGrave(gc,REASON_RULE)
-			Duel.BreakEffect()
-		end
-	end
 	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 or tc:GetFlagEffectLabel(m-1)>m then
 		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)
 	else
+		if tc:IsPreviousLocation(LOCATION_FZONE) then
+			local p=tc:GetPreviousControler()
+			local gc=Duel.GetFieldCard(p,LOCATION_FZONE,0)
+			if gc then
+				Duel.SendtoGrave(gc,REASON_RULE)
+				Duel.BreakEffect()
+			end
+		end
 		Duel.ReturnToField(tc)
 	end
 end

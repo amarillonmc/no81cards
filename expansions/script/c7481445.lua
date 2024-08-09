@@ -8,7 +8,7 @@ function s.initial_effect(c)
 	--end
 	--Debug.Message(#fun)
 	c:EnableReviveLimit()
-	aux.AddFusionProcMixRep(c,false,true,aux.TRUE,1,63,s.fusfilter1,s.fusfilter1)
+	aux.AddFusionProcMixRep(c,false,true,aux.TRUE,1,127,s.fusfilter1,s.fusfilter1)
 	--aux.AddFusionProcMix(c,false,true,s.fusfilter1,s.fusfilter1,table.unpack(fun))
 	--grave fusion material
 	--summon success

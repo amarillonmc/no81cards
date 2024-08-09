@@ -120,7 +120,7 @@ function c11561063.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsType(TYPE_MONSTER)
 end
 function c11561063.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetOverlayGroup():IsExists(c11561063.spfilter,1,nil,e,tp) and Duel.GetMZoneCount(1-tp)~=0 end
+	if chk==0 then return Duel.GetOverlayGroup(tp,1,0):IsExists(c11561063.spfilter,1,nil,e,tp) and Duel.GetMZoneCount(1-tp)~=0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,1-tp,LOCATION_OVERLAY)
 end
 function c11561063.gcheckfilter(g)

@@ -52,7 +52,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp,check,zone):GetFirst()
 	if tc then
-		if check and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		if check and tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
 			and (not tc:IsAbleToHand() or Duel.SelectOption(tp,1190,1152)==1) then
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone)
 		else

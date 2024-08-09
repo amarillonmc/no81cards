@@ -70,7 +70,7 @@ function c98941050.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and (Duel.CheckReleaseGroupEx(tp,Card.IsReleasable,1,e:GetHandler()) or Duel.GetTurnPlayer()==tp)
 end
 function c98941050.rrfilter(c,e,tp)
-	return c:IsSetCard(0xb4) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,true)
+	return c:IsSetCard(0xb4) and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,true,true)
 end
 function c98941050.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

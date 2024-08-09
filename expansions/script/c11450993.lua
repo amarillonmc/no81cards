@@ -129,7 +129,7 @@ function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		local mg=Duel.GetRitualMaterial(tp)
 		if ft>0 then
-			Debug.Message(cm[tp][LOCATION_EXTRA])
+			--Debug.Message(cm[tp][LOCATION_EXTRA])
 			mg=Duel.GetMatchingGroup(cm.mfilter,tp,0x47,0,nil,tp)
 		else
 			mg=mg:Filter(cm.mzfilter,nil,tp)
