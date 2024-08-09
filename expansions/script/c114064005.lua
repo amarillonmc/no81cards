@@ -30,6 +30,7 @@ function c114064005.initial_effect(c)
     local e4=Effect.CreateEffect(c)
     e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
     e4:SetCode(EVENT_TO_GRAVE)
+    e4:SetCountLimit(1,114064005)
     e4:SetOperation(c114064005.operation)
     c:RegisterEffect(e4)
     --replace
@@ -82,14 +83,20 @@ end
 function c114064005.operation(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     local tp=c:GetControler()
-    if Duel.GetFlagEffect(tp,114064005)>0 then return end
-    Duel.RegisterFlagEffect(tp,114064005,RESET_PHASE+PHASE_END,0,1)
     if c:GetPreviousLocation()==LOCATION_DECK then Duel.ShuffleDeck(tp) end
     if Duel.IsExistingMatchingCard(c114064005.kufilter,tp,LOCATION_DECK,0,2,nil) then
         local sg=Duel.GetMatchingGroup(c114064005.kufilter,tp,LOCATION_DECK,0,nil)
         Duel.ConfirmCards(tp,sg)
     end
     --public
+    local e0=Effect.CreateEffect(c)
+    e0:SetType(EFFECT_TYPE_FIELD)
+    e0:SetCode(EFFECT_FLAG_EFFECT+114064005)
+    e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+    e0:SetRange(LOCATION_GRAVE)
+    e0:SetTargetRange(1,0)
+    e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+    c:RegisterEffect(e0)
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
     e1:SetCode(EVENT_TO_GRAVE)

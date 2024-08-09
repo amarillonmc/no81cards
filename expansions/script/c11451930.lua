@@ -122,6 +122,7 @@ function cm.adcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(m,3))
 	local pg=Duel.SelectMatchingCard(1-tp,Card.IsAbleToHandAsCost,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.SendtoHand(pg,1-tp,REASON_COST)
+	Duel.ConfirmCards(tp,pg)
 end
 function cm.adtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=eg:Filter(Card.IsControler,nil,tp):Filter(Card.IsLocation,nil,LOCATION_MZONE)

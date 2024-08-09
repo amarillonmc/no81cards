@@ -63,6 +63,7 @@ function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToHandAsCost,tp,LOCATION_MZONE,0,nil)
 	if chk==0 then return #g>0 end
 	Duel.SendtoHand(g,nil,REASON_COST)
+	Duel.ConfirmCards(1-tp,e:GetHandler())
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
