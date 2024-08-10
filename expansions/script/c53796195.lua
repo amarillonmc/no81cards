@@ -245,8 +245,10 @@ function s.initial_effect(c)
 		local tempf1=Effect.Reset
 		Effect.Reset=function(se)
 			local sc=se:GetHandler()
-			local le={sc:IsHasEffect(id+250)}
-			for _,v in pairs(le) do if v:GetLabelObject()==se then tempf1(v) end end
+			if sc then
+				local le={sc:IsHasEffect(id+250)}
+				for _,v in pairs(le) do if v:GetLabelObject()==se then tempf1(v) end end
+			end
 			return tempf1(se)
 		end
 		local tempf2=Card.ReplaceEffect

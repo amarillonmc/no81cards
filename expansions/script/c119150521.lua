@@ -82,17 +82,16 @@ function c119150521.desfilter(c,tp)
 end
 function c119150521.target2(e,tp,eg,ep,ev,re,r,rp,chk)
     if chkc then return chkc:IsOnField() and c119150521.desfilter(chkc,tp) end
-    local c=e:GetHandler()
-    if chk==0 then return Duel.IsExistingTarget(c119150521.desfilter,tp,LOCATION_ONFIELD,0,1,nil,tp) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+    if chk==0 then return Duel.IsExistingTarget(c119150521.desfilter,tp,LOCATION_ONFIELD,0,1,nil,tp) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
     local g=Duel.SelectTarget(tp,c119150521.desfilter,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
-    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c119150521.operation2(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     local tc=Duel.GetFirstTarget()
-    if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)==1 then
+    if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) and c:IsRelateToEffect(e) then
         Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
     end
 end
