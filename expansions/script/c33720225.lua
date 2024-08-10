@@ -74,12 +74,14 @@ function s.rmopOUT(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)>0 and aux.BecauseOfThisEffect(e)(tc) then
 			tc:RegisterFlagEffect(id+100,RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_END,0,1)
 			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:Desc(1,id)
-			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CANNOT_TRIGGER)
-			e1:SetReset(RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_END)
-			tc:RegisterEffect(e1)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+			e1:SetTargetRange(1,1)
+			e1:SetValue(s.aclimit)
+			e1:SetLabel(tc:GetOriginalCodeRule())
+			e1:SetReset(RESET_PHASE|PHASE_END)
+			Duel.RegisterEffect(e1,tp)
 		end
 	end
 end
@@ -92,16 +94,27 @@ function s.rmopIN(e,tp,eg,ep,ev,re,r,rp,n)
 		if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 then
 			local c=e:GetHandler()
 			local og=Duel.GetGroupOperatedByThisEffect(e)
+			local codes={}
 			for tc in aux.Next(g) do
 				tc:RegisterFlagEffect(id+100,RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_END,0,1)
-				local e1=Effect.CreateEffect(c)
-				e1:Desc(1,id)
-				e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_CANNOT_TRIGGER)
-				e1:SetReset(RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_END)
-				tc:RegisterEffect(e1)
+				local ogcodes={tc:GetOriginalCodeRule()}
+				for _,ogcode in ipairs(ogcodes) do
+					table.insert(codes,ogcode)
+				end
 			end
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+			e1:SetTargetRange(1,1)
+			e1:SetValue(s.aclimit)
+			e1:SetLabel(table.unpack(codes))
+			e1:SetReset(RESET_PHASE|PHASE_END)
+			Duel.RegisterEffect(e1,tp)
 		end
 	end
+end
+function s.aclimit(e,re,tp)
+	local c=re:GetHandler()
+	return c:IsOriginalCodeRule(e:GetLabel())
 end
