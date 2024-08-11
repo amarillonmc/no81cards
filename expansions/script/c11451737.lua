@@ -42,8 +42,8 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc and Duel.SSet(tp,tc)~=0 and c:IsRelateToEffect(e) and c:IsAbleToDeck() then
 		if KOISHI_CHECK then
-			c:SetEntityCode(m+10,true)
-			c:ReplaceEffect(m+10,0)
+			c:SetEntityCode(m+48,true)
+			c:ReplaceEffect(m+48,0)
 			c:EnableReviveLimit()
 			aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1,1)
 			local loc=c:GetLocation()
@@ -52,7 +52,8 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 			local g=Duel.GetFieldGroup(tp,loc,0)
 			Duel.ConfirmCards(tp,g)
 		else
-			local token=Duel.CreateToken(tp,m+10)
+			Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
+			local token=Duel.CreateToken(tp,m+48)
 			Duel.SendtoDeck(token,nil,2,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,token)
 			--change code
@@ -60,7 +61,7 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetType(EFFECT_TYPE_SINGLE)
 			e3:SetCode(EFFECT_CHANGE_CODE)
 			e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
-			e3:SetValue(m+10)
+			e3:SetValue(m+48)
 			token:RegisterEffect(e3)
 		end
 	end

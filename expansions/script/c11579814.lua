@@ -3,7 +3,7 @@ function c11579814.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--xyz summon
 	c:EnableReviveLimit()
-	aux.AddXyzProcedureLevelFree(c,function(c,xyzc) return c:IsRank(2) or c:IsLink(2) end,nil,2,99)  
+	aux.AddXyzProcedureLevelFree(c,function(c,xyzc) return c:IsSetCard(0x180) end,nil,2,99)  
 	--atk
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -84,7 +84,7 @@ function c11579814.regop(e,tp,eg,ep,ev,re,r,rp)
 	c:ResetFlagEffect(code)
 end
 function c11579814.ovcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsControler,1,nil,tp) 
+	return eg:IsExists(Card.IsControler,1,nil,tp) and eg:IsExists(Card.IsLocation,1,nil,LOCATION_MZONE)
 end 
 function c11579814.ovfil(c) 
 	return c:IsCanOverlay() 
@@ -100,7 +100,11 @@ function c11579814.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	local g=Duel.GetMatchingGroup(c11579814.ovfil,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,e:GetHandler())
 	if c:IsRelateToEffect(e) and g:CheckSubGroup(c11579814.ovgck,2,2) then 
-		local og=g:SelectSubGroup(tp,c11579814.ovgck,false,2,2) 
+		local og=g:SelectSubGroup(tp,c11579814.ovgck,false,2,2)
+		local oog=og:GetFirst():GetOverlayGroup()
+		if oog:GetCount()>0 then
+			Duel.SendtoGrave(oog,REASON_RULE)
+		end
 		Duel.Overlay(c,og)
 	end  
 end

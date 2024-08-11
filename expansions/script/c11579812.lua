@@ -116,11 +116,11 @@ end
 
 function c11579812.imcon(e)
 	local tp=e:GetHandlerPlayer()
-	return Duel.GetLP(tp)<=Duel.GetLP(1-tp) and e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+	return Duel.GetLP(tp)<Duel.GetLP(1-tp) and e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c11579812.atcon(e)
 	local tp=e:GetHandlerPlayer()
-	return Duel.GetLP(tp)<=Duel.GetLP(1-tp)
+	return Duel.GetLP(tp)<Duel.GetLP(1-tp)
 end
 function c11579812.val(e,c)
 	return Duel.GetLP(1-c:GetControler())-Duel.GetLP(c:GetControler())

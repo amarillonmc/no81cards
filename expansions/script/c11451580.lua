@@ -85,7 +85,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_PLAYER_TARGET,1,0,aux.Stringid(m,5))
+	Duel.RegisterFlagEffect(1-tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_PLAYER_TARGET,1,0,aux.Stringid(m,5))
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetDescription(aux.Stringid(m,5))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -103,7 +103,7 @@ function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	return loc&LOCATION_ONFIELD>0 and p~=tp
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ResetFlagEffect(tp,m)
+	Duel.ResetFlagEffect(1-tp,m)
 	Duel.NegateEffect(ev)
 	e:SetProperty(0)
 	e:Reset()

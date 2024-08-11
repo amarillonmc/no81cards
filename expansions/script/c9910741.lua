@@ -24,7 +24,7 @@ function c9910741.spcon(e,tp,eg,ep,ev,re,r,rp)
 		and (c:IsLocation(LOCATION_HAND) or (not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainDisablable(ev)))
 end
 function c9910741.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	e:SetLabel(1)
+	e:SetLabel(100)
 	return true
 end
 function c9910741.cfilter(c,b1,b2,tp,rc)
@@ -40,7 +40,7 @@ function c9910741.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b2=c:IsLocation(LOCATION_ONFIELD)
 	local b3=Duel.IsExistingMatchingCard(c9910741.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,g,b1,b2,tp,rc)
 	if chk==0 then
-		if e:GetLabel()~=0 then
+		if e:GetLabel()==100 then
 			e:SetLabel(0)
 			return b0 and b3
 		else
@@ -52,27 +52,16 @@ function c9910741.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local rg=Duel.SelectMatchingCard(tp,c9910741.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,g,b1,b2,tp,rc)
 		rg:AddCard(rc)
+		local cg=rg:Filter(Card.IsFacedown,nil)
+		Duel.ConfirmCards(1-tp,cg)
 		Duel.Remove(rg,POS_FACEUP,REASON_COST)
 	end
-	local off=1
-	local ops={}
-	local opval={}
-	if b1 then
-		ops[off]=aux.Stringid(9910741,0)
-		opval[off-1]=1
-		off=off+1
-	end
-	if b2 then
-		ops[off]=aux.Stringid(9910741,1)
-		opval[off-1]=2
-		off=off+1
-	end
-	local op=Duel.SelectOption(tp,table.unpack(ops))
-	e:SetLabel(opval[op])
-	if opval[op]==1 then
+	if c:IsLocation(LOCATION_HAND) then
+		e:SetLabel(1)
 		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-	else
+	elseif c:IsLocation(LOCATION_MZONE) then
+		e:SetLabel(2)
 		e:SetCategory(CATEGORY_DISABLE)
 		Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 	end
@@ -83,7 +72,7 @@ function c9910741.spop(e,tp,eg,ep,ev,re,r,rp)
 		if e:GetHandler():IsRelateToEffect(e) then
 			Duel.SpecialSummon(e:GetHandler(),0,tp,tp,true,false,POS_FACEUP)
 		end
-	else
+	elseif sel==2 then
 		Duel.NegateEffect(ev)
 	end
 end

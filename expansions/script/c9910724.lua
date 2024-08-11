@@ -1,4 +1,4 @@
---远古造物 丽蛉
+--远古造物 梅森铰链虫
 dofile("expansions/script/c9910700.lua")
 function c9910724.initial_effect(c)
 	--special summon
@@ -49,9 +49,10 @@ function c9910724.disop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c9910724.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	local tc=g:GetFirst()
 	if not tc then return end
+	Duel.BreakEffect()
 	if tc:IsAbleToHand() and (not tc:IsAbleToGrave() or Duel.SelectOption(tp,1104,1191)==0) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		else
+	else
 		Duel.SendtoGrave(tc,REASON_EFFECT)
 	end
 end

@@ -1,4 +1,4 @@
---远古造物 莱尼蕨
+--远古造物 顶囊蕨
 dofile("expansions/script/c9910700.lua")
 function c9910710.initial_effect(c)
 	--special summon
@@ -37,7 +37,7 @@ function c9910710.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function c9910710.thfilter(c)
-	return c:IsSetCard(0xc950) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0xc950) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function c9910710.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910710.thfilter,tp,LOCATION_DECK,0,1,nil) end

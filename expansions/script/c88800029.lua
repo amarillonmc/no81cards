@@ -2,6 +2,7 @@
 function c88800029.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(88880029,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -12,6 +13,7 @@ function c88800029.initial_effect(c)
 	c:RegisterEffect(e1)
 	--activate
 	local e2=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(88880029,1))
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)

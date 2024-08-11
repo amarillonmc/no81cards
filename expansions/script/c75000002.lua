@@ -1,6 +1,5 @@
 --驾驭纹章之力 琉迩
 function c75000002.initial_effect(c)
-	aux.AddCodeList(c,75000001)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCodeFun(c,75000001,c75000002.ffilter,1,true,true)   

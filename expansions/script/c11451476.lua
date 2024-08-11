@@ -1,6 +1,5 @@
 --食大食食大食蚁兽蚁兽螳螂
-local m=11451476
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--cannot special summon
@@ -75,7 +74,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 		local sg=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
 		if #sg>0 and sg:FilterCount(cm.filter,nil)==#sg and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,m)==0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-			Duel.BreakEffect()
+			--Duel.BreakEffect()
 			local tg=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK,0,1,1,nil)
 			Duel.SSet(tp,tg)
 			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)

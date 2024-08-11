@@ -1,0 +1,150 @@
+function c10111108.initial_effect(c)
+	--special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(10111108,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_DRAW)
+	e1:SetCost(c10111108.spcost)
+	e1:SetTarget(c10111108.sptg)
+	e1:SetOperation(c10111108.spop)
+	c:RegisterEffect(e1)
+    	--special summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_DRAW+CATEGORY_ATKCHANGE)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetCountLimit(1,10111108)
+	e2:SetTarget(c10111108.drtg)
+	e2:SetOperation(c10111108.drop)
+	c:RegisterEffect(e2)
+    	--todeck
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(10111108,1))
+	e3:SetCategory(CATEGORY_TODECK)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e3:SetTarget(c10111108.tdtg)
+	e3:SetOperation(c10111108.tdop)
+	c:RegisterEffect(e3)
+    	--Activate
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
+	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetRange(LOCATION_GRAVE)  
+    e4:SetCountLimit(1,101111080)
+	e4:SetCost(c10111108.cost)  
+	e4:SetTarget(c10111108.target)
+	e4:SetOperation(c10111108.activate)
+	c:RegisterEffect(e4)
+end
+function c10111108.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return not e:GetHandler():IsPublic() end
+end
+function c10111108.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+end
+function c10111108.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+    local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_TO_HAND)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsLocation,LOCATION_DECK))
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c10111108.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c10111108.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
+	Duel.BreakEffect()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsType,TYPE_MONSTER))
+	e1:SetValue(800)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.Clone(e1)
+	e2:SetCode(EFFECT_UPDATE_DEFENSE)
+	Duel.RegisterEffect(e2,tp)
+    local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_TO_HAND)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsLocation,LOCATION_DECK))
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c10111108.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+end
+function c10111108.tdop(e,tp,eg,ep,ev,re,r,rp)
+	local token1=Duel.CreateToken(tp,10111105)
+	local g=Group.CreateGroup()
+	g:AddCard(token1)
+	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+    local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_TO_HAND)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsLocation,LOCATION_DECK))
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c10111108.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
+	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_COST)
+end
+function c10111108.filter(c)
+	return not c:IsCode(10111108) and c:IsAbleToDeck()
+end
+function c10111108.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c10111108.filter(chkc) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
+		and Duel.IsExistingTarget(c10111108.filter,tp,LOCATION_GRAVE,0,2,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectTarget(tp,c10111108.filter,tp,LOCATION_GRAVE,0,2,2,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c10111108.activate(e,tp,eg,ep,ev,re,r,rp)
+	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	if tg:FilterCount(Card.IsRelateToEffect,nil,e)~=2 then return end
+	Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	local g=Duel.GetOperatedGroup()
+	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
+	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+	if ct==2 then
+		Duel.BreakEffect()
+		Duel.Draw(tp,1,REASON_EFFECT)
+	end
+    local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_TO_HAND)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsLocation,LOCATION_DECK))
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end

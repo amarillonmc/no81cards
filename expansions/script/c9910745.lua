@@ -32,10 +32,10 @@ function c9910745.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c9910745.cfilter0(c)
-	return c:IsFaceup() and c:IsSetCard(0xc950) and not c:IsAttribute(ATTRIBUTE_DARK)
+	return c:IsFaceup() and c:IsSetCard(0xc950)
 end
 function c9910745.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c9910745.cfilter0,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(c9910745.cfilter0,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c9910745.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -55,6 +55,8 @@ function c9910745.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910745.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c9910745.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+	local cg=g:Filter(Card.IsFacedown,nil)
+	Duel.ConfirmCards(1-tp,cg)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c9910745.thfilter(c)
@@ -76,7 +78,7 @@ function c9910745.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910745,0))
-	e1:SetCategory(CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_HANDES)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetRange(LOCATION_GRAVE)
@@ -87,21 +89,18 @@ function c9910745.regop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1)
 end
 function c9910745.setfilter(c)
-	return c:IsSetCard(0xc950) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0xc950) and c:IsType(TYPE_TRAP) and c:IsSSetable()
 end
 function c9910745.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910745.setfilter,tp,LOCATION_DECK,0,1,nil)
-		and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT)
+		and Duel.IsExistingMatchingCard(c9910745.setfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 end
 function c9910745.setop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD,nil,REASON_EFFECT)==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,c9910745.setfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if #g>0 and Duel.SSet(tp,g)>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
-		if #sg>0 then
-			Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		end
+	if g:GetCount()>0 then
+		Duel.SSet(tp,g)
 	end
 end

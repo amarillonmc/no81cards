@@ -285,7 +285,8 @@ function cm.operation6(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 	local tg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_HAND,nil)
 	if #tg>0 then
-		local sg=tg:RandomSelect(1-tp,1)
+		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TODECK)
+		local sg=tg:Select(1-tp,1,1,nil)
 		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 	end
 	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())
