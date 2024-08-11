@@ -137,7 +137,7 @@ function c11561064.bmop(e,tp,eg,ep,ev,re,r,rp)
 	local ttc=g:GetFirst()
 	if g:GetCount()>0 and ttc:IsFaceup() then
 		Duel.HintSelection(g)
-		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		Duel.NegateRelatedChain(ttc,RESET_TURN_SET)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_DISABLE)
