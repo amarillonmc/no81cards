@@ -29,22 +29,25 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.sumtg)
 	e3:SetOperation(cm.sumop)
 	c:RegisterEffect(e3)
-	local g=Group.CreateGroup()
-	g:KeepAlive()
-	local ge1=Effect.CreateEffect(c)
-	ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	ge1:SetCode(EVENT_TO_HAND)
-	ge1:SetLabel(m)
-	ge1:SetLabelObject(g)
-	ge1:SetOperation(cm.MergedDelayEventCheck1)
-	Duel.RegisterEffect(ge1,0)
-	local ge2=ge1:Clone()
-	ge2:SetCode(EVENT_CHAIN_SOLVED)
-	ge2:SetOperation(cm.MergedDelayEventCheck2)
-	Duel.RegisterEffect(ge2,0)
-	local ge3=ge2:Clone()
-	ge3:SetCode(EVENT_CHAIN_NEGATED)
-	Duel.RegisterEffect(ge3,0)
+	if not cm.global_check then
+		cm.global_check=true
+		local g=Group.CreateGroup()
+		g:KeepAlive()
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_TO_HAND)
+		ge1:SetLabel(m)
+		ge1:SetLabelObject(g)
+		ge1:SetOperation(cm.MergedDelayEventCheck1)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_CHAIN_SOLVED)
+		ge2:SetOperation(cm.MergedDelayEventCheck2)
+		Duel.RegisterEffect(ge2,0)
+		local ge3=ge2:Clone()
+		ge3:SetCode(EVENT_CHAIN_NEGATED)
+		Duel.RegisterEffect(ge3,0)
+	end
 end
 function cm.MergedDelayEventCheck1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetTurnCount()<=0 or not eg then return end
@@ -104,6 +107,13 @@ end
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(m)==0 end
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
+	local tc=eg:GetFirst()
+	while tc do
+		local code,code2=tc:GetCode()
+		Duel.Hint(HINT_CARD,0,code)
+		if code2 then Duel.Hint(HINT_CARD,0,code2) end
+		tc=eg:GetNext()
+	end
 end
 function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -112,7 +122,7 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	while tc do
 		local code,code2=tc:GetCode()
 		tab[code]=true
-		Duel.Hint(HINT_CARD,0,code)
+		--Duel.Hint(HINT_CARD,0,code)
 		--negate
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -143,7 +153,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
 	local op=re:GetOperation() or aux.TRUE
-	if re:GetHandler():IsCode(e:GetLabel()) and Duel.IsChainDisablable(ev) and #g>0 and Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(m,1)) then
+	if re:GetHandler():IsCode(e:GetLabel()) and Duel.IsChainDisablable(ev) and #g>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(m,1)) then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
 		g=g:Select(tp,1,1,nil)

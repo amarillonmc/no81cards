@@ -91,6 +91,11 @@ function c98933005.reop(e,tp,eg,ep,ev,re,r,rp)
 		   Duel.DisableShuffleCheck()
 		   Duel.SendtoHand(g,nil,REASON_EFFECT)
 		   Duel.ShuffleHand(tp)
+		   if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)<Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) then
+		   	   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+			   local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+			   Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		   end
 		else
 		   Duel.MoveSequence(tc,SEQ_DECKBOTTOM)
 		end

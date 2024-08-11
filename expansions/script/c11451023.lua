@@ -86,7 +86,7 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
 	local dg=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and c:IsAbleToHand() end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	if #g>0 and #dg>0 and ((c:IsLocation(LOCATION_HAND) and loc==LOCATION_HAND and Duel.SelectYesNo(tp,aux.Stringid(m,0))) or (c:IsOnField() and loc&LOCATION_ONFIELD>0 and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,0)))) then
+	if #g>0 and #dg>0 and ((c:IsLocation(LOCATION_HAND) and loc==LOCATION_HAND and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(m,0))) or (c:IsOnField() and loc&LOCATION_ONFIELD>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(m,0)))) then
 		Duel.Hint(HINT_CARD,0,m)
 		if c:IsLocation(LOCATION_HAND) then Duel.ConfirmCards(1-tp,c) end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)

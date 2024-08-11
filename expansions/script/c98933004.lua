@@ -125,7 +125,7 @@ function c98933004.disop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
-		if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(98933004,1)) then
+		if g:GetFirst():IsLocation(LOCATION_HAND) and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(98933004,1)) then
 			Duel.BreakEffect()
 			Duel.Draw(tp,1,REASON_EFFECT)
 		end
@@ -133,7 +133,7 @@ function c98933004.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c98933004.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and Duel.IsPlayerCanDraw(tp,1) then
+	if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and Duel.IsPlayerCanDraw(tp,1) then
 		Duel.ShuffleDeck(tp)
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
@@ -144,6 +144,7 @@ function c98933004.spcon(e,c)
 	return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>=1
 end
 function c98933004.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,1)
-	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
+	local tp=e:GetHandlerPlayer()
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):Select(1-tp,1,1,nil)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_RULE)
 end

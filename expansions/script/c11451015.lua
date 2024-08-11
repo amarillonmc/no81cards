@@ -217,14 +217,14 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.rsop111(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message(e:GetHandler():IsAbleToHand())
 	e:GetHandler():SetStatus(STATUS_LEAVE_CONFIRMED,false)
 	e:Reset()
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,2,nil)
+	local tg=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
+	local g=tg:SelectSubGroup(tp,aux.dncheck,false,1,2)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)

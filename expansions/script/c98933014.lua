@@ -40,10 +40,7 @@ function c98933014.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c98933014.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateSummon(eg)
-	if Duel.SendtoHand(eg,nil,REASON_EFFECT) and not Duel.IsExistingMatchingCard(Card.IsType,e:GetHandlerPlayer(),LOCATION_GRAVE,0,1,nil,TYPE_TRAP) and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(98933014,1)) then
-		 Duel.BreakEffect()
-		 Duel.Draw(tp,1,REASON_EFFECT)
-	end
+	Duel.SendtoHand(eg,nil,REASON_EFFECT)
 end
 function c98933014.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler()) end

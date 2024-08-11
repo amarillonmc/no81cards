@@ -87,7 +87,7 @@ function c98933002.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c98933002.reop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(c98933002.SSfilter,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(98933002,0)) then
-	   Duel.RegisterFlagEffect(tp,98933002,RESET_CHAIN,0,1)
+	   Duel.RegisterFlagEffect(tp,98933002,RESET_CHAIN,0,2)
 	   local c=e:GetHandler()
 	   Duel.ConfirmCards(1-tp,c)
 	   Duel.ShuffleHand(tp)
@@ -125,7 +125,7 @@ function c98933002.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c98933002.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and Duel.IsPlayerCanDraw(tp,1) then
+	if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and Duel.IsPlayerCanDraw(tp,1) then
 		Duel.ShuffleDeck(tp)
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
