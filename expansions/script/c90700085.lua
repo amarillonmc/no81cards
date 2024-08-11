@@ -40,31 +40,29 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,tp)
 
 	local g=Duel.GetFieldGroup(tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,0)
-	g:ForEach(
-		function (tc)
-			if tc:IsSetCard(0x17f) and tc:IsType(TYPE_QUICKPLAY) then
-				local eset={tc:GetActivateEffect()}
-				for _,te in pairs(eset) do
-					local ne=Effect.CreateEffect(tc)
-					ne:SetDescription(te:GetDescription())
-					ne:SetCategory(te:GetCategory())
-					ne:SetProperty(te:GetProperty())
-					ne:SetType(EFFECT_TYPE_ACTIVATE)
-					ne:SetCode(te:GetCode())
-					if te:GetCondition() then
-						ne:SetCondition(te:GetCondition())
-					end
-					if te:GetCost() then
-						ne:SetCost(te:GetCost())
-					end				 
-					ne:SetTarget(te:GetTarget())
-					ne:SetOperation(te:GetOperation())
-					tc:RegisterEffect(ne)
-					te:Reset()
+	for tc in aux.Next(g) do
+		if tc:IsSetCard(0x17f) and tc:IsType(TYPE_QUICKPLAY) then
+			local eset={tc:GetActivateEffect()}
+			for _,te in pairs(eset) do
+				local ne=Effect.CreateEffect(tc)
+				ne:SetDescription(te:GetDescription())
+				ne:SetCategory(te:GetCategory())
+				ne:SetProperty(te:GetProperty())
+				ne:SetType(EFFECT_TYPE_ACTIVATE)
+				ne:SetCode(te:GetCode())
+				if te:GetCondition() then
+					ne:SetCondition(te:GetCondition())
 				end
+				if te:GetCost() then
+					ne:SetCost(te:GetCost())
+				end			  
+				ne:SetTarget(te:GetTarget())
+				ne:SetOperation(te:GetOperation())
+				tc:RegisterEffect(ne)
+				te:Reset()
 			end
 		end
-	)
+	end
 end
 function cm.filter(c,e)
 	return c:IsSetCard(0x17f) and c:IsType(TYPE_QUICKPLAY) and c:IsAbleToDeck() and c:IsCanBeEffectTarget(e)

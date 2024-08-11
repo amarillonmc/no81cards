@@ -154,6 +154,7 @@ function s.lmop(e)
 		e3:SetTargetRange(1,1)
 		e3:SetValue(0)
 		Duel.RegisterEffect(e3,tp)
+		Duel.RegisterFlagEffect(0,id,0,0,1)
 	end
 end
 function s.incremental(code,tp)

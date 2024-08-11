@@ -221,7 +221,7 @@ function s.spop3(e,tp,eg,ep,ev,re,r,rp)
 	local ss=Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)
 	if ss>0 then
 		local token=Duel.CreateToken(tp,57300402)
-		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP_ATTACK,zone)
+		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_ATTACK,zone)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_ADJUST)
@@ -230,6 +230,20 @@ function s.spop3(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOperation(s.backop)
 		token:RegisterEffect(e1)
 		Duel.SpecialSummonComplete()
+		local fid=token:GetFieldID()
+		token:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
+		local ct=Duel.GetTurnCount(tp)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e2:SetCode(EVENT_PHASE+PHASE_END,2)
+		e2:SetReset(RESET_PHASE+PHASE_END,2)
+		e2:SetCountLimit(1)
+		e2:SetLabel(fid,ct)
+		e2:SetLabelObject(token)
+		e2:SetCondition(s.descon3)
+		e2:SetOperation(s.desop3)
+		Duel.RegisterEffect(e2,tp)
 	else
 		return
 	end
@@ -237,4 +251,24 @@ end
 function s.backop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Exile(c,0)
+end
+function s.desfilter(c,fid)
+	return c:GetFlagEffectLabel(id)==fid
+end
+function s.descon3(e,tp,eg,ep,ev,re,r,rp)
+	local fid,ct=e:GetLabel()
+	local g=e:GetLabelObject()
+	if ct==Duel.GetTurnCount(tp) return false end
+	if not g:IsExists(s.desfilter,1,nil,fid) then
+		g:DeleteGroup()
+		e:Reset()
+		return false
+	else return true end
+end
+function s.desop3(e,tp,eg,ep,ev,re,r,rp)
+	local fid,ct=e:GetLabel()
+	local g=e:GetLabelObject()
+	local dg=g:Filter(s.desfilter,nil,fid)
+	g:DeleteGroup()
+	Duel.Destroy(dg,REASON_EFFECT)
 end

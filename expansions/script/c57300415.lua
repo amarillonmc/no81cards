@@ -13,7 +13,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.deffilter(c,tp)
-	return c:IsDefenseAbove(1) and c:IsFaceup() and c:IsControler(1-tp) and not (c:GetFlagEffect(57300424)~=0)
+	return c:IsType(TYPE_MONSTER) and c:IsDefenseAbove(1) and c:IsFaceup() and c:IsControler(1-tp) and not (c:GetFlagEffect(57300424)~=0)
 end
 function s.deftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

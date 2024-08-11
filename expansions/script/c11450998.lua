@@ -135,7 +135,8 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			if cm[rp+10] then Duel.RegisterFlagEffect(rp,m+2,RESET_CHAIN,0,1) end
 			return
 		end
-		if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 then
+		if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) then
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
 			Duel.ConfirmCards(1-rp,tc)
 			--Duel.HintSelection(Group.FromCards(tc))
 			local e1=Effect.CreateEffect(e:GetHandler())
@@ -144,16 +145,22 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_PUBLIC)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1,true)
-			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
 			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e2:SetCode(EVENT_CHAIN_SOLVED)
-			e2:SetCountLimit(1)
+			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-			e2:SetLabelObject(tc)
-			e2:SetCondition(cm.descon)
-			e2:SetOperation(cm.desop)
-			Duel.RegisterEffect(e2,tp)
+			e2:SetCode(EFFECT_DISABLE)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2,true)
+			Duel.AdjustAll()
+			local e3=Effect.CreateEffect(e:GetHandler())
+			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e3:SetCode(EVENT_CHAIN_SOLVED)
+			e3:SetCountLimit(1)
+			e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+			e3:SetLabelObject(tc)
+			e3:SetCondition(cm.descon)
+			e3:SetOperation(cm.desop)
+			Duel.RegisterEffect(e3,tp)
 		end
 	end
 end
