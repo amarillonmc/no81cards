@@ -131,7 +131,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and e:GetHandler():GetFlagEffect(1)>0
+	return rp==1-tp and e:GetHandler():GetFlagEffect(FLAG_ID_CHAINING)>0
 end
 function s.efilter(e,te)
 	return te==e:GetLabelObject()
@@ -140,7 +140,7 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	if Duel.TossCoin(tp,1)>0 then
 		local c=e:GetHandler()
-		local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,0,nil)
+		local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
 		for tc in aux.Next(g) do
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)

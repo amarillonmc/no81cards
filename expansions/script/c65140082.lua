@@ -42,7 +42,7 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(eg,EVENT_CUSTOM+id,re,r,rp,ep,ev)
 end
 function s.disfilter(c,tp)
-	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_MZONE,0,nil):GetMaxGroup(Card.GetAttack)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil):GetMaxGroup(Card.GetAttack)
 	return g and #g>0 and g:IsContains(c)
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
