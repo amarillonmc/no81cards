@@ -110,38 +110,6 @@ function cm.nnfilter(c,ec)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
-	Duel.ResetTimeLimit(0,360)
-	Duel.ResetTimeLimit(1,360)
-	local ag=Duel.GetMatchingGroup(cm.nnfilter,0,0xff,0xff,nil)
-	local _TGetID=GetID
-	local stack={}
-	for ac in aux.Next(ag) do
-		local int=ac:GetOriginalCode()
-		local ini=ac.initial_effect
-		if ini then
-			--ac.initial_effect(ac)
-			stack[#stack+1]=ac
-		else
-			if not _G["c"..int] then
-				_G["c"..int]={}
-				_G["c"..int].__index=_G["c"..int]
-			end
-			GetID=function()
-				return _G["c"..int],int,int<100000000 and 1 or 100
-			end
-			require("expansions/script/c"..int)
-			local ini=ac.initial_effect
-			if ini then stack[#stack+1]=ac end
-		end
-	end
-	GetID=_TGetID
-	if #stack>0 then
-		for i=#stack,1,-1 do
-			local ac=stack[i]
-			local ini=ac.initial_effect
-			if ini then ac.initial_effect(ac) end
-		end
-	end
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
@@ -172,6 +140,40 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
 			Duel.DisableShuffleCheck()
 			Duel.SendtoHand(tc,nil,REASON_RULE)
+		end
+	end
+	if KOISHI_CHECK then
+		Duel.ResetTimeLimit(0,360)
+		Duel.ResetTimeLimit(1,360)
+	end
+	local ag=Duel.GetMatchingGroup(cm.nnfilter,0,0xff,0xff,nil)
+	local _TGetID=GetID
+	local stack={}
+	for ac in aux.Next(ag) do
+		local int=ac:GetOriginalCode()
+		local ini=ac.initial_effect
+		if ini then
+			--ac.initial_effect(ac)
+			stack[#stack+1]=ac
+		else
+			if not _G["c"..int] then
+				_G["c"..int]={}
+				_G["c"..int].__index=_G["c"..int]
+			end
+			GetID=function()
+				return _G["c"..int],int,int<100000000 and 1 or 100
+			end
+			require("expansions/script/c"..int)
+			local ini=ac.initial_effect
+			if ini then stack[#stack+1]=ac end
+		end
+	end
+	GetID=_TGetID
+	if #stack>0 then
+		for i=#stack,1,-1 do
+			local ac=stack[i]
+			local ini=ac.initial_effect
+			if ini then ac.initial_effect(ac) end
 		end
 	end
 end
