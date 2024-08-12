@@ -92,6 +92,14 @@ function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetPlayer(tp)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_HAND)
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end

@@ -145,6 +145,14 @@ end
 function cm.etofilter(c)
 	return c:IsPreviousLocation(LOCATION_EXTRA) and c:IsOnField()
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(cm.etofilter,nil)
 	g:ForEach(Card.RegisterFlagEffect,m-2,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)

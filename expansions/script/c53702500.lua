@@ -3,6 +3,15 @@ AD_Database=true
 SNNM=SNNM or {}
 local cm=SNNM
 --53702700 alleffectreset
+	function Group.ForEach(group,func,...)
+		if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+			local d_group=group:Clone()
+			for tc in aux.Next(d_group) do
+				func(tc,...)
+			end
+		end
+	end
+--
 function cm.AllGlobalCheck(c)
 	if not cm.snnm_global_check then
 		cm.snnm_global_check=true

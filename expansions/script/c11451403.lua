@@ -150,6 +150,14 @@ end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIONS) and not re:IsHasType(EFFECT_TYPE_CONTINUOUS)
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g1=eg:Filter(cm.filter,nil,tp)
 	local g2=eg:Filter(cm.filter,nil,1-tp)

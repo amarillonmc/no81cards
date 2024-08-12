@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local s,id=GetID()
 function s.initial_effect(c)
 	local e0=Effect.CreateEffect(c)

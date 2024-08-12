@@ -246,6 +246,14 @@ function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 		if #ag>0 then Duel.SetTargetCard(ag) end
 	end
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)

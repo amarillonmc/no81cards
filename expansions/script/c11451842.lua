@@ -31,6 +31,14 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetParam(ac)
 	Duel.SetOperationInfo(0,CATEGORY_ANNOUNCE,nil,0,tp,0)
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local ac=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,LOCATION_DECK,nil,ac)

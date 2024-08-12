@@ -137,6 +137,14 @@ end
 function cm.filter2(c,re,tp,r)
 	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsReason(REASON_RELEASE) and bit.band(r,REASON_COST)~=0 and re and aux.GetValueType(re)=="Effect" and re:IsActivated() and re:GetHandler()==c and re:GetHandlerPlayer()==tp
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return eg:IsExists(cm.filter2,1,nil,re,tp,r) end

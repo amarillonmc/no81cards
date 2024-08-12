@@ -69,6 +69,14 @@ end
 function cm.rfilter(c)
 	return c:GetFlagEffect(11451771)>0
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local phase=Duel.GetCurrentPhase()
 	if phase>=PHASE_BATTLE_START and phase<=PHASE_BATTLE then return end

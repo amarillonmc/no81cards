@@ -175,6 +175,14 @@ end
 function cm.filter1(c,fid)
 	return c:GetFlagEffect(m)>0 and c:GetFlagEffectLabel(m)==fid
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	if pnfl_adjusting then return end
 	pnfl_adjusting=true

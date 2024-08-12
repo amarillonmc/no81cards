@@ -209,6 +209,14 @@ function cm.retop3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
 	e:Reset()
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	local c=e:GetHandler()
 	local ct=lab//3

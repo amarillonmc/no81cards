@@ -1,6 +1,5 @@
 --革命爆发
-local m=11451449
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,99518961)
 	--activate
@@ -60,6 +59,14 @@ end
 function cm.damval(e,re,val,r,rp)
 	if r&REASON_EFFECT==REASON_EFFECT and re and re:GetHandler():IsCode(99518961) and rp and rp==e:GetHandlerPlayer() then return val*2 end
 	return val
+end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

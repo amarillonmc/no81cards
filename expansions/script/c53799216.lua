@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local m=53799216
 local cm=_G["c"..m]
 cm.name="木毛的爱女 RI"
@@ -46,8 +48,9 @@ function cm.initial_effect(c)
 				end
 				Duel.SpecialSummon(sc,0,sumplayer,sumplayer,false,false,POS_FACEUP)
 			end
-			cm[0](g,sumtype,sumplayer,...)
+			local fin=cm[0](g,sumtype,sumplayer,...)
 			fing:ForEach(Card.ResetFlagEffect,m)
+			return fin
 		end
 		cm[1]=Duel.SpecialSummonStep
 		Duel.SpecialSummonStep=function(targets,sumtype,sumplayer,...)
@@ -63,10 +66,10 @@ function cm.initial_effect(c)
 				Duel.SpecialSummon(sc,0,sumplayer,sumplayer,false,false,POS_FACEUP)
 				tc=sc
 			end
-			cm[1](tc,sumtype,sumplayer,...)
+			return cm[1](tc,sumtype,sumplayer,...)
 		end
 		cm[2]=Duel.SynchroSummon
-		Duel.SynchroSummon=function(p,c,tuner)
+		Duel.SynchroSummon=function(p,c,tuner,...)
 			local sg=Duel.GetMatchingGroup(function(c)return c:IsHasEffect(m)end,p,LOCATION_PZONE,0,nil)
 			if #sg>0 and Duel.SelectYesNo(p,aux.Stringid(m,0)) then
 				Duel.Hint(HINT_CARD,0,m)
@@ -76,6 +79,7 @@ function cm.initial_effect(c)
 				Duel.SendtoGrave(c,REASON_EFFECT)
 				Duel.SpecialSummon(sc,0,p,p,false,false,POS_FACEUP)
 			end
+			return cm[2](p,c,tuner,...)
 		end
 		cm[3]=Duel.XyzSummon
 		Duel.XyzSummon=function(p,c,...)
@@ -88,6 +92,7 @@ function cm.initial_effect(c)
 				Duel.SendtoGrave(c,REASON_EFFECT)
 				Duel.SpecialSummon(sc,0,p,p,false,false,POS_FACEUP)
 			end
+			return cm[3](p,c,...)
 		end
 		cm[4]=Duel.LinkSummon
 		Duel.LinkSummon=function(p,c,...)
@@ -100,6 +105,7 @@ function cm.initial_effect(c)
 				Duel.SendtoGrave(c,REASON_EFFECT)
 				Duel.SpecialSummon(sc,0,p,p,false,false,POS_FACEUP)
 			end
+			return cm[4](p,c,...)
 		end
 	end
 end

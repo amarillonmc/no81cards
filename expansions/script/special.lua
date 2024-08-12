@@ -85,5 +85,13 @@ function Auxiliary.PreloadUds()
 		return (c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)) or ((_IsCanTurnSet(c) and not c:IsLocation(LOCATION_SZONE)))
 	end
 	EFFECT_FLAG_CANNOT_NEGATE=EFFECT_FLAG_CANNOT_NEGATE or 0x200
+	function Group.ForEach(group,func,...)
+		if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+			local d_group=group:Clone()
+			for tc in aux.Next(d_group) do
+				func(tc,...)
+			end
+		end
+	end
 	--require("script/procedure.lua")
 end

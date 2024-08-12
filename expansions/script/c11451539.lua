@@ -41,6 +41,14 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ft1=math.min(5,Duel.GetLocationCount(tp,LOCATION_MZONE))
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft1=1 end

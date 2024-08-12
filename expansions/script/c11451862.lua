@@ -98,6 +98,14 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	end
 	Duel.SelectTarget(tp,cm.tgfilter,tp,0x3c,0x3c,1,1,c,e)
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0):Filter(cm.seqfilter,nil)
 	if #g<3 or g:FilterCount(Card.IsFacedown,nil)==0 then return end

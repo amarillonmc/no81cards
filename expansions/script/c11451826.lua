@@ -154,6 +154,14 @@ end
 function cm.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.leave(e,tp,eg,ep,ev,re,r,rp)
 	local b1=r&REASON_SUMMON>0 or (re and (re:GetCode()==EFFECT_SUMMON_PROC or re:GetCode()==EFFECT_SUMMON_COST or re:GetCode()==EVENT_SUMMON)) or Duel.CheckEvent(EVENT_SUMMON)
 	local b2=re and (re:GetCode()==EFFECT_SET_PROC or re:GetCode()==EFFECT_MSET_COST)

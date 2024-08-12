@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local m=53796138
 local cm=_G["c"..m]
 cm.name="规则守护者"
@@ -20,7 +22,7 @@ function cm.initial_effect(c)
 		cm[2]=Duel.MoveToField
 		Duel.MoveToField=function(sc,...)
 			local g=Duel.GetMatchingGroup(Card.IsHasEffect,0,LOCATION_EXTRA,LOCATION_EXTRA,nil,m)
-			if #g>0 and sc:GetFlagEffect(m)>0 then
+			if #g>0 and sc:GetFlagEffect(m)>0 and not sc:IsType(TYPE_TOKEN) then
 				local sg=g:RandomSelect(0,1)
 				Duel.ConfirmCards(0,sg)
 				Duel.ConfirmCards(1,sg)

@@ -93,6 +93,14 @@ function cm.acfilter(c,tp)
 	local code,code2=c:GetCode()
 	return c:IsSetCard(0xc976) and c:IsAbleToGraveAsCost() and Duel.GetFlagEffect(0,m+code+0xffffff)==0 and (not code2 or Duel.GetFlagEffect(0,m+code2+0xffffff)==0) --and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,c:GetCode())
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	if cm[0] then return end
 	if e:GetHandler():GetFlagEffect(m)>0 then return end

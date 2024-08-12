@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local m=53727012
 local cm=_G["c"..m]
 cm.name="电脑深域N 解址死装"

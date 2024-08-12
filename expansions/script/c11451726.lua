@@ -248,6 +248,14 @@ function cm.imfilter(c)
 	end
 	return false
 end
+function Group.ForEach(group,func,...)
+    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+        local d_group=group:Clone()
+        for tc in aux.Next(d_group) do
+            func(tc,...)
+        end
+    end
+end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(nil,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	local ig=g:Filter(cm.imfilter,nil)
