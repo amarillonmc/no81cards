@@ -97,7 +97,11 @@ if not Duel.LoadScript and loadfile then
 		require_list=require_list or {}
 		str="expansions/script/"..str
 		if not require_list[str] then
-			require_list[str]=loadfile(str..".lua")
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
 			pcall(require_list[str])
 		end
 		return require_list[str]
