@@ -27,7 +27,7 @@ end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAbleToDeckAsCost() end
-	Duel.SendtoDeck(c,nil,SEQ_DECKBOTTOM,REASON_COST)
+	Duel.ConfirmCards(1-tp,c) Duel.SendtoDeck(c,nil,SEQ_DECKBOTTOM,REASON_COST)
 end
 function s.hgfilter(c)
 	return c:IsType(TYPE_MONSTER) and aux.IsCodeListed(c,id) and (c:IsAbleToHand() or c:IsAbleToGrave())

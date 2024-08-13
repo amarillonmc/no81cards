@@ -68,8 +68,8 @@ function c28372877.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,sg)
 	end
 end
-function c28372877.indescon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(tp)<=3000
+function c28372877.indescon(e)
+	return Duel.GetLP(e:GetHandlerPlayer())<=3000
 end
 function c28372877.rmlimit(e,c,tp,r,re)
 	return c==e:GetHandler() and r&REASON_EFFECT>0
@@ -77,8 +77,9 @@ end
 function c28372877.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x285)
 end
-function c28372877.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(c28372877.cfilter,tp,LOCATION_MZONE,0,1,nil)
+function c28372877.drcon(e)
+	local p=e:GetHandlerPlayer()
+	return Duel.GetLP(p)<=3000 and Duel.IsExistingMatchingCard(c28372877.cfilter,p,LOCATION_MZONE,0,1,nil)
 end
 function c28372877.damval(e,re,val,r,rp,rc)
 	return 0
