@@ -63,7 +63,7 @@ function c40008627.atkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c40008627.descon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
+	return Duel.GetTurnPlayer()~=tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function c40008627.filter(c,e,tp,rk)
 	return c:IsRank(rk) and c:IsRace(RACE_MACHINE)

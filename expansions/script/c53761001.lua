@@ -62,26 +62,24 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	if not tc:IsRelateToEffect(e) then return end
 	local dg=Group.CreateGroup()
 	if tc:IsFaceup() then
-		local res=tc:GetAttack()>0
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(-400)
 		tc:RegisterEffect(e1)
-		if res and tc:GetAttack()<=0 then dg:AddCard(tc) end
+		if tc:GetAttack()<=0 then dg:AddCard(tc) end
 	else dg:AddCard(tc) end
 	local cg=Group.__add(Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_ONFIELD,tc,tc:GetSequence()),tc)
 	for ac in aux.Next(cg) do
 		if ac:IsType(TYPE_MONSTER) and ac:IsFaceup() then
-			local atk=ac:GetAttack()
 			local e2=Effect.CreateEffect(e:GetHandler())
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetCode(EFFECT_UPDATE_ATTACK)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			e2:SetValue(-800)
 			ac:RegisterEffect(e2)
-			if atk>0 and ac:GetAttack()<=0 then dg:AddCard(ac) end
+			if ac:GetAttack()<=0 then dg:AddCard(ac) end
 		else dg:AddCard(ac) end
 	end
 	if #dg>0 then Duel.Destroy(dg,REASON_EFFECT) end
