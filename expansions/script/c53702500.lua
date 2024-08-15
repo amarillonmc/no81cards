@@ -3,6 +3,7 @@ AD_Database=true
 SNNM=SNNM or {}
 local cm=SNNM
 --53702700 alleffectreset
+if not Group.ForEach then
 	function Group.ForEach(group,func,...)
 		if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
 			local d_group=group:Clone()
@@ -11,6 +12,7 @@ local cm=SNNM
 			end
 		end
 	end
+end
 --
 function cm.AllGlobalCheck(c)
 	if not cm.snnm_global_check then
@@ -6635,6 +6637,48 @@ function cm.HTAmvhint(code)
 		if hflag>13 then hflag=13 end
 		c:RegisterFlagEffect(code+50,RESET_EVENT+0x7e0000,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(53765000,hflag))
 	else c:RegisterFlagEffect(code+50,RESET_EVENT+0x7e0000,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(53765000,0)) end
+	end
+end
+function cm.DragoronMergedDelay(c)
+	local mt=getmetatable(c)
+	if mt[53757098]==true then return end
+	mt[53757098]=true
+	if not g then g=Group.CreateGroup() end
+	g:KeepAlive()
+	local ge1=Effect.CreateEffect(c)
+	ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	ge1:SetCode(EVENT_CHAINING)
+	ge1:SetLabelObject(g)
+	ge1:SetOperation(cm.DragoronM1)
+	Duel.RegisterEffect(ge1,0)
+	local ge2=ge1:Clone()
+	ge2:SetCode(4179255)
+	ge2:SetOperation(cm.DragoronM2)
+	Duel.RegisterEffect(ge2,0)
+	local ge3=ge1:Clone()
+	ge3:SetCode(EVENT_CHAIN_END)
+	ge3:SetOperation(cm.DragoronMEnd)
+	Duel.RegisterEffect(ge3,0)
+end
+function cm.DragoronM1(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	if re and re:IsHasType(EFFECT_TYPE_ACTIVATE) then g:Merge(re:GetHandler()) end
+end
+function cm.DragoronM2(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	if re then g:Merge(re:GetHandler()) end
+	if Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_END) then
+		local _eg=g:Clone()
+		Duel.RaiseEvent(_eg,EVENT_CUSTOM+53757098,re,r,rp,ep,ev)
+		g:Clear()
+	end
+end
+function cm.DragoronMEnd(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	if #g>0 then
+		local _eg=g:Clone()
+		Duel.RaiseEvent(_eg,EVENT_CUSTOM+53757098,re,r,rp,ep,ev)
+		g:Clear()
 	end
 end
 function cm.DragoronActivate(c,code)

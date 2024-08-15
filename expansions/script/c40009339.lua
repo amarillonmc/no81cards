@@ -67,7 +67,7 @@ function c40009339.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(),1,0,0)
 end
 function c40009339.eqlimit(e,c)
-	return c:GetControler()==e:GetHandlerPlayer() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xf13)
+	return e:GetOwner()==c
 end
 function c40009339.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -82,7 +82,7 @@ function c40009339.activate(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(aux.tgoval)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e2)
-		local e3=Effect.CreateEffect(c)
+		local e3=Effect.CreateEffect(tc)
 		e3:SetType(EFFECT_TYPE_SINGLE)
 		e3:SetCode(EFFECT_EQUIP_LIMIT)
 		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)

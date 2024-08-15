@@ -1,6 +1,8 @@
 local m=53757010
 local cm=_G["c"..m]
 cm.name="秽界龙 葛利迪"
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	aux.AddCodeList(c,m-1)
 	local e1=Effect.CreateEffect(c)
@@ -23,17 +25,14 @@ function cm.initial_effect(c)
 	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetCategory(CATEGORY_DISABLE+CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_CHAINING)
+	e3:SetCode(EVENT_CUSTOM+53757098)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCondition(cm.trcon)
 	e3:SetTarget(cm.trtg)
 	e3:SetOperation(cm.trop)
 	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return re and (re:GetHandler():IsCode(m-1) or re:GetHandler()==e:GetHandler())end)
-	e4:SetCode(4179255)
-	c:RegisterEffect(e4)
+	SNNM.DragoronMergedDelay(c)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return re and re:IsActiveType(TYPE_FIELD) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
@@ -60,7 +59,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.trcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:GetHandler():IsCode(m-1) or re:GetHandler()==e:GetHandler())
+	local tc=eg:GetFirst()
+	return tc:IsCode(m-1) or tc==e:GetHandler()
 end
 function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end

@@ -1,6 +1,8 @@
 local m=53757006
 local cm=_G["c"..m]
 cm.name="秽界龙 科尔兹"
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	aux.AddCodeList(c,m-1)
 	local e1=Effect.CreateEffect(c)
@@ -26,10 +28,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.trtg)
 	e2:SetOperation(cm.trop)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return re and (re:GetHandler():IsCode(m-1) or re:GetHandler()==e:GetHandler())end)
-	e3:SetCode(4179255)
-	c:RegisterEffect(e3)
+	SNNM.DragoronMergedDelay(c)
 end
 function cm.cfilter(c,tp)
 	return c:IsReason(REASON_EFFECT) and c:GetReasonPlayer()==tp and c:IsPreviousControler(1-tp)
@@ -46,7 +45,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
 end
 function cm.trcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:GetHandler():IsCode(m-1) or re:GetHandler()==e:GetHandler())
+	local tc=eg:GetFirst()
+	return tc:IsCode(m-1) or tc==e:GetHandler()
 end
 function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil,tp,POS_FACEDOWN) end

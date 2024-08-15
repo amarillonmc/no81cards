@@ -3,7 +3,7 @@ if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401022.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,nil,2,2,c71401022.lcheck)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_SPELLCASTER),2,2,c71401022.lcheck)
 	--act limit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

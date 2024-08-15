@@ -55,6 +55,7 @@ function s.initial_effect(c)
 	e6:SetTarget(s.setlimit)
 	c:RegisterEffect(e6)
 end
+s.material_type=TYPE_SYNCHRO
 function s.acop(e,tp,eg,ep,ev,re,r,rp)
 	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL) and e:GetHandler():GetFlagEffect(FLAG_ID_CHAINING)>0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
