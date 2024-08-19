@@ -298,14 +298,14 @@ function cm.d2hmatchfilter(c,cd)
 	return c:IsFaceup() and c:IsCode(cd)
 end
 function cm.thfilter2(c)
-	return c:IsSetCard(0x5977) and c:IsAbleToHand() and not Duel.IsExistingMatchingCard(cm.d2hmatchfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,c:GetCode())
+	return c:IsSetCard(0x5977) and c:IsAbleToHand() and (c:IsFaceup() or not c:IsLocation(LOCATION_REMOVED)) --and not Duel.IsExistingMatchingCard(cm.d2hmatchfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,c:GetCode())
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_REMOVED)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(cm.thfilter2,tp,LOCATION_DECK,0,nil,tp)
+	local g=Duel.GetMatchingGroup(cm.thfilter2,tp,LOCATION_DECK+LOCATION_REMOVED,0,nil,tp)
 	if #g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:Select(tp,1,1,nil)

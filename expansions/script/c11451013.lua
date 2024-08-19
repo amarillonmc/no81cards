@@ -28,6 +28,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	--search
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_GRAVE_ACTION)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
@@ -293,12 +294,12 @@ function cm.thfilter2(c)
 	return c:IsSetCard(0x5977) and c:IsType(TYPE_PENDULUM)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter2),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 	if #g>0 then Duel.SendtoExtraP(g,tp,REASON_EFFECT) end
 end
 function cm.tfilter(c)

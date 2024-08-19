@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	--search
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_GRAVE_ACTION)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
@@ -346,7 +346,7 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 end
 function cm.thfilter2(c)
-	return c:IsSetCard(0x5977) and c:IsAbleToHand() and c:IsFaceup()
+	return c:IsSetCard(0x5977) and c:IsAbleToDeck() and c:IsFaceup()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
@@ -356,7 +356,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 	if #g>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
