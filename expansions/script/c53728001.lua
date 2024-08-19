@@ -14,6 +14,7 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.regop)
 	c:RegisterEffect(e1)
 end
+cm.has_text_type=TYPE_UNION
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)

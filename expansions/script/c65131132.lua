@@ -70,7 +70,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local sg=g1:SelectSubGroup(tp,s.fselect,false,4,4,tp,c,st)  
 	c:SetMaterial(sg)
-	Duel.SendtoGrave(sg,POS_FACEUP,REASON_COST)
+	Duel.SendtoGrave(sg,REASON_COST)
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -188,6 +188,7 @@ function s.addeffect(c)
 		e1:SetCondition(s.condition(v))
 		e1:SetTarget(s.target(v))
 		e1:SetOperation(s.operation(v))
+		Debug.Message(v:GetHandler():GetCode())
 		c:RegisterEffect(e1,true)
 	end
 end
@@ -204,10 +205,12 @@ function s.cost(ae)
 		end
 	end
 end
-function s.condition(ae)
-	return function (e,tp,eg,ep,ev,re,r,rp)	 
+function s.condition(ae)  
+	return function (e,tp,eg,ep,ev,re,r,rp)
+		Debug.Message(1)
 		local c=e:GetHandler()
 		local fcon=ae:GetCondition()
+		Debug.Message(c:IsFacedown() and (not fcon or fcon(e,tp,eg,ep,ev,re,r,rp)))
 		return c:IsFacedown() and (not fcon or fcon(e,tp,eg,ep,ev,re,r,rp))
 	end
 end

@@ -17,6 +17,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	SNNM.Whitkins(c,id,ATTRIBUTE_LIGHT)
 end
+s.fusion_effect=true
 function s.cfilter(c)
 	return c:IsFaceupEx() and c:IsRace(RACE_INSECT) and c:IsAbleToGrave()
 end

@@ -26,6 +26,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
 end
+cm.fusion_effect=true
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	for i=1,ev do
 		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)

@@ -11,6 +11,7 @@ function c9910470.initial_effect(c)
 	e1:SetOperation(c9910470.activate)
 	c:RegisterEffect(e1)
 end
+c9910470.fusion_effect=true
 function c9910470.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCounter(tp,1,1,0x1950)>0 end
 	local rec=Duel.GetCounter(tp,1,1,0x1950)*500

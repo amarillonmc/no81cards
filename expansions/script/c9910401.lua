@@ -19,6 +19,7 @@ function c9910401.initial_effect(c)
 	e3:SetOperation(c9910401.spop)
 	c:RegisterEffect(e3)
 end
+c9910401.fusion_effect=true
 function c9910401.cfilter(c)
 	return c:IsType(TYPE_MONSTER) and not c:IsCode(9910401)
 end

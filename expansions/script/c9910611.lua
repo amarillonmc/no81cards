@@ -20,6 +20,7 @@ function c9910611.initial_effect(c)
 	e2:SetOperation(c9910611.spop)
 	c:RegisterEffect(e2)
 end
+c9910611.fusion_effect=true
 function c9910611.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,LOCATION_MZONE)>0 end
 	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE)

@@ -35,6 +35,7 @@ function s.initial_effect(c)
 	e4:SetOperation(s.fsop)
 	c:RegisterEffect(e4)
 end
+s.fusion_effect=true
 function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)

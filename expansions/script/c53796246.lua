@@ -14,6 +14,7 @@ function s.initial_effect(c)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
 end
+s.fusion_effect=true
 function s.lcheck(g,lc)
 	return g:GetClassCount(Card.GetLinkRace)==g:GetCount()
 end

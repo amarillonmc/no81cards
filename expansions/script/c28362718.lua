@@ -5,6 +5,7 @@ function c28362718.initial_effect(c)
 	e1:SetCategory(CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMING_END_PHASE)
 	e1:SetCost(c28362718.cost)
 	e1:SetTarget(c28362718.target)
 	e1:SetOperation(c28362718.activate)
@@ -19,6 +20,35 @@ function c28362718.initial_effect(c)
 	e2:SetTarget(c28362718.fstg)
 	e2:SetOperation(c28362718.fsop)
 	c:RegisterEffect(e2)
+c28362718.fusion_effect=true
+	if not c28362718.global_check then
+		c28362718.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
+		ge1:SetCondition(c28362718.checkcon)
+		ge1:SetOperation(c28362718.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function c28362718.ctfilter(c)
+	return c:IsSummonType(SUMMON_TYPE_FUSION) and c:IsType(TYPE_FUSION) and c:IsFaceup()
+end
+function c28362718.checkcon(e,tp,eg,ep,ev,re,r,rp)
+	return re and not re:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and eg:IsExists(c28362718.ctfilter,1,nil)
+end
+function c28362718.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local sg=eg:Filter(c28362718.ctfilter,nil)
+	for tc in aux.Next(sg) do
+		local code=tc:GetCode()
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(28362718)
+		e1:SetTargetRange(LOCATION_EXTRA,0)
+		e1:SetTarget(aux.TargetBoolFunction(Card.IsCode,code))
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tc:GetSummonPlayer())
+	end
 end
 function c28362718.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.CheckLPCost(tp,2000)
@@ -30,9 +60,6 @@ function c28362718.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	else
 		Duel.PayLPCost(tp,2000)
 	end
-	Debug.Message(b1)
-	Debug.Message(b2)
-	Debug.Message(b3)
 end
 function c28362718.thfilter(c)
 	return c:IsSetCard(0x285) and not c:IsCode(28362718) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsAbleToHand() or c:IsSSetable())
@@ -70,7 +97,7 @@ function c28362718.filter1(c,e)
 end
 function c28362718.filter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c))
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf) and not c:IsHasEffect(28362718)
 end
 function c28362718.fscon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLP(tp)<=3000

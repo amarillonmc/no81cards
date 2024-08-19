@@ -29,7 +29,7 @@ function c60010099.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
 function c60010099.thfilter(c)
-	return c:IsSetCard(0x632) and c:IsAbleToHand() and c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return c:IsSetCard(0x634) and c:IsAbleToHand() and c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function c60010099.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60010099.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -67,7 +67,7 @@ function c60010099.disop(e,tp,eg,ep,ev,re,r,rp)
 			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 			if g:GetCount()>0 then
 				Duel.HintSelection(g)
-				Duel.Remove(g,POS_FACEUP,REASON_EFFECT)	 
+				Duel.Remove(g,POS_FACEUP,REASON_EFFECT)  
 			end
 		end
 		if op==3 then
@@ -76,9 +76,9 @@ function c60010099.disop(e,tp,eg,ep,ev,re,r,rp)
 			local g1=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 			if g1:GetCount()>0 then
 				Duel.HintSelection(g1)
-				Duel.Destroy(g1,REASON_EFFECT)	 
-			end			
-		end	  
+				Duel.Destroy(g1,REASON_EFFECT)   
+			end		 
+		end   
 	end
 end
 

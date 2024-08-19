@@ -28,6 +28,7 @@ function cm.initial_effect(c)
 	e3:SetCost(cm.cost)
 	c:RegisterEffect(e3)
 end
+cm.has_text_type=TYPE_UNION
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() and e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED) end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)

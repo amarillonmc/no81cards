@@ -4,7 +4,8 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,nil,2,99,c22348313.lcheck)
+	--aux.AddLinkProcedure(c,nil,2,99,c22348313.lcheck)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2)
 	--atkup
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
@@ -80,7 +81,7 @@ function c22348313.imfilter(e,te)
 end
 function c22348313.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToRemoveAsCost() and c:IsAttackBelow(1500) end
+	if chk==0 then return c:IsAbleToRemoveAsCost() and c:IsAttackBelow(2000) end
 	if Duel.Remove(c,0,REASON_COST+REASON_TEMPORARY)~=0 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

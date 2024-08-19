@@ -29,6 +29,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
 end
+cm.has_text_type=TYPE_UNION
 function cm.filter(c,e,tp,zone)
 	return c:IsFaceup() and c:IsSetCard(0xc532) and c:GetSequence()<5 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
 end

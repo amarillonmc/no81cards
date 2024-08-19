@@ -19,6 +19,7 @@ function c28318424.initial_effect(c)
 	e2:SetTarget(c28318424.thtg)
 	e2:SetOperation(c28318424.thop)
 	c:RegisterEffect(e2)
+c28318424.fusion_effect=true
 end
 function c28318424.condition(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()

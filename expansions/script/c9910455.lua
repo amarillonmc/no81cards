@@ -20,6 +20,7 @@ function c9910455.initial_effect(c)
 	e2:SetOperation(c9910455.spop)
 	c:RegisterEffect(e2)
 end
+c9910455.fusion_effect=true
 function c9910455.filter(c)
 	return c:IsCode(9910451,9910453) and c:IsAbleToHand()
 end

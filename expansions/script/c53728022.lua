@@ -55,6 +55,7 @@ function cm.initial_effect(c)
 		end
 	end
 end
+cm.has_text_type=TYPE_UNION
 function cm.check(e,tp,eg,ep,ev,re,r,rp)
 	cm[tp]=true
 end

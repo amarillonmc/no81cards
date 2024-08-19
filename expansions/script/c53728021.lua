@@ -28,6 +28,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.negop)
 	c:RegisterEffect(e2)
 end
+cm.has_text_type=TYPE_UNION
 function cm.atktg(e,c)
 	local lg1=c:GetLinkedGroup()
 	local lg2=e:GetHandler():GetLinkedGroup()

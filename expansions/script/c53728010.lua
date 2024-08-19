@@ -27,6 +27,7 @@ function cm.initial_effect(c)
 	e5:SetOperation(cm.thop)
 	c:RegisterEffect(e5)
 end
+cm.has_text_type=TYPE_UNION
 function cm.distg(e,c)
 	if c:GetCardTargetCount()==0 then return false end
 	local eq=e:GetHandler():GetEquipTarget()

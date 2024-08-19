@@ -96,7 +96,7 @@ function c11560706.daop(e,tp,eg,ep,ev,re,r,rp)
 	tc=tg:GetNext() 
 	end  
 	Duel.Hint(HINT_CARD,0,11560706) 
-	Duel.Damage(1-tp,x*200,REASON_EFFECT) 
+	Duel.Damage(1-tp,x*100,REASON_EFFECT) 
 end 
 function c11560706.seqcost(e,tp,eg,ep,ev,re,r,rp,chk) 
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end 

@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.unop)
 	c:RegisterEffect(e4)
 end
+cm.has_text_type=TYPE_UNION
 function cm.efilter(e,te)
 	if te:GetHandlerPlayer()==e:GetHandlerPlayer() or not te:IsActivated() then return false end
 	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end

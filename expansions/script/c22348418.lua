@@ -39,13 +39,22 @@ function cm.initial_effect(c)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
 	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e4:SetCost(c22348418.setcost)
 	e4:SetTarget(c22348418.settg)
 	e4:SetOperation(c22348418.setop)
 	c:RegisterEffect(e4)
 	
 end
+function c22348418.setcosfilter(c)
+	return c:IsCode(22348418) or c:IsCode(22348417)
+end
+function c22348418.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,c22348418.setcosfilter,1,nil) end
+	local g=Duel.SelectReleaseGroup(tp,c22348418.setcosfilter,1,1,nil)
+	Duel.Release(g,REASON_COST)
+end
 function c22348418.setfilter(c)
-	return c:IsFaceup() and c:IsCanTurnSet() and c:IsType(0x6)
+	return c:IsFaceup() and c:IsCanTurnSet()
 end
 function c22348418.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(1-tp) and c22348418.setfilter(chkc) end
@@ -65,7 +74,7 @@ function c22348418.atkfilter(c)
 	return c:IsCode(22348418) or c:IsCode(22348417)
 end
 function c22348418.val(e,c)
-	return Duel.GetMatchingGroupCount(c22348418.atkfilter,c:GetControler(),LOCATION_GRAVE,0,nil)*300
+	return Duel.GetMatchingGroupCount(c22348418.atkfilter,c:GetControler(),LOCATION_GRAVE,0,nil)*800
 end
 function c22348418.spfilter(c,e,tp)
 	return c:IsCode(22348417) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

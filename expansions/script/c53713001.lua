@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	SNNM.ALCYakuNew(c,m,cm.confirm,LOCATION_HAND,{1900,300,4,RACE_WARRIOR,ATTRIBUTE_DARK})
 	SNNM.AllGlobalCheck(c)
 end
+cm.fusion_effect=true
 function cm.confirm(c,tp)
 	local g=Group.CreateGroup()
 	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)

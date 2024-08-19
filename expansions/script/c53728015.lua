@@ -45,6 +45,7 @@ function cm.initial_effect(c)
 	e5:SetOperation(cm.chainop)
 	c:RegisterEffect(e5)
 end
+cm.has_text_type=TYPE_UNION
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(function(c,tp)return c:IsFaceup() and c:IsType(TYPE_UNION) and Duel.GetFlagEffect(tp,m+c:GetOriginalCode())==0 end,tp,LOCATION_ONFIELD,0,nil,tp)
 	if #g==0 then return end

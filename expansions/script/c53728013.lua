@@ -28,6 +28,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
 end
+cm.has_text_type=TYPE_UNION
 function cm.filter1(c,e,tp,zone)
 	return c:IsFaceup() and c:IsSetCard(0xc532) and c:GetOriginalType()&TYPE_MONSTER~=0 and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c,zone) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
 end

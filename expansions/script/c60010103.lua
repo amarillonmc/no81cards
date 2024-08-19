@@ -45,7 +45,7 @@ function c60010103.spcheckop(e,tp,eg,ep,ev,re,r,rp)
 	local p1=false
 	local p2=false
 	while tc do
-		if tc:IsSummonPlayer(0) and tc:IsSummonType(SUMMON_TYPE_RITUAL) and tc:IsSetCard(0x632) then p1=true else p2=true end
+		if tc:IsSummonPlayer(0) and tc:IsSummonType(SUMMON_TYPE_RITUAL) and tc:IsSetCard(0x634) then p1=true else p2=true end
 		tc=eg:GetNext()
 	end
 	if p1 then Duel.RegisterFlagEffect(0,60010103,RESET_PHASE+PHASE_END,0,1) end
@@ -123,7 +123,7 @@ function c60010103.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)
 		e1:SetTargetRange(LOCATION_MZONE,0)
-		e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x632))
+		e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x634))
 		e1:SetValue(c60010103.efilter)
 		e1:SetLabelObject(re)
 		e1:SetReset(RESET_EVENT+RESET_CHAIN)

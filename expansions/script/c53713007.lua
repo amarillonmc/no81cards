@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	SNNM.ALCYakuNew(c,m,cm.confirm,LOCATION_ONFIELD,{100,100,4,RACE_SPELLCASTER,ATTRIBUTE_LIGHT})
 	SNNM.AllGlobalCheck(c)
 end
+cm.fusion_effect=true
 function cm.confirm(c,tp)
 	return Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 end

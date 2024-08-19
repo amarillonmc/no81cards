@@ -39,7 +39,7 @@ function c12852101.thfilter(c)
 	return c:IsAttribute(ATTRIBUTE_FIRE) and c:IsRace(RACE_WARRIOR) and c:IsLevelBelow(4) and c:IsAbleToHand()
 end
 function c12852101.thfilter1(c)
-	return (c:IsSetCard(0xa77) or aux.IsCodeListed(c,12852102)) and c:IsAbleToHand()
+	return (c:IsSetCard(0x3a78) or aux.IsCodeListed(c,12852102)) and c:IsAbleToHand()
 end
 function c12852101.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c12852101.thfilter,tp,LOCATION_DECK,0,1,nil) end

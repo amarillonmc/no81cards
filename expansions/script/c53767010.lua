@@ -19,6 +19,7 @@ function s.initial_effect(c)
 	SNNM.Whitkins(c,id,ATTRIBUTE_WIND)
 	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,s.chainfilter)
 end
+s.fusion_effect=true
 function s.chainfilter(re,tp,cid)
 	local rc=re:GetHandler()
 	local loc=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)

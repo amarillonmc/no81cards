@@ -29,6 +29,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.eqop)
 	c:RegisterEffect(e3)
 end
+cm.has_text_type=TYPE_UNION
 function cm.matfilter(c)
 	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:GetOriginalType()&TYPE_UNION~=0 and c:IsCanOverlay()
 end

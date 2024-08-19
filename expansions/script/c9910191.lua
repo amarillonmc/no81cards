@@ -41,6 +41,7 @@ function c9910191.activate(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.IsExistingMatchingCard(c9910191.setfilter,tp,LOCATION_HAND,0,1,nil,check) and
 			(count==3 or Duel.SelectYesNo(tp,aux.Stringid(9910191,0))) then
 			if count<3 then Duel.BreakEffect() end
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 			local g=Duel.SelectMatchingCard(tp,Card.IsSSetable,tp,LOCATION_HAND,0,1,1,nil)
 			local tc=g:GetFirst()
 			if tc and Duel.SSet(tp,tc,tp,false)>0 then

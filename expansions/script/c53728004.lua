@@ -65,6 +65,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
 end
+cm.has_text_type=TYPE_UNION
 function cm.xyzfilter(c)
 	return c:IsFaceup() and (c:GetOriginalRace()&RACE_MACHINE~=0 or not c:IsLocation(LOCATION_MZONE)) and (c:IsRace(RACE_MACHINE) or not c:IsLocation(LOCATION_SZONE))
 end

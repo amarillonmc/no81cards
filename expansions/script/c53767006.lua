@@ -17,6 +17,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	SNNM.Whitkins(c,id,ATTRIBUTE_EARTH)
 end
+s.fusion_effect=true
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local ac=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)+3

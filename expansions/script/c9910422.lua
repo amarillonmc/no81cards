@@ -17,6 +17,7 @@ function c9910422.initial_effect(c)
 	e2:SetOperation(c9910422.thregop)
 	c:RegisterEffect(e2)
 end
+c9910422.fusion_effect=true
 function c9910422.thfilter(c)
 	return c:IsSetCard(0x6950) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 		and (not c:IsLocation(LOCATION_REMOVED) or c:IsFaceup())

@@ -6,7 +6,7 @@ function c9910905.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON+CATEGORY_REMOVE+CATEGORY_CONTROL)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
-	e1:SetCountLimit(1,9910905)
+	e1:SetCountLimit(1,9910905+EFFECT_COUNT_CODE_CHAIN)
 	e1:SetCondition(c9910905.condition1)
 	e1:SetCost(c9910905.cost)
 	e1:SetTarget(c9910905.target)
@@ -43,22 +43,34 @@ function c9910905.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910905.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local b1=c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	local b1=c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetFlagEffect(tp,9910905)==0
 	local b2=c:IsAbleToRemove() and Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,nil)
+		and Duel.GetFlagEffect(tp,9911431)==0
 	if chk==0 then return b1 or b2 end
 end
 function c9910905.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and Duel.GetFlagEffect(tp,9910905)==0
 	local b2=c:IsAbleToRemove() and Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,nil)
-	if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910905,0),aux.Stringid(9910905,1))==0) then
+		and Duel.GetFlagEffect(tp,9911431)==0
+	local op=0
+	if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(9910905,0),aux.Stringid(9910905,1))
+	elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(9910905,0))
+	elseif b2 then op=Duel.SelectOption(tp,aux.Stringid(9910905,1))+1
+	else return end
+	if op==0 then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	elseif b2 and Duel.Remove(c,POS_FACEUP,REASON_EFFECT)~=0 and c:IsLocation(LOCATION_REMOVED) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
-		local g=Duel.SelectMatchingCard(tp,Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,1,nil)
-		if g:GetCount()==0 then return end
-		Duel.HintSelection(g)
-		Duel.GetControl(g:GetFirst(),tp,PHASE_END,1)
+		Duel.RegisterFlagEffect(tp,9910905,RESET_PHASE+PHASE_END,0,1)
+	else
+		if Duel.Remove(c,POS_FACEUP,REASON_EFFECT)~=0 and c:IsLocation(LOCATION_REMOVED) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
+			local g=Duel.SelectMatchingCard(tp,Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,1,nil)
+			if g:GetCount()==0 then return end
+			Duel.HintSelection(g)
+			Duel.GetControl(g:GetFirst(),tp,PHASE_END,1)
+		end
+		Duel.RegisterFlagEffect(tp,9911431,RESET_PHASE+PHASE_END,0,1)
 	end
 end

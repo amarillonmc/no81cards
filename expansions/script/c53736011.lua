@@ -23,6 +23,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.op)
 	c:RegisterEffect(e2)
 end
+cm.fusion_effect=true
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)

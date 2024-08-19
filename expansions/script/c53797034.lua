@@ -23,14 +23,6 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	if not s.global_check then
 		s.global_check=true
-		local sg=Group.CreateGroup()
-		sg:KeepAlive()
-		local ge0=Effect.GlobalEffect()
-		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge0:SetCode(EVENT_ADJUST)
-		ge0:SetLabelObject(sg)
-		ge0:SetOperation(s.geop)
-		Duel.RegisterEffect(ge0,0)
 		local f1=Duel.ConfirmCards
 		Duel.ConfirmCards=function(p,tg,...)
 			local g=Group.__add(tg,tg)
@@ -46,7 +38,7 @@ function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function s.thfilter(c)
-	return c:GetType()&0x20002==0x20002 and c:GetFlagEffect(id)>0 and c:IsAbleToHand()
+	return c:GetType()&0x20002==0x20002 and c.fusion_effect and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -105,23 +97,4 @@ function s.sop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_CARD,0,id)
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
-end
-function s.geop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=e:GetLabelObject()
-	local g=Duel.GetMatchingGroup(nil,0,0xff,0xff,sg)
-	if #g==0 then return end
-	sg:Merge(g)
-	local cp={}
-	local f=Card.RegisterEffect
-	Card.RegisterEffect=function(tc,te,bool)
-		local pro1,pro2=te:GetProperty()
-		if te:GetCategory()&CATEGORY_FUSION_SUMMON~=0 and pro1&EFFECT_FLAG_UNCOPYABLE==0 then table.insert(cp,te:Clone()) end
-		return f(tc,te,bool)
-	end
-	for tc in aux.Next(g) do
-		Duel.CreateToken(tp,tc:GetOriginalCode())
-		if #cp>0 then tc:RegisterFlagEffect(id,0,0,0) end
-		cp={}
-	end
-	Card.RegisterEffect=f
 end

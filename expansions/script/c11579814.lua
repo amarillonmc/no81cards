@@ -3,7 +3,7 @@ function c11579814.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--xyz summon
 	c:EnableReviveLimit()
-	aux.AddXyzProcedureLevelFree(c,function(c,xyzc) return c:IsSetCard(0x180) end,nil,2,99)  
+	aux.AddXyzProcedureLevelFree(c,function(c,xyzc) return c:IsXyzLevel(xyzc,2) or c:IsLink(2) or c:IsRank(2) end,nil,2,99)  
 	--atk
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -43,7 +43,7 @@ function c11579814.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c11579814.effilter(c)
-	return c:IsType(TYPE_MONSTER) and (c:IsLevel(2) or c:IsRank(2) or c:IsLink(2))
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x180)
 end
 function c11579814.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  

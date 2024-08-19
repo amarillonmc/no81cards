@@ -21,6 +21,7 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e5)
 end
+cm.has_text_type=TYPE_UNION
 function cm.cafilter(c)
 	return c:IsType(TYPE_UNION) and c:IsRace(RACE_MACHINE) and c:IsSummonable(true,nil)
 end

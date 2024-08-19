@@ -20,6 +20,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.setop)
 	c:RegisterEffect(e2)
 end
+cm.fusion_effect=true
 function cm.actfilter(c,tp)
 	return c:IsCode(m-10) and c:GetActivateEffect():IsActivatable(tp,true,true)
 end

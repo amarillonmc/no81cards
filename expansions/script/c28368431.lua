@@ -12,8 +12,8 @@ function c28368431.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_DAMAGE)
-	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCondition(c28368431.thcon)
 	e2:SetTarget(c28368431.thtg)
@@ -110,8 +110,12 @@ function c28368431.rcop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
+function c28368431.confilter(c,tp)
+	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)
+		and c:GetReasonPlayer()==1-tp and not c:IsReason(REASON_RULE)
+end
 function c28368431.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(tp)<=3000 and ep==tp
+	return Duel.GetLP(tp)<=3000 and eg:IsExists(c28368431.confilter,1,nil,tp)
 end
 function c28368431.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToHand() end
@@ -122,4 +126,29 @@ function c28368431.thop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CHANGE_DAMAGE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetCondition(c28368431.damcon)
+	e1:SetValue(c28368431.damval)
+	e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_NO_EFFECT_DAMAGE)
+	e2:SetValue(1)
+	Duel.RegisterEffect(e2,tp)
+end
+function c28368431.damcon(e)
+	local tp=e:GetHandlerPlayer()
+	return Duel.GetFlagEffect(tp,28368431)==0
+end
+function c28368431.damval(e,re,val,r,rp,rc)
+	local tp=e:GetHandlerPlayer()
+	if bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 then
+		Duel.RegisterFlagEffect(tp,28368431,RESET_PHASE+PHASE_END+RESET_OPPO_TURN,0,1)
+		return 0
+	end
+	return val
 end

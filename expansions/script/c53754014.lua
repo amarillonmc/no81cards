@@ -39,6 +39,7 @@ function cm.initial_effect(c)
 	e4:SetLabelObject(e3)
 	c:RegisterEffect(e4)
 end
+cm.fusion_effect=true
 function cm.eftg(e,c)
 	return c:GetType()&0x20004==0x20004 and c:IsStatus(STATUS_EFFECT_ENABLED) and not c:IsStatus(STATUS_LEAVE_CONFIRMED)
 end

@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--xyz summon
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_LIGHT),8,3,c11561063.ovfilter,aux.Stringid(11561063,1),3,c11561063.xyzop)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_LIGHT),8,3,c11561063.ovfilter,aux.Stringid(11561063,0),3,c11561063.xyzop)
 	--adjust
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -139,10 +139,10 @@ function c11561063.spop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=g:SelectSubGroup(tp,c11561063.gcheck,false,1,ft)
 	if sg:GetCount()>0 and Duel.SpecialSummon(sg,0,tp,1-tp,false,false,POS_FACEUP)~=0 then
 		local tc=Duel.GetOperatedGroup():GetCount()
-		if tc>0 and Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,tc,nil) and c:IsRelateToEffect(e) then
+		if tc>0 and Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,1,nil) and c:IsRelateToEffect(e) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 			Duel.BreakEffect()
-			local xg=Duel.SelectMatchingCard(tp,Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,tc,tc,nil)
+			local xg=Duel.SelectMatchingCard(tp,Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,1,tc,nil)
 			local xtc=xg:GetFirst()
 			while xtc do
 				local og=xtc:GetOverlayGroup()

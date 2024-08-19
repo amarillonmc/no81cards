@@ -28,6 +28,7 @@ function s.initial_effect(c)
 	e3:SetOperation(s.unop)
 	c:RegisterEffect(e3)
 end
+s.has_text_type=TYPE_UNION
 function s.eqcfilter(c,tp)
 	local tc=c:GetEquipTarget()
 	return tc and tc:IsControler(tp)

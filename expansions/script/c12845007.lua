@@ -37,7 +37,7 @@ function s.sop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,s.sfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,tp)
-	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
+	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0 and g:GetFirst():IsLocation(LOCATION_GRAVE) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tohand=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 		if tohand:GetCount()>0 and Duel.SendtoHand(tohand,nil,REASON_EFFECT)~=0 then

@@ -77,6 +77,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.tgop)
 	c:RegisterEffect(e3)
 end
+cm.has_text_type=TYPE_UNION
 function cm.xyzfilter(c)
 	return c:IsFaceup() and c:IsOriginalSetCard(0xc532)
 end

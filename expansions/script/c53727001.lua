@@ -13,6 +13,7 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 end
+cm.fusion_effect=true
 function cm.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end

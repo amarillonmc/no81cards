@@ -21,6 +21,7 @@ function s.initial_effect(c)
 	e2:SetOperation(s.rmop)
 	c:RegisterEffect(e2)
 end
+s.fusion_effect=true
 function s.filter1(c,e)
 	return not e or not c:IsImmuneToEffect(e)
 end

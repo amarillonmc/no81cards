@@ -20,6 +20,7 @@ function c9910871.initial_effect(c)
 	e2:SetOperation(c9910871.tdop)
 	c:RegisterEffect(e2)
 end
+c9910871.fusion_effect=true
 function c9910871.mfilter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end

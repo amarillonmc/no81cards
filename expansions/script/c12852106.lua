@@ -19,7 +19,7 @@ function c12852106.cfilter1(c,tp)
 	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_SPELLCASTER) and Duel.IsExistingMatchingCard(c12852106.eqfilter,tp,LOCATION_DECK,0,1,nil,c,tp)
 end
 function c12852106.eqfilter(c,tc,tp)
-	return c:IsType(TYPE_EQUIP) and c:IsSetCard(0xa77) and c:CheckEquipTarget(tc) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
+	return c:IsType(TYPE_EQUIP) and c:IsSetCard(0x3a78) and c:CheckEquipTarget(tc) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
 end
 function c12852106.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(c12852106.cfilter,tp,LOCATION_MZONE,0,1,nil)

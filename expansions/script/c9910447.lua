@@ -12,6 +12,7 @@ function c9910447.initial_effect(c)
 	e1:SetValue(c9910447.zones)
 	c:RegisterEffect(e1)
 end
+c9910447.fusion_effect=true
 function c9910447.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,2000) end
 	Duel.PayLPCost(tp,2000)

@@ -36,7 +36,7 @@ function c60010104.initial_effect(c)
 	end  
 end
 function c60010104.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x632)
+	return c:IsFaceup() and c:IsSetCard(0x634)
 end
 function c60010104.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c60010104.cfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -68,7 +68,7 @@ function c60010104.spcheckop(e,tp,eg,ep,ev,re,r,rp)
 	local p1=false
 	local p2=false
 	while tc do
-		if tc:IsSummonPlayer(0) and tc:IsSummonType(SUMMON_TYPE_RITUAL) and tc:IsSetCard(0x632) then p1=true else p2=true end
+		if tc:IsSummonPlayer(0) and tc:IsSummonType(SUMMON_TYPE_RITUAL) and tc:IsSetCard(0x634) then p1=true else p2=true end
 		tc=eg:GetNext()
 	end
 	if p1 then Duel.RegisterFlagEffect(0,60010104,RESET_PHASE+PHASE_END,0,1) end

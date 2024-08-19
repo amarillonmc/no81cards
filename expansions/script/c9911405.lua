@@ -26,6 +26,7 @@ function c9911405.initial_effect(c)
 	e3:SetOperation(c9911405.limop)
 	c:RegisterEffect(e3)
 end
+c9911405.fusion_effect=true
 function c9911405.pfilter(c,tp,ft)
 	return c:IsSetCard(0x6951,0xa958) and bit.band(c:GetType(),0x20004)==0x20004
 		and not c:IsForbidden() and c:CheckUniqueOnField(tp) and (ft==nil or ft>0)

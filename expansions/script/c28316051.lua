@@ -2,11 +2,12 @@
 function c28316051.initial_effect(c)
 	--antica spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DAMAGE)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,28316051)
-	e1:SetCost(c28316051.cost)
+	e1:SetCondition(c28316051.spcon)
 	e1:SetTarget(c28316051.sptg)
 	e1:SetOperation(c28316051.spop)
 	c:RegisterEffect(e1)
@@ -24,27 +25,25 @@ function c28316051.initial_effect(c)
 	e2:SetOperation(c28316051.tgop)
 	c:RegisterEffect(e2)
 end
-function c28316051.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.CheckLPCost(tp,2000)
-	local b2=Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,500)
-	local b3=Duel.IsPlayerAffectedByEffect(tp,28368431)
-	if chk==0 then return b1 or b2 end
-	if b3 or not b1 or (b2 and Duel.SelectYesNo(tp,aux.Stringid(28316051,3))) then
-		Duel.PayLPCost(tp,500)
-	else
-		Duel.PayLPCost(tp,2000)
-	end
+function c28316051.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
 end
 function c28316051.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	if Duel.GetLP(tp)>=3000 then
+		Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,2000)
+	end
 end
 function c28316051.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
+	if Duel.GetLP(tp)>=3000 then
+		Duel.Damage(tp,2000,REASON_EFFECT)
 	end
 end
 function c28316051.cfilter(c,tp)

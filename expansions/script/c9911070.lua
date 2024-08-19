@@ -13,6 +13,7 @@ function c9911070.initial_effect(c)
 	e1:SetValue(c9911070.zones)
 	c:RegisterEffect(e1)
 end
+c9911070.fusion_effect=true
 function c9911070.filter(c,b)
 	return c:IsSetCard(0x9954) and c:IsType(TYPE_PENDULUM) and ((b and not c:IsForbidden()) or c:IsAbleToHand())
 end

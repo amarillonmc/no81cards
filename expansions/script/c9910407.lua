@@ -20,6 +20,7 @@ function c9910407.initial_effect(c)
 	e3:SetOperation(c9910407.spop)
 	c:RegisterEffect(e3)
 end
+c9910407.fusion_effect=true
 function c9910407.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)

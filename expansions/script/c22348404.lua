@@ -57,6 +57,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 	
 end
+aux.xyz_number[22348404]=107
 function c22348404.ovfilter(c)
 	return c:IsFaceup() and c:IsRank(8) and c:IsRace(RACE_DRAGON) and c:IsType(TYPE_XYZ) and c:GetOverlayCount()==0
 end

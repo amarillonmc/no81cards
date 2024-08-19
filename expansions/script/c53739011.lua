@@ -23,6 +23,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.operation)
 	c:RegisterEffect(e2)
 end
+cm.fusion_effect=true
 function cm.cst(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)

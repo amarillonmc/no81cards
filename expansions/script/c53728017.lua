@@ -75,6 +75,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
 end
+cm.has_text_type=TYPE_UNION
 function cm.xyzfilter(c)
 	return c:IsFaceup() and (c:GetOriginalType()&TYPE_UNION~=0 or not c:IsLocation(LOCATION_MZONE)) and (c:IsType(TYPE_UNION) or not c:IsLocation(LOCATION_SZONE))
 end

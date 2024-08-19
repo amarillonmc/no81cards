@@ -1,6 +1,5 @@
 --艾妮丝王女
 function c12852102.initial_effect(c)
-	aux.AddCodeList(c,12852102)
 	--Special Summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(12852102,1))
@@ -24,7 +23,7 @@ function c12852102.initial_effect(c)
 	c:RegisterEffect(e12) 
 end
 function c12852102.filter(c)
-	return c:IsSetCard(0xa77) and c:IsAbleToHand()
+	return c:IsSetCard(0x3a78) and c:IsAbleToHand()
 end
 function c12852102.sscon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c12852102.filter,tp,LOCATION_ONFIELD,0,1,nil)
@@ -48,7 +47,7 @@ function c12852102.ssop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c12852102.thfilter1(c)
-	return (c:IsSetCard(0xa77) or aux.IsCodeListed(c,12852102)) and c:IsAbleToHand()
+	return (c:IsSetCard(0x3a78) or c:IsCode(12852101)) and c:IsAbleToHand()
 end
 function c12852102.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c12852102.thfilter1,tp,LOCATION_DECK,0,1,nil) end

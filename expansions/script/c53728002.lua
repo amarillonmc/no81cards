@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.unop)
 	c:RegisterEffect(e4)
 end
+cm.has_text_type=TYPE_UNION
 function cm.uncon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsPreviousLocation(LOCATION_SZONE) and c:GetPreviousSequence()<5

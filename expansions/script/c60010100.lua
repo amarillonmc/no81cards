@@ -44,7 +44,7 @@ function c60010100.spcheckop(e,tp,eg,ep,ev,re,r,rp)
 	local p1=false
 	local p2=false
 	while tc do
-		if tc:IsSummonPlayer(0) and tc:IsSummonType(SUMMON_TYPE_RITUAL) and tc:IsSetCard(0x632) then p1=true else p2=true end
+		if tc:IsSummonPlayer(0) and tc:IsSummonType(SUMMON_TYPE_RITUAL) and tc:IsSetCard(0x634) then p1=true else p2=true end
 		tc=eg:GetNext()
 	end
 	if p1 then Duel.RegisterFlagEffect(0,60010100,RESET_PHASE+PHASE_END,0,1) end
@@ -72,7 +72,7 @@ function c60010100.cfmop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c60010100.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x632)
+	return c:IsFaceup() and c:IsSetCard(0x634)
 end
 function c60010100.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler()) and eg:IsExists(c60010100.cfilter,1,nil)

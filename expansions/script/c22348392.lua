@@ -3,7 +3,7 @@ local m=22348392
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),3)
+	aux.AddLinkProcedure(c,nil,2)
 	c:EnableReviveLimit()
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -117,7 +117,7 @@ function c22348392.remop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348392.atkval(e,c)
-	return e:GetHandler():GetMaterialCount()*1000
+	return e:GetHandler():GetMaterialCount()*1200
 end
 function c22348392.gecon1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(22348392)>0

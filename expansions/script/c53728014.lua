@@ -29,6 +29,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.disop)
 	c:RegisterEffect(e2)
 end
+cm.has_text_type=TYPE_UNION
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(function(c)return c:GetOriginalType()&TYPE_UNION==TYPE_UNION end,1,nil)
 end

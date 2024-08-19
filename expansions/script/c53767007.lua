@@ -17,6 +17,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	SNNM.Whitkins(c,id,ATTRIBUTE_WATER)
 end
+s.fusion_effect=true
 function s.tgfilter(c)
 	return c:IsRace(RACE_INSECT) and c:IsType(TYPE_TUNER) and c:IsAbleToGrave()
 end

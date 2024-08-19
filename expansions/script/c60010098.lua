@@ -78,7 +78,7 @@ function c60010098.spop(e,tp,eg,ep,ev,re,r,rp)
 		if sg then
 			local tc=sg:GetFirst()
 			while tc do
-				if tc:IsSetCard(0x632) and tc:IsType(TYPE_RITUAL+TYPE_MONSTER) then
+				if tc:IsSetCard(0x634) and tc:IsType(TYPE_RITUAL+TYPE_MONSTER) then
 					Duel.SpecialSummonStep(tc,SUMMON_TYPE_RITUAL,tp,tp,false,false,POS_FACEUP)
 				else
 					Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
@@ -110,8 +110,8 @@ function c60010098.cfmop(e,tp,eg,ep,ev,re,r,rp)
 		if g:IsExists(Card.IsType,1,nil,TYPE_TRAP) then
 			e:GetHandler():RegisterFlagEffect(60010097,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60010095,4))
 		end
-		if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_ONFIELD,0,1,c,0x632) then
-			local gg=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_ONFIELD,0,1,1,c,0x632):GetFirst()
+		if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_ONFIELD,0,1,c,0x634) then
+			local gg=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_ONFIELD,0,1,1,c,0x634):GetFirst()
 			if g:IsExists(Card.IsType,1,nil,TYPE_MONSTER) then
 				gg:RegisterFlagEffect(60010095,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60010095,2))
 			end
@@ -126,10 +126,10 @@ function c60010098.cfmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ShuffleDeck(tp)
 end
 function c60010098.thfilter(c)
-	return c:IsSetCard(0x632) and c:IsAbleToHand() and bit.band(c:GetType(),TYPE_RITUAL+TYPE_MONSTER)==TYPE_RITUAL+TYPE_MONSTER and not c:IsCode(60010098)
+	return c:IsSetCard(0x634) and c:IsAbleToHand() and bit.band(c:GetType(),TYPE_RITUAL+TYPE_MONSTER)==TYPE_RITUAL+TYPE_MONSTER and not c:IsCode(60010098)
 end
 function c60010098.setfilter(c)
-	return c:IsSetCard(0x632) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0x634) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function c60010098.thfilter1(c)
 	return c:IsAbleToHand() and c:IsFaceupEx()

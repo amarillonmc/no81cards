@@ -25,17 +25,6 @@ function s.initial_effect(c)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
 	Duel.AddCustomActivityCounter(id,ACTIVITY_SPSUMMON,s.counterfilter)
-	if not s.global_check then
-		s.global_check=true
-		local sg=Group.CreateGroup()
-		sg:KeepAlive()
-		local ge0=Effect.GlobalEffect()
-		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge0:SetCode(EVENT_ADJUST)
-		ge0:SetLabelObject(sg)
-		ge0:SetOperation(s.geop)
-		Duel.RegisterEffect(ge0,0)
-	end
 end
 function s.counterfilter(c)
 	return not c:IsSummonLocation(LOCATION_EXTRA) or c:IsType(TYPE_FUSION)
@@ -93,7 +82,7 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.filter(c)
-	return c:GetType()&0x20002==0x20002 and c:GetFlagEffect(id)>0 and c:IsSSetable()
+	return c:GetType()&0x20002==0x20002 and c.fusion_effect and c:IsSSetable()
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
@@ -119,23 +108,4 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE) end
-end
-function s.geop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=e:GetLabelObject()
-	local g=Duel.GetMatchingGroup(nil,0,0xff,0xff,sg)
-	if #g==0 then return end
-	sg:Merge(g)
-	local cp={}
-	local f=Card.RegisterEffect
-	Card.RegisterEffect=function(tc,te,bool)
-		local pro1,pro2=te:GetProperty()
-		if te:GetCategory()&CATEGORY_FUSION_SUMMON~=0 and pro1&EFFECT_FLAG_UNCOPYABLE==0 then table.insert(cp,te:Clone()) end
-		return f(tc,te,bool)
-	end
-	for tc in aux.Next(g) do
-		Duel.CreateToken(tp,tc:GetOriginalCode())
-		if #cp>0 then tc:RegisterFlagEffect(id,0,0,0) end
-		cp={}
-	end
-	Card.RegisterEffect=f
 end

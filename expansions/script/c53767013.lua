@@ -42,6 +42,7 @@ function s.initial_effect(c)
 	e4:SetOperation(s.fsop)
 	c:RegisterEffect(e4)
 end
+s.fusion_effect=true
 function s.cfilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_INSECT) and c:IsType(TYPE_FUSION)
 end

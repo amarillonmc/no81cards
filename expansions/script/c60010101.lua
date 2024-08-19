@@ -40,7 +40,7 @@ function c60010101.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Card.GetFlagEffect(c,60010095)~=0 and Card.GetFlagEffect(c,60010096)~=0 and Card.GetFlagEffect(c,60010097)~=0
 end
 function c60010101.thfilter(c)
-	return c:IsSetCard(0x632) and c:IsAbleToHand() 
+	return c:IsSetCard(0x634) and c:IsAbleToHand() 
 end
 function c60010101.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -17,6 +17,7 @@ function s.initial_effect(c)
 	e2:SetOperation(s.operation)
 	c:RegisterEffect(e2)
 end
+s.fusion_effect=true
 function s.chcon(e,tp,eg,ep,ev,re,r,rp)
 	s[0]=false
 	local rc=re:GetHandler()

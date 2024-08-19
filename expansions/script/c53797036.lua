@@ -38,6 +38,7 @@ function s.initial_effect(c)
 		s[0]={}
 	end
 end
+s.fusion_effect=true
 function s.clearop(e,tp,eg,ep,ev,re,r,rp)
 	s[0]={}
 end

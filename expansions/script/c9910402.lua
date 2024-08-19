@@ -25,6 +25,7 @@ function c9910402.initial_effect(c)
 	e3:SetOperation(c9910402.spop)
 	c:RegisterEffect(e3)
 end
+c9910402.fusion_effect=true
 function c9910402.etlimit(e,c)
 	return c~=e:GetHandler()
 end

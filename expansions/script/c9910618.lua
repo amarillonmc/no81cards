@@ -20,6 +20,7 @@ function c9910618.initial_effect(c)
 	e2:SetOperation(c9910618.thop)
 	c:RegisterEffect(e2)
 end
+c9910618.fusion_effect=true
 function c9910618.filter0(c)
 	return c:IsFaceup() and c:IsCanBeFusionMaterial() and c:IsCanTurnSet()
 end

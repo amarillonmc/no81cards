@@ -28,14 +28,14 @@ function c60010102.initial_effect(c)
 	c:RegisterEffect(e2)   
 end
 function c60010102.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x632) and c:IsType(TYPE_RITUAL)
+	return c:IsFaceup() and c:IsSetCard(0x634) and c:IsType(TYPE_RITUAL)
 end
 function c60010102.handcon(e)
 	return Duel.IsExistingMatchingCard(c60010102.cfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
 --
 function c60010102.cfmfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x632)
+	return c:IsFaceup() and c:IsSetCard(0x634)
 end
 function c60010102.cfmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

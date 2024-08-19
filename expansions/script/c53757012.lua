@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
 end
+cm.fusion_effect=true
 function cm.filter1(c,tp)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,0,nil)
 	for tc in aux.Next(g) do if aux.IsCodeListed(c,tc:GetCode()) then return true end end

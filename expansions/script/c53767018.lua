@@ -33,6 +33,7 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(ge0,0)
 	end
 end
+s.fusion_effect=true
 function s.matfilter(c,fc)
 	return c:IsRace(RACE_INSECT) and c:IsFusionType(TYPE_FUSION)
 end
