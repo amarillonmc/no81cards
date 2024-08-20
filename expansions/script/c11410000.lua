@@ -117,15 +117,14 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
-	if #g<36 then e:Reset() return end
-	if c:IsLocation(LOCATION_DECK) then
+	if c:IsLocation(LOCATION_DECK) and #g>=36 then
 		Duel.DisableShuffleCheck()
 		if KOISHI_CHECK then
 			Duel.Exile(c,0)
 		else
 			Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
 		end
-	elseif c:IsLocation(LOCATION_HAND) then
+	elseif c:IsLocation(LOCATION_HAND) and #g>=36 then
 		if not cm.r then
 			cm.r=Duel.GetFieldGroup(0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_EXTRA):GetSum(Card.GetCode)
 		end
@@ -149,6 +148,12 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if KOISHI_CHECK then
 		Duel.ResetTimeLimit(0,360)
 		Duel.ResetTimeLimit(1,360)
+		local e0=Effect.CreateEffect(c) 
+		e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e0:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+		e0:SetCountLimit(1)
+		e0:SetOperation(function() Duel.ResetTimeLimit(0,360) Duel.ResetTimeLimit(1,360) end)
+		Duel.RegisterEffect(e0,0)
 	end
 	local ag=Duel.GetMatchingGroup(cm.nnfilter,0,0xff,0xff,nil)
 	local _TGetID=GetID

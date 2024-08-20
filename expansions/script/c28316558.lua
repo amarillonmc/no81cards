@@ -34,7 +34,7 @@ function c28316558.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-	if Duel.GetLP(tp)>=3000 then
+	if Duel.GetLP(tp)>3000 then
 		Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,2000)
 	end
 end
@@ -51,7 +51,7 @@ function c28316558.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ShuffleHand(tp)
 		Duel.Damage(1-tp,500,REASON_EFFECT)
 	end
-	if Duel.GetLP(tp)>=3000 then
+	if Duel.GetLP(tp)>3000 then
 		Duel.Damage(tp,2000,REASON_EFFECT)
 	end
 end

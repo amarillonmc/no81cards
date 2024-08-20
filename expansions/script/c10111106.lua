@@ -18,7 +18,7 @@ function c10111106.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,10111106)
+	e2:SetCountLimit(1)
 	e2:SetCondition(c10111106.rmcon)
 	e2:SetTarget(c10111106.rmtg)
 	e2:SetOperation(c10111106.rmop)
@@ -105,7 +105,7 @@ function c10111106.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c10111106.atkval(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsType,e:GetHandlerPlayer(),LOCATION_GRAVE,0,nil,TYPE_MONSTER)*400
+	return Duel.GetMatchingGroupCount(Card.IsType,e:GetHandlerPlayer(),LOCATION_GRAVE,0,nil,TYPE_MONSTER)*200
 end
 function c10111106.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_DESTROY)~=0 and e:GetHandler():IsPreviousControler(tp)

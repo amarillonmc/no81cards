@@ -40,14 +40,14 @@ if not cm.cnum then
 	cm.cnum=0
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	--Debug.Message(cm.cnum)
 	local c=e:GetHandler()
 	local i=c:GetControler()
-	--Debug.Message(Duel.GetCounter(i,LOCATION_ONFIELD,0,0x629)-c:GetCounter(0x629))
-	local nnum=Duel.GetCounter(i,LOCATION_ONFIELD,0,0x629)-c:GetCounter(0x629)
+	local cd=Duel.GetMatchingGroup(Card.IsCode,i,LOCATION_ONFIELD,0,nil,m):GetFirst()
+	if cd==nil then return end
+	local nnum=Duel.GetCounter(i,LOCATION_ONFIELD,0,0x629)-cd:GetCounter(0x629)
 	if cm.cnum~=nnum then
 		cm.cnum=nnum
-		Duel.RaiseEvent(c,EVENT_CUSTOM+m,nil,0,i,i,0)
+		Duel.RaiseEvent(cd,EVENT_CUSTOM+m,nil,0,i,i,0)
 	end
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
