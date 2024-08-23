@@ -106,7 +106,6 @@ function s.atkval(e,c)
 end
 function s.wincon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Debug.Message(c:GetOriginalLevel())
 	return c:GetOriginalLevel()==7
 end
 function s.winop(e,tp,eg,ep,ev,re,r,rp)
@@ -136,8 +135,9 @@ function s.lvop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		for p=0,1 do
 			if g:IsExists(s.cfilter,1,nil,p) then
-				Duel.ConfirmCards(p,Duel.GetFieldGroup(p,LOCATION_EXTRA,0))
-			end
+				Duel.ShuffleExtra(p)
+				--Duel.ConfirmCards(p,Duel.GetFieldGroup(p,LOCATION_EXTRA,0))
+			end			 
 		end
 	end
 end

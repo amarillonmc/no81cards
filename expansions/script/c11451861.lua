@@ -163,6 +163,8 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		e1:SetTarget(cm.thtg2)
 		e1:SetOperation(cm.thop)
 		e1:SetReset(RESET_CHAIN)
+		e1:SetLabel(tp)
+		--Duel.RegisterEffect(e1,re:GetHandlerPlayer())
 		re:GetHandler():RegisterEffect(e1,true)
 	end
 end
@@ -184,7 +186,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		ge2:SetRange(0x1c)
 		ge2:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_SET_AVAILABLE)
 		ge2:SetValue(cm.chkval)
-		ge2:SetOwnerPlayer(tp)
+		ge2:SetOwnerPlayer(e:GetLabel())
 		ge2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		tc:RegisterEffect(ge2,true)
 	end
@@ -218,7 +220,7 @@ function cm.chkval(e,te)
 			if SetCardData then
 				Duel.Hint(24,0,aux.Stringid(m,4))
 			else
-				Debug.Message("「拦截」任务失败。")
+				Debug.Message("「拦截」任务被对方完成！")
 			end
 		end
 	end
