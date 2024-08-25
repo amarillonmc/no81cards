@@ -101,11 +101,18 @@ function s.initial_effect(c)
 end
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
+local IO_CHECK=false
+if io then IO_CHECK=true end
 function s.cfilter(c)
 	return c:GetOriginalCode()==id
 end
 function s.startop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.cfilter,0,0xff,0xff,nil)
+	local g=Duel.GetFieldGroup(0,0x7f,0x7f)
+	local xg=Duel.GetFieldGroup(0,0x4d,0x4d)
+	for xc in aux.Next(xg) do
+		g:Merge(xc:GetOverlayGroup())
+	end
+	g=g:Filter(s.cfilter,nil)
 	for tc in aux.Next(g) do
 		local e1=Effect.CreateEffect(tc)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -154,7 +161,13 @@ function s.cfilter2(c)
 	return c:IsType(TYPE_MONSTER) and c:GetOriginalCode()~=id
 end
 function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.cfilter2,tp,0xff,0xff,nil)
+	local g=Duel.GetFieldGroup(0,0x7f,0x7f)
+	local xg=Duel.GetFieldGroup(0,0x4d,0x4d)
+	for xc in aux.Next(xg) do
+		g:Merge(xc:GetOverlayGroup())
+	end
+	g=g:Filter(s.cfilter2,nil)
+
 	for tc in aux.Next(g) do
 		local bool1=tc:IsHasEffect(EFFECT_CANNOT_SPECIAL_SUMMON)
 		local bool2=tc:IsHasEffect(EFFECT_SPSUMMON_COST)
@@ -169,7 +182,6 @@ function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			for _,te2 in pairs(re2) do
 				if te2:GetType()==EFFECT_TYPE_SINGLE then
 					local con=te2:GetCondition()
-					local cost=te2:GetCost()
 					if not con then con=aux.TRUE end
 					te2:SetCondition(s.chcon(con))
 				end
@@ -185,7 +197,6 @@ function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	
 	local bool3=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_SPECIAL_SUMMON)
 	local bool4=Duel.IsPlayerAffectedByEffect(tp,EFFECT_LIMIT_SPECIAL_SUMMON_POSITION)
 	local bool5=Duel.IsPlayerAffectedByEffect(tp,EFFECT_SPSUMMON_COUNT_LIMIT)
@@ -207,7 +218,7 @@ function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			te4:SetTarget(s.chtg2(tg))
 		end
 	end
-	for _,te5 in pairs(re5) do	  
+	for _,te5 in pairs(re5) do
 		local val=te5:GetValue()
 		if val~=-1 then
 			local e1=Effect.GlobalEffect()
@@ -266,7 +277,7 @@ function s.menuop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	while page~=0 do
 		if page==1 then
 			local desc=s.Cheating_Mode and 4 or 3
-			ot=s.SelectOption(tp,aux.Stringid(id,0),aux.Stringid(id,1),aux.Stringid(id,2),aux.Stringid(id,desc),aux.Stringid(id,5))
+			ot=s.SelectOption(tp,aux.Stringid(id,0),aux.Stringid(id,1),aux.Stringid(id,2),aux.Stringid(id,desc),1345)
 			if ot==0 then
 				s.movecard(e,tp)
 				page=0
@@ -274,18 +285,18 @@ function s.menuop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 				s.printcard(e,tp)
 				page=0
 			elseif ot==2 then
-				s.setcard(tp)
+				s.setcard(e,tp)
 				page=0
 			elseif ot==3 then
-				s.cheatmode(e:GetHandler())
+				s.cheatmode(e)
 				page=0
 			elseif ot==4 then
 				page=page+1
 			end
 		elseif page==2 then
-			local desc1=s.Hint_Mode and 14 or 13
-			local desc2=s.Control_Mode and 4 or 3
-			ot=s.SelectOption(tp,aux.Stringid(id,6),aux.Stringid(id,desc1),aux.Stringid(id,15),aux.Stringid(id+1,desc2),aux.Stringid(id,5))
+			local desc1=s.Hint_Mode and 6 or 5
+			local desc2=s.Control_Mode and 9 or 8
+			ot=s.SelectOption(tp,1360,aux.Stringid(id,desc1),aux.Stringid(id,7),aux.Stringid(id,desc2),1345)
 			if ot==0 then
 				page=page-1
 			elseif ot==1 then
@@ -301,10 +312,10 @@ function s.menuop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 				page=page+1
 			end
 		elseif page==3 then
-			local desc1=s.Wild_Mode and 6 or 5
-			local desc2=s.Random_Mode and 8 or 7
+			local desc1=s.Wild_Mode and 11 or 10
+			local desc2=s.Random_Mode and 13 or 12
 			local desc3=s.Theworld_Mode and 10 or 9
-			ot=s.SelectOption(tp,aux.Stringid(id,6),aux.Stringid(id+1,desc1),aux.Stringid(id+1,desc2),1212)
+			ot=s.SelectOption(tp,1360,aux.Stringid(id,desc1),aux.Stringid(id,desc2),aux.Stringid(id,14),1212)
 			if ot==0 then
 				page=page-1
 			elseif ot==1 then
@@ -313,10 +324,10 @@ function s.menuop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 			elseif ot==2 then
 				s.randomop(tp)
 				page=0
-			--elseif ot==3 then
-			--  s.theworldop()
-			--  page=0
 			elseif ot==3 then
+				s.toolop(tp)
+				page=0
+			elseif ot==4 then
 				page=0
 			end
 		end
@@ -340,13 +351,13 @@ function s.movecard(e,tp)
 		Duel.RegisterEffect(e1,tp)
 		Duel.RaiseEvent(c,EVENT_CUSTOM+id,e,0,tp,tp,0)
 	elseif ot==1 then
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0xfd,0,1,99,c)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0x7d,0,1,99,c)
 		Duel.SendtoHand(g,tp,REASON_RULE)
 	elseif ot==2 then
-		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0xef,0,1,99,c)
+		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0x6f,0,1,99,c)
 		Duel.SendtoGrave(g,REASON_RULE)
 	elseif ot==3 then
-		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0xdf,0,1,99,c)
+		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0x5f,0,1,99,c)
 		local pos=Duel.SelectPosition(tp,g:GetFirst(),0x3)
 		if pos==POS_FACEUP_ATTACK then
 			Duel.Remove(g,POS_FACEUP,REASON_RULE)
@@ -354,13 +365,13 @@ function s.movecard(e,tp)
 			Duel.Remove(g,POS_FACEDOWN,REASON_RULE)
 		end
 	elseif ot==4 then
-		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0xbe,0,1,99,c)
+		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0x3e,0,1,99,c)
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_RULE)
 	end
 end
 function s.movespop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsType,tp,0xf3,0,c,TYPE_MONSTER)
+	local g=Duel.GetMatchingGroup(Card.IsType,tp,0x73,0,c,TYPE_MONSTER)
 	local sg=g:Select(tp,0,99,nil)
 	if #sg==0 then
 		sg=s.RandomSelect(g,tp,math.min(3,#g))
@@ -387,10 +398,10 @@ function s.movespop(e,tp,eg,ep,ev,re,r,rp)
 		if tc:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,tc)==0 or not tc:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then
 			Debug.Message("剩余空位不足！")
 		elseif not tc:IsCanBeSpecialSummoned(e,0,tp,true,true) then
-			Debug.Message("特召被限制，可尝试使用作弊模式s")
+			Debug.Message("特召被限制 请开启限制解除模式")
 		else
 			local bool=false
-			if not tc:IsCanBeSpecialSummoned(e,sumtype,tp,false,false) and Duel.SelectEffectYesNo(tp,tc,aux.Stringid(id,10)) then bool=true end
+			if not tc:IsCanBeSpecialSummoned(e,sumtype,tp,false,false) and Duel.SelectEffectYesNo(tp,tc,aux.Stringid(id+1,0)) then bool=true end
 			if not Duel.SpecialSummonStep(tc,sumtype,tp,tp,bool,bool,POS_FACEUP+POS_FACEDOWN_DEFENSE) then
 				Debug.Message("特殊召唤失败了！") 
 			else
@@ -410,74 +421,124 @@ function s.movespop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 	e:Reset()
 end
-function s.printcard(e,tp)
-	local c=e:GetHandler()
-	local ac=s.AnnounceCard(tp)
-	local tc=Duel.CreateToken(tp,ac)
-	Duel.SendtoHand(tc,nil,REASON_RULE)
-	if s.Cheating_Mode then
-		if tc:GetFlagEffect(id+10)==0 then
-			local e1=Effect.CreateEffect(tc)
-			e1:SetType(EFFECT_TYPE_FIELD)
-			e1:SetDescription(aux.Stringid(id,11))
-			e1:SetCode(EFFECT_SPSUMMON_PROC_G)
-			e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-			e1:SetValue(SUMMON_VALUE_SELF) 
-			e1:SetRange(0xd3)
-			e1:SetCondition(s.spcon)
-			e1:SetOperation(s.spop)				
-			local e2=Effect.CreateEffect(tc)
-			e2:SetType(EFFECT_TYPE_IGNITION+EFFECT_TYPE_CONTINUOUS)
-			e2:SetDescription(aux.Stringid(id,11))
-			e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
-			e2:SetRange(LOCATION_REMOVED)
-			e2:SetCondition(s.spcon)
-			e2:SetOperation(s.spop)
-			e1:SetLabelObject(e2)
-			e2:SetLabelObject(e1)
-			tc:RegisterEffect(e1,true)
-			tc:RegisterEffect(e2,true)
-			tc:RegisterFlagEffect(id+10,0,0,0)
-		end
-	end
-	if s.Control_Mode then
-		local cm=_G["c"..tc:GetOriginalCode()]
-		if not cm.Is_Add_Effect_Id then
-			local inie=cm.initial_effect
-			local function addinit(c)
-				cm.Is_Add_Effect_Id=true
-				local _CReg=Card.RegisterEffect
-				Card.RegisterEffect=function(card,effect,...)
-					if effect and s.Control_Mode then   
-						if effect:GetType()&EFFECT_TYPE_GRANT~=0 then
-							local labeff=s.change_effect(effect:GetLabelObject())
-							if labeff~=0 then
-								local eff=effect:Clone()
-								eff:SetLabelObject(labeff)
-								_CReg(card,eff,...)
-							end
-						else
-							local eff=s.change_effect(effect,c)
-							if eff~=0 then
-								_CReg(card,eff,...)
-							end
-						end 
-					end
-					return _CReg(card,effect,...)   
-				end
-				if inie then inie(c) end
-				Card.RegisterEffect=_CReg
-			end
-			cm.initial_effect=addinit
-		end
-		local ini=s.initial_effect
-		s.initial_effect=function() end
-		tc:ReplaceEffect(id,0)
-		s.initial_effect=ini
-		tc.initial_effect(tc)
+function s.get_os_type()
+	-- Detect the operating system
+	local os_name = package.config:sub(1, 1)
+	if os_name == "\\" then
+		-- Windows: `package.config` starts with `\`
+		return "Windows"
+	else
+		-- Unix-like: `package.config` starts with `/`
+		return "Unix"
 	end
 end
-function s.setcard(tp)
+function s.get_lua_numbers(directory)
+	local file_numbers = {}
+	local os_type = s.get_os_type()
+	local command   
+	if os_type == "Windows" then
+		command = 'dir "' .. directory .. '" /b'
+	else
+		command = 'ls "' .. directory .. '"'
+	end
+	local p = io.popen(command)
+	for file_name in p:lines() do
+		local number = file_name:match("^c(%d+)%.lua$")
+		if number then
+			table.insert(file_numbers, tonumber(number))
+		end
+	end
+	p:close()
+	return file_numbers
+end
+function s.printcard(e,tp)
+	local c=e:GetHandler()
+	local codetable={}
+	local ac=s.AnnounceCard(tp)
+	table.insert(codetable,ac)
+	if KOISHI_CHECK and IO_CHECK then
+		local luatable=s.get_lua_numbers("script")
+		for _,i in ipairs(luatable) do		  
+			if ac==Duel.ReadCard(i,2) and ac~=i then
+				table.insert(codetable,tonumber(i))
+			end
+		end
+		local luatable2=s.get_lua_numbers("expansions/script")
+		for _,i in ipairs(luatable2) do		 
+			if ac==Duel.ReadCard(i,2) and ac~=i then
+				table.insert(codetable,tonumber(i))
+			end
+		end
+	end
+	for _,code in ipairs(codetable) do
+		local tc=Duel.CreateToken(tp,code)
+		Duel.SendtoHand(tc,nil,REASON_RULE)
+		if s.Cheating_Mode then
+			if tc:GetFlagEffect(id+10)==0 then
+				local e1=Effect.CreateEffect(tc)
+				e1:SetType(EFFECT_TYPE_FIELD)
+				e1:SetDescription(aux.Stringid(id+1,3))
+				e1:SetCode(EFFECT_SPSUMMON_PROC_G)
+				e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+				e1:SetValue(SUMMON_VALUE_SELF) 
+				e1:SetRange(0x53)
+				e1:SetCondition(s.spcon)
+				e1:SetOperation(s.spop) 
+				local e2=Effect.CreateEffect(tc)
+				e2:SetType(EFFECT_TYPE_IGNITION+EFFECT_TYPE_CONTINUOUS)
+				e2:SetDescription(aux.Stringid(id+1,3))
+				e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+				e2:SetRange(LOCATION_REMOVED)
+				e2:SetCondition(s.spcon)
+				e2:SetOperation(s.spop)
+				e1:SetLabelObject(e2)
+				e2:SetLabelObject(e1)
+				tc:RegisterEffect(e1,true)
+				tc:RegisterEffect(e2,true)
+				tc:RegisterFlagEffect(id+10,0,0,0)
+			end
+		end
+		if s.Control_Mode then
+			local cm=_G["c"..tc:GetOriginalCode()]
+			if not cm.Is_Add_Effect_Id then
+				local inie=cm.initial_effect
+				local function addinit(c)
+					cm.Is_Add_Effect_Id=true
+					local _CReg=Card.RegisterEffect
+					Card.RegisterEffect=function(card,effect,...)
+						if effect and s.Control_Mode then   
+							if effect:GetType()&EFFECT_TYPE_GRANT~=0 then
+								local labeff=s.change_effect(effect:GetLabelObject())
+								if labeff~=0 then
+									local eff=effect:Clone()
+									eff:SetLabelObject(labeff)
+									_CReg(card,eff,...)
+								end
+							else
+								local eff=s.change_effect(effect,c)
+								if eff~=0 then
+									_CReg(card,eff,...)
+								end
+							end 
+						end
+						return _CReg(card,effect,...)   
+					end
+					if inie then inie(c) end
+					Card.RegisterEffect=_CReg
+				end
+				cm.initial_effect=addinit
+			end
+			local ini=s.initial_effect
+			s.initial_effect=function() end
+			tc:ReplaceEffect(id,0)
+			s.initial_effect=ini
+			tc.initial_effect(tc)
+		end
+	end
+	Duel.ShuffleHand(tp)
+end
+function s.setcard(e,tp)
+	local c=e:GetHandler()
 	local mg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_HAND,0,nil)
 	local ex=0
 	local mzonet={0x01,0x02,0x04,0x08,0x10,0x20,0x40}
@@ -508,7 +569,7 @@ function s.setcard(tp)
 		else
 			p=1-tp
 		end
-		local mc=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_EXTRA,0,1,1,nil):GetFirst()
+		local mc=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_EXTRA,0,1,1,c):GetFirst()
 		local pos=POS_FACEUP_ATTACK
 		if not mc:IsType(TYPE_LINK) then pos=Duel.SelectPosition(tp,mc,0xd) end
 		Duel.MoveToField(mc,tp,p,LOCATION_MZONE,pos,true,flag)
@@ -526,7 +587,7 @@ function s.setcard(tp)
 			p=1-tp
 		end
 		if flag==0x100 or flag==0x1000 then
-			mg:Merge(Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_EXTRA,0,nil,TYPE_PENDULUM))
+			mg:Merge(Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_EXTRA,0,c,TYPE_PENDULUM))
 		end
 		if flag==0x2000 then 
 			mg=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND,0,nil,TYPE_FIELD)
@@ -554,13 +615,14 @@ function s.setcard(tp)
 		end  
 	end
 end
-function s.cheatmode(c)
+function s.cheatmode(e)
+	local c=e:GetHandler()
 	s.Cheating_Mode=not s.Cheating_Mode
 	if s.Cheating_Mode then
 		Debug.Message("规则限制已解除")
 		local ge1=Effect.GlobalEffect()
 		ge1:SetType(EFFECT_TYPE_FIELD)
-		ge1:SetDescription(aux.Stringid(id,12))
+		ge1:SetDescription(aux.Stringid(id+1,4))
 		ge1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 		ge1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		ge1:SetTargetRange(LOCATION_SZONE,LOCATION_SZONE)
@@ -586,8 +648,12 @@ function s.cheatmode(c)
 		local ge6=ge5:Clone()
 		ge6:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
 		Duel.RegisterEffect(ge6,0)
+
 		local ge7=ge5:Clone()
+		ge7:SetDescription(1163)
 		ge7:SetCode(EFFECT_EXTRA_PENDULUM_SUMMON)
+		ge7:SetValue(aux.TRUE)
+		ge7:SetCountLimit(100)
 		Duel.RegisterEffect(ge7,0)
 
 		local ge8=Effect.GlobalEffect()
@@ -605,21 +671,26 @@ function s.cheatmode(c)
 			kge:SetValue(100)
 			Duel.RegisterEffect(kge,0)
 		end
-		local sg=Duel.GetMatchingGroup(s.addfilter,0,0xff,0xff,c)
-		for tc in aux.Next(sg) do
+		local g=Duel.GetFieldGroup(0,0x7f,0x7f)
+		local xg=Duel.GetFieldGroup(0,0x4d,0x4d)
+		for xc in aux.Next(xg) do
+			g:Merge(xc:GetOverlayGroup())
+		end
+		g=g:Filter(s.addfilter,nil)
+		for tc in aux.Next(g) do
 			if tc:GetFlagEffect(id+10)==0 then
 				local e1=Effect.CreateEffect(tc)
 				e1:SetType(EFFECT_TYPE_FIELD)
-				e1:SetDescription(aux.Stringid(id,11))
+				e1:SetDescription(aux.Stringid(id+1,3))
 				e1:SetCode(EFFECT_SPSUMMON_PROC_G)
 				e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 				e1:SetValue(SUMMON_VALUE_SELF) 
-				e1:SetRange(0xd3)
+				e1:SetRange(0x53)
 				e1:SetCondition(s.spcon)
-				e1:SetOperation(s.spop)				
+				e1:SetOperation(s.spop) 
 				local e2=Effect.CreateEffect(tc)
 				e2:SetType(EFFECT_TYPE_IGNITION+EFFECT_TYPE_CONTINUOUS)
-				e2:SetDescription(aux.Stringid(id,11))
+				e2:SetDescription(aux.Stringid(id+1,3))
 				e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
 				e2:SetRange(LOCATION_REMOVED)
 				e2:SetCondition(s.spcon)
@@ -670,7 +741,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetDescription(aux.Stringid(id+1,11))
+	e1:SetDescription(aux.Stringid(id+1,3))
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetValue(sumtype)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
@@ -714,16 +785,16 @@ function s.rulespop(e)
 	if c:GetFlagEffect(id+10)==0 then 
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetDescription(aux.Stringid(id,11))
+		e1:SetDescription(aux.Stringid(id+1,3))
 		e1:SetCode(EFFECT_SPSUMMON_PROC_G)
 		e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 		e1:SetValue(SUMMON_VALUE_SELF) 
 		e1:SetRange(0xd3)
 		e1:SetCondition(s.spcon)
-		e1:SetOperation(s.spop)				
+		e1:SetOperation(s.spop) 
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_IGNITION+EFFECT_TYPE_CONTINUOUS)
-		e2:SetDescription(aux.Stringid(id,11))
+		e2:SetDescription(aux.Stringid(id+1,3))
 		e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
 		e2:SetRange(LOCATION_REMOVED)
 		e2:SetCondition(s.spcon)
@@ -738,8 +809,11 @@ end
 function s.spxyzop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local og=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0xff,0,0,99,c)
+	local og=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0x7f,0,0,99,c)
 	for tc in aux.Next(og) do
+		if tc:GetOverlayCount()>0 then
+			Duel.SendtoGrave(tc:GetOverlayGroup(),REASON_RULE)
+		end
 		Duel.DisableShuffleCheck()
 		Duel.Overlay(c,tc)
 	end
@@ -799,15 +873,17 @@ function s.saveop(e,tp,eg,ep,ev,re,r,rp)
 	Debug.Message("第"..turn.."回合 自动存档完成")
 end
 function s.loadmenu(tp)
-	local ot=s.SelectOption(tp,aux.Stringid(id,7),aux.Stringid(id,8),aux.Stringid(id,9),1212)
+	local decs=6
+	if s.manualdata.turn==0 then decs=7 end
+	local ot=s.SelectOption(tp,aux.Stringid(id+1,8),aux.Stringid(id+1,5),aux.Stringid(id+1,decs),1212)
 	if ot==0 then
+		s.loadcard(s.autodata)
+	elseif ot==1 then   
 		s.manualdata=s.save()
 		local turn=s.manualdata.turn
 		Debug.Message("第"..turn.."回合 手动存档完成")
-	elseif ot==1 then   
-		s.loadcard(s.manualdata)
 	elseif ot==2 then
-		s.loadcard(s.autodata)
+		s.loadcard(s.manualdata)
 	elseif ot==3 then
 		return
 	end
@@ -869,7 +945,7 @@ end
 function s.loadcard(data)
 	Debug.Message("正在读档")
 	Duel.Hint(HINT_CARD,0,id)
-	local cg=Duel.GetFieldGroup(0,0xff,0xff)
+	local cg=Duel.GetFieldGroup(0,0x4d,0x4d)
 	for tc in aux.Next(cg) do
 		local og=tc:GetOverlayGroup()
 		if #og>0 then Duel.SendtoDeck(og,nil,SEQ_DECKSHUFFLE,REASON_RULE) end
@@ -996,7 +1072,11 @@ function s.mindcontrol(e,tp)
 		Duel.RegisterEffect(ge3,tp)
 		s.controltable={ge0,ge1,ge2,ge3}
 		if not KOISHI_CHECK then return end
-		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0xff,0xff,nil)
+		local g=Duel.GetFieldGroup(0,0x7f,0x7f)
+		local xg=Duel.GetFieldGroup(0,0x4d,0x4d)
+		for xc in aux.Next(xg) do
+			g:Merge(xc:GetOverlayGroup())
+		end
 		for tc in aux.Next(g) do
 			local cm=_G["c"..tc:GetOriginalCode()]
 			if not cm.Is_Add_Effect_Id then
@@ -1304,7 +1384,7 @@ function s.addeffcost(effect)
 				if cost then cost(e,tep,eg,ep,ev,re,r,rp,chk,...) end
 			end
 		else
-			if chk==0 then		   
+			if chk==0 then   
 				return (not cost or cost(e,tep,eg,ep,ev,re,r,rp,chk,...))
 			else
 				if cost then cost(e,tep,eg,ep,ev,re,r,rp,chk,...) end
@@ -1325,7 +1405,7 @@ function s.addefftg(effect)
 		local tg=effect:GetTarget()
 		local c=e:GetHandler()
 		local tep=c:GetControler()
-		if chk==0 then		   
+		if chk==0 then   
 			return (not tg or tg(e,tep,eg,ep,ev,re,r,rp,chk,...))
 		else
 			if tg then tg(e,tep,eg,ep,ev,re,r,rp,chk,...) end
@@ -1372,10 +1452,14 @@ function s.change_effect(effect,c,mp)
 	end
 end
 function s.wildop()
-	local g=Duel.GetFieldGroup(0,0xff,0xff)
-	for tc in aux.Next(g) do
-		local og=tc:GetOverlayGroup()
-		if #og>0 then g:Merge(og) end
+	if not KOISHI_CHECK then
+		Debug.Message("该功能需要koishi函数！")
+		return
+	end
+	local g=Duel.GetFieldGroup(0,0x7f,0x7f)
+	local xg=Duel.GetFieldGroup(0,0x4d,0x4d)
+	for xc in aux.Next(xg) do
+		g:Merge(xc:GetOverlayGroup())
 	end
 	s.Wild_Mode=not s.Wild_Mode
 	if s.Wild_Mode then
@@ -1442,12 +1526,70 @@ function s.randomop(tp)
 		Duel.TossDice=s.TossDice
 	end
 end
-function s.theworldop()
-	s.Theworld_Mode=not s.Theworld_Mode
-	if s.Theworld_Mode then
-		Debug.Message("时间静止 开")
-	else
-		Debug.Message("时间静止 关")
-		Duel.AdjustAll()
+function s.toolop(tp)
+	local op=s.SelectOption(tp,aux.Stringid(id+1,11),aux.Stringid(id+1,12),aux.Stringid(id+1,13),aux.Stringid(id+1,14),1212)
+	if op==0 then
+		local p=s.SelectOption(tp,aux.Stringid(id+1,1),aux.Stringid(id+1,2))==0 and tp or 1-tp
+		local lp=s.AnnounceNumber(tp,80000,16000,8000,4000,2000,1000,500,100,1)
+		Duel.SetLP(p,lp)
+	elseif op==1 then
+		local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
+		local sg=Group.CreateGroup()
+		for tc in aux.Next(g) do
+			for counter=0x1,0x999 do
+				local loc=tc:GetLocation()
+				if tc:IsLocation(LOCATION_PZONE) then loc=LOCATION_PZONE end
+				if tc:IsCanAddCounter(counter,1,false,loc) then
+					sg:AddCard(tc)
+					counter=0x999
+				end
+			end
+		end
+		if sg:GetCount()==0 then
+			Debug.Message("场上没有可以放置专属指示物的卡片！")
+			return
+		else
+			local ac=s.Select(sg,tp,1,1,nil):GetFirst()
+			for counter=0x1,0x999 do
+				local loc=ac:GetLocation()
+				if ac:IsLocation(LOCATION_PZONE) then loc=LOCATION_PZONE end
+				if ac:IsCanAddCounter(counter,1,false,loc) then
+					local max=0
+					local t={}
+					for i=1,20 do
+						if ac:IsCanAddCounter(counter,i) then
+							max=i
+							i=20
+						end
+					end
+					if max>1 then
+						for i=1,max do
+							t[i]=max-i+1
+						end
+						ac:AddCounter(counter,s.AnnounceNumber(tp,table.unpack(t)))
+					else
+						ac:AddCounter(counter,1)
+					end
+					return
+				end
+			end
+		end
+	elseif op==2 then
+		local p=s.SelectOption(tp,aux.Stringid(id+1,1),aux.Stringid(id+1,2))==0 and tp or 1-tp
+		if p==1-tp then Duel.ConfirmCards(tp,Duel.GetFieldGroup(p,LOCATION_DECK,0)) end
+		local sg=s.SelectMatchingCard(tp,aux.TRUE,p,LOCATION_DECK,0,1,16,nil)
+		for tc in aux.Next(sg) do
+			Duel.MoveSequence(tc,SEQ_DECKTOP)
+		end
+		if sg:GetCount()>1 then Duel.SortDecktop(tp,p,sg:GetCount()) end
+	elseif op==3 then
+		if not KOISHI_CHECK then
+			Debug.Message("该功能需要koishi函数！")
+			return
+		end
+		Duel.ResetTimeLimit(0,999)
+		Duel.ResetTimeLimit(1,999)
+	elseif op==4 then
+		return
 	end
 end
