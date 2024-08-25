@@ -106,47 +106,46 @@ function cm.tnop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1)
 end
 function cm.filter(c,sc)
-	return c:IsFaceup() and c:IsControlerCanBeChanged() and sc:GetLinkedGroup():IsContains(c)
+	return c:IsFaceup() and sc:GetLinkedGroup():IsContains(c) and c:IsAbleToChangeControler()
 end
 function cm.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,0,LOCATION_MZONE,1,nil,c) and c:IsReleasable(REASON_EFFECT) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,0,LOCATION_MZONE,1,nil,c) and c:IsReleasable(REASON_EFFECT) and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>=Duel.GetMatchingGroupCount(cm.filter,tp,0,LOCATION_MZONE,nil,c) end
 	local g=Duel.GetMatchingGroup(cm.filter,tp,0,LOCATION_MZONE,nil,c)
 	Duel.SetOperationInfo(0,CATEGORY_CONTROL,g,#g,0,0)
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.filter,tp,0,LOCATION_MZONE,nil,c)
-	local tc=g:GetFirst()
+	if Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)<Duel.GetMatchingGroupCount(cm.filter,tp,0,LOCATION_MZONE,nil,c) then return end
+	Duel.HintSelection(g)
+	Duel.GetControl(g,tp)
 	local x=0
-	while tc do
-		if tc:IsControlerCanBeChanged() and tc:IsFaceup() and not tc:IsImmuneToEffect(e) then
+	local og=Duel.GetOperatedGroup()
+	for tc in aux.Next(og) do
 			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetCode(EFFECT_DISABLE)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_PHASE+PHASE_END)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e2)
 			local e3=Effect.CreateEffect(c)
 			e3:SetType(EFFECT_TYPE_SINGLE)
 			e3:SetCode(EFFECT_DISABLE_EFFECT)
-			e3:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_PHASE+PHASE_END)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e3)
 			local e4=Effect.CreateEffect(c)
 			e4:SetType(EFFECT_TYPE_SINGLE)
 			e4:SetCode(EFFECT_CANNOT_ATTACK)
-			e4:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_PHASE+PHASE_END)
+			e4:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e4)
 			local e5=Effect.CreateEffect(c)
 			e5:SetType(EFFECT_TYPE_SINGLE)
 			e5:SetCode(EFFECT_CHANGE_CODE)
 			e5:SetValue(15005304)
-			e5:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_PHASE+PHASE_END)
+			e5:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e5)
 			x=1
-		end
-		Duel.GetControl(tc,tp,PHASE_END,1)
-		tc=g:GetNext()
 	end
 	if x==1 and c:IsReleasable(REASON_EFFECT) then
 		Duel.Release(c,REASON_EFFECT)

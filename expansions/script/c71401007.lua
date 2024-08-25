@@ -24,7 +24,7 @@ function c71401007.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_CHAINING)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)
 	e1:SetCountLimit(1,71401007)
 	e1:SetCondition(c71401007.con1)
@@ -85,14 +85,16 @@ function c71401007.op2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,2,nil)
 	if g:GetCount()==0 then return end
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-	Duel.ShuffleDeck(tp)
-	Duel.BreakEffect()
-	if Duel.Draw(tp,g:GetCount(),REASON_EFFECT)>0 then
+	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_REMOVED)
+	if ct>0 and Duel.Draw(tp,ct+1,REASON_EFFECT)>0 then
+		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		local sg=Duel.GetMatchingGroup(c71401007.filter2,tp,LOCATION_HAND,0,nil,e,tp)
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401007,1)) then
+		if ct>ft then ct=ft end
+		if ct>0 and sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401007,1)) then
 			Duel.BreakEffect()
+			if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local tg=sg:Select(tp,1,1,nil)
+			local tg=sg:Select(tp,1,ct,nil)
 			Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end

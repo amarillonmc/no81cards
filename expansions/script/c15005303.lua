@@ -9,6 +9,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(cm.hspcon)
+	e1:SetTarget(cm.hsptg)
 	e1:SetOperation(cm.hspop)
 	e1:SetValue(SUMMON_VALUE_SELF)
 	c:RegisterEffect(e1)
@@ -32,13 +33,22 @@ end
 function cm.hspcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.CheckReleaseGroup(tp,cm.hspfilter,1,nil,tp)
+	return Duel.CheckReleaseGroupEx(tp,cm.hspfilter,1,REASON_SPSUMMON,false,nil,tp)
+end
+function cm.hsptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetReleaseGroup(tp,false,REASON_SPSUMMON):Filter(cm.hspfilter,nil,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
+	if tc then
+		e:SetLabelObject(tc)
+		return true
+	else return false end
 end
 function cm.hspop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.SelectReleaseGroup(tp,cm.hspfilter,1,1,nil,tp)
-	Duel.Release(g,REASON_COST)
-	local code=g:GetFirst():GetOriginalCodeRule()
-	local atk=g:GetFirst():GetBaseAttack()
+	local tc=e:GetLabelObject()
+	Duel.Release(tc,REASON_SPSUMMON)
+	local code=tc:GetOriginalCodeRule()
+	local atk=tc:GetBaseAttack()
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE)
 	e5:SetCode(EFFECT_CHANGE_CODE)

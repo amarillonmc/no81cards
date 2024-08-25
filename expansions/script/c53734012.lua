@@ -34,10 +34,10 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp)
 end
 function cm.thfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3536) and c:IsAbleToHand() and not Duel.IsExistingMatchingCard(cm.bfilter,tp,LOCATION_ONFIELD,0,1,nil,c)
+	return c:IsSetCard(0x3536) and c:IsAbleToHand() and not Duel.IsExistingMatchingCard(cm.bfilter,tp,LOCATION_ONFIELD,0,1,nil,c)
 end
 function cm.bfilter(c,tc)
-	return tc:IsCode(c:GetCode()) and c:IsFaceup()
+	return tc:IsCode(c:GetCode()) and c:IsFaceupEx()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

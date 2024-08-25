@@ -95,7 +95,8 @@ function c71401021.op2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71401021.tglimit(e,re,rp)
-	return Duel.IsExistingMatchingCard(Card.IsCode,0,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil,re:GetHandler():GetCode())
+	return true
+	--return Duel.IsExistingMatchingCard(Card.IsCode,0,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil,re:GetHandler():GetCode())
 end
 function c71401021.con3(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS
@@ -133,5 +134,6 @@ function c71401021.op3(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71401021.aclimit(e,re,tp)
 	local rc=re:GetHandler()
-	return rc:IsOnField() and not Duel.IsExistingMatchingCard(Card.IsCode,0,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil,rc:GetCode())
+	return rc:IsOnField()
+		--and not Duel.IsExistingMatchingCard(Card.IsCode,0,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,nil,rc:GetCode())
 end

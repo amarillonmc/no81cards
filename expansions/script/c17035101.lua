@@ -323,7 +323,7 @@ function Chikichikibanban.XyzLevelFreeCondition(f,gf,minc,loc1,loc2,maxc)
 				end
 				local exg=Duel.GetMatchingGroup(Chikichikibanban.XyzLevelFreeFilter,tp,loc1,loc2,nil,c,f)
 				mg:Merge(exg)
-				local sg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_XMATERIAL)
+				local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 				if sg:IsExists(Auxiliary.MustMaterialCounterFilter,1,nil,mg) then return false end
 				Duel.SetSelectedCard(sg)
 				Auxiliary.GCheckAdditional=Auxiliary.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
@@ -352,7 +352,7 @@ function Chikichikibanban.XyzLevelFreeTarget(f,gf,minc,loc1,loc2,maxc)
 				end
 				local exg=Duel.GetMatchingGroup(Chikichikibanban.XyzLevelFreeFilter,tp,loc1,loc2,nil,c,f)
 				mg:Merge(exg)
-				local sg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_XMATERIAL)
+				local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 				Duel.SetSelectedCard(sg)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 				local cancel=Duel.IsSummonCancelable()
@@ -426,7 +426,7 @@ function Chikichikibanban.XyzLevelFreeCondition2(f,gf,minc,loc1,loc2,maxc,alterf
 					if minc>maxc then return false end
 				end
 				mg=mg:Filter(Chikichikibanban.XyzLevelFreeFilter,nil,c,f)
-				local sg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_XMATERIAL)
+				local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 				if sg:IsExists(Auxiliary.MustMaterialCounterFilter,1,nil,mg) then return false end
 				Duel.SetSelectedCard(sg)
 				Auxiliary.GCheckAdditional=Auxiliary.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
@@ -452,7 +452,7 @@ function Chikichikibanban.XyzLevelFreeTarget2(f,gf,minc,loc1,loc2,maxc,alterf,de
 				else
 					mg=Duel.GetFieldGroup(tp,LOCATION_MZONE+loc1,loc2)
 				end
-				local sg=Auxiliary.GetMustMaterialGroup(tp,EFFECT_MUST_BE_XMATERIAL)
+				local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 				local mg2=mg:Filter(Chikichikibanban.XyzLevelFreeFilter,nil,c,f)
 				Duel.SetSelectedCard(sg)
 				local b1=mg2:CheckSubGroup(Chikichikibanban.XyzLevelFreeGoal,minc,maxc,tp,c,gf)
@@ -1206,7 +1206,6 @@ function Chikichikibanban.synop(e,tp,eg,ep,ev,re,r,rp,c,tuner,mg)
 	Duel.SendtoGrave(g,REASON_MATERIAL+REASON_SYNCHRO)
 	g:DeleteGroup()
 end
-
 --铳影自肃(代写)
 function Chikichikibanban.c4a71Limit(c)
 	--spsummon cost
@@ -1256,7 +1255,7 @@ function Chikichikibanban.c4a71tohand(c,tg,op,category)
 	local op=op 
 	if not op then op=Chikichikibanban.c4a71tohandthop end
 	local category=category 
-	if not category then category=CATEGORY_TOHAND+CATEGORY_SEARCH end
+	if not category then category=CATEGORY_TOHAND end
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1110)
@@ -1278,13 +1277,15 @@ end
 function Chikichikibanban.c4a71tohandthop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,Chikichikibanban.c4a71tohandthfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	local tc=g:GetFirst()
-	if tc:IsCode(12825601) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-		and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.SelectYesNo(tp,2) then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-	else
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+	if g:GetCount()>0 then
+		local tc=g:GetFirst()
+		if tc:IsCode(12825601) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
+			and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.SelectYesNo(tp,2) then
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		else
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
+		end
 	end
 end
 
@@ -1343,16 +1344,16 @@ function Chikichikibanban.c4a71kang2(c,con,tg,op,category,cardcode,message,excod
 	e1:SetCategory(CATEGORY_NEGATE)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_CHAINING)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_ACTIVATE_CONDITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,cardcode)
+	e1:SetCost(Chikichikibanban.c4a71kangcost0)
 	e1:SetCondition(con)
 	e1:SetTarget(tg)
 	e1:SetOperation(op)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
-	e2:SetCountLimit(1)
-	e2:SetCost(Chikichikibanban.c4a71kangcost)
+	e2:SetCountLimit(1,cardcode+100)
 	e2:SetCondition(Chikichikibanban.c4a71kangdiscon2(con,excode))
 	c:RegisterEffect(e2)
 	--summon success
@@ -1362,11 +1363,13 @@ function Chikichikibanban.c4a71kang2(c,con,tg,op,category,cardcode,message,excod
 	e3:SetOperation(Chikichikibanban.sumsuc)
 	c:RegisterEffect(e3)
 end
-function Chikichikibanban.c4a71kangcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) 
-		and Duel.GetFlagEffect(tp,12825602)==0 end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-	Duel.RegisterFlagEffect(tp,12825602,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+function Chikichikibanban.c4a71kangcost0(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,e:GetHandler():GetCode())==0 or e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	if Duel.GetFlagEffect(tp,e:GetHandler():GetCode())==0 then
+		Duel.RegisterFlagEffect(tp,e:GetHandler():GetCode(),RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	else
+		e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	end
 end
 function Chikichikibanban.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -1391,7 +1394,7 @@ function Chikichikibanban.c4a71rankup(c,f1,f2,cardcode)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,cardcode)
+	e1:SetCountLimit(1,cardcode+EFFECT_COUNT_CODE_OATH)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetTarget(Chikichikibanban.c4a71rankuptarget(f1,f2))
 	e1:SetOperation(Chikichikibanban.c4a71rankupactivate(f1,f2))
@@ -1512,4 +1515,29 @@ end
 
 function Chikichikibanban.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+end
+
+function Chikichikibanban.BeginPuzzle2(effect)
+	local e1=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetTargetRange(0,LOCATION_MZONE)
+	e1:SetValue(5500000)
+	Duel.RegisterEffect(e1,0)
+end
+function Chikichikibanban.BeginPuzzle3(effect)
+	local e1=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_ADD_SETCODE)
+	e1:SetTargetRange(LOCATION_MZONE+LOCATION_DECK,0)
+	e1:SetValue(0x3a0d)
+	Duel.RegisterEffect(e1,0)
+end
+function Chikichikibanban.BeginPuzzle4(effect)
+	local e1=Effect.GlobalEffect()
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetValue(5500000)
+	Duel.RegisterEffect(e1,0)
 end
