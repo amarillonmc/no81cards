@@ -118,5 +118,5 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		tg=Duel.SelectMatchingCard(tp,Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,1,1,nil)
 		tg:Merge(Duel.SelectMatchingCard(tp,Card.IsCanOverlay,tp,0,LOCATION_GRAVE,1,1,nil))
 	end
-	Duel.Overlay(c,tg)
+	Duel.Overlay(c,tg-tg:Filter(Card.IsImmuneToEffect,nil,e))
 end

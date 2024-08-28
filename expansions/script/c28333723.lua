@@ -67,7 +67,7 @@ function c28333723.setfilter(c)
 	return c:IsSetCard(0x285) and c:IsSSetable()
 end
 function c28333723.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28333723.setfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c28333723.setfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,0,0)
 end
 function c28333723.setop(e,tp,eg,ep,ev,re,r,rp)

@@ -14,6 +14,7 @@ function c98920744.initial_effect(c)
 	e2:SetCountLimit(1,98920744)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetCondition(c98920744.atkcon)
+	e2:SetTarget(c98920744.atktg)
 	e2:SetOperation(c98920744.atkop)
 	c:RegisterEffect(e2)
 	--indes
@@ -66,6 +67,11 @@ function c98920744.matfilter(c)
 end
 function c98920744.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
+end
+function c98920744.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
+	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:GetCount(),0,0)
 end
 function c98920744.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

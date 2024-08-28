@@ -170,7 +170,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 					if not tc:IsType(TYPE_EQUIP+TYPE_CONTINUOUS+TYPE_FIELD) and not tc:IsHasEffect(EFFECT_REMAIN_FIELD) then tc:CancelToGrave(false) end
 					tc:CreateEffectRelation(te)
 					if cost then cost(te,tp,ceg,cep,cev,cre,cr,crp,1) end
+					local _GetTurnPlayer=Duel.GetTurnPlayer
+					Duel.GetTurnPlayer=function() return 1-tp end
 					if target then target(te,tp,ceg,cep,cev,cre,cr,crp,1) end
+					Duel.GetTurnPlayer=_GetTurnPlayer
 					local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 					if g then
 						for fc in aux.Next(g) do
@@ -221,7 +224,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.ClearTargetCard()
 				tc:CreateEffectRelation(te)
 				if cost then cost(te,tp,eg,ep,ev,re,r,rp,1) end
-				if target then target(te,tp,eg,ep,ev,re,r,rp,1) end
+				if target then target(te,tp,eg,ep,ev,re,r,rp,1,false,true) end
 				local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 				if g then
 					for fc in aux.Next(g) do
@@ -237,6 +240,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				end
 			end
 		end
+		g=g:Filter(Card.IsControler,nil,tp):Filter(Card.IsLocation,nil,LOCATION_HAND)
 		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end
 end

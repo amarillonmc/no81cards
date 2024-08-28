@@ -75,7 +75,7 @@ function c28382113.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return ct>0 and Duel.IsExistingMatchingCard(c28382113.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 	if Duel.GetLP(tp)<=3000 then
-		e:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_NEGATE)
+		e:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN)
 	else e:SetProperty(EFFECT_FLAG_DELAY) end
 end
 function c28382113.tdop(e,tp,eg,ep,ev,re,r,rp)

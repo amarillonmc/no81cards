@@ -17,7 +17,13 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CARDTYPE)
 	local op=Duel.SelectOption(tp,1057,1056,1063,1345)
-	if op==3 then op=Duel.SelectOption(tp,1073,1074,1076)+3 end
+	while op==3 or op==6 do
+		if op==3 then
+			op=Duel.SelectOption(tp,1073,1074,1076,1345)+3
+		elseif op==6 then
+			op=Duel.SelectOption(tp,1057,1056,1063,1345)
+		end
+	end
 	Duel.SetTargetParam(op)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)

@@ -33,8 +33,7 @@ end
 function c98940044.hspcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
-		and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)~=0
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)<Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)
 end
 function c98940044.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	local e1=Effect.CreateEffect(c)

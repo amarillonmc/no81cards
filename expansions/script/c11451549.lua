@@ -55,21 +55,23 @@ function cm.CheckGroupRecursive(sg,g,f,min,max,ext_params)
 			if (#sg>=min and #sg<=max and f(sg,table.unpack(ext_params))) or (#sg<max and cm.CheckGroupRecursive(sg,eg,f,min,max,ext_params)) then return true end
 		end
 		sg:RemoveCard(c)
-		eg:RemoveCard(c)
+		eg:Sub(eg:Filter(cm.slfilter,nil,c))
 	end
 	return false
 end
 function cm.CheckGroupRecursiveCapture(bool,sg,g,f,min,max,ext_params)
 	local eg=g:Clone()
-	if bool then cm.esg=sg:Clone() end
-	for c in aux.Next(g-sg) do
+	if bool then cm.esg=sg:Clone() cm.eeg=g:Clone() end
+	local tempg=g-sg
+	local c=tempg:GetFirst()
+	while c do
 		if not bool or not Auxiliary.SubGroupCaptured:IsContains(c) then
 			sg:AddCard(c)
 			if not Auxiliary.GCheckAdditional or Auxiliary.GCheckAdditional(sg,c,eg,f,min,max,ext_params) then
 				if (#sg>=min and #sg<=max and f(sg,table.unpack(ext_params))) then -- or (#sg<max and cm.CheckGroupRecursiveCapture(false,sg,eg,f,min,max,ext_params)) then
 					--Debug.Message(cm[0])
 					for sc in aux.Next(sg-cm.esg) do
-						Auxiliary.SubGroupCaptured:Merge(eg:Filter(cm.slfilter,nil,sc))
+						Auxiliary.SubGroupCaptured:Merge(cm.eeg:Filter(cm.slfilter,nil,sc))
 					end
 				end
 				if #sg<max then cm.CheckGroupRecursiveCapture(false,sg,eg,f,min,max,ext_params) end
@@ -77,7 +79,10 @@ function cm.CheckGroupRecursiveCapture(bool,sg,g,f,min,max,ext_params)
 			sg:RemoveCard(c)
 			--eg:RemoveCard(c)
 			eg:Sub(eg:Filter(cm.slfilter,nil,c))
+			tempg:Sub(eg:Filter(cm.slfilter,nil,c))
 		end
+		tempg:RemoveCard(c)
+		c=tempg:GetFirst()
 	end
 end
 function cm.slfilter(c,sc)
