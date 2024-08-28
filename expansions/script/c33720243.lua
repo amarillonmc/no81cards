@@ -38,6 +38,7 @@ function s.initial_effect(c)
 		local _ConfirmCards, _ConfirmExtratop = Duel.ConfirmCards, Duel.ConfirmExtratop
 		
 		function Duel.ConfirmCards(p,g)
+			if aux.GetValueType(g)=="Card" then g=Group.FromCards(g) end
 			local rg=g:Filter(Card.IsControler,nil,1-p)
 			if #rg>0 then
 				Duel.RaiseEvent(rg,EVENT_CUSTOM+id,nil,0,PLAYER_NONE,1-p,0)
