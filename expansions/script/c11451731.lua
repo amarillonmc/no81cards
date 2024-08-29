@@ -136,10 +136,10 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mg2=Duel.GetOverlayGroup(tp,1,1):Filter(cm.matfilter,nil)
 	mg:Merge(mg2)
 	if chk==0 then
-		aux.GCheckAdditional=cm.fselect
-		local res=Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,mg)
-		aux.GCheckAdditional=nil
-		return res
+		--aux.GCheckAdditional=cm.fselect
+		--local res=Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,mg)
+		--aux.GCheckAdditional=nil
+		return Duel.IsExistingMatchingCard(cm.scfilter,tp,LOCATION_EXTRA,0,1,nil,mg)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end

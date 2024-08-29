@@ -157,7 +157,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetCode(EVENT_CHAIN_SOLVED)
 			e3:SetCountLimit(1)
 			e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-			e3:SetLabelObject(tc)
+			e3:SetLabelObject(e2)
 			e3:SetCondition(cm.descon)
 			e3:SetOperation(cm.desop)
 			Duel.RegisterEffect(e3,tp)
@@ -165,8 +165,8 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if tc:GetFlagEffect(m)~=0 then
+	local te=e:GetLabelObject()
+	if te and te:GetHandler() and te:GetHandler():GetFlagEffect(m)~=0 then
 		return true
 	else
 		e:Reset()
@@ -174,6 +174,8 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
+	local te=e:GetLabelObject()
+	local tc=te:GetHandler()
+	te:Reset()
 	if tc:GetFlagEffect(m)~=0 and tc:GetFlagEffect(11451905)==0 then Duel.SendtoDeck(tc,nil,2,REASON_EFFECT) end
 end

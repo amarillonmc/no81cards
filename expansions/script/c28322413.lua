@@ -127,7 +127,7 @@ function c28322413.rsop(e,tp,eg,ep,ev,re,r,rp)
 			local xlv=c:GetFlagEffectLabel(28322413)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CHANGE_RANK)
+			e1:SetCode(EFFECT_CHANGE_RANK_FINAL)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e1:SetValue(xlv)
@@ -178,18 +178,57 @@ function c28322413.ruop(e,tp,eg,ep,ev,re,r,rp)
 	local og=Duel.GetOperatedGroup()
 	local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 	if ct>0 then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_UPDATE_LEVEL)
-		e1:SetTargetRange(LOCATION_MZONE,0)
-		e1:SetValue(ct)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_ADJUST)
+		e1:SetCondition(c28322413.adcon)
 		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
-		e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x284))
+		e1:SetOperation(c28322413.adop)
+		e1:SetLabel(ct)
+		e1:SetLabelObject(c)
 		Duel.RegisterEffect(e1,tp)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_UPDATE_RANK)
-		Duel.RegisterEffect(e2,tp)
+		table.insert(c28322413.et,{e1})
 	end
+end
+function c28322413.adcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c28322413.adf,tp,LOCATION_MZONE,0,1,nil,e)
+end
+function c28322413.adop(e,tp,eg,ep,ev,re,r,rp)
+	local ct=e:GetLabel()
+	local c,g= e:GetLabelObject(),Duel.GetMatchingGroup(c28322413.adf,tp,LOCATION_MZONE,0,nil,e)
+	for xc in aux.Next(g) do
+		local x
+		if xc:GetLevel()>0 then x=EFFECT_UPDATE_LEVEL
+		elseif xc:GetRank()>0 then x=EFFECT_UPDATE_RANK end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(x)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+		e1:SetValue(ct)
+		e1:SetCondition(c28322413.efcon)
+		e1:SetOwnerPlayer(tp)
+		xc:RegisterEffect(e1)
+		table.insert(c28322413.get(e),xc)
+	end
+end
+function c28322413.efcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetControler()==e:GetOwnerPlayer()
+end
+c28322413.et = { }
+function c28322413.get(v)
+	for _,i in ipairs(c28322413.et) do
+		if i[1]==v then return i end
+	end
+end
+function c28322413.ck(e,c)
+	local t = c28322413.get(e)
+	for _,v in ipairs(t) do
+		if v == c then return false end
+	end
+	return true
+end
+function c28322413.adf(c,e)
+	return c:IsSetCard(0x284) and (c:GetLevel()>0 or c:GetRank()>0) and c28322413.ck(e,c)
 end
 function c28322413.immunefilter(e,te)
 	return te:IsActiveType(TYPE_MONSTER) and not te:GetHandler():IsType(TYPE_XYZ)

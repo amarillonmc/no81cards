@@ -36,66 +36,22 @@ end
 function cm.mzfilter(c)
 	return c:IsAbleToDeckOrExtraAsCost() and c:GetLevel()>=1 and c:IsRace(RACE_PSYCHO) and (c:IsLocation(LOCATION_GRAVE) or c:IsFacedown())
 end
-function cm.CheckSubGroup(g,f,min,max,...)
-	local min=min or 1
-	local max=max or #g
-	if min>max then return false end
-	local ext_params={...}
-	local sg=Duel.GrabSelectedCard()
-	if #sg>max or #(g+sg)<min then return false end
-	if #sg==max and (not f(sg,...) or Auxiliary.GCheckAdditional and not Auxiliary.GCheckAdditional(sg,nil,g,f,min,max,ext_params)) then return false end
-	if #sg>=min and #sg<=max and f(sg,...) and (not Auxiliary.GCheckAdditional or Auxiliary.GCheckAdditional(sg,nil,g,f,min,max,ext_params)) then return true end
-	return cm.CheckGroupRecursive(sg,g,f,min,max,ext_params)
-end
-function cm.CheckGroupRecursive(sg,g,f,min,max,ext_params)
-	local eg=g:Clone()
-	for c in aux.Next(g-sg) do
-		sg:AddCard(c)
-		if not Auxiliary.GCheckAdditional or Auxiliary.GCheckAdditional(sg,c,eg,f,min,max,ext_params) then
-			if (#sg>=min and #sg<=max and f(sg,table.unpack(ext_params))) or (#sg<max and cm.CheckGroupRecursive(sg,eg,f,min,max,ext_params)) then return true end
-		end
-		sg:RemoveCard(c)
-		eg:Sub(eg:Filter(cm.slfilter,nil,c))
-	end
-	return false
-end
-function cm.CheckGroupRecursiveCapture(bool,sg,g,f,min,max,ext_params)
-	local eg=g:Clone()
-	if bool then cm.esg=sg:Clone() cm.eeg=g:Clone() end
-	local tempg=g-sg
-	local c=tempg:GetFirst()
-	while c do
-		if not bool or not Auxiliary.SubGroupCaptured:IsContains(c) then
-			sg:AddCard(c)
-			if not Auxiliary.GCheckAdditional or Auxiliary.GCheckAdditional(sg,c,eg,f,min,max,ext_params) then
-				if (#sg>=min and #sg<=max and f(sg,table.unpack(ext_params))) then -- or (#sg<max and cm.CheckGroupRecursiveCapture(false,sg,eg,f,min,max,ext_params)) then
-					--Debug.Message(cm[0])
-					for sc in aux.Next(sg-cm.esg) do
-						Auxiliary.SubGroupCaptured:Merge(cm.eeg:Filter(cm.slfilter,nil,sc))
-					end
-				end
-				if #sg<max then cm.CheckGroupRecursiveCapture(false,sg,eg,f,min,max,ext_params) end
-			end
-			sg:RemoveCard(c)
-			--eg:RemoveCard(c)
-			eg:Sub(eg:Filter(cm.slfilter,nil,c))
-			tempg:Sub(eg:Filter(cm.slfilter,nil,c))
-		end
-		tempg:RemoveCard(c)
-		c=tempg:GetFirst()
-	end
-end
 function cm.slfilter(c,sc)
 	return c:IsLocation(sc:GetLocation()) and (c:GetLevel()-sc:GetLevel())%5==0
 end
 function cm.srfilter(c)
 	return c:GetLevel()%5==0
 end
+--subgroup optimization
 function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
-	Auxiliary.SubGroupCaptured=g:Filter(cm.srfilter,nil)
-	local min=min or 1
-	local max=max or #g
-	local ext_params={...}
+	--classif: function to classify cards, e.g. function(c,tc) return c:GetLevel()==tc:GetLevel() end
+	--sortif: function of subgroup search order, high to low. e.g. Card.GetLevel
+	--passf: cards that do not require check, e.g. function(c) return c:IsLevel(1) end
+	--goalstop: do you want to backtrack after reaching the goal? true/false
+	--check: do you want to return true after reaching the goal firstly? true/false
+	local classif,sortf,passf,goalstop,check=table.unpack(cm.SubGroupParams)
+	min=min or 1
+	max=max or #g
 	local sg=Group.CreateGroup()
 	local fg=Duel.GrabSelectedCard()
 	if #fg>max or min>max or #(g+fg)<min then return nil end
@@ -103,14 +59,146 @@ function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 		fg:SelectUnselect(sg,tp,false,false,min,max)
 	end
 	sg:Merge(fg)
+	local mg,iisg,tmp,stop,iter,ctab,rtab,gtab
+	--main check
 	local finish=(#sg>=min and #sg<=max and f(sg,...))
 	while #sg<max do
-		Auxiliary.SubGroupCaptured=(g-sg):Filter(cm.srfilter,nil)
-		cm.CheckGroupRecursiveCapture(true,sg,g,f,min,max,ext_params)
-		local cg=Auxiliary.SubGroupCaptured:Clone()
-		Auxiliary.SubGroupCaptured:Clear()
-			--Debug.Message(cm[0])
+		mg=g-sg
+		iisg=sg:Clone()
+		if passf then
+			aux.SubGroupCaptured=mg:Filter(passf,nil,sg,g)
+		else
+			aux.SubGroupCaptured=Group.CreateGroup()
+		end
+		ctab,rtab,gtab={},{},{1}
+		for tc in aux.Next(mg) do
+			ctab[#ctab+1]=tc
+		end
+		--high to low
+		if sortf then
+			for i=1,#ctab-1 do
+				for j=1,#ctab-1-i do
+					if sortf(ctab[j])<sortf(ctab[j+1]) then
+						tmp=ctab[j]
+						ctab[j]=ctab[j+1]
+						ctab[j+1]=tmp
+					end
+				end
+			end
+		end
+		--classify
+		if classif then
+			--make similar cards adjacent
+			for i=1,#ctab-2 do
+				for j=i+2,#ctab do
+					if classif(ctab[i],ctab[j]) then
+						tmp=ctab[j]
+						ctab[j]=ctab[i+1]
+						ctab[i+1]=tmp
+					end
+				end
+			end
+			--rtab[i]: what category does the i-th card belong to
+			--gtab[i]: What is the first card's number in the i-th category
+			for i=1,#ctab-1 do
+				rtab[i]=#gtab
+				if not classif(ctab[i],ctab[i+1]) then
+					gtab[#gtab+1]=i+1
+				end
+			end
+			rtab[#ctab]=#gtab
+			--iter record all cards' number in sg
+			iter={1}
+			sg:AddCard(ctab[1])
+			while #sg>#iisg and #aux.SubGroupCaptured<#mg do
+				stop=#sg>=max
+				--prune if too much cards
+				if (aux.GCheckAdditional and not aux.GCheckAdditional(sg,c,g,f,min,max,...)) then
+					stop=true
+				--skip check if no new cards
+				elseif #(sg-iisg-aux.SubGroupCaptured)>0 and #sg>=min and #sg<=max and f(sg,...) then
+					for sc in aux.Next(sg-iisg) do
+						if check then return true end
+						aux.SubGroupCaptured:Merge(mg:Filter(classif,nil,sc))
+					end
+					stop=goalstop
+				end
+				local code=iter[#iter]
+				--last card isn't in the last category
+				if code and code<gtab[#gtab] then
+					if stop then
+						--backtrack and add 1 card from next category
+						iter[#iter]=gtab[rtab[code]+1]
+						sg:RemoveCard(ctab[code])
+						sg:AddCard(ctab[(iter[#iter])])
+					else
+						--continue searching forward
+						iter[#iter+1]=code+1
+						sg:AddCard(ctab[code+1])
+					end
+				--last card is in the last category
+				elseif code then
+					if stop or code>=#ctab then
+						--clear all cards in the last category
+						while #iter>0 and iter[#iter]>=gtab[#gtab] do
+							sg:RemoveCard(ctab[(iter[#iter])])
+							iter[#iter]=nil
+						end
+						--backtrack and add 1 card from next category
+						local code2=iter[#iter]
+						if code2 then
+							iter[#iter]=gtab[rtab[code2]+1]
+							sg:RemoveCard(ctab[code2])
+							sg:AddCard(ctab[(iter[#iter])])
+						end
+					else
+						--continue searching forward
+						iter[#iter+1]=code+1
+						sg:AddCard(ctab[code+1])
+					end
+				end
+			end
+		--classification is essential for efficiency, and this part is only for backup
+		else
+			iter={1}
+			sg:AddCard(ctab[1])
+			while #sg>#iisg and #aux.SubGroupCaptured<#mg do
+				stop=#sg>=max
+				if (aux.GCheckAdditional and not aux.GCheckAdditional(sg,c,g,f,min,max,...)) then
+					stop=true
+				elseif #(sg-iisg-aux.SubGroupCaptured)>0 and #sg>=min and #sg<=max and f(sg,...) then
+					for sc in aux.Next(sg-iisg) do
+						if check then return true end
+						aux.SubGroupCaptured:AddCard(sc) --Merge(mg:Filter(class,nil,sc))
+					end
+					stop=goalstop
+				end
+				local code=iter[#iter]
+				if code<#ctab then
+					if stop then
+						iter[#iter]=nil
+						sg:RemoveCard(ctab[code])
+					end
+					iter[#iter+1]=code+1
+					sg:AddCard(ctab[code+1])
+				else
+					local code2=iter[#iter-1]
+					iter[#iter]=nil
+					sg:RemoveCard(ctab[code])
+					if code2 and code2>0 then
+						iter[#iter]=code2+1
+						sg:RemoveCard(ctab[code2])
+						sg:AddCard(ctab[code2+1])
+					end
+				end
+			end
+		end
+		--finish searching
+		sg=iisg
+		local cg=aux.SubGroupCaptured:Clone()
+		aux.SubGroupCaptured:Clear()
 		cg:Sub(sg)
+		--Debug.Message(cm[0])
 		finish=(#sg>=min and #sg<=max and f(sg,...))
 		if #cg==0 then break end
 		local cancel=not finish and cancelable
@@ -137,11 +225,11 @@ function cm.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local mg=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	--[[Auxiliary.SubGroupCaptured=Group.CreateGroup()
-	local sg=Group.CreateGroup()
-	cm.CheckGroupRecursiveCapture(true,sg,mg,cm.syngoal,4,#mg,{1})
-	Debug.Message(cm[0])--]]
-	return mg:IsExists(Card.IsLocation,2,nil,LOCATION_GRAVE) and mg:IsExists(Card.IsLocation,2,nil,LOCATION_REMOVED) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and cm.CheckSubGroup(mg,cm.syngoal)
+	cm.SubGroupParams={cm.slfilter,Card.GetLevel,cm.srfilter,false,true}
+	local res=cm.SelectSubGroup(mg,tp,cm.syngoal,Duel.IsSummonCancelable(),2,#mg)
+	cm.SubGroupParams={}
+	--Debug.Message(cm[0])
+	return mg:IsExists(Card.IsLocation,2,nil,LOCATION_GRAVE) and mg:IsExists(Card.IsLocation,2,nil,LOCATION_REMOVED) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and res
 end
 --cm[0]=0
 function cm.syngoal(g)
@@ -150,40 +238,18 @@ function cm.syngoal(g)
 end
 function cm.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local mg=Duel.GetMatchingGroup(cm.mzfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	local sg=cm.SelectSubGroup(mg,tp,cm.syngoal,Duel.IsSummonCancelable(),4,#mg)
+	cm.SubGroupParams={cm.slfilter,Card.GetLevel,cm.srfilter,false}
+	local sg=cm.SelectSubGroup(mg,tp,cm.syngoal,Duel.IsSummonCancelable(),2,#mg)
+	cm.SubGroupParams={}
 	if sg then
 		sg:KeepAlive()
 		e:SetLabelObject(sg)
 		return true
 	else return false end
-	--[[local sg=Group.CreateGroup()
-	local cg=mg:Filter(cm.syncheck,sg,sg,mg)
-	local cg0=cg
-	local finish=cm.syngoal(sg)
-	while 1==1 do
-		cg=cg0:Filter(cm.syncheck,sg,sg,cg0)
-		cg:Sub(sg)
-		finish=cm.syngoal(sg)
-		local cancel=not finish and Duel.IsSummonCancelable()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local tc=cg:SelectUnselect(sg,tp,finish,cancel,4,#mg)
-		if not tc then break end
-		if not sg:IsContains(tc) then
-			sg:AddCard(tc)
-			if #sg==#cg then finish=true end
-		else
-			sg:RemoveCard(tc)
-		end
-	end
-	if finish then
-		sg:KeepAlive()
-		e:SetLabelObject(sg)
-		return true
-	else return false end--]]
 end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sg=e:GetLabelObject()
-	Card.SetMaterial(c,sg)
+	c:SetMaterial(sg)
 	local cg=sg:Filter(Card.IsFacedown,nil)
 	Duel.SendtoDeck(sg,nil,2,REASON_COST+REASON_MATERIAL)
 	if #cg>0 then Duel.ConfirmCards(1-tp,cg) end

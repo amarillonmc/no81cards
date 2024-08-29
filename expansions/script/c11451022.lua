@@ -90,18 +90,29 @@ function cm.smfilter11(c)
 end
 function cm.smfilter(c,e,tp,fg)
 	local eset1={c:IsHasEffect(EFFECT_LIMIT_SUMMON_PROC)}
-	local eset2={c:IsHasEffect(EFFECT_SUMMON_PROC)}
-	local eset3={c:IsHasEffect(EFFECT_SET_PROC)}
+	local eset2={c:IsHasEffect(EFFECT_LIMIT_SET_PROC)}
+	local eset3={c:IsHasEffect(EFFECT_SUMMON_PROC)}
+	local eset4={c:IsHasEffect(EFFECT_SET_PROC)}
 	local e1,e2=Effect.CreateEffect(c),Effect.CreateEffect(c)
 	local _CheckTribute=Duel.CheckTribute
+	local _GetLocationCount=Duel.GetLocationCount
+	local _GetMZoneCount=Duel.GetMZoneCount
 	if aux.GetValueType(fg)=="Group" then
-		function Duel.CheckTribute(c,mi,ma,mg,top,...) 
+		function Duel.CheckTribute(c,mi,ma,mg,top,...)
 			local g=mg or Duel.GetTributeGroup(c)
 			return _CheckTribute(c,mi,ma,g-fg,top,...)
 		end
+		function Duel.GetLocationCount(p,loc,...)
+			if loc~=LOCATION_MZONE then return _GetLocationCount(p,loc,...) end
+			return _GetMZoneCount(p,fg,...)
+		end
+		function Duel.GetMZoneCount(p,lg,...)
+			if lg then return _GetMZoneCount(p,fg+lg,...) end
+			return _GetMZoneCount(p,fg,...)
+		end
 	end
-	if #eset1==0 and #eset2==0 and #eset3==0 then
-		local mi,ma=c:GetTributeRequirement()
+	local mi,ma=c:GetTributeRequirement()
+	if #eset1==0 then
 		--summon
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -110,6 +121,8 @@ function cm.smfilter(c,e,tp,fg)
 		e1:SetCondition(cm.ttcon)
 		if mi>0 then e1:SetValue(SUMMON_TYPE_ADVANCE) end
 		c:RegisterEffect(e1,true)
+	end
+	if #eset2==0 then
 		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_LIMIT_SET_PROC)
@@ -118,9 +131,38 @@ function cm.smfilter(c,e,tp,fg)
 		c:RegisterEffect(e2,true)
 	end
 	local res=c:IsSummonable(true,nil) or c:IsMSetable(true,nil)
-	Duel.CheckTribute=_CheckTribute
 	e1:Reset()
 	e2:Reset()
+	if not res then
+		if #eset1==0 and #eset3>0 then
+			for _,te in pairs(eset3) do
+				local te1=te:Clone()
+				te1:SetType(EFFECT_TYPE_SINGLE)
+				te1:SetCode(EFFECT_LIMIT_SUMMON_PROC)
+				te1:SetRange(nil)
+				c:RegisterEffect(te1,true)
+				res=res or c:IsSummonable(true,nil)
+				te1:Reset()
+				if res then break end
+			end
+		end
+		if #eset2==0 and #eset4>0 then
+			for _,te in pairs(eset4) do
+				local te1=te:Clone()
+				te1:SetType(EFFECT_TYPE_SINGLE)
+				te1:SetCode(EFFECT_LIMIT_SET_PROC)
+				te1:SetRange(nil)
+				c:RegisterEffect(te1,true)
+				res=res or c:IsMSetable(true,nil)
+				te1:Reset()
+				if res then break end
+			end
+		end
+	end
+	Duel.CheckTribute=_CheckTribute
+	Duel.GetLocationCount=_GetLocationCount
+	Duel.GetMZoneCount=_GetMZoneCount
+	--Debug.Message(res)
 	return res
 end
 function cm.ttcon(e,c,minc)
