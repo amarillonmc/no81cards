@@ -3476,570 +3476,6 @@ function cm.GCSpiritNop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Readjust()
 	Duel.RaiseSingleEvent(c,c:GetOriginalCode(),re,r,rp,ep,ev)
 end
-function cm.NecroceanSynchro(c)
-	c:EnableReviveLimit()
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(1164)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetCondition(aux.SynMixCondition(aux.Tuner(nil),aux.NonTuner(nil),nil,nil,0,99,nil))
-	e1:SetTarget(cm.Necroceansyntg(aux.Tuner(nil),aux.NonTuner(nil),nil,nil,0,99,nil))
-	e1:SetOperation(cm.Necroceansynop(aux.Tuner(nil),aux.NonTuner(nil),nil,nil,0,99,nil))
-	e1:SetValue(SUMMON_TYPE_SYNCHRO)
-	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
-	e2:SetRange(0xff)
-	e2:SetOperation(cm.NecroceanSLevel)
-	e2:SetCountLimit(1,EFFECT_COUNT_CODE_DUEL+53752000)
-	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_ADJUST)
-	e3:SetRange(LOCATION_EXTRA)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e3:SetLabelObject(e1)
-	e3:SetOperation(cm.LilyLind)
-	c:RegisterEffect(e3)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e4:SetCode(53752000)
-	e4:SetRange(LOCATION_EXTRA)
-	c:RegisterEffect(e4)
-end
-function cm.LilyLind(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local se=e:GetLabelObject()
-	se:SetLabel(0)
-	c:RegisterFlagEffect(53752000,0,0,0)
-	local re1={c:IsHasEffect(EFFECT_CANNOT_SPECIAL_SUMMON)}
-	local re2={c:IsHasEffect(EFFECT_SPSUMMON_COST)}
-	local re5={Duel.IsPlayerAffectedByEffect(tp,EFFECT_SPSUMMON_COUNT_LIMIT)}
-	for _,te1 in pairs(re1) do
-		local con=te1:GetCondition()
-		if not con then con=aux.TRUE end
-		te1:SetCondition(cm.Necroceanchcon(con))
-		se:SetLabel(1)
-	end
-	for _,te2 in pairs(re2) do
-		local cost=te2:GetCost()
-		if cost and not cost(te2,c,tp) then
-			if te2:GetType()==EFFECT_TYPE_SINGLE then
-				local con=te2:GetCondition()
-				if not con then con=aux.TRUE end
-				te2:SetCondition(cm.Necroceanchcon(con))
-				se:SetLabel(1)
-			end
-			if te2:GetType()==EFFECT_TYPE_FIELD then
-				local tg=te2:GetTarget()
-				if not tg then
-					te2:SetTarget(cm.Necroceanchtg(aux.TRUE))
-					se:SetLabel(1)
-				elseif tg(te2,c,tp) then
-					te2:SetTarget(cm.Necroceanchtg(tg))
-					se:SetLabel(1)
-				end
-			end
-		end
-	end
-	for _,te5 in pairs(re5) do
-		local val=te5:GetValue()
-		local _,a=te5:GetLabel()
-		if a==0 then te5:SetLabel(0,val) end
-		local sp=Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)
-		local _,b=te5:GetLabel()
-		if sp==0 then
-			te5:SetLabel(1,b)
-			te5:SetValue(b)
-		end
-		val=te5:GetValue()
-		local l,_=te5:GetLabel()
-		if l==0 then te5:SetLabel(sp+1,b) else
-			local n=sp-l+1
-			if n==val then
-				te5:SetValue(val+1)
-				local e1=te5:Clone()
-				e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-				e1:SetReset(RESET_PHASE+PHASE_END)
-				local loc=te5:GetRange()
-				if loc~=0 then
-					e1:SetLabelObject(te5)
-					te5:GetHandler():RegisterEffect(e1)
-					local e2=Effect.CreateEffect(c)
-					e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-					e2:SetCode(EVENT_ADJUST)
-					e2:SetLabel(loc,b)
-					e2:SetLabelObject(e1)
-					e2:SetOperation(cm.Necroceanreset1)
-					Duel.RegisterEffect(e2,tp)
-				else Duel.RegisterEffect(e1,te5:GetOwnerPlayer()) end
-			end
-		end
-	end
-	local re3={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_SPECIAL_SUMMON)}
-	local re4={Duel.IsPlayerAffectedByEffect(tp,EFFECT_LIMIT_SPECIAL_SUMMON_POSITION)}
-	for _,v in pairs(re4) do table.insert(re3,v) end
-	for _,te3 in pairs(re3) do
-		local tg=te3:GetTarget()
-		if not tg then
-			te3:SetTarget(cm.Necroceanchtg3(aux.TRUE))
-			se:SetLabel(1)
-		elseif tg(te3,c,tp,SUMMON_TYPE_SYNCHRO,POS_FACEUP,tp,se) then
-			te3:SetTarget(cm.Necroceanchtg3(tg))
-			se:SetLabel(1)
-		end
-	end
-	c:ResetFlagEffect(53752000)
-end
-function cm.Necroceanchcon(_con)
-	return function(e,...)
-			   local x=e:GetHandler()
-			   if x:IsHasEffect(53752000) and Duel.IsExistingMatchingCard(function(c)return (c:IsFaceup() or not c:IsLocation(LOCATION_ONFIELD)) and c:IsOriginalCodeRule(53752019) and c:IsAbleToGrave()end,x:GetControler(),LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,0,1,nil) and x:GetFlagEffect(53752000)<1 then return false end
-			   return _con(e,...)
-		   end
-end
-function cm.Necroceanreset1(e,tp,eg,ep,ev,re,r,rp)
-	local x=e:GetLabelObject():GetHandler()
-	local te=e:GetLabelObject():GetLabelObject()
-	local loc,v=e:GetLabel()
-	if x:GetLocation()&loc==0 then
-		te:SetLabel(0,v)
-		te:SetValue(v)
-		e:GetLabelObject():Reset()
-		e:Reset()
-	end
-end
-function cm.Necroceanchtg3(_tg)
-	return function(e,c,sump,sumtype,sumpos,targetp,se)
-			   if c:IsHasEffect(53752000) and se:GetHandler()==c and Duel.IsExistingMatchingCard(function(c)return (c:IsFaceup() or not c:IsLocation(LOCATION_ONFIELD)) and c:IsOriginalCodeRule(53752019) and c:IsAbleToGrave()end,c:GetControler(),LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,0,1,nil) and c:GetFlagEffect(53752000)<1 then return false end
-			   return _tg(e,c,sump,sumtype,sumpos,targetp,se)
-		   end
-end
-function cm.Necroceanchtg(_tg)
-	return function(e,c,...)
-			   if c:IsHasEffect(53752000) and Duel.IsExistingMatchingCard(function(c)return (c:IsFaceup() or not c:IsLocation(LOCATION_ONFIELD)) and c:IsOriginalCodeRule(53752019) and c:IsAbleToGrave()end,c:GetControler(),LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,0,1,nil) and c:GetFlagEffect(53752000)<1 then return false end
-			   return _tg(e,c,...)
-		   end
-end
-function cm.NecroceanSLevel(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(0,53752000)>0 then return end
-	Duel.RegisterFlagEffect(0,53752000,0,0,0)
-	func1=Card.IsCanBeSynchroMaterial
-	Card.IsCanBeSynchroMaterial=function(tc,sc,...)
-		if sc and sc.NecroceanSyn then
-			if tc:IsLocation(LOCATION_GRAVE) and tc:IsLevel(0) and tc:GetControler()==sc:GetControler() and not sc.NecroceanKythra then return false end
-			local res=Duel.IsExistingMatchingCard(function(c)return (c:IsFaceup() or not c:IsLocation(LOCATION_ONFIELD)) and c:IsOriginalCodeRule(53752019) and c:IsAbleToGrave()end,sc:GetControler(),LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,0,1,nil)
-			if tc:IsLocation(LOCATION_ONFIELD) and tc:GetControler()~=sc:GetControler() and not tc:IsHasEffect(EFFECT_SYNCHRO_MATERIAL) and not res then return false end
-			if not sc.GuyWildCard then
-				if not (tc:IsAbleToRemove() or res) then return false end
-				if tc:IsStatus(STATUS_FORBIDDEN) then return false end
-				if tc:IsHasEffect(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL) then return false end
-			end
-			return true
-		else
-			return func1(tc,sc,...)
-		end
-	end
-	func2=Card.GetSynchroLevel
-	Card.GetSynchroLevel=function(tc,sc)
-		if sc and sc.NecroceanSyn and ((tc:IsLocation(LOCATION_GRAVE) and tc:IsLevel(0) and (sc.GuyWildCard or sc.NecroceanKythra or tc:GetControler()~=sc:GetControler())) or (Duel.IsExistingMatchingCard(function(c)return (c:IsFaceup() or not c:IsLocation(LOCATION_ONFIELD)) and c:IsOriginalCodeRule(53752019) and c:IsAbleToGrave()end,sc:GetControler(),LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,0,1,nil) and tc:IsLocation(LOCATION_ONFIELD) and tc:GetControler()~=sc:GetControler() and (tc:IsFacedown() or tc:IsLevel(0)))) then
-			return 1
-		else
-			return func2(tc,sc)
-		end
-	end
-	func3=aux.GetSynMaterials
-	aux.GetSynMaterials=function(tp,sc)
-		local exg=Group.CreateGroup()
-		if sc and sc.NecroceanSyn then
-			local mg3=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_MONSTER)
-			if not mg3:IsExists(aux.NOT(Card.IsType),1,nil,TYPE_TUNER) then
-				exg=Duel.GetMatchingGroup(Card.IsCanBeSynchroMaterial,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,sc)
-			end
-			if Duel.IsExistingMatchingCard(function(c)return (c:IsFaceup() or not c:IsLocation(LOCATION_ONFIELD)) and c:IsOriginalCodeRule(53752019) and c:IsAbleToGrave()end,sc:GetControler(),LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,0,1,nil) then
-				local exg2=Duel.GetMatchingGroup(Card.IsCanBeSynchroMaterial,tp,0,LOCATION_ONFIELD,nil,sc)
-				exg:Merge(exg2)
-			end
-		end
-		return Group.__add(func3(tp,sc),exg)
-	end
-	func4=aux.SynMixCheckGoal
-	aux.SynMixCheckGoal=function(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
-		if ct<minc then return false end
-		local g=sg:Clone()
-		g:Merge(sg1)
-		if Duel.GetLocationCountFromEx(tp,tp,g,syncard)<=0 then return false end
-		if gc and not gc(g) then return false end
-		if smat and not g:IsContains(smat) then return false end
-		if not aux.MustMaterialCheck(g,tp,EFFECT_MUST_BE_SMATERIAL) then return false end
-		if not (g:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) and syncard and syncard.NecroceanSyn) then
-			if not g:CheckWithSumEqual(Card.GetSynchroLevel,syncard:GetLevel(),g:GetCount(),g:GetCount(),syncard) and (not g:IsExists(Card.IsHasEffect,1,nil,89818984) or not g:CheckWithSumEqual(aux.GetSynchroLevelFlowerCardian,syncard:GetLevel(),g:GetCount(),g:GetCount(),syncard)) then return false end
-		end
-		local hg=g:Filter(Card.IsLocation,nil,LOCATION_HAND)
-		local hct=hg:GetCount()
-		if hct>0 and not mgchk then
-			local found=false
-			for c in aux.Next(g) do
-				local he,hf,hmin,hmax=c:GetHandSynchro()
-				if he then
-					found=true
-					if hf and hg:IsExists(aux.SynLimitFilter,1,c,hf,he,syncard) then return false end
-					if (hmin and hct<hmin) or (hmax and hct>hmax) then return false end
-				end
-			end
-			if not found then return false end
-		end
-		for c in aux.Next(g) do
-			local le,lf,lloc,lmin,lmax=c:GetTunerLimit()
-			if le then
-				local lct=g:GetCount()-1
-				if lloc then
-					local llct=g:FilterCount(Card.IsLocation,c,lloc)
-					if llct~=lct then return false end
-				end
-				if lf and g:IsExists(aux.SynLimitFilter,1,c,lf,le,syncard) then return false end
-				if (lmin and lct<lmin) or (lmax and lct>lmax) then return false end
-			end
-		end
-		return true
-	end
-end
---[[function cm.Necroceansyncon(f1,f2,f3,f4,minc,maxc,gc,check,wild_check)
-	return  function(e,c,smat,mg1,min,max)
-				if c==nil then return true end
-				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
-				local minc=minc
-				local maxc=maxc
-				if min then
-					if min>minc then minc=min end
-					if max<maxc then maxc=max end
-					if minc>maxc then return false end
-				end
-				local tp=c:GetControler()
-				local mg
-				local mgchk=false
-				if mg1 then
-					mg=mg1
-					mgchk=true
-				else
-					mg=aux.GetSynMaterials(tp,c,e,check)
-				end
-				if smat~=nil then mg:AddCard(smat) end
-				return mg:IsExists(cm.NecroceanSynMixFilter1,1,nil,f1,f2,f3,f4,minc,maxc,c,mg,smat,gc,mgchk)
-			end
-end
-function cm.Necroceansyncon2(...)--deserted
-	local f1=aux.GetSynMaterials
-	local f2=aux.SynMixFilter1
-	aux.GetSynMaterials=cm.NecroceanGetSynMaterials
-	aux.SynMixFilter1=cm.NecroceanSynMixFilter1
-	local res=aux.SynMixCondition(aux.Tuner(nil),aux.NonTuner(nil),nil,nil,0,99,nil)(...)
-	aux.GetSynMaterials=f1
-	aux.SynMixFilter1=f2
-	return res
-end--]]
-function cm.Necroceansyntg(f1,f2,f3,f4,minc,maxc,gc)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg1,min,max)
-				local minc=minc
-				local maxc=maxc
-				if min then
-					if min>minc then minc=min end
-					if max<maxc then maxc=max end
-					if minc>maxc then return false end
-				end
-				local res=false
-				while true do
-				local g=Group.CreateGroup()
-				local mg
-				local mgchk=false
-				if mg1 then
-					mg=mg1
-					mgchk=true
-				else
-					mg=aux.GetSynMaterials(tp,c,e)
-				end
-				if smat~=nil then mg:AddCard(smat) end
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-				local c1=mg:FilterSelect(tp,aux.SynMixFilter1,1,1,nil,f1,f2,f3,f4,minc,maxc,c,mg,smat,gc,mgchk):GetFirst()
-				g:AddCard(c1)
-				if f2 then
-					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-					local c2=mg:FilterSelect(tp,aux.SynMixFilter2,1,1,c1,f2,f3,f4,minc,maxc,c,mg,smat,c1,gc,mgchk):GetFirst()
-					g:AddCard(c2)
-					if f3 then
-						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-						local c3=mg:FilterSelect(tp,aux.SynMixFilter3,1,1,Group.FromCards(c1,c2),f3,f4,minc,maxc,c,mg,smat,c1,c2,gc,mgchk):GetFirst()
-						g:AddCard(c3)
-					end
-				end
-				local g4=Group.CreateGroup()
-				for i=0,maxc-1 do
-					local mg2=mg:Clone()
-					if f4 then
-						mg2=mg2:Filter(f4,g,c)
-					else
-						mg2:Sub(g)
-					end
-					local cg=mg2:Filter(aux.SynMixCheckRecursive,g4,tp,g4,mg2,i,minc,maxc,c,g,smat,gc,mgchk)
-					if cg:GetCount()==0 then break end
-					local minct=1
-					if aux.SynMixCheckGoal(tp,g4,minc,i,c,g,smat,gc,mgchk) then
-						minct=0
-					end
-					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-					local tg=cg:Select(tp,minct,1,nil)
-					if tg:GetCount()==0 then break end
-					g4:Merge(tg)
-				end
-				g:Merge(g4)
-				if g:GetCount()>0 then
-					if not g:CheckWithSumEqual(Card.GetSynchroLevel,c:GetLevel(),g:GetCount(),g:GetCount(),c) and (not g:IsExists(Card.IsHasEffect,1,nil,89818984) or not g:CheckWithSumEqual(aux.GetSynchroLevelFlowerCardian,c:GetLevel(),g:GetCount(),g:GetCount(),c)) then
-						if not Duel.SelectYesNo(tp,aux.Stringid(53702600,5)) then break end
-					else
-						g:KeepAlive()
-						e:SetLabelObject(g)
-						res=true
-						break
-					end
-				else break end
-				end
-				return res
-			end
-end
---[[function cm.Necroceansyntg2(...)-
-	local f1=aux.GetSynMaterials
-	local f2=aux.SynMixFilter1
-	local f3=aux.SynMixFilter2
-	local f4=aux.SynMixFilter3
-	local f5=aux.SynMixFilter4
-	local f6=aux.SynMixCheck
-	local f7=aux.SynMixCheckRecursive
-	local f8=aux.SynMixCheckGoal
-	aux.GetSynMaterials=cm.NecroceanGetSynMaterials
-	aux.SynMixFilter1=cm.NecroceanSynMixFilter1
-	aux.SynMixFilter2=cm.NecroceanSynMixFilter2
-	aux.SynMixFilter3=cm.NecroceanSynMixFilter3
-	aux.SynMixFilter4=cm.NecroceanSynMixFilter4
-	aux.SynMixCheck=cm.NecroceanSynMixCheck
-	aux.SynMixCheckRecursive=cm.NecroceanSynMixCheckRecursive
-	aux.SynMixCheckGoal=cm.NecroceanSynMixCheckGoal
-	local res=aux.SynMixTarget(aux.Tuner(nil),aux.NonTuner(nil),nil,nil,0,99,nil)(...)
-	aux.GetSynMaterials=f1
-	aux.SynMixFilter1=f2
-	aux.SynMixFilter2=f3
-	aux.SynMixFilter3=f4
-	aux.SynMixFilter4=f5
-	aux.SynMixCheck=f6
-	aux.SynMixCheckRecursive=f7
-	aux.SynMixCheckGoal=f8
-	return res
-end--]]
-function cm.Necroceansynop(f1,f2,f3,f4,minct,maxc,gc)
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,smat,mg,min,max)
-				local g=e:GetLabelObject()
-				c:SetMaterial(g)
-				local rg=g:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
-				local pos,rsn=POS_FACEUP,0
-				if c.GuyWildCard then
-					pos=POS_FACEDOWN
-					rsn=REASON_RULE
-				end
-				local res=false
-				if g:IsExists(function(c,tp)return c:IsControler(1-tp) and c:IsLocation(LOCATION_ONFIELD) and not c:IsHasEffect(EFFECT_SYNCHRO_MATERIAL)end,1,nil,tp) then res=true end
-				if g:IsExists(aux.NOT(Card.IsAbleToRemove),1,nil) then
-					rsn=REASON_RULE
-					res=true
-				end
-				Duel.Remove(rg,pos,REASON_MATERIAL+REASON_SYNCHRO+rsn)
-				Duel.SendtoGrave(Group.__sub(g,rg),REASON_MATERIAL+REASON_SYNCHRO)
-				g:DeleteGroup()
-				if e:GetLabel()==1 or res then
-					local g=Duel.SelectMatchingCard(tp,function(c)return (c:IsFaceup() or not c:IsLocation(LOCATION_ONFIELD)) and c:IsOriginalCodeRule(53752019) and c:IsAbleToGrave()end,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,0,1,1,nil)
-					if #g>0 then Duel.SendtoGrave(g,REASON_EFFECT) end
-				end
-			end
-end
---[[function cm.Necroceansfilter(c,syncard,e,tp,check,wild_check)
-	if not wild_check then
-		if c:IsHasEffect(EFFECT_CANNOT_REMOVE) then return false end
-		local re1={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_REMOVE)}
-		local res=true
-		for _,v1 in ipairs(re1) do
-			local tg=v1:GetTarget()
-			if not tg or tg(v1,c,tp,REASON_MATERIAL+REASON_SYNCHRO,e) then res=false end
-		end
-		if not res then return false end
-	end
-	local flag=c:IsLevel(0)
-	if c:IsControler(tp) and flag and not check then return false end
-	if not wild_check then
-		local re2={c:IsHasEffect(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)}
-		for _,v2 in ipairs(re2) do
-			local val=v2:GetValue()
-			if aux.GetValueType(val)=="number" then flag=false elseif val(v2,c) then flag=false end
-		end
-	end
-	return c:IsCanBeSynchroMaterial(syncard) or flag
-end
-function cm.NecroceanGetSynMaterials(tp,syncard,e,check,wild_check)
-	local mg=Duel.GetMatchingGroup(aux.SynMaterialFilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,syncard)
-	if mg:IsExists(Card.GetHandSynchro,1,nil) then
-		local mg2=Duel.GetMatchingGroup(Card.IsCanBeSynchroMaterial,tp,LOCATION_HAND,0,nil,syncard)
-		if mg2:GetCount()>0 then mg:Merge(mg2) end
-	end
-	local mg3=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_MONSTER)
-	if not mg3:IsExists(aux.NOT(Card.IsType),1,nil,TYPE_TUNER) then
-		local exg=Duel.GetMatchingGroup(cm.Necroceansfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,syncard,e,tp,check,wild_check)
-		if exg:GetCount()>0 then mg:Merge(exg) end
-	end
-	return mg
-end
-function cm.NecroceanSynMixFilter1(c,f1,f2,f3,f4,minc,maxc,syncard,mg,smat,gc,mgchk)
-	return (not f1 or f1(c,syncard)) and mg:IsExists(cm.NecroceanSynMixFilter2,1,c,f2,f3,f4,minc,maxc,syncard,mg,smat,c,gc,mgchk)
-end
-function cm.NecroceanSynMixFilter2(c,f2,f3,f4,minc,maxc,syncard,mg,smat,c1,gc,mgchk)
-	if f2 then
-		return f2(c,syncard,c1)
-			and (mg:IsExists(cm.NecroceanSynMixFilter3,1,Group.FromCards(c1,c),f3,f4,minc,maxc,syncard,mg,smat,c1,c,gc,mgchk)
-				or minc==0 and cm.NecroceanSynMixFilter4(c,nil,1,1,syncard,mg,smat,c1,nil,nil,gc,mgchk))
-	else
-		return mg:IsExists(cm.NecroceanSynMixFilter4,1,c1,f4,minc,maxc,syncard,mg,smat,c1,nil,nil,gc,mgchk)
-	end
-end
-function cm.NecroceanSynMixFilter3(c,f3,f4,minc,maxc,syncard,mg,smat,c1,c2,gc,mgchk)
-	if f3 then
-		return f3(c,syncard,c1,c2)
-			and (mg:IsExists(cm.NecroceanSynMixFilter4,1,Group.FromCards(c1,c2,c),f4,minc,maxc,syncard,mg,smat,c1,c2,c,gc,mgchk)
-				or minc==0 and cm.NecroceanSynMixFilter4(c,nil,1,1,syncard,mg,smat,c1,c2,nil,gc,mgchk))
-	else
-		return mg:IsExists(cm.NecroceanSynMixFilter4,1,Group.FromCards(c1,c2),f4,minc,maxc,syncard,mg,smat,c1,c2,nil,gc,mgchk)
-	end
-end
-function cm.NecroceanSynMixFilter4(c,f4,minc,maxc,syncard,mg1,smat,c1,c2,c3,gc,mgchk)
-	if f4 and not f4(c,syncard,c1,c2,c3) then return false end
-	local sg=Group.FromCards(c1,c)
-	sg:AddCard(c1)
-	if c2 then sg:AddCard(c2) end
-	if c3 then sg:AddCard(c3) end
-	local mg=mg1:Clone()
-	if f4 then
-		mg=mg:Filter(f4,sg,syncard)
-	else
-		mg:Sub(sg)
-	end
-	return cm.NecroceanSynMixCheck(mg,sg,minc-1,maxc-1,syncard,smat,gc,mgchk)
-end
-function cm.NecroceanSynMixCheck(mg,sg1,minc,maxc,syncard,smat,gc,mgchk)
-	local tp=syncard:GetControler()
-	local sg=Group.CreateGroup()
-	if minc<=0 and cm.NecroceanSynMixCheckGoal(tp,sg1,0,0,syncard,sg,smat,gc,mgchk) then return true end
-	if maxc==0 then return false end
-	return mg:IsExists(cm.NecroceanSynMixCheckRecursive,1,nil,tp,sg,mg,0,minc,maxc,syncard,sg1,smat,gc,mgchk)
-end
-function cm.NecroceanSynMixCheckRecursive(c,tp,sg,mg,ct,minc,maxc,syncard,sg1,smat,gc,mgchk)
-	sg:AddCard(c)
-	ct=ct+1
-	local res=cm.NecroceanSynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
-		or (ct<maxc and mg:IsExists(cm.NecroceanSynMixCheckRecursive,1,sg,tp,sg,mg,ct,minc,maxc,syncard,sg1,smat,gc,mgchk))
-	sg:RemoveCard(c)
-	ct=ct-1
-	return res
-end
-function cm.NecroceanGetSynchroLevel(c,syncard,wild_check)
-	local slv=c:GetSynchroLevel(syncard)
-	if c:IsLocation(LOCATION_GRAVE) and c:IsLevel(0) then slv=1 end
-	return slv
-end
-function cm.NecroceanGetSynchroLevelFlowerCardian(c,syncard)
-	local slv=2
-	--if c:IsSynchroType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_GRAVE) then slv=1 end
-	return slv
-end
-function cm.NecroceanSynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk)
-	if ct<minc then return false end
-	local g=sg:Clone()
-	g:Merge(sg1)
-	if Duel.GetLocationCountFromEx(tp,tp,g,syncard)<=0 then return false end
-	if gc and not gc(g) then return false end
-	if smat and not g:IsContains(smat) then return false end
-	if not Auxiliary.MustMaterialCheck(g,tp,EFFECT_MUST_BE_SMATERIAL) then return false end
-	local hg=g:Filter(Card.IsLocation,nil,LOCATION_HAND)
-	local hct=hg:GetCount()
-	if hct>0 and not mgchk then
-		local found=false
-		for c in aux.Next(g) do
-			local he,hf,hmin,hmax=c:GetHandSynchro()
-			if he then
-				found=true
-				if hf and hg:IsExists(aux.SynLimitFilter,1,c,hf,he,syncard) then return false end
-				if (hmin and hct<hmin) or (hmax and hct>hmax) then return false end
-			end
-		end
-		if not found then return false end
-	end
-	for c in aux.Next(g) do
-		local le,lf,lloc,lmin,lmax=c:GetTunerLimit()
-		if le then
-			local lct=g:GetCount()-1
-			if lloc then
-				local llct=g:FilterCount(Card.IsLocation,c,lloc)
-				if llct~=lct then return false end
-			end
-			if lf and g:IsExists(aux.SynLimitFilter,1,c,lf,le,syncard) then return false end
-			if (lmin and lct<lmin) or (lmax and lct>lmax) then return false end
-		end
-	end
-	return true
-end--]]
---[[function cm.NecroceanSynchro(c)
-	c:EnableReviveLimit()
-	aux.AddSynchroMixProcedure(c,aux.Tuner(nil),aux.NonTuner(nil),nil,nil,0,99)
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e5:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-	e5:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
-	e5:SetRange(0xff)
-	e5:SetOperation(cm.NecroceanSLevel)
-	e5:SetCountLimit(1,EFFECT_COUNT_CODE_DUEL+53752000)
-	c:RegisterEffect(e5)
-end
-function cm.NecroceanSLevel(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(0,53752000)>0 then return end
-	Duel.RegisterFlagEffect(0,53752000,0,0,0)
-	func1=Card.IsCanBeSynchroMaterial
-	Card.IsCanBeSynchroMaterial=function(tc,sc,...)
-		if tc:IsLocation(LOCATION_GRAVE) and sc and sc.NecroceanSyn and sc.GuyWildCard then
-			if sc and tc:IsLocation(LOCATION_MZONE) and tc:GetControler()~=sc:GetControler() and not tc:IsHasEffect(EFFECT_SYNCHRO_MATERIAL) then return false end
-			return true
-		else
-			return func1(tc,sc,...)
-		end
-	end
-	func2=Card.GetSynchroLevel
-	Card.GetSynchroLevel=function(tc,sc)
-		if sc and sc.NecroceanSyn and sc.GuyWildCard and tc:IsLocation(LOCATION_GRAVE) and tc:IsLevel(0) then
-			return 1
-		else
-			return func2(tc,sc)
-		end
-	end
-	func3=aux.GetSynMaterials
-	aux.GetSynMaterials=function(tp,sc)
-		local exg=Group.CreateGroup()
-		if sc and sc.NecroceanSyn and sc.GuyWildCard then
-			local mg3=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_MONSTER)
-			if not mg3:IsExists(aux.NOT(Card.IsType),1,nil,TYPE_TUNER) then
-				exg=Duel.GetMatchingGroup(Card.IsCanBeSynchroMaterial,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,sc)
-			end
-		end
-		return Group.__add(func3(tp,sc),exg)
-	end
-end--]]
 function Intersection(t1, t2)
 	local ret = {}
 	for k, v1 in pairs(t1) do
@@ -7887,129 +7323,185 @@ function cm.Whitkinsefilter(att)
 		return te:GetOwnerPlayer()~=c:GetControler() and te:IsActiveType(TYPE_MONSTER) and te:GetHandler():IsAttribute(att)
 	end
 end
------------
---[[				local dam=tc:GetAttack()
-				local seta={tc:IsHasEffect(EFFECT_SET_BATTLE_ATTACK)}
-				if #seta>0 then
-					seta=seta[#seta]
-					dam=seta:GetValue()
-					if aux.GetValueType(dam)=="function" then val=val(dam) end
-				end
-				local le={tc:IsHasEffect(EFFECT_DEFENSE_ATTACK)}
-				local val=0
-				for _,v in pairs(le) do
-					val=v:GetValue()
-					if aux.GetValueType(val)=="function" then val=val(e) end
-				end
-				if val==1 then
-					local setd={tc:IsHasEffect(EFFECT_SET_BATTLE_DEFENSE)}
-					if #setd>0 then
-						setd=setd[#setd]
-						dam=setd:GetValue()
-						if aux.GetValueType(dam)=="function" then val=val(dam) end
+--written by purplenightfall
+--subgroup optimization
+function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
+	--classif: function to classify cards, e.g. function(c,tc) return c:GetLevel()==tc:GetLevel() end
+	--sortif: function of subgroup search order, high to low. e.g. Card.GetLevel
+	--passf: cards that do not require check, e.g. function(c) return c:IsLevel(1) end
+	--goalstop: do you want to backtrack after reaching the goal? true/false
+	--check: do you want to return true after reaching the goal firstly? true/false
+	local classif,sortf,passf,goalstop,check,params1,params2=table.unpack(cm.SubGroupParams)
+	min=min or 1
+	max=max or #g
+	local sg=Group.CreateGroup()
+	local fg=Duel.GrabSelectedCard()
+	if #fg>max or min>max or #(g+fg)<min then return nil end
+	for tc in aux.Next(fg) do
+		fg:SelectUnselect(sg,tp,false,false,min,max)
+	end
+	sg:Merge(fg)
+	local mg=g-sg
+	local iisg,tmp,stop,iter,ctab,rtab,gtab
+	--main check
+	local finish=(#sg>=min and #sg<=max and f(sg,...))
+	while #sg<max do
+		mg=g-sg
+		iisg=sg:Clone()
+		if passf then
+			aux.SubGroupCaptured=mg:Filter(passf,nil)
+		else
+			aux.SubGroupCaptured=Group.CreateGroup()
+		end
+		ctab,rtab,gtab={},{},{1}
+		for tc in aux.Next(mg) do
+			ctab[#ctab+1]=tc
+		end
+		--high to low
+		if sortf then
+			for i=1,#ctab-1 do
+				for j=1,#ctab-1-i do
+					if sortf(ctab[j],table.unpack(params2))<sortf(ctab[j+1],table.unpack(params2)) then
+						tmp=ctab[j]
+						ctab[j]=ctab[j+1]
+						ctab[j+1]=tmp
 					end
 				end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(id)
-	e1:SetRange(LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE)
-	c:RegisterEffect(e1)
-	if not s.global_check then
-		s.global_check=true
-		local ge0=Effect.GlobalEffect()
-		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge0:SetCode(EVENT_ADJUST)
-		ge0:SetLabelObject(sg)
-		ge0:SetOperation(s.geop)
-		Duel.RegisterEffect(ge0,0)
-		s.OAe={}
-	end
-end
-function s.geop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(function(c)return c:IsOriginalCodeRule(46173679) and c:GetActivateEffect()end,0,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,nil)
-	for tc in aux.Next(g) do
-		local le={tc:GetActivateEffect()}
-		for _,v in pairs(le) do
-			if v:GetRange()&0x10a~=0 and not SNNM.IsInTable(v,s.OAe) then
-				table.insert(s.OAe,v)
-				local e1=v:Clone()
-				e1:SetRange(LOCATION_DECK+LOCATION_GRAVE)
-				e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-				tc:RegisterEffect(e1,true)
-				local e2=SNNM.Act(tc,e1)
-				e2:SetRange(LOCATION_DECK+LOCATION_GRAVE)
-				e2:SetCost(s.costchk)
-				e2:SetOperation(s.costop2)
-				tc:RegisterEffect(e2,true)
-				local e3=Effect.CreateEffect(tc)
-				e3:SetType(EFFECT_TYPE_FIELD)
-				e3:SetCode(EFFECT_ACTIVATE_COST)
-				e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
-				e3:SetRange(LOCATION_HAND)
-				e3:SetLabelObject(v)
-				e3:SetTargetRange(1,0)
-				e3:SetTarget(s.costtg)
-				e3:SetOperation(s.costop1)
-				tc:RegisterEffect(e3,true)
 			end
 		end
-	end
-end
-function s.costchk(e,te,tp)
-	return Duel.IsExistingMatchingCard(Card.IsHasEffect,tp,0xff,0,1,nil,id)
-end
-function s.costtg(e,te,tp)
-	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject() and Duel.IsExistingMatchingCard(Card.IsHasEffect,tp,0xff,0,nil,id)
-end
-function s.costop1(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.SelectYesNo(tp,aux.Stringid(id,0)) then return end
-	s.costop(e,tp,eg,ep,ev,re,r,rp)
-end
-function s.costop2(e,tp,eg,ep,ev,re,r,rp)
-	s.costop(e,tp,eg,ep,ev,re,r,rp)
-	SNNM.BaseActOp(e,tp,eg,ep,ev,re,r,rp)
-end
-function s.costop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,1))
-	local tc=Duel.SelectMatchingCard(tp,Card.IsHasEffect,tp,0xff,0,1,1,nil,id):GetFirst()
-	Duel.ConfirmCards(1-tp,tc)
-	local ev0=Duel.GetCurrentChain()+1
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_SOLVED)
-	e1:SetCountLimit(1)
-	e1:SetLabelObject(tc)
-	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return ev==ev0 end)
-	e1:SetOperation(s.op)
-	e1:SetReset(RESET_CHAIN)
-	Duel.RegisterEffect(e1,tp)
-	tc:CreateEffectRelation(e1)
-end
-function s.op(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if not tc:IsRelateToEffect(e) then return end
-	local le={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_SUMMON)}
-	for _,v in pairs(le) do
-		if v:GetOwner()==e:GetOwner() then
-			local tg=v:GetTarget() or aux.TRUE
-			if tg(v,tc,tp,SUMMON_TYPE_ADVANCE,POS_FACEUP,tp,e) then v:SetTarget(s.chtg(tg,tc)) end
-		end
-	end
-	if not (tc:IsAbleToHand() or tc:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1)) or not Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,tc,REASON_EFFECT) or not Duel.SelectYesNo(tp,aux.Stringid(id,2)) then return end
-	if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD,tc)==0 then return end
-	if not tc:IsLocation(LOCATION_HAND) then Duel.SendtoHand(tc,nil,REASON_EFFECT) else
-		local s1=tc:IsSummonable(true,nil,1)
-		local s2=tc:IsMSetable(true,nil,1)
-		if (s1 and s2 and Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
-			Duel.Summon(tp,tc,true,nil,1)
+		--classify
+
+		if classif then
+			--make similar cards adjacent
+			for i=1,#ctab-2 do
+				for j=i+2,#ctab do
+					if classif(ctab[i],ctab[j],table.unpack(params1)) then
+						tmp=ctab[j]
+						ctab[j]=ctab[i+1]
+						ctab[i+1]=tmp
+					end
+				end
+			end
+			--rtab[i]: what category does the i-th card belong to
+			--gtab[i]: What is the first card's number in the i-th category
+			for i=1,#ctab-1 do
+				rtab[i]=#gtab
+				if not classif(ctab[i],ctab[i+1],table.unpack(params1)) then
+					gtab[#gtab+1]=i+1
+				end
+			end
+			--iter record all cards' number in sg
+			iter={1}
+			sg:AddCard(ctab[1])
+			while #sg>#iisg and #aux.SubGroupCaptured<#mg do
+				stop=false
+				--prune if too much cards
+				if aux.GCheckAdditional and not aux.GCheckAdditional(sg,c,g,f,min,max,...) then
+					stop=true
+				--skip check if no new cards
+				elseif #(sg-iisg-aux.SubGroupCaptured)>0 and #sg>=min and #sg<=max and f(sg,...) then
+					for sc in aux.Next(sg-iisg) do
+						if check then return true end
+						aux.SubGroupCaptured:Merge(mg:Filter(classif,nil,sc,table.unpack(params1)))
+					end
+					stop=goalstop
+				end
+				if #sg>=max then stop=true end
+				local code=iter[#iter]
+				--last card isn't in the last category
+				if code and code<gtab[#gtab] then
+					if stop then
+						--backtrack and add 1 card from next category
+						iter[#iter]=gtab[rtab[code]+1]
+						sg:RemoveCard(ctab[code])
+						sg:AddCard(ctab[(iter[#iter])])
+					else
+						--continue searching forward
+						iter[#iter+1]=code+1
+						sg:AddCard(ctab[code+1])
+					end
+				--last card is in the last category
+				elseif code then
+					if stop or code>=#ctab then
+						--clear all cards in the last category
+						while #iter>0 and iter[#iter]>=gtab[#gtab] do
+							sg:RemoveCard(ctab[(iter[#iter])])
+							iter[#iter]=nil
+						end
+						--backtrack and add 1 card from next category
+						local code2=iter[#iter]
+						if code2 then
+							iter[#iter]=gtab[rtab[code2]+1]
+							sg:RemoveCard(ctab[code2])
+							sg:AddCard(ctab[(iter[#iter])])
+						end
+					else
+						--continue searching forward
+						iter[#iter+1]=code+1
+						sg:AddCard(ctab[code+1])
+					end
+				end
+			end
+		--classification is essential for efficiency, and this part is only for backup
 		else
-			Duel.MSet(tp,tc,true,nil,1)
+			iter={1}
+			sg:AddCard(ctab[1])
+			while #sg>#iisg and #aux.SubGroupCaptured<#mg do
+				stop=false
+				if aux.GCheckAdditional and not aux.GCheckAdditional(sg,c,g,f,min,max,...) then
+					stop=true
+				elseif #(sg-iisg-aux.SubGroupCaptured)>0 and #sg>=min and #sg<=max and f(sg,...) then
+					for sc in aux.Next(sg-iisg) do
+						if check then return true end
+						aux.SubGroupCaptured:AddCard(sc) --Merge(mg:Filter(class,nil,sc))
+					end
+					stop=goalstop
+				end
+				if #sg>=max then stop=true end
+				local code=iter[#iter]
+				if code<#ctab then
+					if stop then
+						iter[#iter]=nil
+						sg:RemoveCard(ctab[code])
+					end
+					iter[#iter+1]=code+1
+					sg:AddCard(ctab[code+1])
+				else
+					local code2=iter[#iter-1]
+					iter[#iter]=nil
+					sg:RemoveCard(ctab[code])
+					if code2 and code2>0 then
+						iter[#iter]=code2+1
+						sg:RemoveCard(ctab[code2])
+						sg:AddCard(ctab[code2+1])
+					end
+				end
+			end
+		end
+		--finish searching
+		sg=iisg
+		local cg=aux.SubGroupCaptured:Clone()
+		aux.SubGroupCaptured:Clear()
+		cg:Sub(sg)
+		finish=(#sg>=min and #sg<=max and f(sg,...))
+		if #cg==0 then break end
+		local cancel=not finish and cancelable
+		local tc=cg:SelectUnselect(sg,tp,finish,cancel,min,max)
+		if not tc then break end
+		if not fg:IsContains(tc) then
+			if not sg:IsContains(tc) then
+				sg:AddCard(tc)
+				if #sg==max then finish=true end
+			else
+				sg:RemoveCard(tc)
+			end
+		elseif cancelable then
+			return nil
 		end
 	end
+	if finish then
+		return sg
+	else
+		return nil
+	end
 end
-function s.chtg(_tg,tc)
-	return  function(e,c,...)
-				return _tg(e,c,...) and c~=tc
-			end
-end--]]

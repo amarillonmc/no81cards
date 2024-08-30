@@ -1,12 +1,10 @@
 local m=53752013
 local cm=_G["c"..m]
 cm.name="破灭之阿尔坎"
-cm.NecroceanSyn=true
---cm.GuyWildCard=true
 if not require and dofile then function require(str) return dofile(str..".lua") end end
-if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
+if not pcall(function() require("expansions/script/c53752002") end) then require("script/c53752002") end
 function cm.initial_effect(c)
-	SNNM.NecroceanSynchro(c)
+	Necrocean.AddSynchroMixProcedure(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_DECKDES)

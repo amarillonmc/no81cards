@@ -130,7 +130,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 						end
 						local op0=e:GetOperation() or (function() end)
 						local prop1,prop2=e:GetProperty()
-						te:SetProperty(prop1|EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_UNCOPYABLE,prop2)
+						te:SetProperty(prop1|EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_CANNOT_INACTIVATE,prop2)
 						local op2=function(e,tp,eg,ep,ev,re,r,rp)
 									e:SetOperation(op0)
 									op0(e,tp,eg,ep,ev,re,r,rp)
@@ -238,7 +238,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 										end
 									elseif sel==2 then
 										cm[tp]=cm[tp]-4
-										Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,2)
+										Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 										if not cm.reg then
 											cm.reg=true
 											local e1=Effect.CreateEffect(e:GetHandler())

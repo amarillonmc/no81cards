@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCost(cm.xcost)
+	--e4:SetCost(cm.xcost)
 	e4:SetTarget(cm.xtg)
 	e4:SetOperation(cm.xop)
 	c:RegisterEffect(e4)
@@ -112,11 +112,11 @@ end
 function cm.xtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
-		if e:GetLabel()~=100 then return false end
-		e:SetLabel(0)
+		--if e:GetLabel()~=100 then return false end
+		--e:SetLabel(0)
 		local b1=(c:IsCanRemoveCounter(tp,0xfc,2,REASON_COST) and Duel.IsExistingMatchingCard(cm.xfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,c))
 		local b2=(c:IsCanRemoveCounter(tp,0xfc,3,REASON_COST) and Duel.IsExistingMatchingCard(cm.xfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,LOCATION_GRAVE+LOCATION_MZONE,1,c))
-		return b1 or b2
+		return e:IsCostChecked() and (b1 or b2)
 	end
 	local b1=(c:IsCanRemoveCounter(tp,0xfc,2,REASON_COST) and Duel.IsExistingMatchingCard(cm.xfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,c))
 	local b2=(c:IsCanRemoveCounter(tp,0xfc,3,REASON_COST) and Duel.IsExistingMatchingCard(cm.xfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,LOCATION_GRAVE+LOCATION_MZONE,1,c))

@@ -50,7 +50,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			local c=e:GetHandler()
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_SYNCHRO_MATERIAL)
+			e1:SetCode(EFFECT_EXTRA_SYNCHRO_MATERIAL)
+			e1:SetOwnerPlayer(tp)
+			e1:SetValue(cm.matval)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1)
 			local e2=Effect.CreateEffect(c)
@@ -75,6 +77,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterEffect(e3,tp)
 		end
 	end
+end
+function cm.matval(e,c)
+	return c:IsControler(e:GetOwnerPlayer())
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()

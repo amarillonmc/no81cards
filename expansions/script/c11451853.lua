@@ -196,8 +196,12 @@ function cm.nnfilter(c,tc)
 	local loc=tc:GetLocation()
 	return c==tc or (s<5 and seq<5 and math.abs(seq-s)<=1 and c:IsControler(tp) and c:IsLocation(loc))
 end
+local _IsCanTurnSet=Card.IsCanTurnSet
+function Card.IsCanTurnSet(c)
+    return (c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)) or ((_IsCanTurnSet(c) and not c:IsLocation(LOCATION_SZONE)))
+end
 function cm.dsfilter(c)
-	return c:IsFaceup() and (c:IsCanTurnSet() or (c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)))
+	return c:IsFaceup() and c:IsCanTurnSet()
 end
 function cm.tfilter(c)
 	return c:IsFacedown() and c:IsOnField()

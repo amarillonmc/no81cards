@@ -80,6 +80,13 @@ function Auxiliary.PreloadUds()
 		table_range[e]=r
 		return _SetRange(e,r,...)
 	end
+	local _Clone=Effect.Clone
+	function Effect.Clone(e)
+		table_range=table_range or {}
+		local clone_e=_Clone(e)
+		table_range[clone_e]=r
+		return clone_e
+	end
 	local _IsCanTurnSet=Card.IsCanTurnSet
 	function Card.IsCanTurnSet(c)
 		return (c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)) or ((_IsCanTurnSet(c) and not c:IsLocation(LOCATION_SZONE)))

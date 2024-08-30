@@ -146,13 +146,13 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if KOISHI_CHECK then
-		Duel.ResetTimeLimit(0,360)
-		Duel.ResetTimeLimit(1,360)
+		Duel.ResetTimeLimit(0,600)
+		Duel.ResetTimeLimit(1,600)
 		local e0=Effect.CreateEffect(c) 
 		e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e0:SetCode(EVENT_PHASE_START+PHASE_DRAW)
 		e0:SetCountLimit(1)
-		e0:SetOperation(function() Duel.ResetTimeLimit(0,360) Duel.ResetTimeLimit(1,360) end)
+		e0:SetOperation(function() Duel.ResetTimeLimit(0,600) Duel.ResetTimeLimit(1,600) end)
 		Duel.RegisterEffect(e0,0)
 	end
 	local ag=Duel.GetMatchingGroup(cm.nnfilter,0,0xff,0xff,nil)

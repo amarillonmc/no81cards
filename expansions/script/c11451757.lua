@@ -67,8 +67,12 @@ end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler())
 end
+local _IsCanTurnSet=Card.IsCanTurnSet
+function Card.IsCanTurnSet(c)
+    return (c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)) or ((_IsCanTurnSet(c) and not c:IsLocation(LOCATION_SZONE)))
+end
 function cm.dsfilter(c)
-	return c:IsFaceup() and (c:IsCanTurnSet() or (c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)))
+	return c:IsFaceup() and c:IsCanTurnSet()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

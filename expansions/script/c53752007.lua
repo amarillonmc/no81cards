@@ -1,12 +1,10 @@
 local m=53752007
 local cm=_G["c"..m]
 cm.name="仇恨之安妮"
-cm.NecroceanSyn=true
---cm.GuyWildCard=true
 if not require and dofile then function require(str) return dofile(str..".lua") end end
-if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
+if not pcall(function() require("expansions/script/c53752002") end) then require("script/c53752002") end
 function cm.initial_effect(c)
-	SNNM.NecroceanSynchro(c)
+	Necrocean.AddSynchroMixProcedure(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
