@@ -23,6 +23,7 @@ function c98920542.initial_effect(c)
 	e4:SetOperation(c98920542.tnop)
 	c:RegisterEffect(e4)
 end
+c98920542.treat_itself_tuner=true
 function c98920542.spfilter(c,e,tp)
 	return c:IsRace(RACE_FISH) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end

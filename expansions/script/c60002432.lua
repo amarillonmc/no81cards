@@ -124,11 +124,11 @@ end
 function cm.filter(c)
 	return c:IsLevel(9) and c:IsRace(RACE_FAIRY) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
