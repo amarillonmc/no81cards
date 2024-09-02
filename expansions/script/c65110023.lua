@@ -29,8 +29,12 @@ function s.mofilter(c)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.mofilter,tp,LOCATION_ONFIELD,0,1,nil) end
-	local mc=Duel.SelectMatchingCard(tp,s.mofilter,tp,LOCATION_ONFIELD,0,1,nil)
-	Duel.MoveToField(mc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+	local mc=Duel.SelectMatchingCard(tp,s.mofilter,tp,LOCATION_ONFIELD,0,1,1,nil):GetFirst()
+	if mc:IsLocation(LOCATION_SZONE) then
+		Duel.MoveSequence(mc,5)
+	else
+		Duel.MoveToField(mc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+	end
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,0,1,nil) end

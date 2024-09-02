@@ -21,7 +21,7 @@ local e1=Effect.CreateEffect(c)
 local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_QUICK_O)
-	e3:SetCountLimit(1,m)
+	e3:SetCountLimit(1,m+1000)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetCost(cm.cost2)
 	e3:SetTarget(cm.tg2)
@@ -65,7 +65,7 @@ end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()
 	if Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_MZONE,0,1,c,TYPE_XYZ) then
-		local aa=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_MZONE,0,1,1,c,TYPE_XYZ)
+		local aa=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_MZONE,0,1,1,c,TYPE_XYZ):GetFirst()
 		Duel.Overlay(aa,c)
 	end
 end

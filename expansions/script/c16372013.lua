@@ -157,7 +157,7 @@ function c16372013.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetChainLimit(c16372013.chainlm)
 end
 function c16372013.chainlm(re,rp,tp)
-	return tp==rp or not re:GetHandler():IsType(TYPE_MONSTER) or re:GetHandler():IsRace(RACE_PLANT)
+	return tp==rp or re:GetHandler():IsRace(RACE_PLANT)
 end
 function c16372013.op(e,tp,eg,ep,ev,re,r,rp)
 	local dc=e:GetLabelObject()

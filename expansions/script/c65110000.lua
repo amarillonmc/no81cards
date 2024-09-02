@@ -128,6 +128,7 @@ function s.spcop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g:Select(tp,1,1,nil),0,tp,tp,false,false,POS_FACEUP)
 	end
+	e:Reset()
 end
 function s.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

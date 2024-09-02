@@ -1,6 +1,6 @@
 --玉桂·花信
 function c16372008.initial_effect(c)
-	--special summon/set
+	--can not diseffect
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -60,7 +60,7 @@ function c16372008.con(e,tp,eg,ep,ev,re,r,rp)
 end
 function c16372008.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToGraveAsCost()
+	if chk==0 then return c:IsAbleToRemoveAsCost()
 		and Duel.GetCustomActivityCount(16372008,tp,ACTIVITY_SPSUMMON)==0 end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -70,7 +70,7 @@ function c16372008.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetTargetRange(1,0)
 	e1:SetTarget(c16372008.splimitoath)
 	Duel.RegisterEffect(e1,tp)
-	Duel.SendtoGrave(c,REASON_COST)
+	Duel.Remove(c,POS_FACEUP,REASON_COST)
 end
 function c16372008.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,16372008)==0 end

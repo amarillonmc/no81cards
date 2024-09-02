@@ -81,8 +81,8 @@ function c10111122.ctop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e2)
 		tc=g:GetNext()
         Duel.BreakEffect()
-		Duel.Draw(tp,1,REASON_EFFECT)
 	end
+	Duel.Draw(tp,1,REASON_EFFECT)
 end
 function c10111122.eftg(e,c)
 	return c:IsType(TYPE_EFFECT) and c:IsSetCard(0x11a)

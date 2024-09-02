@@ -44,7 +44,9 @@ end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local count=eg:Filter(Card.IsType,nil,TYPE_MONSTER):GetCount()
-	c:AddCounter(0x1,count)
+	if count>0 then
+		c:AddCounter(0x1,count)
+	end
 end
 function s.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x1,13,REASON_COST) end

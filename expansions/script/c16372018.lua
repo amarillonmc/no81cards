@@ -71,7 +71,7 @@ function c16372018.cfilter(c,tp)
 end
 function c16372018.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c16372018.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,tp) end
-	local g=Duel.SelectMatchingCard(tp,c16372018.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c16372018.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,tp)
 	Duel.SendtoGrave(g,REASON_COST)
 	e:SetLabel(g:GetFirst():GetCode())
 end
