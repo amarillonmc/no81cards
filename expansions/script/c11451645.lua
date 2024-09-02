@@ -1,7 +1,6 @@
 --救祓少女·埃莉亚忒
 --21.12.31
-local m=11451645
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,4,3)

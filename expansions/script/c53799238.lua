@@ -25,7 +25,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if res1 then
 			Duel.SpecialSummon(tc,0,1-tp,1-tp,false,false,POS_FACEDOWN_DEFENSE)
 			Duel.ConfirmCards(tp,tc)
-		else Duel.SSet(1-tp,tc) end
+		else Duel.SSet(1-tp,tc,1-tp,true) end
 	end
 	Duel.ShuffleHand(1-tp)
 end

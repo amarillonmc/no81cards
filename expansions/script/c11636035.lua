@@ -32,7 +32,7 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_DRAW)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetRange(LOCATION_EXTRA)
-	--e4:SetCountLimit(3)
+	e4:SetCountLimit(3)
 	e4:SetCondition(cm.decon)
 	e4:SetOperation(cm.deop)
 	c:RegisterEffect(e4)
@@ -121,13 +121,22 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 --
 function cm.decon(e,tp,eg,ep,ev,re,r,rp)
-	local p=e:GetHandler():GetOwner()
-	return p~=e:GetHandler():GetControler() and ep==tp and e:GetHandler():GetFlagEffect(m)<2
+	return e:GetHandler():GetOwner()~=tp and ep==tp
 end
-function cm.deop(e,tp,eg,ep,ev,re,r,rp)
+
+function cm.oprep(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	Duel.Draw(1-tp,1,REASON_EFFECT)
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	if Duel.Draw(1-tp,1,REASON_EFFECT) then
+		Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+11636070,e,0,0,0,0)
+	end
+end
+
+function cm.deop(e,tp,eg,ep,ev,re,r,rp)
+	cm.oprep(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsPlayerAffectedByEffect(tp,11636065) and e:CheckCountLimit(tp) then
+		cm.oprep(e,tp,eg,ep,ev,re,r,rp)
+		e:UseCountLimit(tp)
+	end
 end
 --
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)

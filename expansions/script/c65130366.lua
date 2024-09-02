@@ -28,7 +28,6 @@ function s.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_LEAVE_FIELD_P)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(s.addcon)
 	e3:SetOperation(s.addop)
 	c:RegisterEffect(e3)
 end
@@ -78,13 +77,9 @@ end
 function s.atkval(e,c)
 	return c:GetOverlayCount()*100*math.max(1,c:GetFlagEffect(id))
 end
-function s.addcon(e,tp,eg,ep,ev,re,r,rp)
-	return r&REASON_REPLACE==0
-end
 function s.addop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=math.max(1,c:GetFlagEffect(id))
-	Duel.Destroy(c,REASON_REPLACE)
 	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
 	for i=1,ct do
 		for tc in aux.Next(g) do				

@@ -36,9 +36,15 @@ function fugf.Filter(g, f, v, n)
 	if n then return n>0 and #g>=n or (n<0 and #g<-n) end
 	return g
 end
-fugf.Get = function(tp,loc) return Duel.GetFieldGroup(tp,fusf.Get_Loc(loc)) end
-fugf.GetFilter = function(tp,loc,f,v,n) return fugf.Filter(fugf.Get(tp,loc),f,v,n) end
-fugf.SelectFilter = function(tp,loc,f,v,c,min,max,sp) return fugf.GetFilter(tp,loc,f,v):Select(sp or tp,min or 1,max or min or 1,c) end
+function fugf.Get(tp,loc) 
+	return Duel.GetFieldGroup(tp,fusf.Get_Loc(loc)) 
+end
+function fugf.GetFilter(tp,loc,f,v,n) 
+	return fugf.Filter(fugf.Get(tp,loc),f,v,n) 
+end
+function fugf.SelectFilter(tp,loc,f,v,c,min,max,sp) 
+	return fugf.GetFilter(tp,loc,f,v):Select(sp or tp,min or 1,max or min or 1,c) 
+end
 function fugf.SelectTg(tp,loc,f,v,c,min,max,sp)
 	local g=fugf.SelectFilter(tp,loc,f,v,c,min,max,sp)
 	Duel.SetTargetCard(g)
@@ -50,36 +56,23 @@ function fucf.Filter(c,f,...)
 	v = #v==1 and v[1] or v
 	return fugf.Filter(Group.FromCards(c),f,v,1)
 end
-function fucf.Compare(c,f,n,meth,...)
-	if type(f) == "string" then f = fucf[f] or Card[f] or aux[f] end
-	local v = {...}
-	v = type(v[1]) =="table" and #v==1 and v[1] or v
-	if meth == "A" then
-		return f(c,table.unpack(v))>=n
-	elseif meth == "B" then
-		return f(c,table.unpack(v))<=n
-	end
-	return f(c,table.unpack(v))==n
-end
-fucf.A = function(c,f,n,...) return fucf.Compare(c,f,n,"A",...) end
-fucf.B = function(c,f,n,...) return fucf.Compare(c,f,n,"B",...) end
-fucf.E = function(c,f,n,...) return fucf.Compare(c,f,n,nil,...) end
 function fucf.IsN(func)
-	return function(c,val,exval)
-		local _func,_val = func,val
-		if type(val) == "string" then
-			if val:match("+") then 
-				local _,ed = _val:find("+")
-				_val = _val:sub(ed + 1,#_val)
-				return Card[_func](c,exval) >= tonumber(_val) 
+	return function(c, val, exval)
+		if type(val) == "string" and val:match("[%+%-]") then
+			local st, ed  = val:find("[%+%-]")
+			if st == 1 then
+				st, ed = 2, #val
+			else
+				st, ed = 1, #val -1
 			end
-			if val:match("-") then 
-				local _,ed = _val:find("-")
-				_val = _val:sub(ed + 1,#_val)
-				return Card[_func](c,exval) <= tonumber(_val) 
-			end
+			local _val = math.abs(tonumber(val:sub(st, ed)))
+			local Cal = {
+				["+"] = Card[func](c, exval) >= _val,
+				["-"] = Card[func](c, exval) <= _val
+			}
+			return Cal[val:match("[%+%-]")]
 		end
-		return Card[_func](c,exval) == tonumber(_val) 
+		return Card[func](c,exval) == tonumber(val)
 	end
 end
 fucf.IsRk = fucf.IsN("GetRank")
@@ -123,7 +116,32 @@ end
 function fucf.CanSp(c,e,tp,typ,nochk,nolimit,pos,totp,zone)
 	return c:IsCanBeSpecialSummoned(e, typ, tp, nochk or false, nolimit or false, pos or POS_FACEUP, totp or tp,zone or 0xff)
 end
-fucf.IsCod = function(c,cod) return c:IsCode(tonumber(cod)<19999999 and (tonumber(cod)+20000000) or tonumber(cod)) end
+function fucf.IsCod(c,cod)
+	local _cod
+	if aux.GetValueType(cod) == "number" then
+		_cod = {cod}
+	elseif aux.GetValueType(cod) == "string" then
+		_cod = fusf.CutString(cod, ",")
+	elseif aux.GetValueType(cod) == "table" then
+		_cod = cod
+	end
+	for i,v in ipairs(_cod) do
+		_cod[i] = tonumber(v)<19999999 and (tonumber(v)+20000000) or tonumber(v)
+	end
+	return c:IsCode(table.unpack(_cod))
+end
+function fucf.AddCode(c, ...)
+	local _codes = {...}
+	for i,code in ipairs(_codes) do
+		if (code < 19999999) then _codes[i] = code + 20000000 end
+	end
+	aux.AddCodeList(c,table.unpack(_codes))
+end
+function fucf.HasCode(c, cod)
+	local _cod = tonumber(cod)
+	_cod = (_cod < 19999999) and _cod + 20000000 or _cod
+	return aux.IsCodeListed(c,_cod)
+end
 fucf.TgChk = Card.IsCanBeEffectTarget
 fucf.GChk = function(c) return not c:IsHasEffect(EFFECT_NECRO_VALLEY) end
 fucf.IsImm = Card.IsImmuneToEffect

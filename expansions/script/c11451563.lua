@@ -22,24 +22,105 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetCategory(CATEGORY_POSITION+CATEGORY_EQUIP)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetRange(LOCATION_SZONE)
 	--e3:SetCountLimit(1,m)
-	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	--e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e3:SetCode(EVENT_SUMMON_SUCCESS)
+	e3:SetCondition(cm.trcon)
 	e3:SetCost(cm.trcost)
 	e3:SetTarget(cm.trtg)
 	e3:SetOperation(cm.trop)
 	c:RegisterEffect(e3)
+	local e31=e3:Clone()
+	e31:SetType(EFFECT_TYPE_QUICK_O)
+	e31:SetCondition(function(e,...) return e:GetHandler():IsFacedown() and cm.trcon(e,...) end)
+	e31:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	c:RegisterEffect(e31)
 	local e4=e3:Clone()
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
+	local e41=e4:Clone()
+	e41:SetType(EFFECT_TYPE_QUICK_O)
+	e41:SetCondition(function(e,...) return e:GetHandler():IsFacedown() and cm.trcon(e,...) end)
+	e41:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	c:RegisterEffect(e41)
 	local e5=e3:Clone()
 	e5:SetDescription(aux.Stringid(m,2))
 	e5:SetCode(EVENT_CHAINING)
+	e5:SetProperty(EFFECT_FLAG_DELAY)
 	e5:SetCondition(cm.con)
 	e5:SetTarget(cm.trtg2)
 	c:RegisterEffect(e5)
+	local e51=e3:Clone()
+	e51:SetDescription(aux.Stringid(m,2))
+	e51:SetCode(EVENT_CUSTOM+m)
+	e51:SetType(EFFECT_TYPE_QUICK_O)
+	e51:SetCondition(function(e,tp,eg,ep,...) return ep==1-tp and e:GetHandler():IsFacedown() and #eg>0 end)
+	e51:SetTarget(cm.trtg3)
+	e51:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	c:RegisterEffect(e51)
+	if not cm.global_check then
+		cm.global_check=true
+		local g=Group.CreateGroup()
+		g:KeepAlive()
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAINING)
+		ge1:SetOperation(cm.check)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_CHAIN_SOLVED)
+		ge2:SetLabelObject(g)
+		ge2:SetCondition(cm.clearcon)
+		ge2:SetOperation(cm.clear)
+		Duel.RegisterEffect(ge2,0)
+		local ge3=ge2:Clone()
+		ge3:SetCode(EVENT_CHAIN_NEGATED)
+		Duel.RegisterEffect(ge3,0)
+		local ge4=ge1:Clone()
+		ge4:SetCode(EVENT_CHAIN_NEGATED)
+		ge4:SetCondition(cm.rscon)
+		ge4:SetOperation(cm.reset)
+		Duel.RegisterEffect(ge4,0)
+	end
+end
+function cm.check(e,tp,eg,ep,ev,re,r,rp)
+	local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)
+	local tf=re:GetHandler():IsRelateToEffect(re)
+	local cid=re:GetHandler():GetRealFieldID()
+	cm[ev]={re,tf,cid,p,loc}
+	re:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+0x1fc0000+RESET_CHAIN,0,1)
+end
+function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentChain()>1
+end
+function cm.reset(e,tp,eg,ep,ev,re,r,rp)
+	cm[ev]={re,false,0,0,0}
+	re:GetHandler():ResetFlagEffect(m+2)
+end
+function cm.clearcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentChain()==1
+end
+function cm.clear(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetCode()==EVENT_CHAIN_NEGATED then cm.reset(e,tp,eg,ep,ev,re,r,rp) end
+	local i=1
+	local g0=Group.CreateGroup()
+	local g1=Group.CreateGroup()
+	while cm[i] do
+		if type(cm[i])=="table" then
+			local te,tf,cid,p,loc=table.unpack(cm[i])
+			local tc=te:GetHandler()
+			if (tf and p==0 and loc&LOCATION_MZONE~=0 and tc:GetFlagEffect(m+1)>0) then g0:AddCard(tc) end
+			if (tf and p==1 and loc&LOCATION_MZONE~=0 and tc:GetFlagEffect(m+1)>0) then g1:AddCard(tc) end
+			i=i+1
+		end
+		cm[i]=nil
+		i=i+1
+	end
+	Duel.RaiseEvent(g0,EVENT_CUSTOM+m,re,r,rp,0,ev)
+	Duel.RaiseEvent(g1,EVENT_CUSTOM+m,re,r,rp,1,ev)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
@@ -55,9 +136,15 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	local loc=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_LOCATION)
+	local p,loc=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)
 	local tc=re:GetHandler()
-	return tc:IsControler(1-tp) and loc&LOCATION_MZONE~=0
+	return p==1-tp and loc&LOCATION_MZONE~=0
+end
+function cm.tgfilter(c,tp)
+	return c:IsFaceup() and c:IsControler(tp)
+end
+function cm.trcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.tgfilter,1,nil,1-tp)
 end
 function cm.trcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -73,8 +160,9 @@ function cm.filter(c,tp)
 	return c:IsFaceup() and c:IsControler(1-tp) and c:IsCanTurnSet()
 end
 function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp) and not eg:IsContains(e:GetHandler():GetEquipTarget()) end
+	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp) end
 	local g=eg:Filter(cm.filter,nil,tp)
+	Duel.HintSelection(g)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,#g,0,0)
 end
@@ -82,6 +170,17 @@ function cm.trtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=re:GetHandler()
 	if chk==0 then return tc:IsRelateToEffect(re) and tc:IsFaceup() and tc:IsCanTurnSet() and tc:IsControler(1-tp) and tc~=e:GetHandler():GetEquipTarget() end
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,tc,1,0,0)
+end
+function cm.trtg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return eg:IsExists(Card.IsCanTurnSet,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+	local g=eg:Filter(Card.IsCanTurnSet,nil)
+	if #g>1 then
+		g=eg:FilterSelect(Card.IsCanTurnSet,1,1,nil)
+	end
+	Duel.HintSelection(g)
+	Duel.SetTargetCard(g)
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,0,0)
 end
 function cm.eqlimit(e,c)
 	return c==e:GetLabelObject()

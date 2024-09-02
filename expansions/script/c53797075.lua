@@ -11,7 +11,9 @@ function s.initial_effect(c)
 		local f1=Duel.SSet
 		Duel.SSet=function(p,tg,tp,bool)
 			local g=Group.__add(tg,tg)
-			if bool~=false and g:IsExists(Card.IsHasEffect,1,nil,id) then
+			if bool~=false and g:IsExists(Card.IsHasEffect,1,nil,id) and Duel.GetFlagEffect(0,id)<=0 then
+				Duel.RegisterFlagEffect(0,id,RESET_PHASE+PHASE_END,0,1)
+				Duel.Hint(HINT_CARD,0,id)
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_FIELD)
 				e1:SetCode(EFFECT_IMMUNE_EFFECT)
@@ -21,9 +23,7 @@ function s.initial_effect(c)
 				e1:SetReset(RESET_PHASE+PHASE_END)
 				Duel.RegisterEffect(e1,0)
 			end
-			local res=f1(p,tg,tp,bool)
-			Duel.Hint(HINT_CARD,0,id)
-			return res
+			return f1(p,tg,tp,bool)
 		end
 	end
 end

@@ -3,7 +3,7 @@ local m = 11636045
 local cm = _G["c"..m]
 function cm.initial_effect(c)
 	--pendulum summon
-	aux.EnablePendulumAttribute(c)  
+	aux.EnablePendulumAttribute(c)
 	--to hand or summon 
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EFFECT_NONTUNER)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetValue(cm.tnval)
-	c:RegisterEffect(e1)	
+	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_EXTRA_SYNCHRO_MATERIAL)
@@ -29,21 +29,28 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e0)
 	--synchro material
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)   
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EFFECT_SEND_REPLACE)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e3:SetTarget(cm.reptg)
 	c:RegisterEffect(e3)
 	--debuff
+	if not cm.globalcheck then
+		cm.globalcheck=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAINING)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_CHAINING)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetCode(EVENT_CUSTOM+m)
 	e4:SetRange(LOCATION_EXTRA)
 	e4:SetCondition(cm.decon)
 	e4:SetOperation(cm.deop)
-	c:RegisterEffect(e4)		
+	c:RegisterEffect(e4)
 	--to grave
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -54,6 +61,17 @@ function cm.initial_effect(c)
 	e5:SetOperation(cm.tgop)
 	c:RegisterEffect(e5)
 	--
+end
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(rp,m)~=0 then
+		local n=Duel.GetFlagEffectLabel(rp,m)+1
+		Duel.SetFlagEffectLabel(rp,m,n)
+		if n%3==0 then
+			Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m,e,0,rp,0,0)
+		end
+	else
+		Duel.RegisterFlagEffect(rp,m,RESET_PHASE+PHASE_END,0,1,1)
+	end
 end
 --
 function cm.tnval(e,c)
@@ -86,28 +104,30 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 --
 function cm.decon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local p=e:GetHandler():GetOwner()
-	if c:GetFlagEffect(m)<4 then
-		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-		return false
-	end
-	return p~=e:GetHandler():GetControler() and ep==tp
+	return e:GetHandler():GetOwner()~=tp and rp==tp
 end
-function cm.deop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
+
+function cm.oprep(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	Duel.DiscardDeck(tp,1,REASON_EFFECT)
-	local g=Duel.GetOperatedGroup()
-	local tc=g:GetFirst()
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_CANNOT_TRIGGER)
-	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	tc:RegisterEffect(e3)
-	c:ResetFlagEffect(m) 
+	if Duel.DiscardDeck(tp,1,REASON_EFFECT) then
+		local tc=Duel.GetOperatedGroup():GetFirst()
+		if tc:IsLocation(0x10) then
+			local e3=Effect.CreateEffect(e:GetHandler())
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetCode(EFFECT_CANNOT_TRIGGER)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e3)
+		end
+		Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+11636070,e,0,0,0,0)
+	end
 end
----
+
+function cm.deop(e,tp,eg,ep,ev,re,r,rp)
+	cm.oprep(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsPlayerAffectedByEffect(tp,11636065) then
+		cm.oprep(e,tp,eg,ep,ev,re,r,rp)
+	end
+end
 --
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetHandler():GetOwner()

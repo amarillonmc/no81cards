@@ -54,7 +54,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsRace(RACE_INSECT)
+	return c:IsFacedown() --and c:IsRace(RACE_INSECT)
 end
 function cm.thfilter(c)
 	return c:IsCode(13250922) and c:IsAbleToHand()
@@ -72,12 +72,12 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		if Duel.SendtoHand(g,nil,REASON_EFFECT)==0 then return end
 		Duel.ConfirmCards(1-tp,g)
-		local sg=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
-		if #sg>0 and sg:FilterCount(cm.filter,nil)==#sg and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,m)==0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-			--Duel.BreakEffect()
+		local sg=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
+		if sg:FilterCount(cm.filter,nil)==0 and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,m)==0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+			Duel.BreakEffect()
 			local tg=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK,0,1,1,nil)
 			Duel.SSet(tp,tg)
-			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+			--Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 		end
 	end
 end

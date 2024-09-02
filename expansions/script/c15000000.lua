@@ -21,10 +21,10 @@ if not require and loadfile then
 end
 if not pcall(function() require("expansions/script/c15000000") end) then require("script/c15000000") end
 ]]--
---if Satl_Library_Switch then
---  return
---end
---Satl_Library_Switch=true
+if Satl_Library_Switch then
+	return
+end
+Satl_Library_Switch=true
 --为 卡 片 c添 加 裂 解 召 唤 手 续 ,mf为 裂 解 素 材 需 满 足 的 条 件
 function Satl.AddSplitProcedure(c,mf)
 	if not Satl.PendulumChecklist then
@@ -600,5 +600,165 @@ function Satl.HearogenehirpXyzLevelFreeOperation(f,gf,minct,maxct)
 					Duel.Overlay(c,mg)
 					mg:DeleteGroup()
 				end
+			end
+end
+function Satl.AddWitheredLinkProcedure(c,f,min,max,gf)
+	if max==nil then max=c:GetLink() end
+	--Link Summon
+	aux.AddLinkProcedure(c,f,min,max,gf)
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(15005641,2))
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetRange(LOCATION_GRAVE)
+	e0:SetCondition(Satl.WitheredLinkCondition(f,min,max,gf))
+	e0:SetTarget(Satl.WitheredLinkTarget(f,min,max,gf))
+	e0:SetOperation(Satl.WitheredLinkOperation(f,min,max,gf))
+	e0:SetValue(SUMMON_TYPE_LINK)
+	c:RegisterEffect(e0)
+	--spsummon condition
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SPSUMMON_COST)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCost(Satl.WitheredLinkCost)
+	c:RegisterEffect(e1)
+end
+function Satl.WitheredLinkCost(e,c,tp,st)
+	if st&SUMMON_TYPE_LINK~=SUMMON_TYPE_LINK then return true end
+	return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,c:GetOriginalCodeRule())
+end
+function Satl.WitheredLinkLConditionFilter(c,f,lc,e)
+	return (c:IsFaceup() or not c:IsOnField() or e:IsHasProperty(EFFECT_FLAG_SET_AVAILABLE))
+		and c:IsCanBeLinkMaterial(lc) and (not f or f(c))
+end
+function Satl.WitheredLinkLExtraFilter(c,f,lc,tp)
+	if c:IsOnField() and c:IsFacedown() then return false end
+	if not c:IsCanBeLinkMaterial(lc) or f and not f(c) then return false end
+	local le={c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
+	for _,te in pairs(le) do
+		local tf=te:GetValue()
+		local related,valid=tf(te,lc,nil,c,tp)
+		if related then return true end
+	end
+	return false
+end
+function Satl.WitheredLinkGetLinkCount(c)
+	if c:IsType(TYPE_LINK) and c:GetLink()>1 then
+		return 1+0x10000*c:GetLink()
+	else return 1 end
+end
+function Satl.WitheredLinkGetLinkMaterials(tp,f,lc,e)
+	local mg=Duel.GetMatchingGroup(Satl.WitheredLinkLConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc,e)
+	local mg2=Duel.GetMatchingGroup(Satl.WitheredLinkLExtraFilter,tp,LOCATION_HAND+LOCATION_SZONE,LOCATION_ONFIELD,nil,f,lc,tp)
+	if mg2:GetCount()>0 then mg:Merge(mg2) end
+	return mg
+end
+function Satl.WitheredLinkLCheckOtherMaterial(c,mg,lc,tp)
+	local le={c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
+	local res1=false
+	local res2=true
+	for _,te in pairs(le) do
+		local f=te:GetValue()
+		local related,valid=f(te,lc,mg,c,tp)
+		if related then res2=false end
+		if related and valid then res1=true end
+	end
+	return res1 or res2
+end
+function Satl.WitheredLinkLUncompatibilityFilter(c,sg,lc,tp)
+	local mg=sg:Filter(aux.TRUE,c)
+	return not Satl.WitheredLinkLCheckOtherMaterial(c,mg,lc,tp)
+end
+function Satl.WitheredLinkLEFilter(c)
+	return c:GetSequence()<5
+end
+function Satl.WitheredLinkLCheckGoal(sg,tp,lc,gf,lmat)
+	return sg:CheckWithSumEqual(Satl.WitheredLinkGetLinkCount,lc:GetLink(),#sg,#sg)
+		and Duel.GetLocationCountFromEx(tp,tp,sg,lc,0x1f)>0 and (not gf or gf(sg,lc,tp))
+		and not sg:IsExists(Satl.WitheredLinkLUncompatibilityFilter,1,nil,sg,lc,tp)
+		and (not lmat or sg:IsContains(lmat))
+end
+function Satl.WitheredLinkLExtraMaterialCount(mg,lc,tp)
+	for tc in aux.Next(mg) do
+		local le={tc:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
+		for _,te in pairs(le) do
+			local sg=mg:Filter(aux.TRUE,tc)
+			local f=te:GetValue()
+			local related,valid=f(te,lc,sg,tc,tp)
+			if related and valid then
+				te:UseCountLimit(tp)
+			end
+		end
+	end
+end
+function Satl.WitheredLinkCondition(f,minct,maxct,gf)
+	return  function(e,c,og,lmat,min,max)
+				if c==nil then return true end
+				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
+				local minc=minct
+				local maxc=maxct
+				if min then
+					if min>minc then minc=min end
+					if max<maxc then maxc=max end
+					if minc>maxc then return false end
+				end
+				local tp=c:GetControler()
+				local mg=nil
+				if og then
+					mg=og:Filter(Satl.WitheredLinkLConditionFilter,nil,f,c,e)
+				else
+					mg=Satl.WitheredLinkGetLinkMaterials(tp,f,c,e)
+				end
+				if lmat~=nil then
+					if not Satl.WitheredLinkLConditionFilter(lmat,f,c,e) then return false end
+					mg:AddCard(lmat)
+				end
+				local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
+				if fg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
+				Duel.SetSelectedCard(fg)
+				return mg:CheckSubGroup(Satl.WitheredLinkLCheckGoal,minc,maxc,tp,c,gf,lmat) and Duel.IsExistingMatchingCard(Card.IsDiscardable,c:GetControler(),LOCATION_HAND,0,1,nil) and Duel.IsPlayerAffectedByEffect(c:GetControler(),15005641)
+			end
+end
+function Satl.WitheredLinkTarget(f,minct,maxct,gf)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,lmat,min,max)
+				local minc=minct
+				local maxc=maxct
+				if min then
+					if min>minc then minc=min end
+					if max<maxc then maxc=max end
+					if minc>maxc then return false end
+				end
+				local mg=nil
+				if og then
+					mg=og:Filter(Satl.WitheredLinkLConditionFilter,nil,f,c,e)
+				else
+					mg=Satl.WitheredLinkGetLinkMaterials(tp,f,c,e)
+				end
+				if lmat~=nil then
+					if not Satl.WitheredLinkLConditionFilter(lmat,f,c,e) then return false end
+					mg:AddCard(lmat)
+				end
+				local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
+				Duel.SetSelectedCard(fg)
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
+				local cancel=Duel.IsSummonCancelable()
+				local sg=mg:SelectSubGroup(tp,Satl.WitheredLinkLCheckGoal,cancel,minc,maxc,tp,c,gf,lmat)
+				if sg then
+					sg:KeepAlive()
+					e:SetLabelObject(sg)
+					return true
+				else return false end
+			end
+end
+function Satl.WitheredLinkOperation(f,minct,maxct,gf)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,lmat,min,max)
+				local g=e:GetLabelObject()
+				c:SetMaterial(g)
+				Satl.WitheredLinkLExtraMaterialCount(g,c,tp)
+				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_LINK)
+				g:DeleteGroup()
+				Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD)
 			end
 end

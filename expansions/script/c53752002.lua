@@ -151,12 +151,11 @@ function s.chtg(_tg)
 end
 function s.GetSynMaterials(tp,syncard)
 	local g=aux.GetSynMaterials(tp,syncard)
-	local mg=Duel.GetMatchingGroup(s.IsCanBeSynchroMaterial,tp,0x10,0x1c,nil,syncard,g)
+	local mg=Duel.GetMatchingGroup(s.IsCanBeSynchroMaterial,tp,0x10,0x1c,g,syncard)
 	return Group.__add(g,mg)
 end
-function s.IsCanBeSynchroMaterial(c,syncard,g)
-	if c:IsCanBeSynchroMaterial(syncard) and (not g or g:IsContains(c)) then return true end
-	if not s.NecroceanSyn(syncard) then return false end
+function s.IsCanBeSynchroMaterial(c,syncard)
+	if not (c:IsCanBeSynchroMaterial(syncard) or c:IsLevel(0)) then return false end
 	if c:IsStatus(STATUS_FORBIDDEN) then return false end
 	if c:IsHasEffect(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL) then return false end
 	local tp=syncard:GetControler()
@@ -166,6 +165,7 @@ function s.IsCanBeSynchroMaterial(c,syncard,g)
 		if Duel.IsExistingMatchingCard(function(c)return c:IsType(TYPE_MONSTER) and not c:IsType(TYPE_TUNER)end,tp,LOCATION_GRAVE,0,1,nil) then return false end
 		if not (c:IsAbleToRemove(tp,POS_FACEUP,REASON_MATERIAL+REASON_SYNCHRO) or res) then return false end
 	elseif c:IsLocation(LOCATION_ONFIELD) then
+		if c:GetControler()==tp and c:IsFacedown() then return false end
 		if c:GetControler()~=tp and not res then return false end
 	else return false end
 	return true
@@ -216,6 +216,14 @@ function s.lvplus(group,sc)
 	calculateRecursive(cards, 1, 0)
 	return results
 end
+function s.IsTuner(c,sc)
+	local p,sp=c:GetControler(),sc:GetControler()
+	return c:IsTuner(sc) and (c:IsFaceup() or p==sp or not c:IsOnField())
+end
+function s.IsNotTuner(c,sc)
+	local p,sp=c:GetControler(),sc:GetControler()
+	return c:IsNotTuner(sc) or (c:IsFacedown() and p~=sp and c:IsOnField())
+end
 function s.slfilter(c,tc,sc)
 	local lv1_1,lv1_2=s.lvs(c,sc)
 	local lv2_1,lv2_2=s.lvs(tc,sc)
@@ -224,12 +232,12 @@ function s.slfilter(c,tc,sc)
 	if lv1_2 and lv2_2 then res1=(((lv1_1==lv2_1) and (lv1_2==lv2_2)) or ((lv1_1==lv2_2) and (lv1_2==lv2_1))) end
 	if not res1 then return false end
 	local function botht(card,syncard)
-		return card:IsTuner(syncard) and card:IsNotTuner(syncard)
+		return s.IsTuner(card,syncard) and s.IsNotTuner(card,syncard)
 	end
 	if botht(c,sc) and botht(tc,sc) then return true
 	elseif botht(c,sc) and not botht(tc,sc) then return false
 	elseif not botht(c,sc) and botht(tc,sc) then return false else
-		if (c:IsTuner(sc) and tc:IsTuner(sc)) or (c:IsNotTuner(sc) and tc:IsNotTuner(sc)) then return true end
+		if (s.IsTuner(c,sc) and s.IsTuner(tc,sc)) or (s.IsNotTuner(c,sc) and s.IsNotTuner(tc,sc)) then return true end
 	end
 	return false
 end
@@ -275,7 +283,7 @@ function s.SynMixCondition(e,c,smat,mg1,min,max)
 	return res and mg:IsExists(s.ntfilter,1,nil,c,mg) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function s.ntfilter(c,sc,mg)
-	return c:IsTuner(sc) and mg:IsExists(Card.IsNotTuner,1,c,sc)
+	return s.IsTuner(c,sc) and mg:IsExists(s.IsNotTuner,1,c,sc)
 end
 function s.syngoal(g,sc,smat,tp,mgchk)
 	if not g:IsExists(s.ntfilter,1,nil,sc,g) then return false end

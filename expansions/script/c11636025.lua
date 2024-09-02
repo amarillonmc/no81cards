@@ -17,10 +17,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e2) 
+	c:RegisterEffect(e2)
 	--synchro material
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)   
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EFFECT_SEND_REPLACE)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -100,18 +100,22 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	return false
 end
 --
-function cm.cfilter2(c,tp)
-	return c:IsSummonPlayer(tp)
-end
 function cm.decon(e,tp,eg,ep,ev,re,r,rp)
-	local p=e:GetHandler():GetOwner()
-	return p~=e:GetHandler():GetControler() and eg:IsExists(cm.cfilter2,1,nil,1-p)
+	return e:GetHandler():GetOwner()~=tp and eg:IsExists(Card.IsSummonPlayer,1,nil,tp)
 end
-function cm.deop(e,tp,eg,ep,ev,re,r,rp)
+
+function cm.oprep(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 	Duel.SetLP(tp,Duel.GetLP(tp)-200)
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+11636070,e,0,0,0,0)
 end
----
+
+function cm.deop(e,tp,eg,ep,ev,re,r,rp)
+	cm.oprep(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsPlayerAffectedByEffect(tp,11636065) then
+		cm.oprep(e,tp,eg,ep,ev,re,r,rp)
+	end
+end
 --
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetHandler():GetOwner()

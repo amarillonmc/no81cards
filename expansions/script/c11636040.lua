@@ -16,18 +16,25 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--synchro material
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)   
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EFFECT_SEND_REPLACE)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e3:SetTarget(cm.reptg)
 	c:RegisterEffect(e3)
 	--debuff
+	if not cm.globalcheck then
+		cm.globalcheck=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e4:SetCode(EVENT_CUSTOM+m)
 	e4:SetRange(LOCATION_EXTRA)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCondition(cm.decon)
 	e4:SetOperation(cm.deop)
 	c:RegisterEffect(e4)
@@ -40,6 +47,18 @@ function cm.initial_effect(c)
 	e5:SetCondition(cm.tgcon)
 	e5:SetOperation(cm.tgop)
 	c:RegisterEffect(e5)
+end
+
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(rp,m)~=0 then
+		local n=Duel.GetFlagEffectLabel(rp,m)+1
+		Duel.SetFlagEffectLabel(rp,m,n)
+		if n%5==0 then
+			Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m,e,0,rp,0,0)
+		end
+	else
+		Duel.RegisterFlagEffect(rp,m,RESET_PHASE+PHASE_END,0,1,1)
+	end
 end
 --
 function cm.filter(c,e,tp)
@@ -90,29 +109,28 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	return false
 end
 --
-function cm.cfilter2(c,tp)
-	return c:IsSummonPlayer(tp)
-end
 function cm.decon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local p=e:GetHandler():GetOwner()	
-	if c:GetFlagEffect(m)<4 then
-		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-		return false
-	end
-	return p~=e:GetHandler():GetControler() and eg:IsExists(cm.cfilter2,1,nil,1-p)
+	return e:GetHandler():GetOwner()~=tp and rp==tp
 end
-function cm.deop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
+
+function cm.oprep(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectMatchingCard(1-tp,aux.TRUE,tp,LOCATION_ONFIELD,0,1,1,nil)
 	if #g>0 then
 		Duel.HintSelection(g)
-		Duel.Destroy(g,REASON_EFFECT)
-		c:ResetFlagEffect(m)
+		if Duel.Destroy(g,REASON_EFFECT) then
+			Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+11636070,e,0,0,0,0)
+		end
 	end
 end
----
+
+function cm.deop(e,tp,eg,ep,ev,re,r,rp)
+	cm.oprep(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsPlayerAffectedByEffect(tp,11636065) then
+		cm.oprep(e,tp,eg,ep,ev,re,r,rp)
+	end
+end
 --
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetHandler():GetOwner()

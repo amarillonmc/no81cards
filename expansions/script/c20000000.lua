@@ -27,8 +27,8 @@ function fuef:Get_Func(_val)
 	if type(_val) == "string" then 
 		local lib = self.e:GetOwner().lib or {}
 		local cm = _G["c"..self.e:GetOwner():GetCode()]
-		-- find lib, cm and aux
-		_var = lib[_val] or cm[_val] or aux[_val]
+		-- find lib, cm, aux and fuef
+		_var = lib[_val] or cm[_val] or aux[_val] or fuef[_val]
 		-- _val = func*a*b => func(a,b) 
 		if not _var and _val:match("*") then 
 			local _func_val = fusf.CutString(_val, "*", nil, "fuef:Get_Func")
@@ -36,6 +36,7 @@ function fuef:Get_Func(_val)
 			if aux[_func] then _var = aux[_func](table.unpack(_func_val)) end
 			if cm[_func] then _var = cm[_func](table.unpack(_func_val)) end
 			if lib[_func] then _var = lib[_func](table.unpack(_func_val)) end
+			if fuef[_func] then _var = fuef[_func](table.unpack(_func_val)) end
 		end
 	end
 	return _var or _val
@@ -149,7 +150,7 @@ function fuef:Owner(_owner, _handler)
 end
 ----------------------------------------------------------------typ, owner, cod and handler
 -- need cod
-for _,typ in ipairs(fusf.CutString("I,QO,QF,F+TO,F+TF,S+TO,S+TF", ",", nil, "fuef:typ_reg_1")) do
+for _,typ in ipairs(fusf.CutString("I,QF,F+TO,F+TF,S+TO,S+TF", ",", nil, "fuef:typ_reg_1")) do
 	local name = ""
 	for _,var in ipairs(fusf.CutString(typ, "+", nil, "fuef:typ_reg_2")) do
 		name = name..var
@@ -159,7 +160,7 @@ for _,typ in ipairs(fusf.CutString("I,QO,QF,F+TO,F+TF,S+TO,S+TF", ",", nil, "fue
 	end
 end
 -- cod = cod or FC
-for _,typ in ipairs(fusf.CutString("A,S,S+C,F,F+C,F+G,E,E+C,X", ",", nil, "fuef:typ_reg_3")) do
+for _,typ in ipairs(fusf.CutString("A,QO,S,S+C,F,F+C,F+G,E,E+C,X", ",", nil, "fuef:typ_reg_3")) do
 	local name = ""
 	for _,var in ipairs(fusf.CutString(typ, "+", nil, "fuef:typ_reg_4")) do
 		name = name..var
@@ -299,8 +300,7 @@ function fuef:Func(_val1, _val2)
 	local _seqs = {"val", "con", "cos", "tg", "op"}
 	-- _val2 chk : (val, other func)
 	if _val2 then self.val, _val1 = _val1, _val2 end
-	local _funcs = fusf.CutString(_val1, ",", nil, "fuef:Func")
-	for i,_func in ipairs(_funcs) do
+	for i,_func in ipairs(fusf.CutString(_val1, ",", nil, "fuef:Func")) do
 		if fusf.NotNil(_func) then
 			-- chk
 			local _place, _chk = 0, 0
@@ -400,4 +400,9 @@ function fuef:OBJ(_val)
 	if self:Owner_chk("obj", _val) or self:Nil_chk("OBJ", _val) then return self end
 	self.obj = _val
 	return self:Reload()
+end
+--------------------------------------------------------------------------"Support Effect function"
+function fuef.cos_in_tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(100)
+	if chk==0 then return true end
 end

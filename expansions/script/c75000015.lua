@@ -9,6 +9,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e1:SetCondition(c75000015.citcon)
 	e1:SetValue(1)
 	c:RegisterEffect(e1)
 	--indes
@@ -17,6 +18,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(c75000015.citcon)
 	e2:SetValue(aux.indoval)
 	c:RegisterEffect(e2)
 	--atk
@@ -37,6 +39,9 @@ function cm.initial_effect(c)
 	e4:SetOperation(c75000015.efop)
 	c:RegisterEffect(e4)
 	
+end
+function c75000015.citcon(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil,75000001) end
 end
 function c75000015.efcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

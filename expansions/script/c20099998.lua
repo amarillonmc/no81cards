@@ -52,29 +52,37 @@ function fusf.Get_Constant(_constable, _vals)
 	return _res,_first
 end
 function fusf.Get_Code_Constant(_m, _val)
-	-- EVENT_CUSTOM
-	if type(_val) == "string" and _val:match("CUS") then
+	if type(_val) == "string" then 
 		local _res = 0
-		for _,_var in ipairs(fusf.CutString(_val, "+", nil, "fuef:COD")) do
-			if _var == "CUS" then 
-				_res = _res + EVENT_CUSTOM 
-			-- owner code
-			elseif _var == "m" then 
-				_res = _res + _m
-			-- number
-			elseif tonumber(_var) then 
-				_res = _res + tonumber(_var)
+		-- EVENT_CUSTOM
+		if _val:match("CUS") then
+			for _,_var in ipairs(fusf.CutString(_val, "+", nil, "fuef:COD")) do
+				if _var == "CUS" then 
+					_res = _res + EVENT_CUSTOM 
+				-- owner code
+				elseif _var == "m" then 
+					_res = _res + _m
+				-- number
+				elseif tonumber(_var) then 
+					_res = _res + tonumber(_var)
+				end
+			end
+		-- EVENT_PHASE or EVENT_PHASE_START
+		elseif _val:match("PH") then
+			for _,_var in ipairs(fusf.CutString(_val, "+", nil, "fuef:COD")) do
+				local _constable = _var:match("PH") and "cod" or "pha"
+				_res = _res + fucs[_constable][_var]
 			end
 		end
-		return _res
+		if _res ~= 0 then return _res end
 	end
 	-- other event
 	return fusf.Get_Constant("cod", _val)
 end
-function fusf.Get_Loc(_loc1, _loc2, _Debug_Message)
+function fusf.Get_Loc(_loc1, _loc2, _from)
 	-- nil chk
 	if not fusf.NotNil({_loc1, _loc2}) then 
-		Debug.Message(_Debug_Message)
+		Debug.Message(_from)
 		return nil
 	end
 	local _locs = {0, 0}
@@ -149,7 +157,7 @@ function fusf.Value_Trans(...)
 	end
 	return var
 end
-function fusf.Check_Constant(func,chktable)
+function fusf.Check_Constant(func, chktable)
 	return function(c,cons)
 		if cons and type(cons) ~= "string" then return func(c,cons) end
 		local Cons, tStack = fusf.PostFix_Trans(cons), { }
@@ -170,5 +178,22 @@ function fusf.Check_Constant(func,chktable)
 			end
 		end
 		return tStack[#tStack]
+	end
+end
+--------------------------------------"Other Support function"
+function fusf.GetFlag(val, cod, n1, n2)
+	local typ, count = aux.GetValueType(val)
+	if type(cod) == "string" then cod = tonumber(cod) end
+	if cod < 19999999 then cod = cod + 20000000 end
+	if typ == "Card" then count = val:GetFlagEffect(cod) end
+	if typ == "Effect" then count = val:GetHandler():GetFlagEffect(cod) end
+	if typ == "int" then count = Duel.GetFlagEffect(val, cod) end
+	if not n1 then return n2 and (count == n2) or count end
+	if type(n1) == "string" and n1:match("[%+%-]") then
+		local Cal = {
+			["+"] = count >= (n2 or math.abs(tonumber(n1))),
+			["-"] = count <= (n2 or math.abs(tonumber(n1)))
+		}
+		return Cal[n1:match("[%+%-]")]
 	end
 end
