@@ -30,17 +30,10 @@ function s.initial_effect(c)
 	e2:SetTarget(s.distg)
 	e2:SetOperation(s.disop)
 	c:RegisterEffect(e2)
-	--win
-	--local e5=Effect.CreateEffect(c)
-	--e5:SetCode(EVENT_BATTLE_DAMAGE)
-	--e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	--e5:SetCondition(s.wincon)
-	--e5:SetOperation(s.winop)
-	--c:RegisterEffect(e5)
 end
 function s.efilter(e,te)
 	return te:IsActiveType(TYPE_MONSTER) and te:GetOwner()~=e:GetOwner()
-		and (bit.band(te:GetCode(),EFFECT_DISABLE)~=0 or bit.band(te:GetCategory(),CATEGORY_DISABLE)~=0)
+		and (te:GetCode()==EFFECT_DISABLE or te:IsHasCategory(CATEGORY_DISABLE))
 end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -78,6 +71,18 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.rmlimit(e,c,tp,r,re)
 	return c:IsOriginalCodeRule(e:GetLabel()) and re and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsCode(id) and r==REASON_EFFECT
+end
+
+
+
+function s.wineff(c)
+	--win
+	local e5=Effect.CreateEffect(c)
+	e5:SetCode(EVENT_BATTLE_DAMAGE)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCondition(s.wincon)
+	e5:SetOperation(s.winop)
+	c:RegisterEffect(e5)
 end
 function s.wincon(e,tp,eg,ep,ev,re,r,rp)
 	return ep==1-tp

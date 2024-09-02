@@ -25,7 +25,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.rmfilter(c,tp)
-	return c:IsRace(RACE_ZOMBIE) and c:IsAbleToRemove() and c:IsFaceupEx()
+	return c:IsRace(RACE_ZOMBIE) and c:IsAbleToRemove() and c:IsFaceupEx() and c:IsAttackBelow(1000)
 		and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,c)
 end
 function s.filter(c)

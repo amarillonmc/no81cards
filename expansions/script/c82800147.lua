@@ -55,6 +55,8 @@ function s.initial_effect(c)
 	c:RegisterEffect(e7)
 	if not s.global_flag then
 		s.global_flag=true
+		s[0]={}
+		s[1]={}
 		--Negate
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -65,16 +67,28 @@ function s.initial_effect(c)
 	end
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetActivateLocation()==LOCATION_REMOVED and re:IsActiveType(TYPE_MONSTER)
+	return re:IsActiveType(TYPE_MONSTER)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if re:GetActivateLocation()==LOCATION_REMOVED and re:IsActiveType(TYPE_MONSTER) then
-		rc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
+	if Duel.GetTurnCount()~=s[2] then
+		s[0]={}
+		s[1]={}
+		s[2]=Duel.GetTurnCount()
+	end
+	if re:IsActiveType(TYPE_MONSTER) then
+		table.insert(s[rp],rc:GetCode())
 	end
 end
 function s.cthfilter(c)
-	return c:IsAbleToHand() and c:GetFlagEffect(id)==0 and c:IsRace(RACE_ZOMBIE)
+	local p=c:GetControler()
+	local ct=0
+	for _,fcode in ipairs(s[p]) do
+		if fcode==c:GetCode() then
+			ct=1
+		end
+	end
+	return c:IsAbleToHand() and c:IsRace(RACE_ZOMBIE) and ct==0
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(82800114)~=0
@@ -89,6 +103,22 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
+		if Duel.IsExistingMatchingCard(s.summmfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)
+			and Duel.SelectYesNo(tp,1) then
+			Duel.BreakEffect()
+			s.summmop(e,tp,eg,ep,ev,re,r,rp)
+		end
+	end
+end
+function s.summmfilter(c)
+	return c:IsRace(RACE_ZOMBIE) and c:IsSummonable(true,nil)
+end
+function s.summmop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+	local g=Duel.SelectMatchingCard(tp,s.summmfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.Summon(tp,tc,true,nil)
 	end
 end
 function s.lfcon(e)

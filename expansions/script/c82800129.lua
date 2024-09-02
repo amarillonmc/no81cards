@@ -96,6 +96,7 @@ function s.rsfilter(c)
 end
 function s.ttcon(e,c,minc)
 	if c==nil then return true end
+	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(s.rsfilter,tp,LOCATION_MZONE,0,nil)
 	return minc<=4 and g:GetClassCount(Card.GetOriginalCode)>3 and Duel.CheckTribute(c,4,4,g)
 end

@@ -40,6 +40,7 @@ function s.initial_effect(c)
 	e4:SetCountLimit(1)
 	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e4:SetCondition(s.poscon)
+	e4:SetCost(s.poscost)
 	e4:SetTarget(s.postg)
 	e4:SetOperation(s.posop)
 	c:RegisterEffect(e4)
@@ -53,7 +54,26 @@ function s.initial_effect(c)
 	e5:SetTarget(s.target)
 	e5:SetOperation(s.operation)
 	c:RegisterEffect(e5)
+	--code
+	s.EnableChangeCode(c,82800144,LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED)
 end
+
+function s.EnableChangeCode(c,code,location,condition)
+	Auxiliary.AddCodeList(c,code)
+	local loc=c:GetOriginalType()&TYPE_MONSTER~=0 and LOCATION_MZONE or LOCATION_SZONE
+	loc=location or loc
+	if condition==nil then condition=Auxiliary.TRUE end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetCode(EFFECT_CHANGE_CODE)
+	e1:SetRange(loc)
+	e1:SetCondition(condition)
+	e1:SetValue(code)
+	c:RegisterEffect(e1)
+	return e1
+end
+
 function s.fselect(g,tp)
 	return g:FilterCount(Card.IsControler,nil,1-tp)<=1
 end
@@ -66,7 +86,7 @@ function s.ttcon(e,c,minc)
 	local mg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
 	local mg2=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	if Duel.IsPlayerAffectedByEffect(tp,82800126) then mg:Merge(mg2) end
-	return minc<=ct and Duel.CheckTribute(c,ct,ct,mg) and mg:CheckSubGroup(s.fselect,2,2,tp)
+	return minc<=ct and mg:CheckSubGroup(s.fselect,2,2,tp)
 end
 function s.ttop(e,tp,eg,ep,ev,re,r,rp,c)
 	local mg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
@@ -74,7 +94,7 @@ function s.ttop(e,tp,eg,ep,ev,re,r,rp,c)
 	if Duel.IsPlayerAffectedByEffect(tp,82800126) then mg:Merge(mg2) end
 	local ct=2
 	if c:IsLevelBelow(6) then ct=1 end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local sg=mg:SelectSubGroup(tp,s.fselect,false,ct,ct,tp)
 	c:SetMaterial(sg)
 	Duel.Release(sg,REASON_SUMMON+REASON_MATERIAL)
@@ -99,6 +119,14 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.poscon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
+end
+function s.poscost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.Remove(g,POS_FACEUP,REASON_COST)
+	end
 end
 function s.posfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet() and c:IsRace(RACE_ZOMBIE)

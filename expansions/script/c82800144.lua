@@ -71,7 +71,7 @@ function s.ttcon(e,c,minc)
 	local mg=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,LOCATION_MZONE,0,nil)
 	local mg2=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,0,LOCATION_ONFIELD,nil)
 	if Duel.IsPlayerAffectedByEffect(tp,82800126) then mg:Merge(mg2) end
-	return minc<=ct and Duel.CheckTribute(c,ct,ct,mg) and mg:CheckSubGroup(s.fselect,2,2,tp)
+	return minc<=ct and mg:CheckSubGroup(s.fselect,2,2,tp)
 end
 function s.ttop(e,tp,eg,ep,ev,re,r,rp,c)
 	local mg=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,LOCATION_MZONE,0,nil)

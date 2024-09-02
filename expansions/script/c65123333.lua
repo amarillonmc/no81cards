@@ -18,7 +18,6 @@ function s.initial_effect(c)
 		s.Control_Mode=false
 		s.Wild_Mode=false
 		s.Random_Mode=false
-		s.Theworld_Mode=false
 		s.cheaktable={}
 		s.controltable={}
 
@@ -43,8 +42,9 @@ function s.initial_effect(c)
 
 		local ge0=Effect.GlobalEffect()
 		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge0:SetCode(EVENT_ADJUST)
+		ge0:SetCode(EVENT_DRAW)
 		ge0:SetCountLimit(1,id+EFFECT_COUNT_CODE_DUEL)
+		ge0:SetCondition(s.startcon)
 		ge0:SetOperation(s.startop)
 		Duel.RegisterEffect(ge0,0)
 		local ge1=Effect.GlobalEffect()
@@ -53,6 +53,7 @@ function s.initial_effect(c)
 		ge1:SetCondition(s.adjustcon)
 		ge1:SetOperation(s.adjustop)
 		Duel.RegisterEffect(ge1,0)
+		--save
 		local ge2=Effect.GlobalEffect()
 		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge2:SetCode(EVENT_PREDRAW)
@@ -106,6 +107,9 @@ if io then IO_CHECK=true end
 function s.cfilter(c)
 	return c:GetOriginalCode()==id
 end
+function s.startcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnCount()==0
+end
 function s.startop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(0,0x7f,0x7f)
 	local xg=Duel.GetFieldGroup(0,0x4d,0x4d)
@@ -121,8 +125,9 @@ function s.startop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(0)
 		tc:RegisterEffect(e1,true)
 		local e2=Effect.CreateEffect(tc)
-		e2:SetType(EFFECT_TYPE_IGNITION+EFFECT_TYPE_CONTINUOUS)
-		e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetCode(EVENT_FREE_CHAIN)
 		e2:SetRange(LOCATION_EXTRA)
 		e2:SetCondition(s.menucon)
 		e2:SetOperation(s.menuop)
@@ -167,7 +172,6 @@ function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		g:Merge(xc:GetOverlayGroup())
 	end
 	g=g:Filter(s.cfilter2,nil)
-
 	for tc in aux.Next(g) do
 		local bool1=tc:IsHasEffect(EFFECT_CANNOT_SPECIAL_SUMMON)
 		local bool2=tc:IsHasEffect(EFFECT_SPSUMMON_COST)
@@ -269,7 +273,9 @@ function s.resetop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function s.menucon(e,tp,eg,ep,ev,re,r,rp)
-	return tp==e:GetHandler():GetOwner()
+	local ph=Duel.GetCurrentPhase()
+	local bool=ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE and ph~=PHASE_BATTLE_STEP or ph==PHASE_MAIN1 or ph==PHASE_MAIN2
+	return tp==e:GetHandler():GetOwner() and (s.Wild_Mode or Duel.GetTurnPlayer()==tp and Duel.GetCurrentChain()==0 and Duel.GetTurnPlayer()==tp and bool)
 end
 function s.menuop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	local page=1
@@ -303,7 +309,7 @@ function s.menuop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 				s.hintcard()
 				page=0
 			elseif ot==2 then
-				s.loadmenu(tp)
+				s.loadmenu(e,tp)
 				page=0
 			elseif ot==3 then
 				s.mindcontrol(e,tp)
@@ -343,11 +349,6 @@ function s.movecard(e,tp)
 		e1:SetCode(EVENT_CUSTOM+id)
 		e1:SetCountLimit(1)
 		e1:SetOperation(s.movespop)
-		if Duel.GetCurrentPhase()<=PHASE_STANDBY then
-			e1:SetReset(RESET_PHASE+PHASE_STANDBY,2)
-		else
-			e1:SetReset(RESET_PHASE+PHASE_STANDBY)
-		end
 		Duel.RegisterEffect(e1,tp)
 		Duel.RaiseEvent(c,EVENT_CUSTOM+id,e,0,tp,tp,0)
 	elseif ot==1 then
@@ -458,13 +459,13 @@ function s.printcard(e,tp)
 	table.insert(codetable,ac)
 	if KOISHI_CHECK and IO_CHECK then
 		local luatable=s.get_lua_numbers("script")
-		for _,i in ipairs(luatable) do		  
+		for _,i in ipairs(luatable) do  
 			if ac==Duel.ReadCard(i,2) and ac~=i then
 				table.insert(codetable,tonumber(i))
 			end
 		end
 		local luatable2=s.get_lua_numbers("expansions/script")
-		for _,i in ipairs(luatable2) do		 
+		for _,i in ipairs(luatable2) do   
 			if ac==Duel.ReadCard(i,2) and ac~=i then
 				table.insert(codetable,tonumber(i))
 			end
@@ -574,7 +575,7 @@ function s.setcard(e,tp)
 		if not mc:IsType(TYPE_LINK) then pos=Duel.SelectPosition(tp,mc,0xd) end
 		Duel.MoveToField(mc,tp,p,LOCATION_MZONE,pos,true,flag)
 		if tp~=p then
-			local e1=Effect.CreateEffect(mc)
+			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_SET_CONTROL)
 			e1:SetValue(p)
@@ -605,7 +606,7 @@ function s.setcard(e,tp)
 			local pos=Duel.SelectPosition(tp,mc,0xd)							 
 			Duel.MoveToField(mc,tp,p,LOCATION_MZONE,pos,true,flag)
 			if tp~=p then
-				local e1=Effect.CreateEffect(mc)
+				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_SET_CONTROL)
 				e1:SetValue(p)
@@ -872,18 +873,18 @@ function s.saveop(e,tp,eg,ep,ev,re,r,rp)
 	local turn=s.autodata.turn
 	Debug.Message("第"..turn.."回合 自动存档完成")
 end
-function s.loadmenu(tp)
-	local decs=6
-	if s.manualdata.turn==0 then decs=7 end
+function s.loadmenu(e,tp)
+	local c=e:GetHandler()
+	local decs=s.manualdata.turn==0 and 7 or 6
 	local ot=s.SelectOption(tp,aux.Stringid(id+1,8),aux.Stringid(id+1,5),aux.Stringid(id+1,decs),1212)
 	if ot==0 then
-		s.loadcard(s.autodata)
+		s.loadcard(c,s.autodata)
 	elseif ot==1 then   
 		s.manualdata=s.save()
 		local turn=s.manualdata.turn
 		Debug.Message("第"..turn.."回合 手动存档完成")
 	elseif ot==2 then
-		s.loadcard(s.manualdata)
+		s.loadcard(c,s.manualdata)
 	elseif ot==3 then
 		return
 	end
@@ -942,7 +943,7 @@ function s.save()
 	end
 	return data
 end
-function s.loadcard(data)
+function s.loadcard(c,data)
 	Debug.Message("正在读档")
 	Duel.Hint(HINT_CARD,0,id)
 	local cg=Duel.GetFieldGroup(0,0x4d,0x4d)
@@ -969,7 +970,7 @@ function s.loadcard(data)
 					if cdata.sequence>=5 then Duel.SendtoExtraP(tc,p,REASON_RULE) end
 					if not Duel.MoveToField(tc,p,p,cdata.location,cdata.position,true,2^cdata.sequence) then Duel.SendtoGrave(tc,REASON_RULE) end
 					if tc:GetOwner()~=p then
-						local e1=Effect.CreateEffect(tc)
+						local e1=Effect.CreateEffect(c)
 						e1:SetType(EFFECT_TYPE_SINGLE)
 						e1:SetCode(EFFECT_SET_CONTROL)
 						e1:SetValue(p)
@@ -1452,16 +1453,12 @@ function s.change_effect(effect,c,mp)
 	end
 end
 function s.wildop()
-	if not KOISHI_CHECK then
-		Debug.Message("该功能需要koishi函数！")
-		return
-	end
+	s.Wild_Mode=not s.Wild_Mode
 	local g=Duel.GetFieldGroup(0,0x7f,0x7f)
 	local xg=Duel.GetFieldGroup(0,0x4d,0x4d)
 	for xc in aux.Next(xg) do
 		g:Merge(xc:GetOverlayGroup())
 	end
-	s.Wild_Mode=not s.Wild_Mode
 	if s.Wild_Mode then
 		Debug.Message("歼灭模式 开")
 		s.SetCountLimit=Effect.SetCountLimit
@@ -1527,7 +1524,7 @@ function s.randomop(tp)
 	end
 end
 function s.toolop(tp)
-	local op=s.SelectOption(tp,aux.Stringid(id+1,11),aux.Stringid(id+1,12),aux.Stringid(id+1,13),aux.Stringid(id+1,14),1212)
+	local op=s.SelectOption(tp,aux.Stringid(id+1,11),aux.Stringid(id+1,12),aux.Stringid(id+1,13),aux.Stringid(id+1,14),aux.Stringid(id+1,15))
 	if op==0 then
 		local p=s.SelectOption(tp,aux.Stringid(id+1,1),aux.Stringid(id+1,2))==0 and tp or 1-tp
 		local lp=s.AnnounceNumber(tp,80000,16000,8000,4000,2000,1000,500,100,1)
@@ -1583,13 +1580,54 @@ function s.toolop(tp)
 		end
 		if sg:GetCount()>1 then Duel.SortDecktop(tp,p,sg:GetCount()) end
 	elseif op==3 then
+		if Duel.GetCurrentPhase()==PHASE_MAIN1 then
+			if Duel.GetTurnCount()==1 then
+				if KOISHI_CHECK then			
+					Duel.MoveTurnCount()					
+				else
+					Duel.SkipPhase(tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
+					Duel.SkipPhase(tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1)
+					Duel.SkipPhase(tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
+					Duel.SkipPhase(tp,PHASE_END,RESET_PHASE+PHASE_END,1)
+					local e1=Effect.GlobalEffect()
+					e1:SetType(EFFECT_TYPE_FIELD)
+					e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+					e1:SetCode(EFFECT_SKIP_TURN)
+					e1:SetTargetRange(0,1)
+					e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+					Duel.RegisterEffect(e1,tp)
+					Duel.SkipPhase(tp,PHASE_DRAW,RESET_PHASE+PHASE_END,2)
+					Duel.SkipPhase(tp,PHASE_STANDBY,RESET_PHASE+PHASE_END,2)
+				end
+			end
+			Duel.SkipPhase(tp,PHASE_MAIN1,RESET_PHASE+PHASE_BATTLE_START+RESET_SELF_TURN,1)
+		else
+			Duel.SkipPhase(tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
+			Duel.SkipPhase(tp,PHASE_END,RESET_PHASE+PHASE_END,1)
+			local e1=Effect.GlobalEffect()
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetCode(EFFECT_SKIP_TURN)
+			e1:SetTargetRange(0,1)
+			e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+			Duel.RegisterEffect(e1,tp)
+			Duel.SkipPhase(tp,PHASE_DRAW,RESET_PHASE+PHASE_END,2)
+			Duel.SkipPhase(tp,PHASE_STANDBY,RESET_PHASE+PHASE_END,2)
+			Duel.SkipPhase(tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,2)	
+		end
+		local e2=Effect.GlobalEffect()
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e2:SetCode(EFFECT_CANNOT_EP)
+		e2:SetTargetRange(1,0)
+		e2:SetReset(RESET_PHASE+PHASE_BATTLE_START+RESET_SELF_TURN)
+		Duel.RegisterEffect(e2,tp)
+	elseif op==4 then	
 		if not KOISHI_CHECK then
 			Debug.Message("该功能需要koishi函数！")
 			return
 		end
 		Duel.ResetTimeLimit(0,999)
 		Duel.ResetTimeLimit(1,999)
-	elseif op==4 then
-		return
 	end
 end
