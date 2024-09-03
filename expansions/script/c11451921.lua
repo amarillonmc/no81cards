@@ -170,10 +170,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 					if not tc:IsType(TYPE_EQUIP+TYPE_CONTINUOUS+TYPE_FIELD) and not tc:IsHasEffect(EFFECT_REMAIN_FIELD) then tc:CancelToGrave(false) end
 					tc:CreateEffectRelation(te)
 					if cost then cost(te,tp,ceg,cep,cev,cre,cr,crp,1) end
-					local _GetTurnPlayer=Duel.GetTurnPlayer
-					Duel.GetTurnPlayer=function() return 1-tp end
 					if target then target(te,tp,ceg,cep,cev,cre,cr,crp,1) end
-					Duel.GetTurnPlayer=_GetTurnPlayer
 					local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 					if g then
 						for fc in aux.Next(g) do
@@ -224,7 +221,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.ClearTargetCard()
 				tc:CreateEffectRelation(te)
 				if cost then cost(te,tp,eg,ep,ev,re,r,rp,1) end
-				if target then target(te,tp,eg,ep,ev,re,r,rp,1,false,true) end
+				local _GetTurnPlayer=Duel.GetTurnPlayer
+				Duel.GetTurnPlayer=function() return 1-tp end
+				if target then target(te,tp,eg,ep,ev,re,r,rp,1) end
+				Duel.GetTurnPlayer=_GetTurnPlayer
 				local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 				if g then
 					for fc in aux.Next(g) do
@@ -262,7 +262,8 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=c:GetMaterial()
-	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_HAND) and g and #g>0 then
+	local sumtype=c:GetSummonType()
+	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_HAND) and sumtype&SUMMON_TYPE_ADVANCE>0 and g and #g>0 then
 		local tc=g:GetFirst()
 		if tc:IsFaceup() and tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA) and tc:IsReason(REASON_SUMMON) and tc:GetReasonCard()==c and tc:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)>0 then tc:CompleteProcedure() end
 	end
