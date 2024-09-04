@@ -39,7 +39,7 @@ function cm.nfilter(c)
 	return c:IsLocation(LOCATION_GRAVE) and c:IsSetCard(0x3531)
 end
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
-	if not rp==1-tp then return end
+	if rp==tp then return false end
 	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) or not Duel.IsChainNegatable(ev) then return false end
 	if cm.nfilter(re:GetHandler()) then return true end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)

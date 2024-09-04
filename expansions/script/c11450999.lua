@@ -196,6 +196,7 @@ function cm.op3(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 and g:FilterCount(Card.IsAbleToDeckAsCost,nil)==#g and Duel.GetFlagEffect(tp,m)==0 then
 		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+Duel.GetCurrentPhase(),0,1)
 		Duel.ConfirmCards(1-tp,c)
+		Duel.HintSelection(Group.FromCards(c))
 		Duel.SendtoDeck(g,nil,2,REASON_COST)
 		cm.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.AdjustAll()

@@ -5,8 +5,6 @@ function cm.initial_effect(c)
 		dofile("expansions/script/c11451851.lua")
 		pnfl_prophecy_flight_initial(c)
 	end
-	c:EnableCounterPermit(0x972,LOCATION_MZONE)
-	c:EnableCounterPermit(0x973,LOCATION_MZONE)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -47,8 +45,8 @@ function cm.coinop(e,tp,eg,ep,ev,re,r,rp)
 		local s0,s1=0,0
 		for _,r in ipairs(res) do if r==0 then s0=s0+1 end end
 		for _,r in ipairs(res) do if r==1 then s1=s1+1 end end
-		local b1=Duel.IsCanRemoveCounter(p,1,0,0x973,1,REASON_EFFECT) and s0>0
-		local b2=Duel.IsCanRemoveCounter(p,1,0,0x972,1,REASON_EFFECT) and s1>0
+		local b1=Duel.IsCanRemoveCounter(p,1,0,0x1971,1,REASON_EFFECT) and s0>0
+		local b2=Duel.IsCanRemoveCounter(p,1,0,0x1970,1,REASON_EFFECT) and s1>0
 		local off=1
 		local ops,opval={},{}
 		if b1 then
@@ -75,22 +73,22 @@ function cm.coinop(e,tp,eg,ep,ev,re,r,rp)
 			local sel=opval[op]
 			if sel==0 then
 				Duel.Hint(HINT_CARD,0,m)
-				Duel.RemoveCounter(p,1,0,0x973,1,REASON_EFFECT)
+				Duel.RemoveCounter(p,1,0,0x1971,1,REASON_EFFECT)
 				local rs={Duel.TossCoin(tp,s0)}
 				local j=1
 				for i,r in ipairs(res) do if r==0 then res[i]=rs[j] j=j+1 end end
 				Duel.SetCoinResult(table.unpack(res))
 			elseif sel==1 then
 				Duel.Hint(HINT_CARD,0,m)
-				Duel.RemoveCounter(p,1,0,0x972,1,REASON_EFFECT)
+				Duel.RemoveCounter(p,1,0,0x1970,1,REASON_EFFECT)
 				local rs={Duel.TossCoin(tp,s1)}
 				local j=1
 				for i,r in ipairs(res) do if r==1 then res[i]=rs[j] j=j+1 end end
 				Duel.SetCoinResult(table.unpack(res))
 			elseif sel==2 then
 				Duel.Hint(HINT_CARD,0,m)
-				Duel.RemoveCounter(p,1,0,0x973,1,REASON_EFFECT)
-				Duel.RemoveCounter(p,1,0,0x972,1,REASON_EFFECT)
+				Duel.RemoveCounter(p,1,0,0x1971,1,REASON_EFFECT)
+				Duel.RemoveCounter(p,1,0,0x1970,1,REASON_EFFECT)
 				local rs={Duel.TossCoin(tp,#res)}
 				Duel.SetCoinResult(table.unpack(rs))
 			else
@@ -121,12 +119,12 @@ function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local tab=pnflpf.coinsequence
 	if chk==0 then
-		local res=#tab>0 and ((tab[#tab]==0 and c:IsCanAddCounter(0x973,1)) or (tab[#tab]==1 and c:IsCanAddCounter(0x972,1)))
+		local res=#tab>0 and ((tab[#tab]==0 and c:IsCanAddCounter(0x1971,1)) or (tab[#tab]==1 and c:IsCanAddCounter(0x1970,1)))
 		return res
 	end
 	e:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_UNCOPYABLE)
-	if tab[#tab]==0 then c:AddCounter(0x973,1) end
-	if tab[#tab]==1 then c:AddCounter(0x972,1) end
+	if tab[#tab]==0 then c:AddCounter(0x1971,1) end
+	if tab[#tab]==1 then c:AddCounter(0x1970,1) end
 	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e:SetLabel(tab[#tab])
 	tab[#tab]=2
