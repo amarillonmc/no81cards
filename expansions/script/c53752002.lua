@@ -149,12 +149,12 @@ function s.chtg(_tg)
 			   return _tg(e,c,...)
 		   end
 end
-function s.GetSynMaterials(tp,syncard)
+function s.SMatCatch(tp,syncard)
 	local g=aux.GetSynMaterials(tp,syncard)
-	local mg=Duel.GetMatchingGroup(s.IsCanBeSynchroMaterial,tp,0x10,0x1c,g,syncard)
+	local mg=Duel.GetMatchingGroup(s.SMatCheck,tp,0x10,0x1c,g,syncard)
 	return Group.__add(g,mg)
 end
-function s.IsCanBeSynchroMaterial(c,syncard)
+function s.SMatCheck(c,syncard)
 	if not (c:IsCanBeSynchroMaterial(syncard) or c:IsLevel(0)) then return false end
 	if c:IsStatus(STATUS_FORBIDDEN) then return false end
 	if c:IsHasEffect(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL) then return false end
@@ -170,7 +170,7 @@ function s.IsCanBeSynchroMaterial(c,syncard)
 	else return false end
 	return true
 end
-function s.GetSynchroLevel(c,sc)
+function s.SLevelCal(c,sc)
 	local lv=c:GetSynchroLevel(sc)
 	local tp=sc:GetControler()
 	local b1=c:IsLocation(LOCATION_GRAVE) and c:IsLevel(0) and (c:GetControler()~=tp or sc:GetOriginalCode()==53752002)
@@ -186,7 +186,7 @@ function s.lindfilter(c)
 end
 function s.lvs(c,syncard)
 	if not c then return 0 end
-	local lv=s.GetSynchroLevel(c,syncard)
+	local lv=s.SLevelCal(c,syncard)
 	local lv2=lv>>16
 	lv=lv&0xffff
 	if lv2>0 then return lv,lv2 else return lv end
@@ -260,21 +260,21 @@ function s.SynMixCondition(e,c,smat,mg1,min,max)
 	if Duel.IsPlayerAffectedByEffect(tp,8173184) then
 		Duel.RegisterFlagEffect(tp,8173184+1,0,0,1)
 	end
-	if smat and not s.IsCanBeSynchroMaterial(smat,c) then
+	if smat and not s.SMatCheck(smat,c) then
 		Duel.ResetFlagEffect(tp,8173184+1)
 		return false
 	end
 	local mg
 	local mgchk=false
 	if mg1 then
-		mg=mg1:Filter(s.IsCanBeSynchroMaterial,nil,c)
+		mg=mg1:Filter(s.SMatCheck,nil,c)
 		mgchk=true
 	else
-		mg=s.GetSynMaterials(tp,c)
+		mg=s.SMatCatch(tp,c)
 	end
 	if smat~=nil then mg:AddCard(smat) end
 	Auxiliary.SubGroupCaptured=Group.CreateGroup()
-	SNNM.SubGroupParams={s.slfilter,s.GetSynchroLevel,nil,true,true,{c},{c}}
+	SNNM.SubGroupParams={s.slfilter,s.SLevelCal,nil,true,true,{c},{c}}
 	aux.GCheckAdditional=s.gcheck(c)
 	local res=SNNM.SelectSubGroup(mg,tp,s.syngoal,Duel.IsSummonCancelable(),2,#mg,c,smat,tp,mgchk)
 	aux.GCheckAdditional=nil
@@ -327,13 +327,13 @@ function s.SynMixTarget(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local mg
 	local mgchk=false
 	if mg1 then
-		mg=mg1:Filter(s.IsCanBeSynchroMaterial,nil,c)
+		mg=mg1:Filter(s.SMatCheck,nil,c)
 		mgchk=true
 	else
-		mg=s.GetSynMaterials(tp,c)
+		mg=s.SMatCatch(tp,c)
 	end
 	if smat~=nil then mg:AddCard(smat) end
-	SNNM.SubGroupParams={s.slfilter,s.GetSynchroLevel,nil,true,false,{c},{c}}
+	SNNM.SubGroupParams={s.slfilter,s.SLevelCal,nil,true,false,{c},{c}}
 	aux.GCheckAdditional=s.gcheck(c)
 	local sg=SNNM.SelectSubGroup(mg,tp,s.syngoal,Duel.IsSummonCancelable(),2,#mg,c,smat,tp,mgchk)
 	aux.GCheckAdditional=nil

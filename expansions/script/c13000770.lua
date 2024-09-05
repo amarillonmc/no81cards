@@ -40,7 +40,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) end
 	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,nil,tp,LOCATION_MZONE,0,1,1,nil,)
+	Duel.SelectTarget(tp,nil,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE,nil,0,tp,0)
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
@@ -53,7 +53,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e0:SetCode(EFFECT_UPDATE_ATTACK)
 		e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		e0:SetValue(1000)
-		c:RegisterEffect(e0)
+		tc:RegisterEffect(e0)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_EXTRA_ATTACK)
@@ -68,7 +68,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_PHASE+PHASE_END)   
 		Duel.RegisterEffect(e2,tp)
 	end
-	if tc:IsType(TYPE_XYZ) and g:CheckSubGroup(cm.filter,1,99,1-tp) then
+	if tc:IsType(TYPE_XYZ) and g:IsExists(cm.filter,1,nil,1-tp) then
 		local aa=g:FilterSelect(1-tp,cm.filter,1,1,nil,1-tp)
 		Duel.SendtoGrave(aa,REASON_RULE)
 	end

@@ -32,7 +32,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
 		if Duel.GetTurnPlayer()==1-tp then
 			e:SetCategory(CATEGORY_SPECIAL_SUMMON)
-			Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+			Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 			e:SetLabel(1)
 		else
 			e:SetLabel(0)
