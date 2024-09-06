@@ -77,7 +77,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if lc then
 			local _SendToGrave=Duel.SendtoGrave
 			Duel.SendtoGrave=function(tg,r)
-								if r==REASON_MATERIAL+REASON_LINK then
+								if r&(REASON_MATERIAL+REASON_LINK)==REASON_MATERIAL+REASON_LINK then
 									local ct=Duel.Destroy(tg,r|REASON_RULE)
 									Duel.SendtoGrave=_SendToGrave
 									return ct

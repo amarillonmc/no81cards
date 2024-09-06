@@ -185,7 +185,7 @@ function c28322413.ruop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
 		e1:SetOperation(c28322413.adop)
 		e1:SetLabel(ct)
-		e1:SetLabelObject(c)
+		e1:SetLabelObject(e:GetHandler())
 		Duel.RegisterEffect(e1,tp)
 		table.insert(c28322413.et,{e1})
 	end

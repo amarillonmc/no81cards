@@ -6,12 +6,20 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCondition(cm.thcon)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)	
 end
 if not cm.num then
 	cm.num=0
+end
+function cm.sfil(c)
+	return c:GetFlagEffect(m)~=0
+end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(cm.sfil,tp,LOCATION_HAND,0,nil)
+	return #g==0
 end
 function cm.filter(c)
 	return c:IsSetCard(0x647) and c:IsAbleToHand() and not c:IsCode(60010094)
@@ -27,12 +35,12 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.sfil(c)
-    return c:GetFlagEffect(m)~=0
+	return c:GetFlagEffect(m)~=0
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local hg=Duel.GetMatchingGroup(cm.sfil,tp,LOCATION_HAND,0,nil)
-    if #hg~=0 then return end
+	if #hg~=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
@@ -44,6 +52,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Draw(tp,2,REASON_EFFECT)
 		end
 			local mg=Duel.GetOperatedGroup()
+			mg:Merge(g)
 			local tc=mg:GetFirst()
 			for i=1,#mg do
 				local e1=Effect.CreateEffect(c)
@@ -57,7 +66,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 				tc=mg:GetNext()
 			end
-			cm.num=#Duel.GetOperatedGroup()
+			cm.num=#mg
 			
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

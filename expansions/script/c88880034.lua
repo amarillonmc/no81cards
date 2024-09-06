@@ -1,4 +1,4 @@
---ç¥žèš€æœºé¸®
+--ÉñÊ´»úû^
 local m=88880034
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -6,9 +6,11 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
 	e1:SetCountLimit(1,m)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetTarget(cm.fntg)
 	e1:SetOperation(cm.fnop)
 	c:RegisterEffect(e1)

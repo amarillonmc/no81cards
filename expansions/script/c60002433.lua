@@ -47,7 +47,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=nil
 	if ft>-1 then
 		local loc=0
-		if Duel.IsPlayerAffectedByEffect(tp,88581108) then loc=LOCATION_MZONE end
+		--if Duel.IsPlayerAffectedByEffect(tp,88581108) then loc=LOCATION_MZONE end
 		g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE+LOCATION_HAND,loc,c)
 	else
 		g=Duel.GetMatchingGroup(cm.desfilter2,tp,LOCATION_MZONE,0,c)
@@ -64,7 +64,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=nil
 	if ft>-1 then
 		local loc=0
-		if Duel.IsPlayerAffectedByEffect(tp,88581108) then loc=LOCATION_MZONE end
+		--if Duel.IsPlayerAffectedByEffect(tp,88581108) then loc=LOCATION_MZONE end
 		g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE+LOCATION_HAND,loc,c)
 	else
 		g=Duel.GetMatchingGroup(cm.desfilter2,tp,LOCATION_MZONE,0,c)
@@ -100,7 +100,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<3 then return false end
 		local g=Duel.GetDecktopGroup(tp,3)
-		local result=g:FilterCount(Card.IsAbleToHand,nil)>0
+		local result=g:FilterCount(Card.IsType,nil,TYPE_MONSTER)>0
 		return result
 	end
 	Duel.SetTargetPlayer(tp)
@@ -112,7 +112,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(p,3)
 	if g:GetCount()>0 and g:IsExists(Card.IsType,1,nil,TYPE_MONSTER) then
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
-		local sg=g:Select(p,1,1,nil)
+		local sg=g:FilterSelect(p,Card.IsType,1,1,nil,TYPE_MONSTER)
 		if sg:GetFirst():IsCanBeSpecialSummoned(e,0,p,false,false) then
 			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 		else

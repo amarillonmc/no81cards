@@ -99,14 +99,14 @@ end
 function cm.chkop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local ref=c:GetReasonEffect()
-	if c:IsReason(REASON_COST) and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC and ref:GetHandler():IsRace(RACE_INSECT) then
+	if (c:IsReason(REASON_COST) or c:IsReason(REASON_MATERIAL)) and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC and ref:GetHandler():IsRace(RACE_INSECT) then
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,7))
 	end
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ref=c:GetReasonEffect()
-	return c:IsReason(REASON_COST) and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC and ref:GetHandler():IsRace(RACE_INSECT) and not c:IsPreviousLocation(LOCATION_REMOVED)
+	return (c:IsReason(REASON_COST) or c:IsReason(REASON_MATERIAL)) and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC and ref:GetHandler():IsRace(RACE_INSECT) and not c:IsPreviousLocation(LOCATION_REMOVED)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
@@ -185,7 +185,7 @@ function cm.efop1(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(cm.flfilter,nil)
 	for c in aux.Next(g) do
 		local ref=c:GetReasonEffect()
-		if not ((c:IsLocation(LOCATION_SZONE) and c:IsReason(REASON_COST) or c:IsReason(REASON_MATERIAL)) and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC) then return end
+		if not (c:IsLocation(LOCATION_SZONE) and (c:IsReason(REASON_COST) or c:IsReason(REASON_MATERIAL) or c:IsReason(REASON_SPSUMMON)) and ref and ref:GetCode()==EFFECT_SPSUMMON_PROC) then return end
 		local rc=ref:GetHandler()
 		if not rc then return end
 		local e0=Effect.CreateEffect(c)

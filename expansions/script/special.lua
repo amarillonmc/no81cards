@@ -71,6 +71,7 @@ function Auxiliary.PreloadUds()
 						return temp_f(...)
 					end
 	end
+	Auxiliary=Auxiliary or {}
 	if not Auxiliary.GetMustMaterialGroup then
 		Auxiliary.GetMustMaterialGroup=Duel.GetMustMaterial
 	end
@@ -99,6 +100,28 @@ function Auxiliary.PreloadUds()
 				func(tc,...)
 			end
 		end
+	end
+	function Auxiliary.AddPlaceToPZoneIfDestroyEffect(c)
+		--pendulum
+		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(13331639,3))
+		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+		e1:SetCode(EVENT_DESTROYED)
+		e1:SetProperty(EFFECT_FLAG_DELAY)
+		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+							local c=e:GetHandler()
+							return c:IsPreviousLocation(LOCATION_MZONE) and c:IsFaceup()
+						end)
+		e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
+							if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
+						end)
+		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+							local c=e:GetHandler()
+							if c:IsRelateToEffect(e) then
+								Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+							end
+						end)
+		c:RegisterEffect(e1)
 	end
 	--require("script/procedure.lua")
 end

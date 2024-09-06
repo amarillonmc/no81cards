@@ -6,6 +6,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCondition(cm.con)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	--change effect type
@@ -44,15 +45,16 @@ end
 function cm.mfilter(c)
 	return c:IsFaceup() and c:IsCode(60010079)
 end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return Duel.GetFlagEffect(tp,m)==0
+end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp) 
-	local b1=false
 	local b2=false
-	if Duel.GetFlagEffect(tp,m)==0 then b1=true end
 	if not Duel.IsExistingMatchingCard(cm.mfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) then b2=true end
-	if b1==false then return end
 	if b2==true then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end

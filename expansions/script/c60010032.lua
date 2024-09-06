@@ -5,6 +5,7 @@ function cm.initial_effect(c)
 	--material
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(31755044,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_HAND)
@@ -69,14 +70,14 @@ function cm.matop(e,tp,eg,ep,ev,re,r,rp)
 		i=i+1
 	end
 	
-	if Duel.IsExistingMatchingCard(cm.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,raceo,attro,races,attrs) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		local sc=Duel.GetMatchingGroup(cm.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,raceo,attro,races,attrs):Select(tp,1,1,nil)
+	if Duel.IsExistingMatchingCard(cm.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,raceo,attro,races,attrs,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		local sc=Duel.GetMatchingGroup(cm.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,raceo,attro,races,attrs,e,tp):Select(tp,1,1,nil)
 		Duel.BreakEffect()
 		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP) 
 	end
 end
-function cm.spfil(c,raceo,attro,races,attrs)
-	return not c:IsRace(raceo) and not c:IsAttribute(attro) and not c:IsRace(races) and not c:IsAttribute(attrs) and c:IsType(TYPE_MONSTER)
+function cm.spfil(c,raceo,attro,races,attrs,e,tp)
+	return not c:IsRace(raceo) and not c:IsAttribute(attro) and not c:IsRace(races) and not c:IsAttribute(attrs) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.repfilter(c,tp,races,attrs)
 	return c:IsControler(tp) and c:IsOnField() and not c:IsAttribute(races) and not c:IsRace(attrs)

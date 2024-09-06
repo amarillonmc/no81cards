@@ -128,7 +128,7 @@ end
 function c65010030.rmfilter1(c,tp)
 	local att=c:GetAttribute()
 	return c:IsType(TYPE_MONSTER) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToRemove()
-		and Duel.IsExistingMatchingCard(c65010030.rmfilter2,tp,0,LOCATION_MZONE,1,nil,att)
+		and Duel.IsExistingMatchingCard(c65010030.rmfilter2,tp,0,LOCATION_MZONE+LOCATION_GRAVE,1,nil,att)
 end
 function c65010030.rmfilter2(c,att)
 	return c:IsFaceup() and c:IsAttribute(att) and c:IsAbleToRemove()
