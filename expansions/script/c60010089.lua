@@ -67,7 +67,7 @@ function cm.rop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 		Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESETS_STANDARD,0,1)
 	end
-	Duel.Readjust()
+  --  Duel.Readjust()
 end
 
 
