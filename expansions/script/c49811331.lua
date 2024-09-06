@@ -37,7 +37,20 @@ function c49811331.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local mg=c:GetMaterial():Filter(c49811331.spfilter,nil,e,tp)
 	if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,1,REASON_EFFECT)>0 and #mg>0 then
-		if Duel.SpecialSummon(mg,0,tp,tp,false,false,POS_FACEUP)>0 then
+		local tc=mg:GetFirst()
+		if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+			Duel.SpecialSummonComplete()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			local sg=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_HAND,0,1,1,nil,TYPE_SPELL+TYPE_TRAP)
 			if #sg>0 then

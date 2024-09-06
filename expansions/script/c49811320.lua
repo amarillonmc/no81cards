@@ -47,20 +47,19 @@ function cm.f(c)
 end
 function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:IsExists(cm.rf,1,nil)
-		and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_GRAVE,0,1,nil) end
+		and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,nil) end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_GRAVE,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,1,nil)
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT+REASON_REPLACE)
 		return true
-	end
-	return false
+	else return false end
 end
 function cm.rval(e,c)
-	return cm.rf(c,e:GetHandlerPlayer())
+	return cm.rf(c)
 end
-function cm.rf(c,tp)
-	return c:IsControler(tp) and c:IsFaceup() and (c:IsRace(RACE_AQUA) or c:IsRace(RACE_FISH) or c:IsRace(RACE_SEASERPENT)) and not c:IsReason(REASON_REPLACE)
+function cm.rf(c)
+	return c:IsFaceup() and c:IsOnField() and (c:IsRace(RACE_AQUA) or c:IsRace(RACE_FISH) or c:IsRace(RACE_SEASERPENT)) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
 function cm.rop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)

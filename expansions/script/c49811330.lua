@@ -67,7 +67,7 @@ function c49811330.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetParam(1)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
-function c49811330.sfilter(c,code)
+function c49811330.sfilter(c,code1,code2,code3)
 	return c:IsCode(code1,code2,code3) and c:IsAbleToGraveAsCost()
 	--return c:IsCode(table.unpack(c49811330.tab))
 end

@@ -38,7 +38,7 @@ function c9910324.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local d=Duel.GetAttackTarget()
 	if not a or not d then return end
 	if d==c then a,d=d,a end
-	if not a==c or d:IsControler(tp) or not d:IsRelateToBattle() then return end
+	if a~=c or d:IsControler(tp) or not d:IsRelateToBattle() then return end
 	local atk=d:GetBaseAttack()
 	local def=d:GetBaseDefense()
 	local e1=Effect.CreateEffect(c)

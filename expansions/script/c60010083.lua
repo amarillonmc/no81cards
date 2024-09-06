@@ -75,7 +75,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			local nnum=#Duel.GetOperatedGroup()
 			local dg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil):Select(tp,1,nnum,nil)
 			Duel.Destroy(dg,REASON_EFFECT)
-			Duel.Draw(tp,nnum,REASON_EFFECT)
+			Duel.Draw(tp,#Duel.GetOperatedGroup(),REASON_EFFECT)
 		end
 	end
 end

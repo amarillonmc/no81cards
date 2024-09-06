@@ -44,7 +44,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and cm.f(cm.tab[1]) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and cm.f(cm.tab[1]) and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 	cm.tab = nil
