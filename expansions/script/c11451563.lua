@@ -168,15 +168,17 @@ function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.trtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=re:GetHandler()
-	if chk==0 then return tc:IsRelateToEffect(re) and tc:IsFaceup() and tc:IsCanTurnSet() and tc:IsControler(1-tp) and tc~=e:GetHandler():GetEquipTarget() end
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,tc,1,0,0)
+	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp) end
+	Duel.HintSelection(eg)
+	Duel.SetTargetCard(eg)
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,eg,1,0,0)
 end
 function cm.trtg3(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(Card.IsCanTurnSet,1,nil) end
+	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-	local g=eg:Filter(Card.IsCanTurnSet,nil)
+	local g=eg:Filter(cm.filter,nil,tp)
 	if #g>1 then
-		g=eg:FilterSelect(Card.IsCanTurnSet,1,1,nil)
+		g=eg:FilterSelect(cm.filter,1,1,nil,tp)
 	end
 	Duel.HintSelection(g)
 	Duel.SetTargetCard(g)
@@ -202,7 +204,7 @@ function cm.trop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=e:GetLabelObject()
 	local g=Group.CreateGroup()
 	if e:GetCode()==EVENT_CHAINING then
-		g=Group.FromCards(re:GetHandler()):Filter(Card.IsRelateToEffect,nil,re)
+		g=Group.FromCards(re:GetHandler()):Filter(Card.IsRelateToEffect,nil,e)
 	else
 		g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	end
