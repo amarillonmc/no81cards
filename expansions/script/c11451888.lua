@@ -27,7 +27,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if #g>=4 then
 			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
 			local sg=g:Select(p,4,4,nil)
-			Duel.ConfirmCards(1-p,sg)
+			--Duel.ConfirmCards(1-p,sg)
 			Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 			--match kill
 			local e1=Effect.CreateEffect(e:GetHandler())

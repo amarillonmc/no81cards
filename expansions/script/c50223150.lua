@@ -36,7 +36,7 @@ function c50223150.copycost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c50223150.copyfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
+	return c:IsFaceup() and (c:GetAttack()>0 or aux.NegateEffectMonsterFilter(c))
 end
 function c50223150.copytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and c50223150.copyfilter(chkc) end
@@ -47,7 +47,7 @@ end
 function c50223150.copyop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
+	if tc and tc:IsFaceup() and tc:IsRelateToEffect(e) then
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -66,31 +66,31 @@ function c50223150.copyop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e3:SetValue(0)
 		tc:RegisterEffect(e3)
-	end
-	if c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsType(TYPE_EFFECT) then
-		local atk=tc:GetBaseAttack()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(atk)
-		c:RegisterEffect(e1)
-		local code=tc:GetOriginalCodeRule()
-		if not tc:IsType(TYPE_TRAPMONSTER) then
-			local cid=c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,1)
-			local e2=Effect.CreateEffect(c)
-			e2:SetDescription(aux.Stringid(50223145,2))
-			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e2:SetCode(EVENT_PHASE+PHASE_END)
-			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-			e2:SetCountLimit(1)
-			e2:SetRange(LOCATION_MZONE)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			e2:SetLabelObject(e2)
-			e2:SetLabel(cid)
-			e2:SetOperation(c50223150.rstop)
-			c:RegisterEffect(e2)
+		if c:IsFaceup() and c:IsRelateToEffect(e) then
+			local atk=tc:GetBaseAttack()
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetCode(EFFECT_UPDATE_ATTACK)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetValue(atk)
+			c:RegisterEffect(e1)
+			local code=tc:GetOriginalCodeRule()
+			if not tc:IsType(TYPE_TRAPMONSTER) then
+				local cid=c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,1)
+				local e2=Effect.CreateEffect(c)
+				e2:SetDescription(aux.Stringid(50223145,2))
+				e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e2:SetCode(EVENT_PHASE+PHASE_END)
+				e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+				e2:SetCountLimit(1)
+				e2:SetRange(LOCATION_MZONE)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+				e2:SetLabelObject(e2)
+				e2:SetLabel(cid)
+				e2:SetOperation(c50223150.rstop)
+				c:RegisterEffect(e2)
+			end
 		end
 	end
 end

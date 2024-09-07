@@ -198,10 +198,10 @@ function cm.nnfilter(c,tc)
 end
 local _IsCanTurnSet=Card.IsCanTurnSet
 function Card.IsCanTurnSet(c)
-    return (c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)) or ((_IsCanTurnSet(c) and not c:IsLocation(LOCATION_SZONE)))
+	return (c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)) or ((_IsCanTurnSet(c) and not c:IsLocation(LOCATION_SZONE)))
 end
 function cm.dsfilter(c)
-	return c:IsFaceup() and c:IsCanTurnSet()
+	return c:IsFaceup() and c:IsCanTurnSet() and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.tfilter(c)
 	return c:IsFacedown() and c:IsOnField()
