@@ -52,9 +52,6 @@ function c28399984.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(sg,REASON_EFFECT)
 	end
 end
-function c28399984.cfilter(c,e,tp)
-	return c:IsSetCard(0x284) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
-end
 function c28399984.spcon(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	return eg:IsContains(e:GetHandler()) and re:GetHandler():IsType(TYPE_MONSTER) and re:GetHandler():IsSetCard(0x284)
@@ -62,14 +59,17 @@ end
 function c28399984.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_EXTRA)
+end
+function c28399984.cfilter(c,e,tp)
+	return c:IsSetCard(0x284) and c:IsType(TYPE_MONSTER) and ((c:IsLocation(LOCATION_DECK) and c:IsAbleToHand()) or (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsLocation(LOCATION_DECK) and Duel.GetMZoneCount(tp)>0 or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)))
 end
 function c28399984.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local sc=Duel.SelectMatchingCard(tp,c28399984.cfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
+	local sc=Duel.SelectMatchingCard(tp,c28399984.cfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,e,tp):GetFirst()
 	if sc then
-		local b1=sc:IsAbleToHand()
-		local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and sc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		local b1=sc:IsLocation(LOCATION_DECK) and sc:IsAbleToHand()
+		local b2=sc:IsCanBeSpecialSummoned(e,0,tp,false,false) and (sc:IsLocation(LOCATION_DECK) and Duel.GetMZoneCount(tp)>0 or sc:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,sc)>0)
 		local op=0
 		if b1 and b2 then op=Duel.SelectOption(tp,1190,1152)
 		elseif b1 then op=0
