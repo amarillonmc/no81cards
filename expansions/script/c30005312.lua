@@ -78,7 +78,7 @@ function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	Duel.SendtoGrave(tc,REASON_EFFECT)
+	if tc:IsOnField() and tc:IsFaceup() then Duel.SendtoGrave(tc,REASON_EFFECT) end
 end
 --Effect 2
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)

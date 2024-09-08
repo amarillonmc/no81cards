@@ -33,31 +33,23 @@ function cm.initial_effect(c)
 		cm.global_check=true
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_LEAVE_FIELD)
-		ge1:SetCondition(cm.lecon)
-		ge1:SetOperation(cm.leop)
+		ge1:SetCode(EVENT_CHAIN_SOLVED)
+		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
 --all
-function cm.zpf(c,tp)
-	local b1=c:IsPreviousControler(tp) 
-	local b2=bit.band(c:GetPreviousTypeOnField(),TYPE_TRAP)~=0
-	local b3=c:GetReasonPlayer()==1-tp
-	return b1 and b2 and b3 
-end
-function cm.lecon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.zpf,1,nil,0) or eg:IsExists(cm.zpf,1,nil,1)
-end 
-function cm.leop(e,tp,eg,ep,ev,re,r,rp)
-	local ag=eg:Filter(cm.zpf,nil,0)
-	local bg=eg:Filter(cm.zpf,nil,1)
-	if #ag>0 then Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1) end
-	if #bg>0 then Duel.RegisterFlagEffect(1,m,RESET_PHASE+PHASE_END,0,1) end
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	local race,lv=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_RACE,CHAININFO_TRIGGERING_LEVEL)
+	if re:IsActiveType(TYPE_TRAP) or (race&RACE_FIEND>0 and lv&6>0) then
+		Duel.RegisterFlagEffect(0,m+100,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(1,m+100,RESET_PHASE+PHASE_END,0,1)
+	end
 end
 --Effect 1
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(e:GetHandlerPlayer(),m)>0
+	return Duel.GetFlagEffect(e:GetHandlerPlayer(),m+100)>0
 end 
 function cm.th(c)
 	local b1=c:IsAttack(2700)
@@ -101,7 +93,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 		dh=true
 	end
-	if dh==true and ec:IsRelateToEffect(e) then 
+	if dh==true and ec:IsRelateToEffect(e) then
+		Duel.BreakEffect() 
 		Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT+REASON_DISCARD)
 	end
 end  

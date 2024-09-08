@@ -3,19 +3,19 @@ local m=30005301
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--summon limit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_CANNOT_SUMMON)
-	e1:SetCondition(cm.sumcon)
-	c:RegisterEffect(e1)
+	--local e1=Effect.CreateEffect(c)
+	--e1:SetType(EFFECT_TYPE_SINGLE)
+	--e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	--e1:SetCode(EFFECT_CANNOT_SUMMON)
+	--e1:SetCondition(cm.sumcon)
+	--c:RegisterEffect(e1)
 	--spsummon limit
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e2:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e2:SetValue(cm.sumlimit)
-	c:RegisterEffect(e2)
+	--local e2=Effect.CreateEffect(c)
+	--e2:SetType(EFFECT_TYPE_SINGLE)
+	--e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	--e2:SetCode(EFFECT_SPSUMMON_CONDITION)
+	--e2:SetValue(cm.sumlimit)
+	--c:RegisterEffect(e2)
 	--Effect 1
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_RELEASE)
@@ -45,6 +45,7 @@ function cm.initial_effect(c)
 	e51:SetCode(EVENT_FREE_CHAIN)
 	e51:SetRange(LOCATION_MZONE)
 	e51:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e51:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e51:SetCondition(cm.ztcon)
 	e51:SetCost(cm.tcost)
 	e51:SetTarget(cm.ttg)
@@ -104,7 +105,6 @@ end
 --Effect 1
 function cm.rsf(c,tp)
 	if not c:IsType(TYPE_TRAP) then return false end
-	if not c:IsType(TYPE_CONTINUOUS) then return false end
 	local re=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
 	local val=nil
 	local tge=nil
@@ -144,7 +144,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoHand(gt,nil,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,gt)
 end
-function cm.ddop(e,tp,eg,ep,ev,re,r,rp)
+function cm.ddop3(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -152,6 +152,28 @@ function cm.ddop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(1,0)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+end
+function cm.ddop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e13=Effect.CreateEffect(c)
+	e13:SetType(EFFECT_TYPE_SINGLE)
+	e13:SetCode(EFFECT_SPSUMMON_COST)
+	e13:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e13:SetCost(cm.spcost)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e3:SetTargetRange(0xff,0xfe)
+	e3:SetTarget(cm.eftg)
+	e3:SetLabelObject(e13)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e3,tp)
+end
+function cm.spcost(e,c,tp)
+	return false 
+end
+function cm.eftg(e,c)
+	return c:IsType(TYPE_MONSTER) or c:IsType(TYPE_SPELL)
 end
 --Effect 2
 function cm.thcf(c,tp)

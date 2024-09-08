@@ -45,7 +45,8 @@ function cm.initial_effect(c)
 	e51:SetCode(EVENT_FREE_CHAIN)
 	e51:SetRange(LOCATION_GRAVE)
 	e51:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e51:SetCondition(cm.zcon)
+	e51:SetCountLimit(1,m)
+	--e51:SetCondition(cm.zcon)
 	e51:SetCost(aux.bfgcost)
 	e51:SetTarget(cm.ztg)
 	e51:SetOperation(cm.zop)
@@ -67,7 +68,9 @@ end
 function cm.spmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		Duel.RegisterFlagEffect(tc:GetSummonPlayer(),m+200,RESET_PHASE+PHASE_END,0,2)
+		if tc:GetOriginalType()&TYPE_TRAP==0 then 
+			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),m+m,RESET_PHASE+PHASE_END,0,2)
+		end
 		tc=eg:GetNext()
 	end
 end
@@ -139,14 +142,14 @@ function cm.zop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e)  then return end
 	if not Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) or not tc:IsLocation(LOCATION_SZONE) then return false end
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_ADJUST)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e2:SetReset(RESET_EVENT+RESETS_STANDARD) 
-	e2:SetOperation(cm.winop)
-	tc:RegisterEffect(e2,true)
+	--local e2=Effect.CreateEffect(c)
+	--e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	--e2:SetCode(EVENT_ADJUST)
+	--e2:SetRange(LOCATION_SZONE)
+	--e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	--e2:SetReset(RESET_EVENT+RESETS_STANDARD) 
+	--e2:SetOperation(cm.winop)
+	--tc:RegisterEffect(e2,true)
 	local e12=Effect.CreateEffect(c)
 	e12:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e12:SetCode(EVENT_ADJUST)
@@ -163,8 +166,8 @@ function cm.winop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.wwinop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetFlagEffect(e:GetHandlerPlayer(),m+200)
-	if ct>=3 then
+	local ct=Duel.GetFlagEffect(e:GetHandlerPlayer(),m+m)
+	if ct>3 then
 		Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 	end
 end

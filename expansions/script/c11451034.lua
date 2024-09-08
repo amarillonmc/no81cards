@@ -299,7 +299,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcost(e,c,tp,sc)
 	local c=sc or e:GetHandler()
-	local g=Duel.GetMatchingGroup(cm.sfilter,tp,0xff,0xff,c,tp)
+	local g=Duel.GetMatchingGroup(cm.sfilter,tp,0xcf,0xcf,c,tp)
 	return #g>0
 end
 function cm.sptg(e,c,tp)
@@ -310,7 +310,7 @@ function cm.sfilter(c,tp)
 end
 function cm.spcop(e,tp,eg,ep,ev,re,r,rp,c)
 	local c=c or e:GetHandler()
-	local g=Duel.GetMatchingGroup(cm.sfilter,tp,0xff,0xff,c,tp)
+	local g=Duel.GetMatchingGroup(cm.sfilter,tp,0xcf,0xcf,c,tp)
 	local tg=g:Filter(function(c) return c:IsFacedown() and c:IsControler(1-tp) end,nil)
 	Duel.ConfirmCards(tp,tg)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))

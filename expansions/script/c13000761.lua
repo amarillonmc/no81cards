@@ -1,0 +1,97 @@
+--大饥荒
+local cm,m,o=GetID()
+function cm.initial_effect(c)
+	c:SetSPSummonOnce(13000761)
+	c:EnableReviveLimit()
+	aux.AddFusionProcFunRep(c,cm.ffilter,3,true)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetProperty(EFFECT_FLAG_DELAY)
+	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e0:SetOperation(cm.drop)
+	c:RegisterEffect(e0)
+ local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_SPSUMMON_PROC)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetRange(LOCATION_EXTRA)
+	e2:SetCondition(cm.spcon)
+	e2:SetOperation(cm.spop)
+	c:RegisterEffect(e2)
+local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EVENT_SUMMON)
+	e1:SetCondition(aux.NegateSummonCondition)
+	e1:SetTarget(cm.target1)
+	e1:SetOperation(cm.activate1)
+	c:RegisterEffect(e1)
+	local e3=e1:Clone()
+	e3:SetCode(EVENT_FLIP_SUMMON)
+	c:RegisterEffect(e3)
+	local e4=e1:Clone()
+	e4:SetCode(EVENT_SPSUMMON)
+	c:RegisterEffect(e4)
+end
+function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
+end
+function cm.activate1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.SendtoDeck(c,1-tp,2,REASON_COST)
+	Duel.NegateSummon(eg)
+	Duel.Destroy(eg,REASON_EFFECT)
+end
+function cm.ffilter(c,fc,sub,mg,sg)
+	if not sg then return true end
+	return c:IsSetCard(0xe09) and (not sg or not sg:IsExists(Card.IsFusionCode,1,c,c:GetFusionCode()))
+end
+function cm.spfilter(c)
+	return c:IsSetCard(0xe09) 
+end
+function cm.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD+LOCATION_HAND,0,nil)
+	return g:GetClassCount(Card.GetCode)>=3
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD+LOCATION_HAND,0,nil)
+	if g:GetClassCount(Card.GetCode)>=3 then
+		local sg=g:SelectSubGroup(tp,aux.dncheck,false,3,3)
+		c:SetMaterial(sg)
+		Duel.SendtoDeck(sg,1-tp,2,REASON_COST)
+	end	
+end
+function cm.drop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local pt=c:GetOwner()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CHANGE_DAMAGE)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(0)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,1-pt)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_NO_EFFECT_DAMAGE)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,1-pt)
+
+	local e9=Effect.CreateEffect(e:GetHandler())
+	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e9:SetCode(EVENT_PHASE+PHASE_END)
+	e9:SetCountLimit(1)
+	e9:SetOperation(cm.tgop)
+	e9:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e9,tp)
+end
+function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
+	Duel.Destroy(g,REASON_EFFECT)
+end
+

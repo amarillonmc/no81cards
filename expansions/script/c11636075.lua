@@ -4,18 +4,14 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	aux.AddSynchroMixProcedure(c,aux.Tuner(Card.IsSetCard,0x223),nil,nil,cm.mfilter,1,99,cm.syncheck(c))
 	c:EnableReviveLimit() 
-	--negate
+	--额外卡组0x9223怪兽效果重复适用用标记
+	--Duel.IsPlayerAffectedByEffect(tp,11636065)
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_REMOVE)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e1:SetCode(EVENT_CHAINING)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(11636065)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.negcon)
-	e1:SetTarget(cm.negtg)
-	e1:SetOperation(cm.negop)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(0,1)
 	c:RegisterEffect(e1)
 	--
 	local e2=Effect.CreateEffect(c)
@@ -38,32 +34,6 @@ function cm.syncheck(syncard)
 	return  function(g)
 				return g:IsExists(cm.cfilter,1,nil,syncard)
 			end
-end
---
-function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local rc=re:GetHandler()
-	return  not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
-end
-
-function cm.tdfilter(c,e,tp,ft)
-	return c:IsSetCard(0x9223)  and c:IsType(TYPE_MONSTER) and c:IsAbleToExtra() 
-end
-function cm.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND)
-end
-function cm.negop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
-	local g=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil)
-	local tc=g:GetFirst()
-	if g:GetCount()>0 then
-		Duel.SendtoExtraP(tc,1-tp,REASON_EFFECT)
-		if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-			Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
-		end
-	end
 end
 --
 function cm.tktg(e,tp,eg,ep,ev,re,r,rp,chk)

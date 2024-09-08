@@ -2,12 +2,12 @@
 function c11560718.initial_effect(c)
 	--xyz summon
 	c:EnableReviveLimit()
-	aux.AddXyzProcedureLevelFree(c,c11560718.mfilter,c11560718.xyzcheck,2,99) 
+	aux.AddXyzProcedureLevelFree(c,c11560718.mfilter,c11560718.xyzcheck,1,99) 
 	--xyz 
 	local e1=Effect.CreateEffect(c) 
 --  e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_BATTLED)
+	e1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,11560718) 
 	--e1:SetCondition(function(e) 

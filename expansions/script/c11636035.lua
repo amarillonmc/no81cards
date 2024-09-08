@@ -32,10 +32,10 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_DRAW)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetRange(LOCATION_EXTRA)
-	e4:SetCountLimit(3)
+	e4:SetCountLimit(1,m+1)
 	e4:SetCondition(cm.decon)
 	e4:SetOperation(cm.deop)
-	c:RegisterEffect(e4)
+	c:RegisterEffect(e4)	
 	--to grave
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -133,9 +133,9 @@ end
 
 function cm.deop(e,tp,eg,ep,ev,re,r,rp)
 	cm.oprep(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsPlayerAffectedByEffect(tp,11636065) and e:CheckCountLimit(tp) then
+	if Duel.IsPlayerAffectedByEffect(tp,11636065)  then --and e:CheckCountLimit(tp)
 		cm.oprep(e,tp,eg,ep,ev,re,r,rp)
-		e:UseCountLimit(tp)
+		--e:UseCountLimit(tp)
 	end
 end
 --

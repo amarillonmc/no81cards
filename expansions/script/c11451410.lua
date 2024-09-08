@@ -90,7 +90,7 @@ function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.filter(c)
-	return c.traveler_saga and c:IsAbleToDeckAsCost()
+	return c:IsSetCard(0xa977) and c:IsAbleToDeckAsCost()
 end
 function cm.ssfilter(c)
 	return c:IsLocation(LOCATION_SZONE) and c:GetSequence()<5

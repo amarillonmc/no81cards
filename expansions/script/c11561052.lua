@@ -23,10 +23,27 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetCountLimit(1,11561052)
-	e3:SetTarget(c11561052.spstg)
-	e3:SetOperation(c11561052.spsop)
+	e3:SetTarget(c11561052.spstg2)
+	e3:SetOperation(c11561052.spsop2)
 	c:RegisterEffect(e3)
 	
+end
+function c11561052.spfilter2(c,e,tp)
+	return c:GetOriginalType()&TYPE_MONSTER>0 and c:GetType()&TYPE_CONTINUOUS+TYPE_TRAP==TYPE_CONTINUOUS+TYPE_TRAP and c:IsFaceup() and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsSSetable() and (c:GetControler()==tp or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
+end
+function c11561052.spstg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and c11561052.spfilter2(chkc,e,tp) end
+	if chk==0 then return Duel.IsExistingTarget(c11561052.spfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,c11561052.spfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,e,tp)
+end
+function c11561052.spsop2(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	local c=e:GetHandler()
+	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and c:IsRelateToEffect(e) and c:IsSSetable() and (c:GetControler()==tp or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) then
+		Duel.BreakEffect()
+		Duel.SSet(tp,c)
+	end
 end
 function c11561052.spfilter(c,e,tp)
 	return c:GetOriginalType()&TYPE_MONSTER>0 and c:GetType()&TYPE_CONTINUOUS+TYPE_TRAP==TYPE_CONTINUOUS+TYPE_TRAP and c:IsFaceup() and ((c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or (c:IsAbleToDeck() and e:GetHandler():IsSSetable() and (c:GetControler()==tp or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)))
@@ -71,22 +88,32 @@ end
 function c11561052.filter1(c,tp)
 	return not c:IsForbidden()
 end
-function c11561052.filter(c,tp)
+function c11561052.filter(c,e,tp,eg)
 	return c:IsSummonPlayer(tp) and not c:IsForbidden()
+end
+function c11561052.mtsfilter(c,eg)
+	return c:IsType(TYPE_MONSTER) and not eg:IsContains(c) and not c:IsForbidden()
 end
 function c11561052.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetHandler():IsLocation(LOCATION_HAND) and 1 or 0
 	local g=eg:Filter(c11561052.filter1,nil)
-	local ct1=g:FilterCount(c11561052.filter,nil,tp)
-	local ct2=g:FilterCount(c11561052.filter,nil,1-tp)
-	if chk==0 then return eg:IsExists(c11561052.filter1,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>ft+ct1 and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>ct2 end
+	local sg=Duel.GetMatchingGroup(c11561052.filter1,tp,LOCATION_MZONE,0,nil)
+	local ct1=g:FilterCount(c11561052.filter,nil,e,tp,eg)
+	local ct2=g:FilterCount(c11561052.filter,nil,e,1-tp,eg)
+	if chk==0 then return eg:IsExists(c11561052.filter1,1,nil) and Group.__sub(sg,g):GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>ft+ct1+1 and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>ct2 end
 	Duel.SetTargetCard(g)
 end
 function c11561052.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	local g1=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	local sg=Duel.GetMatchingGroup(c11561052.filter1,tp,LOCATION_MZONE,0,nil)
+	local g2=Group.__sub(sg,g1)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local g2=Duel.SelectMatchingCard(tp,c11561052.mtsfilter,tp,LOCATION_MZONE,0,1,1,nil,eg)
+	local g=Group.__add(g1,g2)
 	local tc=g:GetFirst()
-	local ct1=g:FilterCount(c11561052.filter,nil,tp)
-	local ct2=g:FilterCount(c11561052.filter,nil,1-tp)
+	local ct1=g:FilterCount(c11561052.filter,nil,e,tp,eg)
+	local ct2=g:FilterCount(c11561052.filter,nil,e,1-tp,eg)
+
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)>ct1 and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>ct2 then
 	while tc do
 		Duel.MoveToField(tc,tp,tc:GetControler(),LOCATION_SZONE,POS_FACEUP,true)

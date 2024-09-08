@@ -1,6 +1,5 @@
 --渊洋巨兽 末日蠕虫
 local cm,m=GetID()
-
 function cm.initial_effect(c)
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x223),aux.NonTuner(Card.IsAttribute,ATTRIBUTE_WATER),1)
 	c:EnableReviveLimit()
@@ -16,14 +15,13 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.seqtg)
 	e1:SetOperation(cm.seqop)
 	c:RegisterEffect(e1)
-	--额外卡组0x9223怪兽效果重复适用用标记
-	--Duel.IsPlayerAffectedByEffect(tp,11636065)
+	--set
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(m)
+	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTargetRange(0,1)
+	e2:SetCountLimit(1,m+1)
+	e2:SetTarget(cm.settg)
+	e2:SetOperation(cm.setop)
 	c:RegisterEffect(e2)
 	--damage
 	local e3=Effect.CreateEffect(c)
@@ -54,6 +52,42 @@ function cm.seqop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		Duel.SendtoExtraP(g,1-tp,REASON_EFFECT)
 	end
+end
+--
+function cm.setfilter(c)
+	return c:IsSetCard(0x223) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+end
+function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+end
+function cm.setop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+	if #g<1 then return end
+	local tc1=g:Select(tp,1,1,nil):GetFirst()
+	Duel.SendtoGrave(tc1,REASON_DISCARD+REASON_EFFECT)	
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc and Duel.SSet(tp,tc)~=0 and tc1:IsSetCard(0xa223) then
+		local c=e:GetHandler()
+		if tc:IsType(TYPE_QUICKPLAY) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+		end
+		if tc:IsType(TYPE_TRAP) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+		end
+	end	
 end
 --
 function cm.damtg(e,tp,eg,ep,ev,re,r,rp,chk)

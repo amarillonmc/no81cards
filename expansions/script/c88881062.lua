@@ -6,16 +6,6 @@ function s.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,1))
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e1:SetRange(LOCATION_FZONE)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
-	e1:SetCondition(s.tgcon6)
-	e1:SetTarget(s.rectg)
-	e1:SetOperation(s.recop)
-	c:RegisterEffect(e1)
 	--indes by battle
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -49,18 +39,19 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.atcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(1-tp)<=7816
+	local c=e:GetHandler()
+	return Duel.GetAttacker()==c and c:IsChainAttackable(0,true) and Duel.GetLP(1-tp)<=7816
 end
 function s.filter(c)
-	return c:IsCode(88800017,88800012,88800022) and c:IsAbleToHand()
+	return (c:IsCode(88800017) or c:IsCode(88800012) or c:IsCode(88800022)) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK,0,1,1,nil)
 	if #g>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
@@ -78,17 +69,4 @@ end
 function s.damop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
-end
-function s.tgcon6(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetOwner()~=e:GetOwner() and ep==tp
-end
-function s.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(360)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,360)
-end
-function s.recop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Recover(p,d,REASON_EFFECT)
 end

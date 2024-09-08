@@ -66,7 +66,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if not tc or tc==nil then return false end
 	Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 	if tc:IsFacedown() or tc:GetLocation()~=LOCATION_SZONE then return false end
-	if rk==1 then
+	if rk==1  then
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -87,7 +87,7 @@ function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	Duel.SendtoGrave(tc,REASON_EFFECT)
+	if tc:IsOnField() and tc:IsFaceup() then Duel.SendtoGrave(tc,REASON_EFFECT) end
 end
 --Effect 2
 function cm.thcf(c,tp)

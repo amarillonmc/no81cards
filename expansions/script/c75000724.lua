@@ -19,8 +19,7 @@ function s.initial_effect(c)
 	--spsummon
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCost(s.spcost)
 	e3:SetTarget(s.sptg)
@@ -134,7 +133,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			local fop=ce:GetOperation()
 			fop(ce,e,tp,tc,mat2)
 		end
-		tc:CompleteProcedure()	  
+		tc:CompleteProcedure()		
 	end
 end
 

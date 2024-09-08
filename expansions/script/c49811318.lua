@@ -59,12 +59,12 @@ function cm.ff(g)
     return g:GetClassCount(Card.GetLevel)==1 and g:GetClassCount(Card.GetRace)==g:GetCount()
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local g=Duel.GetMatchingGroup(cm.f,tp,LOCATION_DECK,0,nil,e,tp)
+    local g=Duel.GetMatchingGroup(cm.f,tp,LOCATION_DECK+LOCATION_HAND,0,nil,e,tp)
 	if chk==0 then return g:CheckSubGroup(cm.ff,1,3) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-    local ft,g,c = 3,Duel.GetMatchingGroup(cm.f,tp,LOCATION_DECK,0,nil,e,tp),e:GetHandler()
+    local ft,g,c = 3,Duel.GetMatchingGroup(cm.f,tp,LOCATION_DECK+LOCATION_HAND,0,nil,e,tp),e:GetHandler()
     if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not g:CheckSubGroup(cm.ff,1,3) then return end
     if Duel.GetLocationCount(tp,LOCATION_MZONE)<3 then ft = Duel.GetLocationCount(tp,LOCATION_MZONE) end
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end

@@ -63,16 +63,6 @@ function cm.initial_effect(c)
 	e6:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e6:SetOperation(cm.op)  
 	c:RegisterEffect(e6)  
-	--special summon
-	local e7=Effect.CreateEffect(c)
-	e7:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e7:SetCode(EVENT_LEAVE_FIELD)
-	e7:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	e7:SetCondition(cm.spcon1)
-	e7:SetTarget(cm.sptg1)
-	e7:SetOperation(cm.spop1)
-	c:RegisterEffect(e7)
 	if not cm.global_flag then
 		cm.global_flag=true
 		local ge0=Effect.CreateEffect(c)
@@ -135,20 +125,4 @@ function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return (c:IsReason(REASON_BATTLE) or (c:GetReasonPlayer()==1-tp and c:IsReason(REASON_EFFECT)))
 		and c:IsPreviousPosition(POS_FACEUP)
-end
-function cm.filter(c,e,tp)
-	return c:IsCode(88881086) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
-end
-function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	end
 end

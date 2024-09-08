@@ -4,15 +4,19 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetDescription(aux.Stringid(m,3))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_POSITION+CATEGORY_GRAVE_SPSUMMON)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetRange(LOCATION_HAND)
-	--e1:SetCountLimit(1,m)
+	e1:SetCode(EVENT_CHANGE_POS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	--e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
-	cm.hand_effect=e1
+	cm.hand_effect=cm.hand_effect or {}
+	cm.hand_effect[c]=e1
 	--destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DESTROY)
@@ -28,58 +32,54 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return #g==g:FilterCount(Card.IsFacedown,nil)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x3978) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
+end
+function cm.filter(c,tp)
+	return (c:IsPosition(POS_FACEDOWN_DEFENSE) or (c:IsCanTurnSet() and not c:IsStatus(STATUS_BATTLE_DESTROYED))) and (c:GetSequence()<=4 or Duel.GetLocationCount(tp,LOCATION_MZONE)>1)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_HAND+LOCATION_DECK)
+	if chk==0 then return (Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,0,1,nil,tp)) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,LOCATION_HAND)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<2 or not c:IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	if not c:IsRelateToEffect(e) or not c:IsCanBeSpecialSummoned(e,0,tp,false,false) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133)
+	local g1=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE,0,nil,e,tp)
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_MZONE,0,nil,tp)
+	if b1 then g:Merge(g1) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	g=g:Select(tp,1,1,nil)
 	if #g==0 then return end
 	local tc=g:GetFirst()
-	g:AddCard(c)
-	Duel.ConfirmCards(1-tp,g)
-	if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)>0 then
-		Duel.ShuffleSetCard(g)
-		if Duel.SelectYesNo(tp,aux.Stringid(11451619,0)) then Duel.SwapSequence(c,tc) end
-	end
-	if not Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_ONFIELD,0,1,nil) then return end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(cm.splimit)
-	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_LIMIT_SPECIAL_SUMMON_POSITION)
-	e2:SetLabelObject(e1)
-	Duel.RegisterEffect(e2,tp)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_ADJUST)
-	e3:SetOperation(cm.adjustop)
-	e3:SetLabelObject(e2)
-	e3:SetOwnerPlayer(tp)
-	Duel.RegisterEffect(e3,tp)
-end
-function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return sumpos&POS_FACEUP>0
-end
-function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_MZONE,0,1,nil) then
-		local te=e:GetLabelObject()
-		if te~=nil and aux.GetValueType(te)=="Effect" then
-			local te2=te:GetLabelObject()
-			if te2~=nil and aux.GetValueType(te2)=="Effect" then te2:Reset() end
-			te:Reset()
+	if not tc:IsOnField() then
+		g:AddCard(c)
+		Duel.ConfirmCards(1-tp,g)
+		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)>0 then
+			Duel.ShuffleSetCard(g)
+			if Duel.SelectYesNo(tp,aux.Stringid(11451619,0)) then Duel.SwapSequence(c,tc) end
 		end
-		e:Reset()
+	elseif tc:GetSequence()<=4 then
+		if tc:IsFaceup() then Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE) end
+		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)>0 then
+			Duel.ConfirmCards(1-tp,c)
+			g:AddCard(c)
+			Duel.ShuffleSetCard(g)
+			if Duel.SelectYesNo(tp,aux.Stringid(11451619,0)) then Duel.SwapSequence(c,tc) end
+		end
+	else
+		if tc:IsFaceup() then Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE) end
+		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)>0 then
+			Duel.ConfirmCards(1-tp,c)
+			g:AddCard(c)
+			if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+			local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
+			local nseq=math.log(s,2)
+			Duel.MoveSequence(tc,nseq)
+			Duel.ShuffleSetCard(g)
+			if Duel.SelectYesNo(tp,aux.Stringid(11451619,0)) then Duel.SwapSequence(c,tc) end
+		end
 	end
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -104,6 +104,8 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if c:IsRelateToEffect(e) and c:GetColumnGroupCount()==0 then
+		Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,2))
+		Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,2))
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_CHAIN_SOLVING)

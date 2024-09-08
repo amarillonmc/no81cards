@@ -21,18 +21,17 @@ function c50213125.initial_effect(c)
 	e22:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e22:SetOperation(c50213125.lvop2)
 	c:RegisterEffect(e22)
-	--negate
+	--todeck
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DISABLE)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetCategory(CATEGORY_TODECK)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,50213126)
-	e3:SetCondition(c50213125.ngcon)
-	e3:SetCost(c50213125.ngcost)
-	e3:SetTarget(c50213125.ngtg)
-	e3:SetOperation(c50213125.ngop)
+	e3:SetCost(c50213125.tdcost)
+	e3:SetTarget(c50213125.tdtg)
+	e3:SetOperation(c50213125.tdop)
 	c:RegisterEffect(e3)
 	--attack counter 1
 	local e4=Effect.CreateEffect(c)
@@ -89,21 +88,26 @@ end
 function c50213125.costfilter(c)
 	return c:IsSetCard(0xcbf) and c:IsAbleToGraveAsCost()
 end
-function c50213125.ngcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c50213125.costfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
-	local g=Duel.SelectMatchingCard(tp,c50213125.costf,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
+function c50213125.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c50213125.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	local g=Duel.SelectMatchingCard(tp,c50213125.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler())
 	Duel.SendtoGrave(g,REASON_COST)
 end
-function c50213125.ngcon(e,tp,eg,ep,ev,re,r,rp)
-	if ep==tp or e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then return false end
-	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainNegatable(ev)
+function c50213125.cfilter(c,e,tp)
+	return c:IsSummonPlayer(1-tp) and c:IsLocation(LOCATION_MZONE) and c:IsAbleToDeck()
+		and (not e or c:IsRelateToEffect(e))
 end
-function c50213125.ngtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
+function c50213125.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return eg:IsExists(c50213125.cfilter,1,nil,nil,tp) end
+	local g=eg:Filter(c50213125.cfilter,nil,nil,tp)
+	Duel.SetTargetCard(g)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 end
-function c50213125.ngop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateEffect(ev)
+function c50213125.tdop(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(c50213125.cfilter,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	end
 end
 function c50213125.atccon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)

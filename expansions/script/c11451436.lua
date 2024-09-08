@@ -82,7 +82,7 @@ end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sg=e:GetLabelObject()
 	Card.SetMaterial(c,sg)
-	Duel.SendtoGrave(sg,REASON_COST+REASON_MATERIAL)
+	Duel.SendtoGrave(sg,REASON_SPSUMMON+REASON_MATERIAL)
 end
 function cm.adcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
@@ -140,7 +140,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if tc and Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CANNOT_ATTACK)
+		e1:SetCode(EFFECT_CANNOT_TRIGGER)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
 	end

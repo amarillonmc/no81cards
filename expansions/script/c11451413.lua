@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	e4:SetCondition(cm.condition0)
 	c:RegisterEffect(e4)
 	cm.hand_effect=cm.hand_effect or {}
-    cm.hand_effect[c]=e1
+	cm.hand_effect[c]=e1
 	--effect2
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -88,8 +88,17 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if r and not e:GetHandler():IsLocation(LOCATION_GRAVE) and not e:GetHandler():IsLocation(LOCATION_REMOVED) then
 		Duel.BreakEffect()
 		local ph=Duel.GetCurrentPhase()
-		if Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)~=0 and e:GetHandler():IsLocation(LOCATION_GRAVE) and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE then
-			Duel.SkipPhase(Duel.GetTurnPlayer(),PHASE_BATTLE,RESET_PHASE+PHASE_BATTLE_STEP,1)
+		if Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)~=0 and e:GetHandler():IsLocation(LOCATION_GRAVE) then -- and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE then
+			--Duel.SkipPhase(Duel.GetTurnPlayer(),PHASE_BATTLE,RESET_PHASE+PHASE_BATTLE_STEP,1)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)
+			e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+			e1:SetTargetRange(0,LOCATION_MZONE)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+			Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,4))
+			Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,4))
 		end
 	end
 end

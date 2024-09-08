@@ -22,14 +22,17 @@ s.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER),3,
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetOperation(s.regop)
-	c:RegisterEffect(e3)
+	c:RegisterEffect(e1)--e3改成e1
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local pt=c:GetOwner()
+	tp=1-pt --原本持有者的对方
 local e3=Effect.CreateEffect(e:GetHandler())
 		e3:SetType(EFFECT_TYPE_FIELD)
 		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e3:SetCode(EFFECT_CHANGE_DAMAGE)
-		e3:SetTargetRange(0,1)
+		e3:SetTargetRange(1,0)
 		e3:SetValue(0)
 		e3:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e3,tp)
@@ -40,14 +43,12 @@ local e3=Effect.CreateEffect(e:GetHandler())
 local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 		e1:SetCountLimit(1)
-		e1:SetCondition(s.stcon)
+		--e1:SetCondition(s.stcon) 不用检测
 		e1:SetOperation(s.stop)
-		e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
-		Duel.RegisterEffect(e1,tp)
-end
-function s.stcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsLocation(LOCATION_ONFIELD)
+		e1:SetReset(RESET_PHASE+PHASE_END+RESET_EVENT+RESETS_STANDARD) --离场+结束阶段重置
+		Duel.RegisterEffect(e1,tp) --可以直接注册给这张卡
 end
 function s.stop(e,tp,eg,ep,ev,re,r,rp)
 Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
@@ -156,5 +157,5 @@ function s.atkcon(e)
 end
 function s.atkval(e,c)
 	local tc = e:GetHandler():GetBattleTarget() 
-	return math.max(tc:GetAttack(),tc:GetDefense())
+	return math.max(tc:GetBaseAttack(),tc:GetBaseDefense())
 end

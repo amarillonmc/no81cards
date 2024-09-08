@@ -70,7 +70,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	g:AddCard(c)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
-function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)		
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)	   
 	local g=Duel.GetMatchingGroup(cm.mf,tp,LOCATION_ONFIELD,0,nil)
 	if chk==0 then return #g>0 end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
@@ -226,7 +226,7 @@ function cm.aff(c)
 end
 function cm.bfcon(e)	 
 	local loc=LOCATION_GRAVE+LOCATION_ONFIELD+LOCATION_REMOVED 
-	local g=Duel.GetMatchingGroup(cm.af,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,nil)
+	local g=Duel.GetMatchingGroup(cm.af,e:GetHandlerPlayer(),LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	return #g>0 
 end  
 function cm.atkval(e,c)

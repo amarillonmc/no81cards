@@ -57,7 +57,7 @@ function s.fusfilter2(c)
 	return c:IsSetCard(0x750) and c:IsFusionType(TYPE_XYZ)
 end
 function s.indtg(e,c)
-	return c:IsSetCard(0x750) and c:IsFaceup() and rp==1-e:GetHandlerPlayer()
+	return c:IsSetCard(0x750) and c:IsFaceup() and ep==1-e:GetHandlerPlayer()
 end
 function s.indtg2(e,c)
 	return c:IsSetCard(0x750) and c:IsFaceup() and c:IsLocation(LOCATION_MZONE)
@@ -88,7 +88,7 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local cg=Duel.GetOperatedGroup()
 	for tc in aux.Next(cg) do
-		local code=tc:GetOriginalCode()
+		local code=tc:GetOriginalCodeRule()
 		c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,1)
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())

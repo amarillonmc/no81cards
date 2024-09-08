@@ -1,6 +1,6 @@
 --[[
-水晶魔法大妖精 吉贝尔
-Gebil, The Crystal Sorcery
+做成面包！
+Breaded!
 Card Author: nemoma
 Scripted by: XGlitchy30
 ]]
@@ -10,111 +10,115 @@ if not GLITCHYLIB_LOADED then
 	Duel.LoadScript("glitchylib_vsnemo.lua")
 end
 function s.initial_effect(c)
-	--[[(Quick Effect): You can send this card from your hand to the GY; apply the following effect, also, each time your opponent Special Summons a monster(s) this turn,
-	immediately banish the top card of your Deck, but if it was banished by this effect, its effects cannot be activated this turn.]]
+	--[[Activate only during a turn in which your opponent has activated an effect that targeted you, or a card(s) you controlled, in your GY and/or in your banishment.
+	Place 1 card your opponent controls face-up in their Spell & Trap Zone as a Continuous Spell, also replace its effect with the following one.
+	● You can Tribute this card; gain 1200 LP.]]
 	local e1=Effect.CreateEffect(c)
 	e1:Desc(0,id)
-	e1:SetCategory(CATEGORY_REMOVE)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_HAND)
 	e1:SetRelevantTimings()
-	e1:HOPT()
-	e1:SetFunctions(nil,aux.ToGraveSelfCost,aux.DummyCost,s.operation)
+	e1:SetFunctions(s.condition,nil,s.target,s.activate)
 	c:RegisterEffect(e1)
+	--[[If a Continuous Spell that was placed by this card's effect leaves the field, destroy this card.]]
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_CONTINUOUS|EFFECT_TYPE_FIELD)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetCondition(s.descon)
+	e2:SetOperation(s.desop)
+	c:RegisterEffect(e2)
+	if not s.global_check then
+		s.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_CONTINUOUS|EFFECT_TYPE_FIELD)
+		ge1:SetCode(EVENT_CHAINING)
+		ge1:SetOperation(s.regop1)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_CONTINUOUS|EFFECT_TYPE_FIELD)
+		ge2:SetCode(EVENT_CHAIN_SOLVED)
+		ge2:SetOperation(s.regop2)
+		Duel.RegisterEffect(ge2,0)
+	end
 end
+function s.regop1(e,tp,eg,ep,ev,re,r,rp)
+	local flags=re:GetProperty()
+	local IsTargetsPlayer, IsTargetsCards = flags&EFFECT_FLAG_PLAYER_TARGET, flags&EFFECT_FLAG_CARD_TARGET
+	if IsTargetsPlayer==0 and IsTargetsCards==0 then return end
+	local tp,tg=Duel.GetChainInfo(Duel.GetCurrentChain(),CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_CARDS)
+	if (IsTargetsPlayer>0 and tp and tp==1-rp) or (IsTargetsCards>0 and tg and tg:IsExists(s.checkfilter,1,nil,1-rp)) then
+		Duel.RegisterFlagEffect(rp,id,RESET_CHAIN,0,1,ev)
+	end
+end
+function s.regop2(e,tp,eg,ep,ev,re,r,rp)
+	local chain_ct={Duel.GetFlagEffectLabel(rp,id)}
+	for i=1,#chain_ct do
+		if chain_ct[i]==ev then
+			Duel.RegisterFlagEffect(rp,id+100,RESET_PHASE+PHASE_END,0,1)
+			return
+		end
+	end
+end
+function s.checkfilter(c,p)
+	return c:IsControler(p) and c:IsLocation(LOCATION_ONFIELD|LOCATION_GRAVE|LOCATION_REMOVED)
+end
+
 --E1
-function s.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local e1=Effect.CreateEffect(c)
-	e1:Desc(2,id)
-	e1:SetCategory(CATEGORY_TOHAND|CATEGORY_DAMAGE)
-	e1:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_TRIGGER_F)
-	e1:SetCode(EVENT_PHASE|PHASE_END)
-	e1:OPT()
-	e1:SetTarget(s.thtg)
-	e1:SetOperation(s.thop)
-	e1:SetReset(RESET_PHASE|PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-	aux.RegisterMaxxCEffect(c,id,tp,0,EVENT_SPSUMMON_SUCCESS,s.rmcon,s.rmopOUT,s.rmopIN,nil,RESET_PHASE|PHASE_END)
+function s.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.PlayerHasFlagEffect(1-tp,id+100)
 end
-function s.thfilter(c)
-	return c:HasFlagEffect(id+100) and c:IsAbleToHand()
+function s.pcfilter(c,p)
+	return c:IsCanBePlacedOnField(p)
 end
-function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local g=Duel.Group(s.thfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
-	if #g>0 then
-		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,#g,0,LOCATION_REMOVED)
-	else
-		Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,0,LOCATION_REMOVED)
+function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		return Duel.GetLocationCount(1-tp,LOCATION_SZONE,tp)>0 and Duel.IsExists(false,s.pcfilter,tp,0,LOCATION_MZONE|LOCATION_FZONE,1,nil,1-tp)
 	end
 end
-function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.Group(s.thfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
-	if #g==0 then return end
-	Duel.HintMessage(tp,HINTMSG_ATOHAND)
-	local tg=g:Select(tp,1,#g,nil)
-	if #tg>0 and Duel.Search(tg,nil,tp)>0 then
-		local ct=Duel.GetOperatedGroup():FilterCount(aux.PLChk,nil,tp,LOCATION_HAND)
-		if ct>0 then
-			Duel.Damage(tp,ct*200,REASON_EFFECT)
-		end
-	end
-end
-function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp)
-end
-function s.rmopOUT(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,tp,id)
-	local g=Duel.GetDecktopGroup(tp,1)
-	if g and #g>0 then
-		local tc=g:GetFirst()
-		Duel.DisableShuffleCheck()
-		if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)>0 and aux.BecauseOfThisEffect(e)(tc) then
-			tc:RegisterFlagEffect(id+100,RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_END,0,1)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_FIELD)
-			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-			e1:SetTargetRange(1,1)
-			e1:SetValue(s.aclimit)
-			e1:SetLabel(tc:GetOriginalCodeRule())
-			e1:SetReset(RESET_PHASE|PHASE_END)
-			Duel.RegisterEffect(e1,tp)
-		end
-	end
-end
-function s.rmopIN(e,tp,eg,ep,ev,re,r,rp,n)
-	Duel.Hint(HINT_CARD,tp,id)
-	local ct=Duel.GetFlagEffect(tp,id)
-	local g=Duel.GetDecktopGroup(tp,ct)
-	if g and #g>=ct then
-		Duel.DisableShuffleCheck()
-		if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 then
-			local c=e:GetHandler()
-			local og=Duel.GetGroupOperatedByThisEffect(e)
-			local codes={}
-			for tc in aux.Next(g) do
-				tc:RegisterFlagEffect(id+100,RESET_EVENT|RESETS_STANDARD|RESET_PHASE|PHASE_END,0,1)
-				local ogcodes={tc:GetOriginalCodeRule()}
-				for _,ogcode in ipairs(ogcodes) do
-					table.insert(codes,ogcode)
-				end
+function s.activate(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(1-tp,LOCATION_SZONE,tp)<=0 then return end
+	local tc=Duel.Select(HINTMSG_OPERATECARD,false,tp,s.pcfilter,tp,0,LOCATION_MZONE|LOCATION_FZONE,1,1,nil,1-tp):GetFirst()
+	if tc then
+		Duel.HintSelection(Group.FromCards(tc))
+		local c=e:GetHandler()
+		if Duel.PlaceAsContinuousCard(tc,tp,1-tp,c,TYPE_SPELL,aux.Stringid(id,1))>0 then
+			tc:ReplaceEffect(CARD_CYBER_HARPIE_LADY,RESET_EVENT|RESETS_STANDARD)
+			local e1=Effect.CreateEffect(tc)
+			e1:Desc(2,id)
+			e1:SetCategory(CATEGORY_RECOVER)
+			e1:SetType(EFFECT_TYPE_IGNITION)
+			e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+			e1:SetRange(LOCATION_SZONE)
+			e1:SetFunctions(nil,aux.TributeSelfCost,s.lptg,s.lpop)
+			e1:SetReset(RESET_EVENT|RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			if c:IsRelateToChain() then
+				c:SetCardTarget(tc)
 			end
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_FIELD)
-			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-			e1:SetTargetRange(1,1)
-			e1:SetValue(s.aclimit)
-			e1:SetLabel(table.unpack(codes))
-			e1:SetReset(RESET_PHASE|PHASE_END)
-			Duel.RegisterEffect(e1,tp)
-		end
+		end	
 	end
 end
-function s.aclimit(e,re,tp)
-	local c=re:GetHandler()
-	return c:IsOriginalCodeRule(e:GetLabel())
+function s.lptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1200)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1200)
+end
+function s.lpop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Recover(p,d,REASON_EFFECT)
+end
+
+--E2
+function s.dfilter(c,sg)
+	return sg:IsContains(c)
+end
+function s.descon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:GetCardTargetCount()==0 then return false end
+	return c:GetCardTarget():IsExists(s.dfilter,1,nil,eg)
+end
+function s.desop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 end

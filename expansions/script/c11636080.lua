@@ -18,8 +18,9 @@ function cm.filter(c,e,tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil,e,tp)
-		return  g:GetClassCount(Card.GetCode)>=2 end
+		return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,2,nil,e,tp) end
+		--local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil,e,tp)
+		--return  g:GetClassCount(Card.GetCode)>=2 end
 	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end

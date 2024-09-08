@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetCode(EVENT_CHAIN_SOLVED)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
 	e2:SetLabelObject(e0)
@@ -30,9 +30,25 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.adtg2)
 	e2:SetOperation(cm.adop2)
 	c:RegisterEffect(e2)
+	local e5=e2:Clone()
+	e5:SetCode(EVENT_CHAIN_NEGATED)
+	c:RegisterEffect(e5)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_LEAVE_FIELD)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	if eg:IsExists(cm.filter,1,nil,tp) and Duel.GetCurrentChain()>0 then
+		Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
+	end
 end
 function cm.filter(c,tp,se)
-	if not (se==nil or c:GetReasonEffect()~=se) then return false end
+	--if not (se==nil or c:GetReasonEffect()~=se) then return false end
 	return c:IsPreviousPosition(POS_FACEDOWN)
 end
 function cm.adcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -66,8 +82,9 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.adcon2(e,tp,eg,ep,ev,re,r,rp)
-	local se=e:GetLabelObject():GetLabelObject()
-	return eg:IsExists(cm.filter,1,nil,tp,se)
+	return Duel.GetFlagEffect(tp,m)>0 and Duel.GetCurrentChain()==1
+	--local se=e:GetLabelObject():GetLabelObject()
+	--return eg:IsExists(cm.filter,1,nil,tp,se)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)

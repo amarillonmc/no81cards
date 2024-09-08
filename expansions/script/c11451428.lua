@@ -43,7 +43,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_SPELL)<3 then return end
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD)
-		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+		e2:SetCode(EFFECT_IMMUNE_EFFECT)
 		e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e2:SetTargetRange(LOCATION_ONFIELD,0)
 		e2:SetValue(cm.efilter)

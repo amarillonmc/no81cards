@@ -59,8 +59,6 @@ function cm.initial_effect(c)
 	e33:SetCode(EVENT_CUSTOM+30015500)
 	e33:SetCondition(cm.tthcon2)
 	c:RegisterEffect(e33)
-	--all
-	local ge1=ors.allop2(c)
 end
 c30015081.isoveruins=true
 --Effect 1

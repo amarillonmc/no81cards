@@ -57,7 +57,7 @@ end
 function cm.actcon(e)
 	local g=Duel.GetMatchingGroup(Card.IsFacedown,e:GetHandlerPlayer(),LOCATION_SZONE,0,nil)
 	local tg=Duel.GetMatchingGroup(cm.pf,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,nil)
-	return #g>=2 or #tg>=2
+	return (#g+#tg)>=2
 end
 --Effect 1
 function cm.rsf(c,tp)
@@ -91,7 +91,7 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local te,p,lv,race=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LEVEL,CHAININFO_TRIGGERING_RACE)
 	if not te or p~=tp then return false end
 	local tc=te:GetHandler()
-	local b1=te:IsActiveType(TYPE_MONSTER) and lv==6 and race==RACE_FIEND 
+	local b1=te:IsActiveType(TYPE_MONSTER) and lv&6>0 and race&RACE_FIEND>0
 	local b2=te:IsActiveType(TYPE_TRAP)
 	return b1 or b2
 end
@@ -120,11 +120,26 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:GetFirst()
 		if Duel.SendtoHand(g,nil,REASON_EFFECT)==0 or tc:GetLocation()~=LOCATION_HAND then return false end
 		Duel.ConfirmCards(1-tp,tc)
-		if tc:IsSummonable(true,nil) then
+		Duel.BreakEffect()
+		if cm.suf(tc,e:GetHandler()) then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetDescription(aux.Stringid(30005304,3))
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_SUMMON_PROC)
+			e1:SetCondition(cm.ntcon)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e2:SetCode(EVENT_SUMMON_NEGATED)
+			e2:SetOperation(cm.rstop)
+			e2:SetLabelObject(e1)
+			e2:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e2,tp)
 			Duel.Summon(tp,tc,true,nil)
 		else
 			Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-			Duel.ShuffleDeck(tp)
 		end
 	else 
 		Duel.BreakEffect()
@@ -134,6 +149,29 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+end
+function cm.ntcon(e,c,minc)
+	if c==nil then return true end
+	return minc==0 and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+end
+function cm.rstop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=e:GetLabelObject()
+	if e1 then e1:Reset() end
+	e:Reset()
+end
+function cm.suf(c,ec)
+	if not c:IsRace(RACE_FIEND) or not c:IsLevel(6) then return false end
+	local e1=Effect.CreateEffect(ec)
+	e1:SetDescription(aux.Stringid(30005304,3))
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SUMMON_PROC)
+	e1:SetCondition(cm.ntcon)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e1)
+	local res=c:IsSummonable(true,nil)
+	e1:Reset()
+	return res 
 end
 --Effect 2
 function cm.scon(e,tp,eg,ep,ev,re,r,rp)

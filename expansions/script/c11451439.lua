@@ -32,7 +32,7 @@ function cm.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,3))
 	e4:SetCategory(CATEGORY_TOHAND)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e4:SetCode(EVENT_LEAVE_FIELD)
 	e4:SetCondition(cm.thcon)
@@ -81,7 +81,7 @@ end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sg=e:GetLabelObject()
 	Card.SetMaterial(c,sg)
-	Duel.SendtoGrave(sg,REASON_COST+REASON_MATERIAL)
+	Duel.SendtoGrave(sg,REASON_SPSUMMON+REASON_MATERIAL)
 end
 function cm.filter4(c,tp)
 	return c:IsFacedown() and c:IsAbleToRemove(tp,POS_FACEDOWN)
@@ -100,12 +100,12 @@ function cm.ertg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,e:GetLabel(),1-tp,LOCATION_EXTRA)
 end
 function Group.ForEach(group,func,...)
-    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
-        local d_group=group:Clone()
-        for tc in aux.Next(d_group) do
-            func(tc,...)
-        end
-    end
+	if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+		local d_group=group:Clone()
+		for tc in aux.Next(d_group) do
+			func(tc,...)
+		end
+	end
 end
 function cm.erop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.filter4,tp,0,LOCATION_EXTRA,nil,tp)
@@ -146,17 +146,22 @@ function cm.thfilter(c)
 	return c:IsFacedown() and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,tp,LOCATION_REMOVED)
+	local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)
+	num=math.floor(#g/10)
+	if chk==0 then return num>0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_REMOVED,0,num,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,num,tp,LOCATION_REMOVED)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,#g-num,tp,LOCATION_REMOVED)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)
 	if #g<10 then return end
 	num=math.floor(#g/10)
+	local sg=Group.CreateGroup()
 	if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_REMOVED,0,num,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local sg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_REMOVED,0,num,num,nil)
+		sg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_REMOVED,0,num,num,nil)
 		sg:ForEach(Card.SetStatus,STATUS_TO_HAND_WITHOUT_CONFIRM,true)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	end
+	Duel.SendtoDeck((g-sg):Filter(Card.IsLocation,nil,LOCATION_REMOVED),nil,2,REASON_EFFECT)
 end

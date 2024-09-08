@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	e4:SetCondition(cm.condition0)
 	c:RegisterEffect(e4)
 	cm.hand_effect=cm.hand_effect or {}
-    cm.hand_effect[c]=e1
+	cm.hand_effect[c]=e1
 	--effect2
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -79,7 +79,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetTargetRange(LOCATION_ONFIELD,0)
 	e3:SetReset(RESET_PHASE+PHASE_END)
 	e3:SetTarget(function(e,c) return c:IsSetCard(0x6978) and c:IsFaceup() end)
-	e3:SetValue(function(e,re,r,rp) if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then return 1 else return 0 end end)
+	e3:SetValue(function(e,re,r,rp) if bit.band(r,REASON_EFFECT)~=0 then return 1 else return 0 end end)
 	Duel.RegisterEffect(e3,tp)
 end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)

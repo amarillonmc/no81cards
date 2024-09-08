@@ -56,18 +56,19 @@ end
 function cm.tcon(e,tp,eg,ep,ev,re,r,rp)
 	local sp=Duel.GetTurnPlayer()
 	local g=Duel.GetMatchingGroup(cm.kf,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
-	return Duel.GetFlagEffect(sp,m+100)>0 and #g>0
+	return  Duel.GetFlagEffect(sp,m+100)>0 and #g>0
 end
 function cm.top(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.kf,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil):Filter(Card.IsAbleToDeck,nil)
-	local sp=Duel.GetTurnPlayer()
 	if #g==0  then return false end
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		Duel.RegisterFlagEffect(tc:GetSummonPlayer(),m+200,RESET_PHASE+PHASE_END,0,2)
+		if tc:GetOriginalType()&TYPE_TRAP==0 then 
+			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),m+m,RESET_PHASE+PHASE_END,0,2)
+		end
 		tc=eg:GetNext()
 	end
 end
@@ -75,7 +76,7 @@ end
 function cm.ff(c,rp) 
 	if c:GetPreviousLocation()~=LOCATION_DECK then return false end
 	local se=c:GetReasonEffect()
-	if se and se~=nil and se:GetHandler():GetCode()==m then return false end
+	if (se and se~=nil and se:GetHandler():GetCode()==m) then return false end
 	if c:GetFlagEffect(m)>0 then return false end
 	local ap=c:GetPreviousControler()
 	local b1= c:GetReasonPlayer()==ap
@@ -109,8 +110,11 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if act>0 then
 		sp=tp
 		ct=act
-		tg=Duel.GetDecktopGroup(sp,ct*2)
-		if tg:FilterCount(cm.rf,nil,sp)~=ct*2 then return false end
+		tg=Duel.GetDecktopGroup(sp,ct*3)
+		if #tg>Duel.GetFieldGroupCount(sp,LOCATION_DECK,0) then 
+			tg=Duel.GetFieldGroup(sp,LOCATION_DECK,0) 
+		end
+		if tg:FilterCount(cm.rf,nil,sp)~=ct*3 then return false end
 		Duel.DisableShuffleCheck()
 		if Duel.Remove(tg,POS_FACEDOWN,REASON_EFFECT)==0 then return false end
 		local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
@@ -124,8 +128,11 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if bct>0 then
 		sp=1-tp
 		ct=bct
-		tg=Duel.GetDecktopGroup(sp,ct*2)
-		if tg:FilterCount(cm.rf,nil,sp)~=ct*2 then return false end
+		tg=Duel.GetDecktopGroup(sp,ct*3)
+		if #tg>Duel.GetFieldGroupCount(sp,LOCATION_DECK,0) then 
+			tg=Duel.GetFieldGroup(sp,LOCATION_DECK,0) 
+		end
+		if tg:FilterCount(cm.rf,nil,sp)~=ct*3 then return false end
 		Duel.DisableShuffleCheck()
 		if Duel.Remove(tg,POS_FACEDOWN,REASON_EFFECT)==0 then return false end
 		local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
@@ -140,7 +147,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 end
 --Effect 2
 function cm.sdcon(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetFlagEffect(e:GetHandlerPlayer(),m+200)
+	local ct=Duel.GetFlagEffect(e:GetHandlerPlayer(),m+m)
 	return ct>3
 end
 --??
@@ -166,7 +173,10 @@ function cm.jop(e,tp,eg,ep,ev,re,r,rp)
 		sp=tp
 		ct=#ag
 		zg=ag
-		tg=Duel.GetDecktopGroup(sp,ct*2)
+		tg=Duel.GetDecktopGroup(sp,ct*3)
+		if #tg>Duel.GetFieldGroupCount(sp,LOCATION_DECK,0) then 
+			tg=Duel.GetFieldGroup(sp,LOCATION_DECK,0) 
+		end
 		if tg:FilterCount(cm.rf,nil,sp)~=ct*2 then return false end
 		Duel.DisableShuffleCheck()
 		if Duel.Remove(tg,POS_FACEDOWN,REASON_EFFECT)==0 then return false end
@@ -182,7 +192,10 @@ function cm.jop(e,tp,eg,ep,ev,re,r,rp)
 		sp=1-tp
 		ct=#bg
 		zg=bg
-		tg=Duel.GetDecktopGroup(sp,ct*2)
+		tg=Duel.GetDecktopGroup(sp,ct*3)
+		if #tg>Duel.GetFieldGroupCount(sp,LOCATION_DECK,0) then 
+			tg=Duel.GetFieldGroup(sp,LOCATION_DECK,0) 
+		end
 		if tg:FilterCount(cm.rf,nil,sp)~=ct*2 then return false end
 		Duel.DisableShuffleCheck()
 		if Duel.Remove(tg,POS_FACEDOWN,REASON_EFFECT)==0 then return false end

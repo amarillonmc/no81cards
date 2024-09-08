@@ -54,8 +54,8 @@ function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local g=eg:Filter(cm.atkfilter,nil,1-tp)
-	Duel.SetTargetCard(g)
+	local sg=eg:Filter(cm.atkfilter,nil,1-tp)
+	Duel.SetTargetCard(sg)
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
@@ -72,6 +72,5 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_UPDATE_DEFENSE)
 		tc:RegisterEffect(e2)
-		tc=g:GetNext()
-	end
+	end	
 end

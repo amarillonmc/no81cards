@@ -118,7 +118,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		local tc=g:GetFirst()
 		if tc:IsType(TYPE_CONTINUOUS) then
-			if not tc:GetActivateEffect():IsActivatable(tp) or Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+			if not tc:GetActivateEffect():IsActivatable(tp) or Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))==0 then
 				Duel.SendtoHand(tc,nil,REASON_EFFECT)
 				Duel.ConfirmCards(tp,tc)
 			else
@@ -131,7 +131,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 				if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 			end
 		else
-			if not (tc:CheckActivateEffect(false,false,false)~=nil and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+			if not (tc:CheckActivateEffect(false,false,false)~=nil and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))==0 then
 				Duel.SendtoHand(tc,nil,REASON_EFFECT)
 				Duel.ConfirmCards(tp,tc)
 			else

@@ -2,6 +2,64 @@ EFFECT_NO_RECOVER = 33720228	--Affected player cannot gain LP by card effects
 
 aux.EnabledRegisteredEffectMods={}
 
+--Extra Deck Procedures Info
+EXTRA_DECK_INFO_MODS			= 33701360
+EXTRA_DECK_PROC_SYNCHRO			= 1
+EXTRA_DECK_PROC_SYNCHRO_MIX 	= 2
+EXTRA_DECK_PROC_XYZ				= 3
+EXTRA_DECK_PROC_XYZ_LEVEL_FREE	= 4
+EXTRA_DECK_PROC_LINK			= 5
+
+----Synchro
+local _AddSynchroProc, _AddSynchroMixProc = Auxiliary.AddSynchroProcedure, Auxiliary.AddSynchroMixProcedure
+
+function Auxiliary.AddSynchroProcedure(c,f1,f2,minc,maxc)
+	if aux.EnabledRegisteredEffectMods[EXTRA_DECK_INFO_MODS] then
+		if maxc==nil then maxc=99 end
+		local s=getmetatable(c)
+		s.ExtraDeckSummonProcTable={EXTRA_DECK_PROC_SYNCHRO,f1,f2,minc,maxc}
+	end
+	return _AddSynchroProc(c,f1,f2,minc,maxc)
+end
+function Auxiliary.AddSynchroMixProcedure(c,f1,f2,f3,f4,minc,maxc,gc)
+	if aux.EnabledRegisteredEffectMods[EXTRA_DECK_INFO_MODS] then
+		local s=getmetatable(c)
+		s.ExtraDeckSummonProcTable={EXTRA_DECK_PROC_SYNCHRO_MIX,f1,f2,f3,f4,minc,maxc,gc}
+	end
+	return _AddSynchroMixProc(c,f1,f2,f3,f4,minc,maxc,gc)
+end
+
+----Xyz
+local _AddXyzProc, _AddXyzProcLevelFree = Auxiliary.AddXyzProcedure, Auxiliary.AddXyzProcedureLevelFree
+
+function Auxiliary.AddXyzProcedure(c,f,lv,ct,alterf,alterdesc,maxct,alterop)
+	if aux.EnabledRegisteredEffectMods[EXTRA_DECK_INFO_MODS] then
+		local s=getmetatable(c)
+		if not maxct then maxct=ct end
+		s.ExtraDeckSummonProcTable={EXTRA_DECK_PROC_XYZ,f,lv,ct,alterf,alterdesc,maxct,alterop}
+	end
+	return _AddXyzProc(c,f,lv,ct,alterf,alterdesc,maxct,alterop)
+end
+function Auxiliary.AddXyzProcedureLevelFree(c,f,gf,minc,maxc,alterf,alterdesc,alterop)
+	if aux.EnabledRegisteredEffectMods[EXTRA_DECK_INFO_MODS] then
+		local s=getmetatable(c)
+		s.ExtraDeckSummonProcTable={EXTRA_DECK_PROC_XYZ_LEVEL_FREE,f,gf,minc,maxc,alterf,alterdesc,alterop}
+	end
+	return _AddXyzProcLevelFree(c,f,gf,minc,maxc,alterf,alterdesc,alterop)
+end
+
+----Link
+local _AddLinkProc = Auxiliary.AddLinkProcedure
+
+function Auxiliary.AddLinkProcedure(c,f,min,max,gf)
+	if aux.EnabledRegisteredEffectMods[EXTRA_DECK_INFO_MODS] then
+		if max==nil then max=c:GetLink() end
+		local s=getmetatable(c)
+		s.ExtraDeckSummonProcTable={EXTRA_DECK_PROC_LINK,f,min,max,gf}
+	end
+	return _AddLinkProc(c,f,min,max,gf)
+end
+
 --EFFECT TABLES
 
 function Auxiliary.CheckAlreadyRegisteredEffects()
@@ -13,7 +71,7 @@ function Auxiliary.CheckAlreadyRegisteredEffects()
 	e1:SetCode(EVENT_PREDRAW)
 	e1:OPT()
 	e1:SetOperation(function(e)
-		local g=Duel.Group(aux.TRUE,0,LOCATION_ALL,LOCATION_ALL,nil)
+		local g=Duel.Group(function(c) return not c:IsOriginalType(TYPE_NORMAL) end,0,LOCATION_ALL,LOCATION_ALL,nil)
 		for tc in aux.Next(g) do
 			if not global_card_effect_table[tc] then
 				local code=tc:GetOriginalCode()

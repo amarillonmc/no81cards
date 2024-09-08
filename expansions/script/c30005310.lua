@@ -26,13 +26,13 @@ function cm.initial_effect(c)
 	e14:SetOperation(cm.ngop)
 	c:RegisterEffect(e14)
 	--Effect 3 
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetRange(LOCATION_SZONE)
-	e1:SetCode(EFFECT_SELF_DESTROY)
-	e1:SetCondition(cm.sdcon)
-	c:RegisterEffect(e1)
+	--local e1=Effect.CreateEffect(c)
+	--e1:SetType(EFFECT_TYPE_SINGLE)
+	--e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	--e1:SetRange(LOCATION_SZONE)
+	--e1:SetCode(EFFECT_SELF_DESTROY)
+	--e1:SetCondition(cm.sdcon)
+	--c:RegisterEffect(e1)
 	--Effect 4  
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
@@ -63,7 +63,7 @@ end
 function cm.leop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:GetPreviousLocation()==LOCATION_SZONE and tc:GetLocation()~=LOCATION_SZONE then
+		if tc:GetPreviousLocation()==LOCATION_ONFIELD and (c:GetPreviousTypeOnField()&TYPE_SPELL~=0 or c:GetPreviousTypeOnField()&TYPE_TRAP~=0) and tc:GetLocation()~=LOCATION_SZONE then
 			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
 		end
 		tc=eg:GetNext()
@@ -103,18 +103,16 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 end
 --Effect 2
 function cm.ttf(c)
-	local b1=c:IsLocation(LOCATION_GRAVE)
-	local b2=c:IsType(TYPE_SPELL+TYPE_TRAP)
-	return b1 and b2
+	return c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function cm.rsf(c,tp)
-	return  c:IsAbleToRemove(tp,POS_FACEDOWN)
+	return c:IsAbleToRemove(tp,POS_FACEDOWN)
 end
 function cm.ngcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return tg and tg:IsExists(cm.ttf,1,nil) 
+	return tg and #tg>0 and tg:IsExists(cm.ttf,1,nil) 
 end
 function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)

@@ -39,7 +39,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		return true
 	end
 	local opinfochk=false
-	local g=aux.SelectSimultaneousEventGroup(eg,id+100,1,e,id+200)
+	local g=aux.SelectSimultaneousEventGroup(eg,tp,id+100,1,e,id+200)
 	if not g or #g==0 then
 		Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,0,LOCATION_MZONE)
 	else

@@ -3,14 +3,14 @@ function c11579814.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--xyz summon
 	c:EnableReviveLimit()
-	aux.AddXyzProcedureLevelFree(c,function(c,xyzc) return c:IsXyzLevel(xyzc,2) or c:IsLink(2) or c:IsRank(2) end,nil,2,99)  
+	aux.AddXyzProcedureLevelFree(c,function(c,xyzc) return c:IsLink(2) or c:IsRank(2) end,nil,2,99)  
 	--atk
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK) 
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetValue(function(e,c) 
-	return c:GetOverlayGroup():Filter(function(c) return c:IsLevel(2) or c:IsRank(2) or c:IsLink(2) end,nil):GetSum(Card.GetAttack) end)
+	return c:GetOverlayGroup():Filter(function(c) return c:IsSetCard(0x180) end,nil):GetSum(Card.GetAttack) end)
 	c:RegisterEffect(e1) 
 	--effect gian
 	local e2=Effect.CreateEffect(c)

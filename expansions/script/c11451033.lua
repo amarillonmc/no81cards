@@ -373,7 +373,8 @@ function cm.filter2(c)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local tp=c:GetControler()
+	local tp=c:GetReasonPlayer()
+	if tp~=0 and tp~=1 then tp=c:GetControler() end
 	local g1=eg:Filter(cm.filter1,nil)
 	local g2=eg:Filter(cm.filter2,nil)
 	if chk==0 then return #g1>0 or #g2>0 end

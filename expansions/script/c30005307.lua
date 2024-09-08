@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCode(EFFECT_CHANGE_TYPE)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_SET_AVAILABLE)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)
 	e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
 	e1:SetCondition(cm.hcon)
@@ -41,7 +41,8 @@ end
 --Effect 1
 function cm.hcon(e)
 	local c=e:GetHandler()
-	return c:IsLocation(LOCATION_HAND+LOCATION_GRAVE) or (c:IsFaceup() and c:IsLocation(LOCATION_REMOVED)) end
+	return c:IsLocation(LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)  
+end
 --Effect 2
 function cm.sp(c,e,tp)
 	if not c:IsType(TYPE_TRAP) then return false end
@@ -65,9 +66,8 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local loc=LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED 
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.sp),tp,loc,0,nil,e,tp)
-	if ft==0 or #g==0 then return end
+	if  #g==0 then return end
 	local ct=2
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -77,20 +77,17 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		local b1=cm.spf(tc,e,tp,tp)
 		local b2=cm.spf(tc,e,tp,1-tp)
 		local op=aux.SelectFromOptions(tp,{b1,aux.Stringid(m,0)},{b2,aux.Stringid(m,1)})
+		if not b1 and not b2 then return end
 		if op==1 then 
-			if cm.spf(tc,e,tp,tp) then
-				cm.spp(e,tp,tc,tp)
-			end
+			cm.spp(e,tp,tc,tp)
 		else
-			if cm.spf(tc,e,tp,1-tp) then
-				cm.spp(e,tp,tc,1-tp)
-			end
+			cm.spp(e,tp,tc,1-tp)
 		end
 	end
 	Duel.SpecialSummonComplete()
 end
 function cm.spp(e,tp,tc,sp)
-	tc:AddMonsterAttribute(TYPE_NORMAL+TYPE_TRAP)
+	tc:AddMonsterAttribute(TYPE_NORMAL+TYPE_TRAP,ATTRIBUTE_FIRE,RACE_FIEND,6,500,0)
 	Duel.SpecialSummonStep(tc,0,tp,sp,true,false,POS_FACEUP)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)

@@ -56,7 +56,7 @@ function c75000719.spfilter1(c,e,tp)
 	return c:IsSetCard(0x750) and not c:IsCode(75000719) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c75000719.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c75000719.spfilter1,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c75000714.spfilter1,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c75000719.spop1(e,tp,eg,ep,ev,re,r,rp)

@@ -103,9 +103,9 @@ function cm.rsf(c,tp)
 end
 function cm.ff(c,tc)
 	if c:IsCode(tc:GetCode()) then return false end
-	local b1=c:IsType(TYPE_COUNTER) 
+	local b1=c:IsType(TYPE_TRAP) 
 	local b2=c:GetType()==TYPE_TRAP 
-	return c:IsFaceupEx() and (b1 or b2) and c:IsSSetable() 
+	return c:IsFaceupEx() and b1 and c:IsSSetable(true) 
 end
 function cm.con(e)   
 	return Duel.GetCurrentPhase()==PHASE_END 
@@ -122,7 +122,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local rg=g:Select(tp,1,1,nil)
 	if #rg==0 or Duel.SendtoGrave(rg,REASON_EFFECT+REASON_RELEASE)==0 then return false end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local gt=Duel.SelectMatchingCard(tp,cm.ff,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,rg:GetFirst()):GetFirst()
+	local gt=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.ff),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,rg:GetFirst()):GetFirst()
 	if not gt or gt==nil then return false end
 	Duel.SSet(tp,gt)
 end

@@ -1,6 +1,5 @@
 --革命武装
-local m=11451454
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,99518961)
 	--activate
@@ -17,7 +16,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_EQUIP_LIMIT)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e2:SetValue(cm.eqlimit)
+	e2:SetValue(1)
 	c:RegisterEffect(e2)
 	--atk up
 	local e3=Effect.CreateEffect(c)
@@ -49,12 +48,51 @@ function cm.initial_effect(c)
 	e5:SetTargetRange(0,1)
 	e5:SetValue(cm.actlimit)
 	c:RegisterEffect(e5)
+	--codelist
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_EQUIP)
+	e7:SetCode(m)
+	c:RegisterEffect(e7)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge0=Effect.CreateEffect(c)
+		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge0:SetCode(EVENT_ADJUST)
+		ge0:SetOperation(cm.adjust)
+		Duel.RegisterEffect(ge0,0)
+	end
+end
+function cm.adjust(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(0,LOCATION_MZONE,LOCATION_MZONE)
+	g=g:Filter(function(c) return c:IsHasEffect(m) and (not c.card_code_list or not c.card_code_list[99518961]) end,nil)
+	for c in aux.Next(g) do
+		cm[c:GetOriginalCode()]=true
+		if c.card_code_list==nil then
+			local mt=getmetatable(c)
+			mt.card_code_list={}
+			mt.card_code_list[99518961]=true
+		else
+			c.card_code_list[99518961]=true
+		end
+	end
+	g=Duel.GetFieldGroup(0,LOCATION_MZONE,LOCATION_MZONE)
+	sg=Duel.GetFieldGroup(0,0xff,0xff)+Duel.GetOverlayGroup(0,1,1)
+	sg=sg:Filter(function(c) return cm[c:GetOriginalCode()] and not g:IsExists(function(sc) return sc:IsHasEffect(m) and sc:GetOriginalCode()==c:GetOriginalCode() end,1,nil) end,nil)
+	for c in aux.Next(sg) do
+		cm[c:GetOriginalCode()]=nil
+		local mt=getmetatable(c)
+		if mt.card_code_list and #mt.card_code_list>1 then
+			mt.card_code_list[99518961]=nil
+		else
+			mt.card_code_list=nil
+		end
+	end
 end
 function cm.eqlimit(e,c)
 	return aux.IsCodeListed(c,99518961) and c:IsType(TYPE_MONSTER)
 end
 function cm.filter1(c)
-	return c:IsFaceup() and aux.IsCodeListed(c,99518961) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) --and aux.IsCodeListed(c,99518961)
 end
 function cm.filter2(c)
 	return c:IsFaceup() and c:IsType(TYPE_NORMAL)

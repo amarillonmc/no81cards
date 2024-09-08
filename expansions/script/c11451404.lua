@@ -1,7 +1,6 @@
 --traveler saga dawn
 --21.04.10
-local m=11451404
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)

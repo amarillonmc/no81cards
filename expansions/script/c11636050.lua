@@ -71,21 +71,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if not c:IsRelateToEffect(e) or not c:IsCanBeSpecialSummoned(e,0,tp,false,false) then return end
 	if ft>0 and g:IsExists(cm.filter,1,nil)  then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-		local lv=c:GetLevel()
-		if g:IsExists(cm.filter2,1,nil,lv) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
-			local lg=g:FilterSelect(tp,cm.filter2,1,1,nil,lv)
-			local tc=lg:GetFirst()
-			local lv2=tc:GetLevel()
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CHANGE_LEVEL)
-			e1:SetValue(lv2)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			c:RegisterEffect(e1)
-		end  
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) 
 	end
 end
 --
