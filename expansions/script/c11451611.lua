@@ -113,7 +113,7 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cacon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousPosition(POS_FACEDOWN) and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+	return e:GetHandler():IsPreviousPosition(POS_FACEDOWN) and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) and aux.bpcon()
 end
 function cm.catg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
