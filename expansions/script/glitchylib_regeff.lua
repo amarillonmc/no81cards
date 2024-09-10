@@ -77,6 +77,7 @@ function Auxiliary.CheckAlreadyRegisteredEffects()
 				local code=tc:GetOriginalCode()
 				tc:ReplaceEffect(CARD_CYBER_HARPIE_LADY,0,0)
 				tc:SetStatus(STATUS_EFFECT_REPLACED,false)
+				Debug.Message(code)
 				Duel.SetMetatable(tc, _G["c"..code])
 				local s=getmetatable(tc)
 				s.initial_effect(tc)
@@ -260,6 +261,7 @@ if not global_duel_effect_table_global_check then
 	global_duel_effect_table={}
 	Duel.register_global_duel_effect_table = Duel.RegisterEffect
 	Duel.RegisterEffect = function(e,tp)
+							if tp~=0 and tp~=1 then return end
 							if not global_duel_effect_table[tp] then global_duel_effect_table[tp]={} end
 							table.insert(global_duel_effect_table[tp],e)
 							

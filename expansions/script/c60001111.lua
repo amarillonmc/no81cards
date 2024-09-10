@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	e27:SetProperty(EFFECT_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_UNCOPYABLE)
 	e27:SetCode(EVENT_ADJUST)
 	e27:SetOperation(cm.gravecheckop)
-	Duel.RegisterEffect(e27,tp)
+	Duel.RegisterEffect(e27,0)
 	--tg
 	local e11=Effect.CreateEffect(c)
 	e11:SetCategory(CATEGORY_TOGRAVE)
