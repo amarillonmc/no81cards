@@ -57,6 +57,10 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	e0:SetTarget(cm.sptg)
 	e0:SetOperation(cm.spop)
 	Duel.RegisterEffect(e0,tp)
+	local e4=e0:Clone()
+	e4:SetType(EFFECT_TYPE_QUICK_F)
+	e4:SetCondition(cm.spcon3)
+	Duel.RegisterEffect(e4,tp)
 end
 function cm.valcheck(e,c)
 	local g=c:GetMaterial()
@@ -74,6 +78,10 @@ function cm.atkval(e,c)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and Duel.GetFlagEffect(tp,m)>0
+end
+function cm.spcon3(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return ((c:IsLocation(LOCATION_ONFIELD+LOCATION_REMOVED) and c:IsFacedown()) or c:GetOverlayTarget() or eg:IsContains(c)) and cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.filter1(c,e,tp)
 	return c:IsFaceup() and c:IsSetCard(0x172) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)

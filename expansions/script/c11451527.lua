@@ -76,9 +76,19 @@ end
 function cm.lcheck(g)
 	return g:GetClassCount(Card.GetLinkRace)==1 and g:GetClassCount(Card.GetCode)==g:GetCount()
 end
+function cm.exmatcheck(c,lc,tp)
+	if not c:IsLocation(LOCATION_PZONE) then return false end
+	local le={c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
+	for _,te in pairs(le) do	 
+		local f=te:GetValue()
+		local related,valid=f(te,lc,nil,c,tp)
+		if related and not te:GetHandler():IsCode(m) then return false end
+	end
+	return true  
+end
 function cm.matval(e,lc,mg,c,tp)
 	if e:GetHandler()~=lc then return false,nil end
-	return true,not mg or not mg:IsExists(Card.IsLocation,1,nil,LOCATION_PZONE)
+	return true,not mg or not mg:IsExists(cm.exmatcheck,1,nil,lc,tp)
 end
 function cm.LinkCondition(f,minc,maxc,gf)
 	return  function(e,c,og,lmat,min,max)

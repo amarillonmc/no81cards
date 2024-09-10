@@ -34,6 +34,7 @@ function c50222100.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetCondition(c50222100.efcon)
+	e4:SetTarget(c50222100.eftg)
 	e4:SetOperation(c50222100.efop)
 	c:RegisterEffect(e4)
 	--tohand
@@ -94,13 +95,24 @@ end
 function c50222100.efcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL)
 end
+function c50222100.effilter(c)
+	return c:IsFaceup() and c:GetType()&TYPE_EFFECT~=0
+end
+function c50222100.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c50222100.effilter,tp,0,LOCATION_MZONE,1,nil) end
+end
 function c50222100.efop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_TRIGGER)
-	e1:SetTargetRange(0,LOCATION_MZONE)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+	local c=e:GetHandler()
+	local tg=Duel.GetMatchingGroup(c50222100.effilter,tp,0,LOCATION_MZONE,nil)
+	local tc=tg:GetFirst()
+	while tc do
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_TRIGGER)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		tc=tg:GetNext()
+	end
 end
 function c50222100.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
