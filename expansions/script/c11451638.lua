@@ -138,7 +138,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
-		local mg1=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,aux.ExceptThisCard(e))
+		local mg1=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,e:GetHandler())
 		if Duel.IsExistingMatchingCard(cm.ccfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then
 			local mg2=Duel.GetMatchingGroup(cm.fexfilter,tp,LOCATION_DECK,0,nil)
 			if #mg2>0 then
