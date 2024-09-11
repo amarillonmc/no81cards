@@ -4455,7 +4455,9 @@ function cm.MultipleGroupCheck(c)
 	if not AD_Multiple_Group_Check then
 		AD_Multiple_Group_Check=true
 		Duel.RegisterFlagEffect(0,53759000,0,0,0,0)
-		ADIMI_IsExistingMatchingCard=Duel.IsExistingMatchingCard
+		local ADIMI_IsExistingMatchingCard=Duel.IsExistingMatchingCard
+		local ADIMI_SelectMatchingCard=Duel.SelectMatchingCard
+		local ADIMI_GetMatchingGroup=Duel.GetMatchingGroup
 		Duel.IsExistingMatchingCard=function(...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4477,7 +4479,6 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_SelectMatchingCard=Duel.SelectMatchingCard
 		Duel.SelectMatchingCard=function(sp,f,p,s,o,min,max,ex,...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4499,7 +4500,6 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_GetMatchingGroup=Duel.GetMatchingGroup
 		Duel.GetMatchingGroup=function(...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4521,7 +4521,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_GetMatchingGroupCount=Duel.GetMatchingGroupCount
+		local ADIMI_GetMatchingGroupCount=Duel.GetMatchingGroupCount
 		Duel.GetMatchingGroupCount=function(...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4543,7 +4543,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_GetFirstMatchingCard=Duel.GetFirstMatchingCard
+		local ADIMI_GetFirstMatchingCard=Duel.GetFirstMatchingCard
 		Duel.GetFirstMatchingCard=function(...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4565,7 +4565,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_IsExists=Group.IsExists
+		local ADIMI_IsExists=Group.IsExists
 		Group.IsExists=function(...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4587,7 +4587,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_Filter=Group.Filter
+		local ADIMI_Filter=Group.Filter
 		Group.Filter=function(...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4609,7 +4609,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_FilterCount=Group.FilterCount
+		local ADIMI_FilterCount=Group.FilterCount
 		Group.FilterCount=function(...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4631,7 +4631,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_Remove=Group.Remove
+		local ADIMI_Remove=Group.Remove
 		Group.Remove=function(...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4653,7 +4653,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_SearchCard=Group.SearchCard
+		local ADIMI_SearchCard=Group.SearchCard
 		Group.SearchCard=function(...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4675,7 +4675,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_FilterSelect=Group.FilterSelect
+		local ADIMI_FilterSelect=Group.FilterSelect
 		Group.FilterSelect=function(g,p,f,min,max,ex,...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4697,7 +4697,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_CheckSubGroup=Group.CheckSubGroup
+		local ADIMI_CheckSubGroup=Group.CheckSubGroup
 		Group.CheckSubGroup=function(...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4719,7 +4719,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_SelectSubGroup=Group.SelectSubGroup
+		local ADIMI_SelectSubGroup=Group.SelectSubGroup
 		Group.SelectSubGroup=function(g,p,f,bool,min,max,...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4732,7 +4732,8 @@ function cm.MultipleGroupCheck(c)
 			end
 			cm["Card_Prophecy_Layer_"..ly]=true
 			cm["Card_Prophecy_L_Check_"..ly]=true
-			ADIMI_CheckSubGroup(g,f,min,max,...)
+			f(g,...)
+			--ADIMI_CheckSubGroup(g,f,min,max,...)
 			cm["Card_Prophecy_L_Check_"..ly]=false
 			local b=ADIMI_SelectSubGroup(g,p,f,bool,min,max,...)
 			cm["Card_Prophecy_Certain_SP_"..ly]=false
@@ -4741,7 +4742,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_IsExistingTarget=Duel.IsExistingTarget
+		local ADIMI_IsExistingTarget=Duel.IsExistingTarget
 		Duel.IsExistingTarget=function(...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4749,7 +4750,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_SelectTarget=Duel.SelectTarget
+		local ADIMI_SelectTarget=Duel.SelectTarget
 		Duel.SelectTarget=function(...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4757,7 +4758,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_DiscardHand=Duel.DiscardHand
+		local ADIMI_DiscardHand=Duel.DiscardHand
 		Duel.DiscardHand=function(p,f,min,max,reason,ex,...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4779,7 +4780,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_SelectReleaseGroup=Duel.SelectReleaseGroup
+		local ADIMI_SelectReleaseGroup=Duel.SelectReleaseGroup
 		Duel.SelectReleaseGroup=function(p,f,min,max,ex,...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4801,7 +4802,7 @@ function cm.MultipleGroupCheck(c)
 			Duel.SetFlagEffectLabel(0,53759000,lab)
 			return b
 		end
-		ADIMI_SelectReleaseGroupEx=Duel.SelectReleaseGroupEx
+		local ADIMI_SelectReleaseGroupEx=Duel.SelectReleaseGroupEx
 		Duel.SelectReleaseGroupEx=function(p,f,min,max,r,bool,ex,...)
 			local lab=Duel.GetFlagEffectLabel(0,53759000)
 			Duel.SetFlagEffectLabel(0,53759000,lab+1)
@@ -4836,7 +4837,7 @@ function cm.SetAsSpellorTrapCheck(c,type)
 	c:RegisterEffect(e0)
 	if not AD_SetAsSpellorTrap_Check then
 		AD_SetAsSpellorTrap_Check=true
-		ADIMI_IsSSetable=Card.IsSSetable
+		local ADIMI_IsSSetable=Card.IsSSetable
 		Card.IsSSetable=function(sc,bool)
 			local ly=0
 			for i=1,114 do
@@ -4857,7 +4858,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 	if not AD_ActivatedAsSpellorTrap_Check then
 		AD_ActivatedAsSpellorTrap_Check=true
 		cm.MultipleGroupCheck(c)
-		ADIMI_GetActivateEffect=Card.GetActivateEffect
+		local ADIMI_GetActivateEffect=Card.GetActivateEffect
 		Card.GetActivateEffect=function(ac)
 			local ly=0
 			for i=1,114 do
@@ -4897,7 +4898,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			end
 			return table.unpack(le)
 		end
-		ADIMI_CheckActivateEffect=Card.CheckActivateEffect
+		local ADIMI_CheckActivateEffect=Card.CheckActivateEffect
 		Card.CheckActivateEffect=function(ac,...)
 			local ly=0
 			for i=1,114 do
@@ -4919,11 +4920,11 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			end
 			return table.unpack(le)
 		end
-		ADIMI_IsActivatable=Effect.IsActivatable
+		local ADIMI_IsActivatable=Effect.IsActivatable
 		Effect.IsActivatable=function(re,...)
 			if re then return ADIMI_IsActivatable(re,...) else return false end
 		end
-		ADIMI_IsType=Card.IsType
+		local ADIMI_IsType=Card.IsType
 		Card.IsType=function(rc,type)
 			local res=ADIMI_IsType(rc,type)
 			local ly=0
@@ -4942,7 +4943,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			if ae and (res1 or res2) then res=(type&typ~=0) end
 			return res
 		end
-		ADIMI_CGetType=Card.GetType
+		local ADIMI_CGetType=Card.GetType
 		Card.GetType=function(rc)
 			local res=ADIMI_CGetType(rc)
 			local ly=0
@@ -4961,7 +4962,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			if ae and (res1 or res2) then res=typ end
 			return res
 		end
-		ADIMI_MoveToField=Duel.MoveToField
+		local ADIMI_MoveToField=Duel.MoveToField
 		Duel.MoveToField=function(rc,...)
 			local xe={rc:IsHasEffect(53765099)}
 			local b=false
@@ -4978,7 +4979,36 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			end
 			return ADIMI_MoveToField(rc,...)
 		end
-		ADIMI_IsHasType=Effect.IsHasType
+		local ADIMI_CreateEffect=Effect.CreateEffect
+		function Effect.CreateEffect(rc,...)
+			local re=ADIMI_CreateEffect(rc,...)
+			ADIMI_EHandler=ADIMI_EHandler or {}
+			if re and rc then ADIMI_EHandler[re]=rc end
+			return re
+		end
+		local ADIMI_CRegisterEffect=Card.RegisterEffect
+		Card.RegisterEffect=function(rc,re,...)
+			local res=ADIMI_CRegisterEffect(rc,re,...)
+			ADIMI_RegisteredEffects=ADIMI_RegisteredEffects or {}
+			if re and res then ADIMI_RegisteredEffects[re]=true end
+			return res
+		end
+		local ADIMI_DRegisterEffect=Duel.RegisterEffect
+		Duel.RegisterEffect=function(re,...)
+			local res=ADIMI_DRegisterEffect(re,...)
+			ADIMI_RegisteredEffects=ADIMI_RegisteredEffects or {}
+			if re and res then ADIMI_RegisteredEffects[re]=true end
+			return res
+		end
+		local ADIMI_IsHasType=Effect.IsHasType
+		local ADIMI_GetHandler=Effect.GetHandler
+		function Effect.GetHandler(re,...)
+			ADIMI_RegisteredEffects=ADIMI_RegisteredEffects or {}
+			if ADIMI_IsHasType(re,EFFECT_TYPE_XMATERIAL) and not ADIMI_RegisteredEffects[re] then return ADIMI_EHandler[re] end
+			local rc=ADIMI_GetHandler(re,...)
+			if not rc then return ADIMI_EHandler[re] end
+			return rc
+		end
 		Effect.IsHasType=function(re,type)
 			local res=ADIMI_IsHasType(re,type)
 			local rc=re:GetHandler()
@@ -4990,7 +5020,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 				if type&EFFECT_TYPE_ACTIVATE~=0 then return true else return false end
 			else return res end
 		end
-		ADIMI_EGetType=Effect.GetType
+		local ADIMI_EGetType=Effect.GetType
 		Effect.GetType=function(re)
 			local rc=re:GetHandler()
 			local xe={}
@@ -4999,7 +5029,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			for _,v in pairs(xe) do if re==v:GetLabelObject() then b=true end end
 			if b then return EFFECT_TYPE_ACTIVATE else return ADIMI_EGetType(re) end
 		end
-		ADIMI_IsActiveType=Effect.IsActiveType
+		local ADIMI_IsActiveType=Effect.IsActiveType
 		Effect.IsActiveType=function(re,type)
 			local res=ADIMI_IsActiveType(re,type)
 			local rc=re:GetHandler()
@@ -5012,7 +5042,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 				if type&typ~=0 then return true else return false end
 			else return res end
 		end
-		ADIMI_GetActiveType=Effect.GetActiveType
+		local ADIMI_GetActiveType=Effect.GetActiveType
 		Effect.GetActiveType=function(re)
 			local rc=re:GetHandler()
 			local xe={}
@@ -5036,7 +5066,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			end
 			if ls>5 then return LOCATION_FZONE elseif ls>0 then return LOCATION_SZONE else return ADIMI_GetActivateLocation(re) end
 		end]]--
-		ADIMI_GetActivateSequence=Effect.GetActivateSequence
+		local ADIMI_GetActivateSequence=Effect.GetActivateSequence
 		Effect.GetActivateSequence=function(re)
 			local rc=re:GetHandler()
 			local xe={}
@@ -5051,7 +5081,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			end
 			if ls>0 then return ls-1 else return seq end
 		end
-		ADIMI_GetChainInfo=Duel.GetChainInfo
+		local ADIMI_GetChainInfo=Duel.GetChainInfo
 		Duel.GetChainInfo=function(chainc,...)
 			local re=ADIMI_GetChainInfo(chainc,CHAININFO_TRIGGERING_EFFECT)
 			local b=false
@@ -5082,7 +5112,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			end
 			return table.unpack(t)
 		end
-		ADIMI_NegateActivation=Duel.NegateActivation
+		local ADIMI_NegateActivation=Duel.NegateActivation
 		Duel.NegateActivation=function(chainc)
 			local re=ADIMI_GetChainInfo(chainc,CHAININFO_TRIGGERING_EFFECT)
 			local xe={}
@@ -5098,7 +5128,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			end
 			return res
 		end
-		ADIMI_ChangeChainOperation=Duel.ChangeChainOperation
+		local ADIMI_ChangeChainOperation=Duel.ChangeChainOperation
 		Duel.ChangeChainOperation=function(chainc,...)
 			local re=ADIMI_GetChainInfo(chainc,CHAININFO_TRIGGERING_EFFECT)
 			local xe={}
@@ -5108,8 +5138,8 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 			if b then re:GetHandler():CancelToGrave(false) end
 			return ADIMI_ChangeChainOperation(chainc,...)
 		end
-		ADIMI_IsCanBeEffectTarget=Card.IsCanBeEffectTarget
-		Card.IsCanBeEffectTarget=function(sc,se)
+		local ADIMI_IsCanBeEffectTarget=Card.IsCanBeEffectTarget
+		Card.IsCanBeEffectTarget=function(sc,...)
 			local b=true
 			local ly=0
 			for i=1,114 do
@@ -5118,7 +5148,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 					break
 				end
 			end
-			if c:IsHasEffect(53765098) and cm["Card_Prophecy_Certain_ACST_"..ly] then b=false else b=ADIMI_IsCanBeEffectTarget(sc,se) end
+			if c:IsHasEffect(53765098) and cm["Card_Prophecy_Certain_ACST_"..ly] then b=false else b=ADIMI_IsCanBeEffectTarget(sc,...) end
 			return b
 		end
 	end

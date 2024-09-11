@@ -39,11 +39,10 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.atcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return Duel.GetAttacker()==c and c:IsChainAttackable(0,true) and Duel.GetLP(1-tp)<=7816
+	return Duel.GetLP(1-tp)<=7816
 end
 function s.filter(c)
-	return (c:IsCode(88800017) or c:IsCode(88800012) or c:IsCode(88800022)) and c:IsAbleToHand()
+	return c:IsCode(88800017,88800012,88800022) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end
