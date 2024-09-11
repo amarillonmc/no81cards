@@ -71,7 +71,7 @@ function Auxiliary.CheckAlreadyRegisteredEffects()
 	e1:SetCode(EVENT_PREDRAW)
 	e1:OPT()
 	e1:SetOperation(function(e)
-		local g=Duel.Group(function(c) return not c:IsOriginalType(TYPE_NORMAL) end,0,LOCATION_ALL,LOCATION_ALL,nil)
+		local g=Duel.Group(function(c) return not c:IsOriginalType(TYPE_NORMAL) end,0,LOCATION_ALL,0,nil)
 		for tc in aux.Next(g) do
 			if not global_card_effect_table[tc] then
 				local code=tc:GetOriginalCode()
@@ -115,7 +115,12 @@ if not global_card_effect_table_global_check then
 		if not global_card_effect_table[self] then global_card_effect_table[self]={} end
 		table.insert(global_card_effect_table[self],e)
 		
-		local code=e:GetCode()
+		local typ,code=e:GetType(),e:GetCode()
+		
+		local IsSingleOrField=typ==EFFECT_TYPE_SINGLE or typ==EFFECT_TYPE_FIELD
+		local IsInherentSummonProc=code==EFFECT_SPSUMMON_PROC or code==EFFECT_SPSUMMON_PROC_G
+		local IsHasExceptionType=typ==EFFECT_TYPE_XMATERIAL or typ==EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD or typ&EFFECT_TYPE_GRANT~=0
+		
 		local selfp,oppo=e:GLGetTargetRange()
 		local condition,cost,tg,op,val=e:GetCondition(),e:GetCost(),e:GetTarget(),e:GetOperation(),e:GetValue()
 		
@@ -183,71 +188,75 @@ if not global_card_effect_table_global_check then
 		end
 		
 		--Define self_reference_effect
-		if condition and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()==EFFECT_TYPE_XMATERIAL or e:GetType()==EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD or e:GetType()&EFFECT_TYPE_GRANT~=0)) then	
+		if condition and not IsHasExceptionType then	
 			local newcon =	function(...)
-								self_reference_effect=e
+								local x={...}
+								local previous_sre=self_reference_effect
+								self_reference_effect=x[1]
 								local x={...}
 								if type(x[2])=="number" and (x[2]==0 or x[2]==1) then
 									self_reference_tp = x[2]
 								end
-								return condition(...)
+								local res=condition(table.unpack(x))
+								self_reference_effect=previous_sre
+								return res
 							end
 			e:SetCondition(newcon)
 		end
-		if cost and not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()==EFFECT_TYPE_XMATERIAL or e:GetType()==EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD or e:GetType()&EFFECT_TYPE_GRANT~=0) then
+		if cost and not IsHasExceptionType then
 			local newcost =	function(...)
-								self_reference_effect=e
 								local x={...}
+								local previous_sre=self_reference_effect
+								self_reference_effect=x[1]
 								if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
 									self_reference_tp = x[2]
 								end
-								return cost(...)
+								local res=cost(table.unpack(x))
+								self_reference_effect=previous_sre
+								return res
 							end
 			e:SetCost(newcost)
 		end
-		if tg then
-			if e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G then
-				local newtg =	function(...)
-									self_reference_effect=e
-									local x={...}
-									if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-										self_reference_tp = x[2]
-									end
-									return tg(...)
-								end
-				e:SetTarget(newtg)
-			elseif not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()==EFFECT_TYPE_XMATERIAL or e:GetType()==EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD or e:GetType()&EFFECT_TYPE_GRANT~=0) then
-				local newtg =	function(...)
-									self_reference_effect=e
-									local x={...}
-									if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-										self_reference_tp = x[2]
-									end
-									return tg(...)
-								end
-				e:SetTarget(newtg)
-			end
-		end
-		if op and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()==EFFECT_TYPE_XMATERIAL or e:GetType()==EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD or e:GetType()&EFFECT_TYPE_GRANT~=0)) then
-			local newop =	function(...)
-								self_reference_effect=e
+		if tg and not IsHasExceptionType then
+			local newtg =	function(...)
 								local x={...}
+								local previous_sre=self_reference_effect
+								self_reference_effect=x[1]
 								if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
 									self_reference_tp = x[2]
 								end
-								return op(...)
+								local res=tg(table.unpack(x))
+								self_reference_effect=previous_sre
+								return res
+							end
+			e:SetTarget(newtg)
+		end
+		if op and not IsHasExceptionType then
+			local newop =	function(...)
+								local x={...}
+								local previous_sre=self_reference_effect
+								self_reference_effect = x[1]
+								if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
+									self_reference_tp = x[2]
+								end
+								local res=op(table.unpack(x))
+								self_reference_effect=previous_sre
+								return res
 							end
 			e:SetOperation(newop)
 		end
-		if val then
-			if type(val)=="function" and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()==EFFECT_TYPE_XMATERIAL or e:GetType()==EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD or e:GetType()&EFFECT_TYPE_GRANT~=0)) then
-				local newval =	function(...)
-									self_reference_effect=e
-									return val(...)
+		if val and type(val)=="function" and not IsHasExceptionType then
+			local newval =	function(...)
+								local x={...}
+								local previous_sre=self_reference_effect
+								if aux.GetValueType(x[1])=="Effect" then
+									self_reference_effect = x[1]
 								end
-				e:SetValue(newval)
-				
-			end
+								local res=val(...)
+								self_reference_effect=previous_sre
+								return res
+							end
+			e:SetValue(newval)
 		end
 		if aux.PreventSecondRegistration then return end
 		return self.register_global_card_effect_table(self,e,forced)
@@ -264,7 +273,12 @@ if not global_duel_effect_table_global_check then
 							if not global_duel_effect_table[tp] then global_duel_effect_table[tp]={} end
 							table.insert(global_duel_effect_table[tp],e)
 							
-							local code=e:GetCode()
+							local typ,code=e:GetType(),e:GetCode()
+							
+							local IsSingleOrField=typ==EFFECT_TYPE_SINGLE or typ==EFFECT_TYPE_FIELD
+							local IsInherentSummonProc=code==EFFECT_SPSUMMON_PROC or code==EFFECT_SPSUMMON_PROC_G
+							local IsHasExceptionType=typ==EFFECT_TYPE_XMATERIAL or typ==EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD or typ&EFFECT_TYPE_GRANT~=0
+							
 							local condition,cost,tg,op,val=e:GetCondition(),e:GetCost(),e:GetTarget(),e:GetOperation(),e:GetValue()
 							
 							--Damage Replacement Effects
@@ -297,71 +311,77 @@ if not global_duel_effect_table_global_check then
 							end
 							
 							--Define self_reference_effect
-							if condition and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()&EFFECT_TYPE_GRANT~=0)) then
+							if condition and not IsHasExceptionType then
 								local newcon =	function(...)
-													self_reference_effect=e
 													local x={...}
+													local previous_sre=self_reference_effect
+													self_reference_effect=x[1]
 													if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
 														self_reference_tp = x[2]
 													end
-													return condition(...)
+													local res=condition(table.unpack(x))
+													self_reference_effect=previous_sre
+													return res
 												end
 								e:SetCondition(newcon)
 							end
-							if cost and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()&EFFECT_TYPE_GRANT~=0)) then
+							if cost and not IsHasExceptionType then
 								local newcost =	function(...)
-													self_reference_effect=e
 													local x={...}
+													local previous_sre=self_reference_effect
+													self_reference_effect=x[1]
 													if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
 														self_reference_tp = x[2]
 													end
-													return cost(...)
+													local res=cost(table.unpack(x))
+													self_reference_effect=previous_sre
+													return res
 												end
 								e:SetCost(newcost)
 							end
-							if tg then
-								if e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G then
-									local newtg =	function(...)
-														self_reference_effect=e
-														local x={...}
-														if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-															self_reference_tp = x[2]
-														end
-														return tg(...)
-													end
-									e:SetTarget(newtg)
-								elseif not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()&EFFECT_TYPE_GRANT~=0) then
-									local newtg =	function(...)
-														self_reference_effect=e
-														local x={...}
-														if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
-															self_reference_tp = x[2]
-														end
-														return tg(...)
-													end
-									e:SetTarget(newtg)
-								end
-							end
-							if op and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()&EFFECT_TYPE_GRANT~=0)) then
-								local newop =	function(...)
-													self_reference_effect=e
+							if tg and not IsHasExceptionType then
+								local newtg =	function(...)
+													local x={...}
+													local previous_sre=self_reference_effect
+													self_reference_effect=x[1]
 													local x={...}
 													if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
 														self_reference_tp = x[2]
 													end
-													return op(...)
+													local res=tg(table.unpack(x))
+													self_reference_effect=previous_sre
+													return res
+												end
+								e:SetTarget(newtg)
+								
+							end
+							if op and not IsHasExceptionType then
+								local newop =	function(...)
+													local x={...}
+													local previous_sre=self_reference_effect
+													self_reference_effect=x[1]
+													if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
+														self_reference_tp = x[2]
+													end
+													local res=op(table.unpack(x))
+													self_reference_effect=previous_sre
+													return res
 												end
 								e:SetOperation(newop)
 							end
-							if val then
-								if type(val)=="function" and ((e:GetCode()==EFFECT_SPSUMMON_PROC or e:GetCode()==EFFECT_SPSUMMON_PROC_G) or not (e:GetType()==EFFECT_TYPE_FIELD or e:GetType()==EFFECT_TYPE_SINGLE or e:GetType()&EFFECT_TYPE_GRANT~=0)) then
-									local newval =	function(...)
-														self_reference_effect=e
-														return val(...)
+							if val and type(val)=="function" and not IsHasExceptionType then
+								local newval =	function(...)
+													local x={...}
+													local previous_sre=self_reference_effect
+													if aux.GetValueType(x[1])=="Effect" then
+														self_reference_effect = x[1]
 													end
-									e:SetValue(newval)
+													local res=val(...)
+													self_reference_effect=previous_sre
+													return res
+												end
+								e:SetValue(newval)
 								
-								end
 							end
 							if aux.PreventSecondRegistration then return end
 							return Duel.register_global_duel_effect_table(e,tp)
