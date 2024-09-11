@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	e4:SetCondition(cm.condition0)
 	c:RegisterEffect(e4)
 	cm.hand_effect=cm.hand_effect or {}
-    cm.hand_effect[c]=e1
+	cm.hand_effect[c]=e1
 	--effect2
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -76,7 +76,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetProperty(c:GetProperty())
 	local target=c:GetTarget()
 	if target then target(e,tp,eg,ep,ev,re,r,rp,1) end
-	if tp==Duel.GetTurnPlayer() then Duel.IsPlayerAffectedByEffect(tp,11451425):GetHandler():RegisterFlagEffect(11451425,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) end
+	if tp==Duel.GetTurnPlayer() and Duel.IsPlayerAffectedByEffect(tp,11451425) then Duel.IsPlayerAffectedByEffect(tp,11451425):GetHandler():RegisterFlagEffect(11451425,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) end
 	Duel.ClearOperationInfo(0)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,e:GetHandler(),1,0,0)
 end

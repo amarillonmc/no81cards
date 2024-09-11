@@ -61,7 +61,7 @@ function c22022580.activate2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22022580.cfilter(c,tp)
-	return c:GetSummonLocation()==LOCATION_DECK or c:GetSummonLocation()==LOCATION_EXTRA and c:GetPreviousControler()==1-tp
+	return (c:GetSummonLocation()==LOCATION_DECK or c:GetSummonLocation()==LOCATION_EXTRA) and c:GetPreviousControler()==1-tp
 end
 function c22022580.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c22022580.cfilter,1,nil,tp)

@@ -58,7 +58,10 @@ function cm.check0(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetOwner()
 	if rc:IsOriginalSetCard(0x6978) and rc.hand_effect then
 		local te=rc.hand_effect[rc]
-		if te:GetOperation()==re:GetOperation() then cm[rc.hand_effect]=Duel.GetTurnCount() end
+		if te:GetOperation()==re:GetOperation() then
+			cm[rc.hand_effect]=cm[rc.hand_effect] or {}
+			cm[rc.hand_effect][re:GetHandlerPlayer()]=Duel.GetTurnCount()
+		end
 	end
 end
 function cm.tbfilter(c)
@@ -97,7 +100,7 @@ function cm.acfilter(c,tp,eg,ep,ev,re,r,rp)
 	if not c:IsSetCard(0x6978) then return end
 	if c:IsType(TYPE_SPELL+TYPE_TRAP) and ((c:CheckActivateEffect(false,false,false)~=nil and c:GetActivateEffect():GetCode()~=EVENT_CHAINING and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (c:IsType(TYPE_CONTINUOUS) and c:GetActivateEffect():IsActivatable(tp)) or (c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true))) then return true end
 	local te=c.hand_effect
-	if not te or (te[c]:GetCode()==EVENT_CHAINING and te[c]:IsHasType(EFFECT_TYPE_QUICK_O)) or (c:IsType(TYPE_MONSTER) and cm[te] and cm[te]==Duel.GetTurnCount()) then return false end
+	if not te or (te[c]:GetCode()==EVENT_CHAINING and te[c]:IsHasType(EFFECT_TYPE_QUICK_O)) or (c:IsType(TYPE_MONSTER) and cm[te] and cm[te][tp] and cm[te][tp]==Duel.GetTurnCount()) then return false end
 	te=te[c]
 	local con=te:GetCondition() or aux.TRUE
 	if te:IsHasType(EFFECT_TYPE_TRIGGER_O) then con=aux.TRUE end
@@ -130,7 +133,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			local b1,b2=false,false
 			if c:IsType(TYPE_SPELL+TYPE_TRAP) and ((c:CheckActivateEffect(false,false,false)~=nil and c:GetActivateEffect():GetCode()~=EVENT_CHAINING and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (c:IsType(TYPE_CONTINUOUS) and c:GetActivateEffect():IsActivatable(tp)) or (c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true))) then b1=true end
 			local te=c.hand_effect
-			if te and not (te[c]:GetCode()==EVENT_CHAINING and te[c]:IsHasType(EFFECT_TYPE_QUICK_O)) and not (c:IsType(TYPE_MONSTER) and cm[te] and cm[te]==Duel.GetTurnCount()) then
+			if te and not (te[c]:GetCode()==EVENT_CHAINING and te[c]:IsHasType(EFFECT_TYPE_QUICK_O)) and not (c:IsType(TYPE_MONSTER) and cm[te] and cm[te][tp] and cm[te][tp]==Duel.GetTurnCount()) then
 				te=te[c]
 				local con=te:GetCondition() or aux.TRUE
 				if te:IsHasType(EFFECT_TYPE_TRIGGER_O) then con=aux.TRUE end

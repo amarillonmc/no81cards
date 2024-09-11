@@ -75,7 +75,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetProperty(c:GetProperty())
 	local target=c:GetTarget()
 	if target then target(e,tp,eg,ep,ev,re,r,rp,1) end
-	if tp==Duel.GetTurnPlayer() then Duel.IsPlayerAffectedByEffect(tp,11451425):GetHandler():RegisterFlagEffect(11451425,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) end
+	if tp==Duel.GetTurnPlayer() and Duel.IsPlayerAffectedByEffect(tp,11451425) then Duel.IsPlayerAffectedByEffect(tp,11451425):GetHandler():RegisterFlagEffect(11451425,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) end
 	Duel.ClearOperationInfo(0)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,e:GetHandler(),1,0,0)
 end
