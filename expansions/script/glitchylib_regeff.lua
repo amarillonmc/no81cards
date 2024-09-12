@@ -71,7 +71,7 @@ function Auxiliary.CheckAlreadyRegisteredEffects()
 	e1:SetCode(EVENT_PREDRAW)
 	e1:OPT()
 	e1:SetOperation(function(e)
-		local g=Duel.Group(function(c) return not c:IsOriginalType(TYPE_NORMAL) end,0,LOCATION_ALL,0,nil)
+		local g=Duel.Group(function(c) return not c:IsOriginalType(TYPE_NORMAL) end,0,LOCATION_ALL,LOCATION_ALL,nil)
 		for tc in aux.Next(g) do
 			if not global_card_effect_table[tc] then
 				local code=tc:GetOriginalCode()
