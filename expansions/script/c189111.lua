@@ -47,16 +47,12 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetCondition(cm.discon)
 	e1:SetOperation(cm.disop)
-	if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_STANDBY then
-		e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2)
-	else
-		e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
-	end
+	if Duel.GetTurnPlayer()==tp then e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2) else e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN) end
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	return Duel.IsExistingMatchingCard(Card.IsCode,0,LOCATION_GRAVE,LOCATION_GRAVE,1,rc,rc:GetCode()) and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)&(LOCATION_ONFIELD+LOCATION_GRAVE)~=0
+	return Duel.IsExistingMatchingCard(Card.IsCode,0,LOCATION_GRAVE,LOCATION_GRAVE,1,aux.ExceptThisCard(re),rc:GetCode()) and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)&(LOCATION_ONFIELD+LOCATION_GRAVE)~=0
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)

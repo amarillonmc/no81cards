@@ -51,7 +51,7 @@ function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.ConfirmDecktop(tp,5)
 	local g=Duel.GetDecktopGroup(tp,5)
-	local ct=g:FilterCount(Card.IsSetCard,nil,0x3620):FilterCount(Card.IsAttribute,nil,ATTRIBUTE_FIRE)
+	local ct=g:Filter(Card.IsSetCard,nil,0x3620):FilterCount(Card.IsAttribute,nil,ATTRIBUTE_FIRE)
 	Duel.ShuffleDeck(tp)
 	if ct>1 then
 		local e1=Effect.CreateEffect(c)

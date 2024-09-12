@@ -65,7 +65,10 @@ function c12847003.condition(e,tp,eg,ep,ev,re,r,rp)
 	return false
 end
 function c12847003.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then
+		local ct=Duel.GetCurrentChain()+1
+		return Duel.IsPlayerCanSpecialSummonMonster(tp,12847030,0,TYPES_TOKEN_MONSTER,ct*1000,ct*1000,1,RACE_PSYCHO,ATTRIBUTE_LIGHT)
+	end
 	local c=e:GetHandler()
 	local ng=Group.CreateGroup()
 	for i=1,ev do
@@ -77,6 +80,8 @@ function c12847003.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 	end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,ng,ng:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c12847003.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

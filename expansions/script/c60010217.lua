@@ -31,7 +31,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
 	local e4=e3:Clone()
-	e4:SetCode(EVENT_TO_GRAVE)
+	e4:SetCode(EVENT_DESTROYED)
 	e4:SetCondition(cm.spcon2)
 	c:RegisterEffect(e4)
 
@@ -68,7 +68,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 		and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsReason(REASON_DESTROY) and e:GetHandler():IsReason(REASON_BATTLE+REASON_EFFECT)
+	return e:GetHandler():IsReason(REASON_BATTLE+REASON_EFFECT)
 end
 function cm.filter2(c)
 	return c:IsSetCard(0x3620) and c:IsRace(RACE_SPELLCASTER) and not c:IsCode(m) and c:IsAbleToHand()

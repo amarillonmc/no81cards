@@ -17,7 +17,8 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_GRAVE)
 	e1:SetCountLimit(1,m+10000000)
 	e1:SetTarget(cm.sptg)
@@ -45,7 +46,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.desfilter(c)
-	return  (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsSetCard(0x3620)
+	return c:IsSetCard(0x3620)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
  if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and cm.desfilter(chkc,tp) end
