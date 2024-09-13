@@ -14,7 +14,7 @@ function cm.tgfilter(c)
 	return aux.IsCodeListed(c,60040005) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter1,tp,LOCATION_DECK,0,1,nil) end
-	local g=Duel.GetMatchingGroup(cm.tgfilter1,tp,LOCATION_DECK,0,nil):Select(tp,1,1,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil) end
+	local g=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_DECK,0,nil):Select(tp,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
