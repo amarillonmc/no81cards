@@ -121,7 +121,7 @@ function cm.initial_effect(c)
 			local temp_f=Duel[fname]
 			Duel[fname]=function(p,c,...)
 				temp_f(p,c,...)
-				c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1)
+				if Duel.GetCurrentChain()==1 then c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1) end
 			end
 		end
 	end
@@ -263,7 +263,7 @@ function cm.reg(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(0,m,0,0,1)
 end
 function cm.clear(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ResetFlagEffect(0,m)
+	--Duel.ResetFlagEffect(0,m)
 end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(0,m)>0 and Duel.GetCurrentChain()==1 and e:GetHandler():GetFlagEffect(m+1)==0
@@ -272,6 +272,7 @@ function cm.filter11(c)
 	return c:IsSetCard(0xc976) and c:GetFlagEffect(11451905)==0
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ResetFlagEffect(0,m)
 	local c=e:GetHandler()
 	local hg=Duel.GetMatchingGroup(cm.filter11,tp,LOCATION_HAND,0,nil)
 	if c:IsLocation(LOCATION_HAND) then

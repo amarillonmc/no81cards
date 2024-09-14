@@ -126,7 +126,6 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		--local eset={e:GetHandler():GetActivateEffect()}
 		--Debug.Message(eset[3]:IsActivatable(tp,false,true))
 		--local se=e:GetHandler():CheckActivateEffect(true,true,true)
-		--Debug.Message(Duel.GetFlagEffect(0,11451901))
 		return (Duel.GetFlagEffect(0,11451901)>0 or Duel.CheckEvent(EVENT_CUSTOM+11451902)) and ft>0 and Duel.GetFlagEffect(tp,11451902)>0
 	end
 	Duel.ResetFlagEffect(tp,11451902)
@@ -264,6 +263,7 @@ function cm.spcfilter(c,e,tp)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
+	local tp=c:GetControler()
 	local bg=Duel.GetMatchingGroup(cm.spcfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,c,e,tp)
 	return #bg>0 and c:IsAbleToRemoveAsCost()
 end

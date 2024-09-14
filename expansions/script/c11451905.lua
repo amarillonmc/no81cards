@@ -71,8 +71,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	--c:IsCanBeSpecialSummoned(e,0,tp,false,false) or 
-	if chk==0 then return (1==1) and (c:IsSummonable(true,nil) or (c:IsAbleToHand() and c:IsLocation(LOCATION_MZONE))) end
+	if chk==0 then return (c:IsCanBeSpecialSummoned(e,0,tp,false,false) or 1==1) and (c:IsSummonable(true,nil) or (c:IsAbleToHand() and c:IsLocation(LOCATION_MZONE))) end
 	if c:IsLocation(LOCATION_HAND) then
 		Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
 	elseif c:IsLocation(LOCATION_MZONE) then

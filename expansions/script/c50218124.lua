@@ -92,7 +92,7 @@ function c50218124.stg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(c50218124.sfilter,tp,LOCATION_DECK,0,1,nil) and c:IsAbleToDeck() end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,tp,LOCATION_HAND)
 end
 function c50218124.sop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

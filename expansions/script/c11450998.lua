@@ -49,7 +49,7 @@ function cm.initial_effect(c)
 			local temp_f=Duel[fname]
 			Duel[fname]=function(p,c,...)
 				temp_f(p,c,...)
-				c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1)
+				if Duel.GetCurrentChain()==1 then c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1) end
 			end
 		end
 	end

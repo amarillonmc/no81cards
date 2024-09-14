@@ -3,10 +3,12 @@ local cm,m,o=GetID()
 function cm.initial_effect(c)
  local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)
-	e0:SetCode(EFFECT_CANNOT_TRIGGER) --要用 EFFECT_CANNOT_TRIGGER
+	e0:SetCode(EFFECT_CANNOT_ACTIVATE) --要用 EFFECT_CANNOT_ACTIVATE
+	e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e0:SetRange(LOCATION_MZONE)
-	e0:SetTargetRange(0,LOCATION_ONFIELD)
-	e0:SetTarget(cm.desfilther1) --直接使用 cm.desfilther1 即可
+	e0:SetTargetRange(0,1)
+	e0:SetCondition(cm.atkcon)
+	e0:SetValue(cm.desfilther2) --直接使用 cm.desfilther1 即可
 	c:RegisterEffect(e0)
 local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -36,6 +38,17 @@ local e5=Effect.CreateEffect(c)
 	e5:SetCondition(cm.imcon)
 	e5:SetValue(cm.efilter)
 	c:RegisterEffect(e5)	
+end
+function cm.atkcon(e)
+	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
+end
+function cm.desfilther2(e,re,tp) --写反了，第一个参数是效果，第二个是卡
+	local seq=e:GetHandler():GetSequence()
+	local sseq=re:GetHandler():GetSequence()
+	if not re:GetHandler():IsLocation(LOCATION_ONFIELD) then
+		return false
+	end
+	return (seq<5 and sseq<5 and math.abs(4-sseq-seq)<=1) or (seq<5 and sseq==5 and seq>1) or (seq<3 and sseq==6) or (seq==6 and sseq<3) or (seq==5 and sseq>1 and sseq<5)
 end
 function cm.desfilther1(e,c) --写反了，第一个参数是效果，第二个是卡
 	local seq=c:GetSequence()

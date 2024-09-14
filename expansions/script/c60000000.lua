@@ -340,9 +340,12 @@ function MerlinTC.con3(e,c)
 		ub=1
 	end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_ONFIELD,0,nil,60002113)
+	local g=Duel.GetMatchingGroup(MerlinTC.csfil,tp,LOCATION_ONFIELD,0,nil)
 	return Duel.GetMZoneCount(tp,g)>0
 		and g:GetCount()>=ub
+end
+function MerlinTC.csfil(c)
+	return c:IsCode(60002113) and c:IsAbleToGraveAsCost()
 end
 function MerlinTC.op3(e,tp,eg,ep,ev,re,r,rp,c)
 	local loc=e:GetHandler():GetLocation()
@@ -351,7 +354,7 @@ function MerlinTC.op3(e,tp,eg,ep,ev,re,r,rp,c)
 		ub=1
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsCode,tp,LOCATION_ONFIELD,0,ub,ub,nil,60002113)
+	local g=Duel.SelectMatchingCard(tp,MerlinTC.csfil,tp,LOCATION_ONFIELD,0,ub,ub,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 	if loc~=LOCATION_HAND then
 		local e1=Effect.CreateEffect(e:GetHandler())

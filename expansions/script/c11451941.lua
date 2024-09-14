@@ -61,8 +61,8 @@ function cm.ret(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local dc=g:Select(tp,1,1,nil):GetFirst()
 		local code,code2=dc:GetCode()
-		c:RegisterFlagEffect(m+code+0xffffff,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,aux.Stringid(code,8))
-		if code2 then c:RegisterFlagEffect(m+code2+0xffffff,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,aux.Stringid(code2,8)) end
+		c:RegisterFlagEffect(m+code+0xffffff,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(code,8))
+		if code2 then c:RegisterFlagEffect(m+code2+0xffffff,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(code2,8)) end
 		Duel.SendtoHand(dc,nil,REASON_EFFECT)
 		g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil,c)
 		if c:GetFlagEffect(m)>0 and #g==0 then Duel.Readjust() end
