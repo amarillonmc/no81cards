@@ -44,7 +44,7 @@ function c50218131.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,c50218131.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	if g:GetCount()>0 then
-		if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)~=0 and g:GetFirst():IsLocation(LOCATION_DECK) then
+		if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)>0 then
 			Duel.BreakEffect()
 			Duel.Draw(tp,1,REASON_EFFECT)
 		end

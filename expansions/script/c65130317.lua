@@ -26,7 +26,7 @@ function c65130317.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c65130317.thfilter(e,c) 
-	return c:IsLocation(LOCATION_DECK) and c:IsLevelAbove(4)
+	return c:IsLocation(LOCATION_DECK) and c:IsLevelAbove(4) and not c:IsStatus(STATUS_TO_HAND_WITHOUT_CONFIRM)
 end
 function c65130317.cfilter(c) 
 	return c:IsAttack(878) and c:IsDefense(1157) and c:IsFaceup()

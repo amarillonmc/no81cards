@@ -44,7 +44,7 @@ function cm.initial_effect(c)
 							Duel.RegisterEffect(ge2,0)
 						end
 					end)
-	Duel.RegisterEffect(e6,0)
+	--Duel.RegisterEffect(e6,0)
 	e2:SetLabelObject(e6)
 	e5:SetLabelObject(e6)
 	local e4=Effect.CreateEffect(c)

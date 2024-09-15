@@ -35,7 +35,7 @@ function c50223170.initial_effect(c)
 	local e7=e3:Clone()
 	e7:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	c:RegisterEffect(e7)
-	--to grave
+	--destroy
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e8:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -45,14 +45,14 @@ function c50223170.initial_effect(c)
 	e8:SetOperation(c50223170.regop)
 	c:RegisterEffect(e8)
 	local e9=Effect.CreateEffect(c)
-	e9:SetCategory(CATEGORY_TOGRAVE)
+	e9:SetCategory(CATEGORY_DESTROY)
 	e9:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e9:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e9:SetCode(EVENT_CUSTOM+50223170)
 	e9:SetRange(LOCATION_MZONE)
 	e9:SetCountLimit(1,50223170)
-	e9:SetTarget(c50223170.tgtg)
-	e9:SetOperation(c50223170.tgop)
+	e9:SetTarget(c50223170.destg)
+	e9:SetOperation(c50223170.desop)
 	c:RegisterEffect(e9)
 end
 function c50223170.lcheck(g,lc)
@@ -75,14 +75,14 @@ end
 function c50223170.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseSingleEvent(e:GetHandler(),EVENT_CUSTOM+50223170,e,0,tp,0,0)
 end
-function c50223170.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
+function c50223170.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
-function c50223170.tgop(e,tp,eg,ep,ev,re,r,rp)
+function c50223170.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		Duel.Destroy(g,REASON_EFFECT)

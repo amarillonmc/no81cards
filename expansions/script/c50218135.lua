@@ -28,14 +28,16 @@ function c50218135.initial_effect(c)
 	e3:SetTarget(c50218135.sptg)
 	e3:SetOperation(c50218135.spop)
 	c:RegisterEffect(e3)
-   --can not be attack
+   --can not be attack target
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e4:SetRange(LOCATION_MZONE)
 	e4:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
 	e4:SetCondition(c50218135.atcon)
 	e4:SetValue(aux.imval1)
 	c:RegisterEffect(e4)
-	--can not be target
+	--can not be effect target
 	local e5=e4:Clone()
 	e5:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)	
 	e5:SetValue(aux.tgoval)
@@ -93,7 +95,7 @@ function c50218135.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c50218135.atcon(e)
-	return Duel.IsExistingMatchingCard(nil,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,e:GetHandler())
+	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_MZONE,0)>=2
 end
 function c50218135.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,nil) end
