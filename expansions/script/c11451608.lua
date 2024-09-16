@@ -116,9 +116,8 @@ end
 function cm.efilter(e,te)
 	if not (te:IsActivated() and te:GetOwnerPlayer()==1-e:GetHandlerPlayer()) then return false end
 	local ev=Duel.GetCurrentChain()
-	local sp=te:IsHasCategory(CATEGORY_NEGATE) and Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT):IsHasType(EFFECT_TYPE_ACTIVATE)
 	local ex,tg,tc=Duel.GetOperationInfo(ev,CATEGORY_DESTROY)
-	return sp or not (ex and (tg~=nil or tc>0))
+	return not (ex and (tg~=nil or tc>0))
 end
 function cm.thfilter(c)
 	return c:GetAttack()>0 and (c:IsSetCard(0x10) or c:IsSetCard(0xb5)) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

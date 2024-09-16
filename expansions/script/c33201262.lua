@@ -43,7 +43,6 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.damop)
 	c:RegisterEffect(e2)
 end
-cm.VHisc_DragonCovenant=true
 
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)

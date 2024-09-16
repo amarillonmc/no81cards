@@ -88,5 +88,5 @@ function s.indtg(e,c)
 	return c:IsSetCard(0x104f)
 end
 function s.efilter(e,re)
-	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActiveType(TYPE_MONSTER)
+	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActiveType(TYPE_MONSTER) and not re:GetHandler():IsType(TYPE_XYZ)
 end

@@ -72,7 +72,7 @@ function s.cfilter(c,tp)
 	return c:IsControler(tp)
 end
 function s.hdcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()~=PHASE_DRAW and eg:IsExists(s.cfilter,1,nil,1-tp)
+	return eg:IsExists(s.cfilter,1,nil,1-tp) and bit.band(r,REASON_EFFECT)==REASON_EFFECT
 end
 function s.thfilter(c,tp)
 	return c:IsAbleToHand() and c:IsHasEffect(25000027,tp)

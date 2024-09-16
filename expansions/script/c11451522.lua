@@ -143,7 +143,7 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		if lscale>rscale then lscale,rscale=rscale,lscale end
 		local loc=0
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_HAND end
-		if Duel.GetLocationCountFromEx(tp)>0 then loc=loc+LOCATION_EXTRA end
+		if Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)>0 then loc=loc+LOCATION_EXTRA end
 		if loc==0 then return false end
 		local g=Duel.GetMatchingGroup(nil,tp,loc,0,nil)
 		local _PendulumChecklist=aux.PendulumChecklist
@@ -164,7 +164,7 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 	if lscale>rscale then lscale,rscale=rscale,lscale end
 	local loc=0
 	local ft1=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local ft2=Duel.GetLocationCountFromEx(tp)
+	local ft2=Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)
 	local ft=Duel.GetUsableMZoneCount(tp)
 	local ect=c29724053 and Duel.IsPlayerAffectedByEffect(tp,29724053) and c29724053[tp]
 	if ect and ect<ft2 then ft2=ect end

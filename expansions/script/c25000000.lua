@@ -41,10 +41,10 @@ function s.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 function s.atcost(e,c,tp)
-	return Duel.CheckReleaseGroupEx(tp,Card.IsDisabled,1,REASON_ACTION,false,e:GetHandler())
+	return Duel.CheckReleaseGroupEx(tp,aux.AND(Card.IsFaceup,aux.NOT(Card.IsAttack)),1,REASON_ACTION,false,e:GetHandler())
 end
 function s.atop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.SelectReleaseGroupEx(tp,Card.IsDisabled,1,1,REASON_ACTION,false,e:GetHandler())
+	local g=Duel.SelectReleaseGroupEx(tp,aux.AND(Card.IsFaceup,aux.NOT(Card.IsAttack)),1,1,REASON_ACTION,false,e:GetHandler())
 	Duel.Release(g,REASON_ACTION)
 end
 
@@ -60,14 +60,13 @@ function s.rmfilter(c)
 	return c:IsAbleToRemove() and c:IsPosition(POS_ATTACK)
 end
 function s.disfilter(c,atk)
-	return not c:IsDisabled() and c:GetBaseAttack()<atk
+	return not c:IsDisabled() and c:GetAttack()<atk
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.NegateSummon(eg)
-	local g=Duel.GetMatchingGroup(s.rmfilter,tp,0,LOCATION_MZONE,nil)
 	if Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)==0 then return end
-	local dg=Duel.GetMatchingGroup(s.disfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,c:GetBaseAttack())
+	local dg=Duel.GetMatchingGroup(s.disfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,c:GetAttack())
 	if dg:GetCount()>0 and c:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		for tc in aux.Next(dg) do
 			local e1=Effect.CreateEffect(c)

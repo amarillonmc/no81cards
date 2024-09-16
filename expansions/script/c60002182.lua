@@ -57,6 +57,7 @@ end
 function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Damage(1-tp,500,REASON_EFFECT)
 	Duel.Recover(tp,500,REASON_EFFECT)
+	Duel.Draw(tp,1,REASON_EFFECT)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1000)
 end
 function cm.filter(c)
@@ -70,12 +71,11 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
-	Duel.Destroy(sg,REASON_EFFECT)
+	Duel.Destroy(sg,REASON_EFFECT)~=0
 	local c=e:GetHandler()
 	local dmg=1600
-	Duel.Damage(tp,dmg,REASON_EFFECT)
 	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil) 
-	local tc=g:GetFirst()
+	local tc=g:GetFirst()	
 	while tc do 
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -88,6 +88,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		tc=g:GetNext()
 	end 
+	Duel.Damage(1-tp,dmg,REASON_EFFECT)
 end
 function cm.cfilter(c,tp)
 	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)

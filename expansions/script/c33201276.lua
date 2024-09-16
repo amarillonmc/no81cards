@@ -35,10 +35,9 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.tdop)
 	c:RegisterEffect(e3)
 end
-cm.VHisc_DragonCovenant=true
 
 function cm.actcfilter(c)
-	return c.VHisc_DragonCovenant and c:IsLocation(LOCATION_MZONE) and c:IsFaceup()
+	return c:IsSetCard(0xa327) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup()
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.actcfilter,tp,LOCATION_ONFIELD,0,1,nil)
@@ -84,7 +83,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.tdfilter(c)
-	return c:IsType(TYPE_MONSTER) and c.VHisc_DragonCovenant and c:IsAbleToDeck()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa327) and c:IsAbleToDeck()
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and cm.tdfilter(chkc) end

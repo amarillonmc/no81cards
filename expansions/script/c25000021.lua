@@ -6,8 +6,8 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_DRAW)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_TO_GRAVE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.drcon)
@@ -17,21 +17,47 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCode(EVENT_TO_HAND)
+	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,id+o*10000)
 	e2:SetCondition(s.spcon)
 	e2:SetTarget(s.sptg)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
+	local e3=e1:Clone()
+	e3:SetCode(EVENT_TO_DECK)
+	c:RegisterEffect(e3)
+	local e4=e1:Clone()
+	e4:SetCode(EVENT_REMOVE)
+	c:RegisterEffect(e4)
+	local e5=e1:Clone()
+	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e5)
+	local e6=e1:Clone()
+	e6:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e6)
+	if not s.thcheck then
+		s.thcheck=true
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_TO_HAND)
+		e2:SetRange(LOCATION_MZONE)
+		e2:SetCondition(s.thcheckcon)
+		e2:SetOperation(s.thcheckop)
+		Duel.RegisterEffect(e2,tp)
+	end
+end
+function s.thcheckcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()~=PHASE_DRAW
+end
+function s.thcheckop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RegisterFlagEffect(0,id,RESET_PHASE+PHASE_END,0,2)
 end
 function s.lcheck(g)
 	return g:GetClassCount(Card.GetLinkAttribute)==g:GetCount()
 end
 function s.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return Deul.GetFlagEffect(tp,id)==0
+	return Deul.GetFlagEffect(tp,id)==0 and eg:IsExists(Card.IsPreviousLocation,1,nil)
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetMatchingGroupCount(nil,tp,0,LOCATION_HAND,e:GetHandler())-Duel.GetMatchingGroupCount(nil,tp,LOCATION_HAND,0,nil)
@@ -45,13 +71,9 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	if ct>0 then
 		Duel.Draw(p,ct,REASON_EFFECT)
 	end
-	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,2)
-end
-function s.cfilter(c)
-	return c:IsPreviousLocation(LOCATION_DECK)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()~=PHASE_DRAW and eg:IsExists(s.cfilter,1,nil)
+	return Duel.GetFlagEffect(0,id)>0
 end
 function s.spfilter(c,e,tp)
 	return c:IsAttackAbove(1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -61,6 +83,11 @@ function s.fselect(sg,atk)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local ct1=Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_MZONE,0,nil)
+	local ct2=Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+	if ct1>=ct2 then return false end
+	local ct=ct2-ct1
+	if ct<ft then ft=ct end
 	if ft>1 and Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	local ag=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if ag:GetCount()==0 then return false end
@@ -75,6 +102,11 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local ct1=Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_MZONE,0,nil)
+	local ct2=Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_MZONE,nil)
+	if ct1>=ct2 then return false end
+	local ct=ct2-ct1
+	if ct<ft then ft=ct end
 	if ft<=0 then return end
 	if ft>1 and Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	local ag=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)

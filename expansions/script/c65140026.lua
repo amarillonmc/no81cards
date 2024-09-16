@@ -153,5 +153,6 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetLabelObject(re)
 			tc:RegisterEffect(e1)
 		end
+		Duel.AdjustAll()
 	end
 end

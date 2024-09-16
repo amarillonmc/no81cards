@@ -38,7 +38,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.mfilter(c)
-	return c:IsLinkSetCard(0x445)
+	return c:IsLinkSetCard(0x442)
 end
 function s.lcheck(g,lc)
 	return g:GetClassCount(Card.GetLinkCode)==g:GetCount()

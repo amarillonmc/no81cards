@@ -78,18 +78,9 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		e1:SetValue(c:GetAttack()*2)
 		c:RegisterEffect(e1)
-		if c:GetOverlayCount()>0 then
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_FIELD)
-			e2:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
-			e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e2:SetTargetRange(1,1)
-			e2:SetReset(RESET_PHASE+PHASE_DAMAGE)
-			Duel.RegisterEffect(e2,tp)
-		end
 		c:RegisterFlagEffect(id,RESET_PHASE+PHASE_BATTLE+RESET_EVENT+RESETS_STANDARD,0,1,fid)
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -106,6 +97,7 @@ end
 function s.pencon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	return tc:GetFlagEffectLabel(id)==e:GetLabel() and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
+		and tc:GetOverlayCount()==0
 end
 function s.penop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()

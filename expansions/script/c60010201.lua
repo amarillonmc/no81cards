@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.desfilter(c)
-	return  (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and c:IsSetCard(0x3620)
+	return c:IsSetCard(0x3620)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and cm.desfilter(chkc,tp) end

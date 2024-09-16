@@ -6,7 +6,7 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_INACTIVATE)
-	e1:SetRange(LOCATION_SZONE)
+	e1:SetRange(LOCATION_MZONE)
 	e1:SetValue(s.effectfilter)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
@@ -31,6 +31,12 @@ function s.initial_effect(c)
 	e4:SetCondition(s.negcon)
 	e4:SetOperation(s.negop)
 	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetCode(EFFECT_CANNOT_DISABLE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetValue(s.efffilter)
+	c:RegisterEffect(e5)
 end
 function s.lcheck(g)
 	return not g:IsExists(s.mfilter1,1,nil,g) and not g:IsExists(s.mfilter2,1,nil,g)==1
@@ -48,6 +54,9 @@ function s.effectfilter(e,ct)
 	local p=e:GetHandler():GetControler()
 	local te,tp,loc=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
 	return p==tp and s.linkfilter(te:GetHandler()) and bit.band(loc,LOCATION_ONFIELD)~=0
+end
+function s.efffilter()
+	return c:IsLinkState()
 end
 function s.disilter(e,c)
 	return c:GetMutualLinkedGroupCount()~=0

@@ -57,8 +57,9 @@ function s.sspfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.fop(e,tp,eg,ep,ev,re,r,rp)
+	local flag=false
 	local chkf=tp
-		local mg1=Duel.GetMatchingGroup(s.filter1,tp,LOCATION_DECK,0,nil,e)
+	local mg1=Duel.GetMatchingGroup(s.filter1,tp,LOCATION_DECK,0,nil,e)
 	local mg2=Duel.GetMatchingGroup(s.filter3,tp,LOCATION_GRAVE,0,nil)
 	mg1:Merge(mg2)
 	local sg1=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
@@ -80,6 +81,9 @@ function s.fop(e,tp,eg,ep,ev,re,r,rp)
 		local mat1=nil
 		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
 			mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
+			if mat1:FilterCount(Card.IsLocation,nil,LOCATION_HAND)==mat1:GetCount() then
+				flag=true
+			end
 			tc:SetMaterial(mat1)
 			Duel.Remove(mat1,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			Duel.BreakEffect()
@@ -90,8 +94,7 @@ function s.fop(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
-		if (not Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE,0,1,tc) or Duel.GetMatchingGroupCount(nil,tp,0,LOCATION_MZONE,nil)>0) and Duel.IsExistingMatchingCard(s.rthfilter,tp,LOCATION_REMOVED,0,1,nil)
-			and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+		if flag and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_REMOVED,0,1,1,nil)

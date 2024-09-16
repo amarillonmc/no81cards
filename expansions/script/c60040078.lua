@@ -9,6 +9,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.spcon)
 	c:RegisterEffect(e1)
 	

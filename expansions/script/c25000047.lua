@@ -12,7 +12,14 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.costfilter(c)
-	return c:GetRace()~=c:GetOriginalRace() and not (bit.band(c:GetOriginalType(),TYPE_TRAP)==TYPE_TRAP)
+	return c:IsFaceupEx() and c:GetRace()~=c:GetOriginalRace() and not (bit.band(c:GetOriginalType(),TYPE_TRAP)==TYPE_TRAP)
+end
+function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(100)
+	if chk==0 then return true end
+end
+function s.cfilter(c)
+	return c:IsType(TYPE_SPIRIT) and c:IsAbleToRemoveAsCost()
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
@@ -24,25 +31,25 @@ end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()~=100 then return false end
-		return Duel.CheckReleaseGroup(tp,s.costfilter,1,nil)
+		return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
 	end
-	local g=Duel.SelectReleaseGroup(tp,s.costfilter,1,1,nil)
-	Duel.Release(g,REASON_COST)
+	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
 	e:SetLabel(g:GetFirst():GetRace())
-	local g=Duel.GetMatchingGroup(s.tgfilter,tp,0,LOCATION_MZONE,nil,g:GetFirst():GetRace())
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+	local g=Duel.GetMatchingGroup(s.tgfilter,tp,0,LOCATION_MZONE+LOCATION_GRAVE,nil,g:GetFirst():GetRace())
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 end
 function s.cffilter(c)
 	return c:IsLocation(LOCATION_HAND) or c:IsFacedown()
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local race=e:GetLabel()
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD+LOCATION_HAND)
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_HAND)
 	if g:GetCount()>0 then
 		local cg=g:Filter(s.cffilter,nil)
 		Duel.ConfirmCards(tp,cg)
 		local dg=g:Filter(Card.IsRace,nil,race)
-		Duel.Destroy(dg,REASON_EFFECT)
+		Duel.Remove(dg,POS_FACEUP,REASON_EFFECT)
 		Duel.ShuffleHand(1-tp)
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -71,7 +78,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	if hg:GetCount()==0 then return end
 	Duel.ConfirmCards(1-ep,hg)
 	local dg=hg:Filter(Card.IsRace,nil,e:GetLabel())
-	Duel.Destroy(dg,REASON_EFFECT)
+	Duel.Remove(dg,POS_FACEUP,REASON_EFFECT)
 	Duel.ShuffleHand(ep)
 end
 function s.turncon(e,tp,eg,ep,ev,re,r,rp)

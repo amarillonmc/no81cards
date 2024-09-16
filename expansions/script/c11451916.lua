@@ -48,6 +48,84 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(11451912)
+	e0:SetRange(LOCATION_HAND+LOCATION_EXTRA)
+	c:RegisterEffect(e0)
+	if not STRIDGON_REPSPSUMMON_CHECK then
+		STRIDGON_REPSPSUMMON_CHECK=true
+		local _PConditionFilter=aux.PConditionFilter
+		function aux.PConditionFilter(c,e,...)
+			cm[0]=e
+			return _PConditionFilter(c,e,...)
+		end
+		local _SelectSubGroup=Group.SelectSubGroup
+		function Group.SelectSubGroup(...)
+			local res=_SelectSubGroup(...)
+			if res and cm[0] then cm[1]=cm[0] end
+			cm[0]=nil
+			return res
+		end
+		local _Merge=Group.Merge
+		function Group.Merge(sg,obj)
+			if cm[1]==nil or (aux.GetValueType(obj)=="Group" and #obj~=1) then cm[1]=nil return _Merge(sg,obj) end
+			local tc=obj
+			if aux.GetValueType(obj)=="Group" then tc=obj:GetFirst() end
+			local tp=tc:GetControler()
+			if tc:IsLevel(3) then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))
+				local tg=Duel.SelectMatchingCard(tp,cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,0,1,nil,cm[1],tp,tc)
+				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) cm[1]=nil return _Merge(sg,tg) end
+			end
+			cm[1]=nil
+			return _Merge(sg,obj)
+		end
+		local _SpecialSummonRule=Duel.SpecialSummonRule
+		function Duel.SpecialSummonRule(tp,tc,sumtype)
+			if sumtype~=SUMMON_TYPE_PENDULUM then _SpecialSummonRule(tp,tc,sumtype) end
+			local tp=tc:GetControler()
+			if tc:IsLevel(3) then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))
+				local tg=Duel.SelectMatchingCard(tp,cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,0,1,nil,nil,tp,tc)
+				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) local tc2=tg:GetFirst() tc2.pendulum_rule[tc2]:SetLabel(1) if tc.pendulum_rule and tc.pendulum_rule[tc] then tc.pendulum_rule[tc]:SetLabel(0) end return _SpecialSummonRule(tp,tc2,SUMMON_TYPE_PENDULUM) end
+			end
+			_SpecialSummonRule(tp,tc,sumtype)
+		end
+	end
+end
+function cm.tspfilter(c,e,tp)
+	if not c:IsHasEffect(11451912) or Duel.GetFlagEffect(tp,c:GetOriginalCode())>0 or (e and not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,false,false)) then return false end
+	if not e then
+		local tc=c
+		if not tc.pendulum_rule or not tc.pendulum_rule[tc] then
+			local tcm=getmetatable(tc)
+			tcm.pendulum_rule=tcm.pendulum_rule or {}
+			local e1=Effect.CreateEffect(tc)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_SPSUMMON_PROC)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+			e1:SetRange(LOCATION_HAND+LOCATION_EXTRA)
+			e1:SetLabel(1)
+			e1:SetCondition(function(e) return e:GetLabel()==1 end)
+			e1:SetTarget(function(e) e:SetLabel(0) return true end)
+			e1:SetValue(SUMMON_TYPE_PENDULUM)
+			tc:RegisterEffect(e1,true)
+			tcm.pendulum_rule[tc]=e1
+		else
+			tc.pendulum_rule[tc]:SetLabel(1)
+		end
+		if not tc:IsCanBeSpecialSummoned(tc.pendulum_rule[tc],SUMMON_TYPE_PENDULUM,tp,false,false) then tc.pendulum_rule[tc]:SetLabel(0) return false end
+		tc.pendulum_rule[tc]:SetLabel(0)
+	end
+	local ft1=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local ft2=Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)
+	local ft=Duel.GetUsableMZoneCount(tp)
+	local ect=c29724053 and Duel.IsPlayerAffectedByEffect(tp,29724053) and c29724053[tp]
+	if ect and ect<ft2 then ft2=ect end
+	local g=Group.FromCards(c)
+	local ext=g:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)
+	return ext<=ft2 and #g-ext<=ft1 and #g<=ft
 end
 function cm.pspcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetActivateLocation()==LOCATION_HAND

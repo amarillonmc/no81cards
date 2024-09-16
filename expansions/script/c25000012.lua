@@ -12,6 +12,7 @@ function s.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.rmcon)
 	e1:SetTarget(s.rmtg)
 	e1:SetOperation(s.rmop)
 	c:RegisterEffect(e1)
@@ -27,9 +28,10 @@ function s.initial_effect(c)
 	e2:SetOperation(s.rmop2)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_REMOVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetRange(LOCATION_REMOVED)
 	e3:SetCountLimit(1,id+o*20000)
 	e3:SetCondition(s.pencon)
 	e3:SetTarget(s.pentg)
@@ -57,6 +59,9 @@ function s.mfilter(c,xyzc)
 end
 function s.xyzcheck(g)
 	return g:GetClassCount(Card.GetLevel)==1
+end
+function s.rmtg(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(TYPE_XYZ)
 end
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil,tp,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY) end
@@ -136,7 +141,7 @@ function s.rmop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.pencon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsReason(REASON_COST) and re:IsActivated()
+	return not eg:IsContains(e:GetHandler())
 end
 function s.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end

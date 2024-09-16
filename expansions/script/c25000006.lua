@@ -45,7 +45,7 @@ function s.xyzcheck(g)
 	return g:GetClassCount(Card.GetLevel)==1
 end
 function s.skipcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and Duel.GetFlagEffect(1-tp,id)>0
+	return Duel.IsExistingMatchingCard(Card.IsPosition,tp,LOCATION_MZONE,0,1,e:GetHandler(),POS_ATTACK) and Duel.GetFlagEffect(1-tp,id)>0
 end
 function s.skipcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
@@ -212,12 +212,6 @@ function s.skipop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetTargetRange(1,0)
 	e2:SetReset(RESET_PHASE+PHASE_MAIN1+RESET_SELF_TURN)
 	Duel.RegisterEffect(e2,tp)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CANNOT_ATTACK)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE_START,2)
-	c:RegisterEffect(e1)
 end
 function s.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)

@@ -48,13 +48,17 @@ function cm.desrepval(e,c)
 end
 function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsLocation(LOCATION_HAND) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) then
+	if c:IsLocation(LOCATION_HAND) and not c:IsPublic() then
+		local e0=Effect.CreateEffect(c)
+		e0:SetType(EFFECT_TYPE_SINGLE)
+		e0:SetCode(EFFECT_PUBLIC)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e0)
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,66)
 		local tg=e:GetLabelObject() 
 		Duel.SendtoHand(tg,nil,REASON_EFFECT+REASON_REPLACE)
 		if tg:GetFirst():IsLocation(LOCATION_HAND+LOCATION_EXTRA) then
 			Duel.ConfirmCards(1-tp,tg)
-			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-			Duel.Hint(24,0,aux.Stringid(m,1))
 		end
 	end
 end

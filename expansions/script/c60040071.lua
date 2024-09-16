@@ -34,7 +34,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		if Duel.SendtoDeck(tc,nil,SEQ_DECKTOP,REASON_EFFECT)~=0 and Duel.GetLP(1-tp)<=4000 then
-			Duel.Draw(tp,1,REASON_EFFECT)
+			Duel.Draw(tp,2,REASON_EFFECT)
 		end
 	end
 end

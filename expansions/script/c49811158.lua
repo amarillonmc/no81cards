@@ -50,10 +50,10 @@ function c49811158.checkop(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function c49811158.effcon(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.GetFlagEffect(1-tp,49811158)>=2
+    return Duel.GetFlagEffect(1-tp,49811158)>=3
 end
 function c49811158.effop(e,tp,eg,ep,ev,re,r,rp)
     local ct=Duel.GetFlagEffect(1-tp,49811158)
-    local cd=math.floor(ct/2)
+    local cd=math.floor(ct/3)
     Duel.Draw(tp,cd,REASON_EFFECT)
 end

@@ -36,7 +36,7 @@ function c49811162.initial_effect(c)
     c:RegisterEffect(e2)
 end
 function c49811162.spcon(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.GetFlagEffect(1-tp,49811162)>=2 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+    return Duel.GetFlagEffect(1-tp,49811162)>=5 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function c49811162.checkop(e,tp,eg,ep,ev,re,r,rp)
     local tc=eg:GetFirst()

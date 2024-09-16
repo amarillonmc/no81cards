@@ -28,24 +28,37 @@ function cm.initial_effect(c)
 	--negate attack
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
-	e2:SetCondition(cm.negcon)
+	e2:SetTarget(cm.rectg)
 	e2:SetOperation(cm.negop)
 	VHisc_Dragonk.eqgef(c,e2)
 end
 cm.VHisc_DragonRelics=true
 
 --e2
-function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetAttacker():GetControler()~=tp
+function cm.cfilter(c)
+	return c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+end
+function cm.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1000)
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,1))
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Recover(tp,1000,REASON_EFFECT)
+	local g=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,e:GetHandler())
 	local ac=Duel.GetAttacker()
-	if Duel.NegateAttack() and ac:IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) and Duel.NegateAttack() then
 		Duel.BreakEffect()
-		Duel.SendtoHand(ac,nil,REASON_EFFECT)
+		local sg=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,e:GetHandler())
+		Duel.HintSelection(sg)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
 	end
 end

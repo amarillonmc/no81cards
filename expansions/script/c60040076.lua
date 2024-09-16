@@ -22,7 +22,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	local g=Duel.GetFieldGroup(p,LOCATION_HAND,0):Select(tp,1,1,nil)
 	if g:GetCount()==0 then return end
-	Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT)
-	Duel.BreakEffect()
-	Duel.Draw(p,1,REASON_EFFECT)
+	if Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT)~=0 then
+		local num=1
+		local dnum=Duel.GetMatchingGroupCount(nil,tp,LOCATION_DECK,0,nil)
+		local g1=Duel.GetDecktopGroup(tp,dnum)
+		local g2=Duel.GetDecktopGroup(tp,dnum-num)
+		for c in aux.Next(g2) do
+			g1:RemoveCard(c)
+		end
+		Duel.SendtoHand(g1,nil,REASON_EFFECT)
+	end
 end

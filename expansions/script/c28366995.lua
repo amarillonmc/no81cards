@@ -7,8 +7,8 @@ function c28366995.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,28366995)
 	e1:SetCondition(c28366995.recon)
 	e1:SetTarget(c28366995.retg)
@@ -29,7 +29,6 @@ function c28366995.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_BE_MATERIAL)
 	e3:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
-	e3:SetCondition(c28366995.indcon)
 	e3:SetOperation(c28366995.indop)
 	c:RegisterEffect(e3)
 end
@@ -48,8 +47,8 @@ function c28366995.cfilter(c,tp)
 end
 function c28366995.reop(e,tp,eg,ep,ev,re,r,rp)
 	local mg=e:GetHandler():GetMaterial()
-	if Duel.Recover(tp,1000,REASON_EFFECT)>0 and Duel.GetLP(tp)>=10000 and mg:IsExists(c28366995.cfilter,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(28366995,0)) then
-		Duel.BreakEffect()
+	Duel.Recover(tp,1000,REASON_EFFECT)
+	if Duel.GetLP(tp)>=10000 and mg:IsExists(c28366995.cfilter,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(28366995,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tg=mg:Filter(c28366995.cfilter,nil,tp):Select(tp,1,1,nil)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
@@ -73,9 +72,6 @@ function c28366995.thop(e,tp,eg,ep,ev,re,r,rp)
 		local lp=Duel.GetLP(tp)
 		Duel.SetLP(tp,lp-2000)
 	end
-end
-function c28366995.indcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetReasonCard():IsType(TYPE_FUSION+TYPE_XYZ+TYPE_LINK)
 end
 function c28366995.indop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

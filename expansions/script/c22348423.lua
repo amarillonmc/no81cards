@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	aux.AddLinkProcedure(c,c22348423.matfilter,1,1)
 	--sset
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_SINGLE)
+	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetTarget(c22348423.sttg)
@@ -44,7 +44,7 @@ function c22348423.matfilter(c)
 	return c:IsLevelAbove(1) and c:IsSetCard(0x11a)
 end
 function c22348423.stfilter1(c)
-	return c:IsFaceup(1) and c:IsAttackAbove(1)
+	return c:IsFaceup()
 end
 function c22348423.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348423.stfilter,tp,LOCATION_DECK,0,1,nil,tp) and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_ONFIELD,0,1,nil,90173539) end

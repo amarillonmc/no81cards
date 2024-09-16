@@ -58,7 +58,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_MZONE,1,1,nil)
 	local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_SZONE,1,1,nil)
 	g:Merge(g2)
-	if g:GetCount()>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 and Duel.GetFlagEffect(tp,m)>=10 then
+	if g:GetCount()>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 and Duel.GetFlagEffect(tp,m)>=4 then
 		Duel.Draw(tp,3,REASON_EFFECT)
 	end
 end

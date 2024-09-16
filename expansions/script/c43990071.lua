@@ -10,6 +10,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
 	e1:SetCost(c43990071.rspcost)
+	e1:SetCondition(c43990071.rspcon)
 	e1:SetTarget(c43990071.rsptg)
 	e1:SetOperation(c43990071.rspop)
 	c:RegisterEffect(e1)
@@ -24,6 +25,9 @@ function cm.initial_effect(c)
 	e2:SetOperation(c43990071.stop)
 	c:RegisterEffect(e2)
 	
+end
+function c43990071.rspcon(e,tp,eg,ep,ev,re,r,rp)
+	return not eg:IsContains(e:GetHandler())
 end
 function c43990071.rscfilter(c)
 	return c:IsRace(RACE_ILLUSION) and c:IsAbleToGraveAsCost()

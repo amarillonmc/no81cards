@@ -32,7 +32,6 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.sumop)
 	c:RegisterEffect(e1)
 end
-cm.VHisc_DragonCovenant=true
 
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

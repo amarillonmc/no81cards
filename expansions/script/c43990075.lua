@@ -52,7 +52,7 @@ function c43990075.spcfilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_ILLUSION)
 end
 function c43990075.rspcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c43990075.spcfilter,1,nil)
+	return eg:IsExists(c43990075.spcfilter,1,nil) and not eg:IsContains(e:GetHandler())
 end
 function c43990075.rsptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

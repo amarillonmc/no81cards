@@ -35,7 +35,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then
 			Duel.BreakEffect()
 			local dg=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_SZONE,0,nil,60040052):Select(tp,1,1,nil)
-			Duel.Destroy(dg,REASON_EFFECT)
+			if  Duel.Destroy(dg,REASON_EFFECT)~=0 then
+				Duel.Draw(tp,1,REASON_EFFECT)
+			end
+			
 		end
 	end
 end

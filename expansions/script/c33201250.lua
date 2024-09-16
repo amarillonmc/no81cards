@@ -19,10 +19,10 @@ function VHisc_Dragonk.rmeq(ce,cid)
 	ce:RegisterEffect(e3)
 end
 function VHisc_Dragonk.eqof(c)
-	return c:IsFaceup() and c.VHisc_DragonCovenant
+	return c:IsFaceup() and c:IsSetCard(0xa327)
 end
 function VHisc_Dragonk.eqfilter(c)
-	return c.VHisc_DragonRelics and c:IsType(TYPE_EQUIP)
+	return c:IsSetCard(0xc327) and c:IsType(TYPE_EQUIP)
 end
 function VHisc_Dragonk.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and VHisc_Dragonk.eqof(chkc) end
@@ -49,7 +49,7 @@ function VHisc_Dragonk.eqop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetValue(LOCATION_DECKSHF)
 				ec:RegisterEffect(e1,true)
 			end
-			local g=Duel.GetMatchingGroup(function(ec) return ec:IsXyzSummonable(nil) and ec.VHisc_DragonCovenant end,tp,LOCATION_EXTRA,0,nil)
+			local g=Duel.GetMatchingGroup(function(ec) return ec:IsXyzSummonable(nil) and ec:IsSetCard(0xa327) end,tp,LOCATION_EXTRA,0,nil)
 			if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(33201250,3)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -80,7 +80,7 @@ function VHisc_Dragonk.dthcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
 function VHisc_Dragonk.dthfilter(c)
-	return ((c.VHisc_DragonCovenant and c:IsType(TYPE_MONSTER) and not c:IsLevel(2)) or (c.VHisc_DragonRelics and c:IsType(TYPE_EQUIP))) and c:IsAbleToHand() and c:IsAbleToGrave()
+	return ((c:IsSetCard(0xa327) and c:IsType(TYPE_MONSTER) and not c:IsLevel(2)) or (c:IsSetCard(0xc327) and c:IsType(TYPE_EQUIP))) and c:IsAbleToHand() and c:IsAbleToGrave()
 end
 function VHisc_Dragonk.dthtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -127,10 +127,10 @@ function VHisc_Dragonk.eqa(ce)
 	ce:RegisterEffect(e5)
 end
 function VHisc_Dragonk.eqlimit(e,c)
-	return c.VHisc_DragonCovenant
+	return c:IsSetCard(0xa327)
 end
 function VHisc_Dragonk.eqft(c)
-	return c:IsFaceup() and c.VHisc_DragonCovenant
+	return c:IsFaceup() and c:IsSetCard(0xa327)
 end
 function VHisc_Dragonk.eqatg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and VHisc_Dragonk.eqft(chkc) end
@@ -161,7 +161,7 @@ end
 
 
 ------------------------------XYZ summon rule------------------------------
-function VHisc_Dragonk.xyzsm(ce,cid) 
+function VHisc_Dragonk.xyzsm(ce,ccode) 
 	ce:EnableReviveLimit()  
 	--special summon rule
 	local e0=Effect.CreateEffect(ce)
@@ -169,7 +169,7 @@ function VHisc_Dragonk.xyzsm(ce,cid)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
-	e0:SetLabel(cid)
+	e0:SetLabel(ccode)
 	e0:SetCondition(VHisc_Dragonk.spcon)
 	e0:SetOperation(VHisc_Dragonk.spop)
 	e0:SetValue(SUMMON_TYPE_XYZ)
@@ -185,18 +185,20 @@ function VHisc_Dragonk.xyzsm(ce,cid)
 	ce:RegisterEffect(e10)
 end
 --xyz
-function VHisc_Dragonk.ovfilter(c,catt)
-	return c:IsFaceup() and c.VHisc_DragonCovenant and c:IsAttribute(catt) and c:IsLevel(4) and c:GetEquipGroup():IsExists(function(ec) return ec.VHisc_DragonRelics end,1,nil)
+function VHisc_Dragonk.ovfilter(c,code)
+	return c:IsFaceup() and c:IsCode(code) and c:GetEquipGroup():IsExists(function(ec) return ec:IsSetCard(0xc327) end,1,nil)
 end
 function VHisc_Dragonk.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local id=e:GetLabel()
-	return Duel.GetFlagEffect(tp,id)==0 and Duel.IsExistingMatchingCard(VHisc_Dragonk.ovfilter,tp,LOCATION_MZONE,0,1,nil,c:GetOriginalAttribute())
+	local code=e:GetLabel()
+	local id=e:GetHandler():GetOriginalCode()
+	return Duel.GetFlagEffect(tp,id)==0 and Duel.IsExistingMatchingCard(VHisc_Dragonk.ovfilter,tp,LOCATION_MZONE,0,1,nil,code)
 end
 function VHisc_Dragonk.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local id=e:GetLabel()
-	local g=Duel.SelectMatchingCard(tp,VHisc_Dragonk.ovfilter,tp,LOCATION_MZONE,0,1,1,nil,c:GetOriginalAttribute())
+	local code=e:GetLabel()
+	local id=e:GetHandler():GetOriginalCode()
+	local g=Duel.SelectMatchingCard(tp,VHisc_Dragonk.ovfilter,tp,LOCATION_MZONE,0,1,1,nil,code)
 	local mc=g:GetFirst()
 	local mg=mc:GetOverlayGroup()
 	local eqg=mc:GetEquipGroup()
@@ -291,6 +293,16 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)
+	--cannot activate effect
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e5:SetRange(LOCATION_FZONE)
+	e5:SetTargetRange(0,1)
+	e5:SetCondition(cm.actlimcon)
+	e5:SetValue(1)
+	c:RegisterEffect(e5)
 	--indes
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -317,11 +329,16 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
 end
+function cm.actlimcon(e)
+	local ph=Duel.GetCurrentPhase()
+	local tp=e:GetHandlerPlayer()
+	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+end
 function cm.cfilter(c,tp)
-	return c:IsFaceup() and c.VHisc_DragonCovenant and c:IsControler(tp)
+	return c:IsFaceup() and c:IsSetCard(0xa327) and c:IsControler(tp)
 end
 function cm.thfilter(c)
-	return c:IsAbleToHand() and (c.VHisc_DragonCovenant or c.VHisc_DragonRelics)
+	return c:IsAbleToHand() and (c:IsSetCard(0xa327) or c:IsSetCard(0xc327))
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp)

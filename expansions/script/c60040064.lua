@@ -90,7 +90,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	for i=1,x do
 		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 		local num=Duel.GetFlagEffect(tp,m)
-		if num==3 or num==6 or num==9 then
+		if num==3 or num==5 or num==7 then
 			Duel.RaiseEvent(c,EVENT_CUSTOM+m,e,0,tp,tp,0)
 		end
 	end

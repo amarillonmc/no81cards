@@ -38,7 +38,6 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.drop)
 	VHisc_Dragonk.eqgef(c,e2)
 end
-cm.VHisc_DragonRelics=true
 
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():GetAttack()>0 and re:GetActivateLocation()==LOCATION_MZONE and re:GetHandler():IsLocation(LOCATION_MZONE)
@@ -47,6 +46,7 @@ function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1)
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,1))
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
@@ -57,7 +57,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:GetFirst()
 		Duel.ConfirmCards(1-tp,tc)
 		local rc=re:GetHandler()
-		if tc.VHisc_DragonRelics or tc.VHisc_DragonCovenant and rc:IsLocation(LOCATION_MZONE) and rc:GetAttack()>0 then
+		if tc:IsSetCard(0xa327) or tc:IsSetCard(0xc327) and rc:IsLocation(LOCATION_MZONE) and rc:GetAttack()>0 then
 			local e3=Effect.CreateEffect(c)
 			e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e3:SetType(EFFECT_TYPE_SINGLE)

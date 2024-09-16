@@ -31,7 +31,6 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.posop)
 	c:RegisterEffect(e1)
 end
-cm.VHisc_DragonCovenant=true
 
 function cm.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and chkc:IsCanChangePosition() end

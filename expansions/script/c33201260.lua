@@ -41,7 +41,6 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.tgop)
 	c:RegisterEffect(e2)
 end
-cm.VHisc_DragonCovenant=true
 
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)

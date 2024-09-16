@@ -49,6 +49,7 @@ function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return  e:GetHandler():IsAttackAbove(1000) and Duel.IsExistingTarget(cm.rmfilter,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectTarget(tp,cm.rmfilter,tp,0,LOCATION_MZONE,1,1,nil)
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,1))
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)

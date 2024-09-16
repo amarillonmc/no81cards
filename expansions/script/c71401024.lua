@@ -16,7 +16,7 @@ function c71401024.initial_effect(c)
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71401024,0))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_TOEXTRA+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_LEAVE_DECK)
@@ -49,18 +49,20 @@ function c71401024.filter2d(c)
 end
 function c71401024.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c71401024.filter2a,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	--[[
 	local g=Duel.GetMatchingGroup(tp,c71401024.filter2a,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	--]]
 end
 function c71401024.op2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,c71401024.filter2a,tp,LOCATION_REMOVED,0,1,1,nil)
 	if #g>0 then
 		local cg=g:Filter(c71401024.filter2b,nil)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		if cg:GetCount()>0 then Duel.ConfirmCards(1-tp,cg) end
 		local mg=Duel.GetMatchingGroup(c71401024.filter2d,tp,LOCATION_EXTRA,0,nil)
-		if g:IsExists(Card.IsLocation,1,nil,LOCATION_HAND)
+		if g:IsExists(Card.IsLocation,1,nil,LOCATION_HAND+LOCATION_EXTRA)
 			and Duel.IsExistingMatchingCard(c71401024.filter2c,tp,LOCATION_MZONE,0,1,nil)
 			and mg:GetCount()>0	and Duel.SelectYesNo(tp,aux.Stringid(71401024,1)) then
 			Duel.BreakEffect()

@@ -40,7 +40,6 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.operation)
 	c:RegisterEffect(e2)
 end
-cm.VHisc_DragonCovenant=true
 
 function cm.atklimit(e,c)
 	return c==e:GetHandler()

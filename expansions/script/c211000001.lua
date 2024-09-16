@@ -1,4 +1,4 @@
---肃声的宣告者 神巫
+--肃声的宣告者 萨菲拉
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--search

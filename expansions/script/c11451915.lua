@@ -62,7 +62,7 @@ function cm.lhfilter(c,pc)
 end
 function cm.lefilter(c,pc)
 	local tp=pc:GetControler()
-	return Duel.GetLocationCountFromEx(tp,tp,c)>0
+	return Duel.GetLocationCountFromEx(tp,tp,c,TYPE_PENDULUM)>0
 end
 function cm.fselect(g,lv,lock1,lock2,c)
 	--if lock2 and not g:IsContains(lock2) then return false end
@@ -88,9 +88,9 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		if c:GetFlagEffect(m+1)>0 then return false end
 		local loc=0
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>-1 then loc=loc+LOCATION_HAND end
-		if Duel.GetLocationCountFromEx(tp)>-1 then loc=loc+LOCATION_EXTRA end
+		if Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)>-1 then loc=loc+LOCATION_EXTRA end
 		if (c:IsLocation(LOCATION_EXTRA) and c:GetFlagEffect(m)>0) or loc==0 or not c:IsLocation(loc) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,false,false) then return false end
-		local lock1=(c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_MZONE)==0) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp)==0)
+		local lock1=(c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_MZONE)==0) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)==0)
 		local lock2=false
 		if rpz==nil and lpz==nil then
 			local z1=Duel.CheckLocation(tp,LOCATION_SZONE,0)
@@ -142,7 +142,7 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 	end
 	c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
-	local lock1=(c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_MZONE)==0) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp)==0)
+	local lock1=(c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_MZONE)==0) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)==0)
 	local lock2=false
 	local sg=Group.CreateGroup()
 	if rpz==nil and lpz==nil then
@@ -195,6 +195,7 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 		Duel.MoveToField(sc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
+	cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
@@ -207,7 +208,7 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 	if lscale>rscale then lscale,rscale=rscale,lscale end
 	local loc=0
 	local ft1=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local ft2=Duel.GetLocationCountFromEx(tp)
+	local ft2=Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)
 	if ft1>0 then loc=loc|LOCATION_HAND end
 	if ft2>0 then loc=loc|LOCATION_EXTRA end
 	if loc==0 then return false end
@@ -236,7 +237,6 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 	else
 		tc.pendulum_rule[tc]:SetLabel(1)
 	end
-	cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonRule(tp,tc,SUMMON_TYPE_PENDULUM)
 end
 function cm.effcon(e,tp,eg,ep,ev,re,r,rp)

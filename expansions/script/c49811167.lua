@@ -29,7 +29,7 @@ function c49811167.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c49811167.matfilter(c)
-	return c:IsSummonType(SUMMON_TYPE_NORMAL) and c:IsLinkRace(RACE_INSECT) and c:IsLinkAttribute(ATTRIBUTE_EARTH)
+	return c:IsLinkRace(RACE_INSECT) and c:IsLinkAttribute(ATTRIBUTE_EARTH)
 end
 function c49811167.costfilter(c)
 	return (c:IsRace(RACE_INSECT) and c:IsAttribute(ATTRIBUTE_EARTH)) and not c:IsPublic()
@@ -48,7 +48,7 @@ function c49811167.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>ct-1 end
 end
 function c49811167.milfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsCode(49811164,49811166) and c:IsAbleToHand()
 end
 function c49811167.thop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
@@ -57,13 +57,13 @@ function c49811167.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,ct)
 	if g:GetCount()>0 then
 		Duel.DisableShuffleCheck()
-		if g:IsExists(c49811167.milfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(49811167,3)) then
+		if g:IsExists(c49811167.milfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(49811167,2)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=g:FilterSelect(tp,c49811167.milfilter,1,1,nil)
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,sg)
 			Duel.ShuffleHand(tp)
-			ct=g:Sub(sg)
+			ct=ct-1
 		end
 		if ct>0 then
 		Duel.SortDecktop(tp,tp,ct)
@@ -75,10 +75,10 @@ function c49811167.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c49811167.cfilter(c,tp)
-	return c:IsSummonPlayer(1-tp)
+	return c:IsControler(1-tp)
 end
 function c49811167.tgcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c49811167.cfilter,1,nil,tp) and aux.exccon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c49811167.cfilter,1,nil,tp)
 end
 function c49811167.tgfilter(c)
 	return c:IsRace(RACE_INSECT) and c:IsAttribute(ATTRIBUTE_EARTH) and c:IsAbleToGrave()
@@ -93,11 +93,6 @@ function c49811167.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0 and tc:GetBaseAttack()>0 then
 		Duel.Recover(tp,tc:GetBaseAttack(),REASON_EFFECT)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CANNOT_TRIGGER)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
 	end
 end	
 

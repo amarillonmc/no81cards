@@ -3,23 +3,11 @@ local m=13000749
 local cm=_G["c"..m]
 function c13000749.initial_effect(c)
 c:EnableReviveLimit()
-	 local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCondition(cm.adcon)
-	e1:SetCost(cm.adcost)
-	e1:SetCountLimit(1,m)
-	e1:SetOperation(cm.adop)
-	c:RegisterEffect(e1)
-	local e4=e1:Clone()
-	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e4)
+	 
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_HAND)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1,m)
 	e2:SetCost(cm.cost)
 	e2:SetTarget(cm.tg)
@@ -70,15 +58,18 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		if tg1 then tg:Merge(tg1) end
 		if tg:GetCount()>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			tg=tg:Select(tp,1,1,nil)
-			local tc=tg:GetFirst()
-			if tc then
+			tg=tg:FilterSelect(tp,cm.suc,1,1,nil,mg,tp,e)
+			if #tg~=0 then
+				local tc=tg:GetFirst()
 				mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
 				if tc.mat_filter then
 					mg=mg:Filter(tc.mat_filter,tc,tp)
 				else
 					mg:RemoveCard(tc)
 				end
+				-- if not mg:CheckSubGroup(aux.RitualCheck,1,1,tp,tc:GetLevel(),tp,tc,tc:GetLevel(),"Greater") then
+				-- 	return
+				-- end
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 				aux.GCheckAdditional=aux.RitualCheckAdditional(tc,tc:GetLevel(),"Greater")
 				local mat=mg:SelectSubGroup(tp,aux.RitualCheck,true,1,tc:GetLevel(),tp,tc,tc:GetLevel(),"Greater")
@@ -103,6 +94,20 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.ShuffleDeck(tp)
 end
+function cm.suc(c,mg2,tp,e)
+	if bit.band(c:GetType(),0x81)~=0x81 or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
+	local mg=mg2:Filter(Card.IsCanBeRitualMaterial,c,c)
+	if not pcall(function()
+		if c.mat_filter then
+			mg=mg:Filter(c.mat_filter,c,tp)
+		else
+			mg:RemoveCard(c)
+		end
+	end) then
+		mg:RemoveCard(c)
+	end
+	return mg:CheckSubGroup(aux.RitualCheck,1,1,tp,c,c:GetLevel(),"Greater")
+end
 function cm.hspgcheck(td,lv)   
 	return td:CheckWithSumGreater(Card.GetLevel,lv)
 end
@@ -124,10 +129,7 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsLocation(LOCATION_HAND) end
 	local c=e:GetHandler()
-	local b1=true
-	local b2=e:GetHandler():IsPublic() and c:IsAbleToRemove()
-	local op=aux.SelectFromOptions(tp,{b1,aux.Stringid(m,0)},{b2,aux.Stringid(m,1)})
-	if op==1 then
+ 
 		Duel.SendtoHand(e:GetHandler(),1-tp,REASON_COST)
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(66)
@@ -136,18 +138,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 		e1:SetReset(RESET_EVENT+0x1fe0000)
 		e:GetHandler():RegisterEffect(e1)
-	end
-	if op==2 then
-		Duel.Remove(c,POS_FACEUP,REASON_EFFECT)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetCountLimit(1)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabelObject(c)
-		e1:SetOperation(cm.op3)
-		Duel.RegisterEffect(e1,tp)
-	end
+	
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

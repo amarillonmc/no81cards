@@ -4,8 +4,14 @@ function c71400043.initial_effect(c)
 	c:SetSPSummonOnce(71400043)
 	--link summon
 	aux.AddLinkProcedure(c,c71400043.matfilter,1,1,yume.YumeCheck(c))
+	c:EnableReviveLimit()
 	--summon limit
-	yume.AddYumeSummonLimit(c,1)
+	local el1=Effect.CreateEffect(c)
+	el1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	el1:SetType(EFFECT_TYPE_SINGLE)
+	el1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	el1:SetValue(c71400043.splimit)
+	c:RegisterEffect(el1)
 	--tohand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71400043,0))
@@ -56,6 +62,12 @@ function c71400043.initial_effect(c)
 end
 function c71400043.matfilter(c)
 	return c:IsSetCard(0x714) and not c:IsLinkType(TYPE_LINK)
+end
+function c71400043.gyfilter(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x7714) and c:IsType(TYPE_FIELD)
+end
+function c71400043.splimit(e,se,sp,st,pos,tp)
+	return yume.YumeCheck(e,se,sp) and Duel.IsExistingMatchingCard(c71400043.gyfilter,sp,LOCATION_GRAVE,0,1,nil)
 end
 function c71400043.con1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and not yume.IsRust(tp)

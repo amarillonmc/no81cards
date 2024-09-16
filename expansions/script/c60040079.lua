@@ -39,7 +39,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.ntlfil,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local num=Duel.GetMatchingGroupCount(cm.ntlfil,tp,LOCATION_ONFIELD,0,e:GetHandler())
+	local num=Duel.GetMatchingGroupCount(cm.ntlfil,tp,LOCATION_ONFIELD,0,e:GetHandler())*2
 	local a=0
 	local b=0
 	local c=0
@@ -64,7 +64,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Damage(1-tp,400,REASON_EFFECT)
 			i=i+1
 		elseif i==3 then
-			Duel.Draw(tp,1,REASON_EFFECT)
+			Duel.Draw(tp,2,REASON_EFFECT)
 			i=1
 		end
 		num=num-1

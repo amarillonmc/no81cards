@@ -34,6 +34,7 @@ function c28316347.initial_effect(c)
 	e4:SetTarget(c28316347.rectg)
 	e4:SetOperation(c28316347.recop)
 	c:RegisterEffect(e4)
+	c28316347.recover_effect=e4
 end
 function c28316347.hspcon(e,c)
 	if c==nil then return true end
@@ -65,7 +66,6 @@ function c28316347.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
 		if tc:IsAttribute(ATTRIBUTE_EARTH) then
-			Duel.BreakEffect()
 			Duel.Recover(tp,1000,REASON_EFFECT)
 		end
 	end
@@ -75,42 +75,27 @@ function c28316347.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
 function c28316347.hkfilter(c)
-	return c:IsSetCard(0x286) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x283) and c:IsLevel(4) and c:IsAbleToHand()
 end
 function c28316347.recop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Recover(tp,1000,REASON_EFFECT)>0 and Duel.GetLP(tp)>=10000 then
+	Duel.Recover(tp,1000,REASON_EFFECT)
+	if Duel.GetLP(tp)>=10000 then
 		local b1=Duel.IsExistingMatchingCard(c28316347.hkfilter,tp,LOCATION_DECK,0,1,nil)
 		local b2=Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,REASON_EFFECT)
+		local b3=true
 		if not (b1 or b2) then return end
-		local off=1
-		local ops,opval={},{}
-		if b1 then
-			ops[off]=aux.Stringid(28316347,0)
-			opval[off]=0
-			off=off+1
-		end
-		if b2 then
-			ops[off]=aux.Stringid(28316347,1)
-			opval[off]=1
-			off=off+1
-		end
-		if true then
-			ops[off]=aux.Stringid(28316347,2)
-			opval[off]=2
-			off=off+1
-		end
-		local op=Duel.SelectOption(tp,table.unpack(ops))+1
-		local sel=opval[op]
-		if sel~=2 then Duel.BreakEffect() end
-		if sel==0 then
+		local op=aux.SelectFromOptions(tp,
+			{b1,aux.Stringid(28316347,0)},
+			{b2,aux.Stringid(28316347,1)},
+			{b3,aux.Stringid(28316347,2)})
+		if op==1 then
 			local lp=Duel.GetLP(tp)
 			Duel.SetLP(tp,lp-2000)
-			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local g=Duel.SelectMatchingCard(tp,c28316347.hkfilter,tp,LOCATION_DECK,0,1,1,nil)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
-		elseif sel==1 then
+		elseif op==2 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 			local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,REASON_EFFECT)
 			Duel.HintSelection(g)

@@ -38,18 +38,23 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(eg) do
 		if tc:IsType(TYPE_FUSION) then
 			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),id,0,0,0)
+			Duel.RegisterFlagEffect(1-tc:GetSummonPlayer(),id,0,0,0)
 		end
 		if tc:IsType(TYPE_SYNCHRO) then
 			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),id+o*10000,0,0,0)
+			Duel.RegisterFlagEffect(1-tc:GetSummonPlayer(),id+o*10000,0,0,0)
 		end
 		if tc:IsType(TYPE_XYZ) then
 			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),id+o*20000,0,0,0)
+			Duel.RegisterFlagEffect(1-tc:GetSummonPlayer(),id+o*20000,0,0,0)
 		end
 		if tc:IsType(TYPE_LINK) then
 			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),id+o*30000,0,0,0)
+			Duel.RegisterFlagEffect(1-tc:GetSummonPlayer(),id+o*30000,0,0,0)
 		end
 		if tc:IsType(TYPE_PENDULUM) then
 			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),id+o*40000,0,0,0)
+			Duel.RegisterFlagEffect(1-tc:GetSummonPlayer(),id+o*40000,0,0,0)
 		end
 	end
 end
@@ -61,13 +66,9 @@ function s.sumcon(e)
 		and Duel.GetFlagEffect(tp,id+o*40000)>0)
 end
 function s.spfilter(c,e,tp)
-	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and not Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil,c)
-end
-function s.cfilter(c,ec)
-	local ect=bit.band(ect:GetType(),TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_PENDULUM+TYPE_LINK)
-	local ct=bit.band(ct:GetType(),TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_PENDULUM+TYPE_LINK)
-	return c:IsFaceupEx() and bit.band(ect,ct)~=0
+	return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+		and (c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		or c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp))
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
@@ -119,9 +120,30 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetLabelObject()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tc=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp):GetFirst()
-	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local g=Duel.GetMatchingGroup(s.tfilter,tp,LOCATION_MZONE,0,nil)
-		if g:IsExists(s.skipfilter,1,nil,g) and not Duel.IsPlayerAffectedByEffect(1-tp,EFFECT_SKIP_TURN) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+	if tc then
+		local off=1
+		local ops={}
+		local opval={}
+		if tc:IsCanBeSpecialSummoned(e,0,tp,false,false) then
+			ops[off]=aux.Stringid(id,3)
+			opval[off-1]=1
+			off=off+1
+		end
+		if tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp) then
+			ops[off]=aux.Stringid(id,4)
+			opval[off-1]=2
+			off=off+1
+		end
+		if off==1 then return end
+		local op=Duel.SelectOption(tp,table.unpack(ops))
+		local res=false
+		if opval[op]==1 then
+			res=tc:IsCanBeSpecialSummoned(e,0,tp,false,false)~=0
+		elseif opval[op]==2 then
+			res=tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp)~=0
+		end
+		local g=Duel.GetMatchingGroup(s.tfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		if res and g:IsExists(s.skipfilter,1,nil,g) and not Duel.IsPlayerAffectedByEffect(1-tp,EFFECT_SKIP_TURN) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD)
 			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)

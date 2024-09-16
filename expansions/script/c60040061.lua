@@ -76,6 +76,6 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 	if ct==5 then
 		Duel.BreakEffect()
-		Duel.Draw(tp,1,REASON_EFFECT)
+		Duel.Draw(tp,2,REASON_EFFECT)
 	end
 end

@@ -2,7 +2,7 @@
 local m=49811166
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:SetUniqueOnField(1,0,m)
+	--c:SetUniqueOnField(1,0,m)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -13,17 +13,19 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetCountLimit(1,49811166)
 	e2:SetCondition(cm.handcon)
 	c:RegisterEffect(e2)
 	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,2))
+	e3:SetDescription(aux.Stringid(m,0))
 	e3:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1)
 	e3:SetCost(cm.drcost)
+	e3:SetTarget(cm.drtg)
 	e3:SetOperation(cm.drop)
 	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
@@ -36,7 +38,6 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.chtg1)
 	e4:SetOperation(cm.chop1)
 	c:RegisterEffect(e4)
-	
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(m,2))
 	e5:SetCategory(CATEGORY_TOHAND)
@@ -86,7 +87,7 @@ function cm.chop2(e,tp,eg,ep,ev,re,r,rp)
 	if bc>0 and g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local tg=g:Select(tp,1,bc,nil)
-		Duel.SendtoHand(tg,REASON_EFFECT)
+		Duel.SendtoHand(tg,tp,REASON_EFFECT)
 	end
 end
 
@@ -110,13 +111,21 @@ function cm.drfilter2(c,tc)
 end
 
 function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.drfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) end
-	local g=Duel.GetMatchingGroup(cm.drfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil)
+	e:SetLabel(100)
+	if chk==0 then return true end
+end
+
+function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetLabel()==100 and Duel.IsExistingMatchingCard(cm.drfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_MZONE,0,1,nil) end
+	e:SetLabel(0)
+	local g=Duel.GetMatchingGroup(cm.drfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_MZONE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local tc=g:Select(tp,1,1,nil):GetFirst()
 	Duel.Remove(tc,POS_FACEUP,REASON_COST)
 	e:SetLabelObject(tc)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
+
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	if tc==nil then return end

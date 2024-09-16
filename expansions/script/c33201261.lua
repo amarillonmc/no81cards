@@ -44,7 +44,6 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
 end
-cm.VHisc_DragonCovenant=true
 
 function cm.poscon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
@@ -69,7 +68,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousLocation(LOCATION_ONFIELD)
 end
 function cm.thft(c)
-	return c.VHisc_DragonCovenant and c:IsAbleToHand()
+	return c:IsSetCard(0xa327) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thft,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():IsAbleToExtra() end

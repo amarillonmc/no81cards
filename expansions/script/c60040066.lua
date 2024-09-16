@@ -58,7 +58,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_HAND,0,nil,0x645)
 	local cg=Group.CreateGroup()
-	for i=1,3 do
+	for i=1,2 do
 		local sg=g:Select(tp,1,1,nil)
 		g:Remove(Card.IsCode,nil,sg:GetFirst():GetCode())
 		cg:Merge(sg)
@@ -109,7 +109,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	for i=1,x do
 		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 		local num=Duel.GetFlagEffect(tp,m)
-		if num>=10 then
+		if num>=5 then
 			Duel.RaiseEvent(c,EVENT_CUSTOM+m,nil,0,tp,tp,0)
 		end
 	end

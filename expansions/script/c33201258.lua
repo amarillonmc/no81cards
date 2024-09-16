@@ -26,7 +26,7 @@ function cm.initial_effect(c)
 	e0:SetRange(LOCATION_EXTRA)
 	e0:SetCondition(cm.spcon)
 	e0:SetOperation(cm.spop)
-	e0:SetValue(SUMMON_TYPE_XYZ)
+	e0:SetValue(SUMMON_TYPE_SPECIAL)
 	c:RegisterEffect(e0)
 	--tohand
 	local e1=Effect.CreateEffect(c)
@@ -35,68 +35,51 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.thcon)
+ --   e1:SetCondition(cm.thcon)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
 end
-cm.VHisc_DragonCovenant=true
 
 --xyz
-function cm.ovfilter(c)
-	return c:IsFaceup() and c.VHisc_DragonCovenant and c:IsLevel(2)
-end
-function cm.gyfilter(c)
-	return c.VHisc_DragonCovenant and c:IsType(TYPE_MONSTER)
+function cm.relfilter(c)
+	return (c:IsSetCard(0xa327) or c:IsSetCard(0xc327)) and c:IsAbleToGrave()
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(cm.gyfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	return Duel.GetFlagEffect(tp,m)==0 and Duel.IsExistingMatchingCard(cm.ovfilter,tp,LOCATION_MZONE,0,1,nil) and g:GetClassCount(Card.GetCode)>4
+	return Duel.GetFlagEffect(tp,m)==0 and Duel.IsExistingMatchingCard(cm.relfilter,tp,LOCATION_HAND,0,1,nil)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.SelectMatchingCard(tp,cm.ovfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	local mc=g:GetFirst()
-	local mg=mc:GetOverlayGroup()
-	if mg:GetCount()~=0 then
-		Duel.Overlay(c,mg)
-	end
-	c:SetMaterial(g)
-	Duel.Overlay(c,g)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local sg=Duel.SelectMatchingCard(tp,cm.relfilter,tp,LOCATION_HAND,0,1,2,nil)
+	local gc=sg:GetCount()
+	Duel.Hint(HINT_CARD,1-tp,m)
+	Duel.SendtoGrave(sg,REASON_COST)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+RESET_PHASE+PHASE_END,nil,1,1)
+	if gc==2 then Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1) end
 	Duel.Hint(24,0,aux.Stringid(m,0))
+	local fc=e:GetHandler():GetFlagEffect(m)
 end
 
-function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
-end
+
 function cm.thfilter(c)
-	return ((c.VHisc_DragonCovenant and not c:IsLevel(2)) or (c.VHisc_DragonRelics and c:IsType(TYPE_EQUIP))) and c:IsAbleToHand()
+	return (c:IsSetCard(0xa327) or c:IsSetCard(0xc327) or c:IsCode(33201250)) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil)  end
+	local fc=e:GetHandler():GetFlagEffect(m)
+	if chk==0 then return fc>0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp) 
+	local gc=Duel.GetFlagEffect(tp,m)
+	if gc==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,gc,nil)
 	if g:GetCount()>0 then
 		if Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
 			Duel.ConfirmCards(1-tp,g)
-			Duel.BreakEffect()
-			--atk up
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_FIELD)
-			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetTargetRange(LOCATION_MZONE,0)
-			e1:SetTarget(cm.atkfilter)
-			e1:SetValue(400)
-			Duel.RegisterEffect(e1,tp)
 		end
 	end
-end
-function cm.atkfilter(e,c)
-	return c.VHisc_DragonCovenant and c:IsType(TYPE_MONSTER)
 end

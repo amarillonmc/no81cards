@@ -4,57 +4,62 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(49811164,0)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCondition(cm.condition1)
 	e1:SetCost(cm.cost1)
+	e1:SetCountLimit(1,49811164)
 	e1:SetTarget(cm.target1)
 	e1:SetOperation(cm.activate1)
 	c:RegisterEffect(e1)
 	--Grave Damage
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(49811164,1)
 	e2:SetCategory(CATEGORY_DAMAGE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCondition(aux.exccon)
-	e2:SetCost(cm.descost)
+	e2:SetCountLimit(1,49811164)
+	e2:SetCost(cm.cost2)
+	e2:SetTarget(cm.destg)
 	e2:SetOperation(cm.desop)
 	c:RegisterEffect(e2)
 end
-
 function cm.dmcostfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost() and c:IsLevelBelow(7) and c:IsRace(RACE_INSECT) and c:IsAttribute(ATTRIBUTE_EARTH) and c:GetTextAttack()>0
 end
-
 function cm.ffselect(g)
-	return aux.dncheck(g)
+	return g:GetClassCount(Card.GetOriginalCode)==#g
 end
-
-function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()
+function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(100) 
+	if chk==0 then return true end
+end
+function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 and e:GetLabel()==100 then return e:GetHandler():IsAbleToRemoveAsCost()
 		and Duel.IsExistingMatchingCard(cm.dmcostfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.GetMatchingGroup(cm.dmcostfilter,tp,LOCATION_GRAVE,0,nil)
-	g:SelectSubGroup(tp,cm.ffselect,false,1,g:GetCount())
-	local tc=g:GetFirst()
+	local tg=g:SelectSubGroup(tp,cm.ffselect,false,1,g:GetCount())
+	local tc=tg:GetFirst()
 	local toatk=0
 	while tc do
 		if tc:GetTextAttack()>0 then toatk=toatk+tc:GetTextAttack() end
-		tc=g:GetNext()
+		tc=tg:GetNext()
 	end
-	g:AddCard(e:GetHandler())
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	toatk = toatk/2
+	tg:AddCard(e:GetHandler())
+	Duel.Remove(tg,POS_FACEUP,REASON_COST)
 	e:SetLabel(toatk)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,toatk)
 end
-
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local toatk=e:GetLabel()
 	if toatk then
 		Duel.Damage(1-tp,toatk,REASON_EFFECT)
 	end
 end
-
 function cm.condition1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
@@ -109,6 +114,7 @@ function cm.activate1(e,tp,eg,ep,ev,re,r,rp)
 			local fid=e:GetHandler():GetFieldID()
 			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 			local e3=Effect.CreateEffect(c)
+			e3:SetDescription(49811164,2)
 			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e3:SetCode(EVENT_PHASE+PHASE_END)
 			e3:SetCountLimit(1)

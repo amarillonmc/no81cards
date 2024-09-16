@@ -37,7 +37,8 @@ function c49811157.operation(e,tp,eg,ep,ev,re,r,rp)
 	local ac=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 	local g=Duel.GetMatchingGroup(Card.IsCode,tp,0,LOCATION_EXTRA,nil,ac)
 	if g:GetCount()>0 then
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+		local tg=g:Select(tp,1,1,nil)
+		Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)
 		Duel.ShuffleExtra(1-tp)
 	end
 end

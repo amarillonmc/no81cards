@@ -37,10 +37,9 @@ function cm.initial_effect(c)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
 end
-cm.VHisc_DragonCovenant=true
 
 function cm.eqfilter(c,ec,tp,eqg)
-	return c:IsType(TYPE_EQUIP) and c.VHisc_DragonRelics and c:CheckEquipTarget(ec) and c:CheckUniqueOnField(tp,LOCATION_SZONE) and not c:IsForbidden() and not eqg:IsExists(Card.IsCode,1,nil,c:GetCode())
+	return c:IsType(TYPE_EQUIP) and c:IsSetCard(0xc327) and c:CheckEquipTarget(ec) and c:CheckUniqueOnField(tp,LOCATION_SZONE) and not c:IsForbidden() and not eqg:IsExists(Card.IsCode,1,nil,c:GetCode())
 end
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local eqg=e:GetHandler():GetEquipGroup()
