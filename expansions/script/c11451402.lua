@@ -19,14 +19,14 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.costtg)
 	e2:SetOperation(cm.costop)
 	c:RegisterEffect(e2)
-	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
+	--Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
 	if not cm.global_check then
 		cm.global_check=true
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_CHAINING)
 		ge1:SetOperation(cm.checkop)
-		--Duel.RegisterEffect(ge1,0)
+		Duel.RegisterEffect(ge1,0)
 	end
 end
 cm.traveler_saga=true
@@ -49,7 +49,8 @@ function cm.costchk(e,te,tp)
 end
 function cm.costtg(e,te,tp)
 	e:SetLabelObject(te)
-	return te:GetHandler() and Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)~=0 and te:GetActivateLocation()&LOCATION_ONFIELD==0 --and not te:GetHandler():IsOnField() and not te:IsHasType(EFFECT_TYPE_ACTIVATE)
+	--Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)~=0
+	return te:GetHandler() and Duel.GetFlagEffect(tp,m)~=0 and not te:GetHandler():IsOnField() and not te:IsHasType(EFFECT_TYPE_ACTIVATE) --and te:GetActivateLocation()&LOCATION_ONFIELD==0
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	if cm[0] then return end
