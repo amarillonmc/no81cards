@@ -59,7 +59,7 @@ function s.pcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPublic()
 end
 function s.cfilter(c,ec)
-	return ((c:GetOriginalType()&TYPE_SPELL+TYPE_TRAP)>0 and c:IsSetCard(0x3a70) or c:IsLocation(LOCATION_ONFIELD) and ec:IsLocation(LOCATION_HAND) and ec:IsPublic()) and c:IsAbleToGraveAsCost()
+	return c:GetOriginalType()&(TYPE_SPELL+TYPE_TRAP)>0 and (c:IsSetCard(0x3a70) or c:IsLocation(LOCATION_ONFIELD) and ec:IsLocation(LOCATION_HAND) and ec:IsPublic()) and c:IsAbleToGraveAsCost()
 end
 function s.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

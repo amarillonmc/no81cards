@@ -20,7 +20,6 @@ function s.initial_effect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_CHAIN_SOLVING)
-	e2:SetCountLimit(1,id+100)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCondition(s.imncon)
 	e2:SetOperation(s.imnop)
@@ -114,7 +113,7 @@ end
 function s.imnop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(s.movefilter,tp,LOCATION_MZONE,0,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) and Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
+	if g:GetCount()>0 and Duel.GetFlagEffect(tp,id+100)==0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) and Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
 		Duel.Hint(HINT_CARD,0,id)
 		for tc in aux.Next(g) do
 			local e1=Effect.CreateEffect(c)
@@ -125,8 +124,10 @@ function s.imnop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 			e1:SetValue(s.efilter)
-			tc:RegisterEffect(e1)
+			tc:RegisterEffect(e1,true)
 		end
+		Duel.AdjustAll()
+		Duel.RegisterFlagEffect(tp,id+100,RESET_PHASE+PHASE_END,0,1)
 		Duel.RegisterFlagEffect(tp,12835102,RESET_PHASE+PHASE_END,0,1)
 	end
 end

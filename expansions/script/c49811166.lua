@@ -118,9 +118,8 @@ end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetLabel()==100 and Duel.IsExistingMatchingCard(cm.drfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_MZONE,0,1,nil) end
 	e:SetLabel(0)
-	local g=Duel.GetMatchingGroup(cm.drfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_MZONE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local tc=g:Select(tp,1,1,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,cm.drfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_MZONE,0,1,1,nil):GetFirst()
 	Duel.Remove(tc,POS_FACEUP,REASON_COST)
 	e:SetLabelObject(tc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
