@@ -57,19 +57,21 @@ function cm.xyzcheck(g)
 end
 function cm.sprcon(e,c)
 	if c==nil then return true end
-	return Duel.CheckRemoveOverlayCard(tp,1,0,2,REASON_EFFECT) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return Duel.CheckRemoveOverlayCard(e:GetHandlerPlayer(),1,0,2,REASON_EFFECT) and Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_MZONE)>0
 end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-   Duel.RemoveOverlayCard(tp,1,0,2,2,REASON_EFFECT)
+   Duel.RemoveOverlayCard(e:GetHandlerPlayer(),1,0,2,2,REASON_EFFECT)
+end
+function cm.tgfilter(c,e)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ) and not c:IsImmuneToEffect(e)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
-local c=e:GetHandler()
-	if Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_MZONE,0,1,c,TYPE_XYZ) then
-		local aa=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_MZONE,0,1,1,c,TYPE_XYZ):GetFirst()
+	local c=e:GetHandler()
+	if Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_MZONE,0,1,c,e) and c:IsCanOverlay() then
+		local aa=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_MZONE,0,1,1,c,e)
 		Duel.Overlay(aa,c)
 	end
 end
-
 
 
 

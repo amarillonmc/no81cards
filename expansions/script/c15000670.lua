@@ -64,10 +64,13 @@ function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)  
 	local g2=Duel.SelectMatchingCard(tp,cm.spr2filter,tp,LOCATION_MZONE,0,1,1,g1:GetFirst(),x,c)
 	g1:Merge(g2)
-	c:SetMaterial(g1) 
-	e:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	c:SetMaterial(g1)
+	local _IsActivated=Effect.IsActivated
+	Effect.IsActivated=aux.TRUE
+	--e:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	Duel.SendtoGrave(g1,REASON_COST)
-	e:SetType(EFFECT_TYPE_FIELD)
+	Effect.IsActivated=_IsActivated
+	--e:SetType(EFFECT_TYPE_FIELD)
 	Debug.Message("Her cries, call forth the storm.")
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

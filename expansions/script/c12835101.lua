@@ -80,12 +80,12 @@ function c12835101.initial_effect(c)
 	end
 end
 function c12835101.con0(e)
-	return Duel.GetFlagEffect(tp,12835101+1)==0
+	return Duel.GetFlagEffect(tp,12835101+100)==0
 end
 function c12835101.op0(e,tp,eg,ep,ev,re,r,rp)
 	for tp = 0,1 do
 		if Duel.GetCurrentPhase()==PHASE_END then
-		Duel.RegisterFlagEffect(tp,12835101+1,RESET_PHASE+PHASE_DRAW,0,1)
+		Duel.RegisterFlagEffect(tp,12835101+100,RESET_PHASE+PHASE_DRAW,0,1)
 		end
 		if Duel.IsPlayerAffectedByEffect(tp,12835101) then 
 		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,4,0,nil)
@@ -99,7 +99,7 @@ function c12835101.op0(e,tp,eg,ep,ev,re,r,rp)
 				Duel.SendtoGrave(ccg,REASON_RULE)
 				g=Duel.GetMatchingGroup(Card.IsFaceup,tp,4,0,nil)
 				goto a
-				end		
+				end	 
 			end
 			g=Duel.GetMatchingGroup(Card.IsFaceup,tp,4,0,nil)
 			if #g>0 then
@@ -108,7 +108,7 @@ function c12835101.op0(e,tp,eg,ep,ev,re,r,rp)
 				o[#o+1] = tc:GetCode()
 				end
 			c12835101_single_monster[tp+1] = o
-			end	
+			end 
 		end
 	end
 end

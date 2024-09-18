@@ -1,8 +1,8 @@
---古木寻斋
+-- 古木寻斋
 local m=12847555
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	--special summon rule
+	-- special summon rule
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
@@ -12,7 +12,7 @@ function cm.initial_effect(c)
 	e0:SetTarget(cm.sprtg)
 	e0:SetOperation(cm.sprop)
 	c:RegisterEffect(e0)
-	--
+	-- 
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e1:SetCode(EVENT_PREDRAW)
@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e1:SetOperation(cm.op)
 	c:RegisterEffect(e1)
-	--act limit
+	-- act limit
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetRange(LOCATION_MZONE)
@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	e2:SetTargetRange(0,1)
 	e2:SetValue(cm.aclimit)
 	c:RegisterEffect(e2)
-	--disable
+	-- disable
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_DISABLE)
@@ -38,7 +38,7 @@ function cm.initial_effect(c)
 	e3:SetTargetRange(0,LOCATION_ONFIELD)
 	e3:SetTarget(cm.distarget)
 	c:RegisterEffect(e3)
-	--disable effect
+	-- disable effect
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CHAIN_SOLVING)

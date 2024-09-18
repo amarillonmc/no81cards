@@ -2,6 +2,7 @@
 local cm,m,o=GetID()
 function cm.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
+	c:EnableReviveLimit()
 	--pendulum set
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)

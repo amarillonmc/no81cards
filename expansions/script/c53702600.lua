@@ -12,21 +12,37 @@ function cm.RabbitTeam(c)
 	e1:SetOperation(cm.RabbitTeamspop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
-	e2:SetRange(0xff)
-	e2:SetOperation(cm.RabbitTeamCheck)
-	e2:SetCountLimit(1,EFFECT_COUNT_CODE_DUEL+53755000)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+	e2:SetCondition(cm.RabbitTeamrecon)
+	e2:SetValue(LOCATION_DECK)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
-	e3:SetCondition(cm.RabbitTeamrecon)
-	e3:SetValue(LOCATION_DECK)
-	c:RegisterEffect(e3)
-	return e3
+	if not RabbitTeam_Check then
+		RabbitTeam_Check=true
+		local ge=Effect.GlobalEffect()
+		ge:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge:SetCode(EVENT_ADJUST)
+		ge:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)RabbitTeam_Place_Confirm_Check=false end)
+		Duel.RegisterEffect(ge,tp)
+		local f1=Duel.ConfirmDecktop
+		Duel.ConfirmDecktop=function(tp,ct)
+			if ct<5 and not RabbitTeam_Place_Confirm_Check then
+				local g=Duel.GetDecktopGroup(tp,ct)
+				local t={}
+				for tc in aux.Next(g) do for i=1,4 do if tc["Rabbit_Team_Number_"..i] and not SNNM.IsInTable(i,t) then table.insert(t,i) end end end
+				for _,v in ipairs(t) do Duel.RegisterFlagEffect(tp,53755000+v,RESET_PHASE+PHASE_END,0,1) end
+			end
+			RabbitTeam_Place_Confirm_Check=false
+			return f1(tp,ct)
+		end
+		local f2=Duel.MoveSequence
+		Duel.MoveSequence=function(...)
+			RabbitTeam_Place_Confirm_Check=true
+			return f2(...)
+		end
+	end
+	return e2
 end
 function cm.RabbitTeamspcon(e,c)
 	if c==nil then return true end
@@ -77,20 +93,6 @@ end
 function cm.RabbitTeamrecon(e)
 	local c=e:GetHandler()
 	return c:GetReasonPlayer()~=c:GetControler()
-end
-function cm.RabbitTeamCheck(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(0,53755000)>0 then return end
-	Duel.RegisterFlagEffect(0,53755000,0,0,0)
-	cm[55]=Duel.ConfirmDecktop
-	Duel.ConfirmDecktop=function(tp,ct)
-		if ct<5 then
-			local g=Duel.GetDecktopGroup(tp,ct)
-			local t={}
-			for tc in aux.Next(g) do for i=1,4 do if tc["Rabbit_Team_Number_"..i] and not SNNM.IsInTable(i,t) then table.insert(t,i) end end end
-			for _,v in ipairs(t) do Duel.RegisterFlagEffect(tp,53755000+v,RESET_PHASE+PHASE_END,0,1) end
-		end
-		return cm[55](tp,ct)
-	end
 end
 function cm.Global_in_Initial_Reset(c,t)
 	local le={Duel.IsPlayerAffectedByEffect(0,53702800)}
@@ -3465,8 +3467,10 @@ function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 	local sg=Group.CreateGroup()
 	local fg=Duel.GrabSelectedCard()
 	if #fg>max or min>max or #(g+fg)<min then return nil end
-	for tc in aux.Next(fg) do
-		fg:SelectUnselect(sg,tp,false,false,min,max)
+	if not check then
+		for tc in aux.Next(fg) do
+			fg:SelectUnselect(sg,tp,false,false,min,max)
+		end
 	end
 	sg:Merge(fg)
 	local mg=g-sg

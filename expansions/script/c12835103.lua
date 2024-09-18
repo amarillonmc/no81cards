@@ -58,8 +58,9 @@ end
 function s.pcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPublic()
 end
-function s.cfilter(c,ec)
-	return c:GetOriginalType()&(TYPE_SPELL+TYPE_TRAP)>0 and (c:IsSetCard(0x3a70) or c:IsLocation(LOCATION_ONFIELD) and ec:IsLocation(LOCATION_HAND) and ec:IsPublic()) and c:IsAbleToGraveAsCost()
+function s.cfilter(c,ce)
+	local ec=ce:GetHandler()
+	return c:GetOriginalType()&(TYPE_SPELL+TYPE_TRAP)>0 and (c:IsSetCard(0x3a70) or ec:IsLocation(LOCATION_HAND) and ec:IsPublic() and ce:GetType()&EFFECT_TYPE_ACTIVATE==0) and c:IsAbleToGraveAsCost()
 end
 function s.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -86,9 +87,9 @@ function s.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c,c) end
+	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c,e) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local cc=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,c,c):GetFirst()
+	local cc=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,c,e):GetFirst()
 	if cc:IsFacedown() then Duel.ConfirmCards(1-tp,cc) end
 	Duel.SendtoGrave(cc,REASON_COST)
 	s.sscost(e,tp,eg,ep,ev,re,r,rp,chk)

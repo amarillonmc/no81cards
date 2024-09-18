@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 		cm.global_check=true
 		local ge3=Effect.CreateEffect(c)
 		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge3:SetCode(EVENT_CHAIN_SOLVING)
+		ge3:SetCode(EVENT_CHAINING)
 		ge3:SetOperation(cm.checkop3)
 		Duel.RegisterEffect(ge3,0)
 		local ge4=Effect.CreateEffect(c)
@@ -36,7 +36,7 @@ function cm.initial_effect(c)
 end
 function cm.checkop3(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and rc:GetType()==TYPE_SPELL then
+	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and rc:GetType()==TYPE_SPELL and rc:IsLocation(LOCATION_SZONE) then
 		rc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	end
 end

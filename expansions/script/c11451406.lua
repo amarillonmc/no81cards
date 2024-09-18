@@ -2,6 +2,7 @@
 --21.04.10
 local cm,m=GetID()
 function cm.initial_effect(c)
+	c:SetUniqueOnField(1,0,m)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TODECK+CATEGORY_ATKCHANGE)

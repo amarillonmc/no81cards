@@ -26,7 +26,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetLabel(5,5)
+	e2:SetLabel(3,3)
 	e2:SetCondition(cm.regcon)
 	e2:SetOperation(cm.regop)
 	local e3=Effect.CreateEffect(c)
@@ -151,12 +151,12 @@ function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIONS) and not re:IsHasType(EFFECT_TYPE_CONTINUOUS)
 end
 function Group.ForEach(group,func,...)
-    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
-        local d_group=group:Clone()
-        for tc in aux.Next(d_group) do
-            func(tc,...)
-        end
-    end
+	if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+		local d_group=group:Clone()
+		for tc in aux.Next(d_group) do
+			func(tc,...)
+		end
+	end
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g1=eg:Filter(cm.filter,nil,tp)
