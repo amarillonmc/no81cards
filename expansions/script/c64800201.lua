@@ -3,8 +3,8 @@ local m=64800201
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--fusion material
---	c:EnableReviveLimit()
---	aux.AddFusionProcFun2(c,cm.matfilter1,cm.matfilter2,true)
+	c:EnableReviveLimit()
+	aux.AddFusionProcFun2(c,cm.matfilter1,cm.matfilter2,true)
 	--negate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCode(EVENT_CHAINING)

@@ -57,14 +57,14 @@ function s.chop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeChainOperation(ev,s.repop)
 end
 function s.spfilter(c,e,tp)
-	return c:IsCode() and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE,c:GetOwner())
+	return c:IsCode(id) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE,c:GetOwner())
 		and Duel.GetLocationCount(c:GetOwner(),LOCATION_MZONE)>0
 end
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,g:GetFirst():GetOwner(),false,false,POS_FACEUP)
+		Duel.SpecialSummon(g,0,tp,g:GetFirst():GetOwner(),false,false,POS_FACEUP_DEFENSE)
 	end
 end
 function s.thfilter(c)
