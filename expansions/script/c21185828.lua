@@ -33,6 +33,14 @@ function c21185828.initial_effect(c)
 	e3:SetCondition(c21185828.con3)
 	e3:SetOperation(c21185828.op3)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_ADJUST)
+	e4:SetRange(LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_HAND+LOCATION_EXTRA)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e4:SetCondition(c21185828.con4)
+	e4:SetOperation(c21185828.op4)
+	c:RegisterEffect(e4)
 end
 function c21185828.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==1-tp
@@ -50,7 +58,7 @@ function c21185828.w(c)
 end
 function c21185828.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,4,0,nil)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,4,4,nil)
 	if #g<=0 then return end
 	local x=0
 	for tc in aux.Next(g) do
@@ -116,4 +124,16 @@ function c21185828.op3(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+end
+function c21185828.con4(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:GetOriginalCode()==21185828
+end
+function c21185828.op4(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	c:SetEntityCode(21185825)
+	Duel.ConfirmCards(tp,Group.FromCards(c))
+	Duel.ConfirmCards(1-tp,Group.FromCards(c))
+	c:ReplaceEffect(21185825,0,0)
+	Duel.Hint(HINT_CARD,1,21185825)
 end

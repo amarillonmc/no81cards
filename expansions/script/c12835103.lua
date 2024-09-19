@@ -60,7 +60,7 @@ function s.pcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.cfilter(c,ce)
 	local ec=ce:GetHandler()
-	return c:GetOriginalType()&(TYPE_SPELL+TYPE_TRAP)>0 and (c:IsSetCard(0x3a70) or ec:IsLocation(LOCATION_HAND) and ec:IsPublic() and ce:GetType()&EFFECT_TYPE_ACTIVATE==0) and c:IsAbleToGraveAsCost()
+	return (c:GetOriginalType()&(TYPE_SPELL+TYPE_TRAP)>0 and c:IsSetCard(0x3a70) or not c:IsSetCard(0x3a70) and c:IsOnField() and ec:IsLocation(LOCATION_HAND) and ec:IsPublic() and ce:GetType()&EFFECT_TYPE_ACTIVATE==0) and c:IsAbleToGraveAsCost()
 end
 function s.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -119,5 +119,5 @@ function s.disfilter(c)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(e:GetOwnerPlayer(),LOCATION_HAND,0):Filter(s.disfilter,nil)
-	Duel.SendtoGrave(g,REASON_EFFECT+REASON_DISCARD)
+	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 end

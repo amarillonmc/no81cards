@@ -73,7 +73,7 @@ function s.lpop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabelObject(c)
 		e1:SetCondition(s.retcon)
 		e1:SetOperation(s.retop)
-		e1:SetReset(RESET_PHASE+PHASE_END)
+		e1:SetReset(RESET_PHASE+PHASE_END+RESET_EVENT)
 		Duel.RegisterEffect(e1,tp)
 	end
 end
@@ -98,7 +98,7 @@ function s.retcon(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetTurnPlayer()~=tp then return false end
 	local fid=e:GetLabel()
 	local ec=e:GetLabelObject()
-	if ec:GetFlagEffectLabel(id)~=fid then
+	if ec:GetFlagEffectLabel(id)~=fid or ec:GetLocation()~=LOCATION_HAND then
 		e:Reset()
 		return false
 	else return true end

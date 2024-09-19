@@ -49,8 +49,11 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1)
 	c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,66)
 end
+function s.ccfilter(c,tp)
+	return c:IsType(TYPE_MONSTER) and c:IsSummonPlayer(tp) and c:IsFaceup()
+end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPublic()
+	return e:GetHandler():IsPublic() and eg:IsExists(s.ccfilter,1,nil,tp)
 end
 function s.tdfilter(c,tp,e)
 	return c:IsSummonPlayer(tp) and c:IsLocation(LOCATION_MZONE)

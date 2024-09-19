@@ -61,14 +61,14 @@ function cm.rmcfilter(c)
 	return not c:IsType(TYPE_LINK)
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and Duel.IsExistingMatchingCard(cm.rmcfilter,e:GetHandler():GetControler(),0,LOCATION_EXTRA,1,nil)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) --and Duel.IsExistingMatchingCard(cm.rmcfilter,e:GetHandler():GetControler(),0,LOCATION_EXTRA,1,nil)
 end
 function cm.filter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_ATTACK) and not c:IsType(TYPE_LINK)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 end
+		and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_EXTRA)>0 end
 	--Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,1-tp,LOCATION_EXTRA)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
