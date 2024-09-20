@@ -68,7 +68,7 @@ end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_MZONE,0,1,c,e) and c:IsCanOverlay() then
-		local aa=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_MZONE,0,1,1,c,e):GetFirst
+		local aa=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_MZONE,0,1,1,c,e):GetFirst()
 		Duel.Overlay(aa,c)
 	end
 end

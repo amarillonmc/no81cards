@@ -53,7 +53,7 @@ function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
    local g=Duel.GetMatchingGroup(Card.IsAbleToDeckOrExtraAsCost,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,nil)
    if chk==0 then return true end
    local aa=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,2,2,nil)
-   Duel.SendtoDeck(aa,tp,0,REASON_EFFECT)
+   Duel.SendtoDeck(aa,nil,0,REASON_EFFECT)
 end
 function cm.filter0(g)
 	return g:IsExists(Card.IsType,1,nil,TYPE_RITUAL) 
@@ -71,7 +71,7 @@ function cm.discon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.disop2(e,tp,eg,ep,ev,re,r,rp)
 	local aa=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_REMOVED+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_REMOVED+LOCATION_GRAVE,1,2,nil)
-	Duel.SendtoDeck(aa,tp,0,REASON_EFFECT)
+	Duel.SendtoDeck(aa,nil,0,REASON_EFFECT)
 end
 function cm.efilter(e,te,c)
 	if te:GetOwnerPlayer()==e:GetHandlerPlayer() or not te:IsActivated() then return false end
@@ -102,14 +102,20 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RegisterEffect(e1)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
+
 local aa=Duel.SelectMatchingCard(tp,Card.IsCode,tp,LOCATION_DECK,0,1,1,nil,13000753)
+Duel.DisableShuffleCheck()
 Duel.SendtoHand(aa,tp,REASON_EFFECT)
+
 local bb=Duel.SelectMatchingCard(tp,Card.IsCode,tp,LOCATION_DECK,0,1,1,nil,13000751)
+Duel.DisableShuffleCheck()
 Duel.SendtoHand(bb,tp,REASON_EFFECT)
+
 local cc=Duel.SelectMatchingCard(tp,Card.IsCode,tp,LOCATION_DECK,0,1,1,nil,13000749)
+Duel.DisableShuffleCheck()
 Duel.SendtoHand(cc,tp,REASON_EFFECT)
 	local sg=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_HAND,0,3,3,nil,TYPE_RITUAL)
-	Duel.SendtoDeck(sg,tp,0,REASON_EFFECT)
+	Duel.SendtoDeck(sg,nil,0,REASON_EFFECT)
 end
 
 

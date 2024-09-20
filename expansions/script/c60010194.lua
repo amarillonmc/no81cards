@@ -92,7 +92,7 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.negop1(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if rc:GetControler()~=tp and Duel.SelectEffectYesNo(tp,e:GetHandler()) then
+	if rp~=tp and Duel.SelectEffectYesNo(tp,e:GetHandler()) then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.NegateEffect(ev)
 		Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)

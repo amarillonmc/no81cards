@@ -75,7 +75,7 @@ function c21185825.gf(c,lc,sg)
 end
 function c21185825.LCheckGoal(sg,tp,lc,lmat)
 	return #sg>=4
-		and sg:IsExists(c21185825.gf,1,nil,cl,sg)
+		and sg:IsExists(c21185825.gf,1,nil,lc,sg)
 		and sg:CheckWithSumEqual(aux.GetLinkCount,5,#sg,#sg)
 		and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0
 		and not sg:IsExists(aux.LUncompatibilityFilter,1,nil,sg,lc,tp)
@@ -85,12 +85,12 @@ function c21185825.LCheckGoal2(sg,tp,lc,lmat)
 	return #sg==1 
 		and sg:IsExists(c21185825.onlycheck,1,nil,lc,sg)
 		or #sg>=4 
-		and sg:IsExists(c21185825.gf,1,nil,cl,sg)
+		and sg:IsExists(c21185825.gf,1,nil,lc,sg)
 		and sg:CheckWithSumEqual(aux.GetLinkCount,5,#sg,#sg)
 		and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0
 		and not sg:IsExists(aux.LUncompatibilityFilter,1,nil,sg,lc,tp)
 		and (not lmat or sg:IsContains(lmat))
-		and #sg==sg:Filter(Card.IsLinkType,nil)
+		and #sg==sg:Filter(Card.IsLinkType,nil,TYPE_EFFECT)
 end
 function c21185825.linkcon()
 	return	function(e,c,og,lmat,min,max)
