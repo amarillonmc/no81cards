@@ -115,11 +115,11 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetDescription(aux.Stringid(m,3))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_ADJUST)
-		--e1:SetCountLimit(1)
 		e1:SetLabel(Duel.GetCurrentPhase())
 		e1:SetLabelObject(tc)
 		e1:SetCondition(cm.retcon)
 		e1:SetOperation(cm.retop)
+		e1:SetReset(RESET_PHASE+PHASE_END,2)
 		Duel.RegisterEffect(e1,tp)
 		if c:IsRelateToEffect(e) then
 			Duel.BreakEffect()
@@ -128,6 +128,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return false end
 	local tc=e:GetLabelObject()
 	if tc:GetFlagEffect(m)==0 then
 		e:Reset()
@@ -137,9 +138,12 @@ function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return end
+	pnfl_adjusting=true
 	local tc=e:GetLabelObject()
 	local ph,ph2=Duel.GetCurrentPhase(),e:GetLabel()
 	if ph~=ph2 and (ph<=PHASE_MAIN1 or ph>=PHASE_MAIN2 or ph2<=PHASE_MAIN1 or ph2>=PHASE_MAIN2) then
 		Duel.SendtoHand(tc,1-tp,REASON_EFFECT)
 	end
+	pnfl_adjusting=false
 end

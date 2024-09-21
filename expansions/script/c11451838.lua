@@ -59,10 +59,13 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_ADJUST)
 	e1:SetLabel(Duel.GetCurrentPhase())
+	e1:SetCondition(function() return not pnfl_adjusting end)
 	e1:SetOperation(cm.adjustop)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return end
+	pnfl_adjusting=true
 	local ph,ph2=Duel.GetCurrentPhase(),e:GetLabel()
 	if ph~=ph2 and (ph<=PHASE_MAIN1 or ph>=PHASE_MAIN2 or ph2<=PHASE_MAIN1 or ph2>=PHASE_MAIN2) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -78,6 +81,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		e:Reset()
 	end
+	pnfl_adjusting=false
 end
 function cm.setfilter(c,e,tp)
 	return c:IsFaceup() and c:IsSetCard(0x9977) and ((c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1) or c:IsSSetable())

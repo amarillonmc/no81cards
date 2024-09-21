@@ -292,7 +292,6 @@ function cm.efop2(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetProperty(EFFECT_FLAG_DELAY)
 			e2:SetCode(EVENT_BATTLE_DESTROYING)
 			e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e2:SetCountLimit(1)
 			e2:SetCondition(cm.drcon1)
 			e2:SetTarget(cm.drtg)
 			e2:SetOperation(cm.drop)
@@ -360,7 +359,7 @@ function cm.drcon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(m+1)<2 end
+	if chk==0 then return true end --c:GetFlagEffect(m+1)<2 end
 	c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1)

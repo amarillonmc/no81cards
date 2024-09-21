@@ -90,7 +90,7 @@ function c21185825.LCheckGoal2(sg,tp,lc,lmat)
 		and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0
 		and not sg:IsExists(aux.LUncompatibilityFilter,1,nil,sg,lc,tp)
 		and (not lmat or sg:IsContains(lmat))
-		and #sg==sg:Filter(Card.IsLinkType,nil,TYPE_EFFECT)
+		and #sg==sg:Filter(Card.IsLinkType,nil,TYPE_EFFECT):GetCount()
 end
 function c21185825.linkcon()
 	return	function(e,c,og,lmat,min,max)

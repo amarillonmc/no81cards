@@ -66,6 +66,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetRange(LOCATION_HAND)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetCondition(cm.rmcon)
 	e2:SetTarget(cm.rmtg)
 	e2:SetOperation(cm.rmop)
@@ -87,7 +88,7 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(Card.IsPreviousLocation,nil,LOCATION_ONFIELD):Filter(Card.IsPreviousPosition,nil,POS_FACEUP)
 	for tc in aux.Next(g) do
-		local code,code2=tc:GetCode()
+		local code,code2=tc:GetPreviousCodeOnField()
 		PNFL_TURN_TOHAND_CHECK[code]=true
 		if code2 then PNFL_TURN_TOHAND_CHECK[code2]=true end
 	end

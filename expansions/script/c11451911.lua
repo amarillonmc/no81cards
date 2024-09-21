@@ -267,6 +267,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return false end
 	local g=e:GetLabelObject()
 	if not g:IsExists(cm.filter6,1,nil) then
 		g:DeleteGroup()
@@ -303,6 +304,8 @@ function cm.returntofield(tc)
 	end
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return end
+	pnfl_adjusting=true
 	local g=e:GetLabelObject()
 	local sg=g:Filter(cm.filter6,nil,e)
 	local ph,ph2=Duel.GetCurrentPhase(),e:GetLabel()
@@ -357,4 +360,5 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(tc,tc:GetPreviousControler(),REASON_EFFECT)
 		end
 	end
+	pnfl_adjusting=false
 end

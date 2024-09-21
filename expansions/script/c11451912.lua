@@ -74,7 +74,7 @@ function cm.initial_effect(c)
 			local tc=obj
 			if aux.GetValueType(obj)=="Group" then tc=obj:GetFirst() end
 			local tp=tc:GetControler()
-			if tc:IsLevel(3) then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
+			if 1==1 then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
 				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))
 				local tg=Duel.SelectMatchingCard(tp,cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,0,1,nil,cm[1],tp,tc)
 				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) cm[1]=nil return _Merge(sg,tg) end
@@ -86,7 +86,7 @@ function cm.initial_effect(c)
 		function Duel.SpecialSummonRule(tp,tc,sumtype)
 			if sumtype~=SUMMON_TYPE_PENDULUM then _SpecialSummonRule(tp,tc,sumtype) end
 			local tp=tc:GetControler()
-			if tc:IsLevel(3) then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
+			if 1==1 then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
 				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))
 				local tg=Duel.SelectMatchingCard(tp,cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,0,1,nil,nil,tp,tc)
 				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) local tc2=tg:GetFirst() tc2.pendulum_rule[tc2]:SetLabel(1) if tc.pendulum_rule and tc.pendulum_rule[tc] then tc.pendulum_rule[tc]:SetLabel(0) end return _SpecialSummonRule(tp,tc2,SUMMON_TYPE_PENDULUM) end
@@ -212,7 +212,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetDescription(aux.Stringid(m,1))
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_ADJUST)
-			e1:SetCountLimit(1)
 			e1:SetLabel(Duel.GetCurrentPhase())
 			e1:SetLabelObject(og)
 			e1:SetCondition(cm.retcon)
@@ -223,6 +222,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return false end
 	local g=e:GetLabelObject()
 	if not g:IsExists(cm.filter6,1,nil) then
 		g:DeleteGroup()
@@ -259,6 +259,8 @@ function cm.returntofield(tc)
 	end
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
+	if pnfl_adjusting then return end
+	pnfl_adjusting=true
 	local g=e:GetLabelObject()
 	local sg=g:Filter(cm.filter6,nil,e)
 	local ph,ph2=Duel.GetCurrentPhase(),e:GetLabel()
@@ -313,4 +315,5 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(tc,tc:GetPreviousControler(),REASON_EFFECT)
 		end
 	end
+	pnfl_adjusting=false
 end
