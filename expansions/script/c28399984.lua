@@ -41,8 +41,21 @@ function c28399984.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28399984.tgfilter,tp,LOCATION_DECK,0,4,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,4,tp,LOCATION_DECK)
 	if e:GetLabelObject():IsSetCard(0x284) then
-	   e:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAINING)
+		e1:SetOperation(c28399984.actop)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
 	end
+end
+function c28399984.actop(e,tp,eg,ep,ev,re,r,rp)
+	if re:GetHandler():IsCode(28399984) and ep==tp then
+		Duel.SetChainLimit(c28399984.chainlm)
+	end
+end
+function c28399984.chainlm(e,rp,tp)
+	return tp==rp
 end
 function c28399984.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c28399984.tgfilter,tp,LOCATION_DECK,0,nil)
@@ -82,14 +95,21 @@ function c28399984.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e1:SetTargetRange(1,1)
-	e1:SetValue(c28399984.aclimit)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCountLimit(1)
 	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetCondition(c28399984.discon)
+	e1:SetOperation(c28399984.disop)
 	Duel.RegisterEffect(e1,tp)
 end
-function c28399984.aclimit(e,re,tp)
-	return re:IsActiveType(TYPE_MONSTER) and not re:GetHandler():IsRace(RACE_FAIRY)
+function c28399984.discon(e,tp,eg,ep,ev,re,r,rp)
+	local race=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_RACE)
+	return re:IsActiveType(TYPE_MONSTER) and race&RACE_FAIRY==0
+end
+function c28399984.disop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,28399984)
+	if Duel.NegateEffect(ev,true) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.SendtoDeck(re:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	end
 end
