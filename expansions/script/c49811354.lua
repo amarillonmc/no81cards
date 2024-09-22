@@ -48,6 +48,13 @@ function s.initial_effect(c)
 		ge1:SetCondition(s.chkcon)
 		ge1:SetOperation(s.chkop)
 		Duel.RegisterEffect(ge1,0)
+		local _CRegisterEffect=Card.RegisterEffect
+		function Card.RegisterEffect(c,e,bool)
+			if (e:GetCode()==EFFECT_CHANGE_TYPE or e:GetCode()==EFFECT_EQUIP_LIMIT) and c:GetOriginalType()&TYPE_MONSTER>0 and not c:IsPreviousLocation(LOCATION_SZONE) and c:IsLocation(LOCATION_SZONE) and c:GetOwner()~=e:GetOwnerPlayer() then
+				c:RegisterFlagEffect(id+200,RESET_EVENT+RESETS_STANDARD,0,1)
+			end
+			return _CRegisterEffect(c,e,bool)
+		end
 	end
 end
 function s.chainfilter(e)
@@ -59,11 +66,15 @@ end
 function s.ovfilter(c,tp)
 	return c:GetOwner()==tp and c:GetOriginalType()&TYPE_MONSTER>0
 end
+function s.msfilter(c,tp)
+	return c:GetOwner()==tp and c:GetFlagEffect(id+200)>0
+end
 function s.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
+	local g1=Duel.GetFieldGroup(tp,LOCATION_SZONE,LOCATION_SZONE)
 	local g=Duel.GetOverlayGroup(tp,0,LOCATION_MZONE)
-	return (Duel.GetFlagEffect(tp,id+200)>0 or g:IsExists(s.ovfilter,1,nil,tp)) and Duel.IsExistingMatchingCard(s.matfilter,tp,0,LOCATION_MZONE,1,nil)
+	return (g1:IsExists(s.msfilter,1,nil,tp) or g:IsExists(s.ovfilter,1,nil,tp)) and Duel.IsExistingMatchingCard(s.matfilter,tp,0,LOCATION_MZONE,1,nil)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local oc=Duel.SelectMatchingCard(tp,s.matfilter,tp,0,LOCATION_MZONE,1,1,nil,c):GetFirst()

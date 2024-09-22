@@ -25,6 +25,7 @@ function c29056009.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
+	c29056009.summon_effect=e1 
 end
 --search
 function c29056009.thfilter(c)

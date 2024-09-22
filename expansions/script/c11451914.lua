@@ -44,6 +44,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetRange(LOCATION_PZONE)
 	e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.sptg)
@@ -74,10 +75,10 @@ function cm.initial_effect(c)
 			local tc=obj
 			if aux.GetValueType(obj)=="Group" then tc=obj:GetFirst() end
 			local tp=tc:GetControler()
-			if tc:IsLevel(3) then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
+			if 1==1 then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
 				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))
 				local tg=Duel.SelectMatchingCard(tp,cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,0,1,nil,cm[1],tp,tc)
-				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) cm[1]=nil return _Merge(sg,tg) end
+				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) cm[1]=nil Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(11451912,6)) return _Merge(sg,tg) end
 			end
 			cm[1]=nil
 			return _Merge(sg,obj)
@@ -86,10 +87,10 @@ function cm.initial_effect(c)
 		function Duel.SpecialSummonRule(tp,tc,sumtype)
 			if sumtype~=SUMMON_TYPE_PENDULUM then _SpecialSummonRule(tp,tc,sumtype) end
 			local tp=tc:GetControler()
-			if tc:IsLevel(3) then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
+			if 1==1 then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
 				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))
 				local tg=Duel.SelectMatchingCard(tp,cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,0,1,nil,nil,tp,tc)
-				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) local tc2=tg:GetFirst() tc2.pendulum_rule[tc2]:SetLabel(1) if tc.pendulum_rule and tc.pendulum_rule[tc] then tc.pendulum_rule[tc]:SetLabel(0) end return _SpecialSummonRule(tp,tc2,SUMMON_TYPE_PENDULUM) end
+				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) local tc2=tg:GetFirst() tc2.pendulum_rule[tc2]:SetLabel(1) if tc.pendulum_rule and tc.pendulum_rule[tc] then tc.pendulum_rule[tc]:SetLabel(0) end Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(11451912,6)) return _SpecialSummonRule(tp,tc2,SUMMON_TYPE_PENDULUM) end
 			end
 			_SpecialSummonRule(tp,tc,sumtype)
 		end
@@ -190,9 +191,10 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.thfilter),tp,loc,0,nil,e,tp,table.unpack(tab))
 	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	Auxiliary.GCheckAdditional=Auxiliary.PendOperationCheck(ft1,ft2,ft)
-	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,g:GetClassCount(Card.GetOriginalCode))
-	Auxiliary.GCheckAdditional=nil
+	local sg=g:Select(tp,1,1,nil)
+	--Auxiliary.GCheckAdditional=Auxiliary.PendOperationCheck(ft1,ft2,ft)
+	--local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,g:GetClassCount(Card.GetOriginalCode))
+	--Auxiliary.GCheckAdditional=nil
 	if #sg>0 then
 		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end

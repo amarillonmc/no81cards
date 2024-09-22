@@ -48,7 +48,7 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
 function s.thfilter(c)
-	return  c:IsSetCard(0x1a6,0xcf) and c:IsType(TYPE_RITUAL)
+	return  c:IsSetCard(0x1a6)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -70,7 +70,17 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoDeck(sg,nil,SEQ_DECKTOP,REASON_EFFECT)
 		end
 	end
-
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(s.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function s.splimit(e,c)
+	return c:IsLocation(LOCATION_EXTRA)
 end
 --remove
 function s.rmfilter(c)

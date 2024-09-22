@@ -55,8 +55,9 @@ function cm.posop(e,tp)
 			end
 		elseif op==2 then
 			local g=Duel.SelectMatchingCard(1-tp,nil,1-tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-			if g:GetCount()>0 and Duel.Destroy(g,REASON_EFFECT)~=0 then
-				Duel.Draw(1-tp,1,REASON_EFFECT)
+			if g:GetCount()>0 then -- and Duel.Destroy(g,REASON_EFFECT)~=0 then
+				--Duel.Draw(1-tp,1,REASON_EFFECT)
+				Duel.Destroy(g,REASON_EFFECT)
 			end
 		end
 	end

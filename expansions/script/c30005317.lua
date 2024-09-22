@@ -168,6 +168,6 @@ function cm.tohand(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local tag=gg:Select(tp,1,1,nil)
 		if #tag==0 then return false end
-		Duel.SendtoGrave(sgc,REASON_EFFECT+REASON_RETURN)
+		Duel.SendtoGrave(tag,REASON_EFFECT+REASON_RETURN)
 	end
 end

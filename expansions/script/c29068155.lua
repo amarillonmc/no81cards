@@ -1,46 +1,57 @@
 --引领者 -方舟骑士-
-c29068155.named_with_Arknight=1
 function c29068155.initial_effect(c)
-	c:SetSPSummonOnce(29068155)
 	aux.AddCodeList(c,29065500)
-	--link summon
-	aux.AddLinkProcedure(c,nil,2,2,c29068155.lcheck)
-	c:EnableReviveLimit()
-	--change name
-	aux.EnableChangeCode(c,29065500,LOCATION_MZONE+LOCATION_GRAVE)
-	--search
+	--add code
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(29068155,0))
-	e1:SetCategory(CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(c29068155.thcon)
-	e1:SetTarget(c29068155.thtg)
-	e1:SetOperation(c29068155.thop)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetCode(EFFECT_ADD_CODE)
+	e1:SetRange(LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD+LOCATION_GRAVE)
+	e1:SetValue(29065500)
 	c:RegisterEffect(e1)
+	--special Summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_HAND)
+	e2:SetCountLimit(1,29068155)
+	e2:SetTarget(c29068155.sptg)
+	e2:SetOperation(c29068155.spop)
+	c:RegisterEffect(e2)
+	--cannot be target
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(LOCATION_MZONE,0)
+	e3:SetTarget(c29068155.tgtg)
+	e3:SetValue(aux.tgoval)
+	c:RegisterEffect(e3)
 end
-function c29068155.matfilter(c)
-	return c:IsLinkSetCard(0x87af) or (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+--e2
+function c29068155.spfilter(c,e,tp)
+	return c:IsSetCard(0x87af) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c29068155.lcheck(g,lc)
-	return g:IsExists(c29068155.matfilter,1,nil)
+function c29068155.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and Duel.IsExistingMatchingCard(c29068155.spfilter,tp,LOCATION_HAND,0,1,c,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_HAND)
 end
-function c29068155.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
-end
-function c29068155.thfilter(c)
-	return aux.IsCodeListed(c,29065500) and c:IsAbleToHand()
-end
-function c29068155.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29068155.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
-end
-function c29068155.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c29068155.thfilter),tp,LOCATION_GRAVE,0,1,1,nil)
+function c29068155.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<2 or Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) or not c:IsCanBeSpecialSummoned(e,0,tp,false,false) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c29068155.spfilter,tp,LOCATION_HAND,0,1,1,c,e,tp)
 	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+		g:AddCard(c)
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
+end
+--e3
+function c29068155.tgtg(e,c)
+	return c~=e:GetHandler()
 end

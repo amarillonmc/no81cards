@@ -12,7 +12,6 @@ function cm.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_SZONE)
-	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e5:SetCountLimit(1)
 	e5:SetTarget(cm.ztg)
@@ -45,16 +44,17 @@ end
 function cm.ssf(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) 
 end
-function cm.ztg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsType(TYPE_SPELL+TYPE_TRAP) and chkc:IsControler(tp) end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsType,tp,LOCATION_ONFIELD,0,1,nil,TYPE_SPELL+TYPE_TRAP) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,Card.IsType,tp,LOCATION_ONFIELD,0,1,1,nil,TYPE_SPELL+TYPE_TRAP)
+function cm.ztg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(cm.ssf,tp,LOCATION_ONFIELD,0,nil,e,tp)
+	if chk==0 then return #g>0 end
 end
 function cm.zop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) then return false end
+	local g=Duel.GetMatchingGroup(cm.ssf,tp,LOCATION_ONFIELD,0,nil,e,tp)
+	if #g==0 then return false end
+	local gt=g:Select(tp,1,1,nil)
+	if #gt==0 then return false end
+	local tc=gt:GetFirst()
 	if tc:IsFacedown() then
 		local b1=tc:IsType(TYPE_QUICKPLAY) or tc:IsType(TYPE_TRAP)
 		if b1 then

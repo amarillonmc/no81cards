@@ -1,71 +1,79 @@
---希洛克的狂战士
+--异天枝-亚夫结
 function c22060130.initial_effect(c)
-	--fusion material
-	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xff3),2,true)
-	--search
+	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(22060130,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCondition(c22060130.thcon)
-	e1:SetTarget(c22060130.thtg)
-	e1:SetOperation(c22060130.thop)
+	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,22060130)
+	e1:SetCondition(c22060130.condition)
+	e1:SetCost(c22060130.cost)
+	e1:SetOperation(c22060130.operation)
 	c:RegisterEffect(e1)
-	--negate
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(22060130,1))
-	e2:SetCategory(CATEGORY_NEGATE+CATEGORY_REMOVE)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e2:SetCountLimit(1,22060130)
-	e2:SetCondition(c22060130.negcon)
-	e2:SetCost(c22060130.negcost)
-	e2:SetTarget(c22060130.negtg)
-	e2:SetOperation(c22060130.negop)
-	c:RegisterEffect(e2)
-end
-function c22060130.matfilter(c)
-	return c:IsSetCard(0xff3) and c:IsType(TYPE_MONSTER)
-end
-function c22060130.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
-end
-function c22060130.thfilter(c)
-	return c:IsSetCard(0xff3) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
-end
-function c22060130.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c22060130.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function c22060130.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c22060130.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	if not c22060130.global_flag then
+		c22060130.global_flag=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAINING)
+		ge1:SetOperation(c22060130.regop1)
+		Duel.RegisterEffect(ge1,0)
+
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_CHAINING)
+		ge2:SetOperation(c22060130.regop2)
+		Duel.RegisterEffect(ge2,0)
+
+		local ge3=Effect.CreateEffect(c)
+		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge3:SetCode(EVENT_CHAINING)
+		ge3:SetOperation(c22060130.regop3)
+		Duel.RegisterEffect(ge3,0)
 	end
 end
-function c22060130.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
-end
-function c22060130.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
-end
-function c22060130.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return aux.nbcon(tp,re) end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
+function c22060130.regop1(e,tp,eg,ep,ev,re,r,rp)
+	for tc in aux.Next(eg) do
+		if tc:IsType(TYPE_MONSTER) then
+			Duel.RegisterFlagEffect(tp,22060131,RESET_PHASE+PHASE_END,0,1)
+		end
 	end
 end
-function c22060130.negop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
+function c22060130.regop2(e,tp,eg,ep,ev,re,r,rp)
+	for tc in aux.Next(eg) do
+		if tc:IsType(TYPE_SPELL) then
+			Duel.RegisterFlagEffect(tp,22060132,RESET_PHASE+PHASE_END,0,1)
+		end
 	end
+end
+function c22060130.regop3(e,tp,eg,ep,ev,re,r,rp)
+	for tc in aux.Next(eg) do
+		if tc:IsType(TYPE_TRAP) then
+			Duel.RegisterFlagEffect(tp,22060133,RESET_PHASE+PHASE_END,0,1)
+		end
+	end
+end
+function c22060130.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()~=tp and Duel.GetFlagEffect(tp,22060131)>0 and Duel.GetFlagEffect(tp,22060132)>0 and Duel.GetFlagEffect(tp,22060133)>0
+end
+function c22060130.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsDiscardable() end
+	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
+end
+function c22060130.operation(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SkipPhase(1-tp,PHASE_DRAW,RESET_PHASE+PHASE_END,1)
+	Duel.SkipPhase(1-tp,PHASE_STANDBY,RESET_PHASE+PHASE_END,1)
+	Duel.SkipPhase(1-tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
+	Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
+	Duel.SkipPhase(1-tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_BP)
+	e1:SetTargetRange(0,1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end

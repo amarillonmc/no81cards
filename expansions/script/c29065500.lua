@@ -23,7 +23,8 @@ function c29065500.initial_effect(c)
 	c:RegisterEffect(e1)	
 	local e3=e1:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e3)   
+	c:RegisterEffect(e3)
+	c29065500.summon_effect=e1   
 	--copy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(29065500,0)) 

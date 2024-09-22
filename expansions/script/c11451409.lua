@@ -69,10 +69,11 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp,chk)
 	if not c:IsRelateToEffect(e) then return end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
-	Duel.SendtoDeck(sg,nil,1,REASON_EFFECT)
+	Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 	local og=Duel.GetOperatedGroup()
 	if og:IsExists(Card.IsType,2,nil,TYPE_MONSTER) or og:IsExists(Card.IsType,2,nil,TYPE_SPELL) or og:IsExists(Card.IsType,2,nil,TYPE_TRAP) then
 		Duel.BreakEffect()
+		Duel.ShuffleDeck(tp)
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 	--[[if og:IsExists(Card.IsType,1,nil,TYPE_MONSTER) and c:GetFlagEffect(m+9)==0 then

@@ -4,7 +4,6 @@ function c9910015.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	--pendulum set
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910015,0))
 	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_PZONE)
@@ -46,28 +45,29 @@ end
 function c9910015.rpcon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler())
 end
-function c9910015.rpfilter(c,tp)
+function c9910015.rpfilter(c)
 	return c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
-		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
 end
-function c9910015.rpsfilter(c,tp)
-	return c9910015.rpfilter(c,tp) and c:IsSetCard(0x3950) and not c:IsCode(9910015)
+function c9910015.rpsfilter(c)
+	return c9910015.rpfilter(c) and c:IsSetCard(0x3950) and not c:IsCode(9910015)
 end
 function c9910015.rptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910015.rpfilter,tp,LOCATION_HAND,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910015.rpfilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
 end
 function c9910015.rpop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.Destroy(c,REASON_EFFECT)>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910015,1))
-		local g=Duel.SelectMatchingCard(tp,c9910015.rpfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
+		if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+		local g=Duel.SelectMatchingCard(tp,c9910015.rpfilter,tp,LOCATION_HAND,0,1,1,nil)
 		if g:GetCount()==0 then return end
 		local tc=g:GetFirst()
 		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
-		local sg=Duel.GetMatchingGroup(c9910015.rpsfilter,tp,LOCATION_DECK,0,nil,tp)
-		if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910015,2)) then
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910015,3))
+		if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
+		local sg=Duel.GetMatchingGroup(c9910015.rpsfilter,tp,LOCATION_DECK,0,nil)
+		if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910015,0)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 			local tg=sg:Select(tp,1,1,nil)
 			local fc=tg:GetFirst()
 			Duel.BreakEffect()

@@ -75,13 +75,13 @@ function s.thfilter1(c,e,tp)
 	return not c:IsCode(id) and c:IsFaceupEx() and c:IsSetCard(0x1a6) and c:IsAbleToHand()
 end
 function s.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and e:GetHandler():IsAbleToHand() end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and e:GetHandler():IsAbleToHand() end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
 function s.thop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfilter1),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfilter1),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) then
 		Duel.ConfirmCards(1-tp,tc)
@@ -93,7 +93,7 @@ function s.thop1(e,tp,eg,ep,ev,re,r,rp)
 end
 --to hand in phase end
 function s.thfilter2(c)
-	return (c:IsType(TYPE_RITUAL) and c:IsType(TYPE_SPELL)) or (c:IsRace(RACE_WARRIOR+RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_LIGHT)) and c:IsAbleToHand()
+	return c:IsType(TYPE_RITUAL) and (c:IsType(TYPE_SPELL) or (c:IsRace(RACE_WARRIOR+RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_LIGHT))) and c:IsAbleToHand()
 end
 function s.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and e:GetHandler():IsAbleToHand() end
@@ -127,7 +127,7 @@ function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end
-function s.spfilter(c,e,tp)
+function s.disfilter(c,e,tp)
 	return c:IsSetCard(0x1a6,0x99) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
@@ -135,11 +135,11 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and not c:IsImmuneToEffect(e) then
 		if Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true) and c:IsLocation(LOCATION_PZONE) then
 			if Duel.NegateEffect(ev) and c:IsSummonType(SUMMON_TYPE_RITUAL)
-				and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
+				and Duel.IsExistingMatchingCard(s.disfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
 				and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-				local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+				local g=Duel.SelectMatchingCard(tp,s.disfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 			end
 		end

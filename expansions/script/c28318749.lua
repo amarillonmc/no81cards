@@ -141,22 +141,19 @@ function c28318749.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c28318749.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) then return end
+	local tc=Duel.GetFirstTarget()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.HintSelection(g)
-	if Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 then
+	if tc:IsRelateToEffect(e) then
+		g:AddCard(tc)
+	end
+	if Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) and Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_EFFECT) and Duel.SelectYesNo(tp,aux.Stringid(28318749,0)) then
 		Duel.BreakEffect()
-		local tc=Duel.GetFirstTarget()
-		if tc:IsRelateToEffect(e) then
-			Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		end
-		if Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) and Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_EFFECT) and Duel.SelectYesNo(tp,aux.Stringid(28318749,0)) then
-			Duel.BreakEffect()
-			Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_EFFECT)
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil)
-			Duel.SendtoDeck(g2,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		end
+		Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_EFFECT)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil)
+		Duel.SendtoDeck(g2,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end
 function c28318749.immcon(e)

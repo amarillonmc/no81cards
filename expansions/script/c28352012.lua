@@ -75,14 +75,22 @@ function c28352012.tdfilter(c,e,tp,eg,ep,ev,re,r,rp)
 	return not tg or tg and tg(e,tp,eg,ep,ev,re,r,rp,0)
 end
 function c28352012.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28352012.tdfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,eg,ep,ev,re,r,rp) and e:GetHandler():GetFlagEffect(28352012)==0 end
-	e:GetHandler():RegisterFlagEffect(28352012,RESET_CHAIN,0,1)
+	local check=true
+	local ct=Duel.GetChainInfo(0,CHAININFO_CHAIN_COUNT)
+	if ct then
+		for i=1,ct do
+			local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
+			if te:GetHandler()==e:GetHandler() then check=false end
+		end
+	end
+	if chk==0 then return Duel.IsExistingMatchingCard(c28352012.tdfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp,eg,ep,ev,re,r,rp) and check end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
 end
 function c28352012.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local tc=Duel.SelectMatchingCard(tp,c28352012.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp):GetFirst()
-	if tc and Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 then
+	if tc and Duel.SendtoDeck(tc,nil,SEQ_DECKTOP,REASON_EFFECT)~=0 then
+		Duel.ShuffleDeck(tp)
 		local te=tc.recover_effect
 		local op=te:GetOperation()
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end

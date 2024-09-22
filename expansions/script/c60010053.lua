@@ -1,77 +1,64 @@
 --黄泉-远辞畴昔-
-local cm,m,o=GetID()
+local m=60010053
+local cm=_G["c"..m]
 function cm.initial_effect(c)
 	aux.AddCodeList(c,60010029)
-	--
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_PHASE+PHASE_END)
-	e3:SetRange(LOCATION_HAND)
-	e3:SetCondition(cm.retcon)
-	e3:SetOperation(cm.retop1)
-	c:RegisterEffect(e3)
-	
-	--special summon  
-	local e1=Effect.CreateEffect(c)  
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_TOHAND)  
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN) 
-	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCountLimit(1,m)   
-	e1:SetCondition(cm.con)
-	e1:SetTarget(cm.tg)  
-	e1:SetOperation(cm.op)  
+	--special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,2))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	--e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	e1:SetTarget(cm.retg1)
+	e1:SetOperation(cm.retop1)
 	c:RegisterEffect(e1)
-	if not cm.global_check then
-		cm.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_CHAINING)
-		ge1:SetOperation(cm.checkop)
-		Duel.RegisterEffect(ge1,0)
-	end
+	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,aux.FALSE)
+	--special summon  
+	local e2=Effect.CreateEffect(c)  
+	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_TOHAND)  
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN) 
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,m)
+	e2:SetCondition(cm.con)
+	e2:SetTarget(cm.tg)
+	e2:SetOperation(cm.op)
+	c:RegisterEffect(e2)
 end
-function cm.ffil(c)
-	return c:IsCode(60010029) and c:IsFaceup()
-end
-function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if rp==tp then
-		Duel.RegisterFlagEffect(rp,m,RESET_PHASE+PHASE_END,0,1)
-	end
-end
-function cm.retcon(e,tp,eg,ep,ev,re,r,rp,tc)
-	local tp=e:GetHandlerPlayer()
-	return Duel.GetFlagEffect(tp,m)>=9 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2))
+function cm.retg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetMZoneCount(tp)>0 and (Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)>=9 or (Duel.IsPlayerAffectedByEffect(tp,60010131) and Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)>=4)) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.retop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-		if #g~=0 and Duel.IsExistingMatchingCard(cm.ffil,tp,LOCATION_FZONE,0,1,nil) then
+		if #g~=0 and Duel.IsEnvironment(60010029,tp) then
 			Duel.SendtoGrave(g,REASON_EFFECT)
 			if #Duel.GetOperatedGroup()>=5 then
 				Duel.SelectOption(tp,aux.Stringid(m,0))
 				Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(m,0))
 				Duel.SelectOption(tp,aux.Stringid(m,1))
 				Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(m,1))
-				--e:GetHandler():SetCardData(CARDDATA_CODE,m+1) 
 			end
 		end
 	end
 end
-
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()
 	local ag=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 	return ag:GetClassCount(Card.GetRace)==ag:GetCount() and ag:GetClassCount(Card.GetAttribute)==ag:GetCount()
 end
-function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)  
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,0,1,nil)  end  
 end  
-function cm.op(e,tp,eg,ep,ev,re,r,rp)  
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
-	if not c:IsRelateToEffect(e) then return end  
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)  
+	if not c:IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,0,1,1,nil)
 	if Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
 		Duel.BreakEffect()

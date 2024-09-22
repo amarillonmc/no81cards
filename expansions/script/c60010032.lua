@@ -45,6 +45,11 @@ function cm.mattg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(cm.matfilter,tp,LOCATION_MZONE,0,1,nil,races,attrs) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,cm.matfilter,tp,LOCATION_MZONE,0,1,1,nil,races,attrs)
+	if Duel.IsPlayerAffectedByEffect(tp,60010133) then
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON+CATEGORY_DESTROY)
+	else
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
+	end
 end
 function cm.matop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -53,7 +58,7 @@ function cm.matop(e,tp,eg,ep,ev,re,r,rp)
 	local attro=tc:GetAttribute()
 	local races=e:GetHandler():GetRace()
 	local attrs=e:GetHandler():GetAttribute()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 or not c:IsRelateToEffect(e) or not tc:IsRelateToEffect(e) then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then return end
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	local i=0
 	while i<=0xffff do
@@ -73,7 +78,16 @@ function cm.matop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(cm.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,raceo,attro,races,attrs,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		local sc=Duel.GetMatchingGroup(cm.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,raceo,attro,races,attrs,e,tp):Select(tp,1,1,nil)
 		Duel.BreakEffect()
-		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP) 
+		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
+		if Duel.IsPlayerAffectedByEffect(tp,60010133) and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+			if g:GetCount()>0 then
+				Duel.BreakEffect()
+				Duel.HintSelection(g)
+				Duel.Destroy(g,REASON_EFFECT)
+			end
+		end
 	end
 end
 function cm.spfil(c,raceo,attro,races,attrs,e,tp)
@@ -103,7 +117,7 @@ function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_FZONE,0,1,nil,60010029) and Duel.GetTurnPlayer()~=tp
+	return Duel.IsEnvironment(60010029,tp) and Duel.GetTurnPlayer()~=tp
 end
 
 

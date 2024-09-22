@@ -30,7 +30,7 @@ function c67201111.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsReason(REASON_DRAW)
 end
 function c67201111.desfilter(c,tp)
-	return c:IsSetCard(0x3670) and c:IsAbleToGraveAsCost()
+	return c:IsAbleToGraveAsCost()
 end
 function c67201111.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

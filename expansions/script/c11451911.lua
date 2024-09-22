@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e4:SetCondition(cm.effcon)
 	e4:SetOperation(cm.regop)
-	--c:RegisterEffect(e4)
+	c:RegisterEffect(e4)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,2))
@@ -32,6 +32,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetRange(LOCATION_PZONE)
 	e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.sptg)
@@ -154,7 +155,7 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 		Duel.MoveToField(sc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
-	cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	--cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
@@ -200,7 +201,7 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.effcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return re and re==c.pendulum_rule[c]
+	return c:IsSummonType(SUMMON_TYPE_PENDULUM) --re and re==c.pendulum_rule[c]
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -249,14 +250,13 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		og=og:Filter(cm.rffilter,nil)
 		if og and #og>0 then
 			for oc in aux.Next(og) do
-				oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+				oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451911,4))
 			end
 			og:KeepAlive()
 			local e1=Effect.CreateEffect(c)
 			e1:SetDescription(aux.Stringid(m,3))
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_ADJUST)
-			e1:SetCountLimit(1)
 			e1:SetLabel(Duel.GetCurrentPhase())
 			e1:SetLabelObject(og)
 			e1:SetCondition(cm.retcon)
@@ -267,7 +267,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
-	if pnfl_adjusting then return false end
 	local g=e:GetLabelObject()
 	if not g:IsExists(cm.filter6,1,nil) then
 		g:DeleteGroup()
@@ -305,12 +304,13 @@ function cm.returntofield(tc)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	if pnfl_adjusting then return end
-	pnfl_adjusting=true
 	local g=e:GetLabelObject()
 	local sg=g:Filter(cm.filter6,nil,e)
 	local ph,ph2=Duel.GetCurrentPhase(),e:GetLabel()
 	if ph==ph2 or not (ph<=PHASE_MAIN1 or ph>=PHASE_MAIN2 or ph2<=PHASE_MAIN1 or ph2>=PHASE_MAIN2) then return end
+	pnfl_adjusting=true
 	g:DeleteGroup()
+	e:Reset()
 	local ft,mg,pft,pmg={},{},{},{}
 	ft[1]=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	ft[2]=Duel.GetLocationCount(1-tp,LOCATION_MZONE)

@@ -63,6 +63,8 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(cm.defil,tp,0,LOCATION_MZONE,1,nil) then
 		local tg=Duel.GetMatchingGroup(cm.defil,tp,0,LOCATION_MZONE,nil)
 		local tc=tg:GetFirst()
+		local val=-1000
+		if Duel.IsPlayerAffectedByEffect(tp,60010133) then val=-4000 end
 		for i=1,#tg do
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)

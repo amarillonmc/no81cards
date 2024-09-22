@@ -5,7 +5,6 @@ if c71400001 then
 function c71400001.initial_effect(c)
 	--Activate(nofield)
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(71400001,2))
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(c71400001.tg1)
@@ -58,7 +57,7 @@ function c71400001.filter(c)
 end
 end
 --global part
---table=require("table")
+table=require("table")
 function yume.AddYumeSummonLimit(c,ssm)
 --1=special summon monster, 0=non special summon monster
 	ssm=ssm or 0

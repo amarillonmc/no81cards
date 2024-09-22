@@ -21,7 +21,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local tgp=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_PLAYER)
-		return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and (not tgp or tgp~=tp) --and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil)
+		return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and (not tgp or tgp~=tp) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil)
 	end
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -33,7 +33,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,1)
 	Duel.MoveSequence(tc,1)
 	if not cm.filter(tc,tp) then
-		Duel.ShuffleDeck(tp)
+		--[[Duel.ShuffleDeck(tp)
 		local ph=Duel.GetCurrentPhase()
 		if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
 		local e1=Effect.CreateEffect(c)
@@ -45,17 +45,17 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_CANNOT_TRIGGER)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+ph)
-		c:RegisterEffect(e2)
-		--[[local tg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_HAND,0,nil)
-		local sg=tg:RandomSelect(tp,1)
+		c:RegisterEffect(e2)--]]
+		local tg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_HAND,0,nil)
+		local sg=tg:Select(tp,1,1,nil)
 		if Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)>0 then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetValue(1500)
+			e1:SetValue(1000)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 			c:RegisterEffect(e1)
-		end--]]
+		end
 	else
 		if tc:IsType(TYPE_FIELD) then
 			local te=tc:GetActivateEffect()

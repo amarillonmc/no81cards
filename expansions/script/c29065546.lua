@@ -1,5 +1,4 @@
 --方舟骑士-迷迭香
-c29065546.named_with_Arknight=1
 function c29065546.initial_effect(c)
 	aux.AddCodeList(c,29065500,29065502)
 	--special summon

@@ -15,19 +15,15 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,1)
 	c:RegisterEffect(e2)
-	--to hand 
+	--draw 
 	local e2=Effect.CreateEffect(c) 
-	e2:SetCategory(CATEGORY_DRAW) 
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F) 
-	e2:SetCode(EVENT_SUMMON_SUCCESS) 
-	e2:SetProperty(EFFECT_FLAG_DELAY) 
-	e2:SetRange(LOCATION_FZONE) 
-	--e2:SetTarget(cm.srtg) 
-	e2:SetOperation(cm.srop) 
-	c:RegisterEffect(e2)  
-	local e3=e2:Clone() 
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS) 
-	c:RegisterEffect(e3) 
+	e2:SetCategory(CATEGORY_DRAW)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetRange(LOCATION_FZONE)
+	--e2:SetTarget(cm.srtg)
+	e2:SetOperation(cm.srop)
+	c:RegisterEffect(e2)
 	--search
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
@@ -40,14 +36,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3)
 	
-	if not cm.global_check then
-		cm.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_SUMMON_SUCCESS)
-		ge1:SetOperation(cm.checkop)
-		Duel.RegisterEffect(ge1,0)
-	end
+	Duel.AddCustomActivityCounter(m,ACTIVITY_SUMMON,aux.FALSE)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
@@ -57,15 +46,19 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.accon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(e:GetHandlerPlayer(),m)==0
+	return Duel.GetCustomActivityCount(m,tp,ACTIVITY_SUMMON)==0
 end
 
 function cm.srop(e,tp,eg,ep,ev,re,r,rp) 
-	if Duel.GetFlagEffect(rp,m)==0 then 
-		Duel.Draw(rp,1,REASON_EFFECT)
-		Duel.RegisterFlagEffect(rp,m,RESET_PHASE+PHASE_END,0,1)
-	end 
-end 
+	if Duel.GetFlagEffect(0,m) and eg:IsExists(Card.IsControler,1,nil,0) then
+		Duel.Draw(0,1,REASON_EFFECT)
+		Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1)
+	end
+	if Duel.GetFlagEffect(1,m) and eg:IsExists(Card.IsControler,1,nil,1) then
+		Duel.Draw(1,1,REASON_EFFECT)
+		Duel.RegisterFlagEffect(1,m,RESET_PHASE+PHASE_END,0,1)
+	end
+end
 
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.GetType,tp,LOCATION_HAND,0,nil,TYPE_MONSTER)

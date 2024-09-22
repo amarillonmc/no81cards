@@ -59,15 +59,26 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		{#g3>0,aux.Stringid(m,1)},
 		{#g1>0,aux.Stringid(m,2)})
 
+	local p1=0
+	local p2=0
 	if op1==1 then
 		Duel.SendtoHand(g4,tp,REASON_EFFECT)
+		p1=#g4
 	elseif op1==2 then
 		Duel.SendtoHand(g2,tp,REASON_EFFECT)
+		p1=#g2
 	end
 	if op2==1 then
 		Duel.SendtoHand(g3,1-tp,REASON_EFFECT)
+		p2=#g3
 	elseif op2==2 then
 		Duel.SendtoHand(g1,1-tp,REASON_EFFECT)
+		p2=#g1
+	end
+	if p1>p2 then
+		Duel.Draw(1-tp,1,REASON_EFFECT)
+	elseif p1<p2 then
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
 

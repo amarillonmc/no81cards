@@ -26,6 +26,7 @@ function c29021399.initial_effect(c)
 	e2:SetTarget(c29021399.tgtg)
 	e2:SetOperation(c29021399.tgop)
 	c:RegisterEffect(e2)
+	c29021399.summon_effect=e2   
 end
 function c29021399.rfilter(c,tp)
 	return c:IsType(TYPE_MONSTER) and Duel.GetMZoneCount(tp,c)>0

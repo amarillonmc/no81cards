@@ -44,6 +44,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetRange(LOCATION_PZONE)
 	e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.sptg)
@@ -77,7 +78,7 @@ function cm.initial_effect(c)
 			if 1==1 then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
 				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))
 				local tg=Duel.SelectMatchingCard(tp,cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,0,1,nil,cm[1],tp,tc)
-				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) cm[1]=nil return _Merge(sg,tg) end
+				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) cm[1]=nil Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(11451912,6)) return _Merge(sg,tg) end
 			end
 			cm[1]=nil
 			return _Merge(sg,obj)
@@ -89,7 +90,7 @@ function cm.initial_effect(c)
 			if 1==1 then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
 				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))
 				local tg=Duel.SelectMatchingCard(tp,cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,0,1,nil,nil,tp,tc)
-				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) local tc2=tg:GetFirst() tc2.pendulum_rule[tc2]:SetLabel(1) if tc.pendulum_rule and tc.pendulum_rule[tc] then tc.pendulum_rule[tc]:SetLabel(0) end return _SpecialSummonRule(tp,tc2,SUMMON_TYPE_PENDULUM) end
+				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) local tc2=tg:GetFirst() tc2.pendulum_rule[tc2]:SetLabel(1) if tc.pendulum_rule and tc.pendulum_rule[tc] then tc.pendulum_rule[tc]:SetLabel(0) end Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(11451912,6)) return _SpecialSummonRule(tp,tc2,SUMMON_TYPE_PENDULUM) end
 			end
 			_SpecialSummonRule(tp,tc,sumtype)
 		end
@@ -171,7 +172,7 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil,table.unpack(tab))
 	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,g:GetClassCount(Card.GetOriginalCode))
+	local sg=g:Select(tp,1,1,nil) --SelectSubGroup(tp,aux.dncheck,false,1,g:GetClassCount(Card.GetOriginalCode))
 	if #sg>0 and Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 then
 		Duel.ConfirmCards(1-tp,sg)
 	end
@@ -205,7 +206,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		og=og:Filter(cm.rffilter,nil)
 		if og and #og>0 then
 			for oc in aux.Next(og) do
-				oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+				oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451911,4))
 			end
 			og:KeepAlive()
 			local e1=Effect.CreateEffect(c)
@@ -222,9 +223,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
-	if pnfl_adjusting then return false end
 	local g=e:GetLabelObject()
-	if not g:IsExists(cm.filter6,1,nil) then
+	if not g or not g:IsExists(cm.filter6,1,nil) then
 		g:DeleteGroup()
 		e:Reset()
 		return false
@@ -244,6 +244,7 @@ function cm.fselect2(g,pft)
 	return g:FilterCount(Card.IsPreviousLocation,nil,LOCATION_PZONE)<=pft
 end
 function cm.returntofield(tc)
+	tc:ResetFlagEffect(m)
 	if tc:IsPreviousLocation(LOCATION_FZONE) then
 		local p=tc:GetPreviousControler()
 		local gc=Duel.GetFieldCard(p,LOCATION_FZONE,0)
@@ -260,12 +261,13 @@ function cm.returntofield(tc)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	if pnfl_adjusting then return end
-	pnfl_adjusting=true
 	local g=e:GetLabelObject()
 	local sg=g:Filter(cm.filter6,nil,e)
 	local ph,ph2=Duel.GetCurrentPhase(),e:GetLabel()
 	if ph==ph2 or not (ph<=PHASE_MAIN1 or ph>=PHASE_MAIN2 or ph2<=PHASE_MAIN1 or ph2>=PHASE_MAIN2) then return end
+	pnfl_adjusting=true
 	g:DeleteGroup()
+	e:Reset()
 	local ft,mg,pft,pmg={},{},{},{}
 	ft[1]=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	ft[2]=Duel.GetLocationCount(1-tp,LOCATION_MZONE)

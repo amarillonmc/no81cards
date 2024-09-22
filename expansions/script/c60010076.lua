@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.cfilter(c,tp)
-	return c:IsSummonPlayer(1-tp) and c:IsSummonLocation(LOCATION_EXTRA)
+	return c:IsSummonPlayer(1-tp) and (c:IsSummonLocation(LOCATION_EXTRA) or Duel.IsPlayerAffectedByEffect(tp,60010135))
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -27,9 +27,9 @@ function cm.retreg(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
-	e1:SetRange(LOCATION_MZONE)
+	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e1:SetCountLimit(1)
-	e1:SetReset(RESET_EVENT+0x1ee0000+RESET_PHASE+PHASE_END)
+	e1:SetReset(RESET_EVENT+0x1ee0000-RESET_TOGRAVE-RESET_LEAVE+RESET_PHASE+PHASE_END)--减去送墓重置即可
 	e1:SetCondition(aux.SpiritReturnConditionForced)
 	e1:SetTarget(cm.rettg)
 	e1:SetOperation(cm.retop)
@@ -52,8 +52,8 @@ function cm.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsFaceup() and Duel.SendtoHand(c,nil,REASON_EFFECT)~=0
-		and Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_GRAVE,0,1,nil)
+	if Duel.SendtoHand(c,nil,REASON_EFFECT)~=0
+		and Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,3))
 		then
 		 ::cancel::
 		 local mg=Duel.GetRitualMaterial(tp)
@@ -118,26 +118,10 @@ function cm.matfilter(c)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_HAND,0,1,c) or Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_HAND,0,1,c) end
-	local b1=Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_HAND,0,1,c)
-	local b2=Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_HAND,0,1,c)
-	local op=aux.SelectFromOptions(tp,{b1,aux.Stringid(m,0)},{b2,aux.Stringid(m,1)})
-	if op==1 then
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_HAND,0,1,c) end
+	
 	Duel.DiscardHand(tp,cm.filter1,1,1,REASON_COST+REASON_DISCARD,c)
-	end
-	if op==2 then
-		local ta=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_HAND,0,1,1,c):GetFirst()
-		Duel.Remove(ta,POS_FACEUP,REASON_EFFECT)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetCountLimit(1)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabelObject(ta)
-		e1:SetOperation(cm.op3)
-		Duel.RegisterEffect(e1,tp)
- 
-end
+   
 end
 function cm.op3(e,tp,eg,ep,ev,re,r,rp)
 local tc=e:GetLabelObject()
@@ -161,9 +145,9 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	if #gg>0 then
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
+		Duel.Destroy(gg,REASON_EFFECT)
 	end
 end
 end
 end
-
 

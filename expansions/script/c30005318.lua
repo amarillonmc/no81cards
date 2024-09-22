@@ -68,7 +68,7 @@ end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local loc=LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED 
 	local hg=Duel.GetMatchingGroup(cm.suf,tp,LOCATION_HAND,0,nil,e:GetHandler())
-	local pg=Duel.GetMatchingGroup(cm.spf,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,e,tp)
+	local pg=Duel.GetMatchingGroup(cm.spf,tp,LOCATION_HAND+LOCATION_SZONE,0,nil,e,tp)
 	local ng=Duel.GetMatchingGroup(cm.nf,tp,LOCATION_ONFIELD,0,nil,e,tp)
 	local xg=Duel.GetMatchingGroup(cm.zef,tp,loc,0,nil,e,tp)
 	if chk==0 then return #hg>0 or #pg>0 or (#ng>0 and #xg>0) end
@@ -76,7 +76,7 @@ end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local loc=LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED 
 	local hg=Duel.GetMatchingGroup(cm.suf,tp,LOCATION_HAND,0,nil,e:GetHandler())
-	local pg=Duel.GetMatchingGroup(cm.spf,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,e,tp)
+	local pg=Duel.GetMatchingGroup(cm.spf,tp,LOCATION_HAND+LOCATION_SZONE,0,nil,e,tp)
 	local ng=Duel.GetMatchingGroup(cm.nf,tp,LOCATION_ONFIELD,0,nil,e,tp)
 	local xg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.zef),tp,loc,0,nil,e,tp)
 	if #hg==0 and #pg==0 and (#xg==0 and #ng==0) then return end

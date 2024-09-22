@@ -24,25 +24,24 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.distg)
 	e2:SetOperation(cm.disop)
 	c:RegisterEffect(e2)
-end
 cm.toss_dice=true
+cm.toss_coin=true
+end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp) end
+	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,3)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local d1,d2,d3=Duel.TossDice(tp,3)
-	Debug.Message(d1)
-	Debug.Message(d2)
-	Debug.Message(d3)
 	local i=0
-	if d1==6 then
+	if d1==6 or (Duel.IsPlayerAffectedByEffect(tp,60010130) and d1==5) then
 		i=i+1
 	end
-	if d2==6 then
+	if d2==6 or (Duel.IsPlayerAffectedByEffect(tp,60010130) and d2==5) then
 		i=i+1
 	end
-	if d3==6 then
+	if d3==6 or (Duel.IsPlayerAffectedByEffect(tp,60010130) and d3==5) then
 		i=i+1
 	end
 	if i~=0 then
@@ -61,7 +60,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SelectOption(tp,aux.Stringid(m,5))
 			Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(m,5))
 			Duel.Hint(HINT_CARD,0,m+1)
-			e:GetHandler():SetCardData(CARDDATA_CODE,m+1) 
+			--e:GetHandler():SetCardData(CARDDATA_CODE,m+1) 
 			
 			local e1=Effect.CreateEffect(c)
 			e1:SetCategory(CATEGORY_TODECK+CATEGORY_COIN)

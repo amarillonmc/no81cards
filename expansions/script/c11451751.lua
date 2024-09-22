@@ -110,7 +110,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local rg=g:RandomSelect(tp,1)
 	local tc=rg:GetFirst()
 	if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)>0 then
-		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451911,4))
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(m,3))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -144,6 +144,7 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local ph,ph2=Duel.GetCurrentPhase(),e:GetLabel()
 	if ph~=ph2 and (ph<=PHASE_MAIN1 or ph>=PHASE_MAIN2 or ph2<=PHASE_MAIN1 or ph2>=PHASE_MAIN2) then
 		Duel.SendtoHand(tc,1-tp,REASON_EFFECT)
+		e:Reset()
 	end
 	pnfl_adjusting=false
 end

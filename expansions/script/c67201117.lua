@@ -106,7 +106,7 @@ function c67201117.optg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67201117.filter,tp,LOCATION_DECK,0,1,nil) end
 end
 function c67201117.opop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(67201117,4))
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(67201105,4))
 	local g=Duel.SelectMatchingCard(tp,c67201117.filter,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then

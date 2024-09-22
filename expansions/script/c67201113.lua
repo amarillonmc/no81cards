@@ -43,7 +43,7 @@ function c67201113.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) or not c:IsCanBeSpecialSummoned(e,0,tp,false,false) then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<2 or Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c67201113.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,c67201113.spfilter,tp,LOCATION_HAND,0,1,1,c,e,tp)
 	if g:GetCount()>0 then
 		g:AddCard(c)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)

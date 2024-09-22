@@ -25,7 +25,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g1=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_HAND,0,1,snum,nil)
 	if not g1 then return end
-	snum=g1:GetCount()
+	snum=g1:GetCount()+g1:GetCount()
 	local num=0
 	Duel.ConfirmCards(1-tp,g1)
 	for i=1,#g2,1 do
@@ -68,7 +68,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 					mg:RemoveCard(tc)
 				end
 				-- if not mg:CheckSubGroup(aux.RitualCheck,1,1,tp,tc:GetLevel(),tp,tc,tc:GetLevel(),"Greater") then
-				-- 	return
+				--  return
 				-- end
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 				aux.GCheckAdditional=aux.RitualCheckAdditional(tc,tc:GetLevel(),"Greater")
@@ -127,17 +127,9 @@ end
 
 
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsLocation(LOCATION_HAND) end
-	local c=e:GetHandler()
- 
-		Duel.SendtoHand(e:GetHandler(),1-tp,REASON_COST)
-		local e1=Effect.CreateEffect(c)
-		e1:SetDescription(66)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_PUBLIC)
-		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-		e1:SetReset(RESET_EVENT+0x1fe0000)
-		e:GetHandler():RegisterEffect(e1)
+	 local c=e:GetHandler()
+	 if chk==0 then return c:IsDiscardable() end
+	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 	
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -197,8 +189,6 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e6)
 	end
 end
-
-
 
 
 

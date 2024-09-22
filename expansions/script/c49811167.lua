@@ -29,7 +29,7 @@ function c49811167.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c49811167.matfilter(c)
-	return c:IsLinkRace(RACE_INSECT) and c:IsLinkAttribute(ATTRIBUTE_EARTH)
+	return c:IsLinkRace(RACE_INSECT) and c:IsLinkAttribute(ATTRIBUTE_EARTH) and c:IsLevelAbove(1)
 end
 function c49811167.costfilter(c)
 	return (c:IsRace(RACE_INSECT) and c:IsAttribute(ATTRIBUTE_EARTH)) and not c:IsPublic()

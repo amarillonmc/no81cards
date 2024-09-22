@@ -1,7 +1,7 @@
 --方舟骑士-阿米娅·青色怒火
 c29065513.named_with_Arknight=1
 function c29065513.initial_effect(c)
-	aux.AddCodeList(c,29065500) 
+	aux.AddCodeList(c,29065500,29065508)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCode2(c,29065500,29065508,true,true)
@@ -41,6 +41,13 @@ function c29065513.xxop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:GetMinGroup(Card.GetAttack):Select(tp,1,1,nil):GetFirst()
 		Duel.CalculateDamage(c,tc)
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetValue(700)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
 function c29065513.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
