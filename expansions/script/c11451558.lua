@@ -209,6 +209,7 @@ function cm.excost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
 	local cg=g:Select(tp,1,#g,nil)
 	Duel.SendtoHand(cg,1-tp,REASON_COST)
+	Duel.ShuffleHand(1-tp)
 	local ft=Duel.GetOperatedGroup():FilterCount(cm.thfilter,nil,tp)
 	e:SetLabel(ft)
 end

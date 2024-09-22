@@ -123,5 +123,5 @@ function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,1-tp,REASON_EFFECT)>0 then Duel.Draw(tp,1,REASON_EFFECT) end
+	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,1-tp,REASON_EFFECT)>0 then Duel.ShuffleHand(1-tp) Duel.Draw(tp,1,REASON_EFFECT) end
 end

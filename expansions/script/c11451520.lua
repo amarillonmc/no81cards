@@ -1,7 +1,6 @@
 --山雨欲来
 --21.04.21
-local m=11451520
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -41,6 +40,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		c:CancelToGrave()
 		Duel.SendtoHand(c,1-tp,REASON_EFFECT)
+		Duel.ShuffleHand(1-tp)
 	end
 end
 function cm.con(e)
@@ -48,5 +48,11 @@ function cm.con(e)
 	return Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)<=3
 end
 function cm.aclimit(e,tp,eg,ep,ev,re,r,rp)
-	if ep==tp then Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1) end
+	local c=e:GetHandler()
+	local ct=Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)
+	if ep==tp then
+		--Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+		c:SetTurnCounter(ct)
+		if Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)>=3 then e:Reset() end
+	end
 end

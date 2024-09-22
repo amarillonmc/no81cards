@@ -137,6 +137,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.DisableShuffleCheck()
 			Duel.SendtoHand(tc,1-tp,REASON_EFFECT)
 			Duel.ConfirmCards(tp,tc)
+			Duel.ShuffleHand(1-tp)
 		end
 	end
 end

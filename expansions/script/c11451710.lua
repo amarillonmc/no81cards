@@ -80,6 +80,7 @@ function cm.cacost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAbleToHandAsCost() end
 	Duel.SendtoHand(c,1-tp,REASON_COST)
+	Duel.ShuffleHand(1-tp)
 end
 function cm.catg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.setfilter,tp,LOCATION_DECK,0,nil,tp)

@@ -84,7 +84,10 @@ function c22348428.seqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tctb={}
 	for tc in aux.Next(g) do
 		local lv=tc:GetLevel()
-		table.insert(tctb,lv)
+		if not tct[lv] then
+			tct[lv]=true
+			table.insert(tctb,lv)
+		end
 	end
 	local num=Duel.AnnounceNumber(tp,table.unpack(tctb))
 	e:SetLabel(num)

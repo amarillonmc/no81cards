@@ -38,7 +38,7 @@ function cm.initial_effect(c)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
 	e4:SetCondition(c43990027.chcon)
-	e4:SetTarget(c43990027.chtg)
+	--e4:SetTarget(c43990027.chtg)
 	e4:SetOperation(c43990027.chop)
 	c:RegisterEffect(e4)
 	

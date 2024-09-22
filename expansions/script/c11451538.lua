@@ -118,6 +118,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAbleToHandAsCost() end
 	Duel.SendtoHand(c,1-tp,REASON_COST)
+	Duel.ShuffleHand(1-tp)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
