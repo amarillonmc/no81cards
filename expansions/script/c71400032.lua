@@ -1,5 +1,5 @@
 --蚀异梦境-幻想植物回路
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400032.initial_effect(c)
 	--Activate
 	--See AddYumeFieldGlobal

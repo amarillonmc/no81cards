@@ -1,5 +1,5 @@
 --幻异梦境-梦湖回廊
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400015.initial_effect(c)
 	--Activate
 	--See AddYumeFieldGlobal

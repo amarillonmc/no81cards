@@ -1,5 +1,5 @@
 --梦坠
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400013.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -20,7 +20,6 @@ end
 function c71400013.filter2(c)
 	return c:IsSetCard(0x714) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx()
 end
-
 function c71400013.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=yume.YumeFieldCheck(tp,0,1)
 	local tg=Duel.GetMatchingGroup(c71400013.filter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)

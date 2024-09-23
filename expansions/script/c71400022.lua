@@ -1,5 +1,5 @@
 --异梦眼药商人
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400022.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2,yume.YumeLMGFilterFunction(c))

@@ -1,5 +1,5 @@
 --异梦书使-馆长女儿
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400011.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,yume.YumeCheck(c,true),4,3)
