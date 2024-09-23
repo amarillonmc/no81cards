@@ -27,7 +27,7 @@ function c67201124.initial_effect(c)
 	c:RegisterEffect(e3)   
 end
 function c67201124.tdfilter(c,tp)
-	return c:IsSetCard(0x3670) and c:IsFaceupEx() and c:IsAbleToDeckAsCost() and Duel.GetMZoneCount(tp,c)>0
+	return c:IsSetCard(0x3670) and c:IsFaceupEx() and c:IsAbleToDeckAsCost() and Duel.GetMZoneCount(tp,c)>0 and c:IsType(TYPE_MONSTER)
 end
 function c67201124.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

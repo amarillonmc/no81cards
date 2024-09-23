@@ -134,7 +134,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(tde,tp)
 	end
 	if Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_EXTRA,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)	
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)   
 		local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_EXTRA,0,1,1,nil)
 		local tc=g:GetFirst()
 		if tc then
@@ -155,7 +155,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.resetop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
-	if not te:CheckCountLimit(tp) then
+	if not te or not te:CheckCountLimit(tp) then
 		Duel.ResetFlagEffect(tp,id)
 		e:Reset()
 	end

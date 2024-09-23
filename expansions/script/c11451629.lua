@@ -1,7 +1,6 @@
 --龙宫城的反逆者 哪吒
 --21.12.15
-local m=11451629
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,22702055)
 	c:SetUniqueOnField(1,1,11451419)
@@ -29,15 +28,25 @@ function cm.initial_effect(c)
 	e3:SetCondition(cm.rule2)
 	c:RegisterEffect(e3)
 	--control
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e0:SetOperation(cm.check)
+	c:RegisterEffect(e0)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,2))
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e4:SetCode(EVENT_CUSTOM+m)
 	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_EVENT_PLAYER)
+	e4:SetRange(LOCATION_MZONE)
 	e4:SetTarget(cm.target)
 	e4:SetOperation(cm.operation)
 	c:RegisterEffect(e4)
 	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
+end
+function cm.check(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.RaiseSingleEvent(c,EVENT_CUSTOM+m,re,r,1-c:GetControler(),1-c:GetControler(),0)
 end
 function cm.chainfilter(re,tp,cid)
 	return not re:GetHandler():IsSetCard(0x6978)
