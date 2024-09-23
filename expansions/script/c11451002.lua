@@ -28,7 +28,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
 	for tc in aux.Next(g) do
-		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH+EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END-RESET_TURN_SET,EFFECT_FLAG_OATH+EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -77,7 +77,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if ev==e:GetLabel() then rc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH+EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1)) end
+	if ev==e:GetLabel() then rc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END-RESET_TURN_SET,EFFECT_FLAG_OATH+EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1)) end
 end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
 	local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)
@@ -106,7 +106,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 		local og=og1:Filter(cm.rffilter,nil)
 		if og and #og>0 then
 			for oc in aux.Next(og) do
-				oc:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
+				oc:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END-RESET_TURN_SET,0,1,fid)
 			end
 			og:KeepAlive()
 			if Duel.GetCurrentChain()>1 then
@@ -144,6 +144,8 @@ function cm.returntofield(tc)
 				Duel.SendtoGrave(gc,REASON_RULE)
 				Duel.BreakEffect()
 			end
+	        Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+	        return
 		end
 		Duel.ReturnToField(tc)
 	end

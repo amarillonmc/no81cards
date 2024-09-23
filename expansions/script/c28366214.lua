@@ -41,7 +41,7 @@ end
 function c28366214.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		local g=Duel.GetMatchingGroup(c28366214.cfilter,tp,LOCATION_MZONE,0,nil)
+		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 		local atk=g:GetSum(Card.GetRank)+g:GetSum(Card.GetLevel)
 		if atk>0 then
 			local e1=Effect.CreateEffect(e:GetHandler())
@@ -59,11 +59,11 @@ function c28366214.activate(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetLabelObject(tc)
 		e2:SetValue(1)
 		e2:SetCondition(c28366214.actcon)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e2,tp)
 		if Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28366214,2)) then
 			Duel.BreakEffect()
-			Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD)
+			local ct=Duel.DiscardHand(tp,Card.IsDiscardable,1,99,REASON_EFFECT+REASON_DISCARD)
 			local e3=Effect.CreateEffect(e:GetHandler())
 			e3:SetType(EFFECT_TYPE_SINGLE)
 			e3:SetCode(EFFECT_IMMUNE_EFFECT)
@@ -71,18 +71,14 @@ function c28366214.activate(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetOwnerPlayer(tp)
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e3)
-		end
-		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28366214,3))
-		if not tc:IsAttribute(ATTRIBUTE_FIRE) then
 			local e4=Effect.CreateEffect(e:GetHandler())
-			e4:SetType(EFFECT_TYPE_FIELD)
-			e4:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
-			e4:SetTargetRange(LOCATION_MZONE,0)
-			e4:SetTarget(c28366214.atktg)
-			e4:SetLabel(tc:GetFieldID())
-			e4:SetReset(RESET_PHASE+PHASE_END)
-			Duel.RegisterEffect(e4,tp)
+			e4:SetType(EFFECT_TYPE_SINGLE)
+			e4:SetCode(EFFECT_UPDATE_ATTACK)
+			e4:SetValue(ct*1000)
+			e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e4)
 		end
+		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28366214,3))
 	end
 end
 function c28366214.actcon(e)
@@ -90,9 +86,6 @@ function c28366214.actcon(e)
 end
 function c28366214.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
-end
-function c28366214.atktg(e,c)
-	return e:GetLabel()~=c:GetFieldID()
 end
 function c28366214.thcon(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end

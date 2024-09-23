@@ -62,11 +62,17 @@ function cm.initial_effect(c)
 			cm[0]=e
 			return _PConditionFilter(c,e,...)
 		end
+		local _PendOperationCheck=aux.PendOperationCheck
+		function aux.PendOperationCheck(ft1,ft2,ft)
+			cm[2]=true
+			return _PendOperationCheck(ft1,ft2,ft)
+		end
 		local _SelectSubGroup=Group.SelectSubGroup
 		function Group.SelectSubGroup(...)
 			local res=_SelectSubGroup(...)
-			if res and cm[0] then cm[1]=cm[0] end
+			if res and cm[0] and cm[2] then cm[1]=cm[0] end
 			cm[0]=nil
+			cm[2]=nil
 			return res
 		end
 		local _Merge=Group.Merge
@@ -252,6 +258,8 @@ function cm.returntofield(tc)
 			Duel.SendtoGrave(gc,REASON_RULE)
 			Duel.BreakEffect()
 		end
+		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		return
 	end
 	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then
 		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)
