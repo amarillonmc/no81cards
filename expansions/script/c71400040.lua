@@ -1,5 +1,5 @@
 --异梦笑颜兄妹
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400040.initial_effect(c)
 	c:SetUniqueOnField(1,0,71400040)
 	--link summon

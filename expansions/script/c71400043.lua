@@ -1,5 +1,5 @@
 --异梦海底的潜水员-橘黄子
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400043.initial_effect(c)
 	c:SetSPSummonOnce(71400043)
 	--link summon
@@ -64,7 +64,7 @@ function c71400043.matfilter(c)
 	return c:IsSetCard(0x714) and not c:IsLinkType(TYPE_LINK)
 end
 function c71400043.gyfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x7714) and c:IsType(TYPE_FIELD)
+	return c:IsSetCard(0x7714) and c:IsType(TYPE_FIELD)
 end
 function c71400043.splimit(e,se,sp,st,pos,tp)
 	return yume.YumeCheck(e,se,sp) and Duel.IsExistingMatchingCard(c71400043.gyfilter,sp,LOCATION_GRAVE,0,1,nil)

@@ -1,5 +1,5 @@
 --幻异梦境-梦幻图书馆
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400014.initial_effect(c)
 	--red remedy
 	local e1a=Effect.CreateEffect(c)
@@ -20,11 +20,10 @@ function c71400014.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71400014,1))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_CHAINING)
+	e2:SetCode(EVENT_TO_HAND)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCondition(c71400014.con2)
 	e2:SetCost(c71400014.cost2)
 	e2:SetTarget(c71400014.tg2)
 	e2:SetOperation(c71400014.op2)
@@ -72,9 +71,6 @@ function c71400014.con1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c71400014.filter2(c,e,tp)
 	return c:IsSetCard(0x714) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c71400014.con2(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_TRAP) and e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED)
 end
 function c71400014.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,2000) end

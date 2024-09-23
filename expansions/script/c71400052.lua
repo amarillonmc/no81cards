@@ -1,5 +1,5 @@
 --蚀异梦像-机械
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400052.initial_effect(c)
 	--summon limit
 	yume.AddYumeSummonLimit(c)

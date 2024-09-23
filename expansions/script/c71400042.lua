@@ -1,5 +1,5 @@
 --构异梦境-巡行病房
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400042.initial_effect(c)
 	yume.temp_card_field[c]=yume.temp_card_field[c] or {}
 	yume.temp_card_field[c].id=71400042
@@ -70,7 +70,7 @@ function c71400042.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoGrave(sg,REASON_EFFECT)
 	local ct=sg:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if ct>ft then ct=ft
+	if ct>ft then ct=ft end
 	local g=Duel.GetMatchingGroup(c71400042.filter1sp,tp,LOCATION_GRAVE,0,nil,e,tp)
 	if ct<1 or g:GetCount()==0 then return end
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end

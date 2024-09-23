@@ -1,5 +1,5 @@
 --黑白异梦少女-黑白子
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400045.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,yume.YumeCheck(c,true),aux.NonTuner(nil),1)

@@ -1,5 +1,5 @@
 --幽禁异梦的狐侍与魔女
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400024.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,c71400024.mfilter,2,2,yume.YumeCheck(c))

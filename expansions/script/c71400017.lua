@@ -1,5 +1,5 @@
 --幻异梦境-门扉房间
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400017.initial_effect(c)
 	--Activate
 	--See AddYumeFieldGlobal
@@ -54,13 +54,16 @@ end
 function c71400017.filter2r(c,tp)
 	return c:IsSetCard(0xe714) and c:IsAbleToRemove(tp)
 end
+function c71400017.filter2c(c)
+	return c:IsOnField() and c:IsFacedown()
+end
 function c71400017.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c71400017.filter2,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) and Duel.GetMatchingGroupCount(c71400017.filter2r,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,tp)>4 end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,5,tp,LOCATION_HAND+LOCATION_GRAVE)
+	if chk==0 then return Duel.IsExistingMatchingCard(c71400017.filter2,tp,LOCATION_GRAVE+LOCATION_DECK+LOCATION_REMOVED,0,1,nil) and Duel.GetMatchingGroupCount(c71400017.filter2r,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,nil,tp)>4 end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,5,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_ONFIELD)
 end
 function c71400017.op2(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c71400017.filter2r,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil)
+	local g=Duel.GetMatchingGroup(c71400017.filter2r,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)
 	if g:GetClassCount(Card.GetCode)<5 then return end
 	local rg=Group.CreateGroup()
 	for i=1,5 do
@@ -69,11 +72,13 @@ function c71400017.op2(e,tp,eg,ep,ev,re,r,rp)
 		rg:AddCard(sc)
 		g:Remove(Card.IsCode,nil,sc:GetCode())
 	end
+	local cg=rg:Filter(c71400017.filter2c,nil)
+	Duel.ConfirmCards(1-tp,cg)
 	Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g2=Duel.SelectMatchingCard(tp,c71400017.filter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	local g2=Duel.SelectMatchingCard(tp,c71400017.filter2,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 	if g2:GetCount()>0 then
 		Duel.SendtoHand(g2,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+		Duel.ConfirmCards(1-tp,g2)
 	end
 end

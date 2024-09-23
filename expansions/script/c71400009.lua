@@ -1,5 +1,5 @@
 --异梦画廊的假面画师
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400009.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,yume.YumeCheck(c,true),4,2)

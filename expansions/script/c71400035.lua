@@ -1,5 +1,5 @@
 --梦行
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400035.initial_effect(c)
 	--activate from hand
 	local e0=Effect.CreateEffect(c)

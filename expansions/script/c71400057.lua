@@ -1,5 +1,5 @@
 --剧场读书
-if not c71401001 then dofile("expansions/script/c71400001.lua") end
+if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400057.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
