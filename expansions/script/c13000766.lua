@@ -24,8 +24,26 @@ local e3=Effect.CreateEffect(c)
 	e3:SetTarget(s.sptg)
 	e3:SetOperation(s.desop)
 	c:RegisterEffect(e3)
+	if s.global==nil then --添加全局效果并注册给1个玩家
+		s.global=true
+		local e13=Effect.CreateEffect(c)
+		e13:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e13:SetCode(EVENT_CHANGE_POS)
+		e13:SetOperation(s.globals)
+		Duel.RegisterEffect(e13,0)
+	end
 end
 s.num=0
+function s.globals(e,tp,eg,ep,ev,re,r,rp)--添加标识
+	local g=eg:Filter(s.cfilter2,nil,tp)--筛选自己盖放的卡
+	for tc in aux.Next(g) do
+		tc:RegisterFlagEffect(id+rp,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
+	end
+end
+function s.cfilter2(c,tp)
+	return c:IsLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP)
+			and c:IsPosition(POS_FACEDOWN)
+end
 function s.AddLinkProcedure(c,f,min,max,gf)
 	if max==nil then max=c:GetLink() end
 	local e1=Effect.CreateEffect(c)
@@ -58,7 +76,7 @@ function s.LinkCondition(f,minct,maxct,gf)
 					mg=og:Filter(Auxiliary.LConditionFilter,nil,f,c,e)
 				else
 					mg=Auxiliary.GetLinkMaterials(tp,f,c,e)
-					local mg2=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+					local mg2=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
 					local mg3=Duel.GetMatchingGroup(s.filter,tp,LOCATION_SZONE,0,nil)
 					mg:Merge(mg2)
 					mg:Merge(mg3)
@@ -70,7 +88,7 @@ function s.LinkCondition(f,minct,maxct,gf)
 				local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
 				if fg:IsExists(Auxiliary.MustMaterialCounterFilter,1,nil,mg) then return false end
 				Duel.SetSelectedCard(fg)
-				return mg:CheckSubGroup(Auxiliary.LCheckGoal,minc,maxc,tp,c,gf,lmat)
+				return mg:CheckSubGroup(s.LCheckGoal,minc,maxc,tp,c,gf,lmat)
 			end
 end
 function s.LinkTarget(f,minct,maxct,gf)
@@ -87,7 +105,7 @@ function s.LinkTarget(f,minct,maxct,gf)
 					mg=og:Filter(Auxiliary.LConditionFilter,nil,f,c,e)
 				else
 					mg=Auxiliary.GetLinkMaterials(tp,f,c,e)
-					local mg2=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+					local mg2=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
 					local mg3=Duel.GetMatchingGroup(s.filter,tp,LOCATION_SZONE,0,nil)
 					mg:Merge(mg2)
 					mg:Merge(mg3)
@@ -130,10 +148,10 @@ function s.chainlm(e,ep,tp)
 	return tp==ep
 end
 function s.filter(c)
-	return bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0
+	return bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0 and not c:IsFacedown()
 end
 function s.filter2(c,tp)
-	return c:IsFacedown()
+	return c:IsFacedown() and c:GetFlagEffect(id+tp)~=0
 end
 function s.mattg(e,c,tp)
 	return bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0

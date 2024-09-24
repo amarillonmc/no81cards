@@ -71,6 +71,7 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
 	if chk==0 then
 		--if (e:IsHasType(EFFECT_TYPE_TRIGGER_O) and c:IsFaceup()) or (e:IsHasType(EFFECT_TYPE_QUICK_O) and c:IsFacedown()) then return false end
+		if Duel.GetCurrentChain()<1 then return false end
 		if c:GetFlagEffect(m+1)>0 then return false end
 		local loc=0
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_HAND end
@@ -296,7 +297,7 @@ function cm.returntofield(tc)
 			Duel.BreakEffect()
 		end
 		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-        return
+		return
 	end
 	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then
 		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)

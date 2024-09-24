@@ -141,6 +141,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCost(cm.descost)
 		e1:SetTarget(cm.destg)
 		e1:SetOperation(cm.desop)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
 	end
 end

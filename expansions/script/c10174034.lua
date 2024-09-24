@@ -7,7 +7,15 @@ function s.initial_effect(c)
 	local e2 = Scl.CreateIgnitionEffect(c, "Destroy", 1, "Destroy", "Target", "MonsterZone", s.descon, 
 		{ "PlayerCost", "Discard", 1 },
 		{ "Target", "Destroy", aux.TRUE, 0, "OnField" }, s.desop)
-	local e4 = Scl.CreateSingleBuffEffect(c, "UnaffectedByOpponentsActivatedEffects", 1, "MonsterZone", s.uecon)
+	--immune
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_IMMUNE_EFFECT)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCondition(s.uecon)
+	e3:SetValue(s.efilter)
+	c:RegisterEffect(e3)
 end
 function s.val(e,c)
 	return Duel.GetFieldGroupCount(c:GetControler(),0,LOCATION_ONFIELD)*1000
@@ -23,4 +31,7 @@ function s.desop(e,tp)
 end
 function s.uecon(e,tp)
 	return e:GetHandler():IsAttackAbove(4000)
+end
+function s.efilter(e,re)
+	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
 end
