@@ -1,5 +1,5 @@
 --刚炼装勇士·银金后宫王
-function c79029517.initial_effect(c)
+function c79029517.initial_effect(c) 
 	--extra material
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(79029517,0))
@@ -63,7 +63,7 @@ function c79029517.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function c79029517.sprfilter(c,tp,g,sc)
-	return c:IsType(TYPE_PENDULUM)
+	return c:IsType(TYPE_PENDULUM) and c:IsFaceup() 
 end
 function c79029517.linkcon(e,c)
 	return Duel.IsExistingMatchingCard(c79029517.sprfilter,tp,LOCATION_MZONE+LOCATION_PZONE,0,4,nil) 

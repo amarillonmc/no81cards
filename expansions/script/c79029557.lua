@@ -20,7 +20,7 @@ function c79029557.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMING_END_PHASE)
+	e2:SetHintTiming(0,TIMING_END_PHASE+TIMINGS_CHECK_MONSTER)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,19029557)  
 	e2:SetCost(c79029557.ttcost) 
@@ -77,35 +77,35 @@ end
 function c79029557.ttop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(c79029557.ttfil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler(),Duel.GetTurnCount()) 
-	if g:GetCount()>0 then 
+	if g:GetCount()<=0 then return end 
 	local sg=g:Select(tp,1,99,nil)
 	local tc=sg:GetFirst() 
 	while tc do 
 	local loc=tc:GetPreviousLocation() 
 	local p=tc:GetPreviousControler()
 	if bit.band(loc,LOCATION_HAND)~=0 then 
-	Duel.SendtoHand(tc,p,REASON_EFFECT+REASON_RULE)
+		Duel.SendtoHand(tc,p,REASON_EFFECT+REASON_RULE)
 	elseif bit.band(loc,LOCATION_DECK)~=0 then
-	Duel.SendtoDeck(tc,p,2,REASON_EFFECT+REASON_RULE)
+		Duel.SendtoDeck(tc,p,2,REASON_EFFECT+REASON_RULE)
 	elseif bit.band(loc,LOCATION_EXTRA)~=0 then
-	if tc:IsPreviousPosition(POS_FACEUP) then 
-	Duel.SendtoExtraP(tc,p,REASON_EFFECT+REASON_RULE)
-	else
-	Duel.SendtoDeck(tc,p,2,REASON_EFFECT+REASON_RULE) 
-	end
+		if tc:IsPreviousPosition(POS_FACEUP) then 
+			Duel.SendtoExtraP(tc,p,REASON_EFFECT+REASON_RULE)
+		else
+			Duel.SendtoDeck(tc,p,2,REASON_EFFECT+REASON_RULE) 
+		end
 	elseif bit.band(loc,LOCATION_GRAVE)~=0 then
-	Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RULE)
+		Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RULE)
 	elseif bit.band(loc,LOCATION_REMOVED)~=0 then
-	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT+REASON_RULE)
+		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT+REASON_RULE)
 	else 
-	Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT+REASON_RULE)
+		Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT+REASON_RULE)
 	end
 	tc=sg:GetNext()
 	end
 	if Duel.IsExistingMatchingCard(Card.IsCanBeBattleTarget,tp,0,LOCATION_MZONE,1,nil,c) and Duel.SelectYesNo(tp,aux.Stringid(79029557,1)) then 
-	local bc=Duel.SelectMatchingCard(tp,Card.IsCanBeBattleTarget,tp,0,LOCATION_MZONE,1,1,nil,c):GetFirst()
-	Duel.CalculateDamage(c,bc)
-	end
+		Duel.BreakEffect()
+		local bc=Duel.SelectMatchingCard(tp,Card.IsCanBeBattleTarget,tp,0,LOCATION_MZONE,1,1,nil,c):GetFirst()
+		Duel.CalculateDamage(c,bc) 
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)

@@ -2,13 +2,13 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedureLevelFree(c,aux.FilterBoolFunction(Card.IsRace,RACE_DRAGON),nil,2,2,s.ovfilter,aux.Stringid(id,0),s.xyzop)
+	aux.AddXyzProcedureLevelFree(c,s.mfilter,nil,2,2,s.ovfilter,aux.Stringid(id,0),s.xyzop)
 	c:EnableReviveLimit()
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,false)
 	--pzone specialsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,3))
+	e1:SetDescription(aux.Stringid(id,1))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -21,7 +21,8 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	--remove
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,4))
+	e2:SetDescription(aux.Stringid(id,0))
+	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
@@ -32,7 +33,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	--pendulum move
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(id,5))
+	e3:SetDescription(aux.Stringid(id,0))
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_PHASE+PHASE_END)
 	e3:SetRange(LOCATION_MZONE)
@@ -43,6 +44,9 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 s.pendulum_level=7
+function s.mfilter(c)
+	return c:IsFaceup() and c:IsRace(RACE_DRAGON) and c:IsXyzLevel(7)
+end
 function s.ovfilter(c)
 	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_DARK) and c:IsType(TYPE_XYZ)
 end
@@ -73,7 +77,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Group.FromCards(c)
 	local g=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_EXTRA,0,nil,e,tp,c)
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)	  
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)	
 		local tc=g:Select(tp,1,1,nil):GetFirst()
 		if tc then
 			Duel.BreakEffect()
@@ -100,8 +104,10 @@ function s.pcop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local g=Duel.SelectMatchingCard(tp,s.pcfilter,tp,LOCATION_EXTRA,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true) 	 
+	if g:GetCount()>0 and Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true) and c:IsOnField() and c:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then  
+		local rg=c:GetColumnGroup()
+		rg:AddCard(c)
+		Duel.Remove(rg:Select(tp,1,1,nil),POS_FACEUP,REASON_EFFECT)  
 	end
 end
 function s.filter(c)

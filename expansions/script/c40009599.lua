@@ -58,7 +58,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp)
 	local ctype=bit.band(g:GetFirst():GetType(),TYPE_RITUAL+TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK)
-	local dg=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil,e,tp,ctype,tgc)
+	local dg=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,e,tp,ctype,g:GetFirst())
 	Duel.HintSelection(g)
 	local tc=dg:GetFirst()
 	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0 then

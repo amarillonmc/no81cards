@@ -57,7 +57,6 @@ function c71400001.filter(c)
 end
 end
 --global part
-table=require("table")
 function yume.AddYumeSummonLimit(c,ssm)
 --1=special summon monster, 0=non special summon monster
 	ssm=ssm or 0

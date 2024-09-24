@@ -48,7 +48,6 @@ end
 function cm.pspcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
-		if Duel.GetCurrentChain()<1 then return false end
 		if c:GetFlagEffect(m+1)>0 then return false end
 		for i=1,Duel.GetCurrentChain() do
 			local te,tep,loc,pos=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_POSITION)
@@ -94,6 +93,11 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
 	local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
 	if chk==0 then
+		if Duel.GetFlagEffect(tp,m)==0 then
+			Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,5))
+			Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
+		end
+		if Duel.GetCurrentChain()<1 then return false end
 		if c:GetFlagEffect(m+1)>0 then return false end
 		local loc=0
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>-1 then loc=loc+LOCATION_HAND end

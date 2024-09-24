@@ -30,17 +30,19 @@ function cm.cfilterz(c)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	if not Duel.IsExistingMatchingCard(cm.cfilterz,tp,4,0,1,nil) then return end
+	if not Duel.IsExistingMatchingCard(cm.cfilterz,tp,LOCATION_MZONE,0,1,nil) then return end
 	cm_copy = false
 	local g = {}
+	local x = 0
 	if Duel.IsPlayerAffectedByEffect(tp,40011471) then
-		g=Duel.GetMatchingGroup(cm.cfilter2,tp,LOCATION_GRAVE,0,nil)
+		g=Duel.GetMatchingGroup(cm.cfilter2,tp,LOCATION_GRAVE,0,nil)+Duel.GetMatchingGroup(cm.cfilter1,tp,LOCATION_GRAVE,0,nil)
+		x=1
 	else
 		g=Duel.GetMatchingGroup(cm.cfilter1,tp,LOCATION_GRAVE,0,nil)
 	end
 	if #g<=0 then return end
-	if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then 
-		Duel.Hint(3,tp,HINTMSG_REMOVE)	
+	if Duel.SelectYesNo(tp,aux.Stringid(m,1+x)) then
+		Duel.Hint(3,tp,HINTMSG_REMOVE)  
 		local sg=g:Select(tp,1,1,nil)
 		Duel.Remove(sg,POS_FACEUP,REASON_COST)
 		cm_copy = true
@@ -50,7 +52,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end  
 		te:SetLabelObject(e:GetLabelObject())  
 		e:SetLabelObject(te)  
-		Duel.ClearOperationInfo(0)  
+		Duel.ClearOperationInfo(0)
 	end
 end
 function cm.filter(c)
@@ -73,13 +75,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 then
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
-	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
-			Duel.BreakEffect()
 		if cm_copy then
 		cm_copy = false
 		local te=e:GetLabelObject()
@@ -89,6 +84,22 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				if op then op(e,tp,eg,ep,ev,re,r,rp) end  
 			end
 		 end
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,g)
+			Duel.BreakEffect()
+		end
+		if cm_copy then
+		cm_copy = false
+		local te=e:GetLabelObject()
+			if te then  
+			e:SetLabelObject(te:GetLabelObject())  
+			local op=te:GetOperation()  
+				if op then op(e,tp,eg,ep,ev,re,r,rp) end  
+			end
 		 end
 	end
 end

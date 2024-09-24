@@ -38,25 +38,26 @@ function cm.cfilter1(c)
 	return c:GetType()==TYPE_SPELL and c:IsAbleToRemoveAsCost() and c:CheckActivateEffect(true,true,false)~=nil  
 end
 function cm.cfilter2(c)
-	return (c:GetType()==TYPE_SPELL or c:IsType(TYPE_QUICKPLAY))
-	and c:IsAbleToRemoveAsCost() and c:CheckActivateEffect(true,true,false)~=nil  
+	return c:IsType(TYPE_QUICKPLAY) and c:IsAbleToRemoveAsCost() and c:CheckActivateEffect(true,true,false)~=nil  
 end
 function cm.cfilterz(c)
 	return c:IsFaceup() and cm.Spiritualist(c)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	if not Duel.IsExistingMatchingCard(cm.cfilterz,tp,4,0,1,nil) then return end
+	if not Duel.IsExistingMatchingCard(cm.cfilterz,tp,LOCATION_MZONE,0,1,nil) then return end
 	cm_copy = false
 	local g = {}
+	local x = 0
 	if Duel.IsPlayerAffectedByEffect(tp,40011471) then
-		g=Duel.GetMatchingGroup(cm.cfilter2,tp,LOCATION_GRAVE,0,nil)
+		g=Duel.GetMatchingGroup(cm.cfilter2,tp,LOCATION_GRAVE,0,nil)+Duel.GetMatchingGroup(cm.cfilter1,tp,LOCATION_GRAVE,0,nil)
+		x=1
 	else
 		g=Duel.GetMatchingGroup(cm.cfilter1,tp,LOCATION_GRAVE,0,nil)
 	end
 	if #g<=0 then return end
-	if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then 
-		Duel.Hint(3,tp,HINTMSG_REMOVE)	
+	if Duel.SelectYesNo(tp,aux.Stringid(m,1+x)) then
+		Duel.Hint(3,tp,HINTMSG_REMOVE)  
 		local sg=g:Select(tp,1,1,nil)
 		Duel.Remove(sg,POS_FACEUP,REASON_COST)
 		cm_copy = true
@@ -66,7 +67,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end  
 		te:SetLabelObject(e:GetLabelObject())  
 		e:SetLabelObject(te)  
-		Duel.ClearOperationInfo(0)  
+		Duel.ClearOperationInfo(0)
 	end
 end
 function cm.filter(c)
