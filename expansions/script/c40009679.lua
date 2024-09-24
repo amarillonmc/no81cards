@@ -35,40 +35,38 @@ function cm.recon1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter6,tp,LOCATION_MZONE,0,1,nil)
 end 
 function cm.cfilter1(c)
-	return c:GetType()==TYPE_SPELL and c:IsAbleToRemoveAsCost() and c:CheckActivateEffect(false,true,false)~=nil  
+	return c:GetType()==TYPE_SPELL and c:IsAbleToRemoveAsCost() and c:CheckActivateEffect(true,true,false)~=nil  
 end
 function cm.cfilter2(c)
-	return c:IsType(TYPE_QUICKPLAY) and c:IsAbleToRemoveAsCost() and c:CheckActivateEffect(false,true,false)~=nil  
+	return (c:GetType()==TYPE_SPELL or c:IsType(TYPE_QUICKPLAY))
+	and c:IsAbleToRemoveAsCost() and c:CheckActivateEffect(true,true,false)~=nil  
 end
 function cm.cfilterz(c)
 	return c:IsFaceup() and cm.Spiritualist(c)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local g1=Duel.GetMatchingGroup(cm.cfilter1,tp,LOCATION_GRAVE,0,nil)
-	local g2=Duel.GetMatchingGroup(cm.cfilter2,tp,LOCATION_GRAVE,0,nil)
+	if not Duel.IsExistingMatchingCard(cm.cfilterz,tp,4,0,1,nil) then return end
+	cm_copy = false
+	local g = {}
 	if Duel.IsPlayerAffectedByEffect(tp,40011471) then
-		g1:Merge(g2)
+		g=Duel.GetMatchingGroup(cm.cfilter2,tp,LOCATION_GRAVE,0,nil)
+	else
+		g=Duel.GetMatchingGroup(cm.cfilter1,tp,LOCATION_GRAVE,0,nil)
 	end
-	if g1:GetCount()>0 and Duel.IsExistingMatchingCard(cm.cfilterz,tp,LOCATION_MZONE,0,1,nil) then 
-		if Duel.IsPlayerAffectedByEffect(tp,40011471) then 
-			Duel.SelectYesNo(tp,aux.Stringid(m,2)) 
-		else 
-			Duel.SelectYesNo(tp,aux.Stringid(m,1))
-		end 
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg=g1:Select(tp,1,1,nil):GetFirst() 
+	if #g<=0 then return end
+	if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then 
+		Duel.Hint(3,tp,HINTMSG_REMOVE)	
+		local sg=g:Select(tp,1,1,nil)
 		Duel.Remove(sg,POS_FACEUP,REASON_COST)
-		local te,ceg,cep,cev,cre,cr,crp=sg:CheckActivateEffect(false,true,true)
+		cm_copy = true
+		local te,ceg,cep,cev,cre,cr,crp=sg:GetFirst():CheckActivateEffect(true,true,true)
 		e:SetProperty(te:GetProperty())  
 		local tg=te:GetTarget()  
 		if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end  
 		te:SetLabelObject(e:GetLabelObject())  
 		e:SetLabelObject(te)  
 		Duel.ClearOperationInfo(0)  
-		e:SetLabel(1)
-	else
-		e:SetLabel(0)
 	end
 end
 function cm.filter(c)
@@ -90,14 +88,15 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(g)
 		if Duel.Destroy(g,REASON_EFFECT)~=0 then
 			Duel.BreakEffect()
-			if e:GetLabel()==1 then
-				local te=e:GetLabelObject()  
-				if te then  
-					e:SetLabelObject(te:GetLabelObject())  
-					local op=te:GetOperation()  
-					if op then op(e,tp,eg,ep,ev,re,r,rp) end  
-				end
-			end 
+			if cm_copy then
+		cm_copy = false
+		local te=e:GetLabelObject()
+			if te then  
+			e:SetLabelObject(te:GetLabelObject())  
+			local op=te:GetOperation()  
+				if op then op(e,tp,eg,ep,ev,re,r,rp) end  
+			end
+		 end  
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local g2=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 			if #g2>0 then

@@ -64,7 +64,7 @@ function c67201128.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c67201128.opcon(e,tp,eg,ep,ev,re,r,rp)
-	return ev==1-tp or ev==tp or ev==PLAYER_ALL
+	return ev==tp or ev==PLAYER_ALL
 end
 function c67201128.filter(c)
 	return c:IsSetCard(0x3670) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
