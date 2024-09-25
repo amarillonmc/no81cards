@@ -3,7 +3,7 @@ if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400043.initial_effect(c)
 	c:SetSPSummonOnce(71400043)
 	--link summon
-	aux.AddLinkProcedure(c,c71400043.matfilter,1,1,yume.YumeCheck(c))
+	aux.AddLinkProcedure(c,c71400043.matfilter,1,1,c71400043.mgfilterfunc(c))
 	c:EnableReviveLimit()
 	--summon limit
 	local el1=Effect.CreateEffect(c)
@@ -62,6 +62,10 @@ function c71400043.initial_effect(c)
 end
 function c71400043.matfilter(c)
 	return c:IsSetCard(0x714) and not c:IsLinkType(TYPE_LINK)
+end
+function c71400043.mgfilterfunc(c)
+	local sp=c:GetControler()
+	return function(g) return yume.IsYumeFieldOnField(sp) and Duel.IsExistingMatchingCard(c71400043.gyfilter,sp,LOCATION_GRAVE,0,1,nil) end
 end
 function c71400043.gyfilter(c)
 	return c:IsSetCard(0x7714) and c:IsType(TYPE_FIELD)

@@ -33,7 +33,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.tg(e,c)
-	return c:IsSummonType(SUMMON_TYPE_SPECIAL)
+	local phase=Duel.GetCurrentPhase()
+	return c:IsSummonType(SUMMON_TYPE_SPECIAL) and not ((phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL or e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) or c:IsStatus(STATUS_BATTLE_DESTROYED)) --and c:IsStatus(STATUS_SPSUMMON_TURN)
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetHandler():GetOwner()

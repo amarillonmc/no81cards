@@ -150,7 +150,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			if Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0xff,1,nil) then g:AddCard(tc) end --not PNFL_MIRROR_ACTIVATED[tp][ccode] and
 		end
 	end
-	if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(11451031,0)) then
+	if #g>0 and Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11451031,0)) then
 		local tg=g:Filter(function(c) return c:IsFacedown() and c:IsControler(1-tp) end,nil)
 		Duel.ConfirmCards(tp,tg)
 		Duel.Hint(HINT_SELECTMSG,0,aux.Stringid(11451031,4))

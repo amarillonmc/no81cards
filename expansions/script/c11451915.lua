@@ -43,7 +43,7 @@ function cm.spfilter0(c,loc)
 	return c:IsPreviousLocation(loc) and not (c:IsLocation(loc) and c:IsControler(c:GetPreviousControler()))
 end
 function cm.pspcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.spfilter0,1,nil,LOCATION_DECK) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND))
+	return eg:IsExists(cm.spfilter0,1,nil,LOCATION_DECK) --and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND))
 end
 function cm.pspcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -93,16 +93,13 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
 	local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
 	if chk==0 then
-		if Duel.GetFlagEffect(tp,m)==0 then
-			Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,5))
-			Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
-		end
+		if c:IsLocation(LOCATION_EXTRA) and c:GetFlagEffect(m)>0 then return false end
 		if Duel.GetCurrentChain()<1 then return false end
 		if c:GetFlagEffect(m+1)>0 then return false end
 		local loc=0
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>-1 then loc=loc+LOCATION_HAND end
 		if Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)>-1 then loc=loc+LOCATION_EXTRA end
-		if (c:IsLocation(LOCATION_EXTRA) and c:GetFlagEffect(m)>0) or loc==0 or not c:IsLocation(loc) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,false,false) then return false end
+		if loc==0 or not c:IsLocation(loc) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,false,false) then return false end
 		local lock1=(c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_MZONE)==0) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)==0)
 		local lock2=false
 		if rpz==nil and lpz==nil then

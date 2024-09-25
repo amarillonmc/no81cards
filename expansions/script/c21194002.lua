@@ -51,7 +51,7 @@ function c21194002.r(c,tp)
 end
 function c21194002.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingTarget(c21194002.r,tp,12,12,1,nil,tp) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,4)>0 end
+	if chk==0 then return Duel.IsExistingTarget(c21194002.r,tp,12,12,1,nil,tp) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.Hint(3,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,12,12,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
