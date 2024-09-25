@@ -68,8 +68,12 @@ end
 function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc1,tc2=Duel.GetFirstTarget()
 	if tc1~=e:GetLabelObject() then tc1,tc2=tc2,tc1 end
-	if cm.setfilter(tc2,tc1:GetColumnZone(LOCATION_SZONE,tp)) then
-		if tc1:IsRelateToEffect(e) and tc2:IsRelateToEffect(e) and Duel.SSet(tp,tc2,tc1:GetColumnZone(LOCATION_SZONE,tp))~=0 then
+	local seq=aux.GetColumn(tc1,tp)
+	if cm.setfilter(tc2) and Duel.CheckLocation(tp,LOCATION_SZONE,seq) then
+		if tc1:IsRelateToEffect(e) and tc2:IsRelateToEffect(e) and Duel.MoveToField(tc2,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false,1<<seq) then
+			tc2:SetStatus(STATUS_SET_TURN,true)
+			Duel.RaiseEvent(tc2,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+			Duel.ConfirmCards(1-tp,tc2)
 			local g=tc2:GetColumnGroup()
 			local sg=g:Filter(cm.ofilter6,nil,tp)
 			if sg:GetCount()>0 then
