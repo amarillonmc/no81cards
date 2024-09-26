@@ -3,23 +3,15 @@ local m=35399325
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--activate
-	local e0=Effect.CreateEffect(c)
-	e0:SetDescription(aux.Stringid(35399325,0))
-	e0:SetType(EFFECT_TYPE_ACTIVATE)
-	e0:SetCode(EVENT_FREE_CHAIN)
-	c:RegisterEffect(e0)
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(35399325,1))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,35399325+EFFECT_COUNT_CODE_OATH)
-	e1:SetTarget(c35399325.target)
+	e1:SetCountLimit(1,35399325)
 	e1:SetOperation(c35399325.activate)
 	c:RegisterEffect(e1)
-
+	--level
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(35399325,2))
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_SZONE)
@@ -37,31 +29,26 @@ function cm.initial_effect(c)
 	e3:SetTarget(c35399325.tdtg)
 	e3:SetOperation(c35399325.tdop)
 	c:RegisterEffect(e3)
-	
 end
 function c35399325.thfilter(c)
 	return ((c:IsLevelBelow(3) and c:IsType(TYPE_TUNER) and (c:IsRace(RACE_MACHINE) or c:IsRace(RACE_FIEND))) or c:IsSetCard(0x1017)) and c:IsAbleToHand()
 end
-function c35399325.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c35399325.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
 function c35399325.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c35399325.thfilter,tp,LOCATION_DECK,0,nil)
-	if g:GetCount()>0 then
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(35399325,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:Select(tp,1,1,nil)
 		if Duel.SendtoHand(sg,nil,REASON_EFFECT)~=0 then
-		local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_HAND,0,nil)
-		if #g>0 then
-		Duel.ConfirmCards(1-tp,sg)
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local tg=g:Select(tp,1,1,nil)
-		if Duel.SendtoGrave(tg,REASON_EFFECT)~=0 then
-			Duel.SetLP(tp,Duel.GetLP(tp)-1500)
-		end
-		end
+			Duel.ConfirmCards(1-tp,sg)
+			local g2=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_HAND,0,nil)
+			if #g2>0 then
+				Duel.BreakEffect()
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+				local tg=g2:Select(tp,1,1,nil)
+				if Duel.SendtoGrave(tg,REASON_EFFECT)~=0 then
+					Duel.SetLP(tp,Duel.GetLP(tp)-1500)
+				end
+			end
 		end
 	end
 end

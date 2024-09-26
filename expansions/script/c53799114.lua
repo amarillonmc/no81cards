@@ -94,6 +94,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetLabelObject(sc)
 			e1:SetCondition(cm.fpcon)
 			e1:SetOperation(cm.fpop)
+			e1:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e1,tp)
 		end
 	end

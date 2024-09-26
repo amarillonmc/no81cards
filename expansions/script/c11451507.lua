@@ -229,16 +229,18 @@ function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.regsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetFlagEffect(tp,11451928)>0 then return end
-	Duel.RegisterFlagEffect(tp,11451928,RESET_PHASE+PHASE_END,0,1)
+	--if Duel.GetFlagEffect(tp,11451928)>0 then return end
+	--Duel.RegisterFlagEffect(tp,11451928,RESET_PHASE+PHASE_END,0,1)
 	--activate from hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e1:SetDescription(aux.Stringid(11451927,2))
 	e1:SetCountLimit(1)
+	e1:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
+	e1:SetCondition(function() return Duel.GetTurnPlayer()==tp end)
 	e1:SetTargetRange(LOCATION_HAND,0)
-	e1:SetReset(RESET_PHASE+PHASE_END)
+	--e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 	local e2=e1:Clone()
 	Duel.RegisterEffect(e2,1-tp)
@@ -248,26 +250,28 @@ function cm.regsop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetCode(EVENT_CHAIN_SOLVING)
 	e3:SetCondition(cm.disscon)
 	e3:SetOperation(cm.dissop)
-	e3:SetReset(RESET_PHASE+PHASE_END)
+	--e3:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e3,tp)
 	--indes
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 	e4:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e4:SetCondition(function() return Duel.GetTurnPlayer()==tp end)
 	e4:SetTarget(cm.indtg)
-	e4:SetValue(function() e:SetLabel(1) return 1 end)
-	e4:SetReset(RESET_PHASE+PHASE_END)
+	e4:SetValue(function(e) e:SetLabel(1) return 1 end)
+	--e4:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e4,tp)
 end
 function cm.indtg(e,c)
 	local tc=e:GetHandler()
-	return (c==tc or c==tc:GetBattleTarget()) and c:IsFaceup() and e:GetLabel()==0
+	return c:IsFaceup() and e:GetLabel()==0
 end
 function cm.disscon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_SPELL)
+	return re:IsActiveType(TYPE_SPELL) and Duel.GetTurnPlayer()==tp
 end
 function cm.dissop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
 	if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Remove(re:GetHandler(),POS_FACEUP,REASON_EFFECT)
 	end

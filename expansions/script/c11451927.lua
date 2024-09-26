@@ -574,13 +574,13 @@ function cm.regsop(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e4:SetCondition(function() return Duel.GetTurnPlayer()==tp end)
 	e4:SetTarget(cm.indtg)
-	e4:SetValue(function() e:SetLabel(1) return 1 end)
+	e4:SetValue(function(e) e:SetLabel(1) return 1 end)
 	--e4:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e4,tp)
 end
 function cm.indtg(e,c)
 	local tc=e:GetHandler()
-	return (c==tc or c==tc:GetBattleTarget()) and c:IsFaceup() and e:GetLabel()==0
+	return c:IsFaceup() and e:GetLabel()==0
 end
 function cm.disscon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_SPELL) and Duel.GetTurnPlayer()==tp

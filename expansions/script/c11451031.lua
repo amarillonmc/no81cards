@@ -106,7 +106,7 @@ function cm.initial_effect(c)
 		local ge3=Effect.CreateEffect(c)
 		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge3:SetCode(EVENT_CHAINING)
-		ge3:SetCondition(function() return not pnfl_adjusting end)
+		ge3:SetCondition(function(e,tp) return Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0,1,nil) and not pnfl_adjusting end)
 		ge3:SetOperation(cm.adjustop)
 		Duel.RegisterEffect(ge3,0)
 		local ge31=ge3:Clone()
@@ -119,7 +119,7 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge41,1)
 		local ge5=ge3:Clone()
 		ge5:SetCode(EVENT_CHAIN_SOLVED)
-		ge5:SetCondition(function() return Duel.GetCurrentChain()==1 and not pnfl_adjusting end)
+		ge5:SetCondition(function(e,tp) return Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0,1,nil) and Duel.GetCurrentChain()==1 and not pnfl_adjusting end)
 		Duel.RegisterEffect(ge5,0)
 		local ge51=ge5:Clone()
 		Duel.RegisterEffect(ge51,1)
@@ -136,7 +136,7 @@ function cm.fccon(e,tp,eg,ep,ev,re,r,rp)
 		local tg=ce:GetTarget() or aux.TRUE
 		if aux.GetValueType(ce)=="Effect" and aux.GetValueType(tc)=="Card" then
 			local ccode=tc:GetOriginalCode()
-			if Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0xff,1,nil) then return true end --not PNFL_MIRROR_ACTIVATED[tp][ccode] and
+			if Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0,1,nil) then return true end --not PNFL_MIRROR_ACTIVATED[tp][ccode] and
 		end
 	end
 	return false
