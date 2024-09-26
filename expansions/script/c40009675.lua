@@ -60,7 +60,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.filter(c,e,tp)
-	return cm.MagicCombineDemon(c) or (c:IsLevel(6) and c:IsRace(RACE_ZOMBIE)) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return (cm.MagicCombineDemon(c) or c:IsLevel(6) and c:IsRace(RACE_ZOMBIE)) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

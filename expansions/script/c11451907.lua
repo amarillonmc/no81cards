@@ -269,7 +269,7 @@ function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(0,m)>0 and Duel.GetCurrentChain()==1 and e:GetHandler():GetFlagEffect(m+1)==0
 end
 function cm.filter11(c)
-	return c:IsSetCard(0xc976) and c:GetFlagEffect(11451905)==0
+	return c:IsSetCard(0xc976) and (c:GetFlagEffect(11451905)==0 or not c:IsLocation(LOCATION_HAND))
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ResetFlagEffect(0,m)
@@ -318,16 +318,16 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end
 function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,m)
-	local te=e:GetLabelObject()
-	te:Reset()
-	e:Reset()
 	local c=e:GetHandler()
 	local hg=Duel.GetMatchingGroup(cm.filter11,tp,LOCATION_ONFIELD,0,nil):Filter(Card.IsFaceup,nil)
 	if #hg>0 then
 		local op=not cm[tp] and Duel.SelectYesNo(tp,aux.Stringid(m,2))
 		if not op and cm[tp]==nil then cm[tp]=Duel.SelectYesNo(tp,aux.Stringid(m,9)) end
 		if not op then return end
+		Duel.Hint(HINT_CARD,0,m)
+		local te=e:GetLabelObject()
+		te:Reset()
+		e:Reset()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=hg:Select(tp,1,1,nil)
 		Duel.Destroy(dg,REASON_EFFECT)
@@ -346,16 +346,16 @@ function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.operation4(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,m)
-	local te=e:GetLabelObject()
-	te:Reset()
-	e:Reset()
 	local c=e:GetHandler()
 	if c:GetFlagEffect(m+1)>0 and c:GetFlagEffectLabel(m+1)==e:GetLabel() then
 		local op=not cm[tp] and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,4))
 		if not op and cm[tp]==nil then cm[tp]=Duel.SelectYesNo(tp,aux.Stringid(m,9)) end
 		if not op then return end
 		if op then
+			Duel.Hint(HINT_CARD,0,m)
+			local te=e:GetLabelObject()
+			te:Reset()
+			e:Reset()
 			Duel.Destroy(c,REASON_EFFECT)
 			--Destroy
 			local e6=Effect.CreateEffect(c)
@@ -375,10 +375,6 @@ function cm.operation4(e,tp,eg,ep,ev,re,r,rp)
 	c:ResetFlagEffect(m+1)
 end
 function cm.operation5(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,m)
-	local te=e:GetLabelObject()
-	te:Reset()
-	e:Reset()
 	local c=e:GetHandler()
 	local hg=Duel.GetMatchingGroup(cm.filter11,tp,LOCATION_DECK,0,nil)
 	if c:GetFlagEffect(m+1)>0 and c:GetFlagEffectLabel(m+1)==e:GetLabel() then
@@ -388,6 +384,10 @@ function cm.operation5(e,tp,eg,ep,ev,re,r,rp)
 		local op=not cm[tp] and Duel.SelectYesNo(tp,aux.Stringid(m,3))
 		if not op and cm[tp]==nil then cm[tp]=Duel.SelectYesNo(tp,aux.Stringid(m,9)) end
 		if not op then return end
+		Duel.Hint(HINT_CARD,0,m)
+		local te=e:GetLabelObject()
+		te:Reset()
+		e:Reset()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=hg:Select(tp,1,1,nil)
 		Duel.Destroy(dg,REASON_EFFECT)

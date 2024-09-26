@@ -8,6 +8,13 @@ function s.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(id)
 	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_MUST_USE_MZONE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetCondition(s.frccon)
+	e2:SetValue(s.frcval)
+	c:RegisterEffect(e2)
 	if not s.global_check then
 		s.global_check=true
 		local f1=Card.IsFaceup
@@ -19,4 +26,10 @@ function s.initial_effect(c)
 			return res
 		end
 	end
+end
+function s.frccon(e)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_PENDULUM)
+end
+function s.frcval(e,c,fp,rp,r)
+	return e:GetHandler():GetLinkedZone() | 0x600060
 end

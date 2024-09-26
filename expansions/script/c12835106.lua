@@ -174,7 +174,10 @@ function s.mcon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter2,1,nil) and e:GetHandler():GetFlagEffect(id)==0
 end
 function s.desfilter(c,s,tp)
-	return c:GetSequence()<5 and aux.GetColumn(c,tp)==s
+	local seq=c:GetSequence()
+	if c:GetSequence()==5 and tp~=c:GetControler() then seq=6 end
+	if c:GetSequence()==6 and tp~=c:GetControler() then seq=5 end
+	return seq<5 and aux.GetColumn(c,tp)==s or seq==5 and s==1 or seq==6 and s==3
 end
 function s.mtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

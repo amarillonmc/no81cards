@@ -90,7 +90,7 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e) then
-		if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 then
+		if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 then
 			Duel.BreakEffect()
 			local g=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0)
 			local sg=g:RandomSelect(1-tp,1)
