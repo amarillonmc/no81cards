@@ -134,6 +134,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetValue(att)
 			tc:RegisterEffect(e2)
 		end
+	tc:CompleteProcedure()
 	Duel.SpecialSummonComplete()
 	end
 end

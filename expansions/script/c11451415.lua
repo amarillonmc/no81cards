@@ -88,6 +88,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e5,tp)
 	elseif e:GetLabel()==2 then
 		local turnp=Duel.GetTurnPlayer()
+		Duel.SkipPhase(turnp,PHASE_DRAW,RESET_PHASE+PHASE_END,1)
+		Duel.SkipPhase(turnp,PHASE_STANDBY,RESET_PHASE+PHASE_END,1)
 		Duel.SkipPhase(turnp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
 		Duel.SkipPhase(turnp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
 		Duel.SkipPhase(turnp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)

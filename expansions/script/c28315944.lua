@@ -77,11 +77,14 @@ end
 function c28315944.hkfilter(c)
 	return c:IsSetCard(0x283) and c:IsLevel(4) and c:IsAbleToHand()
 end
+function c28315944.sfilter(c)
+	return c:IsFaceup() and c:IsCanTurnSet()
+end
 function c28315944.recop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(tp,1000,REASON_EFFECT)
 	if Duel.GetLP(tp)>=10000 then
 		local b1=Duel.IsExistingMatchingCard(c28315944.hkfilter,tp,LOCATION_DECK,0,1,nil)
-		local b2=Duel.IsPlayerCanDraw(tp,1)
+		local b2=Duel.IsExistingMatchingCard(c28315944.sfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 		local b3=true
 		if not (b1 or b2) then return end
 		local op=aux.SelectFromOptions(tp,

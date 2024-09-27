@@ -91,5 +91,12 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		for _,ph in pairs({PHASE_DRAW,PHASE_STANDBY,PHASE_MAIN1,PHASE_BATTLE,PHASE_MAIN2,PHASE_END}) do
 			Duel.SkipPhase(p,ph,RESET_PHASE+PHASE_END,1)
 		end
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CANNOT_BP)
+		e1:SetTargetRange(1,0)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,p)
 	end
 end

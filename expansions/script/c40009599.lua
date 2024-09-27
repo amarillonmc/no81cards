@@ -77,7 +77,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetValue(att)
 			tc:RegisterEffect(e2)
 		end
-	Duel.SpecialSummonComplete()
+		tc:CompleteProcedure()
+		Duel.SpecialSummonComplete()
 	end
 end
 function cm.cfilter(c)
