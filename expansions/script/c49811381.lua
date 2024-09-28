@@ -44,8 +44,8 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 s.pendulum_level=7
-function s.mfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_DRAGON) and c:IsXyzLevel(7)
+function s.mfilter(c,xyzc)
+	return c:IsFaceup() and c:IsRace(RACE_DRAGON) and c:IsXyzLevel(xyzc,7)
 end
 function s.ovfilter(c)
 	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_DARK) and c:IsType(TYPE_XYZ)

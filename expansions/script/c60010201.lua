@@ -34,10 +34,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.desfilter(c)
-	return c:IsSetCard(0x3620)
+	return c:IsSetCard(0x3620) and (c:IsLocation(LOCATION_HAND) or (c:IsLocation(LOCATION_ONFIELD) and c:IsFaceup()))
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and cm.desfilter(chkc,tp) end
+	if chkc then return chkc:IsControler(tp) and cm.desfilter(chkc,tp) end
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and Duel.IsExistingTarget(cm.desfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
