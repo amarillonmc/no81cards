@@ -29,7 +29,8 @@ function c28355662.initial_effect(c)
 	e2:SetOperation(c28355662.dsop)
 	c:RegisterEffect(e2)
 end
-function c28355662.excondition(e,tp,eg,ep,ev,re,r,rp)
+function c28355662.excondition(e)
+	local tp=e:GetHandlerPlayer()
 	return (Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,2500)) or (Duel.GetLP(tp)>3000 and Duel.CheckLPCost(tp,4000))
 end
 function c28355662.excost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -50,34 +51,29 @@ end
 function c28355662.spfilter(c,e,tp)
 	return c:IsSetCard(0x285) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
-function c28355662.dsfilter(c)
-	return c:IsSetCard(0x285) and c:IsFaceup()
-end
 function c28355662.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28355662.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(c28355662.dsfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
-	local g=Duel.GetMatchingGroup(c28355662.dsfilter,tp,LOCATION_ONFIELD,0,e:GetHandler())
+	if chk==0 then return Duel.IsExistingMatchingCard(c28355662.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
-function c28355662.ctfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_FIEND)
-end
 function c28355662.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	if Duel.GetMZoneCount(tp)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=Duel.SelectMatchingCard(tp,c28355662.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if #sg>0 and Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP_ATTACK)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local dg=Duel.SelectMatchingCard(tp,c28355662.dsfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
+		local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,sg)
 		Duel.HintSelection(dg)
 		Duel.Destroy(dg,REASON_EFFECT)
 	end
 	--pinch
-	local ct=Duel.GetMatchingGroupCount(c28355662.ctfilter,tp,LOCATION_MZONE,0,nil)
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
-	if Duel.GetLP(tp)<=3000 and ct>0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(28355662,1)) then
+	if Duel.GetLP(tp)<=3000 and Duel.GetMZoneCount(tp)>0 and Duel.IsExistingMatchingCard(c28355662.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(28355662,1)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=Duel.SelectMatchingCard(tp,c28355662.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local dg=g:Select(tp,1,ct,nil)
+		local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,aux.ExceptThisCard(e))
 		Duel.HintSelection(dg)
 		Duel.Destroy(dg,REASON_EFFECT)
 	end

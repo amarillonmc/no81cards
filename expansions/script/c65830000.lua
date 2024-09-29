@@ -35,7 +35,7 @@ end
 
 
 function c65830000.filter(c)
-	return c:IsLinkSetCard(0xa33) and c:IsAbleToHand()
+	return c:IsSetCard(0xa33) and c:IsAbleToHand()
 end
 function c65830000.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c65830000.filter,tp,LOCATION_DECK,0,1,nil) end

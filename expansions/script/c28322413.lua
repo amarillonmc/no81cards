@@ -146,8 +146,8 @@ function c28322413.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_COST)
 end
 function c28322413.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetOverlayGroup():GetCount()>1 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,nil)
+	if chk==0 then return e:GetHandler():GetOverlayGroup():GetCount()>1 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 end
 function c28322413.tdop(e,tp,eg,ep,ev,re,r,rp)
@@ -164,7 +164,7 @@ function c28322413.rankcon(e)
 	return e:GetHandler():GetRank()>=e:GetLabel()
 end
 function c28322413.tdfilter(c)
-	return c:IsSetCard(0x284) and c:IsAbleToDeck() and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
+	return c:IsSetCard(0x284) and c:IsAbleToDeck() and c:IsFaceupEx()
 end
 function c28322413.rutg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28322413.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end

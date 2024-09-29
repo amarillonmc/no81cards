@@ -55,7 +55,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 				hb=true
 			end
 		end
-		if hb then
+		if hb and c:IsRelateToEffect(e) then
 			Duel.Equip(tp,c,tc)
 			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 			--Add Equip limit
