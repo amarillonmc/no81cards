@@ -33,7 +33,7 @@ end
 function c28335405.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tc=Duel.SelectMatchingCard(tp,c28335405.center,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-	if tc:GetCount()>0 then
+	if tc then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
 		if tc:IsCode(28315548) and Duel.IsExistingMatchingCard(c28335405.tgfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28335405,0)) then

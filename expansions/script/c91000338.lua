@@ -6,8 +6,6 @@ function c91000338.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION) 
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,91000338)
-	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-	return  Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0 end) 
 	c:RegisterEffect(e1)  
 	--xx
 	local e2=Effect.CreateEffect(c)  
@@ -17,7 +15,7 @@ function c91000338.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY) 
 	e2:SetCountLimit(1,91000338*2)
 	e2:SetCondition(function(e) 
-	return  Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0  and e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)end)
+	return  e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)end)
 	e2:SetTarget(c91000338.ritg)
 	e2:SetOperation(c91000338.riops) 
 	c:RegisterEffect(e2)  
@@ -37,8 +35,6 @@ function c91000338.initial_effect(c)
 	e4:SetCode(EVENT_RELEASE) 
 	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET) 
 	e4:SetCountLimit(1,19100338) 
-	e4:SetCondition(function(e) 
-	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)==0 end)
 	e4:SetOperation(c91000338.riop) 
 	c:RegisterEffect(e4)
 	--special summon cost
@@ -134,14 +130,17 @@ function c91000338.aclimit(e,re,tp)
 	return re:GetActivateLocation()==LOCATION_HAND and re:IsActiveType(TYPE_MONSTER)
 end
 function c91000338.ritg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,2)  end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(2)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
 end
+function c91000338.fitd(c)
+	return c:IsLevel(10) and c:IsReleasableByEffect()
+end
 function c91000338.riops(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_MZONE,0,1,nil) then
-	local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_MZONE,0,1,1,nil)
+	if Duel.IsExistingMatchingCard(c91000338.fitd,tp,LOCATION_MZONE,0,1,nil) then
+	local g=Duel.SelectMatchingCard(tp,c91000338.fitd,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.Release(g,REASON_EFFECT)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Draw(p,d,REASON_EFFECT)
