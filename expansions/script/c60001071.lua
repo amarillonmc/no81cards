@@ -36,7 +36,7 @@ function cm.filter(c,hg,dg)
 end
 
 function cm.costiefilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x62d)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6621)
 end
 
 function cm.shcost(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -66,7 +66,7 @@ function cm.initial_effect(c)
 end
 --spsummon procedure
 function cm.sprfilter(c)
-	return c:IsSetCard(0x628) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x5620) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function cm.sprcon(e,c)
 	if c==nil then return true end
@@ -114,10 +114,10 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 end
 --to hand
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsSetCard(0x628)
+	return re:GetHandler():IsSetCard(0x5620)
 end
 function cm.filter(c)
-	return c:IsAbleToHand() and c:IsSetCard(0x628)
+	return c:IsAbleToHand() and c:IsSetCard(0x5620)
 end
 function cm.thop(e)
 	local tp=e:GetHandlerPlayer()

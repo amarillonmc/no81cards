@@ -8,9 +8,7 @@ function c11561013.initial_effect(c)
 	local e1=Effect.CreateEffect(c) 
 	e1:SetCategory(CATEGORY_COUNTER)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS) 
-	e1:SetCondition(function(e) 
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) end)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetTarget(c11561013.addtg)
 	e1:SetOperation(c11561013.addop)
 	c:RegisterEffect(e1)	 
@@ -57,42 +55,22 @@ function c11561013.accost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveCounter(tp,1,0,0x1,4,REASON_COST)
 end
 function c11561013.filter(c,tp)
-	return c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)
+	return (c:IsType(TYPE_FIELD) or (c:IsType(TYPE_PENDULUM) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)))) and not c:IsForbidden()
 end 
 function c11561013.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11561013.filter,tp,LOCATION_DECK,0,1,nil,tp) end
-	if not Duel.CheckPhaseActivity() then e:SetLabel(1) else e:SetLabel(0) end 
 end
-function c11561013.acop(e,tp,eg,ep,ev,re,r,rp) 
-	local c=e:GetHandler() 
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	if e:GetLabel()==1 then Duel.RegisterFlagEffect(tp,15248873,RESET_CHAIN,0,1) end
-	local g=Duel.SelectMatchingCard(tp,c11561013.filter,tp,LOCATION_DECK,0,1,1,nil,tp)
-	Duel.ResetFlagEffect(tp,15248873)
-	local tc=g:GetFirst()
-	if tc then
-		local te=tc:GetActivateEffect()
-		local b1=tc:IsAbleToHand()
-		if e:GetLabel()==1 then Duel.RegisterFlagEffect(tp,15248873,RESET_CHAIN,0,1) end 
-		local b2=te:IsActivatable(tp,true,true)
-		Duel.ResetFlagEffect(tp,15248873) 
-		local op=Duel.SelectOption(tp,aux.Stringid(11561013,1),aux.Stringid(11561013,2)) 
-		local p=tp 
-		if op==1 then p=1-tp end  
-		local fc=Duel.GetFieldCard(p,LOCATION_FZONE,0)
+function c11561013.acop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local tc=Duel.SelectMatchingCard(tp,c11561013.filter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
+	if tc:IsType(TYPE_FIELD) then
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 		if fc then
 			Duel.SendtoGrave(fc,REASON_RULE)
 			Duel.BreakEffect()
 		end
-		Duel.MoveToField(tc,tp,p,LOCATION_FZONE,POS_FACEUP,true) 
-		te:UseCountLimit(tp,1,true) 
-		local tep=tc:GetControler()
-		local cost=te:GetCost()
-		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-		Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain()) 
+		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+	else
+		Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 end
-
-
-
-

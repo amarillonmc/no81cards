@@ -31,7 +31,7 @@ function cm.initial_effect(c)
 end
 cm.named_with_ExMachina=true 
 function cm.cfilter(c)
-	return c:IsSetCard(0x6a0) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0xc621) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
@@ -49,7 +49,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.xxfilter(c)
-	return c:IsSetCard(0x6a0)
+	return c:IsSetCard(0xc621)
 end
 function cm.mkfilter(c)
 	return c.named_with_ExMachina and c:IsType(TYPE_LINK) and c:IsAttackAbove(2500)

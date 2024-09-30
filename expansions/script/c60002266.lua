@@ -3,7 +3,7 @@ local m=60002266
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x6a9),3)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x5622),3)
 	c:EnableReviveLimit()
 	--negate
 	local e3=Effect.CreateEffect(c)
@@ -101,7 +101,7 @@ function cm.negop1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cfilter(c,tp)
-	return c:IsSummonPlayer(tp) and c:IsSetCard(0x6a9)
+	return c:IsSummonPlayer(tp) and c:IsSetCard(0x5622)
 end
 function cm.filter1(c,e,tp)
 	return c:IsCode(m+1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

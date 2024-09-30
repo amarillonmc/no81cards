@@ -26,7 +26,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x621) and not c:IsCode(m) and c:IsAbleToHand()
+	return c:IsSetCard(0x6620) and not c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -41,7 +41,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter2(c)
-	return c:IsSetCard(0x621) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0x6620) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

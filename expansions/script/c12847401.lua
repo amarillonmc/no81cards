@@ -45,6 +45,6 @@ function s.clop(e,tp,eg,ep,ev,re,r,rp)
 	ex1:SetTargetRange(1,0)
 	ex1:SetValue(1)
 	ex1:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(ex1,true,tp)
+	Duel.RegisterEffect(ex1,tp)
 	return ex1
 end

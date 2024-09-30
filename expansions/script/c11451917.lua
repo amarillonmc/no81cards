@@ -45,7 +45,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=e:GetHandler():GetReasonCard()
-	return rc and rc:IsLevelAbove(5) and rc:IsRace(RACE_FAIRY)
+	return rc and rc:IsLevelAbove(5) and rc:IsRace(RACE_FAIRY) and r&REASON_EFFECT>0
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())

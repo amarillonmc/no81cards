@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,2))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE+CATEGORY_GRAVE_ACTION)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -96,7 +96,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m+1)==0
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
-	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (sa or sb) end
+	if chk==0 then return (Duel.GetCurrentChain()==0 or (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) and (sa or sb) end
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	if c:IsLocation(LOCATION_HAND) then
@@ -105,7 +105,12 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,PLAYER_ALL,LOCATION_GRAVE)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	if Duel.GetCurrentChain()==1 then
+		e:SetCategory(CATEGORY_REMOVE+CATEGORY_GRAVE_ACTION)
+	else
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE+CATEGORY_GRAVE_ACTION)
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -113,7 +118,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToRemove),tp,LOCATION_GRAVE,LOCATION_GRAVE,1,3,nil)
 	if #g>0 then
 		Duel.HintSelection(g)
-		if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 and c:IsRelateToEffect(e) then
+		if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 and Duel.GetCurrentChain()>1 and c:IsRelateToEffect(e) then
 			Duel.BreakEffect()
 			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		end

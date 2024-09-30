@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.atktg(e,c)
-	return c:IsSetCard(0x647)
+	return c:IsSetCard(0xc622)
 end
 function cm.filter(c,e,tp)
 	return c:IsCode(60010079) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

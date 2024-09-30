@@ -40,7 +40,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e4,tp) 
 end
 function cm.thfilter(c)
-	return (c:IsSetCard(0x6a2) or c:IsSetCard(0x6a3) or c:IsSetCard(0x6a4) or c:IsSetCard(0x62c)) and c:IsAbleToHand()
+	return (c:IsSetCard(0x6a2) or c:IsSetCard(0x6a3) or c:IsSetCard(0x6a4) or c:IsSetCard(0x5621)) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
@@ -74,7 +74,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsSummonType(SUMMON_TYPE_SYNCHRO) and bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0
 end
 function cm.spfilter(c,e,tp)
-	return (c:IsSetCard(0x6a2) or c:IsSetCard(0x6a3) or c:IsSetCard(0x6a4) or c:IsSetCard(0x62c)) and not c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsSetCard(0x6a2) or c:IsSetCard(0x6a3) or c:IsSetCard(0x6a4) or c:IsSetCard(0x5621)) and not c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.spfilter(chkc,e,tp) end

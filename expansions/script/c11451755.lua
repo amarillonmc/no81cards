@@ -93,7 +93,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m+1)==0
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
 	local rg=Duel.GetDecktopGroup(tp,2)
-	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and rg:FilterCount(Card.IsAbleToRemove,nil)==2 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (sa or sb) end
+	if chk==0 then return (Duel.GetCurrentChain()==0 or (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) and rg:FilterCount(Card.IsAbleToRemove,nil)==2 and (sa or sb) end
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	if c:IsLocation(LOCATION_HAND) then
@@ -102,14 +102,19 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,rg,2,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	if Duel.GetCurrentChain()==1 then
+		e:SetCategory(CATEGORY_REMOVE)
+	else
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetDecktopGroup(tp,2)
 	if #g<=0 then return end
 	Duel.DisableShuffleCheck()
-	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) then
+	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 and Duel.GetCurrentChain()>1 and c:IsRelateToEffect(e) then
 		Duel.BreakEffect()
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end

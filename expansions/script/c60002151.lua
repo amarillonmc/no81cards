@@ -3,7 +3,7 @@ local m=60002151
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	c:EnableCounterPermit(0x624)
+	c:EnableCounterPermit(0x9620)
 	aux.AddLinkProcedure(c,cm.matfilter,2)
 	--search
 	local e3=Effect.CreateEffect(c)
@@ -46,16 +46,16 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.matfilter(c)
-	return c:GetCounter(0x624)>0
+	return c:GetCounter(0x9620)>0
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x624)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x9620)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local sr=Duel.GetFlagEffect(tp,60002148)
 	if e:GetHandler():IsRelateToEffect(e) and sr~=0 then
-		e:GetHandler():AddCounter(0x624,sr)
+		e:GetHandler():AddCounter(0x9620,sr)
 		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 		if sr>=5 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.Draw(tp,1,REASON_EFFECT)
@@ -63,28 +63,28 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x624)>=1
+	return Card.GetCounter(e:GetHandler(),0x9620)>=1
 end
 function cm.filter(c)
-	return c:IsCanHaveCounter(0x624) and Duel.IsCanAddCounter(tp,0x624,1,c) and c:IsFaceup() 
+	return c:IsCanHaveCounter(0x9620) and Duel.IsCanAddCounter(tp,0x9620,1,c) and c:IsFaceup() 
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x624,2,REASON_COST) end
-	Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x624,2,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x9620,2,REASON_COST) end
+	Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x9620,2,REASON_COST)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x624)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x9620)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x624,1)
+		e:GetHandler():AddCounter(0x9620,1)
 		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 		if Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
 			local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,0,1,1,nil)
 			if g:GetCount()>0 then
-				g:GetFirst():AddCounter(0x624,1)
+				g:GetFirst():AddCounter(0x9620,1)
 				Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 			end
 		end

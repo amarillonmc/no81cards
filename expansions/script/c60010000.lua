@@ -1,3 +1,4 @@
+---@diagnostic disable: param-type-mismatch, duplicate-set-field, undefined-global
 --Hello World!
 
 --This is a library of mtc's cards.
@@ -6,10 +7,21 @@
 --You can view detailed usages below or in mtc's card.
 --A few annotations in Chinese are noted below.
 --Welcome to use mtc's library.
+if mtccreate then return end
+mtccreate=1
 
 MTC=MTC or {}
 MTC.loaded_metatable_list={}
 
+if not SpaceCheck then
+	SpaceCheck={}
+	for i=0,1 do
+		local g=Duel.GetMatchingGroup(nil,i,LOCATION_HAND+LOCATION_DECK,0,nil)
+		if #g==g:GetClassCount(Card.GetCode) then
+		   SpaceCheck[i]=true
+		end
+	end
+end
 -------------------------------------------------------------------------------------------------------------------------------------
 --系列「传说天」相关函数
 --「传说天」次数检定初始化函数
@@ -36,7 +48,7 @@ function MTC.LHini(c)
 	end
 end
 function MTC.LHfil1(c,tp)
-	return c:IsSummonPlayer(tp) and c:IsSetCard(0x630)
+	return c:IsSummonPlayer(tp) and c:IsSetCard(0xa621)
 end
 function MTC.LHcon1(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(MTC.LHfil1,1,nil,tp)
@@ -45,7 +57,7 @@ function MTC.LHop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsSetCard(0x630) then
+		if tc:IsSetCard(0xa621) then
 			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),60010002,RESET_PHASE+PHASE_END,0,1)
 			Duel.RaiseEvent(c,EVENT_CUSTOM+60010002,nil,0,tc:GetSummonPlayer(),tc:GetSummonPlayer(),0)
 		end
@@ -210,6 +222,48 @@ function MTC.ActivateEffect(e,tp,oe)
 		end
 	end
 end
+function MTC.ActivateCard(c,tp,oe)
+	local e=c:GetActivateEffect()
+	if c:IsType(TYPE_FIELD) then
+		Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		Duel.RaiseEvent(c,4179255,e,0,tp,tp,Duel.GetCurrentChain())
+	else
+		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	end 
+	
+	local cos,tg,op=e:GetCost(),e:GetTarget(),e:GetOperation()
+	if e and (not cos or cos(e,tp,eg,ep,ev,re,r,rp,0)) and (not tg or tg(e,tp,eg,ep,ev,re,r,rp,0)) then
+		oe:SetProperty(e:GetProperty())
+		local code=c:GetOriginalCode()
+		Duel.Hint(HINT_CARD,tp,code)
+		Duel.Hint(HINT_CARD,1-tp,code)
+		e:UseCountLimit(tp,1,true)
+		c:CreateEffectRelation(e)
+		if cos then cos(e,p,eg,ep,ev,re,r,rp,1) end
+		if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
+		local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+		if g and #g~=0 then
+			local fg=g:GetFirst()
+			while fg do
+				fg:CreateEffectRelation(e)
+				fg=g:GetNext()
+			end
+		end
+		if op then op(e,tp,eg,ep,ev,re,r,rp) end
+		c:ReleaseEffectRelation(e)
+		if g then
+			fg=g:GetFirst()
+			while fg do
+				fg:ReleaseEffectRelation(e)
+				fg=g:GetNext()
+			end
+		end
+	end
+
+	if (not (c:IsType(TYPE_CONTINUOUS) or c:IsType(TYPE_FIELD) or c:IsType(TYPE_EQUIP))) and c:IsRelateToEffect(e) then
+		 Duel.SendtoGrave(c,REASON_RULE)
+	end
+end
 -------------------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------------------------
 --对于某个g里的每张卡片依次适用操作op
@@ -357,6 +411,7 @@ function MTC.Whiteop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT) then
 		local g=Duel.GetMatchingGroup(Card.IsPublic,tp,LOCATION_HAND,0,nil)
+		if #g==0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 		local sc=g:Select(tp,1,1,nil):GetFirst()
 		sc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
@@ -389,3 +444,76 @@ end
 function MTC.Whiteacl(e,re,tp)
 	return not re:GetHandler():IsSetCard(0x646)
 end
+
+--random
+function getrand()
+	local result=0
+	local g=Duel.GetDecktopGroup(0,5)
+	local tc=g:GetFirst()
+	while tc do
+		result=result+tc:GetCode()
+		tc=g:GetNext()
+	end
+	math.randomseed(result)
+end
+--创建化身效果
+Avatar={}
+function MTC.AvatarCreate(c,code,loc)
+	Avatar[c:GetCode()]=code
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetRange(loc)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetLabel(code)
+	e1:SetCondition(MTC.Avatarcon1)
+	e1:SetOperation(MTC.Avatarop1)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	c:RegisterEffect(e2)
+	local e3=e1:Clone()
+	e3:SetCode(EVENT_CHAINING)
+	c:RegisterEffect(e3)
+	local e3=e1:Clone()
+	e3:SetCode(EVENT_ATTACK_ANNOUNCE)
+	c:RegisterEffect(e3)
+end
+function MTC.Avatarcon1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local code=e:GetLabel()
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(MTC.Avatarfil1,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,code)
+	Duel.RegisterFlagEffect(tp,code+60010000,0,0,1)
+	local d=math.random(1,20)
+	local seq=c:GetSequence()+1
+	local tm=Duel.GetFlagEffect(tp,code+60010000)
+	if c:IsLocation(LOCATION_MZONE) then
+		if d<=tm then
+			Debug.Message(seq.."号位的怪兽化身为" ..d .."/" ..tm.."可触发化身")
+		else
+			Debug.Message(seq.."号位的怪兽化身为" ..d .."/" ..tm.."不可触发化身")
+		end
+	end
+	if d<=tm and #g>0 then return true else return false end
+end
+function MTC.Avatarfil1(c,code)
+	return c:IsCode(code) and c:CheckActivateEffect(false,false,false)~=nil
+end
+function MTC.Avatarop1(e,tp,eg,ep,ev,re,r,rp)
+	local code=e:GetLabel()
+	Duel.Hint(HINT_CARD,0,e:GetHandler():GetCode()) 
+	Duel.ResetFlagEffect(tp,code+60010000)
+	local tc=Duel.GetMatchingGroup(MTC.Avatarfil1,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,code):RandomSelect(tp,1):GetFirst()
+	MTC.ActivateCard(tc,tp,e)
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+60010225,nil,0,tp,tp,0)
+end
+
+
+
+
+
+
+
+
+
+

@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.filter(c,e,tp)
-	return c:IsSetCard(0x6a9) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x5622) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ub=Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_DECK,0,nil)

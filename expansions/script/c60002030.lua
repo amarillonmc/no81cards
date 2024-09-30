@@ -45,7 +45,7 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.penfilter(c)
-	return c:IsSetCard(0x62c) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and not c:IsCode(m)
+	return c:IsSetCard(0x5621) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and not c:IsCode(m)
 end
 function cm.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDestructable()

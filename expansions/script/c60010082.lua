@@ -46,7 +46,7 @@ end
 
 
 function cm.con2filter(c)
-	return c:IsSetCard(0x647) and c:GetOriginalType()==TYPE_EQUIP and not c:IsDisabled()
+	return c:IsSetCard(0xc622) and c:GetOriginalType()==TYPE_EQUIP and not c:IsDisabled()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.sfil,tp,LOCATION_HAND,0,nil)
@@ -85,11 +85,11 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.tgfil(c)
-	return not c:IsSetCard(0x647)
+	return not c:IsSetCard(0xc622)
 end
 
 function cm.con2(e, tp, eg, ep, ev, re, r, rp)
-	local ch = Duel.GetCurrentChain(true) - 1
+	local ch = Duel.GetCurrentChain() - 1
 	if ch <= 0 then return false end
 	local cplayer = Duel.GetChainInfo(ch, CHAININFO_TRIGGERING_CONTROLER)
 	local ceff = Duel.GetChainInfo(ch, CHAININFO_TRIGGERING_EFFECT)

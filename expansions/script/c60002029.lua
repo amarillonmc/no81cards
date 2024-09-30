@@ -36,7 +36,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.pfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x62c) and not c:IsCode(m) and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x5621) and not c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.ptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.pfilter,tp,LOCATION_EXTRA,0,1,nil) end
@@ -51,7 +51,7 @@ function cm.pop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x62c) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x5621) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

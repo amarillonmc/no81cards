@@ -14,14 +14,14 @@ function cm.initial_effect(c)
 	end)
 	e1:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk)
 		if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and
-			Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x628,0x21,2000,1600,5,RACE_FIEND,ATTRIBUTE_DARK) end
+			Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x5620,0x21,2000,1600,5,RACE_FIEND,ATTRIBUTE_DARK) end
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	end)
 	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 		local c=e:GetHandler()
 		if not c:IsRelateToEffect(e) then return end
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-			or not Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x628,0x21,2000,1600,5,RACE_FIEND,ATTRIBUTE_DARK) then return end
+			or not Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x5620,0x21,2000,1600,5,RACE_FIEND,ATTRIBUTE_DARK) then return end
 		c:AddMonsterAttribute(TYPE_EFFECT)
 		Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)
 		if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,60000043) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e1:SetTargetRange(1,0)
 		e1:SetTarget(function(e,c)
-			return not c:IsSetCard(0x628)
+			return not c:IsSetCard(0x5620)
 		end)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
@@ -69,7 +69,7 @@ function cm.initial_effect(c)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e1:SetTargetRange(1,0)
 		e1:SetTarget(function(e,c)
-			return not c:IsSetCard(0x628)
+			return not c:IsSetCard(0x5620)
 		end)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
@@ -99,7 +99,7 @@ function cm.initial_effect(c)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e1:SetTargetRange(1,0)
 		e1:SetTarget(function(e,c)
-			return not c:IsSetCard(0x628)
+			return not c:IsSetCard(0x5620)
 		end)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
@@ -117,5 +117,5 @@ function cm.initial_effect(c)
 end
 --e2
 function cm.t2(c)
-	return c:IsAbleToGrave() and c:IsSetCard(0x628)
+	return c:IsAbleToGrave() and c:IsSetCard(0x5620)
 end

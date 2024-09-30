@@ -35,7 +35,7 @@ function cm.initial_effect(c)
 end
 --c1 Activated Resistance 
 function cm.rmfilter(c,e,tp)
-	return c:IsAbleToRemoveAsCost() and c:IsSetCard(0x628) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_DECK,0,1,c)
+	return c:IsAbleToRemoveAsCost() and c:IsSetCard(0x5620) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_DECK,0,1,c)
 end
 function cm.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -44,7 +44,7 @@ function cm.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x628)
+	return c:IsFaceup() and c:IsSetCard(0x5620)
 end
 --function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	--if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,0,1,nil) end
@@ -74,8 +74,8 @@ function cm.efilter(e,te)
 end
 --to deck--
 function cm.cfilter(c)
-	return ( c:IsSetCard(0x628) and c:IsType(TYPE_SYNCHRO))
-	or (c:IsSetCard(0x628) and c:IsType(TYPE_XYZ))
+	return ( c:IsSetCard(0x5620) and c:IsType(TYPE_SYNCHRO))
+	or (c:IsSetCard(0x5620) and c:IsType(TYPE_XYZ))
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)

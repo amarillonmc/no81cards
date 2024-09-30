@@ -34,7 +34,7 @@ function cm.mfilter(c)
 	return c:IsLinkRace(RACE_MACHINE)
 end
 function cm.ckfil(c)
-	return not c:IsSetCard(0x6a0)
+	return not c:IsSetCard(0xc621)
 end
 function cm.filter(c)
 	return c:IsAbleToDeck()

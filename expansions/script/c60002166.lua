@@ -2,7 +2,7 @@
 local m=60002166
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x624)
+	c:EnableCounterPermit(0x9620)
 	--tohand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -124,7 +124,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Damage(p,d,REASON_EFFECT)
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x624)>=1
+	return Card.GetCounter(e:GetHandler(),0x9620)>=1
 end
 
 

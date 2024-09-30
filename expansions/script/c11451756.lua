@@ -81,16 +81,23 @@ function cm.costfilter(c)
 	return c:IsSetCard(0x9977) and c:IsAbleToRemoveAsCost()
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	local c=e:GetHandler()
+	if chk==0 then
+		local nsp=Duel.GetCurrentChain()==0
+		local exc=not nsp and c
+		return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_HAND,0,1,exc)
+	end
+	local nsp=Duel.GetCurrentChain()==1
+	local exc=not nsp and c
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local tg=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_HAND,0,1,1,e:GetHandler())
+	local tg=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_HAND,0,1,1,exc)
 	Duel.Remove(tg,POS_FACEUP,REASON_COST)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m+1)==0
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
-	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsPlayerCanDraw(tp,1) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (sa or sb) end
+	if chk==0 then return (Duel.GetCurrentChain()==0 or (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) and Duel.IsPlayerCanDraw(tp,1) and (sa or sb) end
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	if c:IsLocation(LOCATION_HAND) then
@@ -99,12 +106,17 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	if Duel.GetCurrentChain()==1 then
+		e:SetCategory(CATEGORY_DRAW)
+	else
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.Draw(tp,1,REASON_EFFECT)>0 and c:IsRelateToEffect(e) then
-		--Duel.BreakEffect()
+	if Duel.Draw(tp,1,REASON_EFFECT)>0 and Duel.GetCurrentChain()>1 and c:IsRelateToEffect(e) then
+		Duel.BreakEffect()
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

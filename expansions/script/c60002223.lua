@@ -14,6 +14,19 @@ function cm.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(cm.con1)
 	c:RegisterEffect(e1)
+
+	--spsummon proc
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_DECK)
+	e1:SetCondition(cm.spcon)
+	e1:SetTarget(cm.sptg)
+	e1:SetOperation(cm.spop)
+	e1:SetValue(SUMMON_VALUE_SELF)
+	c:RegisterEffect(e1)
+	
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
@@ -26,7 +39,7 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_DRAW)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
 	e3:SetCode(EVENT_SUMMON_SUCCESS)
 	e3:SetOperation(cm.op3)
 	c:RegisterEffect(e3)
@@ -43,6 +56,30 @@ function cm.initial_effect(c)
 	e5:SetOperation(cm.op5)
 	c:RegisterEffect(e5)
 end
+function cm.spfilter(c)
+	return aux.IsCodeListed(c,m) and c:IsDiscardable()
+end
+function cm.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,c)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND,0,c)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
+	if tc then
+		e:SetLabelObject(tc)
+		return true
+	else return false end
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	Duel.SendtoGrave(g,REASON_SPSUMMON+REASON_DISCARD)
+end
+
+
 --e0
 function cm.op0(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():GetFieldID()<=172 then return end
@@ -73,14 +110,14 @@ function cm.op3f1(c,mc)
 	return not aux.IsCodeListed(c,mc:GetCode())
 end
 function cm.op3con1f(c,tp)
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) and (c:IsReason(REASON_COST) or c:IsReason(REASON_SUMMON+REASON_MATERIAL))
+	return c:IsPreviousControler(tp) and (c:IsReason(REASON_COST) or c:IsReason(REASON_SUMMON+REASON_MATERIAL))
 end
 function cm.op3con1(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.op3con1f,1,nil,tp)
 end
 function cm.op3op1(e,tp,eg,ep,ev,re,r,rp)
-	if #eg-1<=0 then return end
-	Duel.Draw(tp,#eg-1,REASON_EFFECT)
+	if #eg<=0 then return end
+	Duel.Draw(tp,#eg,REASON_EFFECT)
 end
 function cm.op3(e,tp,eg,ep,ev,re,r,rp)
 	local c,g=e:GetHandler(),Duel.GetFieldGroup(tp,LOCATION_DECK,0)
@@ -92,6 +129,13 @@ function cm.op3(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EVENT_RELEASE)
 		e1:SetCondition(cm.op3con1)
 		e1:SetOperation(cm.op3op1)
+		Duel.RegisterEffect(e1,tp)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(1,0)
+		e1:SetValue(8)
 		Duel.RegisterEffect(e1,tp)
 	end
 end

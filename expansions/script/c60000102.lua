@@ -37,7 +37,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp
 end
 function cm.filter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x6a0) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsFaceup() and c:IsSetCard(0xc621) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and cm.filter(chkc,e,tp) end

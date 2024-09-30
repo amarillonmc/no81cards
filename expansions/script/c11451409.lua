@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	--todeck
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,0))
-	e4:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
+	e4:SetCategory(CATEGORY_TODECK+CATEGORY_ATKCHANGE)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e4:SetCode(EVENT_CHAINING)
@@ -31,6 +31,10 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.tg)
 	e4:SetOperation(cm.op)
 	c:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetCode(11451409)
+	--e5:SetCondition(cm.con2)
+	c:RegisterEffect(e5)
 	--Equip limit
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_SINGLE)
@@ -38,6 +42,28 @@ function cm.initial_effect(c)
 	e7:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e7:SetValue(1)
 	c:RegisterEffect(e7)
+	if not cm.global_check then
+		cm.global_check=true
+		local _MoveToField=Duel.MoveToField
+		function Duel.MoveToField(tc,...)
+			local res=_MoveToField(tc,...)
+			local te=tc:GetActivateEffect()
+			if te then
+				local fid=tc:GetFieldID()
+				local cost=te:GetCost() or aux.TRUE
+				local cost2=function(e,tp,eg,ep,ev,re,r,rp,chk)
+								if chk==0 then return cost(e,tp,eg,ep,ev,re,r,rp,0) end
+								cost(e,tp,eg,ep,ev,re,r,rp,1)
+								if fid==tc:GetFieldID() then
+									Duel.RaiseEvent(tc,11451409,te,0,tp,tp,Duel.GetCurrentChain())
+								end
+								e:SetCost(cost)
+							end
+				te:SetCost(cost2)
+			end
+			return res
+		end
+	end
 end
 cm.traveler_saga=true
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -55,7 +81,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetEquipTarget()
-	return re:IsActiveType(TYPE_MONSTER) and ec==re:GetHandler()
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler()~=e:GetHandler() and ec
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingTarget(Card.IsAbleToDeck,tp,0,LOCATION_GRAVE,1,nil) end
@@ -66,15 +92,20 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
+	local ec=c:GetEquipTarget()
 	if not c:IsRelateToEffect(e) then return end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
-	Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
+	Duel.SendtoDeck(sg,nil,0,REASON_EFFECT)
 	local og=Duel.GetOperatedGroup()
 	if og:IsExists(Card.IsType,2,nil,TYPE_MONSTER) or og:IsExists(Card.IsType,2,nil,TYPE_SPELL) or og:IsExists(Card.IsType,2,nil,TYPE_TRAP) then
 		Duel.BreakEffect()
-		Duel.ShuffleDeck(tp)
-		Duel.Draw(tp,1,REASON_EFFECT)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(1500)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		ec:RegisterEffect(e1)
 	end
 	--[[if og:IsExists(Card.IsType,1,nil,TYPE_MONSTER) and c:GetFlagEffect(m+9)==0 then
 		c:RegisterFlagEffect(m+9,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))

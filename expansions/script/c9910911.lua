@@ -1,40 +1,34 @@
 --恶性复活
 function c9910911.initial_effect(c)
-	aux.AddCodeList(c,9910871,9910909)
+	aux.AddCodeList(c,9910871)
 	aux.AddRitualProcGreater2(c,c9910911.filter,LOCATION_HAND+LOCATION_EXTRA,c9910911.mfilter)
-	--salvage
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCost(c9910911.thcost)
-	e1:SetTarget(c9910911.thtg)
-	e1:SetOperation(c9910911.thop)
-	c:RegisterEffect(e1)
+	--set
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_PHASE+PHASE_END)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(c9910911.settg)
+	e2:SetOperation(c9910911.setop)
+	c:RegisterEffect(e2)
 end
 function c9910911.filter(c)
-	return c:IsCode(9910909) and (not c:IsLocation(LOCATION_EXTRA) or c:IsFaceup())
+	return c:IsSetCard(0xc954) and (not c:IsLocation(LOCATION_EXTRA) or c:IsFaceup())
 end
 function c9910911.mfilter(c)
 	return aux.IsCodeListed(c,9910871)
 end
-function c9910911.thfilter(c)
-	return c:IsCode(9910871) and c:IsAbleToRemoveAsCost()
+function c9910911.setfilter(c)
+	return c:IsCode(9910871) and c:IsSSetable()
 end
-function c9910911.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910911.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c9910911.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+function c9910911.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910911.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
 end
-function c9910911.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToHand() end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
-end
-function c9910911.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SendtoHand(c,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,c)
+function c9910911.setop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910911.setfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.SSet(tp,tc)
 	end
 end

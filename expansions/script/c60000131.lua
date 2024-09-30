@@ -17,7 +17,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)	
 end
 function cm.thfilter(c)
-	return c:IsAbleToHand() and c:IsSetCard(0x621) 
+	return c:IsAbleToHand() and c:IsSetCard(0x6620) 
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

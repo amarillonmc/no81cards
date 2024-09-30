@@ -48,7 +48,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.rfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6a9) and c:IsLevelAbove(3) and not c:IsCode(m)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x5622) and c:IsLevelAbove(3) and not c:IsCode(m)
 end
 function cm.splimit(e,c)
 	return not c:IsRace(RACE_CYBERSE)

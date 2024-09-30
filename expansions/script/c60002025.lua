@@ -2,7 +2,7 @@ local m=60002025
 local cm=_G["c"..m]
 cm.name="Once Upon A Rainy Day"
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x621)
+	c:EnableCounterPermit(0x6620)
 	 --atc
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
@@ -104,7 +104,7 @@ end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,0))
 	local x=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)*1000+Duel.GetFieldGroupCount(tp,LOCATION_HAND,LOCATION_HAND)*100+Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,LOCATION_GRAVE)*10+Duel.GetFieldGroupCount(tp,LOCATION_DECK,LOCATION_DECK)
-	e:GetHandler():AddCounter(0x621,x,false)
+	e:GetHandler():AddCounter(0x6620,x,false)
 end 
 function cm.setlimit(e,c,tp)
 	return c:IsType(TYPE_FIELD)
@@ -114,7 +114,7 @@ function cm.actlimit(e,re,tp)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local x=e:GetHandler():GetCounter(0x621)/2
+	local x=e:GetHandler():GetCounter(0x6620)/2
 	local count=math.ceil(x)
 Debug.Message(count)
 	if count>=1 then Duel.SetOperationInfo(0,CATEGORY_RECOVER,0,0,tp,count) end
@@ -126,10 +126,10 @@ function cm.spfilter(c,e,tp)
 	return c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local x=e:GetHandler():GetCounter(0x621)/2
+	local x=e:GetHandler():GetCounter(0x6620)/2
 	local count=math.ceil(x)
 	if x==0 then Duel.SetLP(1-tp,0) end
-	if e:GetHandler():RemoveCounter(tp,0x621,count,REASON_EFFECT) then
+	if e:GetHandler():RemoveCounter(tp,0x6620,count,REASON_EFFECT) then
 		if count>=1 then Duel.Recover(tp,count,REASON_EFFECT) end
 		if count<=100 and Duel.GetMZoneCount(tp)>=1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

@@ -1,5 +1,5 @@
 --铳影-浅仓绘里
-Duel.LoadScript("c17035101.lua")
+Duel.LoadScript("c12825622.lua")
 function c12825605.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,6,3)

@@ -4,62 +4,87 @@ function s.initial_effect(c)
 	c:EnableReviveLimit()
 	--material
 	aux.AddXyzProcedure(c,nil,9,2,s.mfilter,aux.Stringid(id,0),2,s.altop)
-	--disable
+	--Atk
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DISABLE)
-	e1:SetDescription(aux.Stringid(id,1))
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetCountLimit(1)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCost(s.discost)
-	e1:SetTarget(s.distg)
-	e1:SetOperation(s.disop)
+	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e1:SetCondition(s.atkcon)
+	e1:SetTarget(s.atktg)
+	e1:SetValue(s.atkvalue)
 	c:RegisterEffect(e1)
+	
 	--cannot spsummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_ADJUST)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTargetRange(1,1)
-	e2:SetTarget(s.splimit)
+	e2:SetCondition(s.matcon)
+	e2:SetOperation(s.matop)
 	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCode(id)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(1,1)
+	c:RegisterEffect(e3)
 end
 function s.mfilter(c,e,tp)
 	return c:GetAttack()>c:GetBaseAttack()
 end
 function s.altop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 and Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)>Duel.GetFieldGroupCount(tp,0,LOCATION_EXTRA) and Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)==1 and Duel.GetTurnCount()>1 end
+	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 and Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)==1 end
 	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
-function s.splimit(e,c)
-	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
-	if g:GetCount()==0 then return false end 
-	local _,atk=g:GetMaxGroup(Card.GetBaseAttack)
-	return c:IsLocation(LOCATION_EXTRA) and c:GetAttack()<atk
+function s.atkcon(e)
+	local tp=e:GetHandlerPlayer()
+	return Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)>=Duel.GetFieldGroupCount(tp,0,LOCATION_EXTRA)
 end
-function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.atktg(e,c)
+	return c~=e:GetHandler()
+end
+function s.atkvalue(e,c)
+	return e:GetHandler():GetOverlayCount()*100
+end
+function s.matfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:GetFlagEffect(id)==0
+end
+function s.matcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(s.matfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+end
+function s.matop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	c:RemoveOverlayCard(tp,1,1,REASON_COST)
+	local g=Duel.GetMatchingGroup(s.matfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	for tc in aux.Next(g) do
+		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetRange(LOCATION_MZONE)
+		e2:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+		e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_SINGLE_RANGE)
+		e2:SetValue(s.matlimit)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2,true)
+		local e3=e2:Clone()
+		e3:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+		e3:SetValue(s.fuslimit)
+		tc:RegisterEffect(e3,true)
+		local e4=e2:Clone()
+		e4:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+		tc:RegisterEffect(e4,true)
+		local e5=e2:Clone()
+		e5:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+		tc:RegisterEffect(e5,true)
+	end
 end
-function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+function s.matlimit(e,c)
+	local tp=e:GetHandler():GetControler()
+	--Debug.Message(e:GetHandler():GetAttack())
+	--Debug.Message(c:GetAttack())
+	return Duel.IsPlayerAffectedByEffect(tp,id) and e:GetHandler():GetAttack()>c:GetAttack()
 end
-function s.disop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_DISABLE)
-	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e1:SetTarget(s.disable)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-end
-function s.disable(e,c)
-	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
-	if g:GetCount()==0 then return false end
-	local ag=g:GetMaxGroup(Card.GetAttack)
-	return not ag:IsContains(c)
+function s.fuslimit(e,c,st)
+	return Duel.IsPlayerAffectedByEffect(tp,id) and e:GetHandler():GetAttack()>c:GetAttack() and st==SUMMON_TYPE_FUSION
 end

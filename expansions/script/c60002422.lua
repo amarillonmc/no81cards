@@ -16,8 +16,8 @@ function c60002422.condition(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function c60002422.target(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local b1=Duel.GetDecktopGroup(tp,1):GetFirst() and Duel.GetDecktopGroup(tp,1):GetFirst():IsAbleToRemove(POS_FACEDOWN) and Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsAbleToHand() and c:IsSetCard(0x6ac) and c:IsType(TYPE_MONSTER) end,tp,LOCATION_REMOVED,0,1,nil)
-	local b2=Duel.GetDecktopGroup(tp,1):GetFirst() and Duel.GetDecktopGroup(tp,1):GetFirst():IsAbleToRemove() and Duel.IsExistingMatchingCard(function(c) return c:IsFacedown() and c:IsAbleToHand() and c:IsSetCard(0x6ac) and c:IsType(TYPE_SPELL+TYPE_TRAP) end,tp,LOCATION_REMOVED,0,1,nil)
+	local b1=Duel.GetDecktopGroup(tp,1):GetFirst() and Duel.GetDecktopGroup(tp,1):GetFirst():IsAbleToRemove(POS_FACEDOWN) and Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsAbleToHand() and c:IsSetCard(0x6622) and c:IsType(TYPE_MONSTER) end,tp,LOCATION_REMOVED,0,1,nil)
+	local b2=Duel.GetDecktopGroup(tp,1):GetFirst() and Duel.GetDecktopGroup(tp,1):GetFirst():IsAbleToRemove() and Duel.IsExistingMatchingCard(function(c) return c:IsFacedown() and c:IsAbleToHand() and c:IsSetCard(0x6622) and c:IsType(TYPE_SPELL+TYPE_TRAP) end,tp,LOCATION_REMOVED,0,1,nil)
 	if chk==0 then return b1 or b2 end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
@@ -41,8 +41,8 @@ function c60002422.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_PHASE+PHASE_END,2)
 		Duel.RegisterEffect(e1,tp) 
 		end 
-		local b1=Duel.GetDecktopGroup(tp,1):GetFirst() and Duel.GetDecktopGroup(tp,1):GetFirst():IsAbleToRemove(POS_FACEDOWN) and Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsAbleToHand() and c:IsSetCard(0x6ac) and c:IsType(TYPE_MONSTER) end,tp,LOCATION_REMOVED,0,1,nil)
-		local b2=Duel.GetDecktopGroup(tp,1):GetFirst() and Duel.GetDecktopGroup(tp,1):GetFirst():IsAbleToRemove() and Duel.IsExistingMatchingCard(function(c) return c:IsFacedown() and c:IsAbleToHand() and c:IsSetCard(0x6ac) and c:IsType(TYPE_SPELL+TYPE_TRAP) end,tp,LOCATION_REMOVED,0,1,nil) 
+		local b1=Duel.GetDecktopGroup(tp,1):GetFirst() and Duel.GetDecktopGroup(tp,1):GetFirst():IsAbleToRemove(POS_FACEDOWN) and Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsAbleToHand() and c:IsSetCard(0x6622) and c:IsType(TYPE_MONSTER) end,tp,LOCATION_REMOVED,0,1,nil)
+		local b2=Duel.GetDecktopGroup(tp,1):GetFirst() and Duel.GetDecktopGroup(tp,1):GetFirst():IsAbleToRemove() and Duel.IsExistingMatchingCard(function(c) return c:IsFacedown() and c:IsAbleToHand() and c:IsSetCard(0x6622) and c:IsType(TYPE_SPELL+TYPE_TRAP) end,tp,LOCATION_REMOVED,0,1,nil) 
 		if b1 or b2 then 
 			local op=2
 			if b1 and b2 then 
@@ -53,7 +53,7 @@ function c60002422.activate(e,tp,eg,ep,ev,re,r,rp)
 				op=Duel.SelectOption(tp,aux.Stringid(60002422,2))+1  
 			end 
 			if op==0 then 
-				local sg=Duel.SelectMatchingCard(tp,function(c) return c:IsFaceup() and c:IsAbleToHand() and c:IsSetCard(0x6ac) and c:IsType(TYPE_MONSTER) end,tp,LOCATION_REMOVED,0,1,1,nil)  
+				local sg=Duel.SelectMatchingCard(tp,function(c) return c:IsFaceup() and c:IsAbleToHand() and c:IsSetCard(0x6622) and c:IsType(TYPE_MONSTER) end,tp,LOCATION_REMOVED,0,1,1,nil)  
 				Duel.SendtoHand(sg,tp,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,sg) 
 				local tc=Duel.GetDecktopGroup(tp,1):GetFirst() 
@@ -62,7 +62,7 @@ function c60002422.activate(e,tp,eg,ep,ev,re,r,rp)
 				local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil) 
 				Duel.ConfirmCards(tp,g) 
 				Duel.ConfirmCards(1-tp,g) 
-				local sg=Duel.SelectMatchingCard(tp,function(c) return c:IsFacedown() and c:IsAbleToHand() and c:IsSetCard(0x6ac) and c:IsType(TYPE_SPELL+TYPE_TRAP) end,tp,LOCATION_REMOVED,0,1,1,nil)  
+				local sg=Duel.SelectMatchingCard(tp,function(c) return c:IsFacedown() and c:IsAbleToHand() and c:IsSetCard(0x6622) and c:IsType(TYPE_SPELL+TYPE_TRAP) end,tp,LOCATION_REMOVED,0,1,1,nil)  
 				Duel.SendtoHand(sg,tp,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,sg) 
 				local tc=Duel.GetDecktopGroup(tp,1):GetFirst() 

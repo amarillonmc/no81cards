@@ -4,6 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
@@ -58,7 +59,7 @@ function c11561062.sprhop2(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then
 	local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_BATTLED)
+		e1:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 		e1:SetCondition(c11561062.conrh)
 		e1:SetOperation(c11561062.oprh)
 		e1:SetReset(RESET_PHASE+PHASE_END)
@@ -77,13 +78,18 @@ function c11561062.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end
 function c11561062.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x133) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
+end
+function c11561062.fcheck(tp,sg,fc)
+	return sg:IsExists(Card.IsSetCard,1,nil,0x133)
 end
 function c11561062.oprh(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(c11561062.filter1,nil,e)
+	aux.FCheckAdditional=c11561062.fcheck
 	local sg1=Duel.GetMatchingGroup(c11561062.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
+	aux.FCheckAdditional=nil
 	local mg2=nil
 	local sg2=nil
 	local ce=Duel.GetChainMaterial(tp)
@@ -96,24 +102,26 @@ function c11561062.oprh(e,tp,eg,ep,ev,re,r,rp)
 	if sg1:GetCount()>0 or (sg2~=nil and sg2:GetCount()>0) then
 		local sg=sg1:Clone()
 		if sg2 then sg:Merge(sg2) end
-		if Duel.GetFlagEffect(tp,11561062)<1 and Duel.SelectYesNo(tp,aux.Stringid(11561062,1)) then
-			Duel.RegisterFlagEffect(tp,11561062,RESET_PHASE+PHASE_END,0,1)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local tg=sg:Select(tp,1,1,nil)
-		local tc=tg:GetFirst()
-		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
-			local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
-			tc:SetMaterial(mat1)
-			Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
-			Duel.BreakEffect()
-			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
-		else
-			local mat2=Duel.SelectFusionMaterial(tp,tc,mg2,nil,chkf)
-			local fop=ce:GetOperation()
-			fop(ce,e,tp,tc,mat2)
+		if Duel.SelectYesNo(tp,aux.Stringid(11561062,1)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local tg=sg:Select(tp,1,1,nil)
+			local tc=tg:GetFirst()
+			if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
+				aux.FCheckAdditional=c11561062.fcheck
+				local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
+				aux.FCheckAdditional=nil
+				tc:SetMaterial(mat1)
+				Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
+				Duel.BreakEffect()
+				Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
+			else
+				local mat2=Duel.SelectFusionMaterial(tp,tc,mg2,nil,chkf)
+				local fop=ce:GetOperation()
+				fop(ce,e,tp,tc,mat2)
+			end
+			tc:CompleteProcedure()
+			e:Reset()
 		end
-		tc:CompleteProcedure()
-	end
 	end
 end
 function c11561062.indfilter(c)

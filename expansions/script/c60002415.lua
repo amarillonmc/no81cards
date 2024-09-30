@@ -46,7 +46,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		local qg=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)
 		Duel.ConfirmCards(tp,qg)
 		g:Merge(qg)
-		local thg=g:Filter(Card.IsSetCard,nil,0x6ac):Select(tp,1,1,nil)
+		local thg=g:Filter(Card.IsSetCard,nil,0x6622):Select(tp,1,1,nil)
 		Duel.SendtoHand(thg,tp,REASON_EFFECT)
 	end
 end

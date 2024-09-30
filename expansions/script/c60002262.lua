@@ -25,14 +25,14 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsSetCard(0x6a9) and tc:IsType(TYPE_MONSTER) then
+		if tc:IsSetCard(0x5622) and tc:IsType(TYPE_MONSTER) then
 			Art_g:AddCard(tc)
 		end
 		tc=eg:GetNext()
 	end
 end  
 function cm.thfilter1(c,e)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6a9) and c:IsAbleToDeck() and c:IsCanBeEffectTarget(e)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x5622) and c:IsAbleToDeck() and c:IsCanBeEffectTarget(e)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local g=Duel.GetMatchingGroup(cm.thfilter1,tp,LOCATION_GRAVE,0,nil,e)

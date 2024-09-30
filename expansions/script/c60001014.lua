@@ -74,16 +74,16 @@ if not cm.lsy_change_operation then
 			end
 		end
 		-----------------------------------------------------------------------------------------
-		if tc:IsCode(60001012) and single==1 and Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_DECK,0,tc,0x624):GetFirst():IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(60001012,0)) then
+		if tc:IsCode(60001012) and single==1 and Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_DECK,0,tc,0x9620):GetFirst():IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(60001012,0)) then
 			Duel.Hint(HINT_CARD,0,60001012)
-			local ac=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,tc,0x624)
+			local ac=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,tc,0x9620)
 			Duel.SendtoHand(ac,nil,REASON_EFFECT)
 			if not tc:IsLocation(LOCATION_DECK) then
 				Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 			end
-		elseif tc:IsCode(60001013) and single==1 and Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_DECK,0,tc,0x624):GetFirst():IsAbleToGrave() and Duel.SelectYesNo(tp,aux.Stringid(60001013,0)) then
+		elseif tc:IsCode(60001013) and single==1 and Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_DECK,0,tc,0x9620):GetFirst():IsAbleToGrave() and Duel.SelectYesNo(tp,aux.Stringid(60001013,0)) then
 			Duel.Hint(HINT_CARD,0,60001013)
-			local ac=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,tc,0x624)
+			local ac=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,tc,0x9620)
 			Duel.SendtoGrave(ac,REASON_EFFECT)
 			if not tc:IsLocation(LOCATION_DECK) then
 				Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
@@ -118,7 +118,7 @@ if not cm.lsy_change_operation then
 -----------------------------------------------------------------------------------------
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x624) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x9620) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -150,7 +150,7 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.ConfirmCards(1-tp,Duel.GetFieldGroup(tp,LOCATION_HAND,0))
-	if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_HAND,0,1,e:GetHandler(),0x624) then
+	if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_HAND,0,1,e:GetHandler(),0x9620) then
 		Duel.Draw(tp,1,REASON_EFFECT)
 		if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
 		local sc=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_HAND,0,1,1,nil,TYPE_PENDULUM):GetFirst()

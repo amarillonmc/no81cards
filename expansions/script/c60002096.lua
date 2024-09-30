@@ -58,7 +58,7 @@ function cm.spcost(e,c,tp,st)
 	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE,0,1,nil)
 end
 function cm.spfilter(c)
-	return (c:IsSetCard(0x6a2) or c:IsSetCard(0x6a3) or c:IsSetCard(0x6a4) or c:IsSetCard(0x62c))
+	return (c:IsSetCard(0x6a2) or c:IsSetCard(0x6a3) or c:IsSetCard(0x6a4) or c:IsSetCard(0x5621))
 end
 function cm.mfilter(c)
 	return not c:IsCode(m)
@@ -83,7 +83,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
 function cm.thfilter2(c)
-	return (c:IsSetCard(0x6a2) or c:IsSetCard(0x6a3) or c:IsSetCard(0x6a4) or c:IsSetCard(0x62c)) and c:IsAbleToHand()
+	return (c:IsSetCard(0x6a2) or c:IsSetCard(0x6a3) or c:IsSetCard(0x6a4) or c:IsSetCard(0x5621)) and c:IsAbleToHand()
 end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c7808cm0961.thfilter2,tp,LOCATION_DECK,0,1,nil) end

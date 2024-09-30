@@ -85,16 +85,16 @@ if not cm.lsy_change_operation then
 			end
 		end
 		-----------------------------------------------------------------------------------------
-		if tc:IsCode(60001012) and single==1 and Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_DECK,0,tc,0x624):GetFirst():IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(60001012,0)) then
+		if tc:IsCode(60001012) and single==1 and Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_DECK,0,tc,0x9620):GetFirst():IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(60001012,0)) then
 			Duel.Hint(HINT_CARD,0,60001012)
-			local ac=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,tc,0x624)
+			local ac=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,tc,0x9620)
 			Duel.SendtoHand(ac,nil,REASON_EFFECT)
 			if not tc:IsLocation(LOCATION_DECK) then
 				Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 			end
-		elseif tc:IsCode(60001013) and single==1 and Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_DECK,0,tc,0x624):GetFirst():IsAbleToGrave() and Duel.SelectYesNo(tp,aux.Stringid(60001013,0)) then
+		elseif tc:IsCode(60001013) and single==1 and Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_DECK,0,tc,0x9620):GetFirst():IsAbleToGrave() and Duel.SelectYesNo(tp,aux.Stringid(60001013,0)) then
 			Duel.Hint(HINT_CARD,0,60001013)
-			local ac=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,tc,0x624)
+			local ac=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,1,tc,0x9620)
 			Duel.SendtoGrave(ac,REASON_EFFECT)
 			if not tc:IsLocation(LOCATION_DECK) then
 				Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
@@ -143,7 +143,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 end
 function cm.chainfilter(re,tp)
-	return not re:GetHandler():IsSetCard(0x624) and re:GetHandler():IsCode(m)
+	return not re:GetHandler():IsSetCard(0x9620) and re:GetHandler():IsCode(m)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return not e:GetHandler():IsPublic() end

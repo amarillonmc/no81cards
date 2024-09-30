@@ -43,7 +43,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.xxfilter(c)
-	return c:IsSetCard(0x6a0)
+	return c:IsSetCard(0xc621)
 end
 function cm.mkfilter(c)
 	return c.named_with_ExMachina and c:IsType(TYPE_LINK) and c:IsAttackAbove(2500)
@@ -59,7 +59,7 @@ function cm.xxtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.filter2(c,e)
-	return c:IsFaceup() and c:IsSetCard(0x6a0) and not c:IsImmuneToEffect(e)
+	return c:IsFaceup() and c:IsSetCard(0xc621) and not c:IsImmuneToEffect(e)
 end
 function cm.xxop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

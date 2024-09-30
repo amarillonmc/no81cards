@@ -57,7 +57,7 @@ function cm.initial_effect(c)
 	e27:SetProperty(EFFECT_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_UNCOPYABLE)
 	e27:SetCode(EVENT_ADJUST)
 	e27:SetOperation(cm.gravecheckop)
-	Duel.RegisterEffect(e27,0)
+	Duel.RegisterEffect(e27,tp)
 	if not cm.global_check then
 		cm.global_check=true
 		local ge1=Effect.CreateEffect(c)

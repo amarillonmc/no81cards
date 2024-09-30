@@ -28,7 +28,7 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsSetCard(0x6a9) and tc:IsType(TYPE_MONSTER) then
+		if tc:IsSetCard(0x5622) and tc:IsType(TYPE_MONSTER) then
 			Art_g:AddCard(tc)
 		end
 		tc=eg:GetNext()

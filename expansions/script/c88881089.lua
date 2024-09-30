@@ -7,6 +7,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e1:SetCode(EVENT_CHAINING)
+	e1:SetCost(s.cost)
 	e1:SetCondition(s.condition)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
@@ -19,7 +20,13 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.handcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler())
+	return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler())
+end
+function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
+		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD,e:GetHandler())
+	end
 end
 function s.vcfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xc06) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(8)

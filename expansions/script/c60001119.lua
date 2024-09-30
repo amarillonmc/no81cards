@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	e27:SetProperty(EFFECT_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_UNCOPYABLE)
 	e27:SetCode(EVENT_ADJUST)
 	e27:SetOperation(cm.gravecheckop)
-	Duel.RegisterEffect(e27,0)
+	Duel.RegisterEffect(e27,tp)
 end
 
 function cm.gravecheckop(e,tp,eg,ep,ev,re,r,rp)

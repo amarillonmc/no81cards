@@ -5,14 +5,14 @@ function c9910395.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCountLimit(1,9910395+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,9910395)
 	e1:SetCost(c9910395.cost)
 	e1:SetTarget(c9910395.target)
 	e1:SetOperation(c9910395.activate)
 	c:RegisterEffect(e1)
 	--act in hand
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910395,1))
+	e2:SetDescription(aux.Stringid(9910395,0))
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	c:RegisterEffect(e2)
@@ -23,6 +23,7 @@ function c9910395.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCountLimit(1,9910395)
 	e3:SetCost(c9910395.spcost)
 	e3:SetTarget(c9910395.sptg)
 	e3:SetOperation(c9910395.spop)
@@ -50,18 +51,23 @@ function c9910395.pfilter(c,tp)
 	return c:IsSetCard(0x5951) and not c:IsForbidden() and c:IsType(TYPE_FIELD) and c:CheckUniqueOnField(tp)
 end
 function c9910395.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910395.pfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910395.pfilter,tp,LOCATION_DECK,0,3,nil,tp) end
 end
 function c9910395.activate(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910395.pfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
-	if tc then
+	local g=Duel.GetMatchingGroup(c9910395.pfilter,tp,LOCATION_DECK,0,nil)
+	if g:GetCount()>=3 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+		local sg=g:Select(tp,3,3,nil)
+		Duel.ConfirmCards(1-tp,sg)
+		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOFIELD)
+		local tg=sg:RandomSelect(1-tp,1)
 		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 		if fc then
 			Duel.SendtoGrave(fc,REASON_RULE)
 			Duel.BreakEffect()
 		end
-		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		Duel.MoveToField(tg:GetFirst(),tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		Duel.ShuffleDeck(tp)
 	end
 end
 function c9910395.spcost(e,tp,eg,ep,ev,re,r,rp,chk)

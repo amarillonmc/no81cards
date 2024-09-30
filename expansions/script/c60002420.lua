@@ -62,7 +62,7 @@ function c60002420.pbfil(c,e,tp)
 	return not c:IsPublic() and c:IsAttribute(ATTRIBUTE_WATER) and Duel.IsExistingMatchingCard(c60002420.thfil,tp,LOCATION_DECK,0,1,nil,c:GetCode())  
 end 
 function c60002420.thfil(c,code) 
-	if not (c:IsAbleToHand() and c:IsSetCard(0x6ac) and c:IsType(TYPE_MONSTER)) then return false end 
+	if not (c:IsAbleToHand() and c:IsSetCard(0x6622) and c:IsType(TYPE_MONSTER)) then return false end 
 	if code==nil then 
 	return true 
 	else 

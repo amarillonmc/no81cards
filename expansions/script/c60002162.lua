@@ -2,7 +2,7 @@
 local m=60002162
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x624)
+	c:EnableCounterPermit(0x9620)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -66,7 +66,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x624)>=1
+	return Card.GetCounter(e:GetHandler(),0x9620)>=1
 end
 function cm.filter(c,e,tp)
 	return c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -78,7 +78,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ShuffleHand(tp)
 			Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
 			if e:GetHandler():IsRelateToEffect(e) then
-				e:GetHandler():AddCounter(0x624,1)
+				e:GetHandler():AddCounter(0x9620,1)
 				Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 			end
 		end

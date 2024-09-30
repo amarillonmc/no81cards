@@ -2,7 +2,7 @@
 local m=60001249
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x624)
+	c:EnableCounterPermit(0x9620)
 	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))

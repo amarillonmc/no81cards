@@ -52,7 +52,7 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(dg,REASON_EFFECT)
 end
 function cm.xxfilter(c)
-	return c:IsSetCard(0x6a0)
+	return c:IsSetCard(0xc621)
 end
 function cm.mkfilter(c)
 	return c.named_with_ExMachina and c:IsType(TYPE_LINK) and c:IsAttackAbove(2500)

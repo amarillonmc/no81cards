@@ -66,11 +66,11 @@ function cm.initial_effect(c)
 end
 
 function cm.ffilter(c,fc,sub,mg,sg)
-	return c:IsFusionSetCard(0x628) and (not sg or not sg:IsExists(Card.IsFusionCode,1,c,c:GetFusionCode())) and c:IsType(TYPE_MONSTER)
+	return c:IsFusionSetCard(0x5620) and (not sg or not sg:IsExists(Card.IsFusionCode,1,c,c:GetFusionCode())) and c:IsType(TYPE_MONSTER)
 end
 
 function cm.getfusionfilter(c,tp,tc)
-	return c:IsPosition(POS_FACEDOWN) and c:IsAbleToDeckOrExtraAsCost() and c:IsSetCard(0x628) and Duel.GetLocationCountFromEx(tp,tp,c,tc)>0
+	return c:IsPosition(POS_FACEDOWN) and c:IsAbleToDeckOrExtraAsCost() and c:IsSetCard(0x5620) and Duel.GetLocationCountFromEx(tp,tp,c,tc)>0
 end
 
 function cm.sprcon(e,c)
@@ -114,11 +114,11 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0x628)
+	return not c:IsSetCard(0x5620)
 end
 
 function cm.costcfilter(c)
-	return c:IsType(TYPE_SPELL) and not c:IsCode(m) and c:IsFaceup() and c:IsSetCard(0x628) and c:IsAbleToHandAsCost()
+	return c:IsType(TYPE_SPELL) and not c:IsCode(m) and c:IsFaceup() and c:IsSetCard(0x5620) and c:IsAbleToHandAsCost()
 end
 
 function cm.cacost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -132,7 +132,7 @@ function cm.cacost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function cm.tgcfilter(c)
-	return c:IsAbleToRemove() and c:IsSetCard(0x628)
+	return c:IsAbleToRemove() and c:IsSetCard(0x5620)
 end
 
 function cm.catg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -159,7 +159,7 @@ function cm.caop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.tgrfilter(c)
-	return c:IsSetCard(0x628) and c:IsAbleToGrave()
+	return c:IsSetCard(0x5620) and c:IsAbleToGrave()
 end
 
 function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)

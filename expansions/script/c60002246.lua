@@ -42,5 +42,5 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6a9) 
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x5622) 
 end

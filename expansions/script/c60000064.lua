@@ -20,7 +20,7 @@ function c60000064.jscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,3,3,REASON_COST)
 end
 function c60000064.jster(c)
-	return c:IsSetCard(0x62b) and c:IsAbleToHand()
+	return c:IsSetCard(0x3621) and c:IsAbleToHand()
 end
 function c60000064.jstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60000064.jster,tp,LOCATION_DECK,0,1,nil) end

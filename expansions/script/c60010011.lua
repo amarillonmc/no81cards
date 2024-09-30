@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.filter(c,e,tp)
-	return c:IsSetCard(0x630) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa621) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

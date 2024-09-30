@@ -64,5 +64,5 @@ function cm.tf21(c)
 	return c:IsLevelAbove(6) and c:IsFaceup()
 end
 function cm.tf22(c)
-	return c:IsSetCard(0x628) and c:GetType()==0x10002 and c:IsAbleToHand()
+	return c:IsSetCard(0x5620) and c:GetType()==0x10002 and c:IsAbleToHand()
 end

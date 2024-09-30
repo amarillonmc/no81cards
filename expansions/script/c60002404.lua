@@ -26,7 +26,7 @@ function cm.initial_effect(c)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	--local tp=e:GetHandlerPlayer()
-	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
+	Duel.RegisterFlagEffect(0,m,RESET_CHAIN,0,1)
 end
 function cm.filter(c,tp)
 	local mg=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,TYPE_MONSTER)
@@ -46,7 +46,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local num=Duel.GetFlagEffect(0,m)
 	if Duel.GetMZoneCount(tp)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		Duel.ConfirmDecktop(tp,num)
-		local g=Duel.GetDecktopGroup(tp,num):Filter(Card.IsSetCard,nil,0x62a)
+		local g=Duel.GetDecktopGroup(tp,num):Filter(Card.IsSetCard,nil,0xc620)
 		if g:GetCount()>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=g:Select(tp,1,1,nil)
@@ -58,7 +58,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 					local mg=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,TYPE_MONSTER)
 					local spg=ssg:Select(tp,1,1,nil)
 					if Duel.GetMZoneCount(tp,c)>0 then
-						Duel.SynchroSummon(tp,spg:GetFirst(),nil,mg)
+						Duel.SynchroSummon(tp,spg:GetFirst(),nil)
 					end
 				end
 			else

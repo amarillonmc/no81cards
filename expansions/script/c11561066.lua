@@ -29,7 +29,7 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_TO_GRAVE)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,11560066)
 	e3:SetTarget(c11561066.zmtg)
 	e3:SetOperation(c11561066.zmop)
@@ -38,19 +38,39 @@ end
 function c11561066.atkval(e,c)
 	return Duel.GetCounter(c:GetControler(),1,1,0x1)*500
 end
-
-function c11561066.zmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_GRAVE+LOCATION_ONFIELD) and chkc:sAbleToRemove() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,1-tp,LOCATION_GRAVE+LOCATION_ONFIELD)
+function c11561066.mfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsFaceupEx()
+end
+function c11561066.sfilter(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemove()
+end
+function c11561066.zmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c11561066.mfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,nil) or Duel.IsExistingMatchingCard(c11561066.sfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,nil) end
 end
 function c11561066.zmop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_REMOVED) then
-		local c=e:GetHandler()
-		local e1=Effect.CreateEffect(c)
+	local g1=Duel.GetMatchingGroup(c11561066.mfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,nil)
+	local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(c11561066.sfilter),tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,nil)
+	g1:Merge(g2)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local tc=g1:Select(tp,1,1,nil):GetFirst()
+	Duel.HintSelection(Group.FromCards(tc))
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetLabelObject(tc)
+	e1:SetCondition(c11561066.condition)
+	e1:SetOperation(c11561066.operation)
+	Duel.RegisterEffect(e1,tp)
+end
+function c11561066.condition(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetLabelObject():IsRelateToEffect(e)
+end
+function c11561066.operation(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:IsType(TYPE_MONSTER) then
+		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_DISABLE)
 		e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
@@ -58,7 +78,7 @@ function c11561066.zmop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabelObject(tc)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
-		local e2=Effect.CreateEffect(c)
+		local e2=Effect.CreateEffect(e:GetHandler())
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_CHAIN_SOLVING)
 		e2:SetCondition(c11561066.discon)
@@ -66,15 +86,27 @@ function c11561066.zmop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetLabelObject(tc)
 		e2:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e2,tp)
+	else
+		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE) 
+		e1:SetRange(LOCATION_REMOVED)
+		e1:SetCountLimit(1)
+		e1:SetOperation(function(e) 
+		Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT) end) 
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
 	end
-end
-function c11561066.distg(e,c)
-	local tc=e:GetLabelObject()
-	return c:IsOriginalCodeRule(tc:GetOriginalCodeRule()) and (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0)
 end
 function c11561066.discon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	return re:GetHandler():IsOriginalCodeRule(tc:GetOriginalCodeRule())
+end
+function c11561066.distg(e,c)
+	local tc=e:GetLabelObject()
+	return c:IsOriginalCodeRule(tc:GetOriginalCodeRule()) and (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0)
 end
 function c11561066.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)

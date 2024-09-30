@@ -59,14 +59,14 @@ end
 
 
 function cm.thfilter(c)
-	return (c:IsSetCard(0x647) or c:IsType(TYPE_EQUIP)) and c:IsAbleToHand()
+	return (c:IsSetCard(0xc622) or c:IsType(TYPE_EQUIP)) and c:IsAbleToHand()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.sfil,tp,LOCATION_HAND,0,nil)
 	return #g==0 and not Duel.IsPlayerAffectedByEffect(tp,60010091)
 end
 function cm.con2filter(c)
-	return c:IsSetCard(0x647) and c:GetOriginalType()==TYPE_EQUIP and not c:IsDisabled()
+	return c:IsSetCard(0xc622) and c:GetOriginalType()==TYPE_EQUIP and not c:IsDisabled()
 end
 function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.sfil,tp,LOCATION_HAND,0,nil)

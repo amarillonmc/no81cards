@@ -31,7 +31,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x629) and c:IsAbleToDeck() and not c:IsPublic()
+	return c:IsSetCard(0xa620) and c:IsAbleToDeck() and not c:IsPublic()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp)
@@ -53,7 +53,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cfilter(c)
-	return c:IsSetCard(0x629) and c:IsAbleToRemoveAsCost() and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0xa620) and c:IsAbleToRemoveAsCost() and c:IsType(TYPE_MONSTER)
 		and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
 end
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)

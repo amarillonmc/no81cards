@@ -11,6 +11,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCountLimit(1,m+10000000)
 	e1:SetCondition(cm.thcon)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
@@ -31,7 +32,7 @@ if not cm.num then
 	cm.num=0
 end
 function cm.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x647)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0xc622)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.sfil,tp,LOCATION_HAND,0,nil)

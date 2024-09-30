@@ -50,7 +50,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.filter(c,tp)
 	return c:IsType(TYPE_EQUIP) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
-		and c:IsSetCard(0x647) and Duel.GetMatchingGroupCount(cm.eqfilter,tp,LOCATION_MZONE,0,nil,c)>0
+		and c:IsSetCard(0xc622) and Duel.GetMatchingGroupCount(cm.eqfilter,tp,LOCATION_MZONE,0,nil,c)>0
 end
 function cm.eqfilter(c,ec)
 	return c:IsFaceup() and ec:CheckEquipTarget(c)
@@ -68,7 +68,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.con2filter(c)
-	return c:IsSetCard(0x647) and c:GetOriginalType()==TYPE_EQUIP and not c:IsDisabled()
+	return c:IsSetCard(0xc622) and c:GetOriginalType()==TYPE_EQUIP and not c:IsDisabled()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.sfil,tp,LOCATION_HAND,0,nil)

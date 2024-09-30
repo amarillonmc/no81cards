@@ -46,7 +46,7 @@ end
 
 
 function cm.con2filter(c)
-	return c:IsSetCard(0x647) and c:GetOriginalType()==TYPE_EQUIP and not c:IsDisabled()
+	return c:IsSetCard(0xc622) and c:GetOriginalType()==TYPE_EQUIP and not c:IsDisabled()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.sfil,tp,LOCATION_HAND,0,nil)
@@ -71,7 +71,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if #thg~=0 then
 		Duel.SendtoHand(thg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,thg)
-		if #Duel.GetOperatedGroup():Filter(Card.IsSetCard,nil,0x647)==#Duel.GetOperatedGroup() and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		if #Duel.GetOperatedGroup():Filter(Card.IsSetCard,nil,0xc622)==#Duel.GetOperatedGroup() and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			local nnum=#Duel.GetOperatedGroup()
 			local dg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil):Select(tp,1,nnum,nil)
 			Duel.Destroy(dg,REASON_EFFECT)

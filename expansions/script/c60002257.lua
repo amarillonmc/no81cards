@@ -57,10 +57,10 @@ function cm.retop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,6,REASON_EFFECT)
 end
 function cm.cfilter(c,tp)
-	return c:IsSummonPlayer(tp) and c:IsSetCard(0x6a9)
+	return c:IsSummonPlayer(tp) and c:IsSetCard(0x5622)
 end
 function cm.filter(c,e,tp,s)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x6a9) and c:IsLevelBelow(s)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x5622) and c:IsLevelBelow(s)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp)

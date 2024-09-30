@@ -52,7 +52,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.LHfil1(c,tp)
-	return c:IsSummonPlayer(tp) and c:IsSetCard(0x630)
+	return c:IsSummonPlayer(tp) and c:IsSetCard(0xa621)
 end
 function cm.LHcon1(e,tp,eg,ep,ev,re,r,rp)
 	local tp=eg:GetFirst():GetOwner()
@@ -62,7 +62,7 @@ function cm.LHop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsSetCard(0x630) then
+		if tc:IsSetCard(0xa621) then
 			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),60010002,RESET_PHASE+PHASE_END,0,1)
 			Duel.RaiseEvent(c,EVENT_CUSTOM+60010002,nil,0,tc:GetSummonPlayer(),tc:GetSummonPlayer(),0)
 		end

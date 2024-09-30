@@ -41,7 +41,7 @@ end
 cm.toss_coin=true
 function cm.cocon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:GetFlagEffect(m)
+	return c:GetFlagEffect(m)==0
 end
 function cm.cotg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

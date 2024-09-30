@@ -35,7 +35,7 @@ function cm.cvtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 end
 function cm.cvfilter1(c)
-	return c:IsSetCard(0x629) and c:IsType(TYPE_SPELL) and c:IsAbleToHand() and not c:IsCode(m)
+	return c:IsSetCard(0xa620) and c:IsType(TYPE_SPELL) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.cvop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

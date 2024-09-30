@@ -6,7 +6,6 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCondition(cm.condition)
 	c:RegisterEffect(e1)
 	--replace
 	local e2=Effect.CreateEffect(c)
@@ -17,10 +16,17 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.reptg)
 	e2:SetValue(aux.FALSE)
 	c:RegisterEffect(e2)
+	--act in hand
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,2))
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e3:SetCondition(cm.condition)
+	c:RegisterEffect(e3)
 end
 cm.traveler_saga=true
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND+LOCATION_ONFIELD)>Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)
+	return Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)
 end
 function cm.filter(c,tp)
 	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) and (c:IsAbleToHand() or c:IsStatus(STATUS_LEAVE_CONFIRMED)) and c:GetLeaveFieldDest()==0 and (c:IsReason(REASON_BATTLE) or (c:GetDestination()==LOCATION_GRAVE and c:IsReason(REASON_EFFECT))) and not c:IsType(TYPE_TOKEN)

@@ -78,6 +78,22 @@ if not require and loadfile then
 		end
 		return require_list[str]
 	end
+	local _dofile=dofile
+	local _loadfile=loadfile
+	function dofile(str)
+		if string.find(str,"%.") then
+			return _dofile(str)
+		else
+			return _dofile(str..".lua")
+		end
+	end
+	function loadfile(str)
+		if string.find(str,"%.") then
+			return _loadfile(str)
+		else
+			return _loadfile(str..".lua")
+		end
+	end
 end
 if not require and Duel.LoadScript then
 	function require(str)
@@ -137,6 +153,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			local ini=cm.initial_effect
 			cm.initial_effect=function() end
 			c:ReplaceEffect(m,0)
+			c:SetStatus(STATUS_EFFECT_REPLACED,false)
 			cm.initial_effect=ini
 			if tc.initial_effect then tc.initial_effect(c) end
 			Duel.DisableShuffleCheck()

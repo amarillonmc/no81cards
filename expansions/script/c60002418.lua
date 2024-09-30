@@ -44,15 +44,15 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	if ct<2 then return false end
 	local te,p=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
 	if not te then return false end
-	local b1=te:GetHandler():IsSetCard(0x6ac) and not te:GetHandler():IsCode(m)
+	local b1=te:GetHandler():IsSetCard(0x6622) and not te:GetHandler():IsCode(m)
 	return b1 and p==tp and rp==1-tp
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil):Filter(Card.IsSetCard,nil,0x6ac):Filter(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil):Filter(Card.IsSetCard,nil,0x6622):Filter(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP)
 	if chk==0 then return #g~=0 end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil):Filter(Card.IsSetCard,nil,0x6ac):Filter(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil):Filter(Card.IsSetCard,nil,0x6622):Filter(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP)
 	local athg=g:Select(tp,1,1,nil)
 	Duel.SendtoHand(athg,nil,REASON_EFFECT)
 end

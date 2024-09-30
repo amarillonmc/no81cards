@@ -44,7 +44,7 @@ function c60000065.initial_effect(c)
 	Duel.AddCustomActivityCounter(60000065,ACTIVITY_SPSUMMON,c60000065.counterfilter)
 end
 function c60000065.counterfilter(c)
-	return c:IsSetCard(0x62b)
+	return c:IsSetCard(0x3621)
 end
 function c60000065.filter(c,e,tp)
 	return c:IsCode(60000064) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
@@ -53,10 +53,10 @@ function c60000065.filter2(c)
 	return c:IsFaceup() and c:IsCode(60000064) and c:IsType(TYPE_XYZ)
 end
 function c60000065.jster(c,e,tp,code)
-	return c:IsSetCard(0x62b) and c:IsAbleToHand() and not c:IsCode(code)
+	return c:IsSetCard(0x3621) and c:IsAbleToHand() and not c:IsCode(code)
 end
 function c60000065.fzter(c,e,tp,code)
-	return c:IsSetCard(0x62b) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and not c:IsCode(code)
+	return c:IsSetCard(0x3621) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and not c:IsCode(code)
 end
 function c60000065.tzcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(60000065,tp,ACTIVITY_SPSUMMON)==0 end
@@ -78,7 +78,7 @@ function c60000065.tztg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c60000065.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0x62b)
+	return not c:IsSetCard(0x3621)
 end
 function c60000065.tzop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -148,7 +148,7 @@ function c60000065.smcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,0,REASON_COST)
 end
 function c60000065.smter(c)
-	return (c:IsAbleToHand() or c:IsAbleToGrave()) and c:IsSetCard(0x62b)
+	return (c:IsAbleToHand() or c:IsAbleToGrave()) and c:IsSetCard(0x3621)
 end
 function c60000065.smter2(c)
 	return c:IsFaceup() and c:IsCode(60000086)

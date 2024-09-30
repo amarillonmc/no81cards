@@ -83,8 +83,8 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	pnfl_adjusting=false
 end
-function cm.setfilter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x9977) and ((c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1) or c:IsSSetable())
+function cm.setfilter(c,e,tp,fd)
+	return c:IsFaceup() and c:IsSetCard(0x9977) and ((c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>fd and Duel.IsPlayerCanSpecialSummonCount(tp,2)) or c:IsSSetable())
 end
 function cm.spfilter(c,se)
 	if not (se==nil or c:GetReasonEffect()~=se) then return false end
@@ -98,7 +98,12 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m-1)==0
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m)==0
-	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_REMOVED,0,1,c,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (sa or sb) end
+	if chk==0 then
+		local nsp=Duel.GetCurrentChain()==0
+		local fd=nsp and 0 or 1
+		local exc=not nsp and c
+		return (Duel.GetCurrentChain()==0 or (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_REMOVED,0,1,exc,e,tp,fd) and (sa or sb)
+	end
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	if c:IsLocation(LOCATION_HAND) then
@@ -106,25 +111,31 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	elseif c:IsLocation(LOCATION_REMOVED) then
 		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	if Duel.GetCurrentChain()>1 then
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local nsp=Duel.GetCurrentChain()<2
+	local fd=0
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_REMOVED,0,1,1,aux.ExceptThisCard(e),e,tp)
+	local exc=not nsp and aux.ExceptThisCard(e)
+	local g=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_REMOVED,0,1,1,exc,e,tp,fd)
 	if g:GetCount()>0 then
 		local tc=g:GetFirst()
 		local res=false
-		if tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and (not tc:IsSSetable() or Duel.SelectYesNo(tp,Stringid(m,3))) then
-			res=Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+		if tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>fd and (not tc:IsSSetable() or Duel.SelectYesNo(tp,Stringid(m,3))) then
+			res=Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)>0
 			if res then Duel.ConfirmCards(1-tp,tc) end
 		else
 			res=Duel.SSet(tp,tc)>0
 		end
-		if res and c:IsRelateToEffect(e) then
-			--Duel.BreakEffect()
-			Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP)
+		if res and Duel.GetCurrentChain()>1 and c:IsRelateToEffect(e) then
+			Duel.BreakEffect()
+			Duel.AdjustAll()
+			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		end
-		Duel.SpecialSummonComplete()
+		--Duel.SpecialSummonComplete()
 	end
 end

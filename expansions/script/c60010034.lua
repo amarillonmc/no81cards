@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 --血源猎手 永世的沉沦鲸梦
 local cm,m,o=GetID()
 function cm.initial_effect(c)
@@ -98,7 +99,7 @@ function cm.oop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 		if g:GetCount()>0 then
 			Duel.ConfirmCards(1-tp,g)
-			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_DISCARD)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
 			local sg=g:Select(tp,1,mth,nil)
 			Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)
 			Duel.ShuffleHand(1-tp)

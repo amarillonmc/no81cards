@@ -52,12 +52,12 @@ function cm.con(e)
 end
 
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0x62d)
+	return not c:IsSetCard(0x6621)
 end
 
 function cm.activeturnlimit(e,re,tp)
 	local rc=re:GetHandler()
-	return not rc:IsSetCard(0x62d)
+	return not rc:IsSetCard(0x6621)
 end
 
 function cm.opnfilter(c)
@@ -118,11 +118,11 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.opdfilter(c)
-	return c:IsDiscardable() and c:IsSetCard(0x62d)
+	return c:IsDiscardable() and c:IsSetCard(0x6621)
 end
 
 function cm.optgfilter(c)
-	return c:IsAbleToGrave() and c:IsSummonLocation(LOCATION_EXTRA) and c:IsSetCard(0x62d)
+	return c:IsAbleToGrave() and c:IsSummonLocation(LOCATION_EXTRA) and c:IsSetCard(0x6621)
 end
 
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)

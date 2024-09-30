@@ -52,7 +52,7 @@ function cm.mfilter(c,xyzc)
 end 
 
 function cm.xyzcheck(g)
-	return g:IsExists(Card.IsSetCard,1,nil,0x62d) and g:IsExists(Card.IsCode,1,nil,24094653)
+	return g:IsExists(Card.IsSetCard,1,nil,0x6621) and g:IsExists(Card.IsCode,1,nil,24094653)
 end
 
 function cm.getfusionfilter(c)

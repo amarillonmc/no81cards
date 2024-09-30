@@ -1,0 +1,50 @@
+--爆墓姐姐
+local s,id,o=GetID()
+function s.initial_effect(c)
+	--synchro summon
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	c:EnableReviveLimit()
+	--immune
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e0:SetRange(LOCATION_MZONE)
+	e0:SetValue(1)
+	c:RegisterEffect(e0)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EFFECT_SET_ATTACK)
+	e1:SetValue(s.value)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCode(EFFECT_SET_DEFENSE)
+	e2:SetValue(s.value)
+	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_REMOVE)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1,id+EFFECT_COUNT_CODE_DUEL)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetTarget(s.rmtg)
+	e3:SetOperation(s.rmop)
+	c:RegisterEffect(e3)
+end
+function s.value(e,c)
+	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_REMOVED,LOCATION_REMOVED)*400
+end
+function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,nil,POS_FACEDOWN)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
+end
+function s.rmop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Remove(Duel.GetFieldGroup(tp,0,LOCATION_GRAVE),POS_FACEDOWN,REASON_EFFECT)
+end

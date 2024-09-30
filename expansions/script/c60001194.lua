@@ -44,14 +44,14 @@ end
 function c60001194.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do 
-	if tc:IsSetCard(0x6a5) then 
+	if tc:IsSetCard(0x3622) then 
 	Duel.RegisterFlagEffect(tc:GetSummonPlayer(),60001194,RESET_PHASE+PHASE_END,0,1) 
 	end 
 	tc=eg:GetNext()
 	end
 end
 function c60001194.rlfil(c) 
-	return c:IsReleasable() and c:IsSetCard(0x6a5) 
+	return c:IsReleasable() and c:IsSetCard(0x3622) 
 end 
 function c60001194.rlgck(g,tp) 
 	return Duel.GetMZoneCount(tp,g)>0   
@@ -114,7 +114,7 @@ function c60001194.dissop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(eg,REASON_EFFECT)
 end 
 function c60001194.sctfil(c) 
-	return c:IsAbleToGraveAsCost() and c:IsSetCard(0x6a5) and c:IsType(TYPE_SPELL+TYPE_TRAP)  
+	return c:IsAbleToGraveAsCost() and c:IsSetCard(0x3622) and c:IsType(TYPE_SPELL+TYPE_TRAP)  
 end 
 function c60001194.smcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(c60001194.sctfil,tp,LOCATION_DECK,0,1,nil) end
@@ -152,16 +152,16 @@ function c60001194.smop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c60001194.splimit(e,c)
-	return not c:IsSetCard(0x6a5) 
+	return not c:IsSetCard(0x3622) 
 end
 function c60001194.tghcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) 
 end 
 function c60001194.tgfil(c,e,tp) 
-	return c:IsAbleToGrave() and c:IsFaceup() and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x6a5) and Duel.IsExistingMatchingCard(c60001194.thfil,tp,LOCATION_GRAVE,0,1,nil,c)
+	return c:IsAbleToGrave() and c:IsFaceup() and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x3622) and Duel.IsExistingMatchingCard(c60001194.thfil,tp,LOCATION_GRAVE,0,1,nil,c)
 end 
 function c60001194.thfil(c,sc) 
-	return c:IsAbleToHand() and c:IsSetCard(0x6a5) and not c:IsCode(sc:GetCode()) 
+	return c:IsAbleToHand() and c:IsSetCard(0x3622) and not c:IsCode(sc:GetCode()) 
 end 
 function c60001194.tghtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60001194.tgfil,tp,LOCATION_ONFIELD,0,1,nil,e,tp) end

@@ -143,8 +143,22 @@ function c28384553.dsop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Destroy(sc,REASON_EFFECT)
 		end
 	end
-	if Duel.GetLP(tp)~=3000 and Duel.SelectYesNo(tp,aux.Stringid(28384553,1)) then
+	local lp=Duel.GetLP(tp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsFaceup() and lp~=3000 and Duel.SelectYesNo(tp,aux.Stringid(28384553,1)) then
 		Duel.BreakEffect()
 		Duel.SetLP(tp,3000)
+		local val=0
+		if lp<3000 then
+			val=3000-lp
+		else
+			val=lp-3000
+		end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+		e1:SetValue(val)
+		c:RegisterEffect(e1)
 	end
 end

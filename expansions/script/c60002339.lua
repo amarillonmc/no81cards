@@ -98,20 +98,20 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.afil1(c)
+function cm.afil1(c,e,tp)
 	return (c:IsCode(60002335) or c:IsCode(60002336)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function cm.fil1(c)
+function cm.fil1(c,e,tp)
 	return c:IsCode(60002335) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function cm.fil2(c)
+function cm.fil2(c,e,tp)
 	return c:IsCode(60002336) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g1=Duel.GetMatchingGroup(cm.afil1,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+	local g1=Duel.GetMatchingGroup(cm.afil1,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,e,tp)
 	if chk==0 then return g1:GetClassCount(Card.GetCode)>=2 and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end

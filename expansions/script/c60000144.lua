@@ -33,7 +33,7 @@ function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x621) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x6620) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -49,7 +49,7 @@ function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thfilter(c)
-	return c:IsAbleToHand() and c:IsSetCard(0x621) 
+	return c:IsAbleToHand() and c:IsSetCard(0x6620) 
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

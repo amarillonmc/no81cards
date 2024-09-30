@@ -4,8 +4,10 @@ function cm.initial_effect(c)
 	--change code
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetHintTiming(0,TIMING_END_PHASE)
 	e1:SetCountLimit(1,m)
 	e1:SetCost(cm.chcost)
 	e1:SetTarget(cm.chtg)
@@ -405,7 +407,7 @@ function cm.returntofield(tc)
 			Duel.BreakEffect()
 		end
 		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-        return
+		return
 	end
 	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then
 		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)

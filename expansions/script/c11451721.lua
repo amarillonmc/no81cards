@@ -153,7 +153,53 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabelObject(tc)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
+		--aclimit
+		local ge0=Effect.CreateEffect(tc)
+		ge0:SetType(EFFECT_TYPE_FIELD)
+		ge0:SetCode(EFFECT_ACTIVATE_COST)
+		ge0:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
+		ge0:SetRange(LOCATION_MZONE)
+		ge0:SetTargetRange(1,1)
+		ge0:SetTarget(cm.actarget1)
+		ge0:SetOperation(cm.costop1)
+		ge0:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(ge0,true)
 	end
+end
+function cm.actarget1(e,te,tp)
+	e:SetLabelObject(te)
+	return te:GetHandler()==e:GetHandler()
+end
+function cm.costop1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local te=e:GetLabelObject()
+	local op=te:GetOperation()
+	local res=false
+	local tab=getmetatable(te:GetHandler())
+	for _,f in pairs(tab) do
+		if f and f==op then res=true end
+	end
+	if res then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetTargetRange(1,1)
+		e1:SetValue(cm.aclimit)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e1,true)
+	end
+end
+function cm.aclimit(e,te,tp)
+	if te:GetHandler()~=e:GetHandler() then return false end
+	local op=te:GetOperation()
+	local res=false
+	local tab=getmetatable(te:GetHandler())
+	for _,f in pairs(tab) do
+		if f and f==op then res=true end
+	end
+	return res
 end
 function cm.eqlimit(e,c)
 	return e:GetLabelObject()==c

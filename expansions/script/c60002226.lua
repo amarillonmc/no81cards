@@ -1,10 +1,10 @@
 --万物的见证者·洁蒂丝
 local m=60002226
 local cm=_G["c"..m]
-function cm.initial_effect(c)
-	aux.AddCodeList(c,60002223)
-	c:EnableCounterPermit(0x624,LOCATION_ONFIELD)
-	c:EnableCounterPermit(0x625,LOCATION_ONFIELD)
+function cm.initial_effect(c)   
+	for i=0,0xffff do
+		c:EnableCounterPermit(i,LOCATION_ONFIELD)
+	end
 	--race
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -13,6 +13,15 @@ function cm.initial_effect(c)
 	e1:SetRange(0xff)
 	e1:SetValue(0xfffffff)
 	c:RegisterEffect(e1)
+	--att
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+	e1:SetRange(0xff)
+	e1:SetValue(0xff)
+	c:RegisterEffect(e1)
+	
 	--爆能强化
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -35,30 +44,79 @@ function cm.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,2))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SUMMON)
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_SUMMON+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,3))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCost(cm.spcost)
-	e1:SetCondition(cm.spcon2)
-	e1:SetTarget(cm.sptg)
-	e1:SetOperation(cm.spop)
-	c:RegisterEffect(e1)
+	--local e1=Effect.CreateEffect(c)
+	--e1:SetDescription(aux.Stringid(m,3))
+	--e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SUMMON)
+	--e1:SetType(EFFECT_TYPE_IGNITION)
+	--e1:SetRange(LOCATION_HAND)
+	--e1:SetCost(cm.spcost)
+	--e1:SetCondition(cm.spcon2)
+	--e1:SetTarget(cm.sptg)
+	--e1:SetOperation(cm.spop)
+	--c:RegisterEffect(e1)
 end
+
+if not cm.enable_all_setname then
+	cm.enable_all_setname=true
+	cm._is_set_card=Card.IsSetCard
+	Card.IsSetCard=function (c,...)
+		return c:IsOriginalCodeRule(m) or cm._is_set_card(c,...)
+	end
+	cm._is_link_set_card=Card.IsLinkSetCard
+	Card.IsLinkSetCard=function (c,...)
+		return c:IsOriginalCodeRule(m) or cm._is_link_set_card(c,...)
+	end
+	cm._is_fusion_set_card=Card.IsFusionSetCard
+	Card.IsFusionSetCard=function (c,...)
+		return c:IsOriginalCodeRule(m) or cm._is_fusion_set_card(c,...)
+	end
+	cm._is_previous_set_card=Card.IsPreviousSetCard
+	Card.IsPreviousSetCard=function (c,...)
+		return c:IsOriginalCodeRule(m) or cm._is_previous_set_card(c,...)
+	end
+	cm._is_original_set_card=Card.IsOriginalSetCard
+	Card.IsOriginalSetCard=function (c,...)
+		return c:IsOriginalCodeRule(m) or cm._is_original_set_card(c,...)
+	end
+
+
+	cm._is_code=Card.IsCode
+	Card.IsCode=function (c,...)
+		return c:IsOriginalCodeRule(m) or cm._is_code(c,...)
+	end
+	cm._is_link_code=Card.IsLinkCode
+	Card.IsLinkCode=function (c,...)
+		return c:IsOriginalCodeRule(m) or cm._is_link_code(c,...)
+	end
+	cm._is_fusion_code=Card.IsFusionCode
+	Card.IsFusionCode=function (c,...)
+		return c:IsOriginalCodeRule(m) or cm._is_fusion_code(c,...)
+	end
+	cm._is_original_code_rule=Card.IsOriginalCodeRule
+	Card.IsOriginalCodeRule=function (c,...)
+		return cm._is_original_code_rule(c,m,...)
+	end
+
+
+	cm._is_code_listed=aux.IsCodeListed
+	aux.IsCodeListed=function (c,code,...)
+		return c:IsOriginalCodeRule(m) or cm._is_code_listed(c,code,...)
+	end
+end
+
 function cm.con2(e,c,minc)
 	if c==nil then return true end
 	return minc<=1 and Duel.CheckTribute(c,1)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp,c)
-	g=Duel.SelectTribute(tp,c,1,Duel.GetFieldGroupCount(tp,LOCATION_MZONE,LOCATION_MZONE))
+	local g=Duel.SelectTribute(tp,c,1,Duel.GetFieldGroupCount(tp,LOCATION_MZONE,LOCATION_MZONE))
 	c:SetMaterial(g)
 	Duel.Release(g,REASON_SUMMON+REASON_MATERIAL)
 	for tc in aux.Next(g) do
@@ -124,37 +182,51 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return sg and sg:GetClassCount(Card.GetRace)>=2
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0):Filter(Card.IsFaceup,nil)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and 
+	Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,g) end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,0,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SEARCH,nil,0,0,0)
 end
-function cm.thfilter(c,e,tp)
-	return c:IsSetCard(0x6a9)
+function cm.thfilter(c,g)
+	local sg=g
+	sg:AddCard(c)
+	if sg:GetClassCount(Card.GetRace)==#sg and sg:GetClassCount(Card.GetAttribute)==#sg then
+		return true
+	else
+		return false
+	end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0):Filter(Card.IsFaceup,nil)
+	local ag=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil,g)
 	if not c:IsRelateToEffect(e) then return end
-	Duel.Summon(tp,c,true,nil)
-end
-function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
-	local sg=g:Filter(Card.IsFaceup,nil)
-	return sg and sg:GetClassCount(Card.GetRace)>=2 and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,60002223)
-end
-function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	if Duel.SendtoHand(ag,nil,REASON_EFFECT)~=0 then
+		Duel.Summon(tp,c,true,nil)
 	end
 end
-function cm.filter(c,e,tp)
-	return c:IsSetCard(0x6a9) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function cm.xfilter(c)
-	return c:IsType(TYPE_MONSTER)
-end
+--function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	--local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
+	--local sg=g:Filter(Card.IsFaceup,nil)
+	--return sg and sg:GetClassCount(Card.GetRace)>=2 and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE,0,1,nil,60002223)
+--end
+--function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	--if chk==0 then return true end
+	--if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	--local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+	--if g:GetCount()>0 then
+		--Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	--end
+--end
+--function cm.filter(c,e,tp)
+	--return c:IsSetCard(0x5622) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+--end
+--function cm.xfilter(c)
+	--return c:IsType(TYPE_MONSTER)
+--end
 
 
 

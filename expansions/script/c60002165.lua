@@ -2,7 +2,7 @@
 local m=60002165
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x624)
+	c:EnableCounterPermit(0x9620)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -57,7 +57,7 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,m)>=10 then
 		if e:GetHandler():IsRelateToEffect(e) then
-			e:GetHandler():AddCounter(0x624,1)
+			e:GetHandler():AddCounter(0x9620,1)
 			Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 		end
 		Duel.Draw(tp,1,REASON_EFFECT)
@@ -97,7 +97,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x624)>=1
+	return Card.GetCounter(e:GetHandler(),0x9620)>=1
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

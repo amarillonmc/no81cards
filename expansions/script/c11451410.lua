@@ -160,7 +160,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabel()>0 then re:Reset() end
 end
 function cm.spfilter(c,e,tp)
-	return c:IsCode(11451406) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(11451406) and c:IsAbleToHand()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or not e:GetHandler():IsLocation(LOCATION_EXTRA) end
@@ -173,7 +173,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
-	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #g>0
+	local b1=#g>0
 	local b2=Duel.IsExistingMatchingCard(nil,tp,LOCATION_DECK,0,1,nil)
 	if chk==0 then return b2 end
 	local num=e:GetLabelObject():GetLabel()
@@ -189,16 +189,17 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	e:SetLabel(op)
 	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,op))
-	if op~=1 then Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_DECK) end
+	if op~=1 then Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK) end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local op=e:GetLabel()
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
 	local rflag=false
-	if op~=1 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #g>0 then
+	if op~=1 and #g>0 then
 		local tg=g:Select(tp,1,1,nil)
-		Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 		rflag=true
 	end
 	if op~=0 then
@@ -210,7 +211,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ShuffleDeck(tp)
 			Duel.MoveSequence(tc,0)
 			Duel.ConfirmDecktop(tp,1)
-			Duel.MoveSequence(tc,1)
+			--Duel.MoveSequence(tc,1)
 		end
 	end
 end

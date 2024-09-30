@@ -31,7 +31,7 @@ function c75030025.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function c75030025.mfilter(c,xyzc)
-	return c:IsXyzType(TYPE_XYZ) and c:IsRace(RACE_PYRO) 
+	return c:IsXyzType(TYPE_XYZ) and c:IsLevel(4)
 end
 function c75030025.xyzcheck(g)
 	return g:GetClassCount(Card.GetRank)==1

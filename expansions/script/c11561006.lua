@@ -8,9 +8,7 @@ function c11561006.initial_effect(c)
 	local e1=Effect.CreateEffect(c) 
 	e1:SetCategory(CATEGORY_COUNTER)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS) 
-	e1:SetCondition(function(e) 
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) end)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetTarget(c11561006.addtg)
 	e1:SetOperation(c11561006.addop)
 	c:RegisterEffect(e1) 
@@ -27,7 +25,7 @@ function c11561006.initial_effect(c)
 	--des 
 	local e3=Effect.CreateEffect(c) 
 	e3:SetCategory(CATEGORY_DESTROY) 
-	e3:SetType(EFFECT_TYPE_QUICK_O) 
+	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN) 
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER)   
 	e3:SetRange(LOCATION_MZONE) 
@@ -71,37 +69,43 @@ function c11561006.xdescost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1,2,REASON_COST) end
 	Duel.RemoveCounter(tp,1,0,0x1,2,REASON_COST)
 end  
-function c11561006.xdestg(e,tp,eg,ep,ev,re,r,rp,chk)  
-	local c=e:GetHandler() 
-	local x=c:GetLinkedGroupCount() 
-	if chk==0 then return c:GetFlagEffect(11561006)<x and Duel.IsExistingMatchingCard(function(c,atk) return c:GetAttack()<atk and c:IsFaceup() end,tp,0,LOCATION_MZONE,1,nil,c:GetAttack()) end
-	c:RegisterFlagEffect(11561006,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) 
+function c11561006.xdestg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,11561006)<e:GetHandler():GetLinkedGroupCount() end
+	Duel.RegisterFlagEffect(tp,11561006,RESET_PHASE+PHASE_END,0,1)
 end 
 function c11561006.xdesop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
-	if c:IsFaceup() and c:IsRelateToEffect(e) then
-		local e2=Effect.CreateEffect(c) 
-		e2:SetType(EFFECT_TYPE_SINGLE) 
-		e2:SetCode(EFFECT_IMMUNE_EFFECT) 
-		e2:SetRange(LOCATION_MZONE) 
-		e2:SetValue(function(e,te) 
-		return e:GetOwner()~=te:GetOwner() end) 
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN) 
-		c:RegisterEffect(e2) 
-	end 
-	if Duel.IsExistingMatchingCard(function(c,atk) return c:GetAttack()<atk and c:IsFaceup() end,tp,0,LOCATION_MZONE,1,nil,c:GetAttack())  and Duel.SelectYesNo(tp,aux.Stringid(11561006,2)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local dg=Duel.SelectMatchingCard(tp,function(c,atk) return c:GetAttack()<atk and c:IsFaceup() end,tp,0,LOCATION_MZONE,1,1,nil,c:GetAttack())
-		Duel.Destroy(dg,REASON_EFFECT)
-
-	end 
-	if c:IsFaceup() and c:IsRelateToEffect(e) then
-		local e1=Effect.CreateEffect(c) 
+	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
+	local e0=Effect.CreateEffect(c) 
+	e0:SetType(EFFECT_TYPE_SINGLE) 
+	e0:SetCode(EFFECT_IMMUNE_EFFECT) 
+	e0:SetRange(LOCATION_MZONE) 
+	e0:SetValue(function(e,te) 
+	return e:GetOwner()~=te:GetOwner() end) 
+	e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN) 
+	c:RegisterEffect(e0)
+	local b1=Duel.IsExistingMatchingCard(function(c,atk) return c:GetAttack()<atk and c:IsFaceup() end,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,c:GetAttack()) and not c:GetFlagEffectLabel(11561006)==1
+	local b2=c:IsFaceup() and c:IsRelateToEffect(e) and not c:GetFlagEffectLabel(11561006)==2
+	local b3=true
+	local op=aux.SelectFromOptions(tp,
+		{b1,aux.Stringid(11561006,2)},
+		{b2,aux.Stringid(11561006,3)},
+		{b3,aux.Stringid(11561006,4)})
+	if op==1 then
+		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE) 
 		e1:SetCode(EFFECT_UPDATE_ATTACK) 
 		e1:SetRange(LOCATION_MZONE) 
 		e1:SetValue(2000) 
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END) 
 		c:RegisterEffect(e1)
+		c:ResetFlagEffect(11561006)
+		c:RegisterFlagEffect(11561006,RESET_EVENT+RESETS_STANDARD,0,1,1)
+	elseif op==2 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local dg=Duel.SelectMatchingCard(tp,function(c,atk) return c:GetAttack()<atk and c:IsFaceup() end,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,c:GetAttack())
+		Duel.Destroy(dg,REASON_EFFECT)
+		c:ResetFlagEffect(11561006)
+		c:RegisterFlagEffect(11561006,RESET_EVENT+RESETS_STANDARD,0,1,2)
 	end 
-end 
+end

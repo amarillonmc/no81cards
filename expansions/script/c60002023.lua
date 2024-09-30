@@ -85,10 +85,10 @@ function cm.ofilter(c)
 	return c:IsFaceup() and c:IsCode(60002024)
 end
 function cm.cvfilter1(c)
-	return c:IsSetCard(0x629) and c:IsAbleToHand() and not c:IsCode(m)
+	return c:IsSetCard(0xa620) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.repfilter(c,tp)
-	return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsSetCard(0x629) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
+	return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsSetCard(0xa620) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemove() and eg:IsExists(cm.repfilter,1,nil,tp) end

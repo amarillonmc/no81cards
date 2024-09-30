@@ -126,14 +126,14 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	e:SetCategory(CATEGORY_NEGATE)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if Duel.IsChainNegatable(ev) and re:GetHandler():IsSetCard(0x628) 
+	if Duel.IsChainNegatable(ev) and re:GetHandler():IsSetCard(0x5620) 
 		and re:GetHandler():IsRelateToEffect(re) and not re:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then
 		e:SetCategory(CATEGORY_NEGATE+CATEGORY_DRAW)
 		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 	end
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsSetCard(0x628) 
+	if Duel.NegateActivation(ev) and re:GetHandler():IsSetCard(0x5620) 
 		and re:GetHandler():IsRelateToEffect(re) and not re:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 		and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
 		Duel.BreakEffect()

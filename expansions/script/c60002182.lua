@@ -71,11 +71,11 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
-	Duel.Destroy(sg,REASON_EFFECT)~=0
+	Duel.Destroy(sg,REASON_EFFECT)
 	local c=e:GetHandler()
 	local dmg=1600
 	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil) 
-	local tc=g:GetFirst()	
+	local tc=g:GetFirst()   
 	while tc do 
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)

@@ -66,7 +66,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsSetCard(0x628)
+	return re:GetHandler():IsSetCard(0x5620)
 end
 function cm.regop1(e,tp,eg,ep,ev,re,r,rp)
 	Tab_for_Hai_Activate_Times[rp+1]=Tab_for_Hai_Activate_Times[rp+1]+1
@@ -84,7 +84,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x628) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:IsSetCard(0x5620) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end

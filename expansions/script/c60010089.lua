@@ -28,7 +28,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsSummonType(SUMMON_TYPE_XYZ)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x647) and c:IsAbleToHand() and c:IsType(TYPE_EQUIP)
+	return c:IsSetCard(0xc622) and c:IsAbleToHand() and c:IsType(TYPE_EQUIP)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
@@ -49,9 +49,10 @@ function cm.rcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tp=e:GetHandlerPlayer()
 	local g=Duel.GetMatchingGroup(cm.sfil,tp,LOCATION_HAND,0,nil)
-	return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_DECK,1,nil) and #g==0 and Duel.GetFlagEffect(tp,m)<10
+	return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_DECK,1,nil) and #g==0 and Duel.GetFlagEffect(tp,m)<10 and cm.sb~=1
 end
 function cm.rop(e,tp,eg,ep,ev,re,r,rp)
+	cm.sb=1
 	local c=e:GetHandler()
 	local tc=Duel.GetDecktopGroup(1-tp,1):GetFirst()
 	if Duel.SendtoHand(tc,tp,REASON_EFFECT)~=0 then
@@ -68,6 +69,7 @@ function cm.rop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESETS_STANDARD,0,1)
 	end
   --  Duel.Readjust()
+	cm.sb=0
 end
 
 

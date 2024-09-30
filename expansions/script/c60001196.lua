@@ -44,14 +44,14 @@ end
 function c60001196.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do 
-	if tc:IsSetCard(0x6a5) then 
+	if tc:IsSetCard(0x3622) then 
 	Duel.RegisterFlagEffect(tc:GetSummonPlayer(),60001196,RESET_PHASE+PHASE_END,0,1) 
 	end 
 	tc=eg:GetNext()
 	end
 end
 function c60001196.rlfil(c) 
-	return c:IsReleasable() and c:IsSetCard(0x6a5) 
+	return c:IsReleasable() and c:IsSetCard(0x3622) 
 end 
 function c60001196.rlgck(g,tp) 
 	return Duel.GetMZoneCount(tp,g)>0   
@@ -63,7 +63,7 @@ function c60001196.hspcon(e,c)
 	return g:CheckSubGroup(c60001196.rlgck,3,3,tp) and Duel.GetFlagEffect(tp,60001196)>=3 
 end
 function c60001196.xthfil(c) 
-	return c:IsSetCard(0x6a5) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() 
+	return c:IsSetCard(0x3622) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() 
 end 
 function c60001196.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	local tp=c:GetControler()
@@ -95,7 +95,7 @@ function c60001196.smtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
 end 
 function c60001196.stgfil(c) 
-	return c:IsAbleToGrave() and c:IsSetCard(0x6a5) 
+	return c:IsAbleToGrave() and c:IsSetCard(0x3622) 
 end 
 function c60001196.smop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 

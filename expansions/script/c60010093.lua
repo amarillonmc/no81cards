@@ -35,10 +35,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.eqlimit(e,c)
-	return c:IsSetCard(0x647)
+	return c:IsSetCard(0xc622)
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x647)
+	return c:IsFaceup() and c:IsSetCard(0xc622)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.filter(chkc) end
@@ -55,7 +55,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.tdfilter(c)
-	return c:IsSetCard(0x647) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+	return c:IsSetCard(0xc622) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

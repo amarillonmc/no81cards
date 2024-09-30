@@ -80,6 +80,16 @@ function c49811378.puop(e,tp,eg,ep,ev,re,r,rp)
     e0:SetDescription(aux.Stringid(49811378,4))
     e0:SetReset(RESET_PHASE+PHASE_END,1)
     Duel.RegisterEffect(e0,tp)
+    local e1=Effect.CreateEffect(c)
+    e1:SetType(EFFECT_TYPE_FIELD)
+    e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+    e1:SetTargetRange(1,0)
+    e1:SetTarget(c49811378.splimit)
+    Duel.RegisterEffect(e1,tp)
+end
+function c49811378.splimit(e,c)
+    return not c:IsType(TYPE_XYZ) and c:IsLocation(LOCATION_EXTRA)
 end
 function c49811378.drfilter(c)
     return c:IsRace(RACE_DRAGON)
@@ -142,6 +152,6 @@ function c49811378.imop(e,tp,eg,ep,ev,re,r,rp)
     e0:SetReset(RESET_PHASE+PHASE_END,1)
     Duel.RegisterEffect(e0,tp)
 end
-function c49811378.efilter(e,re)
-    return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and re:GetHandler():GetLocation()==LOCATION_HAND
+function c49811378.efilter(e,te,ev)
+    return e:GetOwnerPlayer()~=te:GetOwnerPlayer() and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_GRAVE
 end

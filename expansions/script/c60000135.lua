@@ -30,7 +30,7 @@ function cm.spcon(e,c)
 		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0x621) and not c:IsCode(m) and c:IsAbleToGrave()
+	return c:IsSetCard(0x6620) and not c:IsCode(m) and c:IsAbleToGrave()
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil) end

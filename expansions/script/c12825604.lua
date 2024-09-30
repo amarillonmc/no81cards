@@ -1,5 +1,5 @@
 --铳影-王昕研
-Duel.LoadScript("c17035101.lua")
+Duel.LoadScript("c12825622.lua")
 function c12825604.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,6,3)

@@ -35,7 +35,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsSummonType(SUMMON_TYPE_XYZ)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x647) and c:IsAbleToHand() and c:IsType(TYPE_EQUIP)
+	return c:IsSetCard(0xc622) and c:IsAbleToHand() and c:IsType(TYPE_EQUIP)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
@@ -59,7 +59,7 @@ function cm.ablefil(c)
 		end
 		ablec=ableg:GetNext()
 	end
-	return c:IsSetCard(0x647) and ub==true and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0xc622) and ub==true and c:IsType(TYPE_MONSTER)
 end
 function cm.repfilter(c,tp)
 	return c:IsControler(tp) and c:IsOnField()
@@ -75,12 +75,14 @@ function cm.desrepval(e,c)
 	return cm.repfilter(c,e:GetHandlerPlayer())
 end
 function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.ablefil,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 		table.insert(cm.tab,g:GetFirst())
+		local tc=g:GetFirst()
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(m,0))
 		e1:SetType(EFFECT_TYPE_SINGLE)

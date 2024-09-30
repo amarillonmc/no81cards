@@ -1,5 +1,5 @@
 --铳影-行动代号一
-Duel.LoadScript("c17035101.lua")
+Duel.LoadScript("c12825622.lua")
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,12825602)

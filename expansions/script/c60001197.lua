@@ -44,14 +44,14 @@ end
 function c60001197.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do 
-	if tc:IsSetCard(0x6a5) then 
+	if tc:IsSetCard(0x3622) then 
 	Duel.RegisterFlagEffect(tc:GetSummonPlayer(),60001197,RESET_PHASE+PHASE_END,0,1) 
 	end 
 	tc=eg:GetNext()
 	end
 end
 function c60001197.rlfil(c) 
-	return c:IsReleasable() and c:IsSetCard(0x6a5) 
+	return c:IsReleasable() and c:IsSetCard(0x3622) 
 end 
 function c60001197.rlgck(g,tp) 
 	return Duel.GetMZoneCount(tp,g)>0   
@@ -63,7 +63,7 @@ function c60001197.hspcon(e,c)
 	return g:CheckSubGroup(c60001197.rlgck,3,3,tp) and Duel.GetFlagEffect(tp,60001197)>=3 
 end
 function c60001197.xthfil(c) 
-	return c:IsSetCard(0x6a5) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() 
+	return c:IsSetCard(0x3622) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() 
 end 
 function c60001197.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	local tp=c:GetControler()
@@ -89,7 +89,7 @@ function c60001197.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.RegisterEffect(e1,tp)
 end 
 function c60001197.hthfil(c) 
-	return c:IsAbleToHand() and c:IsSetCard(0x6a5)   
+	return c:IsAbleToHand() and c:IsSetCard(0x3622)   
 end 
 function c60001197.hthop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,60001097)
@@ -118,7 +118,7 @@ function c60001197.ddcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c60001197.dckfil,tp,LOCATION_SZONE,0,1,nil) 
 end 
 function c60001197.dthfil(c) 
-	return c:IsAbleToHand() and c:IsSetCard(0x6a5)  
+	return c:IsAbleToHand() and c:IsSetCard(0x3622)  
 end 
 function c60001197.ddtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT) and Duel.IsExistingMatchingCard(c60001197.dthfil,tp,LOCATION_GRAVE,0,1,nil) end 

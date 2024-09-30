@@ -30,7 +30,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
 		local ng=Duel.GetOperatedGroup()
 		local m=0
-		if #ng:Filter(Card.IsSetCard,nil,0x647)>=3 then
+		if #ng:Filter(Card.IsSetCard,nil,0xc622)>=3 then
 			m=1
 		end
 		e:SetLabel(#ng,m)

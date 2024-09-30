@@ -52,7 +52,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x6a9) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(m)
+	return c:IsSetCard(0x5622) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

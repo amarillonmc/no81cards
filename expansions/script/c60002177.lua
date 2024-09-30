@@ -2,7 +2,7 @@
 local m=60002177
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x624,LOCATION_ONFIELD)
+	c:EnableCounterPermit(0x9620,LOCATION_ONFIELD)
 	c:EnableCounterPermit(0x625,LOCATION_ONFIELD)
 	--summon with s/t
 	local e1=Effect.CreateEffect(c)
@@ -70,21 +70,21 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x624)>=1
+	return Card.GetCounter(e:GetHandler(),0x9620)>=1
 end
 function cm.filter(c,e,tp)
 	return c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x624,1)
+		e:GetHandler():AddCounter(0x9620,1)
 		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-			g:GetFirst():AddCounter(0x624,1)
+			g:GetFirst():AddCounter(0x9620,1)
 			Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 			g:GetFirst():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
 			local e1=Effect.CreateEffect(e:GetHandler())

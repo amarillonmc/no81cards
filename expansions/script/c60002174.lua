@@ -2,7 +2,7 @@
 local m=60002174
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x624)
+	c:EnableCounterPermit(0x9620)
 	--tohand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -62,14 +62,14 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x624)>=1
+	return Card.GetCounter(e:GetHandler(),0x9620)>=1
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function cm.thfilter(c)
-	return (c:IsCanHaveCounter(0x624) and Duel.IsCanAddCounter(tp,0x624,1,c) and not c:IsCode(m)) or c:IsCode(60001210) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return (c:IsCanHaveCounter(0x9620) and Duel.IsCanAddCounter(tp,0x9620,1,c) and not c:IsCode(m)) or c:IsCode(60001210) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -101,7 +101,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(g:GetFirst(),POS_FACEUP,REASON_EFFECT)
 	end
 	if e:GetHandler():IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x624,1)
+		e:GetHandler():AddCounter(0x9620,1)
 		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 	end   
 	if Duel.GetFlagEffect(tp,60002148)>=7 then

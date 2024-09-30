@@ -58,14 +58,14 @@ function cm.initial_effect(c)
 end
 function cm.splimit(e,se,sp,st)
 	local sc=se:GetHandler()
-	return sc and sc:IsSetCard(0x628)
+	return sc and sc:IsSetCard(0x5620)
 end
 --Cover
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
 function cm.setfilter(c)
-	return c:IsSetCard(0x628) and c:IsType(TYPE_SPELL) and c:IsSSetable()
+	return c:IsSetCard(0x5620) and c:IsType(TYPE_SPELL) and c:IsSSetable()
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0

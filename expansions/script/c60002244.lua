@@ -46,7 +46,7 @@ end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsSetCard(0x6a9) then
+		if tc:IsSetCard(0x5622) then
 			Art_g:AddCard(tc)
 		end
 	end

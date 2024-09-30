@@ -29,7 +29,7 @@ function cm.initial_effect(c)
 end
 
 function cm.tgsfilter(c)
-	return c:IsSetCard(0x62d) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x6621) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 
 function cm.shtg(e,tp,eg,ep,ev,re,r,rp,chk)

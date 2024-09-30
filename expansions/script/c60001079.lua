@@ -59,7 +59,7 @@ function cm.flagcheck(e,tp)
 end
 
 function cm.eftg(e,c)
-	return c:IsSetCard(0x62d) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x6621) and c:IsType(TYPE_MONSTER)
 end
 
 function cm.negcostfilter(c)
@@ -106,7 +106,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function cm.opsfilter(c,e,tp)
-	return c:IsSetCard(0x62d) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsType(TYPE_TUNER)
+	return c:IsSetCard(0x6621) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsType(TYPE_TUNER)
 end
 
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -140,5 +140,5 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0x62d)
+	return not c:IsSetCard(0x6621)
 end

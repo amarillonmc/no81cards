@@ -22,10 +22,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c,e,tp)
-	return c:IsSetCard(0x621)
+	return c:IsSetCard(0x6620)
 end
 function cm.mfilter(c)
-	return c:GetLevel()>0 and c:IsSetCard(0x621) and c:IsAbleToDeck()
+	return c:GetLevel()>0 and c:IsSetCard(0x6620) and c:IsAbleToDeck()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -56,7 +56,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		aux.GCheckAdditional=nil
 		if not mat or mat:GetCount()==0 then return end
 		tc:SetMaterial(mat)
-		local mat2=mat:Filter(Card.IsLocation,nil,LOCATION_REMOVED):Filter(Card.IsSetCard,nil,0x621)
+		local mat2=mat:Filter(Card.IsLocation,nil,LOCATION_REMOVED):Filter(Card.IsSetCard,nil,0x6620)
 		mat:Sub(mat2)
 		Duel.ReleaseRitualMaterial(mat)
 		Duel.SendtoDeck(mat2,nil,SEQ_DECKSHUFFLE,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
@@ -66,7 +66,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cfilter(c)
-	return c:IsSetCard(0x621) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x6620) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()
@@ -77,7 +77,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x621) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:IsSetCard(0x6620) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

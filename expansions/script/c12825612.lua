@@ -45,10 +45,9 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsChainDisablable(ev) then return false end
-	local te,p=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return te and te:GetHandler():IsSetCard(0x4a76) and te:IsActiveType(TYPE_MONSTER) and p==tp and rp==1-tp
+	local te,p,loc=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
+	return te and te:GetHandler():IsSetCard(0x4a76) and te:IsActiveType(TYPE_MONSTER) and p==tp and rp==1-tp and loc&LOCATION_ONFIELD>0
 end
-
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te,p,loc=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)

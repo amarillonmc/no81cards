@@ -33,7 +33,7 @@ function cm.tgrco(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function cm.tgtgrfilter(c,code)
-	return c:IsSetCard(0x62d) and c:IsAbleToHand() and not c:IsCode(code)
+	return c:IsSetCard(0x6621) and c:IsAbleToHand() and not c:IsCode(code)
 end
 
 function cm.tgrtg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -27,7 +27,7 @@ function c60001198.initial_effect(c)
 	c:RegisterEffect(e3) 
 end 
 function c60001198.smfil(c) 
-	return c:IsSetCard(0x6a5) and c:IsSummonable(true,nil)  
+	return c:IsSetCard(0x3622) and c:IsSummonable(true,nil)  
 end 
 function c60001198.smtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60001198.smfil,tp,LOCATION_HAND,0,1,nil) end 

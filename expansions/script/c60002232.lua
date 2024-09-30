@@ -29,7 +29,7 @@ function cm.con2(e,c,minc)
 	return minc<=1 and Duel.CheckTribute(c,1)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp,c)
-	g=Duel.SelectTribute(tp,c,1,Duel.GetFieldGroupCount(tp,LOCATION_MZONE,LOCATION_MZONE))
+	local g=Duel.SelectTribute(tp,c,1,Duel.GetFieldGroupCount(tp,LOCATION_MZONE,LOCATION_MZONE))
 	c:SetMaterial(g)
 	Duel.Release(g,REASON_SUMMON+REASON_MATERIAL)
 	for tc in aux.Next(g) do
@@ -48,6 +48,7 @@ function cm.cos5(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(Duel.SendtoDeck(g,tp,2,REASON_COST))
 end
 function cm.op5(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local dam=e:GetLabel()
 	if not e:GetHandler():IsRelateToEffect(e) or not e:GetHandler():IsFaceup() then return end
 	if dam==2 then

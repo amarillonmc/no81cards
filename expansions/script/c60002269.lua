@@ -124,7 +124,7 @@ function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
 end
 function cm.cfilter(c,tp)
-	return c:IsSummonPlayer(tp) and c:IsSetCard(0x6a9)
+	return c:IsSummonPlayer(tp) and c:IsSetCard(0x5622)
 end
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp)

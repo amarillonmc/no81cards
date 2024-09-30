@@ -79,9 +79,9 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(sg,nil,0,REASON_EFFECT)
 		ct=Duel.GetOperatedGroup():FilterCount(Card.IsControler,nil,p)
 		Duel.SortDecktop(p,p,ct)
-		for i=1,ct do
+		--[[for i=1,ct do
 			local mg=Duel.GetDecktopGroup(p,1)
 			Duel.MoveSequence(mg:GetFirst(),1)
-		end
+		end--]]
 	end
 end

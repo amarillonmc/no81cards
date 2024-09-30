@@ -2,7 +2,7 @@
 local m=60002264
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x624,LOCATION_ONFIELD)
+	c:EnableCounterPermit(0x9620,LOCATION_ONFIELD)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -58,13 +58,13 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_MZONE,0,1,1,c)
 	Duel.Destroy(g:GetFirst(),REASON_EFFECT)
-	if Duel.Draw(tp,1,REASON_EFFECT)~=0 and g:GetFirst():IsSetCard(0x6a9) then
+	if Duel.Draw(tp,1,REASON_EFFECT)~=0 and g:GetFirst():IsSetCard(0x5622) then
 		if e:GetHandler():IsRelateToEffect(e) then
-			e:GetHandler():AddCounter(0x624,1)
+			e:GetHandler():AddCounter(0x9620,1)
 			Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 		end
 	end
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x624)>=1
+	return Card.GetCounter(e:GetHandler(),0x9620)>=1
 end

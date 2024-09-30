@@ -71,7 +71,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 --set 
 function cm.spfilter(c,tp)
-	return c:IsControler(tp) and c:IsSetCard(0x628) 
+	return c:IsControler(tp) and c:IsSetCard(0x5620) 
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.spfilter,1,nil,tp)

@@ -119,9 +119,9 @@ end
 function c9910895.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c9910895.remfilter,1,nil)
 end
-function c9910895.tgfilter(c)
+function c9910895.tgfilter(c,tp)
 	local race=c:GetRace()
-	return aux.IsCodeListed(c,9910871) and race>0 and c:IsAbleToGrave()
+	return aux.IsCodeListed(c,9910871) and c:IsType(TYPE_MONSTER) and race>0 and c:IsAbleToGrave()
 		and not Duel.IsExistingMatchingCard(c9910895.filter1,tp,LOCATION_REMOVED,0,1,nil,race)
 end
 function c9910895.filter1(c,race)

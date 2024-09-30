@@ -123,7 +123,7 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	local tc=g:GetFirst()
-	if tc and tc:IsSetCard(0x628) then
+	if tc and tc:IsSetCard(0x5620) then
 		e:SetLabel(1)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
@@ -156,7 +156,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.BreakEffect()
 		local tc=Duel.GetFirstTarget()
-		if e:GetLabel()==1 and tc:IsSetCard(0x628) and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
+		if e:GetLabel()==1 and tc:IsSetCard(0x5620) and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
 			Duel.Draw(tp,1,REASON_EFFECT)
 		end
 	end

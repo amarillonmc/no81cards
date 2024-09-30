@@ -99,6 +99,7 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,m)<e:GetHandler():GetLevel()
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if e:GetHandler():GetFlagEffect(m+10000000)~=0 then
 		if Duel.IsExistingMatchingCard(cm.defil,tp,0,LOCATION_MZONE,1,nil) then
 			local tc=Duel.GetMatchingGroup(cm.defil,tp,0,LOCATION_MZONE,nil):Select(tp,1,1,nil):GetFirst()

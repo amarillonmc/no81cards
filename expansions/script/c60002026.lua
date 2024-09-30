@@ -36,7 +36,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.pfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x62c) and not c:IsCode(m) and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x5621) and not c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.ptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.pfilter,tp,LOCATION_EXTRA,0,1,nil) end

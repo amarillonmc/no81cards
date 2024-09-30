@@ -18,10 +18,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x621)
+	return c:IsSetCard(0x6620)
 end
 function cm.cfilter(c)
-	return c:IsSetCard(0x621) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x6620) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()
@@ -32,7 +32,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x621) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:IsSetCard(0x6620) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

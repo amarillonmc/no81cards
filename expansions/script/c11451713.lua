@@ -147,7 +147,7 @@ function cm.mvop1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x3977) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsRace(RACE_PSYCHO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	local c=e:GetHandler()

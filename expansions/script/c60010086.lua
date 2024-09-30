@@ -29,6 +29,9 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
 end
+function cm.tgfilter(c)
+	return c:IsDisabled() and c:IsAbleToGraveAsCost()
+end
 function cm.lcheck(g,lc)
 	return g:GetClassCount(Card.GetLinkCode)==g:GetCount()
 end
@@ -77,8 +80,8 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-   if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDisabled,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-   local g=Duel.SelectMatchingCard(tp,Card.IsDisabled,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+   if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+   local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
    Duel.SendtoGrave(g,REASON_EFFECT+REASON_COST)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

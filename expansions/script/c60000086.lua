@@ -66,7 +66,7 @@ function c60000086.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Release(g,REASON_COST)
 end
 function c60000086.discon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==e:GetHandlerPlayer() and re:GetHandler():IsSetCard(0x62b)
+	return rp==e:GetHandlerPlayer() and re:GetHandler():IsSetCard(0x3621)
 end
 function c60000086.checkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(e:GetHandlerPlayer(),90000086,0,0,1)
@@ -76,7 +76,7 @@ function c60000086.jscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,3,3,REASON_COST)
 end
 function c60000086.jster(c)
-	return c:IsSetCard(0x62b) and c:IsAbleToHand()
+	return c:IsSetCard(0x3621) and c:IsAbleToHand()
 end
 function c60000086.jstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60000086.jster,tp,LOCATION_DECK,0,1,nil) end
@@ -90,7 +90,7 @@ function c60000086.jsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60000086.sccon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsSetCard(0x62b)
+	return re:GetHandler():IsSetCard(0x3621)
 end
 function c60000086.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ) and Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)>0 end

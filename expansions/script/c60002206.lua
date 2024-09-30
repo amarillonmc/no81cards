@@ -1,8 +1,10 @@
 --红宝石飞鹰
-local m=60002178
+local m=60002206
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x625,LOCATION_ONFIELD)
+	--pendulum summon
+	aux.EnablePendulumAttribute(c)
 	--summon with s/t
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -44,13 +46,13 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
 	--direct attack
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_DIRECT_ATTACK)
-	e1:SetRange(LOCATION_SZONE)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(cm.datg)
-	c:RegisterEffect(e1)
+	local e11=Effect.CreateEffect(c)
+	e11:SetType(EFFECT_TYPE_IGNITION)
+	e11:SetRange(LOCATION_PZONE)
+	e11:SetCountLimit(1)
+	e11:SetTarget(cm.target)
+	e11:SetOperation(cm.operation)
+	c:RegisterEffect(e11)
 end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
@@ -134,4 +136,20 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.datg(e,c)
 	return c:IsPosition(POS_FACEUP)
+end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+end
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_DIRECT_ATTACK)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(cm.tg)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.tg(e,c)
+	return c:IsFaceup() and c:IsAttack(800)
 end

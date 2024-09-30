@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 
 end
 function cm.spfilter(c,ft)
-	return c:IsSetCard(0x621)
+	return c:IsSetCard(0x6620)
 		and (ft>0 or c:GetSequence()<5)
 end
 function cm.hspcon(e,c)
@@ -43,7 +43,7 @@ function cm.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Destroy(g,REASON_COST)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x621) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return c:IsSetCard(0x6620) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)

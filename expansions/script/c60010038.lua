@@ -20,7 +20,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tsnum=0
 	local x1=0
 	local x2=0
-	while ts=0 do
+	while ts==0 do
 		if tsnum<6 then
 			x1=Duel.TossDice(tp,1)
 			x2=Duel.TossDice(1-tp,1)

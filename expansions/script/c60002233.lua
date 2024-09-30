@@ -192,5 +192,5 @@ function cm.xfilter(c)
 	return c:IsType(TYPE_MONSTER)
 end
 function cm.rfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6a9)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x5622)
 end

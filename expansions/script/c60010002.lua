@@ -40,7 +40,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.filter(c)
-	return c:IsSetCard(0x630) and c:IsAbleToHand() and not c:IsCode(m)
+	return c:IsSetCard(0xa621) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
@@ -56,7 +56,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Damage(1-tp,1000,REASON_EFFECT)
 		Duel.Recover(tp,1000,REASON_EFFECT)
 	elseif Duel.GetFlagEffect(tp,60010002)==5 then
-		local ht=Duel.GetFieldGroupCount(p,LOCATION_HAND,0)
+		local ht=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 		if ht<5 then
 			Duel.Draw(tp,5-ht,REASON_EFFECT)
 		end
@@ -73,7 +73,7 @@ function cm.filter2(c)
 	return c:IsCode(60010003) and c:IsAbleToHand()
 end
 function cm.LHfil1(c,tp)
-	return c:IsSummonPlayer(tp) and c:IsSetCard(0x630)
+	return c:IsSummonPlayer(tp) and c:IsSetCard(0xa621)
 end
 function cm.LHcon1(e,tp,eg,ep,ev,re,r,rp)
 	local tp=eg:GetFirst():GetOwner()
@@ -83,7 +83,7 @@ function cm.LHop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsSetCard(0x630) then
+		if tc:IsSetCard(0xa621) then
 			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),60010002,RESET_PHASE+PHASE_END,0,1)
 			Duel.RaiseEvent(c,EVENT_CUSTOM+60010002,nil,0,tc:GetSummonPlayer(),tc:GetSummonPlayer(),0)
 		end

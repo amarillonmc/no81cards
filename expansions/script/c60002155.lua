@@ -2,7 +2,7 @@
 local m=60002155
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x624)
+	c:EnableCounterPermit(0x9620)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -51,7 +51,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsCanRemoveCounter(tp,1,0,0x624,1,REASON_RULE)
+	return Duel.IsCanRemoveCounter(tp,1,0,0x9620,1,REASON_RULE)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -62,13 +62,13 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-		c:AddCounter(0x624,1)
+		c:AddCounter(0x9620,1)
 		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 	end
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local ct=c:GetCounter(0x624)
+	local ct=c:GetCounter(0x9620)
 	e:SetLabel(ct)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
@@ -87,5 +87,5 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x624)>=1
+	return Card.GetCounter(e:GetHandler(),0x9620)>=1
 end

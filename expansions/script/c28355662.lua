@@ -29,8 +29,7 @@ function c28355662.initial_effect(c)
 	e2:SetOperation(c28355662.dsop)
 	c:RegisterEffect(e2)
 end
-function c28355662.excondition(e)
-	local tp=e:GetHandlerPlayer()
+function c28355662.excondition(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,2500)) or (Duel.GetLP(tp)>3000 and Duel.CheckLPCost(tp,4000))
 end
 function c28355662.excost(e,tp,eg,ep,ev,re,r,rp,chk)

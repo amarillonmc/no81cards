@@ -10,7 +10,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e1:GetCondition(cm.con)
+	e1:SetCondition(cm.con)
 	e1:SetValue(1)
 	c:RegisterEffect(e1)
 	--immune
@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetRange(LOCATION_MZONE)
-	e3:GetCondition(cm.con)
+	e3:SetCondition(cm.con)
 	e3:SetValue(cm.efilter)
 	c:RegisterEffect(e3)
 	if not cst==true then
@@ -50,7 +50,7 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp,tc)
 	return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_FZONE,0,1,nil,60010002)
 end
 function cm.LHfil1(c,tp)
-	return c:IsSummonPlayer(tp) and c:IsSetCard(0x630)
+	return c:IsSummonPlayer(tp) and c:IsSetCard(0xa621)
 end
 function cm.LHcon1(e,tp,eg,ep,ev,re,r,rp)
 	local tp=eg:GetFirst():GetOwner()
@@ -60,7 +60,7 @@ function cm.LHop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsSetCard(0x630) then
+		if tc:IsSetCard(0xa621) then
 			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),60010002,RESET_PHASE+PHASE_END,0,1)
 			Duel.RaiseEvent(c,EVENT_CUSTOM+60010002,nil,0,tc:GetSummonPlayer(),tc:GetSummonPlayer(),0)
 		end

@@ -36,10 +36,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)  
 end
 function cm.eqlimit(e,c)
-	return c:IsSetCard(0x647)
+	return c:IsSetCard(0xc622)
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x647)
+	return c:IsFaceup() and c:IsSetCard(0xc622)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.filter(chkc) end
@@ -69,5 +69,13 @@ end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	local g=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_HAND,0,nil)
-	Duel.Draw(p,#g,REASON_EFFECT)
+	if Duel.GetFlagEffect(p,m)<10 then
+		local num=math.min(#g,10-Duel.GetFlagEffect(p,m))
+		Duel.Draw(p,num,REASON_EFFECT)
+		for i=1,num do
+			Duel.RegisterFlagEffect(p,m,RESET_PHASE+PHASE_END,0,1)
+		end
+	end
 end
+
+

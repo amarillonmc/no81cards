@@ -28,7 +28,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local rc=Duel.AnnounceAttribute(tp,1,ATTRIBUTE_ALL)
 	local g=Duel.GetMatchingGroup(Card.IsAttribute,tp,LOCATION_DECK,0,nil,rc)
 	local dg=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
-	local tg=g:GetMinGroup(Card.GetSequence)
+	local tg=g:GetMaxGroup(Card.GetSequence)
 	if not tg or #tg==0 then
 		Duel.ConfirmDecktop(tp,#dg)
 		Duel.ShuffleDeck(tp)
@@ -36,16 +36,16 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local tc=tg:GetFirst()
 	local seq=tc:GetSequence()
-	for i=seq,0,-1 do
+	--[[for i=seq,0,-1 do
 		local mg=dg:Filter(cm.filter,nil,i)
 		Duel.MoveSequence(mg:GetFirst(),0)
-	end
-	Duel.ConfirmDecktop(tp,seq+1)
+	end--]]
+	Duel.ConfirmDecktop(tp,#dg-seq)
 	if tc:IsType(TYPE_RITUAL) and (tc.mat_filter or tc.mat_group_check) then
 		Duel.ShuffleDeck(tp)
 		return
 	end
-	local mg=Duel.GetDecktopGroup(tp,seq):Filter(cm.mfilter,nil)
+	local mg=Duel.GetDecktopGroup(tp,#dg-seq-1):Filter(cm.mfilter,nil)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_ADD_TYPE)

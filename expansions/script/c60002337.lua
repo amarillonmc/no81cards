@@ -45,6 +45,7 @@ cm.is_fusion=true
 if not changefusion then
 	changefusion=true
 	cm.is_type=Card.IsType
+---@diagnostic disable-next-line: duplicate-set-field
 	Card.IsType=function(car,typ,...)
 		if typ&TYPE_FUSION>0 then
 			return cm.is_type(car,typ,...) or car.is_fusion

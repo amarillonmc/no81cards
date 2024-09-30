@@ -62,8 +62,8 @@ end
 function c12825613.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	if Duel.Draw(p,d,REASON_EFFECT)>0 and c:GetOwner()~=e:GetHandlerPlayer() then
-	Duel.BreakEffect()
+	Duel.Draw(p,d,REASON_EFFECT)
+	if c:GetOwner()~=e:GetHandlerPlayer() then
 		if Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 then
 			Duel.GetControl(c,1-tp)
 		else

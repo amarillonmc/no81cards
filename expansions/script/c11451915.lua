@@ -94,6 +94,10 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
 	if chk==0 then
 		if c:IsLocation(LOCATION_EXTRA) and c:GetFlagEffect(m)>0 then return false end
+		if Duel.GetFlagEffect(tp,m)==0 then
+			Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,5))
+			Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
+		end
 		if Duel.GetCurrentChain()<1 then return false end
 		if c:GetFlagEffect(m+1)>0 then return false end
 		local loc=0

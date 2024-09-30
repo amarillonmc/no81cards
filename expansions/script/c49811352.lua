@@ -80,35 +80,21 @@ function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	for i=1,ev do
 		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-		if te:GetHandler():IsLocation(LOCATION_HAND) then Duel.SetOperationInfo(0,CATEGORY_NEGATE,te:GetHandler(),1,0,0) end
-		if te:GetHandler():IsLocation(LOCATION_DECK+LOCATION_EXTRA) then Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,te:GetHandler(),1,0,0) end
-		if te:GetHandler():IsLocation(LOCATION_ONFIELD) then Duel.SetOperationInfo(0,CATEGORY_TOHAND,te:GetHandler(),1,0,0) end
+		if te:GetHandler():IsLocation(LOCATION_HAND) and tgp==1-tp then Duel.SetOperationInfo(0,CATEGORY_NEGATE,te:GetHandler(),1,0,0) end
+		if te:GetHandler():IsLocation(LOCATION_DECK+LOCATION_EXTRA) and tgp==1-tp then Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,te:GetHandler(),1,0,0) end
+		if te:GetHandler():IsLocation(LOCATION_ONFIELD) and tgp==1-tp then Duel.SetOperationInfo(0,CATEGORY_TOHAND,te:GetHandler(),1,0,0) end
 	end
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	for i=1,ev do
-		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+		local te,tgp,loc=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
 		local tc=te:GetHandler()
 		Duel.Hint(HINT_CARD,0,tc:GetCode())
-		if tc~=nil then
-			local rn=0
-			if tc:IsLocation(LOCATION_HAND) and rn==0 then 
-				Duel.NegateEffect(ev)
-				rn=1 
-			end
-			if tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) and rn==0 then
-				Duel.SendtoGrave(tc,REASON_EFFECT)
-				rn=1 
-			end
-			if tc:IsLocation(LOCATION_ONFIELD) and rn==0 then 
-				Duel.SendtoHand(tc,nil,REASON_EFFECT) 
-				rn=1
-			end
-			if tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and rn==0 then
-				Duel.Overlay(c,tc)
-				rn=1
-			end
+		if tc~=nil then 
+			if tc:IsLocation(LOCATION_HAND) and tgp==1-tp then Duel.NegateEffect(ev) end
+			if tc:IsLocation(LOCATION_ONFIELD) and tc:IsRelateToEffect(te) and tgp==1-tp then Duel.SendtoHand(tc,nil,REASON_EFFECT) end
+			if tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and tc:IsRelateToEffect(te) and tgp==1-tp then Duel.Overlay(c,tc) end
 		end
 	end
 end

@@ -2,7 +2,7 @@
 local m=60002164
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x624)
+	c:EnableCounterPermit(0x9620)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -43,7 +43,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x624)>=1
+	return Card.GetCounter(e:GetHandler(),0x9620)>=1
 end
 function cm.filter(c)
 	return c:IsLevelBelow(3)
@@ -56,7 +56,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=20 then
 		if e:GetHandler():IsRelateToEffect(e) then
-			e:GetHandler():AddCounter(0x624,1)
+			e:GetHandler():AddCounter(0x9620,1)
 			Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 			Duel.Recover(tp,1200,REASON_EFFECT)
 		end

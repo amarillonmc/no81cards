@@ -78,7 +78,7 @@ function cm.cvop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c)
-	return c:IsSetCard(0x629) and c:IsAbleToHand()
+	return c:IsSetCard(0xa620) and c:IsAbleToHand()
 end
 function cm.ofilter(c)
 	return c:IsFaceup() and c:IsCode(60002024)

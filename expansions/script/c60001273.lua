@@ -1,7 +1,7 @@
 --魔眼的猎人·索恩
 local cm,m,o=GetID()
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x624)
+	c:EnableCounterPermit(0x9620)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -31,14 +31,14 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if e:GetHandler():IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x624,1)
+		e:GetHandler():AddCounter(0x9620,1)
 		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 	end
 	if Duel.GetFlagEffect(tp,m)>=6 then
-		local ag=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_MZONE,0,c,0x6ad)
+		local ag=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_MZONE,0,c,0xa622)
 		local ac=ag:GetFirst()
 		for i=1,#ag do
-			ac:AddCounter(0x624,1)
+			ac:AddCounter(0x9620,1)
 			Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 			ac=ag:GetNext()
 		end
@@ -48,7 +48,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function cm.thfilter(c,lv)
-	return c:IsSetCard(0x6ad) and c:IsType(TYPE_MONSTER) and c:IsLevelBelow(lv) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa622) and c:IsType(TYPE_MONSTER) and c:IsLevelBelow(lv) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lv=Duel.GetFlagEffect(tp,60002148)

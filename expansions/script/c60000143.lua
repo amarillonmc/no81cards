@@ -25,7 +25,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.filter(c,e,tp,chk)
-	return c:IsSetCard(0x621) and (not chk or c~=e:GetHandler())
+	return c:IsSetCard(0x6620) and (not chk or c~=e:GetHandler())
 end
 function cm.matfilter(c,e,tp,chk)
 	return not chk or c~=e:GetHandler()
@@ -38,7 +38,7 @@ function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x621) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x6620) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

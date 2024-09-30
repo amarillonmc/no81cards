@@ -53,7 +53,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousLocation(LOCATION_ONFIELD)
 end
 function cm.filter(c)
-	return c:IsSetCard(0x628) and c:IsAbleToHand()
+	return c:IsSetCard(0x5620) and c:IsAbleToHand()
 end
 function cm.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end

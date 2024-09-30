@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.thfilter(c,e)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6a9) 
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x5622) 
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,nil) end

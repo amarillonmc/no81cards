@@ -38,7 +38,7 @@ function cm.con2(e,c,minc)
 	return minc<=1 and Duel.CheckTribute(c,1)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp,c)
-	g=Duel.SelectTribute(tp,c,1,Duel.GetFieldGroupCount(tp,LOCATION_MZONE,LOCATION_MZONE))
+	local g=Duel.SelectTribute(tp,c,1,Duel.GetFieldGroupCount(tp,LOCATION_MZONE,LOCATION_MZONE))
 	c:SetMaterial(g)
 	Duel.Release(g,REASON_SUMMON+REASON_MATERIAL)
 	for tc in aux.Next(g) do
@@ -85,7 +85,8 @@ function cm.op5(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thfilter(c)
-	return c:IsCanHaveCounter(0x624) and Duel.IsCanAddCounter(tp,0x624,1,c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+		local tp=c:GetControler()
+	return c:IsCanHaveCounter(0x9620) and Duel.IsCanAddCounter(tp,0x9620,1,c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.thfilter2(c)
 	return c:IsLevel(1) and c:IsAbleToHand()

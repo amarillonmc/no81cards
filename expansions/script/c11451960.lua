@@ -48,6 +48,12 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 		e1:SetOperation(cm.negop)
 		e1:SetReset(RESET_CHAIN)
 		Duel.RegisterEffect(e1,tp)
+		local e2=e1:Clone()
+		e2:SetCode(EVENT_CHAIN_NEGATED)
+		e2:SetOperation(cm.negop2)
+		e2:SetReset(RESET_CHAIN)
+		e2:SetLabelObject(e1)
+		Duel.RegisterEffect(e2,tp)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
@@ -66,5 +72,10 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 		e:SetLabel(0)
 	else
 		e:SetLabel(0)
+	end
+end
+function cm.negop2(e,tp,eg,ep,ev,re,r,rp)
+	if ev==e:GetValue() then
+		e:GetLabelObject():Reset()
 	end
 end

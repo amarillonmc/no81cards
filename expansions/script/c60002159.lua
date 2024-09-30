@@ -2,7 +2,7 @@
 local m=60002159
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x624)
+	c:EnableCounterPermit(0x9620)
 	c:EnableReviveLimit()
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
@@ -68,7 +68,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x624)>=1
+	return Card.GetCounter(e:GetHandler(),0x9620)>=1
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -101,8 +101,8 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x624,2,REASON_COST) end
-	Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x624,2,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x9620,2,REASON_COST) end
+	Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x9620,2,REASON_COST)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp) end
@@ -110,11 +110,11 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(6-ht)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,26-ht)
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x624)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x9620)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x624,1)
+		e:GetHandler():AddCounter(0x9620,1)
 		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 		local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 		local ht=Duel.GetFieldGroupCount(p,LOCATION_HAND,0)

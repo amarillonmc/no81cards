@@ -44,7 +44,7 @@ function c60000079.initial_effect(c)
 	Duel.AddCustomActivityCounter(60000079,ACTIVITY_SPSUMMON,c60000079.counterfilter)
 end
 function c60000079.counterfilter(c)
-	return c:IsSetCard(0x62b)
+	return c:IsSetCard(0x3621)
 end
 function c60000079.filter(c,e,tp)
 	return c:IsCode(60000064) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
@@ -53,10 +53,10 @@ function c60000079.filter2(c)
 	return c:IsFaceup() and c:IsCode(60000064) and c:IsType(TYPE_XYZ)
 end
 function c60000079.jster(c,e,tp,code)
-	return c:IsSetCard(0x62b) and c:IsAbleToHand() and not c:IsCode(code)
+	return c:IsSetCard(0x3621) and c:IsAbleToHand() and not c:IsCode(code)
 end
 function c60000079.fzter(c,e,tp,code)
-	return c:IsSetCard(0x62b) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and not c:IsCode(code)
+	return c:IsSetCard(0x3621) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and not c:IsCode(code)
 end
 function c60000079.tzcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(60000079,tp,ACTIVITY_SPSUMMON)==0 end
@@ -78,7 +78,7 @@ function c60000079.tztg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c60000079.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0x62b)
+	return not c:IsSetCard(0x3621)
 end
 function c60000079.tzop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -99,13 +99,13 @@ function c60000079.tzop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Overlay(tc,Group.FromCards(c))
 			tc=g2:GetNext()
 		end
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or Duel.GetLocationCount(1-tp,LOCATION_MZONE)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,60000080,0x62b,TYPES_TOKEN_MONSTER,2800,1000,6,RACE_WARRIOR,ATTRIBUTE_LIGHT,POS_FACEUP) or not Duel.IsPlayerCanSpecialSummonMonster(tp,60000080,0x62b,TYPES_TOKEN_MONSTER,2800,1000,6,RACE_WARRIOR,ATTRIBUTE_LIGHT,POS_FACEUP,1-tp) or Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or Duel.GetLocationCount(1-tp,LOCATION_MZONE)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,60000080,0x3621,TYPES_TOKEN_MONSTER,2800,1000,6,RACE_WARRIOR,ATTRIBUTE_LIGHT,POS_FACEUP) or not Duel.IsPlayerCanSpecialSummonMonster(tp,60000080,0x3621,TYPES_TOKEN_MONSTER,2800,1000,6,RACE_WARRIOR,ATTRIBUTE_LIGHT,POS_FACEUP,1-tp) or Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
 		local token1=Duel.CreateToken(tp,60000080)
 		local token2=Duel.CreateToken(tp,60000080)
 		Duel.SpecialSummonStep(token1,0,tp,tp,false,false,POS_FACEUP)
 		Duel.SpecialSummonStep(token2,0,tp,1-tp,false,false,POS_FACEUP)
 		Duel.SpecialSummonComplete()
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,60000080,0x62b,TYPES_TOKEN_MONSTER,2800,1000,6,RACE_WARRIOR,ATTRIBUTE_LIGHT) then return end
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,60000080,0x3621,TYPES_TOKEN_MONSTER,2800,1000,6,RACE_WARRIOR,ATTRIBUTE_LIGHT) then return end
 		if Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(60000079,2)) then
 			Duel.BreakEffect()
 			local token3=Duel.CreateToken(tp,60000080)
@@ -147,7 +147,7 @@ function c60000079.smcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,0,REASON_COST)
 end
 function c60000079.smter(c)
-	return (c:IsAbleToHand() or c:IsAbleToGrave()) and c:IsSetCard(0x62b)
+	return (c:IsAbleToHand() or c:IsAbleToGrave()) and c:IsSetCard(0x3621)
 end
 function c60000079.smter2(c)
 	return c:IsFaceup() and c:IsCode(60000086)

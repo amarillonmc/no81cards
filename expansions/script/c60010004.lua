@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.filter(c,e,tp)
-	return c:IsSetCard(0x630) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa621) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -58,7 +58,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.LHfil1(c,tp)
-	return c:IsSummonPlayer(tp) and c:IsSetCard(0x630)
+	return c:IsSummonPlayer(tp) and c:IsSetCard(0xa621)
 end
 function cm.LHcon1(e,tp,eg,ep,ev,re,r,rp)
 	local tp=eg:GetFirst():GetOwner()
@@ -68,7 +68,7 @@ function cm.LHop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsSetCard(0x630) then
+		if tc:IsSetCard(0xa621) then
 			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),60010002,RESET_PHASE+PHASE_END,0,1)
 			Duel.RaiseEvent(c,EVENT_CUSTOM+60010002,nil,0,tc:GetSummonPlayer(),tc:GetSummonPlayer(),0)
 		end

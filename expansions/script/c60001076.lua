@@ -5,7 +5,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,24094653,aux.FilterBoolFunction(Card.IsFusionSetCard,0x62d),1,true,true)
+	aux.AddFusionProcCodeFun(c,24094653,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6621),1,true,true)
 	--special summon rule
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

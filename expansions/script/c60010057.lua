@@ -17,7 +17,7 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCost(cm.cost2)
 	e2:SetCondition(cm.tcon)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE)
 	c:RegisterEffect(e2)
 end
 cm={}
@@ -61,6 +61,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)

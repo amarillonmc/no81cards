@@ -22,7 +22,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 end
 function cm.filter(c,e,tp)
-	return c:IsSetCard(0x62c) and c:IsLevel(3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x5621) and c:IsLevel(3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

@@ -34,7 +34,7 @@ function cm.thcon1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function cm.thfilter1(c)
-	return c:IsSetCard(0x6ac) and c:IsAbleToRemove()
+	return c:IsSetCard(0x6622) and c:IsAbleToRemove()
 end
 function cm.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter1,tp,LOCATION_DECK,0,1,nil) end
