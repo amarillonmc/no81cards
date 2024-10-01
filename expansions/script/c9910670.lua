@@ -20,10 +20,10 @@ function c9910670.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910670.thfilter(c,check1,check2)
-	if not (c:IsFaceupEx() and (c:IsRace(RACE_MACHINE) or c:IsSetCard(0xa952))) then return false end
-	local b1=c:IsLocation(LOCATION_ONFIELD) and c:IsAbleToHand() and check1
-	local b2=c:IsLocation(LOCATION_GRAVE) and check2
-	return b1 or b2
+	local b1=c:IsLocation(LOCATION_MZONE) and c:IsRace(RACE_MACHINE) and c:IsFaceup() and check1
+	local b2=c:IsLocation(LOCATION_ONFIELD) and c:IsSetCard(0xa952) and c:IsFaceup() and check1
+	local b3=c:IsLocation(LOCATION_GRAVE) and (c:IsRace(RACE_MACHINE) or c:IsSetCard(0xa952)) and check2
+	return b1 or b2 or b3
 end
 function c9910670.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
