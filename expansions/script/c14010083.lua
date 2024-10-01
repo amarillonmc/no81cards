@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1,m)
 	e3:SetTarget(cm.eqtg1)
 	e3:SetOperation(cm.eqop1)
 	c:RegisterEffect(e3)
@@ -40,6 +41,7 @@ function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
 	local cg=Duel.GetMatchingGroup(cm.eqfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c,e,tp)
 	if #cg>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)

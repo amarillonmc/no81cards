@@ -44,6 +44,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.SelectMatchingCard(tp,cm.filter1,tp,LOCATION_ONFIELD,0,1,1,nil)
 	local g2=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_GRAVE,0,1,1,nil,TYPE_MONSTER)
 	local g3=Duel.SelectMatchingCard(tp,cm.filter1,tp,LOCATION_REMOVED,0,1,1,nil)
+	if not (g1 and g2 and g3) then return end
 	g1:Merge(g2):Merge(g3)
 	if g1:GetCount()==3 then
 		Duel.SendtoHand(g1,nil,REASON_EFFECT)

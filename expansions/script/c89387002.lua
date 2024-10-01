@@ -28,10 +28,10 @@ function cm.efilter(e,re)
     return re:IsActiveType(TYPE_MONSTER) and re:GetOwner()~=e:GetOwner()
 end
 function cm.setfilter(c,tp)
-    return c:IsType(TYPE_TRAP) and c:IsSetCard(0xd4) and c:IsSSetable() and Duel.IsExistingMatchingCard(cm.setfilter2,tp,LOCATION_DECK,0,1,nil,c)
+    return c:IsType(TYPE_TRAP) and c:IsSetCard(0xd4) and c:IsSSetable() and Duel.IsExistingMatchingCard(cm.setfilter2,tp,LOCATION_DECK,0,1,nil,c) 
 end
 function cm.setfilter2(c,tc)
-    return not c:IsCode(tc:GetCode()) andc:IsType(TYPE_TRAP) and c:IsSetCard(0xd4) and c:IsAbleToGrave()
+    return not c:IsCode(tc:GetCode()) and c:IsType(TYPE_TRAP) and c:IsSetCard(0xd4) and  c:IsAbleToGrave()
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_REMOVED) and cm.setfilter(chkc,tp) end

@@ -53,7 +53,7 @@ function c28366277.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard())
+			local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(e))
 			if dg:GetFirst():IsLocation(LOCATION_ONFIELD) then
 				Duel.HintSelection(dg)
 			end

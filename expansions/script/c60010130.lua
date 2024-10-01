@@ -29,6 +29,19 @@ function c60010130.initial_effect(c)
 	e2:SetTarget(c60010130.detg)
 	e2:SetOperation(c60010130.deop)
 	c:RegisterEffect(e2)
+	--space check
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_NO_TURN_RESET)
+	e3:SetCode(EVENT_PREDRAW)
+	e3:SetRange(0xff)
+	e3:SetCountLimit(1,60010129+EFFECT_COUNT_CODE_DUEL)
+	e3:SetOperation(c60010130.checkop)
+	c:RegisterEffect(e3)
+c60010130.toss_dice=true
+c60010130.toss_coin=true
+end
+function c60010130.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if not SpaceCheck then
 		SpaceCheck={}
 		for i=0,1 do
@@ -38,8 +51,6 @@ function c60010130.initial_effect(c)
 			end
 		end
 	end
-c60010130.toss_dice=true
-c60010130.toss_coin=true
 end
 function c60010130.condition(e,tp,eg,ep,ev,re,r,rp)
 	return SpaceCheck[tp]
