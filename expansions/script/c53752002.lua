@@ -216,11 +216,11 @@ function s.lvplus(group,sc)
 	calculateRecursive(cards, 1, 0)
 	return results
 end
-function s.IsTuner(c,sc)
+function s.TunerCheck(c,sc)
 	local p,sp=c:GetControler(),sc:GetControler()
 	return c:IsTuner(sc) and (c:IsFaceup() or p==sp or not c:IsOnField())
 end
-function s.IsNotTuner(c,sc)
+function s.NotTunerCheck(c,sc)
 	local p,sp=c:GetControler(),sc:GetControler()
 	return c:IsNotTuner(sc) or (c:IsFacedown() and p~=sp and c:IsOnField())
 end
@@ -232,12 +232,12 @@ function s.slfilter(c,tc,sc)
 	if lv1_2 and lv2_2 then res1=(((lv1_1==lv2_1) and (lv1_2==lv2_2)) or ((lv1_1==lv2_2) and (lv1_2==lv2_1))) end
 	if not res1 then return false end
 	local function botht(card,syncard)
-		return s.IsTuner(card,syncard) and s.IsNotTuner(card,syncard)
+		return s.TunerCheck(card,syncard) and s.NotTunerCheck(card,syncard)
 	end
 	if botht(c,sc) and botht(tc,sc) then return true
 	elseif botht(c,sc) and not botht(tc,sc) then return false
 	elseif not botht(c,sc) and botht(tc,sc) then return false else
-		if (s.IsTuner(c,sc) and s.IsTuner(tc,sc)) or (s.IsNotTuner(c,sc) and s.IsNotTuner(tc,sc)) then return true end
+		if (s.TunerCheck(c,sc) and s.TunerCheck(tc,sc)) or (s.NotTunerCheck(c,sc) and s.NotTunerCheck(tc,sc)) then return true end
 	end
 	return false
 end
@@ -283,7 +283,7 @@ function s.SynMixCondition(e,c,smat,mg1,min,max)
 	return res and mg:IsExists(s.ntfilter,1,nil,c,mg) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function s.ntfilter(c,sc,mg)
-	return s.IsTuner(c,sc) and mg:IsExists(s.IsNotTuner,1,c,sc)
+	return s.TunerCheck(c,sc) and mg:IsExists(s.NotTunerCheck,1,c,sc)
 end
 function s.syngoal(g,sc,smat,tp,mgchk)
 	if not g:IsExists(s.ntfilter,1,nil,sc,g) then return false end
