@@ -105,9 +105,9 @@ function c60010059.operation(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetCode(EVENT_FREE_CHAIN)
 			e3:SetRange(LOCATION_MZONE)
 			e3:SetCountLimit(1)
-			e3:SetCost(ae:GetCost())
-			e3:SetTarget(ae:GetTarget())
-			e3:SetOperation(ae:GetOperation())
+			if ae:GetCost() then e3:SetCost(ae:GetCost()) end
+			if ae:GetTarget() then e3:SetTarget(ae:GetTarget()) end
+			if ae:GetOperation() then e3:SetOperation(ae:GetOperation()) end
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			c:RegisterEffect(e3)
 			
