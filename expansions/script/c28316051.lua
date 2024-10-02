@@ -30,8 +30,7 @@ function c28316051.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c28316051.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	if Duel.GetLP(tp)>3000 then
 		Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,2000)
@@ -39,7 +38,7 @@ function c28316051.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28316051.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	if c:IsRelateToEffect(e) and Duel.GetMZoneCount(tp)>0 then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 	if Duel.GetLP(tp)>3000 then
@@ -70,7 +69,6 @@ function c28316051.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local b1=Duel.IsExistingMatchingCard(c28316051.tgfilter,tp,LOCATION_DECK,0,1,nil)
 	local b2=Duel.IsExistingMatchingCard(c28316051.refilter,tp,LOCATION_DECK,0,1,nil)
 	if Duel.GetLP(tp)<=3000 and (b1 or b2) and Duel.SelectYesNo(tp,aux.Stringid(28316051,2)) then
-		Duel.BreakEffect()
 		if b1 and (not b2 or Duel.SelectOption(tp,1191,1192)==0) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 			local tg=Duel.SelectMatchingCard(tp,c28316051.tgfilter,tp,LOCATION_DECK,0,1,2,nil)

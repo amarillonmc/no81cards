@@ -6,6 +6,7 @@ function c76029021.initial_effect(c)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCountLimit(1,76029021)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCost(c76029021.incost)
 	e1:SetTarget(c76029021.intg)
 	e1:SetOperation(c76029021.inop)
@@ -27,21 +28,26 @@ function c76029021.initial_effect(c)
 end
 c76029021.named_with_Kazimierz=true 
 function c76029021.ctfil(c)
-	return c.named_with_Kazimierz and c:IsReleasable() and Duel.IsExistingMatchingCard(Card.IsRace,tp,LOCATION_MZONE,0,1,c,RACE_BEASTWARRIOR+RACE_WINDBEAST)
+	return c.named_with_Kazimierz and c:IsReleasable() and Duel.IsExistingTarget(c76029021.tgfil,tp,LOCATION_MZONE,0,1,c)
+end 
+function c76029021.tgfil(c)
+	return c:IsRace(RACE_BEASTWARRIOR+RACE_WINDBEAST) and c:IsFaceup()
 end
 function c76029021.incost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c76029021.tgfil(chkc) end
 	if chk==0 then return Duel.IsExistingMatchingCard(c76029021.ctfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
 	local g=Duel.SelectMatchingCard(tp,c76029021.ctfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
 	Duel.Release(g,REASON_COST)
 end 
 function c76029021.intg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return rp==1-tp end 
+	if chk==0 then return rp==1-tp and Duel.IsExistingTarget(c76029021.tgfil,tp,LOCATION_ONFIELD,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,c76029021.tgfil,tp,LOCATION_MZONE,0,1,1,nil)
 end
 function c76029021.inop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()   
-	local g=Duel.GetMatchingGroup(Card.IsRace,tp,LOCATION_MZONE,0,nil,RACE_BEASTWARRIOR+RACE_WINDBEAST)
-	if g:GetCount()>0 then 
-	local tc=g:Select(tp,1,1,nil):GetFirst()
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
 	--
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)

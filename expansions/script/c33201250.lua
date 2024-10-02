@@ -185,20 +185,20 @@ function VHisc_Dragonk.xyzsm(ce,ccode)
 	ce:RegisterEffect(e10)
 end
 --xyz
-function VHisc_Dragonk.ovfilter(c,code)
-	return c:IsFaceup() and c:IsCode(code) and c:GetEquipGroup():IsExists(function(ec) return ec:IsSetCard(0xc327) end,1,nil)
+function VHisc_Dragonk.ovfilter(c,code,og)
+	return c:IsFaceup() and c:IsCode(code) and c:GetEquipGroup():IsExists(function(ec) return ec:IsSetCard(0xc327) end,1,nil) and (not og or og:IsContains(c))
 end
-function VHisc_Dragonk.spcon(e,c)
+function VHisc_Dragonk.spcon(e,c,og,min,max)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local code=e:GetLabel()
 	local id=e:GetHandler():GetOriginalCode()
-	return Duel.GetFlagEffect(tp,id)==0 and Duel.IsExistingMatchingCard(VHisc_Dragonk.ovfilter,tp,LOCATION_MZONE,0,1,nil,code)
+	return Duel.GetFlagEffect(tp,id)==0 and Duel.IsExistingMatchingCard(VHisc_Dragonk.ovfilter,tp,LOCATION_MZONE,0,1,nil,code,og)
 end
-function VHisc_Dragonk.spop(e,tp,eg,ep,ev,re,r,rp,c)
+function VHisc_Dragonk.spop(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 	local code=e:GetLabel()
 	local id=e:GetHandler():GetOriginalCode()
-	local g=Duel.SelectMatchingCard(tp,VHisc_Dragonk.ovfilter,tp,LOCATION_MZONE,0,1,1,nil,code)
+	local g=Duel.SelectMatchingCard(tp,VHisc_Dragonk.ovfilter,tp,LOCATION_MZONE,0,1,1,nil,code,og)
 	local mc=g:GetFirst()
 	local mg=mc:GetOverlayGroup()
 	local eqg=mc:GetEquipGroup()

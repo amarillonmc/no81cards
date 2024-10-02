@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep2(c,c43990084.ffilter,2,99,true)
+	aux.AddFusionProcFunRep2(c,c43990084.ffilter,3,99,true)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -50,12 +50,13 @@ function c43990084.spfilter(c,e,tp)
 	return c:IsRace(RACE_ILLUSION) and c:IsType(TYPE_MONSTER) and ((not c:IsLocation(LOCATION_DECK) and c:IsAbleToDeck()) or (not c:IsLocation(LOCATION_MZONE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (not c:IsLocation(LOCATION_DECK) or Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1)))
 end
 function c43990084.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and eg:FilterCount(c43990084.spfilter,e,tp) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and eg:FilterCount(c43990084.spfilter,e,tp)>0 end
+	Duel.SetTargetCard(eg:GetFirst())
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c43990084.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
-		if aux.NecroValleyNegateCheck(tc) then return end
+		if not tc:IsRelateToEffect(e) or aux.NecroValleyNegateCheck(tc) then return end
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and (not tc:IsAbleToDeck() or Duel.SelectOption(tp,aux.Stringid(43990084,2),1152)==1) then
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		else
