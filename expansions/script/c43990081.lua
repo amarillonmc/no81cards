@@ -32,7 +32,7 @@ function cm.initial_effect(c)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD)
 	e5:SetCode(EFFECT_CANNOT_DISEFFECT)
-	e5:SetRange(LOCATION_MZONE)
+	e5:SetRange(LOCATION_SZONE)
 	e5:SetValue(c43990081.effectfilter)
 	c:RegisterEffect(e5)
 	

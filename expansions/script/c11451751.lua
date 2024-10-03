@@ -34,6 +34,10 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
+	local e4=e2:Clone()
+	e4:SetCategory(CATEGORY_REMOVE)
+	e4:SetTarget(cm.sptg2)
+	c:RegisterEffect(e4)
 end
 function cm.cfilter(c,code)
 	return c:IsFaceup() and c:IsCode(code)
@@ -92,7 +96,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m+1)==0
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
-	if chk==0 then return (Duel.GetCurrentChain()==0 or (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) and (sa or sb) end
+	if chk==0 then return (Duel.GetCurrentChain()>0 and (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) and (sa or sb) end
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	if c:IsLocation(LOCATION_HAND) then
@@ -101,12 +105,21 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
-	if Duel.GetCurrentChain()==1 then
-		e:SetCategory(CATEGORY_REMOVE)
-	else
-		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+end
+function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m+1)==0
+	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
+	if chk==0 then return Duel.GetCurrentChain()==0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) and (sa or sb) end
+	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	if c:IsLocation(LOCATION_HAND) then
+		Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1)
+	elseif c:IsLocation(LOCATION_REMOVED) then
+		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
 	end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
