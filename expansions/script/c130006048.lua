@@ -15,9 +15,17 @@ function cm.initial_effect(c)
 		cm.global_check=true
 		local _Equip=Duel.Equip
 		Duel.Equip=function(p,c,...)
-			c:RegisterFlagEffect(m,RESET_CHAIN,0,1)
+			if not c:IsOnField() then c:RegisterFlagEffect(m,RESET_CHAIN,0,1) end
 			local res=_Equip(p,c,...)
-			c:ResetFlagEffect(m)
+			return res
+		end
+		local _CRegisterEffect=Card.RegisterEffect
+		function Card.RegisterEffect(c,e,bool)
+			local res=_CRegisterEffect(c,e,bool)
+			if e:GetCode()==EFFECT_EQUIP_LIMIT and c:GetFlagEffect(m)>0 then
+				c:ResetFlagEffect(m)
+				Duel.RaiseEvent(Group.FromCards(c),EVENT_CUSTOM+m,e,0,0,0,0)
+			end
 			return res
 		end
 		local e1=Effect.CreateEffect(c)
@@ -53,7 +61,7 @@ function cm.costchk(e,c,tp,st)
 	return false
 end
 function cm.filter(c,e)
-	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED) or c:GetFlagEffect(m)>0)) then return false end
+	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED))) or c:GetFlagEffect(m)>0 then return false end
 	if e:GetCode()==EVENT_MOVE then
 		local b1,g1=Duel.CheckEvent(EVENT_SUMMON_SUCCESS,true)
 		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
@@ -82,7 +90,24 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CUSTOM+m)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) local g=eg:Filter(cm.filter,nil,e) Duel.SendtoDeck(g,nil,2,REASON_RULE) end)
+	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+		--[[if Duel.GetFlagEffect(0,m)>1 then return end
+		Duel.RegisterFlagEffect(0,m,RESET_CHAIN,0,1)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAINING)
+		e1:SetOperation(function() Duel.ResetFlagEffect(0,m) end)
+		e1:SetReset(RESET_CHAIN)
+		Duel.RegisterEffect(e1,tp)
+		local e2=e1:Clone()
+		e2:SetCode(EVENT_BREAK_EFFECT)
+		Duel.RegisterEffect(e2,tp)
+		local e3=e1:Clone()
+		e3:SetCode(EVENT_CHAIN_SOLVED)
+		Duel.RegisterEffect(e3,tp)--]]
+		local g=eg:Filter(cm.filter,nil,e)
+		Duel.SendtoDeck(g,nil,2,REASON_RULE)
+	end)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,0)
 end

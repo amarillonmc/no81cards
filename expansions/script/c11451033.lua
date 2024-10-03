@@ -30,31 +30,20 @@ function cm.initial_effect(c)
 		e3:SetValue(function(e,c) local res=c:GetFlagEffect(m)>0 c:ResetFlagEffect(m) return res end)
 		Duel.RegisterEffect(e3,0)
 		local _MoveToField=Duel.MoveToField
-		local _ReturnToField=Duel.ReturnToField
 		local _Equip=Duel.Equip
 		function Duel.MoveToField(c,tp,...)
-			if c:IsHasEffect(m) then
+			if c:IsLocation(LOCATION_EXTRA) and c:IsHasEffect(m) then
 				return
-			elseif c:GetOriginalCode()==m then
+			elseif c:IsLocation(LOCATION_EXTRA) and c:GetOriginalCode()==m then
 				if not cm.spcost(nil,nil,tp,c) then return end
 				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
 			end
 			return _MoveToField(c,tp,...)
 		end
-		function Duel.ReturnToField(c,...)
-			local tp=c:GetPreviousControler()
-			if c:IsHasEffect(m) then
-				return
-			elseif c:GetOriginalCode()==m then
-				if not cm.spcost(nil,nil,tp,c) then return end
-				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
-			end
-			return _ReturnToField(c,...)
-		end
 		function Duel.Equip(tp,c,mc,...)
-			if c:IsHasEffect(m) then
+			if c:IsLocation(LOCATION_EXTRA) and c:IsHasEffect(m) then
 				return
-			elseif c:GetOriginalCode()==m then
+			elseif c:IsLocation(LOCATION_EXTRA) and c:GetOriginalCode()==m then
 				if not cm.spcost(nil,nil,tp,c) then return end
 				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
 			end

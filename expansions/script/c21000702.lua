@@ -38,7 +38,7 @@ function s.initial_effect(c)
 end
 
 function s.counterfilter(c)
-	return c:IsSetCard(0x605)
+	return c:IsRace(RACE_PSYCHO)
 end
 function s.filter(c)
 	return c:IsFaceup() and c:IsAbleToRemoveAsCost() and c:IsSetCard(0x603)

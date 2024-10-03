@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE)
 	e5:SetCode(EFFECT_SUMMON_COST)
 	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SINGLE_RANGE)
-	e5:SetRange(0xff)
+	e5:SetRange(0xf3)
 	e5:SetCost(cm.spcost)
 	e5:SetOperation(cm.spcop)
 	c:RegisterEffect(e5)
@@ -24,9 +24,9 @@ function cm.initial_effect(c)
 		local _ReturnToField=Duel.ReturnToField
 		local _Equip=Duel.Equip
 		function Duel.MoveToField(c,tp,...)
-			if c:IsHasEffect(m) then
+			if c:IsLocation(0xf3) and c:IsHasEffect(m) then
 				return
-			elseif c:GetOriginalCode()==m then
+			elseif c:IsLocation(0xf3) and c:GetOriginalCode()==m then
 				if not cm.spcost(nil,nil,tp,c) then return end
 				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
 			end
@@ -43,9 +43,9 @@ function cm.initial_effect(c)
 			return _ReturnToField(c,...)
 		end
 		function Duel.Equip(tp,c,mc,...)
-			if c:IsHasEffect(m) then
+			if c:IsLocation(0xf3) and c:IsHasEffect(m) then
 				return
-			elseif c:GetOriginalCode()==m then
+			elseif c:IsLocation(0xf3) and c:GetOriginalCode()==m then
 				if not cm.spcost(nil,nil,tp,c) then return end
 				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
 			end
