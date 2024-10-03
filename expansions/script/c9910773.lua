@@ -42,13 +42,13 @@ function c9910773.thop1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c9910773.cfilter(c)
+function c9910773.cfilter(c,tp)
 	return c:IsPreviousControler(tp) and c:IsSetCard(0x5951) and c:IsPreviousSetCard(0x5951)
 		and c:IsType(TYPE_MONSTER) and c:IsLocation(LOCATION_DECK) and c:IsPreviousLocation(LOCATION_MZONE)
 		and c:IsPreviousPosition(POS_FACEUP)
 end
 function c9910773.thcon2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c9910773.cfilter,1,nil) and not eg:IsContains(e:GetHandler())
+	return eg:IsExists(c9910773.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function c9910773.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToHand() end

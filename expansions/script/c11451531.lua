@@ -103,7 +103,7 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsFaceup() or not c:IsRelateToEffect(e) or not c:IsSummonType(SUMMON_TYPE_ADVANCE) then return end
+	if not c:IsRelateToEffect(e) or not c:IsSummonType(SUMMON_TYPE_ADVANCE) then return end
 	local g1=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	local g2=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
 	if #g1>0 and (#g2==0 or Duel.SelectYesNo(tp,aux.Stringid(m,1))) then

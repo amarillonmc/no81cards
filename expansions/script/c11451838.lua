@@ -34,14 +34,6 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
-	local e4=e2:Clone()
-	e4:SetCategory(CATEGORY_REMOVE)
-	e4:SetRange(LOCATION_HAND)
-	e4:SetTarget(cm.sptg2)
-	c:RegisterEffect(e4)
-	local e5=e4:Clone()
-	e5:SetRange(LOCATION_REMOVED)
-	c:RegisterEffect(e5)
 end
 function cm.thfilter(c,e,tp)
 	return c:IsSetCard(0x9977) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -110,7 +102,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local nsp=Duel.GetCurrentChain()==0
 		local fd=nsp and 0 or 1
 		local exc=not nsp and c
-		return (Duel.GetCurrentChain()>0 and (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_REMOVED,0,1,exc,e,tp,fd) and (sa or sb)
+		return ((c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or Duel.GetCurrentChain()==0) and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_REMOVED,0,1,exc,e,tp,fd) and (sa or sb)
 	end
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
@@ -119,24 +111,8 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	elseif c:IsLocation(LOCATION_REMOVED) then
 		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-end
-function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m-1)==0
-	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m)==0
-	if chk==0 then
-		local nsp=Duel.GetCurrentChain()==0
-		local fd=nsp and 0 or 1
-		local exc=not nsp and c
-		return Duel.GetCurrentChain()==0 and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_REMOVED,0,1,exc,e,tp,fd) and (sa or sb)
-	end
-	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	if c:IsLocation(LOCATION_HAND) then
-		Duel.RegisterFlagEffect(tp,m-1,RESET_PHASE+PHASE_END,0,1)
-	elseif c:IsLocation(LOCATION_REMOVED) then
-		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+	if Duel.GetCurrentChain()>1 then
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)

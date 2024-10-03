@@ -36,10 +36,6 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
-	local e4=e2:Clone()
-	e4:SetCategory(CATEGORY_DRAW)
-	e4:SetTarget(cm.sptg2)
-	c:RegisterEffect(e4)
 end
 function cm.thfilter(c,tp)
 	return Duel.GetMZoneCount(tp,c)>0 and c:IsAbleToRemove()
@@ -95,36 +91,27 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local exc=not nsp and c
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local tg=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_HAND,0,1,1,exc)
+	if c:IsLocation(LOCATION_HAND) then
+		Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1)
+	elseif c:IsLocation(LOCATION_REMOVED) then
+		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
+	end
 	Duel.Remove(tg,POS_FACEUP,REASON_COST)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m+1)==0
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
-	if chk==0 then return (Duel.GetCurrentChain()>0 and (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) and Duel.IsPlayerCanDraw(tp,1) and (sa or sb) end
+	if chk==0 then return ((c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or Duel.GetCurrentChain()==0) and Duel.IsPlayerCanDraw(tp,1) and (sa or sb) end
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	if c:IsLocation(LOCATION_HAND) then
-		Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1)
-	elseif c:IsLocation(LOCATION_REMOVED) then
-		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
-	end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-end
-function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m+1)==0
-	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
-	if chk==0 then return Duel.GetCurrentChain()==0 and Duel.IsPlayerCanDraw(tp,1) and (sa or sb) end
-	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	if c:IsLocation(LOCATION_HAND) then
-		Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1)
-	elseif c:IsLocation(LOCATION_REMOVED) then
-		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
+	if Duel.GetCurrentChain()==1 then
+		e:SetCategory(CATEGORY_DRAW)
+	else
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
