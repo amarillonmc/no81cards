@@ -44,9 +44,11 @@ function s.initial_effect(c)
 		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge0:SetCode(EVENT_DRAW)
 		ge0:SetCountLimit(1,id+EFFECT_COUNT_CODE_DUEL)
-		ge0:SetCondition(s.startcon)
 		ge0:SetOperation(s.startop)
 		Duel.RegisterEffect(ge0,0)
+		local cge0=ge0:Clone()
+		cge0:SetCode(EVENT_PREDRAW)
+		Duel.RegisterEffect(cge0,0)
 		local ge1=Effect.GlobalEffect()
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_ADJUST)
@@ -134,16 +136,85 @@ function s.initial_effect(c)
 		s.ConfirmCards=Duel.ConfirmCards
 		s.Hint=Duel.Hint	 
 	end
+	local control_player=0
+	if Duel.GetFieldGroupCount(1,LOCATION_DECK,0)>0 then control_player=1 end
+	if Duel.GetMatchingGroupCount(s.cfilter,control_player,LOCATION_EXTRA,0,nil,id)>0 then
+		s.Wild_Mode=true
+		local _cRegisterEffect=Card.RegisterEffect
+		function Card.RegisterEffect(ec,e,bool)
+			if s.cfilter(ec) then
+				return _cRegisterEffect(ec,e,bool)
+			else
+				local ge0=Effect.CreateEffect(ec)
+				ge0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+				ge0:SetCode(EVENT_DRAW)
+				ge0:SetOperation(s.changecardcode)
+				return _cRegisterEffect(ec,ge0,true)
+			end
+		end
+		local dg=Duel.GetFieldGroup(control_player,0,LOCATION_DECK)
+		for tc in aux.Next(dg) do
+			Card.RegisterEffect(tc)
+		end
+		local ge0=Effect.GlobalEffect()
+		ge0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		ge0:SetCode(EVENT_DRAW)
+		ge0:SetOperation(s.changecardcode)
+		local ge1=Effect.GlobalEffect()
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+		ge1:SetTargetRange(0,LOCATION_DECK+LOCATION_HAND)
+		ge1:SetLabelObject(ge0)
+		Duel.RegisterEffect(ge1,control_player)
+	end
+	if Duel.GetMatchingGroupCount(s.cfilter,control_player,LOCATION_EXTRA,0,nil,id)>1 then
+		Duel.DisableActionCheck(true)
+		Debug.SetPlayerInfo(control_player,8000,0,1)
+		Debug.SetPlayerInfo(1-control_player,0,0,1)
+		if Duel.GetLP(1-control_player)>0 then
+			local sl = coroutine.create(Duel.SetLP)
+			coroutine.resume(sl,1-control_player,0)
+		end
+		function Duel.RegisterEffect()
+			
+		end
+		local movet = coroutine.create(Duel.MoveTurnCount)
+		coroutine.resume(movet)
+		local move1 = coroutine.create(Duel.MoveToField)
+		coroutine.resume(move1,c,control_player,control_player,LOCATION_MZONE,POS_FACEUP_ATTACK,true,0x20)
+		--local re = coroutine.create(Duel.Recover)
+		--coroutine.resume(re,1-control_player,2147483647,REASON_RULE)
+		--local pl = coroutine.create(Duel.PayLPCost)
+		--coroutine.resume(pl,1-control_player,2147483647,true)
+		--local dam = coroutine.create(Duel.Damage)
+		--coroutine.resume(dam,1-control_player,2147483647,REASON_RULE)
+		local atke=Effect.CreateEffect(c)
+		atke:SetType(EFFECT_TYPE_SINGLE)
+		atke:SetCode(EFFECT_SET_BATTLE_ATTACK)
+		atke:SetValue(2147483647)
+		c:RegisterEffect(atke,true)
+		local cd = coroutine.create(Duel.CalculateDamage)
+		coroutine.resume(cd,c,nil)
+		local dr1 = coroutine.create(Duel.Draw)
+		coroutine.resume(dr1,control_player,5,REASON_RULE)
+		local dr2 = coroutine.create(Duel.Draw)
+		coroutine.resume(dr2,1-control_player,2147483647,REASON_RULE)
+		Duel.DisableActionCheck(false)
+	end
 end
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
 local IO_CHECK=false
 if io then IO_CHECK=true end
+function s.changecardcode(e,tp)
+	local cardtable={27520594,95511642,22916281,58400390,4392470,62514770,46986414,89631139}
+	local c=e:GetHandler()
+	math.randomseed(c:GetCode())
+	local code=cardtable[math.random(8)]
+	c:SetEntityCode(code,true)
+	c:ReplaceEffect(code,0)
+end
 function s.cfilter(c)
 	return c:GetOriginalCode()==id
-end
-function s.startcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()==0
 end
 function s.startop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(0,0x7f,0x7f)
@@ -625,7 +696,7 @@ function s.printcard(e,tp)
 end
 function s.setcard(e,tp)
 	local c=e:GetHandler()
-	local mg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_HAND,0,nil)
+	local mg=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 	local ex=0
 	local mzonet={0x01,0x02,0x04,0x08,0x10,0x20,0x40}
 	local szonet={0x01,0x02,0x04,0x08,0x10,0x20,0x40}
@@ -673,6 +744,9 @@ function s.setcard(e,tp)
 			flag=flag>>16
 			p=1-tp
 		end
+		if flag<=0x1f then 
+			mg:Merge(Duel.GetFieldGroup(tp,LOCATION_MZONE,0))
+		end
 		if flag==0x100 or flag==0x1000 then
 			mg:Merge(Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_EXTRA,0,c,TYPE_PENDULUM))
 		end
@@ -689,16 +763,24 @@ function s.setcard(e,tp)
 				Duel.MoveToField(mc,tp,p,LOCATION_SZONE,pos,true,flag)
 			end
 		else
-			local pos=Duel.SelectPosition(tp,mc,0xd)							 
-			Duel.MoveToField(mc,tp,p,LOCATION_MZONE,pos,true,flag)
-			if tp~=p then
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_SET_CONTROL)
-				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-				e1:SetValue(p)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				mc:RegisterEffect(e1,true)
+			if mc:IsLocation(LOCATION_MZONE) then
+				if p==tp then
+					Duel.MoveSequence(mc,math.log(flag,2))
+				else
+					Duel.GetControl(mc,p,0,0,flag)
+				end
+			else
+				local pos=Duel.SelectPosition(tp,mc,0xd)
+				Duel.MoveToField(mc,tp,p,LOCATION_MZONE,pos,true,flag)
+				if tp~=p then
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_SET_CONTROL)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+					e1:SetValue(p)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					mc:RegisterEffect(e1,true)
+				end
 			end
 		end  
 	end
@@ -1168,6 +1250,13 @@ function s.mindcontrol(e,tp)
 		sge:SetOperation(s.setactop)
 		Duel.RegisterEffect(sge,tp)
 
+		local fge=Effect.CreateEffect(e:GetHandler())
+		fge:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		fge:SetCode(EVENT_CHAINING)
+		fge:SetCondition(s.qfcon)
+		fge:SetOperation(s.qfop)
+		Duel.RegisterEffect(fge,tp)
+
 		Duel.ConfirmCards(tp,Duel.GetMatchingGroup(Card.IsFacedown,tp,0,LOCATION_EXTRA+LOCATION_REMOVED+LOCATION_ONFIELD+LOCATION_DECK,nil),true)
 		--Summon
 		local e1=Effect.GlobalEffect()
@@ -1560,6 +1649,15 @@ function s.ssetactivate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SSet(tep,c,tep,false)
 	end
 end
+function s.qffilter(c)
+	return false
+end
+function s.qfcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(s.qffilter,tp,0,0xff,1,nil)
+end
+function s.qfop(e,tp,eg,ep,ev,re,r,rp)
+
+end
 function s.setactfilter(c)
 	local ae=c:GetActivateEffect()
 	local ph=Duel.GetCurrentPhase()
@@ -1595,6 +1693,7 @@ function s.setactop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.change_effect(effect,c,mp)
 	local cardtype=c:GetType()
+	local code=c:GetOriginalCode()
 	local eff=Effect.CreateEffect(c)
 	eff:SetDescription(aux.Stringid(id+1,9))
 	eff:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_QUICK_O)   
@@ -1609,11 +1708,24 @@ function s.change_effect(effect,c,mp)
 		eff:SetTarget(s.mindtg)
 		return eff
 	elseif effect:GetType()&EFFECT_TYPE_QUICK_O~=0 then
-		eff:SetCode(EVENT_FREE_CHAIN)
-		eff:SetRange(effect:GetRange())
-		eff:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_QUICK_O)
-		eff:SetTarget(s.mindtg2)
-		return eff
+		if effect:GetCode()&EVENT_FREE_CHAIN then
+			eff:SetCode(EVENT_FREE_CHAIN)
+			eff:SetRange(effect:GetRange())
+			eff:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_QUICK_O)
+			eff:SetTarget(s.mindtg2)
+			return eff
+		elseif effect:GetCode()&EVENT_CHAINING then
+			local eff2=effect:Clone()
+			local con=effect:GetCondition()
+			if not con then con=aux.TRUE
+			eff2:SetType(EFFECT_TYPE_QUICK_F)
+			eff2:SetCode(id+code+10)
+			eff2:SetCondition(s.addfcon(con))
+			local flageff=Effect.CreateEffect(c)
+
+			end
+			return eff2
+		end
 	elseif effect:GetType()&EFFECT_TYPE_ACTIVATE~=0 and not c:IsType(TYPE_MONSTER) then
 		eff:SetCondition(s.mindcon2)
 		eff:SetRange(LOCATION_HAND+LOCATION_SZONE)
@@ -1672,6 +1784,12 @@ function s.addeffcost(effect)
 				if cost then cost(e,tp,eg,ep,ev,re,r,rp,chk,...) end
 			end
 		end
+	end
+end
+function s.addfcon(con)
+	return function (e,tp,...)
+		local code=c:GetOriginalCode()
+		return c:GetFlagEffect(id+code+10)>0 and con(e,tp,...)
 	end
 end
 function s.addeffcon(effect)
