@@ -84,11 +84,11 @@ function c75075612.activate(e,tp,eg,ep,ev,re,r,rp)
 		local gg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_MZONE,0,1,nil)
 		if Duel.SendtoGrave(gg,REASON_EFFECT)~=0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local ggg=Duel.SelectMatchingCard(tp,(c75075612.thfilter,tp,LOCATION_GRAVE,0,1,nil)
+			local ggg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c75075612.thfilter),tp,LOCATION_GRAVE,0,1,nil)
 			Duel.SendtoHand(ggg,nil,REASON_EFFECT)
 			Duel.ConfirmCards(ggg,1-tp)
 		end
-	end	
+	end 
 end
 function c75075612.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
