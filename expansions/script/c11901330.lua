@@ -46,7 +46,8 @@ function s.htgop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
 		c:RegisterEffect(e1)
         local g=Duel.GetMatchingGroup(s.Spfi1ter,tp,0x08,0,c,e,tp)
-        if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+        local zone=Duel.GetLocationCount(tp,0x04)
+        if #g>0 and zone>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
             local sg=g:Select(tp,1,1,nil)
             Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
