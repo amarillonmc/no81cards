@@ -87,19 +87,20 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetCategory(0)
 	end
 	e:SetLabel(op)
+	cm[ev]=op
 end
 function cm.matfilter(c,e)
 	return c:IsCanOverlay() and not c:IsImmuneToEffect(e)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if e:GetLabel()==1 then
+	if cm[ev]==1 then
 		--local tg=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0):GetMinGroup(Card.GetSequence):Filter(cm.matfilter,nil,e)
 		local tg=eg:Filter(Card.IsLocation,nil,LOCATION_GRAVE):Filter(cm.matfilter,nil,e)
 		if #tg==0 or not c:IsRelateToEffect(e) then return end
 		Duel.Overlay(c,tg)
 		Duel.DiscardDeck(tp,1,REASON_EFFECT)
-	elseif e:GetLabel()==2 then
+	elseif cm[ev]==2 then
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_OPERATECARD)
 		if not c:IsRelateToEffect(e) then return end
 		local g=e:GetHandler():GetOverlayGroup():FilterSelect(1-tp,cm.thfilter,1,1,nil,e,1-tp)

@@ -177,7 +177,7 @@ function s.desfilter(c,s,tp)
 	local seq=c:GetSequence()
 	if c:GetSequence()==5 and tp~=c:GetControler() then seq=6 end
 	if c:GetSequence()==6 and tp~=c:GetControler() then seq=5 end
-	return seq<5 and aux.GetColumn(c,tp)==s or seq==5 and s==1 or seq==6 and s==3
+	return seq<5 and aux.GetColumn(c,tp)==s or seq==5 and s==1 and c:IsLocation(LOCATION_MZONE) or seq==6 and s==3 and c:IsLocation(LOCATION_MZONE)
 end
 function s.mtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

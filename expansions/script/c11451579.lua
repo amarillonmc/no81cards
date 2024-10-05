@@ -82,20 +82,21 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,1)
 	end
 	e:SetLabel(op)
+	cm[ev]=op
 end
 function cm.matfilter(c,e)
 	return c:IsCanOverlay() and not c:IsImmuneToEffect(e)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if e:GetLabel()==1 then
+	if cm[ev]==1 then
 		--local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Filter(cm.matfilter,nil,e)
 		local tg=eg:Filter(Card.IsLocation,nil,LOCATION_HAND):Filter(cm.matfilter,nil,e)
 		if #tg==0 or not c:IsRelateToEffect(e) then return end
 	   --local tg=g:RandomSelect(tp,1)
 		Duel.Overlay(c,tg)
 		Duel.Draw(tp,1,REASON_EFFECT)
-	elseif e:GetLabel()==2 then
+	elseif cm[ev]==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
 		if not c:IsRelateToEffect(e) or not c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT) then return end
 		if c:RemoveOverlayCard(tp,1,1,REASON_EFFECT)>0 then Duel.Draw(1-tp,1,REASON_EFFECT) end

@@ -166,41 +166,67 @@ function s.initial_effect(c)
 		ge1:SetLabelObject(ge0)
 		Duel.RegisterEffect(ge1,control_player)
 	end
-	if Duel.GetMatchingGroupCount(s.cfilter,control_player,LOCATION_EXTRA,0,nil,id)>1 then
+	if Duel.GetMatchingGroupCount(s.cfilter,control_player,0x7f,0,nil,id)>1 then
 		Duel.DisableActionCheck(true)
 		Debug.SetPlayerInfo(control_player,8000,0,1)
 		Debug.SetPlayerInfo(1-control_player,0,0,1)
 		if Duel.GetLP(1-control_player)>0 then
-			local sl = coroutine.create(Duel.SetLP)
-			coroutine.resume(sl,1-control_player,0)
+			--local sl = coroutine.create(Duel.SetLP)
+			--coroutine.resume(sl,1-control_player,0)
+			pcall(Duel.SetLP,1-control_player,0)
 		end
-		function Duel.RegisterEffect()
-			
+		local _dRegisterEffect=Duel.RegisterEffect
+		function Duel.RegisterEffect(re,rp)
+			if re:GetCode()==37564153 then return end
+			_dRegisterEffect(re,rp)
 		end
-		local movet = coroutine.create(Duel.MoveTurnCount)
-		coroutine.resume(movet)
-		local move1 = coroutine.create(Duel.MoveToField)
-		coroutine.resume(move1,c,control_player,control_player,LOCATION_MZONE,POS_FACEUP_ATTACK,true,0x20)
+		--local movet = coroutine.create(Duel.MoveTurnCount)
+		--coroutine.resume(movet)
+		--local move1 = coroutine.create(Duel.MoveToField)
+		--coroutine.resume(move1,c,control_player,control_player,LOCATION_MZONE,POS_FACEUP_ATTACK,true,0x20)
 		--local re = coroutine.create(Duel.Recover)
 		--coroutine.resume(re,1-control_player,2147483647,REASON_RULE)
 		--local pl = coroutine.create(Duel.PayLPCost)
 		--coroutine.resume(pl,1-control_player,2147483647,true)
 		--local dam = coroutine.create(Duel.Damage)
 		--coroutine.resume(dam,1-control_player,2147483647,REASON_RULE)
+		pcall(Duel.MoveTurnCount)
+		pcall(Duel.MoveToField,c,control_player,control_player,LOCATION_MZONE,POS_FACEUP_ATTACK,true,0x20)
 		local atke=Effect.CreateEffect(c)
 		atke:SetType(EFFECT_TYPE_SINGLE)
 		atke:SetCode(EFFECT_SET_BATTLE_ATTACK)
 		atke:SetValue(2147483647)
 		c:RegisterEffect(atke,true)
-		local cd = coroutine.create(Duel.CalculateDamage)
-		coroutine.resume(cd,c,nil)
-		local dr1 = coroutine.create(Duel.Draw)
-		coroutine.resume(dr1,control_player,5,REASON_RULE)
-		local dr2 = coroutine.create(Duel.Draw)
-		coroutine.resume(dr2,1-control_player,2147483647,REASON_RULE)
+		--local cd = coroutine.create(Duel.CalculateDamage)
+		--coroutine.resume(cd,c,nil)
+		--local dr1 = coroutine.create(Duel.Draw)
+		--coroutine.resume(dr1,control_player,5,REASON_RULE)
+		--local dr2 = coroutine.create(Duel.Draw)
+		--coroutine.resume(dr2,1-control_player,2147483647,REASON_RULE)
+		--pcall(Duel.CalculateDamage,c,nil)
+		--
+		if control_player==0 then
+			s.Administrator(5)
+		else			
+
+		end
+		pcall(Duel.CalculateDamage,c,nil)
+		pcall(dr1,control_player,5,REASON_RULE)
+		pcall(dr1,1-control_player,2147483647,REASON_RULE)
+		--Debug.AddCard(id+2,1-control_player,1-control_player,LOCATION_DECK,1,POS_FACEDOWN)
 		Duel.DisableActionCheck(false)
 	end
 end
+function s.Administrator(number)
+	local result = ""
+	for i=1,number do
+		result=result..tostring(i%10)
+	end
+	Debug.Message("Messages:"..number)
+	Debug.ShowHint(result)
+end
+--Debug.ReloadFieldBegin(DUEL_ATTACK_FIRST_TURN+DUEL_SIMPLE_AI)
+
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
 local IO_CHECK=false
@@ -745,7 +771,7 @@ function s.setcard(e,tp)
 			p=1-tp
 		end
 		if flag<=0x1f then 
-			mg:Merge(Duel.GetFieldGroup(tp,LOCATION_MZONE,0))
+			mg:Merge(Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE))
 		end
 		if flag==0x100 or flag==0x1000 then
 			mg:Merge(Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_EXTRA,0,c,TYPE_PENDULUM))
@@ -764,7 +790,7 @@ function s.setcard(e,tp)
 			end
 		else
 			if mc:IsLocation(LOCATION_MZONE) then
-				if p==tp then
+				if p==mc:GetControler() then
 					Duel.MoveSequence(mc,math.log(flag,2))
 				else
 					Duel.GetControl(mc,p,0,0,flag)
@@ -1701,30 +1727,21 @@ function s.change_effect(effect,c,mp)
 	eff:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	eff:SetLabelObject(effect)
 	eff:SetLabel(mp)
-	eff:SetCondition(s.mindcon) 
+	eff:SetCondition(s.mindcon)
 	if effect:GetType()&EFFECT_TYPE_IGNITION~=0 then
 		eff:SetRange(effect:GetRange())
 		eff:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_IGNITION)
 		eff:SetTarget(s.mindtg)
 		return eff
 	elseif effect:GetType()&EFFECT_TYPE_QUICK_O~=0 then
-		if effect:GetCode()&EVENT_FREE_CHAIN then
+		if effect:GetCode()==EVENT_FREE_CHAIN then
 			eff:SetCode(EVENT_FREE_CHAIN)
 			eff:SetRange(effect:GetRange())
 			eff:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_QUICK_O)
 			eff:SetTarget(s.mindtg2)
 			return eff
-		elseif effect:GetCode()&EVENT_CHAINING then
-			local eff2=effect:Clone()
-			local con=effect:GetCondition()
-			if not con then con=aux.TRUE
-			eff2:SetType(EFFECT_TYPE_QUICK_F)
-			eff2:SetCode(id+code+10)
-			eff2:SetCondition(s.addfcon(con))
-			local flageff=Effect.CreateEffect(c)
-
-			end
-			return eff2
+		elseif effect:GetCode()==EVENT_CHAINING then
+			return 0
 		end
 	elseif effect:GetType()&EFFECT_TYPE_ACTIVATE~=0 and not c:IsType(TYPE_MONSTER) then
 		eff:SetCondition(s.mindcon2)
@@ -1837,7 +1854,6 @@ function s.mindtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		eff:SetDescription(aux.Stringid(id+1,9))
 		eff:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 		eff:SetCode(id+code)
-		eff:SetCountLimit(1)
 		eff:SetCost(s.addeffcost(effect))
 		eff:SetCondition(s.addeffcon(effect))
 		eff:SetTarget(s.addefftg(effect))
@@ -1866,7 +1882,6 @@ function s.mindtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 		eff:SetDescription(aux.Stringid(id+1,9))
 		eff:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 		eff:SetCode(id+code)
-		eff:SetCountLimit(1)
 		eff:SetCost(s.addeffcost(effect))
 		eff:SetCondition(s.addeffcon(effect))
 		eff:SetTarget(s.addefftg(effect))
