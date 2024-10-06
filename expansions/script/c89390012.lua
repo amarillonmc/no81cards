@@ -58,9 +58,14 @@ function cm.mfilter(c)
     return not cm[tp][rc] and cm[tp+2][rc] and c:IsAbleToRemoveAsCost()
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
-    if not c:GetMaterial() then return end
-    c:GetMaterial():ForEach(cm.regmf,c)
+    local tc=e:GetHandler()
+    local g=tc:GetMaterial()
+    if not g then return end
+    local c=g:GetFirst()
+    while c do
+        cm.regmf(c,tc)
+        c=g:GetNext()
+    end
 end
 function cm.regmf(c,tc)
     if c:IsRace(RACE_PSYCHO+RACE_MACHINE) then 
