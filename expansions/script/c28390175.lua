@@ -56,37 +56,20 @@ end
 function c28390175.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(c28390175.tgfilter,tp,LOCATION_DECK,0,1,nil)
 	local b2=Duel.IsExistingMatchingCard(c28390175.thfilter,tp,LOCATION_GRAVE,0,1,nil)
-	local b3=Duel.IsExistingMatchingCard(c28390175.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	local b3=Duel.IsExistingMatchingCard(c28390175.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)>0
 	if chk==0 then return b1 or b2 or b3 end
-	local off=1
-	local ops={}
-	local opval={}
-	if b1 then
-		ops[off]=aux.Stringid(28390175,0)
-		opval[off-1]=1
-		off=off+1
-	end
-	if b2 then
-		ops[off]=aux.Stringid(28390175,1)
-		opval[off-1]=2
-		off=off+1
-	end
-	if b3 then
-		ops[off]=aux.Stringid(28390175,2)
-		opval[off-1]=3
-		off=off+1
-	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EFFECT)
-	local op=Duel.SelectOption(tp,table.unpack(ops))
-	local sel=opval[op]
-	e:SetLabel(sel)
-	if sel==1 then
+	local op=aux.SelectFromOptions(tp,
+		{b1,aux.Stringid(28390175,0)},
+		{b2,aux.Stringid(28390175,1)},
+		{b3,aux.Stringid(28390175,2)})
+	e:SetLabel(op)
+	if op==1 then
 		e:SetCategory(CATEGORY_TOGRAVE)
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
-	elseif sel==2 then
+	elseif op==2 then
 		e:SetCategory(CATEGORY_TOHAND)
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
-	elseif sel==3 then
+	elseif op==3 then
 		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 	end
@@ -106,7 +89,7 @@ function c28390175.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 		end
 	elseif sel==3 then
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+		if Duel.GetMZoneCount(tp)<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,c28390175.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
@@ -126,7 +109,7 @@ function c28390175.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function c28390175.cfilter(c)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsRace(RACE_FAIRY) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c28390175.thop(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
@@ -142,7 +125,7 @@ function c28390175.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ShuffleDeck(p)
 end
 function c28390175.splimit(e,c)
-	return not c:IsSetCard(0x283)
+	return not c:IsRace(RACE_FAIRY+RACE_SPELLCASTER)
 end
 function c28390175.cdstg(e,c)
 	return true

@@ -23,11 +23,19 @@ function c28381783.initial_effect(c)
 	e1:SetOperation(c28381783.tgop)
 	c:RegisterEffect(e1)
 	--to hand
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e5:SetOperation(c28381783.regop)
+	c:RegisterEffect(e5)
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_LEAVE_GRAVE)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
+	e2:SetCondition(c28381783.thcon)
 	e2:SetTarget(c28381783.thtg)
 	e2:SetOperation(c28381783.thop)
 	c:RegisterEffect(e2)
@@ -109,6 +117,12 @@ function c28381783.tgop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 	end
 end
+function c28381783.regop(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():RegisterFlagEffect(28381783,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+end
+function c28381783.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(28381783)~=0
+end
 function c28381783.dthfilter(c)
 	return c:IsSetCard(0x285) and c:IsAbleToHand()
 end
@@ -117,7 +131,7 @@ function c28381783.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c28381783.gthfilter(c)
-	return c:IsSetCard(0x285) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x285) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsFaceupEx()
 end
 function c28381783.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

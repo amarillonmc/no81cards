@@ -44,7 +44,7 @@ function c28391698.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c28391698.cfilter(c)
-	return c:IsSetCard(0x283) and c:IsFaceup()
+	return c:IsRace(RACE_FAIRY) and c:IsFaceup()
 end
 function c28391698.necon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp

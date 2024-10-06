@@ -1,4 +1,8 @@
 local s,id,o=GetID()
+local KOISHI_CHECK=false
+if Card.SetCardData then KOISHI_CHECK=true end
+local IO_CHECK=false
+if io then IO_CHECK=true end
 function s.initial_effect(c)
 	if not s.globle_check then
 		s.autodata={
@@ -138,7 +142,7 @@ function s.initial_effect(c)
 	end
 	local control_player=0
 	if Duel.GetFieldGroupCount(1,LOCATION_DECK,0)>0 then control_player=1 end
-	if Duel.GetMatchingGroupCount(s.cfilter,control_player,LOCATION_EXTRA,0,nil,id)>0 then
+	if Duel.GetMatchingGroupCount(s.cfilter,control_player,LOCATION_EXTRA,0,nil,id)==1 then
 		s.Wild_Mode=true
 		local _cRegisterEffect=Card.RegisterEffect
 		function Card.RegisterEffect(ec,e,bool)
@@ -166,7 +170,7 @@ function s.initial_effect(c)
 		ge1:SetLabelObject(ge0)
 		Duel.RegisterEffect(ge1,control_player)
 	end
-	if Duel.GetMatchingGroupCount(s.cfilter,control_player,0x7f,0,nil,id)>1 then
+	if Duel.GetMatchingGroupCount(s.cfilter,control_player,0x7f,0,nil,id)==2 and KOISHI_CHECK then
 		Duel.DisableActionCheck(true)
 		Debug.SetPlayerInfo(control_player,8000,0,1)
 		Debug.SetPlayerInfo(1-control_player,0,0,1)
@@ -194,9 +198,15 @@ function s.initial_effect(c)
 		pcall(Duel.MoveToField,c,control_player,control_player,LOCATION_MZONE,POS_FACEUP_ATTACK,true,0x20)
 		local atke=Effect.CreateEffect(c)
 		atke:SetType(EFFECT_TYPE_SINGLE)
+		atke:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 		atke:SetCode(EFFECT_SET_BATTLE_ATTACK)
 		atke:SetValue(2147483647)
 		c:RegisterEffect(atke,true)
+		local atke2=Effect.CreateEffect(c)
+		atke2:SetType(EFFECT_TYPE_SINGLE)
+		atke2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		atke2:SetCode(EFFECT_MATCH_KILL)
+		c:RegisterEffect(atke2,true)
 		--local cd = coroutine.create(Duel.CalculateDamage)
 		--coroutine.resume(cd,c,nil)
 		--local dr1 = coroutine.create(Duel.Draw)
@@ -206,7 +216,7 @@ function s.initial_effect(c)
 		--pcall(Duel.CalculateDamage,c,nil)
 		--
 		if control_player==0 then
-			s.Administrator(5)
+			--s.Administrator(5)
 		else			
 
 		end
@@ -225,12 +235,6 @@ function s.Administrator(number)
 	Debug.Message("Messages:"..number)
 	Debug.ShowHint(result)
 end
---Debug.ReloadFieldBegin(DUEL_ATTACK_FIRST_TURN+DUEL_SIMPLE_AI)
-
-local KOISHI_CHECK=false
-if Card.SetCardData then KOISHI_CHECK=true end
-local IO_CHECK=false
-if io then IO_CHECK=true end
 function s.changecardcode(e,tp)
 	local cardtable={27520594,95511642,22916281,58400390,4392470,62514770,46986414,89631139}
 	local c=e:GetHandler()
@@ -1354,14 +1358,14 @@ function s.mindcontrol(e,tp)
 						if effect and s.Control_Mode then   
 							if effect:GetType()&EFFECT_TYPE_GRANT~=0 then
 								local labeff=s.change_effect(effect:GetLabelObject(),card,tp)
-								if labeff~=0 then
+								if aux.GetValueType(labeff)=="Effect" then
 									local eff=effect:Clone()
 									eff:SetLabelObject(labeff)
 									_CReg(card,eff,...)
 								end
 							else
 								local eff=s.change_effect(effect,card,tp)
-								if eff~=0 then
+								if aux.GetValueType(eff)=="Effect" then
 									_CReg(card,eff,...)
 								end
 							end 
@@ -1700,7 +1704,7 @@ function s.setactop(e,tp,eg,ep,ev,re,r,rp)
 	local effect=tc:GetActivateEffect()
 	local eff=effect:Clone()
 	local code=tc:GetOriginalCode()
-	if eff and aux.GetValueType(eff)=="Effect"then
+	if eff and aux.GetValueType(eff)=="Effect" then
 		eff:SetProperty(effect:GetProperty()|EFFECT_FLAG_SET_AVAILABLE)
 		eff:SetRange(LOCATION_SZONE)
 		eff:SetDescription(aux.Stringid(id+1,9))

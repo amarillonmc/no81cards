@@ -69,38 +69,39 @@ function c28352281.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function c28352281.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLP(tp)>=10000 then
-		--effect indes
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetTargetRange(LOCATION_MZONE,0)
-		e1:SetTarget(aux.TargetBoolFunction(Card.IsAttribute,ATTRIBUTE_EARTH))
-		e1:SetValue(1)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e1)
-	end
-	if Duel.GetLP(tp)>Duel.GetLP(1-tp) then
+	--if Duel.GetLP(tp)>=10000
 		--defense up
-		local val=(Duel.GetLP(tp)-Duel.GetLP(1-tp))/2
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_DEFENSE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetCondition(c28352281.defcon)
+		e1:SetValue(c28352281.defval)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		c:RegisterEffect(e1)
+	--if Duel.GetLP(tp)>Duel.GetLP(1-tp)
+		--effect indes
 		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_UPDATE_DEFENSE)
-		e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 		e2:SetRange(LOCATION_MZONE)
-		e2:SetValue(val)
+		e2:SetTargetRange(LOCATION_MZONE,0)
+		e2:SetTarget(aux.TargetBoolFunction(Card.IsAttribute,ATTRIBUTE_EARTH))
+		e2:SetCondition(c28352281.imcon)
+		e2:SetValue(1)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e2)
-	end
-	if c:IsDefensePos() then
+	--if c:IsDefensePos()
 		--position
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_FIELD)
 		e3:SetCode(EFFECT_SET_POSITION)
 		e3:SetRange(LOCATION_MZONE)
 		e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-		e3:SetValue(POS_DEFENSE)
+		e3:SetCondition(c28352281.poscon)
+		e3:SetValue(POS_FACEUP_DEFENSE)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e3)
 		--defense attack
 		local e4=Effect.CreateEffect(c)
@@ -108,9 +109,24 @@ function c28352281.operation(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetCode(EFFECT_DEFENSE_ATTACK)
 		e4:SetRange(LOCATION_MZONE)
 		e4:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+		e4:SetCondition(c28352281.poscon)
 		e4:SetValue(1)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e4)
-	end
+end
+function c28352281.defcon(e)
+	return Duel.GetLP(e:GetHandlerPlayer())>=10000
+end
+function c28352281.defval(e,c)
+	local tp=c:GetControler()
+	return (Duel.GetLP(tp)-10000)/2
+end
+function c28352281.imcon(e)
+	local tp=e:GetHandlerPlayer()
+	return Duel.GetLP(tp)>Duel.GetLP(1-tp)
+end
+function c28352281.poscon(e)
+	return e:GetHandler():IsDefensePos()
 end
 function c28352281.rlcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLP(tp)>=10000

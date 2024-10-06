@@ -68,10 +68,8 @@ end
 function c28381466.valcheck(e,c)
 	local g=c:GetMaterial()
 	local att=0
-	local tc=g:GetFirst()
-	while tc do
+	for tc in aux.Next(g) do
 		att=bit.bor(att,tc:GetOriginalAttribute())
-		tc=g:GetNext()
 	end
 	e:SetLabel(att)
 end
@@ -100,7 +98,7 @@ function c28381466.regop(e,tp,eg,ep,ev,re,r,rp)
 			ge1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 			ge1:SetRange(LOCATION_MZONE)
 			ge1:SetTargetRange(LOCATION_MZONE,0)
-			ge1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x283))
+			ge1:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_FAIRY))
 			ge1:SetValue(aux.tgoval)
 			c:RegisterEffect(ge1)
 		end
@@ -146,7 +144,7 @@ function c28381466.regop(e,tp,eg,ep,ev,re,r,rp)
 			ge3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 			ge3:SetRange(LOCATION_MZONE)
 			ge3:SetTargetRange(LOCATION_MZONE,0)
-			ge3:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x283))
+			ge3:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_FAIRY))
 			ge3:SetValue(1)
 			c:RegisterEffect(ge3)
 		end
@@ -168,7 +166,7 @@ function c28381466.regop(e,tp,eg,ep,ev,re,r,rp)
 			ge4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 			ge4:SetRange(LOCATION_MZONE)
 			ge4:SetTargetRange(LOCATION_MZONE,0)
-			ge4:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x283))
+			ge4:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_FAIRY))
 			ge4:SetValue(1)
 			c:RegisterEffect(ge4)
 		end
@@ -190,7 +188,7 @@ function c28381466.regop(e,tp,eg,ep,ev,re,r,rp)
 			ge5:SetCode(EFFECT_CANNOT_DISABLE)
 			ge5:SetRange(LOCATION_MZONE)
 			ge5:SetTargetRange(LOCATION_MZONE,0)
-			ge5:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x283))
+			ge5:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_FAIRY))
 			ge5:SetValue(1)
 			ge5:SetReset(RESET_EVENT+RESETS_STANDARD)
 			c:RegisterEffect(ge5)
@@ -219,7 +217,7 @@ function c28381466.regop(e,tp,eg,ep,ev,re,r,rp)
 			e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
 			e0:SetRange(LOCATION_MZONE)
 			e0:SetTargetRange(LOCATION_MZONE,0)
-			e0:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x283))
+			e0:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_FAIRY))
 			e0:SetLabelObject(ge6)
 			c:RegisterEffect(e0)
 		end
@@ -228,7 +226,7 @@ function c28381466.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28381466.indtg(e,c,r,tp)
-	return c:IsSetCard(0x283) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:GetControl()==tp
+	return c:IsRace(RACE_FAIRY) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:GetControl()==tp
 end
 function c28381466.efilter(e,te)
 	if te:GetOwnerPlayer()==e:GetHandlerPlayer() or not te:IsActivated() then return false end
@@ -243,7 +241,7 @@ function c28381466.discon(e,tp,eg,ep,ev,re,r,rp)
 		or (re:IsActiveType(TYPE_TRAP) and Duel.GetFlagEffect(tp,48381466)==0))
 end
 function c28381466.disfilter(c)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost() and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
+	return c:IsRace(RACE_FAIRY) and c:IsAbleToDeckAsCost() and c:IsFaceupEx()
 end
 function c28381466.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28381466.disfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,2,nil) end
