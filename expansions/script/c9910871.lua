@@ -12,7 +12,7 @@ function c9910871.initial_effect(c)
 	c:RegisterEffect(e1)
 	--to deck
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK)
+	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -209,7 +209,7 @@ function c9910871.activate(e,tp,eg,ep,ev,re,r,rp)
 	aux.FCheckAdditional=nil
 end
 function c9910871.tdfilter(c)
-	return aux.IsCodeListed(c,9910871) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+	return aux.IsCodeListed(c,9910871) and c:GetAttack()>0 and c:IsAbleToDeck()
 end
 function c9910871.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and c9910871.tdfilter(chkc) end
@@ -217,13 +217,15 @@ function c9910871.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		and Duel.IsExistingTarget(c9910871.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,c9910871.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	local atk=g:GetFirst():GetAttack()
 	g:AddCard(e:GetHandler())
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,atk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
 end
 function c9910871.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) and Duel.Recover(tp,tc:GetAttack(),REASON_EFFECT)>0 and c:IsRelateToEffect(e) then
 		local g=Group.FromCards(c,tc)
 		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end

@@ -1,4 +1,4 @@
---舞丝的阿瑞妮达
+--逐火的莱皮蒂忒拉
 function c9910877.initial_effect(c)
 	aux.AddCodeList(c,9910871)
 	--spsummon
@@ -39,11 +39,12 @@ function c9910877.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
 	local g0=Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE):Filter(Card.IsFaceup,nil)
+	local ct=math.floor(aux.GetAttributeCount(g0)/2)
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910877.thfilter),tp,LOCATION_GRAVE,0,nil)
-	if g0 and g0:GetClassCount(Card.GetAttribute)>=3 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(9910877,0)) then
+	if ct>0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(9910877,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=g:Select(tp,1,1,nil)
+		local sg=g:Select(tp,1,ct,nil)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,sg)
 	end

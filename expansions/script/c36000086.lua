@@ -28,25 +28,13 @@ function s.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetCountLimit(1,id)
+	e2:SetCountLimit(1,id+1)
 	e2:SetCost(s.setcost)
 	e2:SetTarget(s.settg)
 	e2:SetOperation(s.setop)
 	c:RegisterEffect(e2)
 	
-	--EquipFromDeckGrave
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(id,2))
-	e3:SetCategory(CATEGORY_EQUIP+CATEGORY_GRAVE_ACTION)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetRange(LOCATION_REMOVED)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e3:SetCountLimit(1,id+1)
-	e3:SetCost(s.eqgcost)
-	e3:SetTarget(s.eqgtg)
-	e3:SetOperation(s.eqgop)
-	c:RegisterEffect(e3)
+	
 	
 end
 
@@ -89,21 +77,17 @@ end
 --e2
 --SetSelf
 
-function s.togcon(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
-    return c:IsPreviousLocation(LOCATION_SZONE) and c:IsPreviousPosition(POS_FACEUP)
-end
-
 function s.setcostfilter(c)
-    return aux.IsCodeListed(c,cid) and c:IsFaceup() and c:IsAbleToHandAsCost()
+    return aux.IsCodeListed(c,cid) and c:IsAbleToRemoveAsCost()
+    and (not c:IsLocation(LOCATION_ONFIELD) or c:IsFaceup())
 end
 
 function s.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
-    if chk==0 then return Duel.IsExistingMatchingCard(s.setcostfilter,tp,LOCATION_ONFIELD,0,1,nil) end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOHAND)
-	local g=Duel.SelectMatchingCard(tp,s.setcostfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
-	Duel.SendtoHand(g,nil,REASON_COST)
+    if chk==0 then return Duel.IsExistingMatchingCard(s.setcostfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil) end
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,s.setcostfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	Duel.ConfirmCards(1-tp,g)
 end
 
@@ -117,46 +101,6 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetHandler()
     if not (tc:IsRelateToEffect(e) and tc:IsSSetable() and aux.NecroValleyFilter()(tc) and Duel.GetLocationCount(tp,LOCATION_SZONE-LOCATION_FZONE)>0) then return end
     Duel.SSet(tp,tc)
-end
-
-
---e3
---EquipFromGraveDeck
-
-function s.eqgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
-    if chk==0 then return true end
-    Duel.SendtoGrave(c,REASON_RETURNQREASON_COST)
-end
-
-function s.eqsfilter(c)
-    return aux.IsCodeListed(c,cid) and c:IsType(TYPE_EQUIP)
-    and c:IsFaceupEx()
-    and Duel.GetLocationCount(tp,LOCATION_SZONE-LOCATION_FZONE)>0
-end
-
-function s.eqmfilter(c)
-    return aux.IsCodeListed(c,cid) and c:IsFaceup()
-end
-
-function s.eqgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
-    if chk==0 then return Duel.IsExistingMatchingCard(s.eqsfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(s.eqmfilter,tp,LOCATION_MZONE,0,1,nil) end
-   	
-    Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,0,LOCATION_GRAVE+LOCATION_DECK)
-end
-
-function s.eqgop(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
-    
-    if not (Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.eqsfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(s.eqmfilter,tp,LOCATION_MZONE,0,1,nil)) then return end
-    
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local eqsg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.eqsfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil)
-	
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local eqmg=Duel.SelectMatchingCard(tp,s.eqmfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.Equip(tp,eqsg:GetFirst(),eqmg:GetFirst())
 end
 
 

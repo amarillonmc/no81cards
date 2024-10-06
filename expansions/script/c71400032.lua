@@ -36,7 +36,8 @@ function c71400032.tg1(e,c)
 	return not c71400032.filter2b(c)
 end
 function c71400032.filter2con(c,tp)
-	return c:IsType(TYPE_QUICKPLAY) or c:IsType(TYPE_COUNTER)
+	--return c:IsType(TYPE_QUICKPLAY) or c:IsType(TYPE_COUNTER)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function c71400032.con2(e,tp,eg,ep,ev,re,r,rp)
 	 return eg:IsExists(c71400032.filter2con,1,nil,tp)
@@ -53,7 +54,7 @@ function c71400032.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c71400032.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c71400032.filter2(chkc) end
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsExistingTarget(c71400032.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	local g=Duel.SelectTarget(tp,c71400032.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
@@ -84,7 +85,7 @@ function c71400032.op2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71400032.filter2(c)
-	return c:IsRace(RACE_PLANT) and aux.NegateMonsterFilter(c)
+	return c:IsRace(RACE_PLANT) and c:IsFaceup()
 end
 function c71400032.filter2a(c)
 	return c:IsSetCard(0xd714) and c:IsAbleToHand()

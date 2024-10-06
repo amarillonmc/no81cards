@@ -30,7 +30,7 @@ function s.filter(c)
 	return c:IsFaceup()
 end
 function s.eqfilter(c,tp)
-	return c:IsSetCard(0x39c0) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x67c0) and c:IsType(TYPE_MONSTER)
 		and c:CheckUniqueOnField(tp) and not c:IsForbidden()
 		and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,c)
 end

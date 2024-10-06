@@ -5,10 +5,10 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,id)
-	e1:SetCondition(c98346606.spcon)
 	e1:SetTarget(c98346606.sptg)
 	e1:SetOperation(c98346606.spop)
 	c:RegisterEffect(e1)
@@ -24,39 +24,43 @@ function s.initial_effect(c)
 	e3:SetCondition(c98346606.descon)
 	c:RegisterEffect(e3)
 end
-function c98346606.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()&(PHASE_DAMAGE+PHASE_DAMAGE_CAL)==0
+function c98346606.tgfilter(c,e,tp,atk,mc)
+	return c:IsReleasable() and c:IsFaceup() and c:GetBaseAttack()>=0
+		and Duel.IsExistingMatchingCard(c98346606.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,atk+c:GetBaseAttack(),Group.FromCards(c,mc))
 end
-function c98346606.costfilter(c,e)
-	return c:IsReleasable() and c:IsFaceup()
+function c98346606.spfilter(c,e,tp,atk,mg)
+	return c:IsType(TYPE_SYNCHRO) and c:IsType(TYPE_TUNER) and c:IsSetCard(0xaf7) and c:IsAttackBelow(atk)
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
 end
-function c98346606.gcheck(g,e,tp)
-	return Duel.IsExistingMatchingCard(c98346606.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,g,g:GetSum(Card.GetBaseAttack))
-end
-function c98346606.spfilter(c,e,tp,g,atk)
-	local atke=Card.GetBaseAttack(e:GetHandler())
-	return c:IsType(TYPE_SYNCHRO) and c:IsType(TYPE_TUNER) and c:IsSetCard(0xaf7) and c:IsAttackBelow(atk+atke)
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c98346606.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(c98346606.costfilter,tp,0,LOCATION_MZONE,nil,e)
-	if chk==0 then return e:IsCostChecked() and g:CheckSubGroup(c98346606.gcheck,1,1,e,tp) and e:GetHandler():IsReleasable() end
+function c98346606.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return false end
+	local c=e:GetHandler()
+	local atk=c:GetBaseAttack()
+	if chk==0 then return Duel.IsExistingTarget(c98346606.tgfilter,tp,0,LOCATION_MZONE,1,nil,e,tp,atk,c)
+		and aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local sg=g:SelectSubGroup(tp,c98346606.gcheck,false,1,1,e,tp)
-	sg:AddCard(e:GetHandler())
-	local atk=sg:GetSum(Card.GetBaseAttack)
-	Duel.Release(sg,REASON_COST)
-	e:SetLabel(atk)
+	local g=Duel.SelectTarget(tp,c98346606.tgfilter,tp,0,LOCATION_MZONE,1,1,nil,e,tp,atk,c)
+	g:AddCard(c)
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c98346606.spop(e,tp,eg,ep,ev,re,r,rp)
 	local atk=e:GetLabel()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sc=Duel.SelectMatchingCard(tp,c98346606.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,nil,atk):GetFirst()
-	if sc then
-		sc:SetMaterial(nil)
-		if Duel.SpecialSummon(sc,SUMMON_TYPE_SYNCHRO,tp,tp,false,false,POS_FACEUP)>0 then
-			sc:CompleteProcedure()
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL) then return end
+	if not c:IsRelateToEffect(e) or not tc:IsRelateToEffect(e) then return end
+	local g=Group.FromCards(c,tc)
+	if Duel.Release(g,REASON_EFFECT)==2 and c:GetBaseAttack()>=0 and tc:GetBaseAttack()>=0 then
+		local atk=c:GetBaseAttack()+tc:GetBaseAttack()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=Duel.SelectMatchingCard(tp,c98346606.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,atk,nil)
+		local sc=sg:GetFirst()
+		if sc then
+			sc:SetMaterial(nil)
+			if Duel.SpecialSummon(sc,SUMMON_TYPE_SYNCHRO,tp,tp,false,false,POS_FACEUP)>0 then
+				sc:CompleteProcedure()
+			end
 		end
 	end
 end

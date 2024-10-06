@@ -31,7 +31,7 @@ function c71400021.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local tc=g:GetFirst()
 	local sg=Duel.GetMatchingGroup(c71400021.filter1pos,tp,LOCATION_MZONE,LOCATION_MZONE,tc)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,sg,sg:GetCount(),tp,0)
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,sg,1,0,0)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
 		Duel.SetChainLimit(c71400021.limit(tc))
 	end
@@ -39,7 +39,8 @@ end
 function c71400021.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)>0 then
-		local sg=Duel.GetMatchingGroup(c71400021.filter1pos,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		local sg=Duel.SelectMatchingCard(tp,c71400021.filter1pos,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 		if sg:GetCount()>0 then
 			Duel.BreakEffect()
 			Duel.ChangePosition(sg,POS_FACEDOWN_DEFENSE)

@@ -38,7 +38,8 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	if tc then Duel.SSet(tp,tc) end
 end
 function c98346572.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+	local loc=e:GetHandler():GetPreviousLocation()
+	return loc&(LOCATION_HAND|LOCATION_DECK)==0
 end
 function c98346572.spfilter(c,e,tp)
 	return c:IsSetCard(0xaf7) and not c:IsCode(98346572) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)	

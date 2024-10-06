@@ -35,7 +35,7 @@ function cm.mfilter(c)
 	return true
 end
 function cm.matval1(e,c,mg,lc)
-	if not aux.IsCodeListed(c,15005130) then return false,nil end
+
 	return true,not mg or mg:IsExists(cm.mfilter,0,nil) and aux.IsCodeListed(c,15005130)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)

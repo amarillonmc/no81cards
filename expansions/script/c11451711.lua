@@ -23,10 +23,11 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,2))
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_REMOVE)
+	e3:SetCode(EVENT_TO_HAND)
 	e3:SetRange(LOCATION_HAND)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e3:SetCondition(cm.mrcon)
 	e3:SetTarget(cm.mrtg)
 	e3:SetOperation(cm.mrop)
 	c:RegisterEffect(e3)
@@ -146,6 +147,7 @@ function cm.mvop1(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	local c=e:GetHandler()
+	if not c:IsAttackable() then return end
 	local g=c:GetAttackableTarget()
 	local b1=0
 	local fid=e:GetLabel()
@@ -172,35 +174,20 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	end
 	--c:ResetFlagEffect(11451717)
 end
-function cm.pfilter(c)
-	local seq=c:GetSequence()
-	local p=c:GetControler()
-	local loc=c:GetLocation()
-	if c:IsLocation(LOCATION_FZONE) or c:IsLocation(LOCATION_PZONE) or seq>4 then return false end
-	return (seq>0 and Duel.CheckLocation(p,loc,seq-1)) or (seq<4 and Duel.CheckLocation(p,loc,seq+1))
+function cm.mrcon(e,tp,eg,ep,ev,re,r,rp)
+	return r&REASON_EFFECT~=0
 end
 function cm.mrtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.pfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsRace,tp,LOCATION_DECK,0,1,nil,RACE_PSYCHO) end
 end
 function cm.mrop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local sc=Duel.SelectMatchingCard(tp,cm.pfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil):GetFirst()
-	if sc then
-		local seq=sc:GetSequence()
-		local p=sc:GetControler()
-		local b1=0
-		if p~=tp then b1=1 end
-		local loc=sc:GetLocation()
-		local b2=0
-		if loc==LOCATION_SZONE then b2=1 end
-		if seq>4 then return end
-		local flag=0
-		if seq>0 and Duel.CheckLocation(p,loc,seq-1) then flag=flag|(1<<(seq-1+16*b1+8*b2)) end
-		if seq<4 and Duel.CheckLocation(p,loc,seq+1) then flag=flag|(1<<(seq+1+16*b1+8*b2)) end
-		if flag==0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-		local s=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,LOCATION_ONFIELD,~flag)
-		local nseq=math.log(s,2)-16*b1-8*b2
-		Duel.MoveSequence(sc,nseq)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.GetMatchingGroup(Card.IsRace,tp,LOCATION_DECK,0,nil,RACE_PSYCHO)
+	if #g>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local tc=g:Select(tp,1,1,nil):GetFirst()
+		Duel.ShuffleDeck(tp)
+		Duel.MoveSequence(tc,0)
+		Duel.ConfirmDecktop(tp,1)
 	end
 end

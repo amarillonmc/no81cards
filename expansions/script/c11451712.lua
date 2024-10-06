@@ -23,10 +23,11 @@ function cm.initial_effect(c)
 	--effect2
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,2))
+	e3:SetCategory(CATEGORY_ATKCHANGE)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_TO_HAND)
+	e3:SetCode(EVENT_LEAVE_FIELD)
 	e3:SetRange(LOCATION_HAND)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e3:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e3:SetCondition(cm.mrcon)
 	e3:SetTarget(cm.mrtg)
@@ -225,20 +226,25 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	end
 	--c:ResetFlagEffect(11451717)
 end
+function cm.cfilter(c)
+	return c:IsReason(REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE)
+end
 function cm.mrcon(e,tp,eg,ep,ev,re,r,rp)
-	return r&REASON_EFFECT~=0
+	return eg:IsExists(cm.cfilter,1,nil) and aux.dscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.mrtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsRace,tp,LOCATION_DECK,0,1,nil,RACE_PSYCHO) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 end
 function cm.mrop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.GetMatchingGroup(Card.IsRace,tp,LOCATION_DECK,0,nil,RACE_PSYCHO)
-	if #g>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local tc=g:Select(tp,1,1,nil):GetFirst()
-		Duel.ShuffleDeck(tp)
-		Duel.MoveSequence(tc,0)
-		Duel.ConfirmDecktop(tp,1)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local tc=g:GetFirst()
+	while tc do
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(-300)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		tc=g:GetNext()
 	end
 end

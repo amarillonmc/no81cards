@@ -12,8 +12,8 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 end
-function cm.filter(c)
-	return c:IsFaceup()
+function cm.filter(c) 
+	return c:IsFaceup() and c:IsDefenseAbove(0)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.filter(chkc) end
@@ -30,16 +30,16 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(500)
 		tc:RegisterEffect(e1)
-	end
-	Card.RegisterFlagEffect(tc,60002134,RESET_PHASE+PHASE_END,0,1000) --card 
-	Duel.RegisterFlagEffect(tp,60002134,RESET_PHASE+PHASE_END,0,1) --ply t turn
-	Duel.RegisterFlagEffect(tp,60002135,RESET_PHASE+PHASE_END,0,1000) --ply fore
-	if Duel.GetFlagEffect(tp,60002134)>=2 then 
-		Duel.Draw(tp,1,REASON_EFFECT)
-	end
-	if Duel.GetFlagEffect(tp,60002134)>=4 then 
-		Duel.Damage(1-tp,500,REASON_EFFECT)
-		Duel.Recover(tp,500,REASON_EFFECT)
+		Card.RegisterFlagEffect(c,60002134,RESET_EVENT+RESETS_STANDARD,0,1) --card 
+		Duel.RegisterFlagEffect(tp,60002134,RESET_PHASE+PHASE_END,0,1) --ply t turn
+		Duel.RegisterFlagEffect(tp,60002135,RESET_PHASE+PHASE_END,0,1000) --ply fore
+		if Duel.GetFlagEffect(tp,60002134)>=2 then 
+			Duel.Draw(tp,1,REASON_EFFECT)
+		end
+		if Duel.GetFlagEffect(tp,60002134)>=4 then 
+			Duel.Damage(1-tp,500,REASON_EFFECT)
+			Duel.Recover(tp,500,REASON_EFFECT)
+		end
 	end
 end
 

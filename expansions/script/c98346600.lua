@@ -65,6 +65,7 @@ function c98346600.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(c98346600.tdfilter,tp,0,LOCATION_GRAVE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local tg=Duel.SelectMatchingCard(tp,c98346600.tdfilter,tp,0,LOCATION_GRAVE,1,1,e:GetHandler())
+	Duel.HintSelection(tg)
 	Duel.SendtoDeck(tg,nil,SEQ_DECKTOP,REASON_COST)
 end
 function c98346600.tgfilter(c,e,tp)

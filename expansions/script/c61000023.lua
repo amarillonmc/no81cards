@@ -19,7 +19,7 @@ function s.eqfilter(c)
 	return c:IsFaceup()
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x39c0) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:IsSetCard(0x67c0) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.eqfilter(chkc) end

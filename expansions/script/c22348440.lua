@@ -20,6 +20,7 @@ function c22348440.initial_effect(c)
 	e3:SetCategory(CATEGORY_RECOVER)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetOperation(c22348440.operation)
 	c:RegisterEffect(e3)
 end

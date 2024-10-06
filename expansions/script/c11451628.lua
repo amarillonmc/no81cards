@@ -42,7 +42,7 @@ function cm.tfilter(c)
 	return c:IsRace(RACE_MACHINE) and c:IsType(TYPE_TUNER)
 end
 function cm.ntfilter(c)
-	return c:IsAttribute(ATTRIBUTE_WIND) and not c:IsType(TYPE_TUNER)
+	return c:IsAttribute(ATTRIBUTE_WIND) and not c:IsType(TYPE_TOKEN)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x2016) and c:IsType(TYPE_SYNCHRO) and c:IsLevelBelow(6) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,true)

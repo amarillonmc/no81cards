@@ -30,24 +30,30 @@ function c71400025.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,800) end
 	Duel.PayLPCost(tp,800)
 end
-function c71400025.filter1(c,tp)
-	return yume.ActivateFieldFilter(c,tp,0,2) and Duel.IsExistingMatchingCard(c71400025.filter1a,tp,LOCATION_DECK,0,1,c)
+function c71400025.filter1a1(c)
+	return c:IsSetCard(0x7714) and c:IsType(TYPE_FIELD)
 end
-function c71400025.filter1a(c)
-	return c:IsSetCard(0x714) and c:IsAbleToGrave()
+function c71400025.filter1a2(c,tp,check)
+	return yume.ActivateFieldFilter(c,tp,0,2) and Duel.IsExistingMatchingCard(c71400025.filter1a3,tp,LOCATION_DECK,0,1,c,check)
 end
-function c71400025.filter1b(c,g)
+function c71400025.filter1a3(c,check)
+	local b1=c:IsSetCard(0x7714) and c:IsType(TYPE_FIELD)
+	local b2=check and c:IsSetCard(0x714)
+	return (b1 or b2) and c:IsAbleToGrave()
+end
+function c71400025.filter1b1(c,g)
 	return c:IsType(TYPE_LINK) and c:IsSetCard(0x714) and c:IsLinkSummonable(g)
 end
-function c71400025.filter1c(c,e,tp)
+function c71400025.filter1b2(c,e,tp)
 	return c:IsSetCard(0x714) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
+		and c:IsFaceupEx()
 end
 function c71400025.fselect(g,tp)
-	return Duel.IsExistingMatchingCard(c71400025.filter1b,tp,LOCATION_EXTRA,0,1,nil,g)
+	return Duel.IsExistingMatchingCard(c71400025.filter1b1,tp,LOCATION_EXTRA,0,1,nil,g)
 end
 function c71400025.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(c71400025.filter1,tp,LOCATION_DECK,0,1,nil,tp)
+	local check=Duel.IsExistingMatchingCard(c71400025.filter1a1,tp,LOCATION_GRAVE,0,1,nil)
+	local b1=Duel.IsExistingMatchingCard(c71400025.filter1a2,tp,LOCATION_DECK,0,1,nil,tp,check)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local b2=yume.IsYumeFieldOnField(tp) and Duel.IsPlayerCanSpecialSummonCount(tp,2) and ft>0
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
@@ -57,7 +63,7 @@ function c71400025.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 		ct=ct+tc:GetLink()
 	end
 	if ct>ft then ct=ft end
-	local g=Duel.GetMatchingGroup(c71400025.filter1c,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e,tp)
+	local g=Duel.GetMatchingGroup(c71400025.filter1b2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e,tp)
 	local fg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	g:Merge(fg)
 	b2=b2 and ct>0 and g:CheckSubGroup(c71400025.fselect,1,ct,tp)
@@ -73,7 +79,7 @@ function c71400025.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if not Duel.CheckPhaseActivity() then e:SetLabel(1,op) else e:SetLabel(0,op) end
 	if op==0 then
 		e:SetCategory(CATEGORY_TOGRAVE)
-		local og=Duel.GetMatchingGroup(c71400025.filter1a,tp,LOCATION_DECK,0,nil)
+		local og=Duel.GetMatchingGroup(c71400025.filter1a3,tp,LOCATION_DECK,0,nil,check)
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,og,1,0,0)
 	else
 		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -85,8 +91,9 @@ function c71400025.op1(e,tp,eg,ep,ev,re,r,rp)
 	if op==0 then
 		if not yume.ActivateYumeField(e,tp,nil,2) then return end
 		Duel.BreakEffect()
+		local check=Duel.IsExistingMatchingCard(c71400025.filter1a1,tp,LOCATION_GRAVE,0,1,nil)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,c71400025.filter1a,tp,LOCATION_DECK,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,c71400025.filter1a3,tp,LOCATION_DECK,0,1,1,nil,check)
 		if g:GetCount()>0 then
 			Duel.SendtoGrave(g,REASON_EFFECT)
 		end
@@ -100,7 +107,7 @@ function c71400025.op1(e,tp,eg,ep,ev,re,r,rp)
 			ct=ct+tc:GetLink()
 		end
 		if ct>ft then ct=ft end
-		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c71400025.filter1c),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e,tp)
+		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c71400025.filter1b2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e,tp)
 		if ct>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local sg=g:Select(tp,1,ct,nil)
@@ -108,7 +115,7 @@ function c71400025.op1(e,tp,eg,ep,ev,re,r,rp)
 			local og=Duel.GetOperatedGroup()
 			Duel.RaiseEvent(e:GetHandler(),EVENT_ADJUST,nil,0,PLAYER_NONE,PLAYER_NONE,0)
 			if og:GetCount()<1 then return end
-			local tg=Duel.GetMatchingGroup(c71400025.filter1b,tp,LOCATION_EXTRA,0,nil,nil)
+			local tg=Duel.GetMatchingGroup(c71400025.filter1b1,tp,LOCATION_EXTRA,0,nil,nil)
 			if tg:GetCount()>0 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 				local rg=tg:Select(tp,1,1,nil)

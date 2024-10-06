@@ -33,7 +33,7 @@ function s.initial_effect(c)
 	aux.RegisterMergedDelayedEvent(c,id,EVENT_SPSUMMON_SUCCESS,g)
 end
 function s.mfilter(c)
-	return c:IsFusionSetCard(0x39c0) and c:IsFusionType(TYPE_FUSION)
+	return c:IsFusionSetCard(0x67c0) and c:IsFusionType(TYPE_FUSION)
 end
 function s.tgfilter(c,e,tp,chk)
 	return c:IsSummonPlayer(1-tp)

@@ -22,13 +22,11 @@ function cm.initial_effect(c)
 	--effect2
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,2))
-	e3:SetCategory(CATEGORY_ATKCHANGE)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_LEAVE_FIELD)
+	e3:SetCode(EVENT_REMOVE)
 	e3:SetRange(LOCATION_HAND)
-	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
-	e3:SetCondition(cm.mrcon)
 	e3:SetTarget(cm.mrtg)
 	e3:SetOperation(cm.mrop)
 	c:RegisterEffect(e3)
@@ -178,25 +176,35 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	end
 	--c:ResetFlagEffect(11451717)
 end
-function cm.cfilter(c)
-	return c:IsReason(REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE)
-end
-function cm.mrcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.cfilter,1,nil) and aux.dscon(e,tp,eg,ep,ev,re,r,rp)
+function cm.pfilter(c)
+	local seq=c:GetSequence()
+	local p=c:GetControler()
+	local loc=c:GetLocation()
+	if c:IsLocation(LOCATION_FZONE) or c:IsLocation(LOCATION_PZONE) or seq>4 then return false end
+	return (seq>0 and Duel.CheckLocation(p,loc,seq-1)) or (seq<4 and Duel.CheckLocation(p,loc,seq+1))
 end
 function cm.mrtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.pfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 end
 function cm.mrop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	local tc=g:GetFirst()
-	while tc do
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(-300)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		tc=g:GetNext()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local sc=Duel.SelectMatchingCard(tp,cm.pfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil):GetFirst()
+	if sc then
+		local seq=sc:GetSequence()
+		local p=sc:GetControler()
+		local b1=0
+		if p~=tp then b1=1 end
+		local loc=sc:GetLocation()
+		local b2=0
+		if loc==LOCATION_SZONE then b2=1 end
+		if seq>4 then return end
+		local flag=0
+		if seq>0 and Duel.CheckLocation(p,loc,seq-1) then flag=flag|(1<<(seq-1+16*b1+8*b2)) end
+		if seq<4 and Duel.CheckLocation(p,loc,seq+1) then flag=flag|(1<<(seq+1+16*b1+8*b2)) end
+		if flag==0 then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+		local s=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,LOCATION_ONFIELD,~flag)
+		local nseq=math.log(s,2)-16*b1-8*b2
+		Duel.MoveSequence(sc,nseq)
 	end
 end

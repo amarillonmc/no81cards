@@ -1,25 +1,22 @@
 --拉特金骑士·白枫
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
+if not pcall(function() require("expansions/script/c22348342") end) then require("script/c22348342") end
 function c22348430.initial_effect(c)
-	aux.EnableUnionAttribute(c,aux.TRUE)
-	--equip
-	--local e1=Effect.CreateEffect(c)
-	--e1:SetDescription(aux.Stringid(22348430,0))
-	--e1:SetCategory(CATEGORY_EQUIP)
-	--e1:SetType(EFFECT_TYPE_IGNITION)
-	--e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	--e1:SetRange(LOCATION_MZONE)
-	--e1:SetTarget(c22348430.eqtg)
-   -- e1:SetOperation(c22348430.eqop)
-	--c:RegisterEffect(e1)
-	--unequip
-	--local e2=Effect.CreateEffect(c)
-	--e2:SetDescription(aux.Stringid(22348430,1))
-	--e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	--e2:SetType(EFFECT_TYPE_IGNITION)
-	--e2:SetRange(LOCATION_SZONE)
-	--e2:SetTarget(c22348430.sptg)
-	--e2:SetOperation(c22348430.spop)
-	--c:RegisterEffect(e2)
+	shushu.EnableUnionAttribute(c)
 	--equip-hand
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(22348430,0))
@@ -43,29 +40,6 @@ function c22348430.initial_effect(c)
 	e5:SetCondition(c22348430.eqcon)
 	e5:SetValue(-400)
 	c:RegisterEffect(e5)
-end
-function Auxiliary.UnionEquipLimit(filter)
-	return  function(e,c)
-				return filter(c) or e:GetHandler():GetEquipTarget()==c
-			end
-end
-function Auxiliary.UnionEquipFilter(filter)
-	return  function(c,tp)
-				local ct1,ct2=c:GetUnionCount()
-				return c:IsFaceup() and ct2==0 and filter(c)
-			end
-end
-function Auxiliary.UnionEquipTarget(equip_filter)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-				local c=e:GetHandler()
-				if chkc then return chkc:IsLocation(LOCATION_MZONE) and equip_filter(chkc,tp) end
-				if chk==0 then return c:GetFlagEffect(FLAG_ID_UNION)==0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-					and Duel.IsExistingTarget(equip_filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c,tp) end
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-				local g=Duel.SelectTarget(tp,equip_filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,c,tp)
-				Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,0,0)
-				c:RegisterFlagEffect(FLAG_ID_UNION,RESET_EVENT+0x7e0000+RESET_PHASE+PHASE_END,0,1)
-			end
 end
 function c22348430.filter(c)
 	local ct1,ct2=c:GetUnionCount()

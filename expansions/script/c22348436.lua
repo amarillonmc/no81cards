@@ -17,9 +17,8 @@ function c22348436.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,22348436)
+	e2:SetCountLimit(1,22349436)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetCondition(aux.exccon)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c22348436.sptg)
 	e2:SetOperation(c22348436.spop)
@@ -54,7 +53,7 @@ function c22348436.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348436.spfilter(c,e,tp)
-	return c:IsSetCard(0x970b) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return c:IsSetCard(0x970b) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
 function c22348436.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

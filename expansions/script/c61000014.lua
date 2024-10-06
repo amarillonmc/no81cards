@@ -213,7 +213,7 @@ function s.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function s.spfilter2(c,e,tp)
-	return c:IsFaceupEx() and c:IsSetCard(0x38c0)
+	return c:IsFaceupEx() and c:IsSetCard(0x57c0)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)

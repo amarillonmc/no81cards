@@ -21,13 +21,13 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x38c0) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x57c0) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.cfilter1(c)
-	return c:IsSetCard(0x38c0) and c:IsFaceup()
+	return c:IsSetCard(0x57c0) and c:IsFaceup()
 end
 function s.cfilter2(c)
-	return not c:IsSetCard(0x38c0) and c:IsFaceup()
+	return not c:IsSetCard(0x57c0) and c:IsFaceup()
 end
 function s.thfilter(c,e,tp)
 	if not c:IsCode(61000015) then return false end
@@ -35,7 +35,7 @@ function s.thfilter(c,e,tp)
 	return c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
 end
 function s.cfilter2(c)
-	return not c:IsSetCard(0x38c0) and c:IsFaceup()
+	return not c:IsSetCard(0x57c0) and c:IsFaceup()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -93,10 +93,10 @@ end
 function s.gcheck(g)
 	local tc=g:GetFirst()
 	local ec=g:GetNext()
-	if not tc:IsSetCard(0x38c0) then
+	if not tc:IsSetCard(0x57c0) then
 		tc,ec=ec,tc
 	end
-	return tc:IsSetCard(0x38c0) and ec:IsAttribute(tc:GetAttribute())
+	return tc:IsSetCard(0x57c0) and ec:IsAttribute(tc:GetAttribute())
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

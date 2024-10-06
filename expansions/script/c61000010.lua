@@ -7,6 +7,7 @@ function s.initial_effect(c)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -55,20 +56,24 @@ end
 function s.mttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsType(TYPE_XYZ)
-		and Duel.IsExistingMatchingCard(s.mtfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,c) end
+		and Duel.IsExistingMatchingCard(s.mtfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,nil,1,c) end
 end
 function s.gcheck(g,tp)
 	return g:FilterCount(Card.IsControler,nil,tp)<=2
-		and g:FilterCount(Card.IsControler,nil,1-tp)<=2
 end
 function s.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
-	local g=Duel.GetMatchingGroup(s.mtfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,c)
+	local g=Duel.GetMatchingGroup(s.mtfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local sg=g:SelectSubGroup(tp,s.gcheck,false,1,4,tp)
+	local sg=g:SelectSubGroup(tp,s.gcheck,false,1,2,tp)
 	if sg:GetCount()>0 then
 		Duel.Overlay(c,sg)
+		if Duel.IsExistingMatchingCard(aux.AND(Card.IsAbleToDeck,Card.IsType),tp,LOCATION_ONFIELD,LOCATION_ONFIELD,2,nil,TYPE_SPELL+TYPE_TRAP)
+			and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+			local tg=Duel.SelectMatchingCard(tp,aux.AND(Card.IsAbleToDeck,Card.IsType),tp,LOCATION_ONFIELD,LOCATION_ONFIELD,2,2,nil,TYPE_SPELL+TYPE_TRAP)
+			Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		end
 	end
 end
 function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)

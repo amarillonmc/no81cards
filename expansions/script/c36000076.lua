@@ -39,28 +39,27 @@ function s.initial_effect(c)
 end
 
 --e1
---Remove3FromDeckAndGrave
+--Remove2FromDeckAndGrave
 
 function s.rmfilter(c)
     return aux.IsCodeListed(c,cid) 
     and c:IsAbleToRemove()
 end
 
-
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
     local g=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-    if chk==0 then return g:CheckSubGroup(aux.dncheck,3,3) end    
-    Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,3,0,LOCATION_DECK+LOCATION_GRAVE)
+    if chk==0 then return g:CheckSubGroup(aux.dncheck,2,2) end    
+    Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,0,LOCATION_DECK)
 end
 
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     local g=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-    if not g:CheckSubGroup(aux.dncheck,3,3) then return end
+    if not g:CheckSubGroup(aux.dncheck,2,2) then return end
     
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local sg=g:SelectSubGroup(tp,aux.dncheck,false,3,3)
+	local sg=g:SelectSubGroup(tp,aux.dncheck,false,2,2)
 	Duel.Remove(sg:Filter(aux.NecroValleyFilter,nil),POS_FACEUP,REASON_EFFECT)
 end
 
@@ -71,7 +70,7 @@ end
 function s.tohfilter(c)
     return aux.IsCodeListed(c,cid) 
     and c:IsAbleToHand()
-    and c:IsType(TYPE_SPELL)
+    and c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 
 function s.todfilter(c)

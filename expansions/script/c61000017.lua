@@ -195,11 +195,11 @@ function s.eqfilter2(c)
 	return c:IsFaceupEx() and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x38c0) and c:IsAbleToHand()
+	return c:IsSetCard(0x57c0) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local b1=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(s.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp)
+		and Duel.IsExistingMatchingCard(s.eqfilter,tp,LOCATION_MZONE,0,1,nil,tp)
 	local b2=Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil)
 	if chk==0 then return b1 or b2 end
 	local off=1
@@ -232,7 +232,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabel()==1 then
 		if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-		local tc=Duel.SelectMatchingCard(tp,s.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp):GetFirst()
+		local tc=Duel.SelectMatchingCard(tp,s.eqfilter,tp,LOCATION_MZONE,0,1,1,nil,tp):GetFirst()
 		if tc then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.eqfilter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)

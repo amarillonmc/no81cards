@@ -26,7 +26,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.costfilter(c)
-	return c:IsSetCard(0x38c0) and c:IsType(TYPE_NORMAL) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x57c0) and c:IsType(TYPE_NORMAL) and c:IsAbleToGraveAsCost()
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -59,7 +59,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 end
 function s.chkfilter(c,tp)
-	return c:IsSetCard(0x38c0) and c:IsType(TYPE_SYNCHRO) and not c:IsPublic()
+	return c:IsSetCard(0x57c0) and c:IsType(TYPE_SYNCHRO) and not c:IsPublic()
 		and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetRace(),c:GetAttribute())
 end
 function s.thfilter(c,race,att)

@@ -29,12 +29,14 @@ function s.initial_effect(c)
 	e3:SetCode(EFFECT_UPDATE_ATTACK)
 	e3:SetValue(300)
 	c:RegisterEffect(e3)
+	--desrep
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_EQUIP)
-	e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e4:SetValue(aux.tgoval)
+	e4:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_EQUIP)
+	e4:SetCode(EFFECT_DESTROY_REPLACE)
+	e4:SetTarget(s.destg)
+	e4:SetOperation(s.desop)
 	c:RegisterEffect(e4)
-	
+
     --ToGraveTarget
     local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(id,1))
@@ -43,6 +45,7 @@ function s.initial_effect(c)
 	e5:SetCode(EVENT_TO_GRAVE)
 	e5:SetRange(LOCATION_GRAVE)
 	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e5:SetCountLimit(1,id)
 	e5:SetCondition(s.togcon)
 	e5:SetTarget(s.togtg)
 	e5:SetOperation(s.togop)
@@ -56,7 +59,7 @@ function s.initial_effect(c)
 	e7:SetCode(EVENT_TO_GRAVE)
 	e7:SetProperty(EFFECT_FLAG_DELAY)
 	e7:SetRange(LOCATION_GRAVE)
-	e7:SetCountLimit(1,id)
+	e7:SetCountLimit(1,id+1)
 	e7:SetCondition(s.eqgcon)
 	e7:SetTarget(s.eqgtg)
 	e7:SetOperation(s.eqgop)
@@ -85,6 +88,18 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
+--e4
+
+function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local tg=c:GetEquipTarget()
+	if chk==0 then return c:IsDestructable() and not c:IsStatus(STATUS_DESTROY_CONFIRMED)
+		and tg and tg:IsReason(REASON_BATTLE+REASON_EFFECT) end
+	return Duel.SelectEffectYesNo(tp,c,96)
+end
+function s.desop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Destroy(e:GetHandler(),REASON_EFFECT+REASON_REPLACE)
+end
 
 --e5
 --ToGraveTarget

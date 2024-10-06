@@ -33,12 +33,7 @@ function s.initial_effect(c)
 	e3:SetTarget(s.togtg)
 	e3:SetOperation(s.togop)
 	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_CHAINING)
-	e4:SetRange(LOCATION_GRAVE)
-	e4:SetCondition(s.togcon)
-	c:RegisterEffect(e4)
+	
 end
 
 --e1
@@ -112,7 +107,3 @@ function s.togop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 
-function s.togcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return rp~=tp and Duel.GetTurnPlayer()~=tp and re:IsActiveType(TYPE_MONSTER)
-end

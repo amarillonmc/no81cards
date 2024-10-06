@@ -37,10 +37,8 @@ function c28368431.checkcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c28368431.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=eg:Filter(c28368431.ctfilter,nil)
-	local tc=sg:GetFirst()
-	while tc do
+	for tc in aux.Next(sg) do
 		Duel.RegisterFlagEffect(tc:GetSummonPlayer(),28368431,RESET_PHASE+PHASE_END,0,1)
-		tc=sg:GetNext()
 	end
 end
 function c28368431.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -70,7 +68,7 @@ function c28368431.activate(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(28368431)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,0)
-	e1:SetReset(RESET_PHASE+PHASE_END)
+	e2:SetReset(RESET_PHASE+PHASE_END)
 	e2:SetCondition(c28368431.condition)
 	Duel.RegisterEffect(e2,tp)
 	--recover
@@ -103,11 +101,12 @@ function c28368431.rcop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetFlagEffect(tp,28368431)
 	local val=Duel.Recover(tp,ct*500,REASON_EFFECT)
 	local tct=math.floor(val/1500)
+	local g=Duel.GetMatchingGroup(c28368431.thfilter,tp,LOCATION_DECK,0,nil)
 	if tct>0 and Duel.IsExistingMatchingCard(c28368431.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28368431,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c28368431.thfilter,tp,LOCATION_DECK,0,1,tct,nil)
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+		local tg=g:SelectSubGroup(tp,aux.dncheck,false,1,tct)
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 	end
 end
 function c28368431.confilter(c,tp)

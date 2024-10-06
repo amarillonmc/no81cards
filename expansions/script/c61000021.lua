@@ -26,7 +26,7 @@ function s.initial_effect(c)
 end
 s.fusion_effect=true
 function s.cfilter(c)
-	return c:IsSetCard(0x39c0) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x67c0) and c:IsAbleToGraveAsCost()
 end
 function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -60,7 +60,7 @@ function s.mttg(e,c)
 end
 function s.mtval(e,c)
 	if not c then return false end
-	return c:IsSetCard(0x39c0)
+	return c:IsSetCard(0x67c0)
 end
 function s.fstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

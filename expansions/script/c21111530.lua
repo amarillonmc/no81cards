@@ -1,0 +1,42 @@
+--捕食植物 灯笼吞噬者
+function c21111530.initial_effect(c)
+	aux.EnablePendulumAttribute(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE+0x200)
+	e1:SetRange(LOCATION_PZONE)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c21111530.splimit)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_FUSION_SUBSTITUTE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE)	
+	e2:SetValue(c21111530.val)
+	c:RegisterEffect(e2)	
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_DRAW)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCountLimit(1,21111530)
+	e3:SetTarget(c21111530.tg)
+	e3:SetOperation(c21111530.op)
+	c:RegisterEffect(e3)
+end
+function c21111530.val(e,c)
+	return c:IsAttribute(ATTRIBUTE_DARK)
+end
+function c21111530.splimit(e,c)
+	return not c:IsSetCard(0x10f3)
+end
+function c21111530.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c21111530.op(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Draw(tp,1,REASON_EFFECT)
+end

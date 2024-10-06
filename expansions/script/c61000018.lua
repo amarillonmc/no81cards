@@ -50,7 +50,7 @@ end
 function s.spfilter(c,e,tp)
 	local eg=c:GetEquipGroup()
 	return c:IsFaceup()
-		and (eg:IsExists(s.eqspfilter,1,nil,e,tp) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(s.eqfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,c))
+		and (eg:IsExists(s.eqspfilter,1,nil,e,tp) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(s.eqfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,nil))
 end
 function s.eqfilter(c)
 	return c:IsFaceupEx() and c:IsRace(RACE_WINDBEAST) and not c:IsForbidden()
@@ -62,7 +62,7 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.SelectTarget(tp,s.spfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp)
 	local cg=g:GetFirst():GetEquipGroup()
 	local b1=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(s.eqfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,g:GetFirst())
+		and Duel.IsExistingMatchingCard(s.eqfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,nil)
 	local b2=cg:IsExists(s.eqspfilter,1,nil,e,tp)
 	local off=1
 	local ops={}
@@ -96,7 +96,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 			if tc then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-				local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.eqfilter),tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,1,tc)
+				local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.eqfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 				local ec=g:GetFirst()
 				if not ec or not Duel.Equip(tp,ec,tc) then return end
 				local e1=Effect.CreateEffect(c)

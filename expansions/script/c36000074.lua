@@ -1,4 +1,4 @@
---渊猎的三叉戟
+--渊猎的长矛
 
 local cid=36000070
 local s,id,o=GetID()
@@ -23,11 +23,11 @@ function s.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetValue(s.eqlimit)
 	c:RegisterEffect(e2)
-	--indestructable
+	--AtkUp
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_EQUIP)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetValue(600)
+	e3:SetCode(FFECT_UPDATE_ATTACK)
+	e3:SetValue(800)
 	c:RegisterEffect(e3)
 	
     --SpSumDeckRemovedMon
@@ -125,33 +125,25 @@ function s.togfilter(c)
     and (not c:IsLocation(LOCATION_DECK) or c:IsAbleToGrave())
 end
 
-function s.tohfilter(c)
-    return aux.IsCodeListed(c,cid) and c:IsAbleToHand()
-end
-
 function s.togtg(e,tp,eg,ep,ev,re,r,rp,chk)
     local c=e:GetHandler()
     local g=Duel.GetMatchingGroup(s.togfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,nil)
-    if chk==0 then return g:CheckSubGroup(aux.dncheck,2,2) end    
-    Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,2,0,LOCATION_DECK+LOCATION_REMOVED)
-     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_GRAVE)
+    if chk==0 then return  Duel.IsExistingMatchingCard(s.togfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil) end    
+    Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,0,LOCATION_DECK+LOCATION_REMOVED)
 end
 
 function s.togop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    local g=Duel.GetMatchingGroup(s.togfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,nil)
-    if not g:CheckSubGroup(aux.dncheck,2,2) then return end
+    if not Duel.IsExistingMatchingCard(s.togfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil) then return end
     
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local sg=g:SelectSubGroup(tp,aux.dncheck,false,2,2)
-	local tc=sg:GetFirst()
-	while tc do
-	    if tc:IsLocation(LOCATION_DECK) then
-	        Duel.SendtoGrave(tc,REASON_EFFECT)
-	    else
-	        Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)
-	    end
-	    tc=sg:GetNext()
+    local g=Duel.SelectMatchingCard(tp,s.togfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil)
+    if g:GetCount()~=1 then return end
+	local tc=g:GetFirst()
+	if tc:IsLocation(LOCATION_DECK) then
+	    Duel.SendtoGrave(tc,REASON_EFFECT)
+	else
+	    Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)
 	end
 end
 

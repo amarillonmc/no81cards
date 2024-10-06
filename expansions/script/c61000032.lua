@@ -31,7 +31,7 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 end
 function s.costfilter(c,tp)
-	return c:IsSetCard(0x38c0) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x57c0) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 		and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,c,c:GetRace(),c:GetAttribute(),c:GetAttack(),c:GetDefense())
 end
 function s.thfilter(c,race,att,atk,def)

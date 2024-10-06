@@ -18,6 +18,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
+	e3:SetCost(cm.thcost)
 	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3)
@@ -31,87 +32,55 @@ end
 function cm.filter(c,e,tp)
 	return c:IsCode(60002134) and c:IsAbleToHand()
 end
+function cm.spfilter(c,code,e,tp)
+	return c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsReleasable() end
+	Duel.Release(e:GetHandler(),REASON_COST)
+end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local b1=false
 	local b2=false
 	local b3=false
-	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_EXTRA,0,1,nil,m+1) and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,60002134) then b1=true end
-	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_EXTRA,0,1,nil,m+2) and Duel.IsPlayerCanDraw(tp,2) then b2=true end
-	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_EXTRA,0,1,nil,m+3) then b3=true end
-	if chk==0 then return b1 or b2 or b3 end
-	local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(m,1)},
-		{b2,aux.Stringid(m,2)},
-		{b3,aux.Stringid(m,3)})
-	e:SetLabel(op)
+	local b4=false
+	if Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,m+1,e,tp) then b1=true end
+	if Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,m+2,e,tp) then b2=true end
+	if Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,m+3,e,tp) then b3=true end
+	if Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,60010242,e,tp) then b4=true end
+	if chk==0 then return (((b1 or b2 or b3) and Duel.GetFlagEffect(tp,60002135)>=4) or (Duel.GetFlagEffect(tp,60002135)<4 and b4)) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Card.GetFlagEffect(c,60002134)~=0 and Duel.GetFlagEffect(tp,60002135)<4 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(800)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		c:RegisterEffect(e1)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_DEFENSE)
-		e1:SetValue(800)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		c:RegisterEffect(e1)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
-		end
-	end
-	if Card.GetFlagEffect(c,60002134)~=0 and Duel.GetFlagEffect(tp,60002135)>=4 then
-		Debug.Message("天之昭示，龙剑在此！")
-		local c=e:GetHandler()
-		Duel.Release(c,REASON_EFFECT)
-		local op=e:GetLabel()
-		if op==1 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
-			if g:GetCount()>0 then
-				Duel.SendtoHand(g,nil,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,g)
-			end
-			if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
+		Duel.ConfirmCards(1-tp,g)
+		if Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,m+1,e,tp) then b1=true end
+		if Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,m+2,e,tp) then b2=true end
+		if Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,m+3,e,tp) then b3=true end
+		if Duel.GetFlagEffect(tp,60002135)<4 and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_EXTRA,0,1,nil,60010242) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local g=Duel.SelectMatchingCard(tp,cm.exfilter1,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+			local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,60010242,e,tp)
 			if g:GetCount()>0 then
-				Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
+				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 			end
-		elseif op==2 then
-			Duel.Draw(tp,1,REASON_EFFECT)
-			if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+		elseif (b1 or b2 or b3) and Duel.GetFlagEffect(tp,60002135)>=4 then
+			local op=aux.SelectFromOptions(tp,
+				{b1,aux.Stringid(m,1)},
+				{b2,aux.Stringid(m,2)},
+				{b3,aux.Stringid(m,3)})
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local g=Duel.SelectMatchingCard(tp,cm.exfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+			Debug.Message("天之昭示，龙剑在此！")
+			local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,m+op,e,tp)
 			if g:GetCount()>0 then
-				Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
-			end
-		elseif op==3 then
-			Duel.Recover(tp,2000,REASON_EFFECT)
-			if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local g=Duel.SelectMatchingCard(tp,cm.exfilter3,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-			if g:GetCount()>0 then
-				Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
+				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 			end
 		end
 	end
 end
 
 
-function cm.exfilter1(c,e,tp)
-	return c:IsCode(60002144) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
-end
-function cm.exfilter2(c,e,tp)
-	return c:IsCode(60002145) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
-end
-function cm.exfilter3(c,e,tp)
-	return c:IsCode(60002146) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
-end
