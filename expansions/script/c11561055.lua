@@ -125,7 +125,7 @@ function c11561055.nafilter3(c,tp,ccodes)
 	return Duel.IsExistingMatchingCard(c11561055.nafilter2,tp,0x77,0,3,nil,c:GetCode()) and c:IsCode(table.unpack(ccodes))
 end
 function c11561055.xyzcheck(g,tp,xyzc)
-	return g:GetClassCount(Card.GetCode)==1 and Duel.GetLocationCountFromEx(tp,tp,g,xyzc)>0 and g:Filter(c11561055.lfilter,nil):GetClassCount(Card.GetLocation)==g:FilterCount(c11561055.lfilter,nil)
+	return g:GetClassCount(Card.GetCode)==1 and Duel.GetLocationCountFromEx(tp,tp,g,xyzc)>0 and g:Filter(c11561055.lfilter,nil):GetClassCount(Card.GetLocation)==g:FilterCount(c11561055.lfilter,nil) and g:IsExists(Card.IsLocation,1,nil,LOCATION_MZONE)
 end
 function c11561055.xyzcondition(e,c,og,min,max)
 	if c==nil then return true end
