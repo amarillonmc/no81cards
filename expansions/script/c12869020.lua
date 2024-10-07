@@ -103,9 +103,10 @@ function c12869020.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c12869020.spop1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.IsPlayerCanSpecialSummonMonster(tp,12869000,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_WATER) then
-		for i=1,2 do
-			local token=Duel.CreateToken(tp,12869000)
-			Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
-		end
+		local token=Duel.CreateToken(tp,12869000)
+		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
+		local token2=Duel.CreateToken(tp,12869000)
+		Duel.SpecialSummonStep(token2,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummonComplete()
 	end
 end
