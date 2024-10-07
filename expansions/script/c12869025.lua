@@ -43,7 +43,7 @@ function c12869025.matfilter(c)
 	return c:IsLinkSetCard(0x6a70) or c:IsCode(12869000)
 end
 function c12869025.q(c)
-	return c:IsFaceup() and c:IsSetCard(0x6a70)
+	return c:IsFaceup() and c:IsSetCard(0x6a70) and c:IsType(TYPE_MONSTER)
 end
 function c12869025.con(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()

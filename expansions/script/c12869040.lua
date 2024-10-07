@@ -40,7 +40,7 @@ function c12869040.lcheck(g)
 	return g:IsExists(Card.IsLinkSetCard,1,nil,0x6a70)
 end
 function c12869040.q(c)
-	return c:IsFaceup() and c:IsSetCard(0x6a70)
+	return c:IsFaceup() and c:IsSetCard(0x6a70) and c:IsType(TYPE_MONSTER)
 end
 function c12869040.con(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()

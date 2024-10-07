@@ -1,6 +1,7 @@
 --灰灭融火者
 local s,id,o=GetID()
 function s.initial_effect(c)
+	--Debug.Message("2")
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsRace,RACE_PYRO),2,true)
@@ -83,8 +84,8 @@ function s.filter3(c,e)
 	return c:IsOnField() and not c:IsImmuneToEffect(e)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
-	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_COST)
+	if chk==0 then return e:GetHandler():IsAbleToExtraAsCost() end
+	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKTOP,REASON_COST)
 end
 function s.fscon1(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and not Duel.IsExistingMatchingCard(s.cfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
@@ -108,10 +109,8 @@ function s.fstg(e,tp,eg,ep,ev,re,r,rp,chk)
 				res=Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg3,mf,chkf)
 			end
 		end
-		return Duel.GetFlagEffect(tp,id+o)==0 and res
+		return res
 	end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.RegisterFlagEffect(tp,id+o,RESET_PHASE+PHASE_END,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function s.fsop(e,tp,eg,ep,ev,re,r,rp)
@@ -146,5 +145,6 @@ function s.fsop(e,tp,eg,ep,ev,re,r,rp)
 			local fop=ce:GetOperation()
 			fop(ce,e,tp,tc,mat2)
 		end
+		tc:CompleteProcedure()
 	end
 end
