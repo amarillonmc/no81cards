@@ -60,11 +60,24 @@ function c12869040.indop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetHintTiming(0,TIMING_MAIN_END+TIMING_END_PHASE+TIMING_STANDBY_PHASE+TIMINGS_CHECK_MONSTER)
 	e1:SetCountLimit(1)
-	e1:SetTarget(aux.nbtg)
+	e1:SetTarget(c12869040.target)
 	e1:SetCondition(c12869040.condition)
 	e1:SetOperation(c12869040.op)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1,true)
+end
+function c12869040.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Auxiliary.nbcon(tp,re) end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
+	end
+	if re:GetActivateLocation()==LOCATION_GRAVE then
+		e:SetCategory(e:GetCategory()|CATEGORY_GRAVE_ACTION)
+	else
+		e:SetCategory(e:GetCategory()&~CATEGORY_GRAVE_ACTION)
+	end
+	e:Reset()
 end
 function c12869040.condition(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)

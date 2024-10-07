@@ -82,12 +82,9 @@ function c12869020.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(c,0,tp,sump,false,false,POS_FACEUP,sel_zone)
 end
 function c12869020.efilter(e,te)
-	local c=e:GetHandler()
+	 local c=e:GetHandler()
 	local ec=te:GetHandler()
-	if te:GetOwner()==e:GetOwner() then return false end
-	if ec:IsHasCardTarget(c) or (te:IsHasType(EFFECT_TYPE_ACTIONS) and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(te)) then return false
-	end
-	return true
+	return not (ec:IsHasCardTarget(c) or te:IsHasType(EFFECT_TYPE_ACTIONS) and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(te) or ec==c) 
 end
 function c12869020.costfilter(c)
 	return c:IsSetCard(0x6a70) and c:IsType(TYPE_MONSTER) and (c:IsAbleToDeckAsCost() or c:IsAbleToExtraAsCost())

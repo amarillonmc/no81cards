@@ -73,6 +73,7 @@ function c12869030.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,c12869030.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+	e:Reset()
 end
 function c12869030.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

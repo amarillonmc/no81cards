@@ -40,7 +40,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.mfilter(c,e,tp)
-	return c:IsAttack(0) and Duel.GetCurrentPhase()==PHASE_MAIN1 and tp==Duel.GetTurnPlayer()
+	return c:IsAttack(0) and c:IsFaceup() and Duel.GetCurrentPhase()==PHASE_MAIN1 and tp==Duel.GetTurnPlayer()
 end
 function s.altop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end
