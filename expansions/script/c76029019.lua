@@ -16,6 +16,8 @@ function c76029019.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCondition(function(e) 
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) end)
 	e2:SetTarget(c76029019.dztg)
 	e2:SetOperation(c76029019.dzop)
 	c:RegisterEffect(e2)
@@ -50,7 +52,7 @@ function c76029019.mfilter(c)
 end
 function c76029019.dztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end 
-	local zone=Duel.SelectField(tp,1,0,LOCATION_MZONE,nil)
+	local zone=Duel.SelectField(tp,1,0,LOCATION_MZONE,0x600060)
 	e:SetLabel(zone)
 	Duel.Hint(HINT_ZONE,tp,zone)	
 end

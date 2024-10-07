@@ -43,6 +43,7 @@ function c12869030.q(c)
 	return c:IsFaceup() and c:IsSetCard(0x6a70)
 end
 function c12869030.con(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
 	return Duel.IsExistingMatchingCard(c12869030.q,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
 end
 function c12869030.indcon(e,tp,eg,ep,ev,re,r,rp)

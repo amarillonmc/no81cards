@@ -125,16 +125,16 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function s.cfilter1(c)
+function s.cfilter1(c,tp)
 	local seq=c:GetSequence()
-	return c:IsCode(12835101) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsLocation(LOCATION_MZONE) and seq==c:GetPreviousSequence()-1 and seq<=3
+	return c:IsControler(tp) and c:IsCode(12835101) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsLocation(LOCATION_MZONE) and seq==c:GetPreviousSequence()-1 and seq<=3
 end
 function s.mcon1(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(s.cfilter1,1,nil) and e:GetHandler():GetFlagEffect(id)==0
+	return eg:IsExists(s.cfilter1,1,nil,tp) and e:GetHandler():GetFlagEffect(id)==0
 end
 function s.mtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local mc=eg:Filter(s.cfilter1,nil):GetFirst()
+	local mc=eg:Filter(s.cfilter1,nil,tp):GetFirst()
 	if not mc then return false end
 	local tg=mc:GetColumnGroup():Filter(Card.IsAbleToHand,nil)
 	if chk==0 then return tg:GetCount()>0 and c:GetFlagEffect(id+100)==0 end
@@ -142,7 +142,6 @@ function s.mtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabelObject(mc)
 	mc:CreateEffectRelation(e)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_ONFIELD)
-	return eg:IsExists(s.cfilter1,1,nil)
 end
 function s.mop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -166,12 +165,12 @@ function s.mop1(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1,true)
 	c:SetTurnCounter(3)
 end
-function s.cfilter2(c)
+function s.cfilter2(c,tp)
 	local seq=c:GetSequence()
-	return c:IsCode(12835101) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsLocation(LOCATION_MZONE) and seq==c:GetPreviousSequence()+1 and seq<=4
+	return c:IsControler(tp) and c:IsCode(12835101) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsLocation(LOCATION_MZONE) and seq==c:GetPreviousSequence()+1 and seq<=4
 end
 function s.mcon2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(s.cfilter2,1,nil) and e:GetHandler():GetFlagEffect(id)==0
+	return eg:IsExists(s.cfilter2,1,nil,tp) and e:GetHandler():GetFlagEffect(id)==0
 end
 function s.desfilter(c,s,tp)
 	local seq=c:GetSequence()
@@ -181,7 +180,7 @@ function s.desfilter(c,s,tp)
 end
 function s.mtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local mc=eg:Filter(s.cfilter2,nil):GetFirst()
+	local mc=eg:Filter(s.cfilter2,nil,tp):GetFirst()
 	if not mc then return false end
 	local seq=mc:GetPreviousSequence()
 	local tg=Duel.GetMatchingGroup(s.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,mc,seq,mc:GetControler())
@@ -190,7 +189,6 @@ function s.mtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabelObject(mc)
 	mc:CreateEffectRelation(e)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_ONFIELD)
-	return eg:IsExists(s.cfilter2,1,nil)
 end
 function s.mop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

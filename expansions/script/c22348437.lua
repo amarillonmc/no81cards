@@ -26,17 +26,17 @@ function c22348437.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 c22348437.has_text_type=TYPE_UNION
-function c22348437.filter(c,tp)
+function c22348437.filter111(c,tp)
 	return Duel.IsExistingMatchingCard(c22348437.cfilter1,tp,LOCATION_DECK,0,1,nil,c,tp) and c:IsFaceup()
 end
 function c22348437.cfilter1(c,ec,tp)
 	return c:IsSetCard(0x970b) and c:IsType(TYPE_UNION) and c:CheckUniqueOnField(tp) and not c:IsForbidden() and c:CheckUnionTarget(ec) and aux.CheckUnionEquip(c,ec)
 end
 function c22348437.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c22348437.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c22348437.filter,tp,0,LOCATION_MZONE,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c22348437.filter111(chkc,tp) end
+	if chk==0 then return Duel.IsExistingTarget(c22348437.filter111,tp,0,LOCATION_MZONE,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g=Duel.SelectTarget(tp,c22348437.filter,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,c22348437.filter111,tp,0,LOCATION_MZONE,1,1,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,0,0)
 	Duel.SetChainLimit(c22348437.limit(g:GetFirst()))
 end

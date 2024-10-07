@@ -26,18 +26,18 @@ function c22348435.initial_effect(c)
 end
 c22348435.has_text_type=TYPE_UNION
 function c22348435.beqfilter(c,tp)
-	return c:IsFaceup() and c:IsSummonPlayer(tp)
+	return c:IsFaceup() and c:IsSummonPlayer(1-tp)
 end
-function c22348435.eqfilter(c,ct)
-	return c:IsSetCard(0x970b) and c:IsType(TYPE_MONSTER) and not c:IsForbidden() and Duel.IsExistingMatchingCard(c22348435.eqfilter2,tp,LOCATION_GRAVE,0,ct,c)
+function c22348435.eqfilter(c)
+	return c:IsSetCard(0x970b) and c:IsType(TYPE_MONSTER) and not c:IsForbidden() and Duel.IsExistingMatchingCard(c22348435.eqfilter2,c:GetControler(),LOCATION_GRAVE,0,1,c)
 end
 function c22348435.eqfilter2(c)
 	return c:IsSetCard(0x970b) and c:IsAbleToDeck()
 end
 function c22348435.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:IsExists(c22348435.beqfilter,1,nil,1-tp) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(c22348435.eqfilter,tp,LOCATION_GRAVE,0,1,nil,1) end
+	if chk==0 then return eg:IsExists(c22348435.beqfilter,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(c22348435.eqfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.SetTargetCard(eg)
-	local g=eg:Filter(c22348435.beqfilter,nil,1-tp)
+	local g=eg:Filter(c22348435.beqfilter,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,0,1,0,0)
 end
 function c22348435.filter2(c,e,tp)
@@ -48,11 +48,10 @@ function c22348435.gcheck(g,e,tp)
 
 end
 function c22348435.eqop(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(c22348435.filter2,nil,e,1-tp)
+	local g=eg:Filter(c22348435.filter2,nil,e,tp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	local ctg=Duel.GetMatchingGroup(c22348435.eqfilter,tp,LOCATION_GRAVE,0,nil,1)
-	local ct=Duel.GetMatchingGroup(c22348435.eqfilter,tp,LOCATION_GRAVE,0,nil,1):GetCount()
-	Debug.Message(ct)
+	local ctg=Duel.GetMatchingGroup(c22348435.eqfilter,tp,LOCATION_GRAVE,0,nil)
+	local ct=Duel.GetMatchingGroup(c22348435.eqfilter,tp,LOCATION_GRAVE,0,nil):GetCount()
 	local tc=g:GetFirst()
 	if not tc or ft<1 or ct<1 then return end
 	if g:GetCount()>1 then
@@ -67,7 +66,15 @@ function c22348435.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=ctg:SelectSubGroup(tp,c22348435.gcheck,false,1,ct,e,tp)
 	local ec=tg:GetFirst()
 	while ec do
-		if Duel.Equip(tp,ec,tc,true,true)~=0 then cct=cct+1 end
+		if Duel.Equip(tp,ec,tc,true,true)~=0 then 
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_EQUIP_LIMIT)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetValue(c22348435.eqlimit)
+			e1:SetLabelObject(tc)
+			ec:RegisterEffect(e1)
+	cct=cct+1 end
 		ec=tg:GetNext()
 	end
 	if Duel.IsExistingMatchingCard(c22348435.eqfilter2,tp,LOCATION_GRAVE,0,1,nil) then
@@ -75,6 +82,9 @@ function c22348435.eqop(e,tp,eg,ep,ev,re,r,rp)
 		local ttg=Duel.SelectMatchingCard(tp,c22348435.eqfilter2,tp,LOCATION_GRAVE,0,cct,cct,nil)
 		Duel.SendtoDeck(ttg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
+end
+function c22348435.eqlimit(e,c)
+	return c==e:GetLabelObject()
 end
 function c22348435.thfilter(c,tp)
 	return c:IsSetCard(0x970b) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
