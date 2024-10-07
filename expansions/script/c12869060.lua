@@ -80,7 +80,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			{b3,aux.Stringid(id,4)})
 		if op==1 then
 			local max=math.min(Duel.GetLocationCount(tp,LOCATION_MZONE),ct)
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,5))
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,2))
 			local count=Duel.AnnounceLevel(tp,1,max)
 			for i=1,count do
 				local token=Duel.CreateToken(tp,12869000)
@@ -90,7 +90,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			b3=true
 		elseif op==2 then
 			local max=math.min(Duel.GetLocationCount(1-tp,LOCATION_MZONE),ct)
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,5))
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,3))
 			local count=Duel.AnnounceLevel(tp,1,max)
 			for i=1,count do
 				local token=Duel.CreateToken(tp,12869000)
