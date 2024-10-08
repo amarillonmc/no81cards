@@ -120,7 +120,7 @@ end
 function c12835102.con62(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=c:GetEquipTarget()
-	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) or {}
 	local seq=tc:GetSequence()
 	local tp=tc:GetControler()
 	if re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and #g>0 and g:IsContains(tc) then return false end

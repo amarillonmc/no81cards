@@ -53,6 +53,9 @@ function s.initial_effect(c)
 	e6:SetValue(s.efilter)
 	c:RegisterEffect(e6)
 end
+function s.efilter(e,te)
+	return te:IsActiveType(TYPE_SPELL+TYPE_TRAP)
+end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
@@ -98,7 +101,7 @@ function s.thcon2(e,tp,eg,ep,ev,re,r,rp)
 		and (c:GetPreviousSequence()~=c:GetSequence() or c:GetPreviousControler()~=tp)
 end
 function s.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_ONFIELD,1,nil,TYPE_SPELL+TYPE_TRAP+TYPE_MONSTER) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,nil,TYPE_SPELL+TYPE_TRAP+TYPE_MONSTER) end
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(500)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,500)
@@ -108,7 +111,7 @@ function s.thop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Damage(p,d,REASON_EFFECT)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		local g=Duel.SelectMatchingCard(tp,Card.IsType,tp,0,LOCATION_ONFIELD,1,1,nil,TYPE_SPELL+TYPE_TRAP+TYPE_MONSTER)
+		local g=Duel.SelectMatchingCard(tp,Card.IsType,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil,TYPE_SPELL+TYPE_TRAP+TYPE_MONSTER)
 		if g:GetCount()>0 then
 			Duel.Overlay(c,g)
 		end

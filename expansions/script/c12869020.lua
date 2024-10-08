@@ -42,7 +42,7 @@ end
 function c12869020.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
+	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(12869020,2))
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -52,7 +52,6 @@ function c12869020.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(c12869020.efilter)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 		tc:RegisterEffect(e1)
-	end
 	local zone={}
 	local flag={}
 	for p=0,1 do
@@ -80,6 +79,7 @@ function c12869020.spop(e,tp,eg,ep,ev,re,r,rp)
 				sel_zone=sel_zone>>16
 			end
 			Duel.SpecialSummon(c,0,tp,sump,false,false,POS_FACEUP,sel_zone)
+		end
 end
 function c12869020.efilter(e,te)
 	 local c=e:GetHandler()

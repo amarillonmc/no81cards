@@ -42,7 +42,7 @@ end
 function c12869015.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
+	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(12869015,2))
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -54,7 +54,6 @@ function c12869015.spop(e,tp,eg,ep,ev,re,r,rp)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 		tc:RegisterEffect(e2)
-	end
 	local zone={}
 	local flag={}
 	for p=0,1 do
@@ -82,6 +81,7 @@ function c12869015.spop(e,tp,eg,ep,ev,re,r,rp)
 				sel_zone=sel_zone>>16
 			end
 			Duel.SpecialSummon(c,0,tp,sump,false,false,POS_FACEUP,sel_zone)
+		end
 end
 function c12869015.costfilter(c)
 	return c:IsSetCard(0x6a70) and c:IsAbleToRemoveAsCost()
