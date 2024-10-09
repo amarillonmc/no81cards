@@ -94,7 +94,8 @@ function s.disable(e,c)
 	return c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0 or c:IsLocation(LOCATION_SZONE)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return (Duel.GetFlagEffect(0,id+1)+Duel.GetFlagEffect(1,id+1))>=3
+	local ph=Duel.GetCurrentPhase()
+	return (Duel.GetFlagEffect(0,id+1)+Duel.GetFlagEffect(1,id+1))>=3 and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE 
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end

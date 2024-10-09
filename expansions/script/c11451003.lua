@@ -13,7 +13,7 @@ end
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
 end
 function cm.filter2(c,e)
 	return not c:IsImmuneToEffect(e)
@@ -22,7 +22,7 @@ function cm.filter3(c,ct)
 	return c:GetFlagEffect(m)>ct
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local sg=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_ONFIELD,0,nil,e)
+	local sg=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_ONFIELD,0,aux.ExceptThisCard(e),e)
 	if sg:IsExists(cm.filter3,1,nil,1) and not cm[1] then
 		cm[1]=true
 		if 1==0 then
@@ -89,7 +89,7 @@ end
 function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetHandler():IsImmuneToEffect(e) then return end
 	local op=re:GetOperation() or aux.TRUE
-	local op2=function(e,...) e:SetOperation(op)  op(e,...) Duel.BreakEffect() op(e,...) end
+	local op2=function(e,...) e:SetOperation(op) op(e,...) Duel.BreakEffect() op(e,...) end
 	re:SetOperation(op2)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
