@@ -91,9 +91,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				if #sg==2 and Duel.SelectYesNo(tp,aux.Stringid(11451619,0)) then
 					Duel.SwapSequence(sg:GetFirst(),sg:GetNext())
 				end
-				if #sg<=2 then return end
+				if #sg<=2 then
+					Duel.ConfirmCards(1-tp,sg)
+					Duel.SendtoGrave(g,REASON_EFFECT+REASON_REVEAL)
+					return
+				end
 				for i=1,10 do
-					if not Duel.SelectYesNo(tp,aux.Stringid(11451619,1)) then return end
+					if not Duel.SelectYesNo(tp,aux.Stringid(11451619,1)) then break end
 					Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451619,2))
 					local wg=sg:Select(tp,2,2,nil)
 					Duel.SwapSequence(wg:GetFirst(),wg:GetNext())

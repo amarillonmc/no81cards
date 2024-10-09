@@ -2,17 +2,17 @@
 local cm,m=GetID()
 
 function cm.initial_effect(c)
-	aux.AddCodeList(c,34022290)
+    aux.AddCodeList(c,34022290)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+    e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,m)
+    e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.setg)
 	e1:SetOperation(cm.seop)
 	c:RegisterEffect(e1)
-	--cannot be target
+    --cannot be target
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)
 	e0:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	e0:SetTargetRange(0x0c,0)
 	e0:SetTarget(cm.target)
 	e0:SetValue(aux.tgoval)
-	--c:RegisterEffect(e0)
+	c:RegisterEffect(e0)
 	--cannot remove
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -32,25 +32,25 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.efilter)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-	e3:SetRange(LOCATION_FZONE)
+	e3:SetRange(0x100)
 	e3:SetTargetRange(0x0c,0)
-	e3:SetTarget(cm.target2)
+	e3:SetTarget(cm.eftg2)
 	e3:SetLabelObject(e2)
-	--c:RegisterEffect(e3)
-	--spsummon
+	c:RegisterEffect(e3)
+    --spsummon
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_FREE_CHAIN)
+    e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetCountLimit(1,m+1)
 	e5:SetRange(LOCATION_FZONE)
 	e5:SetTarget(cm.efftg)
 	e5:SetOperation(cm.effop)
 	c:RegisterEffect(e5)
-	--inactivatable
+    --inactivatable
 	local ge4=Effect.CreateEffect(c)
 	ge4:SetType(EFFECT_TYPE_FIELD)
 	ge4:SetCode(EFFECT_CANNOT_INACTIVATE)
-	ge4:SetCondition(cm.actcon)
+    ge4:SetCondition(cm.actcon)
 	ge4:SetValue(cm.effectfilter)
 	Duel.RegisterEffect(ge4,0)
 	local ge5=ge4:Clone()
@@ -62,43 +62,43 @@ function cm.target(e,c)
 	return (c:IsSetCard(0x52) and c:IsLocation(0x04)) or c:GetType()==0x40002
 end
 
-function cm.target2(e,c)
+function cm.eftg2(e,c)
 	return cm.target(e,c) and c:IsFaceup()
 end
 
 function cm.efilter(e,c,rp,r,re)
-	return r&REASON_EFFECT>0
+	return c==e:GetHandler() and r&REASON_EFFECT~=0
 end
 
 function cm.tgsfilter(c)
-	return (aux.IsCodeListed(c,34022290) or c:IsCode(55569674)) and c:IsAbleToHand()
+    return (aux.IsCodeListed(c,34022290) or c:IsCode(55569674)) and c:IsAbleToHand()
 end
 
 function cm.tgsfilter2(c)
-	return c:IsCode(34022290) and c:IsAbleToHand()
+    return c:IsCode(34022290) and c:IsAbleToHand()
 end
 
 function cm.setg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgsfilter,tp,0x11,0,1,nil) and Duel.IsExistingMatchingCard(cm.tgsfilter2,tp,0x11,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,0x11)
+    Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,0x11)
 end
 
 function cm.seop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.tgsfilter2,tp,0x11,0,1,1,nil)
 	if #g>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g1=Duel.SelectMatchingCard(tp,cm.tgsfilter,tp,0x11,0,1,1,nil)
-		if #g1>0 then
-			g:Merge(g1)
-		end
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	    local g1=Duel.SelectMatchingCard(tp,cm.tgsfilter,tp,0x11,0,1,1,nil)
+        if #g1>0 then
+            g:Merge(g1)
+        end
+        Duel.SendtoHand(g,nil,REASON_EFFECT)
+        Duel.ConfirmCards(1-tp,g)
+    end
 end
 
 function cm.tgefilter(c)
-	return c:IsPublic() and c:IsSetCard(0x52) and c:IsType(0x1)
+    return c:IsPublic() and c:IsSetCard(0x52) and c:IsType(0x1)
 end
 
 function cm.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -143,7 +143,7 @@ function cm.effop2(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(Duel.GetMatchingGroup(cm.conefilter,tp,0x04,0,nil)) do
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		for cc in aux.Next(e:GetLabelObject()) do
-			local code=cc:GetOriginalCode()
+				local code=cc:GetOriginalCode()
 				local e2=Effect.CreateEffect(tc)
 				e2:SetDescription(aux.Stringid(34022290,1))
 				e2:SetCategory(CATEGORY_REMOVE)
@@ -192,9 +192,11 @@ end
 function cm.conefilter3(c)
 	return c:IsCode(34022290) and c:GetFlagEffect(m+1)==0
 end
+
 function cm.effcon3(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.conefilter3,tp,0xff,0,1,nil)
 end
+
 function cm.effop3(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(Duel.GetMatchingGroup(cm.conefilter3,tp,0xff,0,nil)) do
 		tc:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+RESET_PHASE+PHASE_END,0,1)
@@ -212,8 +214,9 @@ function cm.effop3(e,tp,eg,ep,ev,re,r,rp)
 		Card.RegisterEffect=cregister
 	end
 end
+
 function cm.actcon(e)
-	return Duel.GetFieldGroupCount(e:GetHandler():GetControler(),0x10,0)==0
+	return Duel.GetMatchingGroupCount(Card.IsType,e:GetHandler():GetControler(),0x10,0,nil,0x1)==0
 end
 
 function cm.effectfilter(e,ct)
