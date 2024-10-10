@@ -58,7 +58,7 @@ function s.pcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPublic()
 end
 function s.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end
 	local c=e:GetHandler()
 	
 	local e1=Effect.CreateEffect(c)

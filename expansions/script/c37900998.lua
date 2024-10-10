@@ -29,7 +29,7 @@ function c37900998.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetCategory(CATEGORY_DAMAGE)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetDescription(1,37900998)
+	e3:SetCountLimit(1,37900998)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetTarget(c37900998.tg3)
 	e3:SetOperation(c37900998.op3)
@@ -101,7 +101,7 @@ function c37900998.con(e,tp,eg,ep,ev,re,r,rp)
 	local all=Duel.GetFieldGroup(tp,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE,0)
 	local lp1=Duel.GetLP(tp)
 	local lp2=Duel.GetLP(1-tp)
-	return (lp2-lp1)>4000 and #g>0 and #g==#all and Duel.GetLocationCountFromEx(tp,tp,g,c)>0	
+	return lp2>lp1 and (lp2-lp1)>=4000 and #g>0 and #g==#all and Duel.GetLocationCountFromEx(tp,tp,g,c)>0	
 end
 function c37900998.w(c)
 	return c:IsLocation(LOCATION_HAND) and not c:IsPublic()

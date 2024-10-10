@@ -59,7 +59,7 @@ function s.descon(e,tp,eg,ep,ev,re,r,rp,chk)
 	return Duel.GetFlagEffect(tp,id)>=3
 end
 function s.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end
 	local c=e:GetHandler()
 	
 	local e1=Effect.CreateEffect(c)
@@ -85,7 +85,7 @@ function s.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return bit.band(sumpos,POS_FACEDOWN)>0
 end
 function s.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return s.sscost(e,tp,eg,ep,ev,re,r,rp,chk) end
 	Duel.ConfirmCards(1-tp,e:GetHandler())
 	s.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
 end

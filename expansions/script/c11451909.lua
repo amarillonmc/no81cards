@@ -123,6 +123,7 @@ function cm.repval(e,c)
 	return cm.repfilter(c,e:GetHandlerPlayer())
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
+	pnfl_adjusting=true
 	local c=e:GetHandler()
 	Duel.HintSelection(Group.FromCards(c))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -135,6 +136,7 @@ function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 		local op=turne:GetOperation()
 		op(turne,turne:GetOwnerPlayer(),nil,0,0,0,0,0)
 	end
+	pnfl_adjusting=false
 end
 function cm.confilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xc976)

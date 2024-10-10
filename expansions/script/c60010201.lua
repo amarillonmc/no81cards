@@ -39,16 +39,19 @@ end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and cm.desfilter(chkc,tp) end
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.IsExistingTarget(cm.desfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil,tp) end
+		and Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler(),tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,cm.desfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,cm.desfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,e:GetHandler(),tp)
+	e:SetLabelObject(g)
+	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) then
+	local tc=nil
+	if Duel.GetFirstTarget() then tc=Duel.GetFirstTarget() else tc=e:GetLabelObject():GetFirst() end
+	if Duel.Destroy(tc,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

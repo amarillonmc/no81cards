@@ -144,10 +144,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
+	e:Reset()
 	Duel.Hint(HINT_CARD,0,m)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_MZONE,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then Duel.Destroy(tc,REASON_EFFECT) end
-	e:Reset()
 end

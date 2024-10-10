@@ -73,6 +73,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e8:SetCode(EVENT_ADJUST)
 			e8:SetLabel(code)
+			e8:SetCondition(function() return not pnfl_adjusting end)
 			e8:SetOperation(cm.sdop)
 			Duel.RegisterEffect(e8,tp)
 			if Duel.GetFlagEffect(tp,code+0xffffff)==0 then
@@ -100,12 +101,14 @@ function cm.sdtg(e,c)
 	return c:IsCode(m) and c:IsFaceup()
 end
 function cm.sdop(e,tp,eg,ep,ev,re,r,rp)
+	pnfl_adjusting=true
 	local phase=Duel.GetCurrentPhase()
 	local c=e:GetHandler()
-	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL then return end
+	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL then pnfl_adjusting=false return end
 	local sdg=Duel.GetMatchingGroup(cm.cfilter2,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,m,e)
 	if #sdg>0 and cm.sdcon(e) and Duel.Destroy(sdg,REASON_EFFECT) then
 		local sdg=Duel.GetMatchingGroup(cm.cfilter2,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,m,e)
-		if #sdg>0 and cm.sdcon(e) then Duel.Readjust() end
+		if #sdg>0 and cm.sdcon(e) then pnfl_adjusting=false Duel.Readjust() end
 	end
+	pnfl_adjusting=false
 end

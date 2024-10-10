@@ -65,7 +65,7 @@ function s.cfilter(c)
 	return (c:GetOriginalType()&TYPE_SPELL+TYPE_TRAP)>0 and c:IsSetCard(0x3a70) and c:IsAbleToGraveAsCost()
 end
 function s.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end
 	local c=e:GetHandler()
 	
 	local e1=Effect.CreateEffect(c)

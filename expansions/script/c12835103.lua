@@ -63,7 +63,7 @@ function s.cfilter(c,ce)
 	return (c:GetOriginalType()&(TYPE_SPELL+TYPE_TRAP)>0 and c:IsSetCard(0x3a70) or not c:IsSetCard(0x3a70) and c:IsOnField() and ec:IsLocation(LOCATION_HAND) and ec:IsPublic() and ce:GetType()&EFFECT_TYPE_ACTIVATE==0) and c:IsAbleToGraveAsCost()
 end
 function s.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end
 	local c=e:GetHandler()
 	
 	local e1=Effect.CreateEffect(c)
@@ -87,7 +87,7 @@ function s.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c,e) end
+	if chk==0 then return s.sscost(e,tp,eg,ep,ev,re,r,rp,chk) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c,e) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local cc=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,c,e):GetFirst()
 	if cc:IsFacedown() then Duel.ConfirmCards(1-tp,cc) end
