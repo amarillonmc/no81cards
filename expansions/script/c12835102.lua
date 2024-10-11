@@ -90,7 +90,7 @@ function c12835102.con6(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	local seq=tc:GetSequence()
 	local tp=tc:GetControler()
-	return rp==1-tp and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and #g>0 and g:IsContains(tc) and c:GetFlagEffect(12835102)==0 and ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)))	 
+	return rp==1-tp and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and #g>0 and g:IsContains(tc) and c:GetFlagEffect(12835102)==0 and ((seq>0 and Duel.CheckLocation(c:GetControler(),LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(c:GetControler(),LOCATION_MZONE,seq+1)))	 
 end
 function c12835102.op6(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(12835102,1)) then
@@ -102,13 +102,14 @@ function c12835102.op6(e,tp,eg,ep,ev,re,r,rp)
 	local seq=tc:GetSequence()
 	if seq>4 then return end
 	local flag=0
-	if seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1) then 
+	if seq>0 and Duel.CheckLocation(c:GetControler(),LOCATION_MZONE,seq-1) then 
 	flag=flag|(1<<(seq-1)) end
-	if seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1) then 
+	if seq<4 and Duel.CheckLocation(c:GetControler(),LOCATION_MZONE,seq+1) then 
 	flag=flag|(1<<(seq+1)) end
 	if flag==0 then return end
 	Duel.Hint(3,tp,HINTMSG_TOZONE)
-	local s=Duel.SelectField(tp,1,LOCATION_MZONE,0,~flag)
+	local s=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~flag)
+	if c:GetControler()~=tp then s=s>>16 end
 	local nseq=math.log(s,2)
 	Duel.MoveSequence(tc,nseq)
 	local g=Group.CreateGroup()
@@ -124,7 +125,7 @@ function c12835102.con62(e,tp,eg,ep,ev,re,r,rp)
 	local seq=tc:GetSequence()
 	local tp=tc:GetControler()
 	if re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and #g>0 and g:IsContains(tc) then return false end
-	return rp==1-tp and Duel.GetFlagEffect(tp,12835102)>0 and c:GetFlagEffect(12835102)==0 and ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)))	 
+	return rp==1-tp and Duel.GetFlagEffect(tp,12835102)>0 and c:GetFlagEffect(12835102)==0 and ((seq>0 and Duel.CheckLocation(c:GetControler(),LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(c:GetControler(),LOCATION_MZONE,seq+1)))	 
 end
 function c12835102.op62(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(12835102,2)) then
@@ -137,13 +138,14 @@ function c12835102.op62(e,tp,eg,ep,ev,re,r,rp)
 	local seq=tc:GetSequence()
 	if seq>4 then return end
 	local flag=0
-	if seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1) then 
+	if seq>0 and Duel.CheckLocation(c:GetControler(),LOCATION_MZONE,seq-1) then 
 	flag=flag|(1<<(seq-1)) end
-	if seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1) then 
+	if seq<4 and Duel.CheckLocation(c:GetControler(),LOCATION_MZONE,seq+1) then 
 	flag=flag|(1<<(seq+1)) end
 	if flag==0 then return end
 	Duel.Hint(3,tp,HINTMSG_TOZONE)
-	local s=Duel.SelectField(tp,1,LOCATION_MZONE,0,~flag)
+	local s=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~flag)
+	if c:GetControler()~=tp then s=s>>16 end
 	local nseq=math.log(s,2)
 	Duel.MoveSequence(tc,nseq)
 	local g=Group.CreateGroup()
