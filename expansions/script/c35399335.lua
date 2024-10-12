@@ -82,7 +82,7 @@ function c35399335.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c35399335.spfilter(chkc,tp) end
 	local c=e:GetHandler()
 	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.IsExistingTarget(c35399335.spfilter,tp,LOCATION_MZONE,0,1,nil,tp) and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 end
+		and Duel.IsExistingTarget(c35399335.spfilter,tp,LOCATION_MZONE,0,1,nil,tp) and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectTarget(tp,c35399335.spfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)

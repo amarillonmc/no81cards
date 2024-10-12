@@ -92,7 +92,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetOperation(cm.disop)
 		tc:RegisterEffect(e1)
-	end	
+	end 
 
 end
 function cm.disop(e,tp)
@@ -100,7 +100,7 @@ function cm.disop(e,tp)
 	local zone=tc:GetLinkedZone(tp)
 	local zone1=tc:GetLinkedZone(1-tp)
 	zone=zone|1<<zone1+16
-	if zone==0 then return end
+	if zone==0 or Duel.GetMZoneCount(tp,nil,2,LOCATION_REASON_TOFIELD,zone)<=0 then return end
 	local dis1=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~zone)
 	return dis1
 end

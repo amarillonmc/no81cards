@@ -15,14 +15,23 @@ function cm.initial_effect(c)
 	e1:SetValue(1)
 	c:RegisterEffect(e1)
 	--indestructable
-	local e2=Effect.CreateEffect(c)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCode(EFFECT_CANNOT_REMOVE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(1,1)
+	e3:SetTarget(c35399333.rmlimit)
+	e3:SetCondition(c35399333.indcon)
+	c:RegisterEffect(e3)
+	--[[local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetCode(EFFECT_CANNOT_REMOVE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(c35399333.indcon)
 	e2:SetValue(c35399333.efilter)
-	c:RegisterEffect(e2)
+	c:RegisterEffect(e2)--]]
 	--tog
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TOGRAVE+CATEGORY_ATKCHANGE)
@@ -112,6 +121,9 @@ function c35399333.indcon(e)
 end
 function c35399333.efilter(e,re)
 	return re:IsActiveType(TYPE_EFFECT)
+end
+function c35399333.rmlimit(e,c,tp,r)
+	return c==e:GetHandler() and r==REASON_EFFECT
 end
 
 

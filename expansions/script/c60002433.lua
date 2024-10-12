@@ -112,7 +112,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(p,3)
 	if g:GetCount()>0 and g:IsExists(Card.IsType,1,nil,TYPE_MONSTER) then
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
-		local sg=g:Select(p,1,1,nil)
+		local sg=g:FilterSelect(p,Card.IsType,1,1,nil,TYPE_MONSTER)
 		if sg:GetFirst():IsCanBeSpecialSummoned(e,0,p,false,false) then
 			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 		else
