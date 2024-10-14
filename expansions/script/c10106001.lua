@@ -10,13 +10,13 @@ function s.initial_effect(c)
 		{ "Target", "ChangeControl", s.ctfilter, 0, "MonsterZone"}, { "~Target", "Return2Hand", s.rtfilter, "OnField", 0, 1, 1, c }} , s.ctop)
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x3338) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(id)
+	return c:IsSetCard(0x3338) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(id) and Duel.GetMZoneCount(c:GetControler(),c,c:GetControler(),LOCATION_REASON_CONTROL)>0
 end
 function s.thop(e,tp)
 	Scl.SelectAndOperateCards("Add2Hand",tp,s.thfilter,tp,"Deck",0,1,1,nil)()
 end
 function s.ctfilter(c)
-	return c:IsControlerCanBeChanged() and c:IsSummonType(SUMMON_TYPE_SPECIAL)
+	return c:IsControlerCanBeChanged(true) and c:IsSummonType(SUMMON_TYPE_SPECIAL)
 end
 function s.rtfilter(c)
 	return c:IsAbleToHand() and c:IsFaceup() and c:IsSetCard(0x3338)
