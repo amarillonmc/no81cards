@@ -1,7 +1,7 @@
 --星幽偶像
 function c9910288.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x957),2)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x3957),2)
 	c:EnableReviveLimit()
 	--atk/def
 	local e1=Effect.CreateEffect(c)
@@ -39,7 +39,7 @@ function c9910288.indtg(e,c)
 	return e:GetHandler()==c or (c:IsType(TYPE_PENDULUM) and e:GetHandler():GetLinkedGroup():IsContains(c))
 end
 function c9910288.thfilter(c)
-	return c:IsSetCard(0x957) and c:IsAbleToHand()
+	return c:IsSetCard(0x3957) and c:IsAbleToHand()
 end
 function c9910288.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910288.thfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) end

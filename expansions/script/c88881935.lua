@@ -70,7 +70,7 @@ end
 function s.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,nil)
+	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_GRAVE+LOCATION_HAND+LOCATION_REMOVED,0,nil)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and g:CheckSubGroup(s.gcheck,2,2)
 end

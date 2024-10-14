@@ -24,12 +24,14 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetTurnCount()==0 then return end
 	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		local ct=1
+		if Duel.GetTurnPlayer()~=tp then ct=2 end
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_PUBLIC)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,ct)
 		c:RegisterEffect(e1)
-		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,ct,0,aux.Stringid(m,1))
 	end
 end
 function cm.sumcon(e,tp,eg,ep,ev,re,r,rp)
@@ -51,8 +53,8 @@ function cm.filter2(c,e,tp,mc,rk)
 end
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and cm.filter1(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter1,tp,LOCATION_MZONE,0,1,nil,e,tp)
-		and e:GetHandler():IsCanOverlay() end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter1,tp,LOCATION_MZONE,0,1,nil,e,tp) end
+		--and e:GetHandler():IsCanOverlay() end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,cm.filter1,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
@@ -75,8 +77,8 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
 		sc:CompleteProcedure()
 		if c:IsRelateToEffect(e) then
-			c:CancelToGrave()
-			Duel.Overlay(sc,Group.FromCards(c))
+			--c:CancelToGrave()
+			--Duel.Overlay(sc,Group.FromCards(c))
 		end
 	end
 end

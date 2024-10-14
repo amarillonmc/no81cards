@@ -86,6 +86,18 @@ function Auxiliary.CheckAlreadyRegisteredEffects()
 	Duel.RegisterEffect(e1,0)
 end
 
+local effect_set_target_range = Effect.SetTargetRange
+Effect.SetTargetRange=function(e,self,oppo)
+	local table_oppo = oppo
+	if type(oppo)==nil then
+		table_oppo=false
+	end
+	if not global_target_range_effect_table then
+		global_target_range_effect_table={}
+	end
+	global_target_range_effect_table[e]={self,table_oppo}
+	return effect_set_target_range(e,self,oppo)
+end
 function Effect.GLGetTargetRange(e)
 	if not global_target_range_effect_table[e] then return false,false end
 	local s=global_target_range_effect_table[e][1]

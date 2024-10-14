@@ -1,10 +1,6 @@
 --魔导飞行队拦截指令
 local cm,m=GetID()
 function cm.initial_effect(c)
-	if not PNFL_PROPHECY_FLIGHT_CHECK then
-		dofile("expansions/script/c11451851.lua")
-		pnfl_prophecy_flight_initial(c)
-	end
 	--psuedo Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)

@@ -79,6 +79,7 @@ function c12869040.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetCategory(e:GetCategory()&~CATEGORY_GRAVE_ACTION)
 	end
 	e:Reset()
+	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(12869035,3))
 end
 function c12869040.condition(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)

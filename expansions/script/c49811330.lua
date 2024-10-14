@@ -6,19 +6,13 @@ function c49811330.initial_effect(c)
 	e1:SetCategory(CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,49811330)
 	e1:SetCost(c49811330.cost)
 	e1:SetTarget(c49811330.tg)
 	e1:SetOperation(c49811330.op)
 	c:RegisterEffect(e1)
-	if not c49811330.global_check then
-		c49811330.global_check=true
-		c49811330.tab = {}
-		c49811330.stab = {}
-	end
 end
 function c49811330.filter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsPublic()
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsPublic() and not c:IsHasEffect(49811330)
 end
 function c49811330.ffilter(g)
 	return g:GetClassCount(Card.GetCode)==g:GetCount()
@@ -26,7 +20,7 @@ end
 function c49811330.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(c49811330.filter,tp,LOCATION_HAND+LOCATION_DECK,0,nil,e,tp)
-	if chk==0 then return g:CheckSubGroup(c49811330.ffilter,3,#g) and c:IsDiscardable() end
+	if chk==0 then return g:GetClassCount(Card.GetCode)>=3 and c:IsDiscardable() end
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local gs=g:SelectSubGroup(tp,c49811330.ffilter,false,3,3)
@@ -55,11 +49,6 @@ function c49811330.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	else
 		e:SetLabel(0,code1,code2,code3)
 	end
-	--for ci in aux.Next(gs) do
-	--	table.insert(c49811330.tab,Card.GetCode(ci))
-	--	Duel.Hint(HINT_CARD,1,Card.GetCode(ci))
-	--	Duel.Hint(HINT_CODE,1,Card.GetCode(ci))
-	--end	
 end
 function c49811330.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
@@ -69,7 +58,6 @@ function c49811330.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c49811330.sfilter(c,code1,code2,code3)
 	return c:IsCode(code1,code2,code3) and c:IsAbleToGraveAsCost()
-	--return c:IsCode(table.unpack(c49811330.tab))
 end
 function c49811330.op(e,tp,eg,ep,ev,re,r,rp)
 	local dlabel,code1,code2,code3=e:GetLabel()
@@ -92,9 +80,15 @@ function c49811330.op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)	
-	if Duel.Draw(p,d,REASON_EFFECT) and dlabel==1 and Duel.SelectYesNo(tp,aux.Stringid(49811330,2)) then
-		Duel.Draw(tp,1,REASON_EFFECT)
-	end
+	Duel.Draw(p,d,REASON_EFFECT)
+	--cannot public by this effect
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(49811330)
+	e0:SetTargetRange(LOCATION_HAND+LOCATION_DECK,0)
+	e0:SetTarget(aux.TargetBoolFunction(Card.IsCode,code1,code2,code3))
+	Duel.RegisterEffect(e0,tp)
+	--cannot add
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -103,6 +97,7 @@ function c49811330.op(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetLabel(code1,code2,code3)
 	e1:SetTarget(c49811330.adlimit)
 	Duel.RegisterEffect(e1,tp)
+	--cannot set by effect
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -111,24 +106,7 @@ function c49811330.op(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetLabel(code1,code2,code3)
 	e2:SetTarget(c49811330.sslimit)
 	Duel.RegisterEffect(e2,tp)
-	--local e21=Effect.CreateEffect(c)
-	--e21:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	--e21:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	--e21:SetCode(EVENT_CHAINING)
-	--e21:SetOperation(c49811330.sregop)
-	--Duel.RegisterEffect(e21,tp)
-	--local e22=Effect.CreateEffect(c)
-	--e22:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	--e22:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	--e22:SetCode(EVENT_CHAIN_SOLVING)
-	--e22:SetOperation(c49811330.sregop2)
-	--Duel.RegisterEffect(e22,tp)
-	--local e23=Effect.CreateEffect(c)
-	--e23:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	--e23:SetCode(EVENT_CHAIN_SOLVED)
-	--e23:SetOperation(c49811330.sregop3)
-	--e23:SetLabelObject(e)
-	--Duel.RegisterEffect(e23,tp)
+	--draw and discard condition
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -137,6 +115,7 @@ function c49811330.op(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetCondition(c49811330.regcon)
 	e3:SetOperation(c49811330.regop)
 	Duel.RegisterEffect(e3,tp)
+	--draw and discard
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CHAIN_SOLVED)
@@ -144,20 +123,6 @@ function c49811330.op(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetOperation(c49811330.drop)
 	Duel.RegisterEffect(e4,tp)
 end
---function c49811330.sregop(e,tp,eg,ep,ev,re,r,rp)
---	if re:IsHasType(EFFECT_TYPE_ACTIVATE) then
---		table.insert(c49811330.stab,re)
---	end
---end
---function c49811330.sregop2(e,tp,eg,ep,ev,re,r,rp)
---	if not re:IsHasType(EFFECT_TYPE_ACTIVATE) then
---		table.insert(c49811330.stab,re)
---	end
---end
---function c49811330.sregop3(e,tp,eg,ep,ev,re,r,rp)
---	if re==e:GetLabelObject() then return end
---	table.remove(c49811330.stab)
---end
 function c49811330.adlimit(e,c)
 	local code1,code2,code3=e:GetLabel()
 	return c:IsCode(code1,code2,code3)
@@ -165,14 +130,10 @@ end
 function c49811330.sslimit(e,c)
 	local code1,code2,code3=e:GetLabel()
 	return c:IsCode(code1,code2,code3) and Duel.GetCurrentChain() > 0
-	--if #c49811330.stab > 0 then
-		--return aux.TargetBoolFunction(Card.IsCode,code1,code2,code3) and c49811330.stab[#c49811330.stab]:GetOwnerPlayer()==tp
-	--end
 end
 function c49811330.regcon(e,tp,eg,ep,ev,re,r,rp)
 	local code1,code2,code3=e:GetLabel()
 	local c=re:GetHandler()
-	--return ep==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and c:IsCode(table.unpack(c49811330.tab))
 	return ep==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and c:IsCode(code1,code2,code3)
 end
 function c49811330.regop(e,tp,eg,ep,ev,re,r,rp)

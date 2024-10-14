@@ -60,15 +60,16 @@ end
 
 
 function s.tgfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x3d70) 
+	return c:IsFaceup() and c:IsSetCard(0x3d70)
 end
 
 function s.thfilter(c)
-	return c:IsSetCard(0x3d70) and c:IsAbleToHand() and not c:IsCode(id)
+	return c:IsSetCard(0x3d70) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	--and not c:IsCode(id)
 end
 
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return s.tgfilter(c,tp) end
+	if chkc then return s.tgfilter(chkc,tp) and chkc:IsControler(tp) end
 	if chk==0 then return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_ONFIELD,0,1,nil)
 		and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
 		

@@ -1,10 +1,6 @@
 --魔导飞行队巡逻指令
 local cm,m=GetID()
 function cm.initial_effect(c)
-	if not PNFL_PROPHECY_FLIGHT_CHECK then
-		dofile("expansions/script/c11451851.lua")
-		pnfl_prophecy_flight_initial(c)
-	end
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -32,15 +28,22 @@ function cm.initial_effect(c)
 		PNFL_MOVE_DELAY_CHECK=true
 		local _Equip=Duel.Equip
 		Duel.Equip=function(p,c,...)
-			c:RegisterFlagEffect(11451848,RESET_CHAIN,0,1)
+			if not (c:IsControler(p) and c:IsLocation(LOCATION_SZONE)) then c:RegisterFlagEffect(11451848,RESET_CHAIN,0,1) c:RegisterFlagEffect(11451848,RESET_CHAIN,0,1) end
 			local res=_Equip(p,c,...)
-			c:ResetFlagEffect(11451848)
+			return res
+		end
+		local _CRegisterEffect=Card.RegisterEffect
+		function Card.RegisterEffect(c,e,bool)
+			local res=_CRegisterEffect(c,e,bool)
+			if e:GetCode()==EFFECT_EQUIP_LIMIT and c:GetFlagEffect(11451848)>0 then
+				c:ResetFlagEffect(11451848)
+				cm.desop2(e,0,Group.FromCards(c),0,0,e,0,0)
+			end
 			return res
 		end
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_SUMMON_SUCCESS)
-		--e1:SetProperty(EFFECT_FLAG_DELAY)
 		e1:SetCondition(cm.descon)
 		e1:SetOperation(cm.desop2)
 		Duel.RegisterEffect(e1,0)
@@ -62,6 +65,11 @@ function cm.initial_effect(c)
 		e5:SetTargetRange(1,1)
 		e5:SetTarget(cm.costchk)
 		Duel.RegisterEffect(e5,0)
+		local e6=Effect.CreateEffect(c)
+		e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e6:SetCode(EVENT_CHAIN_ACTIVATING)
+		e6:SetOperation(function() Duel.RegisterFlagEffect(0,11451848,RESET_CHAIN,0,1) end)
+		Duel.RegisterEffect(e6,0)
 	end
 end
 function cm.costchk(e,c,tp,st)
@@ -70,7 +78,7 @@ function cm.costchk(e,c,tp,st)
 	return false
 end
 function cm.filter12(c,e)
-	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED) or c:GetFlagEffect(11451848)>0)) then return false end
+	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED))) or c:GetFlagEffect(11451848)>1 then return false end
 	if e:GetCode()==EVENT_MOVE then
 		local b1,g1=Duel.CheckEvent(EVENT_SUMMON_SUCCESS,true)
 		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
@@ -91,7 +99,11 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter12,1,nil,e)
 end
 function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RaiseEvent(eg,EVENT_CUSTOM+11451848,re,r,rp,ep,ev)
+	if Duel.GetCurrentChain()>0 and Duel.GetFlagEffect(0,11451848)==0 then
+		cm.desop3(e,tp,eg,ep,ev,re,r,rp)
+	else
+		Duel.RaiseEvent(eg,EVENT_CUSTOM+11451848,re,r,rp,ep,ev)
+	end
 end
 function cm.descon3(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():GetFieldID()==re:GetHandler():GetRealFieldID()
@@ -101,13 +113,9 @@ function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_ACTIVATING)
 	e1:SetCountLimit(1)
-	--e1:SetCondition(function() return Duel.GetCurrentChain()==1 end)
 	e1:SetOperation(function(e) Duel.RaiseEvent(eg,EVENT_CUSTOM+11451848,re,r,rp,ep,ev) end)
 	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,0)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_CHAIN_NEGATED)
-	--Duel.RegisterEffect(e2,0)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
@@ -132,6 +140,8 @@ function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
 	if ev==e:GetLabel() then re:GetHandler():ResetFlagEffect(m) end
 end
 function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(tp,m)>0 then return end
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local c=e:GetHandler()
 	if not re:GetHandler():IsSetCard(0x6e) or not c:IsSSetable() or cm.column~=0 or Duel.GetFlagEffect(tp,m)>0 then return end
 	if Duel.SelectEffectYesNo(tp,c) then
@@ -142,12 +152,10 @@ function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 end
+	if chk==0 then return true end
 	e:GetHandler():SetStatus(STATUS_EFFECT_ENABLED,true)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,m)>0 then return end
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local fd=Duel.SelectField(tp,2,LOCATION_SZONE,0,~0x1f00)
@@ -267,12 +275,12 @@ function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if #ag>0 then Duel.SetTargetCard(ag) end
 end
 function Group.ForEach(group,func,...)
-    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
-        local d_group=group:Clone()
-        for tc in aux.Next(d_group) do
-            func(tc,...)
-        end
-    end
+	if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+		local d_group=group:Clone()
+		for tc in aux.Next(d_group) do
+			func(tc,...)
+		end
+	end
 end
 function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

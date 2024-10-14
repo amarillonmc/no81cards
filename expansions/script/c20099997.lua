@@ -1,86 +1,112 @@
-xpcall(function() dofile("expansions/script/c20099998.lua") end,function() dofile("script/c20099998.lua") end)
+dofile("expansions/script/c20099998.lua")
 if fucf then return end
 fucf, fugf = { }, { }
---------------------------------------"Group function"
-function fugf.Filter(g, f, v, n)
-	v = type(v) == "table" and v or { v }
-	local func = type(f) == "string" and fusf.PostFix_Trans(f,v) or { f }
-	local _g, var = { }, fusf.Value_Trans(table.unpack(v))
---------------------------------------------
-	if #func==1 then
-		if type(func[1]) == "string" then func[1] = fucf[func[1] ] or Card[func[1] ] or aux[func[1] ] end
-		g = g:Filter(func[1] or aux.TRUE,nil,table.unpack(var))
-	elseif fusf.NotNil(func) then
-		local CalL, CalR
-		for _,val in ipairs(func) do
-			if val == "~" then
-				_g[#_g] = g - _g[#_g]
-			elseif type(val) == "string" and #val == 1 then
-				CalR = table.remove(_g)
-				CalL = table.remove(_g)
-				local tCalc = {
-					["+"] = CalL & CalR,
-					["-"] = CalL - CalR,
-					["/"] = CalL + CalR
-				}
-				table.insert(_g, tCalc[val])
-			else
-				if type(val) == "string" then val = fucf[val] or Card[val] or aux[val] end
-				local V = table.remove(var,1)
-				V = V and (type(V) =="table" and V or {V}) or { }
-				table.insert(_g, g:Filter(val,nil,table.unpack(V)))
+-------------------------------------- Group function
+function fugf.Get(_tp, _loc)
+	return Duel.GetFieldGroup(_tp, fusf.Get_Loc(_loc))
+end
+function fugf.Filter(_g, _func, _val, _n, ...)
+	if not _func then return not _n and _g or #_g >= _n end -- nil chk
+	-- trans _val 
+	if type(_val) ~= "table" then _val = { _val } end
+	local temp_val, v_ind = { }, 0
+	for _, f_val in ipairs(_val) do
+		if type(f_val) == "string" then
+			for _, val in fusf.ForTable(fusf.Val_Cuts(f_val, ...)) do
+				v_ind = v_ind + 1
+				temp_val[v_ind] = val
 			end
+		else
+			v_ind = v_ind + 1
+			temp_val[v_ind] = f_val
 		end
-		g = table.remove(_g)
 	end
-	if n then return n>0 and #g>=n or (n<0 and #g<-n) end
-	return g
+	_val, temp_val = temp_val
+	-- _func is function
+	if type(_func) == "function" then 
+		_g = _g:Filter(_func, nil, table.unpack(_val, 1, v_ind))
+		return not _n and _g or #_g >= _n
+	end 
+	-- _func is string
+	_func = fusf.PostFix_Trans(_func, ...)
+	if #_func == 1 then
+		_func = fucf[_func[1] ] or Card[_func[1] ] or aux[_func[1] ]
+		_g = _g:Filter(_func, nil, table.unpack(_val, 1, v_ind))
+		return not _n and _g or #_g >= _n
+	end
+	-- multi _func
+	local v_ind, temp_g = 1, { }
+	for _, func in ipairs(_func) do
+		if func == "~" then
+			temp_g[#temp_g] = _g - temp_g[#temp_g]
+		elseif type(func) == "string" and #func == 1 then
+			local valR = table.remove(temp_g)
+			local valL = table.remove(temp_g)
+			local Cal = {
+				["+"] = valL & valR,
+				["-"] = valL - valR,
+				["/"] = valL + valR 
+			}
+			table.insert(temp_g, Cal[func])
+		else
+			if type(func) == "string" then 
+				func = fucf[func] or Card[func] or aux[func]
+			end
+			temp_val, v_ind = _val[v_ind], v_ind + 1
+			if type(temp_val) ~= "table" then temp_val = {temp_val, len = 1} end
+			table.insert(temp_g, _g:Filter(func, nil, table.unpack(temp_val, 1, temp_val.len)))
+		end
+	end
+	_g = table.remove(temp_g)
+	return not _n and _g or #_g >= _n
 end
-function fugf.Get(tp,loc) 
-	return Duel.GetFieldGroup(tp,fusf.Get_Loc(loc)) 
+function fugf.GetFilter(_tp, _loc, _func, _val, _n, ...)
+	return fugf.Filter(fugf.Get(_tp, _loc), _func, _val, _n, ...)
 end
-function fugf.GetFilter(tp,loc,f,v,n) 
-	return fugf.Filter(fugf.Get(tp,loc),f,v,n) 
+function fugf.Select(_tp, _g, _func, _val, _min, _max, ...)
+	local g = _g
+	if type(_g) == "string" then g = fugf.Get(_tp, _g) end -- _g is loc
+	if _func then 
+		if type(_func) == "number" then -- _func is _min
+			_min, _max = _func, _val or _func
+		else -- _func is _func
+			g = fugf.Filter(g, _func, _val, nil, ...)
+		end
+	end
+	return g:Select(_tp, _min or 1, _max or _min or 1, nil)
 end
-function fugf.SelectFilter(tp,loc,f,v,c,min,max,sp) 
-	return fugf.GetFilter(tp,loc,f,v):Select(sp or tp,min or 1,max or min or 1,c) 
-end
-function fugf.SelectTg(tp,loc,f,v,c,min,max,sp)
-	local g=fugf.SelectFilter(tp,loc,f,v,c,min,max,sp)
+function fugf.SelectTg(_tp, _g, _func, _val, _min, _max, ...)
+	local g = fugf.Select(_tp, _g, _func, _val, _min, _max, ...)
 	Duel.SetTargetCard(g)
 	return g
 end
---------------------------------------"Card function"
-function fucf.Filter(c,f,...)
-	local v = {...}
-	v = #v==1 and v[1] or v
-	return fugf.Filter(Group.FromCards(c),f,v,1)
-end
-function fucf.IsN(func)
-	return function(c, val, exval)
-		if type(val) == "string" and val:match("[%+%-]") then
-			local st, ed  = val:find("[%+%-]")
-			if st == 1 then
-				st, ed = 2, #val
-			else
-				st, ed = 1, #val -1
+--------------------------------------"Card function" (use in initial (no return 
+function fucf.AddCode(c, ...)
+	local codes = { }
+	for _, _code in ipairs({...}) do
+		if type(_code) == "string" then 
+			for _, cod in ipairs(fusf.CutString(_code, ",", "AddCode")) do
+				codes[#codes + 1] = fusf.M_chk(cod)
 			end
-			local _val = math.abs(tonumber(val:sub(st, ed)))
-			local Cal = {
-				["+"] = Card[func](c, exval) >= _val,
-				["-"] = Card[func](c, exval) <= _val
-			}
-			return Cal[val:match("[%+%-]")]
+		else
+			codes[#codes + 1] = fusf.M_chk(_code)
 		end
-		return Card[func](c,exval) == tonumber(val)
 	end
+	aux.AddCodeList(c, table.unpack(codes))
 end
-fucf.IsRk = fucf.IsN("GetRank")
-fucf.IsLv = fucf.IsN("GetLevel")
-fucf.IsRLv = fucf.IsN("GetRitualLevel")
-fucf.IsLk = fucf.IsN("GetLink")
-fucf.IsAtk = fucf.IsN("GetAttack")
-fucf.IsDef = fucf.IsN("GetDefense")
+fucf.ReviveLimit = Card.EnableReviveLimit
+--------------------------------------"Card function" (use in Filter
+function fucf.Filter(c, func, ...)
+	return fugf.Filter(Group.FromCards(c), func, {...},1)
+end
+fucf.IsRk   = fusf.IsN("GetRank")
+fucf.IsLv   = fusf.IsN("GetLevel")
+fucf.IsRLv  = fusf.IsN("GetRitualLevel")
+fucf.IsLk   = fusf.IsN("GetLink")
+fucf.IsAtk  = fusf.IsN("GetAttack")
+fucf.IsDef  = fusf.IsN("GetDefense")
+fucf.IsSeq  = fusf.IsN("GetSequence")
+fucf.IsPSeq = fusf.IsN("GetPreviousSequence")
 function fucf.Not(c,val)
 	if aux.GetValueType(val) == "Card" then
 		return c ~= val
@@ -95,7 +121,7 @@ function fucf.Not(c,val)
 end
 function fucf.IsSet(c,set)
 	if type(set) == "number" then return c:IsSetCard(set) end
-	for _,Set in ipairs(fusf.CutString(set,"/")) do
+	for _,Set in ipairs(fusf.CutString(set, "/")) do
 		Set=tonumber(Set,16)
 		if Set and c:IsSetCard(Set) then return true end
 	end
@@ -113,47 +139,49 @@ function fucf.AbleTo(c,loc)
 	if iscos then loc = string.sub(loc,2) end
 	return Card["IsAbleTo"..func[loc]..(iscos and "AsCost" or "")](c)
 end
-function fucf.CanSp(c,e,tp,typ,nochk,nolimit,pos,totp,zone)
+function fucf.CanSp(c, e, typ, tp, nochk, nolimit, pos, totp, zone)
+	if not tp then tp = e:GetHandlerPlayer() end
 	return c:IsCanBeSpecialSummoned(e, typ, tp, nochk or false, nolimit or false, pos or POS_FACEUP, totp or tp,zone or 0xff)
 end
-function fucf.IsCod(c,cod)
-	local _cod
-	if aux.GetValueType(cod) == "number" then
-		_cod = {cod}
-	elseif aux.GetValueType(cod) == "string" then
-		_cod = fusf.CutString(cod, ",")
-	elseif aux.GetValueType(cod) == "table" then
-		_cod = cod
+function fucf.IsCode(c, _cod)
+	local cod
+	if aux.GetValueType(_cod) == "number" then
+		cod = {_cod}
+	elseif aux.GetValueType(_cod) == "string" then
+		cod = fusf.CutString(_cod, "+")
+	elseif aux.GetValueType(_cod) == "table" then
+		cod = _cod
 	end
-	for i,v in ipairs(_cod) do
-		_cod[i] = tonumber(v)<19999999 and (tonumber(v)+20000000) or tonumber(v)
+	for i,v in ipairs(cod) do
+		cod[i] = fusf.M_chk(tonumber(v))
 	end
-	return c:IsCode(table.unpack(_cod))
+	return c:IsCode(table.unpack(cod))
 end
-function fucf.AddCode(c, ...)
-	local _codes = {...}
-	for i,code in ipairs(_codes) do
-		if (code < 19999999) then _codes[i] = code + 20000000 end
+function fucf.HasCode(c, _cod)
+	if not c.card_code_list then return false end
+	local cod, has
+	if aux.GetValueType(_cod) == "number" then
+		cod = {_cod}
+	elseif aux.GetValueType(_cod) == "string" then
+		cod = fusf.CutString(_cod, "+")
 	end
-	aux.AddCodeList(c,table.unpack(_codes))
+	for i,v in ipairs(cod) do
+		has = has or c.card_code_list[fusf.M_chk(tonumber(v))]
+	end
+	return has
 end
-function fucf.HasCode(c, cod)
-	local _cod = tonumber(cod)
-	_cod = (_cod < 19999999) and _cod + 20000000 or _cod
-	return aux.IsCodeListed(c,_cod)
-end
-fucf.TgChk = Card.IsCanBeEffectTarget
-fucf.GChk = function(c) return not c:IsHasEffect(EFFECT_NECRO_VALLEY) end
-fucf.IsImm = Card.IsImmuneToEffect
-fucf.IsCon = Card.IsControler
+fucf.TgChk  = Card.IsCanBeEffectTarget
+fucf.GChk   = function(c) return not c:IsHasEffect(EFFECT_NECRO_VALLEY) end
+fucf.IsImm  = Card.IsImmuneToEffect
+fucf.IsCon  = Card.IsControler
 fucf.IsPCon = Card.IsPreviousControler
-fucf.IsLoc = function(c,loc) return c:IsLocation(fusf.Get_Loc(loc)) end
+fucf.IsLoc  = function(c,loc) return c:IsLocation(fusf.Get_Loc(loc)) end
 fucf.IsPLoc = function(c,loc) return c:IsPreviousLocation(fusf.Get_Loc(loc)) end
-fucf.IsRea  = fusf.Check_Constant(function(c,v) return c:GetReason()&v==v end,fucs.rea)
-fucf.IsTyp  = fusf.Check_Constant(function(c,v) return c:GetType()&v==v end,fucs.typ)
-fucf.IsSTyp  = fusf.Check_Constant(function(c,v) return c:IsSummonType(v) end,fucs.styp)
-fucf.IsOTyp = fusf.Check_Constant(function(c,v) return c:GetOriginalType()&v==v end,fucs.typ)
-fucf.IsAtt = fusf.Check_Constant(function(c,v) return c:GetAttribute()&v==v end,fucs.att)
-fucf.IsRac = fusf.Check_Constant(function(c,v) return c:GetRace()&v==v end,fucs.rac)
-fucf.IsPos = fusf.Check_Constant(function(c,v) return c:IsPosition(v) end,fucs.pos)
-fucf.IsPPos = fusf.Check_Constant(function(c,v) return c:IsPreviousPosition(v) end,fucs.pos)
+fucf.IsRea  = fusf.Is_Cons("GetReason", "rea")
+fucf.IsTyp  = fusf.Is_Cons("GetType", "typ")
+fucf.IsSTyp = fusf.Is_Cons("GetSummonType", "styp")
+fucf.IsOTyp = fusf.Is_Cons("GetOriginalType", "typ")
+fucf.IsAtt  = fusf.Is_Cons("GetAttribute", "att")
+fucf.IsRac  = fusf.Is_Cons("GetRace", "rac")
+fucf.IsPos  = fusf.Is_Cons("GetPosition", "pos", function(card_val, val) return card_val | val == val end)
+fucf.IsPPos = fusf.Is_Cons("GetPreviousPosition", "pos", function(card_val, val) return card_val | val == val end)

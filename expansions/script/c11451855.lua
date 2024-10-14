@@ -1,10 +1,6 @@
 --魔导空港 迦南
 local cm,m=GetID()
 function cm.initial_effect(c)
-	if not PNFL_PROPHECY_FLIGHT_CHECK then
-		dofile("expansions/script/c11451851.lua")
-		pnfl_prophecy_flight_initial(c)
-	end
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)

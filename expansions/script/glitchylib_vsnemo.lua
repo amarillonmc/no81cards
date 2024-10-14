@@ -608,8 +608,14 @@ function Auxiliary.ClearTable(tab)
 end
 
 --Card Actions
-function Duel.Attach(c,xyz,transfer)
+function Card.IsCanBeAttachedTo(c,xyzc,e,p,r)
+	return xyzc:IsType(TYPE_XYZ) and c:IsCanOverlay(xyzc:GetControler()) and not c:IsForbidden() --futureproofing
+end
+function Duel.Attach(c,xyz,transfer,e,r,rp)
 	if aux.GetValueType(c)=="Card" then
+		if e and r&REASON_EFFECT>0 and c:IsImmuneToEffect(e) then
+			return false
+		end
 		local og=c:GetOverlayGroup()
 		if #og>0 then
 			if transfer then
@@ -624,11 +630,13 @@ function Duel.Attach(c,xyz,transfer)
 	elseif aux.GetValueType(c)=="Group" then
 		for tc in aux.Next(c) do
 			local og=tc:GetOverlayGroup()
-			if #og>0 then
-				if transfer then
-					Duel.Overlay(xyz,og)
-				else
-					Duel.SendtoGrave(og,REASON_RULE)
+			if not (e and r&REASON_EFFECT>0 and tc:IsImmuneToEffect(e)) then
+				if #og>0 then
+					if transfer then
+						Duel.Overlay(xyz,og)
+					else
+						Duel.SendtoGrave(og,REASON_RULE)
+					end
 				end
 			end
 		end
@@ -1491,7 +1499,9 @@ end
 
 --Chain Info
 function Duel.GetTargetCards()
-	return Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToChain,nil)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	if not g then g=Group.CreateGroup() end
+	return g:Filter(Card.IsRelateToChain,nil)
 end
 function Duel.GetTargetPlayer()
 	return Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
@@ -3291,6 +3301,64 @@ function Duel.SSetAndFastActivation(p,g,e)
 			tc:RegisterEffect(e1)
 		end
 	end
+end
+function Duel.SSetAndRedirect(p,g,e)
+	if aux.GetValueType(g)=="Card" then g=Group.FromCards(g) end
+	if Duel.SSet(p,g)>0 then
+		local c=e:GetHandler()
+		local og=g:Filter(aux.SetSuccessfullyFilter,nil)
+		for tc in aux.Next(og) do
+			local e1=Effect.CreateEffect(c)
+			--e1:SetDescription(STRING_BANISH_REDIRECT)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE|EFFECT_FLAG_CANNOT_DISABLE)--|EFFECT_FLAG_CLIENT_HINT)
+			e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+			e1:SetValue(LOCATION_REMOVED)
+			e1:SetReset(RESET_EVENT|RESETS_REDIRECT_FIELD)
+			tc:RegisterEffect(e1,true)
+		end
+	end
+end
+
+--Special Summons
+function Duel.SpecialSummonRedirect(e,g,styp,sump,tp,ign1,ign2,pos,zone,loc,desc)
+	if not zone then zone=0xff end
+	if not loc then loc=LOCATION_REMOVED end
+	if aux.GetValueType(g)=="Card" then g=Group.FromCards(g) end
+	
+	-- if not desc then
+		-- if loc==LOCATION_REMOVED then
+			-- desc=STRING_BANISH_REDIRECT
+		-- elseif loc==LOCATION_DECKSHF then
+			-- desc=STRING_SHUFFLE_INTO_DECK_REDIRECT
+		-- end
+	-- end
+	
+	for dg in aux.Next(g) do
+		local finalzone=zone
+		if type(zone)=="table" then
+			finalzone=zone[tp+1]
+			if tc:IsCanBeSpecialSummoned(e,sumtype,sump,ign1,ign2,pos,1-tp,zone[2-tp]) and (not tc:IsCanBeSpecialSummoned(e,sumtype,sump,ign1,ign2,pos,tp,finalzone) or Duel.SelectYesNo(sump,aux.Stringid(61665245,2))) then
+				tp=1-tp
+				finalzone=zone[tp+1]
+			end
+		end
+		if Duel.SpecialSummonStep(dg,styp,sump,tp,ign1,ign2,pos,finalzone) then
+			local e=Effect.CreateEffect(e:GetHandler())
+			e:SetType(EFFECT_TYPE_SINGLE)
+			e:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+			if desc then
+				e:SetDescription(desc)
+				e:SetProperty(EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_CLIENT_HINT)
+			else
+				e:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			end
+			e:SetValue(loc)
+			e:SetReset(RESET_EVENT|RESETS_REDIRECT_FIELD)
+			dg:RegisterEffect(e,true)
+		end
+	end
+	return Duel.SpecialSummonComplete()
 end
 
 --Special Summon Procedures and After Effect Resolution

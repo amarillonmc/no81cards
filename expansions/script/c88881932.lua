@@ -54,7 +54,7 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.cfilter(c,tp)
-	return c:IsDiscardable() and (not c:IsCode(id) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_MONSTER) or c:IsType(TYPE_SPELL+TYPE_TRAP)) 
+	return c:IsDiscardable() and not c:IsCode(id)
 end
 function s.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,id)==0

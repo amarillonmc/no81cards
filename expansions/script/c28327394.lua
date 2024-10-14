@@ -33,7 +33,7 @@ function c28327394.decost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 end
 function c28327394.cfilter(c)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
+	return c:IsRace(RACE_FAIRY) and not c:IsPublic()
 end
 function c28327394.detg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
@@ -43,19 +43,19 @@ function c28327394.detg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		return Duel.IsExistingMatchingCard(c28327394.cfilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
 	e:SetLabel(0)
 	local ct=Duel.GetMatchingGroupCount(c28327394.cfilter,tp,LOCATION_HAND,0,nil)
-	if ct>Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD) then ct=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD) end
+	if ct>Duel.GetTargetCount(aux.TRUE,tp,0,LOCATION_ONFIELD,nil) then ct=Duel.GetTargetCount(aux.TRUE,tp,0,LOCATION_ONFIELD,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,c28327394.cfilter,tp,LOCATION_HAND,0,1,ct,nil)
 	Duel.ConfirmCards(1-tp,g)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local tg=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,g:GetCount(),g:GetCount(),nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,tg,tg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tg,tg:GetCount(),0,0)
 end
 function c28327394.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER)
 end
 function c28327394.deop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	local g=Duel.GetTargetsRelateToChain()
 	if Duel.Destroy(g,REASON_EFFECT)~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c28327394.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(28327394,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,c28327394.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)

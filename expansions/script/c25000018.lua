@@ -63,7 +63,7 @@ function s.disilter(e,c)
 end
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:GetSequence()>4 and rp==1-tp and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE
+	return c:GetMutualLinkedGroupCount()>0 and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE
 		and re:IsActiveType(TYPE_MONSTER)
 		and Duel.GetFlagEffect(tp,id)==0
 		and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
@@ -78,11 +78,12 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.lfilter(c)
-	return c:IsCode(id) and c:GetMutualLinkedGroupCount()~=0
+	return c:GetSequence()>4 and c:GetMutualLinkedGroupCount()~=0
 end
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local p=tp
-	if Duel.IsExistingMatchingCard(s.lfilter,tp,0,LOCATION_MZONE,1,nil) then
+	if not Duel.IsExistingMatchingCard(s.lfilter,tp,LOCATION_MZONE,0,1,nil) then
 		p=1-tp
 	end
 	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_DISABLE)

@@ -53,7 +53,7 @@ function c9910276.cfilter2(c,tp)
 	return c:IsControler(tp) and c:IsPreviousLocation(LOCATION_DECK)
 end
 function c9910276.lfilter(c,mc)
-	return c:IsSetCard(0x957) and c:IsType(TYPE_LINK) and c:GetLinkedGroup():IsContains(mc)
+	return c:IsSetCard(0x3957) and c:IsType(TYPE_LINK) and c:GetLinkedGroup():IsContains(mc)
 end
 function c9910276.hdcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()~=PHASE_DRAW and eg:IsExists(c9910276.cfilter2,1,nil,1-tp)

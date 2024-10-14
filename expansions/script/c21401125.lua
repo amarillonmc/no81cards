@@ -9,9 +9,14 @@ function c21401125.initial_effect(c)
 	e1:SetHintTiming(0,TIMING_TOGRAVE)
 	--e1:SetCondition(s.condition)
 	e1:SetCost(s.cost)
-	--e1:SetTarget(s.target)
+	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
+end
+
+function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanSpecialSummon(tp)
+		and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=3 end
 end
 
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -31,11 +36,11 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	e:SetLabel(Duel.Remove(sg,POS_FACEUP,REASON_COST))
 	Duel.SetTargetPlayer(tp)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
+	--Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 
-function s.thfilter(c)
-	return c:IsSetCard(0x3d70) and c:IsAbleToHand()
+function s.thfilter(c,e,tp)
+	return c:IsSetCard(0x3d70) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -44,19 +49,19 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	
 	local tp=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	Duel.ConfirmDecktop(tp,ct)
-	local g=Duel.GetDecktopGroup(tp,ct)
-	if g:GetCount()>0 then
-		Duel.DisableShuffleCheck()
-		if g:IsExists(s.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg=g:FilterSelect(tp,s.thfilter,1,1,nil)
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,sg)
-			Duel.ShuffleHand(tp)
-			g:Sub(sg)
-		end
-		if not Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT) == #g then
-			Duel.ShuffleDeck(tp)
-		end
+	local totg=Duel.GetDecktopGroup(tp,ct)
+	local g=totg:Filter(s.thfilter,nil,e,tp)
+	if g:GetCount()>0
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		totg:Sub(sg)
 	end
+	if #totg ~= Duel.Remove(totg,POS_FACEDOWN,REASON_EFFECT) then
+		Duel.ShuffleDeck(tp)
+	end	
+	
+
 end

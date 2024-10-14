@@ -13,15 +13,15 @@ function c9910290.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9910290.rfilter(c,e,tp)
-	return c:IsSetCard(0x957) and Duel.GetMZoneCount(tp,c)>0
+	return c:IsSetCard(0x3957) and Duel.GetMZoneCount(tp,c)>0
 		and Duel.IsExistingMatchingCard(c9910290.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
 end
 function c9910290.spfilter(c,e,tp,code)
-	return c:IsSetCard(0x957) and not c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3957) and not c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and Duel.IsExistingMatchingCard(c9910290.filter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,c,e,tp,true,true)
 end
 function c9910290.filter2(c,e,tp,flag1,flag2)
-	local b1=flag1 and c:IsLocation(LOCATION_DECK) and c:IsSetCard(0x957) and c:IsAbleToHand()
+	local b1=flag1 and c:IsLocation(LOCATION_DECK) and c:IsSetCard(0x3957) and c:IsAbleToHand()
 		and not c:IsCode(9910290)
 	local b2=flag2 and c:IsType(TYPE_PENDULUM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 	return b1 or b2
@@ -44,7 +44,7 @@ function c9910290.chainlm(e,rp,tp)
 	return not e:GetHandler():IsType(TYPE_MONSTER) or e:GetHandler():IsType(TYPE_PENDULUM)
 end
 function c9910290.thfilter(c)
-	return c:IsSetCard(0x957) and c:IsAbleToHand()
+	return c:IsSetCard(0x3957) and c:IsAbleToHand()
 end
 function c9910290.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end

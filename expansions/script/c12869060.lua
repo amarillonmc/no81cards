@@ -80,7 +80,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			{b3,aux.Stringid(id,4)})
 		if op==1 then
 			local max=math.min(Duel.GetLocationCount(tp,LOCATION_MZONE),ct)
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,2))
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,6))
 			local count=Duel.AnnounceLevel(tp,1,max)
 			for i=1,count do
 				local token=Duel.CreateToken(tp,12869000)
@@ -90,7 +90,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			b3=true
 		elseif op==2 then
 			local max=math.min(Duel.GetLocationCount(1-tp,LOCATION_MZONE),ct)
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,3))
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,6))
 			local count=Duel.AnnounceLevel(tp,1,max)
 			for i=1,count do
 				local token=Duel.CreateToken(tp,12869000)
@@ -113,6 +113,7 @@ function s.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local sg=g:SelectSubGroup(tp,s.gcheck,false,2,2)
 	Duel.Release(sg,REASON_COST)
+	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(12869060,7))
 end
 function s.imop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

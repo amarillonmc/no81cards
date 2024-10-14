@@ -23,11 +23,11 @@ function c9910293.condition(e,tp,eg,ep,ev,re,r,rp)
 	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
 end
 function c9910293.rfilter(c,e,tp)
-	return c:IsSetCard(0x957) and Duel.GetMZoneCount(tp,c)>0
+	return c:IsSetCard(0x3957) and Duel.GetMZoneCount(tp,c)>0
 		and Duel.IsExistingMatchingCard(c9910293.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
 end
 function c9910293.spfilter(c,e,tp,code)
-	return c:IsSetCard(0x957) and not c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3957) and not c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910293.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,c9910293.rfilter,1,nil,e,tp) end
@@ -50,5 +50,5 @@ function c9910293.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateActivation(ev)
 end
 function c9910293.handcon(e)
-	return Duel.IsExistingMatchingCard(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_PZONE,0,2,nil,0x957)
+	return Duel.IsExistingMatchingCard(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_PZONE,0,2,nil,0x3957)
 end

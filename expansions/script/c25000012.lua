@@ -140,8 +140,11 @@ function s.rmop2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	end
 end
+function s.cfilter1(c)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER)
+end
 function s.pencon(e,tp,eg,ep,ev,re,r,rp)
-	return not eg:IsContains(e:GetHandler())
+	return eg:IsExists(s.cfilter1,1,e:GetHandler())
 end
 function s.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end

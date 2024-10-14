@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	e2:SetTargetRange(0,1)
 	e2:SetCondition(cm.discon)
 	e2:SetTarget(cm.splimit)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 	--token
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)

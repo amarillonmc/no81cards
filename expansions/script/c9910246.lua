@@ -38,7 +38,7 @@ function c9910246.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c9910246.scfilter(c)
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x957)
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0x3957)
 end
 function c9910246.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910246.scfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -97,7 +97,7 @@ function c9910246.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c9910246.thfilter(c,type1)
-	return not c:IsType(type1) and c:IsSetCard(0x957) and c:IsAbleToHand()
+	return not c:IsType(type1) and c:IsSetCard(0x3957) and c:IsAbleToHand()
 end
 function c9910246.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

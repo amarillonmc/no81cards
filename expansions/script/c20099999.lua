@@ -65,15 +65,14 @@ fucs.des = {
 	--基本分
 	DAM = 20099999*16 + 11  ,   --基本分伤害
 	REC = 20099999*16 + 12  ,   --基本分回复
-	--特殊
-	--SP = 1159   ,  --当魔法卡盖放
-	--SP = 1160   ,  --在灵摆区域发动
+	--特殊 (用于显示
+	PUB = 66  ,   --持续公开
 }
 --category Variable
 fucs.cat = {
 	SH  = 0x20008   ,   --CATEGORY_SEARCH+CATEGORY_TOHAND
 	--召唤
-	S   = CATEGORY_SUMMON	 , 
+	S   = CATEGORY_SUMMON   , 
 	SP  = CATEGORY_SPECIAL_SUMMON   ,
 	FU  = CATEGORY_FUSION_SUMMON	,   --融合召唤效果（暴走魔法阵）
 	--移动
@@ -96,7 +95,7 @@ fucs.cat = {
 	ATK = CATEGORY_ATKCHANGE	,   --改变攻击效果
 	DEF = CATEGORY_DEFCHANGE	,   --改变防御效果
 	--无效
-	NEGA= CATEGORY_NEGATE	 ,   --发动无效
+	NEGA= CATEGORY_NEGATE   ,   --发动无效
 	NEGE= CATEGORY_DISABLE  ,   --效果无效
 	NEGS= CATEGORY_DISABLE_SUMMON   ,   --召唤无效
 	--基本分
@@ -135,7 +134,7 @@ fucs.cod = {
 	DR  = EVENT_DRAW				,   --抽卡时
 	F   = EVENT_FLIP				,   --翻转时
 	RO  = EVENT_DETACH_MATERIAL  ,   --去除超量素材时
-	DES = EVENT_DESTROYED	 ,   --被破坏时
+	DES = EVENT_DESTROYED   ,   --被破坏时
 	PDES= EVENT_DESTROY ,   --確定被破壞的卡片移動前
 	LEA = EVENT_LEAVE_FIELD   ,   --离场时
 	PLEA= EVENT_LEAVE_FIELD_P   ,   --離場的卡片移動前
@@ -220,7 +219,7 @@ fucs.pro = {
 	CAL = EFFECT_FLAG_DAMAGE_CAL		,   --可以在伤害计算时发动
 	OP  = EFFECT_FLAG_EVENT_PLAYER  ,   --发动/处理效果的玩家为触发事件的玩家而不是卡片的持有者，如仪式魔人，万魔殿
 	NR  = EFFECT_FLAG_NO_TURN_RESET  ,   --发条等“这张卡在场上只能发动一次”的效果
-	OE  = 0x40400				 ,   --EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE(out effect)
+	OE  = 0x40400		   ,   --EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE(out effect)
 }
 --Location Variable
 fucs.ran = {
@@ -255,9 +254,10 @@ fucs.pha = {
 fucs.res = {
 	SELF = RESET_SELF_TURN  ,
 	OPPO = RESET_OPPO_TURN  ,
-	PH   = RESET_PHASE  ,
 	CH   = RESET_CHAIN  ,
+	PH   = RESET_PHASE  ,
 	EV   = RESET_EVENT  ,
+	-- 以下自动添加 RESET_EVENT
 	DIS  = RESET_DISABLE	,
 	SET  = RESET_TURN_SET   ,
 	TG   = RESET_TOGRAVE	,
@@ -273,13 +273,6 @@ fucs.res = {
 	----组合时点
 	STD  = RESETS_STANDARD  ,
 	RED  = RESETS_REDIRECT  ,
-	_PH  = fucs.pha   ,
-}
---count limit Variable
-fucs.ctl = {
-	O = EFFECT_COUNT_CODE_OATH  ,   --发动次数
-	D = EFFECT_COUNT_CODE_DUEL  ,   --决斗次数
-	S = EFFECT_COUNT_CODE_SINGLE	,   --公共次数
 }
 --reason Variable
 fucs.rea = {
@@ -297,9 +290,9 @@ fucs.rea = {
 	SY  = REASON_SYNCHRO		, 
 	RI  = REASON_RITUAL   , 
 	XYZ = REASON_XYZ			,  
-	LI  = REASON_LINK	 , 
+	LI  = REASON_LINK   , 
 	--特殊rea
-	COS = REASON_COST	 ,   --用於代價或無法支付代價而破壞
+	COS = REASON_COST   ,   --用於代價或無法支付代價而破壞
 	REP = REASON_REPLACE		,   --代替
 	TEM = REASON_TEMPORARY  ,   --暂时
 	ADJ = REASON_ADJUST   ,   --调整（御前试合）
@@ -313,7 +306,7 @@ fucs.pos = {
 	FU  = POS_FACEUP			,   --正面表示
 	FD  = POS_FACEDOWN  ,   --背面表示
 	A   = POS_ATTACK			,   --攻击表示
-	D   = POS_DEFENSE	 ,   --守备表示
+	D   = POS_DEFENSE   ,   --守备表示
 }
 --Attributes Variable
 fucs.att = {

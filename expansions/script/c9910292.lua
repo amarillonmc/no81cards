@@ -29,7 +29,7 @@ function c9910292.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910292.cfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_LINK) and c:IsSetCard(0x957)
+	return c:IsFaceup() and c:IsType(TYPE_LINK) and c:IsSetCard(0x3957)
 end
 function c9910292.condition(e)
 	return Duel.IsExistingMatchingCard(c9910292.cfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
@@ -38,11 +38,11 @@ function c9910292.val(e,re,dam,r,rp,rc)
 	return math.floor(dam/2)
 end
 function c9910292.rfilter(c,e,tp)
-	return c:IsSetCard(0x957) and Duel.GetMZoneCount(tp,c)>0
+	return c:IsSetCard(0x3957) and Duel.GetMZoneCount(tp,c)>0
 		and Duel.IsExistingMatchingCard(c9910292.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
 end
 function c9910292.spfilter(c,e,tp,code)
-	return c:IsSetCard(0x957) and not c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3957) and not c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910292.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,c9910292.rfilter,1,nil,e,tp) end
@@ -60,7 +60,7 @@ function c9910292.chainlm(e,rp,tp)
 	return not e:GetHandler():IsType(TYPE_MONSTER) or e:GetHandler():IsType(TYPE_PENDULUM)
 end
 function c9910292.recfilter(c)
-	return c:IsSetCard(0x957) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
+	return c:IsSetCard(0x3957) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
 function c9910292.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end

@@ -25,7 +25,7 @@ function c9910291.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9910291.thfilter(c)
-	return c:IsSetCard(0x957) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x3957) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 		and (c:IsFaceup() or not c:IsLocation(LOCATION_EXTRA))
 end
 function c9910291.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -47,11 +47,11 @@ function c9910291.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910291.rfilter(c,e,tp)
-	return c:IsSetCard(0x957) and Duel.GetMZoneCount(tp,c)>0
+	return c:IsSetCard(0x3957) and Duel.GetMZoneCount(tp,c)>0
 		and Duel.IsExistingMatchingCard(c9910291.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode())
 end
 function c9910291.spfilter(c,e,tp,code)
-	return c:IsSetCard(0x957) and not c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3957) and not c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910291.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,c9910291.rfilter,1,nil,e,tp) end
@@ -68,7 +68,7 @@ function c9910291.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c9910291.spfilter2(c,e,tp)
-	return c:IsSetCard(0x957) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3957) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910291.activate2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end

@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCondition(cm.chcon)
 	e4:SetOperation(cm.chop)
-	c:RegisterEffect(e4)
+	--c:RegisterEffect(e4)
 	if not cm.global_check then
 		cm.global_check=true
 		local _IsActiveType=Effect.IsActiveType

@@ -41,7 +41,16 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.mfilter(c,e,tp)
-	return c:IsDisabled()
+	if not c:IsDisabled() then return false end
+	local eset1={c:IsHasEffect(EFFECT_DISABLE)}
+	local eset2={c:IsHasEffect(EFFECT_DISABLE_EFFECT)}
+	for _,te in pairs(eset1) do
+		if aux.GetValueType(te)=="Effect" and te:GetOwnerPlayer()==1-tp then return true end
+	end
+	for _,te in pairs(eset2) do
+		if aux.GetValueType(te)=="Effect" and te:GetOwnerPlayer()==1-tp then return true end
+	end
+	return false
 end
 function s.altop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end

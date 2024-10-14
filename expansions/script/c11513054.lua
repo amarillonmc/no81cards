@@ -1,13 +1,5 @@
 --闪术兵器 — 澪矢
 function c11513054.initial_effect(c)
-	--attribute
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
-	e0:SetCode(EFFECT_ADD_ATTRIBUTE)
-	e0:SetRange(0xff)
-	e0:SetValue(ATTRIBUTE_DARK)
-	c:RegisterEffect(e0) 
 	--to deck 
 	local e1=Effect.CreateEffect(c)  
 	e1:SetCategory(CATEGORY_TODECK+CATEGORY_TOEXTRA+CATEGORY_DRAW)
@@ -42,16 +34,16 @@ function c11513054.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_DISCARD+REASON_COST)
 end 
 function c11513054.tdfil(c) 
-	return c:IsAbleToDeck() and c:IsSetCard(0x1115) and c:IsType(TYPE_MONSTER) and c:IsFaceup()  
+	return c:IsAbleToDeck() and c:IsFaceupEx()  
 end 
 function c11513054.tdtg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	local g=Duel.GetMatchingGroup(c11513054.tdfil,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	if chk==0 then return #g>=5 and Duel.IsPlayerCanDraw(tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,5,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end 
 function c11513054.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil) 
+	local g=Duel.GetMatchingGroup(c11513054.tdfil,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil) 
 	if #g>=5 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local sg=g:Select(tp,5,5,nil)

@@ -99,7 +99,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsSummonType(SUMMON_TYPE_SYNCHRO) and c:IsPreviousPosition(POS_FACEUP)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsCode(40011177) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(40011179) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.spfilter(chkc,e,tp) end

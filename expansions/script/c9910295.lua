@@ -20,7 +20,7 @@ function c9910295.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910295.spfilter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x957) and c:IsType(TYPE_PENDULUM)
+	return c:IsFaceup() and c:IsSetCard(0x3957) and c:IsType(TYPE_PENDULUM)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c9910295.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -32,10 +32,10 @@ function c9910295.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910295.rfilter(c,e,tp)
-	return c:IsSetCard(0x957) and Duel.IsExistingMatchingCard(c9910295.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode(),c)
+	return c:IsSetCard(0x3957) and Duel.IsExistingMatchingCard(c9910295.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode(),c)
 end
 function c9910295.thfilter(c,e,tp,code,mc)
-	if not (c:IsSetCard(0x957) and c:IsType(TYPE_MONSTER)) or c:IsCode(code) then return false end
+	if not (c:IsSetCard(0x3957) and c:IsType(TYPE_MONSTER)) or c:IsCode(code) then return false end
 	return c:IsAbleToHand() or (Duel.GetMZoneCount(tp,mc)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
 end
 function c9910295.thcost(e,tp,eg,ep,ev,re,r,rp,chk)

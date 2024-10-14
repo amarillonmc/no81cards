@@ -53,20 +53,39 @@ function s.rmfilter(c)
 	return c:IsSetCard(0x3d70) and c:IsAbleToRemove() and c:IsFaceup()
 end
 
-function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x3d70) and c:IsFaceup()
-	and ( c:IsCanBeSpecialSummoned(e,0,tp,false,false) or c:IsAbleToHand() )
+function s.sp1filter(c,e,tp)
+	return c:IsSetCard(0x3d70) and c:IsFaceup() and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
+end
+
+function s.sp2filter(c,e,tp)
+	return c:IsSetCard(0x3d70) and c:IsFaceup() and c:IsAbleToHand()
+end
+
+function s.sp3filter(c,e,tp)
+	return c:IsSetCard(0x3d70) and c:IsFaceup() 
+		and (c:IsAbleToHand() or c:IsCanBeSpecialSummoned(e,0,tp,false,false) )
 end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(s.spfilter,tp,LOCATION_REMOVED,0,1,nil,e,tp)
-		and Duel.IsExistingTarget(s.rmfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return 
+		( Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
+			and  Duel.IsExistingTarget(s.sp1filter,tp,LOCATION_REMOVED,0,1,nil,e,tp)
+		) or 
+		Duel.IsExistingTarget(s.sp2filter,tp,LOCATION_REMOVED,0,1,nil,e,tp)
+		and Duel.IsExistingTarget(s.rmfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil)
+	end
 		
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,2))
-	local g1=Duel.SelectTarget(tp,s.spfilter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g1,1,0,0)
+	
+	local g1 = Group.CreateGroup()
+	
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+		g1 = Duel.SelectTarget(tp,s.sp3filter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
+	else
+		g1 = Duel.SelectTarget(tp,s.sp2filter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND,g1,1,0,0)
 	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g2=Duel.SelectTarget(tp,s.rmfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil)

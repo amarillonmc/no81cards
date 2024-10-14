@@ -45,13 +45,13 @@ function c28390175.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c28390175.tgfilter(c)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	return c:IsRace(RACE_FAIRY) and c:IsLevelBelow(4) and c:IsAbleToGrave()
 end
 function c28390175.thfilter(c)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsRace(RACE_FAIRY) and c:IsLevelBelow(4) and c:IsAbleToHand()
 end
 function c28390175.spfilter(c,e,tp)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsRace(RACE_FAIRY) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c28390175.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(c28390175.tgfilter,tp,LOCATION_DECK,0,1,nil)

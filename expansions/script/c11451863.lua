@@ -1,10 +1,6 @@
 --魔导飞行队强击指令
 local cm,m=GetID()
 function cm.initial_effect(c)
-	if not PNFL_PROPHECY_FLIGHT_CHECK then
-		dofile("expansions/script/c11451851.lua")
-		pnfl_prophecy_flight_initial(c)
-	end
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -247,12 +243,12 @@ function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function Group.ForEach(group,func,...)
-    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
-        local d_group=group:Clone()
-        for tc in aux.Next(d_group) do
-            func(tc,...)
-        end
-    end
+	if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+		local d_group=group:Clone()
+		for tc in aux.Next(d_group) do
+			func(tc,...)
+		end
+	end
 end
 function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

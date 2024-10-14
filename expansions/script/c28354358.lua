@@ -24,7 +24,7 @@ function c28354358.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28354358.filter(c)
-	return c:IsSetCard(0x283) and c:IsSummonableCard() and c:IsAbleToHand()
+	return c:IsRace(RACE_FAIRY) and c:IsSummonableCard() and c:IsAbleToHand()
 end
 function c28354358.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c28354358.filter(chkc) end

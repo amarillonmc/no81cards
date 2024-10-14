@@ -9,7 +9,7 @@ function c28346765.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,28346765)
-	e1:SetCondition(c28346765.setcon)
+	--e1:SetCondition(c28346765.setcon)
 	e1:SetCost(c28346765.cost)
 	e1:SetTarget(c28346765.settg)
 	e1:SetOperation(c28346765.setop)
@@ -28,11 +28,11 @@ function c28346765.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28346765.matfilter(c)
-	return c:IsLinkSetCard(0x283)
+	return c:GetOriginalRace()&RACE_FAIRY~=0
 end
-function c28346765.setcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
-end
+--function c28346765.setcon(e,tp,eg,ep,ev,re,r,rp)
+--	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+--end
 function c28346765.cfilter(c)
 	return c:IsSetCard(0x283) and not c:IsPublic()
 end
@@ -64,7 +64,7 @@ function c28346765.spfilter(c,e,tp)
 end
 function c28346765.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c28346765.spfilter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingTarget(c28346765.spfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler(),e,tp) end
+	if chk==0 then return Duel.GetMZoneCount(tp)>0 and Duel.IsExistingTarget(c28346765.spfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler(),e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,c28346765.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)

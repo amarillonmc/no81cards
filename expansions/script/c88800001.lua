@@ -84,8 +84,8 @@ function s.spfilter2(c,e,tp)
 end
 function s.spop2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=4 then return end
-	Duel.ConfirmDecktop(tp,5)
-	local g=Duel.GetDecktopGroup(tp,5)
+	Duel.ConfirmDecktop(tp,3)
+	local g=Duel.GetDecktopGroup(tp,3)
 	local ct=g:GetCount()
 	if ct>0 and ((Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and g:FilterCount(s.spfilter1,nil,e,tp)>0) or (g:FilterCount(s.spfilter2,nil,e,tp)>0))
 		and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then

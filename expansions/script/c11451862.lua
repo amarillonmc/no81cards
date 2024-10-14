@@ -1,10 +1,6 @@
 --魔导飞行队急袭指令
 local cm,m=GetID()
 function cm.initial_effect(c)
-	if not PNFL_PROPHECY_FLIGHT_CHECK then
-		dofile("expansions/script/c11451851.lua")
-		pnfl_prophecy_flight_initial(c)
-	end
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DECKDES+CATEGORY_TOGRAVE)
@@ -99,12 +95,12 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SelectTarget(tp,cm.tgfilter,tp,0x3c,0x3c,1,1,c,e)
 end
 function Group.ForEach(group,func,...)
-    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
-        local d_group=group:Clone()
-        for tc in aux.Next(d_group) do
-            func(tc,...)
-        end
-    end
+	if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+		local d_group=group:Clone()
+		for tc in aux.Next(d_group) do
+			func(tc,...)
+		end
+	end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0):Filter(cm.seqfilter,nil)

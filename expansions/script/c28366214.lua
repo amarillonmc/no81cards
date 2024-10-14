@@ -5,7 +5,8 @@ function c28366214.initial_effect(c)
 	e1:SetCategory(CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetHintTiming(TIMING_DAMAGE_STEP)
 	e1:SetCountLimit(1,28366214+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c28366214.target)
 	e1:SetOperation(c28366214.activate)
@@ -30,7 +31,7 @@ function c28366214.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c28366214.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x284)
+	return c:IsFaceup() and c:IsRace(RACE_FAIRY)
 end
 function c28366214.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c28366214.cfilter(chkc) end
@@ -98,7 +99,7 @@ end
 function c28366214.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local b1=true
-	local b2=c:IsRelateToEffect(e)
+	local b2=c:IsRelateToEffect(e) and c:IsAbleToHand()
 	local op=aux.SelectFromOptions(tp,
 		{b1,aux.Stringid(28366214,0)},
 		{b2,aux.Stringid(28366214,1)})

@@ -66,7 +66,7 @@ function c9910285.spval(e,c)
 	return SUMMON_VALUE_SELF,Duel.GetLinkedZone(c:GetControler())
 end
 function c9910285.lfilter(c,mc)
-	return c:IsSetCard(0x957) and c:IsType(TYPE_LINK) and c:GetLinkedGroup():IsContains(mc)
+	return c:IsSetCard(0x3957) and c:IsType(TYPE_LINK) and c:GetLinkedGroup():IsContains(mc)
 end
 function c9910285.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

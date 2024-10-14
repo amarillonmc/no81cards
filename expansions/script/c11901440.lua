@@ -55,7 +55,7 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
 function s.tdfi1ter(c)
-	return c:IsSetCard(0x409) and c:IsAbleToDeck()
+	return c:IsSetCard(0x409) and c:IsAbleToDeck() and not c:IsCode(11901440)
         and not (c:IsLocation(0x20) and c:IsFacedown())
 end
 function s.scon(e,tp,eg,ep,ev,re,r,rp)
@@ -64,12 +64,12 @@ function s.scon(e,tp,eg,ep,ev,re,r,rp)
 		and c:IsPreviousPosition(0x5) and c:IsPreviousControler(tp) and c:GetReasonPlayer()==1-tp
 end
 function s.stg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.tdfi1ter,tp,0x30,0,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.tdfi1ter,tp,0x30,0,1,nil) end
 	Duel.SetOperationInfo(0,0x10,nil,1,tp,0x30)
 end
 function s.sop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(3,tp,506)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.tdfi1ter),tp,0x30,0,1,5,e:GetHandler())
+	Duel.Hint(3,tp,507)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.tdfi1ter),tp,0x30,0,1,5,nil)
 	if g:GetCount()>0 then
         Duel.HintSelection(g)
 		Duel.SendtoDeck(g,nil,2,0x40)

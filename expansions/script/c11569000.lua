@@ -47,18 +47,18 @@ function s.spfilter(c,e,tp)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetLocationCountFromEx(1-tp,tp,nil,nil)
-	if chk==0 then return ct>0 end
+	if chk==0 then return ct>0 and Duel.GetMZoneCount(1-tp)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCountFromEx(1-tp,tp,nil,nil)<=0 then return end
 	local zg=Duel.GetFieldGroup(tp,LOCATION_DECK+LOCATION_GRAVE,0)
 	if zg:IsExists(s.spfilter,1,nil,e,tp) then
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,1-tp,false,false,POS_FACEUP_ATTACK)
-	end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+		if g:GetCount()>0 then
+			Duel.SpecialSummon(g,0,tp,1-tp,false,false,POS_FACEUP_ATTACK)
+		end
 	end
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
@@ -102,10 +102,6 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Overlay(sc,Group.FromCards(tc))
 		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
 		sc:CompleteProcedure()
-		if c:IsRelateToEffect(e) then
-			c:CancelToGrave()
-			Duel.Overlay(sc,Group.FromCards(c))
-		end
 	end
 end
 function s.ovfilter(c)

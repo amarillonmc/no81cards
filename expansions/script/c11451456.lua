@@ -67,7 +67,7 @@ function cm.debug(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	Debug.Message("场上的表侧表示怪兽合计等级:"..g:GetSum(Card.GetLevel))
 end
 function cm.mzfilter(c)
-	return c:IsLinkRace(RACE_PSYCHO) and c:IsLinkAttribute(ATTRIBUTE_LIGHT) and c:GetLevel()>=3 and c:GetLevel()<=10
+	return c:IsLinkRace(RACE_PSYCHO) and c:IsLinkAttribute(ATTRIBUTE_LIGHT) and not c:IsType(TYPE_LINK)
 end
 function cm.isprime(num)
 	if num<2 then return false elseif num==2 then return true end
@@ -97,7 +97,7 @@ function cm.lvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	local lv=g:GetFirst():GetLevel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINGMSG_LVRANK)
-	e:SetLabel(Duel.AnnounceLevel(tp,3,10,lv))
+	e:SetLabel(Duel.AnnounceLevel(tp,1,10,lv))
 end
 function cm.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

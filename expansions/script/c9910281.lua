@@ -27,7 +27,7 @@ function c9910281.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910281.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x957)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3957)
 end
 function c9910281.indtg(e,c)
 	return e:GetHandler()==c or (c:IsType(TYPE_PENDULUM) and e:GetHandler():GetLinkedGroup():IsContains(c))
@@ -39,7 +39,7 @@ function c9910281.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c9910281.cfilter,1,nil)
 end
 function c9910281.spfilter(c,e,tp)
-	return c:IsSetCard(0x957) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3957) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910281.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_PZONE) and chkc:IsControler(tp) and c9910281.spfilter(chkc,e,tp) end

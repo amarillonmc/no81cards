@@ -25,7 +25,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g1=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_HAND,0,1,snum,nil)
 	if not g1 then return end
-	snum=g1:GetCount()+g1:GetCount()
+	snum=g1:GetCount()+1
 	local num=0
 	Duel.ConfirmCards(1-tp,g1)
 	for i=1,#g2,1 do

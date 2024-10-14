@@ -39,7 +39,7 @@ function c9910294.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	c:RegisterFlagEffect(9910294,RESET_CHAIN,0,1)
 end
 function c9910294.cfilter1(c,lg)
-	return c:IsFaceup() and lg:IsContains(c) and c:IsSetCard(0x957)
+	return c:IsFaceup() and lg:IsContains(c) and c:IsSetCard(0x3957)
 end
 function c9910294.tecon(e,tp,eg,ep,ev,re,r,rp)
 	local lg=e:GetHandler():GetLinkedGroup()
@@ -67,7 +67,7 @@ end
 function c9910294.cfilter2(c,tp,zone)
 	local seq=c:GetPreviousSequence()
 	if c:IsPreviousControler(1-tp) then seq=seq+16 end
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousSetCard(0x957) and bit.extract(zone,seq)~=0
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousSetCard(0x3957) and bit.extract(zone,seq)~=0
 end
 function c9910294.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c9910294.cfilter2,1,nil,tp,e:GetHandler():GetLinkedZone())

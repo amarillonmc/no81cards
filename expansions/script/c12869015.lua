@@ -42,18 +42,6 @@ end
 function c12869015.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetDescription(aux.Stringid(12869015,2))
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
-		e1:SetValue(1)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
-		tc:RegisterEffect(e1)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-		tc:RegisterEffect(e2)
 	local zone={}
 	local flag={}
 	for p=0,1 do
@@ -81,6 +69,18 @@ function c12869015.spop(e,tp,eg,ep,ev,re,r,rp)
 				sel_zone=sel_zone>>16
 			end
 			Duel.SpecialSummon(c,0,tp,sump,false,false,POS_FACEUP,sel_zone)
+			if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(12869015,2))
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
+		e1:SetValue(1)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+		tc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+		tc:RegisterEffect(e2)
 		end
 end
 function c12869015.costfilter(c)
@@ -99,10 +99,10 @@ function c12869015.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c12869015.spop1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.IsPlayerCanSpecialSummonMonster(tp,12869000,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_WATER) then
+	for i=1,2 do
 		local token=Duel.CreateToken(tp,12869000)
 		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
-		local token2=Duel.CreateToken(tp,12869000)
-		Duel.SpecialSummonStep(token2,0,tp,tp,false,false,POS_FACEUP)
-		Duel.SpecialSummonComplete()
+		end
+	Duel.SpecialSummonComplete()
 	end
 end

@@ -23,7 +23,7 @@ function c9910278.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910278.matfilter(c)
-	return c:IsLinkSetCard(0x957) and not c:IsLinkCode(9910278)
+	return c:IsLinkSetCard(0x3957) and not c:IsLinkCode(9910278)
 end
 function c9910278.indtg(e,c)
 	return e:GetHandler()==c or (c:IsType(TYPE_PENDULUM) and e:GetHandler():GetLinkedGroup():IsContains(c))
