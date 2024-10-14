@@ -50,9 +50,7 @@ function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
 		local ex,tg,ct,p,v=Duel.GetOperationInfo(ev,ctg)
 		if tg then
 			if tg:IsExists(cm.nfilter,1,nil) then return true end
-		elseif v and v>0 and Duel.IsExistingMatchingCard(cm.nfilter,tp,v,0,1,nil) then
-			return true
-		end
+		elseif v and v>0 and p==tp and Duel.IsExistingMatchingCard(cm.nfilter,tp,v,0,1,nil) then return true end
 	end
 	return false
 end
