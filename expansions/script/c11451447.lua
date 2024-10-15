@@ -1,6 +1,5 @@
 --组织革命的司令
-local m=11451447
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,99518961)
 	--spsummon procedure
@@ -60,6 +59,7 @@ function cm.decost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_GRAVE,0,2,2,nil)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
+	Duel.ConfirmCards(1-tp,g)
 end
 function cm.detg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
@@ -89,7 +89,6 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
 		e1:SetRange(LOCATION_SZONE)
 		e1:SetValue(cm.efilter)

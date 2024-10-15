@@ -74,7 +74,7 @@ function s.confilter(c,tp)
 	return c:GetType()&TYPE_XYZ~=0
 end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.confilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local g=Duel.GetMatchingGroup(s.confilter,e:GetHandlerPlayer(),LOCATION_MZONE,LOCATION_MZONE,nil)
 	return g:GetClassCount(Card.GetCode)>=2
 end
 function s.disable(e,c)
