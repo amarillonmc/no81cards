@@ -1,7 +1,7 @@
 --怪翎衣 玉鹤守子
 local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x39c0),2,true)
+	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x67c0),2,true)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))

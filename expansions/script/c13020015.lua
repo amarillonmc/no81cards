@@ -134,6 +134,6 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
   local g2 = Duel.GetMatchingGroup( cm.filter5, tp, LOCATION_GRAVE+QY_cw, 0, nil,e,tp)
   local g1 = Duel.SelectMatchingCard(tp, cm.filter6, tp, LOCATION_GRAVE+QY_cw, 0, 1, 1, nil,e,tp,m,g2):GetFirst()
   Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
-  g2=g2:Filter(cm.filter4, nil,g1)
+  g2=g2:Filter(cm.filter4, nil,g1):GetFirst()
   Duel.Equip(tp,g2,g1,true)
 end

@@ -72,7 +72,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0x605)
+	return not c:IsRace(RACE_PSYCHO)
 end
 
 

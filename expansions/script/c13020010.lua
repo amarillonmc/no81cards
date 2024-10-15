@@ -69,7 +69,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			oc=QY_sk
 		end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local tcg=Duel.SelectMatchingCard(tp,Card.CheckEquipTarget,tp,oc,0,1,1,nil,tc):GetFirst()
+		local tcg=Duel.SelectMatchingCard(tp,cm.filter2,tp,oc,0,1,1,nil):GetFirst()
 		Duel.Equip(tp,tcg,tc,true)
 	end
 end
@@ -92,6 +92,7 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local g1 = Duel.GetMatchingGroup( cm.filter5, tp, LOCATION_GRAVE, 0, nil):GetFirst()
 	local g2 = Duel.GetMatchingGroup( cm.filter6, tp, LOCATION_GRAVE, 0, g1 ,e,tp)
 	local kx,zzx,sxx,zzjc,sxjc,zzl=it.sxbl()
+	
 	if num>=6 and g1~=nil and #g2>0 and zzx>0 and xg.ky(tp,m,1) then
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
 		local g = Duel.SelectMatchingCard(tp, cm.filter5, tp, LOCATION_GRAVE, 0, 1, 1, nil)
@@ -137,6 +138,7 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(g, nil, 2, REASON_EFFECT)
 		Duel.RegisterFlagEffect(tp, m, SD_js, 0, 1)
 	end
+
 end
 function cm.atkval(e,c)
 	return Duel.GetMatchingGroupCount(cm.atkfilter,e:GetHandlerPlayer(),LOCATION_GRAVE+LOCATION_REMOVED,0,nil)*500

@@ -66,7 +66,7 @@ function c22348435.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=ctg:SelectSubGroup(tp,c22348435.gcheck,false,1,ct,e,tp)
 	local ec=tg:GetFirst()
 	while ec do
-		if Duel.Equip(tp,ec,tc,true,true)~=0 then 
+		if Duel.Equip(tp,ec,tc)~=0 then 
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_EQUIP_LIMIT)

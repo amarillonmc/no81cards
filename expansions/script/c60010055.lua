@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,2))
 	e1:SetCategory(CATEGORY_DRAW)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_CUSTOM+m)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_SZONE)
@@ -27,12 +27,12 @@ if not cm.lblsz then
 	cm._tossdice=Duel.TossDice
 	Duel.TossDice=function (tp,a,b)
 		Duel.RaiseEvent(Duel.GetDecktopGroup(tp,1),EVENT_CUSTOM+m,nil,0,tp,tp,0)
-		if Duel.GetFlagEffect(tp,m+10000000)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) then
+		if Duel.GetFlagEffect(tp,m+10000000)~=0 and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			local rg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil):Select(tp,1,2,nil)
 			Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 			Duel.ResetFlagEffect(tp,m+10000000)
 		end
-		if Duel.GetFlagEffect(tp,m)==0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,m) and Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,m):RandomSelect(tp,1):GetFirst():IsAbleToHand(tp) then
+		if Duel.GetFlagEffect(tp,m)==0 and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,m) and Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,m):RandomSelect(tp,1):IsAbleToHand(tp) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.RegisterFlagEffect(tp,m,0,0,1)
 			local ag=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,m):Select(tp,1,1,nil)
 			Duel.SendtoHand(ag,nil,REASON_EFFECT)
