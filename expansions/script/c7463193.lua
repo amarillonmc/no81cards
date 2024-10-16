@@ -25,7 +25,8 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.ShuffleHand(tp)
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x106e) and c:IsType(TYPE_SPELL) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),nil,TYPE_MONSTER+TYPE_EFFECT,0,0,1,RACE_SPELLCASTER,ATTRIBUTE_LIGHT) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
+	return c:IsSetCard(0x106e) and c:IsType(TYPE_SPELL) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),nil,TYPE_MONSTER+TYPE_EFFECT,2800,0,1,RACE_SPELLCASTER,ATTRIBUTE_LIGHT) 
+	--and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -39,7 +40,8 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		local tc=g:GetFirst()
-		local e1=Effect.CreateEffect(c)
+		tc:AddMonsterAttribute(TYPE_EFFECT,ATTRIBUTE_LIGHT,RACE_SPELLCASTER,1,2800,0)
+		--[[local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -65,7 +67,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		local e6=e1:Clone()
 		e6:SetCode(EFFECT_CHANGE_LEVEL)
 		e6:SetValue(1)
-		tc:RegisterEffect(e6,true)
+		tc:RegisterEffect(e6,true)]]
 		if Duel.SpecialSummonStep(tc,0,tp,tp,true,false,POS_FACEUP) then
 			--Return to hand
 			local e7=Effect.CreateEffect(c)

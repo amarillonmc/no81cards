@@ -81,7 +81,7 @@ function c12835101.initial_effect(c)
 	end
 end
 function c12835101.con0(e)
-	return Duel.GetFlagEffect(tp,12835101+100)==0
+	return Duel.GetFlagEffect(e:GetHandlerPlayer(),12835101+100)==0
 end
 function c12835101.op0(e,tp,eg,ep,ev,re,r,rp)
 	for tp = 0,1 do

@@ -32,7 +32,7 @@ if not cm.lblsz then
 			Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 			Duel.ResetFlagEffect(tp,m+10000000)
 		end
-		if Duel.GetFlagEffect(tp,m)==0 and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,m) and Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,m):RandomSelect(tp,1):IsAbleToHand(tp) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		if Duel.GetFlagEffect(tp,m)==0 and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,m) and Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,m):RandomSelect(tp,1):GetFirst():IsAbleToHand(tp) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.RegisterFlagEffect(tp,m,0,0,1)
 			local ag=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,m):Select(tp,1,1,nil)
 			Duel.SendtoHand(ag,nil,REASON_EFFECT)
