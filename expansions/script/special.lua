@@ -112,6 +112,15 @@ function Auxiliary.PreloadUds()
 		end
 		return clone_e
 	end
+	if not Effect.GetRange then
+		function Effect.GetRange(e)
+			if table_range and table_range[e] then
+				return table_range[e]
+			end
+			return 0
+		end
+	end
+
 	local _CRegisterEffect=Card.RegisterEffect
 	function Card.RegisterEffect(c,e,...)
 		local eid=_CRegisterEffect(c,e,...)
@@ -139,6 +148,25 @@ function Auxiliary.PreloadUds()
 	local _IsCanTurnSet=Card.IsCanTurnSet
 	function Card.IsCanTurnSet(c,...)
 		return (c:IsLocation(LOCATION_SZONE) and c:IsSSetable(true)) or (not c:IsLocation(LOCATION_SZONE) and _IsCanTurnSet(c,...))
+	end
+	
+	local _IsTuner=Card.IsTuner
+	function Card.IsTuner(c,...)
+		local ext_params={...}
+		if #ext_params==0 then return true end
+		return _IsTuner(c,...)
+	end
+	local _IsCanBeSynchroMaterial=Card.IsCanBeSynchroMaterial
+	function Card.IsCanBeSynchroMaterial(c,...)
+		local ext_params={...}
+		if #ext_params==0 then return _IsCanBeSynchroMaterial(c,...) end
+		local sc=ext_params[1]
+		local tp=sc:GetControler()
+		if c:IsLocation(LOCATION_MZONE) and not c:IsControler(tp) then
+			local mg=Duel.GetSynchroMaterial(tp)
+			return mg:IsContains(c) and _IsCanBeSynchroMaterial(c,...)
+		end
+		return _IsCanBeSynchroMaterial(c,...)
 	end
 	
 	--From REIKAI

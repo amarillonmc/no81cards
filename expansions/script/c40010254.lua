@@ -100,7 +100,7 @@ function cm.goal(g,tp,lv,syncard,tuc)
 	if Duel.GetLocationCountFromEx(tp,tp,g,syncard)<=0 then return false end
 	if tuc:IsHasEffect(EFFECT_HAND_SYNCHRO) and g:IsExists(Card.IsLocation,2,tuc,LOCATION_HAND) then return false end
 	local ct=g:GetCount()
-	return g:CheckWithSumEqual(cm.val,lv,ct,ct,syncard)
+	return g:CheckWithSumEqual(cm.val,lv,ct,ct,syncard) and g:IsContains(tuc)
 end
 function cm.syncon(e,c,tuner,mg)
 	if c==nil then return true end

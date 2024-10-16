@@ -27,7 +27,12 @@ function c75081007.initial_effect(c)
 	end  
 end
 function c75081007.spcheckop(e,tp,eg,ep,ev,re,r,rp)
-	if eg:IsExists(Card.IsControler,1,nil,tp) then return Duel.RegisterFlagEffect(tp,75081007,RESET_PHASE+PHASE_END,0,1) end
+	local c=e:GetHandler()
+	local tc=eg:GetFirst()
+	while tc and tc:IsType(TYPE_MONSTER) do
+		Duel.RegisterFlagEffect(tc:GetPreviousControler(),75081007,RESET_PHASE+PHASE_END,0,1)
+		tc=eg:GetNext()
+	end
 end
 function c75081007.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,75081007)==0 

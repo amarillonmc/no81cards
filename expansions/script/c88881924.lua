@@ -1,8 +1,8 @@
 --太沧挑战者 破面之刻
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER),aux.NonTuner(Card.IsLevel,7),1)
+   --synchro summon
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER),aux.NonTuner(Card.IsAttribute,ATTRIBUTE_WATER),1)
 	c:EnableReviveLimit()
 	--indes
 	local e0=Effect.CreateEffect(c)

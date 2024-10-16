@@ -69,8 +69,9 @@ function c28318606.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not c:IsRace(RACE_FAIRY) and c:IsLocation(LOCATION_EXTRA)
 end
 function c28318606.confilter(c,tp)
-	return c:IsRace(RACE_FAIRY) and c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)
-		and c:IsPreviousPosition(POS_FACEUP) and c:GetReasonPlayer()==1-tp and not c:IsReason(REASON_RULE)
+	return (c:GetPreviousRaceOnField()&RACE_FAIRY)>0 and c:IsPreviousControler(tp)
+		and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP)
+		and c:GetReasonPlayer()==1-tp and not c:IsReason(REASON_RULE)
 end
 function c28318606.con(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c28318606.confilter,1,nil,tp)

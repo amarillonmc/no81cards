@@ -43,11 +43,17 @@ function c75081011.initial_effect(c)
 		ge1:SetCode(EVENT_REMOVE)
 		ge1:SetOperation(c75081011.spcheckop)
 		Duel.RegisterEffect(ge1,0)
-	end	
+	end 
 end
 function c75081011.spcheckop(e,tp,eg,ep,ev,re,r,rp)
-	if eg:IsExists(Card.IsControler,1,nil,tp) then return Duel.RegisterFlagEffect(tp,75081011,RESET_PHASE+PHASE_END,0,1) end
+	local c=e:GetHandler()
+	local tc=eg:GetFirst()
+	while tc and tc:IsType(TYPE_MONSTER) do
+		Duel.RegisterFlagEffect(tc:GetPreviousControler(),75081011,RESET_PHASE+PHASE_END,0,1)
+		tc=eg:GetNext()
+	end
 end
+	
 function c75081011.con1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,75081011)==0 
 end

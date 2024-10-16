@@ -18,24 +18,6 @@ end
 	end
 	return g
 end--]]
-local _IsTuner=Card.IsTuner
-function Card.IsTuner(c,...)
-	local ext_params={...}
-	if #ext_params==0 then return true end
-	return _IsTuner(c,...)
-end
-local _IsCanBeSynchroMaterial=Card.IsCanBeSynchroMaterial
-function Card.IsCanBeSynchroMaterial(c,...)
-	local ext_params={...}
-	if #ext_params==0 then return _IsCanBeSynchroMaterial(c,...) end
-	local sc=ext_params[1]
-	local tp=sc:GetControler()
-	if c:IsLocation(LOCATION_MZONE) and not c:IsControler(tp) then
-		local mg=Duel.GetSynchroMaterial(tp)
-		return mg:IsContains(c) and _IsCanBeSynchroMaterial(c,sc,...)
-	end
-	return _IsCanBeSynchroMaterial(c,...)
-end
 local KOISHI_CHECK=false
 if Duel.Exile then KOISHI_CHECK=true end
 local A=1103515245
@@ -56,14 +38,6 @@ function cm.roll(min,max)
 	return cm.r
 end
 --if Duel.GetRandomNumber then cm.roll=Duel.GetRandomNumber end
-if not Effect.GetRange then
-	function Effect.GetRange(e)
-		if table_range and table_range[e] then
-			return table_range[e]
-		end
-		return 0
-	end
-end
 if not require and loadfile then
 	function require(str)
 		require_list=require_list or {}
@@ -165,14 +139,14 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if KOISHI_CHECK then
-		Duel.ResetTimeLimit(0,999)
-		Duel.ResetTimeLimit(1,999)
+		--Duel.ResetTimeLimit(0,999)
+		--Duel.ResetTimeLimit(1,999)
 		local e0=Effect.CreateEffect(c) 
 		e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e0:SetCode(EVENT_PHASE_START+PHASE_DRAW)
 		e0:SetCountLimit(1)
 		e0:SetOperation(function() Duel.ResetTimeLimit(0,999) Duel.ResetTimeLimit(1,999) end)
-		Duel.RegisterEffect(e0,0)
+		--Duel.RegisterEffect(e0,0)
 	end
 	local ag=Duel.GetMatchingGroup(cm.nnfilter,0,0xff,0xff,nil)
 	local _TGetID=GetID

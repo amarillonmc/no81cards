@@ -32,7 +32,7 @@ function c75075611.initial_effect(c)
 	aux.RegisterMergedDelayedEvent(c,75075611,EVENT_SUMMON_SUCCESS)
 end
 function c75075611.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x757)
+	return c:IsFaceup() and c:IsSetCard(0x75a)
 end
 function c75075611.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75075611.filter,tp,LOCATION_MZONE,0,1,nil) end

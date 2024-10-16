@@ -2,7 +2,7 @@
 function c11560718.initial_effect(c)
 	--xyz summon
 	c:EnableReviveLimit()
-	aux.AddXyzProcedureLevelFree(c,c11560718.mfilter,c11560718.xyzcheck,1,99) 
+	aux.AddXyzProcedureLevelFree(c,c11560718.mfilter,c11560718.xyzcheck,2,99) 
 	--xyz 
 	local e1=Effect.CreateEffect(c) 
 --  e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

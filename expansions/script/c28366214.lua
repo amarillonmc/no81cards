@@ -75,7 +75,7 @@ function c28366214.activate(e,tp,eg,ep,ev,re,r,rp)
 			local e4=Effect.CreateEffect(e:GetHandler())
 			e4:SetType(EFFECT_TYPE_SINGLE)
 			e4:SetCode(EFFECT_UPDATE_ATTACK)
-			e4:SetValue(ct*1000)
+			e4:SetValue(ct*1700)
 			e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e4)
 		end
