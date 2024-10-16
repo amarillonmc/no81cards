@@ -3,7 +3,8 @@ local cm, m, ofs = GetID()
 local yr = 13020010
 function cm.initial_effect(c)
 	aux.AddCodeList(c, yr)
-	c:SetUniqueOnField(1,0,m)
+	c:SetSPSummonOnce(m)
+	
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,cm.filter66,aux.FilterBoolFunction(Card.IsType,TYPE_EFFECT),true)
@@ -37,25 +38,7 @@ end
 function cm.filter(c,c2)
 	return c:IsType(TYPE_EQUIP) and not c:IsForbidden() and aux.IsCodeListed(c, yr) and c:CheckEquipTarget(c2)
 end
-function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	local c = e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,c)
-	if g:GetCount()>0 then
-		g=g:GetFirst()
-		local mg=Group.CreateGroup()
-		mg:AddCard(c)
-		local g2=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil)
-		mg:Merge(g2)
-		local tc=c
-		if g:IsLocation(LOCATION_GRAVE) and #mg>1 then
-			tc=mg:Select(tp, 1, 1, nil):GetFirst()
-		end
-		Duel.Equip(tp,g,tc,true,true)
-		Duel.BreakEffect()
-		Duel.Remove(c, POS_FACEUP,REASON_EFFECT)
-	end
-end
+
 function cm.AddContactFusionProcedure(c,filter,self_location,opponent_location,mat_operation,...)
 	self_location=self_location or 0
 	opponent_location=opponent_location or 0
@@ -98,17 +81,20 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		g=g:GetFirst()
 		local mg=Group.CreateGroup()
 		mg:AddCard(c)
-		local g2=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil)
+		local g2=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil)
 		mg:Merge(g2)
 		local tc=c
 		if g:IsLocation(LOCATION_GRAVE) and #mg>1 then
 			tc=mg:Select(tp, 1, 1, nil):GetFirst()
+			Duel.Equip(tp,g,tc,true)
+		else
+		Duel.Equip(tp,g,tc,true)
 		end
-		Duel.Equip(tp,g,tc,true,true)
 		Duel.BreakEffect()
 		Duel.Remove(c, POS_FACEUP,REASON_EFFECT)
 	end
 end
+
 function cm.cfilter(c,tp)
 	return c:IsPreviousControler(tp)
 		and c:GetReasonPlayer()==1-tp

@@ -111,10 +111,10 @@ function cm.filter6(c,e,tp,id,g)
 	return c:IsCanBeSpecialSummoned(e,0,tp,true,false) and #g:Filter(cm.filter4, nil,c)~=0
 end
 function cm.filter5(c,e,tp)
-	return c:IsType(TYPE_EQUIP)
+	return c:IsType(TYPE_EQUIP) or c:IsType(TYPE_UNION)
 end
 function cm.filter4(c,c2)
-	return c2:CheckEquipTarget(c) and not c:IsCode(m)
+	return c:CheckEquipTarget(c2) and not c:IsCode(m)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -134,6 +134,10 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
   local g2 = Duel.GetMatchingGroup( cm.filter5, tp, LOCATION_GRAVE+QY_cw, 0, nil,e,tp)
   local g1 = Duel.SelectMatchingCard(tp, cm.filter6, tp, LOCATION_GRAVE+QY_cw, 0, 1, 1, nil,e,tp,m,g2):GetFirst()
   Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
-  g2=g2:Filter(cm.filter4, nil,g1):GetFirst()
+  g2=g2:FilterSelect(tp,cm.filter4,1,1,nil,g1):GetFirst()
   Duel.Equip(tp,g2,g1,true)
 end
+
+
+
+
