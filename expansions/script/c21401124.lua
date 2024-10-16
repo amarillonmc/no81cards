@@ -41,7 +41,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return s.tgfilter(chkc,tp) and chkc~=c and chkc:IsOnField() end
 	if chk==0 then
-		Debug.Message(Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_ONFIELD,0,1,nil,tp,c))
+		--Debug.Message(Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_ONFIELD,0,1,nil,tp,c))
 	return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_ONFIELD,0,1,nil,tp,c) end
 		
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)

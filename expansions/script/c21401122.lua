@@ -86,6 +86,7 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		g1 = Duel.SelectTarget(tp,s.sp2filter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND,g1,1,0,0)
+	--Debug.Message(g1:GetFirst():GetCode())
 	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g2=Duel.SelectTarget(tp,s.rmfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil)
@@ -94,9 +95,9 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	local ex1,tg1=Duel.GetOperationInfo(0,CATEGORY_SPECIAL_SUMMON)
+	local ex1,tg1=Duel.GetOperationInfo(0,CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
 	local ex2,tg2=Duel.GetOperationInfo(0,CATEGORY_REMOVE)
-	
+	--Debug.Message(tg1:GetFirst():GetCode())
 	local tc=tg1:GetFirst()
 	if tc:IsRelateToEffect(e) then
 		--if aux.NecroValleyNegateCheck(tc) then return end

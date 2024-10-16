@@ -99,7 +99,7 @@ function cm.mvop1(e,tp,eg,ep,ev,re,r,rp)
 		local off=1
 		local ops={} 
 		local opval={}
-		if cm.mvop(e,tp,eg,ep,ev,re,r,rp,2,lab) and not chk then
+		if not chk and cm.mvop(e,tp,eg,ep,ev,re,r,rp,2,lab) then
 			ops[off]=aux.Stringid(n,10)
 			opval[off-1]=1
 			off=off+1
@@ -147,12 +147,20 @@ function cm.mvop1(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	local c=e:GetHandler()
+	local ph=Duel.GetCurrentPhase()
+	if ph==PHASE_DAMAGE or ph==PHASE_DAMAGE_CAL then
+		if opt==2 and Duel.GetFlagEffect(0,11451711)==0 then
+			Debug.Message("伤害步骤内不能触发效果战斗。")
+			Duel.RegisterFlagEffect(0,11451711,RESET_PHASE+PHASE_DAMAGE,0,1)
+		end
+		return false
+	end
 	if not c:IsAttackable() then return end
 	local g=c:GetAttackableTarget()
 	local b1=0
 	local fid=e:GetLabel()
 	if fid~=0 then b1=1 end
-	if g and #g>0 and Duel.GetFlagEffect(0,11451711)==0 then
+	if g and #g>0 then
 		if opt==2 then return true end
 		Duel.HintSelection(Group.FromCards(c))
 		--if Duel.SelectYesNo(tp,aux.Stringid(m,4+b1)) then
@@ -166,7 +174,6 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 				e1:SetValue(lab*500)
 				c:RegisterEffect(e1)
 				Duel.CalculateDamage(c,tc)
-				Duel.RegisterFlagEffect(0,11451711,RESET_PHASE+PHASE_DAMAGE,0,1)
 			end
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
 			if opt==1 then Duel.RegisterFlagEffect(tp,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end

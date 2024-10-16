@@ -53,13 +53,15 @@ end
 function c9911663.condition(e,tp,eg,ep,ev,re,r,rp)
 	return aux.NegateSummonCondition() and eg:IsExists(Card.IsControler,1,nil,1-tp)
 end
-function c9911663.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
-end
 function c9911663.thtgfilter(c)
 	return c:IsSetCard(0x5957) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or c:IsAbleToGrave())
+end
+function c9911663.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local b1=Duel.IsExistingMatchingCard(c9911663.thtgfilter,tp,LOCATION_DECK,0,3,nil)
+	local b2=Duel.GetFlagEffect(tp,9911654)>0
+	if chk==0 then return b1 or b2 end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
 end
 function c9911663.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chk
