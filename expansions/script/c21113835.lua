@@ -55,17 +55,17 @@ function c21113835.initial_effect(c)
 	Duel.AddCustomActivityCounter(21113835,ACTIVITY_SPSUMMON,c21113835.counter)	
 end
 function c21113835.counter(c)
-	return c:IsSetCard(0xc914)
+	return c:IsSetCard(0xc904)
 end
 function c21113835.GetLinkCount(c)
 	if c:IsType(TYPE_LINK) then
-		if c:IsSetCard(0xc914) and c:IsDisabled() then
+		if c:IsSetCard(0xc904) and c:IsDisabled() then
 			return 1+0x10000*c:GetLink()*2
 		else 
 			return 1+0x10000*c:GetLink()
 		end	
 	else
-		if c:IsSetCard(0xc914) and c:IsDisabled() then
+		if c:IsSetCard(0xc904) and c:IsDisabled() then
 			return 2
 		else			
 			return 1 
@@ -74,7 +74,9 @@ function c21113835.GetLinkCount(c)
 end
 function c21113835.LCheckGoal(sg,tp,lc,lmat)
 	return #sg==1 and sg:IsExists(Card.IsDisabled,1,nil) 
-		and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and sg:GetFirst():IsLink(3) or #sg>=2 
+		and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and sg:GetFirst():IsLink(3) or #sg==2
+		and sg:IsExists(Card.IsDisabled,2,nil) and sg:IsExists(Card.IsType,2,nil,TYPE_LINK)
+		and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and sg:GetClassCount(Card.GetLink)==6 or #sg>=2 
 		and sg:CheckWithSumEqual(c21113835.GetLinkCount,6,#sg,#sg)
 		and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp)
 		and (not lmat or sg:IsContains(lmat)) or #sg>=2 
@@ -93,7 +95,7 @@ function c21113835.linkcon()
 					if max<maxc then maxc=max end
 					if minc>maxc then return false end
 				end
-				local f = function(c) return c:IsFaceup() and c:IsLinkSetCard(0xc914) end
+				local f = function(c) return c:IsFaceup() and c:IsLinkSetCard(0xc904) end
 				local tp=c:GetControler()
 				local mg=nil
 				if og then
@@ -120,7 +122,7 @@ function c21113835.linktg()
 					if max<maxc then maxc=max end
 					if minc>maxc then return false end
 				end
-				local f = function(c) return c:IsFaceup() and c:IsLinkSetCard(0xc914) end
+				local f = function(c) return c:IsFaceup() and c:IsLinkSetCard(0xc904) end
 				local mg=nil
 				if og then
 					mg=og:Filter(Auxiliary.LConditionFilter,nil,f,c,e)
@@ -171,10 +173,10 @@ function c21113835.opq(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function c21113835.q(c)
-	return c:IsFaceup() and c:IsSetCard(0xc914)
+	return c:IsFaceup() and c:IsSetCard(0xc904)
 end
 function c21113835.w(c,e,tp)
-	return c:IsFaceupEx() and c:IsSetCard(0xc914) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,4)>0 and not c:IsCode(21113835)
+	return c:IsFaceupEx() and c:IsSetCard(0xc904) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,4)>0 and not c:IsCode(21113835)
 end
 function c21113835.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c21113835.q,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,4)>0 end
@@ -226,7 +228,7 @@ function c21113835.cost4(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function c21113835.r(c)
-	return c:IsType(6) and c:IsSetCard(0xc914) and c:IsSSetable()
+	return c:IsType(6) and c:IsSetCard(0xc904) and c:IsSSetable()
 end
 function c21113835.opw(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,21113835+1)==0 and Duel.IsExistingMatchingCard(c21113835.r,tp,1,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(21113835,2)) then
@@ -247,7 +249,7 @@ function c21113835.op4(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetTargetRange(12,0)
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xc914))
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xc904))
 	e1:SetValue(aux.tgoval)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
@@ -256,7 +258,7 @@ function c21113835.op4(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e2:SetTargetRange(12,0)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xc914))
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xc904))
 	e2:SetValue(aux.indoval)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
@@ -276,5 +278,5 @@ function c21113835.op5(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c21113835.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0xc914)
+	return not c:IsSetCard(0xc904)
 end

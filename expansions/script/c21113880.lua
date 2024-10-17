@@ -37,6 +37,7 @@ function s.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_GRAVE_ACTION)
 	e3:SetRange(LOCATION_GRAVE)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetDescription(1,id+o)
 	e3:SetCost(aux.bfgcost)
 	e3:SetTarget(s.sptg)
@@ -54,17 +55,17 @@ function s.initial_effect(c)
 	Duel.AddCustomActivityCounter(id,ACTIVITY_SPSUMMON,s.counter) 
 end
 function s.counter(c)
-	return c:IsSetCard(0xc914)
+	return c:IsSetCard(0xc904)
 end
 function s.GetLinkCount(c)
 	if c:IsType(TYPE_LINK) then
-		if c:IsSetCard(0xc914) and c:IsDisabled() then
+		if c:IsSetCard(0xc904) and c:IsDisabled() then
 			return 1+0x10000*c:GetLink()*2
 		else 
 			return 1+0x10000*c:GetLink()
 		end 
 	else
-		if c:IsSetCard(0xc914) and c:IsDisabled() then
+		if c:IsSetCard(0xc904) and c:IsDisabled() then
 			return 2
 		else			
 			return 1 
@@ -92,7 +93,7 @@ function s.linkcon()
 					if max<maxc then maxc=max end
 					if minc>maxc then return false end
 				end
-				local f = function(c) return c:IsFaceup() and c:IsLinkSetCard(0xc914) end
+				local f = function(c) return c:IsFaceup() and c:IsLinkSetCard(0xc904) end
 				local tp=c:GetControler()
 				local mg=nil
 				if og then
@@ -119,7 +120,7 @@ function s.linktg()
 					if max<maxc then maxc=max end
 					if minc>maxc then return false end
 				end
-				local f = function(c) return c:IsFaceup() and c:IsLinkSetCard(0xc914) end
+				local f = function(c) return c:IsFaceup() and c:IsLinkSetCard(0xc904) end
 				local mg=nil
 				if og then
 					mg=og:Filter(Auxiliary.LConditionFilter,nil,f,c,e)
@@ -182,7 +183,7 @@ function s.reop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.spfilter(c,e,tp)
-	return c:IsFaceupEx() and c:IsSetCard(0xc914) and not c:IsCode(id) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsFaceupEx() and c:IsSetCard(0xc904) and not c:IsCode(id) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -225,5 +226,5 @@ function s.op5(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0xc914)
+	return not c:IsSetCard(0xc904)
 end

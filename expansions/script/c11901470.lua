@@ -34,7 +34,7 @@ function s.thfilter(c)
         and not (c:IsLocation(0x20) and c:IsFacedown())
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+	if chk==0 then return Duel.GetLocationCount(tp,0x08)>0
 		and Duel.IsExistingMatchingCard(s.thfilter,tp,0x30,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,0x30)
 end
@@ -43,8 +43,12 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfilter),tp,0x30,0,1,1,nil)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
-        Duel.ConfirmCards(1-tp,g)
-        if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and c:IsRelateToEffect(e) then
+        local val=0
+        if g:GetFirst():IsLocation(0x02) then
+            Duel.ConfirmCards(1-tp,g)
+            val=1
+        end
+        if val==1 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and c:IsRelateToEffect(e) then
             Duel.BreakEffect()
             Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		    local e1=Effect.CreateEffect(c)

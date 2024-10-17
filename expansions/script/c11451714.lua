@@ -157,7 +157,7 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	local b1=0
 	local fid=e:GetLabel()
 	if fid~=0 then b1=1 end
-	if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (not dr or Duel.IsPlayerCanDraw(tp,1)) then
+	if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then --and (not dr or Duel.IsPlayerCanDraw(tp,1)) then
 		if opt==2 then return true end
 		Duel.HintSelection(Group.FromCards(c))
 		--if Duel.SelectYesNo(tp,aux.Stringid(m,b1)) then
@@ -165,7 +165,7 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 			local tc=g:Select(tp,1,1,nil):GetFirst()
 			if tc then
 				Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-				if dr then
+				if dr and Duel.IsPlayerCanDraw(tp,1) then
 					Duel.BreakEffect()
 					Duel.Draw(tp,1,REASON_EFFECT)
 					local e1=Effect.CreateEffect(c)

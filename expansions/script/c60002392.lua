@@ -36,7 +36,6 @@ if not cm.lblsz then
 	cm._sset=Duel.SSet
 	Duel.SSet=function (tp,cg,...)
 		local single=0
-		local sol=0
 		if aux.GetValueType(cg)=="Card" and cg:IsSetCard(0x17e) and cg:IsType(TYPE_TRAP) then
 			single=1
 		elseif aux.GetValueType(cg)=="Group" then
@@ -48,16 +47,10 @@ if not cm.lblsz then
 			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 			local tg=Duel.SelectMatchingCard(tp,Card.IsCode,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,m)
 			Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)
-			sol=1
+			return 0
 		else
-			cm._sset(tp,cg,...)
-			if aux.GetValueType(cg)=="Card" then
-				sol=1
-			elseif aux.GetValueType(cg)=="Group" then
-				sol=cg:GetCount()
-			end
+			return cm._sset(tp,cg,...)
 		end
-		return sol
 	end
 end
 function cm.indtg(e,c)
