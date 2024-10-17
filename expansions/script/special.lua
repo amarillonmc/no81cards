@@ -169,6 +169,41 @@ function Auxiliary.PreloadUds()
 		return _IsCanBeSynchroMaterial(c,...)
 	end
 	
+	local _SendtoDeck=Duel.SendtoDeck
+	function Duel.SendtoDeck(g,top,...)
+		local cg=nil
+		if aux.GetValueType(g)=="Card" then
+			cg=Group.FromCards(g)
+		elseif aux.GetValueType(g)=="Group" then
+			cg=g
+		end
+		if cg then
+			local ag=cg:Filter(function(c) return c:IsLocation(LOCATION_DECK) and c:IsControler(1-top) end,nil)
+			if #ag>0 then
+				Duel.ConfirmCards(0,ag)
+				Duel.ConfirmCards(1,ag)
+			end
+		end
+		return _SendtoDeck(g,top,...)
+	end
+	local _SendtoHand=Duel.SendtoHand
+	function Duel.SendtoHand(g,top,...)
+		local cg=nil
+		if aux.GetValueType(g)=="Card" then
+			cg=Group.FromCards(g)
+		elseif aux.GetValueType(g)=="Group" then
+			cg=g
+		end
+		if cg then
+			local ag=cg:Filter(function(c) return c:IsLocation(LOCATION_DECK) and c:IsControler(1-top) end,nil)
+			if #ag>0 then
+				Duel.ConfirmCards(0,ag)
+				Duel.ConfirmCards(1,ag)
+			end
+		end
+		return _SendtoHand(g,top,...)
+	end
+	
 	--From REIKAI
 	if not Group.ForEach then
 		function Group.ForEach(group,func,...)

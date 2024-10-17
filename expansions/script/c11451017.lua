@@ -10,7 +10,7 @@ function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_GRAVE_SPSUMMON)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -146,16 +146,16 @@ function cm.etofilter(c)
 	return c:IsPreviousLocation(LOCATION_EXTRA) and c:IsOnField()
 end
 function Group.ForEach(group,func,...)
-    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
-        local d_group=group:Clone()
-        for tc in aux.Next(d_group) do
-            func(tc,...)
-        end
-    end
+	if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+		local d_group=group:Clone()
+		for tc in aux.Next(d_group) do
+			func(tc,...)
+		end
+	end
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(cm.etofilter,nil)
-	g:ForEach(Card.RegisterFlagEffect,m-2,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
+	g:ForEach(Card.RegisterFlagEffect,m-2,RESET_EVENT+RESETS_WITHOUT_TEMP_REMOVE,0,1)
 end
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
@@ -185,7 +185,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	c:RegisterFlagEffect(m,RESET_EVENT+0xc7a0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(m,2))
 	local g=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	local g2=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g2,1,PLAYER_ALL,LOCATION_GRAVE)
+	--Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g2,1,PLAYER_ALL,LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,PLAYER_ALL,LOCATION_MZONE)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -285,7 +285,7 @@ function cm.d2hmatchfilter(c,cd)
 	return c:IsFaceup() and c:IsCode(cd)
 end
 function cm.thfilter2(c)
-	return c:IsFaceup() and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and not c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_EXTRA,0,1,nil) end

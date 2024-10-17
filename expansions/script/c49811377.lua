@@ -52,7 +52,7 @@ function c49811377.putg(e,tp,eg,ep,ev,re,r,rp,chk)
     e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
     e1:SetReset(RESET_EVENT+RESETS_STANDARD)
     e:GetHandler():RegisterEffect(e1)
-    Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+    Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function c49811377.puop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()

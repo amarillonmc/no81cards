@@ -1,10 +1,7 @@
 --落徽
-local m=11561052
-local cm=_G["c"..m]
-function cm.initial_effect(c)
+function c11561052.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_POSITION)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetCountLimit(1,11561052)
@@ -110,21 +107,21 @@ function c11561052.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local g2=Duel.SelectMatchingCard(tp,c11561052.mtsfilter,tp,LOCATION_MZONE,0,1,1,nil,eg)
 	local g=Group.__add(g1,g2)
-	local tc=g:GetFirst()
 	local ct1=g:FilterCount(c11561052.filter,nil,e,tp,eg)
 	local ct2=g:FilterCount(c11561052.filter,nil,e,1-tp,eg)
 
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)>ct1 and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>ct2 then
-	while tc do
-		Duel.MoveToField(tc,tp,tc:GetControler(),LOCATION_SZONE,POS_FACEUP,true)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
-		tc:RegisterEffect(e1)
-		tc=g:GetNext()
-	end
+		for tc in aux.Next(g) do
+			if not tc:IsImmuneToEffect(e) then
+				Duel.MoveToField(tc,tp,tc:GetOwner(),LOCATION_SZONE,POS_FACEUP,true)
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetCode(EFFECT_CHANGE_TYPE)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+				e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
+				tc:RegisterEffect(e1)
+			end
+		end
 	end
 end
