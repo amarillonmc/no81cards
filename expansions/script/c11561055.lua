@@ -77,7 +77,15 @@ function c11561055.atkop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		end
 	if not c:IsRelateToBattle() then return end
-	Duel.ChainAttack()
+	--Duel.ChainAttack()
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_BATTLED)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetOperation(function() Duel.ChainAttack() end)
+	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
+	c:RegisterEffect(e3)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)

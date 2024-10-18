@@ -13,7 +13,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetActivityCount(tp,ACTIVITY_NORMALSUMMON)==0 and Duel.IsPlayerCanDiscardDeckAsCost(tp,1) end
+	if chk==0 then return Duel.GetActivityCount(tp,ACTIVITY_NORMALSUMMON)==0 end
 	Duel.DiscardDeck(tp,1,REASON_COST)
 	--oath effects
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -31,7 +31,7 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>0 and Duel.CheckChainUniqueness()
 end
 function s.filter(c,e,tp,lv)
-	return c:IsLevelBelow(lv) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevel(lv) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.thfilter(c)
 	return c:IsCode(id) and c:IsAbleToHand()

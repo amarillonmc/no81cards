@@ -143,7 +143,7 @@ function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,m)>0 then return end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local c=e:GetHandler()
-	if not re:GetHandler():IsSetCard(0x6e) or not c:IsSSetable() or cm.column~=0 or Duel.GetFlagEffect(tp,m)>0 then return end
+	if not re:GetHandler():IsSetCard(0x6e) or not c:IsSSetable() or cm.column~=0 then return end
 	if Duel.SelectEffectYesNo(tp,c) then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.SSet(tp,c,tp,true)
