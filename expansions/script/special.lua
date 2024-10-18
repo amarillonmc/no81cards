@@ -177,7 +177,7 @@ function Auxiliary.PreloadUds()
 		elseif aux.GetValueType(g)=="Group" then
 			cg=g
 		end
-		if cg then
+		if cg and top then
 			local ag=cg:Filter(function(c) return c:IsLocation(LOCATION_DECK) and c:IsControler(1-top) end,nil)
 			if #ag>0 then
 				Duel.ConfirmCards(0,ag)
@@ -194,7 +194,7 @@ function Auxiliary.PreloadUds()
 		elseif aux.GetValueType(g)=="Group" then
 			cg=g
 		end
-		if cg then
+		if cg and top then
 			local ag=cg:Filter(function(c) return c:IsLocation(LOCATION_DECK) and c:IsControler(1-top) end,nil)
 			if #ag>0 then
 				Duel.ConfirmCards(0,ag)

@@ -153,10 +153,12 @@ function cm.fil3(c)
 	return c:IsAbleToRemove()
 end
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return c:GetFlagEffect(m)<7 and Duel.IsExistingMatchingCard(cm.fil3,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 end
-function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
+function cm.rmop(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,cm.fil3,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,3,nil)
 	if g:GetCount()>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 then
