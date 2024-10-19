@@ -41,11 +41,12 @@ end
 function c37629203.stop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,c37629203.stfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
-	local sg=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if g:GetCount()>0 and Duel.SSet(tp,g:GetFirst())>0 and sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(37629203,2)) then
+	if g:GetCount()>0 and Duel.SSet(tp,g:GetFirst())>0 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(37629203,2)) then
 		Duel.BreakEffect()
+		--local sg=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sg=sg:Select(tp,1,1,nil)
+		--local sg=sg:Select(tp,1,1,nil)
+		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 		Duel.HintSelection(sg)
 		Duel.SendtoGrave(sg,REASON_EFFECT)
 	end

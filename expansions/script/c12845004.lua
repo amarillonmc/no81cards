@@ -12,6 +12,7 @@ function s.initial_effect(c)
 	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetCountLimit(1,12845004)
 	e2:SetTarget(s.thtg)
