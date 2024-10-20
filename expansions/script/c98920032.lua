@@ -40,7 +40,7 @@ function c98920032.initial_effect(c)
 end
 c98920032.material_setcode=0x8
 function c98920032.efilter(e,te)
-	return te:GetOwner()~=e:GetOwner()
+	return te:GetOwnerPlayer()~=e:GetHandlerPlayer()
 end
 function c98920032.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA)

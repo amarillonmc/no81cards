@@ -20,16 +20,6 @@ function c130006130.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetOperation(c130006130.sdop)
 	c:RegisterEffect(e3)
-	--go back
-	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_DESTROY)
-	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e5:SetProperty(EFFECT_FLAG_DELAY)
-	e5:SetCode(EVENT_MOVE)
-	e5:SetCondition(c130006130.drcon)
-	e5:SetTarget(c130006130.drtg)
-	e5:SetOperation(c130006130.drop)
-	c:RegisterEffect(e5)
 	--retrieval
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -124,23 +114,13 @@ function c130006130.retop(e,tp,eg,ep,ev,re,r,rp)
 	else
 		c:ResetFlagEffect(130006130)
 		Duel.ReturnToField(c)
-		e:Reset()
-	end
-end
-function c130006130.drcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsLocation(LOCATION_MZONE) and c:IsPreviousLocation(LOCATION_REMOVED) and not c:IsReason(REASON_SPSUMMON)
-end
-function c130006130.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-end
-function c130006130.drop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.HintSelection(g)
-		Duel.Destroy(g,REASON_EFFECT)
+		if Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>0 and Duel.SelectYesNo(tp,aux.Stringid(130006130,3)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local tc=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
+			Duel.HintSelection(tc)
+			Duel.Destroy(tc,REASON_EFFECT)
+			e:Reset()
+		end
 	end
 end
 function c130006130.regtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -163,7 +143,7 @@ function c130006130.clearop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c130006130.spfilter1(c,rp)
 	local rc=c:GetCode()
-	return c:IsAbleToHand() and not c:IsCode(130006130) and c130006130[rp][rc]
+	return c:IsAbleToHand() and c130006130[rp][rc]
 end
 function c130006130.regop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(c130006130.spfilter1,tp,LOCATION_DECK,0,1,nil,tp) then
