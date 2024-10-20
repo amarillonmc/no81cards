@@ -1,5 +1,7 @@
 if AD_Database_2 then return end
 AD_Database_2=true
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702601") end) then require("script/c53702601") end
 SNNM=SNNM or {}
 local cm=SNNM
 function cm.RabbitTeam(c)
