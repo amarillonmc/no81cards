@@ -73,7 +73,7 @@ function c75081014.retop(e,tp,eg,ep,ev,re,r,rp)
 	if ssg:GetCount()>1 and Duel.GetLocationCount(tp,LOCATION_MZONE)==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(75081014,2))
 		local tc=ssg:Select(tp,1,1,nil):GetFirst()
-		if Duel.ReturnToField(tc)~=0 and Duel.GetFlagEffect(tp,75081008)==0 and tc:IsFaceup() and tc:IsControler(tp) and not tc:IsImmuneToEffect(e) and aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.IsExistingMatchingCard(c75081014.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,tc) and Duel.SelectYesNo(tp,aux.Stringid(75081014,1)) then
+		if Duel.ReturnToField(tc)~=0 and Duel.GetFlagEffect(tp,75081008)==0 and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() and tc:IsControler(tp) and not tc:IsImmuneToEffect(e) and aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.IsExistingMatchingCard(c75081014.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,tc) and Duel.SelectYesNo(tp,aux.Stringid(75081014,1)) then
 			Duel.RegisterFlagEffect(tp,75081008,RESET_PHASE+PHASE_END,0,1)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g1=Duel.SelectMatchingCard(tp,c75081014.spfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc)
@@ -94,7 +94,7 @@ function c75081014.retop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=sg:GetFirst()
 		while tc do
 			if tc:IsPreviousLocation(LOCATION_MZONE) then
-				if Duel.ReturnToField(tc)~=0 and tc:IsFaceup() and tc:IsControler(tp) and not tc:IsImmuneToEffect(e) and aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.IsExistingMatchingCard(c75081014.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,tc) and Duel.SelectYesNo(tp,aux.Stringid(75081014,1)) then
+				if Duel.ReturnToField(tc)~=0 and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() and tc:IsControler(tp) and not tc:IsImmuneToEffect(e) and aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.IsExistingMatchingCard(c75081014.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,tc) and Duel.SelectYesNo(tp,aux.Stringid(75081014,1)) then
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 					local g2=Duel.SelectMatchingCard(tp,c75081014.spfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc)
 					local sc=g2:GetFirst()

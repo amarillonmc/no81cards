@@ -20,6 +20,7 @@ function c67201109.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_TO_DECK)
 	--e2:SetCountLimit(1,67201110)
+	e2:SetCondition(c67201109.opcon)
 	e2:SetTarget(c67201109.optg)
 	e2:SetOperation(c67201109.opop)
 	c:RegisterEffect(e2)   
@@ -67,6 +68,9 @@ function c67201109.spop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,math.floor(e2/2),REASON_EFFECT)
 end
 --
+function c67201109.opcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPreviousLocation(LOCATION_HAND)
+end
 function c67201109.spfilter(c,e,tp)
 	return c:IsSetCard(0x3670) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

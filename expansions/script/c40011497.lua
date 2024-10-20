@@ -28,17 +28,7 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetValue(cm.lvval)
 	c:RegisterEffect(e3)
-	--indestructable
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e4:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e4:SetCondition(cm.xyzcon)
-	e4:SetTarget(cm.xyztg)
-	e4:SetOperation(cm.xyzop)
-	c:RegisterEffect(e4) 
+
 end
 function cm.sprcon(e,c)
 	if c==nil then return true end

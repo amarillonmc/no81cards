@@ -65,8 +65,8 @@ function c75081018.spfilter(c,e,tp)
 end
 function c75081018.retop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
-	--Debug.Message(ct)
-	if Duel.ReturnToField(e:GetLabelObject())~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c75081018.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(75081018,1)) then
+	local tc=e:GetLabelObject()
+	if Duel.ReturnToField(e:GetLabelObject())~=0 and tc:IsLocation(LOCATION_MZONE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c75081018.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(75081018,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,c75081018.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then

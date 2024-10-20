@@ -2,7 +2,7 @@
 function c28352012.initial_effect(c)
 	--synchro summon
 	c:EnableReviveLimit()
-	aux.AddSynchroMixProcedure(c,c28352012.matfilter,nil,nil,aux.FilterBoolFunction(Card.IsSetCard,0x287),1,1)
+	aux.AddSynchroMixProcedure(c,c28352012.matfilter,nil,nil,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_EARTH),1,1)
 	--recover
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND)

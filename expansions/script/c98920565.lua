@@ -39,19 +39,6 @@ function c98920565.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsPosition(POS_DEFENSE) then
 		Duel.ChangePosition(tc,POS_FACEUP_ATTACK)
-		if tc:IsPosition(POS_FACEUP_ATTACK) and not tc:IsSetCard(0x72) then
-		   local c=e:GetHandler()
-		   local e1=Effect.CreateEffect(c)
-		   e1:SetType(EFFECT_TYPE_SINGLE)
-		   e1:SetCode(EFFECT_DISABLE)
-		   e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		   tc:RegisterEffect(e1,true)
-		   local e2=Effect.CreateEffect(c)
-		   e2:SetType(EFFECT_TYPE_SINGLE)
-		   e2:SetCode(EFFECT_DISABLE_EFFECT)
-		   e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		   tc:RegisterEffect(e2,true)
-		end
 		if c:IsRelateToEffect(e) then
 			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		end

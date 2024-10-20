@@ -169,7 +169,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.eftg(e,c)
-	return e:GetHandler():GetEquipTarget() and c:GetSequence()<5 and math.abs(aux.GetColumn(c)-aux.GetColumn(e:GetHandler()))==1
+	return e:GetHandler():GetEquipTarget() and math.abs(aux.GetColumn(c)-aux.GetColumn(e:GetHandler()))==1 --and c:GetSequence()<5
 end
 function cm.cfilter(c)
 	return (c:IsFaceup() or c:GetEquipTarget()) and c:IsType(TYPE_EQUIP) and c:IsAbleToDeck()
@@ -182,7 +182,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_ONFIELD,0,nil)
 	local lg2=Duel.GetMatchingGroup(cm.dfilter,tp,LOCATION_DECK,0,nil,tp)
 	if chk==0 then
-		if e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsExistingMatchingCard(function(c) return c:IsCode(m) and c:IsFaceup() end,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then return false end
+		--if e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsExistingMatchingCard(function(c) return c:IsCode(m) and c:IsFaceup() end,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then return false end
 		return #lg>0 and #lg2>0
 	end
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(),1,0,0)

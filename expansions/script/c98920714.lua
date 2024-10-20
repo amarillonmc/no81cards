@@ -9,7 +9,6 @@ function c98920714.initial_effect(c)
 	e1:SetTarget(c98920714.target)
 	e1:SetOperation(c98920714.activate)
 	c:RegisterEffect(e1)
-	Duel.AddCustomActivityCounter(98920714,ACTIVITY_SPSUMMON,c98920714.counterfilter)
 	--to extra
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(98920714,0))
@@ -22,20 +21,6 @@ function c98920714.initial_effect(c)
 	e2:SetTarget(c98920714.tdtg)
 	e2:SetOperation(c98920714.tdop)
 	c:RegisterEffect(e2)
-end
-function c98920714.counterfilter(c)
-	return not c:IsSummonLocation(LOCATION_EXTRA) or c:IsType(TYPE_XYZ)
-end
-function c98920714.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(98920714,tp,ACTIVITY_SPSUMMON)==0 end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c98920714.splimit)
-	Duel.RegisterEffect(e1,tp)
 end
 function c98920714.splimit(e,c)
 	return c:IsLocation(LOCATION_EXTRA) and not c:IsType(TYPE_XYZ)
@@ -90,6 +75,14 @@ function c98920714.activate(e,tp,eg,ep,ev,re,r,rp)
 			tc2:CompleteProcedure()
 		end
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c98920714.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
 function c98920714.tdfilter(c)
 	return c:IsSetCard(0x1048) and c:IsType(TYPE_XYZ) and c:IsAbleToExtra()

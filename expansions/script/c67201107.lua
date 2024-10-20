@@ -20,6 +20,7 @@ function c67201107.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_TO_DECK)
 	--e2:SetCountLimit(1,67201108)
+	e2:SetCondition(c67201107.opcon)
 	e2:SetTarget(c67201107.optg)
 	e2:SetOperation(c67201107.opop)
 	c:RegisterEffect(e2)   
@@ -72,6 +73,9 @@ function c67201107.spop1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
+function c67201107.opcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPreviousLocation(LOCATION_HAND)
+end
 function c67201107.spfilter(c,e,tp)
 	return c:IsSetCard(0x3670) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

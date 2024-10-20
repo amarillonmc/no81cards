@@ -1,7 +1,7 @@
 --古代的机械改造究极巨人
 function c98920121.initial_effect(c)
 		--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),aux.NonTuner(Card.IsRace,RACE_MACHINE),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
  --atk
 	local e2=Effect.CreateEffect(c)

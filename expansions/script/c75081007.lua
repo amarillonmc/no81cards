@@ -92,7 +92,7 @@ function c75081007.retop(e,tp,eg,ep,ev,re,r,rp)
 	if ssg:GetCount()>1 and Duel.GetLocationCount(tp,LOCATION_MZONE)==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(75081007,2))
 		local tc=ssg:Select(tp,1,1,nil):GetFirst()
-		if Duel.ReturnToField(tc)~=0 and tc:IsFaceup() and tc:IsControler(tp) and not tc:IsImmuneToEffect(e) and aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.IsExistingMatchingCard(c75081007.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,tc) and Duel.SelectYesNo(tp,aux.Stringid(75081007,1)) then
+		if Duel.ReturnToField(tc)~=0 and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() and tc:IsControler(tp) and not tc:IsImmuneToEffect(e) and aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.IsExistingMatchingCard(c75081007.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,tc) and Duel.SelectYesNo(tp,aux.Stringid(75081007,1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g=Duel.SelectMatchingCard(tp,c75081007.spfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc)
 			local sc=g:GetFirst()
@@ -112,7 +112,7 @@ function c75081007.retop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=sg:GetFirst()
 		while tc do
 			if tc:IsPreviousLocation(LOCATION_MZONE) then
-				if Duel.ReturnToField(tc)~=0 and tc:IsFaceup() and tc:IsControler(tp) and not tc:IsImmuneToEffect(e) and aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.IsExistingMatchingCard(c75081007.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,tc) and Duel.SelectYesNo(tp,aux.Stringid(75081007,1)) then
+				if Duel.ReturnToField(tc)~=0 and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() and tc:IsControler(tp) and not tc:IsImmuneToEffect(e) and aux.MustMaterialCheck(tc,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.IsExistingMatchingCard(c75081007.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,tc) and Duel.SelectYesNo(tp,aux.Stringid(75081007,1)) then
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 					local g=Duel.SelectMatchingCard(tp,c75081007.spfilter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc)
 					local sc=g:GetFirst()
@@ -128,15 +128,12 @@ function c75081007.retop(e,tp,eg,ep,ev,re,r,rp)
 					end
 				end
 			else
-				if Duel.SendtoHand(tc,tc:GetPreviousControler(),REASON_EFFECT)~=0  and Duel.SelectYesNo(tp,aux.Stringid(75081007,0)) then
-					local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_HAND,nil)
-					local g1=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_HAND,0,nil)
-					if g:GetCount()>0 and g1:GetCount()>0 then
-						local sg=g:RandomSelect(tp,1)
+				if Duel.SendtoHand(tc,tc:GetPreviousControler(),REASON_EFFECT)~=0  and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(75081007,0)) then
+					if Duel.Draw(tp,1,REASON_EFFECT)>0 then
+						Duel.BreakEffect()
 						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-						local sg2=g1:Select(tp,1,1,nil)
-						sg:Merge(sg2)
-						Duel.Destroy(sg,REASON_EFFECT)
+						local gg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND,0,1,1,nil)
+						Duel.Destroy(gg,REASON_EFFECT)
 					end
 				end
 			end

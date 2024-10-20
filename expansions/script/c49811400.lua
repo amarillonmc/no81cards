@@ -20,8 +20,8 @@ function c49811400.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(49811400,1))
 	e2:SetCategory(CATEGORY_POSITION+CATEGORY_TOGRAVE+CATEGORY_DRAW)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_DAMAGE)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCost(aux.bfgcost)
 	e2:SetCondition(c49811400.bfgcondition)
@@ -70,7 +70,8 @@ function c49811400.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c49811400.bfgcondition(e,tp,eg,ep,ev,re,r,rp)
-	return ev>=3000
+	local value=math.abs(Duel.GetLP(0)-Duel.GetLP(1))
+	return value>=3000
 end
 function c49811400.posfilter(c)
 	return c:IsCanChangePosition()

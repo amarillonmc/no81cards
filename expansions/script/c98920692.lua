@@ -1,6 +1,5 @@
 --入魔柳宿增十
 function c98920692.initial_effect(c)
-	c:SetSPSummonOnce(98920692)
 	--spsummon proc
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

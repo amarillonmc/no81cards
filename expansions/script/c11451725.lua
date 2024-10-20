@@ -147,7 +147,7 @@ function cm.costop1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.eftg(e,c)
-	return e:GetHandler():GetEquipTarget() and c:GetSequence()<5 and math.abs(aux.GetColumn(c)-aux.GetColumn(e:GetHandler()))==1
+	return e:GetHandler():GetEquipTarget() and math.abs(aux.GetColumn(c)-aux.GetColumn(e:GetHandler()))==1 --and c:GetSequence()<5
 end
 function cm.xylabel(c,tp)
 	local x=c:GetSequence()
@@ -222,7 +222,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local lg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if chk==0 then
-		if e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsExistingMatchingCard(function(c) return c:IsCode(m) and c:IsFaceup() end,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then return false end
+		--if e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsExistingMatchingCard(function(c) return c:IsCode(m) and c:IsFaceup() end,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then return false end
 		if c:IsLocation(LOCATION_SZONE) then
 			local x,y=cm.xylabel(c,tp)
 			local g=lg:Filter(cm.islinkdir,nil,x,y,tp)
@@ -274,6 +274,7 @@ end
 function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
+		if c:GetFlagEffect(m-1)>0 then return false end
 		local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+m)}
 		if #eset==0 then return false end
 		local flag=eset[1]
@@ -285,6 +286,7 @@ function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 		return false
 	end
+	c:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
 	local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+m)}
 	local flag=eset[1]
 	local tab=cm[flag]

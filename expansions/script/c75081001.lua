@@ -38,7 +38,8 @@ function c75081001.drepop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c75081001.retop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.ReturnToField(e:GetLabelObject())~=0 and Duel.GetFlagEffect(tp,75081001)==0 and Duel.SelectYesNo(tp,aux.Stringid(75081001,0)) then
+	local tc=e:GetLabelObject()
+	if Duel.ReturnToField(e:GetLabelObject())~=0 and tc:IsLocation(LOCATION_MZONE) and Duel.GetFlagEffect(tp,75081001)==0 and Duel.SelectYesNo(tp,aux.Stringid(75081001,0)) then
 		Duel.RegisterFlagEffect(tp,75081001,RESET_PHASE+PHASE_END,0,1)
 		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_HAND,nil)
 		if g:GetCount()>0 then

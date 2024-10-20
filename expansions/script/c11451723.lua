@@ -121,7 +121,7 @@ function cm.get_zone(c,tp)
 	return zone
 end
 function cm.tgfilter(c,e,tp)
-	if not c:IsType(TYPE_MONSTER) then return end
+	if c:IsFacedown() or c:GetOriginalType()&TYPE_MONSTER==0 or not c:IsSummonableCard() then return false end
 	return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,c,e,tp)
 end
 function cm.spfilter(c,tc,e,tp)
@@ -160,14 +160,6 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabelObject(tc)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
-		--type
-		local e2=Effect.CreateEffect(c)
-		e2:SetCode(EFFECT_CHANGE_TYPE)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e2:SetValue(TYPE_EQUIP+TYPE_TRAP)
-		c:RegisterEffect(e2)
 	end
 end
 function cm.eqlimit(e,c)

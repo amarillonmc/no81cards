@@ -92,7 +92,7 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local g1 = Duel.GetMatchingGroup( cm.filter5, tp, LOCATION_GRAVE, 0, nil):GetFirst()
 	local g2 = Duel.GetMatchingGroup( cm.filter6, tp, LOCATION_GRAVE, 0, g1 ,e,tp)
 	local kx,zzx,sxx,zzjc,sxjc,zzl=it.sxbl()
-	
+	if Duel.Recover(tp,200,REASON_EFFECT)>0 then
 	if num>=6 and g1~=nil and #g2>0 and zzx>0 and xg.ky(tp,m,1) then
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
 		local g = Duel.SelectMatchingCard(tp, cm.filter5, tp, LOCATION_GRAVE, 0, 1, 1, nil)
@@ -138,7 +138,7 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(g, nil, 2, REASON_EFFECT)
 		Duel.RegisterFlagEffect(tp, m, SD_js, 0, 1)
 	end
-
+end
 end
 function cm.atkval(e,c)
 	return Duel.GetMatchingGroupCount(cm.atkfilter,e:GetHandlerPlayer(),LOCATION_GRAVE+LOCATION_REMOVED,0,nil)*500

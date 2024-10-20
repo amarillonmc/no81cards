@@ -41,7 +41,7 @@ function c28315944.hspcon(e,c)
    return Duel.GetLP(e:GetHandlerPlayer())>=9000 and Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_MZONE)>0
 end
 function c28315944.alfilter(c)
-	return c:IsSetCard(0x287) and c:IsFaceup()
+	return c:IsAttribute(ATTRIBUTE_EARTH) and c:IsFaceup()
 end
 function c28315944.gspcon(e,c)
 	if c==nil then return true end

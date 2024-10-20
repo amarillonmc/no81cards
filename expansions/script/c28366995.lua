@@ -2,7 +2,7 @@
 function c28366995.initial_effect(c)
 	--synchro summon
 	c:EnableReviveLimit()
-	aux.AddSynchroMixProcedure(c,c28366995.matfilter,nil,nil,aux.FilterBoolFunction(Card.IsSetCard,0x283),1,1)
+	aux.AddSynchroMixProcedure(c,c28366995.matfilter,nil,nil,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),1,1)
 	--recover
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND)
@@ -78,7 +78,7 @@ function c28366995.indop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=c:GetReasonCard()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_UNRELEASABLE_EFFECT)
+	e1:SetCode(EFFECT_UNRELEASABLE_SUM)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)

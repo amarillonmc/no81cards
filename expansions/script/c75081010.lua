@@ -50,7 +50,7 @@ function c75081010.disop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetTargetRange(0,LOCATION_MZONE)
-	e1:SetValue(-ct*1000)
+	e1:SetValue(-ct*300)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
@@ -60,10 +60,10 @@ function c75081010.thfilter(c)
 end
 function c75081010.retop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
-	--Debug.Message(ct)
-	if Duel.ReturnToField(e:GetLabelObject())~=0 and Duel.IsExistingMatchingCard(c75081010.thfilter,tp,LOCATION_DECK,0,ct,nil) then
+	local tc=e:GetLabelObject()
+	if Duel.ReturnToField(e:GetLabelObject())~=0 and tc:IsLocation(LOCATION_MZONE) and Duel.IsExistingMatchingCard(c75081010.thfilter,tp,LOCATION_DECK,0,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c75081010.thfilter,tp,LOCATION_DECK,0,ct,ct,nil)
+		local g=Duel.SelectMatchingCard(tp,c75081010.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 		if g:GetCount()>0 then
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)

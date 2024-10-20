@@ -7,12 +7,12 @@ function c98920583.initial_effect(c)
 	aux.EnablePendulumAttribute(c,false)
 	--change name
 	aux.EnableChangeCode(c,13331639,LOCATION_MZONE+LOCATION_GRAVE)
-	--spsummon condition
+	--spsummon limit
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetValue(c98920583.splimit)
+	e1:SetValue(aux.xyzlimit)
 	c:RegisterEffect(e1)
 	--disable
 	local e2=Effect.CreateEffect(c)
@@ -61,9 +61,6 @@ function c98920583.initial_effect(c)
 end
 function c98920583.ovfilter(c)
 	return c:IsFaceup() and c:IsOriginalCodeRule(13331639)
-end
-function c98920583.splimit(e,se,sp,st)
-	return not se:GetHandler():IsType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP) and st&SUMMON_TYPE_XYZ==SUMMON_TYPE_XYZ 
 end
 function c98920583.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

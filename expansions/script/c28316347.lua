@@ -41,7 +41,7 @@ function c28316347.hspcon(e,c)
    return Duel.GetLP(e:GetHandlerPlayer())>=9000 and Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_MZONE)>0
 end
 function c28316347.alfilter(c)
-	return c:IsSetCard(0x287) and c:IsFaceup()
+	return c:IsAttribute(ATTRIBUTE_EARTH) and c:IsFaceup()
 end
 function c28316347.gspcon(e,c)
 	if c==nil then return true end
@@ -81,7 +81,7 @@ function c28316347.recop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(tp,1000,REASON_EFFECT)
 	if Duel.GetLP(tp)>=10000 then
 		local b1=Duel.IsExistingMatchingCard(c28316347.hkfilter,tp,LOCATION_DECK,0,1,nil)
-		local b2=Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,REASON_EFFECT)
+		local b2=Duel.IsExistingMatchingCard(Card.IsReleasableByEffect,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 		local b3=true
 		if not (b1 or b2) then return end
 		local op=aux.SelectFromOptions(tp,
@@ -97,7 +97,7 @@ function c28316347.recop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,g)
 		elseif op==2 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-			local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,REASON_EFFECT)
+			local g=Duel.SelectMatchingCard(tp,Card.IsReleasableByEffect,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 			Duel.HintSelection(g)
 			Duel.Release(g,REASON_EFFECT)
 		end

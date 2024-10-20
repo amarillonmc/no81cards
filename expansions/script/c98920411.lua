@@ -48,7 +48,7 @@ function c98920411.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
 	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev) 
-		   and (e:GetLabelObject():GetLabel()==1 and Duel.IsEnvironment(56433456))
+		   and (e:GetLabelObject():GetLabel()==1 or Duel.IsEnvironment(56433456))
 end
 function c98920411.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

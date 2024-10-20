@@ -32,7 +32,7 @@ function c49811396.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c49811396.sprfilter(c)
-	return c:IsAbleToGraveAsCost() and c:IsRace(RACE_FIEND) and c:IsLevel(3) and c:IsAttribute(ATTRIBUTE_DARK)
+	return c:IsAbleToGraveAsCost() and c:IsRace(RACE_FIEND) and c:IsLevel(3) and c:IsAttribute(ATTRIBUTE_DARK) and c:GetAttack()<c:GetDefense()
 end
 function c49811396.sprcon(e,c)
 	if c==nil then return true end
@@ -61,7 +61,7 @@ function c49811396.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+SUMMON_VALUE_SELF
 end
 function c49811396.filter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
 function c49811396.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c49811396.filter,1-tp,LOCATION_HAND,0,nil,e,1-tp)
@@ -69,7 +69,7 @@ function c49811396.operation(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.SelectYesNo(1-tp,aux.Stringid(49811396,1)) then
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SPSUMMON)
 		local sg=g:Select(1-tp,1,1,nil)
-		Duel.SpecialSummon(sg,0,1-tp,1-tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(sg,0,1-tp,1-tp,false,false,POS_FACEUP_ATTACK)
 	end
 end
 function c49811396.postg(e,c)

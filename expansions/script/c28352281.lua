@@ -38,7 +38,7 @@ function c28352281.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c28352281.sprfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x287) and c:IsType(TYPE_SYNCHRO) and c:IsReleasable(REASON_SPSUMMON)
+	return c:IsRace(RACE_FAIRY) and c:IsType(TYPE_SYNCHRO) and c:IsReleasable(REASON_SPSUMMON)
 end
 function c28352281.sprfilter1(c,tp,g,sc)
 	local lv=c:GetLevel()
@@ -144,4 +144,12 @@ function c28352281.rlop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,REASON_EFFECT)
 	Duel.HintSelection(g)
 	Duel.Release(g,REASON_EFFECT)
+	if e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsFaceup() then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_TRIGGER)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e:GetHandler():RegisterEffect(e1,true)
+	end
 end

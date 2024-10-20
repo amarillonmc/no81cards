@@ -6,6 +6,7 @@ function c75081017.initial_effect(c)
 	--negate
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(75081017,0))
+	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1,75081017)
@@ -62,7 +63,7 @@ end
 function c75081017.retop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
 	--Debug.Message(ct)
-	if Duel.ReturnToField(e:GetLabelObject())~=0 and Duel.IsExistingMatchingCard(c75081017.thfilter,tp,LOCATION_GRAVE,0,1,nil) then
+	if Duel.ReturnToField(e:GetLabelObject())~=0 and e:GetLabelObject():IsLocation(LOCATION_MZONE) and Duel.IsExistingMatchingCard(c75081017.thfilter,tp,LOCATION_GRAVE,0,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c75081017.thfilter),tp,LOCATION_GRAVE,0,1,ct,nil)
 		if g:GetCount()>0 then
