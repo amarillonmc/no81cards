@@ -67,7 +67,7 @@ function c9910024.retop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ReturnToField(tc)
 	end
 	if lab==LOCATION_HAND then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.SendtoHand(tc,tc:GetPreviousControler(),REASON_EFFECT)
 	end
 	if lab==LOCATION_GRAVE then
 		Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)
