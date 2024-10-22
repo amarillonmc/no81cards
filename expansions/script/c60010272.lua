@@ -117,7 +117,7 @@ function cm.tkop(e,tp,eg,ep,ev,re,r,rp)
 	if not ec then return end
 	local attr=ec:GetAttribute()
 	if attr&ATTRIBUTE_FIRE>0 and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil) then
-		local token=Duel.CreateToken(tp,m+1)
+		local token=Duel.CreateToken(tp,60010261+1)
 		Duel.MoveToField(token,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		local ag=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 		for tc in aux.Next(ag) do
@@ -130,14 +130,14 @@ function cm.tkop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if attr&ATTRIBUTE_WATER>0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>7 then
-		local token=Duel.CreateToken(tp,m+2)
+		local token=Duel.CreateToken(tp,60010261+2)
 		Duel.MoveToField(token,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		Duel.SortDecktop(tp,tp,8)
 	end
 	if attr&ATTRIBUTE_WIND>0 and Duel.IsExistingMatchingCard(cm.cfilter3,tp,0,LOCATION_MZONE,1,nil) then
-		local token=Duel.CreateToken(tp,m+3)
+		local token=Duel.CreateToken(tp,60010261+3)
 		Duel.MoveToField(token,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-		local tc=Duel.SelectMatchingCard(tp,cm.cfilter3,tp,0,LOCATION_MZONE,1,nil):GetFirst()
+		local tc=Duel.SelectMatchingCard(tp,cm.cfilter3,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
@@ -147,7 +147,7 @@ function cm.tkop(e,tp,eg,ep,ev,re,r,rp)
 		if tc:IsAttack(0) then Duel.Destroy(tc,REASON_EFFECT) end
 	end
 	if attr&ATTRIBUTE_EARTH>0 then
-		local token=Duel.CreateToken(tp,m+4)
+		local token=Duel.CreateToken(tp,60010261+4)
 		Duel.MoveToField(token,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		Duel.Recover(tp,3200,REASON_EFFECT)
 	end

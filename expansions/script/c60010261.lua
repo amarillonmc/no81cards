@@ -149,7 +149,7 @@ function cm.tkop(e,tp,eg,ep,ev,re,r,rp)
 	if attr&ATTRIBUTE_WIND>0 then
 		local token=Duel.CreateToken(tp,m+3)
 		Duel.MoveToField(token,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-		local tc=Duel.SelectMatchingCard(tp,cm.cfilter3,tp,0,LOCATION_MZONE,1,nil):GetFirst()
+		local tc=Duel.SelectMatchingCard(tp,cm.cfilter3,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)

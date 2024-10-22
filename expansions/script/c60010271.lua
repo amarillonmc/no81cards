@@ -26,7 +26,7 @@ function cm.bsfil1(c)
 	return c:IsCode(60010263) and c:IsFaceup()
 end
 function cm.bsfil2(c)
-	return c:IsCode(60010264) and c:IsFaceup()
+	return c:IsCode(60010265) and c:IsFaceup()
 end
 function cm.afil(c)
 	return c:IsCode(60010261) and c:IsFaceup()
