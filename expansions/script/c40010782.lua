@@ -2,10 +2,10 @@
 local m=40010782
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	aux.AddCodeList(c,40010766)  
+	aux.AddCodeList(c,40010766,40010774)  
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,40010774,cm.ffilter,1,true,true)  
+	aux.AddFusionProcCodeFun(c,40010766,cm.ffilter,1,true,true)  
 	--Attribute Dark
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

@@ -136,7 +136,7 @@ function c22348284.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 		Duel.BreakEffect()
 	if e:GetLabel()==1 then Duel.RegisterFlagEffect(tp,15248873,RESET_CHAIN,0,1) end
-	local g=Duel.SelectMatchingCard(tp,c22348284.filter,tp,LOCATION_DECK,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348284.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
 	Duel.ResetFlagEffect(tp,15248873)
 	local tc=g:GetFirst()
 	if tc then

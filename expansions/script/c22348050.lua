@@ -144,7 +144,7 @@ function c22348050.atkfilter(c)
 end
 function c22348050.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c22348050.atkfilter,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(c22348050.atkfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	local tc=g:GetFirst()
 	while tc do
 		local e6=Effect.CreateEffect(c)
@@ -153,6 +153,9 @@ function c22348050.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e6:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e6:SetValue(300)
 		tc:RegisterEffect(e6)
+		local e7=e6:Clone()
+		e7:SetCode(EFFECT_UPDATE_DEFENSE)
+		tc:RegisterEffect(e7)
 		tc=g:GetNext()
 	end
 end
