@@ -44,10 +44,12 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.ffilter(c,fc,sub,mg,sg)
-	return (not sg or sg:FilterCount(aux.TRUE,c)==0 or sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute())) and c:IsRace(RACE_DINOSAUR)
+	if not sg then return true end
+	return sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute())
+		and c:IsRace(RACE_DINOSAUR)
 end
 function s.splimit(e,se,sp,st)
-	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
+	return not (e:GetHandler():IsLocation(LOCATION_EXTRA) and e:GetHandler():IsFacedown())
 end
 function s.lztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)

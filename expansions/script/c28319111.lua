@@ -12,6 +12,7 @@ function c28319111.initial_effect(c)
 	e1:SetCategory(CATEGORY_RECOVER+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetTarget(c28319111.target)
 	e1:SetOperation(c28319111.activate)
 	c:RegisterEffect(e1)
 	--grave copy
@@ -27,6 +28,11 @@ function c28319111.initial_effect(c)
 end
 function c28319111.condition(e)
 	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
+end
+function c28319111.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,3,tp,LOCATION_DECK)
 end
 function c28319111.ccfilter(c)
 	return bit.band(c:GetType(),0x7)

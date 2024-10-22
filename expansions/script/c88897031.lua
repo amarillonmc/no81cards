@@ -26,6 +26,8 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.sprcon(e,tp,eg,ep,ev,re,r,rp)
+	if c==nil then return true end
+	local tp=c:GetControler()
 	return (Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 or Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_GRAVE,1,nil,TYPE_MONSTER))
 end
 function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
