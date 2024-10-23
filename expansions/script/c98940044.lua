@@ -73,8 +73,8 @@ function c98940044.cfilter(c)
 	return c:IsSetCard(0x69) and c:IsType(TYPE_MONSTER)
 end
 function c98940044.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c98940044.cfilter,1,e:GetHandler()) end
-	local g=Duel.SelectReleaseGroupEx(tp,c98940044.cfilter,1,1,e:GetHandler())
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,Card.IsSetCard,1,REASON_COST,true,e:GetHandler(),0x69) end
+	local g=Duel.SelectReleaseGroupEx(tp,Card.IsSetCard,1,1,REASON_COST,true,e:GetHandler(),0x69)
 	Duel.Release(g,REASON_COST)
 end
 function c98940044.filter(c)

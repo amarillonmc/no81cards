@@ -31,16 +31,18 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 	end
 end
-function cm.actcfilter(c,e)
-	return c:IsFaceup() and c:IsSetCard(0x412) and c:IsType(TYPE_XYZ) and not c:IsImmuneToEffect(e)
+function cm.actcfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x412) and c:IsType(TYPE_XYZ)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)>0
 		and Duel.IsExistingMatchingCard(cm.actcfilter,tp,LOCATION_MZONE,0,1,nil,e) and c:IsLocation(LOCATION_ONFIELD)
 		and c:IsRelateToEffect(e) and c:IsCanOverlay() and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		local g2=Duel.SelectMatchingCard(tp,cm.actcfilter,tp,LOCATION_MZONE,0,1,1,nil,e)
+		local g2=Duel.SelectMatchingCard(tp,cm.actcfilter,tp,LOCATION_MZONE,0,1,1,nil)
+		Duel.HintSelection(g2)
 		local sc=g2:GetFirst()
+		if sc:IsImmuneToEffect(e) then return end
 		c:CancelToGrave()
 		Duel.Overlay(sc,Group.FromCards(c))
 	end
