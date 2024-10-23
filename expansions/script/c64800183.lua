@@ -7,8 +7,8 @@ function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--destroy&damage
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_DAMAGE)
 	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_EQUIP)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
@@ -23,35 +23,26 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function cm.sp1filter(c,race,att)
-	return c:IsFaceup() and (bit.band(race,c:GetOriginalRace())~=0 or bit.band(att,c:GetOriginalAttribute())~=0)
+	return c:IsFaceup() and (c:GetOriginalRace()==race or c:GetOriginalAttribute()==att)
 end
-function cm.gcheck(g,c,tp)
-	local sg=g:Clone()
-	local ac=sg:GetFirst()
-	local bg=Group.CreateGroup()
-	while ac do
-		if not Duel.IsExistingMatchingCard(cm.sp1filter,tp,LOCATION_MZONE,0,1,nil,ac:GetOriginalRace(),ac:GetOriginalAttribute()) then bg:AddCard(ac) end
-		ac=sg:GetNext()
-	end
-	return bg:GetCount()~=0
-end
-function cm.check(c,e,tp)
-	return c:IsType(TYPE_MONSTER)
+function cm.check(c,tp)
+	return c:IsType(TYPE_MONSTER) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
+		and not Duel.IsExistingMatchingCard(cm.sp1filter,tp,LOCATION_MZONE,0,1,nil,c:GetOriginalRace(),c:GetOriginalAttribute())
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(cm.check,tp,LOCATION_DECK,0,nil,e,tp)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and g:CheckSubGroup(cm.gcheck,1,1,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,tp,LOCATION_DECK)
+	local g=Duel.GetMatchingGroup(cm.check,tp,LOCATION_DECK,0,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.check,tp,LOCATION_DECK,0,1,nil,tp)
+		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_DECK)
 end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not (c:IsFaceup() and c:IsRelateToEffect(e)) then return end
+	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-	local g=Duel.GetMatchingGroup(cm.check,tp,LOCATION_DECK,0,nil,e,tp)
-	if g:CheckSubGroup(cm.gcheck,1,1,tp) then
+	local g=Duel.GetMatchingGroup(cm.check,tp,LOCATION_DECK,0,nil,tp)
+	if #g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local sg=g:SelectSubGroup(tp,cm.gcheck,false,1,1,tp)
-		if not sg then return end
+		local sg=g:Select(tp,1,1,nil)
 		local tc=sg:GetFirst()
 		if tc then
 			if not Duel.Equip(tp,tc,c) then return end
@@ -69,6 +60,9 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetValue(1000)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e2)
+			local e3=e2:Clone()
+			e3:SetCode(EFFECT_UPDATE_DEFENSE)
+			tc:RegisterEffect(e3)
 			local e0=Effect.CreateEffect(c)
 			e0:SetType(EFFECT_TYPE_SINGLE)
 			e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
@@ -82,5 +76,3 @@ end
 function cm.eqlimit(e,c)
 	return c==e:GetLabelObject()
 end
-
-

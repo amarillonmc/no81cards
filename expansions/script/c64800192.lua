@@ -32,24 +32,23 @@ function s.initial_effect(c)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
 end
-function s.cfilter(c)
+function s.cfilter(c,e,tp)
 	return c:IsType(TYPE_EQUIP) and c:IsFaceup()
 end
 function s.spcost(e,c,tp,st)
 	if bit.band(st,SUMMON_TYPE_SPECIAL)~=SUMMON_TYPE_SPECIAL then return true end
 	return  Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
-
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP()
 end
-function s.cfilter(c)
+function s.costfilter(c)
 	return c:IsLevel(10)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lg=e:GetHandler():GetLinkedGroup()
-	if chk==0 then return Duel.CheckReleaseGroup(tp,s.cfilter,1,nil,lg) end
-	local g=Duel.SelectReleaseGroup(tp,s.cfilter,1,1,nil,lg)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,s.costfilter,1,nil,lg) end
+	local g=Duel.SelectReleaseGroup(tp,s.costfilter,1,1,nil,lg)
 	Duel.Release(g,REASON_COST)
 end
 function s.datop(e,tp,eg,ep,ev,re,r,rp)
