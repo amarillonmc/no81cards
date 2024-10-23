@@ -14,6 +14,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e2:SetRange(LOCATION_HAND)
+	e2:SetCondition(cm.condition)
 	e2:SetCost(cm.cost)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.operation)
@@ -61,6 +62,9 @@ function cm.initial_effect(c)
 	e9:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	c:RegisterEffect(e9)
 	
+end
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnCount()==1
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
