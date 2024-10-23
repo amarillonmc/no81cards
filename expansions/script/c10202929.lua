@@ -58,7 +58,7 @@ function c10202929.tdfilter(c)
 end
 function c10202929.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c10202929.tdfilter(chkc) end
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,2)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
 		and Duel.IsExistingTarget(c10202929.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,c10202929.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,3,nil)
@@ -74,6 +74,6 @@ function c10202929.drop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 	if ct>0 then
 		Duel.BreakEffect()
-		Duel.Draw(tp,2,REASON_EFFECT)
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end

@@ -117,7 +117,7 @@ function c98920602.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local mg=Duel.GetMatchingGroup(c98920602.spcfilter,tp,LOCATION_ONFIELD,0,nil)
-	return mg:CheckSubGroup(aux.mzctcheck,3,3,tp)
+	return mg:CheckSubGroup(aux.mzctcheck,3,3,tp) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c98920602.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local mg=Duel.GetMatchingGroup(c98920602.spcfilter,tp,LOCATION_ONFIELD,0,nil)

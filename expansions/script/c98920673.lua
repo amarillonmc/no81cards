@@ -18,8 +18,8 @@ function c98920673.cfilter(c,tp)
 	return c:IsAttribute(ATTRIBUTE_DARK)
 end
 function c98920673.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c98920673.cfilter,2,nil) end
-	local g=Duel.SelectReleaseGroupEx(tp,c98920673.cfilter,2,2,nil)
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c98920673.cfilter,2,REASON_COST,true,nil,tp) end
+	local g=Duel.SelectReleaseGroupEx(tp,c98920673.cfilter,2,2,REASON_COST,true,nil,tp)
 	Duel.Release(g,REASON_COST)
 end
 function c98920673.setfilter(c)

@@ -51,7 +51,7 @@ function c98920369.cfilter1(c,tp)
 end
 function c98920369.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c98920369.cfilter1,1,nil,REASON_COST,true,tp) end
-	local g=Duel.SelectReleaseGroupEx(tp,c98920369.cfilter1,1,1,nil,tp)
+	local g=Duel.SelectReleaseGroupEx(tp,c98920369.cfilter1,1,1,REASON_COST,true,nil,tp)
 	Duel.Release(g,REASON_COST)
 end
 function c98920369.filter(c,e,tp)
