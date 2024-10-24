@@ -68,6 +68,16 @@ function s.mixtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetCategory(ctgy)
 		Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(id,1))
 		Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(id,1))
+		if cct >= 7 then
+			Duel.Hint(HINT_NUMBER,tp,7)
+			Duel.Hint(HINT_NUMBER,1-tp,7)
+		elseif cct >= 5 then
+			Duel.Hint(HINT_NUMBER,tp,5)
+			Duel.Hint(HINT_NUMBER,1-tp,5) 
+		elseif cct >= 3 then
+			Duel.Hint(HINT_NUMBER,tp,3)
+			Duel.Hint(HINT_NUMBER,1-tp,3)
+		end
 		c:RegisterFlagEffect(0, RESET_CHAIN, EFFECT_FLAG_CLIENT_HINT, 1,0,aux.Stringid(id,1))
 	end
 	s.chain_id_scl[cct] = op

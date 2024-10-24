@@ -280,12 +280,13 @@ function s.SynMixCondition(e,c,smat,mg1,min,max)
 	aux.GCheckAdditional=nil
 	SNNM.SubGroupParams={}
 	Duel.ResetFlagEffect(tp,8173184+1)
-	return res and mg:IsExists(s.ntfilter,1,nil,c,mg) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+	return res and mg:IsExists(s.ntfilter,1,nil,c,mg)
 end
 function s.ntfilter(c,sc,mg)
 	return s.TunerCheck(c,sc) and mg:IsExists(s.NotTunerCheck,1,c,sc)
 end
 function s.syngoal(g,sc,smat,tp,mgchk)
+	if Duel.GetLocationCountFromEx(tp,tp,g,sc)<=0 then return false end
 	if not g:IsExists(s.ntfilter,1,nil,sc,g) then return false end
 	if smat and not g:IsContains(smat) then return false end
 	if not aux.MustMaterialCheck(g,tp,EFFECT_MUST_BE_SMATERIAL) then return false end
