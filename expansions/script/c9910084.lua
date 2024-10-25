@@ -36,14 +36,14 @@ function c9910084.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()==0 then return false end
 	local tg=g:GetMaxGroup(Card.GetAttack)
 	return tg:IsExists(Card.IsControler,1,nil,1-tp)
-		and not Duel.IsExistingMatchingCard(c9910084.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
+		and not Duel.IsEnvironment(9910059,tp) and not Duel.IsExistingMatchingCard(c9910084.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c9910084.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if g:GetCount()==0 then return false end
 	local tg=g:GetMaxGroup(Card.GetAttack)
 	return tg:IsExists(Card.IsControler,1,nil,1-tp)
-		and Duel.IsExistingMatchingCard(c9910084.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
+		and (Duel.IsEnvironment(9910059,tp) or Duel.IsExistingMatchingCard(c9910084.cfilter,tp,LOCATION_ONFIELD,0,1,nil))
 end
 function c9910084.rfilter(c,tp)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)

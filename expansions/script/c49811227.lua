@@ -44,7 +44,7 @@ end
 function c49811227.spcon(e,c)
     if c==nil then return true end
     local tp=c:GetControler()
-    return Duel.IsExistingMatchingCard(c49811227.spfilter,tp,0,LOCATION_MZONE,1,nil,tp) and Duel.IsExistingMatchingCard(c49811224.spfilter2,tp,LOCATION_MZONE,0,1,nil)
+    return Duel.IsExistingMatchingCard(c49811227.spfilter,tp,0,LOCATION_MZONE,1,nil,tp) and Duel.IsExistingMatchingCard(c49811227.spfilter2,tp,LOCATION_MZONE,0,1,nil)
 end
 function c49811227.spop(e,tp,eg,ep,ev,re,r,rp,c)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)

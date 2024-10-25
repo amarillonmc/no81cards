@@ -27,6 +27,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetTurnCount()<=0 then return end
 	local tab={LOCATION_DECK,LOCATION_HAND,LOCATION_ONFIELD,LOCATION_GRAVE,LOCATION_REMOVED,LOCATION_EXTRA}
 	for i=1,6 do
 		local loc=tab[i]
@@ -169,7 +170,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 				if mc:IsLocation(LOCATION_MZONE) then
 					Duel.ReleaseRitualMaterial(mat)
 				else
-					Duel.Release(mat,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
+					Duel.SendtoGrave(mat,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL+REASON_RELEASE)
 				end
 				Duel.BreakEffect()
 				Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
@@ -183,7 +184,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 				if mc:IsLocation(LOCATION_MZONE) then
 					Duel.ReleaseRitualMaterial(mat)
 				else
-					Duel.Release(mat,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
+					Duel.SendtoGrave(mat,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL+REASON_RELEASE)
 				end
 				Duel.BreakEffect()
 				Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)

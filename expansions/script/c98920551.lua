@@ -19,6 +19,7 @@ function c98920551.initial_effect(c)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,98930551)
+	e3:SetCondition(c98920551.spcon)
 	e3:SetTarget(c98920551.sptg)
 	e3:SetOperation(c98920551.spop)
 	c:RegisterEffect(e3)
@@ -81,4 +82,7 @@ function c98920551.spop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(LOCATION_REMOVED)
 		c:RegisterEffect(e2,true)
 	end
+end
+function c98920551.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsReason(REASON_EFFECT)
 end

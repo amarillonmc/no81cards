@@ -48,7 +48,7 @@ function c98920632.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c98920632.spop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c98920632.filter),tp,LOCATION_DECK,0,nil,e,tp)
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c98920632.spfilter),tp,LOCATION_DECK,0,nil,e,tp)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=1 or g:GetCount()==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=g:SelectSubGroup(tp,c98920632.fselect,false,2,2,tp)
@@ -77,7 +77,7 @@ function c98920632.spop(e,tp,eg,ep,ev,re,r,rp)
 		if sg:FilterCount(Card.IsLocation,nil,LOCATION_MZONE)<2 then return end
 		local xyzg=Duel.GetMatchingGroup(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,nil,sg,2,2)
 		local tg=Duel.GetMatchingGroup(c98920632.synfilter,tp,LOCATION_EXTRA,0,nil,sg)
-		if xyzg:GetCount()>0 and (tg:GetCount()==0 or Duel.SelectOption(tp,1165,1164)==0) then
+		if xyzg:GetCount()>0 and Duel.SelectOption(tp,1165,1164)==0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local xyz=xyzg:Select(tp,1,1,nil):GetFirst()
 			Duel.XyzSummon(tp,xyz,sg)
@@ -87,4 +87,15 @@ function c98920632.spop(e,tp,eg,ep,ev,re,r,rp)
 			 Duel.SynchroSummon(tp,rg:GetFirst(),nil,og)
 		end
 	end
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,0)
+	e2:SetTarget(c98920632.splimit)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+end
+function c98920632.splimit(e,c)
+	return not c:IsRace(RACE_CYBERSE) and c:IsLocation(LOCATION_EXTRA)
 end

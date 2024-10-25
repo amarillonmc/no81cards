@@ -60,10 +60,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.IsExistingMatchingCard(cm.bsfil1,tp,LOCATION_SZONE,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			local g=Duel.GetMatchingGroup(cm.bsfil1,tp,LOCATION_SZONE,0,nil)
 			if g:GetCount()>0 and Duel.Destroy(g,REASON_EFFECT)~=0 then
-				local tg=g:GetMinGroup(Card.GetAttack)
+				local cg=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+				local tg=cg:GetMinGroup(Card.GetAttack)
 				if tg:GetCount()>1 then
-					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-					local sg=tg:Select(tp,1,1,nil)
+					Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_DESTROY)
+					local sg=tg:Select(1-tp,1,1,nil)
 					Duel.HintSelection(sg)
 					Duel.Destroy(sg,REASON_RULE)
 				else Duel.Destroy(tg,REASON_RULE) end
@@ -72,10 +73,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.IsExistingMatchingCard(cm.bsfil2,tp,LOCATION_SZONE,0,1,nil) and Duel.IsExistingMatchingCard(cm.filter2,tp,0,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			local g=Duel.GetMatchingGroup(cm.bsfil2,tp,LOCATION_SZONE,0,nil)
 			if g:GetCount()>0 and Duel.Destroy(g,REASON_EFFECT)~=0 then
+				local cg=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 				local tg=g:GetMinGroup(Card.GetDefense)
 				if tg:GetCount()>1 then
-					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-					local sg=tg:Select(tp,1,1,nil)
+					Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_DESTROY)
+					local sg=tg:Select(1-tp,1,1,nil)
 					Duel.HintSelection(sg)
 					Duel.Destroy(sg,REASON_RULE)
 				else Duel.Destroy(tg,REASON_RULE) end

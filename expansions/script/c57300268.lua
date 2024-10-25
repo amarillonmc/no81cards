@@ -89,6 +89,6 @@ end
 function s.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner() and te:IsActiveType(TYPE_MONSTER)
 end
-function s.effectfilter(e,ct)
+function s.effectfilter(e,te)
 	return te:GetHandler()==e:GetHandler()
 end
