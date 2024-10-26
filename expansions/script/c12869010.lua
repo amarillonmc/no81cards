@@ -32,16 +32,17 @@ function c12869010.filter(c,e,tp,sc)
 	end
 	return ok
 end
-function c12869010.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c12869010.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c12869010.filter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c12869010.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c12869010.filter,tp,LOCATION_MZONE,0,1,1,nil,e,tp,e:GetHandler())
+	Duel.SelectTarget(tp,c12869010.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,LOCATION_HAND)
 end
 function c12869010.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) then return end
 	local zone={}
 	local flag={}
 	for p=0,1 do
