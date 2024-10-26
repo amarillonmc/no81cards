@@ -64,6 +64,10 @@ function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local cg=Duel.GetMatchingGroup(Card.IsCanChangePosition,tp,0,LOCATION_MZONE,nil)
 	if chk==0 then return #cg>0 end
 end
+local _IsCanChangePosition=Card.IsCanChangePosition
+function Card.IsCanChangePosition(c)
+	return _IsCanChangePosition(c) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local cg=Duel.GetMatchingGroup(Card.IsCanChangePosition,tp,0,LOCATION_MZONE,nil)

@@ -1,6 +1,6 @@
 --机甲载体
 function c98920478.initial_effect(c)
-	aux.EnableUnionAttribute(c,c98920478.eqlimit)
+	aux.EnableUnionAttribute(c,c98920478.ufilter)
 	c:SetSPSummonOnce(98920478)
 	c:EnableReviveLimit()
 	--link summon
@@ -123,6 +123,6 @@ function c98920478.rdcon(e)
 	return Duel.GetAttackTarget()==nil
 		and c:GetEffectCount(EFFECT_DIRECT_ATTACK)<2 and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
 end
-function c98920478.eqlimit(e,c)
-	return c:IsRace(RACE_MACHINE) or e:GetHandler():GetEquipTarget()==c
+function c98920478.ufilter(c)
+	return c:IsRace(RACE_MACHINE)
 end

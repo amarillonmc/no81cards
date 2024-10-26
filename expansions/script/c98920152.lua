@@ -56,8 +56,8 @@ function c98920152.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
-function c98920152.eqlimit(e,c)
-	return c:IsRace(RACE_MACHINE) or e:GetHandler():GetEquipTarget()==c
+function c98920152.eqlimit(c)
+	return c:IsRace(RACE_MACHINE)
 end
 function c98920152.filter(c)
 	local ct1,ct2=c:GetUnionCount()

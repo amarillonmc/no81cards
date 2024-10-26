@@ -177,14 +177,14 @@ function cm.Peacecho(c,typ)
 	e9:SetOperation(cm.UpRegi)
 	c:RegisterEffect(e9)
 end
-GM_global_to_deck_check=true
+cm.global_to_deck_check=true
 function cm.ThirdPeacechotgrepfilter(c)
 	local tp=c:GetOwner()
-	return c.main_peacecho and (c:GetLeaveFieldDest()==0 and not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT)) and c:GetDestination()==LOCATION_GRAVE and ((c:IsLocation(LOCATION_DECK) and (Duel.GetFieldGroup(tp,LOCATION_DECK,0):GetMinGroup(Card.GetSequence):GetFirst()~=c or c:IsControler(1-tp))) or (not c:IsLocation(LOCATION_DECK) and c:IsAbleToDeck()))
+	return c.main_peacecho and c:GetDestination()==LOCATION_GRAVE and ((c:IsLocation(LOCATION_DECK) and (Duel.GetFieldGroup(tp,LOCATION_DECK,0):GetMinGroup(Card.GetSequence):GetFirst()~=c or c:IsControler(1-tp))) or (not c:IsLocation(LOCATION_DECK) and c:IsAbleToDeck()))
 end
 function cm.ThirdPeacechotg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return GM_global_to_deck_check and eg:IsExists(cm.ThirdPeacechotgrepfilter,1,nil) end
-	GM_global_to_deck_check=false
+	if chk==0 then return cm.global_to_deck_check and eg:IsExists(cm.ThirdPeacechotgrepfilter,1,nil) end
+	cm.global_to_deck_check=false
 	for i,xp in ipairs({0,1}) do
 		local xyzg=eg:Filter(function(c,p)return c:GetOverlayGroup():IsExists(function(c,p)return c.main_peacecho and c:GetOwner()==p and c:IsAbleToDeck()end,1,nil,p)end,nil,xp)
 		if #xyzg>0 then Duel.RegisterFlagEffect(xp,53707600,RESET_CHAIN,0,0) end
@@ -235,7 +235,7 @@ function cm.ThirdPeacechotg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 	end
 	end
-	GM_global_to_deck_check=true
+	cm.global_to_deck_check=true
 	return true
 end
 function cm.ThirdPeacechoval(e,c)
@@ -245,6 +245,7 @@ function cm.ThirdPeacechotdfilter(c)
 	return c:GetFlagEffect(53707500)~=0
 end
 function cm.ThirdPeacechotdop(e,tp,eg,ep,ev,re,r,rp)
+	e:Reset()
 	local g=Duel.GetMatchingGroup(cm.ThirdPeacechotdfilter,tp,LOCATION_DECK,0,nil)
 	if #g==0 then return end
 	if Duel.GetFlagEffect(tp,53707600)==0 then
@@ -257,7 +258,6 @@ function cm.ThirdPeacechotdop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ResetFlagEffect(tp,53707600)
 	else Duel.RegisterFlagEffect(tp,53707700,RESET_CHAIN,0,0) end
 	Duel.ResetFlagEffect(tp,53707000)
-	e:Reset()
 end
 function cm.ThirdPeacechoxyztd(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(function(c)return c.main_peacecho and c:IsPreviousLocation(LOCATION_OVERLAY)end,nil)

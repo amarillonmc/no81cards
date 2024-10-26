@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	cm.hand_effect[c]=e3
 end
 function cm.filter(c)
-	return c:GetOriginalType()&TYPE_LINK==0
+	return c:GetOriginalType()&TYPE_LINK==0 and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.SpiritReturnReg(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -95,7 +95,7 @@ function cm.smfilter(c,e,tp,fg)
 	local eset2={c:IsHasEffect(EFFECT_LIMIT_SET_PROC)}
 	local eset3={c:IsHasEffect(EFFECT_SUMMON_PROC)}
 	local eset4={c:IsHasEffect(EFFECT_SET_PROC)}
-	local e1,e2=Effect.CreateEffect(c),Effect.CreateEffect(c)
+	local e1,e2=Effect.CreateEffect(e:GetHandler()),Effect.CreateEffect(e:GetHandler())
 	local _CheckTribute=Duel.CheckTribute
 	local _GetLocationCount=Duel.GetLocationCount
 	local _GetMZoneCount=Duel.GetMZoneCount

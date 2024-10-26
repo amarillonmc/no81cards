@@ -29,7 +29,8 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.sumtg)
 	e3:SetOperation(cm.sumop)
 	c:RegisterEffect(e3)
-	cm.hand_effect=e3
+	cm.hand_effect=cm.hand_effect or {}
+	cm.hand_effect[c]=e3
 end
 function cm.filter(c)
 	return c:IsAbleToDeck() or c:IsAbleToHand()
@@ -59,13 +60,13 @@ function cm.SpiritReturnReg(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e2)
 end
 function cm.cpfilter(c,tp)
-	return c:GetOriginalType()&TYPE_LINK==0 and Duel.IsExistingMatchingCard(cm.cpfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,c,tp,c)
+	return c:GetOriginalType()&TYPE_LINK==0 and not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsExistingMatchingCard(cm.cpfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,c,tp,c)
 end
 function cm.cpfilter2(c,tp,tc)
 	local fg=Group.CreateGroup()
 	if c:IsFacedown() then fg:AddCard(tc) end
 	if tc:IsFacedown() then fg:AddCard(c) end
-	return c:GetOriginalType()&TYPE_LINK==0 and c:GetPosition()~=tc:GetPosition() and Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,fg) and not fg:IsExists(function(c) return c:IsFaceup() and not c:IsCanTurnSet() end,1,nil)
+	return c:GetOriginalType()&TYPE_LINK==0 and not c:IsStatus(STATUS_BATTLE_DESTROYED) and c:GetPosition()~=tc:GetPosition() and Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,fg) and not fg:IsExists(function(c) return c:IsFaceup() and not c:IsCanTurnSet() end,1,nil)
 end
 function cm.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cpfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) and e:GetHandler():GetFlagEffect(m)==0 end

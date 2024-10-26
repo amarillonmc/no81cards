@@ -118,6 +118,10 @@ end
 function cm.ptcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousPosition(POS_FACEDOWN) and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
+local _IsCanChangePosition=Card.IsCanChangePosition
+function Card.IsCanChangePosition(c)
+	return _IsCanChangePosition(c) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+end
 function cm.pttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local cg=Duel.GetMatchingGroup(Card.IsCanChangePosition,tp,LOCATION_MZONE,0,nil)
 	if chk==0 then return #cg>0 end

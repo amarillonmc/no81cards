@@ -21,9 +21,17 @@ function cm.initial_effect(c)
 		cm.global_check=true
 		local _Equip=Duel.Equip
 		Duel.Equip=function(p,c,...)
-			c:RegisterFlagEffect(m,RESET_CHAIN,0,1)
+			if not c:IsOnField() then c:RegisterFlagEffect(m,RESET_CHAIN,0,1) end
 			local res=_Equip(p,c,...)
-			c:ResetFlagEffect(m)
+			return res
+		end
+		local _CRegisterEffect=Card.RegisterEffect
+		function Card.RegisterEffect(c,e,bool)
+			local res=_CRegisterEffect(c,e,bool)
+			if e:GetCode()==EFFECT_EQUIP_LIMIT and c:GetFlagEffect(m)>0 then
+				c:ResetFlagEffect(m)
+				Duel.RaiseEvent(Group.FromCards(c),EVENT_CUSTOM+m,e,0,0,0,0)
+			end
 			return res
 		end
 		local e1=Effect.CreateEffect(c)
@@ -59,7 +67,7 @@ function cm.costchk(e,c,tp,st)
 	return false
 end
 function cm.filter(c,e)
-	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED) or c:GetFlagEffect(m)>0)) then return false end
+	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED))) or c:GetFlagEffect(m)>0 then return false end
 	if e:GetCode()==EVENT_MOVE then
 		local b1,g1=Duel.CheckEvent(EVENT_SUMMON_SUCCESS,true)
 		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
@@ -73,7 +81,7 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	if (re and re:GetHandler():GetOriginalCode()==m) then return end
-	Duel.RaiseEvent(eg,EVENT_CUSTOM+m,re,r,rp,ep,ev)
+	if eg then Duel.RaiseEvent(eg,EVENT_CUSTOM+m,re,r,rp,ep,ev) end
 end
 function cm.descon3(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():GetFieldID()==re:GetHandler():GetRealFieldID()
@@ -83,7 +91,7 @@ function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	--if EVO_GAME then return end
-	--EVO_GAME=true
+	EVO_GAME=true
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

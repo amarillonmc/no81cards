@@ -17,8 +17,8 @@ function cm.sptg(ct)
 		local c=e:GetHandler()
 		local g=Duel.GetReleaseGroup(tp,true):Filter(Card.IsLevelAbove,c,7)
 		if chk==0 then return #g>=ct and g:CheckSubGroup(cm.gfilter,ct,ct,tp) end
-		Duel.Hint(HINT_SELECTMSG,tp,e:GetDescription())
-		Duel.Hint(HINT_SELECTMSG,1-tp,e:GetDescription())
+		Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
+		Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 		Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,ct,tp,LOCATION_HAND+LOCATION_MZONE)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 		if ct==3 then

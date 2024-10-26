@@ -146,8 +146,12 @@ function Auxiliary.PreloadUds()
 	end
 
 	local _IsCanTurnSet=Card.IsCanTurnSet
-	function Card.IsCanTurnSet(c,...)
-		return (c:IsLocation(LOCATION_SZONE) and c:IsSSetable(true)) or (not c:IsLocation(LOCATION_SZONE) and _IsCanTurnSet(c,...))
+	function Card.IsCanTurnSet(c)
+		return (c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)) or ((_IsCanTurnSet(c) and not c:IsLocation(LOCATION_SZONE) and not c:IsStatus(STATUS_BATTLE_DESTROYED)))
+	end
+	local _IsCanChangePosition=Card.IsCanChangePosition
+	function Card.IsCanChangePosition(c)
+		return _IsCanChangePosition(c) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 	end
 	
 	local _IsTuner=Card.IsTuner
