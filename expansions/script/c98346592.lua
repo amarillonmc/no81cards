@@ -36,7 +36,7 @@ function c98346592.concon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c98346592.confilter(c)
-	return c:IsFaceup() and c:IsControlerCanBeChanged()
+	return c:IsControlerCanBeChanged()
 end
 function c98346592.contg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c98346592.confilter(chkc) end
@@ -72,9 +72,9 @@ function c98346592.rmcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c98346592.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and chkc:IsAbleToHand() and chkc:IsFaceup() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand and Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and e:GetHandler():IsAbleToRemove() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and e:GetHandler():IsAbleToRemove() end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToHand and Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
+	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),1,0,0)
 end
