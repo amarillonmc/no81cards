@@ -78,7 +78,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if Duel.IsExistingMatchingCard(cm.ofilter,tp,LOCATION_FZONE,0,1,c) then
 	   local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
-		Duel.Destroy(sg,REASON_EFFECT)
+		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	end
 end
 function cm.ofilter(c)

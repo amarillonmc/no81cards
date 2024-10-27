@@ -85,7 +85,7 @@ function c9911668.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9911668.cfilter(c,tp)
-	return c:IsSetCard(0x5957) and c:IsType(TYPE_MONSTER) and c:IsControler(tp)
+	return c:IsSetCard(0x5957) and c:IsType(TYPE_MONSTER) and c:IsControler(tp) and c:IsLocation(LOCATION_GRAVE)
 end
 function c9911668.rcccon(e,tp,eg,ep,ev,re,r,rp)
 	return aux.exccon(e) and eg:IsExists(c9911668.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())

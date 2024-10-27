@@ -101,6 +101,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(cm.filter)
 			e1:SetReset(RESET_PHASE+PHASE_MAIN1)
 			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_MAIN1,0,1)
+			Duel.RegisterEffect(e1,tp)
 		elseif Duel.GetCurrentPhase()==PHASE_MAIN2 then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD)
@@ -109,10 +110,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa620))
 			e1:SetValue(cm.filter)
 			e1:SetReset(RESET_PHASE+PHASE_MAIN2)
-			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_MAIN2,0,1)
-		else   
+			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_MAIN2,0,1)  
+			Duel.RegisterEffect(e1,tp)
 		end
-		Duel.RegisterEffect(e1,tp)
+		
 	end
 	Duel.RegisterFlagEffect(tp,60002009,RESET_PHASE+PHASE_END,0,1000)
 	if Duel.IsExistingMatchingCard(cm.ofilter,tp,LOCATION_FZONE,0,1,c) then
