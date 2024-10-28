@@ -129,7 +129,7 @@ function c98930407.disop2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		Duel.ConfirmCards(tp,g)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local tg=g:FilterSelect(tp,aux,TRUE,1,1,nil)
+		local tg=g:FilterSelect(tp,aux.TRUE,1,1,nil)
 		if tg:GetCount()>0 then
 		   local tc=tg:GetFirst()
 		   if Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then

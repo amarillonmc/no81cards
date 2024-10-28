@@ -50,6 +50,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(op)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local op=e:GetLabel()
 	if op==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

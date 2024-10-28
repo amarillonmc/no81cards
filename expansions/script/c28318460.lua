@@ -58,7 +58,7 @@ function c28318460.activate(e,tp,eg,ep,ev,re,r,rp,op)
 			if tc:IsPreviousLocation(LOCATION_DECK) then
 				Duel.ShuffleDeck(tp)
 			end
-			if not tc:IsLocation(LOCATION_HAND) or Duel.GetLP(tp)<11000 then return end
+			if not tc:IsLocation(LOCATION_HAND) or Duel.GetLP(tp)<10000 then return end
 			local te=tc.recover_effect
 			if not te then return end
 			local tg=te:GetTarget()

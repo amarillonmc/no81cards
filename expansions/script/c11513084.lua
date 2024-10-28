@@ -11,6 +11,12 @@ function c11513084.initial_effect(c)
 	e1:SetTarget(c11513084.target)
 	e1:SetOperation(c11513084.activate)
 	c:RegisterEffect(e1)
+	--act in set turn
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	c:RegisterEffect(e2)
 end
 function c11513084.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x195) and c:IsAbleToHandAsCost() 
@@ -18,7 +24,7 @@ end
 function c11513084.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if not c:IsStatus(STATUS_SET_TURN) then return true end
-	local ct=#{c:IsHasEffect(EFFECT_TRAP_ACT_IN_SET_TURN,tp)}
+	local ct=#{c:IsHasEffect(EFFECT_QP_ACT_IN_SET_TURN,tp)}
 	local dis=Duel.IsExistingMatchingCard(c11513084.cfilter,tp,LOCATION_MZONE,0,1,nil)
 	if chk==0 then return ct>1 or dis end
 	if ct==1 or dis and Duel.SelectYesNo(tp,aux.Stringid(11513084,0)) then

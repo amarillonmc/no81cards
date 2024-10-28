@@ -42,7 +42,7 @@ function s.initial_effect(c)
 	e3:SetCondition(s.tgcon1)
 	e3:SetTarget(s.tdtg)
 	e3:SetOperation(s.tdop)
-	c:RegisterEffect(e1)
+	c:RegisterEffect(e3)
 end
 function s.matfilter1(c,syncard)
 	return c:IsTuner(syncard) or c:IsAttribute(ATTRIBUTE_EARTH) and c:IsRace(RACE_FAIRY)
