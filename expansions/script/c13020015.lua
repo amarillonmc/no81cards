@@ -8,6 +8,10 @@ function cm.initial_effect(c)
 	aux.AddEquipSpellEffect(c,true,true,Card.IsFaceup,nil)
 	local e1=xg.epp2(c,m,4,EVENT_EQUIP,EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY,QY_mx,nil,nil,cm.target,cm.operation,true)
 	e1:SetCountLimit(1,m)
+ local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_EQUIP)
+	e2:SetCode(EFFECT_CANNOT_DISABLE)
+	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
@@ -77,9 +81,9 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	local tc=e:GetHandler():GetEquipTarget()
-	local dg=eg:Filter(cm.filter1,nil,tc,c)
+	--local dg=eg:Filter(cm.filter1,nil,tc,c)
 	local g = Duel.GetMatchingGroup(cm.filter, tp, LOCATION_DECK+QY_md, 0, nil)
-	if chk==0 then return #dg>0 and tc and tc:IsCanChangePosition() and #g>0 end
+	if chk==0 then return tc and tc:IsCanChangePosition() and #g>0 end
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,tc,1,0,0)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)

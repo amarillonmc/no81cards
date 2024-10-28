@@ -43,7 +43,7 @@ function c28319011.spfilter(c,e,tp)
 end
 function c28319011.activate(e,tp,eg,ep,ev,re,r,rp,op)
 	local b1=true
-	local b2=Duel.IsExistingMatchingCard(c28319011.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)>0
+	local b2=Duel.IsExistingMatchingCard(c28319011.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)>0
 	local op=aux.SelectFromOptions(tp,
 		{b1,aux.Stringid(28319011,0)},
 		{b2,aux.Stringid(28319011,1)})
@@ -54,10 +54,9 @@ function c28319011.activate(e,tp,eg,ep,ev,re,r,rp,op)
 		end
 	elseif op==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-		local sc=Duel.SelectMatchingCard(tp,c28319011.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
-		if Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 and sc:IsSummonLocation(LOCATION_DECK) then
-			local lp=Duel.GetLP(tp)
-			Duel.SetLP(tp,lp-1200)
+		local sc=Duel.SelectMatchingCard(tp,c28319011.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
+		if Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 and sc:IsSummonLocation(LOCATION_HAND) then
+			Duel.Recover(tp,1000,REASON_EFFECT)
 		end
 		if Duel.GetLP(tp)>10000 then
 			local te=sc.recover_effect
@@ -84,7 +83,7 @@ end
 function c28319011.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local lp=Duel.GetLP(tp)
 	Duel.SetLP(tp,lp-1500)
-	local te,ceg,cep,cev,cre,cr,crp=e:GetHandler():CheckActivateEffect(false,true,true)
+	local te=e:GetHandler():CheckActivateEffect(false,true,false)
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	if e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsAbleToDeck() then

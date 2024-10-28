@@ -1,5 +1,4 @@
 --三和弦乐团
-c9910051.named_with_Traid=1
 function c9910051.initial_effect(c)
 	--apply effect
 	local e1=Effect.CreateEffect(c)
@@ -20,9 +19,8 @@ function c9910051.filter(c,tp)
 	local code=c:GetCode()-9910000
 	local flag=Duel.GetFlagEffectLabel(tp,9910051)
 	if flag and math.fmod(flag,code)==0 then return false end
-	local m=_G["c"..c:GetCode()]
-	if not (m and m.named_with_Traid and c:IsAbleToGraveAsCost()) then return false end
-	local te=m.onfield_effect
+	if not (c:IsSetCard(0x6957) and c:IsAbleToGraveAsCost()) then return false end
+	local te=c.triad_onfield_effect
 	if not te then return false end
 	local event=te:GetCode()
 	local con=te:GetCondition()
@@ -54,8 +52,7 @@ function c9910051.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.ClearTargetCard()
 	tc:CreateEffectRelation(e)
 	e:SetLabelObject(tc)
-	local m=_G["c"..tc:GetCode()]
-	local te=m.onfield_effect
+	local te=tc.triad_onfield_effect
 	local event=te:GetCode()
 	local tg=te:GetTarget()
 	local res,teg,tep,tev,tre,tr,trp=Duel.CheckEvent(event,true)
@@ -64,8 +61,7 @@ end
 function c9910051.operation(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=e:GetLabelObject()
 	if tc then
-		local m=_G["c"..tc:GetCode()]
-		local te=m.onfield_effect
+		local te=tc.triad_onfield_effect
 		local op=te:GetOperation()
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	end

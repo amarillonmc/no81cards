@@ -77,3 +77,4 @@ function c22050330.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummonComplete()
 		end
 end
+

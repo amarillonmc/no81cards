@@ -80,7 +80,7 @@ function c71400025.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if op==0 then
 		e:SetCategory(CATEGORY_TOGRAVE)
 		local og=Duel.GetMatchingGroup(c71400025.filter1a3,tp,LOCATION_DECK,0,nil,check)
-		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,og,1,0,0)
+		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,og,1,tp,LOCATION_DECK)
 	else
 		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)

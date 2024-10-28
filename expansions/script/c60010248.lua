@@ -42,7 +42,14 @@ function cm.pkop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,m+1,nil,TYPES_TOKEN_MONSTER,0,0,1,RACE_FISH,ATTRIBUTE_FIRE) then
 		local token=Duel.CreateToken(tp,m+1)
-		if Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP_DEFENSE)~=0 then
+		if Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)~=0 then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetValue(1)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			token:RegisterEffect(e1)
 			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 		end
 	end

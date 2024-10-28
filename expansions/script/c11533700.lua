@@ -63,14 +63,19 @@ function c11533700.rrtcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end 
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end 
-function c11533700.rrfil1(c)
-	return c:IsSetCard(0xb4) and c:IsReleasable()
+function c11533700.rrfil1(c,tp)
+	local re=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
+	local val=nil
+	if re then
+		val=re:GetValue()
+	end
+	return c:IsSetCard(0xb4) and (c:IsReleasable() or (c:IsType(TYPE_SPELL+TYPE_TRAP) and (val==nil or val(re,c)~=true)))
 end 
 function c11533700.rrfil2(c)
 	return c:IsSetCard(0xb4) and c:IsAbleToRemove()
 end 
 function c11533700.rrttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) and Duel.IsPlayerCanDraw(tp,2)
+	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,e:GetHandler(),tp) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) and Duel.IsPlayerCanDraw(tp,2)
 
 	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,LOCATION_GRAVE,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,nil) and Duel.IsPlayerCanDraw(tp,1)
 	if chk==0 then return b1 or b2 end 
@@ -78,7 +83,7 @@ function c11533700.rrttg(e,tp,eg,ep,ev,re,r,rp,chk)
 end 
 function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
-	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) and Duel.IsPlayerCanDraw(tp,2)
+	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,c,tp) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) and Duel.IsPlayerCanDraw(tp,2)
 	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,LOCATION_GRAVE,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,nil) and Duel.IsPlayerCanDraw(tp,1)
 	local op=0
 			if b1 or b2 then  
@@ -92,8 +97,8 @@ function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp)
 
 			if op==0 then 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g1=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11533700.rrfil1),tp,LOCATION_HAND,0,1,1,c)
-	if g1:GetCount()>0 and Duel.Release(g1,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) then
+	local g1=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11533700.rrfil1),tp,LOCATION_HAND,0,1,1,c,tp)
+	if g1:GetCount()>0 and Duel.SendtoGrave(g1,REASON_EFFECT+REASON_RELEASE)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local rrg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,5,nil)
 	if rrg:GetCount()>0 then
@@ -118,20 +123,30 @@ function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	end
 end  
-function c11533700.rlfil(c)  
-	return c:IsReleasable() or c:IsAbleToRemove() 
+function c11533700.rlfil(c,tp)
+	local re=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
+	local val=nil
+	if re then
+		val=re:GetValue()
+	end
+	return c:IsAbleToRemove() or c:IsReleasable() or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_HAND) and (val==nil or val(re,c)~=true))
 end 
 function c11533700.rdistg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return Duel.IsExistingMatchingCard(c11533700.rlfil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end 
+	if chk==0 then return Duel.IsExistingMatchingCard(c11533700.rlfil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,tp) end 
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)  
 end
 function c11533700.rdisop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
-	local g=Duel.GetMatchingGroup(c11533700.rlfil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil) 
+	local rre=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
+	local val=nil
+	if rre then
+		val=rre:GetValue()
+	end
+	local g=Duel.GetMatchingGroup(c11533700.rlfil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil,tp) 
 	if g:GetCount()>0 then 
 		local rc=g:Select(tp,1,1,nil):GetFirst()  
 		local x=0 
-			local b1=rc:IsReleasable() 
+			local b1=rc:IsReleasable() or (rc:IsType(TYPE_SPELL+TYPE_TRAP) and rc:IsLocation(LOCATION_HAND) and (val==nil or val(rre,rc)~=true))
 			local b2=rc:IsAbleToRemove()
 			local op=0  
 			if b1 and b2 then  
@@ -142,7 +157,7 @@ function c11533700.rdisop(e,tp,eg,ep,ev,re,r,rp)
 			op=Duel.SelectOption(tp,aux.Stringid(11533700,3))+1
 			end  
 			if op==0 then 
-			x=Duel.Release(rc,REASON_EFFECT) 
+			x=Duel.SendtoGrave(rc,REASON_EFFECT+REASON_RELEASE)
 			elseif op==1 then 
 			x=Duel.Remove(rc,POS_FACEUP,REASON_EFFECT) 
 			end 

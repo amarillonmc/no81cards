@@ -24,7 +24,7 @@ function c25000067.setfilter(c)
 end
 function c25000067.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c25000067.setfilter,tp,LOCATION_DECK,0,1,nil)
-	and Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+	and Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler())
 	and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 end
 function c25000067.activate(e,tp,eg,ep,ev,re,r,rp)

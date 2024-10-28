@@ -1,6 +1,9 @@
 --潮风的废都 盐风
 function c29098630.initial_effect(c)
 	aux.AddCodeList(c,29098631)
+	aux.AddCodeList(c,22702055)
+	--code
+	aux.EnableChangeCode(c,22702055,LOCATION_SZONE+LOCATION_GRAVE)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)

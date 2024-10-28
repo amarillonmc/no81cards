@@ -6,9 +6,10 @@ function c9911435.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
-	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9911435)
 	e1:SetCondition(c9911435.spcon1)
+	e1:SetCost(c9911435.spcost1)
 	e1:SetTarget(c9911435.sptg1)
 	e1:SetOperation(c9911435.spop1)
 	c:RegisterEffect(e1)
@@ -16,7 +17,7 @@ function c9911435.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_HAND+LOCATION_MZONE)
+	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e2:SetCountLimit(1,9911436)
 	e2:SetCost(c9911435.spcost2)
 	e2:SetTarget(c9911435.sptg2)
@@ -33,8 +34,6 @@ function c9911435.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c9911435.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	if not (rc:IsCode(9910871) and re:IsHasType(EFFECT_TYPE_ACTIVATE)) then return false end
 	for i=1,ev do
 		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
 		local tc=te:GetHandler()
@@ -43,6 +42,12 @@ function c9911435.spcon1(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	return false
+end
+function c9911435.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,9910871) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local tc=Duel.SelectMatchingCard(tp,Card.IsCode,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,9910871):GetFirst()
+	Duel.ConfirmCards(1-tp,tc)
 end
 function c9911435.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -112,11 +117,11 @@ function c9911435.retop(e,tp,eg,ep,ev,re,r,rp)
 	if ct~=2 then return end
 	if tc:GetFlagEffectLabel(9911435)==fid then
 		local loc=tc:GetPreviousLocation()
-		if loc==LOCATION_HAND then
-			Duel.SendtoHand(tc,tc:GetPreviousControler(),REASON_EFFECT)
-		end
 		if loc==LOCATION_MZONE then
 			Duel.ReturnToField(tc)
+		end
+		if loc==LOCATION_GRAVE then
+			Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)
 		end
 	end
 end
@@ -132,10 +137,8 @@ function c9911435.spop2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c9911435.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)>0
-		and Duel.IsPlayerCanDraw(1-tp,1) and Duel.SelectYesNo(1-tp,aux.Stringid(9911435,0)) then
-		Duel.BreakEffect()
-		Duel.Draw(1-tp,1,REASON_EFFECT)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 function c9911435.descon(e,tp,eg,ep,ev,re,r,rp)

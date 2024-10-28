@@ -1,48 +1,59 @@
---梦幻星界 爱丽丝
+--星幻梦界 七色的人偶使
 function c22050320.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,4,2)
 	c:EnableReviveLimit()
-	--Activate
+	--special summon (deck and grave)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(22050320,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,22050320)
-	e1:SetTarget(c22050320.target)
-	e1:SetCost(c22050320.cost)
-	e1:SetOperation(c22050320.operation)
+	e1:SetCountLimit(1,22050321)
+	e1:SetTarget(c22050320.sptg2)
+	e1:SetOperation(c22050320.spop2)
 	c:RegisterEffect(e1)
-	--tohand
+	--Activate
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(22050320,1))
-	e2:SetCategory(CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_DETACH_MATERIAL)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,22050231)
-	e2:SetTarget(c22050320.thtg)
-	e2:SetOperation(c22050320.thop)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,22050320)
+	e2:SetTarget(c22050320.target)
+	e2:SetOperation(c22050320.operation)
 	c:RegisterEffect(e2)
 end
-function c22050320.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(22050320,tp,ACTIVITY_SPSUMMON)==0 end
+function c22050320.spfilter(c,e,tp)
+	return c:IsSetCard(0xff6) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c22050320.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c22050320.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+end
+function c22050320.spop2(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22050320.spfilter),tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 	e1:SetTargetRange(1,0)
 	e1:SetTarget(c22050320.splimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function c22050320.splimit(e,c,sump,sumtype,sumpos,targetp)
-	return c:IsLocation(LOCATION_EXTRA) and not c:IsType(TYPE_XYZ)
+function c22050320.splimit(e,c)
+	return not c:IsType(TYPE_XYZ) and c:IsLocation(LOCATION_EXTRA)
 end
-
 function c22050320.filter(c,e,tp)
 	return c:IsSetCard(0xff6) and c:IsLevel(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
@@ -65,31 +76,4 @@ function c22050320.operation(e,tp,eg,ep,ev,re,r,rp)
 	local sg2=g2:Select(tp,1,1,nil)
 	sg1:Merge(sg2)
 	Duel.SpecialSummon(sg1,0,tp,tp,false,false,POS_FACEUP)
-end
-function c22050320.thfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
-end
-function c22050320.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c22050320.thfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c22050320.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectTarget(tp,c22050320.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
-end
-function c22050320.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0   then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-		e1:SetTargetRange(1,0)
-		e1:SetValue(c22050320.aclimit)
-		e1:SetLabel(tc:GetCode())
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-	end
-end
-function c22050320.aclimit(e,re,tp)
-	return re:GetHandler():IsCode(e:GetLabel())
 end

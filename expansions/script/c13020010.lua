@@ -51,7 +51,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	local oc=LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK
 	if Duel.GetTurnPlayer()~=e:GetHandlerPlayer() then
-		oc=QY_sk
+		oc=QY_sk+QY_md
 	end
 	local g=Duel.GetMatchingGroup(cm.filter2,tp,oc,0,nil)
 	local g2=Duel.GetMatchingGroup(cm.filter,tp,QY_gs,QY_gs,nil,e,g)
@@ -66,7 +66,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsCanBeDisabledByEffect(e) then
 		local oc=LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK
 		if Duel.GetTurnPlayer()~=e:GetHandlerPlayer() then
-			oc=QY_sk
+			oc=QY_sk+QY_md
 		end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local tcg=Duel.SelectMatchingCard(tp,cm.filter2,tp,oc,0,1,1,nil):GetFirst()
@@ -95,7 +95,7 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Recover(tp,200,REASON_EFFECT)>0 then
 	if num>=6 and g1~=nil and #g2>0 and zzx>0 and xg.ky(tp,m,1) then
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
-		local g = Duel.SelectMatchingCard(tp, cm.filter5, tp, LOCATION_GRAVE, 0, 1, 1, nil)
+		local g = Duel.SelectMatchingCard(tp, nil, tp, LOCATION_GRAVE, 0, 1, 3, nil)
 		Duel.SendtoDeck(g, nil, 2, REASON_EFFECT)
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
 		local tc = Duel.SelectMatchingCard(tp, cm.filter6, tp, LOCATION_GRAVE, 0, 1, 1, nil ,e,tp):GetFirst()

@@ -1,4 +1,4 @@
---梦幻星界 八云紫
+--星幻梦界 幻想的境界
 function c22050380.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--xyz summon

@@ -68,13 +68,13 @@ function c22050170.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22050170.cfilter(c)
-	return c:IsAbleToRemoveAsCost() and c:IsType(TYPE_XYZ)
+	return c:IsSetCard(0xff6) and c:IsType(TYPE_XYZ) and c:IsAbleToGraveAsCost()
 end
 function c22050170.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c22050170.cfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c22050170.cfilter,tp,LOCATION_GRAVE,0,1,1,e:GetHandler())
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	if chk==0 then return Duel.IsExistingMatchingCard(c22050170.cfilter,tp,LOCATION_EXTRA,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c22050170.cfilter,tp,LOCATION_EXTRA,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c22050170.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

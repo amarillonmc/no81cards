@@ -9,6 +9,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCountLimit(1,m)
+	e1:SetCost(cm.spcost)
 	e1:SetCondition(cm.spcon1)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
@@ -73,6 +74,24 @@ end
 function cm.ninjafilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x2b)
 end
+function cm.spcostfilter1(c)
+    return aux.IsCodeListed(c,11638001) and not c:IsPublic()
+end
+function cm.apcostfilter2(c)
+    return c:IsFaceup() and c:IsCode(11638011)
+end
+function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+    local c=e:GetHandler()
+    local bl1=Duel.IsExistingMatchingCard(cm.spcostfilter1,tp,LOCATION_HAND,0,1,c)
+    local bl2=Duel.IsExistingMatchingCard(cm.spcostfilter2,tp,LOCATION_ONFIELD,0,1,nil)
+    if chk==0 then return bl2 or bl1 end
+    if not bl2 then
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+        local g=Duel.SelectMatchingCard(tp,cm.spcost1filter,tp,LOCATION_HAND,0,1,1,nil)      
+	    Duel.ConfirmCards(1-tp,g)
+	end
+end
+
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(cm.ninjafilter,tp,0,LOCATION_MZONE,1,nil)
 end

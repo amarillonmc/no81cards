@@ -140,7 +140,7 @@ function c11533718.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 --function c11533718.negcfilter(c)
---  return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0xb4) and c:IsReleasable()
+--	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0xb4) and c:IsReleasable()
 --end
 function c11533718.rrfil(c,tp)
 	local re=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
@@ -148,7 +148,7 @@ function c11533718.rrfil(c,tp)
 	if re then
 		val=re:GetValue()
 	end
-	return c:IsSetCard(0xb4) and (c:IsReleasable() or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_HAND) and (val==nil or val(re,c)~=true)))
+	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0xb4) and (c:IsReleasable() or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_HAND) and (val==nil or val(re,c)~=true)))
 end 
 function c11533718.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11533718.rrfil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler()) end

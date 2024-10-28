@@ -1,6 +1,6 @@
 --影六武众-千代
 function c98920117.initial_effect(c)  
-  c:SetSPSummonOnce(98920117)
+	c:SetSPSummonOnce(98920117)
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(98920117,1))
 	e6:SetCategory(CATEGORY_SPECIAL_SUMMON)

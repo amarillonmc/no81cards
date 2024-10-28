@@ -1,4 +1,4 @@
---梦幻星界 魂魄妖梦
+--星幻梦界 半分虚幻的园艺师
 function c22050280.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--xyz summon

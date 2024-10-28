@@ -49,7 +49,7 @@ function c11561068.cfilter(c,e,tp)
 	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsAbleToExtra() and Duel.IsExistingMatchingCard(c11561068.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c:GetLevel(),c:GetAttribute(),e:GetHandler())
 end
 function c11561068.spfilter(c,e,tp,lv,att,ec)
-	return c:IsLevel(lv) and c:IsAttribute(att) and c:IsType(TYPE_SYNCHRO) and c:IsRace(RACE_DRAGON) and Duel.GetLocationCountFromEx(tp,tp,ec,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevel(lv) and c:IsAttribute(att) and c:IsType(TYPE_SYNCHRO) and Duel.GetLocationCountFromEx(tp,tp,ec,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c11561068.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

@@ -1,37 +1,28 @@
---幻梦界 秦心
+--梦幻星界 蓬莱的人之形
 function c22050470.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,4,2)
 	c:EnableReviveLimit()
-	--attack up
+	--destroy replace
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EFFECT_DESTROY_REPLACE)
+	e1:SetTarget(c22050470.reptg)
+	c:RegisterEffect(e1)
+	--destroy & counter
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(22050470,0))
-	e2:SetCategory(CATEGORY_DAMAGE)
-	e2:SetType(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_SINGLE)
+	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e2:SetCode(EVENT_DETACH_MATERIAL)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTarget(c22050470.damtg)
-	e2:SetOperation(c22050470.damop)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,22050470)
+	e2:SetTarget(c22050470.destg)
+	e2:SetOperation(c22050470.desop)
 	c:RegisterEffect(e2)
-	--destroy replace
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCode(EFFECT_DESTROY_REPLACE)
-	e4:SetTarget(c22050470.reptg)
-	c:RegisterEffect(e4)
-end
-function c22050470.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsRelateToEffect(e) end
-	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(1000)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
-end
-function c22050470.damop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Damage(p,d,REASON_EFFECT)
 end
 function c22050470.repfilter(c)
 	return c:IsSetCard(0xff6) and c:IsType(TYPE_MONSTER) and c:IsCanOverlay()
@@ -46,4 +37,22 @@ function c22050470.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.Overlay(c,g)
 		return true
 	else return false end
+end
+function c22050470.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
+	if chkc then return chkc:IsOnField() and chkc~=c and chkc:IsType(TYPE_SPELL+TYPE_TRAP) end
+	if chk==0 then return c:IsDestructable()
+		and Duel.IsExistingTarget(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)
+	g:AddCard(c)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+end
+function c22050470.desop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) then
+		local g=Group.FromCards(c,tc)
+		Duel.Destroy(g,REASON_EFFECT)
+	end
 end

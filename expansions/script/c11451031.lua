@@ -63,7 +63,7 @@ function cm.initial_effect(c)
 		PNFL_MIRROR_ACTIVATED={}
 		PNFL_MIRROR_ACTIVATED[0]={}
 		PNFL_MIRROR_ACTIVATED[1]={}
-		for code=11451031,11451037 do
+		for code=11451031,11451034 do
 			PNFL_MIRROR_ACTIVATED[0][code]={}
 			PNFL_MIRROR_ACTIVATED[1][code]={}
 		end
@@ -74,6 +74,7 @@ function cm.initial_effect(c)
 		PNFL_MIRROR_CONFIRM={}
 		PNFL_MIRROR_CONFIRM[0]={}
 		PNFL_MIRROR_CONFIRM[1]={}
+		PNFL_MIRROR_MULTI={}
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_ACTIVATE_COST)
@@ -106,7 +107,7 @@ function cm.initial_effect(c)
 		local ge3=Effect.CreateEffect(c)
 		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge3:SetCode(EVENT_CHAINING)
-		ge3:SetCondition(function(e,tp) return Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0,1,nil) and not pnfl_adjusting end)
+		ge3:SetCondition(function(e,tp) return Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0,1,nil) and not pnfl_adjusting and Duel.GetFlagEffect(tp,11451031)==0 end)
 		ge3:SetOperation(cm.adjustop)
 		Duel.RegisterEffect(ge3,0)
 		local ge31=ge3:Clone()
@@ -119,7 +120,7 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge41,1)
 		local ge5=ge3:Clone()
 		ge5:SetCode(EVENT_CHAIN_SOLVED)
-		ge5:SetCondition(function(e,tp) return Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0,1,nil) and Duel.GetCurrentChain()==1 and not pnfl_adjusting end)
+		ge5:SetCondition(function(e,tp) return Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0,1,nil) and Duel.GetCurrentChain()==1 and not pnfl_adjusting and Duel.GetFlagEffect(tp,11451031)==0 end)
 		Duel.RegisterEffect(ge5,0)
 		local ge51=ge5:Clone()
 		Duel.RegisterEffect(ge51,1)
@@ -130,11 +131,16 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge61,1)
 	end
 end
+function cm.notempty(t)
+	for i,k in pairs(t) do return true end
+	return false
+end
 function cm.fccon(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetCurrentChain()~=0 or pnfl_adjusting then return false end
-	for ce,tc in pairs(PNFL_MIRROR_COPY[tp]) do
+	for ce,te in pairs(PNFL_MIRROR_COPY[tp]) do
 		local tg=ce:GetTarget() or aux.TRUE
-		if aux.GetValueType(ce)=="Effect" and aux.GetValueType(tc)=="Card" then
+		if aux.GetValueType(ce)=="Effect" and aux.GetValueType(te)=="Effect" and (PNFL_MIRROR_COPIED[1-tp][te] or (cm.notempty(PNFL_MIRROR_MULTI) and PNFL_MIRROR_COPIED[tp][te])) then
+			local tc=te:GetHandler()
 			local ccode=tc:GetOriginalCode()
 			if Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0,1,nil) then return true end --not PNFL_MIRROR_ACTIVATED[tp][ccode] and
 		end
@@ -143,14 +149,15 @@ function cm.fccon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.mfilter(c)
 	local code=c:GetOriginalCode()
-	return code>=11451031 and code<=11451037
+	return code>=11451031 and code<=11451034
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	pnfl_adjusting=true
 	local g=Group.CreateGroup()
-	for ce,tc in pairs(PNFL_MIRROR_COPY[tp]) do
+	for ce,te in pairs(PNFL_MIRROR_COPY[tp]) do
 		local tg=ce:GetTarget() or aux.TRUE
-		if aux.GetValueType(ce)=="Effect" and aux.GetValueType(tc)=="Card" then
+		if aux.GetValueType(ce)=="Effect" and aux.GetValueType(te)=="Effect" and (PNFL_MIRROR_COPIED[1-tp][te] or (cm.notempty(PNFL_MIRROR_MULTI) and PNFL_MIRROR_COPIED[tp][te])) then
+			local tc=te:GetHandler()
 			local ccode=tc:GetOriginalCode()
 			if Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0xff,1,nil) then g:AddCard(tc) end --not PNFL_MIRROR_ACTIVATED[tp][ccode] and
 		end
@@ -159,11 +166,19 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		local tg=g:Filter(function(c) return c:IsFacedown() and c:IsControler(1-tp) end,nil)
 		Duel.ConfirmCards(tp,tg)
 		Duel.Hint(HINT_SELECTMSG,0,aux.Stringid(11451031,4))
-		local sc=g:Select(tp,1,1,nil):GetFirst()
+		local sc=g:Select(tp,0,1,nil):GetFirst()
+		if not sc then
+			local ph=Duel.GetCurrentPhase()
+			if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
+			Duel.RegisterFlagEffect(tp,11451031,RESET_PHASE+ph,0,1)
+			pnfl_adjusting=false
+			return
+		end
 		PNFL_MIRROR_ACTIVATE[tp]={}
-		for ce,tc in pairs(PNFL_MIRROR_COPY[tp]) do
+		for ce,te in pairs(PNFL_MIRROR_COPY[tp]) do
 			local tg=ce:GetTarget() or aux.TRUE
-			if aux.GetValueType(ce)=="Effect" and aux.GetValueType(tc)=="Card" then
+			if aux.GetValueType(ce)=="Effect" and aux.GetValueType(te)=="Effect" and (PNFL_MIRROR_COPIED[1-tp][te] or (cm.notempty(PNFL_MIRROR_MULTI) and PNFL_MIRROR_COPIED[tp][te])) then
+				local tc=te:GetHandler()
 				local ccode=tc:GetOriginalCode()
 				if tc==sc then PNFL_MIRROR_ACTIVATE[tp][ccode]=true end
 			end
@@ -183,9 +198,16 @@ function cm.conf(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.conf2(e,tp,eg,ep,ev,re,r,rp)
 	if not PNFL_MIRROR_CONFIRM[rp][re] then
-		local ce=PNFL_MIRROR_COPIED[rp][re]
-		PNFL_MIRROR_COPIED[rp][re]=nil
-		PNFL_MIRROR_COPY[1-rp][ce]=nil
+		local ce=table.unpack(PNFL_MIRROR_COPIED[rp][re])
+		if ce then
+			PNFL_MIRROR_COPIED[rp][re]=nil
+			PNFL_MIRROR_COPY[1-rp][ce]=nil
+		end
+	end
+	if PNFL_MIRROR_COPY[rp][re] then
+		local code=re:GetHandler():GetOriginalCode()
+		local ccode=PNFL_MIRROR_COPY[rp][re]:GetHandler():GetOriginalCode()
+		PNFL_MIRROR_ACTIVATED[rp][code][ccode]=false
 	end
 end
 function cm.clear(e,tp,eg,ep,ev,re,r,rp)
@@ -204,22 +226,26 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	local tp=te:GetHandlerPlayer()
+	local loc=te:GetHandler():GetLocation()
+	if te:IsHasType(EFFECT_TYPE_ACTIVATE) and te:GetHandler():IsFaceup() and te:GetHandler():IsOnField() then loc=te:GetHandler():GetPreviousLocation() end
 	if cm[0] then return end
 	cm[0]=true
+	local ce
 	--if te:GetHandler():IsCode(m) then return end
 	if not PNFL_MIRROR_COPIED[tp][te] then
-		local ce=te:Clone()
-		PNFL_MIRROR_COPIED[tp][te]=ce
+		ce=te:Clone()
+		PNFL_MIRROR_COPIED[tp][te]={ce,loc}
 		local ccode=te:GetHandler():GetOriginalCode()
-		PNFL_MIRROR_COPY[1-tp][ce]=te:GetHandler()
-		--PNFL_MIRROR_COPY[tp][ce]=te:GetHandler()
+		PNFL_MIRROR_COPY[1-tp][ce]=te
+		--PNFL_MIRROR_COPY[tp][ce]=te
 		PNFL_MIRROR_HINTED[te]=ccode
 		local tg=ce:GetTarget() or aux.TRUE
 		local tg2=function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 					local code=e:GetHandler():GetOriginalCode()
 					if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,1) end
 					if chk==0 then
-						return tg(e,tp,eg,ep,ev,re,r,rp,0) and PNFL_MIRROR_ACTIVATED[tp][code] and not PNFL_MIRROR_ACTIVATED[tp][code][ccode] and PNFL_MIRROR_ACTIVATE[tp][ccode]
+						local te=PNFL_MIRROR_COPY[tp][e]
+						return tg(e,tp,eg,ep,ev,re,r,rp,0) and PNFL_MIRROR_ACTIVATED[tp][code] and not PNFL_MIRROR_ACTIVATED[tp][code][ccode] and PNFL_MIRROR_ACTIVATE[tp][ccode] and te and (PNFL_MIRROR_COPIED[1-tp][te] or (PNFL_MIRROR_MULTI[code] and PNFL_MIRROR_COPIED[tp][te]))
 					end
 					tg(e,tp,eg,ep,ev,re,r,rp)
 					PNFL_MIRROR_ACTIVATED[tp][code][ccode]=true
@@ -227,26 +253,56 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 					Duel.Hint(HINT_CODE,1-tp,ccode)
 				end
 		ce:SetTarget(tg2)
+		if ce:GetDescription()==0 then ce:SetDescription(aux.Stringid(11451034,1)) end
 		if not te:IsHasType(EFFECT_TYPE_ACTIVATE) then
-			local e3=Effect.CreateEffect(c)
-			e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-			e3:SetTargetRange(0xff,0xff)
-			e3:SetTarget(function(e,c)
-							return cm.mfilter(c)
-						end)
-			e3:SetLabelObject(ce)
-			Duel.RegisterEffect(e3,0)
+			local g=Duel.GetMatchingGroup(function(c) return cm.mfilter(c) end,0,0xff,0xff,nil)
+			local og=Duel.GetOverlayGroup(0,1,1):Filter(function(c) return cm.mfilter(c) end,nil)
+			g:Merge(og)
+			for oc in aux.Next(g) do
+				local ce2=ce:Clone()
+				PNFL_MIRROR_COPY[1-tp][ce2]=te
+				PNFL_MIRROR_COPY[tp][ce2]=te
+				oc:RegisterEffect(ce2,true)
+			end
 		else
-			local loc=te:GetHandler():GetLocation()
-			if te:GetHandler():IsFaceup() and te:GetHandler():IsOnField() then loc=te:GetHandler():GetPreviousLocation() end
-			ce:SetDescription(aux.Stringid(11451034,1))
 			ce:SetRange(loc|LOCATION_SZONE|LOCATION_HAND)
 			local g=Duel.GetMatchingGroup(function(c) return cm.mfilter(c) and c:IsType(TYPE_SPELL+TYPE_TRAP+TYPE_PENDULUM) end,0,0xff,0xff,nil)
 			local og=Duel.GetOverlayGroup(0,1,1):Filter(function(c) return cm.mfilter(c) and c:IsType(TYPE_SPELL+TYPE_TRAP+TYPE_PENDULUM) end,nil)
 			g:Merge(og)
 			for oc in aux.Next(g) do
 				local ce2=ce:Clone()
+				PNFL_MIRROR_COPY[1-tp][ce2]=te
+				PNFL_MIRROR_COPY[tp][ce2]=te
 				oc:RegisterEffect(ce2,true)
+				if loc&LOCATION_HAND>0 then
+					local e1=Effect.CreateEffect(oc)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+					e1:SetDescription(aux.Stringid(11451031,5))
+					e1:SetLabel(11451031)
+					--e1:SetCost(function(e,tp,eg,ep,ev,re,r,rp,chk) if chk==0 then return PNFL_MIRROR_COPY[tp][re]==te end end)
+					oc:RegisterEffect(e1,true)
+				elseif loc&LOCATION_SZONE==0 then
+					local e2=Effect.CreateEffect(oc)
+					e2:SetType(EFFECT_TYPE_FIELD)
+					e2:SetCode(EFFECT_ACTIVATE_COST)
+					e2:SetRange(loc)
+					e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+					e2:SetTargetRange(1,0)
+					e2:SetTarget(function(e,te1,tp) e:SetLabelObject(te1) return te1:GetHandler()==e:GetHandler() and PNFL_MIRROR_COPY[tp][te1]==te and te1:IsHasType(EFFECT_TYPE_ACTIVATE) end)
+					e2:SetOperation(cm.costop2)
+					oc:RegisterEffect(e2,true)
+				end
+			end
+		end
+	elseif te:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		ce,loc0=table.unpack(PNFL_MIRROR_COPIED[tp][te])
+		if loc&loc0==0 then
+			ce:SetRange(loc0|loc|LOCATION_SZONE|LOCATION_HAND)
+			local g=Duel.GetMatchingGroup(function(c) return cm.mfilter(c) and c:IsType(TYPE_SPELL+TYPE_TRAP+TYPE_PENDULUM) end,0,0xff,0xff,nil)
+			local og=Duel.GetOverlayGroup(0,1,1):Filter(function(c) return cm.mfilter(c) and c:IsType(TYPE_SPELL+TYPE_TRAP+TYPE_PENDULUM) end,nil)
+			g:Merge(og)
+			for oc in aux.Next(g) do
 				if loc&LOCATION_HAND>0 then
 					local e1=Effect.CreateEffect(oc)
 					e1:SetType(EFFECT_TYPE_SINGLE)
@@ -261,17 +317,13 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 					e2:SetRange(loc)
 					e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 					e2:SetTargetRange(1,0)
-					e2:SetTarget(cm.actarget2)
+					e2:SetTarget(function(e,te1,tp) e:SetLabelObject(te1) return te1:GetHandler()==e:GetHandler() and PNFL_MIRROR_COPY[tp][te1]==te and te1:IsHasType(EFFECT_TYPE_ACTIVATE) end)
 					e2:SetOperation(cm.costop2)
 					oc:RegisterEffect(e2,true)
 				end
 			end
 		end
-	end
-end
-function cm.actarget2(e,te,tp)
-	e:SetLabelObject(te)
-	return te:GetHandler()==e:GetHandler() and te:IsHasType(EFFECT_TYPE_ACTIVATE)
+	end	 
 end
 function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -322,7 +374,11 @@ function cm.spcop(e,tp,eg,ep,ev,re,r,rp)
 	if not sc then return end
 	if c:IsFacedown() then Duel.ConfirmCards(1-tp,Group.FromCards(c)) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,2))
-	if not sc:IsOnField() then Duel.ConfirmCards(1-tp,Group.FromCards(sc)) end
+	if not sc:IsOnField() then
+		Duel.ConfirmCards(1-tp,Group.FromCards(sc))
+	else
+		Duel.HintSelection(Group.FromCards(sc))
+	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,2))
 	e1:SetType(EFFECT_TYPE_SINGLE)

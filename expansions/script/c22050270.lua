@@ -1,4 +1,4 @@
---幻梦界 妖梦
+--幻梦界 魂魄妖梦
 function c22050270.initial_effect(c)
 	--atkup
 	local e1=Effect.CreateEffect(c)

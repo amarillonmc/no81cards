@@ -107,12 +107,15 @@ function c11561047.cdtop(e,tp,eg,ep,ev,re,r,rp)
 		c:AddCounter(0x1,ct)
 		if Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,ct,nil)
+		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil)
 		if g:GetCount()>0 then
 			Duel.HintSelection(g)
-			local cct=Duel.Destroy(g,REASON_EFFECT)
-			if cct>0 then 
-				Duel.Draw(tp,cct,REASON_EFFECT)
+			if Duel.Destroy(g,REASON_EFFECT) then
+				local ccg=Duel.GetOperatedGroup()
+				local cct=ccg:Filter(Card.IsPreviousControler,nil,tp):GetCount()
+				if cct>0 and Duel.IsPlayerCanDraw(tp,cct) then 
+					Duel.Draw(tp,cct,REASON_EFFECT)
+				end
 			end
 		end
 		end

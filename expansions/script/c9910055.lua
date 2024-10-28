@@ -1,5 +1,4 @@
 --三和弦歌手 奈绪
-c9910055.named_with_Traid=1
 function c9910055.initial_effect(c)
 	c:EnableReviveLimit()
 	--spsummon condition
@@ -7,6 +6,7 @@ function c9910055.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c9910055.splimit)
 	c:RegisterEffect(e1)
 	--to hand
 	local e2=Effect.CreateEffect(c)
@@ -19,7 +19,7 @@ function c9910055.initial_effect(c)
 	e2:SetTarget(c9910055.thtg)
 	e2:SetOperation(c9910055.thop)
 	c:RegisterEffect(e2)
-	c9910055.onfield_effect=e2
+	c9910055.triad_onfield_effect=e2
 	--draw
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_DRAW+CATEGORY_TOEXTRA)
@@ -30,6 +30,9 @@ function c9910055.initial_effect(c)
 	e3:SetTarget(c9910055.drtg)
 	e3:SetOperation(c9910055.drop)
 	c:RegisterEffect(e3)
+end
+function c9910055.splimit(e,se,sp,st)
+	return se:GetHandler():IsCode(9910626)
 end
 function c9910055.cfilter(c,tp)
 	return c:GetSummonPlayer()==tp
@@ -42,7 +45,7 @@ function c9910055.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=9 end
 end
 function c9910055.thfilter(c)
-	return c:IsCode(9910051) and c:IsAbleToHand()
+	return c:IsSetCard(0x6957) and c:IsAbleToHand()
 end
 function c9910055.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<1 then return false end

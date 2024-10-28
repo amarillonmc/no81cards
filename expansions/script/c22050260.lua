@@ -1,4 +1,4 @@
---梦幻星界 琪露诺
+--星幻梦界 冰之妖精
 function c22050260.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--xyz summon
@@ -12,15 +12,15 @@ function c22050260.initial_effect(c)
 	e1:SetCondition(c22050260.discon)
 	e1:SetOperation(c22050260.disop)
 	c:RegisterEffect(e1)
-	--attack up
+	--disable zone
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(22050260,0))
 	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e2:SetCode(EVENT_DETACH_MATERIAL)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,22050260)
-	e2:SetTarget(c22050260.xyztg)
-	e2:SetOperation(c22050260.xyzop)
+	e2:SetTarget(c22050260.ztg)
+	e2:SetOperation(c22050260.zop)
 	c:RegisterEffect(e2)
 end
 function c22050260.discon(e,tp,eg,ep,ev,re,r,rp)
@@ -31,21 +31,26 @@ end
 function c22050260.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
-function c22050260.mtfilter(c)
-	return c:IsType(TYPE_MONSTER)
+function c22050260.ztg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)
+		+Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)
+		+Duel.GetLocationCount(tp,LOCATION_SZONE,PLAYER_NONE,0)
+		+Duel.GetLocationCount(1-tp,LOCATION_SZONE,PLAYER_NONE,0)>0 end
+	local dis=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,LOCATION_ONFIELD,0xe000e0)
+	e:SetLabel(dis)
+	Duel.Hint(HINT_ZONE,tp,dis)
 end
-function c22050260.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ)
-		and Duel.IsExistingMatchingCard(c22050260.mtfilter,tp,0,LOCATION_EXTRA,1,nil) end
-end
-function c22050260.xyzop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
-	if g:GetCount()==0 then return end
-	Duel.ConfirmCards(tp,g)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectMatchingCard(tp,c22050260.mtfilter,tp,0,LOCATION_EXTRA,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.Overlay(c,g)
+function c22050260.zop(e,tp,eg,ep,ev,re,r,rp)
+	local zone=e:GetLabel()
+	if tp==1 then
+		zone=((zone&0xffff)<<16)|((zone>>16)&0xffff)
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EFFECT_DISABLE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetValue(zone)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+	e:GetHandler():RegisterEffect(e1)
 end

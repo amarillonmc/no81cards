@@ -1,7 +1,7 @@
 --N#21 Antonymph Dark Light
 function c31021011.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,nil,1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--battle indestructable
 	local e1=Effect.CreateEffect(c)

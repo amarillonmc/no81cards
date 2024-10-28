@@ -17,6 +17,17 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.desop)
 	c:RegisterEffect(e3)
+local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_EQUIP)
+	e4:SetCode(EFFECT_IMMUNE_EFFECT)
+	e4:SetValue(cm.efilter1)
+	c:RegisterEffect(e4)
+end
+function cm.efilter1(e,te)
+	local ec=e:GetHandler():GetEquipTarget()
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and not(g~=nil and g:IsContains(ec))
+	--return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
 end
 function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeckAsCost,tp,LOCATION_HAND,0,1,nil) end
@@ -36,9 +47,9 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	local tc=e:GetHandler():GetEquipTarget()
-	local dg=eg:Filter(cm.filter1,nil,tc,c)
-	local g1 = Duel.GetMatchingGroup( cm.filter2, tp, QY_gs, QY_gs, nil)
-	if chk==0 then return #dg>0 and tc and #g1>0 and c:IsAbleToRemove() end
+	--local dg=eg:Filter(cm.filter1,nil,tc,c)
+	local g1 = Duel.GetMatchingGroup( cm.filter2, tp, LOCATION_ONFIELD+LOCATION_GRAVE, LOCATION_ONFIELD+LOCATION_GRAVE, nil)
+	if chk==0 then return tc and #g1>0 and c:IsAbleToRemove() end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,c,2,0,0)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -46,7 +57,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=c:GetEquipTarget()
 	if not c:IsRelateToEffect(e) then return end
 	local g=Group.CreateGroup()
-	local g1 = Duel.SelectMatchingCard(tp, cm.filter2, tp, QY_cs, QY_cs,1,1, nil):GetFirst()
+	local g1 = Duel.SelectMatchingCard(tp, cm.filter2, tp, LOCATION_ONFIELD+LOCATION_GRAVE, LOCATION_ONFIELD+LOCATION_GRAVE,1,1, nil):GetFirst()
 	g:AddCard(g1)
 	g:AddCard(c)
 	Duel.Remove(g, POS_FACEUP, REASON_EFFECT)
@@ -84,14 +95,14 @@ if g1:IsLocation(QY_cw) and not g1:IsType(TYPE_MONSTER) then
 	end
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()~=e:GetLabel()
+	return Duel.GetTurnCount()~=e:GetLabel() and tp==Duel.GetTurnPlayer()
 end
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.SendtoHand(c,nil,REASON_EFFECT)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()~=e:GetLabel() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return Duel.GetTurnCount()~=e:GetLabel() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tp==Duel.GetTurnPlayer()
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -145,7 +156,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			local e2=e1:Clone()
 			e2:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
 			g2:RegisterEffect(e2)
-		--[[else
+		else
 			local tc=g2
 			local e4_4=g2:GetActivateEffect()
 			if e4_4~=nil then
@@ -171,7 +182,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 				end)
 				e4_5:SetLabelObject(g2)
 				Duel.RegisterEffect(e4_5,tp)
-			end]]--
+			end
 		end
 	end
 end

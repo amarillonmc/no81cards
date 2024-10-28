@@ -1,5 +1,4 @@
 --三和弦歌手 加莲
-c9910054.named_with_Traid=1
 function c9910054.initial_effect(c)
 	c:EnableReviveLimit()
 	--spsummon condition
@@ -7,11 +6,12 @@ function c9910054.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c9910054.splimit)
 	c:RegisterEffect(e1)
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,9910054)
@@ -19,7 +19,7 @@ function c9910054.initial_effect(c)
 	e2:SetTarget(c9910054.thtg)
 	e2:SetOperation(c9910054.thop)
 	c:RegisterEffect(e2)
-	c9910054.onfield_effect=e2
+	c9910054.triad_onfield_effect=e2
 	--immune
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
@@ -29,6 +29,9 @@ function c9910054.initial_effect(c)
 	e3:SetOperation(c9910054.imop)
 	c:RegisterEffect(e3)
 end
+function c9910054.splimit(e,se,sp,st)
+	return se:GetHandler():IsCode(9910626)
+end
 function c9910054.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
@@ -36,7 +39,7 @@ function c9910054.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=9 end
 end
 function c9910054.thfilter(c)
-	return c:IsCode(9910051) and c:IsAbleToHand()
+	return c:IsSetCard(0x6957) and c:IsAbleToHand()
 end
 function c9910054.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<1 then return false end

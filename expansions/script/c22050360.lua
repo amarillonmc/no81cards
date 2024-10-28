@@ -1,4 +1,4 @@
---梦幻星界 鬼人正邪
+--星幻梦界 逆袭的天邪鬼
 function c22050360.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--xyz summon

@@ -15,6 +15,25 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target1)
 	e1:SetOperation(cm.operation1)
 	c:RegisterEffect(e1)
+	--damage
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetOperation(cm.regop)
+	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAIN_SOLVED)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCondition(cm.damcon)
+	e3:SetOperation(cm.damop)
+	c:RegisterEffect(e3)
+	local e5=e3:Clone()
+	e5:SetCode(11451409)
+	e5:SetCondition(aux.TRUE)
+	c:RegisterEffect(e5)
 	if not cm.global_check then
 		cm.global_check=true
 		local ge2=Effect.CreateEffect(c)
@@ -24,9 +43,51 @@ function cm.initial_effect(c)
 		ge2:SetOperation(cm.chkop)
 		Duel.RegisterEffect(ge2,0)
 	end
+	if not PNFL_SP_ACTIVATE then
+		PNFL_SP_ACTIVATE=true
+		local _MoveToField=Duel.MoveToField
+		function Duel.MoveToField(tc,...)
+			local res=_MoveToField(tc,...)
+			local te=tc:GetActivateEffect()
+			if te then
+				local fid=tc:GetFieldID()
+				local cost=te:GetCost() or aux.TRUE
+				local cost2=function(e,tp,eg,ep,ev,re,r,rp,chk)
+								if chk==0 then return cost(e,tp,eg,ep,ev,re,r,rp,0) end
+								cost(e,tp,eg,ep,ev,re,r,rp,1)
+								if fid==tc:GetFieldID() then
+									Duel.RaiseEvent(tc,11451409,te,0,tp,tp,Duel.GetCurrentChain())
+								end
+								e:SetCost(cost)
+							end
+				te:SetCost(cost2)
+			end
+			return res
+		end
+	end
 end
 function cm.chkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m,e,r,rp,ep,ev)
+end
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	if not re:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
+end
+function cm.damcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:GetFlagEffect(m)~=0 and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+function cm.damop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetValue(500)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e1)
+	if c:IsAttackAbove(2000) and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,13)) then
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
+	end
 end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -74,7 +135,7 @@ function cm.operation1(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_SET_ATTACK)
 			e1:SetValue(int*500)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			c:RegisterEffect(e1)
+			--c:RegisterEffect(e1)
 		end
 		Duel.SpecialSummonComplete()
 		local fid=c:GetFieldID()
@@ -196,9 +257,6 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 				fc:ReleaseEffectRelation(te)
 			end
 		end
-	end
-	if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,13)) then
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	end
 end
 function cm.filter(c,tp)

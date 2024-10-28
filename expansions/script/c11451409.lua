@@ -42,8 +42,8 @@ function cm.initial_effect(c)
 	e7:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e7:SetValue(1)
 	c:RegisterEffect(e7)
-	if not cm.global_check then
-		cm.global_check=true
+	if not PNFL_SP_ACTIVATE then
+		PNFL_SP_ACTIVATE=true
 		local _MoveToField=Duel.MoveToField
 		function Duel.MoveToField(tc,...)
 			local res=_MoveToField(tc,...)

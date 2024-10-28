@@ -1,4 +1,4 @@
---梦幻星界 少名妙针丸
+--梦幻星界 小人的后裔
 function c22050370.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--xyz summon

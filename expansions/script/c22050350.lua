@@ -1,4 +1,4 @@
---幻梦界 正邪
+--幻梦界 鬼人正邪
 function c22050350.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -80,3 +80,4 @@ function c22050350.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	Duel.RegisterEffect(e1,tp)
 end
+

@@ -11,17 +11,17 @@ function c22050250.initial_effect(c)
 	e1:SetTarget(c22050250.sptg)
 	e1:SetOperation(c22050250.spop)
 	c:RegisterEffect(e1)
-	--spsummon
+	--draw
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(22050250,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetCategory(CATEGORY_DRAW)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,22050251)
-	e2:SetCondition(c22050250.spcon1)
-	e2:SetTarget(c22050250.sptg1)
-	e2:SetOperation(c22050250.spop1)
-	e2:SetHintTiming(0,TIMING_END_PHASE)
+	e2:SetCost(c22050250.cost)
+	e2:SetTarget(c22050250.target)
+	e2:SetOperation(c22050250.operation)
 	c:RegisterEffect(e2)
 end
 function c22050250.cfilter(c)
@@ -50,34 +50,17 @@ function c22050250.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.SpecialSummonComplete()
 end
-function c22050250.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetOriginalRace()==RACE_SPELLCASTER 
+function c22050250.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) end
+	Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_COST)
 end
-function c22050250.filter(c,e,tp,rk,mc)
-	return c:IsRank(rk) and c:IsSetCard(0xff6) and e:GetHandler():IsCanBeXyzMaterial(c)
-		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
+function c22050250.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
-function c22050250.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL)
-		and Duel.IsExistingMatchingCard(c22050250.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c:GetRank()+1,c) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
-end
-function c22050250.spop1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) then return end
-	if c:IsFacedown() or not c:IsRelateToEffect(e) or c:IsControler(1-tp) or c:IsImmuneToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c22050250.filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,c:GetRank()+1,c)
-	local sc=g:GetFirst()
-	if sc then
-		local mg=c:GetOverlayGroup()
-		if mg:GetCount()~=0 then
-			Duel.Overlay(sc,mg)
-		end
-		sc:SetMaterial(Group.FromCards(c))
-		Duel.Overlay(sc,Group.FromCards(c))
-		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
-		sc:CompleteProcedure()
-	end
+function c22050250.operation(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
 end

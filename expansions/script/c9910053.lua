@@ -1,5 +1,4 @@
 --三和弦歌手 凛
-c9910053.named_with_Traid=1
 function c9910053.initial_effect(c)
 	c:EnableReviveLimit()
 	--spsummon condition
@@ -7,11 +6,12 @@ function c9910053.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c9910053.splimit)
 	c:RegisterEffect(e1)
 	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,9910053)
@@ -19,7 +19,7 @@ function c9910053.initial_effect(c)
 	e2:SetTarget(c9910053.thtg)
 	e2:SetOperation(c9910053.thop)
 	c:RegisterEffect(e2)
-	c9910053.onfield_effect=e2
+	c9910053.triad_onfield_effect=e2
 	--to hand
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
@@ -32,7 +32,7 @@ function c9910053.initial_effect(c)
 	c:RegisterEffect(e3)
 	if not c9910053.global_check then
 		c9910053.global_check=true
-		TRAID_ACT_CHECK={}
+		TRIAD_ACT_CHECK={}
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD)
 		ge1:SetCode(EFFECT_ACTIVATE_COST)
@@ -55,27 +55,30 @@ end
 function c9910053.chkop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
 	local code,code2=te:GetHandler():GetCode()
-	table.insert(TRAID_ACT_CHECK,code)
+	table.insert(TRIAD_ACT_CHECK,code)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_NEGATED)
-	e1:SetLabel(Duel.GetCurrentChain()+1,#TRAID_ACT_CHECK)
+	e1:SetLabel(Duel.GetCurrentChain()+1,#TRIAD_ACT_CHECK)
 	e1:SetOperation(c9910053.reset)
 	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,0)
 	if code2 then
-		table.insert(TRAID_ACT_CHECK,code2)
+		table.insert(TRIAD_ACT_CHECK,code2)
 		local e2=e1:Clone()
-		e2:SetLabel(Duel.GetCurrentChain()+1,#TRAID_ACT_CHECK)
+		e2:SetLabel(Duel.GetCurrentChain()+1,#TRIAD_ACT_CHECK)
 		Duel.RegisterEffect(e2,0)
 	end
 end
 function c9910053.reset(e,tp,eg,ep,ev,re,r,rp)
 	local ev0,loc=e:GetLabel()
-	if ev==ev0 then table.remove(TRAID_ACT_CHECK,loc) end
+	if ev==ev0 then table.remove(TRIAD_ACT_CHECK,loc) end
 end
 function c9910053.clear(e,tp,eg,ep,ev,re,r,rp)
-	TRAID_ACT_CHECK={}
+	TRIAD_ACT_CHECK={}
+end
+function c9910053.splimit(e,se,sp,st)
+	return se:GetHandler():IsCode(9910626)
 end
 function c9910053.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
@@ -85,7 +88,7 @@ function c9910053.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=9 end
 end
 function c9910053.thfilter(c)
-	return c:IsCode(9910051) and c:IsAbleToHand()
+	return c:IsSetCard(0x6957) and c:IsAbleToHand()
 end
 function c9910053.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<1 then return false end
@@ -117,8 +120,8 @@ function c9910053.thcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910053.thfilter2(c,tp)
 	if not c:IsFaceupEx() or not c:IsAbleToHand(tp) then return false end
-	for i=1,#TRAID_ACT_CHECK do
-		local code=TRAID_ACT_CHECK[i]
+	for i=1,#TRIAD_ACT_CHECK do
+		local code=TRIAD_ACT_CHECK[i]
 		if c:IsCode(code) then return true end
 	end
 	return false

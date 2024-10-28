@@ -18,6 +18,7 @@ function c9910912.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,9910912)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c9910912.sptg)
@@ -55,7 +56,7 @@ function c9910912.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910912.spfilter(c,e,tp)
-	return aux.IsCodeListed(c,9910871) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
+	return aux.IsCodeListed(c,9910871) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_DEFENSE)
 end
 function c9910912.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c9910912.spfilter(chkc,e,tp) end
@@ -67,7 +68,7 @@ function c9910912.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c9910912.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)~=0 then
+	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_DEFENSE)~=0 and tc:IsFacedown() then
 		Duel.ConfirmCards(1-tp,tc)
 	end
 end

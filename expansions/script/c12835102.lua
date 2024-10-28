@@ -86,7 +86,7 @@ end
 function c12835102.con6(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=c:GetEquipTarget()
-	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) or {}
 	local seq=tc:GetSequence()
 	local tp=tc:GetControler()
 	return rp==1-tp and re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and #g>0 and g:IsContains(tc) and c:GetFlagEffect(12835102)==0 and ((seq>0 and Duel.CheckLocation(c:GetControler(),LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(c:GetControler(),LOCATION_MZONE,seq+1)))	 

@@ -7,8 +7,9 @@ function c22050230.initial_effect(c)
 	--attach
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(22050230,0))
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1,22050230)
 	e1:SetCondition(c22050230.matcon)
 	e1:SetTarget(c22050230.mattg)
@@ -27,22 +28,18 @@ function c22050230.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c22050230.matcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1
+	return tp==Duel.GetTurnPlayer()
 end
 function c22050230.mattg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)>3 end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>5 end
 end
 function c22050230.matop(e,tp,eg,ep,ev,re,r,rp)
 	local turnp=Duel.GetTurnPlayer()
 	local c=e:GetHandler()
-	local g=Duel.GetDecktopGroup(1-tp,6)
+	local g=Duel.GetDecktopGroup(tp,6)
 	if c:IsRelateToEffect(e) and g:GetCount()==6 then
 		Duel.DisableShuffleCheck()
 		Duel.Overlay(c,g)
-		Duel.BreakEffect()
-		Duel.SkipPhase(turnp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
-		Duel.SkipPhase(turnp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
-		Duel.SkipPhase(turnp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
 	end
 end
 function c22050230.thfilter(c)

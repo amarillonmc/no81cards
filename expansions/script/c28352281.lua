@@ -25,16 +25,16 @@ function c28352281.initial_effect(c)
 	e2:SetCondition(c28352281.condition)
 	e2:SetOperation(c28352281.operation)
 	c:RegisterEffect(e2)
-	--release
+	--recover
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_RELEASE)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCategory(CATEGORY_RECOVER)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(c28352281.rlcon)
-	e3:SetCost(c28352281.cost)
-	e3:SetTarget(c28352281.rltg)
-	e3:SetOperation(c28352281.rlop)
+	e3:SetCondition(c28352281.recon)
+	e3:SetTarget(c28352281.retg)
+	e3:SetOperation(c28352281.reop)
 	c:RegisterEffect(e3)
 end
 function c28352281.sprfilter(c)
@@ -78,7 +78,7 @@ function c28352281.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetRange(LOCATION_MZONE)
 		e1:SetCondition(c28352281.defcon)
 		e1:SetValue(c28352281.defval)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
 	--if Duel.GetLP(tp)>Duel.GetLP(1-tp)
 		--effect indes
@@ -86,11 +86,10 @@ function c28352281.operation(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetType(EFFECT_TYPE_FIELD)
 		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 		e2:SetRange(LOCATION_MZONE)
-		e2:SetTargetRange(LOCATION_MZONE,0)
-		e2:SetTarget(aux.TargetBoolFunction(Card.IsAttribute,ATTRIBUTE_EARTH))
+		e2:SetTargetRange(LOCATION_ONFIELD,0)
 		e2:SetCondition(c28352281.imcon)
 		e2:SetValue(1)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e2)
 	--if c:IsDefensePos()
 		--position
@@ -101,21 +100,21 @@ function c28352281.operation(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 		e3:SetCondition(c28352281.poscon)
 		e3:SetValue(POS_FACEUP_DEFENSE)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		c:RegisterEffect(e3)
-		--defense attack
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		--c:RegisterEffect(e3)
+		--pierce
 		local e4=Effect.CreateEffect(c)
 		e4:SetType(EFFECT_TYPE_FIELD)
-		e4:SetCode(EFFECT_DEFENSE_ATTACK)
+		e4:SetCode(EFFECT_PIERCE)
 		e4:SetRange(LOCATION_MZONE)
-		e4:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-		e4:SetCondition(c28352281.poscon)
-		e4:SetValue(1)
-		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		e4:SetTargetRange(LOCATION_MZONE,0)
+		e4:SetTarget(aux.TargetBoolFunction(Card.IsAttribute,ATTRIBUTE_EARTH))
+		--e4:SetCondition(c28352281.poscon)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e4)
 end
 function c28352281.defcon(e)
-	return Duel.GetLP(e:GetHandlerPlayer())>=10000
+	return Duel.GetLP(e:GetHandlerPlayer())>10000
 end
 function c28352281.defval(e,c)
 	local tp=c:GetControler()
@@ -128,28 +127,13 @@ end
 function c28352281.poscon(e)
 	return e:GetHandler():IsDefensePos()
 end
-function c28352281.rlcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(tp)>=10000
+function c28352281.recon(e,tp,eg,ep,ev,re,r,rp)
+	return rp~=tp
 end
-function c28352281.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,2000) end
-	Duel.PayLPCost(tp,2000)
+function c28352281.retg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,500)
 end
-function c28352281.rltg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsReleasable,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,REASON_EFFECT) end
-	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,nil,LOCATION_MZONE)
-end
-function c28352281.rlop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsReleasable,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,REASON_EFFECT)
-	Duel.HintSelection(g)
-	Duel.Release(g,REASON_EFFECT)
-	if e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsFaceup() then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CANNOT_TRIGGER)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		e:GetHandler():RegisterEffect(e1,true)
-	end
+function c28352281.reop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Recover(tp,500,REASON_EFFECT)
 end
