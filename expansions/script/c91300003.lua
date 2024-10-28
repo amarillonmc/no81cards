@@ -76,7 +76,7 @@ function s.initial_effect(c)
 					end
 				end
 			end
-			fantasy_SendtoHand(card_c_or_g,int_player,int_reason)
+			return fantasy_SendtoHand(card_c_or_g,int_player,int_reason)
 		end
 	end
 end
@@ -96,9 +96,10 @@ function s.tgfilte(c)
 	return c.fantasy_mountains_and_rivers and c:IsAbleToGrave()
 end
 function s.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and (e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) or 1==1)
 		and e:GetHandler():IsSummonable(true,nil)
 		and Duel.IsExistingMatchingCard(s.tgfilte,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	e:GetHandler():RegisterFlagEffect(0,RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,65)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)

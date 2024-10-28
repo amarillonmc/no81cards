@@ -32,9 +32,7 @@ end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local pt=c:GetOwner()
-	if c:IsRelateToEffect(e) then
-		Duel.GetControl(c,1-tp)
-	end
+	Duel.GetControl(c,1-tp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CHANGE_DAMAGE)
@@ -59,7 +57,16 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.sfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,c,c:GetControler(),c:GetSequence(),c:GetLocation())
 	local g2=c:GetColumnGroup()
 	g:Merge(g2)
-	Duel.Overlay(c, g)
+		if g:IsExists(cm.filter2,1,nil) then
+		   local aa=g:Filter(cm.filter2,nil)
+				for tc in aux.Next(aa) do
+					Duel.Overlay(c,tc:GetOverlayGroup())
+				end
+		end
+	Duel.Overlay(c,g)--重叠有超量素材的怪兽时，记得把那些超量素材也一起重叠
+end
+function cm.filter2(c)
+	return c:IsType(TYPE_XYZ)
 end
 function cm.filter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)

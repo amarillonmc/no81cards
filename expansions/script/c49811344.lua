@@ -38,7 +38,7 @@ end
 function s.lsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local oc=c:GetOverlayGroup():GetFirst()
-	local ctype=oc:GetType()|0x48020c0
+	local ctype=oc:GetType()&0x48020c0
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)

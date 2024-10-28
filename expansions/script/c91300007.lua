@@ -52,6 +52,9 @@ function s.damcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.sccon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if c:IsPreviousLocation(LOCATION_SZONE) then
+		e:GetHandler():RegisterFlagEffect(0,RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,209)
+	end
 	return c:IsPreviousLocation(LOCATION_SZONE)
 end
 function s.descost(e,tp,eg,ep,ev,re,r,rp,chk)

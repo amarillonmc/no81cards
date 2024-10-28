@@ -72,7 +72,7 @@ function s.initial_effect(c)
 						end
 					end
 				end
-				fantasy_SendtoDeck(g,int_player,int_seq,int_reason)
+				return fantasy_SendtoDeck(g,int_player,int_seq,int_reason)
 			else
 				local pl=0
 				if int_player then
@@ -89,20 +89,20 @@ function s.initial_effect(c)
 						Duel.BreakEffect()
 					end
 				end
-				fantasy_SendtoDeck(card_c_or_g,int_player,int_seq,int_reason)
+				return fantasy_SendtoDeck(card_c_or_g,int_player,int_seq,int_reason)
 			end
 		end
 	end
 end
 s.fantasy_mountains_and_rivers=true
 function s.fantasy_setfilter(c)
-	return c.fantasy_mountains_and_rivers and not c:IsCode(id)
+	return c.fantasy_mountains_and_rivers --and not c:IsCode(id)
 		and c:IsAbleToHandAsCost()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
@@ -111,12 +111,17 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(sg)
 		if Duel.SendtoHand(sg,nil,REASON_EFFECT)~=0 and sg:FilterCount(Card.IsLocation,nil,LOCATION_HAND+LOCATION_EXTRA)~=0
 			and Duel.GetCurrentChain()>3 then
+			local dg=Group.CreateGroup()
 			for i=1,ev do
 				local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-				if tgp~=tp then
-					Duel.NegateActivation(i)
+				if tgp~=tp and Duel.NegateActivation(i) then
+					local tc=te:GetHandler()
+					if tc:IsRelateToEffect(te) then
+						dg:AddCard(tc)
+					end
 				end
 			end
+			Duel.SendtoDeck(dg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		end
 	end
 end
