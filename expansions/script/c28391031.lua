@@ -12,6 +12,7 @@ function c28391031.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetHintTiming(TIMING_DRAW_PHASE)
+	e1:SetCountLimit(2,EFFECT_COUNT_CODE_CHAIN)
 	e1:SetTarget(c28391031.settg)
 	e1:SetOperation(c28391031.setop)
 	c:RegisterEffect(e1)
@@ -48,7 +49,7 @@ function c28391031.initial_effect(c)
 	--to deck
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(28391031,1))
-	e6:SetCategory(CATEGORY_TODECK+CATEGORY_ATKCHANGE)
+	e6:SetCategory(CATEGORY_TODECK+CATEGORY_DAMAGE)
 	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e6:SetCode(EVENT_CHAINING)
 	e6:SetProperty(EFFECT_FLAG_DELAY)
@@ -63,7 +64,7 @@ end
 function c28391031.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(c28391031.chkfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) and not c:IsForbidden() and c:CheckUniqueOnField(tp) end
-	Duel.SetChainLimit(c28391031.limit(e:GetHandler()))
+	--Duel.SetChainLimit(c28391031.limit(e:GetHandler()))
 end
 function c28391031.limit(c)
 	return  function (e,lp,tp)
@@ -129,16 +130,5 @@ function c28391031.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	local og=Duel.GetOperatedGroup()
 	local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-	local ag=Duel.GetMatchingGroup(c28391031.atkfilter,tp,LOCATION_MZONE,0,nil,e)
-	if ct>0 and #ag>0 then
-		for tc in aux.Next(ag) do
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetValue(ct*300)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-		end
-	end
+	Duel.Damage(1-tp,ct*500,REASON_EFFECT)
 end

@@ -22,7 +22,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if cm[c]~=1 then
 		if Duel.GetFlagEffect(tp,m)>0 or cm[c]==2 then cm[c]=nil return end
 		local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_HAND+LOCATION_DECK,0,c)
-		if not Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		if 0==1 then -- not Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			for rc in aux.Next(g) do cm[rc]=2 end
 			return
 		end
@@ -30,6 +30,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		g:AddCard(c)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
 		if tc~=c then
+			g:RemoveCard(c)
 			--Debug.Message(tc:GetLocation())
 			for rc in aux.Next(g) do cm[rc]=2 end
 			cm[tc]=1
@@ -47,19 +48,20 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		if KOISHI_CHECK then
 			local code=g:GetFirst():GetOriginalCode()
 			c:SetEntityCode(code)
+			local ini=cm.initial_effect
+			cm.initial_effect=function() end
+			c:ReplaceEffect(m,0)
+			cm.initial_effect=ini
 			if not g:GetFirst():IsType(TYPE_NORMAL) or g:GetFirst():IsType(TYPE_PENDULUM) then
-				c:ReplaceEffect(code,0)
-			else
-				local ini=cm.initial_effect
-				cm.initial_effect=function() end
-				c:ReplaceEffect(m,0)
-				cm.initial_effect=ini
+				local cn=getmetatable(g:GetFirst())
+				if cn then cn.initial_effect(c) end
+				--c:ReplaceEffect(code,0)
 			end
 			Duel.ConfirmCards(1-tp,c)
 			Duel.ShuffleDeck(tp)
 		else
 			local loc=c:GetLocation()
-			Duel.SendtoGrave(c,REASON_EFFECT)
+			Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
 			c=Duel.CreateToken(tp,g:GetFirst():GetOriginalCode())
 			if loc==LOCATION_HAND then
 				Duel.SendtoHand(c,nil,0)

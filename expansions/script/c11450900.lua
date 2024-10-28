@@ -91,13 +91,14 @@ function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	--if EVO_GAME then return end
-	EVO_GAME=true
+	--EVO_GAME=true
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CUSTOM+m)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetOperation(cm.evoperation)
+	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 	c:SetTurnCounter(0)
 end
