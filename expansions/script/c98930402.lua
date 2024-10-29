@@ -60,7 +60,7 @@ function c98930402.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c98930402.sfilter(c,e,tp)
-	return c:GetOriginalType()&TYPE_MONSTER>0 and c:GetType()&TYPE_CONTINUOUS+TYPE_SPELL==TYPE_CONTINUOUS+TYPE_SPELL
+	return c:GetOriginalType()&TYPE_MONSTER>0
 		and c:IsFaceup()
 end
 function c98930402.spfilter(c,fc,tp)

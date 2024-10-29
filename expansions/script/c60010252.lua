@@ -116,7 +116,7 @@ function cm.fil1(c)
 	return c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and c:IsFaceup()
 end
 function cm.fil2(c)
-	return c:IsType(TYPE_FUSION) and c:IsRace(RACE_ILLUSION) and c:IsFaceup()
+	return c:IsType(TYPE_FUSION) and c:IsFaceup()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	if chk==0 then return e:GetHandler():IsAbleToHand() end

@@ -71,11 +71,13 @@ function cm.fil4(c)
 	return c:IsOriginalCodeRule(60010252) and c:IsFaceup() and c:IsAbleToRemoveAsCost() and c:IsCanBeFusionMaterial()
 end
 function cm.spcon(e,c)
+	local tp=e:GetHandlerPlayer()
 	if c==nil then return true end
 	return Duel.IsExistingMatchingCard(cm.fil3,tp,LOCATION_SZONE,0,1,nil)
 	and Duel.IsExistingMatchingCard(cm.fil4,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	local tp=e:GetHandlerPlayer()
 	local g=Duel.GetMatchingGroup(cm.fil4,tp,LOCATION_MZONE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local sg=g:Select(tp,1,1,nil)

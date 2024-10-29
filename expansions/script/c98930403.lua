@@ -48,7 +48,7 @@ function c98930403.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c98930403.filter(c)
-	return c:GetOriginalType()&TYPE_MONSTER>0 and c:GetType()&TYPE_CONTINUOUS+TYPE_SPELL==TYPE_CONTINUOUS+TYPE_SPELL
+	return c:GetOriginalType()&TYPE_MONSTER>0
 		and c:IsFaceup()
 end
 function c98930403.indescon(e)
