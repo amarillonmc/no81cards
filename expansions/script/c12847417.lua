@@ -22,7 +22,7 @@ function s.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetRange(LOCATION_GRAVE)
-	e3:SetTargetRange(0,1)
+	--e3:SetTargetRange(0,1)
 	e3:SetCondition(s.lpcon)
 	e3:SetOperation(s.lpop)
 	c:RegisterEffect(e3)
@@ -62,6 +62,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.handcon(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 		or Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)>=15
 end
@@ -75,7 +76,7 @@ function s.lpcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter,1,nil,tp) and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil)
 end
 function s.lpop(e,tp,eg,ep,ev,re,r,rp)
-	local d1=eg:FilterCount(s.cfilter,tp,1,nil)*300
+	local d1=eg:FilterCount(s.cfilter,nil,tp)*300
 	Duel.Hint(HINT_CARD,0,id)
 	Duel.SetLP(1-tp,Duel.GetLP(1-tp)-d1)
 end

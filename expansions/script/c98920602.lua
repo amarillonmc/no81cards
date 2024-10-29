@@ -134,6 +134,9 @@ function c98920602.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoGrave(g,REASON_COST)
 	g:DeleteGroup()
 end
+function c98920602.cfilter(c,tp)
+	return c:IsSummonPlayer(tp) and c:IsPreviousLocation(LOCATION_EXTRA)
+end
 function c98920602.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local g=eg:Filter(c98920602.cfilter,nil,1-tp)

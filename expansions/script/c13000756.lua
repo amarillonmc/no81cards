@@ -101,13 +101,12 @@ end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.NegateActivation(ev) or Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<3 then return end
 	Duel.BreakEffect()
-	local lg=Duel.GetMatchingGroup(aux.dncheck,tp,LOCATION_DECK,0,nil)
+	local lo=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
+	local lg=lo:Filter(aux.dncheck,nil)
 	if lg:GetCount()>2 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 	getmetatable(e:GetHandler()).announce_filter={TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK,OPCODE_ISTYPE,OPCODE_NOT}
 	local ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
-	
-	
 	local g=lg:RandomSelect(tp,3)
 	Duel.ConfirmCards(tp,g)
 	Duel.ConfirmCards(1-tp,g)

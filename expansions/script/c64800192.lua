@@ -42,8 +42,8 @@ end
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP()
 end
-function s.costfilter(c)
-	return c:IsLevel(10)
+function s.costfilter(c,g)
+	return c:IsLevel(10) and g:IsContains(c)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lg=e:GetHandler():GetLinkedGroup()
