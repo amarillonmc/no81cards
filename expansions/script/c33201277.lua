@@ -26,10 +26,10 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function cm.thfilter1(c)
-	return c.VHisc_DragonCovenant and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0xa327) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.thfilter2(c)
-	return c.VHisc_DragonRelics and c:IsType(TYPE_EQUIP) and c:IsAbleToHand()
+	return c:IsSetCard(0xc327) and c:IsType(TYPE_EQUIP) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter1,tp,LOCATION_DECK,0,1,nil) end
