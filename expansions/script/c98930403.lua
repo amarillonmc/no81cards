@@ -49,7 +49,7 @@ function c98930403.initial_effect(c)
 end
 function c98930403.filter(c)
 	return c:GetOriginalType()&TYPE_MONSTER>0
-		and c:IsFaceup()
+		and c:IsFaceup() and c:IsLocation(LOCATION_SZONE)
 end
 function c98930403.indescon(e)
 	return Duel.IsExistingMatchingCard(c98930403.filter,e:GetHandlerPlayer(),LOCATION_SZONE,0,1,nil)
@@ -58,7 +58,7 @@ function c98930403.indestg(e,c)
 	return c:IsCode(98930401)
 end
 function c98930403.catkfilter(c,tp)
-	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:IsCode(98930401) and c:IsReason(REASON_EFFECT)
+	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:IsCode(98930401)
 end
 function c98930403.catkcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c98930403.catkfilter,1,nil,tp)

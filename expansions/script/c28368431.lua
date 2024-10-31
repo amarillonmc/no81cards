@@ -130,7 +130,7 @@ function c28368431.thop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CHANGE_DAMAGE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(1,0)
-	e1:SetCondition(c28368431.damcon)
+	--e1:SetCondition(c28368431.damcon)
 	e1:SetValue(c28368431.damval)
 	e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
 	Duel.RegisterEffect(e1,tp)
@@ -144,9 +144,8 @@ function c28368431.damcon(e)
 	return Duel.GetFlagEffect(tp,28368431)==0
 end
 function c28368431.damval(e,re,val,r,rp,rc)
-	local tp=e:GetHandlerPlayer()
 	if bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 then
-		Duel.RegisterFlagEffect(tp,28368431,RESET_PHASE+PHASE_END+RESET_OPPO_TURN,0,1)
+		e:Reset()
 		return 0
 	end
 	return val

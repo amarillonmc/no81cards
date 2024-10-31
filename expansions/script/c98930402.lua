@@ -61,7 +61,7 @@ function c98930402.initial_effect(c)
 end
 function c98930402.sfilter(c,e,tp)
 	return c:GetOriginalType()&TYPE_MONSTER>0
-		and c:IsFaceup()
+		and c:IsFaceup() and c:IsLocation(LOCATION_SZONE)
 end
 function c98930402.spfilter(c,fc,tp)
 	return c:IsCode(98930401) and c:IsLevel(10) and not c:IsFusionType(TYPE_FUSION)
