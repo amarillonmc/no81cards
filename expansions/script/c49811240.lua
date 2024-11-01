@@ -68,6 +68,7 @@ end
 function c49811240.filter(c,e)
 	local atk1=e:GetHandler():GetAttack()
 	local atk2=c:GetAttack()
+	local tp=e:GetHandlerPlayer()
 	return ((c:IsFaceup() and c:IsLocation(LOCATION_REMOVED)) or c:IsLocation(LOCATION_GRAVE))
 		and c:IsRace(RACE_FIEND) and Duel.IsExistingMatchingCard(c49811240.afilter,tp,LOCATION_DECK,0,1,nil,atk1,atk2)
 end

@@ -24,8 +24,22 @@ function c49811234.initial_effect(c)
 	e3:SetTarget(c49811234.drtg)
 	e3:SetOperation(c49811234.drop)
 	c:RegisterEffect(e3)
+	--add LV down
+	if not c49811234.global_check then
+		c49811234.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_NO_TURN_RESET)
+		ge1:SetCode(EVENT_PREDRAW)
+		ge1:SetOperation(c49811234.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
-c49811234.lvup={85313220}
+function c49811234.checkop(e,tp,eg,ep,ev,re,r,rp)
+	c58206034.lvdn={49811234,85313220,12817939}
+	c12817939.lvdn={49811234,85313220}
+	c85313220.lvdn={49811234}
+end
 function c49811234.stfilter(c,tp)
 	return c:IsCode(49811237) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end

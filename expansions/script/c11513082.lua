@@ -19,7 +19,7 @@ function c11513082.initial_effect(c)
 	c:RegisterEffect(e2) 
 	-- 
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_IGNITION) 
 	e3:SetRange(LOCATION_FZONE)
 	e3:SetCountLimit(1,21513082) 
@@ -59,7 +59,7 @@ function c11513082.pbfil(c,e,tp)
 	return not c:IsPublic() and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck() and Duel.IsExistingMatchingCard(c11513082.thfil,tp,LOCATION_DECK,0,1,nil,e,tp,c)
 end
 function c11513082.thfil(c,e,tp,pc)
-	return c:IsSetCard(0x195) and not c:IsAttribute(pc:GetAttribute()) and c:IsAbleToHand()
+	return c:IsSetCard(0x195) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(pc:GetAttribute()) and c:IsAbleToHand()
 end
 function c11513082.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11513082.pbfil,tp,LOCATION_HAND,0,1,nil,e,tp) end

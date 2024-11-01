@@ -138,7 +138,11 @@ function c49811237.spop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,c49811237.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp,lv,def)
 		local tc=g:GetFirst()
 		if tc then
-			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+			if c:IsSetCard(0x41) then
+				Duel.SpecialSummon(tc,SUMMON_VALUE_LV,tp,tp,false,false,POS_FACEUP)
+			else
+				Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+			end
 		end
 	end
 end

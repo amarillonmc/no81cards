@@ -39,7 +39,7 @@ function c11513083.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c11513083.xckfil(c) 
-	return c:IsType(TYPE_MONSTER) and not c:IsPreviousLocation(LOCATION_DECK)
+	return c:IsType(TYPE_MONSTER) and c:IsLocation(LOCATION_HAND) and not c:IsPreviousLocation(LOCATION_DECK)
 end 
 function c11513083.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c11513083.xckfil,1,nil) 

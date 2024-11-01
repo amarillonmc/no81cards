@@ -32,7 +32,7 @@ end
 function c28319011.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c28319011.cfilter(c,oc)
 	return c:IsFaceup() and c:IsCode(oc:GetCode())
@@ -58,7 +58,7 @@ function c28319011.activate(e,tp,eg,ep,ev,re,r,rp,op)
 		if Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 and sc:IsSummonLocation(LOCATION_HAND) then
 			Duel.Recover(tp,1000,REASON_EFFECT)
 		end
-		if Duel.GetLP(tp)>10000 then
+		if Duel.GetLP(tp)>=10000 then
 			local te=sc.recover_effect
 			if not te then return end
 			local tg=te:GetTarget()

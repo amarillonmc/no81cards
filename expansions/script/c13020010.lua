@@ -9,6 +9,7 @@ local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_QUICK_O)
 	e0:SetRange(LOCATION_HAND)
 	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e0:SetCost(cm.cost)
 	e0:SetCondition(cm.setcon)
 	e0:SetTarget(cm.target)
@@ -89,11 +90,10 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	cm[tp]=cm[tp]+1
 	local num=cm[tp]
-	local g1 = Duel.GetMatchingGroup( cm.filter5, tp, LOCATION_GRAVE, 0, nil):GetFirst()
-	local g2 = Duel.GetMatchingGroup( cm.filter6, tp, LOCATION_GRAVE, 0, g1 ,e,tp)
+	local g2 = Duel.GetMatchingGroup( cm.filter6, tp, LOCATION_GRAVE, 0, nil ,e,tp)
 	local kx,zzx,sxx,zzjc,sxjc,zzl=it.sxbl()
 	if Duel.Recover(tp,200,REASON_EFFECT)>0 then
-	if num>=6 and g1~=nil and #g2>0 and zzx>0 and xg.ky(tp,m,1) then
+	if num>=6 and #g2>0 and zzx>0 and xg.ky(tp,m,1) then
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
 		local g = Duel.SelectMatchingCard(tp, nil, tp, LOCATION_GRAVE, 0, 1, 3, nil)
 		Duel.SendtoDeck(g, nil, 2, REASON_EFFECT)

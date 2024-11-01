@@ -34,7 +34,7 @@ function cm.retg1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.retop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+	if Duel.SelectYesNo(tp,aux.Stringid(m,2))~=0 and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 		if #g~=0 and Duel.IsEnvironment(60010029,tp) then
 			Duel.SendtoGrave(g,REASON_EFFECT)
