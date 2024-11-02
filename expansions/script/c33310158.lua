@@ -39,7 +39,7 @@ function c33310158.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()==0 then return false end
 		e:SetLabel(0)
-		return og:IsExists(c33310158.filter,tp,1,nil,e,tp,eg,ep,ev,re,r,rp)
+		return og:IsExists(c33310158.filter,1,nil,e,tp,eg,ep,ev,re,r,rp)
 	end
 	local tc=og:FilterSelect(tp,c33310158.filter,1,1,nil,e,tp,eg,ep,ev,re,r,rp):GetFirst()
 	Duel.SendtoGrave(tc,REASON_COST)
