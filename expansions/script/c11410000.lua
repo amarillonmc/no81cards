@@ -103,7 +103,7 @@ function cm.nnfilter(c,ec)
 	return false
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	if apricot_nightfall_adjust then return end
+	--if apricot_nightfall_adjust then return end
 	apricot_nightfall_adjust=true
 	e:Reset()
 	local c=e:GetHandler()
