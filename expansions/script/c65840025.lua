@@ -1,5 +1,6 @@
 --空间的守护灵
 function c65840025.initial_effect(c)
+	aux.AddCodeList(c,65840000)
 	--
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_REMOVE)

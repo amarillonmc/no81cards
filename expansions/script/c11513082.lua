@@ -121,7 +121,7 @@ function c11513082.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetParam(200)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,200)
 end
-function c11513082.damop(e,tp,eg,ep,ev,re,r,rp) 
+function c11513082.xdamop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM) 
 	local x=e:GetLabel() 
@@ -131,7 +131,33 @@ function c11513082.damop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 	end  
 end
-
+function c11513082.damop(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler()
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)  
+	if Duel.Damage(p,d,REASON_EFFECT)~=0 then 
+		local b1=Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) 
+		local b2=Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil) 
+		local b3=Duel.IsExistingMatchingCard(c11513082.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		local xtable={aux.Stringid(11513082,4)} 
+		if b1 then table.insert(xtable,aux.Stringid(11513082,1)) end 
+		if b2 then table.insert(xtable,aux.Stringid(11513082,2)) end 
+		if b3 then table.insert(xtable,aux.Stringid(11513082,3)) end 
+		local op=Duel.SelectOption(tp,table.unpack(xtable))+1 
+		Duel.BreakEffect() 
+		if xtable[op]==aux.Stringid(11513082,1) then 
+			local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil) 
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		end 
+		if xtable[op]==aux.Stringid(11513082,2) then 
+			local sc=Duel.SelectMatchingCard(tp,Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,1,nil,nil):GetFirst() 
+			Duel.LinkSummon(tp,sc,nil)
+		end 
+		if xtable[op]==aux.Stringid(11513082,3) then 
+			local sc=Duel.SelectMatchingCard(tp,c11513082.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst() 
+			Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP) 
+		end 
+	end  
+end
 
 
 

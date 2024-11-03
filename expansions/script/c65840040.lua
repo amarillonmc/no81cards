@@ -1,5 +1,6 @@
 --空间见习魔术师
 function c65840040.initial_effect(c)
+	aux.AddCodeList(c,65840000)
 	--
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_REMOVE)

@@ -3,6 +3,7 @@ local m=91020017
 local cm=c91020017
 function c91020017.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,m*3)
@@ -27,30 +28,22 @@ function c91020017.initial_effect(c)
 	e3:SetOperation(cm.mvop2)
 	c:RegisterEffect(e3)
 end
-function cm.sfilter(c,e,tp)
-	return c:GetOriginalType()&TYPE_MONSTER>0 and c:GetType()&TYPE_CONTINUOUS+TYPE_SPELL==TYPE_CONTINUOUS+TYPE_SPELL
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x9d1)
+function cm.sfilter(c)
+	return c:IsAbleToHand() and c:IsSetCard(0x9d1) and c:IsType(TYPE_MONSTER)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and cm.sfilter(chkc,e,tp) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and cm.sfilter(chkc) and chkc:IsControler(tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(cm.sfilter,tp,LOCATION_ONFIELD,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,cm.sfilter,tp,LOCATION_ONFIELD,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+		and Duel.IsExistingTarget(cm.sfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectTarget(tp,cm.sfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) 
-	  Duel.MoveToField(c,tp,tc:GetOwner(),LOCATION_SZONE,POS_FACEUP,true) 
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-		c:RegisterEffect(e1)	
+	if tc:IsRelateToEffect(e) then 
+	Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
@@ -66,9 +59,17 @@ function cm.splimit(e,c)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return  c:GetReasonCard():IsRace(RACE_DIVINE) and e:GetHandler():IsLocation(LOCATION_GRAVE) 
+	return  c:GetReasonCard():IsRace(RACE_DIVINE) 
 end
 --e2
+function cm.thfilter3(c)
+	return c:IsFaceup()  and c:IsReleasable()
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter3,tp,LOCATION_ONFIELD,0,1,nil) end
+ local g=Duel.SelectMatchingCard(tp,cm.thfilter3,tp,LOCATION_ONFIELD,0,1,1,nil)
+ Duel.Release(g,REASON_COST)
+end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=c:GetReasonCard()
@@ -78,6 +79,7 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
+	e1:SetCost(cm.cost)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.tgf)
 	e1:SetOperation(cm.opf)
@@ -115,17 +117,18 @@ function cm.mvcon2(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS)
 end
 function cm.filter2(c,tp)
-	return  c:IsSetCard(0x9d1)
-		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+	return  c:IsSetCard(0x9d1) and c:IsType(TYPE_MONSTER)
+		 and not c:IsForbidden()
 end
 function cm.mvtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.filter2(chkc,tp) end
-	if chk==0 then return Duel.IsExistingTarget(cm.filter2,tp,LOCATION_MZONE,0,1,nil)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and cm.filter2(chkc,tp) end
+	if chk==0 then return Duel.IsExistingTarget(cm.filter2,tp,LOCATION_GRAVE,0,1,nil)
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,cm.filter2,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,cm.filter2,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
 end
 function cm.mvop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

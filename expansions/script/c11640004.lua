@@ -8,9 +8,10 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.negcon)
-	e1:SetCost(s.negcost)
+	--e1:SetCost(s.negcost)
 	e1:SetTarget(s.negtg)
 	e1:SetOperation(s.negop)
 	c:RegisterEffect(e1) 
@@ -42,26 +43,36 @@ function s.initial_effect(c)
 	e3:SetOperation(s.recop)
 	c:RegisterEffect(e3)   
 end
-function s.filter(c,ra,lv)
-	return not c:IsStatus(STATUS_BATTLE_DESTROYED) and c:IsAbleToRemoveAsCost() and (c:IsRace(ra) or c:IsLevel(lv)) and c:IsSetCard(0x3224)
+function s.filter(c)
+	return  c:IsFaceup() and c:IsLevelAbove(1) and c:IsSetCard(0x3224)
 end
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp~=tp and Duel.IsChainDisablable(ev) and re:IsActiveType(TYPE_MONSTER)
-end
-function s.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local rc=re:GetHandler()
-	local ra=rc:GetRace()
-	local lv=rc:GetLevel()
-	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_GRAVE+LOCATION_HAND+LOCATION_MZONE,0,1,nil,ra,lv) end
-	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_GRAVE+LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,ra,lv)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	return rp~=tp and Duel.IsChainNegatable(ev) and re:IsHasType(EFFECT_TYPE_ACTIVATE) --Duel.IsChainDisablable(ev)
 end
 function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.filter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,0,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,0,1,1,e:GetHandler())
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+	end
 end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateEffect(ev)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	local lv=tc:GetLevel()
+	--local lv=rc:GetLevel()|rc:GetRank()|rc:GetLink()
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.Destroy(eg,REASON_EFFECT)		
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CHANGE_LEVEL)
+		e1:SetValue(lv*2)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		tc:RegisterEffect(e1)
+	end
 end
 --
 function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
@@ -78,7 +89,7 @@ function s.filter2(c,e,tp,tc)
 	return  c:IsLevelAbove(1) and c:IsFaceup() and c:IsReleasableByEffect() and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,ld)
 end
 function s.spfilter2(c,e,tp,lv)  
-	return c:IsSetCard(0x3224)  and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and c:IsLevelBelow(lv)
+	return c:IsAttribute(ATTRIBUTE_LIGHT)  and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and c:IsLevelBelow(lv)
 end
 function s.cfilter(c,e)
 	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToGrave()
@@ -110,7 +121,7 @@ end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sc=e:GetLabelObject()
-	local ld=math.abs(c:GetLevel()-sc:GetLevel())	
+	local ld=math.abs(c:GetLevel()-sc:GetLevel())   
 	local mg=Group.FromCards(c,sc)
 	if ld<=4 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -126,7 +137,6 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 		local g2=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,re1,e,tp,re1)		
 		local re2=g2:GetFirst()  
 		local ld2=math.abs(re1:GetLevel()-re2:GetLevel())
-		debug.Message(ld2)
 		g1:Merge(g2)
 		Duel.Release(g1,REASON_EFFECT) 
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

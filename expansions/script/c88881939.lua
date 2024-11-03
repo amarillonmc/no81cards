@@ -1,8 +1,8 @@
 --太沧神械 骁骑武帝
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	 --synchro summon
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_WATER),aux.NonTuner(Card.IsAttribute,ATTRIBUTE_WATER),1)
 	c:EnableReviveLimit()
 	--search
 	local e1=Effect.CreateEffect(c)

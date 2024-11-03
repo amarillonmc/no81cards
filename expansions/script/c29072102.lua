@@ -1,9 +1,9 @@
---方舟骑士-幽灵鲨
+--方舟骑士团-幽灵鲨
 function c29072102.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29072102,0))
-	e1:SetCategory(CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetRange(LOCATION_MZONE)
@@ -12,6 +12,19 @@ function c29072102.initial_effect(c)
 	e1:SetTarget(c29072102.thtg)
 	e1:SetOperation(c29072102.thop)
 	c:RegisterEffect(e1)
+	--negate
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(29072102,3))
+	e2:SetCategory(CATEGORY_NEGATE)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetCountLimit(1,29072102)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(c29072102.con)
+	e2:SetCost(c29072102.cost)
+	e2:SetTarget(c29072102.distg)
+	e2:SetOperation(c29072102.disop)
+	c:RegisterEffect(e2)
 	--sp
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(29072102,1))
@@ -34,6 +47,13 @@ function c29072102.initial_effect(c)
 	e5:SetValue(1)
 	c:RegisterEffect(e5)
 	Duel.AddCustomActivityCounter(29072102,ACTIVITY_CHAIN,c29072102.chainfilter)
+end
+function c29072102.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
+end
+function c29072102.disop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
 end
 --cost
 function c29072102.chainfilter(re,tp,cid)
@@ -79,7 +99,7 @@ function c29072102.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --e3e4
 function c29072102.thfilter(c)
-	return c:IsSetCard(0x67af) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x67af) and  c:IsAbleToHand()
 end
 function c29072102.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29072102.thfilter,tp,LOCATION_DECK,0,1,nil) end

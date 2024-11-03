@@ -143,16 +143,16 @@ function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(c) and Duel.GetTurnPlayer()==tp
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,2,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,2)
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	local ct=Duel.DiscardHand(tp,nil,1,2,REASON_EFFECT+REASON_DISCARD)
-	if ct>0 and Duel.IsPlayerCanDraw(tp,ct) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+	local ct=Duel.DiscardHand(tp,nil,2,2,REASON_EFFECT+REASON_DISCARD)
+	if ct>0 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		Duel.BreakEffect()
-		Duel.Draw(tp,ct,REASON_EFFECT)
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
 function cm.tcfilter(c)

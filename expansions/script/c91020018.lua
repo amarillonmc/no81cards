@@ -3,9 +3,9 @@ local m=91020018
 local cm=c91020018
 function c91020018.initial_effect(c)
 	 local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_TO_GRAVE)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_GRAVE)
 	e1:SetCountLimit(1,m*3)
 	e1:SetTarget(cm.mvtg)
 	e1:SetOperation(cm.mvop)
@@ -18,27 +18,25 @@ function c91020018.initial_effect(c)
 	e2:SetOperation(cm.op2)
 	c:RegisterEffect(e2)
 	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e5:SetType(EFFECT_TYPE_IGNITION)
+	e5:SetRange(LOCATION_HAND)
 	e5:SetCountLimit(1,m*2)
-	e5:SetProperty(EFFECT_FLAG_DELAY)
+	e5:SetCost(cm.spcost)
 	e5:SetTarget(cm.tg5)
 	e5:SetOperation(cm.op5)
 	c:RegisterEffect(e5)
-	local e6=e5:Clone()
-	e6:SetCode(EVENT_SUMMON_SUCCESS)
-	c:RegisterEffect(e6)
 end
 function cm.filter(c)
 	return c:IsSetCard(0x9d1) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function cm.mvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil) end
+		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
 function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,e:GetHandler()):GetFirst()
 	if  not tc:IsImmuneToEffect(e) and Duel.MoveToField(tc,tp,tc:GetOwner(),LOCATION_SZONE,POS_FACEUP,true) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -47,6 +45,11 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 		tc:RegisterEffect(e1)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,c)
+	end
 	end  
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -63,7 +66,15 @@ end
 --e2
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return  c:GetReasonCard():IsRace(RACE_DIVINE) and e:GetHandler():IsLocation(LOCATION_GRAVE)
+	return  c:GetReasonCard():IsRace(RACE_DIVINE) 
+end
+function cm.thfilter3(c)
+	return c:IsFaceup()  and c:IsReleasable()
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter3,tp,LOCATION_ONFIELD,0,1,nil) end
+ local g=Duel.SelectMatchingCard(tp,cm.thfilter3,tp,LOCATION_ONFIELD,0,1,1,nil)
+ Duel.Release(g,REASON_COST)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -74,6 +85,7 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
+	e2:SetCost(cm.cost)
 	e2:SetCondition(cm.con2)
 	e2:SetTarget(cm.tgf)
 	e2:SetOperation(cm.opf)
@@ -109,6 +121,11 @@ function cm.opf(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(tc,REASON_EFFECT)
 end
 --e4
+function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+local c=e:GetHandler()
+ if chk==0 then return c:IsReleasable() end
+ Duel.Release(c,REASON_COST)
+end
 function cm.tg5(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return  true end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0)

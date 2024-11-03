@@ -59,23 +59,57 @@ end
 --e2
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return  c:GetReasonCard():IsRace(RACE_DIVINE) and e:GetHandler():IsLocation(LOCATION_GRAVE)
+	return  c:GetReasonCard():IsRace(RACE_DIVINE) 
+end
+function cm.thfilter3(c)
+	return c:IsFaceup()  and c:IsReleasable()
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter3,tp,LOCATION_ONFIELD,0,1,nil) end
+ local g=Duel.SelectMatchingCard(tp,cm.thfilter3,tp,LOCATION_ONFIELD,0,1,1,nil)
+ Duel.Release(g,REASON_COST)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=c:GetReasonCard()
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(91020019,1))
+	e3:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_SPSUMMON)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e3:SetCost(cm.cost)
 	e3:SetCondition(cm.spcon)
 	e3:SetTarget(cm.tgf)
 	e3:SetOperation(cm.opf)
 	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e3,true)
+	local e4=e3:Clone()
+	e4:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e4:SetCode(EVENT_CHAINING)
+	e4:SetCondition(cm.condition2)
+	e4:SetTarget(cm.target2)
+	e4:SetOperation(cm.activate2)
+	rc:RegisterEffect(e4,true)
 	rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,2))
+end
+function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) or not Duel.IsChainNegatable(ev) then return false end
+	return re:IsHasCategory(CATEGORY_SPECIAL_SUMMON) and ep~=tp
+end
+function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+	end
+end
+function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.Destroy(eg,REASON_EFFECT)
+	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return tp~=ep and Duel.GetCurrentChain()==0 

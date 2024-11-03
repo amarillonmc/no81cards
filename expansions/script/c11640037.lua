@@ -43,35 +43,43 @@ function s.initial_effect(c)
 
 end
 function s.refilter(c,e,tp)
-	return c:IsSetCard(0x3224) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_GRAVE,0,1,c,e,tp,c:GetLevel())
+	return c:IsSetCard(0x3224) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(s.refilter2,tp,LOCATION_GRAVE,0,1,c,e,tp,c:GetLevel())
 end
 function s.refilter2(c,e,tp,lv)
-	return c:IsSetCard(0x3224) and c:IsType(TYPE_MONSTER) and not c:IsLevel(lv) and c:IsLevelAbove(1) and c:IsAbleToRemoveAsCost()
+	local ld=math.abs(c:GetLevel()-lv) 
+	return c:IsSetCard(0x3224) and c:IsType(TYPE_MONSTER) and not c:IsLevel(lv) and c:IsLevelAbove(1) and c:IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(s.desfilter,tp,0,LOCATION_MZONE,1,nil,ld)   
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.refilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,s.refilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	local tc=g:GetFirst()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g2=Duel.SelectMatchingCard(tp,s.refilter,tp,LOCATION_GRAVE,0,1,1,tc,e,tp,tc:GetLevel())
-	g:Merge(g2)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	local ld=math.abs(tc:GetOriginalLevel()-g2:GetFirst():GetOriginalLevel())  
-	e:SetLabel(ld)
+	e:SetLabel(100)
+	if chk==0 then return true end
 end
 function s.desfilter(c,ld)
 	return c:IsFaceup() and (c:IsLevelBelow(ld) or c:IsLinkBelow(ld) or c:IsRankBelow(ld) )
 end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return  Duel.IsExistingMatchingCard(s.desfilter,tp,0,LOCATION_MZONE,1,nil,e:GetLabel()) end
-	local g=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_MZONE,nil,e:GetLabel())
+	if chk==0 then
+		if e:GetLabel()~=100 then return false end
+		e:SetLabel(0)
+		return Duel.IsExistingMatchingCard(s.refilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil)
+	end
+	e:SetLabel(0)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,s.refilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local tc=g:GetFirst()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g2=Duel.SelectMatchingCard(tp,s.refilter2,tp,LOCATION_GRAVE,0,1,1,tc,e,tp,tc:GetLevel())
+	g:Merge(g2)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	local ld=math.abs(tc:GetLevel()-g2:GetFirst():GetLevel())  
+	Duel.SetTargetParam(ld)
+	local g=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_MZONE,nil,ld)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,nil,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,nil,0,0)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
-	local lv=math.floor(e:GetLabel()/2)
-	local g=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_MZONE,nil,e:GetLabel())
+	local ld=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
+	local lv=math.floor(ld/2)
+	local g=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_MZONE,nil,ld)
 	local g1=g:Filter(s.desfilter,nil,lv)
 	--local tc=g1:GetFirst()
    -- while tc do
@@ -180,6 +188,6 @@ end
 function s.atkval(e,c)
 	local g=Duel.GetMatchingGroup(s.atkfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,nil)
 	local gc=g:GetClassCount(Card.GetRace)
-	return gc*200	 
+	return gc*200   
 end
 

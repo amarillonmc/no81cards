@@ -1,10 +1,11 @@
---深海的引导
+--深海猎人的引导
 function c29016278.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,29016278+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c29016278.target)
 	e1:SetOperation(c29016278.activate)
 	c:RegisterEffect(e1)

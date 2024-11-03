@@ -2,7 +2,7 @@
 local m=91060005
 local cm=c91060005
 function c91060005.initial_effect(c)
-	aux.EnableChangeCode(c,95440946,LOCATION_MZONE+LOCATION_GRAVE)
+	aux.EnableChangeCode(c,95440946,LOCATION_MZONE)
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_ZOMBIE),10,2,cm.ovfilter,aux.Stringid(m,0),2,cm.xyzop)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
@@ -42,10 +42,10 @@ function cm.xyzop(e,tp,chk)
 end
 --e1
 function cm.stfilter(c)
-	return (c:IsCode(92379223)or c:IsSetCard(0x143)or c:IsSetCard(0x2142)) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() 
+	return ( c:IsSetCard(0x143)or c:IsSetCard(0x2142)) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() 
 end
 function cm.stfilter1(c)
-	return (c:IsSetCard(0x143)or c:IsSetCard(0x2142)) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and c:IsType(TYPE_CONTINUOUS)
+	return (c:IsSetCard(0x143)or c:IsSetCard(0x2142)) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() 
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

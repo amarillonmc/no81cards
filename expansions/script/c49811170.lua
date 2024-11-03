@@ -37,7 +37,7 @@ function c49811170.initial_effect(c)
     c:RegisterEffect(e3)
 end
 function c49811170.matfilter(c)
-	return c:IsLinkRace(RACE_FIEND) and not c:IsSummonableCard()
+	return c:IsLinkRace(RACE_FIEND) and c:IsLinkAttribute(ATTRIBUTE_FIRE)
 end
 function c49811170.cfilter(c)
     return c:IsType(TYPE_MONSTER) and c:IsRace(RACE_FIEND) and c:IsAbleToGraveAsCost() and not c:IsSummonableCard()

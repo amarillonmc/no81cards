@@ -71,7 +71,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.cfilter(c,tp)
-	return c:IsControler(1-tp) and not c:IsReason(REASON_DRAW) and (not c:IsStatus(STATUS_TO_HAND_WITHOUT_CONFIRM) or (c:IsStatus(STATUS_TO_HAND_WITHOUT_CONFIRM) and c:IsPublic()))
+	return c:IsControler(1-tp) and not c:IsReason(REASON_DRAW) -- and (not c:IsStatus(STATUS_TO_HAND_WITHOUT_CONFIRM) or (c:IsStatus(STATUS_TO_HAND_WITHOUT_CONFIRM) and c:IsPublic()))
 end
 function s.ancon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter,1,nil,tp)
@@ -79,28 +79,29 @@ end
 function s.antg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return eg:GetCount()>0 end
-	local ag=Group.CreateGroup()
-	local codes={}
-	for tc in aux.Next(eg) do
-		local code=tc:GetCode()
-		if not ag:IsExists(Card.IsCode,1,nil,code) then
-			table.insert(codes,code)
-		end
-	end
-	table.sort(codes)
+	--local ag=Group.CreateGroup()
+	--local codes={}
+	--for tc in aux.Next(eg) do
+	--	local code=tc:GetCode()
+	--	if not ag:IsExists(Card.IsCode,1,nil,code) then
+	--		table.insert(codes,code)
+	--	end
+	--end
+	--table.sort(codes)
 	--c:IsCode(codes[1])
-	local afilter={codes[1],OPCODE_ISCODE}
-	if #codes>1 then
+	--local afilter={codes[1],OPCODE_ISCODE}
+	--if #codes>1 then
 		--or ... or c:IsCode(codes[i])
-		for i=2,#codes do
-			table.insert(afilter,codes[i])
-			table.insert(afilter,OPCODE_ISCODE)
-			table.insert(afilter,OPCODE_OR)
-		end
-	end
-	getmetatable(c).announce_filter=afilter
+	--	for i=2,#codes do
+	--		table.insert(afilter,codes[i])
+	--		table.insert(afilter,OPCODE_ISCODE)
+	--		table.insert(afilter,OPCODE_OR)
+	--	end
+	--end
+	--getmetatable(c).announce_filter=afilter
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-	local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
+	local ac=Duel.AnnounceCard(tp)
+	--local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
 	Duel.SetTargetParam(ac)
 	Duel.SetOperationInfo(0,CATEGORY_ANNOUNCE,nil,0,tp,0)
 end
@@ -157,6 +158,7 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e1:SetTargetRange(1,0)
+	e1:SetReset(RESET_PHASE+PHASE_END)
 	e1:SetValue(s.aclimit2)
 	Duel.RegisterEffect(e1,tp)
 end

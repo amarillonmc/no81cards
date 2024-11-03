@@ -87,21 +87,21 @@ function c16362052.atktg2(e,c)
 end
 function c16362052.tg2f(c,tp)
 	return c:CheckUniqueOnField(tp)
+		and Duel.IsExistingMatchingCard(c16362052.equfilter,tp,LOCATION_MZONE,0,1,c)
 end
 function c16362052.equfilter(c)
 	return c:IsSetCard(0xdc0) and c:IsFaceup()
 end
 function c16362052.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(c16362052.tg2f,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler(),tp) end
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_ONFIELD)
+		and Duel.IsExistingMatchingCard(c16362052.tg2f,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler(),tp) end
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_MZONE)
 end
 function c16362052.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g=Duel.SelectMatchingCard(tp,c16362052.tg2f,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler(),tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local g=Duel.SelectMatchingCard(tp,c16362052.tg2f,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,e:GetHandler(),tp)
 	local tc=g:GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 	local sg=Duel.SelectMatchingCard(tp,c16362052.equfilter,tp,LOCATION_MZONE,0,1,1,tc)

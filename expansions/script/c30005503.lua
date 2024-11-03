@@ -42,7 +42,7 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
-	e2:SetCountLimit(1,m+m)
+	--e2:SetCountLimit(1,m+m)
 	e2:SetCondition(cm.con)
 	e2:SetTarget(cm.tg)
 	e2:SetOperation(cm.op)   
@@ -98,9 +98,6 @@ function cm.nmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --Effect 2
-function cm.fus7(c)
-	return c:IsCode(30005500,30005501,30005502)
-end
 function cm.valcheck(e,c)
 	local g=e:GetHandler():GetMaterial()
 	if #g>=5 then

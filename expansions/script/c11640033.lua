@@ -40,7 +40,6 @@ function s.initial_effect(c)
 	e3:SetTarget(s.tg)
 	e3:SetValue(aux.tgoval)
 	c:RegisterEffect(e3)
-
 end
 function s.thfilter(c)
 	return c:IsSetCard(0x3224) and c:IsAbleToHand() and c:IsFaceup()
@@ -52,7 +51,7 @@ end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_REMOVED,0,1,1,nil)
-	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
 end
 --02
 function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
@@ -89,20 +88,25 @@ end
 function s.tgfilter(c)
 	return c:IsSetCard(0x3224) and c:IsFaceup()
 end
+function s.tfilter(c)
+	return c:IsSetCard(0x3224) and c:IsAbleToHand() and c:IsType(TYPE_SPELL+TYPE_TRAP)
+end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sc=e:GetLabelObject()
-	local ld=math.abs(c:GetLevel()-sc:GetLevel())	
+	local ld=math.abs(c:GetLevel()-sc:GetLevel())   
 	local mg=Group.FromCards(c,sc)
 	local lv=1
 	if ld>0 then
 		lv=ld
 	end
-	if ld<=3 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-		s.acop(e,tp,eg,ep,ev,re,r,rp) 
-		if Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-			s.acop(e,tp,eg,ep,ev,re,r,rp) 
-		end
+	if ld<=3  and Duel.IsExistingMatchingCard(s.tfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,s.tfilter,tp,LOCATION_DECK,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,g)
+		end 
 	elseif ld>3 and Duel.SelectYesNo(tp,aux.Stringid(id,4)) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -128,26 +132,6 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function s.acop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-	getmetatable(c).announce_filter={0x3224,OPCODE_ISSETCARD,TYPE_MONSTER,OPCODE_ISTYPE}
-	local ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
-	local token=Duel.CreateToken(tp,ac)
-	local down=token:IsLevelAbove(3)
-	local op=aux.SelectFromOptions(tp,
-		{true,aux.Stringid(id,2),2},
-		{down,aux.Stringid(id,3),-2})
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_UPDATE_LEVEL)
-	e4:SetTargetRange(0,0x7f)
-	e4:SetTarget(s.crtg)
-	e4:SetLabel(ac)
-	e4:SetValue(op)
-	e4:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e4,tp)
-end
 function s.crtg(e,c)
 	local code=e:GetLabel()
 	return c:IsOriginalCodeRule(code) and c:IsLevelAbove(1)
@@ -163,5 +147,5 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function s.tg(e,c)
-	return c~=e:GetHandler() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3224)
+	return  c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3224)
 end

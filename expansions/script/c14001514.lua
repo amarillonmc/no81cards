@@ -142,33 +142,19 @@ function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return eg:IsContains(c) and Duel.GetTurnPlayer()==tp
 end
-function cm.thfilter(c,tp)
-	return c:IsAbleToHand() and Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,2,c)
-end
 function cm.tdfilter(c)
 	return c:IsAbleToDeck()
 end
-function cm.ckfilter(c)
-	return c:IsAbleToDeck() or c:IsAbleToHand()
-end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,PLAYER_ALL,LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,PLAYER_ALL,LOCATION_GRAVE)
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tg=Duel.GetMatchingGroup(cm.ckfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
-	if #tg<3 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local hg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,tp)
-	if #hg>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local dg=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,2,2,hg)
-		if #dg>0 then
-			Duel.SendtoHand(hg,nil,REASON_EFFECT)
-			Duel.SendtoDeck(dg,nil,2,REASON_EFFECT)
-		end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local dg=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,3,3,nil)
+	if #dg>0 then
+		Duel.SendtoDeck(dg,nil,2,REASON_EFFECT)
 	end
 end
 function cm.tcfilter(c)

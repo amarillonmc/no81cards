@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_FZONE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)  
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(2)
 	e3:SetCondition(cm.thcon)
 	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
@@ -42,10 +42,11 @@ end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasCategory(CATEGORY_FUSION_SUMMON)
 end
+function cm.ft(c)
+	return c:IsFaceupEx() and c:GetReason()&(REASON_FUSION+REASON_MATERIAL)==(REASON_FUSION+REASON_MATERIAL) and c:IsType(TYPE_MONSTER) 
+end
 function cm.thfilter2(c)
-	local b1=c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)
-	return c:GetReason()&(REASON_FUSION+REASON_MATERIAL)==(REASON_FUSION+REASON_MATERIAL) and c:IsType(TYPE_MONSTER) and b1 
-		and c:IsAbleToDeck()
+	return (cm.ft(c) or c:IsSetCard(0x927)) and c:IsAbleToDeck()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and cm.thfilter2(chkc) end

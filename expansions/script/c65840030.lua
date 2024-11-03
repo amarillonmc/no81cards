@@ -1,5 +1,6 @@
 --不稳定的空间
 function c65840030.initial_effect(c)
+	aux.AddCodeList(c,65840000)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_REMOVE)

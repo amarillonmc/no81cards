@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	e51:SetCode(EVENT_FREE_CHAIN)
 	e51:SetRange(LOCATION_GRAVE)
 	e51:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e51:SetCountLimit(1,m+m)
+	e51:SetCountLimit(1,m)
 	e51:SetTarget(cm.tthtg)
 	e51:SetOperation(cm.tthop)
 	c:RegisterEffect(e51)  
@@ -41,7 +41,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,2,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local c=e:GetHandler()
 	if #g==0 then return end
 	if Duel.SendtoHand(g,nil,REASON_EFFECT)==0 or g:FilterCount(Card.IsLocation,nil,LOCATION_HAND)==0 then return false end
@@ -54,7 +54,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EFFECT_PUBLIC)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-		local e51=Effect.CreateEffect(c)
+		local e51=Effect.CreateEffect(tc)
 		e51:SetDescription(aux.Stringid(m,1))
 		e51:SetCategory(CATEGORY_FUSION_SUMMON+CATEGORY_SPECIAL_SUMMON)
 		e51:SetType(EFFECT_TYPE_QUICK_O)
@@ -71,16 +71,17 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --Effect 2
+function cm.ft(c)
+	return c:IsFaceupEx() and c:GetReason()&(REASON_FUSION+REASON_MATERIAL)==(REASON_FUSION+REASON_MATERIAL) and c:IsType(TYPE_MONSTER) 
+end
 function cm.thfilter2(c)
-	local b1=c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)
-	return c:GetReason()&(REASON_FUSION+REASON_MATERIAL)==(REASON_FUSION+REASON_MATERIAL) and c:IsType(TYPE_MONSTER) and b1 
-		and c:IsAbleToHand()
+	return (cm.ft(c) or c:IsSetCard(0x927)) and c:IsAbleToHand()
 end
 function cm.tthtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and cm.thfilter2(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(cm.thfilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and c:IsAbleToDeck() end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectTarget(tp,cm.thfilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
@@ -157,5 +158,38 @@ function cm.fsop(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
+		if e:GetHandler():IsOriginalCodeRule(30005510) and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() then
+			local e4=Effect.CreateEffect(tc)
+			e4:SetType(EFFECT_TYPE_FIELD)
+			e4:SetCode(EFFECT_CANNOT_INACTIVATE)
+			e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e4:SetRange(LOCATION_HAND+LOCATION_MZONE)
+			e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e4:SetValue(cm.effectfilter)
+			tc:RegisterEffect(e4,true)
+			local e5=Effect.CreateEffect(tc)
+			e5:SetType(EFFECT_TYPE_FIELD)
+			e5:SetCode(EFFECT_CANNOT_DISEFFECT)
+			e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e5:SetRange(LOCATION_HAND+LOCATION_MZONE)
+			e5:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e5:SetValue(cm.effectfilter)
+			tc:RegisterEffect(e5,true)
+			if not tc:IsType(TYPE_EFFECT) then
+				local e2=Effect.CreateEffect(tc)
+				e2:SetType(EFFECT_TYPE_SINGLE)
+				e2:SetCode(EFFECT_ADD_TYPE)
+				e2:SetValue(TYPE_EFFECT)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e2,true)
+			end
+			tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+		end
 	end
+end
+function cm.effectfilter(e,ct)
+	local te,tp,loc=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
+	local tc=te:GetHandler()
+	local ec=e:GetHandler()
+	return tc==ec 
 end

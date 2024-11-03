@@ -89,12 +89,12 @@ function cm.exsetcon(e,tp,eg,ep,ev,re,r,rp)
 	local fug=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp)
 	local fdg=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp)
 	local dhg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_HAND,0,nil,tp)
-	return #fug>#fdg and #dhg>0 and (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or c:IsSSetable()) and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+	return #fug>#fdg and #dhg>1 and (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or c:IsSSetable()) and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function cm.exsetop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_HAND,0,1,1,c)
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_HAND,0,2,2,c)
 	if g and #g>0 then
 		Duel.SendtoGrave(g,REASON_RULE+REASON_DISCARD)
 		if Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.SelectOption(tp,aux.Stringid(14001521,4),aux.Stringid(14001521,5))==0 then
@@ -118,7 +118,7 @@ function cm.repfilter(c,tp)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) and eg:IsExists(cm.repfilter,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,e,tp) and eg:IsExists(cm.repfilter,1,nil,tp) and c:GetFlagEffect(m)==0 end
 	return Duel.SelectEffectYesNo(tp,c,96)
 end
 function cm.repval(e,c)
@@ -130,6 +130,7 @@ function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if #g>0 then
+		c:RegisterFlagEffect(m,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1,0,0)
 		local tc=g:GetFirst()
 		if tc:IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.SelectOption(tp,aux.Stringid(14001521,4),aux.Stringid(14001521,5))==0 then
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)

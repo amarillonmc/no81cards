@@ -9,7 +9,7 @@ function c91040035.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCountLimit(1,m*2)
+	e1:SetCountLimit(1,m+100)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
@@ -58,6 +58,9 @@ end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and eg:IsExists(Card.IsControler,1,nil,1-tp)
+end
+function cm.filter(c,e,tp)
+	return c:IsRace(RACE_ZOMBIE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	   if chk==0 then return  Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end

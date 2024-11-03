@@ -56,9 +56,12 @@ end
 function c98921054.mfilter(c)
 	return c:IsLinkRace(RACE_FAIRY+RACE_FIEND)
 end
+function c98921054.kfilter(c)
+	return c:IsCode(64382839) or c:IsLinkType(TYPE_TOKEN)
+end
 function c98921054.valcheck(e,c)
 	local g=c:GetMaterial()
-	if g:IsExists(Card.IsLinkType,1,nil,TYPE_TOKEN) then
+	if g:IsExists(c98921054.kfilter,1,nil) then
 		e:GetLabelObject():SetLabel(1)
 	else
 		e:GetLabelObject():SetLabel(0)

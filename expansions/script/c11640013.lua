@@ -42,24 +42,30 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.filter(c)
-	return c:IsFaceup() and c:IsCanTurnSet()
+	local oc=true
+	if c:IsType(TYPE_MONSTER) then
+		oc=c:IsCanTurnSet() 
+	else
+		oc=c:IsSSetable(true)
+	end
+	return c:IsFaceup() and oc and not (c:IsType(TYPE_PENDULUM) and c:IsLocation(LOCATION_PZONE))
 end
 function s.tgfilter(c)
 	return c:IsSetCard(0x3224) and c:IsType(TYPE_MONSTER)  and c:IsAbleToGrave()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g2=Duel.GetMatchingGroup(s.posfilter,tp,0,LOCATION_ONFIELD,e:GetHandler())
+	local g2=Duel.GetMatchingGroup(s.filter,tp,0,LOCATION_ONFIELD,e:GetHandler())
 	if chk==0 then return #g2>0 end
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g2,1,0,0)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.filter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	if #g==0 then return end
 	local tc=g:GetFirst() 
 	if tc:IsType(TYPE_MONSTER) then
-		Duel.ChangePosition(sg,POS_FACEDOWN_DEFENSE)
+		Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
 	else
 		tc:CancelToGrave()
 		Duel.ChangePosition(tc,POS_FACEDOWN)
@@ -113,7 +119,7 @@ end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sc=e:GetLabelObject()
-	local ld=math.abs(c:GetLevel()-sc:GetLevel())	 
+	local ld=math.abs(c:GetLevel()-sc:GetLevel())   
 	local mg=Group.FromCards(c,sc)
 	if ld<=3  and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)

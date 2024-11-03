@@ -95,7 +95,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.wcfilter(c)
-	return c:IsSetCard(0xc08) and not c:IsCode(id) and c:IsAbleToDeckAsCost()
+	return c:IsSetCard(0xc08) and not c:IsCode(id)
 end
 function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.wcfilter,tp,LOCATION_GRAVE,0,2,nil) end

@@ -40,7 +40,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3224) and c:GetLevel()>0
+	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_LIGHT) and c:GetLevel()>0
 end
 function s.lvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.filter(chkc) end
@@ -97,7 +97,7 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function s.thfilter(c)
-	return c:IsType(TYPE_SPELL) and c:IsSetCard(0x3224) and c:IsType(TYPE_RITUAL) and c:IsAbleToHand()
+	return c:IsType(TYPE_SPELL)  and c:IsType(TYPE_RITUAL) and c:IsAbleToHand()
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

@@ -4,7 +4,7 @@ local cm=c91020010
 function c91020010.initial_effect(c)
 --normal summon
 		c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsSetCard,0x9d1),3,true)
+	aux.AddFusionProcCodeFun(c,91020015,aux.FilterBoolFunction(Card.IsSetCard,0x9d1),2,true,true)
 	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_ONFIELD,0,Duel.Release,POS_FACEUP,REASON_COST)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -88,6 +88,9 @@ function cm.op6(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e2)
 end
 --Destroy
+function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
+end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)

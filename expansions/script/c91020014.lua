@@ -42,7 +42,7 @@ function c91020014.initial_effect(c)
 	e10:SetCondition(cm.spcon1)
 	e10:SetTarget(cm.sptg1)
 	e10:SetOperation(cm.spop1)
-	c:RegisterEffect(e10)
+
 end
 function cm.efilter(e,te)
 	return te:IsActiveType(TYPE_TRAP)

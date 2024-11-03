@@ -9,9 +9,6 @@ function c29098630.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,29098630+EFFECT_COUNT_CODE_OATH)
-	e1:SetTarget(c29098630.target)
-	e1:SetOperation(c29098630.activate)
 	c:RegisterEffect(e1)
 	--token
 	local e2=Effect.CreateEffect(c)
@@ -43,10 +40,6 @@ function c29098630.thfilter(c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 		and c:IsRace(RACE_FISH) and c:IsAbleToHand()
 end
-function c29098630.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29098630.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
 function c29098630.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c29098630.thfilter,tp,LOCATION_DECK,0,1,1,nil)
@@ -56,7 +49,7 @@ function c29098630.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c29098630.cfilter(c,tp)
-	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_EFFECT) and c:IsControler(tp)
+	return c:IsFaceup() and  c:IsType(TYPE_EFFECT) and c:IsControler(tp)
 end
 function c29098630.regcon(e,tp,eg,ep,ev,re,r,rp)
 	local sf=0
@@ -73,14 +66,16 @@ function c29098630.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(eg,EVENT_CUSTOM+29098630,e,r,rp,ep,e:GetLabel())
 end
 function c29098630.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	local tun=Duel.GetTurnCount()
+	if chk==0 then return Duel.GetFlagEffect(tp,29098630)<tun end
+	Duel.RegisterFlagEffect(tp,29098630,RESET_PHASE+PHASE_END,0,1)
 	Duel.SetTargetCard(eg)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c29098630.spop(e,tp,eg,ep,ev,re,r,rp)
 	if bit.extract(ev,tp)~=0 and Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,29010023,0,0x4011,1500,1500,1,RACE_AQUA,ATTRIBUTE_WATER,POS_FACEUP,1-tp) then
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,29010023,0,0x4011,1000,1000,1,RACE_AQUA,ATTRIBUTE_WATER,POS_FACEUP,1-tp) then
 		local token=Duel.CreateToken(tp,29098631)
 		if Duel.SpecialSummonStep(token,0,tp,1-tp,false,false,POS_FACEUP) then
 			token:RegisterFlagEffect(29098630,0,0,1)
@@ -92,7 +87,7 @@ function c29098630.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if bit.extract(ev,1-tp)~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE,1-tp)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,29010023,0,0x4011,1500,1500,1,RACE_AQUA,ATTRIBUTE_WATER,POS_FACEUP) then
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,29010023,0,0x4011,1000,1000,1,RACE_AQUA,ATTRIBUTE_WATER,POS_FACEUP) then
 		local token=Duel.CreateToken(1-tp,29098631)
 		if Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP) then
 			token:RegisterFlagEffect(29098630,0,0,1)
@@ -134,7 +129,7 @@ function c29098630.regop2(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_CHANGE_CODE)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CLIENT_HINT)
-	e2:SetValue(29010023)
+	e2:SetValue(29098631)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e2,true)
 	local tg=c:GetMaterial():Filter(c29098630.cfilter2,nil)

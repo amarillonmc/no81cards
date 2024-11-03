@@ -29,7 +29,11 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.drtg)
 	e1:SetOperation(cm.drop)
 	c:RegisterEffect(e1)
-	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,aux.FALSE)
+	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.descon2)
+end
+function cm.descon2(e,tp,eg,ep,ev,re,r,rp)
+ local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	return not (bit.band(loc,LOCATION_ONFIELD)~=0 and rp~=e:GetHandlerPlayer())
 end
 function cm.mfilter(c,xyzc)
 	return c:IsXyzType(TYPE_XYZ)
@@ -64,7 +68,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmCards(tp,g)
 	if g:IsExists(Card.IsCode,1,nil,ac) and Duel.IsExistingMatchingCard(cm.setfilter1,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-		local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.setfilter1),tp,LOCATION_GRAVE+LOCATION_MZONE,LOCATION_GRAVE+LOCATION_MZONE,1,1,nil):GetFirst()
+		local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.setfilter1),tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,1,nil):GetFirst()
 		if tc and Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -101,14 +105,9 @@ end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.NegateActivation(ev) or Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<3 then return end
 	Duel.BreakEffect()
+	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 	local lo=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
-	local lg=Group.CreateGroup()--lo:Filter(aux.dncheck,nil)
-	for tc in aux.Next(lo) do
-		local io2=lg:Filter(Card.IsCode,nil,tc:GetCode())
-		if #io2==0 then
-			lg:AddCard(tc)
-		end
-	end
+	local lg=lo:Filter(aux.dncheck,nil)
 	if lg:GetCount()>2 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 	getmetatable(e:GetHandler()).announce_filter={TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK,OPCODE_ISTYPE,OPCODE_NOT}

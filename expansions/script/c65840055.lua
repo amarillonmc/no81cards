@@ -2,6 +2,7 @@
 function c65840055.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,c65840055.matfilter,1,1)
+	aux.AddCodeList(c,65840000)
 	--连接召唤效果
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)

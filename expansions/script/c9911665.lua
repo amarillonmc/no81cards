@@ -16,7 +16,7 @@ function c9911665.initial_effect(c)
 	--negate
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(9911665,1))
-	e3:SetCategory(CATEGORY_NEGATE)
+	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_QUICK_F)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e3:SetCode(EVENT_CHAINING)
@@ -42,44 +42,47 @@ function c9911665.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c9911665.rmfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemove()
+	return c:IsSetCard(0x5957) and c:IsAbleToRemove()
 end
 function c9911665.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
-		and Duel.IsExistingTarget(c9911665.rmfilter,tp,LOCATION_GRAVE,0,1,nil) end
+		and Duel.IsExistingTarget(c9911665.rmfilter,tp,LOCATION_GRAVE,0,2,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g1=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g2=Duel.SelectTarget(tp,c9911665.rmfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	local g2=Duel.SelectTarget(tp,c9911665.rmfilter,tp,LOCATION_GRAVE,0,2,2,nil)
 	g1:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g1,2,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g1,3,0,0)
 end
 function c9911665.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if g:GetCount()>0 then
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-	end
+	if #g~=3 then return end
+	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 end
 function c9911665.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsChainNegatable(ev)
 end
 function c9911665.costfilter(c)
-	return c:IsSetCard(0x5957) and c:IsType(TYPE_MONSTER) and c:IsReleasable()
+	return c:IsSummonType(SUMMON_TYPE_NORMAL) and c:IsReleasable()
 end
 function c9911665.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c9911665.costfilter,1,REASON_COST,true,nil) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c9911665.costfilter,1,REASON_COST,false,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroupEx(tp,c9911665.costfilter,1,1,REASON_COST,true,nil)
+	local g=Duel.SelectReleaseGroupEx(tp,c9911665.costfilter,1,1,REASON_COST,false,nil)
 	Duel.Release(g,REASON_COST)
 end
 function c9911665.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+	end
 end
 function c9911665.disop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetCurrentChain()==ev+1 then
-		Duel.NegateActivation(ev)
+	if Duel.GetCurrentChain()~=ev+1 then return end
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end
 function c9911665.cfilter(c,tp)

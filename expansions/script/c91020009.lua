@@ -17,31 +17,18 @@ function c91020009.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_PIERCE)
 	c:RegisterEffect(e2)
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e5:SetCode(EVENT_DAMAGE_STEP_END)
-	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e5:SetCountLimit(1,m*2)
-	e5:SetTarget(cm.settg)
-	e5:SetOperation(cm.setop)
-	c:RegisterEffect(e5)
-			 
 end
-function cm.setfilter(c)
-	return c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSSetable() and c:IsSetCard(0x9d0)
+function cm.ft(c)
+return c:IsFaceup() and c:IsReleasable()
 end
-function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.setfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.setfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectTarget(tp,cm.setfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+local g=Duel.GetMatchingGroup(cm.ft,tp,LOCATION_ONFIELD,0,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.ft,tp,LOCATION_ONFIELD,0,2,e:GetHandler()) end
+	local rg=g:Select(tp,2,2,e:GetHandler())
+	Duel.Release(rg,REASON_COST)
 end
-function cm.setop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SSet(tp,tc)
-	end
+function cm.filter0(c)
+return c:IsFaceup()
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
@@ -89,22 +76,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetTarget(cm.tgtg)
 	e4:SetOperation(cm.tgop)
 	c:RegisterEffect(e4)
-end
-function cm.filter(c)
-	return (aux.IsCodeListed(c,10000000) or c:IsCode(79339613) or  c:IsCode(79868386) or  c:IsCode(85182315) )  and c:IsAbleToHand() 
-end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
-end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
 end
 function cm.actcon(e)
 	return Duel.GetAttacker()==e:GetHandler()

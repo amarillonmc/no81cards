@@ -1,5 +1,6 @@
 --空间穿梭者
 function c65840045.initial_effect(c)
+	aux.AddCodeList(c,65840000)
 	--自己特招
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

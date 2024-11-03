@@ -43,7 +43,7 @@ end
 
 --xyz
 function cm.relfilter(c)
-	return (c:IsSetCard(0xa327) or c:IsSetCard(0xc327)) and c:IsAbleToGrave()
+	return c:IsSetCard(0xc327) and c:IsAbleToGrave()
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
@@ -65,7 +65,7 @@ end
 
 
 function cm.thfilter(c)
-	return (c:IsSetCard(0xa327) or c:IsSetCard(0xc327) or c:IsCode(33201250)) and c:IsAbleToHand()
+	return (c:IsSetCard(0xa327) or c:IsCode(33201250)) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local fc=e:GetHandler():GetFlagEffect(m)

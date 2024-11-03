@@ -22,12 +22,13 @@ function c91020011.initial_effect(c)
 	--battle
 	local e14=Effect.CreateEffect(c)
 	e14:SetDescription(aux.Stringid(m,0))
-	e14:SetCategory(CATEGORY_DEFCHANGE)
+	e14:SetCategory(CATEGORY_ATKCHANGE)
+	e14:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e14:SetType(EFFECT_TYPE_QUICK_O)
 	e14:SetRange(LOCATION_MZONE)
 	e14:SetCode(EVENT_FREE_CHAIN)
 	e14:SetCountLimit(1,m*2)
-	e14:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e14:SetHintTiming(TIMING_DAMAGE_STEP,TIMING_DAMAGE_STEP+TIMINGS_CHECK_MONSTER)
 	e14:SetCost(cm.bacost)
 	e14:SetTarget(cm.batg)
 	e14:SetOperation(cm.baop)
@@ -90,10 +91,6 @@ function cm.batg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.baop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g1=Duel.GetMatchingGroup(Card.IsDefensePos,tp,0,LOCATION_MZONE,nil)
-	if g1:GetCount()>0 then
-		Duel.ChangePosition(g1,0,0,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,true)
-	end
 	local g2=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if  g2:GetCount()>0 and c:IsLocation(LOCATION_MZONE) then 
 		local tg,atk=g2:GetMaxGroup(Card.GetAttack)

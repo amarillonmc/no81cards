@@ -46,7 +46,7 @@ end
 function c28319111.activate(e,tp,eg,ep,ev,re,r,rp,op)
 	local g=Duel.GetMatchingGroup(c28319111.deckfilter,tp,LOCATION_DECK,0,nil)
 	local b1=true
-	local b2=g:CheckSubGroup(c28319111.fselect,3,3)
+	local b2=g:CheckSubGroup(c28319111.fselect,1,1)
 	local op=aux.SelectFromOptions(tp,
 		{b1,aux.Stringid(28319111,0)},
 		{b2,aux.Stringid(28319111,1)})
@@ -57,11 +57,11 @@ function c28319111.activate(e,tp,eg,ep,ev,re,r,rp,op)
 		end
 	elseif op==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sg=g:SelectSubGroup(tp,c28319111.fselect,false,3,3)
-		if Duel.SendtoGrave(sg,REASON_EFFECT)~=3 then return end
+		local sg=g:SelectSubGroup(tp,c28319111.fselect,false,1,3)
+		if Duel.SendtoGrave(sg,REASON_EFFECT)==0 then return end
 		Duel.BreakEffect()
 		Duel.Recover(tp,500,REASON_EFFECT)
-		if Duel.GetLP(tp)>10000 then
+		if Duel.GetLP(tp)>=10000 then
 			local tc=sg:Filter(Card.IsType,nil,TYPE_MONSTER):GetFirst()
 			local te=tc.recover_effect
 			if not te then return end

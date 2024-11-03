@@ -152,12 +152,12 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function s.filter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x3224) and c:IsAbleToGrave()
+	return  c:IsSetCard(0x3224) and c:IsAbleToGrave()
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sc=e:GetLabelObject()
-	local ld=math.abs(c:GetLevel()-sc:GetLevel())	
+	local ld=math.abs(c:GetLevel()-sc:GetLevel())   
 	local mg=Group.FromCards(c,sc)
 	local lv=1
 	if ld>0 then

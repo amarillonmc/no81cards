@@ -14,21 +14,21 @@ end
 function s.filter(c,e,tp)
 	local op=false
 	if c:IsLevel(12) then
-		op=Duel.IsExistingMatchingCard(s.thfilter2,tp,LOCATION_DECK,0,1,c,e,tp)
+		op=Duel.IsExistingMatchingCard(s.thfilter2,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,c,e,tp)
 	else
-		op=Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_DECK,0,1,c,e,tp,c:GetLevel())
+		op=Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,c,e,tp,c:GetLevel())
 	end
 	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave() and op
 end
-function s.filter2(c,e,tp,lv)	
-	return c:IsSetCard(0x3224) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(1) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(s.filter3,tp,LOCATION_DECK,0,1,c,c:GetLevel(),lv)
+function s.filter2(c,e,tp,lv)   
+	return c:IsSetCard(0x3224) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(1) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(s.filter3,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,c,c:GetLevel(),lv)
 end
 function s.filter3(c,lv1,lv2)
 	return c:IsSetCard(0x3224) and c:IsType(TYPE_MONSTER) and (c:IsLevel(lv1+lv2) or c:IsLevel(lv1-lv2) )  and c:IsAbleToHand() and c:IsLevelAbove(1)
 end 
 --
 function s.thfilter2(c,e,tp)
-	return c:IsSetCard(0x3224) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(1) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(s.thfilter3,tp,LOCATION_DECK,0,1,c,c:GetLevel())
+	return c:IsSetCard(0x3224) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(1) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(s.thfilter3,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,c,c:GetLevel())
 end
 function s.thfilter3(c,lv)
 	return c:IsSetCard(0x3224) and c:IsType(TYPE_MONSTER) and not c:IsLevel(lv)  and c:IsAbleToHand()
@@ -37,7 +37,7 @@ end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_HAND,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_REMOVED)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -56,9 +56,9 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.op1(e,tp,eg,ep,ev,re,r,rp,lv)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g1=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_DECK,0,1,1,nil,e,tp,lv)
+	local g1=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil,e,tp,lv)
 	local tc=g1:GetFirst()
-	local g2=Duel.SelectMatchingCard(tp,s.filter3,tp,LOCATION_DECK,0,1,1,tc,tc:GetLevel(),lv)
+	local g2=Duel.SelectMatchingCard(tp,s.filter3,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,tc,tc:GetLevel(),lv)
 	g1:Merge(g2)
 	Duel.SendtoHand(g1,nil,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,g1)
@@ -66,9 +66,9 @@ end
 
 function s.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g1=Duel.SelectMatchingCard(tp,s.thfilter2,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	local g1=Duel.SelectMatchingCard(tp,s.thfilter2,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil,e,tp)
 	local tc=g1:GetFirst()
-	local g2=Duel.SelectMatchingCard(tp,s.thfilter3,tp,LOCATION_DECK,0,1,1,tc,tc:GetLevel())
+	local g2=Duel.SelectMatchingCard(tp,s.thfilter3,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,tc,tc:GetLevel())
 	g1:Merge(g2)
 	Duel.SendtoHand(g1,nil,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,g1)

@@ -21,23 +21,20 @@ function s.tdfilter(c)
 	return c:IsFaceup() and c.VHisc_Mermaid and c:IsAbleToDeck()
 end
 function s.thfilter(c)
-	return c.VHisc_Mermaid and c:IsAbleToHand() and c:IsRace(RACE_AQUA)
+	return c:IsCode(33201154) and c:IsAbleToHand() 
 end
 function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_SZONE) and chkc:IsControler(tp) and s.tdfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(s.tdfilter,tp,LOCATION_SZONE,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,s.tdfilter,tp,LOCATION_SZONE,0,1,1,e:GetHandler())
-	g:AddCard(e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local tc=Duel.GetFirstTarget()
-	local tdg=Group.CreateGroup()
-	tdg:AddCard(tc)
-	tdg:AddCard(e:GetHandler())
-	if Duel.SendtoDeck(tdg,nil,2,REASON_EFFECT) and tdg:Filter(Card.IsLocation,nil,LOCATION_EXTRA+LOCATION_DECK):GetCount()==2 then
+	if Duel.SendtoDeck(tc,nil,2,REASON_EFFECT) then
 		if Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local g2=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)

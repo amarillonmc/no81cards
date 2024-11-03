@@ -39,7 +39,7 @@ function c91020012.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function cm.cfilter(c,tp)
-	return c:IsCode(10000010) and c:IsControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)
+	return c:IsCode(91020014) and c:IsControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler()) and eg:IsExists(cm.cfilter,1,nil,tp)

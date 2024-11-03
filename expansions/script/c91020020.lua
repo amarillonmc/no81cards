@@ -55,7 +55,15 @@ end
 --e2
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return  c:GetReasonCard():IsRace(RACE_DIVINE) and e:GetHandler():IsLocation(LOCATION_GRAVE)
+	return  c:GetReasonCard():IsRace(RACE_DIVINE) 
+end
+function cm.thfilter3(c)
+	return c:IsFaceup()  and c:IsReleasable()
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+ if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter3,tp,LOCATION_ONFIELD,0,1,nil) end
+ local g=Duel.SelectMatchingCard(tp,cm.thfilter3,tp,LOCATION_ONFIELD,0,1,1,nil)
+ Duel.Release(g,REASON_COST)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -67,6 +75,7 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
+	e4:SetCost(cm.cost)
 	e4:SetCondition(cm.spcon)
 	e4:SetTarget(cm.tgf)
 	e4:SetOperation(cm.opf)
@@ -82,10 +91,11 @@ function cm.thfilter1(c)
 end
 function cm.tgf(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter1,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,1-tp,0)
 end
 function cm.opf(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,cm.thfilter1,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
-	local atk=tc:GetAttack()
+	local atk=tc:GetAttack()*2
 	Duel.Recover(tp,atk,REASON_EFFECT)
 end
 --e1

@@ -60,7 +60,7 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp,c)
 		if tc:IsPreviousLocation(LOCATION_MZONE) then
 			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		end
-		Duel.RaiseEvent(tc,EVENT_CUSTOM+33201150,re,r,rp,ep,ev)
+		Duel.RaiseEvent(tc,EVENT_CUSTOM+33201150,nil,r,rp,ep,ev)
 	end
 end
 

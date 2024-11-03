@@ -39,7 +39,7 @@ function c28318460.thfilter(c)
 end
 function c28318460.activate(e,tp,eg,ep,ev,re,r,rp,op)
 	local b1=true
-	local b2=Duel.IsExistingMatchingCard(c28318460.thfilter,tp,LOCATION_DECK,0,1,nil)
+	local b2=Duel.IsExistingMatchingCard(c28318460.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
 	local op=aux.SelectFromOptions(tp,
 		{b1,aux.Stringid(28318460,0)},
 		{b2,aux.Stringid(28318460,1)})

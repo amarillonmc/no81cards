@@ -1,6 +1,7 @@
 --空间稳定装置
 function c65840015.initial_effect(c)
 	c:SetUniqueOnField(1,0,65840015)
+	aux.AddCodeList(c,65840000)
 	--Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)

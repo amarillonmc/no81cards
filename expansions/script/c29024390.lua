@@ -1,5 +1,6 @@
---深海歌者-斯卡蒂
+--深海歌者·斯卡蒂
 function c29024390.initial_effect(c)
+	aux.AddCodeList(c,22702055)
 	--activate
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(29024390,0))
@@ -59,12 +60,12 @@ function c29024390.filter(c,tp)
 	return (aux.IsCodeListed(c,22702055) or c:GetOriginalCode()==295517 or c:GetOriginalCode()==2819435 or c:GetOriginalCode()==26534688 or c:GetOriginalCode()==34103656) and c:IsType(TYPE_FIELD) and c:IsType(TYPE_SPELL) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
 function c29024390.actg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29024390.filter,tp,LOCATION_DECK,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c29024390.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
 end
 function c29024390.acop(e,tp,eg,ep,ev,re,r,rp)
 	local to=tp
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local tc=Duel.SelectMatchingCard(tp,c29024390.filter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c29024390.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
 	if tc then
 		sel=Duel.SelectOption(tp,aux.Stringid(29024390,2),aux.Stringid(29024390,3))
 		if sel==1 then to=1-tp end

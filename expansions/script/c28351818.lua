@@ -9,7 +9,7 @@ function c28351818.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(c28351818.recon)
+	--e1:SetCondition(c28351818.recon)
 	e1:SetTarget(c28351818.retg)
 	e1:SetOperation(c28351818.reop)
 	c:RegisterEffect(e1)
@@ -33,12 +33,12 @@ function c28351818.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
 function c28351818.cfilter(c,tp)
-	return c:IsAbleToHand() and c:IsLocation(LOCATION_GRAVE)
+	return c:IsAbleToHand() and c:IsLocation(LOCATION_GRAVE) and c:IsControler(tp)
 end
 function c28351818.reop(e,tp,eg,ep,ev,re,r,rp)
 	local mg=e:GetHandler():GetMaterial()
 	Duel.Recover(tp,1000,REASON_EFFECT)
-	if Duel.GetLP(tp)>=10000 and mg:IsExists(c28351818.cfilter,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(28351818,0)) then
+	if Duel.GetLP(tp)>=10000 and mg and mg:IsExists(c28351818.cfilter,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(28351818,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tg=mg:Filter(c28351818.cfilter,nil,tp):Select(tp,1,1,nil)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)

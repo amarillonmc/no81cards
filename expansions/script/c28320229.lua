@@ -34,10 +34,9 @@ function c28320229.initial_effect(c)
 	e4:SetDescription(aux.Stringid(28320229,0))
 	e4:SetCategory(CATEGORY_RECOVER+CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_CHAINING)
+	e4:SetCode(EVENT_RECOVER)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetRange(LOCATION_FZONE)
-	e4:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e4:SetCondition(c28320229.recon)
 	e4:SetTarget(c28320229.retg)
 	e4:SetOperation(c28320229.reop)
@@ -64,17 +63,17 @@ function c28320229.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ShuffleDeck(tp)
 	local og=Duel.GetOperatedGroup()
 	local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-	Duel.Recover(tp,ct*500,REASON_EFFECT)
+	Duel.Recover(tp,ct*800,REASON_EFFECT)
 end
 function c28320229.recon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:GetHandler():IsSetCard(0x287) and rp==tp
+	return ep==tp
 end
 function c28320229.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_HAND,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1500)
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,0,0,tp,1)
 end
 function c28320229.reop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Recover(tp,1000,REASON_EFFECT)
+	Duel.Recover(tp,1500,REASON_EFFECT)
 	Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT)
 end

@@ -52,7 +52,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	local oc=LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK
 	if Duel.GetTurnPlayer()~=e:GetHandlerPlayer() then
-		oc=QY_sk+QY_md
+		oc=QY_sk
 	end
 	local g=Duel.GetMatchingGroup(cm.filter2,tp,oc,0,nil)
 	local g2=Duel.GetMatchingGroup(cm.filter,tp,QY_gs,QY_gs,nil,e,g)
@@ -67,7 +67,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsCanBeDisabledByEffect(e) then
 		local oc=LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK
 		if Duel.GetTurnPlayer()~=e:GetHandlerPlayer() then
-			oc=QY_sk+QY_md
+			oc=QY_sk
 		end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local tcg=Duel.SelectMatchingCard(tp,cm.filter2,tp,oc,0,1,1,nil):GetFirst()

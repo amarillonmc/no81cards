@@ -44,7 +44,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.filter(c)
-	return c:IsFaceup() and c:IsLevelAbove(1)
+	return c:IsFaceup() and (c:IsLevelAbove(1) or c:IsRankAbove(1))
 end
 function s.tgfilter(c)
 	return c:IsSetCard(0x3224) and c:IsType(TYPE_MONSTER)  and c:IsAbleToGrave()
@@ -67,7 +67,12 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SendtoGrave(tg,REASON_EFFECT)>0 and tg:IsLocation(LOCATION_GRAVE)
 		and tc:IsFaceup() and tc:IsRelateToEffect(e) then
 		local sel=0
-		local lvl=tc:GetLevel()
+		local lvl=1
+		if tc:IsType(TYPE_XYZ) then
+			lvl=tc:GetRank()
+		else
+			lvl=tc:GetLevel()
+		end
 		local lv2=tg:GetLevel()
 		if lv2>=lvl then
 			sel=Duel.SelectOption(tp,aux.Stringid(id,1))
@@ -79,31 +84,43 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_LEVEL)
+		if tc:IsLevelAbove(1) then
+			e1:SetCode(EFFECT_UPDATE_LEVEL)
+		end
+		if tc:IsRankAbove(1) then
+			e1:SetCode(EFFECT_UPDATE_RANK)
+		end
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetValue(lv2)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-		if tc:GetLevel()==1 or tc:GetLevel()>=12 then
+		if (tc:GetLevel()==1 or tc:GetLevel()>=12) or (tc:GetRank()==1 or tc:GetRank()>=12) then
+			tc:RegisterFlagEffect(id,RESET_EVENT+RESET_PHASE+PHASE_END,0,2)
+			--Debug.Message(tc:GetCode)
+			--Debug.Message('已被封印')
 			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 			e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-			e1:SetRange(LOCATION_MZONE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
-			e1:SetValue(1)
-			tc:RegisterEffect(e1)
+			e1:SetTargetRange(0,1)
+			e1:SetReset(RESET_EVENT+RESET_PHASE+PHASE_END,2)
+			e1:SetValue(s.val)
+			Duel.RegisterEffect(e1,tp)
 			local e3=e1:Clone()
 			e3:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
-			tc:RegisterEffect(e3)
+			Duel.RegisterEffect(e3,tp)
 			local e4=e1:Clone()
 			e4:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
-			tc:RegisterEffect(e4)
+			Duel.RegisterEffect(e4,tp)
 			local e5=e1:Clone()
 			e5:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
-			tc:RegisterEffect(e5)
+			Duel.RegisterEffect(e5,tp)
 		end   
 	end
+end
+function s.val(e,re,tp)
+	return re:GetHandler():GetFlagEffect(id)>0
+		and re:GetHandlerPlayer():GetFlagEffectLabel(id)~=tp
 end
 --02
 function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
@@ -144,7 +161,7 @@ end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sc=e:GetLabelObject()
-	local ld=math.abs(c:GetLevel()-sc:GetLevel())	
+	local ld=math.abs(c:GetLevel()-sc:GetLevel())   
 	local mg=Group.FromCards(c,sc)
 	if ld<=3 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

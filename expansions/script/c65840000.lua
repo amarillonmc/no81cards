@@ -1,5 +1,6 @@
 --空间乱流
 function c65840000.initial_effect(c)
+	aux.AddCodeList(c,65840000)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DRAW)

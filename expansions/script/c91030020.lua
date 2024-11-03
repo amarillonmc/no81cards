@@ -20,7 +20,7 @@ function c91030020.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,91030020*2)
+	e2:SetCountLimit(1,91030020+100)
 	e2:SetCondition(c91030020.spcon2)
 	e2:SetTarget(c91030020.sptg2)
 	e2:SetOperation(c91030020.spop2)
@@ -36,7 +36,7 @@ end
 function c91030020.spop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c91030020.lfilter,tp,LOCATION_EXTRA,0,1,1,nil)
-	   Duel.LinkSummon(tp,g:GetFirst(),nil)
+		if #g>0 then Duel.LinkSummon(tp,g:GetFirst(),nil) end
 end
 function c91030020.cfilter(c,tp,rp)
 	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp) and bit.band(c:GetPreviousTypeOnField(),TYPE_LINK)~=0

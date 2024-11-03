@@ -40,7 +40,7 @@ function cm.tgfilter(c,tp)
 	return c:IsFaceup() and Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,c)
 end
 function cm.eqfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x9d3) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
+	return c:IsFaceup() and c:IsSetCard(0x9d3) and c:CheckUniqueOnField(tp) and not c:IsForbidden()and c:IsType(TYPE_MONSTER)
 end
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.tgfilter(chkc,tp) end

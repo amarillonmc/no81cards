@@ -52,25 +52,18 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
-function s.lv(c)
-	if c:IsType(TYPE_XYZ) then
-		return c:GetRank()
-	else
-		return c:GetLevel()
-	end
-end
 function s.con2(e,tp,eg,ep,ev,re,r,rp)
 	local ac=Duel.GetAttacker()
 	local bc=Duel.GetAttackTarget()
 	if not bc then return false end
 	if not ac:IsControler(tp) then ac,bc=bc,ac end
-	if ac:IsType(TYPE_LINK) or bc:IsType(TYPE_LINK) then return false end
-	local lv1,lv2=s.lv(ac),s.lv(bc)
+	--if ac:IsType(TYPE_LINK) or bc:IsType(TYPE_LINK) then return false end
+	local lv1,lv2=ac:GetLevel()|ac:GetRank()|ac:GetLink(),bc:GetLevel()|bc:GetRank()|bc:GetLink()
 	if lv1==lv2 then return false end
 	local ld=math.abs(lv1-lv2)  
 	e:SetLabelObject(ac)
-	e:SetLabel(ld)	
-	return ac:IsFaceup() and ac:IsControler(tp) and ac:IsSetCard(0x3224) and (ac:IsLevelAbove(1) or ac:IsRankAbove(1)) and bc:IsControler(1-tp) and (bc:IsLevelAbove(1) or bc:IsRankAbove(1))
+	e:SetLabel(ld)  
+	return ac:IsFaceup() and ac:IsControler(tp) and ac:IsAttribute(ATTRIBUTE_LIGHT) and (ac:IsLevelAbove(1) or ac:IsRankAbove(1)) and bc:IsControler(1-tp) and (bc:IsLevelAbove(1) or bc:IsRankAbove(1))
 end
 function s.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -92,7 +85,7 @@ function s.cfilter2(c)
 	return c:IsFaceup() and c:IsSetCard(0x3224) 
 end
 function s.cfilter3(c)
-	return c:IsLevelAbove(3)
+	return c:IsLevelBelow(3)
 end
 function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return  Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_MZONE,0,1,nil)

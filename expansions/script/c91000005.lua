@@ -3,7 +3,8 @@ local m=91000005
 local cm=c91000005
 function c91000005.initial_effect(c)
 	c:EnableReviveLimit()  
-	aux.AddFusionProcFunRep2(c,cm.fit0,1,99,false) 
+	aux.AddFusionProcFunRep2(c,cm.fit0,1,99,false)  
+	
 	--aux.AddFusionProcFunFunRep()
 	local e1=Effect.CreateEffect(c) 
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -49,7 +50,7 @@ function c91000005.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1)
+	e5:SetCountLimit(1,m*2)
 	e5:SetHintTiming(0,TIMING_DRAW_PHASE)
 	e5:SetTarget(cm.attg)
 	e5:SetOperation(cm.atop)

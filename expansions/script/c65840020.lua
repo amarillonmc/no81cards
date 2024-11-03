@@ -1,6 +1,7 @@
 --空间基地
 local s,id,o=GetID()
 function c65840020.initial_effect(c)
+	aux.AddCodeList(c,65840000)
 	--检索
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)

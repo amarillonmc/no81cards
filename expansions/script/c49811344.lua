@@ -50,7 +50,7 @@ function s.lsop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c)
-	return c:IsType(0x48020c0) and not c:IsType(e:GetLabel())
+	return not c:IsType(e:GetLabel())
 end
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)

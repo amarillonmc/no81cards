@@ -143,7 +143,7 @@ function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(c) and Duel.GetTurnPlayer()==tp
 end
 function cm.spfilter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) and c:IsRace(RACE_PSYCHO)
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

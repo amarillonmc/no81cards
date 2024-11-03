@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -29,71 +29,23 @@ end
 s.VHisc_Mermaid=true
 
 --e1
-function s.smfilter(c,e,tp)
-	return c.VHisc_Mermaid and c:IsType(TYPE_CONTINUOUS+TYPE_SPELL) and c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
-end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_SZONE) and chkc:IsControler(tp) and s.smfilter(chkc,e,tp) end
-	if chk==0 then return Mermaid_VHisc.fgck(e:GetHandler(),id) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and  Duel.IsExistingTarget(s.smfilter,tp,LOCATION_SZONE,0,1,e:GetHandler(),e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,s.smfilter,tp,LOCATION_SZONE,0,1,1,e:GetHandler(),e,tp)
+	if chk==0 then return Mermaid_VHisc.fgck(e:GetHandler(),id) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 	Mermaid_VHisc.flagc(e:GetHandler(),id)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,LOCATION_SZONE)
 end
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and e:GetHandler():IsRelateToEffect(e) then 
 		Mermaid_VHisc.sp(e:GetHandler(),tp)
-		if e:GetHandler():IsLocation(LOCATION_SZONE) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_MZONE,1,tc) and tc:IsAbleToRemove() and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local rc=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_MZONE,1,1,tc):GetFirst()
-			local g=Group.FromCards(rc,tc)
-			if Duel.Remove(g,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
-				local c=e:GetHandler()
-				local fid=c:GetFieldID()
-				local rct=1
-				if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_STANDBY then rct=2 end
-				local og=Duel.GetOperatedGroup()
-				local oc=og:GetFirst()
-				while oc do
-					oc:RegisterFlagEffect(id+20000,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,rct,fid)
-					oc=og:GetNext()
-				end
-				og:KeepAlive()
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-				e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-				e1:SetCode(EVENT_PHASE+PHASE_END)
-				e1:SetCountLimit(1)
-				e1:SetLabel(fid)
-				e1:SetLabelObject(og)
-				e1:SetCondition(s.retcon)
-				e1:SetOperation(s.retop)
-				e1:SetReset(RESET_PHASE+PHASE_END)
-				Duel.RegisterEffect(e1,tp)
-			end
-		end
 	end
-end
-function s.retfilter(c,fid)
-	return c:GetFlagEffectLabel(id+20000)==fid
-end
-function s.retcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetLabelObject()
-	if not g:IsExists(s.retfilter,1,nil,e:GetLabel()) then
-		g:DeleteGroup()
-		e:Reset()
-		return false
-	else return true end
-end
-function s.retop(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetLabelObject()
-	local sg=g:Filter(s.retfilter,nil,e:GetLabel())
-	g:DeleteGroup()
-	local tc=sg:GetFirst()
-	while tc do
-		Duel.ReturnToField(tc)
-		tc=sg:GetNext()
-	end
+	--atk up
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetTargetRange(LOCATION_MZONE,0)
+		e1:SetTarget(function(e,ac) return ac.VHisc_Mermaid end)
+		e1:SetValue(800)
+		e1:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e1,tp)
 end
 

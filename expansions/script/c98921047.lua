@@ -62,11 +62,11 @@ function c98921047.effcon(e)
 end
 function c98921047.effcon2(e)
 	local g=Duel.GetMatchingGroup(c98921047.confilter,e:GetHandlerPlayer(),LOCATION_GRAVE,0,nil)
-	return g:GetCount()>=2
+	return g:GetCount()>=3
 end
 function c98921047.effcon3(e)
 	local g=Duel.GetMatchingGroup(c98921047.confilter,e:GetHandlerPlayer(),LOCATION_GRAVE,0,nil)
-	return g:GetCount()>=3
+	return g:GetCount()>=5
 end
 function c98921047.atkval(e,c)
 	return Duel.GetMatchingGroup(Card.IsCode,e:GetHandlerPlayer(),LOCATION_GRAVE,0,nil,64382839):GetCount()*500

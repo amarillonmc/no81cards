@@ -46,20 +46,26 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.SelectYesNo(tp,aux.Stringid(id,4)) then
+	local op1,op2=true
+	if Duel.GetFieldGroupCount(tp,LOCATION_GRAVE+LOCATION_REMOVED,0)==0 then
+		op1=false 
+	end
+	if Duel.GetFieldGroupCount(1-tp,LOCATION_GRAVE+LOCATION_REMOVED,0)==0 then
+		op2=false 
+	end
+	if op1 and Duel.SelectYesNo(tp,aux.Stringid(id,4)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,2,nil)
-		if Duel.SelectYesNo(tp,aux.Stringid(id,5)) then
+		if op2 and Duel.SelectYesNo(tp,aux.Stringid(id,5)) then
 			local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,2,nil)
 			g:Merge(g2)
 		end 
+		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,2,nil)
-	end 
-	if g:GetCount()>0 then
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	end
+	end 
 end
 --02
 function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
@@ -100,7 +106,7 @@ end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sc=e:GetLabelObject()
-	local ld=math.abs(c:GetLevel()-sc:GetLevel())	
+	local ld=math.abs(c:GetLevel()-sc:GetLevel())   
 	local mg=Group.FromCards(c,sc)
 	local lv=1
 	if ld>0 then
