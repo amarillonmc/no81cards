@@ -39,7 +39,7 @@ end
 function c12877030.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectMatchingCard(tp,c12877030.rlfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler(),tp)
-	if Duel.Release(g,REASON_EFFECT)==0 then return end
+	if Duel.SendtoGrave(g,REASON_EFFECT+REASON_RELEASE)==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tc=Duel.SelectMatchingCard(tp,c12877030.thfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if tc then
