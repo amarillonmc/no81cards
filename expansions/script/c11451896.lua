@@ -80,7 +80,7 @@ end
 function cm.cclfilter(c,tc)
 	local seq1=aux.GetColumn(c)
 	local seq2=aux.GetColumn(tc)
-	return math.abs(seq1-seq2)==1
+	return seq1 and seq2 and math.abs(seq1-seq2)==1
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

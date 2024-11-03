@@ -113,7 +113,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local loc=c:GetLocation()
 	if loc&LOCATION_ONFIELD>0 then loc=LOCATION_ONFIELD end
-	return eg:IsExists(cm.spfilter,1,nil,loc) and not eg:IsContains(c)
+	return eg:IsExists(cm.spfilter,1,nil,loc) and (not eg:IsContains(c) or c:IsLocation(LOCATION_HAND))
 end
 function cm.spfilter(c,loc)
 	return c:IsLocation(loc) and not c:IsPreviousLocation(loc)

@@ -2,7 +2,8 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--SpSummon To SZone
-	local e1=Effect.CreateEffect(c) 
+	local e1=Effect.CreateEffect(c)
+    e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON) 
 	e1:SetType(EFFECT_TYPE_IGNITION) 
 	e1:SetRange(LOCATION_HAND)  
@@ -16,8 +17,7 @@ function s.initial_effect(c)
     e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_NEGATE+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)   
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1,id+1)
 	e2:SetCondition(s.cicon)
@@ -57,6 +57,9 @@ end
 function s.fi1ter(c)
 	return aux.NegateAnyFilter(c) and c:IsLocation(0x0c)
 end
+function s.fi2ter(c,e)
+	return c:IsRelateToEffect(e) and s.fi1ter(c)
+end
 function s.cicon(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
         or not re:GetHandler():IsSetCard(0x409) then return false end
@@ -81,7 +84,7 @@ function s.ciop(e,tp,eg,ep,ev,re,r,rp)
     if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then return end
 	local c=e:GetHandler() 
     local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	local tg=g:Filter(Card.IsRelateToEffect,c,e)
+	local tg=g:Filter(s.fi2ter,c,e)
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 and #tg>0 then 
 		local tc=tg:GetFirst()
         while tc do

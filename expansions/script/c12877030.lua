@@ -22,8 +22,14 @@ end
 function c12877030.thfilter(c)
 	return c:IsSetCard(0x9a7b) and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
 end
+function c12877030.rlfilter(c,tp)
+	local re=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
+	local val=nil
+	if re then val=re:GetValue() end
+	return c:IsReleasableByEffect() or (c:IsType(TYPE_SPELL+TYPE_TRAP) and (val==nil or val(re,c)~=true))
+end
 function c12877030.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c12877030.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsReleasableByEffect,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c12877030.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(c12877030.rlfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler(),tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
 end
@@ -32,7 +38,7 @@ function c12877030.pfilter(c,atk)
 end
 function c12877030.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsReleasableByEffect,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler())
+	local g=Duel.SelectMatchingCard(tp,c12877030.rlfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler(),tp)
 	if Duel.Release(g,REASON_EFFECT)==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tc=Duel.SelectMatchingCard(tp,c12877030.thfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
