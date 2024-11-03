@@ -11,6 +11,15 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.tg)
 	e1:SetOperation(cm.op)
 	c:RegisterEffect(e1)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_ACTIVATE_COST)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetLabelObject(e1)
+	e3:SetTargetRange(1,1)
+	e3:SetTarget(cm.actarget)
+	e3:SetOperation(cm.costop)
+	Duel.RegisterEffect(e3,0)
 	--change effect
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
@@ -26,14 +35,47 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then
-		if not (c:IsLocation(LOCATION_SZONE) and c:IsFacedown()) then return end
 		local ct=Duel.GetTurnCount()-c:GetTurnID()
+		if not (c:IsLocation(LOCATION_SZONE) and c:IsFacedown()) then ct=1 end
 		local eset={c:IsHasEffect(EFFECT_TRAP_ACT_IN_SET_TURN)}
 		return ct+#eset>1
 	end
+end
+function cm.actarget(e,te,tp)
+	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject()
+end
+function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local ct=Duel.GetTurnCount()-c:GetTurnID()
+	if not (c:IsLocation(LOCATION_SZONE) and c:IsFacedown()) then ct=1 end
 	local eset={c:IsHasEffect(EFFECT_TRAP_ACT_IN_SET_TURN)}
-	if ct<2 then eset[1]:UseCountLimit(tp,1) end
+	if ct==1 then
+		local tab=cm[flag]
+		local options={}
+		for _,te in ipairs(eset) do
+			table.insert(options,te:GetDescription())
+		end
+		local op=Duel.SelectOption(tp,table.unpack(options))
+		eset[op+1]:UseCountLimit(tp,1)
+	end
+	if ct==0 then
+		Debug.Message("请依次选择两个「在盖放的回合发动」效果。")
+		local tab=cm[flag]
+		local options={}
+		for _,te in ipairs(eset) do
+			table.insert(options,te:GetDescription())
+		end
+		local op=Duel.SelectOption(tp,table.unpack(options))
+		eset[op+1]:UseCountLimit(tp,1)
+		table.remove(eset,op+1)
+		options={}
+		for _,te in ipairs(eset) do
+			table.insert(options,te:GetDescription())
+		end
+		op=Duel.SelectOption(tp,table.unpack(options))
+		eset[op+1]:UseCountLimit(tp,1)
+		Debug.Message("选择完毕。")
+	end
 end
 function cm.filter(c)
 	return c:IsCode(m-5) and c:CheckActivateEffect(false,false,false)~=nil
