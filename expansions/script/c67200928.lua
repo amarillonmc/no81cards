@@ -23,6 +23,7 @@ function c67200928.initial_effect(c)
 	e2:SetCode(EVENT_TO_DECK)
 	e2:SetCountLimit(1,67200928)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCondition(c67200928.tecon)
 	e2:SetTarget(c67200928.tetg)
 	e2:SetOperation(c67200928.teop)
 	c:RegisterEffect(e2)	
@@ -44,6 +45,9 @@ function c67200928.negop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
+function c67200928.tecon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsFaceup()
+end
 function c67200928.filter(c)
 	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0xa67a) and not c:IsCode(67200928)
 end

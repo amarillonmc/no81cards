@@ -111,7 +111,7 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(sge5,0)
 		local sge6=sge4:Clone()
 		sge6:SetCode(EVENT_SPSUMMON_SUCCESS)
-		Duel.RegisterEffect(sge6,0)	   
+		Duel.RegisterEffect(sge6,0)	
 	end
 	local control_player=0
 	if _Duel.GetFieldGroupCount(1,LOCATION_DECK,0)>0 then control_player=1 end
@@ -400,6 +400,15 @@ function s.resetop(e,tp,eg,ep,ev,re,r,rp)
 	te:SetValue(val)
 	e:Reset()
 end
+function s.resetcard(c)
+	local ini=s.initial_effect
+	if c.initial_effect then
+		s.initial_effect=function() end
+		c:ReplaceEffect(id,0)
+		c.initial_effect(c)
+		s.initial_effect=ini
+	end
+end
 function s.menucon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	local bool=Duel.GetAttacker()==nil and ph==PHASE_BATTLE_STEP or ph==PHASE_MAIN1 or ph==PHASE_MAIN2
@@ -533,7 +542,7 @@ function s.movespop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsType,tp,0x73,0,c,TYPE_MONSTER)
 	local sg=g:Select(tp,0,99,nil)
 	--if #sg==0 then
-	--	sg=_Group.RandomSelect(g,tp,math.min(3,#g))
+	--  sg=_Group.RandomSelect(g,tp,math.min(3,#g))
 	--end
 	for tc in aux.Next(sg) do
 		local cardtype=tc:GetType()
@@ -614,7 +623,7 @@ end
 function s.printcard(e,tp)
 	local c=e:GetHandler()
 	local codetable={}
-	local ac=s.AnnounceCard(tp)
+	local ac=_Duel.AnnounceCard(tp)
 	table.insert(codetable,ac)
 	if KOISHI_CHECK and IO_CHECK and Duel.SelectYesNo(tp,aux.Stringid(id,15)) then
 		local luatable=s.get_lua_numbers("script")
@@ -688,11 +697,7 @@ function s.printcard(e,tp)
 				end
 				cm.initial_effect=addinit
 			end
-			local ini=s.initial_effect
-			s.initial_effect=function() end
-			tc:ReplaceEffect(id,0)
-			s.initial_effect=ini
-			tc.initial_effect(tc)
+			s.resetcard(tc)
 		end
 	end
 	Duel.ShuffleHand(tp)
@@ -1186,7 +1191,7 @@ function s.mindcontrol(e,tp)
 			local dg=Duel.SelectMatchingCard(tp,f,sp,LOCATION_HAND,0,min,max,nc,...)
 			return Duel.SendtoGrave(dg,r)
 		end
-		function Duel.RemoveOverlayCard(sp,...) return _Duel.DRemoveOverlayCard(tp,...) end
+		function Duel.RemoveOverlayCard(sp,...) return _Duel.RemoveOverlayCard(tp,...) end
 		function Duel.SelectMatchingCard(sp,f,p,sl,ol,max,min,ex,...)
 			local sg=Duel.GetMatchingGroup(f,p,sl,ol,ex,...)
 			Duel.ConfirmCards(tp,sg:Filter(s.confirmfilter,nil,tp))
@@ -1222,11 +1227,11 @@ function s.mindcontrol(e,tp)
 				return _Duel.SelectDisableField(tp,count,ol,sl,filter)
 			end
 		end
-		function Duel.SelectField(p,count,sl,ol,filter)
+		function Duel.SelectField(p,count,sl,ol,filter,...)
 			if tp==p then
-				return _Duel.SelectField(tp,count,sl,ol,filter)
+				return _Duel.SelectField(tp,count,sl,ol,filter,...)
 			else
-				return _Duel.SelectField(tp,count,ol,sl,filter)
+				return _Duel.SelectField(tp,count,ol,sl,filter,...)
 			end
 		end
 
@@ -1318,7 +1323,7 @@ function s.mindcontrol(e,tp)
 		ge4:SetTargetRange(0,LOCATION_HAND)
 		ge4:SetLabelObject(e4)
 		Duel.RegisterEffect(ge4,tp)
-
+		s.mindplayer=tp
 		s.controltable={sge,ge0,ge1,ge2,ge3,ge4}
 		if not KOISHI_CHECK then return end
 		local g=Duel.GetFieldGroup(0,0x7f,0x7f)
@@ -1354,15 +1359,7 @@ function s.mindcontrol(e,tp)
 				end
 				cm.initial_effect=addinit
 			end
-			local ini=s.initial_effect
-			s.initial_effect=function() end
-			for tc in aux.Next(g) do
-				if tc.initial_effect then
-					tc:ReplaceEffect(id,0)
-					tc.initial_effect(tc)
-				end
-			end
-			s.initial_effect=ini
+			s.resetcard(tc)
 		end
 	else
 		Debug.Message("骇入结束")
@@ -1460,46 +1457,44 @@ function s.sumactivate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local s1=c:IsSummonable(false,nil)
 	local s2=c:IsMSetable(false,nil)
-	if (s1 and s2 and Duel.SelectPosition(1-tp,c,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or (s1 and not s2) then
-		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOZONE)
-		local zone=Duel.SelectField(1-tp,1,LOCATION_MZONE,LOCATION_MZONE,~s.sumzone(c,1-tp))
+	if (s1 and s2 and _Duel.SelectPosition(s.mindplayer,c,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or (s1 and not s2) then
+		local zone=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~s.sumzone(c,1-tp),c:GetOriginalCode())
 		if zone<0x10000 then
-			Duel.Summon(tp,c,false,nil,0,zone)
+			Duel.Summon(1-s.mindplayer,c,false,nil,0,zone)
 		else
-			Duel.Summon(tp,c,false,nil,0,zone/0x10000)
+			Duel.Summon(1-s.mindplayer,c,false,nil,0,zone/0x10000)
 		end
 	elseif s2 then
-		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOZONE)
-		local zone=Duel.SelectField(1-tp,1,LOCATION_MZONE,LOCATION_MZONE,~s.sumzone(c,1-tp))
+		local zone=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~s.sumzone(c,1-tp),c:GetOriginalCode())
 		if zone<0x10000 then
-			Duel.MSet(tp,c,false,nil,0,zone)
+			Duel.MSet(1-s.mindplayer,c,false,nil,0,zone)
 		else
-			Duel.MSet(tp,c,false,nil,0,zone/0x10000)
+			Duel.MSet(1-s.mindplayer,c,false,nil,0,zone/0x10000)
 		end
 	end
-end
-function s.sptarget(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsSpecialSummonable() or c:IsSynchroSummonable(nil) or c:IsXyzSummonable(nil) or c:IsLinkSummonable(nil) end
 end
 function s.spscon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return s.Control_Mode and tp~=e:GetHandler():GetOwner() and (c:IsSpecialSummonable() or c:IsSynchroSummonable(nil) or c:IsXyzSummonable(nil) or c:IsLinkSummonable(nil))
+	return s.Control_Mode and tp~=e:GetHandler():GetOwner() and c:IsSpecialSummonable()
+end
+function s.sptarget(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsSpecialSummonable() end
 end
 function s.spactivate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local s1=c:IsSpecialSummonable()	
-	local s2=c:IsSynchroSummonable(nil)
-	local s3=c:IsXyzSummonable(nil)
-	local s4=c:IsLinkSummonable(nil)
+	if not c:IsSpecialSummonable() then return end
+	local s1=c:IsSpecialSummonable(SUMMON_TYPE_FUSION)
+	local s2=c:IsSpecialSummonable(SUMMON_TYPE_SYNCHRO)
+	local s3=c:IsSpecialSummonable(SUMMON_TYPE_XYZ)
+	local s4=c:IsSpecialSummonable(SUMMON_TYPE_LINK)
 	local op=0
-	if s1 and not s2 and not s3 and not s4 then
-		op=1
-	else
-		op=aux.SelectFromOptions(tp,{s2,1164},{s3,1165},{s4,1166})+1
+	if s1 or s2 or s3 or s4 then
+		op=aux.SelectFromOptions(s.mindplayer,{s1,1169},{s2,1164},{s3,1165},{s4,1166})
 	end
-	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOZONE)
-	local zone=Duel.SelectField(1-tp,1,LOCATION_MZONE,LOCATION_MZONE,~s.spsumzone(c,1-tp))
+	local zoneable=s.spsumzone(c,1-tp)
+	if zoneable==0 then return end
+	local zone=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~zoneable,c:GetOriginalCode())
 	--zone limit
 	local e1=Effect.GlobalEffect()
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -1507,15 +1502,17 @@ function s.spactivate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(1,1)
 	e1:SetValue(zone)
-	Duel.RegisterEffect(e1,0)
-	if op==1 then
-		Duel.SpecialSummonRule(tp,c)
+	Duel.RegisterEffect(e1,s.mindplayer)
+	if op==0 then
+		Duel.SpecialSummonRule(1-s.mindplayer,c,0)
+	elseif op==1 then
+		Duel.SpecialSummonRule(1-s.mindplayer,c,SUMMON_TYPE_FUSION)
 	elseif op==2 then
-		Duel.SynchroSummon(tp,c,nil)
+		Duel.SpecialSummonRule(1-s.mindplayer,c,SUMMON_TYPE_SYNCHRO)
 	elseif op==3 then
-		Duel.XyzSummon(tp,c,nil)
+		Duel.SpecialSummonRule(1-s.mindplayer,c,SUMMON_TYPE_XYZ)
 	elseif op==4 then
-		Duel.LinkSummon(tp,c,nil)
+		Duel.SpecialSummonRule(1-s.mindplayer,c,SUMMON_TYPE_LINK)
 	end
 	e1:Reset()
 end
@@ -1914,21 +1911,13 @@ function s.wildop()
 			s.SetCountLimit(e,1,EFFECT_COUNT_CODE_CHAIN)
 		end
 		for tc in aux.Next(g) do
-			local ini=s.initial_effect
-			s.initial_effect=function() end
-			tc:ReplaceEffect(id,0)
-			s.initial_effect=ini
-			if tc.initial_effect then tc.initial_effect(tc) end
+			s.resetcard(tc)
 		end
 		Effect.SetCountLimit=s.SetCountLimit
 	else
 		Debug.Message("歼灭模式 关")
 		for tc in aux.Next(g) do
-			local ini=s.initial_effect
-			s.initial_effect=function() end
-			tc:ReplaceEffect(id,0)
-			s.initial_effect=ini
-			if tc.initial_effect then tc.initial_effect(tc) end
+			s.resetcard(tc)
 		end
 	end
 end
