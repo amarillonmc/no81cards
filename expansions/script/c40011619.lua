@@ -33,6 +33,7 @@ function cm.spcfilter(c)
 end
 function cm.spccon(e,c)
 	if c==nil then return true end
+	local tp=c:GetControler()
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and (Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 or not Duel.IsExistingMatchingCard(cm.spcfilter,tp,LOCATION_MZONE,0,1,nil))
 end

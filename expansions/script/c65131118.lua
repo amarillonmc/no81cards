@@ -38,11 +38,11 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	while tc do
 		Duel.RegisterFlagEffect(tc:GetControler(),id,nil,0,1)
 		tc=eg:GetNext()
-	end 
-	Duel.GetFieldGroup(0,0xff,0xff):Filter(s.checkfilter,nil):ForEach(s.hintop)
-end
-function s.hintop(c)
-	c:SetHint(CHINT_NUMBER,Duel.GetFlagEffect(c:GetControler(),id))
+	end
+	local g=Duel.GetFieldGroup(0,0xff,0xff):Filter(s.checkfilter,nil)
+	for tc in aux.Next(g) do
+		tc:SetHint(CHINT_NUMBER,Duel.GetFlagEffect(c:GetControler(),id))
+	end
 end
 function s.filter(c,dam)
 	return c:IsFaceup() and c:IsAttackBelow(dam)

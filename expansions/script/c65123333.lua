@@ -3,6 +3,16 @@ local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
 local IO_CHECK=false
 if io then IO_CHECK=true end
+local tableclone=function(tab,mytab)
+	local res=mytab or {}
+	for i,v in pairs(tab) do res[i]=v end
+	return res
+end
+local _Card=tableclone(Card)
+local _Duel=tableclone(Duel)
+local _Effect=tableclone(Effect)
+local _Group=tableclone(Group)
+local _Debug=tableclone(Debug)
 function s.initial_effect(c)
 	if not s.globle_check then
 		s.autodata={
@@ -101,88 +111,51 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(sge5,0)
 		local sge6=sge4:Clone()
 		sge6:SetCode(EVENT_SPSUMMON_SUCCESS)
-		Duel.RegisterEffect(sge6,0)
-
-		s.RandomSelect=Group.RandomSelect
-		s.TossCoin=Duel.TossCoin
-		s.TossDice=Duel.TossDice
-
-		s.Select=Group.Select
-		s.FilterSelect=Group.FilterSelect
-		s.SelectUnselect=Group.SelectUnselect
-		s.CRemoveOverlayCard=Card.RemoveOverlayCard
-		s.SelectMatchingCard=Duel.SelectMatchingCard
-		s.SelectReleaseGroup=Duel.SelectReleaseGroup
-		s.SelectReleaseGroupEx=Duel.SelectReleaseGroupEx
-		s.SelectTarget=Duel.SelectTarget
-		s.SelectTribute=Duel.SelectTribute
-		s.DiscardHand=Duel.DiscardHand
-		s.DRemoveOverlayCard=Duel.RemoveOverlayCard
-		s.SelectFusionMaterial=Duel.SelectFusionMaterial
-
-		s.SpecialSummon=Duel.SpecialSummon
-		s.SpecialSummonStep=Duel.SpecialSummonStep
-		s.MoveToField=Duel.MoveToField
-		s.SSet=Duel.SSet
-		s.GetControl=Duel.GetControl
-		s.SelectDisableField=Duel.SelectDisableField
-		s.SelectField=Duel.SelectField
-
-		s.SelectEffectYesNo=Duel.SelectEffectYesNo
-		s.SelectYesNo=Duel.SelectYesNo
-		s.SelectOption=Duel.SelectOption
-		s.SelectPosition=Duel.SelectPosition
-		
-		s.AnnounceCoin=Duel.AnnounceCoin
-		s.AnnounceCard=Duel.AnnounceCard
-		s.AnnounceNumber=Duel.AnnounceNumber
-
-		s.ConfirmCards=Duel.ConfirmCards
-		s.Hint=Duel.Hint	 
+		Duel.RegisterEffect(sge6,0)	   
 	end
 	local control_player=0
-	if Duel.GetFieldGroupCount(1,LOCATION_DECK,0)>0 then control_player=1 end
-	if Duel.GetMatchingGroupCount(s.cfilter,control_player,LOCATION_EXTRA,0,nil,id)==1 then
+	if _Duel.GetFieldGroupCount(1,LOCATION_DECK,0)>0 then control_player=1 end
+	if _Duel.GetMatchingGroupCount(s.cfilter,control_player,LOCATION_EXTRA,0,nil,id)==1 then
 		s.Wild_Mode=true
-		local _cRegisterEffect=Card.RegisterEffect
-		function Card.RegisterEffect(ec,e,bool)
-			if s.cfilter(ec) then
-				return _cRegisterEffect(ec,e,bool)
-			else
-				local ge0=Effect.CreateEffect(ec)
-				ge0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-				ge0:SetCode(EVENT_DRAW)
-				ge0:SetOperation(s.changecardcode)
-				return _cRegisterEffect(ec,ge0,true)
+		if KOISHI_CHECK then
+			function Card.RegisterEffect(ec,e,bool)
+				if s.cfilter(ec) then
+					return _cRegisterEffect(ec,e,bool)
+				else
+					local ge0=Effect.CreateEffect(ec)
+					ge0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+					ge0:SetCode(EVENT_DRAW)
+					ge0:SetOperation(s.changecardcode)
+					return _Card.RegisterEffect(ec,ge0,true)
+				end
 			end
+			local dg=_Duel.GetFieldGroup(control_player,0,LOCATION_DECK)
+			for tc in aux.Next(dg) do
+				_Card.RegisterEffect(tc)
+			end
+			local ge0=Effect.GlobalEffect()
+			ge0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+			ge0:SetCode(EVENT_DRAW)
+			ge0:SetOperation(s.changecardcode)
+			local ge1=Effect.GlobalEffect()
+			ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+			ge1:SetTargetRange(0,LOCATION_DECK+LOCATION_HAND)
+			ge1:SetLabelObject(ge0)
+			_Duel.RegisterEffect(ge1,control_player)
 		end
-		local dg=Duel.GetFieldGroup(control_player,0,LOCATION_DECK)
-		for tc in aux.Next(dg) do
-			Card.RegisterEffect(tc)
-		end
-		local ge0=Effect.GlobalEffect()
-		ge0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		ge0:SetCode(EVENT_DRAW)
-		ge0:SetOperation(s.changecardcode)
-		local ge1=Effect.GlobalEffect()
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-		ge1:SetTargetRange(0,LOCATION_DECK+LOCATION_HAND)
-		ge1:SetLabelObject(ge0)
-		Duel.RegisterEffect(ge1,control_player)
 	end
-	if Duel.GetMatchingGroupCount(s.cfilter,control_player,0x7f,0,nil,id)==2 and KOISHI_CHECK then
-		Duel.DisableActionCheck(true)
-		Debug.SetPlayerInfo(control_player,8000,0,1)
-		Debug.SetPlayerInfo(1-control_player,0,0,1)
+	if _Duel.GetMatchingGroupCount(s.cfilter,control_player,0x7f,0,nil,id)==2 and KOISHI_CHECK then
+		_Duel.DisableActionCheck(true)
+		_Debug.SetPlayerInfo(control_player,8000,0,1)
+		_Debug.SetPlayerInfo(1-control_player,0,0,1)
 		if Duel.GetLP(1-control_player)>0 then
 			--local sl = coroutine.create(Duel.SetLP)
 			--coroutine.resume(sl,1-control_player,0)
 			pcall(Duel.SetLP,1-control_player,0)
 		end
-		local _dRegisterEffect=Duel.RegisterEffect
 		function Duel.RegisterEffect(re,rp)
 			if re:GetCode()==37564153 then return end
-			_dRegisterEffect(re,rp)
+			_Duel.RegisterEffect(re,rp)
 		end
 		--local movet = coroutine.create(Duel.MoveTurnCount)
 		--coroutine.resume(movet)
@@ -194,19 +167,19 @@ function s.initial_effect(c)
 		--coroutine.resume(pl,1-control_player,2147483647,true)
 		--local dam = coroutine.create(Duel.Damage)
 		--coroutine.resume(dam,1-control_player,2147483647,REASON_RULE)
-		pcall(Duel.MoveTurnCount)
-		pcall(Duel.MoveToField,c,control_player,control_player,LOCATION_MZONE,POS_FACEUP_ATTACK,true,0x20)
+		pcall(_Duel.MoveTurnCount)
+		pcall(_Duel.MoveToField,c,control_player,control_player,LOCATION_MZONE,POS_FACEUP_ATTACK,true,0x20)
 		local atke=Effect.CreateEffect(c)
 		atke:SetType(EFFECT_TYPE_SINGLE)
 		atke:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 		atke:SetCode(EFFECT_SET_BATTLE_ATTACK)
 		atke:SetValue(2147483647)
-		c:RegisterEffect(atke,true)
+		_Card.RegisterEffect(c,atke,true)
 		local atke2=Effect.CreateEffect(c)
 		atke2:SetType(EFFECT_TYPE_SINGLE)
 		atke2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 		atke2:SetCode(EFFECT_MATCH_KILL)
-		c:RegisterEffect(atke2,true)
+		_Card.RegisterEffect(c,atke2,true)
 		--local cd = coroutine.create(Duel.CalculateDamage)
 		--coroutine.resume(cd,c,nil)
 		--local dr1 = coroutine.create(Duel.Draw)
@@ -220,11 +193,11 @@ function s.initial_effect(c)
 		else			
 
 		end
-		pcall(Duel.CalculateDamage,c,nil)
+		pcall(_Duel.CalculateDamage,c,nil)
 		pcall(dr1,control_player,5,REASON_RULE)
 		pcall(dr1,1-control_player,2147483647,REASON_RULE)
 		--Debug.AddCard(id+2,1-control_player,1-control_player,LOCATION_DECK,1,POS_FACEDOWN)
-		Duel.DisableActionCheck(false)
+		_Duel.DisableActionCheck(false)
 	end
 end
 function s.Administrator(number)
@@ -232,8 +205,8 @@ function s.Administrator(number)
 	for i=1,number do
 		result=result..tostring(i%10)
 	end
-	Debug.Message("Messages:"..number)
-	Debug.ShowHint(result)
+	_Debug.Message("Messages:"..number)
+	_Debug.ShowHint(result)
 end
 function s.changecardcode(e,tp)
 	local cardtable={27520594,95511642,22916281,58400390,4392470,62514770,46986414,89631139}
@@ -438,7 +411,7 @@ function s.menuop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	while page~=0 do
 		if page==1 then
 			local desc=s.Cheating_Mode and 4 or 3
-			ot=s.SelectOption(tp,aux.Stringid(id,0),aux.Stringid(id,1),aux.Stringid(id,2),aux.Stringid(id,desc),1345)
+			ot=_Duel.SelectOption(tp,aux.Stringid(id,0),aux.Stringid(id,1),aux.Stringid(id,2),aux.Stringid(id,desc),1345)
 			if ot==0 then
 				s.movecard(e,tp)
 				page=0
@@ -457,7 +430,7 @@ function s.menuop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 		elseif page==2 then
 			local desc1=s.Hint_Mode and 6 or 5
 			local desc2=s.Control_Mode and 9 or 8
-			ot=s.SelectOption(tp,1360,aux.Stringid(id,desc1),aux.Stringid(id,7),aux.Stringid(id,desc2),1345)
+			ot=_Duel.SelectOption(tp,1360,aux.Stringid(id,desc1),aux.Stringid(id,7),aux.Stringid(id,desc2),1345)
 			if ot==0 then
 				page=page-1
 			elseif ot==1 then
@@ -476,7 +449,7 @@ function s.menuop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 			local desc1=s.Wild_Mode and 11 or 10
 			local desc2=s.Random_Mode and 13 or 12
 			local desc3=s.Theworld_Mode and 10 or 9
-			ot=s.SelectOption(tp,1360,aux.Stringid(id,desc1),aux.Stringid(id,desc2),aux.Stringid(id,14),1212)
+			ot=_Duel.SelectOption(tp,1360,aux.Stringid(id,desc1),aux.Stringid(id,desc2),aux.Stringid(id,14),1212)
 			if ot==0 then
 				page=page-1
 			elseif ot==1 then
@@ -527,7 +500,7 @@ function s.mvop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.movecard(e,tp)
 	local c=e:GetHandler()
-	local ot=s.SelectOption(tp,1152,1190,1191,1192,1105)
+	local ot=_Duel.SelectOption(tp,1152,1190,1191,1192,1105)
 	if ot==0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -559,9 +532,9 @@ function s.movespop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsType,tp,0x73,0,c,TYPE_MONSTER)
 	local sg=g:Select(tp,0,99,nil)
-	if #sg==0 then
-		sg=s.RandomSelect(g,tp,math.min(3,#g))
-	end
+	--if #sg==0 then
+	--	sg=_Group.RandomSelect(g,tp,math.min(3,#g))
+	--end
 	for tc in aux.Next(sg) do
 		local cardtype=tc:GetType()
 		local sumtype=0
@@ -751,7 +724,7 @@ function s.setcard(e,tp)
 	local p=tp
 	if flag&0x600060~=0 then
 		flag=flag>>16
-		if s.SelectOption(tp,aux.Stringid(id+1,1),aux.Stringid(id+1,2))==0 then
+		if _Duel.SelectOption(tp,aux.Stringid(id+1,1),aux.Stringid(id+1,2))==0 then
 			flag=flag==2^5 and flag<<1 or flag>>1
 		else
 			p=1-tp
@@ -766,7 +739,7 @@ function s.setcard(e,tp)
 			e1:SetCode(EFFECT_SET_CONTROL)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 			e1:SetValue(p)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 			mc:RegisterEffect(e1,true)
 		end
 	else		
@@ -785,7 +758,7 @@ function s.setcard(e,tp)
 		end
 		local mc=mg:Select(tp,1,1,nil):GetFirst()
 		if flag>0x7f then
-			if mc:IsType(TYPE_PENDULUM) and (flag==0x100 or flag==0x1000) and s.SelectOption(tp,1003,1009)==1 then
+			if mc:IsType(TYPE_PENDULUM) and (flag==0x100 or flag==0x1000) and _Duel.SelectOption(tp,1003,1009)==1 then
 				Duel.MoveToField(mc,tp,p,LOCATION_PZONE,POS_FACEUP,true)
 			else
 				local pos=Duel.SelectPosition(tp,mc,0x3)
@@ -808,7 +781,7 @@ function s.setcard(e,tp)
 					e1:SetCode(EFFECT_SET_CONTROL)
 					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 					e1:SetValue(p)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 					mc:RegisterEffect(e1,true)
 				end
 			end
@@ -1028,7 +1001,7 @@ function s.hintcon(e,tp,eg,ep,ev,re,r,rp)
 	return s.Hint_Mode
 end
 function s.hintop(e,tp,eg,ep,ev,re,r,rp)
-	local str="这个效果可以被 "
+	local str=""
 	if Duel.IsChainDisablable(ev) then
 		local ex2,g2,gc2,dp2,dv2=Duel.GetOperationInfo(ev,CATEGORY_SPECIAL_SUMMON)
 		local ex3,g3,gc3,dp3,dv3=Duel.GetOperationInfo(ev,CATEGORY_TOGRAVE)
@@ -1063,7 +1036,11 @@ function s.hintop(e,tp,eg,ep,ev,re,r,rp)
 			str=str.."伤害杂耍人 "
 		end
 	end
-	Debug.Message(str.."对应")
+	if str=="" then
+		--Debug.Message("")
+	else
+		Debug.Message("这个效果可以被 "..str.."对应")
+	end
 end
 function s.saveop(e,tp,eg,ep,ev,re,r,rp)	
 	s.autodata=s.save()
@@ -1073,7 +1050,7 @@ end
 function s.loadmenu(e,tp)
 	local c=e:GetHandler()
 	local decs=s.manualdata.turn==0 and 7 or 6
-	local ot=s.SelectOption(tp,aux.Stringid(id+1,8),aux.Stringid(id+1,5),aux.Stringid(id+1,decs),1212)
+	local ot=_Duel.SelectOption(tp,aux.Stringid(id+1,8),aux.Stringid(id+1,5),aux.Stringid(id+1,decs),1212)
 	if ot==0 then
 		s.loadcard(c,s.autodata)
 	elseif ot==1 then   
@@ -1172,7 +1149,7 @@ function s.loadcard(c,data)
 						e1:SetCode(EFFECT_SET_CONTROL)
 						e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 						e1:SetValue(p)
-						e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+						e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 						tc:RegisterEffect(e1,true)
 					end
 					for _,counter in ipairs(cdata.counter) do
@@ -1194,34 +1171,34 @@ function s.mindcontrol(e,tp)
 	s.Control_Mode=not s.Control_Mode
 	if s.Control_Mode then
 		Debug.Message("骇入开始")
-		function Group.Select(g,sp,min,max,nc) Duel.ConfirmCards(tp,g:Filter(s.confirmfilter,nil,tp)) return s.Select(g,tp,min,max,nc) end
-		function Group.FilterSelect(g,sp,...) Duel.ConfirmCards(tp,g:Filter(s.confirmfilter,nil,tp)) return s.FilterSelect(g,tp,...) end
-		function Group.SelectUnselect(cg,sg,sp,...) Duel.ConfirmCards(tp,cg:Filter(s.confirmfilter,nil,tp)) return s.SelectUnselect(cg,sg,tp,...) end
-		function Card.RemoveOverlayCard(oc,sp,...) return s.CRemoveOverlayCard(oc,tp,...) end
-		function Duel.SelectFusionMaterial(sp,c,g,...) Duel.ConfirmCards(tp,g:Filter(s.confirmfilter,nil,tp)) return s.SelectFusionMaterial(tp,c,g,...) end
+		function Group.Select(g,sp,min,max,nc) Duel.ConfirmCards(tp,g:Filter(s.confirmfilter,nil,tp)) return _Group.Select(g,tp,min,max,nc) end
+		function Group.FilterSelect(g,sp,...) Duel.ConfirmCards(tp,g:Filter(s.confirmfilter,nil,tp)) return _Group.FilterSelect(g,tp,...) end
+		function Group.SelectUnselect(cg,sg,sp,...) Duel.ConfirmCards(tp,cg:Filter(s.confirmfilter,nil,tp)) return _Group.SelectUnselect(cg,sg,tp,...) end
+		function Card.RemoveOverlayCard(oc,sp,...) return _Card.RemoveOverlayCard(oc,tp,...) end
+		function Duel.SelectFusionMaterial(sp,c,g,...) Duel.ConfirmCards(tp,g:Filter(s.confirmfilter,nil,tp)) return _Duel.SelectFusionMaterial(tp,c,g,...) end
 		function Duel.SelectTarget(sp,f,p,sl,ol,max,min,ex,...)
 			local sg=Duel.GetMatchingGroup(f,p,sl,ol,ex,...)
 			Duel.ConfirmCards(tp,sg:Filter(s.confirmfilter,nil,tp))
-			return s.SelectTarget(tp,f,p,sl,ol,max,min,ex,...)
+			return _Duel.SelectTarget(tp,f,p,sl,ol,max,min,ex,...)
 		end
-		function Duel.SelectTribute(sp,...) return s.SelectTribute(tp,...)end
+		function Duel.SelectTribute(sp,...) return _Duel.SelectTribute(tp,...)end
 		function Duel.DiscardHand(sp,f,min,max,r,nc,...)
 			local dg=Duel.SelectMatchingCard(tp,f,sp,LOCATION_HAND,0,min,max,nc,...)
 			return Duel.SendtoGrave(dg,r)
 		end
-		function Duel.RemoveOverlayCard(sp,...) return s.DRemoveOverlayCard(tp,...) end
+		function Duel.RemoveOverlayCard(sp,...) return _Duel.DRemoveOverlayCard(tp,...) end
 		function Duel.SelectMatchingCard(sp,f,p,sl,ol,max,min,ex,...)
 			local sg=Duel.GetMatchingGroup(f,p,sl,ol,ex,...)
 			Duel.ConfirmCards(tp,sg:Filter(s.confirmfilter,nil,tp))
-			return s.SelectMatchingCard(tp,f,p,sl,ol,max,min,ex,...)
+			return _Duel.SelectMatchingCard(tp,f,p,sl,ol,max,min,ex,...)
 		end
-		function Duel.SelectReleaseGroup(sp,...) return s.SelectReleaseGroup(tp,...) end
-		function Duel.SelectReleaseGroupEx(sp,...) return s.SelectReleaseGroupEx(tp,...) end
+		function Duel.SelectReleaseGroup(sp,...) return _Duel.SelectReleaseGroup(tp,...) end
+		function Duel.SelectReleaseGroupEx(sp,...) return _Duel.SelectReleaseGroupEx(tp,...) end
 
-		function Duel.SpecialSummon(tg,stype,sp,...) return s.SpecialSummon(tg,stype,tp,...) end
-		function Duel.SpecialSummonStep(tg,stype,sp,...) return s.SpecialSummonStep(tg,stype,tp,...) end
-		function Duel.MoveToField(c,mp,...) return s.MoveToField(c,tp,...) end
-		function Duel.SSet(p,tg,sp,...) if not sp then sp=p end return s.SSet(tp,tg,sp,...) end
+		function Duel.SpecialSummon(tg,stype,sp,...) return _Duel.SpecialSummon(tg,stype,tp,...) end
+		function Duel.SpecialSummonStep(tg,stype,sp,...) return _Duel.SpecialSummonStep(tg,stype,tp,...) end
+		function Duel.MoveToField(c,mp,...) return _Duel.MoveToField(c,tp,...) end
+		function Duel.SSet(p,tg,sp,...) if not sp then sp=p end return _Duel.SSet(tp,tg,sp,...) end
 		function Duel.GetControl(tg,p,rphase,rcount,zone,...)
 			if zone==nil then zone=0x1f end
 			local flag=0x1f-zone
@@ -1232,38 +1209,38 @@ function s.mindcontrol(e,tp)
 			end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 			if tp==p then
-				flag=s.SelectField(tp,1,LOCATION_MZONE,0,flag+0x60)
+				flag=_Duel.SelectField(tp,1,LOCATION_MZONE,0,flag+0x60)
 			else
-				flag=s.SelectField(tp,1,0,LOCATION_MZONE,(flag+0x60)<<16)>>16
+				flag=_Duel.SelectField(tp,1,0,LOCATION_MZONE,(flag+0x60)<<16)>>16
 			end
-			return s.GetControl(tg,p,rphase,rcount,flag,...)
+			return _Duel.GetControl(tg,p,rphase,rcount,flag,...)
 		end
 		function Duel.SelectDisableField(p,count,sl,ol,filter)
 			if tp==p then
-				return s.SelectDisableField(tp,count,sl,ol,filter)
+				return _Duel.SelectDisableField(tp,count,sl,ol,filter)
 			else
-				return s.SelectDisableField(tp,count,ol,sl,filter)
+				return _Duel.SelectDisableField(tp,count,ol,sl,filter)
 			end
 		end
 		function Duel.SelectField(p,count,sl,ol,filter)
 			if tp==p then
-				return s.SelectField(tp,count,sl,ol,filter)
+				return _Duel.SelectField(tp,count,sl,ol,filter)
 			else
-				return s.SelectField(tp,count,ol,sl,filter)
+				return _Duel.SelectField(tp,count,ol,sl,filter)
 			end
 		end
 
-		function Duel.SelectEffectYesNo(sp,...) return s.SelectEffectYesNo(tp,...) end
-		function Duel.SelectYesNo(sp,desc) return s.SelectYesNo(tp,desc) end
-		function Duel.SelectOption(sp,...) return s.SelectOption(tp,...) end
-		function Duel.SelectPosition(sp,c,pos) return s.SelectPosition(tp,c,pos) end
+		function Duel.SelectEffectYesNo(sp,...) return _Duel.SelectEffectYesNo(tp,...) end
+		function Duel.SelectYesNo(sp,desc) return _Duel.SelectYesNo(tp,desc) end
+		function Duel.SelectOption(sp,...) return _Duel.SelectOption(tp,...) end
+		function Duel.SelectPosition(sp,c,pos) return _Duel.SelectPosition(tp,c,pos) end
 
-		function Duel.AnnounceCoin(p,...) return s.AnnounceCoin(tp,...) end
-		function Duel.AnnounceCard(p,...) return s.AnnounceCard(tp,...) end
-		function Duel.AnnounceNumber(p,...) return s.AnnounceNumber(tp,...) end
+		function Duel.AnnounceCoin(p,...) return _Duel.AnnounceCoin(tp,...) end
+		function Duel.AnnounceCard(p,...) return _Duel.AnnounceCard(tp,...) end
+		function Duel.AnnounceNumber(p,...) return _Duel.AnnounceNumber(tp,...) end
 
-		function Duel.Hint(htype,sp,desc) return s.Hint(htype,tp,desc) end
-		function Duel.ConfirmCards(sp,tg) return s.ConfirmCards(tp,tg)end
+		function Duel.Hint(htype,sp,desc) return _Duel.Hint(htype,tp,desc) end
+		function Duel.ConfirmCards(sp,tg) return _Duel.ConfirmCards(tp,tg)end
 		
 		local ge0=Effect.GlobalEffect()
 		ge0:SetType(EFFECT_TYPE_FIELD)
@@ -1379,44 +1356,48 @@ function s.mindcontrol(e,tp)
 			end
 			local ini=s.initial_effect
 			s.initial_effect=function() end
-			tc:ReplaceEffect(id,0)
+			for tc in aux.Next(g) do
+				if tc.initial_effect then
+					tc:ReplaceEffect(id,0)
+					tc.initial_effect(tc)
+				end
+			end
 			s.initial_effect=ini
-			tc.initial_effect(tc)
 		end
 	else
 		Debug.Message("骇入结束")
-		Group.Select=s.Select
-		Group.FilterSelect=s.FilterSelect
-		Group.SelectUnselect=s.SelectUnselect
-		Card.RemoveOverlayCard=s.CRemoveOverlayCard
-		Duel.SelectMatchingCard=s.SelectMatchingCard
-		Duel.SelectReleaseGroup=s.SelectReleaseGroup
-		Duel.SelectReleaseGroupEx=s.SelectReleaseGroupEx
-		Duel.SelectTarget=s.SelectTarget
-		Duel.SelectTribute=s.SelectTribute
-		Duel.DiscardHand=s.DiscardHand
-		Duel.RemoveOverlayCard=s.DRemoveOverlayCard
-		Duel.SelectFusionMaterial=s.SelectFusionMaterial
+		Group.Select=_Group.Select
+		Group.FilterSelect=_Group.FilterSelect
+		Group.SelectUnselect=_Group.SelectUnselect
+		Card.RemoveOverlayCard=_Card.RemoveOverlayCard
+		Duel.SelectMatchingCard=_Duel.SelectMatchingCard
+		Duel.SelectReleaseGroup=_Duel.SelectReleaseGroup
+		Duel.SelectReleaseGroupEx=_Duel.SelectReleaseGroupEx
+		Duel.SelectTarget=_Duel.SelectTarget
+		Duel.SelectTribute=_Duel.SelectTribute
+		Duel.DiscardHand=_Duel.DiscardHand
+		Duel.RemoveOverlayCard=_Duel.DRemoveOverlayCard
+		Duel.SelectFusionMaterial=_Duel.SelectFusionMaterial
 
-		Duel.SpecialSummon=s.SpecialSummon
-		Duel.SpecialSummonStep=s.SpecialSummonStep
-		Duel.MoveToField=s.MoveToField
-		Duel.SSet=s.SSet
-		Duel.GetControl=s.GetControl
-		Duel.SelectDisableField=s.SelectDisableField
-		Duel.SelectField=s.SelectField
+		Duel.SpecialSummon=_Duel.SpecialSummon
+		Duel.SpecialSummonStep=_Duel.SpecialSummonStep
+		Duel.MoveToField=_Duel.MoveToField
+		Duel.SSet=_Duel.SSet
+		Duel.GetControl=_Duel.GetControl
+		Duel.SelectDisableField=_Duel.SelectDisableField
+		Duel.SelectField=_Duel.SelectField
 
-		Duel.SelectEffectYesNo=s.SelectEffectYesNo
-		Duel.SelectYesNo=s.SelectYesNo
-		Duel.SelectOption=s.SelectOption
-		Duel.SelectPosition=s.SelectPosition
+		Duel.SelectEffectYesNo=_Duel.SelectEffectYesNo
+		Duel.SelectYesNo=_Duel.SelectYesNo
+		Duel.SelectOption=_Duel.SelectOption
+		Duel.SelectPosition=_Duel.SelectPosition
 		
-		Duel.AnnounceCoin=s.AnnounceCoin
-		Duel.AnnounceCard=s.AnnounceCard
-		Duel.AnnounceNumber=s.AnnounceNumber
+		Duel.AnnounceCoin=_Duel.AnnounceCoin
+		Duel.AnnounceCard=_Duel.AnnounceCard
+		Duel.AnnounceNumber=_Duel.AnnounceNumber
 
-		Duel.ConfirmCards=s.ConfirmCards
-		Duel.Hint=s.Hint
+		Duel.ConfirmCards=_Duel.ConfirmCards
+		Duel.Hint=_Duel.Hint
 		
 		for _,eff in ipairs(s.controltable) do
 			eff:Reset()
@@ -1751,14 +1732,19 @@ function s.change_effect(effect,c,mp)
 		eff:SetCondition(s.mindcon2)
 		eff:SetRange(LOCATION_HAND+LOCATION_SZONE)
 		if cardtype&(TYPE_QUICKPLAY+TYPE_TRAP)~=0 then
-			eff:SetCode(EVENT_FREE_CHAIN)
-			eff:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_QUICK_O)
-			eff:SetTarget(s.mindtg2)
+			if effect:GetCode()==EVENT_FREE_CHAIN then
+				eff:SetCode(EVENT_FREE_CHAIN)
+				eff:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_QUICK_O)
+				eff:SetTarget(s.mindtg2)
+				return eff
+			else
+				return 0
+			end
 		else
 			eff:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_IGNITION)
 			eff:SetTarget(s.mindtg)
+			return eff
 		end
-		return eff
 	else
 		return 0
 	end
@@ -1980,15 +1966,15 @@ function s.randomop(tp)
 		end
 	else
 		Debug.Message("灌铅骰子 关")
-		Group.RandomSelect=s.RandomSelect
-		Duel.TossCoin=s.TossCoin
-		Duel.TossDice=s.TossDice
+		Group.RandomSelect=_Group.RandomSelect
+		Duel.TossCoin=_Duel.TossCoin
+		Duel.TossDice=_Duel.TossDice
 	end
 end
 function s.toolop(tp)
-	local op=s.SelectOption(tp,aux.Stringid(id+1,11),aux.Stringid(id+1,12),aux.Stringid(id+1,13),aux.Stringid(id+1,14),aux.Stringid(id+1,15))
+	local op=_Duel.SelectOption(tp,aux.Stringid(id+1,11),aux.Stringid(id+1,12),aux.Stringid(id+1,13),aux.Stringid(id+1,14),aux.Stringid(id+1,15))
 	if op==0 then
-		local p=s.SelectOption(tp,aux.Stringid(id+1,1),aux.Stringid(id+1,2))==0 and tp or 1-tp
+		local p=_Duel.SelectOption(tp,aux.Stringid(id+1,1),aux.Stringid(id+1,2))==0 and tp or 1-tp
 		local lp=s.AnnounceNumber(tp,80000,16000,8000,4000,2000,1000,500,100,1)
 		Duel.SetLP(p,lp)
 	elseif op==1 then
@@ -2034,9 +2020,9 @@ function s.toolop(tp)
 			end
 		end
 	elseif op==2 then
-		local p=s.SelectOption(tp,aux.Stringid(id+1,1),aux.Stringid(id+1,2))==0 and tp or 1-tp
+		local p=_Duel.SelectOption(tp,aux.Stringid(id+1,1),aux.Stringid(id+1,2))==0 and tp or 1-tp
 		if p==1-tp then Duel.ConfirmCards(tp,Duel.GetFieldGroup(p,LOCATION_DECK,0)) end
-		local sg=s.SelectMatchingCard(tp,aux.TRUE,p,LOCATION_DECK,0,1,16,nil)
+		local sg=_Duel.SelectMatchingCard(tp,aux.TRUE,p,LOCATION_DECK,0,1,16,nil)
 		for tc in aux.Next(sg) do
 			Duel.MoveSequence(tc,SEQ_DECKTOP)
 		end

@@ -81,7 +81,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 			e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			dc:RegisterEffect(e1)
+			tc:RegisterEffect(e1)
 		end
 		if tc:IsType(TYPE_TRAP) then
 			local e1=Effect.CreateEffect(c)
@@ -89,7 +89,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			dc:RegisterEffect(e1)
+			tc:RegisterEffect(e1)
 		end
 	end
 end

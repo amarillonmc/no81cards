@@ -129,8 +129,7 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e2)
 			eqg2:AddCard(tc)
 			tc=eqg:GetNext()
-		end  
-		Duel.RaiseEvent(eqg2,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+		end
 	end
 	local e0=Effect.CreateEffect(c) 
 	e0:SetDescription(aux.Stringid(id,0))
@@ -169,8 +168,10 @@ function s.efcon(e,tp,eg,ep,ev,re,r,rp)
 	return dg:GetCount()>0
 end
 function s.efop(e,tp,eg,ep,ev,re,r,rp)
-	local dg=eg:Filter(s.effilter,nil,e:GetHandler())   
-	dg:ForEach(s.addeffect) 
+	local dg=eg:Filter(s.effilter,nil,e:GetHandler())
+	for tc in aux.Next(dg) do
+		s.addeffect(tc)
+	end
 end
 function s.addeffect(c) 
 	local efft={c:GetActivateEffect()}
@@ -188,7 +189,6 @@ function s.addeffect(c)
 		e1:SetCondition(s.condition(v))
 		e1:SetTarget(s.target(v))
 		e1:SetOperation(s.operation(v))
-		Debug.Message(v:GetHandler():GetCode())
 		c:RegisterEffect(e1,true)
 	end
 end
@@ -207,10 +207,8 @@ function s.cost(ae)
 end
 function s.condition(ae)  
 	return function (e,tp,eg,ep,ev,re,r,rp)
-		Debug.Message(1)
 		local c=e:GetHandler()
 		local fcon=ae:GetCondition()
-		Debug.Message(c:IsFacedown() and (not fcon or fcon(e,tp,eg,ep,ev,re,r,rp)))
 		return c:IsFacedown() and (not fcon or fcon(e,tp,eg,ep,ev,re,r,rp))
 	end
 end

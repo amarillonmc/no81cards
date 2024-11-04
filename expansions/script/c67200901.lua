@@ -85,7 +85,7 @@ function c67200901.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
 	if tg:GetCount()>0 then
-		if Duel.MoveToField(tg:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)~=0 and Duel.IsExistingMatchingCard(c67200901.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(67200901,3)) then
+		if Duel.MoveToField(tg:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)~=0 and tg:GetFirst():IsLocation(LOCATION_PZONE) and Duel.IsExistingMatchingCard(c67200901.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(67200901,3)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local gg=Duel.SelectMatchingCard(tp,c67200901.thfilter,tp,LOCATION_DECK,0,1,1,nil)
