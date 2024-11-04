@@ -21,6 +21,17 @@ function c88100312.initial_effect(c)
 	e2:SetTarget(c88100312.sptg)
 	e2:SetOperation(c88100312.spop)
 	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_DESTROY)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCondition(c88100312.descon)
+	e3:SetCost(aux.bfgcost)
+	e3:SetTarget(c88100312.destg)
+	e3:SetOperation(c88100312.desop)
+	c:RegisterEffect(e3)
 end
 c88100312.I_will_recover=true
 function c88100312.condition(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -79,5 +90,23 @@ function c88100312.spop(e,tp,eg,ep,ev,re,r,rp)
 			tc:AddMonsterAttribute(TYPE_EFFECT)
 			Duel.SpecialSummon(tc,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP_DEFENSE)
 		end
+	end
+end
+function c88100312.descfilter(c,tp)
+	return c:IsSetCard(0x5590) and c:IsControler(tp)
+end
+function c88100312.descon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c88100312.descfilter,1,nil,tp)
+end
+function c88100312.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
+	if chk==0 then return #g>0 end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+end
+function c88100312.desop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD):Select(tp,1,1,nil)
+	if #g>0 then
+		Duel.Destroy(g,REASON_EFFECT)
 	end
 end

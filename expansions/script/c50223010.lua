@@ -55,7 +55,7 @@ function c50223010.op1(e,tp,eg,ep,ev,re,r,rp)
 			if Duel.SendtoGrave(g1,REASON_EFFECT)~=0 then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-				g2=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
+				local g2=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
 				if g2:GetCount()>0 then
 					Duel.Destroy(g2,REASON_EFFECT)
 				end
