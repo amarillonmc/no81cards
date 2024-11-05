@@ -39,7 +39,7 @@ function c33710912.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(sum-sum1)
 end
 function c33710912.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c33710912.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c33710912.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetCurrentPhase()==PHASE_MAIN2 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,nil,tp,LOCATION_GRAVE)
 end
 function c33710912.op1(e,tp,eg,ep,ev,re,r,rp)
