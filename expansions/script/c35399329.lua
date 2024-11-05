@@ -60,7 +60,7 @@ function c35399329.lvop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c35399329.thfilter1(c,tp)
-	return ((c:IsRace(RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_WIND) and c:IsType(TYPE_SYNCHRO)) or c:IsSetCard(0x2016)) and c:IsAbleToHand() and (Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,c) or Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0)
+	return ((c:IsRace(RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_WIND) and c:IsType(TYPE_SYNCHRO)) or c:IsSetCard(0x2016)) and c:IsAbleToHand() and (Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,c) or Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0) and c:IsFaceup()
 end
 function c35399329.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c35399329.thfilter1(chkc) end

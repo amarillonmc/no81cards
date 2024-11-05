@@ -26,7 +26,7 @@ function c51924013.cfilter(c)
 end
 function c51924013.condition(e,tp,eg,ep,ev,re,r,rp)
 	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
-		and Duel.IsExistingMatchingCard(c51924013.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
+		and Duel.IsExistingMatchingCard(c51924013.cfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
 end
 function c51924013.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -43,7 +43,7 @@ function c51924013.activate(e,tp,eg,ep,ev,re,r,rp)
 		ec:CancelToGrave()
 		if Duel.SendtoDeck(ec,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and ec:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local dg=Duel.SelectMatchingCard(tp,c51924013.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+		local dg=Duel.SelectMatchingCard(tp,c51924013.cfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
 			if #dg>0 then
 				Duel.BreakEffect()
 				Duel.HintSelection(dg)

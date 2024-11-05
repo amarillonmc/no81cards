@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 end
 --Effect 1
 function cm.spf(c,fc,e,tp)
-	return aux.IsMaterialListCode(fc,c:GetCode()) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false) or c:IsAbleToHand())
+	return (aux.IsMaterialListCode(fc,c:GetCode()) or aux.IsCodeListed(fc,c:GetCode())) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false) or c:IsAbleToHand())
 end
 function cm.cff(c,e,tp)
 	local b1=c:IsFaceup() and c:IsLocation(LOCATION_MZONE) 

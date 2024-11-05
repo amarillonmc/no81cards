@@ -1,6 +1,6 @@
 --暗月小丑/已腐蚀
 function c51924019.initial_effect(c)
-	aux.AddCodeList(c,51924014)
+	aux.AddCodeList(c,51924017)
 	c:SetSPSummonOnce(51924019)
 	c:EnableReviveLimit()
 	--splimit
