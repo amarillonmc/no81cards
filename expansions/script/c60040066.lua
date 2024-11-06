@@ -53,7 +53,7 @@ function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_HAND,0,nil,0x645)
-	return g:GetClassCount(Card.GetCode)>=3
+	return g:GetClassCount(Card.GetCode)>=2
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_HAND,0,nil,0x645)

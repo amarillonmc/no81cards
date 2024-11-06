@@ -209,6 +209,7 @@ function c51924010.diceop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Damage(1-tp,1000,REASON_EFFECT)
 			end
 			if ct==30 then Duel.SetLP(1-tp,0) end
+			if Duel.GetLP(tp)==0 or Duel.GetLP(1-tp)==0 then ct=30 end
 		end
 	end
 end

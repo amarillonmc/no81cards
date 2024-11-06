@@ -46,14 +46,14 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	local op1,op2=true
+	local op1,op2=true,true
 	if Duel.GetFieldGroupCount(tp,LOCATION_GRAVE+LOCATION_REMOVED,0)==0 then
 		op1=false 
 	end
 	if Duel.GetFieldGroupCount(1-tp,LOCATION_GRAVE+LOCATION_REMOVED,0)==0 then
 		op2=false 
 	end
-	if op1 and Duel.SelectYesNo(tp,aux.Stringid(id,4)) then
+	if op1 and op2 and Duel.SelectYesNo(tp,aux.Stringid(id,4)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,2,nil)
 		if op2 and Duel.SelectYesNo(tp,aux.Stringid(id,5)) then
@@ -61,6 +61,10 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 			g:Merge(g2)
 		end 
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	elseif op1 and not op2 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,2,nil)
+		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)	
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,2,nil)

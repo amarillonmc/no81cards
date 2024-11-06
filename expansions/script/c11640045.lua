@@ -66,7 +66,7 @@ function s.filter3(c,e,tp,lv)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		return Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_HAND,0,1,nil,tp)
+		return Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_MZONE+LOCATION_HAND,0,1,nil,tp)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE)
