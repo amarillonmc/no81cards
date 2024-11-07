@@ -67,7 +67,7 @@ function s.atktg(e,c)
 	return c:IsSetCard(0xc07)
 end
 function s.destg(e,c)
-	return not c:IsType(TYPE_SYNCHRO)
+	return not c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0xc07)
 end
 function s.effectfilter(e,ct)
 	local p=e:GetHandler():GetControler()

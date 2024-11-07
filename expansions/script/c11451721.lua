@@ -249,7 +249,7 @@ function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local bool=c:IsRelateToEffect(e) and c:IsControler(tp) and c:IsFaceup()
+	local bool=c:IsRelateToEffect(e) --and c:IsControler(tp) and c:IsFaceup()
 	local seq=c:GetSequence()
 	local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
 	local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)

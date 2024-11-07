@@ -176,13 +176,6 @@ end
 function cm.mcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()==1
 end
-function cm.filter(c,fc,lc,tp)
-	local typ=bit.band(fc:GetType(),0x7)
-	return c:IsAbleToGrave() and c:IsType(typ)
-end
-function cm.fselect(g,typ)
-	return (typ&0x1==0 or g:IsExists(Card.IsType,1,nil,0x1)) and (typ&0x2==0 or g:IsExists(Card.IsType,1,nil,0x2)) and (typ&0x4==0 or g:IsExists(Card.IsType,1,nil,0x4))
-end
 function cm.nfilter(c,lc,tp,bool)
 	--if not c:IsFaceup() then return false,false end
 	if cm.islinkdirstate(c) then return true,true end
@@ -209,7 +202,7 @@ function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local bool=c:IsRelateToEffect(e) and c:IsControler(tp) and c:IsFaceup()
+	local bool=c:IsRelateToEffect(e) --and c:IsControler(tp) and c:IsFaceup()
 	local seq=c:GetSequence()
 	local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
 	local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
@@ -280,6 +273,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 			local tc=g:Select(tp,1,1,nil):GetFirst()
 			if tc then
+				Duel.HintSelection(Group.FromCards(tc))
 				local fid=tc:GetRealFieldID()
 				tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(m,3))
 				--disable

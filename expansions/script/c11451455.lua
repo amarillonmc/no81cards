@@ -1,6 +1,5 @@
 --波动武士·热辐射爆弹
-local m=11451455
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -42,7 +41,7 @@ end
 function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)>0 and c:IsControlerCanBeChanged() and Duel.GetFlagEffect(tp,m)==0 end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local fd=Duel.SelectDisableField(tp,1,0,LOCATION_MZONE,0)
 	Duel.Hint(HINT_ZONE,tp,fd)
 	Duel.Hint(HINT_ZONE,1-tp,fd>>16)
@@ -64,7 +63,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local fd=e:GetLabel()
 	local seq=math.log(fd,2)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or c:IsImmuneToEffect(e) or not c:IsControler(tp) or not Duel.CheckLocation(1-tp,LOCATION_MZONE,seq) or not c:IsFaceup() then return end
+	if not c:IsRelateToEffect(e) or c:IsImmuneToEffect(e) or not c:IsControler(tp) or not Duel.CheckLocation(1-tp,LOCATION_MZONE,seq) then return end
 	Duel.GetControl(c,1-tp,0,0,fd)
 	if c:GetSequence()==seq then
 		local dg=Group.CreateGroup()

@@ -43,7 +43,7 @@ end
 function cm.checkop4(e,tp,eg,ep,ev,re,r,rp)
 	local tg=eg:Filter(cm.cfilter,nil)
 	for tc in aux.Next(tg) do
-		tc:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END-RESET_TOGRAVE-RESET_LEAVE,0,1)
+		tc:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END-RESET_TOGRAVE-RESET_LEAVE+RESET_OVERLAY,0,1)
 	end
 end
 function cm.cfilter(c)

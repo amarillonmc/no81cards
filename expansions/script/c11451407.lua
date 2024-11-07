@@ -48,7 +48,7 @@ function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
-	re:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+	re:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
 end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
 	local seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_SEQUENCE)

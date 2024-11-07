@@ -99,9 +99,10 @@ function c71403005.op2(e,tp,eg,ep,ev,re,r,rp)
 	local dg=Group.FromCards(c,tc)
 	if Duel.Destroy(dg,REASON_EFFECT)==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-		local g=Duel.SelectMatchingCard(tp,c71403005.filter2,tp,LOCATION_PZONE,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,c71403005.filter2,tp,LOCATION_ONFIELD,0,1,1,nil)
 		if g:GetCount()>0 then
-			oc=g:GetFirst()
+			Duel.BreakEffect()
+			local oc=g:GetFirst()
 			local e1=Effect.CreateEffect(c)
 			e1:SetDescription(aux.Stringid(71403005,2))
 			e1:SetType(EFFECT_TYPE_SINGLE)
