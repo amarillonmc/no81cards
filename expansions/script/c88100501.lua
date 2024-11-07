@@ -45,6 +45,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function s.cfilter(c)
@@ -74,6 +75,7 @@ function s.posop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE+POS_FACEUP_ATTACK)
+			Duel.ConfirmCards(1-tp,g)
 		end
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
