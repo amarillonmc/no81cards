@@ -226,6 +226,7 @@ function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 					end
 				end
 			end
+            if check then return false end
 		--classification is essential for efficiency, and this part is only for backup
 		else
 			iter={1}

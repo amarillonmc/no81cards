@@ -29,7 +29,7 @@ function c10150065.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c10150065.lcheck(g,lc)
-	return g:IsExists(Card.IsSetCard,1,nil,0xd3)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0xd3)
 end
 function c10150065.thfilter(c)
 	return c:IsSetCard(0xd3) and c:IsFaceup() and c:IsAbleToHand()

@@ -175,6 +175,7 @@ function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 					end
 				end
 			end
+            if check then return false end
 		--classification is essential for efficiency, and this part is only for backup
 		else
 			iter={1}
@@ -260,6 +261,8 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	tg:Merge(tg2)
 	Duel.SetTargetCard(tg)
 end
+local KOISHI_CHECK=false
+if Duel.DisableActionCheck then KOISHI_CHECK=true end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
@@ -277,26 +280,36 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		ge2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		tc:RegisterEffect(ge2,true)
 	end
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e5:SetCode(EVENT_ADJUST)
-	e5:SetLabel(fid)
-	e5:SetCondition(function() return not pnfl_adjusting end)
-	e5:SetOperation(cm.acop)
-	Duel.RegisterEffect(e5,tp)
-	local e6=e5:Clone()
-	e6:SetCode(EVENT_CHAIN_SOLVED)
-	e6:SetCondition(aux.TRUE)
-	e6:SetOperation(cm.acop2)
-	Duel.RegisterEffect(e6,tp)
+	if not KOISHI_CHECK then
+		local e5=Effect.CreateEffect(c)
+		e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e5:SetCode(EVENT_ADJUST)
+		e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e5:SetLabel(fid)
+		e5:SetCondition(function() return not pnfl_adjusting end)
+		e5:SetOperation(cm.acop)
+		Duel.RegisterEffect(e5,tp)
+		local e6=e5:Clone()
+		e6:SetCode(EVENT_CHAIN_SOLVED)
+		e6:SetCondition(aux.TRUE)
+		e6:SetOperation(cm.acop2)
+		Duel.RegisterEffect(e6,tp)
+	end
 end
 function cm.chkval(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
-		e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1,e:GetLabel())
+	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) and e:GetHandler():IsAbleToHand() then
+		if KOISHI_CHECK then
+			Duel.DisableActionCheck(true)
+			pcall(Duel.SendtoHand,e:GetHandler(),nil,REASON_EFFECT)
+			Duel.DisableActionCheck(false)
+		else
+			e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1,e:GetLabel())
+		end
 		--Duel.AdjustAll()
 		--Duel.Readjust()
 		e:SetValue(aux.FALSE)
 		e:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e:SetDescription(0)
 		if Duel.GetFlagEffect(tp,0xffff+m)==0 then
 			Duel.RegisterFlagEffect(tp,0xffff+m,RESET_CHAIN,0,1)
 			if SetCardData then
