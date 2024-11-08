@@ -1,5 +1,6 @@
 --魔女术组合·召唤小组
 function c98920499.initial_effect(c)
+	if c:GetOriginalCode()==98920499 then
 	c:SetSPSummonOnce(98920499)
 	--link summon
 	aux.AddLinkProcedure(c,c98920499.mfilter,2,2,c98920499.lcheck)
@@ -41,6 +42,7 @@ function c98920499.initial_effect(c)
 		ge1:SetOperation(c98920499.checkop)
 		Duel.RegisterEffect(ge1,0)
 	end	
+	end
 end
 function c98920499.mfilter(c) 
 	return c:IsLinkRace(RACE_SPELLCASTER)   
@@ -176,7 +178,7 @@ function c98920499.deckcostfilter(c,tp)
 	return c:IsSetCard(0x128) and c:IsType(TYPE_SPELL) and c:IsAbleToGraveAsCost()
 end
 function c98920499.acost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98920499.costfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil,tp) or (Duel.IsExistingMatchingCard(c98920499.deckcostfilter,tp,LOCATION_DECK,0,1,nil,tp) and Duel.GetFlagEffect(tp,98920499)==0) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c98920499.costfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil,tp) or (Duel.IsExistingMatchingCard(c98920499.deckcostfilter,tp,LOCATION_DECK,0,1,nil,tp) and Duel.GetFlagEffect(tp,98920500)==0) end
 	if Duel.IsExistingMatchingCard(c98920499.deckcostfilter,tp,LOCATION_DECK,0,1,nil,tp) and Duel.GetFlagEffect(tp,98920500)==0 and (not Duel.IsExistingMatchingCard(c98920499.costfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil,tp) or Duel.SelectYesNo(tp,aux.Stringid(98920499,1))) then
 		 local g=Duel.GetMatchingGroup(c98920499.deckcostfilter,tp,LOCATION_DECK,0,nil,tp)
 		 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)

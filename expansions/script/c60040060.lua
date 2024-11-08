@@ -19,6 +19,8 @@ function cm.initial_effect(c)
 		ge1:SetCondition(cm.regcon)
 		ge1:SetOperation(cm.regop)
 		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		Duel.RegisterEffect(ge2,1)
 	end
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)

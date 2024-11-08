@@ -19,12 +19,14 @@ function cm.initial_effect(c)
 		ge1:SetCondition(cm.regcon)
 		ge1:SetOperation(cm.regop)
 		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		Duel.RegisterEffect(ge2,1)
 	end
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local num=Duel.GetFlagEffect(tp,m)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) or num>=5 end
-	if num<3 or not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) or num>=3 end
+	if num<2 or not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST,nil)
 	end
 end

@@ -19,6 +19,8 @@ function cm.initial_effect(c)
 		ge1:SetCondition(cm.regcon)
 		ge1:SetOperation(cm.regop)
 		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		Duel.RegisterEffect(ge2,1)
 	end
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -51,7 +53,7 @@ function cm.cfilter(c,tp)
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetCurrentPhase()==PHASE_DRAW or Duel.GetCurrentPhase()==0 then return false end
-	local v=0
+	--local v=0
 	local ag=eg:Filter(cm.cfilter,nil,e:GetHandlerPlayer())
 	if #ag~=0 then 
 		e:SetLabel(#ag)

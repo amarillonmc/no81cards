@@ -91,10 +91,11 @@ function cm.matop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spfil(c,raceo,attro,races,attrs,e,tp)
-	return not c:IsRace(raceo) and not c:IsAttribute(attro) and not c:IsRace(races) and not c:IsAttribute(attrs) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return not c:IsRace(raceo) and not c:IsAttribute(attro) and not c:IsRace(races) and not c:IsAttribute(attrs) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and aux.IsCodeListed(c,60010029)
 end
 function cm.repfilter(c,tp,races,attrs)
-	return c:IsControler(tp) and c:IsOnField() and not c:IsAttribute(races) and not c:IsRace(attrs)
+	return c:IsControler(tp) and c:IsOnField() 
+		and ((not c:IsAttribute(races) and not c:IsRace(attrs) and c:IsType(TYPE_MONSTER)) or c:IsFacedown())
 		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -110,7 +111,7 @@ function cm.desrepval(e,c)
 	return cm.repfilter(c,e:GetHandlerPlayer(),races,attrs)
 end
 function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(e:GetHandlerPlayer(),m)<3 then
+	if Duel.GetFlagEffect(e:GetHandlerPlayer(),m)<1 then
 		Duel.Draw(e:GetHandlerPlayer(),1,REASON_EFFECT)
 		Duel.RegisterFlagEffect(e:GetHandlerPlayer(),m,RESET_PHASE+PHASE_END,0,1)
 	end
