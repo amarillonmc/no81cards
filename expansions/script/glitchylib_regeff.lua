@@ -263,10 +263,11 @@ if not global_card_effect_table_global_check then
 								local previous_sre=self_reference_effect
 								if aux.GetValueType(x[1])=="Effect" then
 									self_reference_effect = x[1]
+									self_reference_tp = self_reference_effect:GetHandlerPlayer()
 								end
-								local res=val(...)
+								local res={val(...)}
 								self_reference_effect=previous_sre
-								return res
+								return table.unpack(res)
 							end
 			e:SetValue(newval)
 		end
@@ -387,10 +388,11 @@ if not global_duel_effect_table_global_check then
 													local previous_sre=self_reference_effect
 													if aux.GetValueType(x[1])=="Effect" then
 														self_reference_effect = x[1]
+														self_reference_tp = self_reference_effect:GetHandlerPlayer()
 													end
-													local res=val(...)
+													local res={val(...)}
 													self_reference_effect=previous_sre
-													return res
+													return table.unpack(res)
 												end
 								e:SetValue(newval)
 								
