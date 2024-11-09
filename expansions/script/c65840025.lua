@@ -46,7 +46,6 @@ function c65840025.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c65840025.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c65840025.setfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c65840025.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

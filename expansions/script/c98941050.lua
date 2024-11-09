@@ -191,6 +191,7 @@ function c98941050.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rg=Duel.SelectMatchingCard(tp,c98941050.fcfilter,tp,LOCATION_MZONE,0,1,ct,nil)
 	if Duel.Remove(rg,0,REASON_COST+REASON_TEMPORARY)~=0 then
+			rg:KeepAlive()
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_PHASE+PHASE_END)
