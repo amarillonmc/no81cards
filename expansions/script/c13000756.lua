@@ -107,7 +107,13 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.BreakEffect()
 	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 	local lo=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
-	local lg=lo:Filter(aux.dncheck,nil)
+	local lg=Group.CreateGroup()
+	for tc in aux.Next(lo) do
+		local io2=lg:Filter(Card.IsCode,nil,tc:GetCode())
+		if #io2==0 then
+			lg:AddCard(tc)
+		end
+	end
 	if lg:GetCount()>2 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 	getmetatable(e:GetHandler()).announce_filter={TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK,OPCODE_ISTYPE,OPCODE_NOT}
