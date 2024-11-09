@@ -39,7 +39,7 @@ function c10111129.initial_effect(c)
 	e3:SetTarget(c10111129.target)
 	e3:SetOperation(c10111129.activate)
 	c:RegisterEffect(e3)
-    end
+end
 function c10111129.splimit(e,se,sp,st)
 	local sc=se:GetHandler()
 	return sc:IsCode(10111128)

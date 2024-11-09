@@ -35,7 +35,7 @@ function c10111138.initial_effect(c)
 	e3:SetTarget(c10111138.fstg)
 	e3:SetOperation(c10111138.fsop)
 	c:RegisterEffect(e3)
-    end
+end
 function c10111138.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(10111138)==0 end
 	e:GetHandler():RegisterFlagEffect(10111138,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)

@@ -1,4 +1,3 @@
-local s,id,o=GetID()
 function c10111128.initial_effect(c)
    --Activate
 	local e1=Effect.CreateEffect(c)
@@ -19,8 +18,7 @@ function c10111128.initial_effect(c)
 	e2:SetTarget(c10111128.thtg)
 	e2:SetOperation(c10111128.thop)
 	c:RegisterEffect(e2)
-    end
-s.fusion_effect=true
+end
 function c10111128.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end
