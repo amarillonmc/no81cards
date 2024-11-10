@@ -59,7 +59,7 @@ function cm.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
 end
 function cm.regacop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(rp,15005077,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(rp,15005079,RESET_PHASE+PHASE_END,0,1)
 end
 function cm.regrmop(e,tp,eg,ep,ev,re,r,rp)
 	local ag=eg:Filter(Card.IsLocation,nil,LOCATION_REMOVED)
@@ -74,11 +74,11 @@ function cm.costcon(e)
 end
 function cm.costchk(e,te_or_c,tp)
 	local ct=Duel.GetFlagEffect(tp,m)
-	if Duel.GetFlagEffect(tp,15005077)<=3 then return true end 
+	if Duel.GetFlagEffect(tp,15005079)<=3 then return true end 
 	return Duel.CheckLPCost(tp,ct*1800)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,15005077)>3 then
+	if Duel.GetFlagEffect(tp,15005079)>3 then
 		Duel.PayLPCost(tp,1800)
 	end
 end

@@ -88,11 +88,11 @@ function c65840020.disfilter(c)
 	return c:IsAbleToRemove()
 end
 function c65840020.discon(e,tp,eg,ep,ev,re,r,rp)
-	c=e:GetHandler()
+	local c=e:GetHandler()
 	return rp==1-tp and Duel.IsChainDisablable(ev) and re:IsActiveType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(c65840020.disfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,c) and e:GetHandler():GetFlagEffect(id)<=0
 end
 function c65840020.disop(e,tp,eg,ep,ev,re,r,rp)
-	c=e:GetHandler()
+	local c=e:GetHandler()
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(65840020,3)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local tc=Duel.SelectMatchingCard(tp,c65840020.disfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,c):GetFirst()
