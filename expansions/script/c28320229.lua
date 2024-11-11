@@ -5,6 +5,20 @@ function c28320229.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
+	--Activate from grave
+	local e5=e0:Clone()
+	e5:SetRange(LOCATION_GRAVE)
+	e5:SetCost(c28320229.cost)
+	c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetCode(EFFECT_ACTIVATE_COST)
+	e6:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e6:SetRange(LOCATION_GRAVE)
+	e6:SetTargetRange(1,0)
+	e6:SetTarget(c28320229.gatg)
+	e6:SetOperation(c28320229.gaop)
+	c:RegisterEffect(e6)
 	--field effect
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -41,6 +55,42 @@ function c28320229.initial_effect(c)
 	e4:SetTarget(c28320229.retg)
 	e4:SetOperation(c28320229.reop)
 	c:RegisterEffect(e4)
+end
+function c28320229.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetLP(tp,Duel.GetLP(tp)-2000)
+end
+function c28320229.gatg(e,te,tp)
+	e:SetLabelObject(te)
+	return te:GetHandler()==e:GetHandler()
+end
+function c28320229.gaop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_FZONE,POS_FACEUP,false)
+	e:GetHandler():CreateEffectRelation(te)
+	local c=e:GetHandler()
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+	e1:SetOperation(c28320229.rsop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+end
+function c28320229.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+	end
 end
 function c28320229.effectfilter(e,ct)
 	local p=e:GetHandlerPlayer()

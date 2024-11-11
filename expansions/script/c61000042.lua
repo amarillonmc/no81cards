@@ -30,6 +30,23 @@ function s.initial_effect(c)
 	e3:SetTarget(s.rectg)
 	e3:SetOperation(s.recop)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetOperation(s.checkop)
+	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
+	e5:SetTargetRange(LOCATION_MZONE,0)
+	e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e5:SetRange(LOCATION_SZONE)
+	e5:SetCondition(s.atkcon)
+	e5:SetTarget(s.atktg)
+	e4:SetLabelObject(e5)
+	c:RegisterEffect(e5)
 end
 function s.filter(c)
 	return c:IsSetCard(0x97c0) and c:IsAbleToRemove()
@@ -77,4 +94,16 @@ function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
+end
+function s.checkop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(tp,id)~=0 then return end
+	local fid=eg:GetFirst():GetFieldID()
+	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
+	e:GetLabelObject():SetLabel(fid)
+end
+function s.atkcon(e)
+	return Duel.GetFlagEffect(e:GetHandlerPlayer(),id)>0
+end
+function s.atktg(e,c)
+	return c:GetFieldID()~=e:GetLabel()
 end

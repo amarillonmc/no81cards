@@ -77,7 +77,7 @@ function c10111129.filter1(c,e)
 	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck() and not c:IsImmuneToEffect(e)
 end
 function c10111129.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and (c:IsSetCard(0xf008) or c.dark_calling) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and (c:IsSetCard(0x9008) or c.dark_calling) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_DARK_FUSION,tp,true,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c10111129.target(e,tp,eg,ep,ev,re,r,rp,chk)

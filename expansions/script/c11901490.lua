@@ -54,10 +54,10 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(ad,nil,0x40)
         Duel.ConfirmCards(tp,ad)
     end
-    Duel.DisableShuffleCheck()
+    Duel.ShuffleDeck(tp)
 end
 function s.fi1ter(c,tp)
-	return c:IsFaceup() and c:IsCanTurnSet() and c:IsLocation(0x0c)
+	return c:IsFaceup() and c:IsCanTurnSet() and c:IsLocation(0x04)
 end
 function s.fi2ter(c,e,tp)
 	return c:IsRelateToEffect(e) and s.fi1ter(c,tp)

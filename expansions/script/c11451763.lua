@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetCode(EVENT_CUSTOM+m)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_REMOVED)
 	e2:SetLabelObject(e0)
@@ -29,6 +29,12 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
+	local e5=e2:Clone()
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e5:SetCode(EVENT_MOVE)
+	e5:SetCondition(cm.spcon2)
+	c:RegisterEffect(e5)
+	aux.RegisterMergedDelayedEvent(c,m,EVENT_SPSUMMON_SUCCESS)
 end
 function cm.filter(c,tp)
 	return c:IsSetCard(0x9977) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil,c)
@@ -54,12 +60,15 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spfilter(c,se)
-	if not (se==nil or c:GetReasonEffect()~=se) then return false end
 	return c:IsFaceup() and c:IsSetCard(0x9977)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local se=e:GetLabelObject():GetLabelObject()
 	return eg:IsExists(cm.spfilter,1,nil,se)
+end
+function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	local bool,ceg=Duel.CheckEvent(EVENT_CUSTOM+m,true)
+	return eg:IsContains(e:GetHandler()) and bool and ceg:IsExists(cm.spfilter,1,nil)
 end
 function cm.refilter(c)
 	return c:IsAbleToRemove() and c:IsSetCard(0x9977)

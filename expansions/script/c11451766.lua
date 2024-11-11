@@ -32,9 +32,9 @@ function cm.initial_effect(c)
 	--spsummon
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetCategory(CATEGORY_TODECK)
+	e4:SetCategory(CATEGORY_REMOVE)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e4:SetCode(EVENT_CUSTOM+m)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetRange(LOCATION_REMOVED)
 	e4:SetLabelObject(e0)
@@ -42,6 +42,54 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.sptg)
 	e4:SetOperation(cm.spop)
 	c:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e5:SetCode(EVENT_MOVE)
+	e5:SetCondition(cm.spcon2)
+	c:RegisterEffect(e5)
+	aux.RegisterMergedDelayedEvent(c,m,EVENT_SPSUMMON_SUCCESS)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAINING)
+		ge1:SetOperation(cm.check)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_CHAIN_SOLVED)
+		ge2:SetCondition(cm.clearcon)
+		ge2:SetOperation(cm.clear)
+		Duel.RegisterEffect(ge2,0)
+		local ge3=ge2:Clone()
+		ge3:SetCode(EVENT_CHAIN_NEGATED)
+		Duel.RegisterEffect(ge3,0)
+		local ge4=ge1:Clone()
+		ge4:SetCode(EVENT_CHAIN_NEGATED)
+		ge4:SetCondition(cm.rscon)
+		ge4:SetOperation(cm.reset)
+		Duel.RegisterEffect(ge4,0)
+	end
+end
+function cm.check(e,tp,eg,ep,ev,re,r,rp)
+	local tf=re:GetHandler():IsRelateToEffect(re)
+	cm[ev]={re,tf,rp}
+end
+function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentChain()>1
+end
+function cm.reset(e,tp,eg,ep,ev,re,r,rp)
+	cm[ev]={re,false,0}
+end
+function cm.clearcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentChain()==1
+end
+function cm.clear(e,tp,eg,ep,ev,re,r,rp)
+	local i=1
+	while cm[i] do
+		cm[i]=nil
+		i=i+1
+	end
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -52,9 +100,14 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.damcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local rrp=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_PLAYER)
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return re:GetHandler():IsSetCard(0x9977) and re:IsActiveType(TYPE_MONSTER) and rrp~=tp and c:GetFlagEffect(m)~=0 --and loc&LOCATION_ONFIELD==0
+	local i=1
+	local res=false
+	while type(cm[i])=="table" do
+		local te,tf,rp=table.unpack(cm[i])
+		if tf and rp~=tp then res=true end
+		i=i+1
+	end
+	return res and re:GetHandler():IsSetCard(0x9977) and c:GetFlagEffect(m)~=0
 end
 function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
@@ -63,15 +116,21 @@ function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(g,REASON_EFFECT)
 end
 function cm.spfilter(c,se)
-	if not (se==nil or c:GetReasonEffect()~=se) then return false end
 	return c:IsFaceup() and c:IsSetCard(0x9977)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local se=e:GetLabelObject():GetLabelObject()
 	return eg:IsExists(cm.spfilter,1,nil,se)
 end
+function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	local bool,ceg=Duel.CheckEvent(EVENT_CUSTOM+m,true)
+	return eg:IsContains(e:GetHandler()) and bool and ceg:IsExists(cm.spfilter,1,nil)
+end
 function cm.refilter(c,tp)
-	return c:IsAbleToRemove() and c:IsSetCard(0x9977) and c:IsFaceup() and (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or c:IsLocation(LOCATION_SZONE))
+	return c:IsAbleToRemove() and c:IsSetCard(0x9977) and c:IsFaceup() and (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or (c:IsLocation(LOCATION_SZONE) and c:GetSequence()<5))
+end
+function cm.refilter2(c,tp)
+	return c:IsAbleToRemove() and c:IsSetCard(0x9977) and c:IsFaceup()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -83,7 +142,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
-	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 and c:IsRelateToEffect(e) then
+	if #g==0 then g=Duel.SelectMatchingCard(tp,cm.refilter2,tp,LOCATION_ONFIELD,0,1,1,nil,tp) end
+	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 and c:IsRelateToEffect(e) and c:IsSSetable() then
 		Duel.SSet(tp,c)
 	end
 end

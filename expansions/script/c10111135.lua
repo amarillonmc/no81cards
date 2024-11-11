@@ -43,7 +43,7 @@ function c10111135.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c10111135.cfilter2(c)
-	return c:IsFaceup() and c:IsSetCard(0xf008) and not c:IsCode(10111135)
+	return c:IsFaceup() and c:IsSetCard(0x9008) and not c:IsCode(10111135)
 end
 function c10111135.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c10111135.cfilter2,tp,LOCATION_MZONE,0,1,nil)

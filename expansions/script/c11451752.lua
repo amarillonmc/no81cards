@@ -68,8 +68,8 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function cm.refilter(c)
-	return c:IsFaceup() and c:IsAbleToRemove()
+function cm.refilter(c,tp)
+	return c:IsFaceup() and c:IsAbleToRemove() and (not tp or Duel.GetMZoneCount(tp,c)>0)
 end
 function cm.spfilter(c,se)
 	if not (se==nil or c:GetReasonEffect()~=se) then return false end
@@ -84,7 +84,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local sa=c:IsLocation(LOCATION_HAND) and Duel.GetFlagEffect(tp,m+1)==0
 	local sb=c:IsLocation(LOCATION_REMOVED) and Duel.GetFlagEffect(tp,m+10)==0
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and cm.desfilter(chkc,tp) end
-	if chk==0 then return ((c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) or Duel.GetCurrentChain()==0) and Duel.IsExistingTarget(cm.refilter,tp,0,LOCATION_ONFIELD,1,nil) and (sa or sb) end
+	if chk==0 then return ((c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(cm.refilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp)) or (Duel.GetCurrentChain()==0 and Duel.IsExistingTarget(cm.refilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil))) and (sa or sb) end
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	if c:IsLocation(LOCATION_HAND) then
@@ -93,11 +93,13 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		Duel.RegisterFlagEffect(tp,m+10,RESET_PHASE+PHASE_END,0,1)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,cm.refilter,tp,0,LOCATION_ONFIELD,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 	if Duel.GetCurrentChain()==1 then
+		local g=Duel.SelectTarget(tp,cm.refilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 		e:SetCategory(CATEGORY_REMOVE)
 	else
+		local g=Duel.SelectTarget(tp,cm.refilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,tp)
+		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	end

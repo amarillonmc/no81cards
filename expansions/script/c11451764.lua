@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetCode(EVENT_CUSTOM+m)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_REMOVED)
 	e2:SetLabelObject(e0)
@@ -28,6 +28,12 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
+	local e5=e2:Clone()
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e5:SetCode(EVENT_MOVE)
+	e5:SetCondition(cm.spcon2)
+	c:RegisterEffect(e5)
+	aux.RegisterMergedDelayedEvent(c,m,EVENT_SPSUMMON_SUCCESS)
 end
 function cm.filter(c)
 	return c:IsSetCard(0x9977) and c:IsFaceup()
@@ -54,15 +60,17 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spfilter(c,se)
-	if not (se==nil or c:GetReasonEffect()~=se) then return false end
 	return c:IsFaceup() and c:IsSetCard(0x9977)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local se=e:GetLabelObject():GetLabelObject()
 	return eg:IsExists(cm.spfilter,1,nil,se)
 end
+function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	local bool,ceg=Duel.CheckEvent(EVENT_CUSTOM+m,true)
+	return eg:IsContains(e:GetHandler()) and bool and ceg:IsExists(cm.spfilter,1,nil)
+end
 function cm.tdfilter(c,se)
-	if not (se==nil or c:GetReasonEffect()~=se) then return false end
 	return c:IsFaceup() and c:IsSetCard(0x9977) and c:IsAbleToHand()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -71,12 +79,18 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	c:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	local g=eg:Filter(cm.tdfilter,nil,se)
 	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,#g,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	if #g==0 then
+		return
+	elseif #g>1 then
+		Duel.Hint(HINT_SELECTMSG,HINTMSG_RTOHAND)
+		g=g:Select(tp,1,1,nil)
+	end
 	if Duel.SendtoHand(g,nil,REASON_EFFECT)>0 and Duel.GetOperatedGroup():IsExists(Card.IsLocation,1,nil,LOCATION_HAND) and c:IsRelateToEffect(e) then
 		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
 	end

@@ -81,13 +81,7 @@ function c65840060.activate2(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c65840060.discon(e,tp,eg,ep,ev,re,r,rp)
-	for i=1,ev do
-		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-		if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsActiveType(TYPE_SPELL) or te:IsActiveType(TYPE_TRAP)) and Duel.IsChainDisablable(i) then
-			return true
-		end
-	end
-	return false
+	return Duel.IsChainDisablable(ev) and ep==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function c65840060.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetDecktopGroup(tp,5)
@@ -97,27 +91,10 @@ function c65840060.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c65840060.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local ng=Group.CreateGroup()
-	local dg=Group.CreateGroup()
-	for i=1,ev do
-		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-		if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsActiveType(TYPE_SPELL) or te:IsActiveType(TYPE_TRAP)) and Duel.IsChainDisablable(i) then
-			local tc=te:GetHandler()
-			ng:AddCard(tc)
-		end
-	end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,ng,ng:GetCount(),0,0)
+	if chk==0 then return e:GetHandler():GetFlagEffect(65840060)==0 end
+	e:GetHandler():RegisterFlagEffect(65840060,RESET_CHAIN,0,1)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end
 function c65840060.disop(e,tp,eg,ep,ev,re,r,rp)
-	local dg=Group.CreateGroup()
-	for i=1,ev do
-		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-		if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsActiveType(TYPE_SPELL) or te:IsActiveType(TYPE_TRAP)) and Duel.NegateEffect(i) then
-			local tc=te:GetHandler()
-			if tc:IsRelateToEffect(e) and tc:IsRelateToEffect(te) then
-				dg:AddCard(tc)
-			end
-		end
-	end
+	Duel.NegateEffect(ev)
 end

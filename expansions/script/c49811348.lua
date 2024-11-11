@@ -61,7 +61,8 @@ function s.lsop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.imcon(e)
 	local tp=e:GetHandlerPlayer()
-	return Duel.GetLP(tp)>Duel.GetLP(1-tp)
+	local c=e:GetHandler()
+	return Duel.GetLP(tp)>Duel.GetLP(1-tp) and c:IsPosition(POS_FACEUP_ATTACK)
 end
 function s.efilter(e,re)
 	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:GetHandler():IsType(TYPE_MONSTER)

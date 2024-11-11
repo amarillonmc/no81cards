@@ -2,7 +2,7 @@
 function c75075608.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x75a),3,127,false)
+	aux.AddFusionProcFunRep2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x757),3,127,false)
 	--Destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(75075608,0))
@@ -72,7 +72,7 @@ function c75075608.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75075608.fil1ter(c,seq)
-	return c:GetPreviousSequence()<5 and math.abs(seq-c:GetPreviousSequence())==1 and c:IsRace(RACE_BEAST+RACE_FAIRY)
+	return c:GetPreviousSequence()<5 and math.abs(seq-c:GetPreviousSequence())==1 and :IsRace(RACE_BEAST+RACE_FAIRY)
 end
 function c75075608.fil2ter(c,seq)
 	return c:GetPreviousSequence()<5 and math.abs(seq-c:GetPreviousSequence())==1 

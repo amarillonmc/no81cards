@@ -26,7 +26,7 @@ end
 function c75075612.cfilter1(c,tp)
 	return c:IsCode(75080003) and c:IsAbleToHand() and Duel.GetMZoneCount(tp,c)>0
 end
-function c75075612.cfilter1(c,e,tp)
+function c75075612.cfilter2(c,e,tp)
 	return c:IsCode(75080001) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c75075612.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -50,19 +50,22 @@ function c75075612.drop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75075612.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c75075612.spfilter,tp,LOCATION_HAND,0,2,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(c75075612.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_HAND)
+	if chk==0 then return Duel.IsExistingMatchingCard(c75075612.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function c75075612.spfilter(c,e,tp)
-	return (c:IsSetCard(0x75a) or c:IsSetCard(0x758)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
+	return (c:IsSetCard(0x757) or c:IsSetCard(0x758)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
 end
 function c75075612.thfilter(c,e,tp)
-	return (c:IsSetCard(0x75a) or c:IsSetCard(0x758)) and c:IsAbleToHand()
+	return (c:IsSetCard(0x757) or c:IsSetCard(0x758)) and c:IsAbleToHand()
 end
 function c75075612.activate(e,tp,eg,ep,ev,re,r,rp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+    if ft<1 then return end
+    if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c75075612.spfilter,tp,LOCATION_HAND,0,2,2,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,c75075612.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,ct,nil,e,tp)
 	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)~=0 then
 		local tc=g:GetFirst()
 		while tc do
@@ -80,15 +83,7 @@ function c75075612.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterEffect(e1,tp)
 			tc=g:GetNext()
 		end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local gg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_MZONE,0,1,nil)
-		if Duel.SendtoGrave(gg,REASON_EFFECT)~=0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local ggg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c75075612.thfilter),tp,LOCATION_GRAVE,0,1,nil)
-			Duel.SendtoHand(ggg,nil,REASON_EFFECT)
-			Duel.ConfirmCards(ggg,1-tp)
-		end
-	end 
+	end	
 end
 function c75075612.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()

@@ -33,7 +33,7 @@ function c10111139.filter1(c)
 	return c:IsCode(10111128) and c:IsAbleToHand()
 end
 function c10111139.filter2(c)
-	return c:IsSetCard(0xf008) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x9008) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c10111139.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c10111139.filter1,tp,LOCATION_DECK,0,1,nil)
@@ -55,7 +55,7 @@ function c10111139.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function c10111139.cfilter(c)
 	local bc=c:GetBattleTarget()
-	return c:IsSetCard(0xf008) or (bc and bc:IsSetCard(0xf008))
+	return c:IsSetCard(0x9008) or (bc and bc:IsSetCard(0x9008))
 end
 function c10111139.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c10111139.cfilter,1,nil)

@@ -32,6 +32,7 @@ function s.initial_effect(c)
 	e4:SetOperation(s.spop)
 	c:RegisterEffect(e4)
 end
+s.counter_add_list={0x100e}
 function s.mfilter(c)
 	return c:IsCode(51192573) and c:IsSummonType(SUMMON_TYPE_ADVANCE)
 end

@@ -52,7 +52,7 @@ function c75075606.initial_effect(c)
 	c:RegisterEffect(e6)  
 end
 function c75075606.thfilter(c)
-	return c:IsSetCard(0x75a) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x757) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c75075606.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75075606.thfilter,tp,LOCATION_DECK,0,1,nil) end

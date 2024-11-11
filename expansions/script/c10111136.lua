@@ -40,7 +40,7 @@ function c10111136.initial_effect(c)
 	c:RegisterEffect(e3)
     end
 function c10111136.cfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xf008) and c:IsFaceup()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x9008) and c:IsFaceup()
 end
 function c10111136.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	local ct1=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)

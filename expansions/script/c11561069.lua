@@ -12,7 +12,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c11561069.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateMonsterFilter,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
 	local sg=Duel.GetMatchingGroup(aux.NegateMonsterFilter,tp,0,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,sg,sg:GetCount(),0,0)
 end
@@ -26,7 +26,7 @@ function c11561069.activate(e,tp,eg,ep,ev,re,r,rp)
 		local e01=Effect.CreateEffect(e:GetHandler())
 		e01:SetType(EFFECT_TYPE_SINGLE)
 		e01:SetCode(EFFECT_CANNOT_TRIGGER)
-		e01:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e01:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 		e01:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc2:RegisterEffect(e01)
 		tc2=g2:GetNext()

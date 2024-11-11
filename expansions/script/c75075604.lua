@@ -105,5 +105,5 @@ function c75075604.disable(e,c)
 end
 --
 function c75075604.efilter(e,te)
-	return not te:IsSetCard(0x75a)
+	return not te:IsSetCard(0x757)
 end

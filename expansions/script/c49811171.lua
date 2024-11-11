@@ -10,13 +10,14 @@ function c49811171.initial_effect(c)
     e1:SetCode(EFFECT_SPSUMMON_PROC)
     e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
     e1:SetRange(LOCATION_EXTRA)
+    e1:SetCountLimit(1)
     e1:SetCondition(c49811171.spcon)
     e1:SetTarget(c49811171.sptg)
     e1:SetOperation(c49811171.spop)
     c:RegisterEffect(e1)
     Duel.AddCustomActivityCounter(49811171,ACTIVITY_SPSUMMON,c49811171.counterfilter)
     --unique
-    c:SetUniqueOnField(1,0,49811171)
+    --c:SetUniqueOnField(1,0,49811171)
     --atk
     local e2=Effect.CreateEffect(c)
     e2:SetType(EFFECT_TYPE_SINGLE)
@@ -39,10 +40,9 @@ function c49811171.initial_effect(c)
     --to grave
     local e4=Effect.CreateEffect(c)
     e4:SetCategory(CATEGORY_TOGRAVE)
-    e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+    e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
     e4:SetCode(EVENT_LEAVE_FIELD)
     e4:SetProperty(EFFECT_FLAG_DELAY)
-    e4:SetCountLimit(1,49811172)
     e4:SetCondition(c49811171.tgcon)
     e4:SetTarget(c49811171.tgtg)
     e4:SetOperation(c49811171.tgop)
@@ -119,9 +119,9 @@ function c49811171.copyfilter(c)
 end
 function c49811171.copytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_REMOVED) and c49811171.copyfilter(chkc) end
-    if chk==0 then return Duel.IsExistingTarget(c49811171.copyfilter,tp,LOCATION_REMOVED,0,1,nil) end
+    if chk==0 then return Duel.IsExistingTarget(c49811171.copyfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-    Duel.SelectTarget(tp,c49811171.copyfilter,tp,LOCATION_REMOVED,0,1,1,nil)
+    Duel.SelectTarget(tp,c49811171.copyfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,1,nil)
 end
 function c49811171.copyop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
@@ -174,12 +174,12 @@ function c49811171.tgfilter(c,e,tp)
     return c:IsFaceup() and c:IsSetCard(0xbb) and c:IsType(TYPE_MONSTER)
 end
 function c49811171.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c49811171.tgfilter,tp,LOCATION_REMOVED,0,1,nil) end
-    local g=Duel.GetMatchingGroup(c49811171.tgfilter,tp,LOCATION_REMOVED,0,nil)
+	if chk==0 then return true end
+    local g=Duel.GetMatchingGroup(c49811171.tgfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
     Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,g:GetCount(),0,0)
 end
 function c49811171.tgop(e,tp,eg,ep,ev,re,r,rp)
-    local g=Duel.GetMatchingGroup(c49811171.tgfilter,tp,LOCATION_REMOVED,0,nil)
+    local g=Duel.GetMatchingGroup(c49811171.tgfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
     if g:GetCount()>0 then
         Duel.SendtoGrave(g,REASON_EFFECT+REASON_RETURN)
     end

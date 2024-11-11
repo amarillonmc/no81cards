@@ -1,6 +1,6 @@
 --古之钥的序曲 蒸汽交响
 function c28381783.initial_effect(c)
-	aux.AddFusionProcFunRep2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x285),2,99,true)
+	aux.AddFusionProcFunRep2(c,c28381783.ffilter,2,99,true)
 	c:EnableReviveLimit()
    --spsummon
 	local e0=Effect.CreateEffect(c)
@@ -9,8 +9,9 @@ function c28381783.initial_effect(c)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
 	e0:SetValue(SUMMON_TYPE_FUSION)
-	e0:SetCondition(c28381783.hspcon)
-	e0:SetOperation(c28381783.hspop)
+	e0:SetCondition(c28381783.sprcon)
+	e0:SetTarget(c28381783.sprtg)
+	e0:SetOperation(c28381783.sprop)
 	c:RegisterEffect(e0)
 	--to grave and remove
 	local e1=Effect.CreateEffect(c)
@@ -56,18 +57,38 @@ function c28381783.initial_effect(c)
 	e4:SetValue(RACE_FIEND)
 	c:RegisterEffect(e4)
 end
-function c28381783.matfilter(c)
-	return c:IsAbleToDeckAsCost() and c:IsFusionSetCard(0x285) and c:IsCanBeFusionMaterial()
+function c28381783.ffilter(c)
+	return c:IsFusionAttribute(ATTRIBUTE_DARK) and c:IsLevel(3)
 end
-function c28381783.hspcon(e,c)
+function c28381783.matfilter(c)
+	return c:IsAbleToDeckAsCost() and c:IsFusionAttribute(ATTRIBUTE_DARK) and c:IsLevel(3) and c:IsCanBeFusionMaterial()
+end
+function c28381783.sprcon(e,c)
 	if c==nil then return true end
 	local mg=Duel.GetMatchingGroup(c28381783.matfilter,c:GetOwner(),LOCATION_MZONE,0,nil)
-	return mg:GetCount()>=2 and Duel.GetLP(c:GetOwner())<=3000
+	local ct=Duel.GetFlagEffect(tp,28381783)+2
+	return mg:GetCount()>=ct and Duel.GetLP(c:GetOwner())<=3000
 end
-function c28381783.hspop(e,tp,eg,ep,ev,re,r,rp,c)
-	local mg=Duel.SelectMatchingCard(tp,c28381783.matfilter,tp,LOCATION_MZONE,0,2,99,nil)
+function c28381783.selectcheck(mg)
+	return true
+end
+function c28381783.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local mg=Duel.GetMatchingGroup(c28381783.matfilter,tp,LOCATION_MZONE,0,nil)
+	local ct=Duel.GetFlagEffect(tp,28381783)+2
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local sg=mg:SelectSubGroup(tp,c28381783.selectcheck,true,ct,99)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function c28381783.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local mg=e:GetLabelObject()
 	c:SetMaterial(mg)
 	Duel.SendtoDeck(mg,nil,SEQ_DECKSHUFFLE,REASON_COST+REASON_FUSION+REASON_MATERIAL)
+	mg:DeleteGroup()
+	Duel.RegisterFlagEffect(tp,28381783,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c28381783.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
@@ -81,9 +102,6 @@ function c28381783.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return ct>0 and Duel.IsExistingMatchingCard(c28381783.cfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
-	if Duel.GetLP(tp)<=3000 then
-		e:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN)
-	else e:SetProperty(EFFECT_FLAG_DELAY) end
 end
 function c28381783.tgfilter(c)
 	return c:IsSetCard(0x285) and c:IsAbleToGrave()
@@ -94,7 +112,7 @@ end
 function c28381783.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=c:GetMaterialCount()
-	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
+	--[[if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
@@ -103,7 +121,7 @@ function c28381783.tgop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e2)
+	c:RegisterEffect(e2)--]]
 	local tct=Duel.GetMatchingGroupCount(c28381783.tgfilter,tp,LOCATION_DECK,0,nil)
 	local rct=Duel.GetMatchingGroupCount(c28381783.refilter,tp,LOCATION_DECK,0,nil)
 	if tct==0 and rct==0 then return end

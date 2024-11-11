@@ -49,38 +49,37 @@ function c9911456.thfilter(c,tp)
 		and not Duel.IsExistingMatchingCard(c9911456.cfilter,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode())
 end
 function c9911456.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9911456.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
+	if chk==0 then
+		local ct=0
+		local ce={Duel.IsPlayerAffectedByEffect(tp,EFFECT_SET_SUMMON_COUNT_LIMIT)}
+		for _,te in ipairs(ce) do
+			ct=math.max(ct,te:GetValue())
+		end
+		return ct<2 and Duel.IsExistingMatchingCard(c9911456.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function c9911456.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9911456.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
-	if #g>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
+	local hc=g:GetFirst()
+	if hc and Duel.SendtoHand(hc,nil,REASON_EFFECT)~=0 and hc:IsLocation(LOCATION_HAND) then
 		Duel.ConfirmCards(1-tp,g)
-		local ct=0
-		local ce={Duel.IsPlayerAffectedByEffect(tp,EFFECT_SET_SUMMON_COUNT_LIMIT)}
-		for _,te in ipairs(ce) do
-			ct=math.max(ct,te:GetValue())
-		end
-		if ct<2 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,c)
-			and Duel.SelectYesNo(tp,aux.Stringid(9911456,0)) then
-			Duel.BreakEffect()
-			Duel.ShuffleHand(tp)
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,c)
-			local tc=tg:GetFirst()
-			if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_FIELD)
-				e1:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
-				e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-				e1:SetTargetRange(1,0)
-				e1:SetValue(2)
-				e1:SetReset(RESET_PHASE+PHASE_END)
-				Duel.RegisterEffect(e1,tp)
-			end
+		Duel.ShuffleHand(tp)
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(e))
+		local tc=tg:GetFirst()
+		if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_SET_SUMMON_COUNT_LIMIT)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetTargetRange(1,0)
+			e1:SetValue(2)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
 		end
 	end
 end

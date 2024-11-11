@@ -58,14 +58,10 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if tc and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,g)
-		if Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK,0,1,nil)
+		if Duel.IsPlayerCanDraw(tp,1) then
 			and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-			local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_DECK,0,1,1,nil)
-			local tc=g:GetFirst()
-			if tc then
-				Duel.SSet(tp,tc)
-			end
+			Duel.BreakEffect()
+			Duel.Draw(tp,1,REASON_EFFECT)
 		end
 	end
 	local c=e:GetHandler()

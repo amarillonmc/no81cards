@@ -58,7 +58,7 @@ function c49811244.activate(e,tp,eg,ep,ev,re,r,rp)
 			local g1=g:Select(tp,1,1,nil)
 			Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
 		end
-	end	
+	end 
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
@@ -73,7 +73,7 @@ function c49811244.actlimit(e,re,rp)
 	return re:IsActiveType(TYPE_MONSTER) and rc:IsOnField() and not rc:IsRace(RACE_WYRM)
 end
 function c49811244.rfilter(c,tp,rp)
-	return c:IsPreviousControler(tp) and bit.band(c:GetPreviousRaceOnField(),RACE_WYRM)~=0 and rp==1-tp
+	return c:IsPreviousControler(tp) and c:IsPreviousPosition(POS_FACEUP) and bit.band(c:GetPreviousRaceOnField(),RACE_WYRM)~=0 and rp==1-tp
 end
 function c49811244.stcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c49811244.rfilter,1,nil,tp,rp) and not eg:IsContains(e:GetHandler())

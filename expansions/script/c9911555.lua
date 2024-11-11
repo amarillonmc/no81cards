@@ -65,20 +65,34 @@ function c9911555.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9911555.tgfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
-function c9911555.thfilter(c)
-	return c:IsFaceupEx() and c:IsSetCard(0x6952) and c:IsAbleToHand()
-end
 function c9911555.tgop(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c9911555.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)>0 and g:GetFirst():IsLocation(LOCATION_GRAVE)
-		and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c9911555.thfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
-		and Duel.SelectYesNo(tp,aux.Stringid(9911555,1)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9911555.thfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,sg)
+	if g:GetCount()>0 then
+		Duel.SendtoGrave(g,REASON_EFFECT)
+	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	e1:SetCondition(c9911555.thcon)
+	e1:SetOperation(c9911555.thop)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c9911555.thfilter(c)
+	return c:IsFaceupEx() and c:IsSetCard(0x6952) and c:IsAbleToHand()
+end
+function c9911555.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c9911555.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
+end
+function c9911555.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9911555.thfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
 	end
 end
 function c9911555.costfilter(c)

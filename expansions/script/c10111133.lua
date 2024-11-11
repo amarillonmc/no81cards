@@ -2,7 +2,7 @@ function c10111133.initial_effect(c)
 	aux.AddCodeList(c,10111128)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xf008),aux.FilterBoolFunction(Card.IsFusionSetCard,0x8),true) 
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9008),aux.FilterBoolFunction(Card.IsFusionSetCard,0x8),true) 
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
@@ -52,7 +52,7 @@ function c10111133.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(sg,nil,SEQ_DECKTOP,REASON_EFFECT)
 end
 function c10111133.cfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xf008) and not c:IsCode(10111133)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x9008) and not c:IsCode(10111133)
 end
 function c10111133.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c10111133.cfilter,tp,LOCATION_MZONE,0,1,nil)

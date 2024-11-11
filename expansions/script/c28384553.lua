@@ -54,10 +54,10 @@ function c28384553.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c28384553.mfilter(c)
-	return c:IsType(TYPE_FUSION) and c:IsFusionSetCard(0x285)
+	return c:IsType(TYPE_FUSION) and c:IsRace(RACE_FIEND)
 end
 function c28384553.matfilter(c)
-	return c:IsAbleToExtraAsCost() and c:IsFusionSetCard(0x285) and c:IsCanBeFusionMaterial()
+	return c:IsAbleToExtraAsCost() and c:IsRace(RACE_FIEND) and c:IsCanBeFusionMaterial()
 end
 function c28384553.hspcon(e,c)
 	if c==nil then return true end

@@ -168,69 +168,67 @@ function yume.PPTTetrisBasicMoveOp(e,tp,eg,ep,ev,re,r,rp)
 	Duel.MoveSequence(c,seq)
 	Duel.AdjustAll()
 	if c:IsLocation(LOCATION_MZONE) and c:GetSequence()==seq then
-		local c=e:GetHandler()
-		local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
-		local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
-		local oppo_lpz=Duel.GetFieldCard(1-tp,LOCATION_PZONE,0)
-		local oppo_rpz=Duel.GetFieldCard(1-tp,LOCATION_PZONE,1)
-		local self_pend_flag = lpz ~= nil and rpz ~= nil
-		local oppo_pend_flag = oppo_lpz ~= nil and oppo_rpz ~= nil
-			and oppo_lpz:GetFieldID()==oppo_lpz:GetFlagEffectLabel(31531170)
-			and oppo_rpz:GetFieldID()==oppo_rpz:GetFlagEffectLabel(31531170)
-		if not(self_pend_flag or oppo_pend_flag) then return end
-		local loc=0
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_HAND end
-		if Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)>0 then loc=loc+LOCATION_EXTRA end
-		if loc==0 then return end
-		local pend_chk=aux.PendulumChecklist
-		aux.PendulumChecklist=aux.PendulumChecklist&~(1<<tp)
-		local eset={}
-		local lscale,rscale,oppo_lscale,oppo_rscale
-		local g=Duel.GetFieldGroup(tp,loc,0)
-		if self_pend_flag then
-			lscale=lpz:GetLeftScale()
-			rscale=rpz:GetRightScale()
-			if lscale>rscale then lscale,rscale=rscale,lscale end
+		yume.OptionalPendulum(e,c,tp)
+	end
+end
+function yume.OptionalPendulum(e,c,tp)
+	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
+	local rpz=Duel.GetFieldCard(tp,LOCATION_PZONE,1)
+	local oppo_lpz=Duel.GetFieldCard(1-tp,LOCATION_PZONE,0)
+	local oppo_rpz=Duel.GetFieldCard(1-tp,LOCATION_PZONE,1)
+	local self_pend_flag = lpz ~= nil and rpz ~= nil
+	local oppo_pend_flag = oppo_lpz ~= nil and oppo_rpz ~= nil
+		and oppo_lpz:GetFieldID()==oppo_lpz:GetFlagEffectLabel(31531170)
+		and oppo_rpz:GetFieldID()==oppo_rpz:GetFlagEffectLabel(31531170)
+	if not(self_pend_flag or oppo_pend_flag) then return end
+	local loc=0
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_HAND end
+	if Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)>0 then loc=loc+LOCATION_EXTRA end
+	if loc==0 then return end
+	local pend_chk=aux.PendulumChecklist
+	aux.PendulumChecklist=aux.PendulumChecklist&~(1<<tp)
+	local eset={}
+	local lscale,rscale,oppo_lscale,oppo_rscale
+	local g=Duel.GetFieldGroup(tp,loc,0)
+	if self_pend_flag then
+		lscale=lpz:GetLeftScale()
+		rscale=rpz:GetRightScale()
+		if lscale>rscale then lscale,rscale=rscale,lscale end
+	end
+	if oppo_pend_flag then
+		oppo_lscale=oppo_lpz:GetLeftScale()
+		oppo_rscale=oppo_rpz:GetRightScale()
+		if oppo_lscale>oppo_rscale then
+			oppo_lscale,oppo_rscale=oppo_rscale,oppo_lscale
 		end
-		if oppo_pend_flag then
-			oppo_lscale=oppo_lpz:GetLeftScale()
-			oppo_rscale=oppo_rpz:GetRightScale()
-			if oppo_lscale>oppo_rscale then
-				oppo_lscale,oppo_rscale=oppo_rscale,oppo_lscale
-			end
-		end
-		self_pend_flag=self_pend_flag and g:IsExists(aux.PConditionFilter,1,nil,e,tp,lscale,rscale,eset)
-		oppo_pend_flag=oppo_pend_flag and g:IsExists(aux.PConditionFilter,1,nil,e,tp,oppo_lscale,oppo_rscale,eset)
-		if (self_pend_flag or oppo_pend_flag) and Duel.SelectYesNo(tp,aux.Stringid(71403001,4)) then
-			Duel.BreakEffect()
-			--reset when special summoned
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-			e1:SetReset(RESET_PHASE+PHASE_MAIN1)
-			e1:SetLabel(pend_chk)
-			e1:SetOperation(yume.ResetExtraPendulumEffect)
-			Duel.RegisterEffect(e1,tp)
-			--reset when negated
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e2:SetCode(EVENT_SPSUMMON_NEGATED)
-			e2:SetOperation(yume.ResetExtraPendulumEffect)
-			e2:SetLabelObject(e1)
-			e2:SetLabel(pend_chk)
-			e2:SetReset(RESET_PHASE+PHASE_MAIN1)
-			Duel.RegisterEffect(e2,tp)
-			e1:SetLabelObject(e2)
-			local use_oppo_pend=not self_pend_flag or oppo_pend_flag and Duel.SelectYesNo(tp,aux.Stringid(71403001,5))
-			if use_oppo_pend then
-				--Duel.HintSelection(Group.FromCards(oppo_lpz))
-				--Duel.HintSelection(Group.FromCards(oppo_rpz))
-				Duel.SpecialSummonRule(tp,oppo_lpz,SUMMON_TYPE_PENDULUM)
-			else
-				--Duel.HintSelection(Group.FromCards(lpz))
-				--Duel.HintSelection(Group.FromCards(rpz))
-				Duel.SpecialSummonRule(tp,lpz,SUMMON_TYPE_PENDULUM)
-			end
+	end
+	self_pend_flag=self_pend_flag and g:IsExists(aux.PConditionFilter,1,nil,e,tp,lscale,rscale,eset)
+	oppo_pend_flag=oppo_pend_flag and g:IsExists(aux.PConditionFilter,1,nil,e,tp,oppo_lscale,oppo_rscale,eset)
+	if (self_pend_flag or oppo_pend_flag) and Duel.SelectYesNo(tp,aux.Stringid(71403001,4)) then
+		Duel.BreakEffect()
+		--reset when special summoned
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+		e1:SetReset(RESET_PHASE+PHASE_MAIN1)
+		e1:SetLabel(pend_chk)
+		e1:SetOperation(yume.ResetExtraPendulumEffect)
+		Duel.RegisterEffect(e1,tp)
+		--reset when negated
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_SPSUMMON_NEGATED)
+		e2:SetOperation(yume.ResetExtraPendulumEffect)
+		e2:SetLabelObject(e1)
+		e2:SetLabel(pend_chk)
+		e2:SetReset(RESET_PHASE+PHASE_MAIN1)
+		Duel.RegisterEffect(e2,tp)
+		e1:SetLabelObject(e2)
+		local use_oppo_pend=not self_pend_flag or oppo_pend_flag and Duel.SelectYesNo(tp,aux.Stringid(71403001,5))
+		if use_oppo_pend then
+			Duel.SpecialSummonRule(tp,oppo_lpz,SUMMON_TYPE_PENDULUM)
+		else
+			Duel.SpecialSummonRule(tp,lpz,SUMMON_TYPE_PENDULUM)
 		end
 	end
 end

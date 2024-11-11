@@ -1,16 +1,17 @@
 --古之钥的主歌 深渊冲突
 function c28382113.initial_effect(c)
-	aux.AddFusionProcFunRep2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x285),2,99,true)
+	aux.AddFusionProcFunRep2(c,c28382113.ffilter,2,99,true)
 	c:EnableReviveLimit()
-   --spsummon
+	--spsummon
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
 	e0:SetValue(SUMMON_TYPE_FUSION)
-	e0:SetCondition(c28382113.hspcon)
-	e0:SetOperation(c28382113.hspop)
+	e0:SetCondition(c28382113.sprcon)
+	e0:SetTarget(c28382113.sprtg)
+	e0:SetOperation(c28382113.sprop)
 	c:RegisterEffect(e0)
 	--to deck
 	local e1=Effect.CreateEffect(c)
@@ -50,38 +51,55 @@ function c28382113.initial_effect(c)
 	e4:SetValue(RACE_FIEND)
 	c:RegisterEffect(e4)
 end
-function c28382113.matfilter(c)
-	return c:IsReleasable(REASON_SPSUMMON) and c:IsFusionSetCard(0x285) and c:IsCanBeFusionMaterial()
+function c28382113.ffilter(c)
+	return c:IsFusionAttribute(ATTRIBUTE_DARK) and c:IsLevel(3)
 end
-function c28382113.hspcon(e,c)
+function c28382113.matfilter(c)
+	return c:IsReleasable(REASON_SPSUMMON) and c:IsFusionAttribute(ATTRIBUTE_DARK) and c:IsLevel(3) and c:IsCanBeFusionMaterial()
+end
+function c28382113.sprcon(e,c)
 	if c==nil then return true end
 	local mg=Duel.GetMatchingGroup(c28382113.matfilter,c:GetOwner(),LOCATION_MZONE,0,nil)
-	return mg:GetCount()>=2 and Duel.GetLP(c:GetOwner())<=3000
+	local ct=Duel.GetFlagEffect(tp,28382113)+2
+	return mg:GetCount()>=ct and Duel.GetLP(c:GetOwner())<=3000
 end
-function c28382113.hspop(e,tp,eg,ep,ev,re,r,rp,c)
-	local mg=Duel.SelectMatchingCard(tp,c28382113.matfilter,tp,LOCATION_MZONE,0,2,99,nil)
+function c28382113.selectcheck(mg)
+	return true
+end
+function c28382113.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local mg=Duel.GetMatchingGroup(c28382113.matfilter,tp,LOCATION_MZONE,0,nil)
+	local ct=Duel.GetFlagEffect(tp,28382113)+2
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local sg=mg:SelectSubGroup(tp,c28382113.selectcheck,true,ct,99)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function c28382113.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local mg=e:GetLabelObject()
 	c:SetMaterial(mg)
 	Duel.Release(mg,REASON_COST+REASON_FUSION+REASON_MATERIAL)
+	mg:DeleteGroup()
+	Duel.RegisterFlagEffect(tp,28382113,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c28382113.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
 function c28382113.tdfilter(c)
-	return c:IsSetCard(0x285) and c:IsAbleToDeck()  and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
+	return c:IsSetCard(0x285) and c:IsAbleToDeck() and c:IsFaceupEx()
 end
 function c28382113.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local ct=c:GetMaterialCount()
 	if chk==0 then return ct>0 and Duel.IsExistingMatchingCard(c28382113.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
-	if Duel.GetLP(tp)<=3000 then
-		e:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN)
-	else e:SetProperty(EFFECT_FLAG_DELAY) end
 end
 function c28382113.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=c:GetMaterialCount()
-	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
+	--[[if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
@@ -90,7 +108,7 @@ function c28382113.tdop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e2)
+	c:RegisterEffect(e2)--]]
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28382113.tdfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,ct,nil)
 	if g:GetCount()==0 then return end
@@ -120,4 +138,5 @@ function c28382113.dsop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLP(tp)<=3000 and Duel.IsChainNegatable(ev) and Duel.SelectYesNo(tp,aux.Stringid(28382113,0)) then
 		Duel.NegateActivation(ev)
 	end
+	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28382113,1))
 end

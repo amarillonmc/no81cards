@@ -17,8 +17,9 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_DECK,0,nil)
 		if not chainchk then return #g>0 end
 		for i=1,Duel.GetCurrentChain() do
-			local tgp,code=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_CODE)
-			if tgp~=tp and g:IsExists(Card.IsCode,1,nil,code) then return true end
+			local tgp,te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_EFFECT)
+			local code,code2=te:GetHandler():GetOriginalCodeRule()
+			if tgp~=tp and g:IsExists(Card.IsCode,1,nil,code,code2) then return true end
 		end
 		return false
 	end
@@ -29,11 +30,13 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local codes={}
 	if chainchk then
 		for i=1,Duel.GetCurrentChain() do
-			local tgp,code=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_CODE)
-			local tg=g:Filter(Card.IsCode,nil,code)
+			local tgp,te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_EFFECT)
+			local code,code2=te:GetHandler():GetOriginalCodeRule()
+			local tg=g:Filter(Card.IsCode,nil,code,code2)
 			if tgp~=tp and #tg>0 then
 				ag:Merge(tg)
 				table.insert(codes,code)
+				if code2 then table.insert(codes,code2) end
 			end
 		end
 	else

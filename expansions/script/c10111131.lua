@@ -47,7 +47,7 @@ function c10111131.initial_effect(c)
 	e3:SetLabelObject(ng)
 	--spsummon
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(10111131,1))
+	e4:SetDescription(aux.Stringid(10111131,2))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_NO_TURN_RESET)

@@ -59,7 +59,7 @@ function c10111138.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
 function c10111138.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xf008) and c:IsType(TYPE_FUSION)
+	return c:IsFaceup() and c:IsSetCard(0x9008) and c:IsType(TYPE_FUSION)
 end
 function c10111138.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -78,7 +78,7 @@ function c10111138.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end
 function c10111138.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0xf008)
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x9008)
 		and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,true,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c10111138.fstg(e,tp,eg,ep,ev,re,r,rp,chk)

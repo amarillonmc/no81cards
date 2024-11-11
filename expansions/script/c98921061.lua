@@ -130,7 +130,7 @@ function c98921061.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetRange(LOCATION_SZONE)
 		e4:SetCountLimit(1)
 		e4:SetOperation(c98921061.matop)
-		e4:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e4)
 	end
 end

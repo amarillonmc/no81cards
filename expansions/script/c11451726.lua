@@ -145,7 +145,7 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if chk==0 then return ft>0 or c:IsLocation(LOCATION_SZONE) end
+	if chk==0 then return true end --ft>0 or c:IsLocation(LOCATION_SZONE) end
 	local cid=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -175,7 +175,7 @@ function cm.cfilter(c)
 	return (c:IsFaceup() or c:GetEquipTarget()) and c:IsType(TYPE_EQUIP) and c:IsAbleToDeck()
 end
 function cm.dfilter(c,tp)
-	return c:IsRace(RACE_PYRO) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
+	return c:IsRace(RACE_PYRO) and c:CheckUniqueOnField(tp) and not c:IsForbidden() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -183,7 +183,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lg2=Duel.GetMatchingGroup(cm.dfilter,tp,LOCATION_DECK,0,nil,tp)
 	if chk==0 then
 		--if e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsExistingMatchingCard(function(c) return c:IsCode(m) and c:IsFaceup() end,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then return false end
-		return #lg>0 and #lg2>0
+		return #lg>0 --and #lg2>0
 	end
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(),1,0,0)
 end
@@ -193,12 +193,12 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	if #g==0 then return end
 	local tc=g:GetFirst():GetEquipTarget()
-	if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)>0 and c:IsRelateToEffect(e) and c:IsLocation(LOCATION_SZONE) and not c:IsStatus(STATUS_LEAVE_CONFIRMED) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() then
+	if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)>0 and tc:IsFaceup() then
+		local sg=Duel.GetMatchingGroup(cm.dfilter,tp,LOCATION_DECK,0,nil,tp)
+		if c:IsRelateToEffect(e) and c:IsLocation(LOCATION_SZONE) and not c:IsStatus(STATUS_LEAVE_CONFIRMED) then sg:AddCard(c) end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local sg=Duel.SelectMatchingCard(tp,cm.dfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
-		local ec=sg:GetFirst()
-		if ec then
-			Duel.Equip(tp,c,tc,true,true)
+		local rg=sg:SelectSubGroup(tp,function(ag) return ag:IsContains(c) or #ag<=1 end,false,0,2)
+		for ec in aux.Next(rg) do
 			Duel.Equip(tp,ec,tc,true,true)
 			--equip limit
 			local e1=Effect.CreateEffect(c)
@@ -208,11 +208,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(cm.eqlimit)
 			e1:SetLabelObject(tc)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			c:RegisterEffect(e1)
-			local e2=e1:Clone()
-			ec:RegisterEffect(e2)
-			Duel.EquipComplete()
+			ec:RegisterEffect(e1)
 		end
+		Duel.EquipComplete()
+		if sg:IsContains(c) and not rg:IsContains(c) then c:CancelToGrave(false) end
 	end
 end
 function cm.eqlimit(e,c)

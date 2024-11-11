@@ -34,8 +34,8 @@ end
 function c65810070.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c65810070.filter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c65810070.filter,tp,LOCATION_DECK,0,1,1,nil)
-	Duel.SendtoGrave(g,REASON_COST)
+	local g=Duel.SelectMatchingCard(tp,c65810070.filter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+	Duel.Release(g,REASON_COST)
 end
 function c65810070.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c65810070.filter1,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp) end

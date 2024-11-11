@@ -71,7 +71,7 @@ function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return rc:IsControler(tp) and bit.band(rc:GetType(),TYPE_TRAP+TYPE_CONTINUOUS)==TYPE_TRAP+TYPE_CONTINUOUS and re:GetActivateLocation()==LOCATION_MZONE
 end
 function s.setfilter(c)
-	return c:IsSetCard(0x2c3) and c:GetType()&0x20004==0x20004 and not c:IsForbidden() and not Duel.IsExistingMatchingCard(s.bfilter,tp,LOCATION_ONFIELD,0,1,nil,c)
+	return c:IsSetCard(0x1c1) and c:GetType()&0x20004==0x20004 and not c:IsForbidden() and not Duel.IsExistingMatchingCard(s.bfilter,tp,LOCATION_ONFIELD,0,1,nil,c)
 end
 function s.bfilter(c,tc)
 	return tc:IsCode(c:GetCode()) and c:IsFaceup()

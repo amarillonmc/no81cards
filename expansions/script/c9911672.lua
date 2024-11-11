@@ -23,27 +23,30 @@ function c9911672.initial_effect(c)
 	e2:SetOperation(c9911672.efop)
 	c:RegisterEffect(e2)
 end
-function c9911672.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) end
-	Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_COST)
-end
 function c9911672.thfilter(c)
 	return (c:IsSetCard(0x5957) or c:IsCode(9911675)) and c:IsAbleToHand()
 end
+function c9911672.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(c9911672.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) and #g>0 end
+	local ct=Duel.RemoveOverlayCard(tp,1,0,1,math.min(#g,2),REASON_COST)
+	e:SetLabel(ct)
+end
 function c9911672.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9911672.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
-end
-function c9911672.check(g)
-	return g:FilterCount(Card.IsSetCard,nil,0x5957)<2 and g:FilterCount(Card.IsCode,nil,9911675)<2
+	local ct=e:GetLabel()
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,ct,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function c9911672.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9911672.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=tg:SelectSubGroup(tp,c9911672.check,false,1,2)
-	if g then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	local ct=e:GetLabel()
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9911672.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+	if #g>=ct then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,ct,ct,nil)
+		if #sg>0 then
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg)
+		end
 	end
 end
 function c9911672.efcon(e,tp,eg,ep,ev,re,r,rp)
@@ -76,12 +79,12 @@ function c9911672.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,g:GetCount()*900)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,g:GetCount()*300)
 end
 function c9911672.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,aux.ExceptThisCard(e))
 	local ct=Duel.Destroy(g,REASON_EFFECT)
 	if ct>0 then
-		Duel.Damage(1-tp,ct*900,REASON_EFFECT)
+		Duel.Damage(1-tp,ct*300,REASON_EFFECT)
 	end
 end
