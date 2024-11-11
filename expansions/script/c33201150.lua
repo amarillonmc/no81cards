@@ -71,16 +71,25 @@ end
 function s.tgcon(e,c)
 	if c==nil then return true end
 	local sp=e:GetHandler():GetControler()
-	return Duel.GetLocationCount(sp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(s.relfilter,sp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and Duel.GetTurnPlayer()==sp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+	return Duel.IsExistingMatchingCard(s.relfilter,sp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and (Duel.GetLocationCount(sp,LOCATION_SZONE)>0 or Duel.IsExistingMatchingCard(s.relfilter,sp,LOCATION_SZONE,0,1,nil)) and Duel.GetTurnPlayer()==sp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp,c)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,s.relfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
-	Duel.Hint(HINT_CARD,1-tp,id)
-	if Duel.Release(g,REASON_COST)~=0 then
-		Mermaid_VHisc.sp(c,tp)
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		local g=Duel.SelectMatchingCard(tp,s.relfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+		Duel.Hint(HINT_CARD,1-tp,id)
+		if Duel.Release(g,REASON_COST)~=0 then
+			Mermaid_VHisc.sp(c,tp)
+		end
+	else 
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		local g=Duel.SelectMatchingCard(tp,s.relfilter,tp,LOCATION_SZONE,0,1,1,nil)
+		Duel.Hint(HINT_CARD,1-tp,id)
+		if Duel.Release(g,REASON_COST)~=0 then
+			Mermaid_VHisc.sp(c,tp)
+		end
 	end
 end
 

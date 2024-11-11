@@ -93,6 +93,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:GetCount(),0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local sg=Duel.GetMatchingGroup(cm.filter,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 	Duel.Destroy(sg,REASON_EFFECT)
 	local num=Duel.GetOperatedGroup()

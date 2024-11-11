@@ -3,10 +3,10 @@ local cm=_G["c"..m]
 cm.name="铁轨所连接的完美世界"
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCategory(CATEGORY_RECOVER)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.condition)
 	e1:SetTarget(cm.rectg)
@@ -15,9 +15,9 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1,34512024)
 	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(cm.settg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
 end
@@ -37,6 +37,9 @@ function cm.recop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.setfilter(c)
 	return c:IsSetCard(0xac9) and c:IsType(TYPE_SPELL) and c:IsSSetable()
+end
+function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
