@@ -35,13 +35,13 @@ function c49811196.tdfilter(c)
     return c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
 function c49811196.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(c49811196.tdfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) and Duel.IsPlayerCanSummon(tp) and Duel.IsPlayerCanAdditionalSummon(tp) end
+    if chk==0 then return Duel.IsExistingMatchingCard(c49811196.tdfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c49811196.tdop(e,tp,eg,ep,ev,re,r,rp)
-    local g=Duel.GetMatchingGroup(c49811196.tdfilter,p,LOCATION_HAND+LOCATION_GRAVE,0,nil)
+    local g=Duel.GetMatchingGroup(c49811196.tdfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil)
     if g:GetCount()>=1 then
-        Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
         local sg=g:Select(tp,1,5,nil)
         Duel.ConfirmCards(1-tp,sg)
         Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
