@@ -61,9 +61,9 @@ function s.Unification_Vector_Fusion_Condition()
             local tp=e:GetHandlerPlayer()
             if gc then
                 if not g:IsContains(gc) then return false end
-				return g:CheckSubGroup(s.Unification_Vector_Fusion_Gcheck,2,99,fc,tp,chkf,gc)
+				return g:Filter(Card.IsFusionType,nil,TYPE_MONSTER):CheckSubGroup(s.Unification_Vector_Fusion_Gcheck,2,99,fc,tp,chkf,gc)
             end
-            return g:CheckSubGroup(s.Unification_Vector_Fusion_Gcheck,2,99,fc,tp,chkf,nil)
+            return g:Filter(Card.IsFusionType,nil,TYPE_MONSTER):CheckSubGroup(s.Unification_Vector_Fusion_Gcheck,2,99,fc,tp,chkf,nil)
         end
 end
 function s.Unification_Vector_Fusion_Operation()
@@ -73,7 +73,7 @@ function s.Unification_Vector_Fusion_Operation()
 			if not gc then
 				gc=nil
 			end
-			local g=eg:Clone()
+			local g=eg:Filter(Card.IsFusionType,nil,TYPE_MONSTER)
 			local sg=g:SelectSubGroup(tp,s.Unification_Vector_Fusion_Gcheck,false,2,99,fc,tp,chkf,gc)
             Duel.SetFusionMaterial(sg)
         end

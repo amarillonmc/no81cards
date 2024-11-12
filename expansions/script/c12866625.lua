@@ -73,8 +73,31 @@ function s.spop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		local tc=g:GetFirst()
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		local fid=e:GetHandler():GetFieldID()
+		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1,fid)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetCountLimit(1)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetLabel(fid)
+		e1:SetLabelObject(tc)
+		e1:SetCondition(s.tgcon)
+		e1:SetOperation(s.tgop)
+		Duel.RegisterEffect(e1,tp)
 	end
+end
+function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffectLabel(id)~=e:GetLabel() then
+		e:Reset()
+		return false
+	else return true end
+end
+function s.tgop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SendtoGrave(e:GetLabelObject(),REASON_EFFECT)
 end
 function s.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()

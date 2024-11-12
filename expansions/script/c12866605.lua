@@ -1,7 +1,6 @@
 --电锯人
 local s,id,o=GetID()
 function s.initial_effect(c)
-	c:EnableReviveLimit()
 	aux.AddCodeList(c,12866620)
 	--splimit
 	local e1=Effect.CreateEffect(c)
@@ -32,7 +31,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 	--SpecialSummon
 	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_TO_GRAVE)
 	e4:SetCountLimit(1,id+1)
@@ -58,7 +57,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		if Duel.Destroy(tc,REASON_EFFECT)>0 then
 		local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-		if not c:IsLocation(LOCATION_ONFIELD) and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+		if not (c:IsRelateToEffect(e) or c:IsLocation(LOCATION_MZONE)) and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)

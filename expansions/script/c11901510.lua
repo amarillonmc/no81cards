@@ -37,8 +37,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(s.rmfilter,tp,LOCATION_DECK,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.rmfilter,tp,LOCATION_DECK,0,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
@@ -61,7 +60,7 @@ function s.fi1ter(c,tp)
 	return c:IsFaceup() and c:IsControler(1-tp) and c:IsControlerCanBeChanged() and c:IsLocation(0x04)
 end
 function s.fi2ter(c,e,tp)
-	return c:IsRelateToEffect(e) and c:IsControler(1-tp) and c:IsControlerCanBeChanged() and c:IsLocation(0x04)
+	return c:IsRelateToEffect(e) and s.fi1ter(c,tp)
 end
 function s.cicon(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
