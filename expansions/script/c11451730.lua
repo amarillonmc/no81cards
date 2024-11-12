@@ -39,7 +39,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 	local e6=e3:Clone()
 	e6:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+	e6:SetValue(cm.fuslimit)
 	c:RegisterEffect(e6)
+end
+function cm.fuslimit(e,c,sumtype)
+	if not c then return false end
+	return sumtype==SUMMON_TYPE_FUSION
 end
 function cm.tg(e,c)
 	local phase=Duel.GetCurrentPhase()

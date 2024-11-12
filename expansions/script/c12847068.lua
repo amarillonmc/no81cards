@@ -69,10 +69,12 @@ end
 function c12847068.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local tc=Duel.GetFieldCard(tp,LOCATION_GRAVE,Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)-1)
+	if tc then
 	local type=bit.band(tc:GetType(),0x7)
 	local g=Duel.SelectMatchingCard(tp,c12847068.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,type)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		Duel.SendtoGrave(g,REASON_EFFECT)
+		end
 	end
 end
