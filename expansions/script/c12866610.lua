@@ -61,7 +61,7 @@ end
 function c12866610.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetMZoneCount(tp)<=0 then return end
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c12866610.spfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if #sg>0 and Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)~=0 and c:IsRelateToEffect(e) then
 		Duel.BreakEffect()
@@ -76,7 +76,7 @@ function c12866610.tgcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c12866610.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rc=re:GetHandler()
-	if chk==0 then return rc:IsRelateToEffect(re) and rc:IsAbleToGrave() end
+	if chk==0 then return rc:IsRelateToEffect(re) and rc:IsAbleToGrave() and not rc:IsLocation(LOCATION_GRAVE))end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,rc,1,0,0)
 end
 function c12866610.tgop(e,tp,eg,ep,ev,re,r,rp)

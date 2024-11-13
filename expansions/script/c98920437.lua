@@ -14,6 +14,7 @@ function c98920437.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)
 	e1:SetValue(c98920437.efilter)
+	e1:SetRange(LOCATION_MZONE)
 	c:RegisterEffect(e1)
 	--special summon rule
 	local e2=Effect.CreateEffect(c)

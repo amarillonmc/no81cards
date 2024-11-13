@@ -35,25 +35,25 @@ end
 function s.spfilter(c,e,tp)
 	return c:IsSetCard(0x409) and c:IsLevelBelow(3) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function s.tdfilter(c,e,tp)
+function s.tdfilter(c,tp)
 	return c:IsAbleToDeck() and (c:IsLocation(0x02) or (c:IsSetCard(0x409) and c:IsFaceup()))
+        and (Duel.GetLocationCount(tp,0x04)>0 or (c:IsLocation(0x04) and c:GetSequence()<5))
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp)
-		and Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,0x01,0,1,nil,e,tp)
+		and Duel.IsExistingMatchingCard(s.tdfilter,tp,0x0e,0,1,e:GetHandler(),tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local tg=Duel.SelectMatchingCard(tp,s.tdfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+	local tg=Duel.SelectMatchingCard(tp,s.tdfilter,tp,0x0e,0,1,1,nil,tp)
     if tg:GetFirst():IsLocation(0x0c) then Duel.HintSelection(tg) end
 	if tg:GetCount()>0 then
 		local tc=tg:GetFirst()
 		if Duel.SendtoDeck(tg,nil,2,REASON_EFFECT)==0 or not tc:IsLocation(0x41) then return end
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+		local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,0x01,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end

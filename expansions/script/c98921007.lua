@@ -25,7 +25,8 @@ function c98921007.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c98921007.spfilter(c,e,tp)
-	return c:IsSetCard(0x1130) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x1130) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsLocation(LOCATION_DECK) and Duel.GetMZoneCount(tp)>0
+			or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
 end
 function c98921007.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)   
 	if chkc then return chkc:IsLocation(e:GetLabel()) and chkc:IsControler(tp) end

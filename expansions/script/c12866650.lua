@@ -59,7 +59,7 @@ function c12866650.cfilter(c,tp)
 		and Duel.IsExistingMatchingCard(c12866650.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetCode())
 end
 function c12866650.thfilter(c,code)
-	return c:IsSetCard(0x9a7c) and not c:IsCode(code) and c:IsAbleToHand()
+	return c:IsSetCard(0x9a7c) and not c:IsCode(code) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c12866650.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c12866650.cfilter(chkc,tp) end
