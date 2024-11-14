@@ -7,7 +7,7 @@ function s.initial_effect(c)
 	--atkchange
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_ATKCHANGE)
+	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DISABLE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -17,7 +17,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	--tohand
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(1190)
+	e2:SetDescription(aux.Stringid(id,3))
 	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
@@ -50,36 +50,35 @@ function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+	local dg=Group.CreateGroup()
+	local g=Duel.GetMatchingGroup(s.filter,tp,0,LOCATION_MZONE,nil)
 	local tc=g:GetFirst()
 	while tc do
-		local e1=Effect.CreateEffect(e:GetHandler())
+		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
 		e1:SetValue(0)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
+		if not (c:IsRelateToEffect(e) or c:IsLocation(LOCATION_MZONE)) and tc:IsAttack(0) and aux.NegateEffectMonsterFilter(tc) then dg:AddCard(tc) end
 		tc=g:GetNext()
-		end
-		local og=Duel.GetOperatedGroup():Filter(s.filter1,nil,e,tp)
-		if not (c:IsRelateToEffect(e) or c:IsLocation(LOCATION_MZONE)) and #og>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-			Duel.BreakEffect()
-			local tc=og:GetFirst()
-			while tc do
-			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			e2:SetValue(RESET_TURN_SET)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
-			tc=og:GetNext()
-		end
+	end
+	if not Duel.SelectYesNo(tp,aux.Stringid(id,1)) then return end
+	local tc1=dg:GetFirst()
+	while tc1 do
+		Duel.NegateRelatedChain(tc1,RESET_TURN_SET)
+		local e0=Effect.CreateEffect(c)
+		e0:SetType(EFFECT_TYPE_SINGLE)
+		e0:SetCode(EFFECT_DISABLE)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc1:RegisterEffect(e0)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc1:RegisterEffect(e2)
+		tc1=dg:GetNext()
 	end
 end
 function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -117,6 +116,7 @@ function s.damop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	local atk=rc:GetBaseAttack()
 	if Duel.Damage(1-tp,atk,REASON_EFFECT)>0 and c:IsRelateToEffect(e) then
-	Duel.Remove(c,POS_FACEUP,REASON_EFFECT)
+		Duel.BreakEffect()
+		Duel.Remove(c,POS_FACEUP,REASON_EFFECT)
 	end
 end

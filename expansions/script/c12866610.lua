@@ -76,7 +76,7 @@ function c12866610.tgcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c12866610.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rc=re:GetHandler()
-	if chk==0 then return rc:IsRelateToEffect(re) and rc:IsAbleToGrave() and not rc:IsLocation(LOCATION_GRAVE) end
+	if chk==0 then return rc:IsRelateToEffect(re) and rc:IsAbleToGrave() and not rc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,rc,1,0,0)
 end
 function c12866610.tgop(e,tp,eg,ep,ev,re,r,rp)

@@ -65,7 +65,7 @@ function c75075612.activate(e,tp,eg,ep,ev,re,r,rp)
     if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c75075612.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,ft,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,c75075612.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,math.min(ft,2),nil,e,tp)
 	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)~=0 then
 		local tc=g:GetFirst()
 		while tc do
