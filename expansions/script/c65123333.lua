@@ -111,7 +111,7 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(sge5,0)
 		local sge6=sge4:Clone()
 		sge6:SetCode(EVENT_SPSUMMON_SUCCESS)
-		Duel.RegisterEffect(sge6,0)	
+		Duel.RegisterEffect(sge6,0) 
 	end
 	local control_player=0
 	if _Duel.GetFieldGroupCount(1,LOCATION_DECK,0)>0 then control_player=1 end
@@ -1251,23 +1251,23 @@ function s.mindcontrol(e,tp)
 		ge0:SetType(EFFECT_TYPE_FIELD)
 		ge0:SetCode(EFFECT_PUBLIC)
 		ge0:SetTargetRange(0,LOCATION_HAND)
-		ge0:SetTarget(function() return s.Control_Mode end)
 		Duel.RegisterEffect(ge0,tp)
 
-		--local hintcard=Duel.CreateToken(tp,id+1)
+		--attack redirect
+		local age=Effect.GlobalEffect()
+		age:SetType(EFFECT_TYPE_FIELD)
+		age:SetCode(EFFECT_PATRICIAN_OF_DARKNESS)
+		age:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		age:SetTargetRange(0,1)
+		Duel.RegisterEffect(age,tp)
+
+		local hintcard=Duel.CreateToken(tp,id+1)
 		local sge=Effect.CreateEffect(e:GetHandler())
 		sge:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		sge:SetCode(EVENT_FREE_CHAIN)
 		sge:SetCondition(s.setactcon)
 		sge:SetOperation(s.setactop)
 		Duel.RegisterEffect(sge,tp)
-
-		local fge=Effect.CreateEffect(e:GetHandler())
-		fge:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		fge:SetCode(EVENT_CHAINING)
-		fge:SetCondition(s.qfcon)
-		fge:SetOperation(s.qfop)
-		Duel.RegisterEffect(fge,tp)
 
 		Duel.ConfirmCards(tp,Duel.GetMatchingGroup(Card.IsFacedown,tp,0,LOCATION_EXTRA+LOCATION_REMOVED+LOCATION_ONFIELD+LOCATION_DECK,nil),true)
 		--Summon
@@ -1324,7 +1324,7 @@ function s.mindcontrol(e,tp)
 		ge4:SetLabelObject(e4)
 		Duel.RegisterEffect(ge4,tp)
 		s.mindplayer=tp
-		s.controltable={sge,ge0,ge1,ge2,ge3,ge4}
+		s.controltable={age,sge,ge0,ge1,ge2,ge3,ge4}
 		if not KOISHI_CHECK then return end
 		local g=Duel.GetFieldGroup(0,0x7f,0x7f)
 		local xg=Duel.GetOverlayGroup(0,0x7f,0x7f)
@@ -1657,15 +1657,6 @@ function s.ssetactivate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SSet(tep,c,tep,false)
 	end
 end
-function s.qffilter(c)
-	return false
-end
-function s.qfcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.qffilter,tp,0,0xff,1,nil)
-end
-function s.qfop(e,tp,eg,ep,ev,re,r,rp)
-
-end
 function s.setactfilter(c)
 	local ae=c:GetActivateEffect()
 	local ph=Duel.GetCurrentPhase()
@@ -1773,18 +1764,23 @@ function s.addeffcost(effect)
 			if chk==0 then
 				return (not c:IsLocation(LOCATION_HAND) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) and (not cost or cost(e,tp,eg,ep,ev,re,r,rp,chk,...))
 			else
-				--e:SetType(effect:GetType())
-				--e:SetCode(effect:GetCode())
+				e:SetType(EFFECT_TYPE_ACTIVATE)
 				if c:IsLocation(LOCATION_SZONE) then Duel.ChangePosition(c,POS_FACEUP) end
-				if c:IsLocation(LOCATION_HAND) then Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) end
+				if c:IsLocation(LOCATION_HAND) then
+					if c:IsType(TYPE_FIELD) then
+						Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+					else
+						Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+					end
+				end
 				if cost then cost(e,tp,eg,ep,ev,re,r,rp,chk,...) end
 			end
 		else
 			if chk==0 then
 				return (not cost or cost(e,tp,eg,ep,ev,re,r,rp,chk,...))
 			else
-				--e:SetType(effect:GetType())
-				--e:SetCode(effect:GetCode())
+				e:SetType(effect:GetType())
+				e:SetCode(effect:GetCode())
 				if cost then cost(e,tp,eg,ep,ev,re,r,rp,chk,...) end
 			end
 		end
@@ -1821,7 +1817,6 @@ function s.addeffop(effect)
 		local op=effect:GetOperation()
 		local c=e:GetHandler()
 		local tep=c:GetControler()
-		--e:SetType(effect:GetType())
 		if effect:GetType()&EFFECT_TYPE_ACTIVATE~=0 and c:GetType()&(TYPE_FIELD+TYPE_CONTINUOUS+TYPE_EQUIP)==0 then c:CancelToGrave(false) end
 		if op then op(e,tp,eg,ep,ev,re,r,rp,...) end
 	end

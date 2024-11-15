@@ -199,7 +199,7 @@ function c9911565.activate2(e,tp,eg,ep,ev,re,r,rp)
 		local num=math.abs(lv1-lv2)
 		local tg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 		if #tg==0 then return end
-		if res then Duel.BreakEffect() end
+		if op==2 and res~=0 then Duel.BreakEffect() end
 		for tc in aux.Next(tg) do
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
