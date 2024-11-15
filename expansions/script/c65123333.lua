@@ -111,7 +111,7 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(sge5,0)
 		local sge6=sge4:Clone()
 		sge6:SetCode(EVENT_SPSUMMON_SUCCESS)
-		Duel.RegisterEffect(sge6,0) 
+		Duel.RegisterEffect(sge6,0)
 	end
 	local control_player=0
 	if _Duel.GetFieldGroupCount(1,LOCATION_DECK,0)>0 then control_player=1 end
@@ -1176,8 +1176,14 @@ function s.mindcontrol(e,tp)
 	s.Control_Mode=not s.Control_Mode
 	if s.Control_Mode then
 		Debug.Message("骇入开始")
-		function Group.Select(g,sp,min,max,nc) Duel.ConfirmCards(tp,g:Filter(s.confirmfilter,nil,tp)) return _Group.Select(g,tp,min,max,nc) end
-		function Group.FilterSelect(g,sp,...) Duel.ConfirmCards(tp,g:Filter(s.confirmfilter,nil,tp)) return _Group.FilterSelect(g,tp,...) end
+		function Group.Select(g,sp,min,max,nc)
+			Duel.ConfirmCards(tp,g:Filter(s.confirmfilter,nil,tp))
+			return _Group.Select(g,tp,min,max,nc)
+		end
+		function Group.FilterSelect(g,sp,...)
+			Duel.ConfirmCards(tp,g:Filter(s.confirmfilter,nil,tp))
+			return _Group.FilterSelect(g,tp,...)
+		end
 		function Group.SelectUnselect(cg,sg,sp,...) Duel.ConfirmCards(tp,cg:Filter(s.confirmfilter,nil,tp)) return _Group.SelectUnselect(cg,sg,tp,...) end
 		function Card.RemoveOverlayCard(oc,sp,...) return _Card.RemoveOverlayCard(oc,tp,...) end
 		function Duel.SelectFusionMaterial(sp,c,g,...) Duel.ConfirmCards(tp,g:Filter(s.confirmfilter,nil,tp)) return _Duel.SelectFusionMaterial(tp,c,g,...) end
@@ -1191,7 +1197,13 @@ function s.mindcontrol(e,tp)
 			local dg=Duel.SelectMatchingCard(tp,f,sp,LOCATION_HAND,0,min,max,nc,...)
 			return Duel.SendtoGrave(dg,r)
 		end
-		function Duel.RemoveOverlayCard(sp,...) return _Duel.RemoveOverlayCard(tp,...) end
+		function Duel.RemoveOverlayCard(sp,s,o,...)
+			if sp==tp then
+				return _Duel.RemoveOverlayCard(tp,s,o,...)
+			else
+				return _Duel.RemoveOverlayCard(tp,o,s,...)
+			end
+		end
 		function Duel.SelectMatchingCard(sp,f,p,sl,ol,max,min,ex,...)
 			local sg=Duel.GetMatchingGroup(f,p,sl,ol,ex,...)
 			Duel.ConfirmCards(tp,sg:Filter(s.confirmfilter,nil,tp))
@@ -1199,26 +1211,75 @@ function s.mindcontrol(e,tp)
 		end
 		function Duel.SelectReleaseGroup(sp,...) return _Duel.SelectReleaseGroup(tp,...) end
 		function Duel.SelectReleaseGroupEx(sp,...) return _Duel.SelectReleaseGroupEx(tp,...) end
-
-		function Duel.SpecialSummon(tg,stype,sp,...) return _Duel.SpecialSummon(tg,stype,tp,...) end
-		function Duel.SpecialSummonStep(tg,stype,sp,...) return _Duel.SpecialSummonStep(tg,stype,tp,...) end
-		function Duel.MoveToField(c,mp,...) return _Duel.MoveToField(c,tp,...) end
-		function Duel.SSet(p,tg,sp,...) if not sp then sp=p end return _Duel.SSet(tp,tg,sp,...) end
-		function Duel.GetControl(tg,p,rphase,rcount,zone,...)
-			if zone==nil then zone=0x1f end
-			local flag=0x1f-zone
-			for i=0,4 do
-				if not Duel.CheckLocation(p,LOCATION_MZONE,i) then
+		function Duel.SpecialSummon(tg,stype,sp,trp,check,limit,pos,zone)
+			local num=0
+			if aux.GetValueType(tg)=="Card" then
+				if Duel.SpecialSummonStep(tg,stype,sp,trp,check,limit,pos,zone) then num=num+1 end
+			elseif aux.GetValueType(tg)=="Group" then
+				for tc in aux.Next(tg) do
+					if Duel.SpecialSummonStep(tc,stype,sp,trp,check,limit,pos,zone) then num=num+1 end
+				end				
+			end
+			if num>0 then _Duel.SpecialSummonComplete() end
+			return num
+		end
+		function Duel.SpecialSummonStep(tg,stype,sp,trp,check,limit,pos,zone)
+			if not zone then zone=0xff end
+			local flag=0xff-zone
+			for i=0,7 do
+				if not tg:IsCanBeSpecialSummoned(e,0,sp,false,false,pos,trp,2^i) then
 					flag=flag|2^i
 				end
 			end
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-			if tp==p then
-				flag=_Duel.SelectField(tp,1,LOCATION_MZONE,0,flag+0x60)
+			if flag==0xff then return end
+			if tp==trp then
+				flag=_Duel.SelectField(tp,1,LOCATION_MZONE,0,flag,tg:GetOriginalCode())
 			else
-				flag=_Duel.SelectField(tp,1,0,LOCATION_MZONE,(flag+0x60)<<16)>>16
+				flag=_Duel.SelectField(tp,1,0,LOCATION_MZONE,flag<<16,tg:GetOriginalCode())>>16
 			end
-			return _Duel.GetControl(tg,p,rphase,rcount,flag,...)
+			pos=_Duel.SelectPosition(tp,tg,pos)
+			return _Duel.SpecialSummonStep(tg,stype,sp,trp,check,limit,pos,flag)
+		end
+		function Duel.MoveToField(c,mp,...) return _Duel.MoveToField(c,tp,...) end
+		function Duel.SSet(p,tg,sp,...) if not sp then sp=p end return _Duel.SSet(tp,tg,sp,...) end
+		function Duel.GetControl(tg,p,rphase,rcount,zone,...)
+			if not zone then zone=0x1f end			
+			if aux.GetValueType(tg)=="Card" then
+				local flag=0x1f-zone
+				for i=0,4 do
+					if not Duel.CheckLocation(p,LOCATION_MZONE,i) then
+						flag=flag|2^i
+					end
+				end
+				if flag==0x1f then return end
+				if tp==p then
+					flag=_Duel.SelectField(tp,1,LOCATION_MZONE,0,flag+0x60,tg:GetOriginalCode())
+				else
+					flag=_Duel.SelectField(tp,1,0,LOCATION_MZONE,(flag+0x60)<<16,tg:GetOriginalCode())>>16
+				end
+				return _Duel.GetControl(tg,p,rphase,rcount,flag,...)
+			elseif aux.GetValueType(tg)=="Group" then
+				local num=0
+				for tc in aux.Next(tg) do
+					local flag=0x1f-zone
+					for i=0,4 do
+						if not Duel.CheckLocation(p,LOCATION_MZONE,i) then
+							flag=flag|2^i
+						end
+					end
+					if flag==0x1f then return end
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ZONE,tc)
+					if tp==p then
+						flag=_Duel.SelectField(tp,1,LOCATION_MZONE,0,flag+0x60,tc:GetOriginalCode())
+					else
+						flag=_Duel.SelectField(tp,1,0,LOCATION_MZONE,(flag+0x60)<<16,tc:GetOriginalCode())>>16
+					end
+					if _Duel.GetControl(tc,p,rphase,rcount,flag,...)==1 then
+						num=num+1
+					end
+				end
+				return num
+			end
 		end
 		function Duel.SelectDisableField(p,count,sl,ol,filter)
 			if tp==p then
@@ -1250,9 +1311,17 @@ function s.mindcontrol(e,tp)
 		local ge0=Effect.GlobalEffect()
 		ge0:SetType(EFFECT_TYPE_FIELD)
 		ge0:SetCode(EFFECT_PUBLIC)
+		ge0:SetLabel(id)
 		ge0:SetTargetRange(0,LOCATION_HAND)
 		Duel.RegisterEffect(ge0,tp)
-
+		
+		function Card.IsPublic(c)
+			local pet={c:IsHasEffect(EFFECT_PUBLIC)}
+			for _,pe in pairs(pet) do
+				if pe:GetLabel()~=id then return true end
+			end
+			return false
+		end
 		--attack redirect
 		local age=Effect.GlobalEffect()
 		age:SetType(EFFECT_TYPE_FIELD)
@@ -1261,7 +1330,7 @@ function s.mindcontrol(e,tp)
 		age:SetTargetRange(0,1)
 		Duel.RegisterEffect(age,tp)
 
-		local hintcard=Duel.CreateToken(tp,id+1)
+		--local hintcard=Duel.CreateToken(tp,id+1)
 		local sge=Effect.CreateEffect(e:GetHandler())
 		sge:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		sge:SetCode(EVENT_FREE_CHAIN)
@@ -1363,6 +1432,8 @@ function s.mindcontrol(e,tp)
 		end
 	else
 		Debug.Message("骇入结束")
+		Card.IsPublic=_Card.IsPublic
+
 		Group.Select=_Group.Select
 		Group.FilterSelect=_Group.FilterSelect
 		Group.SelectUnselect=_Group.SelectUnselect
@@ -1373,7 +1444,7 @@ function s.mindcontrol(e,tp)
 		Duel.SelectTarget=_Duel.SelectTarget
 		Duel.SelectTribute=_Duel.SelectTribute
 		Duel.DiscardHand=_Duel.DiscardHand
-		Duel.RemoveOverlayCard=_Duel.DRemoveOverlayCard
+		Duel.RemoveOverlayCard=_Duel.RemoveOverlayCard
 		Duel.SelectFusionMaterial=_Duel.SelectFusionMaterial
 
 		Duel.SpecialSummon=_Duel.SpecialSummon
@@ -1403,10 +1474,11 @@ function s.mindcontrol(e,tp)
 	end
 end
 function s.sumcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	s.SummonUnit=e:GetHandler()
 	local res=s.SummonCheckEffect[1-tp]:IsActivatable(1-tp,true,false)
 	s.SummonUnit=nil
-	return s.Control_Mode and tp~=e:GetHandler():GetOwner() and res
+	return s.Control_Mode and tp~=c:GetOwner() and res
 end
 function s.sumfilter(c)
 	return c:IsSummonable(false,nil) or c:IsMSetable(false,nil)
@@ -1431,7 +1503,7 @@ function s.sumzone(c,tp)
 		e1:SetValue((1<<i)*0x10000)
 		e1:SetCountLimit(1)
 		Duel.RegisterEffect(e1,tp)
-		if s.SummonCheckEffect[1-tp]:IsActivatable(1-tp,true,false) then
+		if c:IsSummonable(false,nil) or c:IsMSetable(false,nil) then
 			zone=zone|((1<<i)*0x10000)
 		end
 		e1:Reset()
@@ -1445,7 +1517,7 @@ function s.sumzone(c,tp)
 		e1:SetValue(1<<i)
 		e1:SetCountLimit(1)
 		Duel.RegisterEffect(e1,tp)
-		if s.SummonCheckEffect[1-tp]:IsActivatable(1-tp,true,false) then
+		if c:IsSummonable(false,nil) or c:IsMSetable(false,nil) then
 			zone=zone|((1<<i))
 		end
 		e1:Reset()
@@ -1457,15 +1529,16 @@ function s.sumactivate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local s1=c:IsSummonable(false,nil)
 	local s2=c:IsMSetable(false,nil)
-	if (s1 and s2 and _Duel.SelectPosition(s.mindplayer,c,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or (s1 and not s2) then
-		local zone=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~s.sumzone(c,1-tp),c:GetOriginalCode())
+	local flag=s.sumzone(c,1-tp)
+	if (s1 and s2 and _Duel.SelectPosition(s.mindplayer,c,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or (s1 and not s2) then		
+		local zone=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~flag,c:GetOriginalCode())
 		if zone<0x10000 then
 			Duel.Summon(1-s.mindplayer,c,false,nil,0,zone)
 		else
 			Duel.Summon(1-s.mindplayer,c,false,nil,0,zone/0x10000)
 		end
 	elseif s2 then
-		local zone=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~s.sumzone(c,1-tp),c:GetOriginalCode())
+		local zone=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~flag,c:GetOriginalCode())
 		if zone<0x10000 then
 			Duel.MSet(1-s.mindplayer,c,false,nil,0,zone)
 		else
@@ -1475,7 +1548,10 @@ function s.sumactivate(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.spscon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return s.Control_Mode and tp~=e:GetHandler():GetOwner() and c:IsSpecialSummonable()
+	s.SpecialSummonUnit=c
+	local res=s.SpecialSummonCheckEffect[1-tp]:IsActivatable(1-tp,true,false)
+	s.SpecialSummonUnit=nil
+	return s.Control_Mode and tp~=c:GetOwner() and res
 end
 function s.sptarget(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -1519,14 +1595,13 @@ end
 function s.sptarget2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		if s.SpecialSummonUnit then
-			return s.SpecialSummonUnit:IsSpecialSummonable() or s.SpecialSummonUnit:IsSynchroSummonable(nil) or s.SpecialSummonUnit:IsXyzSummonable(nil) or s.SpecialSummonUnit:IsLinkSummonable(nil)
+			return s.SpecialSummonUnit:IsSpecialSummonable()
 		end
 		return Duel.IsExistingMatchingCard(s.sfilter,tp,LOCATION_EXTRA+LOCATION_HAND,0,1,nil) 
 	end
 end
 function s.spsumzone(c,tp)
 	local zone=0
-	s.SpecialSummonUnit=c
 	for i=0,4 do
 		local e1=Effect.GlobalEffect()
 		e1:SetType(EFFECT_TYPE_FIELD)
@@ -1536,7 +1611,7 @@ function s.spsumzone(c,tp)
 		e1:SetValue((1<<i)*0x10000)
 		e1:SetCountLimit(1)
 		Duel.RegisterEffect(e1,tp)
-		if s.SpecialSummonCheckEffect[1-tp]:IsActivatable(1-tp,true,false) then
+		if c:IsSpecialSummonable() then
 			zone=zone|((1<<i)*0x10000)
 		end
 		e1:Reset()
@@ -1550,7 +1625,7 @@ function s.spsumzone(c,tp)
 		e1:SetValue(1<<i)
 		e1:SetCountLimit(1)
 		Duel.RegisterEffect(e1,tp)
-		if s.SpecialSummonCheckEffect[1-tp]:IsActivatable(1-tp,true,false) then
+		if c:IsSpecialSummonable() then
 			zone=zone|((1<<i))
 		end
 		e1:Reset()
@@ -1564,7 +1639,7 @@ function s.spsumzone(c,tp)
 		e1:SetValue(0x200040)
 		e1:SetCountLimit(1)
 		Duel.RegisterEffect(e1,tp)
-		if s.SpecialSummonCheckEffect[1-tp]:IsActivatable(1-tp,true,false) then
+		if c:IsSpecialSummonable() then
 			zone=zone|0x200040
 		end
 		e1:Reset()
@@ -1578,12 +1653,11 @@ function s.spsumzone(c,tp)
 		e1:SetValue(0x400020)
 		e1:SetCountLimit(1)
 		Duel.RegisterEffect(e1,tp)
-		if s.SpecialSummonCheckEffect[1-tp]:IsActivatable(1-tp,true,false) then
+		if c:IsSpecialSummonable() then
 			zone=zone|0x400020
 		end
 		e1:Reset()
 	end
-	s.SpecialSummonUnit=nil
 	return zone
 end
 function s.pspcon(e,tp,eg,ep,ev,re,r,rp)
@@ -1593,8 +1667,7 @@ function s.pspcon(e,tp,eg,ep,ev,re,r,rp)
 	if lpz==nil then return false end
 	local g=Duel.GetMatchingGroup(Card.IsType,p,LOCATION_HAND+LOCATION_EXTRA,0,nil,TYPE_MONSTER)
 	if #g==0 then return false end
-	local pcon=aux.PendCondition()
-	return s.Control_Mode and p~=e:GetHandler():GetOwner() and pcon(e,lpz,g)
+	return s.Control_Mode and p~=e:GetHandler():GetOwner() and aux.PendCondition(e,lpz,g)
 end
 function s.pspactivate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -1615,8 +1688,7 @@ function s.pspop(e,tp,eg,ep,ev,re,r,rp)
 	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
 	local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_EXTRA,0,nil,TYPE_MONSTER)
 	if #g==0 then return end
-	local pop=aux.PendOperation()
-	pop(e,tp,eg,ep,ev,re,r,rp,lpz,sg,g)
+	aux.PendOperation(e,tp,eg,ep,ev,re,r,rp,lpz,sg,g)
 	Duel.RaiseEvent(sg,EVENT_SPSUMMON_SUCCESS_G_P,e,REASON_EFFECT,tp,tp,0)
 	Duel.SpecialSummon(sg,SUMMON_TYPE_PENDULUM,tp,tp,true,true,POS_FACEUP)
 	e:Reset()
@@ -1679,7 +1751,6 @@ function s.setactop(e,tp,eg,ep,ev,re,r,rp)
 		eff:SetDescription(aux.Stringid(id+1,9))
 		eff:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 		eff:SetCode(id+code)
-		eff:SetCountLimit(1)
 		eff:SetCost(s.addeffcost(effect))
 		eff:SetCondition(s.addeffcon(effect))
 		eff:SetTarget(s.addefftg(effect))
@@ -1765,6 +1836,7 @@ function s.addeffcost(effect)
 				return (not c:IsLocation(LOCATION_HAND) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) and (not cost or cost(e,tp,eg,ep,ev,re,r,rp,chk,...))
 			else
 				e:SetType(EFFECT_TYPE_ACTIVATE)
+				e:Reset()
 				if c:IsLocation(LOCATION_SZONE) then Duel.ChangePosition(c,POS_FACEUP) end
 				if c:IsLocation(LOCATION_HAND) then
 					if c:IsType(TYPE_FIELD) then
@@ -1777,10 +1849,11 @@ function s.addeffcost(effect)
 			end
 		else
 			if chk==0 then
-				return (not cost or cost(e,tp,eg,ep,ev,re,r,rp,chk,...))
+				return not cost or cost(e,tp,eg,ep,ev,re,r,rp,chk,...)
 			else
-				e:SetType(effect:GetType())
-				e:SetCode(effect:GetCode())
+				--e:SetType(effect:GetType())
+				--e:SetCode(effect:GetCode())
+				e:Reset()
 				if cost then cost(e,tp,eg,ep,ev,re,r,rp,chk,...) end
 			end
 		end
@@ -1830,7 +1903,7 @@ function s.mindtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local code=c:GetOriginalCode()
 	if eff and aux.GetValueType(eff)=="Effect"then
 		if effect:GetType()&EFFECT_TYPE_ACTIVATE~=0 then
-			eff:SetProperty(effect:GetProperty()|EFFECT_FLAG_BOTH_SIDE|EFFECT_FLAG_SET_AVAILABLE)
+			eff:SetProperty(effect:GetProperty()|EFFECT_FLAG_SET_AVAILABLE)
 			eff:SetRange(LOCATION_HAND+LOCATION_SZONE)
 		end
 		eff:SetDescription(aux.Stringid(id+1,9))
@@ -1858,7 +1931,7 @@ function s.mindtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local code=c:GetOriginalCode()
 	if eff and aux.GetValueType(eff)=="Effect"then
 		if effect:GetType()&EFFECT_TYPE_ACTIVATE~=0 then
-			eff:SetProperty(effect:GetProperty()|EFFECT_FLAG_BOTH_SIDE|EFFECT_FLAG_SET_AVAILABLE)
+			eff:SetProperty(effect:GetProperty()|EFFECT_FLAG_SET_AVAILABLE)
 			eff:SetRange(LOCATION_HAND+LOCATION_SZONE)
 		end
 		eff:SetDescription(aux.Stringid(id+1,9))

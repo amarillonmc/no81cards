@@ -44,10 +44,23 @@ function c12866650.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,0,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 end
+function c12866650.spfilter(c,e,tp)
+	return not c:IsType(TYPE_TOKEN) and c:IsFaceup() and c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+end
 function c12866650.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e) then
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 then
+		local og=Duel.GetOperatedGroup():Filter(c12866650.spfilter,nil,e,tp)
+		if #og<=0 then return end
+		local tc1=og:GetFirst()
+		if not (c:IsRelateToEffect(e) or c:IsLocation(LOCATION_MZONE)) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(12866650,1)) then
+			Duel.BreakEffect()
+			Duel.SpecialSummon(tc1,0,tp,tp,false,false,POS_FACEUP)
+			end
+		end
 	end
 end
 function c12866650.eqcon(e,tp,eg,ep,ev,re,r,rp)
