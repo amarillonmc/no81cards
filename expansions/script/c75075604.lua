@@ -30,22 +30,20 @@ function c75075604.initial_effect(c)
 	e2:SetTarget(c75075604.postg)
 	e2:SetOperation(c75075604.posop)
 	c:RegisterEffect(e2)
-	--disable
+	----
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetTargetRange(LOCATION_SZONE,LOCATION_SZONE)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_CHAIN_SOLVING)
 	e4:SetCondition(c75075604.atkcon)
-	e4:SetTarget(c75075604.disable)
-	e4:SetCode(EFFECT_DISABLE)
-	c:RegisterEffect(e4) 
+	e4:SetOperation(c75075604.disop)
+	c:RegisterEffect(e4)	 
 	--immune
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e3:SetCondition(c75075604.atkcon)
+	e3:SetCondition(c75075604.atkcon2)
 	e3:SetTarget(aux.TargetBoolFunction(Card.IsFacedown))
 	e3:SetValue(c75075604.efilter)
 	c:RegisterEffect(e3)
@@ -60,12 +58,12 @@ function c75075604.filter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()
 end
 function c75075604.hsptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c75075604.filter(chkc) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c75075604.filter(chkc) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.IsExistingTarget(c75075604.filter,tp,LOCATION_MZONE,0,1,nil) end
+		and Duel.IsExistingTarget(c75075604.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectTarget(tp,c75075604.filter,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,c75075604.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,1,0,0)
 end
@@ -97,13 +95,20 @@ function c75075604.posop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75075604.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPosition(POS_FACEUP_DEFENSE)
+	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	return e:GetHandler():IsPosition(POS_FACEUP_DEFENSE) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and loc&LOCATION_ONFIELD~=0
 end
-function c75075604.disable(e,c)
-	local seq=aux.MZoneSequence(c:GetSequence())
-	return Duel.IsExistingMatchingCard(Card.IsFacedown,e:GetHandlerPlayer(),LOCATION_MZONE,LOCATION_MZONE,1,nil,seq)
+function c75075604.disop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	local seq=aux.MZoneSequence(rc:GetSequence())
+	if Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,seq) then
+		Duel.NegateEffect(ev)
+	end
 end
 --
+function c75075604.atkcon2(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPosition(POS_FACEUP_DEFENSE)
+end
 function c75075604.efilter(e,te)
 	return not te:IsSetCard(0x757)
 end
