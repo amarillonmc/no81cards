@@ -41,7 +41,7 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.GetMatchingGroup(s.Starfi2ter,tp,0x08,0,nil)
     if #g==0 then return end
-    local dg=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
+    local dg=Duel.GetFieldGroupCount(tp,0x01,0)
     local fd=0
 	if #g>dg then fd=dg
     elseif #g<=dg then fd=#g end
@@ -56,11 +56,11 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
     end
     Duel.ShuffleDeck(tp)
 end
-function s.fi1ter(c,tp)
+function s.fi1ter(c)
 	return c:IsFaceup() and c:IsCanTurnSet() and c:IsLocation(0x04)
 end
-function s.fi2ter(c,e,tp)
-	return c:IsRelateToEffect(e) and s.fi1ter(c,tp)
+function s.fi2ter(c,e)
+	return c:IsRelateToEffect(e) and s.fi1ter(c)
 end
 function s.cicon(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET)

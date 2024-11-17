@@ -27,6 +27,9 @@ function c10111127.initial_effect(c)
 	e2:SetOperation(c10111127.xxop1) 
 	c:RegisterEffect(e2)
 end
+function c10111127.rmfilter(c)
+	return c:IsFacedown() and c:IsAbleToRemoveAsCost(POS_FACEDOWN)
+end
 function c10111127.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local check=Duel.GetCustomActivityCount(10111127,tp,ACTIVITY_SPSUMMON)==0
 	local g=Duel.GetMatchingGroup(c10111127.rmfilter,tp,LOCATION_EXTRA,0,nil)
