@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	--spsummon success
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_DECKDES)
+	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)  
@@ -44,11 +44,19 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end
-	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,3)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_EXTRA,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,0)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.DiscardDeck(tp,3,REASON_EFFECT)
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
+	if g:GetCount()==0 then return end
+	Duel.ConfirmCards(tp,g)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local mg=g:FilterSelect(tp,Card.IsAbleToRemove,1,1,nil)
+	if mg:GetCount()>0 then
+		Duel.Remove(mg,POS_FACEUP,REASON_EFFECT)
+	end
+	Duel.ShuffleExtra(1-tp)
 end
 
 --02

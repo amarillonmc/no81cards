@@ -28,23 +28,23 @@ function c71403003.initial_effect(c)
 	ep2:SetTarget(c71403003.tgp2)
 	ep2:SetOperation(c71403003.opp2)
 	c:RegisterEffect(ep2)
+	--destroy
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(71403003,1))
+	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCountLimit(1,71513003)
+	e1:SetCondition(yume.PPTMainPhaseCon)
+	e1:SetCost(yume.PPTLimitCost)
+	e1:SetTarget(c71403003.tg1)
+	e1:SetOperation(c71403003.op1)
+	c:RegisterEffect(e1)
 	--monster movement effect
 	yume.RegPPTTetrisBasicMoveEffect(c,71403003)
-	--special summon
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(71403003,1))
-	e2:SetCategory(CATEGORY_DESTROY)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1,71513003)
-	e2:SetCondition(yume.PPTMainPhaseCon)
-	e2:SetCost(yume.PPTLimitCost)
-	e2:SetTarget(c71403003.tg2)
-	e2:SetOperation(c71403003.op2)
-	c:RegisterEffect(e2)
 	yume.PPTCounter()
 end
 function c71403003.filterp2a(c)
@@ -73,30 +73,40 @@ function c71403003.opp2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(sg,REASON_EFFECT)
 	end
 end
-function c71403003.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c71403003.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and chkc~=c end
 	if chk==0 then return
-		c:GetSequence()<5
+		(c:GetSequence()<5 or c:IsLocation(LOCATION_HAND))
 		and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,0,1,c)
 		and Duel.GetFieldGroupCount(0,LOCATION_ONFIELD,LOCATION_ONFIELD)>2
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,0,1,1,c)
-	g:AddCard(c)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,0,0)
+	if c:IsLocation(LOCATION_MZONE) then
+		g:AddCard(c)
+	else
+		Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,c,1,0,0)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount()+1,0,0)
 end
-function c71403003.op2(e,tp,eg,ep,ev,re,r,rp)
+function c71403003.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local c_is_in_hand=c:IsLocation(LOCATION_HAND)
+	if not (c:IsRelateToEffect(e) and (c_is_in_hand or c:GetSequence()<5)) then return end
+	if c_is_in_hand then
+		op_flag=Duel.SendtoExtraP(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()
+	else
+		op_flag=Duel.Destroy(c,REASON_EFFECT)==1
+	end
+	if not op_flag then return end
 	local tc=Duel.GetFirstTarget()
-	if not (c:IsRelateToEffect(e) and c:GetSequence()<5 and tc:IsRelateToEffect(e)) then return end
-	local dg=Group.FromCards(c,tc)
-	if Duel.Destroy(dg,REASON_EFFECT)==2 then
+	if not tc:IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectMatchingCard(tp,nil,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
+	if g:GetCount()>0 then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,nil,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.Destroy(g,REASON_EFFECT)
-		end
+		g:AddCard(tc)
+		Duel.Destroy(g,REASON_EFFECT)
 	end
 end

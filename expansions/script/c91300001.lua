@@ -24,7 +24,7 @@ function s.initial_effect(c)
 end
 s.fantasy_mountains_and_rivers=true
 function s.cfilter(c,tp)
-	return c.fantasy_mountains_and_rivers and (c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS or c:GetType()==TYPE_TRAP+TYPE_CONTINUOUS)
+	return _G["c"..c:GetCode()]  and _G["c"..c:GetCode()].fantasy_mountains_and_rivers and (c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS or c:GetType()==TYPE_TRAP+TYPE_CONTINUOUS)
 		and c:GetActivateEffect():IsActivatable(tp)
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -43,7 +43,7 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,1000)
 end
 function s.thfilter(c)
-	return c.fantasy_mountains_and_rivers and not c:IsCode(id) and c:IsType(TYPE_MONSTER)
+	return _G["c"..c:GetCode()] and _G["c"..c:GetCode()] and _G["c"..c:GetCode()].fantasy_mountains_and_rivers and not c:IsCode(id) and c:IsType(TYPE_MONSTER)
 		and c:IsAbleToHand()
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

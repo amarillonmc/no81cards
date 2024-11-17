@@ -32,6 +32,15 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	--Gains 500 ATK for each "Golden Sauryman Token" on the field.
 	c:UpdateATK(aux.ForEach(s.atkfilter,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,500))
+	--Your opponent takes no battle damage, except from battles involving Tokens.
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_NO_BATTLE_DAMAGE)
+	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(LOCATION_MZONE,0)
+	e3:SetTarget(aux.NOT(aux.TargetBoolFunction(Card.IsType,TYPE_TOKEN)))
+	c:RegisterEffect(e3)
 end
 --E1
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)

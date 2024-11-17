@@ -28,23 +28,23 @@ function c71403002.initial_effect(c)
 	ep2:SetTarget(c71403002.tgp2)
 	ep2:SetOperation(c71403002.opp2)
 	c:RegisterEffect(ep2)
+	--special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(71403002,1))
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCountLimit(1,71513002)
+	e1:SetCondition(yume.PPTMainPhaseCon)
+	e1:SetCost(yume.PPTLimitCost)
+	e1:SetTarget(c71403002.tg1)
+	e1:SetOperation(c71403002.op1)
+	c:RegisterEffect(e1)
 	--monster movement effect
 	yume.RegPPTTetrisBasicMoveEffect(c,71403002)
-	--special summon
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(71403002,1))
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1,71513002)
-	e2:SetCondition(yume.PPTMainPhaseCon)
-	e2:SetCost(yume.PPTLimitCost)
-	e2:SetTarget(c71403002.tg2)
-	e2:SetOperation(c71403002.op2)
-	c:RegisterEffect(e2)
 	yume.PPTCounter()
 end
 function c71403002.filterp2a(c)
@@ -74,32 +74,50 @@ function c71403002.opp2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,sg)
 	end
 end
-function c71403002.filter2(c,e,tp)
-	return c:IsSetCard(0x715) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c71403002.filtertg1(c,check)
+	return check or c:IsLocation(LOCATION_MZONE) and c:GetSequence()<5
 end
-function c71403002.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c71403002.filter1(c)
+	return c:IsSetCard(0x715) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
+function c71403002.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and chkc~=c end
+	--local c_is_on_mzone=c:IsLocation(LOCATION_MZONE)
+	--local check=c_is_on_mzone or Duel.GetMZoneCount(tp)>0
+	if chkc then return chkc:IsControler(tp) and chkc~=c and chkc:IsOnField() end
 	if chk==0 then return
-		c:GetSequence()<5
-		and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,0,1,c)
-		and Duel.IsExistingMatchingCard(c71403002.filter2,tp,LOCATION_DECK,0,1,nil,e,tp)
+		(c:IsLocation(LOCATION_HAND) or c:GetSequence()<5)
+		and Duel.IsExistingTarget(c71403002.filtertg1,tp,LOCATION_ONFIELD,0,1,c,true)
+		and Duel.IsExistingMatchingCard(c71403002.filter1,tp,LOCATION_DECK,0,1,nil)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,0,1,1,c)
-	g:AddCard(c)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
-end
-function c71403002.op2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if not (c:IsRelateToEffect(e) and c:GetSequence()<5 and tc:IsRelateToEffect(e)) then return end
-	local dg=Group.FromCards(c,tc)
-	if Duel.Destroy(dg,REASON_EFFECT)==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c71403002.filter2,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-		if g:GetCount()==0 then return end
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	local g=Duel.SelectTarget(tp,c71403002.filtertg1,tp,LOCATION_ONFIELD,0,1,1,c,true)
+	if c:IsLocation(LOCATION_MZONE) then
+		g:AddCard(c)
+	else
+		Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,c,1,0,0)
 	end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c71403002.op1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local c_is_in_hand=c:IsLocation(LOCATION_HAND)
+	if not (c:IsRelateToEffect(e) and (c_is_in_hand or c:GetSequence()<5)) then return end
+	local op_flag=false
+	if c_is_in_hand then
+		op_flag=Duel.SendtoExtraP(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()
+	else
+		op_flag=Duel.Destroy(c,REASON_EFFECT)==1
+	end
+	if not op_flag then return end
+	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) then return end
+	Duel.BreakEffect()
+	if Duel.Destroy(tc,REASON_EFFECT)==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c71403002.filter1,tp,LOCATION_DECK,0,1,2,nil)
+	if g:GetCount()==0 then return end
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,g)
 end

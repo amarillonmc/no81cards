@@ -74,6 +74,7 @@ function c65840010.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_REMOVED)
 end
 function c65840010.activate1(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local dg=Duel.SelectMatchingCard(tp,c65840010.filter1,tp,LOCATION_HAND,0,1,1,nil)
 	if Duel.Remove(dg,POS_FACEUP,REASON_COST)~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>=0 then
 		local g=Duel.GetMatchingGroup(c65840010.spfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_REMOVED,0,nil,e,tp)

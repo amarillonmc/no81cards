@@ -2,22 +2,18 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit() 
-	--spsummon success
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e0:SetRange(LOCATION_MZONE)
-	e0:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e0:SetValue(1)
-	c:RegisterEffect(e0)  
-	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_DAMAGE)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCode(EVENT_DAMAGE)
-	e5:SetCondition(s.damcon1)
-	e5:SetOperation(s.damop)
-	c:RegisterEffect(e5)
+	--spsummon success  
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(1639384,0))
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1,id)
+	e1:SetTarget(s.target)
+	e1:SetOperation(s.operation)
+	c:RegisterEffect(e1)
+	
 	--
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE+CATEGORY_TOKEN)
@@ -44,19 +40,71 @@ function s.initial_effect(c)
 	e3:SetCondition(s.atkcon)
 	e3:SetOperation(s.atkop)
 	c:RegisterEffect(e3)
+	if s.counter==nil then
+		s[0]=0
+		s[1]=0
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		ge1:SetCode(EVENT_TO_GRAVE)
+		ge1:SetOperation(s.checkop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		ge2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+		ge2:SetOperation(s.clearop)
+		Duel.RegisterEffect(ge2,0)
+	end		 
 end
-function s.damcon1(e,tp,eg,ep,ev,re,r,rp)
-	return ep==tp
+function s.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		if tc:IsPreviousLocation(LOCATION_HAND) and re:GetHandler():IsAttribute(ATTRIBUTE_LIGHT) and bit.band(r,REASON_EFFECT)~=0  then
+			local p=tc:GetPreviousControler()
+			s[p]=s[p]+1
+		end
+		tc=eg:GetNext()
+	end
 end
-function s.damop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,id)
-	local c=e:GetHandler()  
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetValue(ev)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-	c:RegisterEffect(e1)
+function s.clearop(e,tp,eg,ep,ev,re,r,rp)
+	s[0]=0
+	s[1]=0
+end
+--
+
+function s.filter(c)
+	return c:IsFaceup()
+end
+function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and s.filter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,s.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
+end
+function s.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetTargetsRelateToChain()
+	if #g==0 then return end	
+	local tc=g:GetFirst()
+	while tc do
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+		e1:SetValue(1)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
+		e3:SetRange(LOCATION_MZONE)
+		e3:SetCode(EFFECT_IMMUNE_EFFECT)
+		e3:SetValue(s.efilter)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e3)
+		tc=g:GetNext()
+	end	 
+end
+function s.efilter(e,te)
+	return te:GetOwner()~=e:GetOwner()
 end
 --02
 function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
@@ -96,14 +144,17 @@ end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sc=e:GetLabelObject()
-	local ld=math.abs(c:GetLevel()-sc:GetLevel())	 
+	local ld=math.abs(c:GetLevel()-sc:GetLevel())	
 	local mg=Group.FromCards(c,sc)
 	local lv=1
 	if ld>0 then
 		lv=ld
 	end
-	if ld<=3 and  Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-		Duel.Recover(tp,1500,REASON_EFFECT)
+	if ld<=3 and Duel.IsPlayerCanDraw(tp,s[tp]) and s[tp]>0 and  Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+		if s[tp]>4 then
+			s[tp]=4	
+		end
+		Duel.Draw(tp,s[tp],REASON_EFFECT)
 	elseif ld>3 and  Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)

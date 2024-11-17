@@ -110,7 +110,7 @@ end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		local g=c:GetOverlayGroup():Filter(function(c) return c.fantasy_mountains_and_rivers end,nil)
+		local g=c:GetOverlayGroup():Filter(function(c) return _G["c"..c:GetCode()] and _G["c"..c:GetCode()].fantasy_mountains_and_rivers end,nil)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tg=g:FilterSelect(tp,Card.IsAbleToHand,1,1,nil)
 		if tg:GetCount()>0 then

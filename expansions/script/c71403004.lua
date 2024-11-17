@@ -31,20 +31,20 @@ function c71403004.initial_effect(c)
 	--monster movement effect
 	yume.RegPPTTetrisBasicMoveEffect(c,71403004)
 	--special summon
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(71403004,1))
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1,71513004)
-	e2:SetCondition(yume.PPTMainPhaseCon)
-	e2:SetCost(yume.PPTLimitCost)
-	e2:SetTarget(c71403004.tg2)
-	e2:SetOperation(c71403004.op2)
-	c:RegisterEffect(e2)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(71403004,1))
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCountLimit(1,71513004)
+	e1:SetCondition(yume.PPTMainPhaseCon)
+	e1:SetCost(yume.PPTLimitCost)
+	e1:SetTarget(c71403004.tg1)
+	e1:SetOperation(c71403004.op1)
+	c:RegisterEffect(e1)
 	yume.PPTCounter()
 end
 function c71403004.filterp2a(c)
@@ -75,39 +75,47 @@ function c71403004.opp2(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c71403004.filter2(c,e,tp)
-	return c:IsSetCard(0x715) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c71403004.filter1(c)
+	return c:IsSetCard(0x715) and c:IsType(TYPE_PENDULUM) and c:IsFaceup() and c:IsAbleToHand()
 end
-function c71403004.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c71403004.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	local pg=Duel.GetMatchingGroup(c71403004.filter2,tp,LOCATION_PZONE,0,nil,e,tp)
-	local pgct=pg:GetCount()
 	if chkc then return
 		chkc:IsOnField() and chkc:IsControler(tp) and chkc~=c
-		and pgct==2 or chkc~=pg:GetFirst()
 	end
-	local exg=Group.FromCards(c)
-	if pgct==1 then exg:Merge(pg) end
+	local pg=Duel.GetMatchingGroup(c71403004.filter1,tp,LOCATION_EXTRA,0,nil)
 	if chk==0 then
-		return pgct>0 and c:GetSequence()<5
-		and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,0,1,exg)
+		return (c:GetSequence()<5 or c:IsLocation(LOCATION_HAND))
+		and pg:GetCount()>0
+		and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,0,1,c)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,0,1,1,exg)
-	g:AddCard(c)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,2,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_PZONE)
-end
-function c71403004.op2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if not (c:IsRelateToEffect(e) and c:GetSequence()<5 and tc:IsRelateToEffect(e)) then return end
-	local dg=Group.FromCards(c,tc)
-	if Duel.Destroy(dg,REASON_EFFECT)==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c71403004.filter2,tp,LOCATION_PZONE,0,1,1,nil,e,tp)
-		if g:GetCount()>0 then
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-		end
+	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,0,1,1,c)
+	if c:IsLocation(LOCATION_MZONE) then
+		g:AddCard(c)
+	else
+		Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,c,1,0,0)
 	end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,pg,1,tp,LOCATION_EXTRA)
+end
+function c71403004.op1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local c_is_in_hand=c:IsLocation(LOCATION_HAND)
+	if not (c:IsRelateToEffect(e) and (c_is_in_hand or c:GetSequence()<5)) then return end
+	if c_is_in_hand then
+		op_flag=Duel.SendtoExtraP(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()
+	else
+		op_flag=Duel.Destroy(c,REASON_EFFECT)==1
+	end
+	if not op_flag then return end
+	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) then return end
+	Duel.BreakEffect()
+	if Duel.Destroy(tc,REASON_EFFECT)==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c71403004.filter1,tp,LOCATION_EXTRA,0,1,2,nil)
+	if g:GetCount()==0 then return end
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,g)
 end

@@ -65,13 +65,16 @@ function c9911663.thtgfilter(c)
 	return c:IsSetCard(0x5957) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
 function c9911663.target1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9911663.thtgfilter,tp,LOCATION_DECK,0,3,nil) end
+	if chk==0 then
+		local g=Duel.GetMatchingGroup(c9911663.thtgfilter,tp,LOCATION_DECK,0,nil)
+		return g:GetClassCount(Card.GetCode)>=4
+	end
 end
 function c9911663.activate1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9911663.thtgfilter,tp,LOCATION_DECK,0,nil)
-	if g:GetCount()>=3 then
+	if g:GetClassCount(Card.GetCode)>=4 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-		local sg=g:Select(tp,3,3,nil)
+		local sg=g:SelectSubGroup(tp,aux.dncheck,false,4,4)
 		Duel.ConfirmCards(1-tp,sg)
 		local tg=sg:RandomSelect(1-tp,1)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
@@ -91,7 +94,8 @@ end
 function c9911663.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local op=0
-	if Duel.IsExistingMatchingCard(c9911663.thtgfilter,tp,LOCATION_DECK,0,3,nil) then
+	local g=Duel.GetMatchingGroup(c9911663.thtgfilter,tp,LOCATION_DECK,0,nil)
+	if g:GetClassCount(Card.GetCode)>=4 then
 		op=Duel.SelectOption(tp,aux.Stringid(9911663,1),aux.Stringid(9911663,2))
 	else
 		op=Duel.SelectOption(tp,aux.Stringid(9911663,1))
@@ -110,9 +114,9 @@ function c9911663.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local chk
 	if op==1 then
 		local g=Duel.GetMatchingGroup(c9911663.thtgfilter,tp,LOCATION_DECK,0,nil)
-		if g:GetCount()>=3 then
+		if g:GetClassCount(Card.GetCode)>=4 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-			local sg=g:Select(tp,3,3,nil)
+			local sg=g:SelectSubGroup(tp,aux.dncheck,false,4,4)
 			Duel.ConfirmCards(1-tp,sg)
 			local tg=sg:RandomSelect(1-tp,1)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)

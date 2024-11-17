@@ -120,15 +120,19 @@ function c9911552.filter0(c)
 	return c:IsSetCard(0x6952) and c:IsType(TYPE_MONSTER) and (c:IsFaceup() or not c:IsLocation(LOCATION_EXTRA))
 end
 function c9911552.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return re:IsActiveType(TYPE_MONSTER) and (LOCATION_HAND+LOCATION_GRAVE)&loc~=0
+	for i=1,ev do
+		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
+		local tc=te:GetHandler()
+		if tc:GetOriginalType()&TYPE_MONSTER>0 and tc:IsRelateToEffect(te)
+			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+			and Duel.IsExistingMatchingCard(c9911552.filter0,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,tc) then
+			return true
+		end
+	end
+	return false
 end
 function c9911552.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local rc=re:GetHandler()
-	if chk==0 then return rc:IsRelateToEffect(re) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and rc:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.IsExistingMatchingCard(c9911552.filter0,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,rc) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,rc,1,0,0)
+	if chk==0 then return true end
 end
 function c9911552.filter1(c,e,tp)
 	return c9911552.filter0(c) and (c:IsAbleToGrave() or c9911552.filter2(c,e,tp))
@@ -140,13 +144,29 @@ function c9911552.filter2(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (b1 or b2)
 end
 function c9911552.spop(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	if not rc:IsRelateToEffect(re) then return end
-	if aux.NecroValleyNegateCheck(rc) then return end
-	if Duel.SpecialSummonStep(rc,0,tp,tp,false,false,POS_FACEUP) then
+	local g=Group.CreateGroup()
+	for i=1,ev do
+		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
+		local tc=te:GetHandler()
+		if tc:GetOriginalType()&TYPE_MONSTER>0 and tc:IsRelateToEffect(te) and not aux.NecroValleyNegateCheck(tc)
+			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+			and Duel.IsExistingMatchingCard(c9911552.filter0,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,tc) then
+			g:AddCard(tc)
+		end
+	end
+	if #g==0 then return end
+	if g:IsExists(Card.IsFacedown,1,nil) then
+		local cg=g:Filter(Card.IsFacedown,nil)
+		Duel.ConfirmCards(tp,cg)
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sg=g:Select(tp,1,1,nil)
+	Duel.HintSelection(sg)
+	local sc=sg:GetFirst()
+	if Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-		local g=Duel.SelectMatchingCard(tp,c9911552.filter1,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,1,nil,e,tp)
-		local tc=g:GetFirst()
+		local rg=Duel.SelectMatchingCard(tp,c9911552.filter1,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,1,nil,e,tp)
+		local tc=rg:GetFirst()
 		if tc then
 			if tc:IsAbleToGrave() and (not c9911552.filter2(tc,e,tp) or Duel.SelectOption(tp,1191,1152)==0) then
 				Duel.SendtoGrave(tc,REASON_EFFECT)

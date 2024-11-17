@@ -2,7 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddFusionProcFun2(c,function(c)
-		return c.fantasy_mountains_and_rivers
+		return _G["c"..c:GetCode()] and _G["c"..c:GetCode()].fantasy_mountains_and_rivers
 	end,aux.FilterBoolFunction(Card.IsFusionType,TYPE_TUNER),true)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
@@ -32,7 +32,7 @@ function s.descon(e,tp,eg,ep,ev,re,r,rp)
 	return re and re:IsActiveType(TYPE_SPELL)
 end
 function s.desfilter(c)
-	return c:IsFaceup() and c.fantasy_mountains_and_rivers
+	return c:IsFaceup() and _G["c"..c:GetCode()] and _G["c"..c:GetCode()].fantasy_mountains_and_rivers
 end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
@@ -58,7 +58,7 @@ function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 		and c:IsPreviousControler(tp) and c:GetReasonPlayer()==1-tp
 end
 function s.thfilter(c)
-	return c:IsAbleToHand() and c.fantasy_mountains_and_rivers
+	return c:IsAbleToHand() and _G["c"..c:GetCode()] and _G["c"..c:GetCode()].fantasy_mountains_and_rivers
 		and Duel.GetMZoneCount(tp,c)>0
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

@@ -1,7 +1,8 @@
 --电锯人
 local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,12866620)
+	aux.AddCodeList(c,12866620,12866605)
+	c:EnableReviveLimit()
 	--splimit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -41,7 +42,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.splimit(e,se,sp,st)
-	return se:IsHasType(EFFECT_TYPE_ACTIONS)
+	return aux.IsCodeListed(se:GetHandler(),id) or not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

@@ -1,6 +1,13 @@
 local cm,m = GetID()
 cm.eff,cm.ec = {},{}
 function cm.initial_effect(c)
+	--splimit
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(cm.splimit)
+	c:RegisterEffect(e0)
     local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
@@ -16,9 +23,9 @@ function cm.initial_effect(c)
 	e2:SetTargetRange(LOCATION_MZONE,0)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetValue(function(e,c)
-	return Duel.GetMatchingGroupCount(cm.f,c:GetControler(),LOCATION_REMOVED,0,nil,RACE_DRAGON)*200
+	return Duel.GetMatchingGroupCount(cm.f,c:GetControler(),LOCATION_REMOVED,LOCATION_REMOVED,nil,RACE_DRAGON)*200
     end)
-    e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) tp=e:GetHandlerPlayer() return Duel.GetMatchingGroupCount(function(c) return c:IsCode(84569017) and c:IsFaceup() end,tp,LOCATION_REMOVED,0,nil)>0 end )
+    e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) tp=e:GetHandlerPlayer() return Duel.GetMatchingGroupCount(function(c) return c:IsCode(84569017) and c:IsFaceup() end,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)>0 end )
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
     e3:SetDescription(aux.Stringid(m,0))
@@ -30,6 +37,9 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.tg2)
 	e3:SetOperation(cm.op2)
 	c:RegisterEffect(e3)
+end
+function cm.splimit(e,se,sp,st)
+	return se:IsHasType(EFFECT_TYPE_ACTIONS) and se:GetHandler():IsType(TYPE_MONSTER) and se:GetHandler():GetAttribute()&ATTRIBUTE_WIND~=0
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,nil) end

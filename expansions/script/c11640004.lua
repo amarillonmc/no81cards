@@ -89,7 +89,7 @@ function s.filter2(c,e,tp,tc)
 	return  c:IsLevelAbove(1) and c:IsFaceup() and c:IsReleasableByEffect() and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,ld)
 end
 function s.spfilter2(c,e,tp,lv)  
-	return c:IsAttribute(ATTRIBUTE_LIGHT)  and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and c:IsLevelBelow(lv)
+	return c:IsAttribute(ATTRIBUTE_LIGHT)  and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and c:IsLevelBelow(lv) and c:IsType(TYPE_RITUAL)
 end
 function s.cfilter(c,e)
 	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToGrave()

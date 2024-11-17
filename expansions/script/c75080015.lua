@@ -45,14 +45,14 @@ function c75080015.matval(e,lc,mg,c,tp)
 	return true,true
 end
 function c75080015.seqfilter(c,seq)
-	return c:GetSequence()<5 and c:IsFaceup() and c:IsCanAddCounter(0x1751,1)
-		and math.abs(seq-c:GetSequence())==1
+	return c:IsFaceup() and c:IsCanAddCounter(0x1751,1)
+		--and c:GetSequence()<5 and math.abs(seq-c:GetSequence())==1
 end
 function c75080015.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:GetSequence()>=5 then return false end
+	--if c:GetSequence()>=5 then return false end
 	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
-	local g=Duel.GetMatchingGroup(c75080015.seqfilter,tp,LOCATION_MZONE,0,nil,c:GetSequence())
+	local g=Duel.SelectMatchingCard(tp,c75080015.seqfilter,tp,LOCATION_MZONE,0,1,2,nil,c:GetSequence())
 	for tc in aux.Next(g) do
 		tc:AddCounter(0x1751,1)
 	end
@@ -80,9 +80,10 @@ function c75080015.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
 	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(75080015,2))
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
 	e1:SetValue(c75080015.efilter)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)

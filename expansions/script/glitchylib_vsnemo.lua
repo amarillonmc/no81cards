@@ -122,6 +122,7 @@ EXTRA_MONSTER_ZONE=0x60
 
 --resets
 RESETS_REDIRECT_FIELD 			= 0x047e0000
+RESETS_STANDARD_DISABLE			= RESETS_STANDARD|RESET_DISABLE
 RESETS_STANDARD_UNION 			= RESETS_STANDARD&(~(RESET_TOFIELD|RESET_LEAVE))
 RESETS_STANDARD_TOFIELD 		= RESETS_STANDARD&(~(RESET_TOFIELD))
 RESETS_STANDARD_EXC_GRAVE 		= RESETS_STANDARD&~(RESET_LEAVE|RESET_TOGRAVE)
@@ -190,6 +191,7 @@ STRING_DECKBOTTOM						=	aux.Stringid(38082437,5)
 
 --Nemo's archetypes and constants
 ARCHE_ANIFRIENDS = 0x442
+ARCHE_BRAND_810 = 0x3462
 
 ARCHE_DESPERADO_TRICKSTER	=	0x3461
 ARCHE_DESPERADO_HEART		=	0x5461
@@ -221,6 +223,7 @@ COUNTER_GEAS							= 0x1461
 COUNTER_COMPASSION_OF_DESPERADO_HEART	= 0x462
 COUNTER_CONNECTION_OF_DESPERADO_HEART	= 0x463
 COUNTER_H_ANIFRIENDS_OINARI_SAMA		= 0x466
+COUNTER_HEALING_VISION_DESCENT			= 0x469
 COUNTER_KARMA_OF_DESPERADO_HEART		= 0x464
 COUNTER_LBO_HAPPINESS					= 0x440
 COUNTER_LORE							= 0x246
@@ -352,6 +355,8 @@ function Effect.Evaluate(e,...)
 end
 
 --Custom Categories
+CATEGORY_ADDITIONAL_DRAW_COUNT = 0x40000
+
 if not global_effect_category_table_global_check then
 	global_effect_category_table_global_check=true
 	global_effect_category_table={}
@@ -555,10 +560,11 @@ function Duel.ToHandOrGrave(c,tp,p)
 	end
 end
 --Announce
-function Duel.AnnounceNumberMinMax(p,min,max,f)
+function Duel.AnnounceNumberMinMax(p,min,max,f,step)
+	if not step then step=1 end
 	local tab={}
-	for i=min,max do
-		if not f or f(i) then
+	for i=min,max,step do
+		if not f or f(i,p) then
 			table.insert(tab,i)
 		end
 	end
@@ -604,6 +610,14 @@ function Auxiliary.ClearTable(tab)
 		for k=1,size do
 			table.remove(tab)
 		end
+	end
+end
+function Auxiliary.ClearTableRecursive(tab)
+	for k,v in pairs(tab) do
+		if type(v)=="table" then
+			aux.ClearTableRecursive(v)
+		end
+		tab[k]=nil
 	end
 end
 
@@ -1635,7 +1649,7 @@ function Card.GlitchyGetPreviousColumnGroup(c,left,right,without_center)
 end
 
 --Continuous Effects
-function Auxiliary.RegisterMaxxCEffect(c,id,p,range,event,cond,outchainop,inchainop,flaglabel,reset,flagreset,label)
+function Auxiliary.RegisterMaxxCEffect(c,id,p,range,event,cond,outchainop,inchainop,flaglabel,reset,flagreset,label,labelobj)
 	local rct,flagrct=1,1
 	if type(reset)=="table" then
 		rct=reset[2]
@@ -1653,6 +1667,9 @@ function Auxiliary.RegisterMaxxCEffect(c,id,p,range,event,cond,outchainop,inchai
 	e2:SetOperation(outchainop)
 	if label then
 		e2:SetLabel(label)
+	end
+	if labelobj then
+		e2:SetLabelObject(labelobj)
 	end
 	if reset then
 		e2:SetReset(reset,rct)
@@ -1672,6 +1689,9 @@ function Auxiliary.RegisterMaxxCEffect(c,id,p,range,event,cond,outchainop,inchai
 	if label then
 		e3:SetLabel(label)
 	end
+	if labelobj then
+		e3:SetLabelObject(labelobj)
+	end
 	if reset then
 		e3:SetReset(reset,rct)
 	end
@@ -1689,6 +1709,9 @@ function Auxiliary.RegisterMaxxCEffect(c,id,p,range,event,cond,outchainop,inchai
 	e4:SetOperation(aux.ResolvedChainMaxxCOperation(id,inchainop))
 	if label then
 		e4:SetLabel(label)
+	end
+	if labelobj then
+		e4:SetLabelObject(labelobj)
 	end
 	if reset then
 		e4:SetReset(reset,rct)
@@ -2073,6 +2096,16 @@ function Auxiliary.ChkfMMZ(sumcount)
 			end
 end
 
+--SelectUnselectGroup aux functions
+function Auxiliary.dncheckbrk(g,e,tp,mg,c)
+	local res=g:GetClassCount(Card.GetCode)==#g
+	return res, not res
+end
+function Auxiliary.ogdncheckbrk(g,e,tp,mg,c)
+	local res=g:GetClassCount(Card.GetOriginalCodeRule)==#g
+	return res, not res
+end
+
 --Equip
 function Auxiliary.IsEquippedCond(e)
 	return e:GetHandler():GetEquipTarget()
@@ -2171,6 +2204,38 @@ function Auxiliary.STFilter(f,...)
 end
 
 --Flag Effects
+function Card.GetFlagEffectWithSpecificLabel(c,flag,label,reset)
+	flag=flag&MAX_ID
+	local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT|flag)}
+	for i=#eset,1,-1 do
+		local e=eset[i]
+		local x=e:GetLabel()
+		if x==label then
+			if not reset then
+				return e
+			else
+				e:Reset()
+			end
+		end
+	end
+	return
+end
+function Duel.GetFlagEffectWithSpecificLabel(p,flag,label,reset)
+	flag=flag&MAX_ID
+	local eset={Duel.IsPlayerAffectedByEffect(p,EFFECT_FLAG_EFFECT|flag)}
+	for i=#eset,1,-1 do
+		local e=eset[i]
+		local x=e:GetLabel()
+		if x==label then
+			if not reset then
+				return e
+			else
+				e:Reset()
+			end
+		end
+	end
+	return
+end
 function Card.HasFlagEffect(c,id,...)
 	local flags={...}
 	if id then
@@ -2328,9 +2393,11 @@ end
 function Effect.SetSpecificLabel(e,l,pos)
 	if not pos then pos=1 end
 	local tab={e:GetLabel()}
-	if #tab<pos then
-		for i=1,pos-#tab-1 do
-			table.insert(tab,0)
+	if pos==0 or #tab<pos then
+		if pos~=0 then
+			for i=1,pos-#tab-1 do
+				table.insert(tab,0)
+			end
 		end
 		table.insert(tab,l)
 	else
@@ -2343,6 +2410,11 @@ function Effect.GetSpecificLabel(e,pos)
 	local tab={e:GetLabel()}
 	if #tab<pos then return end
 	return tab[pos]
+end
+function Effect.GetLabelCount(e)
+	local tab={e:GetLabel()}
+	if not tab then return 0 end
+	return #tab
 end
 
 --Link Markers
@@ -2967,6 +3039,10 @@ function Duel.IsBattlePhase(tp)
 	local ph=Duel.GetCurrentPhase()
 	return (not tp or Duel.GetTurnPlayer()==tp) and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
+function Duel.IsStartOfBattlePhase(tp)
+	local ph=Duel.GetCurrentPhase()
+	return (not tp or Duel.GetTurnPlayer()==tp) and ph==PHASE_BATTLE_START
+end
 function Duel.IsEndPhase(tp)
 	return (not tp or Duel.GetTurnPlayer()==tp) and Duel.GetCurrentPhase()==PHASE_END
 end
@@ -2974,6 +3050,20 @@ end
 function Duel.GetNextPhaseCount(ph,p)
 	if not ph and not p then return 1 end
 	if (not ph or Duel.GetCurrentPhase()==ph) and (not p or Duel.GetTurnPlayer()==p) then
+		return 2
+	else
+		return 1
+	end
+end
+function Duel.GetNextMainPhaseCount(p)
+	if Duel.IsMainPhase() and (not p or Duel.GetTurnPlayer()==p) then
+		return 2
+	else
+		return 1
+	end
+end
+function Duel.GetNextBattlePhaseCount(p)
+	if Duel.IsBattlePhase() and (not p or Duel.GetTurnPlayer()==p) then
 		return 2
 	else
 		return 1
@@ -3321,6 +3411,74 @@ function Duel.SSetAndRedirect(p,g,e)
 end
 
 --Special Summons
+function Duel.SpecialSummonATK(e,g,styp,sump,tp,ign1,ign2,pos,zone,atk,reset,rc)
+	if not zone then zone=0xff end
+	if not reset then reset=0 end
+	if not rc then rc=e:GetHandler() end
+	if aux.GetValueType(g)=="Card" then
+		if g==e:GetHandler() and rc==e:GetHandler() then reset=reset|RESET_DISABLE end
+		g=Group.FromCards(g)
+	end
+	local ct=0
+	for dg in aux.Next(g) do
+		local finalzone=zone
+		if type(zone)=="table" then
+			finalzone=zone[tp+1]
+			if tc:IsCanBeSpecialSummoned(e,sumtype,sump,ign1,ign2,pos,1-tp,zone[2-tp]) and (not tc:IsCanBeSpecialSummoned(e,sumtype,sump,ign1,ign2,pos,tp,finalzone) or Duel.SelectYesNo(sump,aux.Stringid(61665245,2))) then
+				tp=1-tp
+				finalzone=zone[tp+1]
+			end
+		end
+		if Duel.SpecialSummonStep(dg,styp,sump,tp,ign1,ign2,pos,finalzone) then
+			ct=ct+1
+			local e1=Effect.CreateEffect(rc)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UPDATE_ATTACK)
+			e1:SetValue(atk)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+reset)
+			dg:RegisterEffect(e1)
+		end
+	end
+	Duel.SpecialSummonComplete()
+	return ct
+end
+function Duel.SpecialSummonATKDEF(e,g,styp,sump,tp,ign1,ign2,pos,zone,atk,def,reset,rc)
+	if not zone then zone=0xff end
+	if not reset then reset=0 end
+	if not rc then rc=e:GetHandler() end
+	if aux.GetValueType(g)=="Card" then
+		if g==e:GetHandler() and rc==e:GetHandler() then reset=reset|RESET_DISABLE end
+		g=Group.FromCards(g)
+	end
+	for dg in aux.Next(g) do
+		local finalzone=zone
+		if type(zone)=="table" then
+			finalzone=zone[tp+1]
+			if tc:IsCanBeSpecialSummoned(e,sumtype,sump,ign1,ign2,pos,1-tp,zone[2-tp]) and (not tc:IsCanBeSpecialSummoned(e,sumtype,sump,ign1,ign2,pos,tp,finalzone) or Duel.SelectYesNo(sump,aux.Stringid(61665245,2))) then
+				tp=1-tp
+				finalzone=zone[tp+1]
+			end
+		end
+		if Duel.SpecialSummonStep(dg,styp,sump,tp,ign1,ign2,pos,finalzone) then
+			local e=Effect.CreateEffect(rc)
+			e:SetType(EFFECT_TYPE_SINGLE)
+			e:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+			e:SetReset(RESET_EVENT|RESETS_STANDARD|reset)
+			if atk then
+				e:SetCode(EFFECT_SET_ATTACK_FINAL)
+				e:SetValue(atk)
+				dg:RegisterEffect(e,true)
+			end
+			if def then
+				local e=e:Clone()
+				e:SetCode(EFFECT_SET_DEFENSE_FINAL)
+				e:SetValue(def)
+				dg:RegisterEffect(e,true)
+			end
+		end
+	end
+	return Duel.SpecialSummonComplete()
+end
 function Duel.SpecialSummonRedirect(e,g,styp,sump,tp,ign1,ign2,pos,zone,loc,desc)
 	if not zone then zone=0xff end
 	if not loc then loc=LOCATION_REMOVED end
@@ -3410,6 +3568,11 @@ function Auxiliary.AlreadyInRangeCondition(e,re,se)
 	local se=e and e:GetLabelObject():GetLabelObject() or se
 	return	function(c,...)
 				return se==nil or re~=se
+			end
+end
+function Auxiliary.AlreadyInRangeEventCondition(f)
+	return	function(e,tp,eg,ep,ev,re,r,rp)
+				return not eg:IsContains(e:GetHandler()) and eg:IsExists(aux.AlreadyInRangeFilter(e,f),1,nil,e,tp,eg,ep,ev,re,r,rp)
 			end
 end
 function Auxiliary.AlreadyInRangeFilter(e,f,se)
@@ -3599,6 +3762,12 @@ function Auxiliary.MainPhaseCond(tp,ct)
 	return	function(e,p)
 				local tp = (tp==0) and p or (tp==1) and 1-p or nil
 				return Duel.IsMainPhase(tp,ct)
+			end
+end
+function Auxiliary.StartOfBattlePhaseCond(tp)
+	return	function(e,p)
+				local tp = (tp==0) and p or (tp==1) and 1-p or nil
+				return Duel.IsStartOfBattlePhase(tp)
 			end
 end
 function Auxiliary.BattlePhaseCond(tp)

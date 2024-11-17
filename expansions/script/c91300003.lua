@@ -8,7 +8,6 @@ function s.initial_effect(c)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.sumcon)
 	e1:SetCost(s.sumcost)
 	e1:SetTarget(s.sumtg)
@@ -83,7 +82,7 @@ function s.initial_effect(c)
 end
 s.fantasy_mountains_and_rivers=true
 function s.fantasy_setfilter(c)
-	return c.fantasy_mountains_and_rivers
+	return _G["c"..c:GetCode()] and _G["c"..c:GetCode()].fantasy_mountains_and_rivers
 		and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function s.sumcon(e,tp,eg,ep,ev,re,r,rp)
@@ -94,7 +93,7 @@ function s.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,1000)
 end
 function s.tgfilte(c)
-	return c.fantasy_mountains_and_rivers and c:IsAbleToGrave()
+	return _G["c"..c:GetCode()] and _G["c"..c:GetCode()].fantasy_mountains_and_rivers and c:IsAbleToGrave()
 end
 function s.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and (e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) or 1==1)

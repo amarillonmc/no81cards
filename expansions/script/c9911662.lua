@@ -1,14 +1,25 @@
 --岭偶澄构体·沉积
 function c9911662.initial_effect(c)
-	--Activate
+	--Activate only search
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(9911662,0))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,9911662+EFFECT_COUNT_CODE_OATH)
-	e1:SetTarget(c9911662.target)
-	e1:SetOperation(c9911662.activate)
+	e1:SetTarget(c9911662.target1)
+	e1:SetOperation(c9911662.activate1)
 	c:RegisterEffect(e1)
+	--Activate set monsters
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9911662,1))
+	e2:SetType(EFFECT_TYPE_ACTIVATE)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCountLimit(1,9911662+EFFECT_COUNT_CODE_OATH)
+	e2:SetCondition(c9911662.condition)
+	e2:SetTarget(c9911662.target2)
+	e2:SetOperation(c9911662.activate2)
+	c:RegisterEffect(e2)
 	if not c9911662.global_check then
 		c9911662.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -46,24 +57,17 @@ end
 function c9911662.thtgfilter(c)
 	return c:IsSetCard(0x5957) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
-function c9911662.mfilter(c,e)
-	return c:GetSequence()<=4 and not (e and c:IsImmuneToEffect(e))
+function c9911662.target1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		local g=Duel.GetMatchingGroup(c9911662.thtgfilter,tp,LOCATION_DECK,0,nil)
+		return g:GetClassCount(Card.GetCode)>=3
+	end
 end
-function c9911662.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(c9911662.thtgfilter,tp,LOCATION_DECK,0,3,nil)
-	local b2=Duel.GetFlagEffect(tp,9911654)>0
-		and Duel.IsExistingMatchingCard(c9911662.mfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,nil)
-	if chk==0 then return b1 or b2 end
-end
-function c9911662.sfilter(c,seq)
-	return c:GetSequence()==seq
-end
-function c9911662.activate(e,tp,eg,ep,ev,re,r,rp)
-	local chk
+function c9911662.activate1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9911662.thtgfilter,tp,LOCATION_DECK,0,nil)
-	if g:GetCount()>=3 then
+	if g:GetClassCount(Card.GetCode)>=3 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-		local sg=g:Select(tp,3,3,nil)
+		local sg=g:SelectSubGroup(tp,aux.dncheck,false,3,3)
 		Duel.ConfirmCards(1-tp,sg)
 		local tg=sg:RandomSelect(1-tp,1)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
@@ -75,10 +79,57 @@ function c9911662.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoGrave(tc,REASON_EFFECT)
 		end
 		Duel.ShuffleDeck(tp)
-		chk=true
+	end
+end
+function c9911662.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(tp,9911654)>0
+end
+function c9911662.mfilter(c,e)
+	return c:GetSequence()<=4 and not (e and c:IsImmuneToEffect(e))
+end
+function c9911662.target2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9911662.mfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,nil) end
+	local op=0
+	local g=Duel.GetMatchingGroup(c9911662.thtgfilter,tp,LOCATION_DECK,0,nil)
+	if g:GetClassCount(Card.GetCode)>=3 then
+		op=Duel.SelectOption(tp,aux.Stringid(9911662,1),aux.Stringid(9911662,2))
+	else
+		op=Duel.SelectOption(tp,aux.Stringid(9911662,1))
+	end
+	e:SetLabel(op)
+	if op==0 then
+		e:SetCategory(0)
+	else
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
+	end
+end
+function c9911662.sfilter(c,seq)
+	return c:GetSequence()==seq
+end
+function c9911662.activate2(e,tp,eg,ep,ev,re,r,rp)
+	local op=e:GetLabel()
+	local chk
+	if op==1 then
+		local g=Duel.GetMatchingGroup(c9911662.thtgfilter,tp,LOCATION_DECK,0,nil)
+		if g:GetClassCount(Card.GetCode)>=3 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			local sg=g:SelectSubGroup(tp,aux.dncheck,false,3,3)
+			Duel.ConfirmCards(1-tp,sg)
+			local tg=sg:RandomSelect(1-tp,1)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			local tc=tg:Select(tp,1,1,nil):GetFirst()
+			if tc:IsAbleToHand() and (not tc:IsAbleToGrave() or Duel.SelectOption(tp,1190,1191)==0) then
+				tc:SetStatus(STATUS_TO_HAND_WITHOUT_CONFIRM,true)
+				Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			else
+				Duel.SendtoGrave(tc,REASON_EFFECT)
+			end
+			Duel.ShuffleDeck(tp)
+			chk=true
+		end
 	end
 	local mg=Duel.GetMatchingGroup(c9911662.mfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,e)
-	if Duel.GetFlagEffect(tp,9911654)==0 or #mg==0 then return end
+	if #mg==0 then return end
 	if chk then Duel.BreakEffect() end
 	for tc in aux.Next(mg) do
 		local zone=1<<tc:GetSequence()

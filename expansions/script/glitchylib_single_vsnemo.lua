@@ -579,3 +579,40 @@ function Card.Unaffected(c,immunity,cond,reset,rc,range,prop,desc,forced,typ)
 	
 	return e
 end
+
+--Restriction and Rules
+function Card.MustBeSummoned(c,sumtype,rc)
+	local rc = rc and rc or c
+	local e=Effect.CreateEffect(rc)
+	e:SetType(EFFECT_TYPE_SINGLE)
+	e:SetProperty(EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_UNCOPYABLE)
+	e:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e:SetValue(	function(eff,se,sp,st)
+					return st&sumtype==sumtype
+				end
+			  )
+	c:RegisterEffect(e)
+	return e
+end
+function Card.MustFirstBeSummoned(c,sumtype,rc)
+	local rc = rc and rc or c
+	local e=Effect.CreateEffect(rc)
+	e:SetType(EFFECT_TYPE_SINGLE)
+	e:SetProperty(EFFECT_FLAG_SINGLE_RANGE|EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_UNCOPYABLE)
+	e:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e:SetRange(LOCATION_EXTRA)
+	e:SetValue(	function(eff,se,sp,st)
+					return st&sumtype==sumtype
+				end
+			  )
+	c:RegisterEffect(e)
+	return e
+end
+function Card.MustBeSSedByOwnProcedure(c,rc)
+	local rc = rc and rc or c
+	local e=Effect.CreateEffect(rc)
+	e:SetProperty(EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_UNCOPYABLE)
+	e:SetType(EFFECT_TYPE_SINGLE)
+	e:SetCode(EFFECT_SPSUMMON_CONDITION)
+	c:RegisterEffect(e)
+end

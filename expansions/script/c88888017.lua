@@ -15,19 +15,19 @@ function c88888017.initial_effect(c)
 	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCondition(aux.exccon)
+	e2:SetCountLimit(1,88888017)
 	e2:SetCost(c88888017.thcost)
 	e2:SetTarget(c88888017.thtg)
 	e2:SetOperation(c88888017.thop)
 	c:RegisterEffect(e2)
 end
 function c88888017.cfilter(c,tp)
-	return c:IsCode(89631139) and c:IsAbleToRemoveAsCost()
+	return c:IsCode(89631139,23995346) and c:IsAbleToRemoveAsCost()
 end
 function c88888017.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c88888017.cfilter,tp,LOCATION_GRAVE+LOCATION_DECK+LOCATION_HAND,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c88888017.cfilter,tp,LOCATION_GRAVE+LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c88888017.cfilter,tp,LOCATION_GRAVE+LOCATION_DECK+LOCATION_HAND,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,c88888017.cfilter,tp,LOCATION_GRAVE+LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,1,1,nil,tp)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c88888017.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -46,7 +46,7 @@ function c88888017.filter1(c,e)
 	return (c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck() and not c:IsImmuneToEffect(e)
 end
 function c88888017.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0xdd) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and (aux.IsCodeListed(c,89631139) or aux.IsCodeListed(c,23995346)) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c88888017.target(e,tp,eg,ep,ev,re,r,rp,chk)

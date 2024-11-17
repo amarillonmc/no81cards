@@ -96,7 +96,7 @@ function s.initial_effect(c)
 end
 s.fantasy_mountains_and_rivers=true
 function s.fantasy_setfilter(c)
-	return c.fantasy_mountains_and_rivers --and not c:IsCode(id)
+	return _G["c"..c:GetCode()] and _G["c"..c:GetCode()].fantasy_mountains_and_rivers --and not c:IsCode(id)
 		and c:IsAbleToHandAsCost()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

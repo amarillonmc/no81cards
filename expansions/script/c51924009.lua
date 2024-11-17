@@ -1,6 +1,7 @@
 --暗月古神 亚煞极
 function c51924009.initial_effect(c)
 	c:EnableReviveLimit()
+	c:SetSPSummonOnce(51924009)
 	--pendulum
 	aux.EnablePendulumAttribute(c)
 	--splimit

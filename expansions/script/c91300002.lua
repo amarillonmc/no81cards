@@ -59,7 +59,7 @@ function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,id)==0 and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
 end
 function s.thfilter(c)
-	return c.fantasy_mountains_and_rivers and not c:IsCode(id) and c:IsType(TYPE_MONSTER)
+	return _G["c"..c:GetCode()] and _G["c"..c:GetCode()] and _G["c"..c:GetCode()].fantasy_mountains_and_rivers and not c:IsCode(id) and c:IsType(TYPE_MONSTER)
 		and c:IsAbleToHand()
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)

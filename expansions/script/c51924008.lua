@@ -1,6 +1,7 @@
 --暗月古神 克苏恩
 function c51924008.initial_effect(c)
 	c:EnableReviveLimit()
+	c:SetSPSummonOnce(51924008)
 	--pendulum
 	aux.EnablePendulumAttribute(c)
 	--splimit

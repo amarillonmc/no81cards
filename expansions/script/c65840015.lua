@@ -51,14 +51,16 @@ end
 
 
 function c65840015.remtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_REMOVED,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_REMOVED)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,c:GetControler(),LOCATION_REMOVED,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,c:GetControler(),LOCATION_REMOVED)
 end
 function c65840015.remop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_REMOVED,0,1,5,nil)
+	local g=Duel.SelectMatchingCard(tp,nil,c:GetControler(),LOCATION_REMOVED,0,1,5,nil)
 	if g:GetCount()>0 then
+		Duel.HintSelection(g)
 		Duel.SendtoDeck(g,nil,0,REASON_EFFECT)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD)

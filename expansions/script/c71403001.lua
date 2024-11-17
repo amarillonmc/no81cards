@@ -26,12 +26,12 @@ function c71403001.con1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCustomActivityCount(71503001,tp,ACTIVITY_SPSUMMON)==0
 end
 function c71403001.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(yume.PPTPendFilter,tp,LOCATION_DECK,0,nil)
 	if chk==0 then
-		return Duel.IsExistingMatchingCard(yume.PPTPlacePendExceptFromFieldFilter,tp,LOCATION_DECK,0,1,nil)
-		and Duel.IsExistingMatchingCard(yume.PPTPendFilter,tp,LOCATION_DECK,0,1,nil)
+		return g:GetCount()>1 and g:IsExists(aux.FilterEqualFunction(Card.IsForbidden,false),1,nil)
 		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
 	end
-	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,g,1,tp,LOCATION_DECK)
 end
 function c71403001.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
@@ -39,7 +39,10 @@ function c71403001.op1(e,tp,eg,ep,ev,re,r,rp)
 	if pc and Duel.MoveToField(pc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(71403001,1))
 		local g=Duel.SelectMatchingCard(tp,yume.PPTPendFilter,tp,LOCATION_DECK,0,1,1,nil)
-		Duel.SendtoExtraP(g,nil,REASON_EFFECT)
+		if g:GetCount()>0 then
+			Duel.BreakEffect()
+			Duel.SendtoExtraP(g,nil,REASON_EFFECT)
+		end
 	end
 end
 end

@@ -37,7 +37,7 @@ function s.thfilter(c,tp)
 	return (c:IsAbleToHandAsCost() or c:IsAbleToExtraAsCost()) and g:CheckSubGroup(s.gcheck,2,2,tp)
 end
 function s.tgfilter(c,type)
-	return c.fantasy_mountains_and_rivers
+	return _G["c"..c:GetCode()] and _G["c"..c:GetCode()].fantasy_mountains_and_rivers
 		and c:IsAbleToGraveAsCost() and not c:IsType(type)
 end
 function s.gcheck(g,tp)
@@ -59,7 +59,7 @@ end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()==100 then
-			return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler(),tp) and Duel.GetLP(tp)~=4000
+			return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler(),tp)
 		else return false end
 	end
 	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler(),tp)

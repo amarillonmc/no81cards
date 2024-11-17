@@ -6,6 +6,9 @@ Scripted by: XGlitchy30
 ]]
 
 local s,id=GetID()
+if not GLITCHYLIB_LOADED then
+	Duel.LoadScript("glitchylib_vsnemo.lua")
+end
 function s.initial_effect(c)
 	aux.LocationAfterCostEffects[EFFECT_CANNOT_REMOVE]=true
 	c:EnableReviveLimit()

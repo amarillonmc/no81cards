@@ -76,7 +76,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetCurrentChain()==e:GetLabel()-1 then
+	if Duel.GetCurrentChain()==e:GetLabel() then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.NegateEffect(ev)
 	end
