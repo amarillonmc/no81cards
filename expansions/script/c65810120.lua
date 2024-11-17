@@ -60,7 +60,7 @@ function c65810120.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c65810120.setfilter(c)
-	return (c:IsRace(RACE_INSECT) or c:IsSetCard(0xa31)) and c:IsAbleToDeck()
+	return (c:IsRace(RACE_INSECT) or c:IsSetCard(0xa31)) and c:IsAbleToDeck() and aux.NecroValleyFilter()
 end
 function c65810120.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return  Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c65810120.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,e:GetHandler())
@@ -71,8 +71,9 @@ end
 function c65810120.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c65810120.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,3,nil)
+	local g=Duel.SelectMatchingCard(tp,c65810120.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,3,e:GetHandler())
 	if g:GetCount()>0 then
+		Duel.HintSelection(g)
 		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 		if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)

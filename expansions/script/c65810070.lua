@@ -26,16 +26,16 @@ end
 
 
 function c65810070.filter(c)
-	return c:IsSetCard(0xa31) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+	return c:IsRace(RACE_INSECT) and c:IsType(TYPE_MONSTER) and Duel.IsPlayerCanRelease(c:GetControler())
 end
 function c65810070.filter1(c,e,tp)
 	return c:IsCode(65810055)
 end
 function c65810070.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c65810070.filter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectMatchingCard(tp,c65810070.filter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
-	Duel.Release(g,REASON_COST)
+	Duel.ReleaseRitualMaterial(g)
 end
 function c65810070.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c65810070.filter1,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp) end

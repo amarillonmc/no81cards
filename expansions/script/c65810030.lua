@@ -27,7 +27,7 @@ end
 function c65810030.discon(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsChainDisablable(ev) then return false end
 	local te,p=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return te and te:GetHandler():IsRace(RACE_INSECT) and p==tp and rp==1-tp
+	return te and (te:GetHandler():IsRace(RACE_INSECT) or te:GetHandler():IsSetCard(0xa31)) and p==tp and rp==1-tp
 end
 function c65810030.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
