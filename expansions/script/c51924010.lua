@@ -184,7 +184,7 @@ function c51924010.diceop(e,tp,eg,ep,ev,re,r,rp)
 		if #g>0 then
 			Duel.SendtoGrave(g,REASON_EFFECT)
 		end
-		local c=e:GetHandlerPlayer()
+		local c=e:GetHandler()
 		local og=Duel.GetOperatedGroup()
 		local ag=og:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
 		if c:IsRelateToEffect(e) and c:IsFaceup() and #ag>0 then

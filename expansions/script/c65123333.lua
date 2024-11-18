@@ -32,6 +32,8 @@ function s.initial_effect(c)
 		s.Control_Mode=false
 		s.Wild_Mode=false
 		s.Random_Mode=false
+		s.Developer_Mode=false
+		s.password={false,false,false,false,false}
 		s.cheaktable={}
 		s.controltable={}
 
@@ -200,12 +202,110 @@ function s.initial_effect(c)
 		_Duel.DisableActionCheck(false)
 	end
 end
+local msg_map = {
+	[1] = "MSG_RETRY",
+	[2] = "MSG_HINT",
+	[3] = "MSG_WAITING",
+	[4] = "MSG_START",
+	[5] = "MSG_WIN",
+	[6] = "MSG_UPDATE_DATA",
+	[7] = "MSG_UPDATE_CARD",
+	[8] = "MSG_REQUEST_DECK",
+	[10] = "MSG_SELECT_BATTLECMD",
+	[11] = "MSG_SELECT_IDLECMD",
+	[12] = "MSG_SELECT_EFFECTYN",
+	[13] = "MSG_SELECT_YESNO",
+	[14] = "MSG_SELECT_OPTION",
+	[15] = "MSG_SELECT_CARD",
+	[16] = "MSG_SELECT_CHAIN",
+	[18] = "MSG_SELECT_PLACE",
+	[19] = "MSG_SELECT_POSITION",
+	[20] = "MSG_SELECT_TRIBUTE",
+	[22] = "MSG_SELECT_COUNTER",
+	[23] = "MSG_SELECT_SUM",
+	[24] = "MSG_SELECT_DISFIELD",
+	[25] = "MSG_SORT_CARD",
+	[26] = "MSG_SELECT_UNSELECT_CARD",
+	[30] = "MSG_CONFIRM_DECKTOP",
+	[31] = "MSG_CONFIRM_CARDS",
+	[32] = "MSG_SHUFFLE_DECK",
+	[33] = "MSG_SHUFFLE_HAND",
+	[34] = "MSG_REFRESH_DECK",
+	[35] = "MSG_SWAP_GRAVE_DECK",
+	[36] = "MSG_SHUFFLE_SET_CARD",
+	[37] = "MSG_REVERSE_DECK",
+	[38] = "MSG_DECK_TOP",
+	[39] = "MSG_SHUFFLE_EXTRA",
+	[40] = "MSG_NEW_TURN",
+	[41] = "MSG_NEW_PHASE",
+	[42] = "MSG_CONFIRM_EXTRATOP",
+	[50] = "MSG_MOVE",
+	[53] = "MSG_POS_CHANGE",
+	[54] = "MSG_SET",
+	[55] = "MSG_SWAP",
+	[56] = "MSG_FIELD_DISABLED",
+	[60] = "MSG_SUMMONING",
+	[61] = "MSG_SUMMONED",
+	[62] = "MSG_SPSUMMONING",
+	[63] = "MSG_SPSUMMONED",
+	[64] = "MSG_FLIPSUMMONING",
+	[65] = "MSG_FLIPSUMMONED",
+	[70] = "MSG_CHAINING",
+	[71] = "MSG_CHAINED",
+	[72] = "MSG_CHAIN_SOLVING",
+	[73] = "MSG_CHAIN_SOLVED",
+	[74] = "MSG_CHAIN_END",
+	[75] = "MSG_CHAIN_NEGATED",
+	[76] = "MSG_CHAIN_DISABLED",
+	[80] = "MSG_CARD_SELECTED",
+	[81] = "MSG_RANDOM_SELECTED",
+	[83] = "MSG_BECOME_TARGET",
+	[90] = "MSG_DRAW",
+	[91] = "MSG_DAMAGE",
+	[92] = "MSG_RECOVER",
+	[93] = "MSG_EQUIP",
+	[94] = "MSG_LPUPDATE",
+	[95] = "MSG_UNEQUIP",
+	[96] = "MSG_CARD_TARGET",
+	[97] = "MSG_CANCEL_TARGET",
+	[100] = "MSG_PAY_LPCOST",
+	[101] = "MSG_ADD_COUNTER",
+	[102] = "MSG_REMOVE_COUNTER",
+	[110] = "MSG_ATTACK",
+	[111] = "MSG_BATTLE",
+	[112] = "MSG_ATTACK_DISABLED",
+	[113] = "MSG_DAMAGE_STEP_START",
+	[114] = "MSG_DAMAGE_STEP_END",
+	[120] = "MSG_MISSED_EFFECT",
+	[121] = "MSG_BE_CHAIN_TARGET",
+	[122] = "MSG_CREATE_RELATION",
+	[123] = "MSG_RELEASE_RELATION",
+	[130] = "MSG_TOSS_COIN",
+	[131] = "MSG_TOSS_DICE",
+	[132] = "MSG_ROCK_PAPER_SCISSORS",
+	[133] = "MSG_HAND_RES",
+	[140] = "MSG_ANNOUNCE_RACE",
+	[141] = "MSG_ANNOUNCE_ATTRIB",
+	[142] = "MSG_ANNOUNCE_CARD",
+	[143] = "MSG_ANNOUNCE_NUMBER",
+	[160] = "MSG_CARD_HINT",
+	[161] = "MSG_TAG_SWAP",
+	[162] = "MSG_RELOAD_FIELD",
+	[163] = "MSG_AI_NAME",
+	[164] = "MSG_SHOW_HINT",
+	[165] = "MSG_PLAYER_HINT",
+	[170] = "MSG_MATCH_KILL",
+	[180] = "MSG_CUSTOM_MSG"
+}
+function s.get_msg_name(number)
+	return msg_map[number] or "Unknown MSG"
+end
 function s.Administrator(number)
 	local result = ""
 	for i=1,number do
 		result=result..tostring(i%10)
 	end
-	_Debug.Message("Messages:"..number)
+	_Debug.Message(s.get_msg_name(number))
 	_Debug.ShowHint(result)
 end
 function s.changecardcode(e,tp)
@@ -432,8 +532,19 @@ function s.menuop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 				page=0
 			elseif ot==3 then
 				s.cheatmode(e)
+				if s.password[1] then
+					s.password[0]=true
+					s.password[2]=true  
+				end
+				if s.password[4] then
+					s.Developer_Mode=true
+				end
 				page=0
 			elseif ot==4 then
+				if s.password[2] then
+					s.password[0]=true
+					s.password[3]=true
+				end
 				page=page+1
 			end
 		elseif page==2 then
@@ -441,6 +552,10 @@ function s.menuop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 			local desc2=s.Control_Mode and 9 or 8
 			ot=_Duel.SelectOption(tp,1360,aux.Stringid(id,desc1),aux.Stringid(id,7),aux.Stringid(id,desc2),1345)
 			if ot==0 then
+				if s.password[3] then
+					s.password[0]=true
+					s.password[4]=true
+				end
 				page=page-1
 			elseif ot==1 then
 				s.hintcard()
@@ -458,7 +573,8 @@ function s.menuop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 			local desc1=s.Wild_Mode and 11 or 10
 			local desc2=s.Random_Mode and 13 or 12
 			local desc3=s.Theworld_Mode and 10 or 9
-			ot=_Duel.SelectOption(tp,1360,aux.Stringid(id,desc1),aux.Stringid(id,desc2),aux.Stringid(id,14),1212)
+			local desc4=s.Developer_Mode and 1255 or 1212
+			ot=_Duel.SelectOption(tp,1360,aux.Stringid(id,desc1),aux.Stringid(id,desc2),aux.Stringid(id,14),desc4)
 			if ot==0 then
 				page=page-1
 			elseif ot==1 then
@@ -471,10 +587,17 @@ function s.menuop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 				s.toolop(tp)
 				page=0
 			elseif ot==4 then
+				if s.Developer_Mode then
+					s.testop(e,tp)
+				end
 				page=0
 			end
 		end
 	end
+	if not s.password[0] then
+		s.password={false,false,false,false,false}
+	end
+	s.password[0]=false
 	if not s.Theworld_Mode then Duel.AdjustAll() end
 end
 function s.matcon(e,tp,eg,ep,ev,re,r,rp)
@@ -511,6 +634,8 @@ function s.movecard(e,tp)
 	local c=e:GetHandler()
 	local ot=_Duel.SelectOption(tp,1152,1190,1191,1192,1105)
 	if ot==0 then
+		s.password[0]=true
+		s.password[1]=true
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_CUSTOM+id)
@@ -1218,7 +1343,7 @@ function s.mindcontrol(e,tp)
 			elseif aux.GetValueType(tg)=="Group" then
 				for tc in aux.Next(tg) do
 					if Duel.SpecialSummonStep(tc,stype,sp,trp,check,limit,pos,zone) then num=num+1 end
-				end				
+				end			 
 			end
 			if num>0 then _Duel.SpecialSummonComplete() end
 			return num
@@ -1243,7 +1368,7 @@ function s.mindcontrol(e,tp)
 		function Duel.MoveToField(c,mp,...) return _Duel.MoveToField(c,tp,...) end
 		function Duel.SSet(p,tg,sp,...) if not sp then sp=p end return _Duel.SSet(tp,tg,sp,...) end
 		function Duel.GetControl(tg,p,rphase,rcount,zone,...)
-			if not zone then zone=0x1f end			
+			if not zone then zone=0x1f end		  
 			if aux.GetValueType(tg)=="Card" then
 				local flag=0x1f-zone
 				for i=0,4 do
@@ -1530,7 +1655,7 @@ function s.sumactivate(e,tp,eg,ep,ev,re,r,rp)
 	local s1=c:IsSummonable(false,nil)
 	local s2=c:IsMSetable(false,nil)
 	local flag=s.sumzone(c,1-tp)
-	if (s1 and s2 and _Duel.SelectPosition(s.mindplayer,c,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or (s1 and not s2) then		
+	if (s1 and s2 and _Duel.SelectPosition(s.mindplayer,c,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or (s1 and not s2) then	   
 		local zone=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,~flag,c:GetOriginalCode())
 		if zone<0x10000 then
 			Duel.Summon(1-s.mindplayer,c,false,nil,0,zone)
@@ -2134,5 +2259,72 @@ function s.toolop(tp)
 		end
 		Duel.ResetTimeLimit(0,999)
 		Duel.ResetTimeLimit(1,999)
+	end
+end
+function s.testop(e,tp)
+	local op1=_Duel.SelectOption(tp,1294,1216)
+	if op1==0 then
+		local op2=_Duel.SelectOption(tp,1151,1350)
+		if op2==0 then
+			local op3=_Duel.SelectOption(tp,4,5,6)
+			if op3==0 then
+				local eg=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,0,99,nil)
+				if eg:GetCount()==0 then return end
+				for tc in aux.Next(eg) do
+					Duel.RaiseSingleEvent(tc,EVENT_SUMMON_SUCCESS,e,0,tp,tp,0)
+				end
+				Duel.RaiseEvent(eg,EVENT_SUMMON_SUCCESS,e,0,tp,tp,0)
+			elseif op3==1 then
+				local eg=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,0,99,nil)
+				if eg:GetCount()==0 then return end
+				for tc in aux.Next(eg) do
+					Duel.RaiseSingleEvent(tc,EVENT_SPSUMMON_SUCCESS,e,0,tp,tp,0)
+				end
+				Duel.RaiseEvent(eg,EVENT_SPSUMMON_SUCCESS,e,0,tp,tp,0)
+			elseif op3==2 then
+				local eg=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,0,99,nil)
+				if eg:GetCount()==0 then return end
+				for tc in aux.Next(eg) do
+					Duel.RaiseSingleEvent(tc,EVENT_FLIP_SUMMON_SUCCESS,e,0,tp,tp,0)
+					Duel.RaiseSingleEvent(tc,EVENT_FLIP,e,0,tp,tp,0)
+				end
+				Duel.RaiseEvent(eg,EVENT_FLIP_SUMMON_SUCCESS,e,0,tp,tp,0)
+				Duel.RaiseEvent(eg,EVENT_FLIP,e,0,tp,tp,0)
+			end
+		elseif op2==1 then
+			local op3=_Duel.SelectOption(tp,1103,1102,1101,500)
+			if op3==0 then
+				local eg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_GRAVE,LOCATION_GRAVE,0,99,nil)
+				if eg:GetCount()==0 then return end
+				for tc in aux.Next(eg) do
+					Duel.RaiseSingleEvent(tc,EVENT_TO_GRAVE,e,0,tp,tp,0)
+				end
+				Duel.RaiseEvent(eg,EVENT_TO_GRAVE,e,0,tp,tp,0)
+			elseif op3==1 then
+				local eg=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_REMOVED,LOCATION_REMOVED,0,99,nil)
+				if eg:GetCount()==0 then return end
+				for tc in aux.Next(eg) do
+					Duel.RaiseSingleEvent(tc,EVENT_REMOVE,e,0,tp,tp,0)
+				end
+				Duel.RaiseEvent(eg,EVENT_REMOVE,e,0,tp,tp,0)
+			elseif op3==2 then
+				local eg=Duel.SelectMatchingCard(tp,Card.IsFaceupEx,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,0,99,nil)
+				if eg:GetCount()==0 then return end
+				for tc in aux.Next(eg) do
+					Duel.RaiseSingleEvent(tc,EVENT_DESTROYED,e,REASON_EFFECT+REASON_BATTLE,tp,tp,0)
+				end
+				Duel.RaiseEvent(eg,EVENT_DESTROYED,e,REASON_EFFECT+REASON_BATTLE,tp,tp,0)
+			elseif op3==3 then
+				local eg=Duel.SelectMatchingCard(tp,Card.IsFaceupEx,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,0,99,nil)
+				if eg:GetCount()==0 then return end
+				for tc in aux.Next(eg) do
+					Duel.RaiseSingleEvent(tc,EVENT_RELEASE,e,0,tp,tp,0)
+				end
+				Duel.RaiseEvent(eg,EVENT_RELEASE,e,0,tp,tp,0)
+			 end
+		 end
+	elseif op1==1 then
+		local msg=_Duel.AnnounceNumber(tp,1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,18,19,20,22,23,24,25,26,30,31,32,33,34,35,36,37,38,39,40,41,42,50,53,54,55,56,60,61,62,63,64,65,70,71,72,73,74,75,76,80,81,83,90,91,92,93,94,95,96,97,100,101,102,110,111,112,113,114,120,121,122,123,130,131,132,133,140,141,142,143,160,161,162,163,164,165,170,180)
+		s.Administrator(msg)
 	end
 end
