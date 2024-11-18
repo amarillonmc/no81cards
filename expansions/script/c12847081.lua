@@ -31,8 +31,8 @@ function c12847081.initial_effect(c)
 	e2:SetCountLimit(1,12847082)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCondition(c12847081.condition)
-	e2:SetTarget(c12847081.thtg1(c12847081.ifilter))
-	e2:SetOperation(c12847081.thop1(c12847081.ifilter))
+	e2:SetTarget(c12847081.thtg1)
+	e2:SetOperation(c12847081.thop1)
 	c:RegisterEffect(e2)
 end
 function c12847081.lmlimit(e)
@@ -65,19 +65,17 @@ end
 function c12847081.ifilter(c)
 	return c:IsRace(RACE_ILLUSION) and c:IsAbleToHand()
 end
-function c12847081.thtg1(f)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk)
-				if chk==0 then return Duel.IsExistingMatchingCard(f,tp,LOCATION_DECK,0,1,nil) end
-				Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-			end
+function c12847081.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c12847081.ifilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function c12847081.thop1(f)
-	return  function(e,tp,eg,ep,ev,re,r,rp)
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-				local g=Duel.SelectMatchingCard(tp,f,tp,LOCATION_DECK,0,1,1,nil)
-				Duel.SendtoHand(g,nil,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,g)
-			end
+function c12847081.thop1(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c12847081.ifilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
