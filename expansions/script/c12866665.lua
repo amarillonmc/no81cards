@@ -31,7 +31,7 @@ function s.initial_effect(c)
 end
 s.toss_coin=true
 function s.desfilter(c)
-	return c:IsSetCard(0x9a7c) and c:IsFaceupEx()
+	return c:IsSetCard(0x9a7c) and c:IsFaceupEx() and c:IsType(TYPE_MONSTER)
 end
 function s.cotg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil)

@@ -75,7 +75,7 @@ function c71403010.op1(e,tp,eg,ep,ev,re,r,rp)
 	if op1==0 then
 		if Duel.SendtoExtraP(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_EXTRA) and tc:IsFaceup() then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-			local og=Duel.SelectMatchingCard(c71403010.filter1a2,tp,LOCATION_EXTRA+LOCATION_HAND,0,1,1,nil,p_zone_check)
+			local og=Duel.SelectMatchingCard(tp,c71403010.filter1a2,tp,LOCATION_EXTRA+LOCATION_HAND,0,1,1,nil,p_zone_check)
 			if og:GetCount()==0 then return end
 			local oc=og:GetFirst()
 			local op2=0
