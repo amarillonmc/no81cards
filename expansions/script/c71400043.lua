@@ -64,8 +64,7 @@ function c71400043.matfilter(c)
 	return c:IsSetCard(0x714) and not c:IsLinkType(TYPE_LINK)
 end
 function c71400043.mgfilterfunc(c)
-	local sp=c:GetControler()
-	return function(g) return yume.IsYumeFieldOnField(sp) and Duel.IsExistingMatchingCard(c71400043.gyfilter,sp,LOCATION_GRAVE,0,1,nil) end
+	return function(g) return yume.IsYumeFieldOnField(c:GetControler()) and Duel.IsExistingMatchingCard(c71400043.gyfilter,c:GetControler(),LOCATION_GRAVE,0,1,nil) end
 end
 function c71400043.gyfilter(c)
 	return c:IsSetCard(0x7714) and c:IsType(TYPE_FIELD)

@@ -45,6 +45,7 @@ function c71403010.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	else
 		op=Duel.SelectOption(tp,aux.Stringid(71400010,2))+1
 	end
+	e:SetLabel(op)
 	if op==0 then
 		e:SetCategory(CATEGORY_TOEXTRA+CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(71403001,1))
