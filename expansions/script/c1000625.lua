@@ -29,6 +29,7 @@ function c1000625.initial_effect(c)
 	e99:SetCode(EFFECT_CANNOT_CHANGE_CONTROL)
 	c:RegisterEffect(e99)
 end
+c1000625.material_type=TYPE_SYNCHRO
 function c1000625.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SYNCHRO
 end

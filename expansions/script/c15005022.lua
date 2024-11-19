@@ -62,6 +62,7 @@ function cm.initial_effect(c)
 	e6:SetOperation(cm.msop)
 	c:RegisterEffect(e6)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.c1filter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsType(TYPE_SYNCHRO) and c:IsType(TYPE_TUNER)
 end

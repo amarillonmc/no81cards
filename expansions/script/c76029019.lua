@@ -47,6 +47,7 @@ function c76029019.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 c76029019.named_with_Kazimierz=true 
+c76029019.material_type=TYPE_SYNCHRO
 function c76029019.mfilter(c)
 	return c.named_with_Kazimierz 
 end

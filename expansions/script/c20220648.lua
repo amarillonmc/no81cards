@@ -2,7 +2,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	--Synchro Summon
-   	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsType,TYPE_SYNCHRO),aux.NonTuner(s.tfilter),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsType,TYPE_SYNCHRO),aux.NonTuner(s.tfilter),1)
 	c:EnableReviveLimit()
 	--must first be synchro summoned
 	local e0=Effect.CreateEffect(c)
@@ -13,19 +13,19 @@ function s.initial_effect(c)
 	e0:SetValue(aux.synlimit)
 	c:RegisterEffect(e0)
    --spsummon
-    local e10=Effect.CreateEffect(c)
-    e10:SetType(EFFECT_TYPE_SINGLE)
-    e10:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
-    e10:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-    c:RegisterEffect(e10)
-   	--summon success
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_SINGLE)
+	e10:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
+	e10:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	c:RegisterEffect(e10)
+	--summon success
 	local e44=Effect.CreateEffect(c)
 	e44:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e44:SetCode(EVENT_SPSUMMON_SUCCESS)
-    e44:SetCondition(s.effcon)
+	e44:SetCondition(s.effcon)
 	e44:SetOperation(s.spsumsuc)
 	c:RegisterEffect(e44)
- 	--disable
+	--disable
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetRange(LOCATION_MZONE)
@@ -40,7 +40,7 @@ function s.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetOperation(s.operation)
 	c:RegisterEffect(e2)
- 	--copy
+	--copy
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e7:SetCode(EVENT_BE_PRE_MATERIAL)
@@ -56,6 +56,7 @@ function s.initial_effect(c)
 	e8:SetOperation(s.reset)
 	c:RegisterEffect(e8)
 end
+s.material_type=TYPE_SYNCHRO
 function s.tfilter(c)
 	return c:IsSetCard(0x20ab) and c:IsType(TYPE_SYNCHRO)
 end

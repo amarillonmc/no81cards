@@ -49,6 +49,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	
 end
+c22348130.material_type=TYPE_SYNCHRO
 function c22348130.matfilter1(c)
 	return c:IsSynchroType(TYPE_TUNER) or c:IsSetCard(0x703)
 end

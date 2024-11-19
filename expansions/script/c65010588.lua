@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.negop)
 	c:RegisterEffect(e3)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.actlimit(e,re,tp)
 	return re:IsActiveType(TYPE_MONSTER) and not re:GetHandler():IsLocation(LOCATION_MZONE)
 end

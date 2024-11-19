@@ -33,3 +33,4 @@ function cm.initial_effect(c)
 	end)
 	c:RegisterEffect(e1)
 end
+cm.material_type=TYPE_SYNCHRO

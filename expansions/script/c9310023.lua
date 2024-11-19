@@ -51,6 +51,7 @@ function c9310023.initial_effect(c)
 	e5:SetCode(21142671)
 	c:RegisterEffect(e5)
 end
+c9310023.material_type=TYPE_SYNCHRO
 function c9310023.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or 
 		   (bit.band(st,SUMMON_TYPE_SYNCHRO)==SUMMON_TYPE_SYNCHRO and (not se or not se:IsHasType(EFFECT_TYPE_ACTIONS)))

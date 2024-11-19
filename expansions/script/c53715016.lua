@@ -18,6 +18,7 @@ function cm.initial_effect(c)
 	e5:SetOperation(cm.thop)
 	c:RegisterEffect(e5)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,2,nil) end

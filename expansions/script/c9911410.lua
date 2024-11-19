@@ -22,6 +22,7 @@ function c9911410.initial_effect(c)
 	e2:SetOperation(c9911410.spop)
 	c:RegisterEffect(e2)
 end
+c9911410.material_type=TYPE_SYNCHRO
 function c9911410.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and rc:IsRelateToEffect(re)

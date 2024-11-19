@@ -63,6 +63,7 @@ function cm.initial_effect(c)
 	e6:SetOperation(cm.desop)
 	c:RegisterEffect(e6)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local d=c:GetBattleTarget()

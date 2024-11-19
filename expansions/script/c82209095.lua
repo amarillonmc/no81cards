@@ -54,7 +54,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)  
 end
 cm.toss_coin=true 
-
+cm.material_type=TYPE_SYNCHRO
 --disable summon
 function cm.filter(c,tp)  
 	return c:GetSummonPlayer()==tp  

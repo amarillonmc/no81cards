@@ -47,6 +47,7 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.thop)
 	c:RegisterEffect(e4)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.filter1(e,te)
 	local c=e:GetHandler()
 	local ec=te:GetHandler()

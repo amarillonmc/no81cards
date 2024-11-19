@@ -22,6 +22,7 @@ function c29002369.initial_effect(c)
 	e2:SetOperation(c29002369.seqop)
 	c:RegisterEffect(e2)
 end
+c29002369.material_type=TYPE_SYNCHRO
 function c29002369.syf(c,syc)
 	local setcard=(c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 	return setcard and c:IsSynchroType(TYPE_SYNCHRO)

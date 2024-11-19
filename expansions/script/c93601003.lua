@@ -39,6 +39,7 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.thop)
 	c:RegisterEffect(e4)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.imcon(e)
 	return e:GetHandler():GetSequence()>4
 end

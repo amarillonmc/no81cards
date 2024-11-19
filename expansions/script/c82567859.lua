@@ -47,6 +47,7 @@ function c82567859.initial_effect(c)
 	e9:SetValue(0x825)
 	c:RegisterEffect(e9)
 end
+c82567859.material_type=TYPE_SYNCHRO
 function c82567859.tglimit(e,re,rp)
 	return rp==1-e:GetHandlerPlayer() and re:IsActiveType(TYPE_MONSTER) 
 end

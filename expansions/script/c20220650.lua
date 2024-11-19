@@ -2,7 +2,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	--Synchro Summon
-  	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsType,TYPE_SYNCHRO),aux.NonTuner(s.tfilter),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsType,TYPE_SYNCHRO),aux.NonTuner(s.tfilter),1)
 	c:EnableReviveLimit()
 	--must first be synchro summoned
 	local e0=Effect.CreateEffect(c)
@@ -13,12 +13,12 @@ function s.initial_effect(c)
 	e0:SetValue(aux.synlimit)
 	c:RegisterEffect(e0)
    --spsummon
-    local e10=Effect.CreateEffect(c)
-    e10:SetType(EFFECT_TYPE_SINGLE)
-    e10:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
-    e10:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-    c:RegisterEffect(e10)
-      --immune
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_SINGLE)
+	e10:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
+	e10:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	c:RegisterEffect(e10)
+	  --immune
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
@@ -27,7 +27,7 @@ function s.initial_effect(c)
 	e3:SetCondition(s.imcon)
 	e3:SetValue(s.efilter)
 	c:RegisterEffect(e3)
- 	local e2=Effect.CreateEffect(c)   
+	local e2=Effect.CreateEffect(c)   
 	e2:SetType(EFFECT_TYPE_FIELD)  
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_IGNORE_IMMUNE)  
 	e2:SetCode(EFFECT_CANNOT_ACTIVATE) 
@@ -48,6 +48,7 @@ function s.initial_effect(c)
 	e6:SetOperation(s.atkop)
 	c:RegisterEffect(e6)
 end
+s.material_type=TYPE_SYNCHRO
 function s.tfilter(c)
 	return c:IsSetCard(0x20ab) and c:IsType(TYPE_SYNCHRO)
 end
@@ -60,7 +61,8 @@ end
 function s.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
 end
-function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+
+function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLP(tp)>1000 end
 	local lp=Duel.GetLP(tp)
 	e:SetLabel(lp-1000)

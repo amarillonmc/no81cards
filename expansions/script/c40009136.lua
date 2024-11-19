@@ -28,6 +28,7 @@ function c40009136.initial_effect(c)
 	e2:SetOperation(c40009136.drop)
 	c:RegisterEffect(e2)	
 end
+c40009136.material_type=TYPE_SYNCHRO
 function c40009136.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) and (ph>PHASE_MAIN1 and ph<PHASE_MAIN2)

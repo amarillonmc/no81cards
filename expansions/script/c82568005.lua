@@ -66,6 +66,7 @@ function c82568005.initial_effect(c)
 	e13:SetOperation(c82568005.sumop)
 	c:RegisterEffect(e13)
 end
+c82568005.material_type=TYPE_SYNCHRO
 function c82568005.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(82568005)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
 end

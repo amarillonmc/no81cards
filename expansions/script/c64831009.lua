@@ -46,6 +46,7 @@ function c64831009.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 c64831009.setname="RagnaTravellers"
+c64831009.material_type=TYPE_SYNCHRO
 function c64831009.matfil(c)
 	return c.setname=="RagnaTravellers" and not c:IsType(TYPE_TUNER) 
 end

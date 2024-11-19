@@ -69,6 +69,7 @@ function c72411200.initial_effect(c)
 	e6:SetTarget(c72411200.reptg)
 	c:RegisterEffect(e6)
 end
+c72411200.material_type=TYPE_SYNCHRO
 function c72411200.mfilter1(c)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsType(TYPE_SYNCHRO) and c:IsType(TYPE_TUNER)
 end

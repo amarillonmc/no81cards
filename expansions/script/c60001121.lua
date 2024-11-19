@@ -42,7 +42,7 @@ function cm.initial_effect(c)
 	e27:SetOperation(cm.gravecheckop)
 	Duel.RegisterEffect(e27,tp)
 end
-
+cm.material_type=TYPE_SYNCHRO
 function cm.gravecheckop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,m)~=0 then
 		e:GetHandler():RegisterFlagEffect(0,0,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60001111,0))

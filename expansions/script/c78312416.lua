@@ -35,6 +35,7 @@ function c78312416.initial_effect(c)
 	e3:SetLabelObject(e2) 
 	c:RegisterEffect(e3)
 end
+c78312416.material_type=TYPE_SYNCHRO
 function c78312416.decon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end

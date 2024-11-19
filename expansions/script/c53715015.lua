@@ -13,6 +13,7 @@ function cm.initial_effect(c)
 	e7:SetOperation(cm.op)
 	c:RegisterEffect(e7)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.con(e)
 	return (Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()) and e:GetHandler():GetBattleTarget()
 end

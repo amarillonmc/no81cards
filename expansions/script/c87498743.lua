@@ -56,6 +56,7 @@ function c87498743.initial_effect(c)
 	e5:SetOperation(s.penop)
 	c:RegisterEffect(e5)
 end
+s.material_type=TYPE_SYNCHRO
 --limit
 function s.spelimit(e,se,sp,st)
 	local c=e:GetHandler()
@@ -85,7 +86,7 @@ end
 function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToExtra() end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-    Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,e:GetHandler(),1,0,0)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 	end
@@ -94,18 +95,18 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT) then
 		if  c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and c:IsLocation(LOCATION_EXTRA) then
-            local sg=Duel.GetMatchingGroup(s.synfilter,tp,LOCATION_EXTRA,0,nil,e,tp,nil,nil)
-            if not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL) then return end
-            if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-                Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-                local sc=sg:Select(tp,1,1,nil):GetFirst()
-                if sc then
-                    sc:SetMaterial(nil)
-                   if Duel.SpecialSummon(sc,SUMMON_TYPE_SYNCHRO,tp,tp,false,false,POS_FACEUP)>0 then
-                        sc:CompleteProcedure()
-                    end
-                end
-            end
+			local sg=Duel.GetMatchingGroup(s.synfilter,tp,LOCATION_EXTRA,0,nil,e,tp,nil,nil)
+			if not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL) then return end
+			if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+				local sc=sg:Select(tp,1,1,nil):GetFirst()
+				if sc then
+					sc:SetMaterial(nil)
+				   if Duel.SpecialSummon(sc,SUMMON_TYPE_SYNCHRO,tp,tp,false,false,POS_FACEUP)>0 then
+						sc:CompleteProcedure()
+					end
+				end
+			end
 		end
 	end
 end

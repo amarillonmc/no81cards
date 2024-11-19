@@ -18,6 +18,7 @@ function cm.initial_effect(c)
 	e5:SetOperation(cm.thop)
 	c:RegisterEffect(e5)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.thfilter(c)
 	return c:IsFaceup() and c:IsAbleToHand()
 end

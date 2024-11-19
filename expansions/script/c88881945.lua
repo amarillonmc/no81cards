@@ -49,6 +49,7 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
+s.material_type=TYPE_SYNCHRO
 function s.cfilter(c)
 	return c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0xc07)
 end

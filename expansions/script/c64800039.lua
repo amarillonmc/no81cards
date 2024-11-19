@@ -32,6 +32,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 cm.setname="Axisevil" 
+cm.material_type=TYPE_SYNCHRO
 --e1
 function cm.filter1(c)
 	return c:IsFaceup() and c:IsRank(10)

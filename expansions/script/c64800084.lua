@@ -38,6 +38,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.disop)
 	c:RegisterEffect(e2)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.tfilter(c)
 	return c:GetSummonLocation()==LOCATION_GRAVE
 end

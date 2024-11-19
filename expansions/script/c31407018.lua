@@ -29,6 +29,7 @@ function cm.initial_effect(c)
 	e3:SetCondition(aux.NOT(cm.condition))
 	c:RegisterEffect(e3)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.actlimit(e,re,tp)
 	local lp1,lp2=Duel.GetLP(tp),Duel.GetLP(1-tp)
 	if lp1<lp2 then lp1,lp2=lp2,lp1 end

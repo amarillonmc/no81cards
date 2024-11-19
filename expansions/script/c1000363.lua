@@ -26,6 +26,7 @@ function c1000363.initial_effect(c)
 	e2:SetOperation(c1000363.operation)
 	c:RegisterEffect(e2)
 end
+c1000363.material_type=TYPE_SYNCHRO
 function c1000363.pmfilter(c)
 	return c:IsSetCard(0xc200) 
 end

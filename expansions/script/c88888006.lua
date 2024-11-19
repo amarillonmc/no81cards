@@ -24,6 +24,7 @@ function s.initial_effect(c)
 	e3:SetOperation(s.regop)
 	c:RegisterEffect(e3) 
 end
+s.material_type=TYPE_SYNCHRO
 function s.filter(c)
 	return not c:IsForbidden() and c:IsSetCard(0x207a)
 end

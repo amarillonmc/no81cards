@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 	e2:SetValue(cm.efilter)
 	c:RegisterEffect(e2)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.immcon(e)
 	return Duel.GetAttacker()==e:GetHandler()
 end

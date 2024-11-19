@@ -31,6 +31,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.des2op)  
 	c:RegisterEffect(e3)  
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.valcheck(e,c)  
 	local g=c:GetMaterial()  
 	if g:IsExists(Card.IsSetCard,1,nil,0x129d) then  

@@ -33,6 +33,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 cm.setname="Axisevil" 
+cm.material_type=TYPE_SYNCHRO
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end

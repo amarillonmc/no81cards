@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	e2:SetTargetRange(0,1)
 	c:RegisterEffect(e2)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.efilter(e,te)
 	return (te:IsActiveType(TYPE_SPELL) or te:IsActiveType(TYPE_TRAP)) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
 end

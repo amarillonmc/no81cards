@@ -34,6 +34,7 @@ function c64831010.initial_effect(c)
 	e2:SetOperation(c64831010.activate)
 	c:RegisterEffect(e2)
 end
+c64831010.material_type=TYPE_SYNCHRO
 function c64831010.matfil(c)
 	return c:IsRace(RACE_WARRIOR) and c:IsAttribute(ATTRIBUTE_DARK)
 end

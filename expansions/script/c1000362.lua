@@ -29,6 +29,7 @@ function c1000362.initial_effect(c)
 	e2:SetOperation(c1000362.operation)
 	c:RegisterEffect(e2)
 end
+c1000362.material_type=TYPE_SYNCHRO
 function c1000362.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and aux.disfilter1(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(aux.disfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end

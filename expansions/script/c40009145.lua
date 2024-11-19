@@ -46,6 +46,7 @@ function c40009145.initial_effect(c)
 	e6:SetOperation(c40009145.spop)
 	c:RegisterEffect(e6)
 end
+c40009145.material_type=TYPE_SYNCHRO
 function c40009145.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)

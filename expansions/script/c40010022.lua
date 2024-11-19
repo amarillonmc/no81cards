@@ -46,6 +46,7 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.desop)
 	c:RegisterEffect(e4)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.atcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsSummonType(SUMMON_TYPE_SYNCHRO)

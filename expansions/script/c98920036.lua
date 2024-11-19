@@ -26,6 +26,7 @@ function c98920036.initial_effect(c)
 	e2:SetOperation(c98920036.operation)
 	c:RegisterEffect(e2)
 end
+c98920036.material_type=TYPE_SYNCHRO
 function c98920036.atkfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x27)
 end

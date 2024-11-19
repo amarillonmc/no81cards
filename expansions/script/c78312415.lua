@@ -28,6 +28,7 @@ function c78312415.initial_effect(c)
 	e2:SetOperation(c78312415.spop)
 	c:RegisterEffect(e2)
 end
+c78312415.material_type=TYPE_SYNCHRO
 function c78312415.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end

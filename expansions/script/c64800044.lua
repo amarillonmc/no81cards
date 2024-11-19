@@ -39,6 +39,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.sfilter1(c)
 	return c:IsType(TYPE_SYNCHRO)
 end

@@ -28,6 +28,7 @@ function c98921039.initial_effect(c)
 	e4:SetOperation(c98921039.spop)
 	c:RegisterEffect(e4)
 end
+c98921039.material_type=TYPE_SYNCHRO
 function c98921039.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end

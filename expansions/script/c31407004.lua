@@ -33,6 +33,7 @@ function cm.initial_effect(c)
 	e4:SetValue(cm.efilter)
 	c:RegisterEffect(e4)
 end
+cm.material_type=TYPE_SYNCHRO
 function cm.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) then return end
 	Duel.SetChainLimitTillChainEnd(aux.FALSE)

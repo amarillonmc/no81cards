@@ -22,7 +22,7 @@ function s.initial_effect(c)
 	e2:SetTarget(s.actg)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
-    --ToDeck and SpSum
+    --ToDeck and SearchCard
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,0))
     e3:SetCategory(CATEGORY_TODECK+CATEGORY_SEARCH)
@@ -76,7 +76,7 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(3,tp,507)
-	local tg=Duel.SelectMatchingCard(tp,s.tdfilter,tp,0x0c,0,1,1,nil,e,tp)
+	local tg=Duel.SelectMatchingCard(tp,s.tdfilter,tp,0x0c,0,1,1,nil,tp)
     if #tg>0 then
         Duel.HintSelection(tg)
 		local tc=tg:GetFirst()

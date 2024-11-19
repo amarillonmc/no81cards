@@ -44,6 +44,7 @@ function c64831012.initial_effect(c)
 	e5:SetCode(EFFECT_CANNOT_DISEFFECT)
 	c:RegisterEffect(e5)
 end
+c64831012.material_type=TYPE_SYNCHRO
 function c64831012.tunefil(c)
 	return c:IsType(TYPE_TUNER) and c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x5410)
 end
