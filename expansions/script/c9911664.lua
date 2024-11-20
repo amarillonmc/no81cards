@@ -105,10 +105,20 @@ function c9911664.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 		op=Duel.SelectOption(tp,aux.Stringid(9911664,1))
 	end
 	e:SetLabel(op)
+	local cate=0
+	for i=1,ev do
+		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
+		local tc=te:GetHandler()
+		local b1=tc:IsAbleToRemove(tp,POS_FACEDOWN)
+		local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		if te:IsActiveType(TYPE_MONSTER) and tc:IsRelateToEffect(te) and (b1 or b2) and tc:IsLocation(LOCATION_GRAVE) then
+			cate=CATEGORY_GRAVE_ACTION+CATEGORY_GRAVE_SPSUMMON
+		end
+	end
 	if op==0 then
-		e:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON)
+		e:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON+cate)
 	else
-		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE+CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON)
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE+CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON+cate)
 	end
 end
 function c9911664.activate2(e,tp,eg,ep,ev,re,r,rp)

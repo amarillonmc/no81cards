@@ -26,7 +26,6 @@ function c9911552.initial_effect(c)
 	c:RegisterEffect(e2)
 	--spsummon
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_MZONE)
@@ -133,6 +132,18 @@ function c9911552.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9911552.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	local cate=0
+	for i=1,ev do
+		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
+		local tc=te:GetHandler()
+		if tc:GetOriginalType()&TYPE_MONSTER>0 and tc:IsRelateToEffect(te)
+			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+			and Duel.IsExistingMatchingCard(c9911552.filter0,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,tc)
+			and tc:IsLocation(LOCATION_GRAVE) then
+			cate=CATEGORY_GRAVE_SPSUMMON
+		end
+	end
+	e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE+cate)
 end
 function c9911552.filter1(c,e,tp)
 	return c9911552.filter0(c) and (c:IsAbleToGrave() or c9911552.filter2(c,e,tp))

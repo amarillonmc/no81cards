@@ -3,7 +3,6 @@ function c9911435.initial_effect(c)
 	aux.AddCodeList(c,9910871)
 	--special summon itself
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_HAND)
@@ -52,16 +51,16 @@ end
 function c9911435.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	local g=Group.CreateGroup()
+	local cate=0
 	for i=1,ev do
 		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
 		local tc=te:GetHandler()
-		if tc:IsRelateToEffect(te) and tc:IsAbleToRemove() and tc~=e:GetHandler() then
-			g:AddCard(tc)
+		if tc:IsRelateToEffect(te) and tc:IsAbleToRemove() and tc~=e:GetHandler() and tc:IsLocation(LOCATION_GRAVE) then
+			cate=CATEGORY_GRAVE_ACTION
 		end
 	end
+	e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE+cate)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
 function c9911435.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
