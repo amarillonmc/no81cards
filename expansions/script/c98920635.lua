@@ -29,7 +29,7 @@ function c98920635.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c98920635.spgfilter(c,e,tp)
-	return c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_GLADIATOR,tp,false,false) and not Duel.IsExistingMatchingCard(c98920635.filter1,tp,LOCATION_MZONE,0,1,c,c:GetRace())
+	return c:IsSetCard(0x1019) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_GLADIATOR,tp,false,false) and not Duel.IsExistingMatchingCard(c98920635.filter1,tp,LOCATION_MZONE,0,1,c,c:GetRace())
 end
 function c98920635.filter1(c,race)
 	return c:IsFaceup() and c:IsRace(race)
@@ -58,7 +58,7 @@ function c98920635.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c98920635.filter(c,e,tp)
-	return not c:IsCode(98920635) and c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_GLADIATOR,tp,false,false)
+	return not c:IsCode(98920635) and c:IsSetCard(0x1019) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_GLADIATOR,tp,false,false)
 end
 function c98920635.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1

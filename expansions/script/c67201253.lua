@@ -54,7 +54,7 @@ end
 function c67201253.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
+	local tg=g:Filter(c67201253.disfilter,nil)
 	if #tg>0 then 
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 	end 

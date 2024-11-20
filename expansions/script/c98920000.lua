@@ -55,7 +55,7 @@ function c98920000.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 function c98920000.spfilter(c,e,tp)
-	return c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return c:IsSetCard(0x1019) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
 end
 function c98920000.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -83,7 +83,7 @@ function c98920000.eftg(e,c)
 	return c:IsCode(48156348,90957527)
 end
 function c98920000.filter0(c,ft)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x19) and (c:IsAbleToExtraAsCost() or c:IsAbleToDeck())
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x1019) and (c:IsAbleToExtraAsCost() or c:IsAbleToDeck())
 end
 function c98920000.filter1(c)
 	return c:IsCode(98920000) and c:IsAbleToRemoveAsCost()

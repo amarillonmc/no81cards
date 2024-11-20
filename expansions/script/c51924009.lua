@@ -143,9 +143,9 @@ function c51924009.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetOperation(c51924009.retop)
 			tc:RegisterEffect(e1)
 			tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(51924009,0))
-			Duel.SpecialSummonComplete()
 		end
 	end
+	Duel.SpecialSummonComplete()
 end
 function c51924009.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKTOP,REASON_EFFECT)

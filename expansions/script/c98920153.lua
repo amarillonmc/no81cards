@@ -41,7 +41,7 @@ function c98920153.tgop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=Duel.GetOperatedGroup():GetFirst()
 		Duel.ConfirmCards(1-tp,tc)
 		Duel.BreakEffect()
-		if tc:IsType(TYPE_MONSTER) and tc:IsSetCard(0x19) then
+		if tc:IsSetCard(0x1019) then
 			Duel.Draw(tp,1,REASON_EFFECT)
 		end
 		Duel.ShuffleHand(tp)
@@ -67,7 +67,7 @@ function c98920153.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c98920153.filter(c,e,tp)
-	return c:IsSetCard(0x19) and not c:IsCode(98920153) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_GLADIATOR,tp,false,false)
+	return c:IsSetCard(0x1019) and not c:IsCode(98920153) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_GLADIATOR,tp,false,false)
 end
 function c98920153.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
