@@ -34,7 +34,7 @@ function s.c4a71kang(c,con,tg,op,category,cardcode,message,excode)
 	e1:SetOperation(op)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
-	e2:SetCountLimit(1,cardcode+o)
+	e2:SetCountLimit(1,cardcode+100)
 	e2:SetCondition(s.c4a71kangdiscon2)
 	c:RegisterEffect(e2)
 	--summon success

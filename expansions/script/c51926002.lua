@@ -64,7 +64,7 @@ function c51926002.cfilter(c)
 		and g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_FIRE)
 		and g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_WIND)
 end
-function c51926002.tdcon(e,tp,eg,ep,ev,re,r,rp)
+function c51926002.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c51926002.cfilter,tp,0,LOCATION_MZONE,1,nil)
 end
 function c51926002.thcost(e,tp,eg,ep,ev,re,r,rp,chk)

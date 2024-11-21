@@ -40,7 +40,7 @@ function s.c4a71kang(c)
 	e1:SetOperation(s.rmop)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
-	e2:SetCountLimit(1,id+o)
+	e2:SetCountLimit(1,id+100)
 	e2:SetCondition(s.c4a71kangdiscon2)
 	c:RegisterEffect(e2)
 	--summon success
