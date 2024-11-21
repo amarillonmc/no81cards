@@ -14,7 +14,7 @@ function c9910761.initial_effect(c)
 	c:RegisterEffect(e1)
 	--disable spsummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_TOHAND+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EVENT_SUMMON)
