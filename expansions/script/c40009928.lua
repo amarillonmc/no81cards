@@ -54,7 +54,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		local sg=Duel.GetMatchingGroup(cm.drfilter,tp,LOCATION_REMOVED,0,nil)
-		if sg:GetCount()>0 then
+		if sg:GetCount()>2 then
 			Duel.BreakEffect()
 			Duel.Draw(tp,1,REASON_EFFECT)
 		end

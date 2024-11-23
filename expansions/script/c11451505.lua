@@ -50,7 +50,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=0
-	if not e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
 	local act=e:IsHasType(EFFECT_TYPE_ACTIVATE)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,act) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
 	local e1=Effect.CreateEffect(e:GetHandler())

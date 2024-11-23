@@ -116,8 +116,9 @@ function cm.filter(c)
 	return c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) and ft>0 and (ft>1 or not e:GetHandler():IsLocation(LOCATION_HAND)) end
+	local ft=0
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>ft end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,0,0)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)

@@ -2,6 +2,7 @@
 if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
 local m,cm=rscf.DefineCard(10151003)
 function cm.initial_effect(c)
+	aux.AddCodeList(c,10000000,10000010,10000020)
 	local e1=rsef.ACT(c,nil,nil,{1,m,1},"se,th",nil,nil,rscost.cost(Card.IsDiscardable,"dish",LOCATION_HAND),rsop.target(cm.thfilter,"th",rsloc.dg),cm.act)
 	local e2=rsef.I(c,{m,0},nil,"sum",nil,LOCATION_GRAVE,nil,aux.bfgcost,rsop.target(cm.sumfilter,"sum",LOCATION_HAND),cm.sumop)
 end
