@@ -45,9 +45,9 @@ function c9911429.imcon(e)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_MZONE,0)>1 and e:GetHandler():GetFlagEffect(9911429)==0
 end
 function c9911429.imval(e,te)
-	local res=te:IsActivated()
-	if res then e:GetHandler():RegisterFlagEffect(9911429,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) end
-	return res
+	if te:GetOwnerPlayer()==e:GetHandlerPlayer() or not te:IsActivated() then return false end
+	e:GetHandler():RegisterFlagEffect(9911429,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	return true
 end
 function c9911429.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

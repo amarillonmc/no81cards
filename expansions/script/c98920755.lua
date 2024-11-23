@@ -24,7 +24,7 @@ function c98920755.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c98920755.cfilter(c)
-	return c:IsSetCard(0x105) and c:IsAbleToRemoveAsCost() and not c:IsCode(98920755)
+	return c:IsSetCard(0x105) and c:IsAbleToRemoveAsCost() and not c:IsCode(98920755) and c:IsType(TYPE_MONSTER)
 end
 function c98920755.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
