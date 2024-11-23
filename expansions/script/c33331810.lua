@@ -36,7 +36,7 @@ function c33331810.imcon(e)
 	return Duel.IsExistingMatchingCard(c33331810.ickfil,tp,LOCATION_MZONE,0,1,nil)
 end 
 function c33331810.ctdfil(c) 
-	return c:IsAbleToGraveAsCost() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x566) 
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x566) 
 end 
 function c33331810.tdgck(g) 
 	return g:GetCount()==1 or g:GetCount()==10  

@@ -85,6 +85,27 @@ function c9910731.conop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetLabelObject(tc)
 		e3:SetReset(RESET_PHASE+PHASE_END,2)
 		Duel.RegisterEffect(e3,tp)
+		if tc:IsOnField() and tc:IsFaceup() and tc:IsCanBeDisabledByEffect(e) then
+			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+			local e4=Effect.CreateEffect(c)
+			e4:SetType(EFFECT_TYPE_SINGLE)
+			e4:SetCode(EFFECT_DISABLE)
+			e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+			tc:RegisterEffect(e4)
+			local e5=Effect.CreateEffect(c)
+			e5:SetType(EFFECT_TYPE_SINGLE)
+			e5:SetCode(EFFECT_DISABLE_EFFECT)
+			e5:SetValue(RESET_TURN_SET)
+			e5:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+			tc:RegisterEffect(e5)
+			if tc:IsType(TYPE_TRAPMONSTER) then
+				local e6=Effect.CreateEffect(c)
+				e6:SetType(EFFECT_TYPE_SINGLE)
+				e6:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+				e6:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+				tc:RegisterEffect(e6)
+			end
+		end
 	end
 end
 function c9910731.distg(e,c)

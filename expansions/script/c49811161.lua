@@ -1,6 +1,6 @@
 --ぎりぎり対峙するＧ
 function c49811161.initial_effect(c)
-	c:EnableCounterPermit(0x4981)
+	c:EnableCounterPermit(0x490)
 	--change name
 	aux.EnableChangeCode(c,15721123,LOCATION_GRAVE)
 	--spsummon
@@ -38,7 +38,7 @@ function c49811161.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 then
 		local cn=Duel.GetMatchingGroupCount(nil,tp,LOCATION_HAND,LOCATION_HAND,nil)
-		c:AddCounter(0x4981,cn)
+		c:AddCounter(0x490,cn)
 		c:CompleteProcedure()
 		c:RegisterFlagEffect(49811161,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1)
 	end
@@ -52,8 +52,8 @@ end
 function c49811161.rctop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsFaceup() and c:IsRelateToEffect(e) then
-		if c:IsCanRemoveCounter(tp,0x4981,1,REASON_EFFECT) then
-			c:RemoveCounter(tp,0x4981,1,REASON_EFFECT)
+		if c:IsCanRemoveCounter(tp,0x490,1,REASON_EFFECT) then
+			c:RemoveCounter(tp,0x490,1,REASON_EFFECT)
 		else
 			Duel.Destroy(c,REASON_EFFECT)
 			local c=e:GetHandler()
