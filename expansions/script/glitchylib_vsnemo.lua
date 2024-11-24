@@ -3696,13 +3696,10 @@ end
 
 function Duel.IgnoreActionCheck(f,...)
 	Duel.DisableActionCheck(true)
-	local cr=coroutine.create(f)
 	local ret={}
-	while coroutine.status(cr)~="dead" do
-		local sret={coroutine.resume(cr,...)}
-		for i=2,#sret do
-			table.insert(ret,sret[i])
-		end
+	local sret={pcall(f,...)}
+	for i=2,#sret do
+		table.insert(ret,sret[i])
 	end
 	Duel.DisableActionCheck(false)
 	return table.unpack(ret)
