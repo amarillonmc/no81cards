@@ -48,7 +48,7 @@ function c28318749.initial_effect(c)
 end
 --xyz↓
 function c28318749.mfilter(c,xyzc)
-	return c:IsXyzType(TYPE_XYZ) and c:IsSetCard(0x284)
+	return c:IsXyzType(TYPE_XYZ) and c:IsRace(RACE_FAIRY)
 end
 function c28318749.xyzcheck(g)
 	return g:GetClassCount(Card.GetRank)==1
@@ -125,13 +125,13 @@ function c28318749.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 end
 function c28318749.tdfilter(c)
-	return c:IsSetCard(0x284) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToDeck()
+	return c:IsSetCard(0x284) and c:IsFaceupEx() and c:IsAbleToDeck()
 end
 function c28318749.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then
 		if e:GetLabel()==0 then return false end
 		e:SetLabel(0)
-		return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingTarget(c28318749.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+		return Duel.IsExistingTarget(c28318749.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 	e:SetLabel(0)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local tg=Duel.SelectTarget(tp,c28318749.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
@@ -140,19 +140,24 @@ function c28318749.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 end
 function c28318749.tdop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) then return end
 	local tc=Duel.GetFirstTarget()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil)
-	Duel.HintSelection(g)
+	local g=Group.CreateGroup()
 	if tc:IsRelateToEffect(e) then
 		g:AddCard(tc)
 	end
+	if Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil)
+		Duel.HintSelection(tg)
+		g:Merge(tg)
+	end
+	if #g==0 then return end
 	if Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) and Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_EFFECT) and Duel.SelectYesNo(tp,aux.Stringid(28318749,0)) then
 		Duel.BreakEffect()
 		Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_EFFECT)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil)
+		Duel.HintSelection(g2)
 		Duel.SendtoDeck(g2,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end

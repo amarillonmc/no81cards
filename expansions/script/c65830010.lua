@@ -36,23 +36,13 @@ function c65830010.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(c65830010.aclimit)
 			e1:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e1,tp)
-			local g=Duel.GetMatchingGroup(c65830010.filter,tp,0,LOCATION_EXTRA,nil) 
-			Duel.ConfirmCards(tp,g) 
-			local dg=g:Select(tp,1,1,nil) 
-			local ttc=dg:GetFirst()
-			local rg=Group.CreateGroup()
+			local g=Duel.GetMatchingGroup(c65830010.filter,tp,0,LOCATION_EXTRA,nil)
+			local dg=g:Select(tp,0,3,nil)
 			Duel.HintSelection(dg)
 			Duel.Remove(dg,POS_FACEDOWN,REASON_EFFECT)
-			local rg=Group.CreateGroup()
-			local tpe=ttc:GetType()
-			if bit.band(tpe,TYPE_TOKEN)==0 then
-				local g1=Duel.GetMatchingGroup(Card.IsCode,tp,0,LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA,nil,ttc:GetCode())
-				rg:Merge(g1)
-			end
-			if rg:GetCount()>0 then
-				Duel.BreakEffect()
-				Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
-			end
+			local g1=Duel.GetDecktopGroup(1-tp,2*(3-dg:GetCount()))
+			Duel.DisableShuffleCheck()
+			Duel.Remove(g1,POS_FACEDOWN,REASON_EFFECT)
 		else
 			Duel.SendtoDeck(tc,nil,1,REASON_EFFECT)
 		end

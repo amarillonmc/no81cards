@@ -1,5 +1,5 @@
 --存块！旋转！
-if not c71403010 then dofile("expansions/script/c71403010.lua") end
+if not c71403001 then dofile("expansions/script/c71403001.lua") end
 function c71403010.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -39,11 +39,11 @@ function c71403010.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	end
 	local op=0
 	if b1 and b2 then
-		op=Duel.SelectOption(tp,aux.Stringid(71400010,1),aux.Stringid(71400010,2))
+		op=Duel.SelectOption(tp,aux.Stringid(71403014,1),aux.Stringid(71403014,2))
 	elseif b1 then
-		op=Duel.SelectOption(tp,aux.Stringid(71400010,1))
+		op=Duel.SelectOption(tp,aux.Stringid(71403014,1))
 	else
-		op=Duel.SelectOption(tp,aux.Stringid(71400010,2))+1
+		op=Duel.SelectOption(tp,aux.Stringid(71403014,2))+1
 	end
 	e:SetLabel(op)
 	if op==0 then

@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
-	return Duel.GetLP(1-c:GetControler())<=4000
+	return Duel.GetLP(1-c:GetControler())<=5000
 end
 function cm.indtg(e,c)
 	return c:IsCode(60040052) and c:IsFaceup()

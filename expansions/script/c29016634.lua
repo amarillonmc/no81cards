@@ -1,17 +1,16 @@
---方舟骑士-临光·耀骑士
+--方舟骑士团-临光·耀骑士
 local m=29016634
 local cm=_G["c"..m]
-cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	aux.AddCodeList(c,29080291) 
 	c:EnableReviveLimit()
 	--spsummon condition
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetValue(cm.splimit)
-	c:RegisterEffect(e1)
+	--local e1=Effect.CreateEffect(c)
+	--e1:SetType(EFFECT_TYPE_SINGLE)
+	--e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	--e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	--e1:SetValue(cm.splimit)
+	--c:RegisterEffect(e1)
 	--tohand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -36,10 +35,10 @@ cm.assault_name=29080291
 function cm.splimit(e,se,sp,st)
 	--if not se then return end 
 	local sc=se:GetHandler()
-	return (sc:IsSetCard(0x87af) or (_G["c"..sc:GetCode()] and  _G["c"..sc:GetCode()].named_with_Arknight)) 
+	return sc:IsSetCard(0x87af) 
 end
 function cm.filter(c)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))  and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x87af) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end

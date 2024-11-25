@@ -24,7 +24,7 @@ function cm.filter(c,e,tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_EXTRA,0,1,nil,60040052) end
+		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_SZONE,0,1,nil,60040052) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -36,7 +36,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			local dg=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_SZONE,0,nil,60040052):Select(tp,1,1,nil)
 			if  Duel.Destroy(dg,REASON_EFFECT)~=0 then
-				Duel.Draw(tp,1,REASON_EFFECT)
+				Duel.Draw(tp,2,REASON_EFFECT)
 			end
 			
 		end

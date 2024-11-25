@@ -1,6 +1,7 @@
 --游戏尘寰
 function c60010133.initial_effect(c)
 	aux.AddCodeList(c,60010032)
+	aux.AddCodeList(c,60010029)
 	--Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetCategory(CATEGORY_SEARCH)
@@ -53,7 +54,7 @@ function c60010133.condition(e,tp,eg,ep,ev,re,r,rp)
 	return SpaceCheck[tp]
 end
 function c60010133.thfilter(c)
-	return c:IsCode(60010032) and c:IsAbleToHand()
+	return c:IsCode(60010032,60010029) and c:IsAbleToHand()
 end
 function c60010133.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c60010133.thfilter,tp,LOCATION_DECK,0,nil)

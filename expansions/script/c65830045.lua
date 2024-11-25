@@ -33,6 +33,21 @@ function c65830045.initial_effect(c)
 	e5:SetTarget(c65830045.target)
 	e5:SetOperation(c65830045.operation)
 	c:RegisterEffect(e5)
+	--damage
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e6:SetCode(EVENT_CHAINING)
+	e6:SetRange(LOCATION_FZONE)
+	e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e6:SetOperation(aux.chainreg)
+	c:RegisterEffect(e6)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e7:SetCode(EVENT_CHAIN_SOLVED)
+	e7:SetRange(LOCATION_FZONE)
+	e7:SetCondition(c65830045.damcon)
+	e7:SetOperation(c65830045.damop)
+	c:RegisterEffect(e7)
 end
 
 
@@ -44,29 +59,32 @@ function c65830045.cfilter(c)
 end
 function c65830045.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c65830045.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.DiscardHand(tp,c65830045.cfilter,1,1,REASON_COST+REASON_DISCARD,nil)
+	Duel.DiscardHand(tp,c65830045.cfilter,1,1,REASON_COST+REASON_DISCARD,e:GetHandler())
 end
 function c65830045.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c65830045.filter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end
+	if chk==0 then return true end
 	if not Duel.CheckPhaseActivity() then e:SetLabel(1) else e:SetLabel(0) end
 end
 function c65830045.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(65830045,0))
-	if e:GetLabel()==1 then Duel.RegisterFlagEffect(tp,65830045,RESET_CHAIN,0,1) end
+	if e:GetLabel()==1 then Duel.RegisterFlagEffect(tp,65830045,RESET_CHAIN,0,1)
+	end
 	Duel.ResetFlagEffect(tp,65830045)
-		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
-		if fc then
-			Duel.SendtoGrave(fc,REASON_RULE)
-			Duel.BreakEffect()
-		end
-		Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-		local te=c:GetActivateEffect()
-		te:UseCountLimit(tp,1,true)
-		local tep=tc:GetControler()
-		local cost=te:GetCost()
-		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-		Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+	local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+	if fc then
+		Duel.SendtoGrave(fc,REASON_RULE)
+		Duel.BreakEffect()
+	end
+	if c:GetLocation()==LOCATION_HAND then
+	Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+	local te=c:GetActivateEffect()
+	te:UseCountLimit(tp,1,true)
+	local tep=c:GetControler()
+	local cost=te:GetCost()
+	if cost then cost(te,tep,eg,ep,ev,re,r,rp,1)
+	end
+	Duel.RaiseEvent(c,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+	end
 end
 
 function c65830045.spfilter(c,e,tp)
@@ -96,4 +114,13 @@ function c65830045.operation(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+end
+
+
+function c65830045.damcon(e,tp,eg,ep,ev,re,r,rp)
+	return re and re:IsActiveType(TYPE_SPELL) and re:GetHandler():IsSetCard(0xa33) and re:GetHandler():IsType(TYPE_QUICKPLAY) and rp==tp and e:GetHandler():GetFlagEffect(FLAG_ID_CHAINING)>0
+end
+function c65830045.damop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,65830045)
+	Duel.Damage(1-tp,400,REASON_EFFECT)
 end

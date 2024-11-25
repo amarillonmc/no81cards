@@ -47,17 +47,24 @@ function c9910766.pscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,600) end
 	Duel.PayLPCost(tp,600)
 end
+function c9910766.cfilter(c)
+	return c:IsSummonType(SUMMON_TYPE_SPECIAL) and c:IsSummonLocation(LOCATION_HAND)
+end
 function c9910766.psfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x5951) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return c:IsFaceupEx() and c:IsSetCard(0x5951) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c9910766.pstg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local loc=0
+	if Duel.IsExistingMatchingCard(c9910766.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) then loc=LOCATION_DECK end
 	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
-		and Duel.IsExistingMatchingCard(c9910766.psfilter,tp,LOCATION_EXTRA+LOCATION_REMOVED,0,1,nil) end
+		and Duel.IsExistingMatchingCard(c9910766.psfilter,tp,LOCATION_EXTRA+LOCATION_REMOVED+loc,0,1,nil) end
 end
 function c9910766.psop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
+	local loc=0
+	if Duel.IsExistingMatchingCard(c9910766.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) then loc=LOCATION_DECK end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,c9910766.psfilter,tp,LOCATION_EXTRA+LOCATION_REMOVED,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c9910766.psfilter,tp,LOCATION_EXTRA+LOCATION_REMOVED+loc,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end

@@ -44,7 +44,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 		local num=Duel.GetFlagEffect(tp,m)
 		if num>=6 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-			Duel.Recover(tp,2500,REASON_EFFECT)
+			Duel.Recover(tp,1200,REASON_EFFECT)
 		end
 	end
 end

@@ -1,6 +1,7 @@
 --重塑时光之忆
 function c60010132.initial_effect(c)
 	aux.AddCodeList(c,60010030)
+	aux.AddCodeList(c,60010029)
 	--Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetCategory(CATEGORY_SEARCH)
@@ -53,7 +54,7 @@ function c60010132.condition(e,tp,eg,ep,ev,re,r,rp)
 	return SpaceCheck[tp]
 end
 function c60010132.thfilter(c)
-	return c:IsCode(60010030) and c:IsAbleToHand()
+	return c:IsCode(60010030,60010029) and c:IsAbleToHand()
 end
 function c60010132.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c60010132.thfilter,tp,LOCATION_DECK,0,nil)

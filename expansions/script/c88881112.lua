@@ -22,6 +22,31 @@ function s.initial_effect(c)
 	e2:SetTarget(s.tgtg)
 	e2:SetOperation(s.tgop)
 	c:RegisterEffect(e2)
+   --spsummon cost
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_SPSUMMON_COST)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetCost(s.spcost)
+	e3:SetOperation(s.spcop)
+	c:RegisterEffect(e3)
+end
+function s.spcost(e,c,tp)
+	return Duel.GetActivityCount(tp,ACTIVITY_NORMALSUMMON)==0
+end
+function s.spcop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(s.splimit)
+	Duel.RegisterEffect(e1,tp)
+end
+function s.splimit(e,c)
+	return not c:IsType(TYPE_LINK) and c:IsLocation(LOCATION_EXTRA)
 end
 function s.cfilter(c)
 	return c:IsFacedown() or not c:IsRace(RACE_THUNDER)

@@ -8,9 +8,9 @@ function c28318027.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
-	e0:SetCondition(Auxiliary.XyzLevelFreeCondition(aux.FilterBoolFunction(Card.IsSetCard,0x284),c28318027.xyzcheck,2,99))
-	e0:SetTarget(Auxiliary.XyzLevelFreeTarget(aux.FilterBoolFunction(Card.IsSetCard,0x284),c28318027.xyzcheck,2,99))
-	e0:SetOperation(c28318027.Operation(aux.FilterBoolFunction(Card.IsSetCard,0x284),c28318027.xyzcheck,2,99))
+	e0:SetCondition(Auxiliary.XyzLevelFreeCondition(aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),c28318027.xyzcheck,2,99))
+	e0:SetTarget(Auxiliary.XyzLevelFreeTarget(aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),c28318027.xyzcheck,2,99))
+	e0:SetOperation(c28318027.Operation(aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),c28318027.xyzcheck,2,99))
 	e0:SetValue(SUMMON_TYPE_XYZ)
 	c:RegisterEffect(e0)
 	--search
@@ -47,8 +47,14 @@ function c28318027.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 --xyz↓
-function c28318027.xyzcheck(g)
-	return g:GetClassCount(Card.GetLevel)==1 and not g:IsExists(Card.IsType,1,nil,TYPE_LINK+TYPE_XYZ)
+function Auxiliary.XyzLevelFreeGoal(g,tp,xyzc,gf)
+	return (not gf or gf(g,xyzc)) and Duel.GetLocationCountFromEx(tp,tp,g,xyzc)>0
+end
+function c28318027.xyzcheck(g,xyzc)
+	for lv=1,100 do
+		if not g:IsExists(function(c) return not c:IsXyzLevel(xyzc,lv) end,1,nil) then return true end
+	end
+	return false
 end
 function c28318027.Operation(f,gf,minct,maxct)
 	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
@@ -84,16 +90,18 @@ function c28318027.Operation(f,gf,minct,maxct)
 					c:SetMaterial(mg)
 					c:RegisterFlagEffect(28318027,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,mg:GetFirst():GetLevel())
 					Duel.Overlay(c,mg)
+					if mg:GetClassCount(Card.GetLevel)==1 then
+						local e1=Effect.CreateEffect(c)
+						e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+						e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+						e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+						e1:SetCondition(c28318027.rscon)
+						e1:SetOperation(c28318027.rsop)
+						Duel.RegisterEffect(e1,tp)
+						c28318027.tab = {}
+						table.insert(c28318027.tab,c)
+					end
 					mg:DeleteGroup()
-					local e1=Effect.CreateEffect(c)
-					e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-					e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-					e1:SetCondition(c28318027.rscon)
-					e1:SetOperation(c28318027.rsop)
-					Duel.RegisterEffect(e1,tp)
-					c28318027.tab = {}
-					table.insert(c28318027.tab,c)
 				end
 			end
 end
@@ -147,7 +155,7 @@ function c28318027.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28318027.rcfilter(c,rk)
-	return c:IsFaceup() and c:IsSetCard(0x284) and not c:IsRank(rk) and c:IsRankAbove(1)
+	return c:IsRankAbove(1) and not c:IsRank(rk) and c:IsFaceup()
 end
 function c28318027.rctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c28318027.rcfilter(chkc,e:GetHandler():GetRank()) end

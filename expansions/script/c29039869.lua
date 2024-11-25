@@ -1,4 +1,4 @@
---方舟骑士-鞭刃
+--方舟骑士团-鞭刃
 local cm,m,o=GetID()
 cm.named_with_Arknight=1
 function cm.initial_effect(c)
@@ -11,14 +11,18 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.tg1)
 	e1:SetOperation(cm.op1)
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetCode(EFFECT_UPDATE_DEFENSE)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsDefenseAbove,2000))
-	e2:SetValue(600)
-	c:RegisterEffect(e2)
+	--
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_DEFENSE_ATTACK)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(LOCATION_MZONE,0)
+	e3:SetTarget(cm.atktg)
+	e3:SetValue(1)
+	c:RegisterEffect(e3)
+end
+function cm.atktg(e,c)
+	return c:IsSetCard(0x87af) and c:GetDefense()>=2000
 end
 --e1
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -33,8 +37,8 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetOperatedGroup():GetFirst()
 	Duel.ConfirmCards(1-tp,tc)
 	Duel.BreakEffect()
-	if tc:IsType(TYPE_MONSTER) and (tc:IsSetCard(0x87af) or (_G["c"..tc:GetCode()] and  _G["c"..tc:GetCode()].named_with_Arknight)) then
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.SelectYesNo(tp,aux.Stringid(6459419,1)) then
+	if tc:IsType(TYPE_MONSTER) and tc:IsSetCard(0x87af) then
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		end
 	return

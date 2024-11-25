@@ -57,7 +57,7 @@ end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ag=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
-	return eg:IsExists(cm.cfilter,1,nil,tp,c:GetRace(),c:GetAttribute()) and ag:GetClassCount(Card.GetRace)==ag:GetCount() and ag:GetClassCount(Card.GetAttribute)==ag:GetCount()
+	return eg:IsExists(cm.cfilter,1,nil,tp,c:GetRace(),c:GetAttribute()) and ag:GetClassCount(Card.GetRace)==ag:GetCount() and ag:GetClassCount(Card.GetAttribute)==ag:GetCount() and Duel.IsEnvironment(60010029,tp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

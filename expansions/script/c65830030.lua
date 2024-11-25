@@ -37,7 +37,7 @@ function c65830030.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e1,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c65830030.thfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,5,nil)
+	local g=Duel.SelectMatchingCard(tp,c65830030.thfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,0,5,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)

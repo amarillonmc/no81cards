@@ -1,4 +1,4 @@
---远古造物 风神翼龙
+--远古造物 哈特兹哥翼龙
 dofile("expansions/script/c9910700.lua")
 function c9910731.initial_effect(c)
 	--special summon
@@ -6,11 +6,11 @@ function c9910731.initial_effect(c)
 	c:EnableReviveLimit()
 	--flag
 	QutryYgzw.AddTgFlag(c)
-	--direct attack
+	--damage
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_DIRECT_ATTACK)
-	e1:SetCondition(c9910731.dircon)
+	e1:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
+	e1:SetValue(c9910731.damval)
 	c:RegisterEffect(e1)
 	--confirm
 	local e2=Effect.CreateEffect(c)
@@ -24,8 +24,10 @@ function c9910731.initial_effect(c)
 	e2:SetOperation(c9910731.conop)
 	c:RegisterEffect(e2)
 end
-function c9910731.dircon(e)
-	return Duel.IsExistingMatchingCard(Card.IsFacedown,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)
+function c9910731.damval(e,damp)
+	if damp==1-e:GetHandlerPlayer() then
+		return Duel.GetMatchingGroupCount(Card.IsFacedown,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)*600
+	else return -1 end
 end
 function c9910731.concon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsControler,1,nil,tp)

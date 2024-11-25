@@ -22,7 +22,7 @@ function c88888017.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c88888017.cfilter(c,tp)
-	return c:IsCode(89631139,23995346) and c:IsAbleToRemoveAsCost()
+	return c:IsCode(89631139) and c:IsAbleToRemoveAsCost()
 end
 function c88888017.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c88888017.cfilter,tp,LOCATION_GRAVE+LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA,0,1,nil,tp) end

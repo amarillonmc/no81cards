@@ -45,13 +45,13 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.fil(c,race,attr)
-	return c:IsRace(race) and c:IsAttribute(attr)
+	return aux.IsCodeListed(c,60010029) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function cm.filterfilter(c,race)
 	return c:IsRace(race) and c:IsFaceup()
 end
 function cm.tgfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToGrave() and Duel.IsExistingMatchingCard(cm.filterfilter,tp,LOCATION_MZONE,0,1,nil,c:GetRace())
+	return c:IsType(TYPE_MONSTER) and c:IsAbleToGrave() and aux.IsCodeListed(c,60010029)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

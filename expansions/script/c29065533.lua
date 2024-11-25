@@ -1,5 +1,4 @@
 --方舟骑士升变
-c29065533.named_with_Arknight=1
 function c29065533.initial_effect(c)
 	aux.AddCodeList(c,29065500)
 	--Activate

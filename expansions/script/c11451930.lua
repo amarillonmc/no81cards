@@ -26,6 +26,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetLabelObject(e0)
 	e2:SetCondition(cm.adcon2)
 	e2:SetCost(cm.adcost2)
@@ -94,10 +95,12 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	if g:IsExists(cm.spfilter4,1,nil,e,tp) or (not Duel.IsPlayerAffectedByEffect(tp,59822133) and g:CheckSubGroup(cm.fselect,2,math.min(#g,ft),e,tp,ft1,ft2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=g:SelectSubGroup(tp,cm.fselect,false,1,math.min(#g,ft),e,tp,ft1,ft2)
-		local tg=sg
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
-		tg=sg:FilterSelect(tp,cm.spfilter1,math.max(0,#sg-ft2),math.min(#sg,ft1),nil,e,tp,sg,ft1,ft2)
-		sg:Sub(tg)
+		local tg=Group.CreateGroup()
+		if #sg>ft2 or (ft1>0 and not Duel.SelectYesNo(tp,aux.Stringid(m,6))) then
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
+			tg=sg:FilterSelect(tp,cm.spfilter1,math.max(0,#sg-ft2),math.min(#sg,ft1),nil,e,tp,sg,ft1,ft2)
+			sg:Sub(tg)
+		end
 		for tc in aux.Next(tg) do
 			Duel.SpecialSummonStep(tc,0,tp,1-tp,false,false,POS_FACEUP)
 		end

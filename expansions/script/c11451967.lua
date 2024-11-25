@@ -25,8 +25,10 @@ function cm.filter(c)
 	return c:IsCode(m-5) and c:CheckActivateEffect(false,false,false)~=nil
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ft=0
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and (Duel.GetLocationCount(tp,LOCATION_SZONE)>1 or e:GetHandler():IsOnField()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>ft end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.filter),tp,LOCATION_GRAVE+LOCATION_DECK,0,nil,code)
@@ -36,7 +38,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if #sg>0 then
 		local tc=sg:GetFirst()
 		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-		Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
+		--Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
 		local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(false,false,true)
 		te:UseCountLimit(tp,1,true)
 		local cost=te:GetCost()
@@ -73,7 +75,7 @@ function cm.chcon(e,tp,eg,ep,ev,re,r,rp)
 	return rc:IsSetCard(0x836)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x836) and c:IsAbleToHand() and c:IsFaceupEx()
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand() and c:IsFaceupEx()
 end
 function cm.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

@@ -4,7 +4,7 @@ function s.initial_effect(c)
     --SetSZone
 	local e1=Effect.CreateEffect(c)
     e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_TODECK) 
+	e1:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW) 
 	e1:SetType(EFFECT_TYPE_IGNITION) 
 	e1:SetRange(0x06)  
 	e1:SetCountLimit(1,id)
@@ -44,11 +44,13 @@ function s.htgop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
 		c:RegisterEffect(e1)
         local g=Duel.GetMatchingGroup(s.Tdfi1ter,tp,0x30,0,nil)
-        if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+        if #g>0 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
             Duel.Hint(3,tp,507)
             local sg=g:Select(tp,1,1,nil)
             Duel.HintSelection(sg)
-            Duel.SendtoDeck(sg,nil,1,0x40)
+            if Duel.SendtoDeck(sg,nil,1,0x40)>0 and sg:GetFirst():IsLocation(0x41) then
+                Duel.Draw(tp,1,0x40)
+            end
         end
 	end
 end

@@ -4,7 +4,7 @@ function s.initial_effect(c)
     --SetSZone
 	local e1=Effect.CreateEffect(c)
     e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_DRAW) 
+	e1:SetCategory(CATEGORY_TOHAND) 
 	e1:SetType(EFFECT_TYPE_IGNITION) 
 	e1:SetRange(0x06)  
 	e1:SetCountLimit(1,id)
@@ -28,8 +28,8 @@ function s.htgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,0x08)>0 end
     Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,0x30)
 end
-function s.Syfi1ter(c)
-	return c:IsFaceup() and c:IsSetCard(0x409) and c:IsType(TYPE_SYNCHRO)
+function s.thfi1ter(c)
+	return c:IsFaceup() and c:IsSetCard(0x409)
 end
 function s.htgop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
@@ -42,17 +42,20 @@ function s.htgop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
 		c:RegisterEffect(e1)
-        local g=Duel.GetMatchingGroup(s.Syfi1ter,tp,0x04,0,nil)
+        local g=Duel.GetMatchingGroup(s.thfi1ter,tp,0x0c,0,c)
         if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-            Duel.Draw(tp,1,0x40)
+            Duel.Hint(3,tp,505)
+            local sg=g:Select(tp,1,1,nil)
+            Duel.HintSelection(sg)
+            Duel.SendtoHand(sg,nil,0x40)
         end
 	end
 end
-function s.fi1ter(c)
-	return c:IsFacedown() and c:IsAbleToRemove() and c:IsLocation(0x0c)
+function s.fi1ter(c,tp)
+	return (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and c:IsAbleToRemove(tp,POS_FACEDOWN) and c:IsLocation(0x1c)
 end
-function s.fi2ter(c,e)
-	return c:IsRelateToEffect(e) and s.fi1ter(c)
+function s.fi2ter(c,e,tp)
+	return c:IsRelateToEffect(e) and s.fi1ter(c,tp)
 end
 function s.cicon(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
@@ -65,7 +68,7 @@ function s.citg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
     Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
     local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	local tg=g:Filter(s.fi1ter,e:GetHandler())
+	local tg=g:Filter(s.fi1ter,e:GetHandler(),tp)
 	local tc=tg:GetFirst()
     while tc do
 	    tc:CreateEffectRelation(e)
@@ -78,7 +81,7 @@ function s.ciop(e,tp,eg,ep,ev,re,r,rp)
     if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then return end
 	local c=e:GetHandler() 
     local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	local tg=g:Filter(s.fi2ter,c,e)
+	local tg=g:Filter(s.fi2ter,c,e,tp)
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 and #tg>0 then 
 		Duel.Remove(tg,POS_FACEDOWN,REASON_EFFECT)
 	end 

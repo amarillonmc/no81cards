@@ -34,7 +34,7 @@ function c65830035.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e1,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(),tp,0,LOCATION_REMOVED+LOCATION_GRAVE,1,3,nil)
+	g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(),tp,0,LOCATION_REMOVED+LOCATION_GRAVE,0,3,nil)
 	if g:GetCount()~=0 then
 		Duel.HintSelection(g)
 		local ttc=g:GetFirst()

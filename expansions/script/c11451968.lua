@@ -4,7 +4,7 @@ function cm.initial_effect(c)
 	aux.AddCodeList(c,m-5)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_RELEASE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCost(cm.cost)
@@ -57,6 +57,8 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		local op=Duel.SelectOption(tp,table.unpack(options))
 		eset[op+1]:UseCountLimit(tp,1)
+		local cost=eset[op+1]:GetCost()
+		if cost then cost(eset[op+1],tp,eg,ep,ev,re,r,rp,1) end
 	end
 	if ct==0 then
 		Debug.Message("请依次选择两个「在盖放的回合发动」效果。")
@@ -67,6 +69,8 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		local op=Duel.SelectOption(tp,table.unpack(options))
 		eset[op+1]:UseCountLimit(tp,1)
+		local cost=eset[op+1]:GetCost()
+		if cost then cost(eset[op+1],tp,eg,ep,ev,re,r,rp,1) end
 		table.remove(eset,op+1)
 		options={}
 		for _,te in ipairs(eset) do
@@ -74,6 +78,8 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		op=Duel.SelectOption(tp,table.unpack(options))
 		eset[op+1]:UseCountLimit(tp,1)
+		local cost=eset[op+1]:GetCost()
+		if cost then cost(eset[op+1],tp,eg,ep,ev,re,r,rp,1) end
 		Debug.Message("选择完毕。")
 	end
 end
@@ -81,15 +87,16 @@ function cm.filter(c)
 	return c:IsCode(m-5) and c:CheckActivateEffect(false,false,false)~=nil
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ft=0
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-	if chk==0 then return #g>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and (Duel.GetLocationCount(tp,LOCATION_SZONE)>1 or e:GetHandler():IsOnField()) end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+	local g=Duel.GetMatchingGroup(Card.IsReleasableByEffect,tp,0,LOCATION_ONFIELD,nil)
+	if chk==0 then return #g>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>ft end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+	local sg=Duel.GetMatchingGroup(Card.IsReleasableByEffect,tp,0,LOCATION_ONFIELD,nil)
 	if sg:GetCount()>0 then
-		Duel.Destroy(sg,REASON_EFFECT)
+		Duel.Release(sg,REASON_EFFECT)
 	end
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.filter),tp,LOCATION_GRAVE+LOCATION_DECK,0,nil,code)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
@@ -98,7 +105,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if #sg>0 then
 		local tc=sg:GetFirst()
 		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-		Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
+		--Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
 		local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(false,false,true)
 		te:UseCountLimit(tp,1,true)
 		local cost=te:GetCost()

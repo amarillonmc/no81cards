@@ -36,7 +36,7 @@ function c11513082.initial_effect(c)
 	e4:SetCondition(c11513082.damcon)
 	e4:SetTarget(c11513082.damtg)
 	e4:SetOperation(c11513082.damop)
-	c:RegisterEffect(e4)
+	--c:RegisterEffect(e4)
 	if not c11513082.global_check then
 		c11513082.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -98,7 +98,7 @@ function c11513082.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	tc=xg:GetNext() 
 	end 
 	local xe=Duel.IsPlayerAffectedByEffect(tp,11513082)
-	if xe and bit.band(xatt,xe:GetLabel())==xatt then 
+	if xe and bit.band(xatt,xe:GetLabel())==xatt then
 		e:SetLabel(0) 
 	else 
 		e:SetLabel(1)

@@ -22,6 +22,7 @@ function c29002021.initial_effect(c)
 	e3:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e3:SetProperty(0)
 	c:RegisterEffect(e3)
+	c29002021.summon_effect=e2   
 end
 c29002021.kinkuaoi_Akscsst=true
 function c29002021.tktg(e,tp,eg,ep,ev,re,r,rp,chk)

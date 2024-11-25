@@ -43,8 +43,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,g)
 		local num=Duel.GetFlagEffect(tp,m)
-		if num>=6 and Duel.IsPlayerCanDraw(tp,2) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-			Duel.Draw(tp,2,REASON_EFFECT)
+		if num>=6 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+			Duel.Draw(tp,1,REASON_EFFECT)
 		end
 	end
 end

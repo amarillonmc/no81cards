@@ -53,10 +53,10 @@ function c28319011.activate(e,tp,eg,ep,ev,re,r,rp,op)
 			Duel.Recover(tp,1000,REASON_EFFECT)
 		end
 	elseif op==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sc=Duel.SelectMatchingCard(tp,c28319011.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
 		if Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 and sc:IsSummonLocation(LOCATION_HAND) then
-			Duel.Recover(tp,1000,REASON_EFFECT)
+			Duel.Recover(tp,1650,REASON_EFFECT)
 		end
 		if Duel.GetLP(tp)>=10000 then
 			local te=sc.recover_effect

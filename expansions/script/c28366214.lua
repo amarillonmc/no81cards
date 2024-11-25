@@ -62,6 +62,8 @@ function c28366214.activate(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCondition(c28366214.actcon)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e2,tp)
+		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28366214,3))
+		--discard
 		if Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28366214,2)) then
 			Duel.BreakEffect()
 			local ct=Duel.DiscardHand(tp,Card.IsDiscardable,1,99,REASON_EFFECT+REASON_DISCARD)
@@ -79,7 +81,6 @@ function c28366214.activate(e,tp,eg,ep,ev,re,r,rp)
 			e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e4)
 		end
-		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28366214,3))
 	end
 end
 function c28366214.actcon(e)

@@ -32,6 +32,7 @@ function s.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE+CATEGORY_DRAW)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCost(s.drcost)
 	e3:SetTarget(s.drtarget)
 	e3:SetOperation(s.droperation)
@@ -56,27 +57,27 @@ function s.Unification_Vector_Fusion_Gcheck(g,fc,tp,chkf,gc)
 end
 function s.Unification_Vector_Fusion_Condition()
     return function(e,g,gc,chkf)
-            if g==nil then return aux.MustMaterialCheck(nil,e:GetHandlerPlayer(),EFFECT_MUST_BE_FMATERIAL) end
-            local fc=e:GetHandler()
-            local tp=e:GetHandlerPlayer()
-            if gc then
-                if not g:IsContains(gc) then return false end
-				return g:Filter(Card.IsFusionType,nil,TYPE_MONSTER):CheckSubGroup(s.Unification_Vector_Fusion_Gcheck,2,99,fc,tp,chkf,gc)
-            end
-            return g:Filter(Card.IsFusionType,nil,TYPE_MONSTER):CheckSubGroup(s.Unification_Vector_Fusion_Gcheck,2,99,fc,tp,chkf,nil)
+        if g==nil then return aux.MustMaterialCheck(nil,e:GetHandlerPlayer(),EFFECT_MUST_BE_FMATERIAL) end
+        local fc=e:GetHandler()
+        local tp=e:GetHandlerPlayer()
+        if gc then
+            if not g:IsContains(gc) then return false end
+			return g:Filter(Card.IsFusionType,nil,TYPE_MONSTER):CheckSubGroup(s.Unification_Vector_Fusion_Gcheck,2,99,fc,tp,chkf,gc)
         end
+        return g:Filter(Card.IsFusionType,nil,TYPE_MONSTER):CheckSubGroup(s.Unification_Vector_Fusion_Gcheck,2,99,fc,tp,chkf,nil) and Duel.GetCurrentPhase()==PHASE_MAIN1 and not Duel.CheckPhaseActivity()
+    end
 end
 function s.Unification_Vector_Fusion_Operation()
     return function(e,tp,eg,ep,ev,re,r,rp,gc,chkf)
-            local fc=e:GetHandler()
-            local tp=e:GetHandlerPlayer()
-			if not gc then
-				gc=nil
-			end
-			local g=eg:Filter(Card.IsFusionType,nil,TYPE_MONSTER)
-			local sg=g:SelectSubGroup(tp,s.Unification_Vector_Fusion_Gcheck,false,2,99,fc,tp,chkf,gc)
-            Duel.SetFusionMaterial(sg)
-        end
+        local fc=e:GetHandler()
+        local tp=e:GetHandlerPlayer()
+		if not gc then
+			gc=nil
+		end
+		local g=eg:Filter(Card.IsFusionType,nil,TYPE_MONSTER)
+		local sg=g:SelectSubGroup(tp,s.Unification_Vector_Fusion_Gcheck,false,2,99,fc,tp,chkf,gc)
+        Duel.SetFusionMaterial(sg)
+    end
 end
 function s.splimit(e,se,sp,st)
 	return e:GetHandler():GetLocation()~=LOCATION_EXTRA
@@ -101,34 +102,32 @@ function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
-function s.rmfilter(c,tp)
-	return Duel.IsPlayerCanRemove(tp,c,REASON_EFFECT)
+function s.mgfilter(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK) and c:IsAbleToRemove() and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,c,c:GetCode())
 end
-function s.mgfilter(c,e,tp,fusc,mg)
-	return c:IsControler(tp) and c:IsLocation(LOCATION_GRAVE)
-		and c:GetReason()&(REASON_MATERIAL)==(REASON_MATERIAL) and c:GetReasonCard()==fusc
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
-		and mg:FilterCount(s.rmfilter,c,tp)==#mg-1
+function s.fselect(g)
+	return g:GetClassCount(Card.GetCode)==1
 end
-function s.drtarget(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=e:GetHandler():GetMaterial()
-	g=g:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+function s.drtarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return false end
+	local g=Duel.GetMatchingGroup(s.mgfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
 	if chk==0 then
-		local ct=1
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		if e:GetHandler():GetSequence()<5 then ft=ft+1 end
-		return ft>=ct and g:IsExists(s.mgfilter,1,nil,e,tp,e:GetHandler(),g)
+		return ft>=1 and g:CheckSubGroup(s.fselect,2,99)
 	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local sg=g:SelectSubGroup(tp,s.fselect,false,2,99)
+	Duel.SetTargetCard(sg)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,#g-1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,#sg-1,0,0)
 end
 function s.droperation(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetHandler():GetMaterial()
-	g=g:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
-	local ct=1
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>=ct
-		and g:IsExists(s.mgfilter,1,nil,e,tp,e:GetHandler(),g) then
-		sg=g:FilterSelect(tp,s.mgfilter,1,1,nil,e,tp,e:GetHandler(),g)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>=1
+		and g:IsExists(Card.IsCanBeSpecialSummoned,1,nil,e,0,tp,false,false,POS_FACEUP_ATTACK) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		sg=g:FilterSelect(tp,Card.IsCanBeSpecialSummoned,1,1,nil,e,0,tp,false,false,POS_FACEUP_ATTACK)
 		if Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP_ATTACK) then
 			Group.Sub(g,sg)
 			if #g>0 then

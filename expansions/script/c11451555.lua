@@ -56,10 +56,13 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	if not ((phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL or c:IsStatus(STATUS_BATTLE_DESTROYED)) and Duel.IsPlayerCanSSet(tp) and c:IsLocation(LOCATION_MZONE) and not c:GetEquipGroup():IsExists(cm.eqfilter,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetMatchingGroupCount(nil,tp,LOCATION_DECK,0,nil)>0 and (not flag or flag>2) then
 		if flag then
 			flag=flag-1
+			local flage=c:IsHasEffect(EFFECT_FLAG_EFFECT+11451552)
+			--flage:SetLabel(flag)
+			--flage:SetDescription(aux.Stringid(11451552,flag))
 			c:ResetFlagEffect(11451552)
 			c:RegisterFlagEffect(11451552,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(11451552,flag))
 		else
-			c:RegisterFlagEffect(11451552,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,5,aux.Stringid(11451552,5))
+			c:RegisterFlagEffect(11451552,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,4,aux.Stringid(11451552,4))
 		end
 		Duel.Hint(HINT_CARD,0,m)
 		--Duel.HintSelection(Group.FromCards(c))

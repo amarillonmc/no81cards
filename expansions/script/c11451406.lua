@@ -26,6 +26,7 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_CHAIN_SOLVED)
+	--e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCondition(cm.damcon)
 	e3:SetOperation(cm.damop)
@@ -75,18 +76,19 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.damcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:GetFlagEffect(m)~=0 and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+	return c:GetFlagEffect(m)~=0 and re:IsHasType(EFFECT_TYPE_ACTIVATE) --eg:IsExists(Card.IsType,1,TYPE_SPELL+TYPE_TRAP) or eg:IsExists(Card.IsLocation,1,LOCATION_SZONE)
 end
 function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetValue(500)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e1)
-	if c:IsAttackAbove(2000) and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,13)) then
+	if c:IsAttackAbove(1500) and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,13)) then
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
+	else
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(500)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e1)
 	end
 end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)

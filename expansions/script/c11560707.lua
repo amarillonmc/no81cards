@@ -10,7 +10,7 @@ function c11560707.initial_effect(c)
 	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	e0:SetRange(0xff) 
 	e0:SetOperation(c11560707.actop) 
-	c:RegisterEffect(e0)   
+	--c:RegisterEffect(e0)   
 	-- 
 	local e0=Effect.CreateEffect(c) 
 	e0:SetType(EFFECT_TYPE_SINGLE) 
@@ -21,7 +21,7 @@ function c11560707.initial_effect(c)
 	c:RegisterEffect(e0)   
 	--to deck 
 	local e1=Effect.CreateEffect(c) 
-	e1:SetCategory(CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_COIN+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F) 
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS) 
 	e1:SetProperty(EFFECT_FLAG_DELAY) 
@@ -142,11 +142,13 @@ function c11560707.chainlm(e,rp,tp)
 end
 function c11560707.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end 
+	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,1-tp,LOCATION_ONFIELD)
 end 
 function c11560707.tdop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	if Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) then 
+	local res=Duel.TossCoin(tp,1)
+	if res==1 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) then
 		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil) 
 		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT) 
 	end 

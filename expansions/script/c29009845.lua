@@ -64,7 +64,7 @@ function c29009845.rfilter(c)
 	return c:IsType(TYPE_TOKEN) and c:IsReleasableByEffect()
 end
 function c29009845.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,c29009845.rfilter,1,nil) and Duel.IsExistingMatchingCard(c29009845.rthfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.CheckReleaseGroup(REASON_EFFECT,tp,c29009845.rfilter,1,nil) and Duel.IsExistingMatchingCard(c29009845.rthfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
@@ -74,7 +74,7 @@ function c29009845.thop3(e,tp,eg,ep,ev,re,r,rp)
 	local g3=Duel.GetMatchingGroup(c29009845.rthfilter,tp,LOCATION_DECK,0,nil)
 	local ct=g3:GetClassCount(Card.GetCode)
 	if ct>3 then ct=3 end
-	local g=Duel.SelectReleaseGroup(tp,c29009845.rfilter,1,ct,nil)
+	local g=Duel.SelectReleaseGroup(REASON_EFFECT,tp,c29009845.rfilter,1,ct,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		local rct=Duel.Release(g,REASON_EFFECT)

@@ -21,8 +21,10 @@ function cm.initial_effect(c)
 	--sps
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_GRAVE)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	e2:SetCountLimit(1)
 	e2:SetCondition(c22348424.spcon)
 	e2:SetTarget(c22348424.sptg)
 	e2:SetOperation(c22348424.spop)
@@ -30,7 +32,8 @@ function cm.initial_effect(c)
 	
 end
 function c22348424.checkcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsLocation(LOCATION_GRAVE) and r==REASON_FUSION
+	local c=e:GetHandler()
+	return c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and r==REASON_FUSION and c:IsFaceupEx()
 end
 function c22348424.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

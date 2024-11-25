@@ -8,9 +8,9 @@ function c28303030.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
-	e0:SetCondition(Auxiliary.XyzLevelFreeCondition(aux.FilterBoolFunction(Card.IsSetCard,0x283),c28303030.xyzcheck,2,99))
-	e0:SetTarget(Auxiliary.XyzLevelFreeTarget(aux.FilterBoolFunction(Card.IsSetCard,0x283),c28303030.xyzcheck,2,99))
-	e0:SetOperation(c28303030.Operation(aux.FilterBoolFunction(Card.IsSetCard,0x283),c28303030.xyzcheck,2,99))
+	e0:SetCondition(Auxiliary.XyzLevelFreeCondition(aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),c28303030.xyzcheck,2,99))
+	e0:SetTarget(Auxiliary.XyzLevelFreeTarget(aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),c28303030.xyzcheck,2,99))
+	e0:SetOperation(c28303030.Operation(aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),c28303030.xyzcheck,2,99))
 	e0:SetValue(SUMMON_TYPE_XYZ)
 	c:RegisterEffect(e0)
 	--rank set
@@ -63,31 +63,82 @@ function c28303030.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 --xyz↓
-function c28303030.xyzcheck(g)
-	return g:GetClassCount(Card.GetLevel)==1 and not g:IsExists(Card.IsType,1,nil,TYPE_LINK+TYPE_XYZ)
+function Auxiliary.XyzLevelFreeGoal(g,tp,xyzc,gf)
+	return (not gf or gf(g,xyzc)) and Duel.GetLocationCountFromEx(tp,tp,g,xyzc)>0
+end
+function c28303030.xyzcheck(g,xyzc)
+	for lv=1,100 do
+		if not g:IsExists(function(c) return not c:IsXyzLevel(xyzc,lv) end,1,nil) then return true end
+	end
+	return false
 end
 function c28303030.Operation(f,gf,minct,maxct)
 	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
-				local mg=e:GetLabelObject()
-				c:SetMaterial(mg)
-				c:RegisterFlagEffect(28303030,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,mg:GetFirst():GetLevel())
-				Duel.Overlay(c,mg)
-				mg:DeleteGroup()
+				if og and not min then
+					local sg=Group.CreateGroup()
+					local tc=og:GetFirst()
+					while tc do
+						local sg1=tc:GetOverlayGroup()
+						sg:Merge(sg1)
+						tc=og:GetNext()
+					end
+					Duel.SendtoGrave(sg,REASON_RULE)
+					c:SetMaterial(og)
+					c:RegisterFlagEffect(28303030,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,og:GetFirst():GetLevel())
+					Duel.Overlay(c,og)
+				else
+					local mg=e:GetLabelObject()
+					if e:GetLabel()==1 then
+						local mg2=mg:GetFirst():GetOverlayGroup()
+						if mg2:GetCount()~=0 then
+							Duel.Overlay(c,mg2)
+						end
+					else
+						local sg=Group.CreateGroup()
+						local tc=mg:GetFirst()
+						while tc do
+							local sg1=tc:GetOverlayGroup()
+							sg:Merge(sg1)
+							tc=mg:GetNext()
+						end
+						Duel.SendtoGrave(sg,REASON_RULE)
+					end
+					c:SetMaterial(mg)
+					c:RegisterFlagEffect(28303030,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,mg:GetFirst():GetLevel())
+					Duel.Overlay(c,mg)
+					if mg:GetClassCount(Card.GetLevel)==1 then
+						local e1=Effect.CreateEffect(c)
+						e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+						e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+						e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+						e1:SetCondition(c28303030.rscon)
+						e1:SetOperation(c28303030.rsop)
+						Duel.RegisterEffect(e1,tp)
+						c28303030.tab = {}
+						table.insert(c28303030.tab,c)
+					end
+					mg:DeleteGroup()
+				end
 			end
 end
 function c28303030.rscon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetFlagEffect(28303030)~=0
+	return eg:IsContains(c28303030.tab[1])
 end
 function c28303030.rsop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local xlv=c:GetFlagEffectLabel(28303030)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_CHANGE_RANK)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	e1:SetValue(xlv)
-	c:RegisterEffect(e1)
+	for c in aux.Next(eg) do
+		if c==c28303030.tab[1] then
+			local xlv=c:GetFlagEffectLabel(28303030)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CHANGE_RANK)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetValue(xlv)
+			c:RegisterEffect(e1)
+			c28303030.tab = nil
+			e:Reset()
+		end
+	end
 end
 --xyz↑
 function c28303030.rmcon1(e,tp,eg,ep,ev,re,r,rp)

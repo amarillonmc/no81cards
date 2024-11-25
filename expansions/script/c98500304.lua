@@ -1,0 +1,177 @@
+--神之怒
+function c98500304.initial_effect(c)
+	c:SetSPSummonOnce(98500304)
+	aux.AddCodeList(c,10000000,10000010,10000020)
+	--fusion material
+	c:EnableReviveLimit()
+	aux.AddFusionProcCode3(c,10000020,10000000,10000010,true,true)
+	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_ONFIELD,0,Duel.Remove,POS_FACEUP,REASON_COST)
+	--spsummon condition
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	c:RegisterEffect(e1)
+	--unaffectable
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e2:SetValue(1)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EFFECT_IMMUNE_EFFECT)
+	e3:SetValue(c98500304.efilter)
+	c:RegisterEffect(e3)
+	--to grave
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(98500304,0))
+	e4:SetCategory(CATEGORY_TOGRAVE)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCountLimit(1,98510304)
+	e4:SetTarget(c98500304.sgtg)
+	e4:SetOperation(c98500304.sgop)
+	c:RegisterEffect(e4)
+	--atkup
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(98500304,1))
+	e5:SetCategory(CATEGORY_ATKCHANGE)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+	e5:SetType(EFFECT_TYPE_IGNITION)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCountLimit(1,98510304)
+	e5:SetTarget(c98500304.atktg)
+	e5:SetOperation(c98500304.atkop)
+	c:RegisterEffect(e5)
+end
+function c98500304.efilter(e,te)
+	return te:GetOwner()~=e:GetOwner()
+end
+function c98500304.sgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+	local g2=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_GRAVE,nil)
+	if chk==0 then return g:GetCount()>0 end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g2,g2:GetCount(),0,0)
+end
+function c98500304.sgop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+	if Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
+		Duel.BreakEffect()
+		local g2=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_GRAVE,nil)
+		Duel.Remove(g2,POS_FACEUP,REASON_EFFECT)
+	end
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(98500304,2))
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e6:SetCategory(CATEGORY_TOEXTRA+CATEGORY_SPECIAL_SUMMON)
+	e6:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+	e6:SetCountLimit(1)
+	e6:SetCode(EVENT_PHASE+PHASE_END)
+	e6:SetReset(RESET_PHASE+PHASE_END)
+	e6:SetTarget(c98500304.sptg)
+	e6:SetOperation(c98500304.spop)
+	Duel.RegisterEffect(e6,tp)
+end
+function c98500304.atkfilter(c)
+	return c:IsFaceup()
+end
+function c98500304.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c98500304.atkfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler()) end
+end
+function c98500304.negfilter(c)
+	return aux.NegateMonsterFilter(c) and not c:IsAttribute(ATTRIBUTE_DIVINE)
+end
+function c98500304.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetHandler()
+	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
+		local g=Duel.GetMatchingGroup(c98500304.atkfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		local atk=g:GetSum(Card.GetAttack)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_SET_ATTACK)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetValue(atk)
+		tc:RegisterEffect(e1)
+		Duel.BreakEffect()
+		local g=Duel.GetMatchingGroup(c98500304.negfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		local tc2=g:GetFirst()
+		while tc2 do
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_CANNOT_TRIGGER)
+			e2:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc2:RegisterEffect(e2,true)
+			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+			local e3=Effect.CreateEffect(e:GetHandler())
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetCode(EFFECT_DISABLE)
+			e3:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc2:RegisterEffect(e3)
+			local e4=Effect.CreateEffect(e:GetHandler())
+			e4:SetType(EFFECT_TYPE_SINGLE)
+			e4:SetCode(EFFECT_DISABLE_EFFECT)
+			e4:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+			e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			e4:SetValue(RESET_TURN_SET)
+			tc2:RegisterEffect(e4)
+			tc2=g:GetNext()
+		end
+	end
+	local e6=Effect.CreateEffect(e:GetHandler())
+	e6:SetDescription(aux.Stringid(98500304,2))
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e6:SetCategory(CATEGORY_TOEXTRA+CATEGORY_SPECIAL_SUMMON)
+	e6:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+	e6:SetCountLimit(1)
+	e6:SetCode(EVENT_PHASE+PHASE_END)
+	e6:SetReset(RESET_PHASE+PHASE_END)
+	e6:SetTarget(c98500304.sptg)
+	e6:SetOperation(c98500304.spop)
+	Duel.RegisterEffect(e6,tp)
+end
+function c98500304.spfilter(c,e,tp)
+	return c:IsCode(10000020,10000000,10000010) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+end
+function c98500304.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
+end
+function c98500304.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.SendtoDeck(c,nil,SEQ_DECKTOP,REASON_EFFECT)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) or ft<2 then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>3 then
+		local g=Duel.GetMatchingGroup(c98500304.spfilter,tp,LOCATION_REMOVED,0,nil,e,tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=g:SelectSubGroup(tp,aux.dncheck,false,3,3)
+		if not sg then return end
+		local tc=sg:GetFirst()
+		while tc do
+			Duel.SpecialSummonStep(tc,0,tp,tp,true,false,POS_FACEUP)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CANNOT_TRIGGER)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetCondition(c98500304.actcon)
+			tc:RegisterEffect(e1)
+			tc=sg:GetNext()
+		end
+		Duel.SpecialSummonComplete()
+	end
+end
+function c98500304.actcon(e)
+	local ph=Duel.GetCurrentPhase()
+	local tp=e:GetHandlerPlayer()
+	return ph==PHASE_END
+end

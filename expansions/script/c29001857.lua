@@ -1,62 +1,69 @@
---方舟骑士-瑕光
+--方舟骑士团-瑕光
 local cm,m,o=GetID()
-cm.named_with_Arknight=1
 function cm.initial_effect(c)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,1))
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.con1)
-	e1:SetOperation(cm.op1)
-	e1:SetValue(SUMMON_VALUE_SELF)
-	c:RegisterEffect(e1)
+	--SpecialSummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,2))
-	e2:SetCategory(CATEGORY_RECOVER)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(cm.con2)
-	e2:SetTarget(cm.tg2)
-	e2:SetOperation(cm.op2)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_GRAVE_ACTION)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_HAND)
+	e2:SetCountLimit(1,m)
+	e2:SetTarget(cm.sptg)
+	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
-end
-cm.kinkuaoi_recoveraks=true
---e1
-function cm.conf1(c)
-	return c:IsAbleToDeck() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
-end
-function cm.con1(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.conf1),tp,LOCATION_GRAVE,0,1,nil)
-end
-function cm.op1(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.conf1),tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.ConfirmCards(1-tp,g)
-	Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT)
+	--Recover and ChangePosition
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_RECOVER+CATEGORY_POSITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCountLimit(1,m+1)
+	e1:SetTarget(cm.retg)
+	e1:SetOperation(cm.reop)
+	c:RegisterEffect(e1)
 end
 --e2
-function cm.con2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPosition(POS_FACEUP_DEFENSE)
+function cm.posfilter(c)
+	return c:IsFaceup() and c:IsCanTurnSet()
 end
-function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetFlagEffect(m)==0 end
-	e:GetHandler():RegisterFlagEffect(m,RESET_CHAIN,0,1)
+function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local g=Duel.GetMatchingGroup(cm.posfilter,tp,0,LOCATION_MZONE,nil)
+	local atk=e:GetHandler():GetAttack()
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(atk)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,atk)
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,1,0,0)
 end
-function cm.op2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or not c:IsPosition(POS_FACEUP_DEFENSE) or Duel.ChangePosition(c,POS_FACEUP_ATTACK)==0 then return end
-	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,0,LOCATION_MZONE,nil):Filter(Card.IsFaceup,nil)
-	if #g==0 or not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then return end
-	Duel.BreakEffect()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-	g=g:Select(tp,1,1,nil)
-	Duel.HintSelection(g)
-	if Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)==0 then return end
-	Duel.Recover(tp,c:GetAttack(),REASON_EFFECT)
+function cm.reop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Recover(p,d,REASON_EFFECT)
+		local g=Duel.GetMatchingGroup(cm.posfilter,tp,0,LOCATION_MZONE,nil)
+			if g:GetCount()>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+				local sg=Duel.SelectMatchingCard(tp,cm.posfilter,tp,0,LOCATION_MZONE,1,1,nil)	   
+				if #sg>0 then
+				Duel.HintSelection(sg)
+				Duel.ChangePosition(sg,POS_FACEDOWN_DEFENSE)
+				end
+			end
+end
+--e1
+function cm.tdfilter(c)
+	return c:IsSetCard(0x87af) and c:IsAbleToDeck()
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,nil) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	if g:GetCount()>0 and Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT)>0 then
+		if not e:GetHandler():IsRelateToEffect(e) then return end
+		Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
+	end
 end

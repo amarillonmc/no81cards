@@ -16,26 +16,29 @@ function cm.fselect(g)
 	for code=11451961,11451964 do
 		if not g:IsExists(cm.filter,1,nil,code) then return false end
 	end
-	return true
+	return Duel.GetLocationCount(g:GetFirst():GetControler(),LOCATION_SZONE)>0 or not g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ft=0
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
 	local c=e:GetHandler()
 	if chk==0 then
+		local all=true
 		for code=11451961,11451964 do
 			if not Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD+LOCATION_DECK,0,1,nil,code) then return false end
+			if not Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_ONFIELD,0,1,nil,code) then all=false end
 		end
-		return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and (Duel.GetLocationCount(tp,LOCATION_SZONE)>1 or e:GetHandler():IsOnField())
+		return Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or all
 	end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD+LOCATION_DECK,0,nil,code)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or not g:CheckSubGroup(cm.fselect,4,4) then return end
+	if not g:CheckSubGroup(cm.fselect,4,4) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local sg=g:SelectSubGroup(tp,cm.fselect,false,4,4)
 	if #sg==4 then
 		local ct=sg:FilterCount(Card.IsOnField,nil)+1
 		for i=1,math.min(ct,4) do
-			if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 			if i>1 then Duel.BreakEffect() end
 			local tc=sg:RandomSelect(tp,1):GetFirst()
 			if not tc:IsOnField() then
@@ -43,7 +46,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			else
 				Duel.ChangePosition(tc,POS_FACEUP)
 			end
-			Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
+			--Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
 			local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(false,false,true)
 			te:UseCountLimit(tp,1,true)
 			local cost=te:GetCost()
@@ -71,5 +74,5 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			end
 			sg:RemoveCard(tc)
 		end
-	end	  
+	end   
 end

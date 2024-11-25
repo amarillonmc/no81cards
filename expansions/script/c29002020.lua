@@ -86,9 +86,9 @@ function c29002020.ioperation(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetTargetRange(1,0)
 	Duel.RegisterEffect(e3,tp)
 end
-function c29002020.efilter(e,te,c)
+function c29002020.efilter(e,te)
 	if te:GetOwnerPlayer()==e:GetHandlerPlayer() then return false end
 	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	return not g or not g:IsContains(c)
+	return not g or not g:IsContains(e:GetHandler())
 end

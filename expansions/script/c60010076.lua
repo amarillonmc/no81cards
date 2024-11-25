@@ -4,7 +4,7 @@ function cm.initial_effect(c)
 	aux.AddCodeList(c,60010029)
 	--special summon
 	local e11=Effect.CreateEffect(c)
-	e11:SetDescription(aux.Stringid(m,1))
+	e11:SetDescription(aux.Stringid(m,0))
 	e11:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e11:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e11:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -17,7 +17,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e11)
 	--search
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,4))
+	--e3:SetDescription(aux.Stringid(m,4))
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
@@ -31,7 +31,7 @@ function cm.cfilter(c,tp)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return true
+	return eg:IsExists(cm.cfilter,1,nil,tp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -47,84 +47,71 @@ end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ag=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
-	return ag:GetClassCount(Card.GetRace)==ag:GetCount() and ag:GetClassCount(Card.GetAttribute)==ag:GetCount()
+	return aux.drccheck(ag) and aux.dabcheck(ag)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local count=Duel.AnnounceNumber(tp,1,2,3,4,5,6,7,8,9,10,11,12)
-	local mg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
-	local mc=mg:GetFirst()
-	for i=1,#mg do
-		if not mc:IsLevel(count) then
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-			e1:SetRange(LOCATION_MZONE)
-			e1:SetCode(EFFECT_CHANGE_LEVEL)
-			e1:SetValue(count)
-			e1:SetReset(RESET_EVENT+0xff0000)
-			mc:RegisterEffect(e1)
-		end
-		mc=mg:GetNext()
+	local cg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
+	local lvt={}
+	local rct=RACE_ALL
+	local att=0x7f
+	local tc=cg:GetFirst()
+	for i=1,#cg do
+		Duel.HintSelection(Group.FromCards(tc))
+		local lv=Duel.AnnounceLevel(tp,1,12,tc:GetLevel(),table.unpack(lvt))
+		local rc=Duel.AnnounceRace(tp,1,rct-bit.band(rct,tc:GetRace()))
+		local at=Duel.AnnounceAttribute(tp,1,att-bit.band(att,tc:GetAttribute()))
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CHANGE_LEVEL)
+		e1:SetValue(lv)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_CHANGE_RACE)
+		e2:SetValue(rc)
+		tc:RegisterEffect(e2)
+		local e3=e1:Clone()
+		e3:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+		e3:SetValue(at)
+		tc:RegisterEffect(e3)
+		lvt[i]=lv
+		rct=rct-rc
+		att=att-at
+		tc=cg:GetNext()
 	end
 
-	if Duel.IsExistingMatchingCard(cm.ffil,tp,LOCATION_FZONE,0,1,nil) then
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,m+20000000)
-	e1:SetCondition(cm.con)
-	e1:SetTarget(cm.lktg)
-	e1:SetOperation(cm.lkop)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
-	c:RegisterEffect(e1)
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,m+30000000)
-	e3:SetCondition(cm.con)
-	e3:SetTarget(cm.sytg)
-	e3:SetOperation(cm.syop)
-	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
-	c:RegisterEffect(e3)
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,2))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,m+40000000)
-	e3:SetCondition(cm.con)
-	e3:SetTarget(cm.xyztg)
-	e3:SetOperation(cm.xyzop)
-	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
-	c:RegisterEffect(e3)
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,3))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,m+50000000)
-	e3:SetCondition(cm.con)
-	e3:SetTarget(cm.pftg)
-	e3:SetOperation(cm.pfop)
-	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
-	c:RegisterEffect(e3)
+	if Duel.IsExistingMatchingCard(cm.ffil,tp,LOCATION_ONFIELD,0,1,nil) then
+		local fg=Duel.GetMatchingGroup(Card.IsCanBeFusionMaterial,tp,LOCATION_MZONE+LOCATION_HAND,0,nil):Filter(Card.IsType,nil,TYPE_MONSTER)
+		local b1=Duel.IsExistingMatchingCard(cm.fsfilter,tp,LOCATION_EXTRA,0,1,nil,fg,e,tp)
+		local b2=Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,nil,c)
+		local b3=Duel.IsExistingMatchingCard(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,nil,nil)
+		local b4=Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil,c)
+		local b5=true
+		if not (b1 or b2 or b3 or b4) then return end
+		local op=aux.SelectFromOptions(tp,
+			{b1,aux.Stringid(60010076,1)},
+			{b2,aux.Stringid(60010076,2)},
+			{b3,aux.Stringid(60010076,3)},
+			{b4,aux.Stringid(60010076,4)},
+			{b5,aux.Stringid(60010076,5)})
+		if op~=5 then Duel.BreakEffect() end
+		if op==1 then
+			cm.fsop(e,tp,eg,ep,ev,re,r,rp)
+		elseif op==2 then
+			cm.syop(e,tp,eg,ep,ev,re,r,rp)
+		elseif op==3 then
+			cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
+		elseif op==4 then
+			cm.lkop(e,tp,eg,ep,ev,re,r,rp)
+		end
 	end
 end
 function cm.ffil(c)
 	return c:IsCode(60010029) and c:IsFaceup()
+end
+function cm.fsfilter(c,g,e,tp)
+	return c:CheckFusionMaterial(g) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
@@ -136,7 +123,7 @@ function cm.lktg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.lkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsControler(1-tp) or not c:IsRelateToEffect(e) or c:IsFacedown() then return end
+	--if c:IsControler(1-tp) or not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	local g=Duel.GetMatchingGroup(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,nil,nil,c)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -151,7 +138,7 @@ function cm.sytg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.syop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsControler(1-tp) or not c:IsRelateToEffect(e) or c:IsFacedown() then return end
+	--if c:IsControler(1-tp) or not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	local g=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,c)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -199,7 +186,7 @@ function cm.pftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
-function cm.pfop(e,tp,eg,ep,ev,re,r,rp)
+function cm.fsop(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(cm.pffilter1,nil,e)
 	local sg1=Duel.GetMatchingGroup(cm.pffilter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)

@@ -33,10 +33,10 @@ function c22348434.initial_effect(c)
 	c:RegisterEffect(e4)
 	--to hand
 	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
+	e5:SetCategory(CATEGORY_TOHAND)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e5:SetCode(EVENT_LEAVE_FIELD)
-	e5:SetCondition(c22348434.thcon)
+	e5:SetCode(EVENT_TO_GRAVE)
+	e5:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e5:SetTarget(c22348434.thtg)
 	e5:SetOperation(c22348434.thop)
 	c:RegisterEffect(e5)
@@ -60,31 +60,21 @@ end
 function c22348434.atkval(e,c)
 	return Duel.GetMatchingGroupCount(Card.IsType,0,LOCATION_SZONE,LOCATION_SZONE,nil,TYPE_EQUIP)*700
 end
-function c22348434.thcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_ONFIELD)
-end
-function c22348434.tdfilter(c)
-	return c:IsSetCard(0x970b) and c:IsAbleToDeck() and c:IsFaceupEx()
+function c22348434.thfilter(c)
+	return c:IsSetCard(0xba) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsFaceupEx()
 end
 function c22348434.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c22348434.tdfilter(chkc) end
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingTarget(c22348434.tdfilter,tp,LOCATION_GRAVE,0,4,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c22348434.tdfilter,tp,LOCATION_GRAVE,0,4,4,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c22348434.thfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c22348434.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectTarget(tp,c22348434.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
 function c22348434.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if tg:GetCount()<=0 then return end
-	Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	local g=Duel.GetOperatedGroup()
-	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
-	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-	if ct>0 then
-		Duel.BreakEffect()
-		Duel.Draw(tp,1,REASON_EFFECT)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
 	end
 end
+

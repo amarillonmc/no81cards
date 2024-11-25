@@ -17,7 +17,7 @@ function c71403014.initial_effect(c)
 	yume.PPTCounter()
 end
 function c71403014.filter1(c)
-	return c:IsFaceup() and c:IsSetCard(0x715) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return c:IsFaceup() and yume.PPTPlacePendExceptFromFieldFilter(c)
 end
 function c71403014.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and aux.NegateAnyFilter(chkc) end
@@ -97,9 +97,9 @@ function c71403014.op1(e,tp,eg,ep,ev,re,r,rp)
 		yume.OptionalPendulum(e,c,tp)
 	end
 end
-function s.retcon(e,tp,eg,ep,ev,re,r,rp)
+function c71403014.retcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetLabelObject():GetFlagEffect(71403014)~=0
 end
-function s.retop(e,tp,eg,ep,ev,re,r,rp)
+function c71403014.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
 end

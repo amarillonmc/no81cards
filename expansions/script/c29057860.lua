@@ -1,4 +1,4 @@
---方舟骑士-砾（Incomplete）
+--方舟骑士团-砾
 local m=29057860
 local cm=_G["c"..m]
 cm.named_with_Arknight=1
@@ -53,6 +53,7 @@ function cm.initial_effect(c)
 	local e4_1=e4:Clone()
 	e4_1:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e4_1)
+	cm.summon_effect=e4   
 	--
 
 	local e6=Effect.CreateEffect(c)

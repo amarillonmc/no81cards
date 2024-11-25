@@ -1,13 +1,12 @@
 --执棋者 -方舟骑士-
 function c29065506.initial_effect(c)
 	aux.AddCodeList(c,29065502)
-	--add code
+	--splimit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetCode(EFFECT_ADD_CODE)
-	e1:SetRange(LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD+LOCATION_GRAVE)
-	e1:SetValue(29065502)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c29065506.splimit)
 	c:RegisterEffect(e1)
 	--tohand
 	local e2=Effect.CreateEffect(c)
@@ -32,6 +31,9 @@ function c29065506.initial_effect(c)
 	e3:SetTarget(c29065506.rmtg)
 	e3:SetOperation(c29065506.rmop)
 	c:RegisterEffect(e3)
+end
+function c29065506.splimit(e,se,sp,st)
+	return se:IsHasType(EFFECT_TYPE_ACTIONS)
 end
 --e3
 function c29065506.rmcon(e,tp,eg,ep,ev,re,r,rp)

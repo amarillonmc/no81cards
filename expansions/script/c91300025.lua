@@ -1,0 +1,76 @@
+--海德拉型：猎兽之王
+local s,id,o=GetID()
+function s.initial_effect(c)
+	--direct attack
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_DIRECT_ATTACK)
+	c:RegisterEffect(e1)
+	--Pos Change
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_SET_POSITION)
+	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(s.con)
+	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e2:SetValue(POS_FACEUP_ATTACK)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
+	c:RegisterEffect(e3)
+	--cannot be target
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e4:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCondition(s.con)
+	e4:SetValue(aux.imval1)
+	c:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e5:SetValue(aux.tgoval)
+	c:RegisterEffect(e5)
+	--immune
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE)
+	e6:SetCode(EFFECT_IMMUNE_EFFECT)
+	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCondition(s.con)
+	e6:SetValue(s.efilter)
+	c:RegisterEffect(e6)
+	--negate
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e7:SetCode(EVENT_CHAIN_SOLVING)
+	e7:SetRange(LOCATION_MZONE)
+	e7:SetCondition(s.discon)
+	e7:SetOperation(s.disop)
+	c:RegisterEffect(e7)
+end
+s.hackclad=1
+function s.con(e)
+	local tp=e:GetHandlerPlayer()
+	return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
+end
+function s.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
+end
+function s.discon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
+	seq=aux.MZoneSequence(seq)
+	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE
+		and seq==4-aux.MZoneSequence(c:GetSequence())
+		and re:IsHasProperty(EFFECT_FLAG_PLAYER_TARGET)
+		and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_HAND,0,1,c)
+end
+function s.disop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD)
+		local p=Duel.GetChainInfo(ev,CHAININFO_TARGET_PLAYER)
+		Duel.ChangeTargetPlayer(ev,1-p)
+	end
+end

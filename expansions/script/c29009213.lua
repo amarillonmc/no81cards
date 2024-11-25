@@ -1,17 +1,9 @@
 --先驱者 -方舟骑士团-
-c29009213.named_with_Arknight=1
 function c29009213.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x87af),2,2)
-	--add code
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetCode(EFFECT_ADD_CODE)
-	e1:SetRange(LOCATION_HAND+LOCATION_EXTRA+LOCATION_ONFIELD+LOCATION_GRAVE)
-	e1:SetValue(29056009)
-	c:RegisterEffect(e1)
+	aux.AddCodeList(c,29056009) 
 	--activate Arknights RHOSDES ISLAND
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(29009213,0))
@@ -40,11 +32,11 @@ function c29009213.filter(c,tp)
 	return c:IsCode(29065510) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
 function c29009213.actg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29009213.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c29009213.filter),tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,tp) end
 end
 function c29009213.acop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local tc=Duel.SelectMatchingCard(tp,c29009213.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,tp):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c29009213.filter),tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,tp):GetFirst()
 	if tc then
 		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 		if fc then

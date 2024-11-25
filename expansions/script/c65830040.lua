@@ -37,7 +37,7 @@ function c65830040.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e1,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,c65830040.filter,tp,0,LOCATION_ONFIELD,1,2,nil)
+	local g=Duel.SelectMatchingCard(tp,c65830040.filter,tp,0,LOCATION_ONFIELD,0,2,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		local ttc=g:GetFirst()

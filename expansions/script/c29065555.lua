@@ -1,5 +1,4 @@
---方舟骑士-玛恩纳
-c29065555.named_with_Arknight=1
+--方舟骑士团-玛恩纳
 function c29065555.initial_effect(c)
 	--xyz summon
 	c:EnableReviveLimit()
@@ -36,14 +35,13 @@ function c29065555.mfilter(c,xyzc)
 end
 function c29065555.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if re:GetHandler()~=c and c:GetFlagEffect(1)>0 and c:GetFlagEffect(29065555)<8 then
+	if c:GetAttack()<5800 and re:GetHandler()~=c then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(500)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e1)
-		c:RegisterFlagEffect(29065555,RESET_EVENT+RESETS_STANDARD,0,1)
 	end
 end
 function c29065555.discon(e,tp,eg,ep,ev,re,r,rp)
@@ -58,8 +56,18 @@ function c29065555.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rc=re:GetHandler()
 	local atk=c:GetAttack()-c:GetBaseAttack()
 	local b1=atk>=1000 and atk<2000 and rc:IsRelateToEffect(re) and rc:IsDestructable()
-	local b2=atk>=2000 Duel.IsChainNegatable(ev)
+	local b2=atk>=2000 and Duel.IsChainNegatable(ev)
 	if chk==0 then return b1 or b2 end
+		if atk>=1000 and rc:IsRelateToEffect(re) and rc:IsDestructable() then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+		end
+		if atk>=2000 then
+		Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+		end
+		local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,c)
+		if atk>=4000 then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:GetCount(),0,0)
+		end
 end
 function c29065555.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -67,27 +75,21 @@ function c29065555.disop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	local preatk=c:GetAttack()
 	local atk=preatk-c:GetBaseAttack()
-	if atk<=0 then return end
+	if atk<1000 then return end
+		if atk>=1000 and rc:IsRelateToEffect(re) then
+			Duel.Destroy(rc,REASON_EFFECT)
+		end
+		if atk>=2000 then
+			Duel.NegateActivation(ev)
+		end
+		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+		if atk>=4000 and g:GetCount()>0 then
+			Duel.Destroy(g,REASON_EFFECT)
+		end
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetValue(-atk)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 	c:RegisterEffect(e1)
-	atk=preatk-c:GetAttack()
-	if atk<1000 then return end
-	if atk<2000 then
-		if rc:IsRelateToEffect(re) then
-			Duel.Destroy(rc,REASON_EFFECT)
-		end
-	elseif atk<4000 then
-		if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-			Duel.Destroy(eg,REASON_EFFECT)
-		end
-	else
-		if Duel.NegateActivation(ev) then
-			local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-			Duel.Destroy(g,REASON_EFFECT)
-		end
-	end
 end

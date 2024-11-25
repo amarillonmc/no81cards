@@ -22,12 +22,11 @@ end
 function c71403006.filter1(c)
 	return c:GetSequence()<5 and c:IsFaceup() and c:IsSetCard(0x715) and c:IsCanChangePosition()
 end
-function c71403006.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+function c71403006.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c71403006.filter1(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c71403006.filterp2a,tp,LOCATION_MZONE,0,1,nil)
-		and Duel.IsExistingMatchingCard(c71403006.filterp2b,tp,LOCATION_EXTRA,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(c71403006.filter1,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-	local g=Duel.SelectTarget(tp,c71403006.filterp2a,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,c71403006.filter1,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,#g,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end

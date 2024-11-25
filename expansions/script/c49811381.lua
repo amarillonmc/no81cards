@@ -52,8 +52,7 @@ function s.cfilter(c)
 	return c:IsType(TYPE_QUICKPLAY) and c:IsDiscardable()
 end
 function s.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.DiscardHand(tp,s.cfilter,1,1,REASON_COST+REASON_DISCARD,nil)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)

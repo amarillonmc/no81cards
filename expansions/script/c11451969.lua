@@ -26,8 +26,10 @@ function cm.filter(c)
 	return c:IsCode(m-5) and c:CheckActivateEffect(false,false,false)~=nil
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ft=0
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanAddCounter,tp,0,LOCATION_MZONE,1,nil,0x1972,1) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and (Duel.GetLocationCount(tp,LOCATION_SZONE)>1 or e:GetHandler():IsOnField()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanAddCounter,tp,0,LOCATION_MZONE,1,nil,0x1972,1) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>ft end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsCanAddCounter,tp,0,LOCATION_MZONE,nil,0x1972,1)
@@ -43,7 +45,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if #sg>0 then
 		local tc=sg:GetFirst()
 		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-		Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
+		--Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
 		local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(false,false,true)
 		te:UseCountLimit(tp,1,true)
 		local cost=te:GetCost()
@@ -79,8 +81,9 @@ function cm.chcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		if rp==tp then return Duel.IsExistingMatchingCard(Card.IsSSetable,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,2) and Duel.GetLocationCount(tp,LOCATION_SZONE)>1
-		else return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_HAND,2,nil) and Duel.IsPlayerCanDraw(1-tp,2) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>1 end
+		return true
+		--if rp==tp then return Duel.IsExistingMatchingCard(Card.IsSSetable,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,2) and Duel.GetLocationCount(tp,LOCATION_SZONE)>1
+		--else return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_HAND,2,nil) and Duel.IsPlayerCanDraw(1-tp,2) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>1 end
 	end
 end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
@@ -89,6 +92,18 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeChainOperation(ev,cm.repop)
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_DISABLE)
+	e2:SetTargetRange(0,LOCATION_ONFIELD)
+	e2:SetTarget(cm.disable)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.disable(e,c)
+	return c:GetCounter(0x1972)>0 and (not c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_EFFECT) or bit.band(c:GetOriginalType(),TYPE_EFFECT)==TYPE_EFFECT))
+end
+function cm.repop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsSSetable,tp,LOCATION_HAND,0,nil)
 	if #g<2 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

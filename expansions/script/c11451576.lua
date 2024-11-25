@@ -1,7 +1,6 @@
 --岑露妖
 --21.06.19
-local m=11451576
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--to grave
 	local e1=Effect.CreateEffect(c)
@@ -42,10 +41,10 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCondition(cm.regcon)
 	e2:SetOperation(cm.regop)
 	e2:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e2,tp)
+	--Duel.RegisterEffect(e2,tp)
 end
 function cm.drcon1(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.filter,1,nil,1-tp) and (not re:IsHasType(EFFECT_TYPE_ACTIONS) or re:IsHasType(EFFECT_TYPE_CONTINUOUS))
+	return eg:IsExists(cm.filter,1,nil,1-tp) --and (not re:IsHasType(EFFECT_TYPE_ACTIONS) or re:IsHasType(EFFECT_TYPE_CONTINUOUS))
 end
 function cm.drop1(e,tp,eg,ep,ev,re,r,rp)
 	local tg=eg:Filter(cm.filter,nil,1-tp)

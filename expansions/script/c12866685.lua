@@ -74,9 +74,11 @@ end
 function s.cfilter(c,tp)
 	return c:IsFaceup() and c:IsRace(RACE_FIEND) and c:IsControler(tp)
 end
+function s.spfilter(c,tp)
+	return c:IsControler(tp) and c:IsRace(RACE_FIEND) and c:IsFaceup()
+end
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
-	local tg=eg:GetFirst()
-	return eg:GetCount()==1 and tg~=e:GetHandler() and tg:IsRace(RACE_FIEND)
+	return eg:IsExists(s.spfilter,1,nil,tp)
 end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end

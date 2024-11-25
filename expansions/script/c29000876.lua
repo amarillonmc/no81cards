@@ -13,6 +13,7 @@ function c29000876.initial_effect(c)
 	e2:SetTarget(c29000876.sptg2)
 	e2:SetOperation(c29000876.spop2)
 	c:RegisterEffect(e2)
+	c29000876.summon_effect=e2   
 	--atkpos
 	--change atk and defs
 	local e1=Effect.CreateEffect(c)

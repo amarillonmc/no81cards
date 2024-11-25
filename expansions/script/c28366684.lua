@@ -8,9 +8,9 @@ function c28366684.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
-	e0:SetCondition(Auxiliary.XyzLevelFreeCondition(aux.FilterBoolFunction(Card.IsSetCard,0x283),c28366684.xyzcheck,2,99))
-	e0:SetTarget(Auxiliary.XyzLevelFreeTarget(aux.FilterBoolFunction(Card.IsSetCard,0x283),c28366684.xyzcheck,2,99))
-	e0:SetOperation(c28366684.Operation(aux.FilterBoolFunction(Card.IsSetCard,0x283),c28366684.xyzcheck,2,99))
+	e0:SetCondition(Auxiliary.XyzLevelFreeCondition(aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),c28366684.xyzcheck,2,99))
+	e0:SetTarget(Auxiliary.XyzLevelFreeTarget(aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),c28366684.xyzcheck,2,99))
+	e0:SetOperation(c28366684.Operation(aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),c28366684.xyzcheck,2,99))
 	e0:SetValue(SUMMON_TYPE_XYZ)
 	c:RegisterEffect(e0)
 	--to grave
@@ -48,8 +48,14 @@ function c28366684.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 --xyz↓
-function c28366684.xyzcheck(g)
-	return g:GetClassCount(Card.GetLevel)==1 and not g:IsExists(Card.IsType,1,nil,TYPE_LINK+TYPE_XYZ)
+function Auxiliary.XyzLevelFreeGoal(g,tp,xyzc,gf)
+	return (not gf or gf(g,xyzc)) and Duel.GetLocationCountFromEx(tp,tp,g,xyzc)>0
+end
+function c28366684.xyzcheck(g,xyzc)
+	for lv=1,100 do
+		if not g:IsExists(function(c) return not c:IsXyzLevel(xyzc,lv) end,1,nil) then return true end
+	end
+	return false
 end
 function c28366684.Operation(f,gf,minct,maxct)
 	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
@@ -85,16 +91,18 @@ function c28366684.Operation(f,gf,minct,maxct)
 					c:SetMaterial(mg)
 					c:RegisterFlagEffect(28366684,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,mg:GetFirst():GetLevel())
 					Duel.Overlay(c,mg)
+					if mg:GetClassCount(Card.GetLevel)==1 then
+						local e1=Effect.CreateEffect(c)
+						e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+						e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+						e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+						e1:SetCondition(c28366684.rscon)
+						e1:SetOperation(c28366684.rsop)
+						Duel.RegisterEffect(e1,tp)
+						c28366684.tab = {}
+						table.insert(c28366684.tab,c)
+					end
 					mg:DeleteGroup()
-					local e1=Effect.CreateEffect(c)
-					e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-					e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-					e1:SetCondition(c28366684.rscon)
-					e1:SetOperation(c28366684.rsop)
-					Duel.RegisterEffect(e1,tp)
-					c28366684.tab = {}
-					table.insert(c28366684.tab,c)
 				end
 			end
 end
@@ -179,7 +187,7 @@ function c28366684.supop(e,tp,eg,ep,ev,re,r,rp)
 	local sel=e:GetLabel()
 	if sel==0 then
 		local lp=Duel.GetLP(tp)
-		Duel.SetLP(tp,lp-1500)
+		Duel.SetLP(tp,lp-1000)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c28366684.anfilter,tp,LOCATION_DECK,0,1,1,nil)
 		if g:GetCount()>0 then
@@ -187,7 +195,7 @@ function c28366684.supop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,g)
 		end
 	else
-		if Duel.Recover(tp,1500,REASON_EFFECT)>0 then
+		if Duel.Recover(tp,1000,REASON_EFFECT)>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 			local g=Duel.SelectMatchingCard(tp,c28366684.alfilter,tp,LOCATION_DECK,0,1,1,nil)
 			if g:GetCount()>0 then

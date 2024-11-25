@@ -104,5 +104,5 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SetLP(1-tp,4000)
+	Duel.SetLP(1-tp,5000)
 end

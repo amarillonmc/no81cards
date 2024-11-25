@@ -34,7 +34,7 @@ function c28341958.filter(c,e,tp)
 		and Duel.IsExistingMatchingCard(c28341958.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetAttribute())
 end
 function c28341958.spfilter(c,e,tp,attr)
-	return not c:IsAttribute(attr) and c:IsSetCard(0x284) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return not c:IsAttribute(attr) and c:IsSetCard(0x284) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c28341958.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c28341958.filter(chkc,e,tp) end
@@ -51,7 +51,6 @@ function c28341958.tgfilter(c)
 	return c:IsSetCard(0x284) and c:IsAbleToGrave()
 end
 function c28341958.activate(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		local attr=tc:GetAttribute()

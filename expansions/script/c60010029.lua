@@ -13,30 +13,41 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetCode(EFFECT_CANNOT_SUMMON)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTargetRange(1,1)
+	e2:SetTargetRange(1,0)
 	c:RegisterEffect(e2)
-	--draw 
+	--to hand 
 	local e2=Effect.CreateEffect(c) 
-	e2:SetCategory(CATEGORY_DRAW)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetRange(LOCATION_FZONE)
-	--e2:SetTarget(cm.srtg)
-	e2:SetOperation(cm.srop)
-	c:RegisterEffect(e2)
+	e2:SetCategory(CATEGORY_DRAW) 
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F) 
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS) 
+	e2:SetProperty(EFFECT_FLAG_DELAY) 
+	e2:SetRange(LOCATION_FZONE) 
+	--e2:SetTarget(cm.srtg) 
+	e2:SetOperation(cm.srop) 
+	c:RegisterEffect(e2)  
+	--local e3=e2:Clone() 
+	--e3:SetCode(EVENT_SPSUMMON_SUCCESS) 
+	--c:RegisterEffect(e3) 
 	--search
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_FZONE)
-	e3:SetCountLimit(1,m+20000000)
+	e3:SetCountLimit(1,m)
 	e3:SetCondition(cm.con)
 	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3)
 	
-	Duel.AddCustomActivityCounter(m,ACTIVITY_SUMMON,aux.FALSE)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SUMMON_SUCCESS)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
@@ -45,36 +56,42 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 		tc=eg:GetNext()
 	end
 end
+
 function cm.accon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(m,tp,ACTIVITY_SUMMON)==0
+	return Duel.GetFlagEffect(e:GetHandlerPlayer(),m)==0
 end
 
 function cm.srop(e,tp,eg,ep,ev,re,r,rp) 
-	if Duel.GetFlagEffect(0,m) and eg:IsExists(Card.IsControler,1,nil,0) then
-		Duel.Draw(0,1,REASON_EFFECT)
-		Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1)
-	end
-	if Duel.GetFlagEffect(1,m) and eg:IsExists(Card.IsControler,1,nil,1) then
-		Duel.Draw(1,1,REASON_EFFECT)
-		Duel.RegisterFlagEffect(1,m,RESET_PHASE+PHASE_END,0,1)
-	end
+	if Duel.GetFlagEffect(rp,m)==0 then 
+		Duel.Draw(tp,1,REASON_EFFECT)
+		Duel.RegisterFlagEffect(rp,m,RESET_PHASE+PHASE_END,0,1)
+	end 
+end 
+
+function cm.fselect(g)
+	return g:GetClassCount(Card.GetRace)==g:GetCount()
+		and g:GetClassCount(Card.GetAttribute)==g:GetCount()
+end
+
+function cm.costfilter(c)
+	return c:IsType(TYPE_MONSTER)
 end
 
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.GetType,tp,LOCATION_HAND,0,nil,TYPE_MONSTER)
-	return g:GetClassCount(Card.GetRace)==g:GetCount() and g:GetClassCount(Card.GetAttribute)==g:GetCount()
+	local g=Duel.GetMatchingGroup(cm.costfilter,tp,LOCATION_HAND,0,nil,nil)
+	return g:CheckSubGroup(cm.fselect,3,99)
 end
 
 function cm.rcheck(c)
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(Card.GetType,tp,LOCATION_HAND,0,nil,TYPE_MONSTER)
+	local g=Duel.GetMatchingGroup(cm.costfilter,tp,LOCATION_HAND,0,nil,nil)
 	local tf=false
-	if g:GetCount()>=3 then
-		g:AddCard(c)
-		if g:GetClassCount(Card.GetRace)==g:GetCount() and g:GetClassCount(Card.GetAttribute)==g:GetCount() then
+	--if g:CheckSubGroup(cm.fselect,3,99)then
+		--g:AddCard(c)
+		if g:CheckSubGroup(cm.fselect,3,99) then
 			tf=true
 		end
-	end
+	--end
 	return tf
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -85,8 +102,10 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local lg=Duel.GetMatchingGroup(nil,tp,LOCATION_HAND,0,nil)
 	Duel.ConfirmCards(1-tp,lg)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.GetMatchingGroup(Card.GetType,tp,LOCATION_HAND,0,nil,TYPE_MONSTER)
-	local dg=Duel.GetMatchingGroup(Card.GetType,tp,LOCATION_DECK,0,nil,TYPE_MONSTER)
+	--选择怪兽--
+	local bg=Duel.GetMatchingGroup(cm.costfilter,tp,LOCATION_HAND,0,nil,nil)
+	local g=Group.SelectSubGroup(bg,tp,cm.fselect,0,nil)
+	local dg=Duel.GetMatchingGroup(cm.costfilter,tp,LOCATION_DECK,0,nil,nil)
 	local ac=dg:GetFirst()
 	local cg=Group.CreateGroup()
 	for i=1,#dg do

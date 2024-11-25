@@ -1,7 +1,15 @@
---方舟骑士-临光
+--方舟骑士团-临光
 local cm,m,o=GetID()
-cm.named_with_Arknight=1
 function cm.initial_effect(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_HANDES)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
+	e1:SetCountLimit(1,m)
+	e1:SetTarget(cm.tg1)
+	e1:SetOperation(cm.op1)
+	c:RegisterEffect(e1)
 	--change effect type
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -10,30 +18,32 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(1,0)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_DESTROY_REPLACE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetTarget(cm.tg3)
-	e3:SetValue(cm.val3)
-	e3:SetOperation(cm.op3)
-	c:RegisterEffect(e3)	
 end
-cm.kinkuaoi_recoveraks=true
---e3
-function cm.tgf3(c,tp)
-	return c:IsControler(tp) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE) and c:IsLocation(LOCATION_MZONE) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>2 end
 end
-function cm.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.opf1(c,e,tp)
+	return c:IsSetCard(0x87af) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if chk==0 then return eg:IsExists(cm.tgf3,1,nil,tp) and c:IsPosition(POS_FACEUP_ATTACK) end
-	return Duel.SelectEffectYesNo(tp,c,96)
-end
-function cm.val3(e,c)
-	return cm.tgf3(c,e:GetHandlerPlayer())
-end
-function cm.op3(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ChangePosition(e:GetHandler(),POS_FACEUP_DEFENSE)
-	Duel.Recover(tp,e:GetHandler():GetAttack(),REASON_EFFECT)
-	Duel.Hint(HINT_CARD,0,m)
+	Duel.ConfirmDecktop(tp,3)
+	local g=Duel.GetDecktopGroup(tp,3):Filter(Card.IsAttribute,nil,ATTRIBUTE_LIGHT)
+	local sg=Duel.GetMatchingGroup(cm.opf1,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
+	Duel.ShuffleDeck(tp)
+	if #g>0 and #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+		sg=sg:Select(tp,1,ft>#g and #g or ft,nil)
+		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	end
+	if c:IsLocation(LOCATION_HAND) and c:IsRelateToEffect(e) then
+		if Duel.IsPlayerAffectedByEffect(tp,29080291) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(29080291,2)) then
+			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+		else
+			Duel.SendtoGrave(c,REASON_EFFECT+REASON_DISCARD)
+			Duel.ShuffleHand(tp)
+		end
+	end
 end

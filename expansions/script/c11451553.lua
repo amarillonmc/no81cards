@@ -59,7 +59,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 			c:ResetFlagEffect(11451552)
 			c:RegisterFlagEffect(11451552,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,flag,aux.Stringid(11451552,flag))
 		else
-			c:RegisterFlagEffect(11451552,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,4,aux.Stringid(11451552,4))
+			c:RegisterFlagEffect(11451552,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,3,aux.Stringid(11451552,3))
 		end
 		Duel.Hint(HINT_CARD,0,m)
 		--Duel.HintSelection(Group.FromCards(c))

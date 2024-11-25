@@ -1,9 +1,8 @@
 --方舟骑士-焰尾
 local cm,m,o=GetID()
-cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,2))
+	e1:SetDescription(aux.Stringid(m,3))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES+CATEGORY_HANDES)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
@@ -11,29 +10,64 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.tg1)
 	e1:SetOperation(cm.op1)
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(3070049,0))
-	e2:SetCategory(CATEGORY_COUNTER)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,m+100)
-	e2:SetTarget(cm.tg2)
-	e2:SetOperation(cm.op2)
-	--c:RegisterEffect(e2)
+	--spsummon
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(m,2))
+	e6:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e6:SetType(EFFECT_TYPE_IGNITION)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCountLimit(1,m+1)
+	e6:SetTarget(cm.sptg)
+	e6:SetOperation(cm.spop)
+	c:RegisterEffect(e6)
+	--negate atk
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_BE_BATTLE_TARGET)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1,m+2)
+	e3:SetCondition(cm.atkcon)
+	e3:SetOperation(cm.atkop)
+	c:RegisterEffect(e3)
+end
+--e3
+function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler()==Duel.GetAttackTarget()
+end
+function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	Duel.NegateAttack()
+	end
+end
+--e2
+function cm.spfilter(c,e,tp)
+	return c:IsSetCard(0x87af) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 --e1
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>2 end
 end
 function cm.opf1(c,e,tp)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsAttribute(ATTRIBUTE_LIGHT)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_BEASTWARRIOR)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.ConfirmDecktop(tp,3)
 	local g=Duel.GetDecktopGroup(tp,3):Filter(cm.opf1,nil,e,tp)
-	if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(6459419,1)) then
+	if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		Duel.BreakEffect()
 		g=g:Select(tp,1,1,nil)
@@ -41,32 +75,11 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.ShuffleDeck(tp)
 	if c:IsLocation(LOCATION_HAND) and c:IsRelateToEffect(e) then
-		if Duel.IsPlayerAffectedByEffect(tp,29080291) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(29081673,1)) then
+		if Duel.IsPlayerAffectedByEffect(tp,29080291) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(29080291,2)) then
 			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		else
 			Duel.SendtoGrave(c,REASON_EFFECT+REASON_DISCARD)
 			Duel.ShuffleHand(tp)
 		end
 	end
-end
---e2
-function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x10ae)
-end
-function cm.op2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	c:AddCounter(0x10ae,1)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_BE_BATTLE_TARGET)
-	e1:SetOperation(cm.op2op1)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	c:RegisterEffect(e1)
-end
-function cm.op2op1(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.SelectYesNo(tp,aux.Stringid(5697558,2)) then return end
-	Duel.NegateAttack()
-	e:Reset()
 end

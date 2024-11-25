@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)  
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_HAND)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCountLimit(1,m)   
 	e1:SetCondition(cm.con)
 	e1:SetTarget(cm.tg)  
@@ -63,7 +63,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_FZONE,0,1,nil) and Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil):Select(tp,1,2,nil)
+		local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil):Select(tp,1,1,nil)
 		Duel.SendtoGrave(g,REASON_EFFECT)
 	else	
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
