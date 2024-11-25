@@ -159,7 +159,7 @@ end
 function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	local lk=math.ceil(Duel.SendtoDeck(g,nil,2,REASON_EFFECT)/2)
+	local lk=math.ceil(Duel.SendtoDeck(g,nil,2,REASON_EFFECT):FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)/2)
 	Debug.Message(lk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local tc=Duel.SelectMatchingCard(tp,cm.spfilter1,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,lk):GetFirst()

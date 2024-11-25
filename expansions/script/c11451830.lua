@@ -77,7 +77,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 		local sg1=g1:SelectSubGroup(tp,cm.fselect,false,1,3)
 		local sg2=g2:SelectSubGroup(1-tp,cm.fselect,false,1,3)
 		if Duel.SendtoDeck(sg1+sg2,nil,2,REASON_EFFECT)>0 then
-			local og=Duel.GetOperatedGroup()
+			local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 			local ct1=#Group.__band(og,sg1)
 			local ct2=#Group.__band(og,sg2)
 			if ct1==0 and ct2==0 then return end
@@ -175,7 +175,7 @@ function cm.returntofield(tc)
 			Duel.BreakEffect()
 		end
 		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-        return
+		return
 	end
 	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then
 		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)

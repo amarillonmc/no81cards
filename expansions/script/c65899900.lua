@@ -47,10 +47,10 @@ function c65899900.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c65899900.activate(e,tp,eg,ep,ev,re,r,rp)
+	Debug.Message("Tickrate error occured")
 	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	Duel.Destroy(sg,REASON_EFFECT)
 	Duel.BreakEffect()
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	Duel.Destroy(g,REASON_EFFECT)
-	Debug.Message("Tickrate error occured")
 end

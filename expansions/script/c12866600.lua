@@ -53,8 +53,9 @@ end
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
-	local b1=rc:IsAbleToGrave() and not rc:IsLocation(LOCATION_GRAVE)
-	local b2=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and rc:IsCanBeSpecialSummoned(e,0,tp,false,false))
+	if not rc:IsRelateToEffect(re) then return end
+	local b1=rc:IsAbleToGrave() and not rc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
+	local b2=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and rc:IsCanBeSpecialSummoned(e,0,tp,false,false)) 
 	if chk==0 then return b1 or b2 end
 	if re:GetHandler():IsAttribute(ATTRIBUTE_DARK) then
 		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
@@ -75,7 +76,7 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	if rc:IsRelateToEffect(re) then
 		local tc=Duel.GetFirstTarget()
 		local b1=tc:IsAbleToGrave() and not tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
-		local b2=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false))
+		local b2=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)) 
 		local off=1
 		local ops={}
 		local opval={}
