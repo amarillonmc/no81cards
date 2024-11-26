@@ -57,14 +57,21 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_CARD,0,m)
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	--[[e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCondition(cm.recon)
-	e1:SetOperation(cm.reop)
+	e1:SetOperation(cm.reop)--]]
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_ACTIVATE_COST)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,1)
+	e1:SetTarget(cm.actarget2)
+	e1:SetOperation(cm.costop2)
 	Duel.RegisterEffect(e1,tp)
 	local eid=e1:GetFieldID()
 	e1:SetLabel(eid)
+	cm[e1]={}
 	local ce=nil
 	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451961)}
 	DEFECT_ORAL_COUNT=DEFECT_ORAL_COUNT or 3
@@ -116,6 +123,38 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	de:SetTargetRange(1,0)
 	Duel.RegisterEffect(de,tp)
 	if ce then de:SetLabelObject(ce) end
+end
+function cm.actarget2(e,te,tp)
+	local tc=te:GetHandler()
+	e:SetLabelObject(te)
+	return te:IsHasType(EFFECT_TYPE_ACTIVATE) and not cm[e][te]
+end
+function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
+	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451961)}
+	local res=false
+	for _,te in pairs(eset) do
+		if te:GetLabel()==e:GetLabel() then res=true break end
+	end
+	if not res then e:Reset() return false end
+	local c=e:GetHandler()
+	local te=e:GetLabelObject()
+	cm[e][te]=true
+	local tg=te:GetTarget() or aux.TRUE
+	local tg2=function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+				if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,1) end
+				if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) end
+				e:SetTarget(tg)
+				tg(e,tp,eg,ep,ev,re,r,rp,1)
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
+				local g=Duel.SelectMatchingCard(tp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,0x1972,1)
+				if #g>0 then
+					local prop1,prop2=e:GetProperty()
+					te:SetProperty(prop1|EFFECT_FLAG_IGNORE_IMMUNE,prop2)
+					g:GetFirst():AddCounter(0x1972,1)
+					te:SetProperty(prop1,prop2)
+				end
+			end
+	te:SetTarget(tg2)
 end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE)

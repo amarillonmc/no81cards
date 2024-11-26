@@ -55,13 +55,15 @@ function c12856000.op(e,tp,eg,ep,ev,re,r,rp)
 	c:AddCounter(0xa7d,4)
 	end
 end
-function c12856000.w(c)
-	return c:GetCounter(0xa7d)>0 and c:IsAbleToHand()
+function c12856000.w(c,ct)
+	return c:GetCounter(0xa7d)+ct<=12 and c:GetCounter(0xa7d)>0 and c:IsAbleToHand()
 end
 function c12856000.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingTarget(c12856000.w,tp,4,0,1,nil) end
+	local c=e:GetHandler()
+	local ct=c:GetCounter(0xa7d)
+	if chk==0 then return Duel.IsExistingTarget(c12856000.w,tp,4,0,1,nil,ct) and ct<12 end
 	Duel.Hint(3,tp,HINTMSG_RTOHAND)
-	local tc=Duel.SelectTarget(tp,c12856000.w,tp,4,0,1,1,nil):GetFirst()
+	local tc=Duel.SelectTarget(tp,c12856000.w,tp,4,0,1,1,nil,ct):GetFirst()
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tc,1,0,0)
 	local count=tc:GetCounter(0xa7d)
 	Duel.SetOperationInfo(0,CATEGORY_COUNTER,e:GetHandler(),count,0,1)
@@ -71,7 +73,9 @@ function c12856000.op2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 	local count=tc:GetCounter(0xa7d)
+	local count1=c:GetCounter(0xa7d)
 		if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) and c:IsRelateToEffect(e) then
+		if count+count1>12 then return end
 		Duel.BreakEffect()
 		c:AddCounter(0xa7d,count)
 		end

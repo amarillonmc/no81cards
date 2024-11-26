@@ -54,7 +54,6 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	local pc=1
 	for i=1,12 do if lvt[i] then lvt[i]=nil lvt[pc]=i pc=pc+1 end end
-	lvt[pc]=nil
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,1))
 	local lv=Duel.AnnounceNumber(tp,table.unpack(lvt))
 	local rg=cg:SelectSubGroup(tp,aux.dlvcheck,false,lv,lv)
