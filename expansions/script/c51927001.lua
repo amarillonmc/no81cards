@@ -67,7 +67,7 @@ end
 function c51927001.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetTargetsRelateToChain()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local sg=g:FilterSelect(1-tp.Card.IsAbleToHand,1,1,nil)
+	local sg=g:FilterSelect(1-tp,Card.IsAbleToHand,1,1,nil)
 	Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	g:Sub(sg)
 	if #g>0 then
