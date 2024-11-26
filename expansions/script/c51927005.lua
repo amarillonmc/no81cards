@@ -57,7 +57,7 @@ function c51927005.thfilter(c)
 	return c:IsType(TYPE_NORMAL) and c:IsLevelAbove(5) and c:IsAbleToHand()
 end
 function c51927005.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingTarget(c51927005.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c51927005.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function c51927005.thop(e,tp,eg,ep,ev,re,r,rp)
