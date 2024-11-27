@@ -313,13 +313,10 @@ function c60152913.e22902op(e,tp,eg,ep,ev,re,r,rp)
 end
 function c60152913.e22903tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return Duel.GetFlagEffect(tp,60152903)>0 and Duel.GetMatchingGroupCount(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,nil)>0 end
+	if chk==0 then return Duel.GetFlagEffect(tp,60152903)>0 end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
-end
-function c60152913.e22903opfilter(c)
-	return c:IsAbleToDeck()
 end
 function c60152913.e22903op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
@@ -328,7 +325,7 @@ function c60152913.e22903op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Damage(1,d,REASON_EFFECT,true)
 		Duel.RDComplete()
 		Duel.BreakEffect()
-		local g=Duel.GetMatchingGroup(c60152913.e22903opfilter,tp,LOCATION_MZONE,0,nil)
+		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 		local tc=g:GetFirst()
 		while tc do
 			local e1=Effect.CreateEffect(e:GetHandler())

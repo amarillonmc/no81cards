@@ -44,13 +44,28 @@ function c60152903.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_RELEASE)
-	e3:SetCountLimit(1,602903)
+	e3:SetCountLimit(1,1602903)
 	e3:SetCondition(c60152903.con)
 	e3:SetTarget(c60152903.e3tg)
 	e3:SetOperation(c60152903.e3op)
 	c:RegisterEffect(e3)
 end
+function c60152903.check(c)
+	return c 
+end
+function c60152903.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local c0,c1=Duel.GetBattleMonster(0)
+	if c60152903.check(c0) then
+		Duel.RegisterFlagEffect(0,60152903,RESET_PHASE+PHASE_END,0,1)
+		Debug.Message(Duel.GetFlagEffect(tp,60152903))
+	end
+	if c60152903.check(c1) then
+		Duel.RegisterFlagEffect(1,60152903,RESET_PHASE+PHASE_END,0,1)
+		Debug.Message(Duel.GetFlagEffect(tp,60152903))
+	end
+end
 function c60152903.con(e,tp,eg,ep,ev,re,r,rp)
+	--local tp=e:GetHandlerPlayer()
 	return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
 end
 function c60152903.e1con(e,tp,eg,ep,ev,re,r,rp)
@@ -111,27 +126,12 @@ function c60152903.e1op(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 	end
 end
-function c60152903.check(c)
-	return c 
-end
-function c60152903.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local c0,c1=Duel.GetBattleMonster(0)
-	if c60152903.check(c0) then
-		Duel.RegisterFlagEffect(0,60152903,RESET_PHASE+PHASE_END,0,1)
-	end
-	if c60152903.check(c1) then
-		Duel.RegisterFlagEffect(1,60152903,RESET_PHASE+PHASE_END,0,1)
-	end
-end
 function c60152903.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return not Duel.GetFlagEffect(tp,60152903)==0 and Duel.GetMatchingGroupCount(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,nil)>0 end
+	if chk==0 then return Duel.GetFlagEffect(tp,60152903)>0 end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
-end
-function c60152903.e2opfilter(c)
-	return c:IsAbleToDeck()
 end
 function c60152903.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
@@ -140,7 +140,7 @@ function c60152903.e2op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Damage(1,d,REASON_EFFECT,true)
 		Duel.RDComplete()
 		Duel.BreakEffect()
-		local g=Duel.GetMatchingGroup(c60152903.e2opfilter,tp,LOCATION_MZONE,0,nil)
+		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
 		local tc=g:GetFirst()
 		while tc do
 			local e1=Effect.CreateEffect(e:GetHandler())

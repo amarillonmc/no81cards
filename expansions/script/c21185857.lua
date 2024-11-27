@@ -13,7 +13,7 @@ function c21185857.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(0,1)
 	c:RegisterEffect(e1)
-	if not c21185857_ then
+	--[[if not c21185857_ then
 		c21185857_=true 
 		c21185857_tab = {}
 		c21185857_check_hack = Effect["IsHasProperty"]
@@ -29,7 +29,7 @@ function c21185857.initial_effect(c)
 				return c21185857_check_hack(effect,p1,p2,...)
 			end
 		end
-	end
+	end]]
 end
 function c21185857.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(0,0xff,0xff)
@@ -50,7 +50,7 @@ function c21185857.op(e,tp,eg,ep,ev,re,r,rp)
 				do target(ne,ntp,neg,nep,nev,nre,nr,nrp,1) end
 			end)
 		end
-		c21185857_tab[#c21185857_tab+1] = effect		
+		--c21185857_tab[#c21185857_tab+1] = effect		
 		c21185857_RegisterEffect(card,effect,bool,...)	
 	end
 	for tc in aux.Next(g) do

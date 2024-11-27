@@ -39,10 +39,10 @@ end
 function s.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(s.sprilter,tp,LOCATION_DECK,0,1,c)
+	return Duel.IsExistingMatchingCard(s.sprfilter,tp,LOCATION_DECK,0,1,c)
 end
 function s.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(s.sprilter,tp,LOCATION_DECK,0,c)
+	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_DECK,0,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
 	if tc then
