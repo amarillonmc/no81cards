@@ -20,7 +20,7 @@ function c60152905.initial_effect(c)
 	
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(60152905,1))
-	e2:SetCategory(CATEGORY_DISABLE)
+	e2:SetCategory(CATEGORY_NEGATE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
@@ -29,6 +29,10 @@ function c60152905.initial_effect(c)
 	e2:SetTarget(c60152905.e2tg)
 	e2:SetOperation(c60152905.e2op)
 	c:RegisterEffect(e2)
+	local e4=e2:Clone()
+	e4:SetCondition(c60152905.e2con1)
+	e4:SetCode(EVENT_CHAINING)
+	c:RegisterEffect(e4)
 
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(60152905,2))
@@ -104,7 +108,11 @@ function c60152905.e1op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60152905.e2con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0
+	return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0 and Duel.GetCurrentChain()==0 and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
+end
+function c60152905.e2con1(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0 and Duel.GetCurrentChain()>0 
+	and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
 end
 function c60152905.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
@@ -113,16 +121,15 @@ function c60152905.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local dg=Group.CreateGroup()
 	for i=1,ev do
 		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-		if tgp~=tp and Duel.IsChainNegatable(i) then
+		if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(i) then
 			local tc=te:GetHandler()
 			ng:AddCard(tc)
 		end
 	end
-	Duel.SetTargetCard(dg)
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
+	Duel.SetTargetCard(dg)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,ng,ng:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
 end
 function c60152905.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
@@ -131,13 +138,13 @@ function c60152905.e2op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Damage(1,d,REASON_EFFECT,true)
 		Duel.RDComplete()
 		Duel.BreakEffect()
-		local dg=Group.CreateGroup()
-		for i=1,ev do
-			local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-			if tgp~=tp and Duel.NegateActivation(i) then
-				local tc=te:GetHandler()
-				if tc:IsRelateToEffect(e) and tc:IsRelateToEffect(te) and tc:IsAbleToDeck() then
-					dg:AddCard(tc)
+	local dg=Group.CreateGroup()
+	for i=1,ev do
+		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+		if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.NegateActivation(i) then
+			local tc=te:GetHandler()
+			if tc:IsRelateToEffect(e) and tc:IsRelateToEffect(te) then
+				dg:AddCard(tc)
 				end
 			end
 		end

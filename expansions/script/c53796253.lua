@@ -31,5 +31,5 @@ function s.frccon(e)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_PENDULUM)
 end
 function s.frcval(e,c,fp,rp,r)
-	return e:GetHandler():GetLinkedZone() | 0x600060
+	return Duel.GetLinkedZone(e:GetHandlerPlayer()) | 0x600060
 end

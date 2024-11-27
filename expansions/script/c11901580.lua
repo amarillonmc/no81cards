@@ -53,11 +53,11 @@ end
 function s.cicon(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
         or not re:GetHandler():IsSetCard(0x409) then return false end
-	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(Card.IsFaceup,e:GetHandler())
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToChain,e:GetHandler(),ev)
 	return g and #g>0 and e:GetHandler():GetType()==TYPE_TRAP+TYPE_CONTINUOUS
 end
 function s.citg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(Card.IsFaceup,e:GetHandler())
+    local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToChain,e:GetHandler(),ev)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
         and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
     Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
@@ -79,7 +79,7 @@ function s.ciop(e,tp,eg,ep,ev,re,r,rp)
                 local e1=Effect.CreateEffect(c)
                 e1:SetType(EFFECT_TYPE_SINGLE)
                 e1:SetCode(EFFECT_CANNOT_TRIGGER)
-                e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+                e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
                 tc:RegisterEffect(e1)
                 if tc:IsFaceup() then
                     local e1=Effect.CreateEffect(c)

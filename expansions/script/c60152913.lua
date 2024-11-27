@@ -51,7 +51,7 @@ function c60152913.initial_effect(c)
 
 		local ge5=Effect.GlobalEffect()
 		ge5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge5:SetCode(EVENT_BATTLED)
+		ge5:SetCode(EVENT_BATTLE_CONFIRM)
 		ge5:SetOperation(c60152913.checkop3)
 		Duel.RegisterEffect(ge5,0)
 
@@ -93,9 +93,12 @@ function c60152913.check(c)
 	return c 
 end
 function c60152913.checkop3(e,tp,eg,ep,ev,re,r,rp)
-	if c60152913.check(Duel.GetAttacker()) and c60152913.check(Duel.GetAttackTarget()) then
-		Duel.RegisterFlagEffect(tp,60152903,RESET_PHASE+PHASE_END,0,1)
-		Duel.RegisterFlagEffect(1-tp,60152903,RESET_PHASE+PHASE_END,0,1)
+	local c0,c1=Duel.GetBattleMonster(0)
+	if c60152913.check(c0) then
+		Duel.RegisterFlagEffect(0,60152903,RESET_PHASE+PHASE_END,0,1)
+	end
+	if c60152913.check(c1) then
+		Duel.RegisterFlagEffect(1,60152903,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 
@@ -133,12 +136,12 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_QUICK_O)
 		e1:SetCode(EVENT_FREE_CHAIN)
 		e1:SetRange(LOCATION_MZONE)
-		e1:SetCountLimit(1,6012901)
+		e1:SetCountLimit(1,6012911)
 		e1:SetCondition(c60152913.e22901con)
 		e1:SetTarget(c60152913.e22901tg)
 		e1:SetOperation(c60152913.e22901op)
 		c:RegisterEffect(e1)
-		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(c60152913,1))
+		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60152913,1))
 	end
 	if g:IsExists(Card.IsOriginalCodeRule,1,nil,60152902) then
 		local e2=Effect.CreateEffect(c)
@@ -147,7 +150,7 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetType(EFFECT_TYPE_QUICK_O)
 		e2:SetCode(EVENT_FREE_CHAIN)
 		e2:SetRange(LOCATION_MZONE)
-		e2:SetCountLimit(1,6012902)
+		e2:SetCountLimit(1,6012912)
 		e2:SetCondition(c60152913.con)
 		e2:SetTarget(c60152913.e22902tg)
 		e2:SetOperation(c60152913.e22902op)
@@ -159,9 +162,10 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetDescription(aux.Stringid(60152903,1))
 		e3:SetCategory(CATEGORY_DAMAGE+CATEGORY_DEFCHANGE)
 		e3:SetType(EFFECT_TYPE_QUICK_O)
+		e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 		e3:SetCode(EVENT_FREE_CHAIN)
 		e3:SetRange(LOCATION_MZONE)
-		e3:SetCountLimit(1,6012903)
+		e3:SetCountLimit(1,6012913)
 		e3:SetCondition(c60152913.con)
 		e3:SetTarget(c60152913.e22903tg)
 		e3:SetOperation(c60152913.e22903op)
@@ -175,7 +179,7 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetType(EFFECT_TYPE_QUICK_O)
 		e4:SetCode(EVENT_FREE_CHAIN)
 		e4:SetRange(LOCATION_MZONE)
-		e4:SetCountLimit(1,6012904)
+		e4:SetCountLimit(1,6012914)
 		e4:SetCondition(c60152913.e22904con)
 		e4:SetTarget(c60152913.e22904tg)
 		e4:SetOperation(c60152913.e22904op)
@@ -185,15 +189,19 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 	if g:IsExists(Card.IsOriginalCodeRule,1,nil,60152905) then
 		local e5=Effect.CreateEffect(c)
 		e5:SetDescription(aux.Stringid(60152905,1))
-		e5:SetCategory(CATEGORY_DISABLE)
+		e5:SetCategory(CATEGORY_NEGATE)
 		e5:SetType(EFFECT_TYPE_QUICK_O)
 		e5:SetCode(EVENT_FREE_CHAIN)
 		e5:SetRange(LOCATION_MZONE)
-		e5:SetCountLimit(1,6012905)
+		e5:SetCountLimit(1,6012915)
 		e5:SetCondition(c60152913.e22905con)
 		e5:SetTarget(c60152913.e22905tg)
 		e5:SetOperation(c60152913.e22905op)
 		c:RegisterEffect(e5)
+		local e8=e5:Clone()
+		e8:SetCondition(c60152913.e22905con1)
+		e8:SetCode(EVENT_CHAINING)
+		c:RegisterEffect(e8)
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60152913,5))
 	end
 	if g:IsExists(Card.IsOriginalCodeRule,1,nil,60152906) then
@@ -203,7 +211,7 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e6:SetType(EFFECT_TYPE_QUICK_O)
 		e6:SetCode(EVENT_FREE_CHAIN)
 		e6:SetRange(LOCATION_MZONE)
-		e6:SetCountLimit(1,6012906)
+		e6:SetCountLimit(1,6012916)
 		e6:SetCondition(c60152913.con)
 		e6:SetTarget(c60152913.e22906tg)
 		e6:SetOperation(c60152913.e22906op)
@@ -217,11 +225,11 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e7:SetType(EFFECT_TYPE_QUICK_O)
 		e7:SetCode(EVENT_FREE_CHAIN)
 		e7:SetRange(LOCATION_MZONE)
-		e7:SetCountLimit(1,6012907)
+		e7:SetCountLimit(1,6012917)
 		e7:SetCondition(c60152913.con)
 		e7:SetTarget(c60152913.e22907tg)
 		e7:SetOperation(c60152913.e22907op)
-		c:RegisterEffect(e2)
+		c:RegisterEffect(e7)
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60152913,7))
 	end
 end
@@ -375,26 +383,27 @@ function c60152913.e22904op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60152913.e22905con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0
+	return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0 and Duel.GetCurrentChain()==0 
+	and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
+end
+function c60152913.e22905con1(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0 and Duel.GetCurrentChain()>0 
+	and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
 end
 function c60152913.e22905tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
 	if chk==0 then return true end
-	Duel.SetTargetPlayer(p)
-	Duel.SetTargetParam(1000)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
 	local ng=Group.CreateGroup()
 	local dg=Group.CreateGroup()
 	for i=1,ev do
 		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-		if tgp~=tp and Duel.IsChainNegatable(i) then
+		if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(i) then
 			local tc=te:GetHandler()
 			ng:AddCard(tc)
-			if tc:IsOnField() and tc:IsRelateToEffect(te) and tc:IsAbleToDeck() then
-				dg:AddCard(tc)
-			end
 		end
 	end
+	Duel.SetTargetPlayer(p)
+	Duel.SetTargetParam(1000)
 	Duel.SetTargetCard(dg)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,ng,ng:GetCount(),0,0)
 end
@@ -405,13 +414,13 @@ function c60152913.e22905op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Damage(1,d,REASON_EFFECT,true)
 		Duel.RDComplete()
 		Duel.BreakEffect()
-		local dg=Group.CreateGroup()
-		for i=1,ev do
-			local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-			if tgp~=tp and Duel.NegateActivation(i) then
-				local tc=te:GetHandler()
-				if tc:IsRelateToEffect(e) and tc:IsRelateToEffect(te) and tc:IsAbleToDeck() then
-					dg:AddCard(tc)
+	local dg=Group.CreateGroup()
+	for i=1,ev do
+		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+		if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.NegateActivation(i) then
+			local tc=te:GetHandler()
+			if tc:IsRelateToEffect(e) and tc:IsRelateToEffect(te) then
+				dg:AddCard(tc)
 				end
 			end
 		end

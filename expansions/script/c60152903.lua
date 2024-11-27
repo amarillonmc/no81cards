@@ -20,7 +20,7 @@ function c60152903.initial_effect(c)
 		c60152903.global_check=true
 		local ge1=Effect.GlobalEffect()
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_BATTLED)
+		ge1:SetCode(EVENT_BATTLE_CONFIRM)
 		ge1:SetOperation(c60152903.checkop)
 		Duel.RegisterEffect(ge1,0)
 	end
@@ -28,6 +28,7 @@ function c60152903.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(60152903,1))
 	e2:SetCategory(CATEGORY_DAMAGE+CATEGORY_DEFCHANGE)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
@@ -114,9 +115,12 @@ function c60152903.check(c)
 	return c 
 end
 function c60152903.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if c60152903.check(Duel.GetAttacker()) and c60152903.check(Duel.GetAttackTarget()) then
-		Duel.RegisterFlagEffect(tp,60152903,RESET_PHASE+PHASE_END,0,1)
-		Duel.RegisterFlagEffect(1-tp,60152903,RESET_PHASE+PHASE_END,0,1)
+	local c0,c1=Duel.GetBattleMonster(0)
+	if c60152903.check(c0) then
+		Duel.RegisterFlagEffect(0,60152903,RESET_PHASE+PHASE_END,0,1)
+	end
+	if c60152903.check(c1) then
+		Duel.RegisterFlagEffect(1,60152903,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 function c60152903.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
