@@ -67,13 +67,12 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 	local eid=e1:GetFieldID()
 	e1:SetLabel(eid)
-	local ce=nil
 	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451961)}
 	DEFECT_ORAL_COUNT=DEFECT_ORAL_COUNT or 3
 	if #eset==DEFECT_ORAL_COUNT then
 		local de=eset[1]
 		local ce=de:GetLabelObject()
-		if ce then
+		if ce and aux.GetValueType(ce)=="Effect" then
 			local tc=ce:GetHandler()
 			local eset2={tc:IsHasEffect(EFFECT_FLAG_EFFECT+11451961)}
 			local res=false
@@ -94,7 +93,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			te2:SetDescription(te:GetDescription()-16)
 			Duel.RegisterEffect(te2,tp)
 			local ce=te:GetLabelObject()
-			if ce then
+			if ce and aux.GetValueType(ce)=="Effect" then
 				local tc=ce:GetHandler()
 				local ce2=ce:Clone()
 				ce2:SetDescription(ce:GetDescription()-16)
@@ -105,6 +104,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			te:Reset()
 		end
 	end
+	local ce=nil
 	eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451961)}
 	if c:GetFlagEffect(11451962)>0 or (c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED) and not e:IsHasType(EFFECT_TYPE_ACTIVATE)) then
 		--Duel.HintSelection(Group.FromCards(c))
@@ -126,7 +126,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 	de:SetTargetRange(1,0)
 	Duel.RegisterEffect(de,tp)
-	if ce then de:SetLabelObject(ce) end
+	if ce and aux.GetValueType(ce)=="Effect" then de:SetLabelObject(ce) end
 end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE)
@@ -165,7 +165,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SSet(tp,c)>0 and c:IsLocation(LOCATION_SZONE) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,cm.cclfilter,tp,LOCATION_ONFIELD,0,1,1,nil,e:GetHandler())
+		local g=Duel.SelectMatchingCard(tp,cm.cclfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,e:GetHandler())
 		if not g or #g==0 then return end
 		Duel.Destroy(g,REASON_EFFECT)
 	end

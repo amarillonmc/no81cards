@@ -63,21 +63,35 @@ function c189127.xdisfil(c,sc)
 	local seq=c:GetSequence() 
 	return seq<5 and math.abs(seq-xseq)==1 
 end 
+function c189127.sfilter(c,p,seq,loc)
+	local sseq=c:GetSequence()
+	if c:IsControler(1-p) then
+		return loc==LOCATION_MZONE and c:IsLocation(LOCATION_MZONE)
+			and (sseq==5 and seq==3 or sseq==6 and seq==1)
+	end
+	if c:IsLocation(LOCATION_SZONE) then
+		return sseq<5 and (sseq==seq or loc==LOCATION_SZONE and math.abs(sseq-seq)==1)
+	end
+	if sseq<5 then
+		return sseq==seq or loc==LOCATION_MZONE and math.abs(sseq-seq)==1
+	else
+		return loc==LOCATION_MZONE and (sseq==5 and seq==1 or sseq==6 and seq==3)
+	end
+end
 function c189127.distg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return true end  
-	local c=e:GetHandler() 
-	local g1=c:GetColumnGroup():Filter(Card.IsControler,nil,tp) 
-	local g2=Duel.GetMatchingGroup(c189127.xdisfil,tp,LOCATION_MZONE,0,nil,c) 
-	g1:Merge(g2) 
-	local g=g1:Filter(aux.NegateAnyFilter,nil) 
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(c189127.sfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,c:GetControler(),c:GetSequence(),c:GetLocation())
+	g:AddCard(c)
+	g=g:Filter(aux.NegateAnyFilter,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0) 
 end 
 function c189127.disop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
-	local g1=c:GetColumnGroup():Filter(Card.IsControler,nil,tp) 
-	local g2=Duel.GetMatchingGroup(c189127.xdisfil,tp,LOCATION_MZONE,0,nil,c) 
-	g1:Merge(g2) 
-	local g=g1:Filter(aux.NegateAnyFilter,nil)  
+	if not c:IsRelateToEffect(e) then return end
+	local g=Duel.GetMatchingGroup(c189127.sfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,c:GetControler(),c:GetSequence(),c:GetLocation())
+	g:AddCard(c)
+	g=g:Filter(aux.NegateAnyFilter,nil) 
 	if g:GetCount()>0 then 
 		local tc=g:GetFirst() 
 		while tc do  

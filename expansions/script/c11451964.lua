@@ -72,13 +72,12 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local eid=e1:GetFieldID()
 	e1:SetLabel(eid)
 	cm[e1]={}
-	local ce=nil
 	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451961)}
 	DEFECT_ORAL_COUNT=DEFECT_ORAL_COUNT or 3
 	if #eset==DEFECT_ORAL_COUNT then
 		local de=eset[1]
 		local ce=de:GetLabelObject()
-		if ce then
+		if ce and aux.GetValueType(ce)=="Effect" then
 			local tc=ce:GetHandler()
 			local eset2={tc:IsHasEffect(EFFECT_FLAG_EFFECT+11451961)}
 			local res=false
@@ -99,7 +98,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			te2:SetDescription(te:GetDescription()-16)
 			Duel.RegisterEffect(te2,tp)
 			local ce=te:GetLabelObject()
-			if ce then
+			if ce and aux.GetValueType(ce)=="Effect" then
 				local tc=ce:GetHandler()
 				local ce2=ce:Clone()
 				ce2:SetDescription(ce:GetDescription()-16)
@@ -110,6 +109,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			te:Reset()
 		end
 	end
+	local ce=nil
 	eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451961)}
 	if c:GetFlagEffect(11451962)>0 or (c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED) and not e:IsHasType(EFFECT_TYPE_ACTIVATE)) then
 		ce=c:RegisterFlagEffect(11451961,RESET_EVENT+RESET_TODECK+RESET_TOHAND+RESET_TURN_SET+RESET_OVERLAY,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(11451961+#eset,1))
@@ -122,7 +122,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 	de:SetTargetRange(1,0)
 	Duel.RegisterEffect(de,tp)
-	if ce then de:SetLabelObject(ce) end
+	if ce and aux.GetValueType(ce)=="Effect" then de:SetLabelObject(ce) end
 end
 function cm.actarget2(e,te,tp)
 	local tc=te:GetHandler()

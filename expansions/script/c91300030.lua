@@ -6,6 +6,7 @@ function s.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
@@ -98,7 +99,6 @@ function s.mvalue(e,fp,rp,r)
 end
 function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_MZONE,0,nil,TYPE_MONSTER)
-	e:SetLabel(g:GetCount())
 	if chk==0 then return g:GetCount()>0 and g:FilterCount(Card.IsReleasable,nil)==g:GetCount() end
 	Duel.Release(g,REASON_COST)
 end

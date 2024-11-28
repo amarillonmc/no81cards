@@ -37,7 +37,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local op=1+Duel.SelectOption(tp,table.unpack(tab))
 	local de=eset[op]
 	local ce=de:GetLabelObject()
-	if ce then
+	if ce and aux.GetValueType(ce)=="Effect" then
 		local tc=ce:GetHandler()
 		local eset2={tc:IsHasEffect(EFFECT_FLAG_EFFECT+11451961)}
 		local res=false
@@ -59,7 +59,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			te2:SetDescription(te:GetDescription()-16)
 			Duel.RegisterEffect(te2,tp)
 			local ce=te:GetLabelObject()
-			if ce then
+			if ce and aux.GetValueType(ce)=="Effect" then
 				local tc=ce:GetHandler()
 				local ce2=ce:Clone()
 				ce2:SetDescription(ce:GetDescription()-16)
