@@ -128,7 +128,7 @@ function c60152902.e2opfilter(c)
 end
 function c60152902.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return not Duel.GetFlagEffect(1-tp,60152902)==0 end
+	if chk==0 then return Duel.GetFlagEffect(1-tp,60152902)>0 end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)

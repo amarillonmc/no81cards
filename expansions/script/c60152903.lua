@@ -57,11 +57,9 @@ function c60152903.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local c0,c1=Duel.GetBattleMonster(0)
 	if c60152903.check(c0) then
 		Duel.RegisterFlagEffect(0,60152903,RESET_PHASE+PHASE_END,0,1)
-		Debug.Message(Duel.GetFlagEffect(tp,60152903))
 	end
 	if c60152903.check(c1) then
 		Duel.RegisterFlagEffect(1,60152903,RESET_PHASE+PHASE_END,0,1)
-		Debug.Message(Duel.GetFlagEffect(tp,60152903))
 	end
 end
 function c60152903.con(e,tp,eg,ep,ev,re,r,rp)

@@ -83,5 +83,5 @@ function c51927045.operation(e,tp,eg,ep,ev,re,r,rp)
 	rc:RegisterEffect(e1)
 end
 function c51927045.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return se==nil
+	return se==nil or not se:IsHasType(EFFECT_TYPE_ACTIONS)
 end

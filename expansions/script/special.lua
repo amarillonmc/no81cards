@@ -12,6 +12,7 @@ function Auxiliary.PreloadUds()
 	local _Group=tableclone(Group)
 	
 	EFFECT_FLAG_CANNOT_NEGATE=EFFECT_FLAG_CANNOT_NEGATE or 0x200
+	EFFECT_FLAG_CAN_FORBIDDEN=EFFECT_FLAG_CAN_FORBIDDEN or 0x200
 	
 	function require(str)
 		require_list=require_list or {}
@@ -123,6 +124,8 @@ function Auxiliary.PreloadUds()
 
 	local _CRegisterEffect=Card.RegisterEffect
 	function Card.RegisterEffect(c,e,...)
+		if aux.GetValueType(c)~="Card" then Debug.Message("Card.RegisterEffect没有输入正确的Card参数。") return end
+		if aux.GetValueType(e)~="Effect" then Debug.Message("Card.RegisterEffect没有输入正确的Effect参数。") return end
 		local eid=_CRegisterEffect(c,e,...)
 		effect_registered=effect_registered or {}
 		if e and eid then effect_registered[e]=true end
@@ -130,6 +133,7 @@ function Auxiliary.PreloadUds()
 	end
 	local _DRegisterEffect=Duel.RegisterEffect
 	function Duel.RegisterEffect(e,p,...)
+		if aux.GetValueType(e)~="Effect" then Debug.Message("Duel.RegisterEffect没有输入正确的Effect参数。") return end
 		_DRegisterEffect(e,p,...)
 		effect_registered=effect_registered or {}
 		if e then effect_registered[e]=true end

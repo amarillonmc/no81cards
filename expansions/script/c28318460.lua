@@ -52,7 +52,6 @@ function c28318460.activate(e,tp,eg,ep,ev,re,r,rp,op)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28318460.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil):GetFirst()
 		if tc then
-			Duel.DisableShuffleCheck()
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)
 			if tc:IsPreviousLocation(LOCATION_DECK) then
