@@ -34,8 +34,8 @@ function cm.initial_effect(c)
 	end
 end
 function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and c:GetFlagEffect(11451961)>0 end,0,0xff,0xff,nil)
-	local g2=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and c:GetFlagEffect(11451962)>0 end,0,0xff,0xff,nil)
+	local g1=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and c:GetFlagEffect(11451961)>0 end,0,0xff,0xff,nil)+Duel.GetOverlayGroup(0,1,1):Filter(function(c) return c:GetFlagEffect(11451961)>0 end,nil)
+	local g2=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and c:GetFlagEffect(11451962)>0 end,0,0xff,0xff,nil)+Duel.GetOverlayGroup(0,1,1):Filter(function(c) return c:GetFlagEffect(11451962)>0 end,nil)
 	for tc in aux.Next(g1) do tc:ResetFlagEffect(11451961) end
 	for tc in aux.Next(g2) do tc:ResetFlagEffect(11451962) end
 end

@@ -32,10 +32,20 @@ function cm.initial_effect(c)
 		ge2:SetOperation(cm.evop)
 		Duel.RegisterEffect(ge2,0)
 	end
+	if not PNFL_IMMUNE_CHECK then
+		PNFL_IMMUNE_CHECK=true
+		local _IsImmuneToEffect=Card.IsImmuneToEffect
+		function Card.IsImmuneToEffect(c,e,...)
+			c:RegisterFlagEffect(11451965,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+			local res=_IsImmuneToEffect(c,e,...)
+			c:ResetFlagEffect(11451965)
+			return res
+		end
+	end
 end
 function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and c:GetFlagEffect(11451961)>0 end,0,0xff,0xff,nil)
-	local g2=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and c:GetFlagEffect(11451962)>0 end,0,0xff,0xff,nil)
+	local g1=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and c:GetFlagEffect(11451961)>0 end,0,0xff,0xff,nil)+Duel.GetOverlayGroup(0,1,1):Filter(function(c) return c:GetFlagEffect(11451961)>0 end,nil)
+	local g2=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and c:GetFlagEffect(11451962)>0 end,0,0xff,0xff,nil)+Duel.GetOverlayGroup(0,1,1):Filter(function(c) return c:GetFlagEffect(11451962)>0 end,nil)
 	for tc in aux.Next(g1) do tc:ResetFlagEffect(11451961) end
 	for tc in aux.Next(g2) do tc:ResetFlagEffect(11451962) end
 end
@@ -131,11 +141,13 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
 	local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
 	if #g>0 then
+		--Duel.HintSelection(g)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(m,4))
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_IMMUNE_EFFECT)
 		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		--e1:SetCondition(cm.recon)
 		e1:SetValue(cm.efilter)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		g:GetFirst():RegisterEffect(e1,true)
@@ -148,6 +160,7 @@ function cm.efilter(e,te)
 	if e:GetHandler():GetFlagEffect(m+0xffffff)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) and te:GetCode()~=16 and te:GetCode()~=359 then
 		if KOISHI_CHECK then
 			Duel.DisableActionCheck(true)
+			pcall(Duel.HintSelection,Group.FromCards(e:GetHandler()))
 			local tc=te:GetHandler()
 			local e1=Effect.CreateEffect(tc)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -155,6 +168,7 @@ function cm.efilter(e,te)
 			e1:SetOperation(function() pcall(Duel.Draw,te:GetHandlerPlayer(),1,REASON_EFFECT) e1:Reset() end)
 			Duel.RegisterEffect(e1,0)
 			pcall(Duel.RaiseEvent,tc,m,e,0,0,0,0)
+			e1:Reset()
 			Duel.DisableActionCheck(false)
 		else
 			local e5=Effect.CreateEffect(te:GetHandler())
@@ -166,8 +180,13 @@ function cm.efilter(e,te)
 			e5:SetOperation(cm.acop)
 			Duel.RegisterEffect(e5,tp)
 		end
+		if e:GetHandler():GetFlagEffect(11451965)>0 then
+			e:SetLabelObject(te)
+			e:SetLabel(Duel.GetCurrentChain())
+			e:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN)
+		end
 		e:GetHandler():ResetFlagEffect(m+0xffffff)
-		e:SetValue(aux.FALSE)
+		e:SetValue(function(e,te) return e:GetLabelObject() and te==e:GetLabelObject() and e:GetLabel()==Duel.GetCurrentChain() end)
 		e:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e:SetDescription(0)
 		return true

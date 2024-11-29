@@ -89,15 +89,16 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	else return false end
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local rg=e:GetLabelObject()	
-    local tc=rg:GetFirst()
+	local rg=e:GetLabelObject()
+	Duel.ConfirmCards(1-tp,rg)
+	local tc=rg:GetFirst()
 	while tc do
 		local e1=Effect.CreateEffect(e:GetHandler())
-	    e1:SetType(EFFECT_TYPE_SINGLE)
-	    e1:SetDescription(66)
-	    e1:SetCode(EFFECT_PUBLIC)
-	    e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	    e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetDescription(66)
+		e1:SetCode(EFFECT_PUBLIC)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
 		tc=rg:GetNext()
 	end

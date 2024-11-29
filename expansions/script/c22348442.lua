@@ -53,9 +53,9 @@ end
 function c22348442.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c22348442.eqfilter(chkc,tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingTarget(c22348442.eqfilter,tp,0x14,0x14,1,nil,tp) end
+		and Duel.IsExistingTarget(c22348442.eqfilter,tp,0x14,0x14,1,e:GetHandler(),tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g=Duel.SelectTarget(tp,c22348442.eqfilter,tp,0x14,0x14,1,1,nil,tp)
+	local g=Duel.SelectTarget(tp,c22348442.eqfilter,tp,0x14,0x14,1,1,e:GetHandler(),tp)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,0,0)
 end
 function c22348442.eqlimit(e,c)

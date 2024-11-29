@@ -40,7 +40,10 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		local ct=sg:FilterCount(Card.IsOnField,nil)+1
 		for i=1,math.min(ct,4) do
 			if i>1 then Duel.BreakEffect() end
-			local tc=sg:RandomSelect(tp,1):GetFirst()
+			local tg=sg
+			if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then tg=sg:Filter(Card.IsOnField,nil) end
+			if #tg<=0 then break end
+			local tc=tg:RandomSelect(tp,1):GetFirst()
 			if not tc:IsOnField() then
 				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			else

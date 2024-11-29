@@ -72,6 +72,6 @@ function c44401007.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=g:FilterSelect(tp,Card.IsFaceup,1,1,nil)
 		Duel.HintSelection(dg)
-		Duel.Destroy(g,REASON_EFFECT)
+		Duel.Destroy(dg,REASON_EFFECT)
 	end
 end

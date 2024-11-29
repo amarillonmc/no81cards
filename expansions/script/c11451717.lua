@@ -1,6 +1,5 @@
 --绛胧烈刃能态激发
-local m=11451717
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -49,6 +48,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOperation(cm.retop3)
 		Duel.RegisterEffect(e1,0)
 		Duel.RaiseEvent(tc,m,e,0,0,0,0)
+		e1:Reset()
 	end
 end
 function cm.retop3(e,tp,eg,ep,ev,re,r,rp)
@@ -73,7 +73,10 @@ end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)>0 and tc:IsRelateToEffect(e) then
-		Duel.SendtoDeck(tc,nil,0,REASON_EFFECT)
+	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)>0 then
+		Duel.ConfirmCards(1-tp,c)
+		if tc:IsRelateToEffect(e) then
+			Duel.SendtoDeck(tc,nil,0,REASON_EFFECT)
+		end
 	end
 end
