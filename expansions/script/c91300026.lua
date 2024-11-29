@@ -21,7 +21,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	--draw
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TOHAND)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_LEAVE_FIELD)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
@@ -101,9 +101,9 @@ function s.mvalue(e,fp,rp,r)
 	return 1-Duel.GetFieldGroupCount(fp,LOCATION_SZONE,0)
 end
 function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.drcfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,2,e:GetHandler(),tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.drcfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,2,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,s.drcfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,2,2,e:GetHandler(),tp)
+	local g=Duel.SelectMatchingCard(tp,s.drcfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,2,2,nil,tp)
 	Duel.SendtoGrave(g,REASON_RELEASE+REASON_COST)
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)

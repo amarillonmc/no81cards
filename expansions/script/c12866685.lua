@@ -71,11 +71,8 @@ end
 function s.sumlimit(e,c)
 	return c:IsCode(e:GetLabel())
 end
-function s.cfilter(c,tp)
-	return c:IsFaceup() and c:IsRace(RACE_FIEND) and c:IsControler(tp)
-end
-function s.spfilter(c,tp)
-	return c:IsControler(tp) and c:IsRace(RACE_FIEND) and c:IsFaceup()
+function s.spfilter(c)
+	return c:IsRace(RACE_FIEND) and c:IsFaceup()
 end
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.spfilter,1,nil,tp)

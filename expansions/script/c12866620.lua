@@ -89,7 +89,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	return Duel.GetTurnCount()~=e:GetLabel() and tc:GetFlagEffect(42172465)~=0
+	return Duel.GetTurnCount()~=e:GetLabel() and tc:GetFlagEffect(id)~=0
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()

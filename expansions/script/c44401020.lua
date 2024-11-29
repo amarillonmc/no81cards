@@ -83,6 +83,7 @@ function c44401020.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c44401020.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
+	e:GetLabelObject():ResetFlagEffect(44401020)
 end
 function c44401020.confilter(c,tp)
 	return c:IsSummonPlayer(tp) and c:IsType(TYPE_FUSION) and c:IsSummonType(SUMMON_TYPE_FUSION)
