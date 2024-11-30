@@ -100,7 +100,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 		local cregister=Card.RegisterEffect
 		Card.RegisterEffect=function(card,effect,flag)
-			if effect and (effect:IsHasType(EFFECT_TYPE_IGNITION) or effect:IsHasType(EFFECT_TYPE_TRIGGER_F) or effect:IsHasType(EFFECT_TYPE_TRIGGER_O) or effect:IsHasType(EFFECT_TYPE_QUICK_F) or effect:IsHasType(EFFECT_TYPE_QUICK_O)) then
+			if effect and (effect:IsHasType(EFFECT_TYPE_IGNITION) or effect:IsHasType(EFFECT_TYPE_TRIGGER_F) or effect:IsHasType(EFFECT_TYPE_TRIGGER_O) or effect:IsHasType(EFFECT_TYPE_QUICK_F) or effect:IsHasType(EFFECT_TYPE_QUICK_O)) and bit.band(effect:GetCode(),EVENT_FLIP)==0 then
 				local type=effect:GetType()
 				local prop=effect:GetProperty()
 				if effect:IsHasType(EFFECT_TYPE_TRIGGER_O) then

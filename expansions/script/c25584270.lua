@@ -137,28 +137,28 @@ function c25584270.penop(e,tp,eg,ep,ev,re,r,rp)
 	--local b2=Duel.CheckLocation(tp,LOCATION_SZONE,4) or (not Duel.CheckLocation(tp,LOCATION_SZONE,0) and Duel.GetFieldCard(tp,LOCATION_SZONE,4):IsAbleToHand())
 	--local s=0
 	--if b1 then
-	--	s=0x100
-	--	s=s+0x1
+	--  s=0x100
+	--  s=s+0x1
 	--end
 	--if b2 then
-	--	s=s+0x1000
-	--	s=s+0x10
+	--  s=s+0x1000
+	--  s=s+0x10
 	--end
 	--if s==0 then return false end
 	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 	--local seq=Duel.SelectField(tp,1,LOCATION_SZONE+LOCATION_PZONE,0,~s)
 	--if bit.band(seq,0x100)>0 or bit.band(seq,0x1)>0 then
-	--	local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,0)
-	--	if tc then
-	--		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-	--	end
-	--	Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true,seq)
+	--  local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,0)
+	--  if tc then
+	--	  Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	--  end
+	--  Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true,seq)
 	--elseif bit.band(s,0x1000)>0 or bit.band(seq,0x10)>0 then
-	--	local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,4)
-	--	if tc then
-	--		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-	--	end
-	--	Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true,seq)
+	--  local tc=Duel.GetFieldCard(tp,LOCATION_SZONE,4)
+	--  if tc then
+	--	  Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	--  end
+	--  Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true,seq)
 	--end
 end
 function c25584270.check(e,tp)
@@ -166,8 +166,7 @@ function c25584270.check(e,tp)
 	if lpz==nil then return false end
 	local g=Duel.GetMatchingGroup(c25584270.penfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,nil)
 	if #g==0 then return false end
-	local pcon=aux.PendCondition()
-	return pcon(e,lpz,g)
+	return aux.PendCondition(e,lpz,g)
 end
 function c25584270.penfilter(c)
 	return c:IsSetCard(0xd0) and c:IsType(TYPE_PENDULUM)
@@ -184,7 +183,7 @@ function c25584270.penop2(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then return end
 	--the summon should be done after the chain end
 	local sg=Group.CreateGroup()
-	local pop=aux.PendOperation()
-	pop(e,tp,eg,ep,ev,re,r,rp,lpz,sg,g)
+	aux.PendOperation(e,tp,eg,ep,ev,re,r,rp,lpz,sg,g)
+	Duel.RaiseEvent(sg,EVENT_SPSUMMON_SUCCESS_G_P,e,REASON_EFFECT,tp,tp,0)
 	Duel.SpecialSummon(sg,SUMMON_TYPE_PENDULUM,tp,tp,false,false,POS_FACEUP)
 end
