@@ -2,7 +2,7 @@
 function c9910744.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_NEGATE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCountLimit(1,9910744+EFFECT_COUNT_CODE_OATH)
@@ -44,6 +44,11 @@ end
 function c9910744.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetLabel()~=0 then
+		e:SetCategory(e:GetCategory()|CATEGORY_TODECK|CATEGORY_DESTROY)
+	else
+		e:SetCategory(e:GetCategory()&~(CATEGORY_TODECK|CATEGORY_DESTROY))
+	end
 end
 function c9910744.tdfilter(c)
 	return c:IsSetCard(0xc950) and c:IsAbleToDeck() and c:IsFaceup()
