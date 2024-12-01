@@ -3,6 +3,7 @@ local s,id,o=GetID()
 function c65810120.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xa31),aux.FilterBoolFunction(Card.IsRace,RACE_INSECT),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_INSECT),aux.FilterBoolFunction(Card.IsSetCard,0xa31),1)
 	c:EnableReviveLimit()
 	--
 	local e2=Effect.CreateEffect(c)
@@ -42,7 +43,7 @@ function c65810120.disfilter(c)
 end
 function c65810120.discon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return rp==1-tp and Duel.IsChainDisablable(ev) and (re:IsActiveType(TYPE_SPELL) or re:IsActiveType(TYPE_TRAP)) and Duel.CheckReleaseGroupEx(c:GetControler(),c65810120.disfilter,1,REASON_EFFECT,true,nil) and e:GetHandler():GetFlagEffect(id)<=0
+	return rp==1-tp and Duel.IsChainDisablable(ev) and (re:IsActiveType(TYPE_SPELL) or re:IsActiveType(TYPE_TRAP)) and Duel.CheckReleaseGroupEx(c:GetControler(),c65810120.disfilter,1,REASON_EFFECT,true,nil) and e:GetHandler():GetFlagEffect(id)<=0 and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function c65810120.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

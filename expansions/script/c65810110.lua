@@ -2,7 +2,7 @@
 function c65810110.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,2,3,c65810110.ovfilter,aux.Stringid(65810110,0),99,c65810110.xyzop)
+	aux.AddXyzProcedure(c,nil,2,2,c65810110.ovfilter,aux.Stringid(65810110,0),2,c65810110.xyzop)
 	c:EnableReviveLimit()
 	--to hand
 	local e1=Effect.CreateEffect(c)

@@ -5,44 +5,22 @@ function c65810025.initial_effect(c)
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,65810025+EFFECT_COUNT_CODE_OATH)
-	e1:SetCost(c65810025.cost)
+	e1:SetCountLimit(1,65810025)
 	e1:SetTarget(c65810025.target)
 	e1:SetOperation(c65810025.activate)
 	c:RegisterEffect(e1)
-	Duel.AddCustomActivityCounter(65810025,ACTIVITY_SPSUMMON,c65810025.counterfilter)
 	--
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(65810025,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCountLimit(1,65810025+EFFECT_COUNT_CODE_OATH)
-	e2:SetCost(c65810025.cost)
+	e2:SetCountLimit(1,65810026)
 	e2:SetTarget(c65810025.target1)
 	e2:SetOperation(c65810025.activate1)
 	c:RegisterEffect(e2)
 end
 
-
---自诉
-function c65810025.counterfilter(c)
-	return c:IsRace(RACE_INSECT)
-end
-function c65810025.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(65810025,tp,ACTIVITY_SPSUMMON)==0 end
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	e2:SetTargetRange(1,0)
-	e2:SetTarget(c65810025.sumlimit)
-	Duel.RegisterEffect(e2,tp)
-end
-function c65810025.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsRace(RACE_INSECT)
-end
 
 
 function c65810025.filter(c)

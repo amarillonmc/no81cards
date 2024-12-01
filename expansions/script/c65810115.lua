@@ -40,7 +40,7 @@ function c65810115.lcheck(g,lc)
 end
 
 function c65810115.chcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and re:IsActiveType(TYPE_MONSTER)
+	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function c65810115.chcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c65810115.filter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
@@ -57,7 +57,7 @@ function c65810115.chop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeChainOperation(ev,c65810115.repop)
 end
 function c65810115.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
+	Duel.Destroy(e:GetHandler(),REASON_RULE)
 end
 
 function c65810115.setfilter(c)

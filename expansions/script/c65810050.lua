@@ -1,21 +1,15 @@
 --盛夏回忆·飞蛾
 function c65810050.initial_effect(c)
-	c:SetSPSummonOnce(65810050)
 	--特招手续
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,c65810050.ffilter,4,false)
+	aux.AddFusionProcFunRep(c,c65810050.ffilter,4,true)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_MZONE,0,Duel.SendtoGrave,REASON_COST)
-	--不能融合
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	c:RegisterEffect(e1)
 	--护航
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+	e2:SetCondition(c65810050.condition)
 	e2:SetTarget(c65810050.limtg)
 	e2:SetOperation(c65810050.limop)
 	c:RegisterEffect(e2)
@@ -51,7 +45,10 @@ function c65810050.ffilter(c,fc,sub,mg,sg)
 end
 
 
-
+function c65810050.condition(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsSummonLocation(LOCATION_EXTRA) and Duel.GetTurnPlayer()==e:GetHandlerPlayer()
+end
 function c65810050.limtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetChainLimit(c65810050.chainlm)
