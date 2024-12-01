@@ -1,5 +1,4 @@
---方舟骑士·年
-c29002020.named_with_Arknight=1
+--方舟骑士团-年
 function c29002020.initial_effect(c)
 	c:EnableReviveLimit()  
 	--special summon rule
@@ -51,7 +50,7 @@ function c29002020.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 function c29002020.cfilter(c,tp)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and (c:IsControler(tp) or c:IsFaceup())
+	return c:IsSetCard(0x87af) and (c:IsControler(tp) or c:IsFaceup())
 end
 function c29002020.sprcon(e,c)
 	if c==nil then return true end
@@ -62,7 +61,14 @@ end
 function c29002020.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectReleaseGroup(tp,c29002020.cfilter,3,3,nil)
-	Duel.Release(g,REASON_COST)
+	Duel.Release(g,REASON_RULE)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetTargetRange(1,0) 
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
 function c29002020.itarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end

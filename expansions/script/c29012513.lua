@@ -1,5 +1,4 @@
 --方舟骑士共赴黎明
-c29012513.named_with_Arknight=1
 function c29012513.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -10,15 +9,49 @@ function c29012513.initial_effect(c)
 	e1:SetTarget(c29012513.target)
 	e1:SetOperation(c29012513.activate)
 	c:RegisterEffect(e1)
+	--Draw
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(29012513,1))
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(c29012513.drtg)
+	e2:SetOperation(c29012513.drop)
+	c:RegisterEffect(e2)
 end
-c29012513.kinkuaoi_Lightakm=true
+function c29012513.tdfilter(c,e,tp)
+	return c:IsSetCard(0x87af) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToDeck()
+end
+function c29012513.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c29012513.tdfilter(chkc) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,2)
+		and Duel.IsExistingTarget(c29012513.tdfilter,tp,LOCATION_GRAVE,0,5,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectTarget(tp,c29012513.tdfilter,tp,LOCATION_GRAVE,0,5,5,e:GetHandler())
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+end
+function c29012513.drop(e,tp,eg,ep,ev,re,r,rp)
+	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	if #tg==0 then return end
+	Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	local g=Duel.GetOperatedGroup()
+	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
+	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+	if ct>0 then
+		Duel.BreakEffect()
+		Duel.Draw(tp,2,REASON_EFFECT)
+	end
+end
 function c29012513.filter(c,ft,e,tp)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
+	return c:IsSetCard(0x87af) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c29012513.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-		return Duel.IsExistingMatchingCard(c29012513.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,ft,e,tp)
+		return Duel.IsExistingMatchingCard(c29012513.filter,tp,LOCATION_GRAVE,0,1,nil,ft,e,tp)
 	end
 end
 function c29012513.spfilter(c,e,tp,tid)
@@ -29,7 +62,7 @@ function c29012513.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local res=0
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,c29012513.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,ft,e,tp)
+	local g=Duel.SelectMatchingCard(tp,c29012513.filter,tp,LOCATION_GRAVE,0,1,1,nil,ft,e,tp)
 	if g:GetCount()>0 then
 		local th=g:GetFirst():IsAbleToHand()
 		local sp=ft>0 and g:GetFirst():IsCanBeSpecialSummoned(e,0,tp,false,false)

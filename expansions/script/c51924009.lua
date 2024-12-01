@@ -43,9 +43,12 @@ function c51924009.initial_effect(c)
 	--spsummon
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_CHAINING)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
+	e4:SetCondition(c51924009.spcon)
 	e4:SetTarget(c51924009.sptg)
 	e4:SetOperation(c51924009.spop)
 	c:RegisterEffect(e4)
@@ -117,6 +120,9 @@ function c51924009.efilter(e,te)
 		return false
 	end
 end
+function c51924009.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp
+end
 function c51924009.spfilter(c,e,tp)
 	return c:IsSetCard(0x5256) and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP)
 end
@@ -125,27 +131,12 @@ function c51924009.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c51924009.spop(e,tp,eg,ep,ev,re,r,rp)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local g=Duel.GetMatchingGroup(c51924009.spfilter,tp,LOCATION_EXTRA,0,nil,e,tp)
-	if ft<=0 or g:GetCount()==0 then return end
-	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
-	local ct=math.min(#g,ft)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sg=g:SelectSubGroup(tp,aux.TRUE,false,ct,ct)
-	for tc in aux.Next(sg) do
-		if Duel.SpecialSummonStep(tc,0,tp,tp,true,false,POS_FACEUP) then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e1:SetCode(EVENT_PHASE+PHASE_END)
-			e1:SetCountLimit(1)
-			e1:SetRange(LOCATION_MZONE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetOperation(c51924009.retop)
-			tc:RegisterEffect(e1)
-			tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(51924009,0))
-		end
+	local g=Duel.SelectMatchingCard(tp,c51924009.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
-	Duel.SpecialSummonComplete()
 end
 function c51924009.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKTOP,REASON_EFFECT)

@@ -28,11 +28,18 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetCode(EVENT_EQUIP)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(s.efcon)
 	e2:SetOperation(s.efop)
 	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetCode(id)
+	e3:SetRange(LOCATION_MZONE)
+	c:RegisterEffect(e3)
 end
 
 function s.mfilter(c,fc,sub,mg,sg)
@@ -178,10 +185,11 @@ function s.addeffect(c)
 	for i,v in pairs(efft) do
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_QUICK_O)
+		e1:SetDescription(aux.Stringid(id,1))
 		e1:SetCode(EVENT_FREE_CHAIN)
 		e1:SetRange(LOCATION_SZONE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetCode(v:GetCode())
+		--e1:SetCode(v:GetCode())
 		e1:SetDescription(v:GetDescription())
 		e1:SetCategory(v:GetCategory())
 		e1:SetProperty(v:GetProperty()|EFFECT_FLAG_SET_AVAILABLE)
@@ -205,18 +213,19 @@ function s.cost(ae)
 		end
 	end
 end
-function s.condition(ae)  
+function s.condition(ae)
 	return function (e,tp,eg,ep,ev,re,r,rp)
 		local c=e:GetHandler()
+		local tc=c:GetEquipTarget()
 		local fcon=ae:GetCondition()
-		return c:IsFacedown() and (not fcon or fcon(e,tp,eg,ep,ev,re,r,rp))
+		return tc and tc:IsHasEffect(id) and c:IsFacedown() and (not fcon or fcon(e,tp,eg,ep,ev,re,r,rp))
 	end
 end
 function s.target(ae)   
 	return function (e,tp,eg,ep,ev,re,r,rp,chk,chkc)		
 		local c=e:GetHandler()
 		local ftg=ae:GetTarget()
-		if chk==0 then return e:GetHandler():IsFacedown() and (not ftg or ftg(e,tp,eg,ep,ev,re,r,rp,chk)) end
+		if chk==0 then return not ftg or ftg(e,tp,eg,ep,ev,re,r,rp,chk) end
 		--Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 		
 		if ftg then

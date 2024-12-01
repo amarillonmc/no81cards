@@ -54,6 +54,14 @@ function c65830040.activate(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetValue(RESET_TURN_SET)
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 			ttc:RegisterEffect(e3)
+			if ttc:IsType(TYPE_TRAPMONSTER) then
+				local e4=Effect.CreateEffect(c)
+				e4:SetType(EFFECT_TYPE_SINGLE)
+				e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e4:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+				e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+				ttc:RegisterEffect(e4)
+			end
 			ttc=g:GetNext()
 		end
 	end

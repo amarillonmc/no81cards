@@ -17,7 +17,7 @@ function c22348436.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,22349436)
+	e2:SetCountLimit(1,22350436)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c22348436.sptg)
@@ -65,19 +65,20 @@ function c22348436.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348436.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
-	if tc then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_ATTACK)~=0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
-		e1:SetRange(LOCATION_MZONE)
+		e1:SetCode(EFFECT_ONLY_ATTACK_MONSTER)
 		e1:SetTargetRange(0,LOCATION_MZONE)
-		e1:SetValue(c22348436.atlimit)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1,true)
+		e1:SetValue(c22348436.atklimit)
+		e1:SetLabel(tc:GetRealFieldID())
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+		tc:RegisterFlagEffect(22348436,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_PHASE+PHASE_END,0,0)
 	end
 end
-function c22348436.atlimit(e,c)
-	return c~=e:GetHandler()
+function c22348436.atklimit(e,c)
+	return c:GetRealFieldID()==e:GetLabel()
 end
+
 

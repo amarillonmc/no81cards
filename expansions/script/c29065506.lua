@@ -1,6 +1,13 @@
 --执棋者 -方舟骑士-
 function c29065506.initial_effect(c)
 	aux.AddCodeList(c,29065502)
+	--add code
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetCode(EFFECT_ADD_CODE)
+	e2:SetValue(29065502)
+	c:RegisterEffect(e2)
 	--splimit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

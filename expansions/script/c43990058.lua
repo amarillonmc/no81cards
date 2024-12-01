@@ -10,7 +10,14 @@ function cm.initial_effect(c)
 	e1:SetTarget(c43990058.target)
 	e1:SetOperation(c43990058.activate)
 	c:RegisterEffect(e1)
-	
+	--set
+	local e2=Effect.CreateEffect(c)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetCost(c43990058.setcost)
+	e2:SetTarget(c43990058.settg)
+	e2:SetOperation(c43990058.setop)
+	c:RegisterEffect(e2)
 end
 function c43990058.filter(c)
 	return not c:IsRace(RACE_MACHINE) and c:IsFaceup()
@@ -49,9 +56,28 @@ function c43990058.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.MSet(tp,stc,true,nil,1)
 		end
 	end
-
    end
-
-
 end
-
+function c43990058.costfilter(c)
+	return c:IsRace(RACE_MACHINE) and c:IsReleasable(REASON_COST)
+end
+function c43990058.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c43990058.costfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	local g=Duel.SelectMatchingCard(tp,c43990058.costfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	Duel.Release(g,REASON_COST)
+end
+function c43990058.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsSSetable() end
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
+end
+function c43990058.setop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.SSet(tp,c)~=0 then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+		e1:SetValue(LOCATION_REMOVED)
+		c:RegisterEffect(e1)
+	end
+end

@@ -35,6 +35,9 @@ s.hackclad=2
 function s.spfilter(c,e,tp)
 	return c.hackclad==1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+function s.aclimit(e,re,tp)
+	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
+end
 function s.thfilter(c)
 	return _G["c"..c:GetCode()]  and _G["c"..c:GetCode()].hackclad and not c:IsCode(id) and c:IsAbleToHand()
 end
@@ -115,9 +118,18 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e1:SetTargetRange(0,1)
-	e1:SetValue(aux.TRUE)
+	e1:SetValue(s.aclimit)
 	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e1,p)
+	--cannot set
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_SSET)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(0,1)
+	e2:SetTarget(aux.TRUE)
+	e2:SetReset(RESET_PHASE+PHASE_END,2)
+	Duel.RegisterEffect(e2,p)
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

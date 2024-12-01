@@ -54,8 +54,9 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
 	if not rc:IsRelateToEffect(re) then return end
+	local proc=rc:IsCode(12866705) and c:IsCode(12866600)
 	local b1=rc:IsAbleToGrave() and not rc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
-	local b2=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and rc:IsCanBeSpecialSummoned(e,0,tp,false,false)) 
+	local b2=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (rc:IsCanBeSpecialSummoned(e,0,tp,false,false)) or rc:IsCanBeSpecialSummoned(e,0,tp,proc,proc))
 	if chk==0 then return b1 or b2 end
 	if re:GetHandler():IsAttribute(ATTRIBUTE_DARK) then
 		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
@@ -71,12 +72,14 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetCard(rc)
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local rc=re:GetHandler()
 	if rc:IsRelateToEffect(re) then
 		local tc=Duel.GetFirstTarget()
+		local proc=rc:IsCode(12866705) and c:IsCode(12866600)
 		local b1=tc:IsAbleToGrave() and not tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
-		local b2=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)) 
+		local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (tc:IsCanBeSpecialSummoned(e,0,tp,false,false) or tc:IsCanBeSpecialSummoned(e,0,tp,proc,proc))
 		local off=1
 		local ops={}
 		local opval={}
@@ -95,7 +98,8 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 		if sel==0 then
 			Duel.SendtoGrave(tc,REASON_EFFECT)
 		elseif sel==1 then
-			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+			Duel.SpecialSummon(tc,0,tp,tp,proc,proc,POS_FACEUP)
+			if proc then tc:CompleteProcedure() end
 		end
 	end
 end

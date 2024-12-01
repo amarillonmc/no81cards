@@ -12,7 +12,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	--flip
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_HANDES+CATEGORY_DRAW)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP)
 	e2:SetCost(s.drcost)
@@ -101,9 +101,9 @@ function s.mvalue(e,fp,rp,r)
 	return 1-Duel.GetFieldGroupCount(fp,LOCATION_SZONE,0)
 end
 function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.drcfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,2,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.drcfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,s.drcfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,2,2,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,s.drcfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,1,1,nil,tp)
 	Duel.SendtoGrave(g,REASON_RELEASE+REASON_COST)
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -111,10 +111,15 @@ function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(2)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 end
 function s.dract(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+	local h1=Duel.Draw(p,d,REASON_EFFECT)
+	if h1==0 then return false end
+	Duel.BreakEffect() 
+	Duel.ShuffleHand(p)
+	Duel.DiscardHand(p,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

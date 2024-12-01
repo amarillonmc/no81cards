@@ -75,13 +75,16 @@ end
 function c11561071.spfil(c,e,tp) 
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x195) 
 end 
+function c11561071.TTFfilter(c)
+	return c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+end
 function c11561071.damop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if Duel.Damage(p,d,REASON_EFFECT)~=0 then 
-		local b1=Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsAbleToHand),tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) and Duel.GetFlagEffect(tp,21513082)==0 
+		local b1=Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c11561071.TTFfilter),tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) and Duel.GetFlagEffect(tp,21513082)==0 
 		local b2=Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil) and Duel.GetFlagEffect(tp,31513082)==0 
-		local b3=Duel.IsExistingMatchingCard(c11561071.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFlagEffect(tp,41513082)==0 
+		local b3=Duel.IsExistingMatchingCard(c11561071.spfil,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFlagEffect(tp,41513082)==0 
 		local xtable={aux.Stringid(11561071,4)} 
 		if b1 then table.insert(xtable,aux.Stringid(11561071,1)) end 
 		if b2 then table.insert(xtable,aux.Stringid(11561071,2)) end 
@@ -90,7 +93,7 @@ function c11561071.damop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect() 
 		if xtable[op]==aux.Stringid(11561071,1) then 
 			Duel.RegisterFlagEffect(tp,21513082,RESET_PHASE+PHASE_END,0,1)
-			local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToHand),tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil) 
+			local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11561071.TTFfilter),tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil) 
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		end 
 		if xtable[op]==aux.Stringid(11561071,2) then 
@@ -100,7 +103,7 @@ function c11561071.damop(e,tp,eg,ep,ev,re,r,rp)
 		end 
 		if xtable[op]==aux.Stringid(11561071,3) then 
 			Duel.RegisterFlagEffect(tp,41513082,RESET_PHASE+PHASE_END,0,1)
-			local sc=Duel.SelectMatchingCard(tp,c11561071.spfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst() 
+			local sc=Duel.SelectMatchingCard(tp,c11561071.spfil,tp,LOCATION_HAND,0,1,1,nil,e,tp):GetFirst() 
 			Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP) 
 		end 
 	end  

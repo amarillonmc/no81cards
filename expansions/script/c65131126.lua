@@ -115,22 +115,16 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 then
 			local dc=g:GetFirst()
 			if Duel.SSet(tp,dc,tp,false)==0 then return end
-			if dc:IsType(TYPE_QUICKPLAY) then
-				local e1=Effect.CreateEffect(e:GetHandler())
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-				e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				dc:RegisterEffect(e1)
-			end
-			if dc:IsType(TYPE_TRAP) then
-				local e1=Effect.CreateEffect(e:GetHandler())
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				dc:RegisterEffect(e1)
-			end
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetDescription(aux.Stringid(id,4))
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			dc:RegisterEffect(e1)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+			dc:RegisterEffect(e2)
 		end
 	end
 end

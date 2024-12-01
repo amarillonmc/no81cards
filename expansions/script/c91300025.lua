@@ -1,11 +1,27 @@
---海德拉型：猎兽之王
+--飞龙型：猎兽之王
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--direct attack
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_DIRECT_ATTACK)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>4 end)
 	c:RegisterEffect(e1)
+	--cannot attack
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetCode(EFFECT_CANNOT_ATTACK)
+	e8:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)<5 end)
+	c:RegisterEffect(e8)
+	--direct attack
+	local e9=Effect.CreateEffect(c)
+	e9:SetType(EFFECT_TYPE_SINGLE)
+	e9:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e9:SetRange(LOCATION_MZONE)
+	e9:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
+	e8:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)<5 end)
+	e9:SetValue(s.atlimit)
+	c:RegisterEffect(e9)
 	--Pos Change
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -33,14 +49,14 @@ function s.initial_effect(c)
 	e5:SetValue(aux.tgoval)
 	c:RegisterEffect(e5)
 	--immune
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_SINGLE)
-	e6:SetCode(EFFECT_IMMUNE_EFFECT)
-	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e6:SetRange(LOCATION_MZONE)
-	e6:SetCondition(s.con)
-	e6:SetValue(s.efilter)
-	c:RegisterEffect(e6)
+	--local e6=Effect.CreateEffect(c)
+	--e6:SetType(EFFECT_TYPE_SINGLE)
+	--e6:SetCode(EFFECT_IMMUNE_EFFECT)
+	--e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	--e6:SetRange(LOCATION_MZONE)
+	--e6:SetCondition(s.con)
+	--e6:SetValue(s.efilter)
+	--c:RegisterEffect(e6)
 	--negate
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -51,13 +67,16 @@ function s.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 s.hackclad=1
+function s.atlimit(e,c)
+	return true
+end
 function s.con(e)
 	local tp=e:GetHandlerPlayer()
 	return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
 end
-function s.efilter(e,re)
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
-end
+--function s.efilter(e,re)
+	--return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
+--end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)

@@ -1,6 +1,13 @@
 --出千
 local s,id,o=GetID()
 function s.initial_effect(c)
+	--xmat
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EVENT_ADJUST)
+	e1:SetOperation(s.xop)
+	c:RegisterEffect(e1)
 	if not s.global_check then
 		s.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -96,51 +103,44 @@ function s.ChangeCard(card1,card2,seq)
 end
 function s.lostfilter(c)
 	if c:GetOriginalCode()~=id then return false end
-	if c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED) then 
-		return c:IsFaceup()
+	if c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA) then
+		return c:IsFaceupEx()
+	end
+	if c:IsLocation(LOCATION_HAND) then
+		return c:IsPublic()
 	end
 	if c:IsLocation(LOCATION_DECK) then
 		return Duel.GetDecktopGroup(c:GetControler(),1):IsContains(c) and Duel.IsPlayerAffectedByEffect(c:GetControler(),EFFECT_REVERSE_DECK) or c:IsFaceup()
 	end
 end
 function s.lostcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.lostfilter,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_DECK,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_DECK,1,nil)
+	return Duel.IsExistingMatchingCard(s.lostfilter,0,0x7f,0x7f,1,nil)
 end
 function s.lostop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,86541496)
-	local g=Duel.GetMatchingGroup(s.lostfilter,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_DECK,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_DECK,nil)
+	local g=Duel.GetMatchingGroup(s.lostfilter,0,0x7f,0x7f,nil)
 	local Islost1=false
 	local Islost2=false
-	local tc=g:GetFirst() 
-	while tc do
+	for tc in aux.Next(g) do
 		if tc:GetOwner()==0 then Islost1=true end
 		if tc:GetOwner()==1 then Islost2=true end
-		tc=g:GetNext()
 	end
 	if Islost1 and not Islost2 then Duel.Win(1,0x0)
-	else if not Islost1 and Islost2 then Duel.Win(0,0x0)
-	else Duel.Win(PLAYER_NONE,0x0) end end
+	elseif not Islost1 and Islost2 then Duel.Win(0,0x0)
+	else Duel.Win(PLAYER_NONE,0x0) end
 end
-function s.lostfilter2(c)
-	return c:GetOriginalCode()==id and c:IsPublic()
-end
-function s.lostcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.lostfilter2,0,LOCATION_HAND,LOCATION_HAND,1,nil)
-end
-function s.lostop2(e,tp,eg,ep,ev,re,r,rp)
+function s.xop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,86541496)
-	local g=Duel.GetMatchingGroup(s.lostfilter2,0,LOCATION_HAND,LOCATION_HAND,nil)
+	local g=Duel.GetOverlayGroup(0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	local Islost1=false
 	local Islost2=false
-	local tc=g:GetFirst() 
-	while tc do
-		if tc:GetOwner()==0 then Islost1=true end
-		if tc:GetOwner()==1 then Islost2=true end
-		tc=g:GetNext()
+	for tc in aux.Next(g) do
+		if tc:GetOriginalCode()==id and tc:GetOwner()==0 then Islost1=true end
+		if tc:GetOriginalCode()==id and tc:GetOwner()==1 then Islost2=true end
 	end
 	if Islost1 and not Islost2 then Duel.Win(1,0x0)
-	else if not Islost1 and Islost2 then Duel.Win(0,0x0)
-	else Duel.Win(PLAYER_NONE,0x0) end end
+	elseif not Islost1 and Islost2 then Duel.Win(0,0x0)
+	else Duel.Win(PLAYER_NONE,0x0) end
 end
 function s.dtosfilter(c)
 	return c:IsSetCard(0x836) and c:GetOriginalCode()~=id and c:GetSequence()==2

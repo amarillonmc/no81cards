@@ -21,7 +21,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.setfilter(c)
-	return c:IsSetCard(0x836) and c:IsSSetable()
+	return c:IsSSetable()
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
@@ -32,29 +32,23 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_HAND,0,1,1,nil)
 	if g:GetCount()>0 then
 		local dc=g:GetFirst()
-		if Duel.SSet(tp,dc,tp,false)==0 then return end
-		if dc:IsType(TYPE_QUICKPLAY) then
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-			e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			dc:RegisterEffect(e1)
-		end
-		if dc:IsType(TYPE_TRAP) then
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			dc:RegisterEffect(e1)
-		end
+		if Duel.SSet(tp,dc,tp,false)==0 then return end		
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetDescription(aux.Stringid(id,2))
+		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		dc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+		dc:RegisterEffect(e2)
 	end
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 end
-function s.thop(e,tp,eg,ep,ev,re,r,rp)	
+function s.thop(e,tp,eg,ep,ev,re,r,rp)  
 	--to hand
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

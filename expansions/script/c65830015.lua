@@ -35,21 +35,22 @@ function c65830015.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterEffect(e1,tp)
 	local hg=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	local fg=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
-	local g
+	local sg
 	if #hg>0 and (#fg==0 or Duel.SelectOption(tp,aux.Stringid(2347656,3),aux.Stringid(2347656,4))==0) then
-		g=hg:RandomSelect(tp,1)
+		sg=hg:RandomSelect(tp,1)
 	else
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
+		sg=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
 	end
-	if g:GetCount()~=0 then
-		Duel.HintSelection(g)
-		Duel.Destroy(g,REASON_RULE)
-		local e2=Effect.CreateEffect(e:GetHandler())
+	if sg:GetCount()~=0 then
+		Duel.HintSelection(sg)
+		Duel.Destroy(sg,REASON_RULE)
+		local gc=sg:GetFirst()
+		local e2=Effect.CreateEffect(gc)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_CANNOT_TRIGGER)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e2)
+		gc:RegisterEffect(e2)
 	end
 		else
 			Duel.SendtoDeck(tc,nil,1,REASON_EFFECT)

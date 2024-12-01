@@ -54,7 +54,7 @@ function c22348440.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348440.atkval(e,c)
-	return Duel.GetMatchingGroupCount(Card.IsType,0,LOCATION_SZONE,LOCATION_SZONE,nil,TYPE_EQUIP)*500
+	return Duel.GetMatchingGroupCount(Card.IsType,0,LOCATION_SZONE,LOCATION_SZONE,nil,TYPE_EQUIP)*800
 end
 function c22348440.operation(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -64,9 +64,10 @@ function c22348440.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(c22348440.reop)
 	Duel.RegisterEffect(e1,tp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsSSetable() and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(22348440,0)) then
+	if c:IsRelateToEffect(e) and c:IsSSetable() -- and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(22348440,0)) 
+	then
 		Duel.BreakEffect()
-		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD)
+		--Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD)
 		Duel.SSet(tp,c)
 	end
 end
@@ -74,7 +75,7 @@ function c22348440.atkfilter(c,e)
 	return c:IsFaceup() and not c:IsImmuneToEffect(e) and c:IsRace(RACE_BEAST+RACE_BEASTWARRIOR)
 end
 function c22348440.reop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Recover(tp,500,REASON_EFFECT)
+	Duel.Recover(tp,800,REASON_EFFECT)
 	local g=Duel.GetMatchingGroup(c22348440.atkfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,e)
 	if g:GetCount()>0 then
 		for tc in aux.Next(g) do
@@ -82,7 +83,7 @@ function c22348440.reop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetValue(500)
+			e1:SetValue(800)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1)
 		end

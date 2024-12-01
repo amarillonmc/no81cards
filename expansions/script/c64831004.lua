@@ -23,6 +23,7 @@ function c64831004.initial_effect(c)
 	c:RegisterEffect(e2)
 	Duel.AddCustomActivityCounter(64831004,ACTIVITY_SPSUMMON,c64831004.counterfilter)
 end
+c64831004.setname="RagnaTravellers"
 function c64831004.counterfilter(c)
 	return c:IsType(TYPE_SYNCHRO) or c:GetSummonLocation()~=LOCATION_EXTRA 
 end

@@ -43,6 +43,7 @@ function cm.retop1(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(m,0))
 				Duel.SelectOption(tp,aux.Stringid(m,1))
 				Duel.Hint(HINT_MESSAGE,1-tp,aux.Stringid(m,1))
+				c:SetCardData(CARDDATA_CODE,m+1) 
 			end
 		end
 	end
