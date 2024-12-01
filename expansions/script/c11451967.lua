@@ -75,7 +75,7 @@ function cm.chcon(e,tp,eg,ep,ev,re,r,rp)
 	return rc:IsSetCard(0x836)
 end
 function cm.thfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand() and c:IsFaceupEx()
+	return c:IsSetCard(0x836) and c:IsAbleToHand() and c:IsFaceupEx()
 end
 function cm.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

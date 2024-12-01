@@ -128,10 +128,12 @@ function c60152902.e2opfilter(c)
 end
 function c60152902.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return Duel.GetFlagEffect(1-tp,60152902)>0 end
+	if chk==0 then return Duel.GetFlagEffect(1-tp,60152902)>0 and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
+	local tg=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,tg,1,0,0)
 end
 function c60152902.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

@@ -102,13 +102,12 @@ function c60152906.e1op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60152906.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
+	if chk==0 then return #g>0 end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
-end
-function c60152906.e2opfilter(c)
-	return c
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,#g,0,0)
 end
 function c60152906.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
@@ -122,7 +121,7 @@ function c60152906.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local d2=math.floor(s/1000)
 	if d2>=1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,c60152906.e2opfilter,tp,0,LOCATION_ONFIELD,1,d2,nil)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,d2,nil)
 		if g:GetCount()>0 then
 			Duel.HintSelection(g)
 			Duel.SendtoGrave(g,REASON_EFFECT)

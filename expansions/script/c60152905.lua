@@ -22,17 +22,13 @@ function c60152905.initial_effect(c)
 	e2:SetDescription(aux.Stringid(60152905,1))
 	e2:SetCategory(CATEGORY_NEGATE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,6012905)
 	e2:SetCondition(c60152905.e2con)
 	e2:SetTarget(c60152905.e2tg)
 	e2:SetOperation(c60152905.e2op)
 	c:RegisterEffect(e2)
-	local e4=e2:Clone()
-	e4:SetCondition(c60152905.e2con1)
-	e4:SetCode(EVENT_CHAINING)
-	c:RegisterEffect(e4)
 
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(60152905,2))
@@ -108,11 +104,14 @@ function c60152905.e1op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60152905.e2con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0 and Duel.GetCurrentChain()==0 and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
-end
-function c60152905.e2con1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0 and Duel.GetCurrentChain()>0 
-	and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
+	if not (Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0 and  Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0) then return end
+	for i=1,ev do
+		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+		if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(i) then
+			return true
+		end
+	end
+	return false 
 end
 function c60152905.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL

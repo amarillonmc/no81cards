@@ -191,17 +191,13 @@ function c60152913.e3op(e,tp,eg,ep,ev,re,r,rp)
 		e5:SetDescription(aux.Stringid(60152905,1))
 		e5:SetCategory(CATEGORY_NEGATE)
 		e5:SetType(EFFECT_TYPE_QUICK_O)
-		e5:SetCode(EVENT_FREE_CHAIN)
+		e5:SetCode(EVENT_CHAINING)
 		e5:SetRange(LOCATION_MZONE)
 		e5:SetCountLimit(1,6012915)
 		e5:SetCondition(c60152913.e22905con)
 		e5:SetTarget(c60152913.e22905tg)
 		e5:SetOperation(c60152913.e22905op)
 		c:RegisterEffect(e5)
-		local e8=e5:Clone()
-		e8:SetCondition(c60152913.e22905con1)
-		e8:SetCode(EVENT_CHAINING)
-		c:RegisterEffect(e8)
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(60152913,5))
 	end
 	if g:IsExists(Card.IsOriginalCodeRule,1,nil,60152906) then
@@ -241,7 +237,7 @@ function c60152913.e22901con(e,tp,eg,ep,ev,re,r,rp)
 end
 function c60152913.e22901tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,1,nil) end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
@@ -275,10 +271,12 @@ function c60152913.e22902opf(c)
 end
 function c60152913.e22902tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return Duel.GetFlagEffect(1-tp,60152902)>0 end
+	if chk==0 then return Duel.GetFlagEffect(1-tp,60152902)>0 and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
+	local tg=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,tg,1,0,0)
 end
 function c60152913.e22902op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
@@ -348,7 +346,7 @@ function c60152913.e22904con(e,tp,eg,ep,ev,re,r,rp)
 end
 function c60152913.e22904tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_GRAVE,1,nil) end
 	Duel.SetTargetPlayer(p)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,p,1000)
@@ -380,12 +378,14 @@ function c60152913.e22904op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60152913.e22905con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0 and Duel.GetCurrentChain()==0 
-	and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
-end
-function c60152913.e22905con1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0 and Duel.GetCurrentChain()>0 
-	and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0
+	if not (Duel.GetCustomActivityCount(60152905,1-tp,ACTIVITY_CHAIN)>0 and  Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_EXTRA,0,nil)==0) then return end
+	for i=1,ev do
+		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+		if tgp~=tp and (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(i) then
+			return true
+		end
+	end
+	return false 
 end
 function c60152913.e22905tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local p=PLAYER_ALL
@@ -424,13 +424,11 @@ function c60152913.e22905op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60152913.e22906tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
+	if chk==0 then return #g>0 end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
-end
-function c60152913.e22906opfilter(c)
-	return c
 end
 function c60152913.e22906op(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
@@ -444,7 +442,7 @@ function c60152913.e22906op(e,tp,eg,ep,ev,re,r,rp)
 	local d2=math.floor(s/1000)
 	if d2>=1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,c60152913.e22906opfilter,tp,0,LOCATION_ONFIELD,1,d2,nil)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,d2,nil)
 		if g:GetCount()>0 then
 			Duel.HintSelection(g)
 			Duel.SendtoGrave(g,REASON_EFFECT)

@@ -82,8 +82,13 @@ function c67201262.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 		local g=Duel.SelectMatchingCard(tp,Card.IsCanOverlay,tp,0,LOCATION_MZONE,1,1,nil)
+		local tc=g:GetFirst()
 		if g:GetCount()>0 then
-			Duel.Overlay(c,g)
+			local og=tc:GetOverlayGroup()
+			if og:GetCount()>0 then
+				Duel.SendtoGrave(og,REASON_RULE)
+			end
+			Duel.Overlay(c,Group.FromCards(tc))
 		end
 	end
 end

@@ -159,21 +159,27 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e1,tp)
 		local eid=e1:GetFieldID()
 		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,9))
+		c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,eid,aux.Stringid(m,10))
 		e1:SetTarget(function(e,c)
-						local seq1=aux.GetColumn(c)
+						local seq1=aux.GetColumn(c,e:GetHandlerPlayer())
 						local seq2=aux.GetColumn(e:GetHandler())
 						return seq1 and seq2 and seq1-seq2==1
 					end)
 		e1:SetCost(function(e,tp,eg,ep,ev,re,r,rp,chk)
 						if chk==0 then return true end
-						e:SetLabel(0)
+						e:GetHandler():ResetFlagEffect(m)
 					end)
 		e1:SetLabel(eid)
 		local e2=e1:Clone()
+		e2:SetCondition(cm.con2)
 		e2:SetTarget(function(e,c)
-						local seq1=aux.GetColumn(c)
-						local seq2=aux.GetColumn(e:GetHandler())
+						local seq1=aux.GetColumn(c,e:GetHandlerPlayer())
+						local seq2=aux.GetColumn(e:GetHandler(),e:GetHandlerPlayer())
 						return seq1 and seq2 and seq1-seq2==-1
+					end)
+		e2:SetCost(function(e,tp,eg,ep,ev,re,r,rp,chk)
+						if chk==0 then return true end
+						e:GetHandler():ResetFlagEffect(m+1)
 					end)
 		Duel.RegisterEffect(e2,tp)
 		--[[Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
@@ -184,5 +190,9 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	if not (e:GetHandler():GetFlagEffect(m)>0 and e:GetHandler():GetFlagEffectLabel(m)==e:GetLabel() and e:GetHandler():IsFacedown()) then e:SetLabel(0) return false end
+	return true
+end
+function cm.con2(e,tp,eg,ep,ev,re,r,rp)
+	if not (e:GetHandler():GetFlagEffect(m+1)>0 and e:GetHandler():GetFlagEffectLabel(m+1)==e:GetLabel() and e:GetHandler():IsFacedown()) then e:SetLabel(0) return false end
 	return true
 end
