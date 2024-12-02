@@ -30,7 +30,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.fusfilter1(c)
-	return c:IsSetCard(0x8ee)
+	return c:IsSetCard(0x8ee) or c:IsCode(28985331)
 end
 function s.fusfilter2(c)
 	return c:IsAttribute(ATTRIBUTE_DARK)
