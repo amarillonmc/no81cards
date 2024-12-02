@@ -4,7 +4,7 @@ function s.initial_effect(c)
 	--act in hand
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetDescription(aux.Stringid(id,1))
+	e0:SetDescription(aux.Stringid(id,1))
 	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e0:SetCondition(s.handcon)
 	c:RegisterEffect(e0)

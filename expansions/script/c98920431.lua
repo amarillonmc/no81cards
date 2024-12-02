@@ -75,8 +75,8 @@ function c98920431.spop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		local atk=tc:GetAttack()
-		local lp=tp:GetLP()
-		Duel.SetLP(tp,lp-atk)
+		local lp=Duel.GetLP(e:GetHandlerPlayer())
+		Duel.SetLP(e:GetHandlerPlayer(),lp-atk)
 	end
 end
 function c98920431.thcost(e,tp,eg,ep,ev,re,r,rp,chk)

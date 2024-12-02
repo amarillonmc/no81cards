@@ -13,9 +13,13 @@ function Auxiliary.PreloadUds()
 	
 	EFFECT_FLAG_CANNOT_NEGATE=EFFECT_FLAG_CANNOT_NEGATE or 0x200
 	EFFECT_FLAG_CAN_FORBIDDEN=EFFECT_FLAG_CAN_FORBIDDEN or 0x200
+
+	table_range=table_range or {}
+	effect_handler=effect_handler or {}
+	effect_registered=effect_registered or {}
+	require_list=require_list or {}
 	
 	function require(str)
-		require_list=require_list or {}
 		if not require_list[str] then
 			if string.find(str,"%.") then
 				require_list[str]=loadfile(str)
@@ -92,20 +96,16 @@ function Auxiliary.PreloadUds()
 	local _CreateEffect=Effect.CreateEffect
 	function Effect.CreateEffect(c,...)
 		local e=_CreateEffect(c,...)
-		effect_handler=effect_handler or {}
 		if e and c then effect_handler[e]=c end
 		return e
 	end
 	local _SetRange=Effect.SetRange
 	function Effect.SetRange(e,r,...)
-		table_range=table_range or {}
 		if e and r then table_range[e]=r end
 		return _SetRange(e,r,...)
 	end
 	local _Clone=Effect.Clone
 	function Effect.Clone(e,...)
-		effect_handler=effect_handler or {}
-		table_range=table_range or {}
 		local clone_e=_Clone(e,...)
 		if e and clone_e then
 			effect_handler[clone_e]=effect_handler[e]
@@ -118,6 +118,7 @@ function Auxiliary.PreloadUds()
 			if table_range and table_range[e] then
 				return table_range[e]
 			end
+			Debug.Message("Effect.GetRange没有及时加载该效果的Range信息。")
 			return 0
 		end
 	end
@@ -126,8 +127,16 @@ function Auxiliary.PreloadUds()
 	function Card.RegisterEffect(c,e,...)
 		if aux.GetValueType(c)~="Card" then Debug.Message("Card.RegisterEffect没有输入正确的Card参数。") return end
 		if aux.GetValueType(e)~="Effect" then Debug.Message("Card.RegisterEffect没有输入正确的Effect参数。") return end
+		if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not table_range[e] then
+			table_range[e]=LOCATION_HAND+LOCATION_SZONE
+		elseif e:IsHasType(EFFECT_TYPE_EQUIP) and not table_range[e] then
+			table_range[e]=LOCATION_SZONE
+		elseif e:IsHasType(EFFECT_TYPE_FLIP) and not table_range[e] then
+			table_range[e]=LOCATION_MZONE
+		elseif e:IsHasType(EFFECT_TYPE_XMATERIAL) and not table_range[e] then
+			table_range[e]=LOCATION_OVERLAY
+		end
 		local eid=_CRegisterEffect(c,e,...)
-		effect_registered=effect_registered or {}
 		if e and eid then effect_registered[e]=true end
 		return eid
 	end
@@ -135,14 +144,12 @@ function Auxiliary.PreloadUds()
 	function Duel.RegisterEffect(e,p,...)
 		if aux.GetValueType(e)~="Effect" then Debug.Message("Duel.RegisterEffect没有输入正确的Effect参数。") return end
 		_DRegisterEffect(e,p,...)
-		effect_registered=effect_registered or {}
 		if e then effect_registered[e]=true end
 	end
 
 	local _GetHandler=Effect.GetHandler
 	function Effect.GetHandler(e,...)
 		--warning!!!
-		effect_registered=effect_registered or {}
 		if _Effect.IsHasType(e,EFFECT_TYPE_XMATERIAL) and not effect_registered[e] then return effect_handler[e] end
 		local c=_GetHandler(e,...)
 		if not c then return effect_handler[e] end
