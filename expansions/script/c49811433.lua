@@ -154,7 +154,7 @@ function s.discon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(id,3)) then		
+	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(id,3)) and c:IsLocation(LOCATION_PZONE) then		
 		if Duel.Destroy(c,REASON_EFFECT)~=0 then
 			Duel.Hint(HINT_CARD,0,id)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
