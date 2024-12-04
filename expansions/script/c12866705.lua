@@ -50,7 +50,7 @@ end
 function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and c:IsFaceup() and c:IsControler(tp) then
+	if c:IsRelateToEffect(e) and c:IsFaceupEx() and c:IsControler(tp) then
 		if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or tc:IsFacedown() or not tc:IsRelateToEffect(e) or tc:IsControler(1-tp) or not tc:IsLocation(LOCATION_MZONE) then
 			Duel.SendtoGrave(c,REASON_EFFECT)
 			return

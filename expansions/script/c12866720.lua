@@ -53,7 +53,7 @@ function s.disfilter2(c,tp,zone)
 	if c:GetControler()==tp then
 		zone=((zone&0xffff)<<16)|((zone>>16)&0xffff)
 	end
-	return c:IsFaceup() and (2^c:GetSequence())*0x10000&zone~=0
+	return (2^c:GetSequence())*0x10000&zone~=0
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local zone=e:GetLabel()
