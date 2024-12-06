@@ -34,6 +34,7 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.thtg)  
 	e4:SetOperation(cm.thop)  
 	c:RegisterEffect(e4)  
+	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,aux.FALSE)  
 end
 function cm.ntcon(e,c,minc)
 	if c==nil then return true end
@@ -79,13 +80,13 @@ function cm.efilter(e,te,ev)
 	return te:IsActiveType(TYPE_MONSTER) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
 		and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE
 end
-cm.input={[[+Z+Z,r-:,|]],[[+Z-5-4+W-(]],[[+Y-;,q->,x]],[[+Y-5+X-/-@]],[[+W+U-N-N-D]],[[+_+[+q-*-$]],[[+j-=-2+a-8]],[[+i-,+n+\-,]]}
+cm.input ={[[+Y-6-7-O-8]],[[+Y-:-M-?,x]],[[+i-?,w-5-8]],[[+_+\-B-G+h]],[[+_,x-A+Z-D]],[[+Z+W-M-M-8]],[[+X+V--+s-@]],[[+`+[-K-K- ]]}
 cm.string={}
-cm.string[1]={"Hyper Celestial destruction!","对方把效果发动过10次以上，对方场上的卡全部回到卡组"}
-cm.string[2]={"Reversion of fight!","对方把效果发动过7次以上,自己抽2张"}
+cm.string[1]={"Hyper Celestial destruction!","这个回合对方把效果发动过10次以上，对方场上的卡全部回到卡组"}
+cm.string[2]={"Reversion of fight!","这个回合对方把效果发动过7次以上,自己抽2张"}
 cm.string[3]={"Execution!","自己抽1张"}
 cm.string[4]={"Super Celestial destruction!","对方场上的卡是5张以上，场上的表侧表示的卡的效果直到回合结束时无效"}
-cm.string[5]={"対空蹴!","这个回合，对方下次发动的效果无效"}
+cm.string[5]={"対空蹴!","对方把效果发动过5次以上的这个回合，对方下次发动的效果无效"}
 cm.string[6]={"花火!","这个回合，自己受到的全部伤害变成0"}
 cm.string[7]={"Revelation threads!","对方场上随机1张卡破坏"}
 cm.string[8]={"Dark Blitzes!","这个回合，这张卡可以向对方怪兽全部各作1次攻击"}
@@ -172,15 +173,18 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	elseif e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[5],ev,re,r,rp) then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_CHAINING)
-		e1:SetCountLimit(1)
-		e1:SetCondition(cm.negcon)
-		e1:SetOperation(cm.negop)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabel(tp)
-		Duel.RegisterEffect(e1,tp)
+		local ecount = Duel.GetCustomActivityCount(m,1-tp,ACTIVITY_CHAIN)
+		if ecount >= 5 then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e1:SetCode(EVENT_CHAINING)
+			e1:SetCountLimit(1)
+			e1:SetCondition(cm.negcon)
+			e1:SetOperation(cm.negop)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			e1:SetLabel(tp)
+			Duel.RegisterEffect(e1,tp)
+		end
 	elseif e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[6],ev,re,r,rp) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
