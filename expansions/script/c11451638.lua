@@ -33,6 +33,8 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e2:SetCode(EVENT_LEAVE_FIELD)
+	local e21=aux.AddThisCardInGraveAlreadyCheck(c)
+	e2:SetLabelObject(e21)
 	e2:SetCondition(cm.actcon)
 	e2:SetCost(aux.bfgcost)
 	e2:SetOperation(cm.actop)
@@ -229,12 +231,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 	end
 end
-function cm.actfilter(c)
+function cm.actfilter(c,se)
+	if not (se==nil or c:GetReasonEffect()~=se) then return false end
 	local code1,code2=c:GetPreviousCodeOnField()
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP) and (code1==11451631 or code2==11451631)
 end
 function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.actfilter,1,nil) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND))
+	local se=e:GetLabelObject():GetLabelObject()
+	return eg:IsExists(cm.actfilter,1,nil,se) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND))
 end
 function cm.actop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())

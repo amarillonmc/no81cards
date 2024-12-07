@@ -70,6 +70,12 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.RegisterFlagEffect(tp,id+o*4,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	end
 	Duel.SetTargetCard(rc)
+	if rc:IsLocation(LOCATION_GRAVE) then
+	e:SetCategory(CATEGORY_GRAVE_SPSUMMON)
+	end
+	if rc:IsLocation(LOCATION_DECK) then
+	e:SetCategory(CATEGORY_DECKDES+CATEGORY_SPECIAL_SUMMON)
+	end
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
