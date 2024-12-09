@@ -1,4 +1,4 @@
---远古造物 梅森铰链虫
+--远古造物 马荣铰链虫
 dofile("expansions/script/c9910700.lua")
 function c9910724.initial_effect(c)
 	--special summon
@@ -6,12 +6,13 @@ function c9910724.initial_effect(c)
 	c:EnableReviveLimit()
 	--flag
 	QutryYgzw.AddTgFlag(c)
-	--disable
+	--negate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_TOGRAVE+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
-	e1:SetRange(LOCATION_HAND)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCountLimit(1,9910724)
 	e1:SetCondition(c9910724.discon)
 	e1:SetCost(c9910724.discost)
@@ -33,27 +34,32 @@ function c9910724.cfilter(c)
 	return c:IsFacedown() and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
 function c9910724.discon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainDisablable(ev)
+	local c=e:GetHandler()
+	return (c:IsLocation(LOCATION_HAND) or not c:IsStatus(STATUS_BATTLE_DESTROYED))
+		and ep~=tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainNegatable(ev)
+end
+function c9910724.costfilter(c)
+	return c:IsFacedown() and not c:IsStatus(STATUS_BATTLE_DESTROYED) and c:IsAbleToGraveAsCost()
 end
 function c9910724.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsAbleToGraveAsCost()
+		and Duel.IsExistingMatchingCard(c9910724.costfilter,tp,LOCATION_ONFIELD,0,1,c) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9910724.costfilter,tp,LOCATION_ONFIELD,0,1,1,c)
+	g:AddCard(c)
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c9910724.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910724.cfilter,tp,LOCATION_ONFIELD,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+	end
 end
 function c9910724.disop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.NegateEffect(ev) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEDOWN)
-	local g=Duel.SelectMatchingCard(tp,c9910724.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
-	local tc=g:GetFirst()
-	if not tc then return end
-	Duel.BreakEffect()
-	if tc:IsAbleToHand() and (not tc:IsAbleToGrave() or Duel.SelectOption(tp,1104,1191)==0) then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-	else
-		Duel.SendtoGrave(tc,REASON_EFFECT)
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end
 function c9910724.setcon(e,tp,eg,ep,ev,re,r,rp)

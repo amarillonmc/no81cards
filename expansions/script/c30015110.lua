@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	--Effect 2  
 	local e2=ors.redraw(c)
 	--all
-	local ge1=ors.allop2(c)
+	local ge1=ors.alldrawflag(c)
 end
 c30015110.isoveruins=true
 --
@@ -46,7 +46,6 @@ function cm.smf(c,e,tp,ph)
 	e11:SetOperation(cm.otoptwo)
 	e11:SetValue(SUMMON_TYPE_ADVANCE)
 	e11:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+ph)
-	e11:SetLabelObject(ec)
 	c:RegisterEffect(e11,true)
 	local e12=e11:Clone()
 	e12:SetCode(EFFECT_SET_PROC)
@@ -59,13 +58,13 @@ function cm.smf(c,e,tp,ph)
 	local ct=c:GetLevel()
 	if ct==5 or ct==6 then
 		rct=1
-		dmct=3
+		dmct=2
 	elseif ct>=7 and ct<10 then
 		rct=2
 		dmct=4
 	elseif ct>=10 then
 		rct=3
-		dmct=5
+		dmct=6
 	end
 	local mg=Duel.GetMatchingGroup(ors.srm,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
 	local reg=Duel.GetMatchingGroup(ors.ref,tp,LOCATION_ONFIELD,0,e:GetHandler(),tp)
@@ -92,11 +91,6 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 		e11:SetOperation(cm.otoptwo)
 		e11:SetValue(SUMMON_TYPE_ADVANCE)
 		e11:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+ph)
-		if c:IsOnField() then
-			e11:SetLabelObject(c)
-		else
-			e11:SetLabelObject(nil)
-		end
 		tc:RegisterEffect(e11)
 		local e12=e11:Clone()
 		e12:SetCode(EFFECT_SET_PROC)
@@ -218,7 +212,7 @@ end
 function cm.otcontwo(e,c,minc)
 	if c==nil then return true end
 	if c:GetLevel()<5 then return false end
-	local nc=e:GetLabelObject()
+	local nc=e:GetHandler()
 	local tp=e:GetHandlerPlayer()
 	local mg=Duel.GetMatchingGroup(ors.srm,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nc)
 	local reg=Duel.GetMatchingGroup(ors.ref,tp,LOCATION_ONFIELD,0,nc,tp)
@@ -229,7 +223,7 @@ function cm.otcontwo(e,c,minc)
 	if ct==5 or ct==6 then
 		lv=5
 		rct=1
-		dmct=3
+		dmct=2
 	elseif ct>=7 and ct<10 then
 		lv=7
 		rct=2
@@ -237,7 +231,7 @@ function cm.otcontwo(e,c,minc)
 	elseif ct>=10 then
 		lv=7
 		rct=3
-		dmct=5
+		dmct=6
 	end
 	local exct=math.floor(dmct/2)
 	local b1=mg:CheckSubGroup(ors.fck,dmct,dmct,tp,exct) and minc<=dmct
@@ -251,15 +245,15 @@ function cm.otoptwo(e,tp,eg,ep,ev,re,r,rp,c)
 	local ct=c:GetOriginalLevel()
 	if ct==5 or ct==6 then
 		rct=1
-		dmct=3
+		dmct=2
 	elseif ct>=7 and ct<10 then
 		rct=2
 		dmct=4
 	elseif ct>=10 then
 		rct=3
-		dmct=5
+		dmct=6
 	end
-	local nc=e:GetLabelObject()
+	local nc=e:GetHandler()
 	tp=e:GetHandlerPlayer()
 	local mg=Duel.GetMatchingGroup(ors.srm,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nc)
 	local reg=Duel.GetMatchingGroup(ors.ref,tp,LOCATION_ONFIELD,0,nc,tp)

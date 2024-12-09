@@ -17,12 +17,6 @@ function c9910708.initial_effect(c)
 	e1:SetTarget(c9910708.destg)
 	e1:SetOperation(c9910708.desop)
 	c:RegisterEffect(e1)
-	--change damage
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetOperation(c9910708.regop)
-	c:RegisterEffect(e2)
 end
 function c9910708.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil) end
@@ -62,14 +56,4 @@ function c9910708.negop(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then return end
 	local tc=g:GetFirst()
 	Duel.SpecialSummonRule(tp,tc,0)
-end
-function c9910708.regop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_HAND_LIMIT)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(0,1)
-	e1:SetValue(2)
-	e1:SetReset(RESET_PHASE+PHASE_DRAW)
-	Duel.RegisterEffect(e1,tp)
 end

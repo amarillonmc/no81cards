@@ -98,15 +98,15 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	te:UseCountLimit(tp)
 end
 function cm.refilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsDiscardable()
 end
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local te=Duel.IsPlayerAffectedByEffect(tp,11451673)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if chk==0 then return te and ft>0 and Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
 	local g=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_HAND,0,1,1,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	Duel.SendtoGrave(g,POS_FACEUP,REASON_COST+REASON_DISCARD)
 end
 function cm.actarget(e,te,tp)
 	e:SetLabelObject(te)
@@ -143,7 +143,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c,tp)
-	return c:IsCode(11451631) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or (Duel.IsPlayerAffectedByEffect(tp,11451676) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0)) and c:GetActivateEffect():IsActivatable(tp,true,true)
+	return c:IsCode(11451631) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or (Duel.IsPlayerAffectedByEffect(tp,11451676) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0)) and (c:GetActivateEffect():IsActivatable(tp,true,true) or (Duel.IsPlayerAffectedByEffect(tp,11451676) and c:IsSSetable(true)))
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
@@ -153,30 +153,53 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if tc then
-		local sp=1-tp
-		if not Duel.IsPlayerAffectedByEffect(tp,11451676) or (not tc:IsType(TYPE_FIELD) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)<=0) or ((tc:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) and Duel.SelectOption(tp,aux.Stringid(11451631,3),aux.Stringid(11451631,4))==0) then sp=tp end
-		if tc:IsType(TYPE_FIELD) then
-			local fc=Duel.GetFieldCard(sp,LOCATION_FZONE,0)
-			if fc then
-				Duel.SendtoGrave(fc,REASON_RULE)
-				Duel.BreakEffect()
+		local sp=tp
+		local op=1
+		if Duel.IsPlayerAffectedByEffect(tp,11451676) then
+			local a1=(tc:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
+			local a2=(tc:IsType(TYPE_FIELD) or Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0)
+			local b1=tc:GetActivateEffect():IsActivatable(tp,true,true)
+			local b2=tc:IsSSetable(true)
+			op=aux.SelectFromOptions(tp,{a1 and b1,aux.Stringid(11451631,3)},{a2 and b1,aux.Stringid(11451631,4)},{a1 and b2,aux.Stringid(11451631,8)},{a2 and b2,aux.Stringid(11451631,9)})
+			if op==2 or op==4 then sp=1-tp end
+		end
+		--[[local sp=1-tp
+		if not Duel.IsPlayerAffectedByEffect(tp,11451676) or (not tc:IsType(TYPE_FIELD) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)<=0) or ((tc:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) and Duel.SelectOption(tp,aux.Stringid(11451631,3),aux.Stringid(11451631,4))==0) then sp=tp end--]]
+		if op<=2 then
+			if tc:IsType(TYPE_FIELD) then
+				local fc=Duel.GetFieldCard(sp,LOCATION_FZONE,0)
+				if fc then
+					Duel.SendtoGrave(fc,REASON_RULE)
+					Duel.BreakEffect()
+				end
+				Duel.MoveToField(tc,tp,sp,LOCATION_FZONE,POS_FACEUP,true)
+				local te=tc:GetActivateEffect()
+				local tep=tc:GetControler()
+				local cost=te:GetCost()
+				if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+				if fc and tc:IsLocation(LOCATION_FZONE) then
+					tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
+					Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
+				end
+				Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+			else
+				Duel.MoveToField(tc,tp,sp,LOCATION_SZONE,POS_FACEUP,true)
+				local te=tc:GetActivateEffect()
+				local tep=tc:GetControler()
+				local cost=te:GetCost()
+				if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 			end
-			Duel.MoveToField(tc,tp,sp,LOCATION_FZONE,POS_FACEUP,true)
-			local te=tc:GetActivateEffect()
-			local tep=tc:GetControler()
-			local cost=te:GetCost()
-			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-			if fc and tc:IsLocation(LOCATION_FZONE) then
-				tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
-				Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
-			end
-			Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 		else
-			Duel.MoveToField(tc,tp,sp,LOCATION_SZONE,POS_FACEUP,true)
-			local te=tc:GetActivateEffect()
-			local tep=tc:GetControler()
-			local cost=te:GetCost()
-			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+			if tc:IsType(TYPE_FIELD) then
+				local fc=Duel.GetFieldCard(sp,LOCATION_FZONE,0)
+				if fc then
+					Duel.SendtoGrave(fc,REASON_RULE)
+					Duel.BreakEffect()
+				end
+				Duel.SSet(tp,tc,sp)
+			else
+				Duel.SSet(tp,tc,sp)
+			end
 		end
 		--[[local te=tc:GetActivateEffect()
 		if te:IsActivatable(tp,true,true) and (not tc:CheckActivateEffect(false,false,false) or Duel.SelectOption(tp,aux.Stringid(11451631,3),aux.Stringid(11451631,4))==0) then

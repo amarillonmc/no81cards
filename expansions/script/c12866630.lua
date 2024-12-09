@@ -58,9 +58,10 @@ function s.cfop(e,tp,eg,ep,ev,re,r,rp)
 		local cg=g:Filter(s.cffilter,nil)
 		Duel.ConfirmCards(tp,cg)
 		Duel.ShuffleHand(1-tp)
-		if not (c:IsRelateToEffect(e) or c:IsLocation(LOCATION_MZONE)) and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+		if not (c:IsRelateToEffect(e) or c:IsLocation(LOCATION_MZONE)) and Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.BreakEffect()
-			Duel.DiscardHand(1-tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD,nil)
+			local g1=Duel.GetDecktopGroup(1-tp,1)
+			Duel.ConfirmCards(tp,g1)
 		end
 	end
 end

@@ -454,7 +454,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:GetTurnID()~=Duel.GetTurnCount() or Duel.SelectYesNo(tp,aux.Stringid(11451851,2)) then
+	--if c:GetTurnID()~=Duel.GetTurnCount() or Duel.SelectYesNo(tp,aux.Stringid(11451851,2)) then
+	if Duel.GetMZoneCount(tp)>0 and Duel.SelectYesNo(tp,aux.Stringid(11451851,2)) then
 		Duel.DisableShuffleCheck()
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end

@@ -212,7 +212,7 @@ function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(re)
 	return function(e,tp,eg,ep,ev,re2,r,rp)
-				if re:GetHandler():IsRelateToEffect(e) then Duel.Destroy(re:GetHandler(),REASON_EFFECT) end
+				--if re:GetHandler():IsRelateToEffect(e) then Duel.Destroy(re:GetHandler(),REASON_EFFECT) end
 				local te=e:GetLabelObject()
 				if te and aux.GetValueType(te)=="Effect" then te:Reset() end
 			end

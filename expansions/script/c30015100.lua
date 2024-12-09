@@ -4,11 +4,10 @@ local cm=_G["c"..m]
 if not overuins then dofile("expansions/script/c30015500.lua") end
 function cm.initial_effect(c)
 	--not Special Summon
-	local ea=ors.notsp(c)
 	--summonproc or overuins
-	local e0=ors.summonproc(c,10,5,3)
+	local e0=ors.summonproc(c,10,6,3)
 	--Effect 1
-	local e1=ors.atkordef(c,500,5000)
+	local e1=ors.atkordef(c,150,2500)
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_SINGLE)
 	e7:SetCode(EFFECT_CANNOT_DISABLE_SUMMON)
@@ -29,128 +28,60 @@ function cm.initial_effect(c)
 	e7:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e7)
 	--Effect 3 
-	local e20=Effect.CreateEffect(c)
-	e20:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e20:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e20:SetCode(EVENT_LEAVE_FIELD_P)
-	e20:SetOperation(ors.lechk)
-	c:RegisterEffect(e20)
-	local e21=Effect.CreateEffect(c)
-	e21:SetCategory(CATEGORY_REMOVE+CATEGORY_GRAVE_ACTION)
-	e21:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e21:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
-	e21:SetCode(EVENT_LEAVE_FIELD)
-	e21:SetLabelObject(e20)
-	e21:SetCondition(cm.orscon)
-	e21:SetTarget(cm.orstg)
-	e21:SetOperation(cm.orsop)
-	c:RegisterEffect(e21)
+	local e11=ors.monsterleup(c)
+	--all
+	local e9=ors.alldrawflag(c)
 end
 c30015100.isoveruins=true
 --all
 --Effect 2 
 function cm.df(c,rty) 
-	local chk
-	if rty&TYPE_MONSTER >0 then
-		chk=c:IsLocation(LOCATION_MZONE)
-	else
-		chk=c:IsFaceup()
-	end
-	return c:IsType(rty) and chk
+	return c:IsType(rty) 
 end   
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return not eg:IsContains(e:GetHandler())  
+	return not eg:IsContains(e:GetHandler()) and ors.adsumcon(e)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_DECK+LOCATION_EXTRA)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local rc=Duel.GetDecktopGroup(1-tp,1):GetFirst()
-	if rc==nil or not rc:IsAbleToRemove(tp,POS_FACEDOWN) then return end
-	Duel.ConfirmDecktop(1-tp,1)
-	Duel.DisableShuffleCheck()
-	if Duel.Remove(rc,POS_FACEDOWN,REASON_EFFECT)==0 or rc:GetLocation()~=LOCATION_REMOVED then return false end
-	local rtype=bit.band(rc:GetType(),0x7)
-	local rg=Duel.GetMatchingGroup(cm.df,tp,0,LOCATION_ONFIELD,nil,rtype)
-	if #rg==0 then return false end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local xg=rg:FilterSelect(tp,cm.df,1,1,nil,rtype)
-	if #xg==0 then return false end
-	Duel.BreakEffect()
-	Duel.Remove(xg,POS_FACEDOWN,REASON_EFFECT)
+	local xg=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
+	local dg=Duel.GetFieldGroup(tp,0,LOCATION_DECK)
+	if #xg==0 and #dg==0 then return false end
+	local xc=nil
+	local dc=nil
+	if #dg>0 then
+		dc=Duel.GetDecktopGroup(1-tp,1):GetFirst()
+	end
+	local b1= #xg>0 and xg:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)>0
+	local b2= dc~=nil and dc and dc:IsAbleToRemove(tp,POS_FACEDOWN)
+	local op=aux.SelectFromOptions(tp,{b1,aux.Stringid(m,1)},{b2,aux.Stringid(m,2)})
+	if op==1 then
+		xc=xg:GetMaxGroup(Card.GetSequence):GetFirst()
+		Duel.ConfirmCards(tp,xc)
+		Duel.DisableShuffleCheck()
+		if Duel.Remove(xc,POS_FACEDOWN,REASON_EFFECT)==0 then return false end
+		Duel.ShuffleExtra(1-tp)
+		if c:IsFacedown() or c:GetLocation()~=LOCATION_MZONE then return false end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(500)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		c:RegisterEffect(e1)
+	else
+		Duel.ConfirmDecktop(1-tp,1)
+		Duel.DisableShuffleCheck()
+		if Duel.Remove(dc,POS_FACEDOWN,REASON_EFFECT)==0 then return false end
+		local rtype=bit.band(dc:GetType(),0x7)
+		local rg=Duel.GetMatchingGroup(cm.df,tp,0,LOCATION_ONFIELD,nil,rtype)
+		if #rg==0 then return false end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local xxc=rg:FilterSelect(tp,cm.df,1,1,nil,rtype):GetFirst()
+		if xxc:IsFacedown() then Duel.ConfirmCards(tp,xxc) end
+		if xxc==nil or Duel.Remove(xxc,POS_FACEDOWN,REASON_EFFECT)==0 then return false end
+	end
 end
 --Effect 3 
-function cm.ff(c,tp,code) 
-	return c:IsAbleToRemove(tp,POS_FACEDOWN) and c:IsCode(code)
-end  
-function cm.orscon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsPreviousLocation(LOCATION_ONFIELD)
-end
-function cm.orstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local ct=e:GetLabelObject():GetLabel() 
-	if chk==0 then return true end
-	local sg=Group.FromCards(c)
-	if ct>0 then
-		local rc=c:GetReasonCard()
-		local re=c:GetReasonEffect()
-		if not rc and re then
-			local sc=re:GetHandler()
-			if not rc then
-				Duel.SetTargetCard(sc)
-				sg:AddCard(sc)
-			end
-		end 
-		if rc then 
-			Duel.SetTargetCard(rc)
-			sg:AddCard(rc)
-		end
-	end
-	if ct>0 then
-		loc=LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_DECK+LOCATION_EXTRA 
-		local xg=sg:Clone()
-		xg:RemoveCard(c)
-		local rmg=Duel.GetMatchingGroup(cm.ff,tp,0,loc,nil,tp,xg:GetFirst():GetCode())
-		rmg:AddCard(c)
-		Duel.SetOperationInfo(0,CATEGORY_REMOVE,rmg,#rmg,0,0)
-	else
-		Duel.SetOperationInfo(0,CATEGORY_REMOVE,sg,#sg,0,0)
-	end
-end
-function cm.orsop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local ct=e:GetLabelObject():GetLabel() 
-	if c:IsRelateToEffect(e) then
-		Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)
-	end
-	if ct==1 then
-		local sc=Duel.GetFirstTarget() 
-		if sc==nil then return false end
-		local code=sc:GetCode()
-		loc=LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_DECK+LOCATION_EXTRA 
-		local rmg=Duel.GetMatchingGroup(cm.ff,tp,0,loc,nil,tp,code)
-		if #rmg==0 then return false end
-		local chka=0
-		local chkb=0
-		local chkc=0
-		if rmg:FilterCount(Card.IsLocation,nil,LOCATION_HAND)>0 then
-			chka=1
-		end
-		if rmg:FilterCount(Card.IsLocation,nil,LOCATION_DECK)>0 then
-			chkb=1
-		end
-		if rmg:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)<0 then
-			chkc=1
-		end
-		Duel.Hint(HINT_CARD,0,m) 
-		Duel.BreakEffect()
-		Duel.ConfirmCards(tp,rmg)
-		if Duel.Remove(rmg,POS_FACEDOWN,REASON_EFFECT)==0 then return false end
-		if chka>0 then Duel.ShuffleHand(1-tp) end
-		if chkb>0 then Duel.ShuffleDeck(1-tp) end
-		if chkc>0 then Duel.ShuffleExtra(1-tp) end
-	end
-end

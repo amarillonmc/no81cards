@@ -2,8 +2,6 @@
 function c12856005.initial_effect(c)
 	c:EnableReviveLimit()
 	c:EnableCounterPermit(0xa7d)
-	c:SetCounterLimit(0xa7d,4)
-	aux.AddCodeList(c,12856000)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
@@ -42,11 +40,11 @@ function c12856005.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return c:IsDiscardable() end
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
-function c12856005.filter(c)
+function c12856005.filter(c,tp)
 	return c:IsCode(12856000) and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
 function c12856005.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c12856005.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c12856005.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
 end
 function c12856005.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
@@ -85,7 +83,7 @@ function c12856005.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
+	e1:SetCountLimit(2)
 	e1:SetCondition(c12856005.drcon)
 	e1:SetTarget(c12856005.drtg)
 	e1:SetOperation(c12856005.drop)

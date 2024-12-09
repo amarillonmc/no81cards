@@ -71,10 +71,11 @@ function c44401005.operation(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e2)
 	end
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsSummonType(SUMMON_TYPE_FUSION) and Duel.IsExistingMatchingCard(c44401005.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(44401005,1)) then
+	if c:IsRelateToEffect(e) and c:IsSummonType(SUMMON_TYPE_FUSION) and c:GetFlagEffect(44401005)==0 and Duel.IsExistingMatchingCard(c44401005.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(44401005,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c44401005.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
+		c:RegisterFlagEffect(44401005,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401005,2))
 	end
 end

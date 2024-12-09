@@ -15,6 +15,7 @@ function c44401004.initial_effect(c)
 	e0:SetCategory(CATEGORY_REMOVE)
 	e0:SetType(EFFECT_TYPE_QUICK_F)
 	e0:SetCode(EVENT_BECOME_TARGET)
+	e0:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e0:SetRange(LOCATION_MZONE)
 	e0:SetCondition(c44401004.runcon)
 	e0:SetCost(c44401004.run)
@@ -25,8 +26,8 @@ end
 function c44401004.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local check=c:IsSummonType(SUMMON_TYPE_NORMAL) and c:GetFlagEffect(44401004)==0
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,2,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,tp,LOCATION_REMOVED)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,2,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,0,LOCATION_REMOVED)
 end
 function c44401004.thfilter(c)
 	return c:IsSetCard(0xa4a) and c:IsAbleToHand() and c:IsFaceupEx()
@@ -35,7 +36,7 @@ function c44401004.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local check=c:IsRelateToEffect(e) and c:IsSummonType(SUMMON_TYPE_NORMAL) and c:GetFlagEffect(44401004)==0
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,2,2,nil)
 	if g:GetCount()~=2 then return end
 	if Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and check
 		and Duel.IsExistingMatchingCard(c44401004.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil)

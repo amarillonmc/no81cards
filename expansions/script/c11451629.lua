@@ -91,12 +91,29 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		for _,ph in pairs({PHASE_DRAW,PHASE_STANDBY,PHASE_MAIN1,PHASE_BATTLE,PHASE_MAIN2,PHASE_END}) do
 			Duel.SkipPhase(p,ph,RESET_PHASE+PHASE_END,1)
 		end
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_CANNOT_BP)
-		e1:SetTargetRange(1,0)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,p)
+		if p==tp then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_CANNOT_BP)
+			e1:SetTargetRange(1,0)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+		else
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_CANNOT_BP)
+			e1:SetTargetRange(0,1)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_FIELD)
+			e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e2:SetCode(EFFECT_SKIP_TURN)
+			e2:SetTargetRange(1,0)
+			e2:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN)
+			Duel.RegisterEffect(e2,tp)
+		end
 	end
 end

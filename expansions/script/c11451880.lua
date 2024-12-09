@@ -70,10 +70,12 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local lab=e:GetLabel()
-	local b1=re:IsHasCategory(CATEGORY_NEGATE)
-	local b2=re:IsHasCategory(CATEGORY_DISABLE)
-	local ex,tg,tc=Duel.GetOperationInfo(ev,CATEGORY_DESTROY)
-	local b3=(ex and (tg~=nil or tc>0))
+	local ex,tg,tc=Duel.GetOperationInfo(ev,CATEGORY_NEGATE)
+	local b1=ex and (tg~=nil or tc>0)
+	ex,tg,tc=Duel.GetOperationInfo(ev,CATEGORY_DISABLE)
+	local b2=ex and (tg~=nil or tc>0)
+	ex,tg,tc=Duel.GetOperationInfo(ev,CATEGORY_DESTROY)
+	local b3=ex and (tg~=nil or tc>0)
 	local sg=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
 	local sg2=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
 	if chk==0 then
@@ -103,36 +105,44 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if b2 then lab=lab+2 end
 	if b3 then lab=lab+4 end
 	local lab0=e:GetLabel()
-	if lab0&0x1>0 then Duel.NegateActivation(ev) end
+	local res=0
+	if lab0&0x1>0 then res=Duel.NegateActivation(ev) end
 	if lab0&0x2>0 then
 		local sg=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 		local tg=sg:Select(tp,1,1,nil)
-		Duel.HintSelection(tg)
-		local sc=tg:GetFirst()
-		Duel.NegateRelatedChain(sc,RESET_TURN_SET)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e2:SetCode(EFFECT_DISABLE)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		sc:RegisterEffect(e2)
-		local e3=e2:Clone()
-		e3:SetCode(EFFECT_DISABLE_EFFECT)
-		e3:SetValue(RESET_TURN_SET)
-		sc:RegisterEffect(e3)
-		if sc:IsType(TYPE_TRAPMONSTER) then
-			local e4=e2:Clone()
-			e4:SetCode(EFFECT_DISABLE_TRAPMONSTER)
-			sc:RegisterEffect(e4)
+		if #tg>0 then
+			if res~=0 then Duel.BreakEffect() end
+			Duel.HintSelection(tg)
+			local sc=tg:GetFirst()
+			Duel.NegateRelatedChain(sc,RESET_TURN_SET)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e2:SetCode(EFFECT_DISABLE)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			sc:RegisterEffect(e2)
+			local e3=e2:Clone()
+			e3:SetCode(EFFECT_DISABLE_EFFECT)
+			e3:SetValue(RESET_TURN_SET)
+			sc:RegisterEffect(e3)
+			if sc:IsType(TYPE_TRAPMONSTER) then
+				local e4=e2:Clone()
+				e4:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+				sc:RegisterEffect(e4)
+			end
 		end
+		res=#tg
 	end
 	if lab0&0x4>0 then
 		local sg=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local tg=sg:Select(tp,1,1,nil)
-		Duel.HintSelection(tg)
-		Duel.Destroy(tg,REASON_EFFECT)
+		if #tg>0 then
+			if res~=0 then Duel.BreakEffect() end
+			Duel.HintSelection(tg)
+			Duel.Destroy(tg,REASON_EFFECT)
+		end
 	end
 	if lab>0 then
 		--adjust

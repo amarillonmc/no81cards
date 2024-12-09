@@ -3,7 +3,7 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TODECK)
+	--e1:SetCategory(CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
@@ -39,10 +39,10 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:GetFlagEffect(m+1)==0 and Duel.IsExistingMatchingCard(cm.fieldid,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) and c:IsAbleToDeck() end
-	if c:IsLocation(LOCATION_HAND) then c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
-	Duel.SetTargetCard(e:GetHandler())
+	if chk==0 then return c:GetFlagEffect(m+1)==0 and Duel.IsExistingMatchingCard(cm.fieldid,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) end --and c:IsAbleToDeck() end
+	--if c:IsLocation(LOCATION_HAND) then c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) end
+	--Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
+	--Duel.SetTargetCard(e:GetHandler())
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -78,8 +78,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 	end
 	if c:IsRelateToEffect(e) then
-		Duel.BreakEffect()
-		Duel.SendtoDeck(c,nil,1,REASON_EFFECT)
+		--Duel.BreakEffect()
+		--Duel.SendtoDeck(c,nil,1,REASON_EFFECT)
 	end
 end
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp,chk)

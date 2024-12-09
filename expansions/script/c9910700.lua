@@ -1,43 +1,53 @@
 if QutryYgzw then return end
 QutryYgzw = {}
 
-function QutryYgzw.AddSpProcedure(c,ct)
+function QutryYgzw.AddSpProcedure(c,inicount)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCondition(QutryYgzw.SpCondition(ct))
-	e1:SetOperation(QutryYgzw.SpOperation(ct))
+	e1:SetCondition(QutryYgzw.SpCondition(inicount))
+	e1:SetOperation(QutryYgzw.SpOperation(inicount))
 	c:RegisterEffect(e1)
 end
-function QutryYgzw.SpFilter(c,loc,tp)
-	local b1=c:IsLocation(LOCATION_GRAVE) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsAbleToRemoveAsCost()
-	local b2=c:IsLocation(LOCATION_DECK) and Duel.IsPlayerAffectedByEffect(tp,9910743) and c:IsAbleToGraveAsCost()
-	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and (b1 or b2)
+function QutryYgzw.SpFilter(c,att)
+	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsAbleToRemoveAsCost()
+		and not (att and c:IsAttribute(att))
 end
-function QutryYgzw.SpCondition(ct)
+function QutryYgzw.SpUseDeckFilter(c,tp,ct)
+	return Duel.IsPlayerAffectedByEffect(tp,9910743) and c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+		and (ct<2 or Duel.IsExistingMatchingCard(QutryYgzw.SpFilter,tp,LOCATION_GRAVE,0,ct-1,nil,c:GetAttribute()))
+end
+function QutryYgzw.SpCondition(inicount)
 	return  function(e,c)
 				if c==nil then return true end
 				local tp=c:GetControler()
-				local g1=Duel.GetMatchingGroup(QutryYgzw.SpFilter,tp,LOCATION_GRAVE,0,nil,LOCATION_GRAVE,tp)
-				local g2=Duel.GetMatchingGroup(QutryYgzw.SpFilter,tp,LOCATION_DECK,0,nil,LOCATION_DECK,tp)
-				return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (#g1>=ct or (#g1>=ct-1 and #g2>0))
+				local ct=inicount
+				if c:IsAttribute(ATTRIBUTE_WIND) and Duel.IsPlayerAffectedByEffect(tp,9910738) then ct=ct-1 end
+				local gyg=Duel.GetMatchingGroup(QutryYgzw.SpFilter,tp,LOCATION_GRAVE,0,nil,nil)
+				local deckg=Duel.GetMatchingGroup(QutryYgzw.SpUseDeckFilter,tp,LOCATION_DECK,0,nil,tp,ct)
+				return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (ct<=0 or #gyg>=ct or #deckg>0)
 			end
 end
-function QutryYgzw.SpOperation(ct)
+function QutryYgzw.SpOperation(inicount)
 	return  function(e,tp,eg,ep,ev,re,r,rp,c)
-				local g1=Duel.GetMatchingGroup(QutryYgzw.SpFilter,tp,LOCATION_GRAVE,0,nil,LOCATION_GRAVE,tp)
-				local g2=Duel.GetMatchingGroup(QutryYgzw.SpFilter,tp,LOCATION_DECK,0,nil,LOCATION_DECK,tp)
-				if #g2>0 and (#g1<ct or Duel.SelectYesNo(tp,aux.Stringid(9910700,0))) then
+				local ct=inicount
+				if c:IsAttribute(ATTRIBUTE_WIND) and Duel.IsPlayerAffectedByEffect(tp,9910738) then ct=ct-1 end
+				if ct==0 then return end
+				local att
+				local gyg=Duel.GetMatchingGroup(QutryYgzw.SpFilter,tp,LOCATION_GRAVE,0,nil,nil)
+				local deckg=Duel.GetMatchingGroup(QutryYgzw.SpUseDeckFilter,tp,LOCATION_DECK,0,nil,tp,ct)
+				if #deckg>0 and (#gyg<ct or Duel.SelectYesNo(tp,aux.Stringid(9910700,0))) then
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-					local sg2=g2:Select(tp,1,1,nil)
-					Duel.SendtoGrave(sg2,REASON_COST)
+					local tc=deckg:Select(tp,1,1,nil):GetFirst()
+					att=tc:GetAttribute()
+					Duel.SendtoGrave(tc,REASON_COST)
 					ct=ct-1
 				end
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-				local sg1=g1:Select(tp,ct,ct,nil)
-				Duel.Remove(sg1,POS_FACEUP,REASON_COST)
+				local sg=gyg:FilterSelect(tp,QutryYgzw.SpFilter,ct,ct,nil,att)
+				Duel.Remove(sg,POS_FACEUP,REASON_COST)
 			end
 end
 function QutryYgzw.SetFilter(c,e,tp)
@@ -52,8 +62,7 @@ function QutryYgzw.SetFilter(c,e,tp)
 	return res
 end
 function QutryYgzw.SetFilter2(c,e,tp)
-	if c:IsLocation(LOCATION_REMOVED) and c:IsFacedown() then return false end
-	return c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and QutryYgzw.SetFilter(c,e,tp)
+	return c:IsFaceupEx() and c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER) and QutryYgzw.SetFilter(c,e,tp)
 end
 function QutryYgzw.Set(c,e,tp)
 	local op=e:GetHandlerPlayer()
@@ -86,7 +95,8 @@ function QutryYgzw.Set2(g,e,tp)
 		end
 		tc=g:GetNext()
 	end
-	Duel.RaiseEvent(og,EVENT_SSET,e,REASON_EFFECT,op,op,0)
+	if #og>1 then Duel.ShuffleSetCard(og) end
+	if #og>0 then Duel.RaiseEvent(og,EVENT_SSET,e,REASON_EFFECT,op,op,0) end
 	return og
 end
 function QutryYgzw.AddTgFlag(c)

@@ -57,17 +57,17 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_CARD,0,m)
 	local e1=Effect.CreateEffect(c)
-	--[[e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAINING)
-	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	--e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCondition(cm.recon)
-	e1:SetOperation(cm.reop)--]]
-	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetOperation(cm.reop)
+	--[[e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_ACTIVATE_COST)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(1,1)
 	e1:SetTarget(cm.actarget2)
-	e1:SetOperation(cm.costop2)
+	e1:SetOperation(cm.costop2)--]]
 	Duel.RegisterEffect(e1,tp)
 	local eid=e1:GetFieldID()
 	e1:SetLabel(eid)
@@ -166,7 +166,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 		if te:GetLabel()==e:GetLabel() then res=true break end
 	end
 	if not res then e:Reset() return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
+	Duel.Hint(HINT_SELECTMSG,rp,HINTMSG_COUNTER)
 	local g=Duel.SelectMatchingCard(rp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,0x1972,1)
 	if #g>0 then
 		g:GetFirst():AddCounter(0x1972,1)
@@ -182,15 +182,14 @@ function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SSet(tp,c)>0 then
-		local ct=Duel.GetCounter(tp,1,1,0x1972)
-		if ct>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,ct,nil)
-			if #rg>0 then
-				Duel.HintSelection(rg)
-				Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
-			end
+	if c:IsRelateToEffect(e) then Duel.SSet(tp,c) end
+	local ct=Duel.GetCounter(tp,1,1,0x1972)
+	if ct>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,ct,nil)
+		if #rg>0 then
+			Duel.HintSelection(rg)
+			Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 		end
 	end
 end

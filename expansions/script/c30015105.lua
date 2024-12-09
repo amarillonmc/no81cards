@@ -9,14 +9,14 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	--e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	--Effect 2  
 	local e2=ors.redraw(c)
 	--all
-	local ge1=ors.allop2(c)
+	local ge1=ors.alldrawflag(c)
 end
 c30015105.isoveruins=true
 c30015105[0]=0
@@ -44,7 +44,6 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	cm[tp]=1
 	local c=e:GetHandler()
 	local p1=e:GetHandlerPlayer()
 	if Duel.GetTurnPlayer()==p1 then
@@ -58,7 +57,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 					local e1=Effect.CreateEffect(e:GetHandler())
 					e1:SetType(EFFECT_TYPE_SINGLE)
 					e1:SetCode(EFFECT_UPDATE_ATTACK)
-					e1:SetValue(1000)
+					e1:SetValue(500)
 					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 					tc:RegisterEffect(e1)
 				end
@@ -77,7 +76,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e1:SetTargetRange(1,0)
 		e1:SetValue(cm.val)
-		e1:SetReset(RESET_PHASE+PHASE_END)
+		e1:SetReset(RESET_PHASE+PHASE_END,2)
 		Duel.RegisterEffect(e1,tp)
 	end
 	local res=1
@@ -86,20 +85,20 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.val(e,re,dam,r,rp,rc)
 	local tp=e:GetOwnerPlayer()
-	local ct=Duel.GetMatchingGroupCount(ors.ofm,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
+	local ct=daval[0]+daval[1]
 	local dct
-	if ct*100>1000 then 
-		dct=1000 
+	if ct*100>=1500 then 
+		dct=1500 
 	else 
 		dct=ct*100 
 	end 
-	if cm[tp]==1 or bit.band(r,REASON_EFFECT)~=0 then
-		local dval
-		if dct>dam then dval=0 else dval=dam-dct end
-		return dval
+	local dval
+	if dct>=dam then 
+		dval=0 
 	else 
-		return dam 
+		dval=dam-dct 
 	end
+	return dval
 end
 
 function cm.chainop(e,tp,eg,ep,ev,re,r,rp)

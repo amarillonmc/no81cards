@@ -1,4 +1,4 @@
---远古造物 怪诞虫
+--远古造物 威瓦亚虫
 dofile("expansions/script/c9910700.lua")
 function c9910704.initial_effect(c)
 	--special summon
@@ -6,7 +6,7 @@ function c9910704.initial_effect(c)
 	c:EnableReviveLimit()
 	--flag
 	QutryYgzw.AddTgFlag(c)
-	--draw
+	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910704,0))
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
@@ -53,7 +53,7 @@ function c9910704.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(eg,EVENT_CUSTOM+9910704,re,r,rp,ep,e:GetLabel())
 end
 function c9910704.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return ev==1-tp or ev==PLAYER_ALL 
+	return ev==1-tp or ev==PLAYER_ALL
 end
 function c9910704.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end

@@ -39,7 +39,7 @@ function c71403011.initial_effect(c)
 	--change pos(monster effect)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71403011,1))
-	e2:SetCategory(CATEGORY_POSITION+CATEGORY_TOGRAVE+CATEGORY_DISABLE)
+	e2:SetCategory(CATEGORY_POSITION+CATEGORY_DESTROY+CATEGORY_TOGRAVE+CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
@@ -50,7 +50,6 @@ function c71403011.initial_effect(c)
 	c:RegisterEffect(e2)
 	yume.PPTCounter()
 end
-
 function c71403011.actfilter(c,tp)
 	return c:IsFaceup() and c:IsControler(tp) and c:IsSetCard(0x162) and c:IsType(TYPE_PENDULUM) and c:IsSummonType(SUMMON_TYPE_PENDULUM)
 end

@@ -1,4 +1,4 @@
---远古造物 巴里纳斯鳄
+--远古造物 三角龙
 dofile("expansions/script/c9910700.lua")
 function c9910734.initial_effect(c)
 	--special summon
@@ -12,60 +12,45 @@ function c9910734.initial_effect(c)
 	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetTargetRange(LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE)
+	e1:SetTargetRange(LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED)
 	e1:SetTarget(c9910734.etlimit)
 	e1:SetValue(aux.tgoval)
 	c:RegisterEffect(e1)
-	--recycle
+	--attack target
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_ACTION+CATEGORY_GRAVE_SPSUMMON)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCode(EVENT_PHASE+PHASE_END)
+	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetTarget(c9910734.tdtg)
-	e2:SetOperation(c9910734.tdop)
+	e2:SetCode(EFFECT_PATRICIAN_OF_DARKNESS)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(0,1)
 	c:RegisterEffect(e2)
+	--set
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_LEAVE_GRAVE)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1,9910734)
+	e3:SetTarget(c9910734.settg)
+	e3:SetOperation(c9910734.setop)
+	c:RegisterEffect(e3)
 end
 function c9910734.etlimit(e,c)
 	return c~=e:GetHandler()
 end
-function c9910734.tdfilter(c,e,tp)
-	local b=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsSetCard(0xc950) and c:IsType(TYPE_MONSTER)
-		and c:IsCanBeEffectTarget(e) and (c:IsAbleToDeck() or c9910734.thspfilter(c,e,tp))
+function c9910734.setfilter(c,e,tp)
+	return c:IsAttribute(ATTRIBUTE_EARTH) and QutryYgzw.SetFilter2(c,e,tp)
 end
-function c9910734.thspfilter(c,e,tp)
-	return c:IsAbleToHand() or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
+function c9910734.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910734.setfilter(chkc,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>1
+		and Duel.IsExistingTarget(c9910734.setfilter,tp,LOCATION_GRAVE,0,2,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectTarget(tp,c9910734.setfilter,tp,LOCATION_GRAVE,0,2,2,nil,e,tp)
 end
-function c9910734.fselect(g,e,tp)
-	return g:IsExists(Card.IsAbleToDeck,2,nil) and g:IsExists(c9910734.thspfilter,1,nil,e,tp)
-end
-function c9910734.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local dg=Duel.GetMatchingGroup(c9910734.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e,tp)
-	if chkc then return false end
-	if chk==0 then return dg:CheckSubGroup(c9910734.fselect,3,3,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=dg:SelectSubGroup(tp,c9910734.fselect,false,3,3,e,tp)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
-end
-function c9910734.spfilter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c9910734.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if #tg==0 or aux.NecroValleyNegateCheck(tg) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910734,0))
-	local tc=tg:FilterSelect(tp,c9910734.thspfilter,1,1,nil,e,tp):GetFirst()
-	if not tc then return end
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and (not tc:IsAbleToHand() or Duel.SelectOption(tp,1190,1152)==1) then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-	else
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-	end
-	tg:RemoveCard(tc)
-	Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+function c9910734.setop(e,tp,eg,ep,ev,re,r,rp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	if g:GetCount()==0 or g:GetCount()>ft then return end
+	QutryYgzw.Set2(g,e,tp)
 end

@@ -1,6 +1,5 @@
 --幻神的神殿
-local m=11451511
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,10000000,10000010,10000020)
 	--Activate
@@ -36,7 +35,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.filter(c)
-	return (c:IsCode(10000000,10000010,10000020) or ((aux.IsCodeListed(c,10000000) or aux.IsCodeListed(c,10000010) or aux.IsCodeListed(c,10000020)) and c:IsType(TYPE_MONSTER))) and c:IsAbleToHand()
+	return (c:IsCode(10000000,10000010,10000020) or (aux.IsCodeListed(c,10000010) and c:IsType(TYPE_MONSTER))) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end

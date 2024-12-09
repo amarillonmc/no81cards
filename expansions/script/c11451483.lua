@@ -1,6 +1,5 @@
 --魔人★双子轮舞
-local m=11451483
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

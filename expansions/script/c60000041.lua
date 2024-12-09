@@ -112,11 +112,11 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 		local b1=true
 		local b2=true
 		local b3=true
-		if Duel.GetFlagEffect(tp,m+10000000)~=0 then
+		if Duel.GetFlagEffect(tp,60000037+10000000)~=0 then
 			b1=false
 			if Duel.IsPlayerCanDraw(tp,1) then Duel.Draw(tp,1,REASON_EFFECT) end
 		end
-		if Duel.GetFlagEffect(tp,m+20000000)~=0 then
+		if Duel.GetFlagEffect(tp,60000037+20000000)~=0 then
 			b2=false
 			if Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) then 
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
@@ -124,7 +124,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Destroy(g,REASON_EFFECT)
 			end
 		end
-		if Duel.GetFlagEffect(tp,m+30000000)~=0 then
+		if Duel.GetFlagEffect(tp,60000037+30000000)~=0 then
 			b3=false
 			if Duel.IsExistingMatchingCard(cm.pfil,tp,LOCATION_MZONE,0,1,nil) then 
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
@@ -133,7 +133,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		local op=0
-		if b1 or b2 or b3 then op=aux.SelectFromOptions(tp,{b1,aux.Stringid(m,1)},{b2,aux.Stringid(m,2)},{b3,aux.Stringid(m,3)}) end
+		if b1 or b2 or b3 then op=aux.SelectFromOptions(tp,{b1,aux.Stringid(60000037,1)},{b2,aux.Stringid(60000037,2)},{b3,aux.Stringid(60000037,3)}) end
 		if op==1 then Duel.RegisterFlagEffect(tp,60000037+10000000,0,0,1) 
 		elseif op==2 then Duel.RegisterFlagEffect(tp,60000037+20000000,0,0,1) 
 		elseif op==3 then Duel.RegisterFlagEffect(tp,60000037+30000000,0,0,1) end

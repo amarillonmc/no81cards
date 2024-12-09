@@ -59,12 +59,29 @@ end
 function cm.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_COST)
 	e1:SetProperty(EFFECT_FLAG_OATH)
-	e1:SetOperation(cm.thop)
-	e1:Reset(RESET_CHAIN)
+	e1:SetTargetRange(0xff,0xff)
+	e1:SetTarget(cm.costchk)
+	e1:SetOperation(cm.costop)
+	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,tp)
+end
+function cm.costchk(e,te_or_c,tp)
+	e:SetLabelObject(te_or_c)
+	return true
+end
+function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(m,4))
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_ADD_SETCODE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetValue(0x9977)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+	tc:RegisterEffect(e1,true)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(Card.IsLocation,nil,LOCATION_MZONE):Filter(Card.IsFaceup,nil)

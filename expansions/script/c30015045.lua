@@ -5,27 +5,21 @@ if not overuins then dofile("expansions/script/c30015500.lua") end
 function cm.initial_effect(c)
 	--Effect 1
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_GRAVE_ACTION+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_GRAVE_ACTION+CATEGORY_REMOVE+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(cm.xtg)
 	e1:SetOperation(cm.xop)
 	c:RegisterEffect(e1)
 	--Effect 2  
 	local e2=ors.redraw(c)
 	--all
-	local ge1=ors.allop2(c)
+	local ge1=ors.alldrawflag(c)
 end
 c30015045.isoveruins=true
 --all
 --Effect 1
-function cm.xcon(e,tp,eg,ep,ev,re,r,rp)
-	local a=Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0)
-	local b=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
-	local c=Duel.GetFieldGroupCount(1-tp,LOCATION_ONFIELD,0)
-	local d=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)
-	return a-b>=2 or c-d>=5
-end
 function cm.xtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mg=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 	if chk==0 then return true end
@@ -34,6 +28,9 @@ function cm.xtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.xop(e,tp,eg,ep,ev,re,r,rp)
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		Duel.Draw(tp,1,REASON_EFFECT)
+	end
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -55,6 +52,16 @@ function cm.xop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetOperation(cm.refvengeop)
 	e3:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e3,tp)
+	local e11=Effect.CreateEffect(c)
+	e11:SetType(EFFECT_TYPE_FIELD)
+	e11:SetCode(EFFECT_CANNOT_DISABLE_SUMMON)
+	e11:SetProperty(EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_SET_AVAILABLE)
+	e11:SetTarget(aux.TRUE)
+	e11:SetReset(RESET_PHASE+PHASE_END,2)
+	Duel.RegisterEffect(e11,tp)
+	local e13=e11:Clone()
+	e13:SetCode(EFFECT_CANNOT_DISABLE_FLIP_SUMMON)
+	Duel.RegisterEffect(e13,tp)
 	local res=1
 	Duel.BreakEffect()
 	ors.exrmop(e,tp,res)
@@ -78,9 +85,9 @@ function cm.refvengeop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(xg) do  
 		local sg=Group.CreateGroup()
 		local rc=tc:GetReasonCard()
-		local re=tc:GetReasonEffect()
-		if not rc and re then
-			local sc=re:GetHandler()
+		local rre=tc:GetReasonEffect()
+		if not rc and rre then
+			local sc=rre:GetHandler()
 			if not rc then
 				sg:AddCard(sc)
 			end
@@ -90,15 +97,9 @@ function cm.refvengeop(e,tp,eg,ep,ev,re,r,rp)
 		end 
 		if #sg>0 then
 			local bc=sg:GetFirst()
-			local b1=bc:IsLocation(LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)
-			local b2=bc:GetControler()==1-tp
-			local b3=bc:IsAbleToRemove(tp,POS_FACEDOWN)
-			local b4=not bc:IsType(TYPE_TOKEN)
-			if b1 and  b2 and b3 and b4  then
-				Duel.Hint(HINT_CARD,0,m)  
-				Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,1))
-				Duel.Remove(bc,POS_FACEDOWN,REASON_EFFECT)
-			end
+			Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,1))
+			Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,1))
+			ors.removeone(e,tp,bc)
 		end
 	end
 end 

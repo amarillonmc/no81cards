@@ -15,9 +15,22 @@ function cm.initial_effect(c)
 	--Effect 2  
 	local e2=ors.redraw(c)
 	--all
-	local ge1=ors.allop2(c)
+	local e9=ors.alldrawflag(c)
 end
 c30015095.isoveruins=true
+--
+function cm.selectop(e,tp,mg)
+	if #mg==0 then return false end
+	Duel.BreakEffect()
+	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		local sg=mg:RandomSelect(tp,1)
+		local sgc=sg:GetFirst()
+		if sgc and Duel.SendtoHand(sgc,tp,REASON_EFFECT)>0 
+			and sgc:IsLocation(LOCATION_HAND)  then
+			Duel.ConfirmCards(1-tp,sgc)
+		end
+	end
+end
 --Activate
 function cm.ddf(c,tp)
 	return  c:IsAbleToRemove(tp,POS_FACEDOWN) and c:IsLocation(LOCATION_HAND)
@@ -34,11 +47,17 @@ function cm.ddtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,#g,0,0)
 end
 function cm.ddop(e,tp,eg,ep,ev,re,r,rp)
+	local res=0
 	local g=eg:Filter(cm.ddf,nil,tp)
 	if #g>0 and Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)>0 then
-		local res=1
-		Duel.BreakEffect()
-		ors.exrmop(e,tp,res)		 
+		res=1
+		local mg=Duel.GetMatchingGroup(cm.tf1,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil) 
+		if #mg<2 then return false end
+		cm.selectop(e,tp,mg)
+		Duel.AdjustAll()
+		mg=Duel.GetMatchingGroup(cm.tf1,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil) 
+		cm.selectop(e,1-tp,mg)
 	end
+	ors.exrmop(e,tp,res)
 end
  

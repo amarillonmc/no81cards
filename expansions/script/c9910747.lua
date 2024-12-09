@@ -1,4 +1,4 @@
---远古造物 芬尼氏爪蝠
+--远古造物 爪蝠
 dofile("expansions/script/c9910700.lua")
 function c9910747.initial_effect(c)
 	--special summon
@@ -8,9 +8,10 @@ function c9910747.initial_effect(c)
 	QutryYgzw.AddTgFlag(c)
 	--to hand or to grave
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetCountLimit(1,9910747)
@@ -33,29 +34,24 @@ function c9910747.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c9910747.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToHand() or c:IsAbleToGrave() end
+	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and chkc:IsAbleToHand() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
 function c9910747.spfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSpecialSummonable(0)
 end
 function c9910747.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or not (c:IsAbleToHand() or c:IsAbleToGrave()) then return end
-	local res=false
-	if c:IsAbleToHand() and (not c:IsAbleToGrave() or Duel.SelectOption(tp,1104,1191)==0) then
-		res=Duel.SendtoHand(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_HAND)
-	else
-		res=Duel.SendtoGrave(c,REASON_EFFECT)>0 and c:IsLocation(LOCATION_GRAVE)
-	end
-	if res and Duel.IsExistingMatchingCard(c9910747.spfilter,tp,LOCATION_HAND,0,1,nil)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND)
+		and Duel.IsExistingMatchingCard(c9910747.spfilter,tp,LOCATION_HAND,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910747,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,c9910747.spfilter,tp,LOCATION_HAND,0,1,1,nil)
-		if #g==0 then return end
-		local tc=g:GetFirst()
-		Duel.SpecialSummonRule(tp,tc,0)
+		Duel.SpecialSummonRule(tp,g:GetFirst(),0)
 	end
 end
 function c9910747.setcon(e,tp,eg,ep,ev,re,r,rp)

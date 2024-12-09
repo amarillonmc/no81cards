@@ -87,7 +87,7 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 				end
 			end
 			local i=math.random(2,3)
-			Duel.Hint(24,0,aux.Stringid(60000032,i))
+			Duel.Hint(24,0,aux.Stringid(m,i))
 			local e4=Effect.CreateEffect(e:GetHandler())
 			e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e4:SetCode(EVENT_PHASE+PHASE_END)

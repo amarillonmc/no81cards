@@ -45,10 +45,10 @@ end
 function s.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,c,tp,Card.IsAbleToGraveAsCost)
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c,tp,Card.IsAbleToGraveAsCost)
 end
 function s.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_ONFIELD,0,c,tp,Card.IsAbleToGraveAsCost)
+	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,c,tp,Card.IsAbleToGraveAsCost)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
 	if tc then

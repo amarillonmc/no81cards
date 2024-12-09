@@ -162,6 +162,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local s=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	local num=math.min(#eg,s)
 	if num>0 then
+		Duel.Hint(HINT_CARD,0,m)
 		local teg=Group.CreateGroup()
 		if num~=#eg then 
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)

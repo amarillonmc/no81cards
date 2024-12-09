@@ -103,10 +103,7 @@ function cm.eqlimit(e,c)
 	return c:GetControler()==e:GetHandlerPlayer() or e:GetHandler():GetEquipTarget()==c
 end
 function cm.eqfil1(c)
-	return aux.IsCodeListed(c,60000150) and c:IsAbleToDeck()
-end
-function cm.eqfil2(c)
-	return aux.IsCodeListed(c,60000150) and c:IsAbleToDeck()
+	return aux.IsCodeListed(c,60000150) and c:IsAbleToHand()
 end
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.eqfil1,tp,LOCATION_DECK,0,1,nil)
