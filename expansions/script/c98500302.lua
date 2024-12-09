@@ -80,7 +80,7 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function s.filter(c,e,tp)
-	return (c:IsCode(10000020,10000000,10000010) or aux.IsCodeListed(c,10000020,10000000,10000010)) and c:IsLevelBelow(10) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return (c:IsCode(10000020,10000000) or aux.IsCodeListed(c,10000010)) and c:IsLevelBelow(10) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
