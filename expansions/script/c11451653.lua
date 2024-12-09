@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.operation)
 	c:RegisterEffect(e4)
 	cm.hand_effect=cm.hand_effect or {}
-    cm.hand_effect[c]=e4
+	cm.hand_effect[c]=e4
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)==0
@@ -64,9 +64,12 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetLabelObject()
-	if not c or not e:GetHandler():IsRelateToEffect(e) then return end
+	if not c then return end
+	local r=e:GetHandler():IsRelateToEffect(e)
 	local operation=c:GetOperation()
 	if operation then operation(e,tp,eg,ep,ev,re,r,rp) end
-	Duel.BreakEffect()
-	Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
+	if r and not e:GetHandler():IsLocation(LOCATION_GRAVE) and not e:GetHandler():IsLocation(LOCATION_REMOVED) then
+		Duel.BreakEffect()
+		Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
+	end
 end

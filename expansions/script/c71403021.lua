@@ -99,7 +99,7 @@ function c71403021.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		return (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c71403021.filter2a,tp,LOCATION_HAND,0,1,nil)
 		or Duel.IsExistingMatchingCard(c71403021.filter2b,tp,LOCATION_ONFIELD,0,1,nil,tp))
-		and Duel.IsExistingMatchingCard(c71403021.filter2c,tp,LOCATION_DECK,0,1,nil,e,tp))
+		and Duel.IsExistingMatchingCard(c71403021.filter2c,tp,LOCATION_DECK,0,1,nil,e,tp)
 	end
 end
 function c71403021.filter2second(c)

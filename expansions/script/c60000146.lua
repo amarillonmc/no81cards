@@ -50,11 +50,13 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.filter,e:GetHandlerPlayer(),LOCATION_DECK,0,nil)
 	local tg=Duel.GetMatchingGroup(cm.lkfil,e:GetHandlerPlayer(),LOCATION_HAND,0,nil)
 	g:Merge(tg)
-	if chk==0 then return g:GetClassCount(Card.GetCode)>1 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil)
-		and Duel.IsExistingMatchingCard(cm.lkfil,tp,LOCATION_HAND,0,1,nil) end
 	if e:GetActivateLocation()~=LOCATION_HAND then
 		e:SetLabel(1)
 	end
+	if chk==0 then return e:GetLabel()~=1
+		or (g:GetClassCount(Card.GetCode)>1 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil)
+		and Duel.IsExistingMatchingCard(cm.lkfil,tp,LOCATION_HAND,0,1,nil)) end
+	
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,100)
 end
