@@ -38,31 +38,41 @@ end
 function c11561066.atkval(e,c)
 	return Duel.GetCounter(c:GetControler(),1,1,0x1)*500
 end
-function c11561066.mfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsFaceupEx()
-end
-function c11561066.sfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemove()
+function c11561066.cfilter(c)
+	return (c:IsType(0x6) and c:IsAbleToRemove()) or (c:IsType(TYPE_MONSTER) and c:IsFaceupEx())
 end
 function c11561066.zmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11561066.mfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,nil) or Duel.IsExistingMatchingCard(c11561066.sfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c11561066.cfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,nil) end
 end
 function c11561066.zmop(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(c11561066.mfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,nil)
-	local g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(c11561066.sfilter),tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,nil)
-	g1:Merge(g2)
+	local g=Duel.GetMatchingGroup(c11561066.cfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local tc=g1:Select(tp,1,1,nil):GetFirst()
+	local tc=g:Select(tp,1,1,nil):GetFirst()
 	Duel.HintSelection(Group.FromCards(tc))
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAIN_SOLVED)
-	e1:SetCountLimit(1)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetLabelObject(tc)
-	e1:SetCondition(c11561066.condition)
-	e1:SetOperation(c11561066.operation)
-	Duel.RegisterEffect(e1,tp)
+	if tc:IsType(TYPE_MONSTER) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAIN_SOLVED)
+		e1:SetCountLimit(1)
+		e1:SetLabelObject(tc)
+		e1:SetCondition(c11561066.condition)
+		e1:SetOperation(c11561066.operation)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+	else
+		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetRange(LOCATION_REMOVED)
+		e1:SetCountLimit(1)
+		e1:SetOperation(c11561066.thop)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+	end
+end
+function c11561066.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)
 end
 function c11561066.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetLabelObject():IsRelateToEffect(e)
