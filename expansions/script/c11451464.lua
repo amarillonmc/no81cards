@@ -222,7 +222,7 @@ function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 					end
 				end
 			end
-            if check then return false end
+			if check then return false end
 		--classification is essential for efficiency, and this part is only for backup
 		else
 			iter={1}
@@ -304,6 +304,7 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)==0 then return end
 	local g=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0):RandomSelect(tp,1)
+	Duel.ConfirmCards(tp,g)
 	Duel.HintSelection(g)
 	local tc=g:GetFirst()
 	local e1=Effect.CreateEffect(c)

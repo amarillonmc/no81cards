@@ -132,7 +132,7 @@ function cm.recon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function cm.filter(c,tp,seq)
-	return aux.GetColumn(c,tp)+1==seq
+	return aux.GetColumn(c,tp) and aux.GetColumn(c,tp)==seq-1
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451961)}
@@ -153,8 +153,10 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(function(c) return c:GetSequence()<5 end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if chk==0 then return true end
 	if c:IsLocation(LOCATION_GRAVE) then Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,c,1,0,0) end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function cm.cclfilter(c,tc)
 	local seq1=aux.GetColumn(c)

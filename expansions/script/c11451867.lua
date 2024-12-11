@@ -80,6 +80,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	sc:RegisterEffect(e1,true)
 	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	Duel.ConfirmCards(tp,sc)
+	Duel.HintSelection(Group.FromCards(sc))
 	--hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

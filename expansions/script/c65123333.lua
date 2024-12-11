@@ -2156,7 +2156,7 @@ function s.randomop(tp)
 	if s.Random_Mode then
 		Debug.Message("灌铅骰子 开")
 		function Group.RandomSelect(g,p,count)
-			return s.Select(g,tp,count,count,nil)
+			return _Group.Select(g,tp,count,count,nil)
 		end
 		function Duel.TossCoin(p,count)
 			local ct={}
@@ -2164,23 +2164,23 @@ function s.randomop(tp)
 				local i=1
 				local coin=1
 				while i<=20 and coin==1 do
-					coin=1-s.AnnounceCoin(tp)
+					coin=1-_Duel.AnnounceCoin(tp)
 					table.insert(ct,coin)
 					i=i+1
 				end
-				s.TossCoin(p,i)
+				_Duel.TossCoin(p,i)
 				Duel.SetCoinResult(table.unpack(ct))
 			else
 				for i=1,count do 
-					table.insert(ct,1-s.AnnounceCoin(tp)) 
+					table.insert(ct,1-_Duel.AnnounceCoin(tp)) 
 				end
-				s.TossCoin(p,count)
+				_Duel.TossCoin(p,count)
 				Duel.SetCoinResult(table.unpack(ct))
 			end
 			return table.unpack(ct)
 		end
 		function Duel.TossDice(p,count)
-			local ac=Duel.AnnounceNumber(tp,1,2,3,4,5,6)
+			local ac=_Duel.AnnounceNumber(tp,1,2,3,4,5,6)
 			return ac
 		end
 	else
@@ -2194,7 +2194,7 @@ function s.toolop(tp)
 	local op=_Duel.SelectOption(tp,aux.Stringid(id+1,11),aux.Stringid(id+1,12),aux.Stringid(id+1,13),aux.Stringid(id+1,14),aux.Stringid(id+1,15))
 	if op==0 then
 		local p=_Duel.SelectOption(tp,aux.Stringid(id+1,1),aux.Stringid(id+1,2))==0 and tp or 1-tp
-		local lp=s.AnnounceNumber(tp,80000,16000,8000,4000,2000,1000,500,100,1)
+		local lp=_Duel.AnnounceNumber(tp,80000,16000,8000,4000,2000,1000,500,100,1)
 		Duel.SetLP(p,lp)
 	elseif op==1 then
 		local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
@@ -2213,7 +2213,7 @@ function s.toolop(tp)
 			Debug.Message("场上没有可以放置专属指示物的卡片！")
 			return
 		else
-			local ac=s.Select(sg,tp,1,1,nil):GetFirst()
+			local ac=_Group.Select(sg,tp,1,1,nil):GetFirst()
 			for counter=0x1,0x999 do
 				local loc=ac:GetLocation()
 				if ac:IsLocation(LOCATION_PZONE) then loc=LOCATION_PZONE end
@@ -2230,7 +2230,7 @@ function s.toolop(tp)
 						for i=1,max do
 							t[i]=max-i+1
 						end
-						ac:AddCounter(counter,s.AnnounceNumber(tp,table.unpack(t)))
+						ac:AddCounter(counter,_Duel.AnnounceNumber(tp,table.unpack(t)))
 					else
 						ac:AddCounter(counter,1)
 					end
