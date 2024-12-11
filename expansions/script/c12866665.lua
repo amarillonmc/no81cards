@@ -15,6 +15,7 @@ function s.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
+	e1:SetLabelObject(e2)
 	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,2))
@@ -83,7 +84,7 @@ function s.coop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return re~=e:GetLabelObject()
+	return re~=e:GetLabelObject() and re~=e:GetLabelObject():GetLabelObject()
 end
 function s.filter(c,e,tp)
 	return c:IsCode(12866670) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0

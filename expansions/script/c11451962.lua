@@ -35,9 +35,9 @@ function cm.initial_effect(c)
 	if not PNFL_IMMUNE_CHECK then
 		PNFL_IMMUNE_CHECK=true
 		local _IsImmuneToEffect=Card.IsImmuneToEffect
-		function Card.IsImmuneToEffect(c,e,...)
+		function Card.IsImmuneToEffect(c,...)
 			c:RegisterFlagEffect(11451965,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
-			local res=_IsImmuneToEffect(c,e,...)
+			local res=_IsImmuneToEffect(c,...)
 			c:ResetFlagEffect(11451965)
 			return res
 		end
@@ -206,6 +206,7 @@ function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
 	if c:IsLocation(LOCATION_GRAVE) then Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,c,1,0,0) end
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

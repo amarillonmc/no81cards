@@ -179,7 +179,7 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
-	local mg1=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_ONFIELD,0,nil)
+	local mg1=Duel.GetMatchingGroup(cm.filter1,tp,LOCATION_ONFIELD,0,nil,e)
 	local sg1=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 	local mg2=nil
 	local sg2=nil
