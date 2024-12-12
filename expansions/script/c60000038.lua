@@ -57,7 +57,9 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			if Duel.GetFlagEffect(tp,m+20000000)~=0 then
 				b2=false
 				local g=Duel.GetDecktopGroup(1-tp,1)
-				if #g==1 then Duel.Remove(g,POS_FACEUP,REASON_EFFECT) end
+				if #g==1 then 
+				Duel.DisableShuffleCheck()
+				Duel.Remove(g,POS_FACEUP,REASON_EFFECT) end
 			end
 			if Duel.GetFlagEffect(tp,m+30000000)~=0 then
 				b3=false
@@ -100,7 +102,9 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			if Duel.GetFlagEffect(tp,m+20000000)~=0 then
 				--b2=false
 				local g=Duel.GetDecktopGroup(1-tp,1)
-				if #g==1 then Duel.Remove(g,POS_FACEUP,REASON_EFFECT) end
+				if #g==1 then 
+				Duel.DisableShuffleCheck()
+				Duel.Remove(g,POS_FACEUP,REASON_EFFECT) end
 			end
 			if Duel.GetFlagEffect(tp,m+30000000)~=0 then
 				--b3=false

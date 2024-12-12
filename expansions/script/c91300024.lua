@@ -91,14 +91,15 @@ function cm.hsptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 end
 function cm.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=e:GetLabelObject()
-	if g:GetFirst() and Duel.MoveToField(g:GetFirst(),tp,1-tp,LOCATION_SZONE,POS_FACEUP,true,1<<g:GetFirst():GetSequence()) then
+	local tc=g:GetFirst()
+	if tc and Duel.MoveToField(tc,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true,1<<aux.GetColumn(tc,tc:GetControler())) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-		g:GetFirst():RegisterEffect(e1,true)
+		tc:RegisterEffect(e1,true)
 	end
 	g:DeleteGroup()
 end

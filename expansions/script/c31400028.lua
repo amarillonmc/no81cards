@@ -30,11 +30,11 @@ function cm.matcheck(c)
 	return c:IsLocation(LOCATION_MZONE) and c:IsLinkRace(RACE_SPELLCASTER)
 end
 function cm.lcheck(g,lc)
-	return g:IsExists(cm.matcheck,1,nil)
+	return g:IsExists(Card.IsLinkRace,1,nil,RACE_SPELLCASTER)
 end
 function cm.matval(e,lc,mg,c,tp)
 	if e:GetHandler()~=lc then return false,nil end
-	return true,not mg or not mg:IsExists(Card.IsLocation,1,nil,LOCATION_HAND)
+	return true,not mg or mg:IsExists(cm.matcheck,1,nil) and not mg:IsExists(Card.IsLocation,1,nil,LOCATION_HAND)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)

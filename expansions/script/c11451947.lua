@@ -51,11 +51,10 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return rc:IsSetCard(0x3952)
 end
 function cm.disfilter(c,ec)
-	return aux.NegateAnyFilter(c) and c:GetColumnGroup():IsExists(Card.IsFacedown,1,ec)
+	return aux.NegateAnyFilter(c) and not c:IsLocation(LOCATION_FZONE) and c:GetColumnGroup():IsExists(Card.IsFacedown,1,ec)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	Debug.Message(Duel.IsExistingMatchingCard(cm.disfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,c))
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.disfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,c) end
 	local g=Duel.GetMatchingGroup(cm.disfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0)
