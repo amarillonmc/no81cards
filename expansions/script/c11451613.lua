@@ -7,11 +7,11 @@ function cm.initial_effect(c)
 	e1:SetDescription(aux.Stringid(m,3))
 	e1:SetCategory(CATEGORY_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_MOVE)
+	e1:SetCode(EVENT_CUSTOM+m)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(cm.spcon)
+	--e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sumtg)
 	e1:SetOperation(cm.sumop)
 	c:RegisterEffect(e1)
@@ -28,6 +28,15 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_MOVE)
+		ge2:SetCondition(cm.regcon)
+		ge2:SetOperation(cm.regop)
+		Duel.RegisterEffect(ge2,0)
+	end
 end
 function cm.cfilter(c)
 	local p,loc,seq=c:GetPreviousControler(),c:GetPreviousLocation(),c:GetPreviousSequence()
@@ -37,8 +46,11 @@ end
 function cm.actfilter(c,p,seq)
 	return aux.GetColumn(c,p)==seq
 end
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil)
+end
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RaiseEvent(eg,EVENT_CUSTOM+m,re,r,rp,ep,ev)
 end
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,e:GetHandler()) end
@@ -156,7 +168,7 @@ function cm.valcheck(e,c)
 		e3:SetLabelObject(g)
 		e3:SetTarget(cm.reptg)
 		e3:SetValue(function(e,c) return c:GetFlagEffect(m)>0 end)
-		Duel.RegisterEffect(e3,tp)
+		Duel.RegisterEffect(e3,c:GetControler())
 	end
 	e:Reset()
 end

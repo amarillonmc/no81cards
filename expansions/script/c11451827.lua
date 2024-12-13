@@ -57,7 +57,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.etg(e,c)
-	return c:GetOriginalCode()==m and c:IsFaceup()
+	return c:GetFlagEffect(m-4)>0 --c:GetOriginalCode()==m and c:IsFaceup() and c:IsStatus(STATUS_CHAINING)
 end
 function cm.efilter(e,te,c)
 	return not te:IsActiveType(c:GetType()&0x7)
@@ -79,6 +79,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local rg=Duel.GetMatchingGroup(cm.tfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if chk==0 then return #rg>0 and Duel.IsPlayerCanDiscardDeck(tp,#rg) end
+	e:GetHandler():RegisterFlagEffect(m-4,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_OATH,1)
 	--[[local ft=0
 	if not c:IsLocation(LOCATION_SZONE) then ft=1 end
 	local rg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
@@ -181,6 +182,7 @@ function cm.filter2(c)
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
+	e:GetHandler():RegisterFlagEffect(m-4,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_OATH,1)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)

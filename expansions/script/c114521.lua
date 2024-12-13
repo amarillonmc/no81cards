@@ -43,9 +43,11 @@ function cm.confilter(c,e,tp)
 	return c:IsControlerCanBeChanged() and c:IsFaceup() and not c:IsStatus(STATUS_SUMMONING) and Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_DECK,0,1,nil)
 end
 function cm.eqop(e,tp)
-	local g,tc = rsop.SelectSolve(HINTMSG_OPPO,tp,cm.confilter,tp,0,LOCATION_MZONE,1,1,nil,{})
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPPO)
+	local tc=Duel.SelectMatchingCard(tp,cm.confilter,tp,0,LOCATION_MZONE,1,1,nil,e,tp):GetFirst()
 	if not tc then return end
-	local g2,tc2 = rsop.SelectSolve("eq",tp,cm,eqfilter,tp,LOCATION_DECK,1,1,nil,{})
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+	local tc2=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if rsop.Equip(e,tc2,tc) then
 		Duel.GetControl(tc,tp,0)
 	end
