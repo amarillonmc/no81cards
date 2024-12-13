@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	cm.hand_effect[c]=e1
 	--limit
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(11451416,1))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -33,6 +34,8 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,e:GetHandler()) end
+	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function cm.smfilter(c,ec)
@@ -61,7 +64,7 @@ function cm.cpfilter(c)
 end
 function cm.fselect(g,tp)
 	local dg=g:Filter(Card.IsFacedown,nil)
-	return g:GetClassCount(Card.GetPosition)==2 and (#dg>0 or not (g-dg):IsExists(function(c) return c:IsFaceup() and not c:IsCanTurnSet() end,1,nil))
+	return g:GetClassCount(Card.GetPosition)==2 and (#dg==0 or not (g-dg):IsExists(function(c) return c:IsFaceup() and not c:IsCanTurnSet() end,1,nil))
 end
 function cm.ttcon(e,c,minc)
 	if c==nil then return true end
@@ -117,6 +120,8 @@ function cm.cacon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.catg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	local seq=e:GetHandler():GetPreviousSequence()
 	if e:GetHandler():GetPreviousControler()==1-tp then seq=4-seq end
 	e:SetLabel(seq)

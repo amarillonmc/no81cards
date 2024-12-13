@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	--search
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(11451416,1))
 	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -49,6 +50,8 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=eg:Filter(cm.filter11,nil)
 	if chk==0 then return c:IsAbleToDeck() and g:IsExists(cm.setfilter,1,nil,c,tp) end
 	g=g:Filter(cm.setfilter,nil,c,tp)
+	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,tp,LOCATION_HAND)
@@ -77,7 +80,7 @@ function cm.filter1(c)
 	return c:IsFaceup() and c:IsAbleToRemove() and c:IsCanBeFusionMaterial()
 end
 function cm.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false,POS_FACEDOWN_DEFENSE) and c:CheckFusionMaterial(m,nil,chkf)
+	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function cm.filter3(c,e)
 	return c:IsOnField() and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
@@ -86,7 +89,7 @@ function cm.filter4(c,e)
 	return c:IsFaceup() and c:IsAbleToRemove() and c:IsCanBeFusionMaterial() and not c:IsImmuneToEffect(e)
 end
 function cm.filter5(c,e,tp,m,f,chkf)
-	return (c:IsType(TYPE_FUSION) or c.IsFusionSpellTrap) and (not f or f(c)) and (c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false,POS_FACEDOWN_DEFENSE) or c:IsSSetable()) and c:CheckFusionMaterial(m,nil,chkf)
+	return (c:IsType(TYPE_FUSION) or c.IsFusionSpellTrap) and (not f or f(c)) and (c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) or c:IsSSetable()) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function cm.filter6(c)
 	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove()
@@ -113,6 +116,8 @@ function cm.fstg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 		return res
 	end
+	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,tp,LOCATION_GRAVE)
 end
 function cm.fsop(e,tp,eg,ep,ev,re,r,rp)

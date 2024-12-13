@@ -10,6 +10,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	--e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -92,7 +93,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 					Duel.SwapSequence(sg:GetFirst(),sg:GetNext())
 				end
 				if #sg<=2 then
-					Duel.ConfirmCards(1-tp,sg)
 					Duel.SendtoGrave(g,REASON_EFFECT+REASON_REVEAL)
 					return
 				end

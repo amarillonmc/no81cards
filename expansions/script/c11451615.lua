@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	cm.hand_effect[c]=e1
 	--destroy
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(11451416,1))
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -39,6 +40,8 @@ function cm.filter(c,tp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return (Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)) or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,0,1,nil,tp)) end
+	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,LOCATION_HAND)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -86,6 +89,8 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g1=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,nil)
 	local g2=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 	if chk==0 then return #g1>0 and #g2>0 end
+	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	g1:Merge(g2)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,2,0,0)
 end

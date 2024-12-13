@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	cm.hand_effect[c]=e1
 	--shuffle
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(11451416,1))
 	e2:SetCategory(CATEGORY_POSITION+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_LEAVE_FIELD)
@@ -37,6 +38,8 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,e:GetHandler()) end
+	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function cm.smfilter(c,ec)
@@ -118,6 +121,8 @@ function cm.shtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_MZONE,0,nil)
 	if chk==0 then return #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) end
+	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	local seq=e:GetHandler():GetPreviousSequence()
 	if e:GetHandler():GetPreviousControler()==1-tp then seq=4-seq end
 	e:SetLabel(seq)
