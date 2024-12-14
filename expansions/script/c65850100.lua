@@ -38,7 +38,7 @@ function c65850100.matfilter(c)
 	return c:IsLinkSetCard(0xa35)
 end
 function c65850100.filter1(c)
-	return c:IsSetCard(0xa35) and c:IsAbleToDeck()
+	return c:IsSetCard(0xa35) and c:IsAbleToDeckOrExtraAsCost() and aux.NecroValleyFilter()
 end
 function c65850100.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c65850100.filter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,nil) end
@@ -46,9 +46,6 @@ function c65850100.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,c65850100.filter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,5,nil)
 	Duel.HintSelection(g)
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
-end
-function c65850100.spfilter(c,e,tp)
-	return c:IsSetCard(0xa35) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and aux.NecroValleyFilter()
 end
 function c65850100.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end

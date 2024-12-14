@@ -27,7 +27,7 @@ function c28315944.initial_effect(c)
 	c:RegisterEffect(e3)
 	--recover
 	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_RECOVER+CATEGORY_POSITION)
+	e4:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_POSITION)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1,28315944)
