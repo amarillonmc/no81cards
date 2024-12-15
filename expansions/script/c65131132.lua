@@ -34,12 +34,31 @@ function s.initial_effect(c)
 	e2:SetCondition(s.efcon)
 	e2:SetOperation(s.efop)
 	c:RegisterEffect(e2)
+	local e21=e2:Clone()
+	e21:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e21:SetCode(EVENT_CUSTOM+65131100)
+	c:RegisterEffect(e21)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetCode(id)
 	e3:SetRange(LOCATION_MZONE)
 	c:RegisterEffect(e3)
+	local _Equip=Duel.Equip
+	function Duel.Equip(p,card1,card2,bool,...)
+		if bool==false and card2:GetOriginalCode()==id and card1:IsType(TYPE_SPELL) and not card1:IsType(TYPE_EQUIP) then
+			local ctype=Duel.ReadCard(card1,CARDDATA_TYPE)
+			local og=Duel.GetFieldGroup(0,LOCATION_EXTRA,LOCATION_EXTRA):Filter(aux.TRUE,card1):GetFirst()
+			if og then Duel.Overlay(og,card1) end
+			card1:SetCardData(CARDDATA_TYPE,TYPE_EQUIP+TYPE_SPELL)
+			local count=_Equip(p,card1,card2,bool,...)
+			card1:SetCardData(CARDDATA_TYPE,ctype)
+			return count
+		else
+			return _Equip(p,card1,card2,bool,...)
+		end
+		
+	end
 end
 
 function s.mfilter(c,fc,sub,mg,sg)
@@ -82,61 +101,49 @@ end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,3,tp,LOCATION_DECK)
+	Duel.SetChainLimit(aux.FALSE)
+end
+function s.IsSequence(c,seq)
+	return c:GetSequence()==seq
 end
 function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
-	if g:GetCount()==0 then return end
-	local last1=g:GetFirst()
-	local last2=g:GetNext()
-	local last3=g:GetNext()
-	local tc=g:GetNext()
-	while tc do
-		if tc:GetSequence()<last1:GetSequence() then
-			last3=last2
-			last2=last1
-			last1=tc
-		end
-		if tc:GetSequence()<last2:GetSequence() then
-			last3=last2
-			last2=tc
-		end
-		if tc:GetSequence()<last3:GetSequence() then
-			last3=tc
-		end
-		tc=g:GetNext()
-	end 
-	local eqg=Group.FromCards(last3,last2,last1)
-	local eqg2=Group.CreateGroup()
 	if c:IsFaceup() and c:IsRelateToEffect(e) then
-		local tc=eqg:GetFirst()
-		while tc and tc:IsFacedown() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 do
-			Duel.DisableShuffleCheck()
-			if tc:IsForbidden() then
-				Duel.SendtoGrave(tc,REASON_RULE)
-				return
-			end
-			if not Duel.Equip(tp,tc,c,false) then return end
-			--equip limit
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetCode(EFFECT_EQUIP_LIMIT)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetValue(s.eqlimit)
-			tc:RegisterEffect(e1)
-			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
-			--atk up
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_EQUIP)
-			e2:SetCode(EFFECT_UPDATE_ATTACK)
-			e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-			e2:SetValue(500)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
-			eqg2:AddCard(tc)
-			tc=eqg:GetNext()
-		end
+		for i=1,3 do
+			local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
+			local tc=g:Filter(s.IsSequence,nil,0):GetFirst()
+			if tc and tc:IsFacedown() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsPlayerCanSSet(tp,tc) then
+				Duel.DisableShuffleCheck()
+				if tc:IsForbidden() then
+					Duel.SendtoGrave(tc,REASON_RULE)
+					return
+				end
+				
+				if not Duel.Equip(tp,tc,c,false) then return end
+				
+				--equip limit
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetCode(EFFECT_EQUIP_LIMIT)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				e1:SetValue(s.eqlimit)
+				tc:RegisterEffect(e1)
+				tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
+				--atk up
+				local e2=Effect.CreateEffect(c)
+				e2:SetType(EFFECT_TYPE_EQUIP)
+				e2:SetCode(EFFECT_UPDATE_ATTACK)
+				e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+				e2:SetValue(500)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e2)
+				Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
+				--Duel.AdjustAll()
+			else
+				break
+			end			
+		end		
 	end
 	local e0=Effect.CreateEffect(c) 
 	e0:SetDescription(aux.Stringid(id,0))
@@ -168,13 +175,14 @@ function s.deadop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetLP(tp,0)
 end
 function s.effilter(c,ec)
-	return c:GetEquipTarget()==ec and (c:GetOriginalType()&TYPE_SPELL>0 or c:GetOriginalType()&TYPE_TRAP>0) and c:IsFacedown()
+	return c:GetEquipTarget()==ec and c:GetOriginalType()&(TYPE_SPELL+TYPE_TRAP)>0 and c:GetControler()==ec:GetControler() and c:IsFacedown()
 end
 function s.efcon(e,tp,eg,ep,ev,re,r,rp)
 	local dg=eg:Filter(s.effilter,nil,e:GetHandler())
 	return dg:GetCount()>0
 end
 function s.efop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local dg=eg:Filter(s.effilter,nil,e:GetHandler())
 	for tc in aux.Next(dg) do
 		s.addeffect(tc)
@@ -186,10 +194,10 @@ function s.addeffect(c)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_QUICK_O)
 		e1:SetDescription(aux.Stringid(id,1))
-		e1:SetCode(EVENT_FREE_CHAIN)
+		--e1:SetCode(EVENT_FREE_CHAIN)
 		e1:SetRange(LOCATION_SZONE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		--e1:SetCode(v:GetCode())
+		e1:SetCode(v:GetCode())
 		e1:SetDescription(v:GetDescription())
 		e1:SetCategory(v:GetCategory())
 		e1:SetProperty(v:GetProperty()|EFFECT_FLAG_SET_AVAILABLE)
@@ -198,7 +206,17 @@ function s.addeffect(c)
 		e1:SetTarget(s.target(v))
 		e1:SetOperation(s.operation(v))
 		c:RegisterEffect(e1,true)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		e2:SetLabelObject(e1)
+		e2:SetCode(EVENT_CUSTOM+65131100)
+		e2:SetOperation(s.reop)
+		--c:RegisterEffect(e2,true)
 	end
+end
+function s.reop(e,tp,eg,ep,ev,re,r,rp)
+	e:GetLabelObject():Reset()
+	e:Reset()
 end
 function s.cost(ae)
 	return function (e,tp,eg,ep,ev,re,r,rp,chk)
@@ -207,7 +225,8 @@ function s.cost(ae)
 		if chk==0 then return ae:CheckCountLimit(tp) and (not fcost or fcost(e,tp,eg,ep,ev,re,r,rp,chk)) end
 		ae:UseCountLimit(tp,1)
 		Duel.ChangePosition(c,POS_FACEUP)
-		c:CancelToGrave(false)
+		--c:CancelToGrave(false)
+		--e:SetType(EFFECT_TYPE_ACTIVATE)
 		if fcost then
 			fcost(e,tp,eg,ep,ev,re,r,rp,chk)
 		end

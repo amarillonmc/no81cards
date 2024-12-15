@@ -41,7 +41,7 @@ function cm.initial_effect(c)
 	--set
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(11451631,6))
-	e2:SetCategory(CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_DRAW+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
@@ -98,15 +98,15 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	te:UseCountLimit(tp)
 end
 function cm.refilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsDiscardable()
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()
 end
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local te=Duel.IsPlayerAffectedByEffect(tp,11451673)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if chk==0 then return te and ft>0 and Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	local g=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_HAND,0,1,1,nil)
-	Duel.SendtoGrave(g,POS_FACEUP,REASON_COST+REASON_DISCARD)
+	if chk==0 then return te and ft>0 and Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler())
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function cm.actarget(e,te,tp)
 	e:SetLabelObject(te)
@@ -147,6 +147,7 @@ function cm.filter(c,tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
+	Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
@@ -177,7 +178,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 				if fc and tc:IsLocation(LOCATION_FZONE) then
 					tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
-					Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
 				end
 				Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 			else
@@ -211,12 +211,21 @@ function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.actfilter,1,nil,se) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND))
 end
 function cm.actg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetTargetParam(2)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,1)
 end
 function cm.actop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+	if Duel.Draw(p,d,REASON_EFFECT)==2 then
+		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,p,LOCATION_HAND,0,nil)
+		if g:GetCount()<1 then return end
+		Duel.ShuffleHand(p)
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
+		local sg=g:Select(p,1,1,nil)
+		Duel.SendtoDeck(sg,nil,0,REASON_EFFECT)
+	end
 end

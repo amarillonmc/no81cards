@@ -52,7 +52,7 @@ function c71403019.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c71403019.filterp2a(c)
-	return c:GetSequence()>4 and c:IsFaceup() and c:IsSetCard(0x715) and c:IsCanChangePosition()
+	return c:GetSequence()>4 and c:IsFaceup() and c:IsSetCard(0x715)
 end
 function c71403019.filterp2b(c)
 	return c:IsSetCard(0x715) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGrave()
@@ -61,20 +61,33 @@ function c71403019.tgp2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c71403019.filterp2a(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c71403019.filterp2a,tp,LOCATION_MZONE,0,1,nil)
 		and Duel.IsExistingMatchingCard(c71403019.filterp2b,tp,LOCATION_DECK,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectTarget(tp,c71403019.filterp2a,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,#g,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function c71403019.opp2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	local g=Duel.GetMatchingGroup(c71403019.filterp2b,tp,LOCATION_DECK,0,1,nil)
-	if tc:IsRelateToEffect(e)
-		and Duel.ChangePosition(tc,POS_FACEUP_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)~=0
-		and g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.SendtoGrave(sg,REASON_EFFECT)
+	if tc:IsRelateToEffect(e) then
+		local b2=tc:IsCanChangePosition()
+		local op=-1
+		if b2 then
+			op=Duel.SelectOption(tp,aux.Stringid(71403019,2),aux.Stringid(71403019,3))
+		else
+			op=Duel.SelectOption(tp,aux.Stringid(71403019,2))
+		end
+		local op_flag=false
+		if op==0 then
+			op_flag=Duel.Destroy(sg,REASON_EFFECT)>0
+		else
+			op_flag=Duel.ChangePosition(tc,POS_FACEUP_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)>0
+		end
+		local g=Duel.GetMatchingGroup(c71403019.filterp2b,tp,LOCATION_DECK,0,1,nil)
+		if op_flag and g:GetCount()>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			local sg=g:Select(tp,1,1,nil)
+			Duel.SendtoGrave(sg,REASON_EFFECT)
+		end
 	end
 end
 function c71403019.filter2a(c)

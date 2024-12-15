@@ -3,7 +3,7 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(cm.target)
@@ -22,24 +22,26 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsLevelAbove(5) and c:IsRace(RACE_FAIRY) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsLevelAbove(5) and c:IsRace(RACE_FAIRY) and c:IsAbleToHand()
+end
+function cm.smfilter(c)
+	return not c:IsRace(RACE_FAIRY) and c:IsSummonable(true,nil)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_MZONE)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(cm.smfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local tc=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
-		if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local rg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_MZONE,0,1,1,nil)
-			Duel.HintSelection(rg)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local tc=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
+	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+		local rg=Duel.SelectMatchingCard(tp,cm.smfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,1,1,nil)
+		if #rg>0 then
 			Duel.BreakEffect()
-			Duel.SendtoGrave(rg,REASON_EFFECT)
+			Duel.Summon(tp,rg:GetFirst(),true,nil)
 		end
 	end
 end

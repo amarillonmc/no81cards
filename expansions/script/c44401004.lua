@@ -26,8 +26,8 @@ end
 function c44401004.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local check=c:IsSummonType(SUMMON_TYPE_NORMAL) and c:GetFlagEffect(44401004)==0
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,2,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,0,LOCATION_REMOVED)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,0,LOCATION_REMOVED)
 end
 function c44401004.thfilter(c)
 	return c:IsSetCard(0xa4a) and c:IsAbleToHand() and c:IsFaceupEx()
@@ -36,9 +36,9 @@ function c44401004.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local check=c:IsRelateToEffect(e) and c:IsSummonType(SUMMON_TYPE_NORMAL) and c:GetFlagEffect(44401004)==0
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,2,2,nil)
-	if g:GetCount()~=2 then return end
-	if Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and check
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,1,nil)
+	if g:GetCount()~=1 then return end
+	if Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT)~=0 and check
 		and Duel.IsExistingMatchingCard(c44401004.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(44401004,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -79,11 +79,13 @@ function c44401004.retop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c44401004.runtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,PLAYER_ALL,LOCATION_DECK)
 end
 function c44401004.runop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return end
-	local g=Duel.GetDecktopGroup(tp,1)
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 or Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)==0 then return end
+	local g1=Duel.GetDecktopGroup(tp,1)
+	local g2=Duel.GetDecktopGroup(1-tp,1)
+	g1:Merge(g2)
 	Duel.DisableShuffleCheck()
-	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)
 end

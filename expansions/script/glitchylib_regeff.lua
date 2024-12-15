@@ -1,4 +1,6 @@
-EFFECT_NO_RECOVER = 33720228	--Affected player cannot gain LP by card effects
+EFFECT_NO_RECOVER = 33720228				--Affected player cannot gain LP by card effects
+
+EVENT_EFFECTS_DISABLED		= EVENT_CUSTOM+33720327	--Event raised when the effects (mind the "s") of a card are negated (by Infinite Impermanence, Hot Red Dragon Archfiend Abyss, etc...)
 
 aux.EnabledRegisteredEffectMods={}
 
@@ -272,7 +274,21 @@ if not global_card_effect_table_global_check then
 			e:SetValue(newval)
 		end
 		if aux.PreventSecondRegistration then return end
-		return self.register_global_card_effect_table(self,e,forced)
+		
+		local res=self.register_global_card_effect_table(self,e,forced)
+		
+		--Raise EVENT_EFFECTS_DISABLED event
+		if typ==EFFECT_TYPE_SINGLE and code==EFFECT_DISABLE then
+			if aux.EnabledRegisteredEffectMods[EVENT_EFFECTS_DISABLED] then
+				local handler,owner=e:GetHandler(),e:GetOwner()
+				Duel.AdjustInstantly(handler)
+				if handler:IsDisabled() and not handler:IsImmuneToEffect(e) then
+					Duel.RaiseEvent(handler,EVENT_EFFECTS_DISABLED,e,REASON_EFFECT,e:GetOwnerPlayer(),handler:GetControler(),0)
+				end
+			end
+		end
+		
+		return res
 	end
 end
 

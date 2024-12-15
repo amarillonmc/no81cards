@@ -165,7 +165,7 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.Group(s.tgfilter,tp,LOCATION_HAND,LOCATION_HAND,nil,tp)
 	if chk==0 then
-		return g:CheckSubGroup(s.spchk,1,#g,tp,c)
+		return g:CheckSubGroup(s.spchk,2,2,tp,c)
 	end
 	local tg=Duel.SelectFusionMaterial(tp,c,g,nil,tp|0x200,true)
 	if #tg>0 then

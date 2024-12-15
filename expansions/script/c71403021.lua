@@ -52,7 +52,7 @@ function c71403021.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c71403021.filterp2a(c,e)
-	return c:GetSequence()<5 and c:IsFaceup() and c:IsSetCard(0x715) and c:IsCanChangePosition() and c:IsCanBeEffectTarget(e)
+	return c:GetSequence()<5 and c:IsFaceup() and c:IsSetCard(0x715) and c:IsCanBeEffectTarget(e)
 end
 function c71403021.filterp2b(c)
 	return c:IsFaceup() and c:IsCanTurnSet()
@@ -77,13 +77,26 @@ end
 function c71403021.opp2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local g=Duel.GetMatchingGroup(c71403021.filterp2b,tp,LOCATION_MZONE,LOCATION_MZONE,1,tc)
-	if tc:IsRelateToEffect(e)
-		and Duel.ChangePosition(tc,POS_FACEUP_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)~=0
-		and g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-		local sg=g:Select(tp,1,1,nil)
-		local sc=sg:GetFirst()
-		Duel.ChangePosition(sc,POS_FACEDOWN_DEFENSE)
+	if tc:IsRelateToEffect(e) then
+		local b2=tc:IsCanChangePosition()
+		local op=-1
+		if b2 then
+			op=Duel.SelectOption(tp,aux.Stringid(71403019,2),aux.Stringid(71403019,3))
+		else
+			op=Duel.SelectOption(tp,aux.Stringid(71403019,2))
+		end
+		local op_flag=false
+		if op==0 then
+			op_flag=Duel.Destroy(sg,REASON_EFFECT)>0
+		else
+			op_flag=Duel.ChangePosition(tc,POS_FACEUP_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)>0
+		end
+		if op_flag and g:GetCount()>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+			local sg=g:Select(tp,1,1,nil)
+			local sc=sg:GetFirst()
+			Duel.ChangePosition(sc,POS_FACEDOWN_DEFENSE)
+		end
 	end
 end
 function c71403021.filter2a(c)

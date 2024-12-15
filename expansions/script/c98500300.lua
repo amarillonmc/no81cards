@@ -80,7 +80,7 @@ function c98500300.initial_effect(c)
 	c:RegisterEffect(e8)
 end
 function c98500300.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsRace(RACE_DIVINE)
+	return c:IsLevelAbove(12) and c:IsAttribute(ATTRIBUTE_DIVINE) and c:IsFaceupEx(LOCATION_HAND)
 end
 function c98500300.spfilter(c,e,tp)
 	return c:IsCode(10000000,10000010,10000020) and c:GetOriginalLevel()==10

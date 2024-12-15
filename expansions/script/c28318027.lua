@@ -16,7 +16,7 @@ function c28318027.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(28318027,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
@@ -129,24 +129,34 @@ function c28318027.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) end
 	Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_COST)
 end
-function c28318027.thfilter(c)
-	return c:IsSetCard(0x284) and c:IsType(TYPE_SPELL) and (c:IsAbleToHand() or c:IsSSetable())
+function c28318027.thfilter(c,e,tp)
+	return c:IsSetCard(0x284)and (c:IsSSetable() or c:IsAbleToHand() or (Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)))
 end
 function c28318027.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28318027.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28318027.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	--Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c28318027.tgfilter(c)
 	return c:IsSetCard(0x284) and c:IsAbleToGrave()
 end
 function c28318027.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local tc=Duel.SelectMatchingCard(tp,c28318027.thfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-	if tc and tc:IsAbleToHand() and (not tc:IsSSetable() or Duel.SelectOption(tp,1190,1153)==0) then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+	local tc=Duel.SelectMatchingCard(tp,c28318027.thfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
+	if tc:IsType(TYPE_SPELL+TYPE_TRAP) then
+		if tc:IsAbleToHand() and (not tc:IsSSetable() or Duel.SelectOption(tp,1190,1153)==0) then
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
+		else
+			Duel.SSet(tp,tc)
+		end
 	else
-		Duel.SSet(tp,tc)
+		if tc:IsAbleToHand() and (not (tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetMZoneCount(tp)>0) or Duel.SelectOption(tp,1190,1153)==0) then
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
+		else
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+			Duel.ConfirmCards(1-tp,tc)
+		end
 	end
 	if e:GetHandler():IsRankAbove(8) and Duel.IsExistingMatchingCard(c28318027.tgfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28318027,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -166,15 +176,9 @@ end
 function c28318027.rcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	local b1,b2=false
-	if c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsFaceup() then b1=true end
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() and c:IsFaceup() then b2=true end
-	if not (b1 or b2) then return end
+	if not (c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsFaceup()) then return end
 	if c:GetRank()==tc:GetRank() then return end
-	local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(28318027,3)},
-		{b2,aux.Stringid(28318027,4)})
-	if op==1 then
+	if Duel.SelectOption(tp,aux.Stringid(28318027,3),aux.Stringid(28318027,4))==0 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_RANK)

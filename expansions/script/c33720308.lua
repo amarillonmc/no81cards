@@ -8,6 +8,7 @@ local s,id=GetID()
 if not GLITCHYLIB_LOADED then
 	Duel.LoadScript("glitchylib_vsnemo.lua")
 end
+Duel.LoadScript("glitchylib_lprecover.lua")
 
 local FLAG_DELAYED_EVENT = id
 local FLAG_SIMULT_CHECK = id+100
@@ -54,16 +55,17 @@ function s.initial_effect(c)
 end
 
 function s.damval(e,re,val,r,rp,rc)
-	if not re or Duel.PlayerHasFlagEffect(tp,PFLAG_REPLACING_DAMAGE) then return val end
+	if not re or (aux.DamageReplacementEffectAlreadyUsed[e]~=nil or (aux.IsReplacedDamage and aux.DamageReplacementEffectWasApplied)) then return val end
 	local rec=re:GetHandler()
-	if val<=2950 and r&REASON_EFFECT>0 and rec and rec:IsSetCard(ARCHE_BRAND_810) then
+	if val>0 and val<=2950 and r&REASON_EFFECT>0 and rec and rec:IsSetCard(ARCHE_BRAND_810) then
+		aux.IsReplacedDamage=true
+		aux.DamageReplacementEffectAlreadyUsed[e]=true
 		local c=e:GetHandler()
 		local tp=e:GetHandlerPlayer()
 		local fid=c:GetFieldID()
 		Duel.RegisterFlagEffect(tp,PFLAG_REPLACING_DAMAGE,0,0,0,fid)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-		e1:SetProperty(EFFECT_FLAG_DELAY)
 		e1:SetCode(EVENT_CUSTOM+id)
 		e1:SetCountLimit(1)
 		e1:SetLabel(fid,val)
@@ -83,35 +85,17 @@ end
 function s.damrepop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local res=s.damrep(e,tp,e:GetSpecificLabel(2))
-	local rc=eg:GetFirst()
-	local e1=Effect.CreateEffect(rc)
-	e1:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_CUSTOM+id+1)
-	e1:SetCountLimit(1)
-	e1:SetOwnerPlayer(rp)
-	e1:SetOperation(
-		function(_e)
-			if res==0 then
-				aux.IsReplacedDamage=true
-				local dam=Duel.Damage(ep,ev,r)
-				aux.IsReplacedDamage=false
-			end
-			Duel.ResetFlagEffect(tp,PFLAG_REPLACING_DAMAGE)
-		end
-	)
-	e1:SetReset(RESET_PHASE|PHASE_END)
-	Duel.RegisterEffect(e1,rp)
-	Duel.RaiseEvent(rc,EVENT_CUSTOM+id+1,re,r,rp,ep,ev)
+	aux.DamageReplacementEffectWasApplied=res
+	Duel.ResetFlagEffect(tp,PFLAG_REPLACING_DAMAGE)
 end
 function s.damrep(e,tp,val)
 	local c=e:GetHandler()
-	if c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+	if c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.SelectEffectYesNo(tp,c) then then
 		Duel.Hint(HINT_CARD,tp,id)
 		Duel.SpecialSummonATKDEF(e,c,0,tp,tp,false,false,POS_FACEUP,nil,val)
-		return 1
+		return true
 	end
-	return 0
+	return false
 end
 
 --E2

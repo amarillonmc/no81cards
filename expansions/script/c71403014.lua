@@ -93,7 +93,7 @@ function c71403014.op1(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	if op_flag then
+	if op_flag and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_PZONE,0,2,nil,0x715) then
 		yume.OptionalPendulum(e,c,tp)
 	end
 end

@@ -69,16 +69,29 @@ end
 function c71403022.opp2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local g=Duel.GetMatchingGroup(c71403022.filterp2,tp,LOCATION_MZONE,LOCATION_MZONE,tc)
-	if tc:IsRelateToEffect(e)
-		and Duel.ChangePosition(tc,POS_FACEUP_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)~=0
-		and g:GetCount()>0 then
-		local sg=g:Select(tp,1,1,nil)
-		local sc=sg:GetFirst()
-		if sc:IsPosition(POS_FACEUP_DEFENSE) and sc:IsCanTurnSet() then
-			local pos=Duel.SelectPosition(tp,sc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)
-			Duel.ChangePosition(sc,pos)
+	if tc:IsRelateToEffect(e) then
+		local b2=tc:IsCanChangePosition()
+		local op=-1
+		if b2 then
+			op=Duel.SelectOption(tp,aux.Stringid(71403019,2),aux.Stringid(71403019,3))
 		else
-			Duel.ChangePosition(sc,POS_FACEDOWN_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
+			op=Duel.SelectOption(tp,aux.Stringid(71403019,2))
+		end
+		local op_flag=false
+		if op==0 then
+			op_flag=Duel.Destroy(sg,REASON_EFFECT)>0
+		else
+			op_flag=Duel.ChangePosition(tc,POS_FACEUP_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)>0
+		end
+		if op_flag and g:GetCount()>0 then
+			local sg=g:Select(tp,1,1,nil)
+			local sc=sg:GetFirst()
+			if sc:IsPosition(POS_FACEUP_DEFENSE) and sc:IsCanTurnSet() then
+				local pos=Duel.SelectPosition(tp,sc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)
+				Duel.ChangePosition(sc,pos)
+			else
+				Duel.ChangePosition(sc,POS_FACEDOWN_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
+			end
 		end
 	end
 end

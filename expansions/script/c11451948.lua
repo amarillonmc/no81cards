@@ -91,6 +91,12 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e2,true)
+		local e1=e2:Clone()
+		e1:SetCode(EFFECT_CANNOT_SUMMON)
+		tc:RegisterEffect(e1,true)
+		local e3=e2:Clone()
+		e3:SetCode(EFFECT_CANNOT_MSET)
+		tc:RegisterEffect(e3,true)
 	end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)

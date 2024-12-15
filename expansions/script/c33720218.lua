@@ -9,6 +9,7 @@ local s,id=GetID()
 if not GLITCHYLIB_LOADED then
 	Duel.LoadScript("glitchylib_vsnemo.lua")
 end
+Duel.LoadScript("glitchylib_lprecover.lua")
 function s.initial_effect(c)
 	--[[During the End Phase, if this card is Special Summoned: Activate this effect; until the end of your opponent's next turn, each time you would take damage,
 	you can shuffle 1 "Sepialife" card from your GY into your opponent's Deck, instead.]]
@@ -55,6 +56,11 @@ end
 function s.damval(e,re,val,r,rp,rc)
 	local c=e:GetHandler()
 	local tp=e:GetHandlerPlayer()
+	
+	if aux.DamageReplacementEffectAlreadyUsed[e]~=nil or (aux.IsReplacedDamage and aux.DamageReplacementEffectWasApplied) then return val end
+	aux.IsReplacedDamage=true
+	aux.DamageReplacementEffectAlreadyUsed[e]=true
+	
 	if r==REASON_BATTLE and not rc then
 		rc=s.reason_card
 	end
@@ -62,7 +68,6 @@ function s.damval(e,re,val,r,rp,rc)
 	Duel.RegisterFlagEffect(tp,id+100,0,0,0,fid)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_CUSTOM+id)
 	e1:SetCountLimit(1)
 	e1:SetLabel(fid)
@@ -83,33 +88,18 @@ end
 function s.damrepop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local res=s.damrep(tp)
+	aux.DamageReplacementEffectWasApplied=res
 	local rc=eg:GetFirst()
-	if r==REASON_BATTLE then
+	
+	if not res and r==REASON_BATTLE then
 		s.reason_card=rc
-	end
-	local e1=Effect.CreateEffect(rc)
-	e1:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_CUSTOM+id+1)
-	e1:SetCountLimit(1)
-	e1:SetOwnerPlayer(rp)
-	e1:SetOperation(
-		function(_e)
-			if res==0 then
-				aux.IsReplacedDamage=true
-				local dam=Duel.Damage(ep,ev,r)
-				aux.IsReplacedDamage=false
-				if dam>0 and r==REASON_BATTLE then
-					Duel.RaiseSingleEvent(rc,EVENT_BATTLE_DAMAGE,nil,0,rp,ep,dam)
-					Duel.RaiseEvent(rc,EVENT_BATTLE_DAMAGE,nil,0,rp,ep,dam)
-				end
-			end
-			Duel.ResetFlagEffect(tp,id+100)
+		local dam=Duel.Damage(ep,ev,r)
+		if dam>0 then
+			Duel.RaiseSingleEvent(rc,EVENT_BATTLE_DAMAGE,nil,0,rp,ep,dam)
+			Duel.RaiseEvent(rc,EVENT_BATTLE_DAMAGE,nil,0,rp,ep,dam)
 		end
-	)
-	e1:SetReset(RESET_PHASE|PHASE_END)
-	Duel.RegisterEffect(e1,rp)
-	Duel.RaiseEvent(rc,EVENT_CUSTOM+id+1,re,r,rp,ep,ev)
+	end
+	Duel.ResetFlagEffect(tp,id+100)
 end
 function s.damrep(tp)
 	if Duel.IsExistingMatchingCard(aux.Necro(s.tdfilter),tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
@@ -117,10 +107,10 @@ function s.damrep(tp)
 		local g=Duel.Select(HINTMSG_TODECK,false,tp,aux.Necro(s.tdfilter),tp,LOCATION_GRAVE,0,1,1,nil)
 		if #g>0 then
 			Duel.HintSelection(g)
-			return Duel.ShuffleIntoDeck(g,1-tp)
+			return Duel.ShuffleIntoDeck(g,1-tp)>0
 		end
 	end
-	return 0
+	return false
 end
 
 --E2

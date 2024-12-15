@@ -21,7 +21,7 @@ function c29052475.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetCountLimit(1,29052476)
+	e2:SetCountLimit(1,29052475)
 	e2:SetTarget(c29052475.tktg)
 	e2:SetOperation(c29052475.tkop)
 	c:RegisterEffect(e2)
@@ -59,24 +59,9 @@ function c29052475.tkop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 --e1
 function c29052475.thfilter(c,e,tp)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c.kinkuaoi_Akscsst
+	return c:IsSetCard(0x87af) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c.kinkuaoi_Akscsst
 end
 function c29052475.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

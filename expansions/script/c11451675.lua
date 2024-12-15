@@ -25,26 +25,25 @@ function cm.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e0:SetValue(cm.splimit)
 	c:RegisterEffect(e0)
-	--copy
+	--confirm deck
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCode(m)
+	e1:SetCode(11451676)
 	e1:SetOperation(cm.cfop)
-	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(m)
-	c:RegisterEffect(e2)
-	--effect gain
+	--c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_SOLVED)
+	e2:SetCondition(cm.cfcon)
+	--c:RegisterEffect(e2)
+	--fly
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_ADJUST)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCode(11451676)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetOperation(cm.efop)
-	c:RegisterEffect(e3) 
+	e3:SetTargetRange(1,0)
+	c:RegisterEffect(e3)
 end
 function cm.tdcfop(c)
 	return function(g)
@@ -71,32 +70,15 @@ end
 function cm.splimit(e,se,sp,st)
 	return se:IsHasType(EFFECT_TYPE_ACTIONS)
 end
+function cm.cfcon(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	return rc:IsSetCard(0x1979) or rc:IsCode(11451631)
+end
 function cm.cfop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(r,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(r,0))
-end
-function cm.efop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(function(c) return c:IsCode(11451631) and c:GetOriginalCode()~=11451631 and c:GetFlagEffect(m)==0 end,tp,LOCATION_FZONE,LOCATION_FZONE,nil)
-	for tc in aux.Next(g) do
-		local cid=tc:CopyEffect(11451631,RESET_EVENT+RESETS_STANDARD,1)
-		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,cid)
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e3:SetRange(LOCATION_MZONE)
-		e3:SetCode(EVENT_ADJUST)
-		e3:SetLabel(cid)
-		e3:SetCondition(cm.regcon)
-		e3:SetOperation(cm.regop)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e3)
-	end
-end
-function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(Card.IsHasEffect,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,m)
-end
-function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local cid=e:GetLabel()
-	c:ResetEffect(cid,RESET_COPY)
-	c:ResetFlagEffect(m)
+	local g=Duel.GetDecktopGroup(tp,1)
+	if not g or #g==0 then return end
+	Duel.ConfirmCards(tp,g)
+	local tc=g:GetFirst()
+	local opt=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))
+	if opt==1 then Duel.MoveSequence(tc,1) end
 end

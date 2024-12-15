@@ -616,3 +616,20 @@ function Card.MustBeSSedByOwnProcedure(c,rc)
 	e:SetCode(EFFECT_SPSUMMON_CONDITION)
 	c:RegisterEffect(e)
 end
+
+--Special conditions (not effects)
+function Card.TrapCanBeActivatedFromHand(c,cond,desc,stop)
+	local e1=Effect.CreateEffect(c)
+	if desc then
+		e1:SetDescription(desc)
+	end
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	if cond then
+		e1:SetCondition(cond)
+	end
+	if not stop then
+		c:RegisterEffect(e1)
+	end
+	return e1
+end

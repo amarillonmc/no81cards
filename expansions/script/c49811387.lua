@@ -26,11 +26,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
     --search
 	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_FIELD)
-    e5:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
+	e5:SetType(EFFECT_TYPE_QUICK_O)
+    e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(0x04)
     e5:SetCountLimit(1)
     e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
+    e5:SetCondition(cm.eqcon)
 	e5:SetTarget(cm.eqtg)
 	e5:SetOperation(cm.eqop)
 	c:RegisterEffect(e5)
@@ -91,6 +92,11 @@ end
 
 function cm.tgefilter(c)
     return c:IsCode(34022290) and c:IsFaceup() and Duel.IsExistingMatchingCard(cm.tgefilter2,0,0x08,0x08,1,nil,c)
+end
+
+function cm.eqcon(e,tp,eg,ep,ev,re,r,rp)
+    local ph=Duel.GetCurrentPhase()
+    return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
 
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

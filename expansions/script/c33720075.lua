@@ -1,17 +1,19 @@
---慈英州対張銅羅
---Duel of the Walkers || Duello dei Camminatori
---Scripted by: XGlitchy30
-
-xpcall(function() require("expansions/script/glitchylib_vsnemo") end,function() require("script/glitchylib_vsnemo") end)
+--[[慈英州対張銅羅
+Duel of the Walkers
+Card Author: nemoma
+Scripted by: XGlitchy30
+]]
 
 local s,id,o=GetID()
+Duel.LoadScript("glitchylib_vsnemo.lua")
+Duel.LoadScript("glitchylib_lprecover.lua")
 function s.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_SELF_TOGRAVE)
 	--Counter Permit workaround for placing counters at activation (do NOT assign the EFFECT_FLAG_SINGLE_RANGE property)
 	local ct=Effect.CreateEffect(c)
 	ct:SetType(EFFECT_TYPE_SINGLE)
 	ct:SetRange(LOCATION_FZONE)
-	ct:SetCode(EFFECT_COUNTER_PERMIT|0x46c)
+	ct:SetCode(EFFECT_COUNTER_PERMIT|0x337)
 	c:RegisterEffect(ct)
 	--[[Activate this card by paying half of your LP. If you do, when this card resolves, place 1 Life Counter on this card for every 400 LP you paid this way (rounded up).]]
 	local e1=Effect.CreateEffect(c)
@@ -60,13 +62,7 @@ function s.initial_effect(c)
 	e4:SetTargetRange(1,0)
 	e4:SetValue(s.recval)
 	c:RegisterEffect(e4)
-	local e4x=Effect.CreateEffect(c)
-	e4x:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-	e4x:SetCode(EVENT_PRE_BATTLE_DAMAGE)
-	e4x:SetRange(LOCATION_FZONE)
-	e4x:SetCondition(s.bdcon)
-	e4x:SetOperation(s.bdop)
-	c:RegisterEffect(e4x)
+	xgl.RegisterChangeBattleRecoverHandler()
 	--[[If you would take damage, remove 1 Life Counter from this card for each 400 damage you would have taken, instead.]]
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD)
@@ -115,10 +111,10 @@ end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local cost=math.floor(Duel.GetLP(tp)/2)
-	if chk==0 then return c:IsCanAddCounter(0x46c,math.ceil(cost/400),false,LOCATION_FZONE) end
+	if chk==0 then return c:IsCanAddCounter(0x337,math.ceil(cost/400),false,LOCATION_FZONE) end
 	Duel.PayLPCost(tp,cost)
 	e:SetLabel(math.ceil(cost/400))
-	c:AddCounter(0x46c,math.ceil(cost/400))
+	c:AddCounter(0x337,math.ceil(cost/400))
 end
 
 --E2
@@ -128,44 +124,16 @@ function s.aclimit(e,re,tp)
 end
 
 --E4
-function s.recval(e,r,val)
+function s.recval(e,r,val,re,chk)
 	local c=e:GetHandler()
 	local ct=math.floor(val/400)
-	if ct>0 and c:IsCanAddCounter(0x46c,ct) then
-		c:AddCounter(0x46c,ct)
+	if chk==0 then
+		return c:IsCanAddCounter(0x337,ct)
+	end
+	if ct>0 and c:IsCanAddCounter(0x337,ct) then
+		c:AddCounter(0x337,ct)
 	end
 	return 0
-end
---E4X
-function s.bdcon(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetBattleDamage(tp)<=0 or Duel.IsPlayerAffectedByEffect(tp,EFFECT_AVOID_BATTLE_DAMAGE) then return false end
-	local DamageWillBeReversed=false
-	for _,ce in ipairs({Duel.IsPlayerAffectedByEffect(tp,EFFECT_REVERSE_DAMAGE)}) do
-		local val=ce:GetValue()
-		local rc = (re and re&REASON_EFFECT==REASON_EFFECT) and re:GetHandler() or Duel.GetAttacker()
-		if not val or (type(val)=="number" and val~=0) or val(ce,re,r|REASON_BATTLE,rp,rc) then
-			DamageWillBeReversed=true
-			break
-		end
-	end
-	for _,ce in ipairs({Duel.IsPlayerAffectedByEffect(tp,EFFECT_REVERSE_RECOVER)}) do
-		local val=ce:GetValue()
-		if not val or (type(val)=="number" and val~=0) or val(ce,re,r|REASON_BATTLE,rp) then
-			DamageWillBeReversed=false
-			break
-		end
-	end
-	return DamageWillBeReversed
-end
-function s.bdop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.PlayerHasFlagEffect(tp,id) then return end
-	local c=e:GetHandler()
-	local ct=math.floor(Duel.GetBattleDamage(tp)/400)
-	if ct>0 and c:IsCanAddCounter(0x46c,ct) then
-		c:AddCounter(0x46c,ct)
-		Duel.RegisterFlagEffect(tp,id,RESET_PHASE|PHASE_DAMAGE,0,1)
-		Duel.ChangeBattleDamage(tp,0)
-	end
 end
 
 --E5
@@ -173,8 +141,8 @@ function s.damval(e,re,val,r,rp,rc)
 	local c=e:GetHandler()
 	local tp=e:GetHandlerPlayer()
 	local ct=math.floor(val/400)
-	if ct>0 and c:IsCanRemoveCounter(tp,0x46c,ct,REASON_EFFECT) then
-		Duel.IgnoreActionCheck(Card.RemoveCounter,c,tp,0x46c,ct,REASON_EFFECT)
+	if ct>0 and c:IsCanRemoveCounter(tp,0x337,ct,REASON_EFFECT) then
+		Duel.IgnoreActionCheck(Card.RemoveCounter,c,tp,0x337,ct,REASON_EFFECT)
 		return 0
 	end
 	return ev
@@ -186,7 +154,7 @@ end
 
 --E6
 function s.selftg(e)
-	return e:GetHandler():GetCounter(0x46c)==0
+	return e:GetHandler():GetCounter(0x337)==0
 end
 
 --E7

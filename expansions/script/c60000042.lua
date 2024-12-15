@@ -57,7 +57,7 @@ function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 	
-	local hg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_HAND+LOCATION_ONFIELD,nil)
+	local hg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
 	if Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_DECK,0,nil)<#hg then return end
 	local costlp=Duel.Damage(tp,math.floor(Duel.GetLP(tp)/2),REASON_EFFECT)
 	if costlp~=0 then
@@ -69,7 +69,7 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmDecktop(tp,#hg)
 		while hc and dc do
 			if (dc:IsCode(60000037) or aux.IsCodeListed(dc,60000032)) and dc:IsAbleToHand() and costlp>=1000 then
-				costlp=costlp-1000
+				costlp=costlp-1200
 				thg:AddCard(dc)
 				tdg:AddCard(hc)
 				hc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
@@ -80,20 +80,20 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 		if #thg~=0 then 
 			Duel.SendtoHand(thg,nil,REASON_EFFECT)
 			Duel.SendtoDeck(tdg,nil,0,REASON_EFFECT)
-			if Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_HAND+LOCATION_ONFIELD,nil) then
-				local rg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_HAND+LOCATION_ONFIELD,nil)
-				for tc in aux.Next(rg) do
-					tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-				end
-			end
+			--if Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_ONFIELD,nil) then
+				--local rg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+				--for tc in aux.Next(rg) do
+					--tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+				--end
+			--end
 			local i=math.random(2,3)
 			Duel.Hint(24,0,aux.Stringid(m,i))
-			local e4=Effect.CreateEffect(e:GetHandler())
-			e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e4:SetCode(EVENT_PHASE+PHASE_END)
-			e4:SetCountLimit(1)
-			e4:SetOperation(cm.reop)
-			Duel.RegisterEffect(e4,tp)
+			--local e4=Effect.CreateEffect(e:GetHandler())
+			--e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			--e4:SetCode(EVENT_PHASE+PHASE_END)
+			--e4:SetCountLimit(1)
+			--e4:SetOperation(cm.reop)
+			--Duel.RegisterEffect(e4,tp)
 		end
 	end
 end

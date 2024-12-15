@@ -6,15 +6,12 @@ Scripted by: XGlitchy30
 ]]
 
 local s,id=GetID()
-if not GLITCHYLIB_LOADED then
-	Duel.LoadScript("glitchylib_vsnemo.lua")
-end
+Duel.LoadScript("glitchylib_vsnemo.lua")
 if not TYPE_DOUBLESIDED then
 	Duel.LoadScript("glitchylib_doublesided.lua")
 end
-if not TYPE_SOUNDSTAGE then
-	Duel.LoadScript("glitchylib_soundstage.lua")
-end
+Duel.LoadScript("glitchylib_soundstage.lua")
+Duel.LoadScript("glitchylib_lprecover.lua")
 function s.initial_effect(c)
 	aux.AddDoubleSidedProc(c,SIDE_OBVERSE,id+1,id)
 	c:Activation()
@@ -69,18 +66,12 @@ function s.ctop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOperation(s.addcounter)
 		e1:SetReset(RESET_EVENT|RESETS_STANDARD|RESET_CHAIN)
 		c:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-		e2:SetCode(EVENT_CHAIN_SOLVED)
-		e2:SetOperation(function() e1:Reset() end)
-		e2:SetReset(RESET_CHAIN)
-		Duel.RegisterEffect(e2,tp)
 	end
 end
 function s.addcounter(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local dam=e:GetCode()==EVENT_CHAIN_SOLVED and e:GetLabel() or ev
-	local ct=ev//100
+	local ct=dam//100
 	if c:IsCanAddCounter(COUNTER_ANTHEM_REINCARNATION,ct,true) then
 		c:AddCounter(COUNTER_ANTHEM_REINCARNATION,ct,true)
 	end
@@ -105,14 +96,18 @@ function s.damval(e,re,val,r,rp,rc)
 		return val
 	end
 	
+	if aux.DamageReplacementEffectAlreadyUsed[e]~=nil or (aux.IsReplacedDamage and aux.DamageReplacementEffectWasApplied) then return val end
+	aux.IsReplacedDamage=true
+	aux.DamageReplacementEffectAlreadyUsed[e]=true
+	
 	if r==REASON_BATTLE and not rc then
 		rc=s.reason_card
 	end
+	
 	local fid=c:GetFieldID()
 	Duel.RegisterFlagEffect(tp,id,0,0,0,fid)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_CUSTOM+id)
 	e1:SetCountLimit(1)
 	e1:SetLabel(fid)
@@ -134,40 +129,26 @@ function s.damrepop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	c:RegisterFlagEffect(id,0,0,0)
 	local res=s.damrep(e,tp,c)
+	aux.DamageReplacementEffectWasApplied=res
 	local rc=eg:GetFirst()
-	if r==REASON_BATTLE then
+	
+	if not res and r==REASON_BATTLE then
 		s.reason_card=rc
-	end
-	local e1=Effect.CreateEffect(rc)
-	e1:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_CUSTOM+id+1)
-	e1:SetCountLimit(1)
-	e1:SetOwnerPlayer(rp)
-	e1:SetOperation(
-		function(_e)
-			if not res then
-				aux.IsReplacedDamage=true
-				local dam=Duel.Damage(ep,ev,r)
-				aux.IsReplacedDamage=false
-				if dam>0 and r==REASON_BATTLE then
-					Duel.RaiseSingleEvent(rc,EVENT_BATTLE_DAMAGE,nil,0,rp,ep,dam)
-					Duel.RaiseEvent(rc,EVENT_BATTLE_DAMAGE,nil,0,rp,ep,dam)
-				end
-			else
-				Duel.SetLP(tp,100)
-				if Duel.GetLP(tp)==100 and c:HasFlagEffect(id) then
-					c:ResetFlagEffect(id)
-					Duel.Transform(c,SIDE_REVERSE,e,tp,REASON_EFFECT)
-				end
-			end
-			Duel.ResetFlagEffect(tp,id)
-			c:ResetFlagEffect(id)
+		local dam=Duel.Damage(ep,ev,r)
+		if dam>0 then
+			Duel.RaiseSingleEvent(rc,EVENT_BATTLE_DAMAGE,nil,0,rp,ep,dam)
+			Duel.RaiseEvent(rc,EVENT_BATTLE_DAMAGE,nil,0,rp,ep,dam)
 		end
-	)
-	e1:SetReset(RESET_PHASE|PHASE_END)
-	Duel.RegisterEffect(e1,rp)
-	Duel.RaiseEvent(rc,EVENT_CUSTOM+id+1,re,r,rp,ep,ev)
+	elseif res then
+		Duel.SetLP(tp,100)
+		if Duel.GetLP(tp)==100 and c:HasFlagEffect(id) then
+			c:ResetFlagEffect(id)
+			Duel.Transform(c,SIDE_REVERSE,e,tp,REASON_EFFECT)
+		end
+	end
+	
+	Duel.ResetFlagEffect(tp,id)
+	c:ResetFlagEffect(id)
 end
 function s.damrep(e,tp,c)
 	Duel.Hint(HINT_CARD,tp,id)

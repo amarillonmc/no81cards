@@ -98,15 +98,15 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	te:UseCountLimit(tp)
 end
 function cm.refilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsDiscardable()
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemoveAsCost()
 end
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local te=Duel.IsPlayerAffectedByEffect(tp,11451673)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if chk==0 then return te and ft>0 and Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	local g=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_HAND,0,1,1,nil)
-	Duel.SendtoGrave(g,POS_FACEUP,REASON_COST+REASON_DISCARD)
+	if chk==0 then return te and ft>0 and Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler())
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function cm.actarget(e,te,tp)
 	e:SetLabelObject(te)
@@ -147,6 +147,7 @@ function cm.filter(c,tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
+	Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
@@ -179,7 +180,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 				if fc and tc:IsLocation(LOCATION_FZONE) then
 					tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
-					Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
 				end
 				Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 			else

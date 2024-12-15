@@ -34,7 +34,7 @@ function c44401030.handcon(e)
 	return Duel.IsExistingMatchingCard(c44401030.hcfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
 function c44401030.cfilter(c)
-	return c:IsSetCard(0xa4a) and aux.NegateMonsterFilter(c)
+	return c:IsRace(RACE_PSYCHO) and aux.NegateMonsterFilter(c)
 end
 function c44401030.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end

@@ -67,7 +67,7 @@ function cm.debug(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	Debug.Message("场上的表侧表示怪兽合计等级:"..g:GetSum(Card.GetLevel))
 end
 function cm.mzfilter(c)
-	return c:IsLinkRace(RACE_PSYCHO) and c:IsLinkAttribute(ATTRIBUTE_LIGHT) and not c:IsType(TYPE_LINK)
+	return c:IsLinkRace(RACE_PSYCHO) and c:IsLinkAttribute(ATTRIBUTE_LIGHT) and c:IsLevelAbove(1)
 end
 function cm.isprime(num)
 	if num<2 then return false elseif num==2 then return true end

@@ -11,19 +11,22 @@ function c29088383.initial_effect(c)
 	e1:SetOperation(c29088383.thop)
 	c:RegisterEffect(e1)
 end
+function c29088383.dsfilter(c)
+	return c:IsDiscardable(REASON_EFFECT)
+end
 function c29088383.thfilter(c)
 	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsRace(RACE_SPELLCASTER) and c:IsAbleToHand()
 end
 function c29088383.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local dg=Duel.GetMatchingGroup(c29088383.thfilter,tp,LOCATION_DECK,0,nil)
-		return dg:GetClassCount(Card.GetCode)>=5
+		return dg:GetClassCount(Card.GetCode)>=5 and Duel.IsExistingMatchingCard(c29088383.dsfilter,tp,LOCATION_HAND,0,1,e:GetHandler())
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c29088383.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c29088383.thfilter,tp,LOCATION_DECK,0,nil)
-	if g:GetClassCount(Card.GetCode)>=5 then
+	if Duel.DiscardHand(tp,c29088383.dsfilter,1,1,REASON_EFFECT+REASON_DISCARD,nil)~=0 and g:GetClassCount(Card.GetCode)>=5 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local sg1=g:SelectSubGroup(tp,aux.dncheck,false,5,5)
 		Duel.ConfirmCards(1-tp,sg1)

@@ -45,36 +45,35 @@ function c9910744.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetLabel()~=0 then
-		e:SetCategory(e:GetCategory()|CATEGORY_TODECK|CATEGORY_DESTROY)
+		e:SetCategory(e:GetCategory()|CATEGORY_TODECK)
 	else
-		e:SetCategory(e:GetCategory()&~(CATEGORY_TODECK|CATEGORY_DESTROY))
+		e:SetCategory(e:GetCategory()&~CATEGORY_TODECK)
 	end
 end
 function c9910744.tdfilter(c)
-	return c:IsSetCard(0xc950) and c:IsAbleToDeck() and c:IsFaceup()
+	return c:IsFaceup() and c:IsSetCard(0xc950) and c:IsAbleToDeck()
 end
 function c9910744.operation(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.NegateActivation(ev) or e:GetLabel()==0 then return end
-	local g0=Duel.GetMatchingGroup(c9910744.tdfilter,tp,LOCATION_REMOVED,0,nil)
-	local g1=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
-	local g2=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
-	if #g0>1 and #g1+#g2>0 and Duel.SelectYesNo(tp,aux.Stringid(9910744,0)) then
+	if not Duel.NegateActivation(ev) or not e:IsHasType(EFFECT_TYPE_ACTIVATE) or e:GetLabel()==0 then return end
+	local g1=Duel.GetMatchingGroup(c9910744.tdfilter,tp,LOCATION_REMOVED,0,nil)
+	local g2=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_HAND,nil)
+	local g3=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,nil)
+	if #g1>=3 and #g2+#g3>0 and Duel.SelectYesNo(tp,aux.Stringid(9910744,0)) then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local tg=g0:Select(tp,2,2,nil)
-		if Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)==0 then return end
 		local sg=Group.CreateGroup()
-		if #g1>0 and (#g2==0 or Duel.SelectYesNo(tp,aux.Stringid(9910744,1))) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local sg1=g1:Select(tp,1,1,nil)
-			Duel.HintSelection(sg1)
-			sg:Merge(sg1)
-		end
-		if #g2>0 and (#sg==0 or Duel.SelectYesNo(tp,aux.Stringid(9910744,2))) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local sg1=g1:Select(tp,3,3,nil)
+		Duel.HintSelection(sg1)
+		sg:Merge(sg1)
+		if #g2>0 and (#g3==0 or Duel.SelectOption(tp,aux.Stringid(9910744,1),aux.Stringid(9910744,2))==0) then
 			local sg2=g2:RandomSelect(tp,1)
 			sg:Merge(sg2)
+		else
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+			local sg3=g3:Select(tp,1,1,nil)
+			Duel.HintSelection(sg3)
+			sg:Merge(sg3)
 		end
-		Duel.Destroy(sg,REASON_EFFECT)
+		Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end

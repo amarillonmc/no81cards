@@ -80,8 +80,8 @@ function c44401001.retop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c44401001.runtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,500)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,300)
 end
 function c44401001.runop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Recover(tp,500,REASON_EFFECT)
+	Duel.Recover(tp,300,REASON_EFFECT)
 end

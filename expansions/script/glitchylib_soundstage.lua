@@ -1,4 +1,6 @@
 --Library for Sound Stage Cards
+if TYPE_SOUNDSTAGE then return end
+
 TYPE_SOUNDSTAGE	= 0x2000000000
 
 FLAG_SOUNDSTAGE_CONTRACT = 1082946
@@ -138,7 +140,7 @@ function Auxiliary.AddSoundStageProc(c,e,id,count,bgmid)
 	--Send to GY after contract expiration
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-	e6:SetCode(EVENT_PHASE|PHASE_END)
+	e6:SetCode(EVENT_TURN_END)
 	e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_UNCOPYABLE)
 	e6:SetCountLimit(1)
 	e6:SetRange(LOCATION_FZONE)

@@ -2,13 +2,14 @@
 function c44401002.initial_effect(c)
 	--return
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_ATKCHANGE)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetCode(EVENT_CHAINING)
+	--e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetHintTiming(TIMING_DAMAGE_STEP)
-	e1:SetCost(c44401002.cost)
+	--e1:SetHintTiming(TIMING_DAMAGE_STEP)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	--e1:SetCost(c44401002.cost)
 	e1:SetTarget(c44401002.sptg)
 	e1:SetOperation(c44401002.spop)
 	c:RegisterEffect(e1)
@@ -36,32 +37,23 @@ function c44401002.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e1)
 end
-function c44401002.cfilter(c)
-	return c:IsRace(RACE_PSYCHO) and c:IsFaceup()
+function c44401002.sumfilter(c)
+	return c:IsSetCard(0xa4a) and c:IsSummonable(true,nil)
 end
-function c44401002.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c44401002.cfilter(chkc) end
+function c44401002.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetMZoneCount(tp)>0
-		and Duel.IsExistingTarget(c44401002.cfilter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c44401002.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetMZoneCount(tp)>0 end
 end
 function c44401002.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local tc=Duel.GetFirstTarget()
-		if tc:IsRelateToEffect(e) and tc:IsFaceup() then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-			e1:SetValue(500)
-			e1:SetRange(LOCATION_MZONE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c44401002.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(44401002,0)) then
+		Duel.BreakEffect()
+		Duel.ShuffleHand(tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+		local tc=Duel.SelectMatchingCard(tp,c44401002.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil):GetFirst()
+		if tc then
+			Duel.Summon(tp,tc,true,nil)
 		end
 	end
 end

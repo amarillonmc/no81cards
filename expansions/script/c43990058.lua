@@ -11,13 +11,13 @@ function cm.initial_effect(c)
 	e1:SetOperation(c43990058.activate)
 	c:RegisterEffect(e1)
 	--set
-	local e2=Effect.CreateEffect(c)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetCost(c43990058.setcost)
-	e2:SetTarget(c43990058.settg)
-	e2:SetOperation(c43990058.setop)
-	c:RegisterEffect(e2)
+	--local e2=Effect.CreateEffect(c)
+	--e2:SetRange(LOCATION_GRAVE)
+	--e2:SetType(EFFECT_TYPE_IGNITION)
+	--e2:SetCost(c43990058.setcost)
+	--e2:SetTarget(c43990058.settg)
+	--e2:SetOperation(c43990058.setop)
+	--c:RegisterEffect(e2)
 end
 function c43990058.filter(c)
 	return not c:IsRace(RACE_MACHINE) and c:IsFaceup()
@@ -33,16 +33,18 @@ function c43990058.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c43990058.filter,tp,0,LOCATION_MZONE,nil)
 	if g:GetCount()==0 then return end
 	local tc=g:GetFirst()
-	while tc do
+	local aa=0
+	while tc and not tc:IsImmuneToEffect(e) do
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_CHANGE_RACE)
 			e1:SetValue(RACE_MACHINE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1)
+			aa=aa+1
 		tc=g:GetNext()
 	end
-	if Duel.IsExistingMatchingCard(c43990058.smfilter,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(43990058,2)) then
+	if aa>0 and Duel.IsExistingMatchingCard(c43990058.smfilter,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(43990058,2)) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
 			Duel.BreakEffect()
 	local sg=Duel.SelectMatchingCard(tp,c43990058.smfilter,tp,LOCATION_HAND,0,1,1,nil)

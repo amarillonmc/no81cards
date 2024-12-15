@@ -1,4 +1,4 @@
---远古造物 环饰蠕虫
+--远古造物 金伯拉虫
 dofile("expansions/script/c9910700.lua")
 function c9910702.initial_effect(c)
 	--flag
