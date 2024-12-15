@@ -1,23 +1,5 @@
 --彼方的星因士
 function c98940011.initial_effect(c)
---Activate
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	c:RegisterEffect(e1)
---to field
-	local e7=Effect.CreateEffect(c)
-	e7:SetDescription(aux.Stringid(98940011,1))
-	e7:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e7:SetType(EFFECT_TYPE_QUICK_O)
-	e7:SetRange(LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
-	e7:SetCode(EVENT_FREE_CHAIN)
-	e7:SetHintTiming(0,TIMING_DRAW_PHASE+TIMING_CHAIN_END+TIMING_END_PHASE)
-	e7:SetCondition(c98940011.condition1)
-	e7:SetCost(c98940011.spcost)
-	e7:SetTarget(c98940011.tftg)
-	e7:SetOperation(c98940011.tfop)
-	c:RegisterEffect(e7)
 --effect gain1
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(98940011,0))
@@ -30,7 +12,7 @@ function c98940011.initial_effect(c)
 	e2:SetOperation(c98940011.sumop)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-	e3:SetRange(LOCATION_FZONE)
+	e3:SetRange(0xff)
 	e3:SetTargetRange(LOCATION_HAND,0)
 	e3:SetTarget(c98940011.eftg)
 	e3:SetLabelObject(e2)
@@ -168,12 +150,25 @@ end
 function c98940011.eftg(e,c)
 	return c:IsType(TYPE_EFFECT) and c:IsSetCard(0x9c)
 end
+function c98940011.stfilter(c,tp)
+	return c:IsCode(98940011)
+end
 function c98940011.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsSummonable(true,nil) end 
+	local c=e:GetHandler()
+	if chk==0 then return e:GetHandler():IsSummonable(true,nil) and Duel.IsExistingMatchingCard(c98940011.stfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_FZONE,0,1,nil,tp) and c:GetFlagEffect(98940011)==0 end 
+	c:RegisterFlagEffect(98940011,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,tp,LOCATION_HAND)
 end
 function c98940011.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local tc=Duel.SelectMatchingCard(tp,c98940011.stfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_FZONE,0,1,1,nil,tp):GetFirst()
+	if tc then
+		Duel.ConfirmCards(1-tp,tc)
+		local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+		if not fc then
+		   Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		end
+	end
 	if c:IsRelateToEffect(e) and c:IsSummonable(true,nil) then 
 	   Duel.Summon(tp,c,true,nil)
 	end
@@ -185,14 +180,24 @@ function c98940011.xyzfilter(c,mg)
 	return c:IsXyzSummonable(mg)
 end
 function c98940011.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then
 		local g=Duel.GetMatchingGroup(c98940011.mfilter,tp,LOCATION_MZONE,0,nil)
-		return Duel.IsExistingMatchingCard(c98940011.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,g)
+		return Duel.IsExistingMatchingCard(c98940011.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,g) and Duel.IsExistingMatchingCard(c98940011.stfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_FZONE,0,1,nil,tp) and c:GetFlagEffect(98940012)==0
 	end
+	c:RegisterFlagEffect(98940012,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c98940011.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c98940011.mfilter,tp,LOCATION_MZONE,0,nil)
+	local tc=Duel.SelectMatchingCard(tp,c98940011.stfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_FZONE,0,1,1,nil,tp):GetFirst()
+	if tc then
+		Duel.ConfirmCards(1-tp,tc)
+		local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+		if not fc then
+		   Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		end
+	end
 	local xyzg=Duel.GetMatchingGroup(c98940011.xyzfilter,tp,LOCATION_EXTRA,0,nil,g)
 	if xyzg:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
