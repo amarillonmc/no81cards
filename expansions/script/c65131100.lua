@@ -6,6 +6,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EVENT_ADJUST)
+	e1:SetCondition(s.xcon)
 	e1:SetOperation(s.xop)
 	c:RegisterEffect(e1)
 	if not s.global_check then
@@ -86,6 +87,8 @@ function s.ChangeCard(card1,card2,seq)
 		Duel.DisableShuffleCheck()
 		card1:ReplaceEffect(code2,0,0)
 		card1:SetEntityCode(code2)
+		Duel.RaiseEvent(card1,EVENT_CUSTOM+65131100,Effect.GlobalEffect(),0,0,0,0)
+		Duel.RaiseSingleEvent(card1,EVENT_CUSTOM+65131100,Effect.GlobalEffect(),0,0,0,0)
 	end   
 	if card2:IsLocation(LOCATION_DECK) then
 		Duel.DisableShuffleCheck()
@@ -95,6 +98,8 @@ function s.ChangeCard(card1,card2,seq)
 		Duel.DisableShuffleCheck()
 		card2:ReplaceEffect(code1,0,0)
 		card2:SetEntityCode(code1)
+		Duel.RaiseEvent(card2,EVENT_CUSTOM+65131100,Effect.GlobalEffect(),0,0,0,0)
+		Duel.RaiseSingleEvent(card2,EVENT_CUSTOM+65131100,Effect.GlobalEffect(),0,0,0,0)
 	end  
 end
 function s.lostfilter(c)
@@ -124,6 +129,9 @@ function s.lostop(e,tp,eg,ep,ev,re,r,rp)
 	if Islost1 and not Islost2 then Duel.Win(1,0x0)
 	elseif not Islost1 and Islost2 then Duel.Win(0,0x0)
 	else Duel.Win(PLAYER_NONE,0x0) end
+end
+function s.xcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsLocation(LOCATION_ONFIELD)
 end
 function s.xop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,86541496)

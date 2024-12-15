@@ -41,7 +41,7 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local g=Duel.GetFieldGroup(0,0xff,0xff):Filter(s.checkfilter,nil)
 	for tc in aux.Next(g) do
-		tc:SetHint(CHINT_NUMBER,Duel.GetFlagEffect(c:GetControler(),id))
+		tc:SetHint(CHINT_NUMBER,Duel.GetFlagEffect(tc:GetControler(),id))
 	end
 end
 function s.filter(c,dam)
