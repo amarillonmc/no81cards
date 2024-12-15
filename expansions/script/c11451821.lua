@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
 	cm.hand_effect=cm.hand_effect or {}
-    cm.hand_effect[c]=e3
+	cm.hand_effect[c]=e3
 	--change effect
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -61,14 +61,14 @@ function cm.chktg(e,te,tp)
 	return true
 end
 function cm.check0(e,tp,eg,ep,ev,re,r,rp)
-	local re=e:GetLabelObject()
-	local tg=re:GetTarget()
+	local te=e:GetLabelObject()
+	local tg=te:GetTarget()
 	if tg then
 		function Card.IsCanBeSpecialSummoned(c,e,st,...)
 			if st&SUMMON_TYPE_RITUAL>0 then cm[1]=true end
 			return _IsCanBeSpecialSummoned(c,e,st,...)
 		end
-		tg(e,tp,eg,ep,ev,re,r,rp,0)
+		pcall(tg,te,te:GetHandlerPlayer(),eg,ep,ev,re,r,rp,0)
 		--Card.IsCanBeSpecialSummoned=_IsCanBeSpecialSummoned
 		if cm[1] then cm[re]=true end
 		cm[1]=nil
@@ -238,7 +238,7 @@ function cm.returntofield(tc)
 			Duel.BreakEffect()
 		end
 		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-        return
+		return
 	end
 	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then
 		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)

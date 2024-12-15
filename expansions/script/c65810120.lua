@@ -18,7 +18,7 @@ function c65810120.initial_effect(c)
 	c:RegisterEffect(e3)
 	--negate
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(id,2))
+	e4:SetDescription(aux.Stringid(id,0))
 	e4:SetCategory(CATEGORY_DISABLE+CATEGORY_DESTROY)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CHAIN_SOLVING)
@@ -48,14 +48,14 @@ end
 function c65810120.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
-	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(65810120,3)) then
+	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(65810120,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local tc=Duel.SelectMatchingCard(tp,c65810120.disfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,c):GetFirst()
+		local tc=Duel.SelectMatchingCard(tp,c65810120.disfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1):GetFirst()
 		if tc and Duel.Release(tc,REASON_EFFECT) then
 			Duel.Hint(HINT_CARD,0,id)
 			Duel.NegateEffect(ev)
 			Duel.Destroy(rc,REASON_EFFECT)
-			e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(65810120,4))
+			e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(65810120,2))
 		end
 	end
 end
