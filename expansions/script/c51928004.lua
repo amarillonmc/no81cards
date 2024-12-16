@@ -23,7 +23,7 @@ function c51928004.initial_effect(c)
 	Duel.AddCustomActivityCounter(51928004,ACTIVITY_SPSUMMON,c51928004.counterfilter)
 end
 function c51928004.counterfilter(c)
-	return not (c:IsType(TYPE_SYNCHRO) and c:IsAttribute(ATTRIBUTE_WIND) and c:IsRace(RACE_THUNDER)) and c:IsLocation(LOCATION_EXTRA)
+	return not c:IsSummonLocation(LOCATION_EXTRA) or (c:IsType(TYPE_SYNCHRO) and c:IsAttribute(ATTRIBUTE_WIND) and c:IsRace(RACE_THUNDER))
 end
 --------------------------------
 function c51928004.filter(c)

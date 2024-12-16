@@ -53,7 +53,7 @@ function c98941053.initial_effect(c)
 		PK_hack_fusion_select=Duel.SelectFusionMaterial
 		function Duel.SelectFusionMaterial(tp,card,mg,gc_nil,chkf)
 			if card:GetOriginalCode()==98941053 and Duel.GetFlagEffect(0,98941053)~=0 and Duel.GetFlagEffect(0,98941054)~=0 then
-				exg=Duel.GetMatchingGroup(c98941053.kfilter0,int_chkf,LOCATION_DECK,0,nil,card)
+				exg=Duel.GetMatchingGroup(c98941053.kfilter0,int_chkf,LOCATION_DECK,LOCATION_DECK,nil,card)
 				if exg:GetCount()>0 then
 					mg:Merge(exg)
 				end

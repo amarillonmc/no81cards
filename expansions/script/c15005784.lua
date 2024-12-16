@@ -100,8 +100,8 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	if op1==3 or op2==3 then
 		Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
-		if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
-			Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+		if re:GetHandler():IsAbleToRemove() and re:GetHandler():IsRelateToEffect(re) then
+			Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
 		end
 	end
 end
@@ -129,7 +129,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if op1==3 or op2==3 then
 		if res==1 then Duel.BreakEffect() end
 		if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
-			Duel.Destroy(eg,REASON_EFFECT)
+			Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
 		end
 		res=1
 	end
