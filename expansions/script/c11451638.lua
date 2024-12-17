@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11451631,5))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(cm.target)
@@ -262,6 +262,55 @@ function cm.descon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.destg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
+end
+function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
+	local tc=g:GetFirst()
+	if tc then
+		local sp=tp
+		local op=1
+		if Duel.IsPlayerAffectedByEffect(tp,11451676) then
+			local a1=(tc:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
+			local a2=(tc:IsType(TYPE_FIELD) or Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0)
+			local b1=tc:GetActivateEffect():IsActivatable(tp,true,true)
+			local b2=tc:IsSSetable(true)
+			op=aux.SelectFromOptions(tp,{a1 and b1,aux.Stringid(11451631,3)},{a2 and b1,aux.Stringid(11451631,4)},{a1 and b2,aux.Stringid(11451631,8)},{a2 and b2,aux.Stringid(11451631,9)})
+			if op==2 or op==4 then sp=1-tp end
+		end
+		if op<=2 then
+			if tc:IsType(TYPE_FIELD) then
+				local fc=Duel.GetFieldCard(sp,LOCATION_FZONE,0)
+				if fc then
+					Duel.SendtoGrave(fc,REASON_RULE)
+					Duel.BreakEffect()
+				end
+				Duel.MoveToField(tc,tp,sp,LOCATION_FZONE,POS_FACEUP,true)
+				local te=tc:GetActivateEffect()
+				local tep=tc:GetControler()
+				local cost=te:GetCost()
+				if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+				Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+			else
+				Duel.MoveToField(tc,tp,sp,LOCATION_SZONE,POS_FACEUP,true)
+				local te=tc:GetActivateEffect()
+				local tep=tc:GetControler()
+				local cost=te:GetCost()
+				if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+			end
+		else
+			if tc:IsType(TYPE_FIELD) then
+				local fc=Duel.GetFieldCard(sp,LOCATION_FZONE,0)
+				if fc then
+					Duel.SendtoGrave(fc,REASON_RULE)
+					Duel.BreakEffect()
+				end
+				Duel.SSet(tp,tc,sp)
+			else
+				Duel.SSet(tp,tc,sp)
+			end
+		end
+	end
 end
 function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
