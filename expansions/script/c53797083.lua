@@ -26,8 +26,8 @@ function s.initial_effect(c)
 	e2:SetOperation(s.tkop)
 	c:RegisterEffect(e2)
 end
-function s.cfilter(c)
-	return c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+function s.cfilter(c,tp)
+	return c:IsAllTypes(TYPE_MONSTER) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
 end
 function s.fselect(g,tp)
 	return Duel.GetMZoneCount(tp,g)>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>=#g
@@ -35,11 +35,11 @@ end
 function s.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c)
+	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c,tp)
 	return g:CheckSubGroup(s.fselect,2,99,tp)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c)
+	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local sg=g:SelectSubGroup(tp,s.fselect,true,2,99,tp)
 	if sg then

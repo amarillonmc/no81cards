@@ -74,7 +74,7 @@ end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	
 	local g1=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
-	local rg1=g2:Filter(cm.thfilter,nil)
+	local rg1=g1:Filter(cm.thfilter,nil)
 	local g2=Duel.GetFieldGroup(tp,0,LOCATION_DECK)
 	local rg2=g2:Filter(cm.thfilter,nil)
 	if Duel.IsPlayerAffectedByEffect(tp,23410013) then

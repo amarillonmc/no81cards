@@ -56,17 +56,17 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local num=0
 	if wt==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		g=Duel.SelectMatchingCard(tp,cm.drfil12,tp,LOCATION_GRAVE,0,1,1,nil)
+		g=Duel.SelectMatchingCard(tp,cm.drfil2,tp,LOCATION_GRAVE,0,1,1,nil)
 		if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 then num=num+1 end
 		if Duel.IsExistingMatchingCard(cm.drfil1,tp,LOCATION_HAND,LOCATION_HAND,1,nil) 
 			and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			gg=Duel.SelectMatchingCard(tp,cm.drfil11,tp,LOCATION_HAND,LOCATION_HAND,1,1,nil)
+			gg=Duel.SelectMatchingCard(tp,cm.drfil1,tp,LOCATION_HAND,LOCATION_HAND,1,1,nil)
 			if Duel.SendtoGrave(gg,REASON_EFFECT)~=0 then num=num+1 end
 		end
 	elseif wt==0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		g=Duel.SelectMatchingCard(tp,cm.drfil11,tp,LOCATION_HAND,LOCATION_HAND,1,2,nil)
+		g=Duel.SelectMatchingCard(tp,cm.drfil1,tp,LOCATION_HAND,LOCATION_HAND,1,2,nil)
 		if Duel.SendtoGrave(g,REASON_EFFECT)~=0 then num=#Duel.GetOperatedGroup() end
 	end
 	Duel.Draw(tp,num,REASON_EFFECT)

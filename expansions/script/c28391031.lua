@@ -104,7 +104,7 @@ function c28391031.indescon(e)
 	return Duel.GetLP(e:GetHandlerPlayer())<=3000
 end
 function c28391031.efilter(e,te)
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
+	return e:GetOwnerPlayer()~=te:GetOwnerPlayer()
 end
 function c28391031.drcon(e)
 	local p=e:GetHandlerPlayer()

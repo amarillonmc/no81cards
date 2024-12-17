@@ -56,7 +56,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local code={}
 	if Duel.IsExistingMatchingCard(cm.fil1,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,cm.fil1,tp,LOCATION_DECK,0,1,1,nil)
 		if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 			code[1]=Duel.GetOperatedGroup():GetFirst():GetCode()
 			Duel.ConfirmCards(1-tp,g)
