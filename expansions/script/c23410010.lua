@@ -45,16 +45,25 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,sg)
 	end
 end
+function cm.efffil(c)
+	return c:IsType(TYPE_SPELL) and c:IsType(TYPE_CONTINUOUS) and c:IsFaceup()
+end
 function cm.effcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingMatchingCard(cm.efffil,tp,0,LOCATION_SZONE,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.effop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Recover(tp,1000,REASON_EFFECT)~=0 then Duel.Draw(tp,1,REASON_EFFECT) end
+	local g=Duel.GetMatchingGroup(cm.efffil,tp,0,LOCATION_SZONE,nil)
+	if #g==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local sg=g:Select(tp,1,1,nil)
+	if Duel.SendtoGrave(sg,REASON_EFFECT)~=0 then
+		if Duel.Recover(tp,1000,REASON_EFFECT)~=0 then Duel.Draw(tp,1,REASON_EFFECT) end
+	end
 end
 function cm.dfil(c)
 	return (aux.IsCodeListed(c,23410001) or c:IsCode(23410001)) and c:IsAbleToDeck()

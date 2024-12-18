@@ -75,13 +75,15 @@ end
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
-function cm.sfil(c,e,tp)
-	return c:IsCode(23410001) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function cm.sfil(c,e,tp,sc)
+	return c:IsCode(23410001) 
+	and ((c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLocation(LOCATION_GRAVE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) 
+	or (c:IsCanBeXyzMaterial(sc) and c:IsLocation(LOCATION_MZONE)))
 end
 function cm.xyzfilter(c,e,tp)
 	return (c:IsXyzSummonable(nil) 
-		or (c:IsOriginalCodeRule(23410012) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.sfil,tp,LOCATION_GRAVE,0,1,nil,e,tp)))
-		and aux.IsCodeListed(c,23410001)
+		or (c:IsOriginalCodeRule(23410012) and Duel.IsExistingMatchingCard(cm.sfil,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,nil,e,tp,c)))
+		and aux.IsCodeListed(c,23410001) 
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
@@ -94,17 +96,21 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tg=g:Select(tp,1,1,nil)
 		if tg:GetFirst():GetCode()==23410012 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg=Duel.SelectMatchingCard(tp,cm.sfil,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-			if Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)~=0 then
-				local sc=tg:GetFirst()
-				local tc=Duel.GetOperatedGroup():GetFirst()
-				Duel.BreakEffect()
-				sc:SetMaterial(Group.FromCards(tc))
-				Duel.Overlay(sc,Group.FromCards(tc))
-				Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
-				sc:CompleteProcedure()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			local sg=Duel.SelectMatchingCard(tp,cm.sfil,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,1,nil,e,tp,tg:GetFirst())
+			local ub=0
+			if sg:GetFirst():IsLocation(LOCATION_GRAVE) then
+				Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+				if #Duel.GetOperatedGroup()~=0 then ub=1 else return end
 			end
+			local sc=tg:GetFirst()
+			local mc=nil
+			if ub==1 then mc=Duel.GetOperatedGroup():GetFirst() else mc=sg:GetFirst() end
+			Duel.BreakEffect()
+			sc:SetMaterial(Group.FromCards(mc))
+			Duel.Overlay(sc,Group.FromCards(mc))
+			Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
+			sc:CompleteProcedure()
 		else
 			Duel.XyzSummon(tp,tg:GetFirst(),nil)
 		end

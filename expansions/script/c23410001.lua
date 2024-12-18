@@ -127,7 +127,7 @@ function cm.effop(e,tp,eg,ep,ev,re,r,rp)
 end
 ----------------------------------
 function cm.scon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,m)
+	return Duel.IsPlayerAffectedByEffect(e:GetHandlerPlayer(),m)
 end
 function cm.atktg(e,c)
 	return c:IsRace(RACE_ILLUSION)
