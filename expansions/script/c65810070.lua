@@ -26,7 +26,7 @@ end
 
 
 function c65810070.filter(c)
-	return c:IsRace(RACE_INSECT) and c:IsType(TYPE_MONSTER) and Duel.IsPlayerCanRelease(c:GetControler())
+	return c:IsRace(RACE_INSECT) and c:IsType(TYPE_MONSTER) and Duel.IsPlayerCanRelease(c:GetControler()) and Duel.GetMZoneCount(tp,c,tp)>0
 end
 function c65810070.filter1(c,e,tp)
 	return c:IsCode(65810055)

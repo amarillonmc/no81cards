@@ -43,12 +43,11 @@ end
 
 
 function c65810105.filter(c)
-	return c:IsRace(RACE_INSECT)
+	return c:IsRace(RACE_INSECT) and Duel.GetMZoneCount(tp,c,tp)>0
 end
 function c65810105.spcon(e,c)
 	if c==nil then return true end
-	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c65810105.filter,c:GetControler(),LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
+	return Duel.IsExistingMatchingCard(c65810105.filter,c:GetControler(),LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
 end
 function c65810105.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(c65810105.filter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,nil,tp,tp)

@@ -42,7 +42,7 @@ function c98930408.initial_effect(c)
 end
 function c98930408.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if chk==0 then return ft>0 end
+	if chk==0 then return ft>0 or e:GetHandler():IsLocation(LOCATION_SZONE) end
 	if e:GetHandler():IsLocation(LOCATION_DECK) then
 		Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		local tc=Duel.GetFieldGroup(tp,LOCATION_FZONE,0):GetFirst()
