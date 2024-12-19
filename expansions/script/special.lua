@@ -95,7 +95,7 @@ function Auxiliary.PreloadUds()
 	
 	local _CreateEffect=Effect.CreateEffect
 	function Effect.CreateEffect(c,...)
-		if aux.GetValueType(c)~="Card" then assert(false,"Effect.CreateEffect没有输入正确的Card参数。") return end
+		if aux.GetValueType(c)~="Card" then error("Effect.CreateEffect没有输入正确的Card参数。",2) return end
 		local e=_CreateEffect(c,...)
 		if e and c then effect_handler[e]=c end
 		return e
@@ -119,15 +119,15 @@ function Auxiliary.PreloadUds()
 			if table_range and table_range[e] then
 				return table_range[e]
 			end
-			Debug.Message("Effect.GetRange没有及时加载该效果的Range信息。")
+			error("Effect.GetRange没有及时加载该效果的Range信息。",2)
 			return 0
 		end
 	end
 
 	local _CRegisterEffect=Card.RegisterEffect
 	function Card.RegisterEffect(c,e,...)
-		if aux.GetValueType(c)~="Card" then assert(false,"Card.RegisterEffect没有输入正确的Card参数。") return end
-		if aux.GetValueType(e)~="Effect" then assert(false,"Card.RegisterEffect没有输入正确的Effect参数。") return end
+		if aux.GetValueType(c)~="Card" then error("Card.RegisterEffect没有输入正确的Card参数。",2) return end
+		if aux.GetValueType(e)~="Effect" then error("Card.RegisterEffect没有输入正确的Effect参数。",2) return end
 		if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not table_range[e] then
 			table_range[e]=LOCATION_HAND+LOCATION_SZONE
 		elseif e:IsHasType(EFFECT_TYPE_EQUIP) and not table_range[e] then
@@ -143,7 +143,7 @@ function Auxiliary.PreloadUds()
 	end
 	local _DRegisterEffect=Duel.RegisterEffect
 	function Duel.RegisterEffect(e,p,...)
-		if aux.GetValueType(e)~="Effect" then assert(false,"Duel.RegisterEffect没有输入正确的Effect参数。") return end
+		if aux.GetValueType(e)~="Effect" then error("Duel.RegisterEffect没有输入正确的Effect参数。",2) return end
 		_DRegisterEffect(e,p,...)
 		if e then effect_registered[e]=true end
 	end
