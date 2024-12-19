@@ -36,7 +36,7 @@ function c11621423.initial_effect(c)
 	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3)
-	cm[c]=e3
+	--cm[c]=e3
 end
 --
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)

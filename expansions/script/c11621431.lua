@@ -50,7 +50,7 @@ function c11621431.initial_effect(c)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetTargetRange(0,0x7f)
 	e5:SetTarget(c11621431.crtg) 
-	e5:SetValue(11621402)
+	e5:SetValue(11621403)
 	c:RegisterEffect(e5)
 	--
 	local e6=Effect.CreateEffect(c)
@@ -111,7 +111,7 @@ function c11621431.checkop(e,tp,eg,ep,ev,re,r,rp)
 		if flag==nil then 
 			Duel.RegisterFlagEffect(rp,11621431,0,0,1,1) 
 		else 
-			Duel.SetFlagEffectLabel(tp,11621431,flag+1) 
+			Duel.SetFlagEffectLabel(rp,11621431,flag+1) 
 		end 
 	end
 end
