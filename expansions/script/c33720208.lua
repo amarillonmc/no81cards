@@ -17,7 +17,7 @@ function s.initial_effect(c)
 	--While your opponent has both cards with the same name and cards with different names in their GY, this card is unaffected by your opponent's card effects, also it cannot be destroyed by battle.
 	c:Unaffected(UNAFFECTED_OPPO,s.econd)
 	c:CannotBeDestroyedByBattle(1,s.econd)
-	--You can detach 1 material from this card; shuffle, from your hand and/or field, 3 or more cards with different names or with the same name, and if you do, draw that many cards and reveal them, then you must discard some of them so that each of those cards either have different names or have the same name.
+	--You can detach 1 material from this card; shuffle, from your hand and/or field, 3 or more monsters with different names or with the same name, and if you do, draw that many cards and reveal them, then you must discard some of them so that each of those cards either have different names or have the same name.
 	local e1=Effect.CreateEffect(c)
 	e1:Desc(1,id)
 	e1:SetCategory(CATEGORY_TODECK|CATEGORY_DRAW|CATEGORY_HANDES)
@@ -64,18 +64,22 @@ end
 function s.breakcon(g,e,tp,mg)
 	return Duel.IsPlayerCanDraw(tp,#g) and not Duel.IsPlayerCanDraw(tp,#g+1)
 end
+function s.tdfilter(c)
+	if not (c:IsFaceupEx() and c:IsAbleToDeck()) then return false end
+	return c:IsLocation(LOCATION_MZONE) or c:IsMonster()
+end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.Group(Card.IsAbleToDeck,tp,LOCATION_HAND|LOCATION_ONFIELD,0,nil)
+	local g=Duel.Group(s.tdfilter,tp,LOCATION_HAND|LOCATION_MZONE,0,nil)
 	if chk==0 then
 		return aux.SelectUnselectGroup(g,e,tp,3,#g,s.gcheck,0)
 	end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,3,tp,LOCATION_HAND|LOCATION_ONFIELD)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,3,tp,LOCATION_HAND|LOCATION_MZONE)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,3)
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.Group(Card.IsAbleToDeck,tp,LOCATION_HAND|LOCATION_ONFIELD,0,nil)
+	local g=Duel.Group(s.tdfilter,tp,LOCATION_HAND|LOCATION_MZONE,0,nil)
 	local tg=aux.SelectUnselectGroup(g,e,tp,3,#g,s.gcheck,1,tp,HINTMSG_TODECK,s.rescon,s.breakcon)
 	if #tg>0 then
 		Duel.HintSelection(tg:Filter(Card.IsOnField,nil))

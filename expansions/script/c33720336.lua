@@ -36,7 +36,7 @@ function s.initial_effect(c)
 end
 --E1
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_DECK|LOCATION_GRAVE|LOCATION_HAND,0)>=60
+	return Duel.GetFieldGroupCount(tp,LOCATION_DECK|LOCATION_ONFIELD|LOCATION_GRAVE|LOCATION_HAND,0)>=60
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end
