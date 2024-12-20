@@ -44,14 +44,12 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end 
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.Destroy(eg,REASON_EFFECT)
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) and Duel.Destroy(eg,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,aux.ExceptThisCard(e)) then
+		Duel.BreakEffect()
+		local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(e))
+		Duel.HintSelection(dg)
+		Duel.Destroy(dg,REASON_EFFECT)
 	end
-	Duel.BreakEffect()
-	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then 
-	   local tc=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
-	   Duel.Destroy(tc,REASON_EFFECT)
-   end 
 end
 
 function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
