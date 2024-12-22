@@ -201,20 +201,17 @@ function s.adcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.adfilter,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,nil)
 end
 function s.adop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.adfilter,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,nil)
-	for tc in aux.Next(g) do
+	--[[local g=Duel.GetMatchingGroup(s.adfilter,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,nil)
+	for tc in aux.Next(g) do]]
 		tc:RegisterFlagEffect(id+2,RESET_PHASE+PHASE_END+RESET_EVENT+RESETS_STANDARD,0,0,1)
 		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_PHASE+PHASE_END+RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetReset(RESET_PHASE+PHASE_END+RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e2)
-	end
+		e1:SetTargetRange(0,0x30)
+		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e1:SetReset(RESET_PHASE+PHASE_END,2)
+		Duel.RegisterEffect(e1,tp)
+	--end
 	Duel.AdjustAll()
 end
 function s.setfilter(c)

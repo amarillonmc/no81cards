@@ -27,7 +27,7 @@ function c21113800.initial_effect(c)
 	Duel.AddCustomActivityCounter(21113800,ACTIVITY_SPSUMMON,c21113800.counter)	
 end
 function c21113800.counter(c)
-	return c:IsSetCard(0xc914)
+	return c:IsSetCard(0xc904)
 end
 function c21113800.discon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSequence()~=2
@@ -51,12 +51,12 @@ function c21113800.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e2,tp)
 end
 function c21113800.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0xc914)
+	return not c:IsSetCard(0xc904)
 end
 function c21113800.op0(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,21113800)==0 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,4,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(21113800,0)) then
+	if Duel.GetFlagEffect(tp,21113800)==0 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,12,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(21113800,0)) then
 	Duel.Hint(3,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,4,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,12,1,1,nil)
 		if #g>0 then
 		Duel.HintSelection(g)		
 		Duel.SendtoGrave(g,REASON_RULE)
@@ -66,10 +66,10 @@ function c21113800.op0(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function c21113800.q(c)
-	return c:IsFaceup() and c:IsSetCard(0xc914)
+	return c:IsFaceup() and c:IsSetCard(0xc904)
 end
 function c21113800.w(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,4)>0 and c:IsSetCard(0xc914) and not c:IsCode(21113800)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,4)>0 and c:IsSetCard(0xc904) and not c:IsCode(21113800)
 end
 function c21113800.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c21113800.q,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,4)>0 and Duel.IsExistingMatchingCard(c21113800.w,tp,1,0,1,nil,e,tp) end

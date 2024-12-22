@@ -19,7 +19,7 @@ function c51928011.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c51928011.filter,tp,LOCATION_MZONE,0,1,nil) end
 end
 function c51928011.filter2(c,e)
-	return c:IsFaceup() and c:IsRace(RACE_MACHINE) and not c:IsImmuneToEffect(e)
+	return c:IsFaceup() and c:IsRace(RACE_THUNDER) and not c:IsImmuneToEffect(e)
 end
 function c51928011.activate(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(c51928011.filter2,tp,LOCATION_MZONE,0,nil,e)

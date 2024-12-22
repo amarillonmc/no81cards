@@ -31,6 +31,7 @@ function c51928009.initial_effect(c)
 	e3:SetCondition(c51928009.discon)
 	e3:SetTarget(c51928009.distg)
 	e3:SetOperation(c51928009.disop)
+	c:RegisterEffect(e3)
 end
 function c51928009.sfilter(c)
 	return c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x9256)

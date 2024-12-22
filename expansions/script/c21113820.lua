@@ -29,13 +29,13 @@ function c21113820.initial_effect(c)
 	c:RegisterEffect(e2)	
 end
 function c21113820.act(c)
-	return c:IsFaceup() and c:IsSetCard(0xc914) and c:IsDisabled()
+	return c:IsFaceup() and c:IsSetCard(0xc904) and c:IsDisabled()
 end
 function c21113820.actcon(e)
 	return Duel.IsExistingMatchingCard(c21113820.act,e:GetHandlerPlayer(),4,0,1,nil)
 end
 function c21113820.q(c)
-	return c:IsFaceup() and c:IsSetCard(0xc914)
+	return c:IsFaceup() and c:IsSetCard(0xc904)
 end
 function c21113820.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c21113820.q,tp,LOCATION_MZONE,0,1,nil) and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
@@ -61,7 +61,7 @@ function c21113820.disable(e,c)
 	return c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0
 end
 function c21113820.w(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xc914) and Duel.GetLocationCount(tp,4)>0
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xc904) and Duel.GetLocationCount(tp,4)>0
 end
 function c21113820.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(c21113820.w,tp,0x10,0,1,nil,e,tp) end
@@ -85,5 +85,5 @@ function c21113820.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c21113820.splimit(e,c)
-	return not c:IsSetCard(0xc914)
+	return not c:IsSetCard(0xc904)
 end

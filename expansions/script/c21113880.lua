@@ -75,10 +75,10 @@ end
 function s.LCheckGoal(sg,tp,lc,lmat)
 	return #sg==1 and sg:IsExists(Card.IsDisabled,1,nil) 
 		and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and sg:GetFirst():IsLink(2) or #sg>=2 
-		and sg:CheckWithSumEqual(s.GetLinkCount,4,#sg,#sg)
+		and sg:CheckWithSumEqual(s.GetLinkCount,3,#sg,#sg)
 		and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp)
 		and (not lmat or sg:IsContains(lmat)) or #sg>=2 
-		and sg:CheckWithSumEqual(aux.GetLinkCount,4,#sg,#sg)
+		and sg:CheckWithSumEqual(aux.GetLinkCount,3,#sg,#sg)
 		and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp)
 		and (not lmat or sg:IsContains(lmat))
 end
@@ -87,7 +87,7 @@ function s.linkcon()
 				if c==nil then return true end
 				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 				local minc=1
-				local maxc=4
+				local maxc=3
 				if min then
 					if min>minc then minc=min end
 					if max<maxc then maxc=max end

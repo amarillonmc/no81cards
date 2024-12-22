@@ -14,6 +14,7 @@ function s.initial_effect(c)
 	e1:SetCategory(CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,id)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.operation)
 	c:RegisterEffect(e1)
@@ -22,20 +23,21 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCountLimit(1,id+1)
 	e2:SetCondition(s.setcon)
 	e2:SetTarget(s.settg)
 	e2:SetOperation(s.setop)
 	c:RegisterEffect(e2)
 end
 function s.actfilter(c)
-	return c:IsDisabled() and c:IsSetCard(0xc914) and c:IsFaceup()
+	return c:IsDisabled() and c:IsSetCard(0xc904) and c:IsFaceup()
 end
 function s.actcon(e)
 	return Duel.GetMatchingGroupCount(s.actfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)>0
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0xc914,TYPES_NORMAL_TRAP_MONSTER,2000,2000,7,RACE_BEAST,ATTRIBUTE_WIND) and Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,LOCATION_REMOVED)>0 end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0xc904,TYPES_NORMAL_TRAP_MONSTER,2000,2000,7,RACE_BEAST,ATTRIBUTE_WIND) and Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,LOCATION_REMOVED)>0 end
 	local g=Duel.GetFieldGroup(tp,LOCATION_REMOVED,LOCATION_REMOVED,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,LOCATION_REMOVED,LOCATION_REMOVED)
@@ -45,7 +47,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_REMOVED,LOCATION_REMOVED)
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK)
-	if ct>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0xc914,TYPES_NORMAL_TRAP_MONSTER,2000,2000,7,RACE_BEAST,ATTRIBUTE_WIND) then
+	if ct>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0xc904,TYPES_NORMAL_TRAP_MONSTER,2000,2000,7,RACE_BEAST,ATTRIBUTE_WIND) then
 		c:AddMonsterAttribute(TYPE_NORMAL+TYPE_TRAP)
 		if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 then
 			local e1=Effect.CreateEffect(c)
@@ -63,7 +65,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.setfilter(c)
-	return c:IsSetCard(0xc914) and c:IsFaceup()
+	return c:IsSetCard(0xc904) and c:IsFaceup()
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetMatchingGroupCount(s.setfilter,tp,LOCATION_MZONE,0,nil)>0
