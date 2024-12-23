@@ -80,4 +80,5 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e2,true)
 	end
 	Duel.SpecialSummonComplete()
+	c:CompleteProcedure()
 end

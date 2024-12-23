@@ -96,6 +96,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetOperation(s.ssop)
 		Duel.RegisterEffect(e2,tp)
 		Duel.SpecialSummonComplete()
+		c:CompleteProcedure()
 		Duel.ChangeAttackTarget(c)
 	end
 end

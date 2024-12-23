@@ -87,6 +87,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SSet(tp,sg,tp,false)==ct then
 			if tc:IsType(TYPE_RITUAL) then
 				Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+				tc:CompleteProcedure()
 			else
 				Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,false,POS_FACEUP)
 			end
