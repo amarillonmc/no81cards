@@ -30,7 +30,7 @@ function s.initial_effect(c)
 end
 
 function s.counterfilter(c)
-	return not c:IsSummonLocation(LOCATION_EXTRA) or c:IsSetCard(0x601)
+	return not c:IsSummonLocation(LOCATION_EXTRA) or c:IsSetCard(0x605)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_SPSUMMON)==0 end
@@ -44,7 +44,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit1(e,c,sump,sumtype,sumpos,targetp,se)
-	return c:IsLocation(LOCATION_EXTRA) and not c:IsSetCard(0x601)
+	return c:IsLocation(LOCATION_EXTRA) and not c:IsSetCard(0x605)
 end
 
 function s.filter(c)

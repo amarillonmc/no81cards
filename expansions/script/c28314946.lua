@@ -14,7 +14,7 @@ function c28314946.initial_effect(c)
 	--recover
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28314946,1))
-	e2:SetCategory(CATEGORY_RECOVER)
+	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38314946)
@@ -50,12 +50,16 @@ function c28314946.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,500)
 end
+function c28314946.thfilter(c)
+	return c:IsSetCard(0x283) and c:IsLevel(4) and c:IsAbleToHand()
+end
 function c28314946.recop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c28314946.cfilter,tp,LOCATION_MZONE,0,nil)
-	if Duel.Recover(tp,500,REASON_EFFECT)>0 and g:GetClassCount(Card.GetAttribute)>=3 and Duel.SelectYesNo(tp,aux.Stringid(28314946,2)) then
-		Duel.BreakEffect()
-		Duel.Recover(tp,1500,REASON_EFFECT,true)
-		Duel.Recover(1-tp,1500,REASON_EFFECT,true)
-		Duel.RDComplete()
+	Duel.Recover(tp,500,REASON_EFFECT)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(c28314946.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28314946,2)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local tg=Duel.SelectMatchingCard(tp,c28314946.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 	end
 end

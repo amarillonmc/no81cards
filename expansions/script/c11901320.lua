@@ -82,7 +82,7 @@ function s.ciop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=g:Filter(Card.IsRelateToEffect,c,e)
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 and #tg>0 then 
 		local Dval=Duel.Draw(tp,#tg,REASON_EFFECT)
-        local hg=Duel.GetMatchingGroup(Card.SendtoDeck,tp,0x02,0,nil)
+        local hg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0x02,0,nil)
         if Dval>0 and #hg>0 then
             Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
             local sg=hg:Select(tp,Dval,Dval,nil)

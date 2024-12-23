@@ -54,12 +54,12 @@ function c28315544.gcheck(sg,tp)
 	return sg:FilterCount(Card.IsControler,nil,1-tp)<=1
 end
 function c28315544.recop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c28315544.cfilter,tp,LOCATION_MZONE,0,nil)
-	if Duel.Recover(tp,500,REASON_EFFECT)>0 and g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28315544,2)) then
-		Duel.BreakEffect()
-		local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	Duel.Recover(tp,500,REASON_EFFECT)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28315544,2)) then
+		local tg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local sg=g:SelectSubGroup(tp,c28315544.gcheck,false,1,2,tp)
+		local sg=tg:SelectSubGroup(tp,c28315544.gcheck,false,1,2,tp)
 		Duel.HintSelection(sg)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	end

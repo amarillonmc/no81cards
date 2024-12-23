@@ -46,7 +46,7 @@ function s.stop(e,tp,eg,ep,ev,re,r,rp)
     if val==0 then return end
     if val>2 then val=2 end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,s.stfilter,tp,0x30,0,1,val,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.stfilter),tp,0x30,0,1,val,nil)
     local tc=g:GetFirst()
     while tc do
 	    if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.MoveToField(tc,tp,tp,0x08,POS_FACEUP,true) then

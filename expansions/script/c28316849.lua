@@ -51,9 +51,9 @@ function c28316849.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,500)
 end
 function c28316849.recop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c28316849.cfilter,tp,LOCATION_MZONE,0,nil)
-	if Duel.Recover(tp,500,REASON_EFFECT)>0 and g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(28316849,2)) then
-		Duel.BreakEffect()
+	Duel.Recover(tp,500,REASON_EFFECT)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(28316849,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,3,nil,tp)
 		Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)

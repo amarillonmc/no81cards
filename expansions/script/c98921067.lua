@@ -74,7 +74,7 @@ function c98921067.activate(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e1)
 end
 function c98921067.descon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()~=e:GetLabel()
+	return Duel.GetTurnCount()==e:GetLabel()+1
 end
 function c98921067.datg(e,c)
 	return c:IsType(TYPE_XYZ) and c:GetOverlayCount()==0

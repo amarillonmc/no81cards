@@ -17,7 +17,7 @@ function cm.cfilter(c)
 	return c:GetSequence()<5
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return aux.bpcon() and not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.filter2(c)
 	return c:IsFaceup() and c:IsSetCard(0x1115) and c:IsType(TYPE_MONSTER)

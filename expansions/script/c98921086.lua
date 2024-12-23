@@ -76,27 +76,46 @@ end
 function c98921086.spcond1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsReason(REASON_EFFECT)
 end
-function c98921086.tgfilter(c)
-	return c:IsCode(2084239) and c:IsAbleToHand()
+function c98921086.tgfilter(c,tp)
+	return c:IsCode(2084239) and (c:IsAbleToHand() or c:GetActivateEffect():IsActivatable(tp,true,true))
 end
 function c98921086.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.IsExistingMatchingCard(c98921086.tgfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+		and Duel.IsExistingMatchingCard(c98921086.tgfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c98921086.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToChain() and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c98921086.tgfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c98921086.tgfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,tp)
 		if #g>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=g:Select(tp,1,1,nil)
 			if #sg>0 then
-				Duel.SendtoHand(sg,nil,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,sg)
+				local tc=sg:GetFirst()
+				local te=tc:GetActivateEffect()
+				local b1=tc:IsAbleToHand()
+				local b2=te:IsActivatable(tp,true,true)
+				Duel.ResetFlagEffect(tp,15248873)
+				if b1 and (not b2 or Duel.SelectOption(tp,1190,1150)==0) then
+				   Duel.SendtoHand(tc,nil,REASON_EFFECT)
+				   Duel.ConfirmCards(1-tp,tc)
+			   else
+				   local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+				   if fc then
+						Duel.SendtoGrave(fc,REASON_RULE)
+						Duel.BreakEffect()
+				   end
+				   Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+				   te:UseCountLimit(tp,1,true)
+				   local tep=tc:GetControler()
+				   local cost=te:GetCost()
+				   if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+				   Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+			   end
 			end
 		end
 	end

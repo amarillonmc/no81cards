@@ -9,19 +9,26 @@ function c9911310.initial_effect(c)
 	e1:SetCode(EVENT_EQUIP)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9911310)
+	e1:SetCondition(c9911310.spcon)
 	e1:SetTarget(c9911310.sptg)
 	e1:SetOperation(c9911310.spop)
 	c:RegisterEffect(e1)
 	--xyz spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetCountLimit(1,9911311)
-	e2:SetRange(LOCATION_MZONE)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,9911311)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetCondition(c9911310.xyzcon)
 	e2:SetTarget(c9911310.xyztg)
 	e2:SetOperation(c9911310.xyzop)
 	c:RegisterEffect(e2)
+end
+function c9911310.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
 end
 function c9911310.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -40,6 +47,9 @@ function c9911310.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Destroy(sg,REASON_EFFECT)
 		end
 	end
+end
+function c9911310.xyzcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==1-tp
 end
 function c9911310.filter(c,e,tp)
 	return c:IsFaceup() and c:GetOriginalType()&TYPE_MONSTER>0 and c:IsCanOverlay()

@@ -95,8 +95,7 @@ function c98930025.activate(e,tp,eg,ep,ev,re,r,rp)
 		   local g3=Duel.SelectMatchingCard(tp,c98930025.ttfilter,tp,0,LOCATION_MZONE,1,1,nil)
 		   if g3:GetCount()>0 then
 			   Duel.HintSelection(g3)
-			   Duel.SendtoGrave(g3,REASON_EFFECT)
-			   Duel.BreakEffect()
+			   Duel.Destroy(g3,REASON_EFFECT)
 			   Duel.Destroy(c,REASON_EFFECT)
 			end
 		end
@@ -119,7 +118,7 @@ function c98930025.dcfilter2(c)
 	return c:IsAbleToDeck() and c:IsSetCard(0xad0) and c:IsType(TYPE_MONSTER)
 end
 function c98930025.ttfilter(c)
-	return c:IsSummonLocation(LOCATION_EXTRA)
+	return c:IsSummonType(TYPE_SPSUMMON)
 end
 function c98930025.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_DECK+LOCATION_HAND)

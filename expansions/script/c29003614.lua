@@ -1,16 +1,17 @@
---方舟骑士-远山
-c29003614.named_with_Arknight=1
+--方舟骑士团-远山
 function c29003614.initial_effect(c)
 	aux.AddCodeList(c,29003615)
-	--token
+	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29003614,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_MZONE)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCountLimit(1,29003614)
-	e1:SetTarget(c29003614.tktg)
-	e1:SetOperation(c29003614.tkop)
+	e1:SetTarget(c29003614.sptg)
+	e1:SetOperation(c29003614.spop)
 	c:RegisterEffect(e1)
 	--Activate
 	local e2=Effect.CreateEffect(c)
@@ -25,20 +26,26 @@ function c29003614.initial_effect(c)
 c29003614.toss_coin=true
 c29003614.kinkuaoi_Akscsst=true
 end
-function c29003614.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,29003615,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_SPELLCASTER,ATTRIBUTE_LIGHT) end
-	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
+function c29003614.rfilter(c)
+	return c:IsType(TYPE_TOKEN) and c:IsReleasableByEffect()
 end
-function c29003614.tkop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,29003615,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_SPELLCASTER,ATTRIBUTE_LIGHT) then return end
-	local token=Duel.CreateToken(tp,29003615)
-	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
+function c29003614.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c29003614.rfilter,tp,LOCATION_MZONE,0,1,nil) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function c29003614.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.SelectMatchingCard(tp,c29003614.rfilter,tp,LOCATION_MZONE,0,1,1,aux.ExceptThisCard(e),tp,c)
+	if Duel.Release(g,REASON_EFFECT)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+		if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,29003615,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_SPELLCASTER,ATTRIBUTE_LIGHT) and Duel.SelectYesNo(tp,aux.Stringid(29003614,0)) then 
+			Duel.BreakEffect()
+			local token=Duel.CreateToken(tp,29003615)
+			Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
+		end
+	end
 end
 function c29003614.thfilter1(c)
-	return (c:IsCode(29065532)) or ((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsRace(RACE_SPELLCASTER)) and c:IsAbleToHand()
+	return c:IsSetCard(0x57af) and c:IsAbleToHand()
 end
 function c29003614.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29003614.thfilter1,tp,LOCATION_DECK,0,1,nil) end

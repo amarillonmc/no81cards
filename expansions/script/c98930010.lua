@@ -13,7 +13,6 @@ function c98930010.initial_effect(c)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetCountLimit(1,98930010)
-	e1:SetCondition(c98930010.condition)
 	e1:SetTarget(c98930010.target)
 	e1:SetOperation(c98930010.activate)
 	c:RegisterEffect(e1)
@@ -35,9 +34,6 @@ end
 function c98930010.filter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and c:IsSetCard(0xad0) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
-end
-function c98930010.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp
 end
 function c98930010.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

@@ -62,7 +62,7 @@ function c98930000.spop(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterEffect(e2,true)
 end
 function c98930000.tgfilter(c)
-	return c:IsSetCard(0xad0) and not c:IsCode(98930000) and c:IsAbleToGrave()
+	return c:IsSetCard(0xad0) and c:IsAbleToGrave()
 end
 function c98930000.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c98930000.tgfilter,tp,LOCATION_DECK,0,1,nil) end

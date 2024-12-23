@@ -20,9 +20,9 @@ function c28361833.initial_effect(c)
 	c:RegisterEffect(e0)
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetValue(aux.synlimit)
 	c:RegisterEffect(e1)
 	--hokura power
@@ -59,7 +59,7 @@ function c28361833.synclv(e,c)
 	end
 end
 function c28361833.valcheck(e,c)
-	local val=c:GetMaterial():GetClassCount(Card.GetOriginalAttribute)
+	local val=c:GetMaterial():GetClassCount(Card.GetAttribute)
 	e:SetLabel(val)
 end
 function c28361833.regcon(e,tp,eg,ep,ev,re,r,rp)
@@ -149,15 +149,14 @@ function c28361833.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c28361833.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c28361833.cfilter,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tg=Duel.SelectMatchingCard(tp,c28361833.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if #tg>0 then
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tg)
-		if g:GetClassCount(Card.GetAttribute)>=3 and Duel.SelectYesNo(tp,aux.Stringid(28361833,4)) then
-			Duel.BreakEffect()
-			Duel.Recover(tp,500,REASON_EFFECT)
-		end
+	end
+	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.SelectYesNo(tp,aux.Stringid(28361833,4)) then
+		Duel.Recover(tp,500,REASON_EFFECT)
 	end
 end

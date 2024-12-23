@@ -67,7 +67,7 @@ function c98930002.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,0,tp,LOCATION_DECK)
 end
 function c98930002.tgfilter(c)
-	return c:IsAbleToGrave() and c:IsSetCard(0xad0) and not c:IsCode(98930002)
+	return c:IsAbleToGrave() and c:IsSetCard(0xad0)
 end
 function c98930002.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

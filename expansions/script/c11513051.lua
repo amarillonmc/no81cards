@@ -29,27 +29,20 @@ function c11513051.operation(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE) 
 		e1:SetCode(EFFECT_UPDATE_ATTACK) 
 		e1:SetRange(LOCATION_MZONE) 
-		e1:SetValue(1000) 
+		e1:SetValue(1500) 
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
 		tc:RegisterEffect(e1) 
-		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil) 
-		if Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_GRAVE,0,3,nil,TYPE_SPELL) and g:GetCount()>0 then 
-			local tc=g:GetFirst() 
-			while tc do 
-			local e1=Effect.CreateEffect(c) 
-			e1:SetType(EFFECT_TYPE_SINGLE) 
-			e1:SetCode(EFFECT_UPDATE_ATTACK) 
-			e1:SetRange(LOCATION_MZONE) 
-			e1:SetValue(-1500) 
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
-			tc:RegisterEffect(e1) 
-			tc=g:GetNext() 
-			end 
+		if Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_GRAVE,0,3,nil,TYPE_SPELL) then 
+			local e2=Effect.CreateEffect(c) 
+			e2:SetType(EFFECT_TYPE_SINGLE) 
+			e2:SetCode(EFFECT_ATTACK_ALL) 
+			e2:SetRange(LOCATION_MZONE) 
+			e2:SetValue(1) 
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD) 
+			tc:RegisterEffect(e2)
 		end 
 	end 
 end  
-
-
 
 
 

@@ -26,8 +26,8 @@ function c98930012.initial_effect(c)
 	e3:SetOperation(c98930012.thop)
 	c:RegisterEffect(e3)
 end
-function c98930012.matfilter(c,fc,sub,mg,sg)
-	return c:IsFusionSetCard(0xad0) and c:IsLevelBelow(4) and (not sg or not sg:IsExists(Card.IsFusionCode,1,c,c:GetFusionCode()))
+function c98930012.matfilter(c)
+	return c:IsFusionSetCard(0xad0) and c:IsLevelBelow(4)
 end
 function c98930012.filter1(c,e)
 	return c:IsOnField() and not c:IsImmuneToEffect(e)
