@@ -175,7 +175,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 											Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
 											local sc=e:GetHandler()
 											local code=sc:GetOriginalCode()
-											if code>=11451881 and code<=11451883 and tc:IsSummonableCard() then
+											--[[if code>=11451881 and code<=11451883 and tc:IsSummonableCard() then
 												local e1=Effect.CreateEffect(sc)
 												e1:SetType(EFFECT_TYPE_SINGLE)
 												e1:SetCode(EFFECT_DUAL_SUMMONABLE)
@@ -233,7 +233,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 												tc:RegisterEffect(e5,true)
 												tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(code,0))
 												tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(code,1))
-											end
+											end--]]
 											Duel.SpecialSummonComplete()
 										end
 									elseif sel==2 then

@@ -18,8 +18,8 @@ function c91040033.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetRange(LOCATION_REMOVED)
-	e3:SetCountLimit(1,m+100)
-	e3:SetCost(cm.cost)
+	e3:SetCountLimit(1,m+1)
+	e3:SetCost(cm.stcost2)
 	e3:SetCondition(cm.drcon)
 	e3:SetTarget(cm.drtg)
 	e3:SetOperation(cm.drop)
@@ -30,7 +30,7 @@ function cm.counterfilter(c)
 	return c:IsRace(RACE_ZOMBIE)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 end
+	if chk==0 then return Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)==0 end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
@@ -100,22 +100,24 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			tc:CompleteProcedure()  
 		end
 			Duel.ShuffleDeck(tp)
-	   local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-		e1:SetTargetRange(LOCATION_EXTRA,0)
-		e1:SetTarget(cm.splimit)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)  
 	end
 end
-function cm.splimit(e,c)
-	return not c:IsRace(RACE_ZOMBIE)
-end
+
 function cm.thfilter(c,tp)
 	return c:IsFaceup() and c:IsRace(RACE_ZOMBIE)  and c:IsType(TYPE_FUSION)
 		 and c:IsControler(tp)
+end
+function cm.stcost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return  Duel.GetCustomActivityCount(m,tp,ACTIVITY_SPSUMMON)==0  end
+ local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(cm.splimit)
+	Duel.RegisterEffect(e1,tp)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.thfilter,1,nil,tp)
