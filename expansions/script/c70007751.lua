@@ -46,18 +46,17 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.spop2)
 	c:RegisterEffect(e4)
 end
-	function cm.spcon(e,c)
-	if c==nil then return true end
-	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)==0
-		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-end
-	function cm.spfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x1275)
+	function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local ct=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
+	return ct==0 
 end
 	function cm.spcon2(e,c)
 	if c==nil then return true end
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.spfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
+		and Duel.IsExistingMatchingCard(cm.spfilter1,c:GetControler(),LOCATION_MZONE,0,1,nil)
+end
+	function cm.spfilter1(c)
+	return c:IsFaceup() and c:IsSetCard(0x1275)
 end
 	function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0

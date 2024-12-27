@@ -30,6 +30,9 @@ end
 function cm.fil1(c)
 	return c:IsDiscardable()
 end
+function cm.fil2(c)
+	return aux.IsCodeListed(c,60000163) and c:IsSSetable() and not c:GetType()==TYPE_SPELL and not c:IsCode(m)
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=false
 	local b2=false

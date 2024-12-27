@@ -155,7 +155,7 @@ function cm.bcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.btg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tg=e:GetLabelObject():GetLabelObject()
-	if chk==0 then return aux.GetValueType(tg)=="Group"and #tg>0 end
+	if chk==0 then return tg and aux.GetValueType(tg)=="Group"and #tg>0 end
 end
 function cm.bop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=e:GetLabelObject():GetLabelObject()
