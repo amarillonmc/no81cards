@@ -35,28 +35,25 @@ function c22060130.initial_effect(c)
 	end
 end
 function c22060130.regop1(e,tp,eg,ep,ev,re,r,rp)
-	for tc in aux.Next(eg) do
-		if tc:IsType(TYPE_MONSTER) then
-			Duel.RegisterFlagEffect(tp,22060131,RESET_PHASE+PHASE_END,0,1)
-		end
+	local p=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER)
+	if re:IsActiveType(TYPE_MONSTER) then
+			Duel.RegisterFlagEffect(p,22060131,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 function c22060130.regop2(e,tp,eg,ep,ev,re,r,rp)
-	for tc in aux.Next(eg) do
-		if tc:IsType(TYPE_SPELL) then
-			Duel.RegisterFlagEffect(tp,22060132,RESET_PHASE+PHASE_END,0,1)
-		end
+	local p=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER)
+	if re:IsActiveType(TYPE_SPELL) then
+			Duel.RegisterFlagEffect(p,22060132,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 function c22060130.regop3(e,tp,eg,ep,ev,re,r,rp)
-	for tc in aux.Next(eg) do
-		if tc:IsType(TYPE_TRAP) then
-			Duel.RegisterFlagEffect(tp,22060133,RESET_PHASE+PHASE_END,0,1)
-		end
+	local p=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER)
+	if re:IsActiveType(TYPE_TRAP) then
+			Duel.RegisterFlagEffect(p,22060133,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 function c22060130.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp and Duel.GetFlagEffect(tp,22060131)>0 and Duel.GetFlagEffect(tp,22060132)>0 and Duel.GetFlagEffect(tp,22060133)>0
+	return Duel.GetTurnPlayer()~=tp and Duel.GetFlagEffect(1-tp,22060131)>0 and Duel.GetFlagEffect(1-tp,22060132)>0 and Duel.GetFlagEffect(1-tp,22060133)>0
 end
 function c22060130.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -75,7 +75,7 @@ function s.spcon(e,c)
 	local st=0  
 	local g1=Duel.GetMatchingGroup(s.matfilter,tp,LOCATION_ONFIELD,0,nil,c)
 	if st2>st1 then
-		local g2=Duel.GetMatchingGroup(s.matfilter,tp,LOCATION_EXTRA,0,nil,c)
+		local g2=Duel.GetMatchingGroup(s.matfilter,tp,LOCATION_EXTRA,0,c,c)
 		st=math.min(st2-st1,g2:GetCount())
 	end
 	return g1:GetCount()+st>=4
@@ -84,12 +84,12 @@ function s.fselect(g,tp,sc,st)
 	return Duel.GetLocationCountFromEx(tp,tp,g,sc)>0 and g:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)<=st
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g1=Duel.GetMatchingGroup(s.matfilter,tp,LOCATION_ONFIELD,0,nil,c) 
+	local g1=Duel.GetMatchingGroup(s.matfilter,tp,LOCATION_ONFIELD,0,c,c) 
 	local st1=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD+LOCATION_HAND,0)
 	local st2=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)
 	local st=0
 	if st2>st1 then
-		local g2=Duel.GetMatchingGroup(s.matfilter,tp,LOCATION_EXTRA,0,nil,c)
+		local g2=Duel.GetMatchingGroup(s.matfilter,tp,LOCATION_EXTRA,0,c,c)
 		g1=g1:__bxor(g2)
 		st=math.min(st2-st1,g2:GetCount())
 	end
@@ -142,8 +142,8 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 				--Duel.AdjustAll()
 			else
 				break
-			end			
-		end		
+			end		 
+		end	 
 	end
 	local e0=Effect.CreateEffect(c) 
 	e0:SetDescription(aux.Stringid(id,0))

@@ -19,10 +19,10 @@ function s.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetOperation(s.regop)
 	e2:SetLabelObject(e1)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 	--set
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(id,2))
+	e3:SetDescription(aux.Stringid(id,0))
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCategory(CATEGORY_NEGATE)
 	e3:SetRange(LOCATION_MZONE)
@@ -36,7 +36,7 @@ function s.initial_effect(c)
 
 	--to hand
 	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(id,3))
+	e5:SetDescription(aux.Stringid(id,1))
 	e5:SetCategory(CATEGORY_TOHAND)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
@@ -87,12 +87,12 @@ function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() and Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE) then
+	if tc:IsRelateToEffect(e) and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() and Duel.ChangePosition(tc,POS_FACEUP_ATTACK,POS_FACEDOWN_DEFENSE,POS_FACEUP_DEFENSE,POS_FACEDOWN_DEFENSE)>0 then
 		Duel.NegateActivation(ev)
 	end
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,e:GetHandler())
+	return not Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,e:GetHandler())
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
@@ -109,18 +109,18 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	--  local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_HAND,0,1,1,nil)
 	--  if g:GetCount()>0 then
-	--	  local dc=g:GetFirst()
-	--	  if Duel.SSet(tp,dc,tp,false)==0 then return end
-	--	  local e1=Effect.CreateEffect(c)
-	--	  e1:SetType(EFFECT_TYPE_SINGLE)
-	--	  e1:SetDescription(aux.Stringid(id,4))
-	--	  e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-	--	  e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
-	--	  e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	--	  dc:RegisterEffect(e1)
-	--	  local e2=e1:Clone()
-	--	  e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-	--	  dc:RegisterEffect(e2)
+	--	local dc=g:GetFirst()
+	--	if Duel.SSet(tp,dc,tp,false)==0 then return end
+	--	local e1=Effect.CreateEffect(c)
+	--	e1:SetType(EFFECT_TYPE_SINGLE)
+	--	e1:SetDescription(aux.Stringid(id,4))
+	--	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	--	e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+	--	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	--	dc:RegisterEffect(e1)
+	--	local e2=e1:Clone()
+	--	e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+	--	dc:RegisterEffect(e2)
 	--  end
 	--end
 end

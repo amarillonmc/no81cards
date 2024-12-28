@@ -80,7 +80,7 @@ function s.damop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_CHANGE_DAMAGE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTargetRange(1,1)
+	e2:SetTargetRange(1,0)
 	e2:SetReset(RESET_PHASE+PHASE_END,2)
 	e2:SetValue(function (e,re,val,r,rp)
 		if val>1 then Duel.Hint(HINT_CARD,0,id) end

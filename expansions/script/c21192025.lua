@@ -1,7 +1,7 @@
 --幻想时间 白枭骑士
 local m=21192025
 local cm=_G["c"..m]
-local setcard=0x3917
+local setcard=0x3907
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	local e0=Effect.CreateEffect(c)
@@ -89,7 +89,7 @@ function cm.systg(f1,f2,minc,maxc)
 			end
 end
 function cm.w(c,tp)
-	return c:IsSetCard(setcard) and c:IsControler(tp)
+	return c:IsSetCard(setcard) and c:IsControler(tp) and c:IsType(TYPE_SYNCHRO)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.w,1,nil,tp)
