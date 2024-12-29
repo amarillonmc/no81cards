@@ -1,7 +1,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
-	if not s.globle_check then
-		s.globle_check=true
+	if not _G.dealergame then
+		_G.dealergame=true
 		local ge0=Effect.GlobalEffect()
 		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge0:SetCode(EVENT_DRAW)
@@ -175,7 +175,7 @@ function s.adjust(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetCode(EFFECT_CHANGE_LEVEL)
 			tc:RegisterEffect(e3,true)
 		end
-		for tc in aux.Next(g2) do		
+		for tc in aux.Next(g2) do	   
 			local lv=1
 			if num+g2:GetCount()<=11 then
 				lv=11
@@ -195,7 +195,7 @@ function s.getscore(tp,c)
 		if lv>10 then lv=10 end
 		num=num+lv
 	end
-	for tc in aux.Next(g2) do		
+	for tc in aux.Next(g2) do	   
 		local lv=1
 		if num+g2:GetCount()<=11 then
 			lv=11
@@ -215,7 +215,7 @@ function s.iswin1()
 			Duel.Win(0,0x0)
 		elseif score~=21 and Duel.SelectYesNo(1,aux.Stringid(id,9)) then
 			s.dealcard(1,true)
-			--Duel.RaiseEvent(Group.CreateGroup(),EVENT_CUSTOM+id+1,e,0,1,1,0)	
+			--Duel.RaiseEvent(Group.CreateGroup(),EVENT_CUSTOM+id+1,e,0,1,1,0)  
 		else
 			iscontinue=false
 			--Debug.ShowHint(".达拉崩巴斑得贝迪卜多比鲁翁>")
@@ -224,7 +224,7 @@ function s.iswin1()
 		end
 	end
 end
-function s.iswin2()	
+function s.iswin2() 
 	local iscontinue=true
 	while iscontinue do
 		local score=s.getscore(0)

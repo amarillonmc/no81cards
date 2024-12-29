@@ -124,7 +124,6 @@ function cm.initial_effect(c)
 			if res and aux.GetValueType(re)=="Effect" then
 				local rc=re:GetHandler()
 				if rc and rc:IsRelateToEffect(re) and not (rc:IsOnField() and rc:IsFacedown()) and re:GetDescription()==aux.Stringid(m,0) then
-					rc:ResetFlagEffect(m)
 					rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 				end
 			end
@@ -182,7 +181,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and c:GetFlagEffect(m)==0 end
 	local fid=c:GetFieldID()
-	c:RegisterFlagEffect(m,RESET_EVENT+0x57a0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(m,2))
+	c:RegisterFlagEffect(m,RESET_EVENT+0x57a0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_OATH,1,fid,aux.Stringid(m,2))
 	local g=Duel.GetMatchingGroup(cm.tdfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	local g2=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e,tp)
 	--Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g2,1,PLAYER_ALL,LOCATION_GRAVE)
@@ -285,7 +284,7 @@ function cm.d2hmatchfilter(c,cd)
 	return c:IsFaceup() and c:IsCode(cd)
 end
 function cm.thfilter2(c)
-	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and not c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and not c:IsExtraDeckMonster()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_EXTRA,0,1,nil) end

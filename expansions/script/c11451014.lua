@@ -185,7 +185,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,LOCATION_GRAVE,1,nil,e,tp) and c:GetFlagEffect(m)==0 end
 	local fid=c:GetFieldID()
-	local e1=Card.RegisterFlagEffect(c,m,RESET_EVENT+0x53e0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(m,2))
+	local e1=Card.RegisterFlagEffect(c,m,RESET_EVENT+0x53e0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_OATH,1,fid,aux.Stringid(m,2))
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_TO_DECK)
@@ -195,7 +195,6 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e2,tp)
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND,LOCATION_GRAVE,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,PLAYER_ALL,LOCATION_GRAVE+LOCATION_HAND)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,PLAYER_ALL,LOCATION_ONFIELD)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if eg:IsExists(cm.tdfilter,1,nil,e:GetLabel()) then
@@ -213,8 +212,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND,LOCATION_GRAVE,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) end
-	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,0,aux.ExceptThisCard(e))
-	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e))
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,0,nil)
+	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
 	if #g1>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		--Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)

@@ -17,7 +17,7 @@ function s.initial_effect(c)
 	local control_player=0
 	if _Duel.GetFieldGroupCount(1,LOCATION_DECK,0)>0 then control_player=1 end
 	local CardCount=_Duel.GetMatchingGroupCount(s.cfilter,control_player,LOCATION_EXTRA,0,nil,id)
-	if _Duel.GetMatchingGroupCount(s.cfilter,control_player,LOCATION_DECK,0,nil,id+2)>0 and KOISHI_CHECK then
+	if _G.dealergame==true and KOISHI_CHECK then
 		s.globle_check=true
 		_G.dealerplayer=control_player
 		_Debug.SetPlayerInfo(control_player,8000,0,0)
@@ -58,13 +58,23 @@ function s.initial_effect(c)
 		_Duel.DisableActionCheck(true)
 		_Debug.SetPlayerInfo(control_player,8000,0,1)
 		_Debug.SetPlayerInfo(1-control_player,0,0,1)
-		if Duel.GetLP(1-control_player)>0 then
+		if _Duel.GetLP(1-control_player)>0 then
 			--local sl = coroutine.create(Duel.SetLP)
 			--coroutine.resume(sl,1-control_player,0)
-			pcall(Duel.SetLP,1-control_player,0)
+			pcall(_Duel.SetLP,1-control_player,0)
 		end
+		local dame1=_Effect.GlobalEffect()
+		_Effect.SetType(dame1,2)
+		_Effect.SetProperty(dame1,0x800)
+		_Effect.SetCode(dame1,82)
+		_Effect.SetTargetRange(dame1,1,0)
+		_Effect.SetValue(dame1,0)
+		_Duel.RegisterEffect(dame1,control_player)
+		local dame2=_Effect.Clone(dame1)
+		_Effect.SetCode(dame1,37564153)
+		_Duel.RegisterEffect(dame2,control_player)
 		function Duel.RegisterEffect(re,rp)
-			if re:GetCode()==37564153 then return end
+			if _Effect.GetCode(re)==37564153 or _Effect.GetCode(re)==82 then return end
 			_Duel.RegisterEffect(re,rp)
 		end
 		--local movet = coroutine.create(Duel.MoveTurnCount)
@@ -78,17 +88,15 @@ function s.initial_effect(c)
 		--local dam = coroutine.create(Duel.Damage)
 		--coroutine.resume(dam,1-control_player,2147483647,REASON_RULE)
 		pcall(_Duel.MoveTurnCount)
-		pcall(_Duel.MoveToField,c,control_player,control_player,LOCATION_MZONE,POS_FACEUP_ATTACK,true,0x20)
-		local atke=Effect.CreateEffect(c)
-		atke:SetType(EFFECT_TYPE_SINGLE)
-		atke:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-		atke:SetCode(EFFECT_SET_BATTLE_ATTACK)
-		atke:SetValue(2147483647)
-		_Card.RegisterEffect(c,atke,true)
-		local atke2=Effect.CreateEffect(c)
-		atke2:SetType(EFFECT_TYPE_SINGLE)
-		atke2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-		atke2:SetCode(EFFECT_MATCH_KILL)
+		pcall(_Duel.MoveToField,c,control_player,control_player,4,1,true,0x20)
+		local atke1=_Effect.CreateEffect(c)
+		_Effect.SetType(atke1,1)
+		_Effect.SetProperty(atke1,0x40400)
+		_Effect.SetCode(atke1,362)
+		_Effect.SetValue(atke1,2147483647)
+		_Card.RegisterEffect(c,atke1,true)
+		local atke2=_Effect.Clone(atke1)
+		_Effect.SetCode(atke2,300)
 		_Card.RegisterEffect(c,atke2,true)
 		--local cd = coroutine.create(Duel.CalculateDamage)
 		--coroutine.resume(cd,c,nil)
@@ -98,13 +106,9 @@ function s.initial_effect(c)
 		--coroutine.resume(dr2,1-control_player,2147483647,REASON_RULE)
 		--pcall(Duel.CalculateDamage,c,nil)
 		--
-		if control_player==0 then
-			--s.Administrator(5)
-		else
-		end
 		pcall(_Duel.CalculateDamage,c,nil)
-		pcall(dr1,control_player,5,REASON_RULE)
-		pcall(dr1,1-control_player,2147483647,REASON_RULE)
+		pcall(_Duel.Draw,control_player,5,0x400)
+		pcall(_Duel.Draw,1-control_player,2147483647,0x400)
 		--Debug.AddCard(id+2,1-control_player,1-control_player,LOCATION_DECK,1,POS_FACEDOWN)
 		_Duel.DisableActionCheck(false)
 	end
@@ -895,8 +899,7 @@ function s.setcard(e,tp)
 		local mc=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_EXTRA,0,1,1,c):GetFirst()
 		local pos=POS_FACEUP_ATTACK
 		if not mc:IsType(TYPE_LINK) then pos=Duel.SelectPosition(tp,mc,0xd) end
-		Duel.MoveToField(mc,tp,p,LOCATION_MZONE,pos,true,flag)
-		if tp~=p then
+		if Duel.MoveToField(mc,tp,p,LOCATION_MZONE,pos,true,flag) and tp~=p then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_SET_CONTROL)
@@ -914,7 +917,7 @@ function s.setcard(e,tp)
 			mg:Merge(Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE))
 		end
 		if flag==0x100 or flag==0x1000 then
-			mg:Merge(Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_EXTRA,0,c,TYPE_PENDULUM))
+			mg:Merge(Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_MZONE,LOCATION_MZONE,c,TYPE_PENDULUM))
 		end
 		if flag==0x2000 then 
 			mg=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND,0,nil,TYPE_FIELD)
@@ -922,11 +925,20 @@ function s.setcard(e,tp)
 		local mc=mg:Select(tp,1,1,nil):GetFirst()
 		if flag>0x7f then
 			if mc:IsType(TYPE_PENDULUM) and (flag==0x100 or flag==0x1000) and _Duel.SelectOption(tp,1003,1009)==1 then
-				Duel.MoveToField(mc,tp,p,LOCATION_PZONE,POS_FACEUP,true)
+				local pseq=flag==0x100 and 1 or 2
+				Duel.MoveToField(mc,tp,p,LOCATION_PZONE,POS_FACEUP,true,pseq)
 			else
 				local pos=Duel.SelectPosition(tp,mc,0x3)
 				flag=flag>>8
-				Duel.MoveToField(mc,tp,p,LOCATION_SZONE,pos,true,flag)
+				if Duel.MoveToField(mc,tp,p,LOCATION_SZONE,pos,true,flag) and mc:IsType(TYPE_MONSTER) then
+					local e1=Effect.CreateEffect(c)
+					e1:SetCode(EFFECT_CHANGE_TYPE)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+					e1:SetValue(TYPE_SPELL)
+					mc:RegisterEffect(e1)
+				end
 			end
 		else
 			if mc:IsLocation(LOCATION_MZONE) then
@@ -936,9 +948,8 @@ function s.setcard(e,tp)
 					Duel.GetControl(mc,p,0,0,flag)
 				end
 			else
-				local pos=Duel.SelectPosition(tp,mc,0xd)
-				Duel.MoveToField(mc,tp,p,LOCATION_MZONE,pos,true,flag)
-				if tp~=p then
+				local pos=Duel.SelectPosition(tp,mc,0xd)				
+				if Duel.MoveToField(mc,tp,p,LOCATION_MZONE,pos,true,flag) and tp~=p then
 					local e1=Effect.CreateEffect(c)
 					e1:SetType(EFFECT_TYPE_SINGLE)
 					e1:SetCode(EFFECT_SET_CONTROL)
@@ -1231,8 +1242,8 @@ function s.get_save_location(c)
 	else return c:GetLocation() end
 end
 function s.get_save_sequence(c)
-	if c:IsLocation(LOCATION_PZONE) and c:GetSequence()==0 then return 0 end
-	if c:IsLocation(LOCATION_PZONE) and c:GetSequence()==4 then return 1 end
+	if c:IsLocation(LOCATION_PZONE) and c:GetSequence()==0 then return 1 end
+	if c:IsLocation(LOCATION_PZONE) and c:GetSequence()==4 then return 2 end
 	if c:IsOnField() then return c:GetSequence() end
 	return 0
 end

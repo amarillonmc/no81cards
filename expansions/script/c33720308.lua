@@ -90,7 +90,7 @@ function s.damrepop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.damrep(e,tp,val)
 	local c=e:GetHandler()
-	if c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.SelectEffectYesNo(tp,c) then then
+	if c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.SelectEffectYesNo(tp,c) then
 		Duel.Hint(HINT_CARD,tp,id)
 		Duel.SpecialSummonATKDEF(e,c,0,tp,tp,false,false,POS_FACEUP,nil,val)
 		return true
