@@ -2,9 +2,9 @@ local m=15000259
 local cm=_G["c"..m]
 cm.name="永寂连接2"
 function cm.initial_effect(c)
+	--link summon
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2,cm.lcheck)
 	c:EnableReviveLimit()
-	--Link Summon
-	aux.AddLinkProcedure(c,cm.mfilter,2,2)
 	--back and to grave  
 	local e1=Effect.CreateEffect(c)  
 	e1:SetCategory(CATEGORY_TODECK+CATEGORY_TOGRAVE+CATEGORY_DECKDES)  
@@ -46,14 +46,14 @@ function cm.initial_effect(c)
 	e9:SetCode(EVENT_TO_HAND)
 	c:RegisterEffect(e9)
 end
-function cm.mfilter(c)
-	return c:IsLinkType(TYPE_EFFECT) and c:IsLinkType(TYPE_MONSTER)
+function cm.lcheck(g,lc)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0xaf37)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)  
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)  
 end  
 function cm.thfilter(c)  
-	return c:IsSetCard(0xf37) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()  
+	return c:IsSetCard(0xaf37) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()  
 end  
 function cm.th2filter(c)  
 	return c:IsSetCard(0xaf37) and c:IsAbleToDeck() 
@@ -66,24 +66,23 @@ end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)  
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)  
 	local g=Duel.SelectMatchingCard(tp,cm.th2filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,2,nil)  
-	if g:GetCount()>0 then  
-		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
-	end  
-	Duel.BreakEffect()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g1=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g1:GetCount()>0 then  
-		Duel.SendtoGrave(g1,REASON_EFFECT)
-	end  
+	if g:GetCount()>0 and Duel.SendtoDeck(g,nil,2,REASON_EFFECT)~=0 then  
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g1=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		if g1:GetCount()>0 then  
+			Duel.SendtoGrave(g1,REASON_EFFECT)
+		end  
+	end
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsSetCard(0xf37) and e:GetHandler():IsType(TYPE_XYZ) then
+	if e:GetHandler():IsSetCard(0xaf37) and e:GetHandler():IsType(TYPE_XYZ) then
 		e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 	end
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler()  
-	return c:IsSetCard(0xf37) and c:IsType(TYPE_XYZ)  
+	return c:IsSetCard(0xaf37) and c:IsType(TYPE_XYZ)  
 end
 function cm.adjust2con(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler()  

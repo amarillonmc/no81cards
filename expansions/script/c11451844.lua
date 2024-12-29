@@ -107,7 +107,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e:SetLabelObject(te:GetLabelObject())
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
-	if Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+	if c:IsRelateToEffect(e) and c:IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		Duel.BreakEffect()
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
 	end

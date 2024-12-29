@@ -13,6 +13,7 @@ function c22348447.initial_effect(c)
 	e1:SetOperation(c22348447.atkop)
 	c:RegisterEffect(e1)
 	aux.RegisterMergedDelayedEvent(c,22348447,EVENT_SPSUMMON_SUCCESS)
+	aux.RegisterMergedDelayedEvent(c,22348447,EVENT_SUMMON_SUCCESS)
 	--atkup
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -32,10 +33,10 @@ function c22348447.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c22348447.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsSummonPlayer,1,nil,tp)
+	return eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp)
 end
 function c22348447.cfilter(c,tp)
-	return c:IsSummonPlayer(tp) and c:GetSequence()<5
+	return c:IsSummonPlayer(1-tp) and c:GetSequence()<5
 		and Duel.IsExistingMatchingCard(c22348447.chkfilter,tp,0,LOCATION_MZONE,1,nil,tp,c:GetSequence())
 end
 function c22348447.chkfilter(c,tp,seq)

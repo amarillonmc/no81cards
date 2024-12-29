@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	e1:SetCountLimit(1)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCondition(cm.negcon)
-	e1:SetCost(cm.negcost)
+	--e1:SetCost(cm.negcost)
 	e1:SetTarget(cm.negtg)
 	e1:SetOperation(cm.negop)
 	c:RegisterEffect(e1)
@@ -45,12 +45,9 @@ end
 function cm.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,eg,1,0,0)
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SendtoGrave(eg,REASON_EFFECT)
-	end
+	Duel.NegateEffect(ev)
 end
 function cm.actcon(e)  
 	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()  

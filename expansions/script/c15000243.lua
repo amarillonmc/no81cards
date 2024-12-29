@@ -16,7 +16,7 @@ function cm.tgfilter1(c)
 	return c:IsFaceup() and (c:IsType(TYPE_LINK) or c:IsType(TYPE_XYZ))
 end
 function cm.spfilter(c,e,tp)  
-	return c:IsSetCard(0xf37) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0  
+	return c:IsSetCard(0xaf37) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0  
 end 
 function cm.sp2filter(c)  
 	return c:IsType(TYPE_LINK) and c:IsCanOverlay()

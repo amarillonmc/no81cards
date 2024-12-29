@@ -32,7 +32,7 @@ function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function cm.thfilter(c,tp)
-	return c:IsSetCard(0xf37) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0xaf37) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tp=e:GetHandler():GetControler()

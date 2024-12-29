@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1) 
 end
 function cm.tgfilter(c,e,tp)  
-	return c:IsFaceup() and ((c:IsSetCard(0xf37) and c:IsType(TYPE_MONSTER)) or (c:IsSetCard(0xaf37) and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP))))
+	return c:IsFaceup() and c:IsSetCard(0xaf37)
 end
 function cm.con(e)
 	local tp=e:GetHandler():GetControler()
@@ -39,12 +39,12 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(e:GetHandler())  
 		e1:SetType(EFFECT_TYPE_SINGLE)  
 		e1:SetCode(EFFECT_DISABLE)  
-		e1:SetReset(RESET_PHASE+PHASE_END)  
+		e1:SetReset(RESET_EVENT+0x17a0000+RESET_PHASE+PHASE_END)  
 		g:GetFirst():RegisterEffect(e1)  
 		local e2=Effect.CreateEffect(e:GetHandler())  
 		e2:SetType(EFFECT_TYPE_SINGLE)  
 		e2:SetCode(EFFECT_DISABLE_EFFECT)  
-		e2:SetReset(RESET_PHASE+PHASE_END)  
+		e2:SetReset(RESET_EVENT+0x17a0000+RESET_PHASE+PHASE_END)  
 		g:GetFirst():RegisterEffect(e2)
 	end
 end

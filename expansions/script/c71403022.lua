@@ -38,6 +38,7 @@ function c71403022.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_BATTLE_START+TIMING_END_PHASE)
 	e2:SetCountLimit(1,71513022)
 	e2:SetCost(yume.PPTLimitCost)
 	e2:SetTarget(c71403022.tg2)
@@ -96,7 +97,7 @@ function c71403022.opp2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71403022.filter2(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x715) and Duel.GetMZoneCount(tp,c,tp)
+	return c:IsFaceup() and c:IsSetCard(0x715) and Duel.GetMZoneCount(tp,c,tp)>0
 end
 function c71403022.filter2sp(c,e,tp)
 	return c:IsSetCard(0x715) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)

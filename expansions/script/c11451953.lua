@@ -25,7 +25,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return #eg==1 and eg:GetFirst():IsSummonPlayer(tp)
+	return #eg==1 and eg:GetFirst():IsLevelAbove(1) --:IsSummonPlayer(tp)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

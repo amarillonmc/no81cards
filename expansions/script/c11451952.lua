@@ -41,10 +41,10 @@ function cm.efilter(e,te)
 	return not g or (g:IsContains(e:GetHandler()) and #g==1)
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() end
-	if chk==0 then return Duel.IsExistingTarget(function(c) return not c:IsLocation(LOCATION_FZONE) end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chkc then return chkc:IsOnField() and chkc:IsAbleToHand() and not chkc:IsLocation(LOCATION_FZONE) end
+	if chk==0 then return Duel.IsExistingTarget(function(c) return c:IsAbleToHand() and not c:IsLocation(LOCATION_FZONE) end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local tg=Duel.SelectTarget(tp,function(c) return not c:IsLocation(LOCATION_FZONE) end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local tg=Duel.SelectTarget(tp,function(c) return c:IsAbleToHand() and not c:IsLocation(LOCATION_FZONE) end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	local tc=tg:GetFirst()
 	local g=tc:GetColumnGroup()
 	g:AddCard(tc)

@@ -103,7 +103,7 @@ function c71403003.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,nil,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
+	local g=Duel.SelectMatchingCard(tp,nil,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,tc)
 	if g:GetCount()>0 then
 		Duel.BreakEffect()
 		g:AddCard(tc)

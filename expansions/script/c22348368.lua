@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetCountLimit(1,22348368+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c22348368.spcon)
 	e1:SetOperation(c22348368.spop)
 	c:RegisterEffect(e1)
@@ -17,7 +18,6 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,22348368)
 	e2:SetTarget(c22348368.sptgd)
 	e2:SetOperation(c22348368.spopd)
 	c:RegisterEffect(e2)
@@ -27,7 +27,6 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e3:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
-	e3:SetCountLimit(1,22348368)
 	e3:SetCondition(c22348368.atkcon)
 	e3:SetTarget(c22348368.sptgd)
 	e3:SetOperation(c22348368.spopd)
@@ -109,13 +108,13 @@ function c22348368.spfilter(c,e,tp)
 end
 function c22348368.sptgd(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c22348368.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+		and Duel.IsExistingMatchingCard(c22348368.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function c22348368.spopd(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c22348368.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348368.spfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end

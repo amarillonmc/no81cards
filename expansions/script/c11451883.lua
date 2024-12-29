@@ -76,9 +76,9 @@ function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
 			e4:SetValue(function(e,re,rp) return not re:GetHandler():IsLocation(LOCATION_MZONE) or re:GetHandler():GetSummonType()&SUMMON_TYPE_NORMAL==0 end)
 		end
 		e4:SetRange(LOCATION_MZONE)
-		e4:SetTargetRange(LOCATION_MZONE,0)
+		e4:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 		e4:SetCondition(aux.IsDualState)
-		e4:SetTarget(function(e,c) return c:GetOriginalType()&TYPE_NORMAL>0 end)
+		e4:SetTarget(function(e,c) return c:IsFaceup() and c:GetOriginalType()&TYPE_NORMAL>0 end)
 		e4:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e4,true)
 		--summon

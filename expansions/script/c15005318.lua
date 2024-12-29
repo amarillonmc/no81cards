@@ -50,7 +50,7 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.disop)
 	c:RegisterEffect(e4)
 end
-function cm.matfilter(c,syncard)
+function cm.matfilter1(c,syncard)
 	return c:IsTuner(syncard) or c:IsSetCard(0x13)
 end
 function cm.synchroval(e,c)

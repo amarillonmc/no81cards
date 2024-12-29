@@ -30,13 +30,14 @@ function c71403015.initial_effect(c)
 	c:RegisterEffect(ep2)
 	--monster movement effect
 	yume.RegPPTTetrisExMoveEffect(c,71403015)
-	--change pos(monster effect)
+	--disable and remove
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71403015,1))
 	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_DESTROY+CATEGORY_REMOVE+CATEGORY_GRAVE_ACTION)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_BATTLE_START+TIMING_END_PHASE)
 	e2:SetCountLimit(1,71513015)
 	e2:SetCost(yume.PPTLimitCost)
 	e2:SetTarget(c71403015.tg2)
@@ -44,6 +45,7 @@ function c71403015.initial_effect(c)
 	c:RegisterEffect(e2)
 	yume.PPTCounter()
 end
+c71403015.pendulum_level=4
 function c71403015.damcon(e,tp,eg,ep,ev,re,r,rp)
 	return yume.PPTOtherScaleCheck(e) and eg:IsExists(Card.IsSummonType,1,nil,SUMMON_TYPE_PENDULUM)
 end
@@ -98,7 +100,6 @@ function c71403015.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 			or Duel.IsExistingMatchingCard(c71403015.filter2,tp,LOCATION_ONFIELD,0,1,nil,true)
 	end
 	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if chk==0 then return #g>0 end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
 function c71403015.filter2(c,check)
@@ -116,7 +117,7 @@ function c71403015.op2(e,tp,eg,ep,ev,re,r,rp)
 	if not opt1 and not opt2 then return end
 	if opt1 and not opt2 then result=0 end
 	if opt2 and not opt1 then result=1 end
-	if opt1 and opt2 then result=Duel.SelectOption(tp,aux.Stringid(71403015,2),aux.Stringid(71403015,3)) end
+	if opt1 and opt2 then result=Duel.SelectOption(tp,aux.Stringid(71403011,2),aux.Stringid(71403011,3)) end
 	if result==0 then
 		result=c:RemoveOverlayCard(tp,2,2,REASON_EFFECT)
 	else
@@ -147,7 +148,7 @@ function c71403015.op2(e,tp,eg,ep,ev,re,r,rp)
 			sc:RegisterEffect(e1)
 		end
 	end
-	local bg=Duel.GetMatchingGroup(c71403015.filter2dis,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e)
+	local bg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,tp)
 	if bg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71403015,4)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)

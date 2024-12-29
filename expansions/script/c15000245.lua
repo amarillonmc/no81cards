@@ -2,12 +2,14 @@ local m=15000245
 local cm=_G["c"..m]
 cm.name="希望：永寂之国"
 function cm.initial_effect(c)
-	--Activate  
-	local e1=Effect.CreateEffect(c)  
-	e1:SetType(EFFECT_TYPE_ACTIVATE)  
-	e1:SetCode(EVENT_FREE_CHAIN)  
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetOperation(cm.activate)  
+	--Activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetTarget(cm.target)
+	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	--double damage  
 	local e2=Effect.CreateEffect(c)  
@@ -22,37 +24,31 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.dbop)  
 	c:RegisterEffect(e2)
 end
-function cm.spfilter(c)
-	return c:IsType(TYPE_LINK) and c:IsSetCard(0xf37)
+function cm.filter(c,e,tp)
+	return c:IsSetCard(0xaf37) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.filter(chkc,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(cm.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()  
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))  
-	e1:SetType(EFFECT_TYPE_FIELD)  
-	e1:SetCode(EFFECT_SPSUMMON_PROC)  
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)  
-	e1:SetRange(LOCATION_GRAVE)  
-	e1:SetCondition(cm.linkcon)  
-	e1:SetOperation(cm.linkop)  
-	e1:SetValue(SUMMON_TYPE_LINK)
-	local e2=Effect.CreateEffect(c)  
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)  
-	e2:SetRange(LOCATION_FZONE)  
-	e2:SetTargetRange(LOCATION_GRAVE,0)  
-	e2:SetTarget(cm.mattg) 
-	e2:SetReset(RESET_PHASE+PHASE_END) 
-	e2:SetLabelObject(e1)  
-	Duel.RegisterEffect(e2,tp)  
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 function cm.mattg(e,c)  
-	return c:IsSetCard(0xf37) and c:IsType(TYPE_LINK)  
+	return c:IsSetCard(0xaf37) and c:IsType(TYPE_LINK)  
 end
 function cm.lmfilter(c,lc,tp)  
 	return c:IsFaceup() and c:IsCanBeLinkMaterial(lc) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_LMATERIAL) and Duel.GetLocationCountFromEx(tp,tp,c,lc)>0 and c:IsType(TYPE_EFFECT)
 end  
 function cm.lmfilter2(c,lc,tp)  
-	return c:IsFaceup() and c:IsCanBeLinkMaterial(lc) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_LMATERIAL) and Duel.GetLocationCountFromEx(tp,tp,c,lc)>0 and c:IsSetCard(0xf37) and not c:IsCode(15000255)
+	return c:IsFaceup() and c:IsCanBeLinkMaterial(lc) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_LMATERIAL) and Duel.GetLocationCountFromEx(tp,tp,c,lc)>0 and c:IsSetCard(0xaf37) and not c:IsCode(15000255)
 end
 function cm.linkcon(e,c)
 	if c==nil then return true end
@@ -79,7 +75,7 @@ function cm.dbcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsAbleToEnterBP()  
 end  
 function cm.dbfilter(c)  
-	return c:IsFaceup() and c:IsSetCard(0xf37) and c:GetSummonLocation()==LOCATION_EXTRA and c:GetFlagEffect(m)==0  
+	return c:IsFaceup() and c:IsSetCard(0xaf37) and c:GetSummonLocation()==LOCATION_EXTRA and c:GetFlagEffect(m)==0  
 end  
 function cm.dbtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)  
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and cm.dbfilter(chkc) end  

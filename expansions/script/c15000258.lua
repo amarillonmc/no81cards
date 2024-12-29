@@ -2,12 +2,12 @@ local m=15000258
 local cm=_G["c"..m]
 cm.name="永寂连接3"
 function cm.initial_effect(c)
+	--link summon
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2,cm.lcheck)
 	c:EnableReviveLimit()
-	--Link Summon
-	aux.AddLinkProcedure(c,cm.mfilter,2,2)
 	--when LinkSummon
 	local e1=Effect.CreateEffect(c)  
-	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_TOGRAVE)  
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)  
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)  
 	e1:SetProperty(EFFECT_FLAG_DELAY)  
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -18,9 +18,10 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.thop)  
 	c:RegisterEffect(e1)
 	--Summon Cost
+	--accumulate
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_FIELD)
-	e2:SetCode(0x10000000+m)
+	e2:SetCode(EFFECT_FLAG_EFFECT+15000258)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(0,1)
@@ -62,17 +63,16 @@ function cm.initial_effect(c)
 	e9:SetCode(EVENT_TO_HAND)
 	c:RegisterEffect(e9)
 end
-function cm.mfilter(c)
-	return c:IsLinkType(TYPE_EFFECT) and c:IsLinkType(TYPE_MONSTER)
+function cm.lcheck(g,lc)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0xaf37)
 end
 function cm.th1filter(c,tp)
 	return c:IsType(TYPE_LINK) and Duel.IsExistingMatchingCard(cm.th2filter,tp,LOCATION_DECK,0,1,nil,c:GetLink())
 end
 function cm.th2filter(c,lk)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xf37) and c:GetLevel()<=lk 
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xaf37) and c:GetLevel()<=lk 
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)  
-	local tp=e:GetHandler():GetControler()
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.th1filter,tp,LOCATION_EXTRA,0,1,nil,tp) end  
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)  
 	local g=Duel.SelectMatchingCard(tp,cm.th1filter,tp,LOCATION_EXTRA,0,1,1,nil,tp)
@@ -83,15 +83,13 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)  
-	local tp=e:GetHandler():GetControler()
-	if chk==0 then return true end  
+	if chk==0 then return e:IsCostChecked() end  
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)  
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local tp=e:GetHandler():GetControler()
 	local lk=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)  
-	local g=Duel.SelectMatchingCard(tp,cm.th2filter,tp,LOCATION_DECK,0,1,1,nil,lk)  
+	local g=Duel.SelectMatchingCard(tp,cm.th2filter,tp,LOCATION_DECK,0,1,1,nil,lk)
 	if g:GetCount()>0 then  
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
@@ -99,17 +97,18 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.costcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
-	return c:IsSetCard(0xf37) and c:IsType(TYPE_XYZ) and c:IsLocation(LOCATION_MZONE)
+	return c:IsSetCard(0xaf37) and c:IsType(TYPE_XYZ) and c:IsLocation(LOCATION_MZONE)
 end
 function cm.costchk(e,te_or_c,tp)
-	local ct=Duel.GetFlagEffect(tp,m)
+	local ct=Duel.GetFlagEffect(tp,15000258)
 	return Duel.CheckLPCost(tp,ct*500)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,15000258)
 	Duel.PayLPCost(tp,500)
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsSetCard(0xf37) and e:GetHandler():IsType(TYPE_XYZ) then
+	if e:GetHandler():IsSetCard(0xaf37) and e:GetHandler():IsType(TYPE_XYZ) then
 		e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 	end
 end

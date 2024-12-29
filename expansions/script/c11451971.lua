@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,m)
+	e1:SetCountLimit(1)
 	e1:SetTarget(cm.rmtg)
 	e1:SetOperation(cm.rmop)
 	c:RegisterEffect(e1)
@@ -71,7 +71,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=e:GetLabelObject()
 	local sg=g:Filter(Card.IsOnField,nil)
 	Duel.SendtoGrave(sg,REASON_SPSUMMON+REASON_COST)
-	Duel.SSet(tp,g-sg)
+	Duel.SSet(tp,g-sg,tp,false)
 	g:DeleteGroup()
 end
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -81,14 +81,27 @@ end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)~=0 and c:GetOriginalCode()==m then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabelObject(c)
-		e1:SetCountLimit(1)
-		e1:SetOperation(cm.retop)
-		Duel.RegisterEffect(e1,tp)
+		if Duel.GetCurrentPhase()==PHASE_STANDBY then
+			local tid=Duel.GetTurnCount()
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+			e1:SetReset(RESET_PHASE+PHASE_STANDBY,2)
+			e1:SetLabelObject(c)
+			e1:SetCountLimit(1)
+			e1:SetCondition(function() return Duel.GetTurnCount()~=tid end)
+			e1:SetOperation(cm.retop)
+			Duel.RegisterEffect(e1,tp)
+		else
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+			e1:SetReset(RESET_PHASE+PHASE_STANDBY)
+			e1:SetLabelObject(c)
+			e1:SetCountLimit(1)
+			e1:SetOperation(cm.retop)
+			Duel.RegisterEffect(e1,tp)
+		end
 	end
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
@@ -122,5 +135,5 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 				eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451961)}
 			end
 		end
-	end		
+	end  
 end

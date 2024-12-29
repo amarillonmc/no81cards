@@ -8,7 +8,6 @@ function cm.initial_effect(c)
 	--when LinkSummon
 	local e1=Effect.CreateEffect(c)  
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)  
-	e1:SetCategory(CATEGORY_SEARCH)  
 	e1:SetProperty(EFFECT_FLAG_DELAY)  
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetRange(LOCATION_MZONE)
@@ -51,7 +50,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e9)
 end
 function cm.mfilter(c)
-	return c:IsLinkSetCard(0xf37) and not c:IsLinkCode(15000255)
+	return c:IsLinkSetCard(0xaf37) and not c:IsLinkCode(15000255)
 end
 function cm.stcon(e,tp,eg,ep,ev,re,r,rp)  
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
@@ -60,11 +59,9 @@ function cm.stfilter(c)
 	return c:IsSetCard(0xaf37) and c:IsSSetable() and c:IsType(TYPE_SPELL+TYPE_TRAP)  
 end  
 function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local tp=e:GetHandler():GetControler() 
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.stfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end  
 end  
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)  
-	local tp=e:GetHandler():GetControler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)  
 	local g=Duel.SelectMatchingCard(tp,cm.stfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil) 
 	if g:GetCount()~=0 then 
@@ -73,7 +70,7 @@ function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler()  
-	return c:IsSetCard(0xf37) and c:IsType(TYPE_XYZ)  
+	return c:IsSetCard(0xaf37) and c:IsType(TYPE_XYZ)  
 end
 function cm.value(e,c)  
 	local g=e:GetHandler():GetOverlayGroup()
@@ -89,7 +86,7 @@ function cm.value(e,c)
 	return x*200
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsSetCard(0xf37) and e:GetHandler():IsType(TYPE_XYZ) then
+	if e:GetHandler():IsSetCard(0xaf37) and e:GetHandler():IsType(TYPE_XYZ) then
 		e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 	end
 end

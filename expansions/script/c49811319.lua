@@ -49,8 +49,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
         	local e2=Effect.CreateEffect(c)
             e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
             e2:SetCode(EVENT_PHASE+PHASE_STANDBY)
-            e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-	        return Duel.GetTurnPlayer()==tp end)
+            --e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+	        --  return Duel.GetTurnPlayer()==tp end)
             e2:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) 
             local g = Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_REMOVED,0,1,nil)
             if #g>0 then
@@ -66,10 +66,11 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	            if #g>0 then  Duel.Remove(g,POS_FACEUP,REASON_EFFECT) end
 	        end
 	    else
-    	    local op = cm.SE(tp,m,
+    	    local op = cm.SE(1-tp,m,
     	    {true,0},
     	    {true,1},
-    	    {Duel.IsExistingMatchingCard(cm.ff,tp,LOCATION_DECK,0,1,nil),2})
+    	    --{Duel.IsExistingMatchingCard(cm.ff,tp,LOCATION_DECK,0,1,nil),2}
+    	    {true,2})
 	        if op == 0 then
 	            local e1=Effect.CreateEffect(c)
             	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
@@ -83,8 +84,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	            local e1=Effect.CreateEffect(c)
             	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
             	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
-            	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp end)
+            	--e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+				--	return Duel.GetTurnPlayer()==tp end)
             	e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) 
             	local g = Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_REMOVED,0,1,nil)
             	if #g>0 then
@@ -98,7 +99,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	            local g=Duel.GetMatchingGroup(cm.ff,tp,LOCATION_DECK,0,1,nil)
 	            if #g>0 then
 	                g = g:Select(tp,1,1,nil)
-	                if #g>0 then  Duel.Remove(g,POS_FACEUP,REASON_EFFECT) end
+	                if #g>0 then Duel.Remove(g,POS_FACEUP,REASON_EFFECT) end
 	            end
 	        end
 	    end

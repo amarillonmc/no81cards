@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)  
 	e2:SetRange(LOCATION_FZONE)  
 	e2:SetTargetRange(LOCATION_MZONE,0)  
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xf37))  
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xaf37))  
 	e2:SetValue(cm.atkval)  
 	c:RegisterEffect(e2)  
 	local e3=e2:Clone()  
@@ -25,14 +25,13 @@ function cm.initial_effect(c)
 	e4:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)  
 	e4:SetRange(LOCATION_FZONE)  
 	e4:SetTargetRange(LOCATION_MZONE,0)  
-	e4:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xf37))  
+	e4:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xaf37))  
 	e4:SetValue(1)  
 	c:RegisterEffect(e4)
 	--tohand  
 	local e5=Effect.CreateEffect(c)  
-	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)  
-	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_FREE_CHAIN)
+	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
+	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_FZONE)
 	e5:SetCountLimit(1,m)  
 	e5:SetCost(cm.thcost)  
@@ -54,30 +53,26 @@ function cm.thfilter(c)
 	return c:IsSetCard(0xaf37) and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0xf37) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xaf37) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local tp=e:GetHandler():GetControler()
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end  
+	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end  
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)  
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local tp=e:GetHandler():GetControler()
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end  
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	if Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) then
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
-	end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)  
 	local tp=e:GetHandler():GetControler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)  
 	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)  
-	if g:GetCount()>0 then  
-		Duel.SendtoHand(g,nil,REASON_EFFECT)  
+	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then  
 		Duel.ConfirmCards(1-tp,g) 
-		Duel.BreakEffect()
-		if (g:GetFirst():IsCode(15000240) and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,0))) then
+		if (g:GetFirst():IsType(TYPE_FIELD) and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,0))) then
+			Duel.BreakEffect()
 			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)  
 			if fc then  
 				Duel.SendtoGrave(fc,REASON_RULE)  
@@ -91,7 +86,6 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			local cost=te:GetCost()  
 			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end  
 			Duel.RaiseEvent(g:GetFirst(),4179255,te,0,tp,tp,Duel.GetCurrentChain())
-			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local ag=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
 			if ag:GetFirst() then

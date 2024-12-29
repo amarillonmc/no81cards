@@ -43,6 +43,7 @@ function c71403011.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_BATTLE_START+TIMING_END_PHASE)
 	e2:SetCountLimit(1,71513011)
 	e2:SetCost(yume.PPTLimitCost)
 	e2:SetTarget(c71403011.tg2)
@@ -50,6 +51,7 @@ function c71403011.initial_effect(c)
 	c:RegisterEffect(e2)
 	yume.PPTCounter()
 end
+c71403011.pendulum_level=4
 function c71403011.actfilter(c,tp)
 	return c:IsFaceup() and c:IsControler(tp) and c:IsSetCard(0x162) and c:IsType(TYPE_PENDULUM) and c:IsSummonType(SUMMON_TYPE_PENDULUM)
 end
@@ -155,9 +157,9 @@ function c71403011.op2(e,tp,eg,ep,ev,re,r,rp)
 		local tc=Duel.GetFieldCard(1-tp,LOCATION_MZONE,seq)
 		if tc then
 			if tc:GetPosition()==pos then
-				unchanged_g.AddCard(tc)
+				unchanged_g:AddCard(tc)
 			else
-				changed_g.AddCard(tc)
+				changed_g:AddCard(tc)
 			end
 		end
 	end
