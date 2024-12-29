@@ -50,7 +50,7 @@ function c65810120.disop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(65810120,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local tc=Duel.SelectMatchingCard(tp,c65810120.disfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1):GetFirst()
+		local tc=Duel.SelectMatchingCard(tp,c65810120.disfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil):GetFirst()
 		if tc and Duel.Release(tc,REASON_EFFECT) then
 			Duel.Hint(HINT_CARD,0,id)
 			Duel.NegateEffect(ev)

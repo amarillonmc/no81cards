@@ -12,7 +12,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--remove
 	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetType(EFFECT_TYPE_IGNITION+EFFECT_TYPE_CONTINUOUS)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	e0:SetCountLimit(1,m)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_BOTH_SIDE)
@@ -22,9 +22,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e0)
 	local e2=e0:Clone()
 	e2:SetCondition(cm.recon2)
-	Duel.RegisterEffect(e2,0)
+	--Duel.RegisterEffect(e2,0)
 	local e4=e2:Clone()
-	Duel.RegisterEffect(e4,1)
+	--Duel.RegisterEffect(e4,1)
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
@@ -61,7 +61,8 @@ function cm.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return c:GetAttribute()&(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)==0
 end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
-	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and Duel.GetTurnPlayer()==tp and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil)
+	local tp=Duel.GetTurnPlayer()
+	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) and Duel.GetFlagEffect(tp,m)==0 --and Duel.GetTurnPlayer()==tp
 end
 function cm.recon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -69,10 +70,12 @@ function cm.recon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local tp=Duel.GetTurnPlayer()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sg=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)
 	Duel.Remove(sg,POS_FACEUP,REASON_COST)
 	Duel.RaiseSingleEvent(c,EVENT_CUSTOM+m,e,0,0,0,sg:GetFirst():GetAttribute())
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 end
 function cm.filter(c)
 	return c:IsAbleToRemoveAsCost() and c:IsType(TYPE_MONSTER)
@@ -141,7 +144,7 @@ function cm.returntofield(tc)
 			Duel.BreakEffect()
 		end
 		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-        return
+		return
 	end
 	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then
 		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)
