@@ -24,8 +24,12 @@ local ThreeWithTwo=6
 local FourWithTwo=7
 local Straight=8
 local KingBomb=9
-local Flight=10
+local Pairs=10
+local Flight0=11
+local Flight1=12
+local Flight2=13
 local playercount=2
+local landlord=1
 function s.startop(e,tp,eg,ep,ev,re,r,rp)
 	if _G.dealerplayer then
 		local c=e:GetHandler()
@@ -40,21 +44,17 @@ function s.startop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1,true)
 		s.carddeck={}
 		s.drawnIndexes={}
+		s.IsHuman={false,false,false,false}
 		s.step=1
 		for i=0,3 do
 			for j=1,13 do
 				table.insert(s.carddeck,65123100+20*i+j)
 			end
 		end
-		s.dealcard2(0,20)
-		Duel.RegisterFlagEffect(0,id,RESET_PHASE+PHASE_END,0,1,Duel.GetTurnCount()*3)
-		local p=Duel.GetTurnPlayer()
-		Duel.SkipPhase(p,PHASE_DRAW,RESET_PHASE+PHASE_END,1)
-		Duel.SkipPhase(p,PHASE_STANDBY,RESET_PHASE+PHASE_END,1)
-		Duel.SkipPhase(p,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
-		Duel.SkipPhase(p,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
-		Duel.SkipPhase(p,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-		local ge0=Effect.CreateEffect(c)
+		table.insert(s.carddeck,65123176)
+		table.insert(s.carddeck,65123177)
+		s.skip()
+		local ge0=Effect.GlobalEffect()
 		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge0:SetCode(EVENT_PREDRAW)
 		ge0:SetOperation(s.startop2)
@@ -111,19 +111,164 @@ function s.cfilter(c)
 	return c:GetOriginalCode()==id and c:IsFaceup()
 end
 function s.startop2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(1,id,RESET_PHASE+PHASE_END,0,1,Duel.GetTurnCount()*4)
-	if Duel.IsExistingMatchingCard(s.cfilter,1,LOCATION_EXTRA,0,1,nil) then
-		s.dealcard2(1,10)
-		local p=Duel.GetTurnPlayer()
-		Duel.SkipPhase(p,PHASE_DRAW,RESET_PHASE+PHASE_END,1)
-		Duel.SkipPhase(p,PHASE_STANDBY,RESET_PHASE+PHASE_END,1)
-		Duel.SkipPhase(p,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
-		Duel.SkipPhase(p,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
-		Duel.SkipPhase(p,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
-	else
-		Debug.Message("test")
-	end
 	e:Reset()
+	if Duel.IsExistingMatchingCard(s.cfilter,1,LOCATION_EXTRA,0,1,nil) then
+		s.dealcard2(17,0)
+		s.dealcard2(17,1)
+		s.skip()
+	else
+		Debug.Message("多人模式测试中...")
+		playercount=4
+		local pc=Duel.CreateToken(0,id)
+		Duel.SendtoExtraP(pc,1,REASON_RULE)
+		local e1=Effect.CreateEffect(pc)
+		e1:SetType(EFFECT_TYPE_IGNITION+EFFECT_TYPE_CONTINUOUS)
+		e1:SetRange(LOCATION_EXTRA)
+		e1:SetCountLimit(1)
+		e1:SetProperty(EFFECT_FLAG_BOTH_SIDE+EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetOperation(s.sortop)
+		pc:RegisterEffect(e1,true)
+		if s.humancheck(0) then
+			s.IsHuman[1]=true
+			s.dealcard2(17,0)			
+		else
+			landlord=2
+			Debug.Message("1号位玩家被识别为人机！")
+		end
+		if s.humancheck(1) then
+			s.IsHuman[2]=true
+			s.dealcard2(17,1)
+		else			
+			Debug.Message("2号位玩家被识别为人机！")
+		end
+		s.skip()
+		local ge0=Effect.GlobalEffect()
+		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge0:SetCode(EVENT_PREDRAW)
+		ge0:SetOperation(s.startop3)
+		Duel.RegisterEffect(ge0,0)
+	end
+end
+local races = {
+	{value = 0x1, name = "战士"},
+	{value = 0x2, name = "魔法师"},
+	{value = 0x4, name = "天使"},
+	{value = 0x8, name = "恶魔"},
+	{value = 0x10, name = "不死"},
+	{value = 0x20, name = "机械"},
+	{value = 0x40, name = "水"},
+	{value = 0x80, name = "炎"},
+	{value = 0x100, name = "岩石"},
+	{value = 0x200, name = "鸟兽"},
+	{value = 0x400, name = "植物"},
+	{value = 0x800, name = "昆虫"},
+	{value = 0x1000, name = "雷"},
+	{value = 0x2000, name = "龙"},
+	{value = 0x4000, name = "兽"},
+	{value = 0x8000, name = "兽战士"},
+	{value = 0x10000, name = "恐龙"},
+	{value = 0x20000, name = "鱼"},
+	{value = 0x40000, name = "海龙"},
+	{value = 0x80000, name = "爬虫类"},
+	{value = 0x100000, name = "念动力"},
+	{value = 0x200000, name = "幻神兽"},
+	{value = 0x400000, name = "创造神"},
+	{value = 0x800000, name = "幻龙"},
+	{value = 0x1000000, name = "电子界"},
+	{value = 0x2000000, name = "幻想魔"}
+}
+function s.humancheck(tp)
+	if Duel.SelectYesNo(tp,1214) then
+		return false 
+	else
+		return true
+	end
+	local count=s.rollrandom(1,3)
+	Debug.Message("我们怀疑您是人机，请按照以下内容点击正确的选项")
+	local selected = {}
+	local total_value=0
+	local available_indices = {}
+	for i = 1,#races do
+		table.insert(available_indices,i)
+	end
+	for i=1,3 do
+		local index=s.rollrandom(1,#available_indices)
+		local selected_race=races[available_indices[index]]
+		table.insert(selected,selected_race)
+		total_value=total_value+selected_race.value
+		table.remove(available_indices,index)
+	end
+	
+	local names=""
+	for _, race in ipairs(selected) do
+		names=names..race.name.." "
+	end
+	Debug.Message(names)
+	return Duel.AnnounceRace(tp,3,RACE_ALL)==total_value
+end
+function s.skip(count)
+	if not count then count=1 end
+	local p=Duel.GetTurnPlayer()
+	turn1=(count-count%2)/2+count%2
+	turn2=(count-count%2)/2
+	Duel.RegisterFlagEffect(0,id,RESET_PHASE+PHASE_END,0,count)
+	Duel.RegisterFlagEffect(1,id,RESET_PHASE+PHASE_END,0,count)
+	Duel.SkipPhase(p,PHASE_DRAW,RESET_PHASE+PHASE_END,turn1)
+	Duel.SkipPhase(p,PHASE_STANDBY,RESET_PHASE+PHASE_END,turn1)
+	Duel.SkipPhase(p,PHASE_MAIN1,RESET_PHASE+PHASE_END,turn1)
+	Duel.SkipPhase(p,PHASE_BATTLE,RESET_PHASE+PHASE_END,turn1,1)
+	Duel.SkipPhase(p,PHASE_MAIN2,RESET_PHASE+PHASE_END,turn1)
+	if turn2>0 then
+		Duel.SkipPhase(1-p,PHASE_DRAW,RESET_PHASE+PHASE_END,turn2)
+		Duel.SkipPhase(1-p,PHASE_STANDBY,RESET_PHASE+PHASE_END,turn2)
+		Duel.SkipPhase(1-p,PHASE_MAIN1,RESET_PHASE+PHASE_END,turn2)
+		Duel.SkipPhase(1-p,PHASE_BATTLE,RESET_PHASE+PHASE_END,turn2,1)
+		Duel.SkipPhase(1-p,PHASE_MAIN2,RESET_PHASE+PHASE_END,turn2)
+	end
+end
+function s.skiptoplayer(pid)
+	local turn=4-(Duel.GetTurnCount()-pid+playercount)%playercount
+	if turn==4 then return end
+	s.skip(turn)
+end
+function s.startop3(e,tp,eg,ep,ev,re,r,rp)
+	e:Reset()
+	if s.humancheck(0) then
+		s.IsHuman[3]=true
+	else
+		Debug.Message("3号位玩家被识别为人机！")
+	end
+	if s.humancheck(1) then
+		s.IsHuman[4]=true
+	else
+		Debug.Message("4号位玩家被识别为人机！")		
+	end
+	local count=0	
+	for i=1,4 do
+		if s.IsHuman[i]==true then
+			count=count+1
+		end
+	end
+	if count~=3 then
+		Debug.Message("人机的数量似乎有些不太对劲...让我们重新开始这一局")
+		Duel.Win(PLAYER_NONE,0x0)
+	else
+		if s.IsHuman[3]==true then s.dealcard2(17,0) end
+		if s.IsHuman[4]==true then s.dealcard2(17,1) end
+		s.skiptoplayer(landlord)
+		local ge0=Effect.GlobalEffect()
+		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge0:SetCode(EVENT_PREDRAW)
+		ge0:SetOperation(s.landlords)
+		Duel.RegisterEffect(ge0,0)
+	end
+end
+function s.landlords(e,tp,eg,ep,ev,re,r,rp)
+	if (Duel.GetTurnCount()-1)%playercount+1==landlord then
+		Debug.Message(landlord.."号位玩家成为地主！")
+		s.dealcard(3,Duel.GetTurnPlayer())
+		e:Reset()
+	end
 end
 local A=1103515245
 local B=12345
@@ -178,38 +323,24 @@ function s.sortcompare(a,b)
 	local pb=s.getpoint(b)
 	return pa>pb or pa==pb and a>b
 end
-function s.dealcard(tp)
-	for i=0,4 do
+function s.dealcard(count,tp)
+	if not tp then tp=Duel.GetTurnPlayer() end
+	for i=1,count do
+		local seq=(i-1)%5
+		local loc=i%10<=5 and LOCATION_MZONE or LOCATION_SZONE		
 		local mc=Duel.GetFieldGroup(tp,LOCATION_DECK,0):GetFirst()
 		if not mc then mc=Duel.CreateToken(tp,id) end
-		Duel.MoveToField(mc,tp,tp,LOCATION_MZONE,POS_FACEDOWN_ATTACK,false,2^i)
+		Duel.MoveToField(mc,tp,tp,loc,POS_FACEUP_ATTACK,false,2^seq) 
 		s.changecardcode(mc)
-	end
-	for i=0,4 do
-		local mc=Duel.GetFieldGroup(tp,LOCATION_DECK,0):GetFirst()
-		if not mc then mc=Duel.CreateToken(tp,id) end
-		Duel.MoveToField(mc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false,2^i)
-		s.changecardcode(mc)
-	end
-	Duel.SendtoHand(Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0),tp,REASON_RULE)
-	for i=0,4 do
-		local mc=Duel.GetFieldGroup(tp,LOCATION_DECK,0):GetFirst()
-		if not mc then mc=Duel.CreateToken(tp,id) end
-		Duel.MoveToField(mc,tp,tp,LOCATION_MZONE,POS_FACEDOWN_ATTACK,false,2^i)
-		s.changecardcode(mc)
-	end
-	for i=0,4 do
-		local mc=Duel.GetFieldGroup(tp,LOCATION_DECK,0):GetFirst()
-		if not mc then mc=Duel.CreateToken(tp,id) end
-		Duel.MoveToField(mc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false,2^i)
-		s.changecardcode(mc)
+		if i%10==0 then
+			Duel.SendtoHand(Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0),tp,REASON_RULE)
+		end
 	end
 	Duel.SendtoHand(Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0),tp,REASON_RULE)
 	s.sortop(e,tp)
 end
-function s.dealcard2(tp,count)
-	--local pid=(Duel.GetTurnCount()+1)%playercount+1
-	--Debug.Message("正在为"..pid.."号位玩家分配手卡")
+function s.dealcard2(count,tp)
+	if not tp then tp=Duel.GetTurnPlayer() end
 	local codetable={}
 	for i=1,count do
 		table.insert(codetable,s.changecardcode())
@@ -268,6 +399,15 @@ end
 function s.pairfilter(c,point)
 	return s.getpoint(c)==point or c:GetCode()%20==point
 end
+function s.flightable(c,table,count)
+	local point=c:GetCode()%20
+	 for _,v in ipairs(table) do
+		if v>=point and v<=point+count-1 then
+			return true
+		end
+	end
+	return false
+end
 function s.straightfilter(c,min,max,cp)
 	local point=c:GetCode()%20
 	return point~=cp and (point>=min and point<=max or point==1 and max==14)
@@ -288,7 +428,7 @@ function s.checkStraight(c,g)
 	local max=math.min(14,cpoint+4)
 	for i=min,max do
 		if codetable[i]==true then
-			count=count+1		   
+			count=count+1		  
 		else
 			if count>=5 then
 				return true,i-count,i-1
@@ -336,6 +476,36 @@ end
 function s.fstraight(g,c)
 	return g:IsContains(c) and g:GetClassCount(s.getpoint)==g:GetCount()
 end
+function s.pointdown(c,point)
+	return s.getpoint(c)<point
+end
+function s.pointsame(c,point)
+	return s.getpoint(c)==point
+end
+function s.pointup(c,point)
+	return s.getpoint(c)>point
+end
+function s.updownfilter(c,min,max)
+	local point=c:GetCode()%20
+	if max==1 and point==13 then return true end
+	return point==max+1 or point==min-1
+end
+function s.fpair(g)
+	return g:GetClassCount(s.getpoint)==1
+end
+function s.fpair1(g,hg)
+	local eg=hg:Filter(aux.TRUE,g)
+	return g:GetClassCount(s.getpoint)==1 and eg:GetCount()>0
+end
+function s.fpair2(g,hg)
+	local eg=hg:Filter(aux.TRUE,g)
+	return g:GetClassCount(s.getpoint)==1 and eg:CheckSubGroup(s.fpair,2,2)
+end
+function s.fflight(g,hg)
+	local eg=hg:Filter(aux.TRUE,g)
+	
+	return g:GetClassCount(s.getpoint)==1 and eg:CheckSubGroup(s.fpair,3,3)
+end
 function s.handcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandlerPlayer()==Duel.GetTurnPlayer()
 end
@@ -345,19 +515,18 @@ end
 function s.handop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local p=Duel.GetTurnPlayer()
+	local pid=(Duel.GetTurnCount()-1)%playercount+1
 	local point=s.getpoint(c)
 	local g=Duel.GetFieldGroup(p,LOCATION_HAND,0)
 	local sg=Group.FromCards(c)
 	local cg=g:Filter(s.pairfilter,c,point)
 	local cardtype=Single
 	local isstraight,min,max=s.checkStraight(c,g)
-	if isstraight then	  
+	if isstraight then	
 		cg:Merge(g:Filter(s.straightfilter,c,min,max,c:GetCode()%20))
 	end
 	while true do
-		local cancelable=true
-		if cardtype==Straight and sg:GetCount()<5 then cancelable=false end
-		local sc=cg:SelectUnselect(sg,p,cancelable,true,0,1)
+		local sc=cg:SelectUnselect(sg,p,true,true,0,1)
 		if sc then
 			if sg:IsContains(sc) then return end
 			sg:AddCard(sc)
@@ -372,8 +541,9 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 				if cpoint==1 then max=14 else max=math.min(max,cpoint+4) end
 				cg=cg:Filter(s.straightfilter,c,min,max,c:GetCode()%20)
 				cg=cg:Filter(s.straightfilter,c,min,max,cpoint)
-			end		 
+			end
 		else
+			if cardtype==Straight and sg:GetCount()<5 then return end
 			break
 		end
 	end
@@ -392,19 +562,70 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		cardtype=sg:GetCount()==4 and ThreeWithOne or ThreeWithTwo
 	end
+	local fmax=c:GetCode()%20
+	local fmin=c:GetCode()%20
+	eg=g:Filter(aux.TRUE,sg)
+	local fg=g:Filter(s.updownfilter,sg,fmin,fmax)
+	while (cardtype==ThreeOfAKind or cardtype==Flight0) and fg:CheckSubGroup(s.fpair,3,3) and Duel.SelectYesNo(p,aux.Stringid(id,3)) do		
+		mg=fg:SelectSubGroup(p,s.fpair1,true,3,3,eg)
+		if mg and mg:GetCount()==3 then
+			local cpoint=mg:GetFirst():GetCode()%20
+			fmin=math.min(fmin,cpoint)
+			fmax=math.max(fmax,cpoint)
+			sg:Merge(mg)
+			cardtype=Flight0
+			fg=g:Filter(s.updownfilter,sg,fmin,fmax)
+			eg=g:Filter(aux.TRUE,sg)
+		else
+			break
+		end
+	end
+	while (cardtype==ThreeWithOne or cardtype==Flight1) and fg:CheckSubGroup(s.fpair1,3,3,eg) and Duel.SelectYesNo(p,aux.Stringid(id,3)) do		
+		mg=fg:SelectSubGroup(p,s.fpair1,true,3,3,eg)
+		if mg and mg:GetCount()==3 then
+			local cpoint=mg:GetFirst():GetCode()%20
+			fmin=math.min(fmin,cpoint)
+			fmax=math.max(fmax,cpoint)
+			mg:Merge(g:Select(p,1,1,Group.__add(mg,sg)))
+			sg:Merge(mg)
+			cardtype=Flight1
+			fg=g:Filter(s.updownfilter,sg,fmin,fmax)
+			eg=g:Filter(aux.TRUE,sg)
+		else
+			break
+		end
+	end
+	while (cardtype==ThreeWithTwo or cardtype==Flight2) and fg:CheckSubGroup(s.fpair2,3,3,eg) and Duel.SelectYesNo(p,aux.Stringid(id,3)) do		
+		mg=fg:SelectSubGroup(p,s.fpair2,true,3,3,eg)
+		if mg and mg:GetCount()==3 then
+			local cpoint=mg:GetFirst():GetCode()%20
+			fmin=math.min(fmin,cpoint)
+			fmax=math.max(fmax,cpoint)
+			mg:Merge(g:Filter(aux.TRUE,Group.__add(mg,sg)):SelectSubGroup(p,s.fpair,true,2,2))
+			sg:Merge(mg)
+			cardtype=Flight2
+			fg=g:Filter(s.updownfilter,sg,fmin,fmax)
+			eg=g:Filter(aux.TRUE,sg)
+		else
+			break
+		end
+	end
+	if cardtype==Bomb and eg:GetCount()>=2 and Duel.SelectYesNo(p,aux.Stringid(id,4)) then
+		mg=eg:Select(p,2,2,nil)
+		if mg and mg:GetCount()==2 then
+			sg:Merge(mg)
+			cardtype=FourWithTwo
+		end
+	end
 	if cardtype==Straight then point=min end
+	if cardtype==Flight1 then point=fmin end
 	s.lastcard=sg
-	Duel.RegisterFlagEffect(p,id,RESET_PHASE+PHASE_END,0,1,Duel.GetTurnCount())
 	s.movecard(cardtype,sg)
-	Duel.SkipPhase(p,PHASE_DRAW,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(p,PHASE_STANDBY,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(p,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
-	Duel.SkipPhase(p,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
-	Duel.SkipPhase(p,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
+	s.skip()
 	local ge0=Effect.CreateEffect(c)
 	ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	ge0:SetCode(EVENT_PREDRAW)
-	ge0:SetLabel(cardtype,point,tp)
+	ge0:SetLabel(cardtype,point,pid)
 	ge0:SetOperation(s.chainop)
 	Duel.RegisterEffect(ge0,0)
 end
@@ -457,11 +678,179 @@ function s.movecard(cardtype,mg)
 			Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^i)
 			tc=mg2:GetNext()
 		end
-	elseif cardtype==Straight then	  
+	elseif cardtype==FourWithTwo then
+		local mg1=mg:GetMaxGroup(s.getpoint)
+		if mg1:GetCount()<4 then mg1=mg:GetMinGroup(s.getpoint) end
+		local tc=mg1:GetFirst()
+		for i=0,3 do
+			Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^i)
+			tc=mg1:GetNext()
+		end
+		local mg2=mg:Filter(aux.TRUE,mg1)
+		local tc=mg2:GetFirst()
+		for i=0,1 do
+			Duel.MoveToField(tc,p,p,LOCATION_SZONE,POS_FACEUP,false,2^i)
+			tc=mg2:GetNext()
+		end
+	elseif cardtype==Straight then
 		for i=0,4 do
 			local tc=mg:GetMinGroup(s.getpoint):GetFirst()
 			Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^i)
 			mg:RemoveCard(tc)
+		end
+	elseif cardtype==Flight0 then
+		local count=mg:GetCount()/3
+		for i=1,count do
+			local mg1=mg:GetMaxGroup(s.getpoint)
+			local loc=i%2==1 and LOCATION_MZONE or LOCATION_SZONE
+			if i<=2 then
+				local tc=mg1:GetFirst()
+				for j=1,3 do
+					Duel.MoveToField(tc,p,p,loc,POS_FACEUP_ATTACK,false,2^j)
+					tc=mg1:GetNext()
+				end
+			else
+				local tc=mg1:GetFirst()
+				for j=1,3 do
+					Duel.MoveToField(tc,p,1-p,loc,POS_FACEUP_ATTACK,false,2^(4-j))
+					local e1=Effect.CreateEffect(tc)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_SET_CONTROL)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+					e1:SetValue(1-p)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+					tc:RegisterEffect(e1,true)
+					tc=mg1:GetNext()
+				end
+			end
+			mg=mg:Filter(aux.TRUE,mg1)
+		end
+		if count>=3 then
+			Debug.Message("完成成就：卢食传说")
+			Debug.Message("把牌出到对方场上")
+		end
+	elseif cardtype==Flight1 then
+		local mgtable1={}
+		local mgtable2={}
+		local count=mg:GetCount()/4
+		while #mgtable1<count do
+			local mg1=mg:GetMaxGroup(s.getpoint)
+			if mg1:GetCount()==3 then
+				table.insert(mgtable1,mg1)
+			elseif mg1:GetCount()==1 then
+				table.insert(mgtable2,mg1)
+			elseif mg1:GetCount()==2 then
+				local rc=mg1:GetFirst()
+				table.insert(mgtable2,Group.FromCards(rc))
+				table.insert(mgtable2,mg1:Filter(aux.TRUE,rc))
+			elseif mg1:GetCount()==4 then
+				local rc=mg1:GetFirst()
+				table.insert(mgtable2,Group.FromCards(rc))
+				table.insert(mgtable1,mg1:Filter(aux.TRUE,rc))
+			end
+			mg=mg:Filter(aux.TRUE,mg1)
+		end
+		for tc in aux.Next(mg) do
+			table.insert(mgtable2,Group.FromCards(tc))
+		end
+		for i=1,count do
+			local loc=i%2==1 and LOCATION_MZONE or LOCATION_SZONE
+			if i<=2 then
+				local tc=mgtable1[i]:GetFirst()
+				for j=0,2 do
+					Duel.MoveToField(tc,p,p,loc,POS_FACEUP_ATTACK,false,2^j)
+					tc=mgtable1[i]:GetNext()
+				end
+				local tc=mgtable2[i]:GetFirst()
+				Duel.MoveToField(tc,p,p,loc,POS_FACEUP_ATTACK,false,2^3)
+			else
+				local tc=mgtable1[i]:GetFirst()
+				for j=0,2 do
+					Duel.MoveToField(tc,p,1-p,loc,POS_FACEUP_ATTACK,false,2^(4-j))
+					local e1=Effect.CreateEffect(tc)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_SET_CONTROL)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+					e1:SetValue(1-p)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+					tc:RegisterEffect(e1,true)
+					tc=mgtable1[i]:GetNext()
+				end
+				local tc=mgtable2[i]:GetFirst()
+				Duel.MoveToField(tc,p,1-p,loc,POS_FACEUP_ATTACK,false,2^1)
+				local e1=Effect.CreateEffect(tc)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_SET_CONTROL)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+				e1:SetValue(1-p)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+				tc:RegisterEffect(e1,true)
+			end			
+		end
+		if count>=3 then
+			Debug.Message("完成成就：卢食传说")
+			Debug.Message("把牌出到对方场上")
+		end
+	elseif cardtype==Flight2 then
+		local mgtable1={}
+		local mgtable2={}
+		local count=mg:GetCount()/5
+		while #mgtable1<count do
+			local mg1=mg:GetMaxGroup(s.getpoint)
+			if mg1:GetCount()==3 then
+				table.insert(mgtable1,mg1)
+			elseif mg1:GetCount()==2 then
+				table.insert(mgtable2,mg1)
+			elseif mg1:GetCount()==4 then
+				local rg=Group.FromCards(mg1:GetFirst(),mg1:GetNext())
+				table.insert(mgtable2,rg)
+				table.insert(mgtable2,mg1:Filter(aux.TRUE,rg))
+			end
+			mg=mg:Filter(aux.TRUE,mg1)
+		end
+		for i=1,count do
+			local loc=i%2==1 and LOCATION_MZONE or LOCATION_SZONE
+			if i<=2 then
+				local tc=mgtable1[i]:GetFirst()
+				for j=0,2 do
+					Duel.MoveToField(tc,p,p,loc,POS_FACEUP_ATTACK,false,2^j)
+					tc=mgtable1[i]:GetNext()
+				end
+				local tc=mgtable2[i]:GetFirst()
+				for j=3,4 do
+					Duel.MoveToField(tc,p,p,loc,POS_FACEUP_ATTACK,false,2^j)
+					tc=mgtable2[i]:GetNext()
+				end
+			else
+				local tc=mgtable1[i]:GetFirst()
+				for j=0,2 do
+					Duel.MoveToField(tc,p,1-p,loc,POS_FACEUP_ATTACK,false,2^(4-j))
+					local e1=Effect.CreateEffect(tc)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_SET_CONTROL)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+					e1:SetValue(1-p)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+					tc:RegisterEffect(e1,true)
+					tc=mgtable1[i]:GetNext()
+				end
+				local tc=mgtable2[i]:GetFirst()
+				for j=3,4 do
+					Duel.MoveToField(tc,p,1-p,loc,POS_FACEUP_ATTACK,false,2^(4-j))
+					local e1=Effect.CreateEffect(tc)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_SET_CONTROL)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+					e1:SetValue(1-p)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+					tc:RegisterEffect(e1,true)
+					tc=mgtable2[i]:GetNext()
+				end				
+			end
+		end
+		if count>=3 then
+			Debug.Message("完成成就：卢食传说")
+			Debug.Message("把牌出到对方场上")
 		end
 	end
 	if Duel.GetFieldGroupCount(p,LOCATION_HAND,0)==0 then Duel.Win(p,0xffff,Duel.CreateToken(p,id)) end
@@ -485,30 +874,12 @@ function s.sortop(e,tp)
 		end
 	end
 end
-function s.pointup(c,point)
-	return s.getpoint(c)>point
-end
-function s.fpair(g)
-	return g:GetClassCount(s.getpoint)==1
-end
-function s.fpair1(g,hg)
-	local eg=hg:Filter(aux.TRUE,g)
-	return g:GetClassCount(s.getpoint)==1 and eg:GetCount()>0
-end
-function s.fpair2(g,hg)
-	local eg=hg:Filter(aux.TRUE,g)
-	return g:GetClassCount(s.getpoint)==1 and eg:CheckSubGroup(s.fpair,2,2)
-end
-function s.ffstraight(g,table)
-	return g:GetClassCount(s.getpoint)==1
-end
 function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 	local cardtype,point,lastp=e:GetLabel()
-	local p=Duel.GetTurnPlayer()	
+	local pid=(Duel.GetTurnCount()-1)%playercount+1
 	local g=Duel.GetFieldGroup(p,LOCATION_HAND,0)
 	local upg=g:Filter(s.pointup,nil,point)
-	if p~=lastp then
-		Duel.RegisterFlagEffect(p,id,RESET_PHASE+PHASE_END,0,1,Duel.GetTurnCount())
+	if pid~=lastp then
 		local ischainable=false
 		local ischain=false
 		local mg=Group.CreateGroup()
@@ -519,7 +890,7 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 				point=s.getpoint(mg:GetFirst())
 				ischain=true
 			end
-		end		
+		end	 
 		if cardtype==Single and upg:GetCount()>0 then
 			ischainable=true
 			mg=upg:SelectSubGroup(p,s.fpair,true,1,1)
@@ -562,10 +933,55 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 			if mg and mg:GetCount()==3 then
 				point=s.getpoint(mg:GetFirst())
 				local mg2=g:Filter(aux.TRUE,mg):SelectSubGroup(p,s.fpair,true,2,2)
-				mg:Merge(mg2)							   
+				mg:Merge(mg2)							  
 				ischain=true
 			end
-		elseif cardtype==Straight then	  
+		elseif cardtype==Flight0 then
+			local count=s.lastcard:GetCount()/3
+			local gtable={}
+			local codetable={}
+			local abletable={}
+			for i=1,14 do
+				codetable[i]=false
+			end
+			local min
+			local cg=upg:GetMaxGroup(s.getpoint)
+			while upg:GetCount()>0 do
+				if cg:GetCount()>=3 then
+					local cpoint=cg:GetFirst():GetCode()%20
+					if cpoint==1 then codetable[14]=true end
+					codetable[cpoint]=true
+					local bool=true
+					for i=cpoint,cpoint+count-1 do
+						if codetable[i]~=true then bool=false end
+					end
+					if bool then table.insert(abletable,i) end
+				end
+				upg=upg:Filter(aux.TRUE,cg)
+			end
+			if #abletable>0 then
+				ischainable=true
+				local sg=Group.CreateGroup()
+				while sg:GetCount()<s.lastcard:GetCount() do
+					local mg=upg:Filter(s.flightable,nil,abletable,count)
+					local sc=mg:SelectUnselect(sg,p,true,true,0,1)
+					if sc then
+						if sg:IsContains(sc) then return end
+						local cpoint=s.getpoint(sc)
+						local tg=mg:Filter(s.pointsame,nil,cpoint)
+						if tg:GetCount()==4 then tg=tg:Select(p,3,3,nil) end
+						sg:Merge(tg)
+
+					else
+						break
+					end
+				end
+				if sg:GetCount()==s.lastcard:GetCount() then
+					point=s.getpoint(mg:GetMinGroup():GetFirst())
+					ischain=true
+				end
+			end
+		elseif cardtype==Straight then	
 			local cardtable=s.checkStraight2(point,upg)
 			if #cardtable>0 then
 				ischainable=true
@@ -576,6 +992,7 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 				while mg:GetCount()<5 do
 					local sc=cg:SelectUnselect(mg,p,true,true,0,1)
 					if sc then
+						if sg:IsContains(sc) then return end
 						for i,v in ipairs(cardtable) do
 							if sc:GetCode()%20>=v.min and sc:GetCode()%20<=v.max then
 								cg=cg:Filter(s.straightfilter,nil,v.min,v.max,sc:GetCode()%20)
@@ -587,8 +1004,10 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 						break
 					end
 				end
-				point=s.getpoint(mg:GetMinGroup():GetFirst())
-				ischain=true
+				if mg:GetCount()==5 then
+					point=s.getpoint(mg:GetMinGroup():GetFirst())
+					ischain=true
+				end
 			end
 		end
 		if ischain then
@@ -598,15 +1017,11 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 			if not ischainable then
 				Duel.SelectYesNo(p,aux.Stringid(id,1))
 			end
-			local pid=(Duel.GetTurnCount()+1)%playercount+1
+			local pid=(Duel.GetTurnCount()-1)%playercount+1
 			Debug.Message(pid.."号位玩家：不要！")
 		end
 		local p=Duel.GetTurnPlayer()
-		Duel.SkipPhase(p,PHASE_DRAW,RESET_PHASE+PHASE_END,1)
-		Duel.SkipPhase(p,PHASE_STANDBY,RESET_PHASE+PHASE_END,1)
-		Duel.SkipPhase(p,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
-		Duel.SkipPhase(p,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
-		Duel.SkipPhase(p,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
+		s.skip()
 		local ge0=Effect.GlobalEffect()
 		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge0:SetCode(EVENT_PREDRAW)
@@ -614,6 +1029,7 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 		ge0:SetOperation(s.chainop)
 		Duel.RegisterEffect(ge0,0)
 	else
+		Debug.Message(pid.."号位玩家的回合")
 		local g=Duel.GetFieldGroup(0,LOCATION_ONFIELD,LOCATION_ONFIELD)
 		if g:GetCount()>0 then Duel.SendtoGrave(g,REASON_RULE) end
 	end

@@ -31,8 +31,8 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	  Duel.RemoveCounter(tp,1,0,0x34f,2,REASON_COST)
 	end   
 end
-function cm.filter(c,tp)
-	 return c:IsFaceup() and c:IsControlerCanBeChanged()
+function cm.filter(c)
+	 return ((c:IsType(TYPE_EFFECT) and c:IsDisabled()) or c:IsType(TYPE_NORMAL) or c:IsType(TYPE_TOKEN)) and c:IsFaceup() and c:IsControlerCanBeChanged()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,0,LOCATION_MZONE,1,nil)
