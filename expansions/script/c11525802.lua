@@ -65,6 +65,7 @@ function c11525802.cpop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,11525802)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local tc=Duel.SelectMatchingCard(tp,c11525802.cpfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e:GetLabel()):GetFirst()
+	Duel.HintSelection(Group.FromCards(tc))
 	if e:GetLabel()==1 then
 		local code=tc:GetCode()
 		local e1=Effect.CreateEffect(e:GetHandler())
