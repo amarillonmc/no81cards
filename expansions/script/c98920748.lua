@@ -75,7 +75,7 @@ function s.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if Duel.NegateEffect(ev)~=0 and tc:IsRelateToEffect(e) and tc:IsLocation(LOCATION_PZONE) then
+	if Duel.NegateActivation(ev)~=0 and tc:IsRelateToEffect(e) and tc:IsLocation(LOCATION_PZONE) then
 		tc:AddCounter(0x6a,1)
 	end	
 end

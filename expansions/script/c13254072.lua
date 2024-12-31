@@ -3,6 +3,7 @@ local m=13254072
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
+	local e2=Effect.CreateEffect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_EQUIP)
@@ -11,14 +12,15 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
-	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e1:SetLabelObject(e2)
+	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
+
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_FIELD)
+	e2:SetType(EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1)
@@ -31,11 +33,16 @@ function cm.initial_effect(c)
 	cm[c]=elements
 	
 end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(m)==0 end
+	c:RegisterFlagEffect(m,RESET_CHAIN,0,1)
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and aux.NegateEffectMonsterFilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -55,7 +62,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 				hb=true
 			end
 		end
-		if hb and c:IsRelateToEffect(e) then
+		if hb then
 			Duel.Equip(tp,c,tc)
 			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 			--Add Equip limit
@@ -85,7 +92,19 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetValue(cm.tglimit)
 			tc:RegisterEffect(e1,true)
 		end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetCode(EFFECT_CANNOT_TRIGGER)
+		e1:SetRange(LOCATION_ONFIELD)
+		e1:SetLabelObject(e:GetLabelObject())
+		e1:SetValue(cm.aclimit)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e1,true)
 	end
+end
+function cm.aclimit(e,re,tp)
+	return re==e:GetLabelObject()
 end
 function cm.tglimit(e,re,tp)
 	local rc=re:GetHandler()

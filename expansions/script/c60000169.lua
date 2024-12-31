@@ -81,7 +81,7 @@ function cm.tttcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(e:GetHandlerPlayer(),60000163) and e:GetHandler():GetOverlayCount()==0
 end
 function cm.cpcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_SPELL) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():GetType()~=TYPE_SPELL and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) --and re:GetHandler()==e:GetHandler()
+	return re:IsActiveType(TYPE_SPELL) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():GetType()~=TYPE_SPELL and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and aux.IsCodeListed(re:GetHandler(),60000163) --and re:GetHandler()==e:GetHandler() 
 end
 function cm.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_EFFECT) end

@@ -49,9 +49,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetRange(LOCATION_REMOVED)
-			e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+			e1:SetCode(EVENT_PHASE_START+PHASE_MAIN1)
 			e1:SetCountLimit(1)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY+RESET_OPPO_TURN,1)
+			e1:SetLabel(Duel.GetTurnCount())
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_MAIN1+RESET_OPPO_TURN,1)
 			e1:SetCondition(cm.thcon)
 			e1:SetOperation(cm.thop)
 			tc:RegisterEffect(e1)
@@ -69,6 +70,9 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.handcon(e)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,0)==0
+end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnCount()~=e:GetLabel()
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)

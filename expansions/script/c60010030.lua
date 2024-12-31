@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	--draw(spsummon)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_TOGRAVE)
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -45,36 +45,22 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.fil(c,race,attr)
-	return aux.IsCodeListed(c,60010029) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
-end
-function cm.filterfilter(c,race)
-	return c:IsRace(race) and c:IsFaceup()
-end
-function cm.tgfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToGrave() and aux.IsCodeListed(c,60010029)
+	return c:IsRace(race) and c:IsAttribute(attr)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return (not Duel.IsPlayerAffectedByEffect(tp,60010132) and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,0,1,c)) or (Duel.IsPlayerAffectedByEffect(tp,60010132) and Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil,tp)) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_MZONE,0,1,c,TYPE_MONSTER) end
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.IsPlayerAffectedByEffect(tp,60010132) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
-		if g:GetCount()>0 then
-			Duel.SendtoGrave(g,REASON_EFFECT)
-		end
-	else
-		local ag=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,c):Select(tp,1,1,nil)
-		if Duel.SendtoGrave(ag,REASON_EFFECT)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-			local race=ag:GetFirst():GetRace()
-			local attr=ag:GetFirst():GetAttribute()
-			local gg=Duel.GetMatchingGroup(cm.fil,tp,LOCATION_DECK,0,nil,race,attr):Select(tp,1,1,nil)
-			Duel.SendtoGrave(gg,REASON_EFFECT)
-		end
+	local ag=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_MZONE,0,c,TYPE_MONSTER):Select(tp,1,1,nil)
+	if Duel.SendtoGrave(ag,REASON_EFFECT)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		local race=ag:GetFirst():GetRace()
+		local attr=ag:GetFirst():GetAttribute()
+		local gg=Duel.GetMatchingGroup(cm.fil,tp,LOCATION_DECK,0,nil,race,attr):Select(tp,1,1,nil)
+		Duel.SendtoGrave(gg,REASON_EFFECT)
 	end
-	if Duel.IsEnvironment(60010029,tp) then
+	if Duel.IsExistingMatchingCard(cm.ffil,tp,LOCATION_FZONE,0,1,nil) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -88,3 +74,12 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e2)
 	end
 end
+
+function cm.ffil(c)
+	return c:IsCode(60010029) and c:IsFaceup()
+end
+
+
+
+
+

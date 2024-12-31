@@ -65,10 +65,6 @@ function cm.xcop(e,tp,eg,ep,ev,re,r,rp)
 		local g2=Duel.SelectMatchingCard(tp,cm.xctgfilter,tp,LOCATION_SZONE,0,1,1,nil)
 		Duel.HintSelection(g2)
 		local tc=g2:GetFirst()
-		local og=tc:GetOverlayGroup()
-		if og:GetCount()>0 then
-			Duel.SendtoGrave(og,REASON_RULE)
-		end
 		Duel.Overlay(tc,tg)
 	end
 end

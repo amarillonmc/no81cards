@@ -219,6 +219,16 @@ function Auxiliary.PreloadUds()
 		end
 		return _SendtoHand(g,top,...)
 	end
+
+	local _ReturnToField=Duel.ReturnToField
+	function Duel.ReturnToField(c,...)
+		local res=_ReturnToField(c,...)
+		if res then
+			c:SetStatus(STATUS_SUMMON_TURN,false)
+			c:SetStatus(STATUS_SPSUMMON_TURN,false)
+		end
+		return res
+	end
 	
 	--From REIKAI
 	if not Group.ForEach then
