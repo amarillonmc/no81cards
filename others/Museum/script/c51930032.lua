@@ -19,7 +19,7 @@ function c51930032.initial_effect(c)
 	c:RegisterEffect(e2)
 	--to grave
 	local e3=Effect.CreateEffect(c)
-	e3:Sedesescription(1191)
+	e3:SetDescription(1191)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_BATTLE_END)
 	e3:SetCategory(CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)

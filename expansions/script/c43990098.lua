@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetDescription(aux.Stringid(43990098,0))
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
@@ -35,7 +35,7 @@ function c43990098.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c43990098.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		if Duel.Destroy(eg,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(Card.IsRace,tp,0,LOCATION_MZONE,1,nil,RACE_MACHINE) and eg:GetFirst():IsLocation(0x70) and eg:GetFirst():IsFacedownEx() and Duel.SelectYesNo(tp,aux.Stringid(c43990098,3)) then
+		if Duel.Destroy(eg,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(Card.IsRace,tp,0,LOCATION_MZONE,1,nil,RACE_MACHINE) and eg:GetFirst():IsLocation(0x70) and eg:GetFirst():IsFacedownEx() and Duel.SelectYesNo(tp,aux.Stringid(43990098,3)) then
 			Duel.SendtoHand(eg,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,eg)
 		end

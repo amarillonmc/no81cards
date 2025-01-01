@@ -1,15 +1,15 @@
 --魔餐的准备
 function c51930028.initial_effect(c)
 	--Activate
-	local e10=Effect.CreateEffect(c)
-	e10:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e10:SetType(EFFECT_TYPE_ACTIVATE)
-	e10:SetCode(EVENT_FREE_CHAIN)
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,51930028)
 	e1:SetCost(c51930028.thcost)
 	e1:SetTarget(c51930028.thtg)
 	e1:SetOperation(c51930028.thop)
-	c:RegisterEffect(e10)
+	c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
