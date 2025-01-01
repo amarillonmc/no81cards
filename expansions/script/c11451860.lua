@@ -122,7 +122,7 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasCategory(CATEGORY_COIN) then return end
 	local se=Effect.CreateEffect(e:GetHandler())
 	se:SetType(EFFECT_TYPE_SINGLE)
-	se:SetCode(0x20000000+m)
+	se:SetCode(EFFECT_FLAG_EFFECT+m)
 	se:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE)
 	se:SetReset(RESET_PHASE+PHASE_END,2)
 	rc:RegisterEffect(se,true)
@@ -307,7 +307,7 @@ function cm.shfilter(c)
 	return c:GetFlagEffect(m)>0
 end
 function cm.chkval(e,te)
-	if e:GetHandler():GetFlagEffect(m-10)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
+	if e:GetHandler():GetFlagEffect(m-10)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) then
 		local tp=e:GetOwnerPlayer()
 		local g=e:GetLabelObject()
 		g:ForEach(Card.ResetFlagEffect,m-10)
@@ -334,7 +334,7 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,5))
 	local tc=sg:Select(tp,1,1,nil):GetFirst()
 	Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
-	local eset={tc:IsHasEffect(0x20000000+m)}
+	local eset={tc:IsHasEffect(EFFECT_FLAG_EFFECT+m)}
 	local te=eset[1]:GetLabelObject()
 	if #eset>1 then
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,6))

@@ -347,7 +347,7 @@ function c91300034.discon5(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_HAND,0,1,c)
 end
 function c91300034.disop5(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+	if Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT) and Duel.SelectYesNo(tp,aux.Stringid(91301025,0)) then
 		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD)
 		local p=Duel.GetChainInfo(ev,CHAININFO_TARGET_PLAYER)
 		Duel.ChangeTargetPlayer(ev,1-p)

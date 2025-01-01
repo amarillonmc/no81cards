@@ -257,7 +257,7 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	g=g:Filter(Card.IsRelateToEffect,nil,e)
 	if #g==0 then return end
 	g:KeepAlive()
-	g:ForEach(Card.RegisterFlagEffect,m-10,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,EFFECT_FLAG_CLIENT_HINT,1,aux.Stringid(m,10))
+	g:ForEach(Card.RegisterFlagEffect,m-10,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,10))
 	for tc in aux.Next(g) do
 		local ge2=Effect.CreateEffect(c)
 		ge2:SetType(EFFECT_TYPE_SINGLE)
@@ -271,7 +271,7 @@ function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.chkval(e,te)
-	if e:GetHandler():GetFlagEffect(m-10)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
+	if e:GetHandler():GetFlagEffect(m-10)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) then
 		local g=e:GetLabelObject()
 		g:ForEach(Card.ResetFlagEffect,m-10)
 		if Duel.GetFlagEffect(tp,0xffff+m)==0 then

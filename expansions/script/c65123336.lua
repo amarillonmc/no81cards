@@ -130,7 +130,7 @@ function s.startop2(e,tp,eg,ep,ev,re,r,rp)
 		pc:RegisterEffect(e1,true)
 		if s.humancheck(0) then
 			s.IsHuman[1]=true
-			s.dealcard2(17,0)			
+			s.dealcard2(17,0)		  
 		else
 			landlord=2
 			Debug.Message("1号位玩家被识别为人机！")
@@ -141,7 +141,7 @@ function s.startop2(e,tp,eg,ep,ev,re,r,rp)
 		else			
 			Debug.Message("2号位玩家被识别为人机！")
 		end
-		s.skip()
+		s.skip(2)
 		local ge0=Effect.GlobalEffect()
 		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge0:SetCode(EVENT_PREDRAW)
@@ -149,62 +149,12 @@ function s.startop2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(ge0,0)
 	end
 end
-local races = {
-	{value = 0x1, name = "战士"},
-	{value = 0x2, name = "魔法师"},
-	{value = 0x4, name = "天使"},
-	{value = 0x8, name = "恶魔"},
-	{value = 0x10, name = "不死"},
-	{value = 0x20, name = "机械"},
-	{value = 0x40, name = "水"},
-	{value = 0x80, name = "炎"},
-	{value = 0x100, name = "岩石"},
-	{value = 0x200, name = "鸟兽"},
-	{value = 0x400, name = "植物"},
-	{value = 0x800, name = "昆虫"},
-	{value = 0x1000, name = "雷"},
-	{value = 0x2000, name = "龙"},
-	{value = 0x4000, name = "兽"},
-	{value = 0x8000, name = "兽战士"},
-	{value = 0x10000, name = "恐龙"},
-	{value = 0x20000, name = "鱼"},
-	{value = 0x40000, name = "海龙"},
-	{value = 0x80000, name = "爬虫类"},
-	{value = 0x100000, name = "念动力"},
-	{value = 0x200000, name = "幻神兽"},
-	{value = 0x400000, name = "创造神"},
-	{value = 0x800000, name = "幻龙"},
-	{value = 0x1000000, name = "电子界"},
-	{value = 0x2000000, name = "幻想魔"}
-}
 function s.humancheck(tp)
 	if Duel.SelectYesNo(tp,1214) then
 		return false 
 	else
 		return true
 	end
-	local count=s.rollrandom(1,3)
-	Debug.Message("我们怀疑您是人机，请按照以下内容点击正确的选项")
-	local selected = {}
-	local total_value=0
-	local available_indices = {}
-	for i = 1,#races do
-		table.insert(available_indices,i)
-	end
-	for i=1,3 do
-		local index=s.rollrandom(1,#available_indices)
-		local selected_race=races[available_indices[index]]
-		table.insert(selected,selected_race)
-		total_value=total_value+selected_race.value
-		table.remove(available_indices,index)
-	end
-	
-	local names=""
-	for _, race in ipairs(selected) do
-		names=names..race.name.." "
-	end
-	Debug.Message(names)
-	return Duel.AnnounceRace(tp,3,RACE_ALL)==total_value
 end
 function s.skip(count)
 	if not count then count=1 end
@@ -232,6 +182,7 @@ function s.skiptoplayer(pid)
 	s.skip(turn)
 end
 function s.startop3(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(Duel.GetTurnPlayer(),id)>0 then return end
 	e:Reset()
 	if s.humancheck(0) then
 		s.IsHuman[3]=true
@@ -241,9 +192,9 @@ function s.startop3(e,tp,eg,ep,ev,re,r,rp)
 	if s.humancheck(1) then
 		s.IsHuman[4]=true
 	else
-		Debug.Message("4号位玩家被识别为人机！")		
+		Debug.Message("4号位玩家被识别为人机！")	  
 	end
-	local count=0	
+	local count=0   
 	for i=1,4 do
 		if s.IsHuman[i]==true then
 			count=count+1
@@ -327,17 +278,23 @@ function s.dealcard(count,tp)
 	if not tp then tp=Duel.GetTurnPlayer() end
 	for i=1,count do
 		local seq=(i-1)%5
-		local loc=i%10<=5 and LOCATION_MZONE or LOCATION_SZONE		
+		local loc=i%10<=5 and LOCATION_MZONE or LOCATION_SZONE	
 		local mc=Duel.GetFieldGroup(tp,LOCATION_DECK,0):GetFirst()
 		if not mc then mc=Duel.CreateToken(tp,id) end
 		Duel.MoveToField(mc,tp,tp,loc,POS_FACEUP_ATTACK,false,2^seq) 
 		s.changecardcode(mc)
 		if i%10==0 then
-			Duel.SendtoHand(Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0),tp,REASON_RULE)
+			local mg=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
+			Duel.ConfirmCards(0,mg)
+			Duel.ConfirmCards(1,mg)
+			Duel.SendtoHand(mg,tp,REASON_RULE)
 		end
 	end
-	Duel.SendtoHand(Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0),tp,REASON_RULE)
-	s.sortop(e,tp)
+	local mg=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
+	Duel.ConfirmCards(0,mg)
+	Duel.ConfirmCards(1,mg)
+	Duel.SendtoHand(mg,tp,REASON_RULE)
+	s.sortop(nil,tp)
 end
 function s.dealcard2(count,tp)
 	if not tp then tp=Duel.GetTurnPlayer() end
@@ -360,17 +317,18 @@ function s.dealcard2(count,tp)
 			g:AddCard(mc)
 		end
 		Duel.DisableShuffleCheck()
-		Duel.Overlay(oc,g)
 		local tc=g:GetFirst()
 		for i=count,1,-1 do
+			Duel.Overlay(oc,tc)
 			local code=codetable[i]
 			tc:SetEntityCode(id,true)
 			tc:SetCardData(CARDDATA_CODE,code)
 			tc:ReplaceEffect(code,0)
+			Duel.DisableShuffleCheck()
+			Duel.SendtoDeck(tc,tp,0,REASON_RULE)
 			tc=g:GetNext()
 		end
-		Duel.DisableShuffleCheck()
-		Duel.SendtoHand(g,tp,REASON_RULE)
+		Duel.Draw(tp,count,REASON_RULE)
 		--Duel.ShuffleHand(tp)
 	else
 		s.dealcard(tp)
@@ -428,7 +386,7 @@ function s.checkStraight(c,g)
 	local max=math.min(14,cpoint+4)
 	for i=min,max do
 		if codetable[i]==true then
-			count=count+1		  
+			count=count+1		
 		else
 			if count>=5 then
 				return true,i-count,i-1
@@ -502,8 +460,7 @@ function s.fpair2(g,hg)
 	return g:GetClassCount(s.getpoint)==1 and eg:CheckSubGroup(s.fpair,2,2)
 end
 function s.fflight(g,hg)
-	local eg=hg:Filter(aux.TRUE,g)
-	
+	local eg=hg:Filter(aux.TRUE,g)	
 	return g:GetClassCount(s.getpoint)==1 and eg:CheckSubGroup(s.fpair,3,3)
 end
 function s.handcon(e,tp,eg,ep,ev,re,r,rp)
@@ -522,8 +479,11 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 	local cg=g:Filter(s.pairfilter,c,point)
 	local cardtype=Single
 	local isstraight,min,max=s.checkStraight(c,g)
-	if isstraight then	
+	if isstraight then  
 		cg:Merge(g:Filter(s.straightfilter,c,min,max,c:GetCode()%20))
+	end
+	if point==16 or point==17 then
+		cg:Merge(g:Filter(s.pointsame,c,33-point))
 	end
 	while true do
 		local sc=cg:SelectUnselect(sg,p,true,true,0,1)
@@ -531,7 +491,10 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 			if sg:IsContains(sc) then return end
 			sg:AddCard(sc)
 			cg:RemoveCard(sc)
-			if s.getpoint(sc)==point then
+			if s.getpoint(sc)==16 or s.getpoint(sc)==17 then
+				cardtype=KingBomb
+				cg:Clear()
+			elseif s.getpoint(sc)==point then
 				cardtype=sg:GetCount()
 				cg=cg:Filter(s.pairfilter,c,s.getpoint(sc))
 			else
@@ -566,7 +529,7 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 	local fmin=c:GetCode()%20
 	eg=g:Filter(aux.TRUE,sg)
 	local fg=g:Filter(s.updownfilter,sg,fmin,fmax)
-	while (cardtype==ThreeOfAKind or cardtype==Flight0) and fg:CheckSubGroup(s.fpair,3,3) and Duel.SelectYesNo(p,aux.Stringid(id,3)) do		
+	while (cardtype==ThreeOfAKind or cardtype==Flight0) and fg:CheckSubGroup(s.fpair,3,3) and Duel.SelectYesNo(p,aux.Stringid(id,3)) do  
 		mg=fg:SelectSubGroup(p,s.fpair1,true,3,3,eg)
 		if mg and mg:GetCount()==3 then
 			local cpoint=mg:GetFirst():GetCode()%20
@@ -580,7 +543,7 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 			break
 		end
 	end
-	while (cardtype==ThreeWithOne or cardtype==Flight1) and fg:CheckSubGroup(s.fpair1,3,3,eg) and Duel.SelectYesNo(p,aux.Stringid(id,3)) do		
+	while (cardtype==ThreeWithOne or cardtype==Flight1) and fg:CheckSubGroup(s.fpair1,3,3,eg) and Duel.SelectYesNo(p,aux.Stringid(id,3)) do  
 		mg=fg:SelectSubGroup(p,s.fpair1,true,3,3,eg)
 		if mg and mg:GetCount()==3 then
 			local cpoint=mg:GetFirst():GetCode()%20
@@ -595,7 +558,7 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 			break
 		end
 	end
-	while (cardtype==ThreeWithTwo or cardtype==Flight2) and fg:CheckSubGroup(s.fpair2,3,3,eg) and Duel.SelectYesNo(p,aux.Stringid(id,3)) do		
+	while (cardtype==ThreeWithTwo or cardtype==Flight2) and fg:CheckSubGroup(s.fpair2,3,3,eg) and Duel.SelectYesNo(p,aux.Stringid(id,3)) do  
 		mg=fg:SelectSubGroup(p,s.fpair2,true,3,3,eg)
 		if mg and mg:GetCount()==3 then
 			local cpoint=mg:GetFirst():GetCode()%20
@@ -692,6 +655,13 @@ function s.movecard(cardtype,mg)
 			Duel.MoveToField(tc,p,p,LOCATION_SZONE,POS_FACEUP,false,2^i)
 			tc=mg2:GetNext()
 		end
+	elseif cardtype==KingBomb then
+		local tc=mg:GetFirst()
+		Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^1)
+		Duel.MoveSequence(tc,5)
+		tc=mg:GetNext()
+		Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^3)
+		Duel.MoveSequence(tc,6)
 	elseif cardtype==Straight then
 		for i=0,4 do
 			local tc=mg:GetMinGroup(s.getpoint):GetFirst()
@@ -785,7 +755,7 @@ function s.movecard(cardtype,mg)
 				e1:SetValue(1-p)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 				tc:RegisterEffect(e1,true)
-			end			
+			end	  
 		end
 		if count>=3 then
 			Debug.Message("完成成就：卢食传说")
@@ -845,7 +815,7 @@ function s.movecard(cardtype,mg)
 					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 					tc:RegisterEffect(e1,true)
 					tc=mgtable2[i]:GetNext()
-				end				
+				end		  
 			end
 		end
 		if count>=3 then
@@ -856,26 +826,35 @@ function s.movecard(cardtype,mg)
 	if Duel.GetFieldGroupCount(p,LOCATION_HAND,0)==0 then Duel.Win(p,0xffff,Duel.CreateToken(p,id)) end
 end
 function s.sortop(e,tp)
-	local p=Duel.GetTurnPlayer()
-	local oc=Duel.GetFieldGroup(p,LOCATION_EXTRA,0):GetFirst()
-	local g=Duel.GetFieldGroup(p,LOCATION_HAND,0)
-	Duel.Overlay(oc,g)
+	if e then tp=Duel.GetTurnPlayer() end
+	local oc=Duel.GetFieldGroup(tp,LOCATION_EXTRA,0):GetFirst()
+	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+	local count=g:GetCount()
+	--Duel.Overlay(oc,g)
 	local cg=Group.CreateGroup()
 	while g:GetCount()>0 do
-		local mg=g:GetMaxGroup(s.getpoint)
+		local mg=g:GetMinGroup(s.getpoint)
 		while mg:GetCount()>0 do
 			local mc=mg:GetMaxGroup(Card.GetCode):GetFirst()
 			g:RemoveCard(mc)
 			mg:RemoveCard(mc)
 			cg:AddCard(mc)
 			Duel.DisableShuffleCheck()
-			Duel.SendtoHand(mc,p,REASON_RULE)
+			Duel.SendtoDeck(mc,nil,0,REASON_RULE)
 			Duel.AdjustAll()
 		end
 	end
+	Duel.Draw(tp,count,REASON_RULE)
+end
+function s.fbomb(g)
+	return g:GetClassCount(s.getpoint)==1 and g:GetCount()==4 or g:IsExists(s.pointsame,1,nil,16) and g:IsExists(s.pointsame,1,nil,17) and g:GetCount()==2
+end
+function s.fpairs(g,count)
+	return g:GetClassCount(s.getpoint)==count
 end
 function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 	local cardtype,point,lastp=e:GetLabel()
+	local p=Duel.GetTurnPlayer()
 	local pid=(Duel.GetTurnCount()-1)%playercount+1
 	local g=Duel.GetFieldGroup(p,LOCATION_HAND,0)
 	local upg=g:Filter(s.pointup,nil,point)
@@ -883,14 +862,18 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 		local ischainable=false
 		local ischain=false
 		local mg=Group.CreateGroup()
-		if g:CheckSubGroup(s.fpair,4,4) and Duel.SelectYesNo(p,aux.Stringid(id,5)) then
-			mg=g:SelectSubGroup(p,s.fpair,true,4,4)
+		if cardtype~=KingBomb and cardtype~=Bomb and g:CheckSubGroup(s.fbomb,2,4) and Duel.SelectYesNo(p,aux.Stringid(id,5)) then
+			mg=g:SelectSubGroup(p,s.fbomb,true,4,4)
 			if mg and mg:GetCount()==4 then
 				cardtype=Bomb
 				point=s.getpoint(mg:GetFirst())
 				ischain=true
+			else
+				cardtype=KingBomb
+				point=17
+				ischain=true
 			end
-		end	 
+		end
 		if cardtype==Single and upg:GetCount()>0 then
 			ischainable=true
 			mg=upg:SelectSubGroup(p,s.fpair,true,1,1)
@@ -933,7 +916,7 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 			if mg and mg:GetCount()==3 then
 				point=s.getpoint(mg:GetFirst())
 				local mg2=g:Filter(aux.TRUE,mg):SelectSubGroup(p,s.fpair,true,2,2)
-				mg:Merge(mg2)							  
+				mg:Merge(mg2)							
 				ischain=true
 			end
 		elseif cardtype==Flight0 then
@@ -962,16 +945,18 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 			if #abletable>0 then
 				ischainable=true
 				local sg=Group.CreateGroup()
-				while sg:GetCount()<s.lastcard:GetCount() do
+				while sg:GetCount()<count*3 do
 					local mg=upg:Filter(s.flightable,nil,abletable,count)
 					local sc=mg:SelectUnselect(sg,p,true,true,0,1)
-					if sc then
-						if sg:IsContains(sc) then return end
+					if sc and not sg:IsContains(sc) then
 						local cpoint=s.getpoint(sc)
+						for i=13,1,-1 do
+							if i>=cpoint then abletable[i]=false else break end
+						end
 						local tg=mg:Filter(s.pointsame,nil,cpoint)
+						mg=mg:Filter(s.flightable,tg,abletable,count)
 						if tg:GetCount()==4 then tg=tg:Select(p,3,3,nil) end
 						sg:Merge(tg)
-
 					else
 						break
 					end
@@ -981,7 +966,112 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 					ischain=true
 				end
 			end
-		elseif cardtype==Straight then	
+		elseif cardtype==Flight1 then
+			local count=s.lastcard:GetCount()/4
+			local gtable={}
+			local codetable={}
+			local abletable={}
+			for i=1,14 do
+				codetable[i]=false
+			end
+			local min
+			local cg=upg:GetMaxGroup(s.getpoint)
+			while upg:GetCount()>0 do
+				if cg:GetCount()>=3 then
+					local cpoint=cg:GetFirst():GetCode()%20
+					if cpoint==1 then codetable[14]=true end
+					codetable[cpoint]=true
+					local bool=true					
+					for i=cpoint,cpoint+count-1 do
+						eg:Merge()
+						if codetable[i]~=true then bool=false end
+					end
+					local eg=Group.__add(g:Filter(s.pointup,nil,cpoint+count-1),g:Filter(s.pointdown,nil,cpoint))
+					if bool and eg:GetCount()>=count then table.insert(abletable,i) end
+				end
+				upg=upg:Filter(aux.TRUE,cg)
+			end
+			if #abletable>0 then
+				ischainable=true
+				local sg=Group.CreateGroup()
+				while sg:GetCount()<count*3 do
+					local mg=upg:Filter(s.flightable,nil,abletable,count)
+					local sc=mg:SelectUnselect(sg,p,true,true,0,1)
+					if sc and not sg:IsContains(sc) then
+						local cpoint=s.getpoint(sc)
+						for i=13,1,-1 do
+							if i>=cpoint then abletable[i]=false else break end
+						end
+						local tg=mg:Filter(s.pointsame,nil,cpoint)
+						mg=mg:Filter(s.flightable,tg,abletable,count)
+						if tg:GetCount()==4 then tg=tg:Select(p,3,3,nil) end
+						sg:Merge(tg)
+					else
+						break
+					end
+				end
+				local cp=s.getpoint(mg:GetMinGroup():GetFirst())
+				sg:Merge(g:Select(p,count,count,sg)) 
+				if sg:GetCount()==s.lastcard:GetCount() then
+					point=cp
+					ischain=true
+				end
+			end
+		elseif cardtype==Flight2 then
+			local count=s.lastcard:GetCount()/4
+			local gtable={}
+			local codetable={}
+			local abletable={}
+			for i=1,14 do
+				codetable[i]=false
+			end
+			local min
+			local cg=upg:GetMaxGroup(s.getpoint)
+			while upg:GetCount()>0 do
+				if cg:GetCount()>=3 then
+					local cpoint=cg:GetFirst():GetCode()%20
+					if cpoint==1 then codetable[14]=true end
+					codetable[cpoint]=true
+					local bool=true					
+					for i=cpoint,cpoint+count-1 do
+						eg:Merge()
+						if codetable[i]~=true then bool=false end
+					end
+					local eg=Group.__add(g:Filter(s.pointup,nil,cpoint+count-1),g:Filter(s.pointdown,nil,cpoint))
+					if bool and eg:CheckSubGroup(s.fpairs,2*count,2*count,count) then
+						table.insert(abletable,i)
+					end
+				end
+				upg=upg:Filter(aux.TRUE,cg)
+			end
+			if #abletable>0 then
+				ischainable=true
+				local sg=Group.CreateGroup()
+				while sg:GetCount()<count*3 do
+					local mg=upg:Filter(s.flightable,nil,abletable,count)
+					local sc=mg:SelectUnselect(sg,p,true,true,0,1)
+					if sc and not sg:IsContains(sc) then
+						local cpoint=s.getpoint(sc)
+						for i=13,1,-1 do
+							if i>=cpoint then abletable[i]=false else break end
+						end
+						local tg=mg:Filter(s.pointsame,nil,cpoint)
+						mg=mg:Filter(s.flightable,tg,abletable,count)
+						if tg:GetCount()==4 then tg=tg:Select(p,3,3,nil) end
+						sg:Merge(tg)
+					else
+						break
+					end
+				end
+				local cp=s.getpoint(mg:GetMinGroup():GetFirst())
+				local eg=g:Filter(aux.TRUE,sg)
+				sg:Merge(eg:SelectSubGroup(p,s.fpairs,true,2*count,2*count,count)) 
+				if sg:GetCount()==s.lastcard:GetCount() then
+					point=cp
+					ischain=true
+				end
+			end
+		elseif cardtype==Straight then  
 			local cardtable=s.checkStraight2(point,upg)
 			if #cardtable>0 then
 				ischainable=true
@@ -991,8 +1081,7 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 				end
 				while mg:GetCount()<5 do
 					local sc=cg:SelectUnselect(mg,p,true,true,0,1)
-					if sc then
-						if sg:IsContains(sc) then return end
+					if sc and not cg:IsContains(sc) then
 						for i,v in ipairs(cardtable) do
 							if sc:GetCode()%20>=v.min and sc:GetCode()%20<=v.max then
 								cg=cg:Filter(s.straightfilter,nil,v.min,v.max,sc:GetCode()%20)
@@ -1012,13 +1101,14 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		if ischain then
 			s.movecard(cardtype,mg)
-			lastp=p
+			lastp=pid
 		else
 			if not ischainable then
 				Duel.SelectYesNo(p,aux.Stringid(id,1))
 			end
 			local pid=(Duel.GetTurnCount()-1)%playercount+1
-			Debug.Message(pid.."号位玩家：不要！")
+			local identity=pid==landlord and "地主" or "农民"
+			if s.IsHuman[pid]==true or playercount==2 then Debug.Message(pid.."号位玩家("..identity..")：不要！") end
 		end
 		local p=Duel.GetTurnPlayer()
 		s.skip()
@@ -1029,7 +1119,9 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 		ge0:SetOperation(s.chainop)
 		Duel.RegisterEffect(ge0,0)
 	else
-		Debug.Message(pid.."号位玩家的回合")
+		local pid=(Duel.GetTurnCount()-1)%playercount+1
+		local identity=pid==landlord and "地主" or "农民"
+		Debug.Message(pid.."号位玩家("..identity..")的回合")
 		local g=Duel.GetFieldGroup(0,LOCATION_ONFIELD,LOCATION_ONFIELD)
 		if g:GetCount()>0 then Duel.SendtoGrave(g,REASON_RULE) end
 	end

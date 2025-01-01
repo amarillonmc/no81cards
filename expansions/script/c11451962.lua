@@ -120,7 +120,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	de:SetDescription(aux.Stringid(11451961+#eset,6))
 	de:SetLabel(eid)
 	de:SetType(EFFECT_TYPE_FIELD)
-	de:SetCode(0x20000000+11451961)
+	de:SetCode(EFFECT_FLAG_EFFECT+11451961)
 	de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 	de:SetTargetRange(1,0)
 	Duel.RegisterEffect(de,tp)
@@ -157,7 +157,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.efilter(e,te)
-	if e:GetHandler():GetFlagEffect(m+0xffffff)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) and te:GetCode()~=16 and te:GetCode()~=359 then
+	if e:GetHandler():GetFlagEffect(m+0xffffff)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) then
 		if KOISHI_CHECK then
 			Duel.DisableActionCheck(true)
 			pcall(Duel.HintSelection,Group.FromCards(e:GetHandler()))

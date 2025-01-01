@@ -196,7 +196,7 @@ function cm.shfilter(c)
 	return c:GetFlagEffect(m)>0
 end
 function cm.chkval(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
+	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) then
 		local tp=te:GetOwnerPlayer()
 		local e3=Effect.CreateEffect(e:GetOwner())
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -206,6 +206,7 @@ function cm.chkval(e,te)
 		Duel.RegisterEffect(e3,tp)
 		e:SetValue(aux.FALSE)
 		e:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e:SetDescription(0)
 		if tp==e:GetOwnerPlayer() then
 			if SetCardData then
 				Duel.Hint(24,0,aux.Stringid(m,3))
