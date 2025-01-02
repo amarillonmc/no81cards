@@ -114,7 +114,7 @@ function s.startop2(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 	if Duel.IsExistingMatchingCard(s.cfilter,1,LOCATION_EXTRA,0,1,nil) then
 		s.dealcard2(17,0)
-		s.dealcard2(17,1)
+		s.dealcard2(1,1)
 		s.skip()
 	else
 		Debug.Message("多人模式测试中...")
@@ -130,7 +130,7 @@ function s.startop2(e,tp,eg,ep,ev,re,r,rp)
 		pc:RegisterEffect(e1,true)
 		if s.humancheck(0) then
 			s.IsHuman[1]=true
-			s.dealcard2(17,0)		 
+			s.dealcard2(17,0)		
 		else
 			landlord=2
 			Debug.Message("1号位玩家被识别为人机！")
@@ -192,7 +192,7 @@ function s.startop3(e,tp,eg,ep,ev,re,r,rp)
 	if s.humancheck(1) then
 		s.IsHuman[4]=true
 	else
-		Debug.Message("4号位玩家被识别为人机！")	 
+		Debug.Message("4号位玩家被识别为人机！")	
 	end
 	local count=0   
 	for i=1,4 do
@@ -378,32 +378,22 @@ function s.checkStraight(c,g)
 	for tc in aux.Next(g) do
 		local point=tc:GetCode()%20
 		if point==1 then codetable[14]=true end
-		codetable[point]=true
+		if point>2 then codetable[point]=true end		
 	end
 	local count=0
 	local cpoint=c:GetCode()%20
-	local min=math.max(1,cpoint-4)
-	local max=math.min(14,cpoint+4)
-	for i=min,max do
+	for i=1,14 do
 		if codetable[i]==true then
-			count=count+1	   
+			count=count+1	  
 		else
-			if count>=5 then
+			if count>=5 and i>=cpoint then
 				return true,i-count,i-1
 			end
 			count=0
 		end
 	end
 	if count>=5 then
-		return true,max-count+1,max
-	end
-	if cpoint==1 then
-		for i=10,14 do
-			if codetable[i]~=true then
-				return false
-			end
-		end
-		return true,10,14
+		return true,15-count,14
 	end
 	return false,nil,nil
 end
@@ -437,8 +427,15 @@ end
 function s.pointdown(c,point)
 	return s.getpoint(c)<point
 end
-function s.pointsame(c,point)
-	return s.getpoint(c)==point
+function s.pointsame(c,...)
+	local point=s.getpoint(c)
+	local pointtable=table.pack(...)
+	for i,v in ipairs(pointtable) do
+		if v==point then
+			return true
+		end
+	end
+	return false
 end
 function s.pointup(c,point)
 	return s.getpoint(c)>point
@@ -485,8 +482,12 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 	if point==16 or point==17 then
 		cg:Merge(g:Filter(s.pointsame,c,33-point))
 	end
+	local fmax=point
+	local fmin=point
 	while true do
-		local sc=cg:SelectUnselect(sg,p,true,true,0,1)
+		local finish=true
+		if cardtype==Straight and sg:GetCount()<5 then finish=false end
+		local sc=cg:SelectUnselect(sg,p,finish,true,0,1)
 		if sc then
 			if sg:IsContains(sc) then return end
 			sg:AddCard(sc)
@@ -498,15 +499,34 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 				cardtype=sg:GetCount()
 				cg=cg:Filter(s.pairfilter,c,s.getpoint(sc))
 			else
-				local cpoint=sc:GetCode()%20
+				local cpoint=s.getpoint(sc)
 				cardtype=Straight
-				min=math.max(min,cpoint-4)
-				if cpoint==1 then max=14 else max=math.min(max,cpoint+4) end
-				cg=cg:Filter(s.straightfilter,c,min,max,c:GetCode()%20)
-				cg=cg:Filter(s.straightfilter,c,min,max,cpoint)
+				if cpoint>fmax then
+					if cpoint-fmax>1 then
+						for i=fmax+1,cpoint-1 do
+							local cg1=cg:Filter(s.pointsame,nil,i)
+							sg:AddCard(cg1:GetFirst())
+							cg=cg:Filter(aux.TRUE,cg1)
+						end
+					end
+					fmax=cpoint
+				else
+					if fmin-cpoint>1 then
+						for i=cpoint+1,fmin-1 do
+							local cg1=cg:Filter(s.pointsame,nil,i)
+							sg:AddCard(cg1:GetFirst())
+							cg=cg:Filter(aux.TRUE,cg1)
+						end
+					end
+					fmin=cpoint
+				end
+				cg=cg:Filter(aux.TRUE,cg:Filter(s.pointsame,nil,point,cpoint))
 			end
 		else
-			if cardtype==Straight and sg:GetCount()<5 then return end
+			if not finish then
+				--Duel.Hint(HINT_MESSAGE,p,1421)
+				return
+			end
 			break
 		end
 	end
@@ -525,14 +545,13 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		cardtype=sg:GetCount()==4 and ThreeWithOne or ThreeWithTwo
 	end
-	local fmax=c:GetCode()%20
-	local fmin=c:GetCode()%20
+	
 	eg=g:Filter(aux.TRUE,sg)
 	local fg=g:Filter(s.updownfilter,sg,fmin,fmax)
 	while (cardtype==ThreeOfAKind or cardtype==Flight0) and fg:CheckSubGroup(s.fpair,3,3) and Duel.SelectYesNo(p,aux.Stringid(id,3)) do  
 		mg=fg:SelectSubGroup(p,s.fpair1,true,3,3,eg)
 		if mg and mg:GetCount()==3 then
-			local cpoint=mg:GetFirst():GetCode()%20
+			local cpoint=s.getpoint(mg:GetFirst())
 			fmin=math.min(fmin,cpoint)
 			fmax=math.max(fmax,cpoint)
 			sg:Merge(mg)
@@ -663,9 +682,28 @@ function s.movecard(cardtype,mg)
 		Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^3)
 		Duel.MoveSequence(tc,6)
 	elseif cardtype==Straight then
-		for i=0,4 do
-			local tc=mg:GetMinGroup(s.getpoint):GetFirst()
-			Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^i)
+		if mg:GetCount()==12 then
+			local tc=mg:GetMaxGroup(s.getpoint):GetFirst()
+			Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^2)
+			Duel.MoveSequence(tc,6)
+			mg:RemoveCard(tc)
+		end
+		if mg:GetCount()==11 then
+			local tc=mg:GetMaxGroup(s.getpoint):GetFirst()
+			Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^2)
+			Duel.MoveSequence(tc,5)
+			mg:RemoveCard(tc)
+		end
+		for i=0,9 do
+			local tg=mg:GetMinGroup(s.getpoint)
+			if not tg then break end
+			local tc=tg:GetFirst()
+			local seq=(i-3)%5
+			if i<=4 then
+				Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^seq)
+			else
+				Duel.MoveToField(tc,p,p,LOCATION_SZONE,POS_FACEUP_ATTACK,false,2^seq)
+			end
 			mg:RemoveCard(tc)
 		end
 	elseif cardtype==Flight0 then
@@ -815,7 +853,7 @@ function s.movecard(cardtype,mg)
 					e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 					tc:RegisterEffect(e1,true)
 					tc=mgtable2[i]:GetNext()
-				end	   
+				end	
 			end
 		end
 		if count>=3 then
@@ -862,8 +900,9 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 		local ischainable=false
 		local ischain=false
 		local mg=Group.CreateGroup()
-		if cardtype~=KingBomb and cardtype~=Bomb and g:CheckSubGroup(s.fbomb,2,4) and Duel.SelectYesNo(p,aux.Stringid(id,5)) then
-			mg=g:SelectSubGroup(p,s.fbomb,true,2,4)
+		local bg=cardtype==Bomb and upg or g
+		if cardtype~=KingBomb and bg:CheckSubGroup(s.fbomb,2,4) and Duel.SelectYesNo(p,aux.Stringid(id,5)) then
+			mg=bg:SelectSubGroup(p,s.fbomb,true,2,4)
 			if mg and mg:GetCount()==4 then
 				cardtype=Bomb
 				point=s.getpoint(mg:GetFirst())
@@ -916,7 +955,7 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 			if mg and mg:GetCount()==3 then
 				point=s.getpoint(mg:GetFirst())
 				local mg2=g:Filter(aux.TRUE,mg):SelectSubGroup(p,s.fpair,true,2,2)
-				mg:Merge(mg2)						   
+				mg:Merge(mg2)						  
 				ischain=true
 			end
 		elseif cardtype==Flight0 then
@@ -981,7 +1020,7 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 					local cpoint=cg:GetFirst():GetCode()%20
 					if cpoint==1 then codetable[14]=true end
 					codetable[cpoint]=true
-					local bool=true				 
+					local bool=true			  
 					for i=cpoint,cpoint+count-1 do
 						eg:Merge()
 						if codetable[i]~=true then bool=false end
@@ -1032,7 +1071,7 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 					local cpoint=cg:GetFirst():GetCode()%20
 					if cpoint==1 then codetable[14]=true end
 					codetable[cpoint]=true
-					local bool=true				 
+					local bool=true			  
 					for i=cpoint,cpoint+count-1 do
 						eg:Merge()
 						if codetable[i]~=true then bool=false end

@@ -69,7 +69,7 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetCondition(cm.condition)
 	e4:SetOperation(cm.operation)
-	--c:RegisterEffect(e4)
+	c:RegisterEffect(e4)
 	--
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_QUICK_O)
