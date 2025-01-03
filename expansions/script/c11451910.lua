@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	--e1:SetOperation(function() Debug.Message(string.dump(loadfile("expansions/script/c11451909.lua"))) end)
+	--e1:SetOperation(function() Debug.Message(loadstring(string.dump(function() return 1 end))(1)) end)
 	c:RegisterEffect(e1)
 	--sp
 	local e2=Effect.CreateEffect(c)
@@ -141,5 +141,7 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
+	if tc:GetFlagEffect(m)~=0 then
+		Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
+	end
 end

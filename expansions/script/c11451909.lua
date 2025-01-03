@@ -153,7 +153,7 @@ function cm.condition(e)
 	for _,code in pairs(tab) do
 		ct=ct+1
 	end
-	return ct==5
+	return ct>=5
 end
 function cm.etarget(e,c)
 	return cm.confilter(c)
