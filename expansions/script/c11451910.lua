@@ -33,9 +33,13 @@ function cm.initial_effect(c)
 end
 function cm.filter(c)
 	local re=c:GetReasonEffect()
-	if not (c:IsType(TYPE_MONSTER) and not c:IsStatus(STATUS_TO_HAND_WITHOUT_CONFIRM) and re) then return false end
+	if not re then return false end
 	local rc=re:GetOwner()
-	return rc:IsOriginalSetCard(0xc976) --and rc:GetOriginalType()&0x1>0
+	if not (c:IsType(TYPE_MONSTER) and rc:IsOriginalSetCard(0xc976) and c:IsPreviousLocation(LOCATION_DECK)) then return false end
+	local b1=not c:IsLocation(LOCATION_HAND+LOCATION_REMOVED)
+	local b2=c:IsLocation(LOCATION_HAND) and (c:IsPublic() or not c:IsStatus(STATUS_TO_HAND_WITHOUT_CONFIRM))
+	local b3=c:IsLocation(LOCATION_REMOVED) and c:IsFaceup()
+	return b1 or b2 or b3
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(cm.filter,nil)
