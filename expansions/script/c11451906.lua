@@ -242,6 +242,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 	if #g>0 then
 		Duel.BreakEffect()
+		local sg=g:Clone()
 		for tc in aux.Next(g) do
 			if tc:IsCanBeDisabledByEffect(e) then
 				local e1=Effect.CreateEffect(e:GetHandler())
@@ -252,10 +253,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				Duel.AdjustInstantly()
 				Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 			else
-				g:RemoveCard(tc)
+				sg:RemoveCard(tc)
 			end
 		end
-		Duel.Destroy(g,REASON_EFFECT)
+		Duel.Destroy(sg,REASON_EFFECT)
 	end
 end
 function cm.spcfilter(c,e,tp)

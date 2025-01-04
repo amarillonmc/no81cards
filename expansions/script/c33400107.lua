@@ -3,8 +3,8 @@ function c33400107.initial_effect(c)
 	 --Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	--e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,33400107+EFFECT_COUNT_CODE_OATH)
 	e1:SetLabel(2)
 	e1:SetCost(c33400107.cost)
@@ -19,18 +19,18 @@ function c33400107.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveCounter(tp,1,0,0x34f,ct,REASON_COST)
 end
 function c33400107.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD)   end
-	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 end
 function c33400107.activate(e,tp,eg,ep,ev,re,r,rp)
-	 local ac=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
-	 local tc=Duel.GetFirstTarget()
-	 if  tc:IsRelateToEffect(e) then   
-		Duel.SendtoGrave(tc,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,aux.ExceptThisCard(e)):GetFirst()
+	if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
 		if Duel.IsExistingMatchingCard(c33400107.filter1,tp,LOCATION_GRAVE,0,3,nil) and Duel.SelectYesNo(tp,aux.Stringid(33400107,0)) then
+			Duel.BreakEffect()
 		local c=e:GetHandler()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)

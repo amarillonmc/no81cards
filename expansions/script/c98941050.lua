@@ -191,6 +191,10 @@ function c98941050.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rg=Duel.SelectMatchingCard(tp,c98941050.fcfilter,tp,LOCATION_MZONE,0,1,ct,nil)
 	if Duel.Remove(rg,0,REASON_COST+REASON_TEMPORARY)~=0 then
+			rg:KeepAlive()
+			for tc in aux.Next(rg) do
+				tc:RegisterFlagEffect(98941050,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+			end
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_PHASE+PHASE_END)
@@ -204,17 +208,29 @@ function c98941050.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(rc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,rc,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED)
 end
+function c98941050.retfilter(c,tp)
+	return c:GetFlagEffect(98941050)~=0 and (not tp or c:IsControler(tp))
+end
+function c98941050.returngroup(g,tp)
+	if #g==0 then return end
+	local c
+	while #g>1 and Duel.GetMZoneCount(tp)>0 do
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+		c=g:Select(tp,1,1,nil):GetFirst()
+		Duel.ReturnToField(c)
+		g=g-c
+	end
+	for oc in aux.Next(g) do
+		Duel.ReturnToField(oc)
+	end
+end
 function c98941050.retop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local fid=e:GetLabel()
-	local g=e:GetLabelObject()
-	if g then
-		local tc=g:GetFirst()
-		while tc do
-			Duel.ReturnToField(tc)
-			tc=g:GetNext()
-		end		 
-	end	
+	local turnp=Duel.GetTurnPlayer()
+	local g1=e:GetLabelObject():Filter(c98941050.retfilter,nil,turnp)
+	local g2=e:GetLabelObject():Filter(c98941050.retfilter,nil,1-turnp)
+	if #g1+#g2==0 then return end
+	c98941050.returngroup(g1,turnp)
+	c98941050.returngroup(g2,1-turnp)
 end
 function c98941050.gcheck(g)
 	return g:FilterCount(Card.IsSetCard,nil,0x2b)<2 and g:FilterCount(Card.IsSetCard,nil,0x61)<2

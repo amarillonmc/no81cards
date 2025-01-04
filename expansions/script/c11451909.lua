@@ -116,14 +116,14 @@ function cm.spfilter(c,e,tp)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return eg:IsExists(cm.repfilter,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
+	if chk==0 then return not pnfl_desreplace and eg:IsExists(cm.repfilter,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
 	return true
 end
 function cm.repval(e,c)
 	return cm.repfilter(c,e:GetHandlerPlayer())
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
-	pnfl_adjusting=true
+	pnfl_desreplace=true
 	local c=e:GetHandler()
 	Duel.HintSelection(Group.FromCards(c))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -136,7 +136,7 @@ function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 		local op=turne:GetOperation()
 		op(turne,turne:GetOwnerPlayer(),nil,0,0,0,0,0)
 	end
-	pnfl_adjusting=false
+	pnfl_desreplace=false
 end
 function cm.confilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xc976)
