@@ -240,7 +240,7 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 		if #g1==0 then
 			sg=g2:Select(tp,1,ct,nil)
 		else
-			sg=g2:CancelableSelect(tp,0,ct,nil)
+			sg=g2:CancelableSelect(tp,1,ct,nil)
 		end
 		if sg and #sg>0 then
 			ct=ct-#sg
@@ -256,7 +256,7 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 		if not chk then
 			local sg=g1:Select(tp,1,ct,nil)
 		else
-			sg=g1:CancelableSelect(tp,0,ct,nil)
+			sg=g1:CancelableSelect(tp,1,ct,nil)
 		end
 		if sg and #sg>0 then
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end

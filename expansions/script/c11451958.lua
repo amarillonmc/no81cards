@@ -76,7 +76,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local b3=Duel.GetTurnPlayer()==tp
 	if #g>0 and (b1 or b2 or b3) and Duel.GetCurrentChain()>1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local rg=g:CancelableSelect(tp,0,Duel.GetCurrentChain()-1,nil)
+		local rg=g:CancelableSelect(tp,1,Duel.GetCurrentChain()-1,nil)
 		if not rg or #rg==0 then return end
 		Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
 		local fid=c:GetFieldID()

@@ -132,7 +132,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 			local mt=1
 			if tab[3]&(1<<i)~=0 then mt=2 end
 			local g=Duel.GetMatchingGroup(cm.desfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,i)
-			if #g>0 then dg:Merge(g:CancelableSelect(tp,0,mt,nil)) end
+			if #g>0 then dg:Merge(g:CancelableSelect(tp,1,mt,nil)) end
 		end
 	end
 	Duel.Destroy(dg,REASON_EFFECT)

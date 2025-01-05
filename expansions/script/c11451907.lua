@@ -126,9 +126,17 @@ function cm.initial_effect(c)
 			local temp_f=Duel[fname]
 			Duel[fname]=function(p,c,...)
 				temp_f(p,c,...)
-				if Duel.GetCurrentChain()==1 then c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1) end
+				c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1)
 			end
 		end
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAIN_ACTIVATING)
+		ge1:SetOperation(function()
+							local g=Duel.GetMatchingGroup(function(c) return c:GetFlagEffect(11451905)>0 end,0,0xff,0xff,nil)
+							for tc in aux.Next(g) do tc:ResetFlagEffect(11451905) end
+						end)
+		Duel.RegisterEffect(ge1,0)
 	end
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)

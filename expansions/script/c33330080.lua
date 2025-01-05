@@ -2,6 +2,12 @@
 local m=33330080
 local cm=_G["c"..m]
 function c33330080.initial_effect(c)
+	--act in hand
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e0:SetCost(cm.excost)
+	c:RegisterEffect(e0)
 	--activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_POSITION+CATEGORY_REMOVE)
@@ -11,27 +17,16 @@ function c33330080.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
-	--act in hand
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	c:RegisterEffect(e2)
+end
+function cm.excost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_EXTRA,0,5,e:GetHandler(),POS_FACEDOWN) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_EXTRA,0,5,99,e:GetHandler(),POS_FACEDOWN)
+	Duel.Remove(g,POS_FACEDOWN,REASON_COST)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
 	local g=Duel.GetDecktopGroup(tp,10)
-	if chk==0 then
-		if c:IsLocation(LOCATION_HAND) then
-			return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_EXTRA,0,5,c) and g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN)==10
-		else
-			return g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN)==10
-		end
-	end
-	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_EXTRA,0,5,99,c)
-		Duel.Remove(g,POS_FACEDOWN,REASON_COST)
-	end
+	if chk==0 then return g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN)==10 end
 	Duel.DisableShuffleCheck()
 	Duel.Remove(g,POS_FACEDOWN,REASON_COST)
 end
@@ -48,11 +43,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanRemove(1-tp) and not Duel.IsPlayerAffectedByEffect(1-tp,EFFECT_CANNOT_MSET) and not Duel.IsPlayerAffectedByEffect(1-tp,EFFECT_CANNOT_SSET) then return end
 	local g=Duel.GetMatchingGroup(cm.tdfil,1-tp,LOCATION_ONFIELD,0,nil)
 	local gc=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)//10
-	if #g>0 then
+	if #g>0 and gc>0 then
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SET)
 		local sg=g:FilterSelect(1-tp,cm.tdfil,gc,gc,nil,1-tp,POS_FACEDOWN,REASON_RULE)
+		if #sg==0 then return end
 		Duel.ChangePosition(sg,POS_FACEDOWN_DEFENSE)
 		Duel.Remove(sg,POS_FACEDOWN,REASON_RULE)
+		Duel.BreakEffect()
 		local rg=Duel.GetMatchingGroup(Card.IsFacedown,1-tp,LOCATION_ONFIELD,0,nil)
 		Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
 	end

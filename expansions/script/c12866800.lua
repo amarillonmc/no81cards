@@ -38,7 +38,7 @@ function s.filter1(c,e)
 	not c:IsImmuneToEffect(e) and c:IsAbleToRemove()
 end
 function s.filter4(c)
-	return aux.IsCodeListed(c,12866755) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove()
+	return c:IsType(TYPE_MONSTER) and aux.IsCodeListed(c,12866755) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove()
 end
 function s.filter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and aux.IsCodeListed(c,12866755) and (not f or f(c))

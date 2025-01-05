@@ -33,6 +33,25 @@ function cm.initial_effect(c)
 		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
 	end
+	if not PTFL_SUMMONRULE_CHECK then
+		PTFL_SUMMONRULE_CHECK=true
+		local summon_set={"Summon","MSet","SpecialSummonRule","SynchroSummon","XyzSummon","XyzSummonByRose","LinkSummon"}
+		for i,fname in pairs(summon_set) do
+			local temp_f=Duel[fname]
+			Duel[fname]=function(p,c,...)
+				temp_f(p,c,...)
+				c:RegisterFlagEffect(11451905,RESET_CHAIN,0,1)
+			end
+		end
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAIN_ACTIVATING)
+		ge1:SetOperation(function()
+							local g=Duel.GetMatchingGroup(function(c) return c:GetFlagEffect(11451905)>0 end,0,0xff,0xff,nil)
+							for tc in aux.Next(g) do tc:ResetFlagEffect(11451905) end
+						end)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(ep,m,RESET_CHAIN,0,1)
@@ -106,7 +125,7 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():GetFlagEffect(m)>0 then return end
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.GetMatchingGroup(cm.acfilter,tp,LOCATION_DECK,0,nil,tp):CancelableSelect(tp,0,1,nil)
+	local g=Duel.GetMatchingGroup(cm.acfilter,tp,LOCATION_DECK,0,nil,tp):CancelableSelect(tp,1,1,nil)
 	if g and #g>0 then
 		local code,code2=g:GetFirst():GetCode()
 		Duel.RegisterFlagEffect(0,m+code+0xffffff,RESET_PHASE+PHASE_END,0,1)
@@ -121,7 +140,7 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.HintSelection(cg)
 		cg:KeepAlive()
-		cg:ForEach(Card.RegisterFlagEffect,m+1,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+		cg:ForEach(Card.RegisterFlagEffect,m+0xffffff,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 		local e1=Effect.CreateEffect(cg:GetFirst())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_CHAIN_SOLVED)
@@ -134,16 +153,16 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	cm[0]=true
 end
 function cm.cfilterx(c)
-	return c:IsHasEffect(m) and c:GetFlagEffect(m+1)==0
+	return c:IsHasEffect(m) and c:GetFlagEffect(m+0xffffff)==0
 end
 function cm.cfilter(c)
-	return c:IsHasEffect(m) and c:GetFlagEffect(m+1)>0 and c:IsDestructable()
+	return c:IsHasEffect(m) and c:GetFlagEffect(m+0xffffff)>0 and c:IsDestructable()
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabel()==ev then
 		Duel.Hint(HINT_CARD,0,m)
 		local cg=e:GetLabelObject():Filter(cm.cfilter,nil)
-		if re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsDestructable() then cg:AddCard(re:GetHandler()) end
+		if re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsDestructable() and re:GetHandler():GetFlagEffect(11451905)==0 then cg:AddCard(re:GetHandler()) end
 		if #cg>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			cg=cg:Select(tp,1,1,nil)
