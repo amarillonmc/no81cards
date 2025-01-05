@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 		local _CRemoveOverlayCard=Card.RemoveOverlayCard
 		local _FilterSelect=Group.FilterSelect
 		local _Select=Group.Select
+		local _CancelableSelect=Group.CancelableSelect
 		local _SelectUnselect=Group.SelectUnselect
 		local function Local_RandomSelect(g,tp,ct)
 			local cg=g:Clone()
@@ -165,6 +166,23 @@ function cm.initial_effect(c)
 				return tg
 			else
 				return _Select(g,sp,min,max,nc)
+			end
+		end
+		function Group.CancelableSelect(g,sp,min,max,nc)
+			if Duel.GetFlagEffect(0,m)>0 and min<=1 and max==1 then
+				local ng=g:Clone()
+				if aux.GetValueType(nc)=="Card" then ng:RemoveCard(nc) end
+				if aux.GetValueType(nc)=="Group" then ng:Sub(nc) end	
+				if not Duel.SelectYesNo(sp,aux.Stringid(m,2)) then return Group.CreateGroup() end
+				Duel.Hint(HINT_CARD,0,m)
+				--local ct=Duel.GetFlagEffectLabel(sp,m)
+				--Duel.SetFlagEffectLabel(sp,m,ct+1)
+				cm[sp]=cm[sp]+1
+				local tg=ng:RandomSelect(sp,1)
+				if tg:GetFirst() and tg:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) then Duel.ConfirmCards(sp,tg) end
+				return tg
+			else
+				return _CancelableSelect(g,sp,min,max,nc)
 			end
 		end
 		function Group.SelectUnselect(cg,sg,sp,finish,cancel,...)

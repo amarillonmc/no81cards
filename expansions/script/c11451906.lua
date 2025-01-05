@@ -273,9 +273,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	local tp=c:GetControler()
 	local bg=Duel.GetMatchingGroup(cm.spcfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,c,e,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local bc=bg:Select(tp,0,1,nil):GetFirst()
-	if bc then
-		sg:AddCard(bc)
+	local bcg=bg:CancelableSelect(tp,0,1,nil)
+	if bcg then
+		sg:Merge(bcg)
 		Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 	end
 end

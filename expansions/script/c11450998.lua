@@ -55,6 +55,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.check(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetTurnCount()<=0 then return end
 	for tc in aux.Next(eg) do
 		if tc:IsPreviousLocation(LOCATION_DECK) and tc:IsLocation(LOCATION_HAND) then
 			local p=tc:GetControler()
@@ -111,7 +112,7 @@ function cm.imop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(0x20000000+m+1)
+	e2:SetCode(EFFECT_FLAG_EFFECT+m+1)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetRange(e:GetHandler():GetLocation())
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
@@ -127,14 +128,15 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(rp,m+2)==0 and #g>0 then --and Duel.SelectYesNo(rp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.Hint(HINT_SELECTMSG,rp,HINTMSG_ATOHAND)
-		local tc=g:Select(rp,0,1,nil):GetFirst()
-		if not tc then
+		local tg=g:CancelableSelect(rp,0,1,nil)
+		if not tg then
 			if cm[rp+10]==nil then
 				cm[rp+10]=Duel.SelectYesNo(rp,aux.Stringid(m,3))
 			end
 			if cm[rp+10] then Duel.RegisterFlagEffect(rp,m+2,RESET_CHAIN,0,1) end
 			return
 		end
+		local tc=tg:GetFirst()
 		if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) then
 			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
 			Duel.ConfirmCards(1-rp,tc)

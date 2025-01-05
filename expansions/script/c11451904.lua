@@ -94,20 +94,20 @@ function cm.acfilter(c,tp)
 	return c:IsSetCard(0xc976) and c:IsAbleToGraveAsCost() and Duel.GetFlagEffect(0,m+code+0xffffff)==0 and (not code2 or Duel.GetFlagEffect(0,m+code2+0xffffff)==0) --and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,c:GetCode())
 end
 function Group.ForEach(group,func,...)
-    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
-        local d_group=group:Clone()
-        for tc in aux.Next(d_group) do
-            func(tc,...)
-        end
-    end
+	if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+		local d_group=group:Clone()
+		for tc in aux.Next(d_group) do
+			func(tc,...)
+		end
+	end
 end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	if cm[0] then return end
 	if e:GetHandler():GetFlagEffect(m)>0 then return end
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.acfilter,tp,LOCATION_DECK,0,0,1,nil,tp)
-	if #g>0 then
+	local g=Duel.GetMatchingGroup(cm.acfilter,tp,LOCATION_DECK,0,nil,tp):CancelableSelect(tp,0,1,nil)
+	if g and #g>0 then
 		local code,code2=g:GetFirst():GetCode()
 		Duel.RegisterFlagEffect(0,m+code+0xffffff,RESET_PHASE+PHASE_END,0,1)
 		if code2 then Duel.RegisterFlagEffect(0,m+code2+0xffffff,RESET_PHASE+PHASE_END,0,1) end

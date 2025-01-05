@@ -165,14 +165,15 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		local tg=g:Filter(function(c) return c:IsFacedown() and c:IsControler(1-tp) end,nil)
 		Duel.ConfirmCards(tp,tg)
 		Duel.Hint(HINT_SELECTMSG,0,aux.Stringid(11451031,4))
-		local sc=g:Select(tp,0,1,nil):GetFirst()
-		if not sc then
+		local sg=g:CancelableSelect(tp,0,1,nil)
+		if not sg then
 			local ph=Duel.GetCurrentPhase()
 			if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
 			Duel.RegisterFlagEffect(tp,11451031,RESET_PHASE+ph,0,1)
 			pnfl_adjusting=false
 			return
 		end
+		local sc=sg:GetFirst()
 		PNFL_MIRROR_ACTIVATE[tp]={}
 		for ce,te in pairs(PNFL_MIRROR_COPY[tp]) do
 			local tg=ce:GetTarget() or aux.TRUE

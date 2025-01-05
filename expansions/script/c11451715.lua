@@ -230,12 +230,19 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	local chk=false
 	local g2=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	local g1=Duel.GetMatchingGroup(cm.tffilter,tp,LOCATION_REMOVED,0,nil)
-	if ct>=1 and #g2>0 then
+	if ct>=1 and #(g1+g2)>0 then
 		if opt==2 then return true end
 		Duel.HintSelection(Group.FromCards(c))
-		if #g1==0 or Duel.SelectYesNo(tp,aux.Stringid(m,b1)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg=g2:Select(tp,1,ct,nil)
+	end
+	if ct>=1 and #g2>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=Group.CreateGroup()
+		if #g1==0 then
+			sg=g2:Select(tp,1,ct,nil)
+		else
+			sg=g2:CancelableSelect(tp,0,ct,nil)
+		end
+		if sg and #sg>0 then
 			ct=ct-#sg
 			chk=true
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
@@ -245,11 +252,13 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	end
 	g1=Duel.GetMatchingGroup(cm.tffilter,tp,LOCATION_REMOVED,0,nil)
 	if ct>=1 and #g1>0 then
-		if opt==2 then return true end
-		Duel.HintSelection(Group.FromCards(c))
-		if not chk or Duel.SelectYesNo(tp,aux.Stringid(m,b1+4)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+		if not chk then
 			local sg=g1:Select(tp,1,ct,nil)
+		else
+			sg=g1:CancelableSelect(tp,0,ct,nil)
+		end
+		if sg and #sg>0 then
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
 			if opt==1 then Duel.RegisterFlagEffect(tp,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
 			sg:ForEach(cm.returntofield,e)

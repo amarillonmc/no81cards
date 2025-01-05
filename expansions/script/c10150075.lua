@@ -110,7 +110,7 @@ function c10150075.setcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c10150075.setop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if rc:IsRelateToEffect(re) and Duel.SelectYesNo(tp,aux.Stringid(10150075,0)) then
+	if rc:IsRelateToEffect(re) and rc:IsFaceup() and Duel.SelectYesNo(tp,aux.Stringid(10150075,0)) then
 	   Duel.Hint(HINT_CARD,0,10150075)
 	   rc:CancelToGrave()
 	   Duel.ChangePosition(rc,POS_FACEDOWN)

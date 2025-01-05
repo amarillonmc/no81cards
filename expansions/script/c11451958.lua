@@ -10,6 +10,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e1:SetCondition(cm.spcon)
+	--e1:SetCost(cm.spcost)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
@@ -30,6 +31,32 @@ end
 function cm.tdfilter(c)
 	return c:IsAbleToHand() or (c:IsLocation(LOCATION_MZONE) and c:IsCanTurnSet())
 end
+function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return true end
+	if not c:IsPublic() then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(m,6))
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+		e1:SetCode(EFFECT_PUBLIC)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e:GetHandler():RegisterEffect(e1)
+	else
+		e:GetHandler():RegisterFlagEffect(11451544,RESET_EVENT+RESETS_STANDARD,0,1)
+		local eset={e:GetHandler():IsHasEffect(EFFECT_PUBLIC)}
+		if #eset>0 then
+			for _,ae in pairs(eset) do
+				if ae:IsHasType(EFFECT_TYPE_SINGLE) then
+					ae:Reset()
+				else
+					local tg=ae:GetTarget() or aux.TRUE
+					ae:SetTarget(function(e,c,...) return tg(e,c,...) and c:GetFlagEffect(11451544)==0 end)
+				end
+			end
+		end
+	end
+end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ec=eg:GetFirst()
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_HAND,0,nil,tp,POS_FACEDOWN)
@@ -49,7 +76,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local b3=Duel.GetTurnPlayer()==tp
 	if #g>0 and (b1 or b2 or b3) and Duel.GetCurrentChain()>1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local rg=g:Select(tp,0,Duel.GetCurrentChain()-1,nil)
+		local rg=g:CancelableSelect(tp,0,Duel.GetCurrentChain()-1,nil)
 		if not rg or #rg==0 then return end
 		Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
 		local fid=c:GetFieldID()

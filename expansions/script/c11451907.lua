@@ -115,7 +115,7 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge6,0)
 		local ge7=Effect.CreateEffect(c)
 		ge7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge7:SetCode(EVENT_PHASE+PHASE_END)
+		ge7:SetCode(EVENT_PHASE_START+PHASE_DRAW)
 		ge7:SetOperation(cm.clear2)
 		Duel.RegisterEffect(ge7,0)
 	end

@@ -412,10 +412,10 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			local bg=ng:GetMinGroup(cm.distance2,ac,tp)
 			if bg and #bg>0 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-				bc=bg:Select(tp,0,1,nil):GetFirst()
-				if bc then
-					Duel.HintSelection(Group.FromCards(bc))
-					rg:AddCard(bc)
+				local bcg=bg:CancelableSelect(tp,0,1,nil)
+				if bcg then
+					Duel.HintSelection(bcg)
+					rg:Merge(bcg)
 				end
 			end
 		end

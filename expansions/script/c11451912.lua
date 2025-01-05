@@ -83,8 +83,8 @@ function cm.initial_effect(c)
 			local tp=tc:GetControler()
 			if 1==1 then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
 				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))
-				local tg=Duel.SelectMatchingCard(tp,cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,0,1,nil,cm[1],tp,tc)
-				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) cm[1]=nil Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(11451912,6)) return _Merge(sg,tg) end
+				local tg=Duel.GetMatchingGroup(cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,nil,nil,tp,tc):CancelableSelect(tp,0,1,nil)
+				if tg and #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) cm[1]=nil Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(11451912,6)) return _Merge(sg,tg) end
 			end
 			cm[1]=nil
 			return _Merge(sg,obj)
@@ -95,8 +95,8 @@ function cm.initial_effect(c)
 			local tp=tc:GetControler()
 			if 1==1 then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
 				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))
-				local tg=Duel.SelectMatchingCard(tp,cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,0,1,nil,nil,tp,tc)
-				if #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) local tc2=tg:GetFirst() tc2.pendulum_rule[tc2]:SetLabel(1) if tc.pendulum_rule and tc.pendulum_rule[tc] then tc.pendulum_rule[tc]:SetLabel(0) end Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(11451912,6)) return _SpecialSummonRule(tp,tc2,SUMMON_TYPE_PENDULUM) end
+				local tg=Duel.GetMatchingGroup(cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,nil,nil,tp,tc):CancelableSelect(tp,0,1,nil)
+				if tg and #tg>0 then Duel.RegisterFlagEffect(tp,tg:GetFirst():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1) local tc2=tg:GetFirst() tc2.pendulum_rule[tc2]:SetLabel(1) if tc.pendulum_rule and tc.pendulum_rule[tc] then tc.pendulum_rule[tc]:SetLabel(0) end Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(11451912,6)) return _SpecialSummonRule(tp,tc2,SUMMON_TYPE_PENDULUM) end
 			end
 			_SpecialSummonRule(tp,tc,sumtype)
 		end
