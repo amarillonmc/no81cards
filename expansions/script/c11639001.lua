@@ -39,7 +39,7 @@ function cm.initial_effect(c)
 	local e8=Effect.CreateEffect(c)
 	e8:SetDescription(aux.Stringid(m,1))
 	e8:SetCategory(CATEGORY_COUNTER)
-	e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e8:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e8:SetRange(LOCATION_MZONE)
 	e8:SetCountLimit(1)
@@ -79,7 +79,7 @@ function cm.thfilter(c)
 	return c:IsSetCard(0xc221) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and e:GetHandler():IsCanAddCounter(0x1164,3) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and e:GetHandler():IsCanAddCounter(0x1164,4) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
@@ -87,20 +87,18 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 	if #g>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,g)
-		if e:GetHandler():IsCanAddCounter(0x1164,3) then
+		if e:GetHandler():IsCanAddCounter(0x1164,4) then
 			Duel.BreakEffect()
-			e:GetHandler():AddCounter(0x1164,3)
+			e:GetHandler():AddCounter(0x1164,4)
 		end
 	end
 end
 function cm.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetCounter(0x1164)<3 and e:GetHandler():IsCanAddCounter(0x1164,(3-e:GetHandler():GetCounter(0x1164))) end
+	if chk==0 then return  e:GetHandler():IsCanAddCounter(0x1164,3) end
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():GetCounter(0x1164)>=3 then return end
-	while e:GetHandler():GetCounter(0x1164)<3 do
-		e:GetHandler():AddCounter(0x1164,1)
-	end
+	if e:GetHandler():IsCanAddCounter(0x1164,3) e then return end
+	e:GetHandler():AddCounter(0x1164,3)
 end
 function cm.shcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetCounter(0x1164)>0 and Duel.GetFlagEffect(tp,11639001)<=1

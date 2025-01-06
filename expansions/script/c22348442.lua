@@ -3,7 +3,7 @@ local m=22348442
 local cm=_G["c"..m]
 function c22348442.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,3,2,nil,nil,99)
+	aux.AddXyzProcedure(c,nil,3,3,nil,nil,99)
 	c:EnableReviveLimit()
 	--equip
 	local e1=Effect.CreateEffect(c)

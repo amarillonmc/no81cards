@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c)
-	return c:IsSetCard(0xc221) and c:IsFaceup() and c:GetCounter(0x1164)<3 and c:IsCanAddCounter(0x1164,(3-c:GetCounter(0x1164)))
+	return c:IsSetCard(0xc221) and c:IsFaceup() and c:IsCanAddCounter(0x1164,3)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.filter(c) end
@@ -33,10 +33,8 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:GetCounter(0x1164)<3 then
-		while tc:GetCounter(0x1164)<3 do
-			tc:AddCounter(0x1164,1)
-		end
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsCanAddCounter(0x1164,3) then
+		tc:AddCounter(0x1164,3)
 	end
 end
 function cm.cfilter(c)

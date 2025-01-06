@@ -107,6 +107,6 @@ function s.e2op(e,tp,eg,ep,ev,re,r,rp)
         local tg=Duel.GetMatchingGroup(s.e2confilter,tp,LOCATION_MZONE,0,nil)
         local g=Duel.GetDecktopGroup(1-tp,tg:GetCount())
 	    Duel.DisableShuffleCheck()
-	    Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
+	    Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
     end
 end

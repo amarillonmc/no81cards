@@ -98,6 +98,7 @@ function cm.initial_effect(c)
 	e3:SetValue(cm.efilter)
 	c:RegisterEffect(e3)
 end
+cm.isSG=true
 --random
 function getrand()
 	local result=0

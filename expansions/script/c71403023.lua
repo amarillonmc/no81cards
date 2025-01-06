@@ -15,18 +15,18 @@ function c71403023.initial_effect(c)
 	yume.RegPPTSTGraveEffect(c,71403023)
 	yume.PPTCounter()
 end
-function c71403023.filtertg1(c)
-	return c:IsType(TYPE_PENDULUM) and c:IsFaceup()
-		and Duel.IsExistingMatchingCard(c71403023.filter1,tp,LOCATION_DECK,0,1,nil,c:GetLeftScale())
+function c71403023.filtertg1(c,tp)
+	return c:GetOriginalType()&TYPE_PENDULUM~=0 and c:IsFaceup()
+		and Duel.IsExistingMatchingCard(c71403023.filter1,tp,LOCATION_DECK,0,1,nil,c:GetCurrentScale())
 end
 function c71403023.filter1(c,scale)
-	return c:IsSetCard(0x715) and c:IsType(TYPE_PENDULUM) and c:GetLeftScale()~=scale and c:IsAbleToHand()
+	return c:IsSetCard(0x715) and c:IsType(TYPE_PENDULUM) and c:GetCurrentScale()~=scale and c:IsAbleToHand()
 end
 function c71403023.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return c71403023.filtertg1(chkc) and chkc:IsControler(tp) end
-	if chk==0 then return Duel.IsExistingTarget(c71403023.filtertg1,tp,LOCATION_ONFIELD,0,1,nil) end
+	if chkc then return c71403023.filtertg1(chkc,tp) and chkc:IsControler(tp) end
+	if chk==0 then return Duel.IsExistingTarget(c71403023.filtertg1,tp,LOCATION_ONFIELD,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,c71403023.filtertg1,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,c71403023.filtertg1,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
@@ -34,12 +34,13 @@ function c71403023.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local th_flag=false
 	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then
-		local scale=c:GetLeftScale()
+		local scale=tc:GetCurrentScale()
 		local thg=Duel.SelectMatchingCard(tp,c71403023.filter1,tp,LOCATION_DECK,0,1,1,nil,scale)
 		if thg:GetCount()>0 then
 			Duel.SendtoHand(thg,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,thg)
-			th_flag=thg:Filter(Card.IsLocation,nil,LOCATION_HAND)>0
+			thg=Duel.GetOperatedGroup()
+			th_flag=thg:IsExists(Card.IsLocation,1,nil,LOCATION_HAND)
 		end
 	end
 	if th_flag and (Duel.CheckLocation(tp,LOCATION_PZONE,0)

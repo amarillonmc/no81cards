@@ -48,7 +48,9 @@ function cm.setfilter2(c)
 	return c:IsFaceup() and c:IsCanTurnSet() and c:GetType()&0x20004==0x20004
 end
 function cm.alctg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp) and Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)~=0 end
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(m)<=0 and eg:IsExists(cm.filter,1,nil,tp) and Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)~=0 end
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.SetTargetCard(eg)
 	local g=eg:Filter(cm.filter,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
@@ -56,7 +58,9 @@ function cm.alctg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function cm.alctg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.tefilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(cm.setfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(m)<=0 and Duel.IsExistingMatchingCard(cm.tefilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(cm.setfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_ONFIELD)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end

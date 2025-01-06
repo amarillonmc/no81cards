@@ -105,7 +105,7 @@ end
 function c71403022.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		return Duel.IsExistingMatchingCard(c71403022.filter2,tp,LOCATION_EXTRA+LOCATION_ONFIELD,0,1,nil,tp)
-			and Duel.IsExistingMatchingCard(c71403022.filter2sp,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)
+			and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c71403022.filter2sp),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)
 	end
 	local g1=Duel.GetMatchingGroup(c71403022.filter2,tp,LOCATION_EXTRA+LOCATION_ONFIELD,0,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g1,1,0,0)
@@ -116,10 +116,10 @@ function c71403022.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local desg=Duel.SelectMatchingCard(tp,c71403022.filter2,tp,LOCATION_EXTRA+LOCATION_ONFIELD,0,1,1,nil,tp)
 	if Duel.Destroy(desg,REASON_EFFECT)>0 then
-		local deck_group=Duel.GetMatchingGroup(c71403022.filter2sp,tp,LOCATION_DECK,0,nil,e,tp)
-		if deck_group:GetCount()>0 then
+		local sp_group=Duel.GetMatchingGroup(aux.NecroValleyFilter(c71403022.filter2sp),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,nil,e,tp)
+		if sp_group:GetCount()>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local setg=deck_group:Select(tp,1,1,nil)
+			local setg=sp_group:Select(tp,1,1,nil)
 			if setg:GetCount()>0 then
 				Duel.BreakEffect()
 				Duel.SpecialSummon(setg,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)

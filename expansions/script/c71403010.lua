@@ -1,4 +1,5 @@
 --存块！旋转！
+---@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
 function c71403010.initial_effect(c)
 	--Activate
@@ -160,7 +161,7 @@ function c71403010.OptionalPendulum(e,c,tp,exc)
 	exc_e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	exc_e1:SetType(EFFECT_TYPE_SINGLE)
 	exc_e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	exc_e1:SetReset(RESET_CHAIN)
+	exc_e1:SetReset(RESET_PHASE+PHASE_MAIN1)
 	exc_e1:SetValue(aux.FALSE)
 	exc:RegisterEffect(exc_e1)
 	self_pend_flag=self_pend_flag and g:IsExists(aux.PConditionFilter,1,nil,e,tp,lscale,rscale,eset)
@@ -173,14 +174,15 @@ function c71403010.OptionalPendulum(e,c,tp,exc)
 		e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 		e1:SetReset(RESET_PHASE+PHASE_MAIN1)
 		e1:SetLabel(pend_chk)
-		e1:SetOperation(yume.ResetExtraPendulumEffect)
+		e1:SetOperation(c71403010.ResetExtraPendulumEffect)
 		Duel.RegisterEffect(e1,tp)
+		exc_e1:SetLabelObject(e1)
 		--reset when negated
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_SPSUMMON_NEGATED)
-		e2:SetOperation(yume.ResetExtraPendulumEffect)
-		e2:SetLabelObject(e1)
+		e2:SetOperation(c71403010.ResetExtraPendulumEffect)
+		e2:SetLabelObject(exc_e1)
 		e2:SetLabel(pend_chk)
 		e2:SetReset(RESET_PHASE+PHASE_MAIN1)
 		Duel.RegisterEffect(e2,tp)
@@ -194,4 +196,12 @@ function c71403010.OptionalPendulum(e,c,tp,exc)
 	else
 		exc_e1:Reset()
 	end
+end
+function c71403010.ResetExtraPendulumEffect(e,tp,eg,ep,ev,re,r,rp)
+	local e1=e:GetLabelObject()
+	local e2=e1:GetLabelObject()
+	aux.PendulumChecklist=e:GetLabel()
+	e2:Reset()
+	e1:Reset()
+	e:Reset()
 end

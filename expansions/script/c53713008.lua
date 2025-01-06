@@ -35,7 +35,8 @@ end
 function cm.alctg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c,g=e:GetHandler(),eg:Filter(Card.IsSummonLocation,nil,LOCATION_EXTRA)
 	if chkc then return chkc:IsOnField() and chkc~=e:GetHandler() and not g:IsContains(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,g) and Duel.GetFlagEffect(tp,m)==0 end
+	if chk==0 then return c:GetFlagEffect(m)<=0 and Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,g) and Duel.GetFlagEffect(tp,m)==0 end
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local dg=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,g)
@@ -44,7 +45,8 @@ function cm.alctg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.alctg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c,g=e:GetHandler(),eg:Filter(Card.IsSummonLocation,nil,LOCATION_EXTRA)
-	if chk==0 then return c:IsAbleToExtra() and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.GetFlagEffect(tp,m+50)==0 end
+	if chk==0 then return c:GetFlagEffect(m)<=0 and c:IsAbleToExtra() and Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.GetFlagEffect(tp,m+50)==0 end
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.RegisterFlagEffect(tp,m+50,RESET_PHASE+PHASE_END,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,c,1,0,0)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
@@ -56,7 +58,7 @@ function cm.alcop1(e,tp,eg,ep,ev,re,r,rp)
 	local dc=Duel.GetOperatedGroup():GetFirst()
 	if not dc then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	if not Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,nil,dc:GetCode()) then return end
+	if not Duel.IsExistingMatchingCard(aux.AND(Card.IsFaceup,Card.IsCode),tp,LOCATION_ONFIELD,0,1,nil,dc:GetPreviousCodeOnField()) then return end
 	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,3,nil)
@@ -67,7 +69,7 @@ function cm.alcop2(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	if Duel.SendtoDeck(c,nil,2,REASON_EFFECT)==0 or not c:IsLocation(LOCATION_EXTRA) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local sg=Duel.SelectMatchingCard(tp,cm.setfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
+	local sg=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
 	if #sg==0 then return end
 	Duel.HintSelection(sg)
 	local rg=Group.CreateGroup()

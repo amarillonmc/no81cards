@@ -4,7 +4,7 @@ local s,id,o=GetID()
 local zd=0x5224
 
 function s.initial_effect(c)
-    --fusion material
+	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCodeFun(c,11602000,aux.FilterBoolFunction(Card.IsFusionType,TYPE_PENDULUM),1,true,true)
 	
@@ -40,30 +40,30 @@ end
 --DisableTargetAndSpExtraGrave
 
 function s.e1disfilter(c)
-    return not c:IsType(TYPE_NORMAL) and c:IsFaceup()
+	return not c:IsType(TYPE_NORMAL) and c:IsFaceup()
 end
 
 function s.e1tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingTarget(s.e1disfilter,tp,LOCATKON_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(aux.NegateMonsterFilter,tp,LOCATKON_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-	local g=Duel.SelectTarget(tp,s.e1filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectTarget(tp,aux.NegateMonsterFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,LOCATION_ONFIELD)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_EXTRA+LOCATION_GRAVE)
 end
 
 function s.e1spfilter(c,e,tp)
-    return c:IsSetCard(zd) and (not c:IsLocation(LOCATION_EXTRA) or c:IsFaceup()) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(zd) and (not c:IsLocation(LOCATION_EXTRA) or c:IsFaceup()) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
 function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) and tc:IsLocation(LOCATION_ONFIELD) then return end
+	if tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsCanBeDisabledByEffect(e) then
 	
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_DISABLE)
-	e1:SetTargetRange(0,1)
+	e1:SetTargetRange(0,LOCATION_ONFIELD)
 	e1:SetTarget(s.e1distg)
 	e1:SetLabelObject(tc)
 	e1:SetReset(RESET_PHASE+PHASE_END)
@@ -81,6 +81,7 @@ function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.e1spfilter),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 
 function s.e1distg(e,c)
@@ -100,18 +101,18 @@ end
 --ToDeckDelayToDeck
 
 function s.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_ONFILED,0,1,nil) end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-    local g=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_ONFIELD,0,1,1,nil)
-    Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,LOCATION_ONFIELD)
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_ONFILED,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_ONFIELD,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,LOCATION_ONFIELD)
 end
 
 function s.e2op(e,tp,eg,ep,ev,re,r,rp)
-    local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
 	if not Duel.SendtoDeck(sg,nil,2,REASON_EFFECT) then return end
 	
-    local e1=Effect.CreateEffect(e:GetHandler())
+	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHAS_END)
 	e1:SetCountLimit(1)

@@ -1,4 +1,5 @@
 --气泡方块的星舰舰长 T
+---@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
 function c71403011.initial_effect(c)
 	--xyz summon

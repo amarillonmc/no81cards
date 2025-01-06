@@ -1,4 +1,5 @@
 --气泡方块使 O
+---@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
 function c71403013.initial_effect(c)
 	--pendulum summon
@@ -86,7 +87,7 @@ function c71403013.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local gyg=Duel.GetMatchingGroup(c71403013.filter1,tp,LOCATION_GRAVE,0,nil)
 	if chk==0 then
 		return (c:GetSequence()<5 or c:IsLocation(LOCATION_HAND))
-		and pg:GetCount()>0
+		and gyg:GetCount()>0
 		and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,0,1,c)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

@@ -4,12 +4,20 @@ function c44401007.initial_effect(c)
 	aux.AddFusionProcFunRep(c,c44401007.mfilter,3,true)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_MZONE,0,Duel.Remove,POS_FACEUP,REASON_COST+REASON_FUSION+REASON_MATERIAL):SetValue(SUMMON_TYPE_FUSION)
 	c:EnableReviveLimit()
-	--atk
+--[[	--atk
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_REMOVE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetOperation(c44401007.atkop)
+	c:RegisterEffect(e1)--]]
+	--direct attack
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_DIRECT_ATTACK)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(c44401007.datg)
 	c:RegisterEffect(e1)
 	--redirect
 	local e2=Effect.CreateEffect(c)
@@ -37,6 +45,9 @@ function c44401007.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	e:GetHandler():RegisterEffect(e1)
+end
+function c44401007.datg(e,c)
+	return c:IsLevelBelow(4) and c:IsRace(RACE_PSYCHO)
 end
 function c44401007.cfilter(c,e)
 	return c:IsSetCard(0xa4a) and c:IsFaceup() and c:IsCanBeEffectTarget(e)

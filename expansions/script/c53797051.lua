@@ -302,9 +302,34 @@ end
 function s.copycost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-	Duel.SendtoGrave(g,REASON_COST)
-	e:SetLabel(g:GetFirst():GetCode())
+	local rc=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp):GetFirst()
+	if Duel.Remove(rc,POS_FACEUP,REASON_COST)~=0 then
+		rc:RegisterFlagEffect(id+666,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(id,2))
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		e1:SetLabelObject(rc)
+		e1:SetCountLimit(1)
+		e1:SetCondition(s.retcon)
+		e1:SetOperation(s.retop)
+		Duel.RegisterEffect(e1,tp)
+	end
+	e:SetLabel(rc:GetCode())
+end
+function s.retcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffect(id+666)==0 then
+		e:Reset()
+		return false
+	else
+		return true
+	end
+end
+function s.retop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	Duel.SendtoDeck(tc,tp,0,REASON_EFFECT)
 end
 function s.copyop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -330,7 +355,7 @@ function s.copyop(e,tp,eg,ep,ev,re,r,rp)
 			local con=v:GetCondition() or aux.TRUE
 			e1:SetCondition(s.con(con))
 			tc:RegisterEffect(e1)
-			tc:RegisterFlagEffect(id+500,RESET_EVENT+RESETS_STANDARD,0,1,e1:GetFieldID())
+			tc:RegisterFlagEffect(id+333,RESET_EVENT+RESETS_STANDARD,0,1,e1:GetFieldID())
 			local e1_1,e2,e3,e2_1=SNNM.ActivatedAsSpellorTrap(tc,tc:GetOriginalType(),v:GetRange(),true,e1)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e1_1:SetReset(RESET_EVENT+RESETS_STANDARD)
@@ -345,7 +370,7 @@ function s.copyop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.con(con)
 	return  function(e,tp,eg,ep,ev,re,r,rp)
-				local t={e:GetHandler():GetFlagEffectLabel(id+500)}
+				local t={e:GetHandler():GetFlagEffectLabel(id+333)}
 				return SNNM.IsInTable(e:GetFieldID(),t) and con(e,tp,eg,ep,ev,re,r,rp)
 	end
 end

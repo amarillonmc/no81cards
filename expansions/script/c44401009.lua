@@ -5,13 +5,13 @@ function c44401009.initial_effect(c)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_MZONE,0,Duel.Remove,POS_FACEUP,REASON_COST+REASON_FUSION+REASON_MATERIAL):SetValue(SUMMON_TYPE_FUSION)
 	c:EnableReviveLimit()
 	--indes
-	local e0=Effect.CreateEffect(c)
+--[[	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e0:SetRange(LOCATION_MZONE)
 	e0:SetValue(1)
-	c:RegisterEffect(e0)
+	c:RegisterEffect(e0)--]]
 	--atk
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

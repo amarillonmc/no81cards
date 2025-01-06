@@ -63,7 +63,7 @@ function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 			e1:SetValue(math.ceil(tc:GetAttack()/2))
 			c:RegisterEffect(e1)
 		end
@@ -78,7 +78,7 @@ function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCode(EFFECT_IMMUNE_EFFECT)
 		e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 		e2:SetRange(LOCATION_MZONE)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 		e2:SetValue(s.e2efilter1)
 		c:RegisterEffect(e2)
 		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,id,aux.Stringid(id,2))
@@ -90,7 +90,7 @@ function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCode(EFFECT_IMMUNE_EFFECT)
 		e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 		e2:SetRange(LOCATION_MZONE)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 		e2:SetValue(s.e2efilter2)
 		c:RegisterEffect(e2)
 		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,id,aux.Stringid(id,3))
@@ -102,23 +102,23 @@ function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCode(EFFECT_IMMUNE_EFFECT)
 		e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 		e2:SetRange(LOCATION_MZONE)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 		e2:SetValue(s.e2efilter3)
 		c:RegisterEffect(e2)
 		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,id,aux.Stringid(id,4))
 	end
 end
 
-function s.e2efilter1(e,re)
-	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsType(TYPE_SPELL)
+function s.e2efilter1(e,te)
+	return e:GetHandlerPlayer()~=te:GetOwnerPlayer() and  te:GetHandler():GetOriginalType()&TYPE_SPELL~=0 
 end
 
-function s.e2efilter2(e,re)
-	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsType(TYPE_TRAP)
+function s.e2efilter2(e,te)
+	return e:GetHandlerPlayer()~=te:GetOwnerPlayer() and te:GetHandler():GetOriginalType()&TYPE_TRAP~=0 
 end
 
-function s.e2efilter3(e,re)
-	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsType(TYPE_MONSTER)
+function s.e2efilter3(e,te)
+	return e:GetHandlerPlayer()~=te:GetOwnerPlayer() and te:GetHandler():GetOriginalType()&TYPE_MONSTER~=0 
 end
 
 --e2

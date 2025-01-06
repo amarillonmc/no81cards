@@ -58,16 +58,21 @@ function cm.spfilter(c,e,tp)
 	return (c:IsSetCard(0x17e)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsType(TYPE_MONSTER)
 end
 function cm.filter(c)
-	return c:IsFaceup() and ((c:IsType(TYPE_MONSTER) and c:IsRace(RACE_FIEND)) or c:GetType()==TYPE_TRAP) and c:IsAbleToDeck()
+	return c:IsFaceup()  and c:IsAbleToDeck()
+end
+function cm.fselect(g)
+	return g:IsExists(Card.IsRace,1,nil,RACE_FIEND)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>0 and Duel.GetFlagEffect(tp,m)==0
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_GRAVE,0,nil)
+	local b1=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)>0 and Duel.GetFlagEffect(tp,m)==0
 	local b2=Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE,0)>0 and Duel.GetFlagEffect(tp,m+1)==0
-	local b3=Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingTarget(cm.filter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,2,nil)and Duel.GetFlagEffect(tp,m+2)==0
+	local b3=Duel.IsPlayerCanDraw(tp,1) and g:CheckSubGroup(cm.fselect,3,3)and Duel.GetFlagEffect(tp,m+2)==0
 	if chk==0 then return b1 or b2 or b3 end
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	local b1=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>0 and Duel.GetFlagEffect(tp,m)==0
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_GRAVE,0,nil)
+	local b1=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)>0 and Duel.GetFlagEffect(tp,m)==0
 	local b2=Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE,0)>0 and Duel.GetFlagEffect(tp,m+1)==0
 	local b3=Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingTarget(aux.NecroValleyFilter(cm.filter),tp,LOCATION_REMOVED+LOCATION_GRAVE,0,2,nil)and Duel.GetFlagEffect(tp,m+2)==0
 	local op=aux.SelectFromOptions(tp,
@@ -76,7 +81,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			{b3,aux.Stringid(m,3)})
 	if op==1 then 
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 		Duel.Destroy(g,REASON_EFFECT)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	elseif op==2 then  
@@ -85,7 +90,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
 	Duel.RegisterFlagEffect(tp,m+1,RESET_PHASE+PHASE_END,0,1)
-	else local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,2,2,nil)
+	else local sg=g:SelectSubGroup(tp,cm.fselect,false,3,3)
 		if Duel.SendtoDeck(g,nil,3,REASON_EFFECT)~=0 then Duel.Draw(tp,1,REASON_EFFECT) end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	end

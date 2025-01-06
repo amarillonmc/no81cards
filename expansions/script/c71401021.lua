@@ -23,6 +23,14 @@ function c71401021.initial_effect(c)
 	e1a:SetTargetRange(0xff,0xff)
 	e1a:SetTarget(c71401021.checktg)
 	c:RegisterEffect(e1a)
+	--disable
+	local e1b=Effect.CreateEffect(c)
+	e1b:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1b:SetCode(EVENT_CHAIN_SOLVING)
+	e1b:SetRange(LOCATION_MZONE)
+	e1b:SetCondition(c71401021.discon)
+	e1b:SetOperation(c71401021.disop)
+	c:RegisterEffect(e1b)
 	--place
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71401001,2))
@@ -59,6 +67,14 @@ function c71401021.rmtarget(e,c)
 end
 function c71401021.checktg(e,c)
 	return not c:IsPublic()
+end
+function c71401021.discon(e,tp,eg,ep,ev,re,r,rp)
+	local code=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CODE)
+	return e:GetHandler():IsDefensePos()
+		and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsExistingMatchingCard(Card.IsCode,0,LOCATION_REMOVED,LOCATION_REMOVED,1,nil,code)
+end
+function c71401021.disop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
 end
 function c71401021.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

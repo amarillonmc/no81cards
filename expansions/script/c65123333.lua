@@ -2310,7 +2310,8 @@ function s.toolop(tp)
 	end
 end
 function s.testop(e,tp)
-	local op1=_Duel.SelectOption(tp,aux.Stringid(id+2,2),aux.Stringid(id+2,3),1212)
+	local c=e:GetHandler()
+	local op1=_Duel.SelectOption(tp,aux.Stringid(id+2,2),aux.Stringid(id+2,3),aux.Stringid(id,0),1212)
 	if op1==0 then
 		local op2=_Duel.SelectOption(tp,1151,aux.Stringid(id+2,6))
 		if op2==0 then
@@ -2374,7 +2375,51 @@ function s.testop(e,tp)
 	elseif op1==1 then
 		local msg=_Duel.AnnounceNumber(tp,1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,18,19,20,22,23,24,25,26,30,31,32,33,34,35,36,37,38,39,40,41,42,50,53,54,55,56,60,61,62,63,64,65,70,71,72,73,74,75,76,80,81,83,90,91,92,93,94,95,96,97,100,101,102,110,111,112,113,114,120,121,122,123,130,131,132,133,140,141,142,143,160,161,162,163,164,165,170,180)
 		s.Administrator(msg)
+	elseif op1==2 then
+		local ot=_Duel.SelectOption(tp,1190,1191,1192,1105)
+		if ot==0 then
+			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0x7d,0,1,99,c)
+			Duel.SendtoHand(g,1-tp,REASON_RULE)
+		elseif ot==1 then
+			local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0x6f,0,1,99,c)
+			local g1=g:Filter(Card.IsControler,nil,1-tp)
+			local g2=g:Filter(Card.IsControler,nil,tp)			
+			Duel.SendtoGrave(g1,REASON_RULE)
+			for tc in aux.Next(g2) do
+				local e1=Effect.CreateEffect(tc)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_TO_DECK_REDIRECT)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+				e1:SetValue(LOCATION_GRAVE)
+				tc:RegisterEffect(e1,true)
+				Duel.SendtoDeck(tc,1-tp,1,REASON_RULE)
+			end			
+		elseif ot==2 then
+			local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0x5f,0,1,99,c)
+			local g1=g:Filter(Card.IsControler,nil,1-tp)
+			local g2=g:Filter(Card.IsControler,nil,tp)
+			local pos=Duel.SelectPosition(tp,g:GetFirst(),0x3)
+			if pos==POS_FACEUP_ATTACK then
+				Duel.Remove(g1,POS_FACEUP,REASON_RULE)
+			else
+				Duel.Remove(g1,POS_FACEDOWN,REASON_RULE)
+			end
+			for tc in aux.Next(g2) do
+				local e1=Effect.CreateEffect(tc)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_TO_DECK_REDIRECT)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+				e1:SetValue(LOCATION_REMOVED)
+				tc:RegisterEffect(e1,true)
+				Duel.SendtoDeck(tc,1-tp,1,REASON_RULE)
+			end			
+		elseif ot==3 then
+			local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0x3e,0,1,99,c)
+			Duel.SendtoDeck(g,1-tp,SEQ_DECKSHUFFLE,REASON_RULE)
+		end
 	else
-		return
+		return 
 	end
 end

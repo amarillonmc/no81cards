@@ -1,4 +1,5 @@
 --气泡方块的千金与管家 S&Z
+---@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
 function c71403016.initial_effect(c)
 	--xyz summon

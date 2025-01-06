@@ -20,7 +20,6 @@ function s.initial_effect(c)
 	--AttackAll
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_POSITION)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -114,20 +113,19 @@ function s.e2cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function s.e2tgfilter(c)
-	return c:IsSetCard(zd) and c:IsType(TYOE_FUSION) and c:IsFaceup()
+	return c:IsSetCard(zd) and c:IsType(TYPE_FUSION) and c:IsFaceup()
 end
 
 function s.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(s.e2tgfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectMatchingCard(tp,s.e2tgfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,s.e2tgfilter,tp,LOCATION_MZONE,0,1,1,nil)
 end
 
 function s.e2op(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
-	if not sg then return end 
-	local tc=sg:GetFirst()
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if tc then
 	--attack all
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -135,4 +133,5 @@ function s.e2op(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	e3:SetValue(1)
 	tc:RegisterEffect(e3)
+	end
 end

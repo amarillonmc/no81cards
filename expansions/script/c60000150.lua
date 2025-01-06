@@ -57,6 +57,7 @@ function cm.initial_effect(c)
 	e5:SetValue(aux.indoval)
 	c:RegisterEffect(e5)
 end
+cm.isMC=true
 --random
 function getrand()
 	local result=0

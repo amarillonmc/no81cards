@@ -1,4 +1,5 @@
 --T旋爆裂！
+---@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
 function c71403006.initial_effect(c)
 	--Activate

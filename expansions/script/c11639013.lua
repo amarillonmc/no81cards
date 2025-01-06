@@ -46,7 +46,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if (re==rc.twoffect or re:IsHasType(EFFECT_TYPE_QUICK_F)) and rc:IsSetCard(0xc221) and rc:IsType(TYPE_EQUIP) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 		if g:GetCount()>0 then
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)

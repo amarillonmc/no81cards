@@ -63,6 +63,7 @@ function cm.initial_effect(c)
 	e6:SetOperation(cm.operation)
 	c:RegisterEffect(e6)
 end
+cm.isPN=true
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep==e:GetHandler():GetOwner()
 end
@@ -78,7 +79,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local i=e:GetHandler():GetLocation()==LOCATION_HAND and 1 or 2
-	if Duel.GetFlagEffect(tp,m+i)~=0 or not Duel.SelectYesNo(tp,aux.Stringid(m,i)) then return end
+	if (i==2 and Duel.GetFlagEffect(tp,m+i)~=0) or not Duel.SelectYesNo(tp,aux.Stringid(m,i)) then return end
 	Duel.RegisterFlagEffect(tp,m+i,RESET_PHASE+PHASE_END,0,1)
 	local c=e:GetHandler()
 	if Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)~=0 then c:CompleteProcedure() end

@@ -32,9 +32,8 @@ function cm.initial_effect(c)
 	--
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_EQUIP)
-	e3:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
-	e3:SetCountLimit(1)
-	e3:SetValue(cm.valcon)
+	e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e3:SetValue(1)
 	c:RegisterEffect(e3)
 	--tograve
 	local e4=Effect.CreateEffect(c)
@@ -88,9 +87,6 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
-end
-function cm.valcon(e,re,r,rp)
-	return bit.band(r,REASON_BATTLE)~=0
 end
 function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

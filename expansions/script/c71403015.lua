@@ -1,4 +1,5 @@
 --气泡方块的淘气双子 J&L
+---@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
 function c71403015.initial_effect(c)
 	--xyz summon

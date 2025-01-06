@@ -51,10 +51,10 @@ function c22348431.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
 function c22348431.eqfilter(c,tp)
-	return Duel.IsExistingMatchingCard(c22348431.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,c,tp) and c:IsFaceup()
+	return Duel.IsExistingMatchingCard(c22348431.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) and c:IsFaceup()
 end
-function c22348431.cfilter(c,ec,tp)
-	return c:IsType(TYPE_UNION) and c:CheckUniqueOnField(tp) and not c:IsForbidden() and c:CheckUnionTarget(ec) and aux.CheckUnionEquip(c,ec)
+function c22348431.cfilter(c)
+	return (c:IsType(TYPE_UNION) or c:IsSetCard(0x970b)) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function c22348431.heqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -65,12 +65,21 @@ function c22348431.heqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,0,0)
 end
 function c22348431.heqop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local ec=Duel.SelectMatchingCard(tp,c22348431.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,tc,tp):GetFirst()
+	local ec=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348431.cfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil):GetFirst()
 	if ec and Duel.Equip(tp,ec,tc) then
-		aux.SetUnionState(ec)
+	--equip limit
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_EQUIP_LIMIT)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetLabelObject(tc)
+	e1:SetValue(c22348431.eqlimit)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	ec:RegisterEffect(e1)
 	end
 end
 function c22348431.eqlimit(e,c)

@@ -1,4 +1,5 @@
 --两个人在一起就是最强的！
+---@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
 function c71403014.initial_effect(c)
 	--Activate
@@ -8,8 +9,9 @@ function c71403014.initial_effect(c)
 	e1:SetCategory(CATEGORY_POSITION+CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_LIMIT_ZONE)
 	e1:SetCost(yume.PPTLimitCost)
+	e1:SetValue(yume.PPTActivateZonesLimitForPlacingPend)
 	e1:SetTarget(c71403014.tg1)
 	e1:SetOperation(c71403014.op1)
 	c:RegisterEffect(e1)

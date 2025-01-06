@@ -21,6 +21,7 @@ function c22348440.initial_effect(c)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,22348440)
+	e3:SetCost(c22348440.cost)
 	e3:SetOperation(c22348440.operation)
 	c:RegisterEffect(e3)
 end
@@ -56,20 +57,26 @@ end
 function c22348440.atkval(e,c)
 	return Duel.GetMatchingGroupCount(Card.IsType,0,LOCATION_SZONE,LOCATION_SZONE,nil,TYPE_EQUIP)*800
 end
+function c22348440.costfilter(c)
+	return c:IsSetCard(0x970b) and c:IsAbleToGraveAsCost()
+end
+function c22348440.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348440.costfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c22348440.costfilter,tp,LOCATION_DECK,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
+end
 function c22348440.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsSSetable() then
+		Duel.SSet(tp,c)
+	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e1:SetCode(EVENT_DESTROYED)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	e1:SetOperation(c22348440.reop)
 	Duel.RegisterEffect(e1,tp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsSSetable() -- and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(22348440,0)) 
-	then
-		Duel.BreakEffect()
-		--Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD)
-		Duel.SSet(tp,c)
-	end
 end
 function c22348440.atkfilter(c,e)
 	return c:IsFaceup() and not c:IsImmuneToEffect(e) and c:IsRace(RACE_BEAST+RACE_BEASTWARRIOR)

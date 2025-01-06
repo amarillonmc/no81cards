@@ -1,4 +1,5 @@
 --气泡方块使 Z
+---@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
 function c71403005.initial_effect(c)
 	--pendulum summon

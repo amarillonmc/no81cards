@@ -54,7 +54,7 @@ function c51924009.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c51924009.chkfilter(c,tp)
-	return c:IsSetCard(0x5256) and Duel.IsExistingMatchingCard(c51924009.thfilter,tp,LOCATION_DECK,0,1,nil,c)
+	return c:IsSetCard(0x3255) and Duel.IsExistingMatchingCard(c51924009.thfilter,tp,LOCATION_DECK,0,1,nil,c)
 end
 function c51924009.thfilter(c,fc)
 	return aux.IsCodeListed(fc,c:GetCode()) and c:IsAbleToHand()
@@ -124,7 +124,7 @@ function c51924009.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp
 end
 function c51924009.spfilter(c,e,tp)
-	return c:IsSetCard(0x5256) and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP)
+	return c:IsSetCard(0x3255) and c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEUP)
 end
 function c51924009.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c51924009.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end

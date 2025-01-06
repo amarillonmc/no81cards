@@ -37,42 +37,42 @@ end
 --ExtraGraveToHand
 
 function s.e1tohfilter(c)
-    local bl=c:IsSetCard(zd) and c:IsAbleToHand()
-    if c:IsLocation(LOCATION_EXTEA) then
-        return bl and c:IsFaceup()
-    else
-        return bl
-    end
+	local bl=c:IsSetCard(zd) and c:IsAbleToHand()
+	if c:IsLocation(LOCATION_EXTEA) then
+		return bl and c:IsFaceup()
+	else
+		return bl
+	end
 end
 
 function s.e1tg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(s.e1tohfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil) end
-    Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_EXTRA+LOCATION_GRAVE)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.e1tohfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_EXTRA+LOCATION_GRAVE)
 end
 
-function s.e1op(e,tp,eg,ep,ev,re,r,rp)	
-    if not (Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.e1tohfilter),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil)) then return end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-    local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.e1tohfilter),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil)
-    Duel.SendtoHand(g,nil,REASON_EFFECT)
-    Duel.ConfirmCards(1-tp,g)
+function s.e1op(e,tp,eg,ep,ev,re,r,rp)  
+	if not (Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.e1tohfilter),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil)) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.e1tohfilter),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil)
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,g)
 end
 
 --e2
 --NegateSpAndTrap
 
 function s.e2confilter(c)
-    return c:IsSetCard(zd) and c:IsType(TYPE_FUSION) and c:IsFaceup()
+	return c:IsSetCard(zd) and c:IsType(TYPE_FUSION) and c:IsFaceup()
 end
 
 function s.e2con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.e2confilter,tp,LOCATION_MZONE,0,1,nil) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsChainNegatable(ev)
+	return Duel.IsExistingMatchingCard(s.e2confilter,tp,LOCATION_MZONE,0,1,nil) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsChainNegatable(ev) and rp~=tp
 end
 
 function s.e2cost(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
-    if chk==0 then return c:IsDiscardable() end
-    Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsDiscardable() end
+	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
 
 function s.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)

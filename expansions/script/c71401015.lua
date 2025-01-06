@@ -44,7 +44,7 @@ function c71401015.initial_effect(c)
 	yume.ButterflyCounter()
 end
 function c71401015.filter1(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return c:GetOriginalType()&TYPE_MONSTER~=0
 end
 function c71401015.aclimit(e,re,rp)
 	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not Duel.IsExistingMatchingCard(c71401015.filter1,rp,LOCATION_ONFIELD,0,1,nil)

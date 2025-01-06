@@ -34,24 +34,34 @@ function c22348433.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 c22348433.has_text_type=TYPE_UNION
-function c22348433.eqfilter(c,tc,tp)
-	return aux.CheckUnionEquip(c,tc) and c:CheckUnionTarget(tc) and c:IsType(TYPE_UNION)
-		and c:IsSetCard(0x970b) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
+function c22348433.eqfilter(c)
+	return c:IsSetCard(0x970b) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function c22348433.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(c22348433.eqfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,c,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(c22348433.eqfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,c) end
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE)
 end
 function c22348433.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and c:IsFaceup() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local ec=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348433.eqfilter),tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil,c,tp):GetFirst()
-		if ec and aux.CheckUnionEquip(ec,c) and Duel.Equip(tp,ec,c) then
-			aux.SetUnionState(ec)
+		local ec=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348433.eqfilter),tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,1,c):GetFirst()
+		if ec and Duel.Equip(tp,ec,c) then
+		--equip limit
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_EQUIP_LIMIT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetLabelObject(c)
+		e1:SetValue(c22348433.eeqlimit)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		ec:RegisterEffect(e1)
 		end
 	end
+end
+function c22348433.eeqlimit(e,c)
+	return c==e:GetLabelObject()
 end
 function c22348433.spfilter(c,e,tp,ec)
 	return c:IsSetCard(0x970b) and c:GetEquipTarget()==ec and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

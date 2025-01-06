@@ -70,9 +70,9 @@ function c71401020.checktg(e,c)
 	return not c:IsPublic()
 end
 function c71401020.discon(e,tp,eg,ep,ev,re,r,rp)
-	local loc,code=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_CODE)
+	local code=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CODE)
 	return e:GetHandler():IsDefensePos()
-		and re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_ONFIELD and Duel.IsExistingMatchingCard(Card.IsCode,0,LOCATION_REMOVED,LOCATION_REMOVED,1,nil,code)
+		and re:IsActiveType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(Card.IsCode,0,LOCATION_REMOVED,LOCATION_REMOVED,1,nil,code)
 end
 function c71401020.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)

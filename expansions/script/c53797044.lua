@@ -38,7 +38,7 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(1-tp,id)>0 and Duel.GetTurnPlayer()~=tp
+	return Duel.GetFlagEffect(1-tp,id)>2 and Duel.GetTurnPlayer()~=tp
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

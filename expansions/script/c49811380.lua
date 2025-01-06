@@ -32,21 +32,16 @@ function c49811380.necon(e,tp,eg,ep,ev,re,r,rp)
 	local attr=re:GetHandler():GetAttribute()
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE and Duel.IsChainNegatable(ev)
 end
-function c49811380.costfilter(c,sc,attr)
-	return c:IsRace(RACE_DRAGON) and (c:IsFaceup() or c:GetLocation()&(LOCATION_GRAVE+LOCATION_HAND)~=0) and c:IsCanBeXyzMaterial(sc) and c:IsAttribute(attr)
-end
+
 function c49811380.necost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local attr=re:GetHandler():GetAttribute()
-	if chk==0 then return Duel.IsExistingMatchingCard(c49811380.costfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,c,attr) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectMatchingCard(tp,c49811380.costfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,c,attr)
+	if chk==0 then return Duel.IsExistingMatchingCard(c49811380.nefilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,c,attr) end
 	e:SetLabel(attr)
-	Duel.Overlay(c,g)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAINING)
-	e1:SetLabel(e:GetLabel())
+	e1:SetLabel(attr)
 	e1:SetOperation(c49811380.chainop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
@@ -60,14 +55,22 @@ function c49811380.chainop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c49811380.netg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if chk==0 then return true end	
 	local tc=re:GetHandler()
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if Duel.IsPlayerCanSendtoDeck(tp,tc) and tc:IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
-	end
+	end	
+end
+function c49811380.nefilter(c,sc,attr)
+	return c:IsRace(RACE_DRAGON) and (c:IsFaceup() or c:GetLocation()&(LOCATION_GRAVE+LOCATION_HAND)~=0) and c:IsCanBeXyzMaterial(sc) and c:IsAttribute(attr)
 end
 function c49811380.neop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local attr=e:GetLabel()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	local g=Duel.SelectMatchingCard(tp,c49811380.nefilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,c,attr)
+	Duel.Overlay(c,g)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SendtoDeck(eg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
