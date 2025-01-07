@@ -135,7 +135,7 @@ function yume.QuickDualSelectCheck(g1,g2,uniqf,...)
 	--Experimental quick algorithm for checking if there are two cards from two groups, one for each group
 	--param uniqf is a function for extra unique restrictions like different card names(currently unimplemented)
 	local g3=g1&g2
-	return #g1>0 and #g2>0 and not (#g1==#g3 and #g2==#g3 and #g1==1) end
+	return #g1>0 and #g2>0 and not (#g1==#g3 and #g2==#g3 and #g1==1)
 end
 function yume.QuickDualSelect(tp,g1,g2,msg1,msg2,opf,...)
 	--Experimental quick algorithm for selecting two cards from two groups, one for each group

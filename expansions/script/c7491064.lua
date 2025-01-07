@@ -50,27 +50,34 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 		local ge2=ge1:Clone()
 		Duel.RegisterEffect(ge2,1)
-		local g=Duel.GetMatchingGroup(s.actfilter,0,0xff,0xff,nil)
-		for tc in aux.Next(g) do
-			local te=tc:GetActivateEffect()
-			if te:IsHasType(EFFECT_TYPE_ACTIVATE) and te:GetCode()==EVENT_FREE_CHAIN then
-				local ge2=te:Clone()
-				local con=ge2:GetCondition()
-				local property=ge2:GetProperty()
-				--ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-				ge2:SetCode(EVENT_CUSTOM+id)
-				ge2:SetRange(LOCATION_DECK+LOCATION_GRAVE)
-				if property then
-					ge2:SetProperty(property|EFFECT_FLAG_DELAY)
-				else
-					ge2:SetProperty(EFFECT_FLAG_DELAY)
-				end
-				ge2:SetCondition(function (e,tp,eg,ep,ev,re,r,rp)
-					return rp==tp and (not con or con(e,tp,eg,ep,ev,re,r,rp))
-				end)
-				tc:RegisterEffect(ge2)
-			end
-		end
+		local e0=Effect.CreateEffect(c) 
+		e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e0:SetCode(EVENT_ADJUST)
+		e0:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+							e:Reset()
+							local g=Duel.GetMatchingGroup(s.actfilter,0,0xff,0xff,nil)
+							for tc in aux.Next(g) do
+								local te=tc:GetActivateEffect()
+								if te:IsHasType(EFFECT_TYPE_ACTIVATE) and te:GetCode()==EVENT_FREE_CHAIN then
+									local ge2=te:Clone()
+									local con=ge2:GetCondition()
+									local property=ge2:GetProperty()
+									--ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+									ge2:SetCode(EVENT_CUSTOM+id)
+									ge2:SetRange(LOCATION_DECK+LOCATION_GRAVE)
+									if property then
+										ge2:SetProperty(property|EFFECT_FLAG_DELAY)
+									else
+										ge2:SetProperty(EFFECT_FLAG_DELAY)
+									end
+									ge2:SetCondition(function (e,tp,eg,ep,ev,re,r,rp)
+										return rp==tp and (not con or con(e,tp,eg,ep,ev,re,r,rp))
+									end)
+									tc:RegisterEffect(ge2)
+								end
+							end
+						end)
+		Duel.RegisterEffect(e0,0)
 	end
 end
 function s.spcfilter1(c)

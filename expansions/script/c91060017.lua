@@ -8,9 +8,9 @@ function c91060017.initial_effect(c)
 	e3:SetCondition(cm.handcon)
 	c:RegisterEffect(e3)
 	local e13=e3:Clone()
-	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	e2:SetCondition(cm.handcon2)
-	c:RegisterEffect(e2)
+	e13:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e13:SetCondition(cm.handcon1)
+	c:RegisterEffect(e13)
 		if not cm.global_check then
 		cm.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -48,11 +48,14 @@ end
 function cm.handcon1(e)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,0)==0
 end
-function cm.cfilter(c)
-	return  c:IsAbleToGrave()
+function cm.cfilter(c,e)
+	return  c:IsAbleToGrave() and c:IsType(TYPE_MONSTER)and not c:IsImmuneToEffect(e)
 end
 function cm.filter(c,e,tp)
-	return c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_LINK+TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_LINK+TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
+end
+function cm.filter2(c,e,tp,g)
+	return c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_LINK+TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:CheckFusionMaterial(g) or c:IsSynchroSummonable(nil,g) or c:IsLinkSummonable(g) or c:IsXyzSummonable(g))
 end
 function cm.chk(g,e,tp)
 	local sg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_EXTRA,0,nil,e,tp)
@@ -60,22 +63,24 @@ function cm.chk(g,e,tp)
 		or sg:IsExists(Card.IsSynchroSummonable,1,nil,nil,g) or sg:IsExists(Card.IsLinkSummonable,1,nil,g) or sg:IsExists(Card.IsXyzSummonable,1,nil,g)
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil)
+	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil,e)
 	if chk==0 then return mg:CheckSubGroup(cm.chk,1,99,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.spfit(c,g)
 	return   c:CheckFusionMaterial(g) or c:IsSynchroSummonable(nil,g) or c:IsLinkSummonable(g) or c:IsXyzSummonable(g)
 end
+function cm.spfit2(g,c)
+	return   c:CheckFusionMaterial(g) or c:IsSynchroSummonable(nil,g) or c:IsLinkSummonable(g) or c:IsXyzSummonable(g)
+end
 function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=mg:SelectSubGroup(tp,cm.chk,false,1,99,e,tp)
-	Duel.SendtoGrave(g,REASON_EFFECT)
+	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil,e)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local fg=Duel.SelectMatchingCard(tp,cm.spfit,tp,LOCATION_EXTRA,0,1,1,nil,g)
-	if #fg>0  then
-		Duel.SpecialSummon(fg,0,tp,tp,false,false,POS_FACEUP)
+	local fc=Duel.SelectMatchingCard(tp,cm.spfit,tp,LOCATION_EXTRA,0,1,1,nil,mg):GetFirst()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=mg:SelectSubGroup(tp,cm.spfit2,false,1,99,fc)
+	if   Duel.SendtoGrave(g,REASON_EFFECT)>0 and fc then
+		Duel.SpecialSummon(fc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 function cm.desfilter(c,atk)
