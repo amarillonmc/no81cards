@@ -17,16 +17,14 @@ function c65899920.initial_effect(c)
 	e1:SetCondition(c65899920.xxcon) 
 	e1:SetOperation(c65899920.xxop) 
 	c:RegisterEffect(e1)
-	Duel.AddCustomActivityCounter(65899920,ACTIVITY_CHAIN,c65899920.counterfilter)
-end
-function c65899920.counterfilter(c)
-	return c:GetOwner()==1
+	Duel.AddCustomActivityCounter(65899920,ACTIVITY_CHAIN,aux.FALSE)
 end
 function c65899920.xxcon(e,tp,eg,ep,ev,re,r,rp)
 	return tp==0 and Duel.GetTurnCount()==1
 end 
 function c65899920.xxop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
+	e:SetLabel(0)
 	Duel.ConfirmCards(1-tp,c) 
 	Duel.Hint(HINT_CARD,0,65899920) 
 	local e1=Effect.CreateEffect(c)
@@ -53,7 +51,13 @@ function c65899920.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c65899920.cfilter,1,nil,tp)
 end
 function c65899920.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCustomActivityCount(65899920,1-tp,ACTIVITY_CHAIN)==5
+	local a=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT) 
+	local b=e:GetLabel()
+	if a:GetOwnerPlayer()==0 then
+		local b=b+1
+		e:SetLabel(b)
+	end
+	return Duel.GetCustomActivityCount(65899920,1-tp,ACTIVITY_CHAIN)==5+b
 end
 function c65899920.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,65899920)

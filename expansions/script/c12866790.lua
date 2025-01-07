@@ -26,7 +26,7 @@ function s.initial_effect(c)
 end
 s.fusion_effect=true
 function s.tgfilter(c)
-	return c:IsCode(12866755)
+	return c:IsCode(12866755) and c:IsAbleToGrave()
 end
 function s.spfilter(c,e,tp)
 	return c:IsFaceupEx() and c:IsCode(12866755) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

@@ -63,7 +63,7 @@ function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.eqfilter(c,tp)
 	return c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsAbleToChangeControler() and
-	c:CheckUniqueOnField(tp)
+	c:CheckUniqueOnField(tp) and not c:IsForbidden()
 end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

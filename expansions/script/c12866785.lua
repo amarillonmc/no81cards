@@ -67,7 +67,7 @@ function s.splimit(e,se,sp,st)
 end
 function s.eqfilter(c,tp,id)
 	return c:IsType(TYPE_MONSTER) and c:IsReason(REASON_DESTROY) and c:GetTurnID()==id 
-	and c:CheckUniqueOnField(tp)
+	and c:CheckUniqueOnField(tp) and not c:IsForbidden()
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

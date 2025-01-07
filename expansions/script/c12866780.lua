@@ -56,7 +56,7 @@ function s.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or aux.fuslimit(e,se,sp,st)
 end
 function s.eqfilter(c,tp,atk)
-	return c:IsAttackAbove(atk) and c:CheckUniqueOnField(tp)
+	return c:IsAttackAbove(atk) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

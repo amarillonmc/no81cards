@@ -54,8 +54,8 @@ function s.matfilter2(c)
 	return c:IsAttribute(ATTRIBUTE_LIGHT) or c:IsAttribute(ATTRIBUTE_DARK)
 end
 function s.eqfilter1(c,tp)
-	return c:IsRace(RACE_WARRIOR) or c:IsRace(RACE_FIEND) and 
-	c:CheckUniqueOnField(tp)
+	return (c:IsRace(RACE_WARRIOR) or c:IsRace(RACE_FIEND)) and 
+	c:CheckUniqueOnField(tp) and not c:IsForbidden()
 end
 function s.eqfilter2(c,tp)
 	return aux.IsCodeListed(c,12866755) and c:IsType(TYPE_FUSION) and

@@ -75,13 +75,16 @@ end
 function s.eqlimit(e,c)
 	return c==e:GetLabelObject()
 end
+function s.eqfilter(c,tp)
+	return c:CheckUniqueOnField(tp)
+end
 function s.eqtg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_MZONE,1,nil,c) end
+		and Duel.IsExistingTarget(s.eqfilter,tp,0,LOCATION_MZONE,1,nil,c,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil,c)
+	local g=Duel.SelectTarget(tp,s.eqfilter,tp,0,LOCATION_MZONE,1,1,nil,c,tp)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,0,0)
 end
 function s.eqop1(e,tp,eg,ep,ev,re,r,rp)

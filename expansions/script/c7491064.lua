@@ -85,6 +85,7 @@ function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	--
 	if not s.globle_check then
 		s.globle_check=true
+		local c=e:GetHandler()
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD)
 		ge1:SetCode(EFFECT_ACTIVATE_COST)
