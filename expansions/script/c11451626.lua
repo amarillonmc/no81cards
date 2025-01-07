@@ -26,6 +26,7 @@ function cm.initial_effect(c)
 	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
@@ -37,6 +38,7 @@ function cm.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e3:SetType(EFFECT_TYPE_QUICK_F)
 	e3:SetCode(EVENT_CHAINING)
+	e3:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCondition(cm.descon)
 	e3:SetTarget(cm.destg)
@@ -115,9 +117,15 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	if chk==0 then return e:GetHandler():GetFlagEffect(m)==0 end
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1,Duel.GetCurrentChain())
-	if Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-		local tc=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil):GetFirst()
+	local g=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,0,LOCATION_ONFIELD,1,nil,e)
+	if #g>0 then
+		local tc=g:GetFirst()
+		if #g>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+			tc=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil):GetFirst()
+		else
+			Duel.SetTargetCard(tc)
+		end
 		e:GetHandler():SetCardTarget(tc)
 		e:GetLabelObject():AddCard(tc)
 	end

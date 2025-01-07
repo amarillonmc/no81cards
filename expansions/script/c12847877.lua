@@ -3,7 +3,7 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,nil,2,true)
+	aux.AddFusionProcFunRep(c,s.mfilter,2,true)
 	--extra fusion
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(id,0))
@@ -48,6 +48,9 @@ function s.initial_effect(c)
 	e4:SetHintTiming(0,TIMING_END_PHASE)
 	e4:SetCondition(s.spcon2)
 	c:RegisterEffect(e4)
+end
+function s.mfilter(c)
+	return c:IsFusionType(TYPE_MONSTER)
 end
 function s.MgFilter(sg,tp,sc)
 	return Duel.GetLocationCountFromEx(tp,tp,sg,sc)>0

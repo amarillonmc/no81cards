@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,false)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.Tuner(nil),aux.NonTuner(nil),1,99)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1,99)
 	c:EnableReviveLimit()
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(m,4))
@@ -78,13 +78,16 @@ function cm.stfilterg(g,tp,tc,lv,smat)
 	local count=g:GetCount()
 	return g1:GetCount()==1 and g2:GetCount()==count-1 and g:GetSum(Card.GetLevel)==lv and Duel.GetLocationCountFromEx(tp,tp,g,tc)>0
 end
-function cm.sycon(e,c,smat,mg)
+function cm.sycon(e,c,smat,mg1)
 	if c==nil then return true end
 	if c:IsFaceup() then return false end
 	local lv=e:GetLabel()
 	local tp=c:GetControler()
-	if not mg then
+	local mg
+	if not mg1 then
 		mg=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,0,nil)
+	else
+		mg=mg1:Clone()
 	end
 	if smat then
 		mg:RemoveCard(smat)
@@ -93,10 +96,13 @@ function cm.sycon(e,c,smat,mg)
 		return mg:CheckSubGroup(cm.stfilterg,2,nil,tp,c,lv,nil)
 	end
 end
-function cm.syop(e,tp,eg,ep,ev,re,r,rp,c,smat,mg)
+function cm.syop(e,tp,eg,ep,ev,re,r,rp,c,smat,mg1)
 	local lv=e:GetLabel()
-	if not mg then
+	local mg
+	if not mg1 then
 		mg=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,0,nil)
+	else
+		mg=mg1:Clone()
 	end
 	local g=Group.CreateGroup()
 	if smat then

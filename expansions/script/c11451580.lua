@@ -14,6 +14,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_EVENT_PLAYER)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetValue(11451480)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e1:SetCondition(cm.condition)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.operation)
@@ -58,6 +59,11 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	elseif b2 then
 		op=Duel.SelectOption(tp,aux.Stringid(m,3))+2
 	end
+	if op==2 then
+		e:SetCategory(CATEGORY_DISABLE)
+	else
+		e:SetCategory(0)
+	end
 	e:SetLabel(op)
 end
 function cm.matfilter(c,re,e)
@@ -81,6 +87,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			local g=Group.CreateGroup()
 			Duel.ChangeTargetCard(ev,g)
 			Duel.ChangeChainOperation(ev,cm.repop)
+			--cm.repop(e,tp,eg,ep,ev,re,r,rp)
+			--cm.repop(e,1-tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end

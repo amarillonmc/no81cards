@@ -71,12 +71,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	elseif c:GetFlagEffect(2)>0  then
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP,0x60)
-	c:ResetFlagEffect(2)
-	elseif c:GetFlagEffect(3)>0  then
-	local g=Duel.SelectMatchingCard(tp,cm.lfilter,tp,LOCATION_EXTRA,0,1,1,nil)
-	   if #g>0 then Duel.LinkSummon(tp,g:GetFirst(),nil) end
-	c:ResetFlagEffect(3)
-	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
@@ -87,6 +81,12 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCondition(cm.tgcon)
 		e1:SetOperation(cm.tgop)
 		Duel.RegisterEffect(e1,tp)
+	c:ResetFlagEffect(2)
+	elseif c:GetFlagEffect(3)>0  then
+	local g=Duel.SelectMatchingCard(tp,cm.lfilter,tp,LOCATION_EXTRA,0,1,1,nil)
+	   if #g>0 then Duel.LinkSummon(tp,g:GetFirst(),nil) end
+	c:ResetFlagEffect(3)
+	end
 end
 function cm.lfilter(c)
 	return c:IsLinkSummonable(nil)

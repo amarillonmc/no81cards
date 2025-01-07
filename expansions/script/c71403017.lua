@@ -42,7 +42,7 @@ end
 function c71403017.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c71403017.lffilter,1,nil)
 end
-function c71403017.regop(e,tp,eg,ep,ev,re,r,rp)GetFlagEffect
+function c71403017.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(c71403017.lffilter,nil)
 	if g:IsExists(c71403017.lffilter2,1,nil,0) then
 		Duel.RegisterFlagEffect(0,71403017,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
