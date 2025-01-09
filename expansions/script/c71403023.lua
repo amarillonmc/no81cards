@@ -1,5 +1,6 @@
 --L-J幻象！
 ---@param c Card
+if not c71403001 then dofile("expansions/script/c71403001.lua") end
 function c71403023.initial_effect(c)
 	--destroy
 	local e1=Effect.CreateEffect(c)

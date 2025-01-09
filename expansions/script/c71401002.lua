@@ -58,7 +58,7 @@ function c71401002.op2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c71401002.filter2,tp,LOCATION_DECK,0,nil,tp,check)
 	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71401002,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-		local tc=g:Select(tp,1,1,nil)
+		local tc=g:Select(tp,1,1,nil):GetFirst()
 		local b1=tc:IsAbleToHand()
 		local b2=check and not tc:IsForbidden() and tc:CheckUniqueOnField(tp)
 		if b1 and (not b2 or Duel.SelectOption(tp,1190,aux.Stringid(71401001,5))==0) then

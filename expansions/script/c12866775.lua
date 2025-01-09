@@ -85,9 +85,7 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
 		if Duel.GetLocationCount(tp,LOCATION_SZONE)>=tg:GetCount() then
 		local tc=tg:GetFirst()
-		if tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and
-		aux.NecroValleyFilter()(tc) then
-		while tc do
+		while tc do	
 		Duel.Equip(tp,tc,c,false,true)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -105,7 +103,6 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 		tc=tg:GetNext()
 		end
 		Duel.EquipComplete()
-		end
 	end
 end
 function s.eqlimit(e,c)

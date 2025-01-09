@@ -1,5 +1,6 @@
 --邪心英雄 硫磺翼魔
 function c98920797.initial_effect(c)
+	aux.AddCodeList(c,94820406)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,c98920797.ffilter,2,true)	

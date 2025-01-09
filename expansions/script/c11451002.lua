@@ -144,8 +144,8 @@ function cm.returntofield(tc)
 				Duel.SendtoGrave(gc,REASON_RULE)
 				Duel.BreakEffect()
 			end
-	        Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-	        return
+			Duel.MoveToField(tc,p,p,LOCATION_FZONE,POS_FACEUP,true)
+			return
 		end
 		Duel.ReturnToField(tc)
 	end

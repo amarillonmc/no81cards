@@ -55,13 +55,21 @@ end
 function c98920400.rmfilter(c,tp)
 	return c:IsSummonLocation(LOCATION_EXTRA)
 end
+function c98920400.spcheck(g)
+	return g:GetSum(Card.GetLevel)+g:GetSum(Card.GetRank)>=10
+end
+function c98920400.xxa(c,e)
+	return c==e:GetHandler()
+end
 function c98920400.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tp=e:GetHandlerPlayer()
 	if chk==0 then
+		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		local mg1=Duel.GetRitualMaterial(tp)
-		mg1:Remove(Card.IsLocation,nil,LOCATION_HAND)
+		mg1:Remove(c98920400.xxa,nil,e)
 		local mg2=Duel.GetMatchingGroup(c98920400.rmfilter,tp,0,LOCATION_MZONE,nil,e)
 		mg1:Merge(mg2)
-		return Duel.IsExistingMatchingCard(c98920400.filter,tp,LOCATION_HAND,0,1,nil,e,tp,mg1)
+		return mg1:CheckSubGroup(c98920400.spcheck)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
@@ -72,7 +80,7 @@ function c98920400.spop(e,tp,eg,ep,ev,re,r,rp)
 	mg:Merge(mg2)
 	local ft=Duel.GetMZoneCount(tp)
 	if tc then
-		mg=mg:Filter(Card.IsAbleToGrave,tc,tc)
+		mg=mg:Filter(Card.IsReleasableByEffect,tc,tc)
 		local mat=nil
 		if ft>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)

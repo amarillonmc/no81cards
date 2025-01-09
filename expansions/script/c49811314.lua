@@ -7,7 +7,7 @@ function c49811314.initial_effect(c)
 	c:RegisterEffect(e0) 
 	--search
 	local e1=Effect.CreateEffect(c) 
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_SUMMON+CATEGORY_POSITION)
 	e1:SetDescription(aux.Stringid(49811314,3))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_CHAINING)

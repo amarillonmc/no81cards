@@ -258,7 +258,7 @@ function cm.returntofield(tc)
 			Duel.SendtoGrave(gc,REASON_RULE)
 			Duel.BreakEffect()
 		end
-		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		Duel.MoveToField(tc,p,p,LOCATION_FZONE,POS_FACEUP,true)
 		return
 	end
 	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then
