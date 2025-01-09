@@ -113,7 +113,7 @@ function c22020430.operation1(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.SelectOption(tp,aux.Stringid(22020430,5))
 end
-function c22020430.erescon(e,tp,eg,ep,ev,re,r,rp)
+function c22020430.erecon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,22020980)
 end
 function c22020430.erecost(e,tp,eg,ep,ev,re,r,rp,chk)

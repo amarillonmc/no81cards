@@ -34,7 +34,7 @@ function s.initial_effect(c)
 end
 s.fusion_effect=true
 function s.counterfilter(c)
-	return not (c:IsSummonLocation(LOCATION_EXTRA) or c:IsType(TYPE_FUSION))
+	return not c:IsSummonLocation(LOCATION_EXTRA) or c:IsType(TYPE_FUSION)
 end
 function s.splimit(e,se,sp,st)
 	return se:IsHasType(EFFECT_TYPE_ACTIONS)

@@ -99,7 +99,7 @@ function c11561014.tkop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then 
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_SET_ATTACK)
+		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetValue(function(e)  
 		return e:GetHandler():GetAttack()*2 end)
