@@ -33,7 +33,7 @@ function c33502802.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e3:SetTargetRange(0,1)
 	e3:SetTarget(function(e,c) return c:IsOnField() end)
-	e3:SetCondition(c33502801.con3)
+	e3:SetCondition(c33502802.con3)
 	c:RegisterEffect(e3)
 --
 end
