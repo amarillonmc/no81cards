@@ -97,11 +97,11 @@ function s.thop2(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
-		if Duel.IsExistingMatchingCard(s.sumfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)
+		local se=e:GetLabelObject()
+		if Duel.IsExistingMatchingCard(s.sumfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,se)
 			and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.BreakEffect()
 			Duel.ShuffleHand(tp)
-			local se=e:GetLabelObject()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
 			local sg=Duel.SelectMatchingCard(tp,s.sumfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,se)
 			if sg:GetCount()>0 then

@@ -91,7 +91,8 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if not rc:IsRelateToEffect(re) then return end
 	local proc=rc:IsCode(12866705) and c:IsCode(12866600)
 	local b1=rc:IsAbleToGrave() and not rc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
-	local b2=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (rc:IsCanBeSpecialSummoned(e,0,tp,false,false)) or rc:IsCanBeSpecialSummoned(e,0,tp,proc,proc))
+	local b2=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and aux.NecroValleyFilter()(tc) 
+	and (rc:IsCanBeSpecialSummoned(e,0,tp,false,false)) or rc:IsCanBeSpecialSummoned(e,0,tp,proc,proc))
 	if chk==0 then return b1 or b2 end
 	if re:GetHandler():IsAttribute(ATTRIBUTE_DARK) then
 		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
@@ -105,6 +106,12 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.RegisterFlagEffect(tp,id+o*4,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	end
 	Duel.SetTargetCard(rc)
+	if rc:IsLocation(LOCATION_GRAVE) then
+	e:SetCategory(CATEGORY_GRAVE_SPSUMMON+CATEGORY_LEAVE_GRAVE)
+	end
+	if rc:IsLocation(LOCATION_DECK) then
+	e:SetCategory(CATEGORY_DECKDES+CATEGORY_SPECIAL_SUMMON)
+	end
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

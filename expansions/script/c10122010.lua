@@ -4,6 +4,9 @@ if not pcall(function() require("expansions/script/c10122001") end) then require
 function s.initial_effect(c)
 	local e1 = Scl.CreateActivateEffect(c,"FreeChain","Destroy",nil,"Destroy,Draw,BanishFacedown", nil, nil, nil, { { "~Target", "Destroy", s.dfilter, "OnField",0, true, true, c }, { "PlayerTarget", "Draw", scl.black_hole_count } }, s.act)
 end
+function s.dfilter(c)
+	return c:IsSetCard(0xc333) and c:IsFaceup()
+end
 function s.act(e,tp)
 	local g = Duel.GetMatchingGroup(s.dfilter,tp,LOCATION_ONFIELD,0,aux.ExceptThisCard(e))
 	if #g == 0 then return end

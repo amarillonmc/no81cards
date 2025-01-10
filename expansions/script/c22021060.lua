@@ -27,7 +27,7 @@ function c22021060.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
-function c12607053.activate(e,tp,eg,ep,ev,re,r,rp)
+function c22021060.activate(e,tp,eg,ep,ev,re,r,rp)
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
@@ -42,5 +42,6 @@ end
 function c22021060.atop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsFaceup() and c:IsRelateToEffect(e) then
-	Duel.ChainAttack()
+		Duel.ChainAttack()
+	end
 end
