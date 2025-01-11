@@ -44,7 +44,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.thfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xaf1)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xcf1)
 		and c:IsAbleToHand()
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -57,14 +57,14 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.atfilter(c)
-	return c:IsFaceup() and not c:IsSetCard(0xaf1)
+	return c:IsFaceup() and not c:IsSetCard(0xcf1)
 end
 function s.atcon(e)
 	local tp=e:GetHandlerPlayer()
 	return Duel.IsExistingMatchingCard(s.atfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function s.atlimit(e,c)
-	return c:IsSetCard(0xaf1) and c:IsFaceup()
+	return c:IsSetCard(0xcf1) and c:IsFaceup()
 end
 function s.xyzconfilter(c,tp)
 	return c:IsFaceup()
@@ -80,7 +80,7 @@ function s.fselect(sg,tp)
 	return mg:CheckSubGroup(s.matfilter,1,#mg,tp,sg)
 end
 function s.matfilter(sg,tp,g)
-	if sg:Filter(Card.IsSetCard,nil,0xaf1):GetCount()==0 then return false end
+	if sg:Filter(Card.IsSetCard,nil,0xcf1):GetCount()==0 then return false end
 	return Duel.IsExistingMatchingCard(s.xyzfilter1,tp,LOCATION_EXTRA,0,1,nil,sg)
 end
 function s.xyzfilter1(c,mg)
@@ -95,7 +95,7 @@ function s.xyzfilter2(c,mg)
 	return mg:CheckSubGroup(s.gselect,1,#mg,c)
 end
 function s.gselect(sg,c)
-	if sg:Filter(Card.IsSetCard,nil,0xaf1):GetCount()==0 then return false end
+	if sg:Filter(Card.IsSetCard,nil,0xcf1):GetCount()==0 then return false end
 	return c:IsXyzSummonable(sg,#sg,#sg)
 end
 function s.xyzop(e,tp,eg,ep,ev,re,r,rp)

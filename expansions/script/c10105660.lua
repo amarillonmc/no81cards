@@ -9,7 +9,7 @@ function c10105660.initial_effect(c)
 	e1:SetTarget(c10105660.sptg)
 	e1:SetOperation(c10105660.spop)
 	c:RegisterEffect(e1)
-    	--equip
+		--equip
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_EQUIP)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -21,7 +21,7 @@ function c10105660.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
-    end
+	end
 function c10105660.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
@@ -61,7 +61,8 @@ function c10105660.eqop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_EQUIP_LIMIT)
-		e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetLabelObject(c)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(c10105660.eqlimit)
 		tc:RegisterEffect(e1)

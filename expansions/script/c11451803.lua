@@ -133,8 +133,10 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 			return _GetActiveType(se)
 		end
 		function Effect.IsActiveType(se,typ)
-			local typ2=se:GetActiveType()
-			return typ&typ2~=0
+			if se==te then
+				return TYPE_MONSTER&typ>0
+			end
+			return _IsActiveType(se,typ)
 		end
 		function Card.GetType(sc)
 			if sc==e:GetHandler() then
@@ -143,8 +145,10 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 			return _GetType(sc)
 		end
 		function Card.IsType(sc,typ)
-			local typ2=sc:GetType()
-			return typ&typ2~=0
+			if sc==e:GetHandler() then
+				return typ&(TYPE_MONSTER+TYPE_EFFECT)>0
+			end
+			return _IsType(sc,typ)
 		end
 		function Card.GetOriginalType(sc)
 			if sc==e:GetHandler() then

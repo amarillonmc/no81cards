@@ -83,9 +83,9 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_DESTROY)
 	local sg=g:Select(1-tp,1,#g,nil)
-	local lp=Duel.GetLP(tp)
+	local lp=Duel.GetLP(e:GetHandlerPlayer())
 	local ct=Duel.Destroy(sg,REASON_EFFECT)
 	if ct>0 then
-	Duel.SetLP(tp,lp-ct*500)
+	Duel.SetLP(e:GetHandlerPlayer(),lp-ct*500)
 	end
 end
