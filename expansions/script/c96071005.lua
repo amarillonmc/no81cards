@@ -84,7 +84,7 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 end
 	--special summon
 function cm.tkfilter(c)
-	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsReason(REASON_BATTLE+REASON_EFFECT)
+	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not eg:IsContains(e:GetHandler())
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return ev==tp or ev==PLAYER_ALL
