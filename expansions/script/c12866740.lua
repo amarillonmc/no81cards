@@ -60,6 +60,9 @@ function s.initial_effect(c)
 	e6:SetValue(s.elimit)
 	c:RegisterEffect(e6)
 end
+function s.mfilter(c)
+	return c:IsFaceupEx() and c:IsAbleToRemoveAsCost()
+end
 function s.mfilter1(c)
 	return c:IsType(TYPE_MONSTER) and c:IsLevel(3) and 
 	(c:IsRace(RACE_WARRIOR) or c:IsRace(RACE_FIEND))

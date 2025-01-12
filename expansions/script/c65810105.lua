@@ -43,7 +43,7 @@ end
 
 
 function c65810105.filter(c)
-	return c:IsRace(RACE_INSECT) and Duel.GetMZoneCount(tp,c,tp)>0
+	return c:IsRace(RACE_INSECT) and Duel.GetMZoneCount(tp,c,tp)>0 and c:IsAbleToRemoveAsCost()
 end
 function c65810105.spcon(e,c)
 	if c==nil then return true end
@@ -60,7 +60,7 @@ function c65810105.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 end
 function c65810105.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=e:GetLabelObject()
-	Duel.Remove(g,nil,REASON_SPSUMMON)
+	Duel.Remove(g,POS_FACEUP,REASON_SPSUMMON)
 end
 
 
