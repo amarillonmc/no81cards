@@ -39,7 +39,7 @@ end
 
 
 function c65810120.disfilter(c)
-	return c:IsSetCard(0xa31) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx()
+	return c:IsSetCard(0xa31) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and Duel.IsPlayerCanRelease(c:GetControler())
 end
 function c65810120.discon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

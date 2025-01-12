@@ -49,7 +49,7 @@ function c65810115.chcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 end
 function c65810115.filter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa31) and c:IsFaceupEx()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa31) and c:IsFaceupEx() and Duel.IsPlayerCanRelease(c:GetControler())
 end
 function c65810115.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
