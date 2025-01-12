@@ -62,7 +62,7 @@ function cm.hfilter(c,lv)
 	return c:IsType(TYPE_PENDULUM) and c:GetLeftScale()>lv
 end
 function cm.fselect(g,lv)
-	return g:IsExists(cm.dfilter,1,nil,lv) and g:IsExists(cm.hfilter,1,nil,lv) and g:FilterCount(Card.IsLocation,nil,LOCATION_DECK)<=1 and g:FilterCount(Card.IsLocation,nil,LOCATION_EXTRA)<=1
+	return g:IsExists(cm.dfilter,1,nil,lv) and g:IsExists(cm.hfilter,1,nil,lv) and g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)<=1
 end
 function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

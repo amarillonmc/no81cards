@@ -83,7 +83,22 @@ function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 		cm[i]=nil
 		i=i+1
 	end
-	if res then cm.chain_with_stridgon=cm.chain_with_stridgon+1 else cm.chain_with_stridgon=0 end
+	local tp=e:GetHandler():GetOwner()
+	Duel.ResetFlagEffect(tp,m)
+	--local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+m)}
+	--for _,te in pairs(eset) do te:Reset() end
+	if res then
+		cm.chain_with_stridgon=cm.chain_with_stridgon+1
+		local e3=Effect.CreateEffect(e:GetHandler())
+		e3:SetDescription(aux.Stringid(m,math.min(cm.chain_with_stridgon,3)+2))
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e3:SetTargetRange(1,0)
+		e3:SetCode(EFFECT_FLAG_EFFECT+m)
+		Duel.RegisterEffect(e3,tp)
+	else
+		cm.chain_with_stridgon=0
+	end
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()

@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_DESTROYED)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e1:SetRange(LOCATION_HAND)
+	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetRange(LOCATION_MZONE)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 	--to hand
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
@@ -71,21 +71,26 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return (not c:IsLocation(LOCATION_HAND) or c:IsCanBeSpecialSummoned(e,0,tp,false,false) or 1==1) and (c:IsSummonable(true,nil) or (c:IsAbleToHand() and c:IsLocation(LOCATION_MZONE))) end
+	local g=Duel.GetMatchingGroup(function(c) return c:IsAbleToHand() and c:GetSummonType()&SUMMON_TYPE_NORMAL==0 end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
+	if chk==0 then return (c:IsCanBeSpecialSummoned(e,0,tp,false,false) or 1==1) and (c:IsSummonable(true,nil) or (c:IsAbleToHand() and c:IsLocation(LOCATION_MZONE) and #g>0)) end
+	g:AddCard(c)
 	if c:IsLocation(LOCATION_HAND) then
 		Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
 	elseif c:IsLocation(LOCATION_MZONE) then
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,PLAYER_ALL,LOCATION_ONFIELD)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,PLAYER_ALL,LOCATION_ONFIELD)
 	end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		if c:IsAbleToHand() and c:IsLocation(LOCATION_MZONE) then
-			local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-			local sg=g:SelectSubGroup(tp,Group.IsContains,false,1,2,c)
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		if c:IsLocation(LOCATION_MZONE) then
+			local g=Duel.GetMatchingGroup(function(c) return c:IsAbleToHand() and c:GetSummonType()&SUMMON_TYPE_NORMAL==0 end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
+			if #g>0 then
+				g:AddCard(c)
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+				local sg=g:SelectSubGroup(tp,Group.IsContains,false,2,2,c)
+				Duel.SendtoHand(sg,nil,REASON_EFFECT)
+			end
 		elseif c:IsSummonable(true,nil) then
 			Duel.Summon(tp,c,true,nil)
 		end

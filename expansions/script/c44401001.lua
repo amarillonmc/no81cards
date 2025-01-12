@@ -17,6 +17,7 @@ function c44401001.initial_effect(c)
 	e0:SetCategory(CATEGORY_RECOVER)
 	e0:SetType(EFFECT_TYPE_QUICK_F)
 	e0:SetCode(EVENT_BECOME_TARGET)
+	e0:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e0:SetRange(LOCATION_MZONE)
 	e0:SetCondition(c44401001.runcon)
 	e0:SetCost(c44401001.run)
@@ -29,6 +30,9 @@ function c44401001.rmfilter(c)
 end
 function c44401001.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c44401001.rmfilter,tp,LOCATION_DECK,0,1,nil) end
+	if e:GetHandler():IsSummonType(SUMMON_TYPE_NORMAL) then
+		e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401001,3))
+	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
 function c44401001.thfilter(c)
