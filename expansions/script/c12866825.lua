@@ -76,15 +76,15 @@ end
 function s.splimit(e,se,sp,st)
 	return se:IsHasType(EFFECT_TYPE_ACTIONS)
 end
-function s.rmfilter(c,e,tp)
+function s.rmfilter(c,tp)
 	return c:IsAbleToRemove(tp,POS_FACEUP,REASON_ACTION) and c:IsCode(12866615,12866725) and c:IsFaceupEx()
 end
 function s.spcost(e,c,tp)
-	local g=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
+	local g=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,tp)
 	return g:CheckSubGroupEach(s.spchecks,aux.mzctcheck,tp)
 end
 function s.spcop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.rmfilter),tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.rmfilter),tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sg=g:SelectSubGroupEach(tp,s.spchecks,true,aux.mzctcheck,tp)
 	Duel.Remove(sg,POS_FACEUP,REASON_ACTION)
