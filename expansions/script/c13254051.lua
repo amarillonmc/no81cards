@@ -1,7 +1,7 @@
 --魔能阵·纯净魔力召唤术
 local m=13254051
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

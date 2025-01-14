@@ -1,7 +1,7 @@
 --超时空填充胶囊
 local m=13257332
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DRAW)
@@ -43,7 +43,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		Duel.Hint(12,0,aux.Stringid(m,7))
+		Duel.Hint(HINT_SOUND,0,aux.Stringid(m,7))
 		Duel.Draw(tp,1,REASON_EFFECT)
 		if Duel.GetFlagEffect(tp,m)>=1 then
 			local e1=Effect.CreateEffect(e:GetHandler())
@@ -71,7 +71,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,code)
 			if g:GetCount()>0 then
 				Duel.BreakEffect()
-				Duel.Hint(12,0,aux.Stringid(m-1,7))
+				Duel.Hint(HINT_SOUND,0,aux.Stringid(m-1,7))
 				Duel.SendtoHand(g,tp,REASON_EFFECT)
 			end
 		end

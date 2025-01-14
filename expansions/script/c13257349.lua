@@ -1,7 +1,7 @@
 --超时空武装 主武 白银飞刀
 local m=13257349
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--equip limit

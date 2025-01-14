@@ -73,8 +73,8 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(g)
 		if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 then
 			local tg=Duel.GetMatchingGroup(s.eqfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil,tp)
-			if tg:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 
-			and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+			if tg:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and c:IsRelateToEffect(e) and 
+			c:IsFaceup() and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.BreakEffect()
 			local sg=tg:Select(tp,1,1,nil)
 			local tc=sg:GetFirst()

@@ -1,7 +1,7 @@
 --宇宙军阀首领 产土神-黄辉块
 local m=13257229
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -76,7 +76,7 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		Duel.Hint(11,0,aux.Stringid(m,4))
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,4))
 		local a=Duel.GetAttacker()
 		if a:IsAttackable() and not a:IsImmuneToEffect(e) then
 			Duel.CalculateDamage(a,c)
@@ -103,5 +103,5 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(11,0,aux.Stringid(m,4))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,4))
 end

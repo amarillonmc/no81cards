@@ -46,6 +46,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 	local _Equip=Duel.Equip
 	function Duel.Equip(p,card1,card2,bool,...)
+		if bool==nil then bool=true end
 		if bool==false and card2:GetOriginalCode()==id and card1:IsType(TYPE_SPELL) and not card1:IsType(TYPE_EQUIP) then
 			local ctype=Duel.ReadCard(card1,CARDDATA_TYPE)
 			local og=Duel.GetFieldGroup(0,LOCATION_EXTRA,LOCATION_EXTRA):Filter(aux.TRUE,card1):GetFirst()
@@ -142,8 +143,8 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 				--Duel.AdjustAll()
 			else
 				break
-			end		 
-		end	 
+			end	  
+		end  
 	end
 	local e0=Effect.CreateEffect(c) 
 	e0:SetDescription(aux.Stringid(id,0))

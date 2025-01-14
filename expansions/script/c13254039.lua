@@ -1,7 +1,7 @@
 --元始飞球秘术·乱流
 local m=13254039
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -94,7 +94,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_ORDER,2}},obj) then
 		Duel.SelectOption(tp,aux.Stringid(m,4))
-		e:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+		e:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
 	end
 	if obj and tama.tamas_isAllElementsNotAbove({{TAMA_ELEMENT_CHAOS,2}},obj) then
 		Duel.SelectOption(tp,aux.Stringid(m,5))
@@ -133,7 +133,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		local ht=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 		local ht1=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
 		if ht<ht1 then
-			Duel.Draw(p,ht1-ht,REASON_EFFECT)
+			Duel.Draw(tp,ht1-ht,REASON_EFFECT)
 		end
 		broken=true
 	end

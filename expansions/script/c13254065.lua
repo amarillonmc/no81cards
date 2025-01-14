@@ -1,6 +1,7 @@
 --元素飞球之暴雨
 local m=13254065
 local cm=_G["c"..m]
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))

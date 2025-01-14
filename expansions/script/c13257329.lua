@@ -1,7 +1,7 @@
 --超时空能量胶囊
 local m=13257329
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -54,7 +54,7 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		Duel.Hint(12,0,aux.Stringid(m,7))
+		Duel.Hint(HINT_SOUND,0,aux.Stringid(m,7))
 		local tep=tc:GetControler()
 		local PCe=tama.getTargetTable(tc,"power_capsule")
 		if PCe and cm.canActivate(tc,PCe,eg,ep,ev,re,r,rp) then

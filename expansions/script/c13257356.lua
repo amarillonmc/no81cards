@@ -1,7 +1,7 @@
 --鸟超时空战斗机-国主 雀巳
 local m=13257356
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x351)
 	c:EnableCounterPermit(0x352)
@@ -140,5 +140,5 @@ function cm.efilter1(e,te)
 	return te:GetHandler()~=e:GetHandler()
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(11,0,aux.Stringid(m,7))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
 end

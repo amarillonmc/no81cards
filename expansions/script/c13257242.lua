@@ -1,7 +1,7 @@
 --宇宙战争兵器 巨炮-阿巴顿波动炮
 local m=13257242
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	--equip limit
 	local e11=Effect.CreateEffect(c)

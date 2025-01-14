@@ -70,6 +70,7 @@ end
 function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
+		if c:IsRelateToEffect(e) and c:IsFaceup() then
 		if tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
 		Duel.Equip(tp,tc,c,false)
 		local e1=Effect.CreateEffect(c)
@@ -85,6 +86,7 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(500)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e2)
+		end
 	end
 end
 function s.eqlimit(e,c)

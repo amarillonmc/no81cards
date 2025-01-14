@@ -111,5 +111,5 @@ function cm.actlimit(e,re,tp)
 			tc=g:GetNext()
 		end
 	end
-	return rclv>=min end
+	return rclv>=min
 end

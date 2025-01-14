@@ -1,7 +1,7 @@
 --超时空战斗机-Opa-Opa
 local m=13257359
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x351)
 	--special summon
@@ -108,7 +108,7 @@ function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
 	local ct1=0
 	--for power capsule
-	if eg then ct1=eg:GetCount() end
+	if eg~=nil then ct1=eg:FilterCount(Card.IsPreviousLocation,nil,LOCATION_MZONE) end
 	local t1=ct1>0
 	local op=0
 	local m1={}
@@ -134,5 +134,5 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.Draw(p,d,REASON_EFFECT)
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(11,0,aux.Stringid(m,7))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
 end

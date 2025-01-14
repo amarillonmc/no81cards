@@ -1,7 +1,7 @@
 --伪宇宙战争机器-不死之炎鸟
 local m=13257253
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	--summon with no tribute
 	local e1=Effect.CreateEffect(c)

@@ -1,7 +1,7 @@
 --宇宙军阀首领 邪神红水晶
 local m=13257222
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	--summon with s/t
 	local e0=Effect.CreateEffect(c)
@@ -116,10 +116,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	if tc and tc:IsLocation(LOCATION_GRAVE) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-		Duel.Hint(11,0,aux.Stringid(m,4))
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,4))
 		e:Reset()
 	end
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(11,0,aux.Stringid(m,6))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,6))
 end

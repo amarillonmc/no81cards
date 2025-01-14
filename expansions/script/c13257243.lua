@@ -1,7 +1,7 @@
 --宇宙战争机器-阿巴顿战舰
 local m=13257243
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	local e11=Effect.CreateEffect(c)
 	e11:SetDescription(aux.Stringid(m,1))
@@ -133,5 +133,5 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(11,0,aux.Stringid(m,4))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,4))
 end

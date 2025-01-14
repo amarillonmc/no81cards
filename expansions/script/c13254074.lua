@@ -1,7 +1,7 @@
 --元始飞球造物·魔鬼·球体形
 local m=13254074
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	--fusion summon
 	c:EnableReviveLimit()

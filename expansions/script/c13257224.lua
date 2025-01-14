@@ -1,7 +1,7 @@
 --宇宙战争兵器 量产炮 自瞄镭射
 local m=13257224
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	c:EnableCounterPermit(TAMA_COSMIC_BATTLESHIP_COUNTER_CHARGE,LOCATION_SZONE)
 	c:SetCounterLimit(TAMA_COSMIC_BATTLESHIP_COUNTER_CHARGE,8)

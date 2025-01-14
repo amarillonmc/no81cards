@@ -1,7 +1,7 @@
 --宇宙军阀首领-野望之高弗
 local m=13257237
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -102,5 +102,5 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(11,0,aux.Stringid(m,4))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,4))
 end

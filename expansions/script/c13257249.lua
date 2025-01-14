@@ -1,7 +1,7 @@
 --宇宙战争兵器 护罩-防护结界
 local m=13257249
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	c:EnableCounterPermit(TAMA_COSMIC_BATTLESHIP_COUNTER_CHARGE,LOCATION_SZONE)
 	c:SetCounterLimit(TAMA_COSMIC_BATTLESHIP_COUNTER_CHARGE,3)

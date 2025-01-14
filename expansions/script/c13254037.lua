@@ -1,7 +1,7 @@
 --元始飞球之殇
 local m=13254037
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()

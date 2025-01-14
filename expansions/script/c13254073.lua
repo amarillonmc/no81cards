@@ -1,7 +1,7 @@
 --飞球梦工厂
 local m=13254073
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	c:SetUniqueOnField(1,0,m)
 	local e1=Effect.CreateEffect(c)

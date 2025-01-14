@@ -1,7 +1,7 @@
 --宇宙战争机器 巨核
 local m=13257201
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	--summon with no tribute
 	local e11=Effect.CreateEffect(c)
@@ -35,7 +35,7 @@ function cm.initial_effect(c)
 	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_MZONE)
-	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
 	e5:SetCondition(cm.spcon)
 	e5:SetCost(cm.spcost)
 	e5:SetTarget(cm.sptg)
@@ -92,11 +92,11 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-		Duel.Hint(11,0,aux.Stringid(g:GetFirst():GetCode(),4))
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(g:GetFirst():GetCode(),4))
 	end
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(11,0,aux.Stringid(m,4))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,4))
 end
 
 

@@ -1,7 +1,7 @@
 --超时空战斗机-翡翠骑士
 local m=13257303
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
@@ -57,7 +57,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
-		Duel.Hint(11,0,aux.Stringid(m,7))
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
 		if g:GetCount()>0 then
@@ -87,7 +87,7 @@ end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
-		Duel.Hint(11,0,aux.Stringid(m,7))
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
 		if g:GetCount()>0 then
@@ -213,5 +213,5 @@ function cm.tokendes(e)
 	return not e:GetOwner():GetCardTarget():IsContains(e:GetHandler())
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(11,0,aux.Stringid(m,7))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
 end

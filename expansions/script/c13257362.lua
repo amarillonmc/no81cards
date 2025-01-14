@@ -71,7 +71,7 @@ function cm.spcon(e,c)
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.Hint(11,0,aux.Stringid(m,7))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 	tama.cosmicBattleship_equipShield(e:GetHandler(),2)

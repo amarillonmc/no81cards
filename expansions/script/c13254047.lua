@@ -1,7 +1,6 @@
 --纯净魔能
 local m=13254047
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	--recover
 	local e1=Effect.CreateEffect(c)

@@ -1,6 +1,7 @@
 --元始飞球造物·光兔
 local m=13254068
 local cm=_G["c"..m]
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	--fusion summon
 	c:EnableReviveLimit()

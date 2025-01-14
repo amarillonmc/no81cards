@@ -1,7 +1,7 @@
 --超时空战斗机-大刀β
 local m=13257304
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function c13257304.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,4))
@@ -73,7 +73,7 @@ function cm.neop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateActivation(ev)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsRelateToEffect(e) then
 		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
-			Duel.Hint(11,0,aux.Stringid(m,7))
+			Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 			local g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
 			if g:GetCount()>0 then
@@ -213,5 +213,5 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(11,0,aux.Stringid(m,7))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
 end

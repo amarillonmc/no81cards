@@ -80,6 +80,7 @@ end
 function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local id=Duel.GetTurnCount()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 	local ct=math.min(Duel.GetLocationCount(tp,LOCATION_SZONE),3)
 	local g=Duel.SelectMatchingCard
@@ -104,6 +105,7 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 		tc=g:GetNext()
 		end
 		Duel.EquipComplete()
+		end
 	end
 end
 function s.eqlimit(e,c)

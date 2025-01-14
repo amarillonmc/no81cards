@@ -2,7 +2,8 @@
 function c12847502.initial_effect(c)
 	--
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_ACTIVATE+EFFECT_TYPE_QUICK_O)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetProperty(0,EFFECT_FLAG2_COF)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCondition(c12847502.condition)
 	e1:SetCost(c12847502.cost)

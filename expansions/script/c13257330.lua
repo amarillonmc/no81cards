@@ -1,7 +1,7 @@
 --超时空破坏胶囊
 local m=13257330
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -57,7 +57,7 @@ function cm.desfilter(c)
 	return c:IsFaceup() and (c:GetAttack()==0 or (c:GetDefense()==0 and not c:IsType(TYPE_LINK)))
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(12,0,aux.Stringid(m,7))
+	Duel.Hint(HINT_SOUND,0,aux.Stringid(m,7))
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
 		local sc=g:GetFirst()
@@ -93,7 +93,7 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsCanAddCounter(0x351,1) then
-		Duel.Hint(12,0,aux.Stringid(m-1,7))
+		Duel.Hint(HINT_SOUND,0,aux.Stringid(m-1,7))
 		tc:AddCounter(0x351,1)
 	end
 end

@@ -1,7 +1,7 @@
 --Tama & Amarillo
 local m=13255411
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)

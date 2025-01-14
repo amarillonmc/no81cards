@@ -1,7 +1,7 @@
 --宇宙战争机器 泡核
 local m=13257228
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -91,7 +91,7 @@ function cm.spcop(e,tp,eg,ep,ev,re,r,rp)
 	local e3=e1:Clone()
 	e3:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	Duel.RegisterEffect(e3,tp)
-	Duel.Hint(11,0,aux.Stringid(m,4))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,4))
 end
 function cm.splimit(e,c)
 	return not c:IsSetCard(0x353)
@@ -134,5 +134,5 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(11,0,aux.Stringid(m,4))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,4))
 end

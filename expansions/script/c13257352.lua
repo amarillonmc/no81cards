@@ -1,7 +1,7 @@
 --超时空世界 无现里
 local m=13257352
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	--c:EnableCounterPermit(0x352)
 	local e1=Effect.CreateEffect(c)

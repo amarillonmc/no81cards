@@ -1,7 +1,7 @@
 --超时空战斗机-斑鸠
 local m=13257360
 local cm=_G["c"..m]
-xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x352)
 	c:SetCounterLimit(0x352,10)
@@ -76,7 +76,7 @@ function cm.initial_effect(c)
 end
 function cm.spfilter(c,ft,tp)
 	return c:IsSetCard(0x351)
-		and c:IsControler(tp) and c:IsAbleToDeckAsCost and (ft>0 or c:GetSequence()<5)
+		and c:IsControler(tp) and c:IsAbleToDeckAsCost() and (ft>0 or c:GetSequence()<5)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
@@ -145,5 +145,5 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(g,REASON_EFFECT)
 end
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(11,0,aux.Stringid(m,7))
+	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
 end
