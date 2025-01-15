@@ -87,7 +87,7 @@ function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() and Duel.ChangePosition(tc,POS_FACEUP_ATTACK,POS_FACEDOWN_DEFENSE,POS_FACEUP_DEFENSE,POS_FACEDOWN_DEFENSE)>0 then
+	if tc:IsRelateToEffect(e) and tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() and Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)>0 then
 		Duel.NegateActivation(ev)
 	end
 end
@@ -109,18 +109,18 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	--  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	--  local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_HAND,0,1,1,nil)
 	--  if g:GetCount()>0 then
-	--	local dc=g:GetFirst()
-	--	if Duel.SSet(tp,dc,tp,false)==0 then return end
-	--	local e1=Effect.CreateEffect(c)
-	--	e1:SetType(EFFECT_TYPE_SINGLE)
-	--	e1:SetDescription(aux.Stringid(id,4))
-	--	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-	--	e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
-	--	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	--	dc:RegisterEffect(e1)
-	--	local e2=e1:Clone()
-	--	e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-	--	dc:RegisterEffect(e2)
+	--  local dc=g:GetFirst()
+	--  if Duel.SSet(tp,dc,tp,false)==0 then return end
+	--  local e1=Effect.CreateEffect(c)
+	--  e1:SetType(EFFECT_TYPE_SINGLE)
+	--  e1:SetDescription(aux.Stringid(id,4))
+	--  e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	--  e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+	--  e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	--  dc:RegisterEffect(e1)
+	--  local e2=e1:Clone()
+	--  e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+	--  dc:RegisterEffect(e2)
 	--  end
 	--end
 end
