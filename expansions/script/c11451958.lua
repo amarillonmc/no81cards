@@ -4,7 +4,7 @@ function cm.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_POSITION)
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_POSITION+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
@@ -66,7 +66,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local b3=Duel.GetTurnPlayer()==tp
 		return true --#g>0 and (b1 or b2 or b3) and Duel.GetCurrentChain()>0
 	end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	--Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
