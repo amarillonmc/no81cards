@@ -42,12 +42,12 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(Card.IsType,nil,TYPE_MONSTER)
 	local tc=g:GetFirst()
 	while tc do
-		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(0,id,RESET_PHASE+PHASE_END,0,1)
 		tc=g:GetNext()
 	end
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,id)>=13 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+	return Duel.GetFlagEffect(0,id)>=13 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function s.desfilter(c,tp)
 	return c:GetSequence()<=4 and Duel.GetMZoneCount(1-tp,c)>0
@@ -83,9 +83,9 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_DESTROY)
 	local sg=g:Select(1-tp,1,#g,nil)
-	local lp=Duel.GetLP(e:GetHandlerPlayer())
+	local lp=Duel.GetLP(tp)
 	local ct=Duel.Destroy(sg,REASON_EFFECT)
 	if ct>0 then
-	Duel.SetLP(e:GetHandlerPlayer(),lp-ct*500)
+	Duel.SetLP(tp,lp-ct*500)
 	end
 end

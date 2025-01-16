@@ -63,7 +63,7 @@ end
 function cm.ckfilter1(c,tp,seq) 
 	local seq1=c:GetSequence()
 	local seq2=aux.MZoneSequence(seq1)
-	return  c:IsFaceup() and  math.abs(seq-seq2)<=1 and seq1<5
+	return  c:IsFaceup() and c:IsSetCard(0xa341) and math.abs(seq-seq2)<=1 and seq1<5
 end
 function cm.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
  if chk==0 then return true end 
