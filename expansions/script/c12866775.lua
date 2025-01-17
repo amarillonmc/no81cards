@@ -59,11 +59,11 @@ function s.eqfilter1(c,tp)
 end
 function s.eqfilter2(c,tp)
 	return aux.IsCodeListed(c,12866755) and c:IsType(TYPE_FUSION) and
-	c:CheckUniqueOnField(tp) and (c:IsRace(RACE_WARRIOR) or c:IsRace(RACE_FIEND))
+	c:CheckUniqueOnField(tp) and (c:IsRace(RACE_WARRIOR) or c:IsRace(RACE_FIEND)) and not c:IsForbidden()
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and s.eqfilter(chkc,tp) and 
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and s.eqfilter2(chkc,tp) and 
 	chkc:IsControler(tp) end
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if chk==0 then return ft>0

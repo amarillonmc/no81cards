@@ -23,7 +23,7 @@ function s.initial_effect(c)
 	--negate
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
-	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e3:SetCategory(CATEGORY_DISABLE+CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_MZONE)
@@ -77,12 +77,26 @@ function s.discon(e,tp,eg,ep,ev,re,r,rp)
 	return number>=2
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	local g1,g2,g3=Group.CreateGroup(),Group.CreateGroup(),Group.CreateGroup()
 	for i=1,ev do
 		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-		if te:GetHandler():IsLocation(LOCATION_HAND) and tgp==1-tp then Duel.SetOperationInfo(0,CATEGORY_NEGATE,te:GetHandler(),1,0,0) end
-		if te:GetHandler():IsLocation(LOCATION_DECK+LOCATION_EXTRA) and tgp==1-tp then Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,te:GetHandler(),1,0,0) end
-		if te:GetHandler():IsLocation(LOCATION_ONFIELD) and tgp==1-tp then Duel.SetOperationInfo(0,CATEGORY_TOHAND,te:GetHandler(),1,0,0) end
+		if te:GetHandler():IsLocation(LOCATION_HAND) and tgp==1-tp and Duel.IsChainDisablable(i) then g1:AddCard(te:GetHandler()) end
+		if te:GetHandler():IsLocation(LOCATION_ONFIELD) and tgp==1-tp and te:GetHandler():IsRelateToEffect(te) and te:GetHandler():IsAbleToHand() then g2:AddCard(te:GetHandler()) end
+		if te:GetHandler():IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and tgp==1-tp and te:GetHandler():IsRelateToEffect(te) and te:GetHandler():IsCanOverlay() and not te:GetHandler():IsImmuneToEffect(e) then g3:AddCard(te:GetHandler()) end
+	end
+	if chk==0 then return #(g1+g2+g3)>0 end
+	e:SetCategory(0)
+	if #g1>0 then
+		e:SetCategory(e:GetCategory()|CATEGORY_NEGATE)
+		Duel.SetOperationInfo(0,CATEGORY_NEGATE,g1,#g1,0,0)
+	end
+	if #g2>0 then
+		e:SetCategory(e:GetCategory()|CATEGORY_TOHAND)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,g2,#g2,0,0)
+	end
+	if #g3:Filter(Card.IsLocation,nil,LOCATION_GRAVE)>0 then
+		e:SetCategory(e:GetCategory()|CATEGORY_GRAVE_ACTION)
+		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g3:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
 	end
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
@@ -91,10 +105,10 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 		local te,tgp,loc=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
 		local tc=te:GetHandler()
 		Duel.Hint(HINT_CARD,0,tc:GetCode())
-		if tc~=nil then 
+		if tc~=nil then
 			if tc:IsLocation(LOCATION_HAND) and tgp==1-tp then Duel.NegateEffect(ev) end
 			if tc:IsLocation(LOCATION_ONFIELD) and tc:IsRelateToEffect(te) and tgp==1-tp then Duel.SendtoHand(tc,nil,REASON_EFFECT) end
-			if tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and tc:IsRelateToEffect(te) and tgp==1-tp then Duel.Overlay(c,tc) end
+			if tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and tc:IsRelateToEffect(te) and not tc:IsImmuneToEffect(e) and not tc:IsHasEffect(EFFECT_NECRO_VALLEY) and tgp==1-tp then Duel.Overlay(c,tc) end
 		end
 	end
 end

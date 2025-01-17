@@ -44,10 +44,16 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetEquipTarget() and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function cm.desfilter(c,f)
-	return f:IsExists(cm.desfilter1,1,nil,c) and f:IsContains(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceup() and f:IsExists(cm.ffilter,1,nil,c)
+end
+function cm.ffilter(c,ec)
+	return not ec:GetColumnGroup():IsContains(c)
 end
 function cm.desfilter1(c,ec)
-	return not ec:GetColumnGroup():IsContains(c) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceup()
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceup()
+end
+function cm.ffilter2(c,g)
+	return g:IsExists(cm.ffilter,1,nil,c)
 end
 function cm.leftfilter(c,seq)
 	return c:GetSequence()>4-seq and c:GetSequence()<5
@@ -57,18 +63,18 @@ function cm.rightfilter(c,seq)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local f=tama.cosmicFighters_equipGetFormation(e:GetHandler())
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_MZONE,0,1,nil,f) end
-	--local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE,0,nil,f)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,0,LOCATION_ONFIELD,1,nil,f) end
 	local g=Duel.GetMatchingGroup(Card.IsType,tp,0,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local f=tama.cosmicFighters_equipGetFormation(e:GetHandler())
+	local g=Duel.GetMatchingGroup(cm.desfilter1,tp,0,LOCATION_ONFIELD,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local ec=Duel.SelectMatchingCard(tp,cm.desfilter,tp,LOCATION_MZONE,0,1,1,nil,f)
-	local g=Duel.GetMatchingGroup(cm.desfilter1,tp,0,LOCATION_ONFIELD,nil,ec)
-	if g:GetCount()>0 then
+	local fsg=f:FilterSelect(tp,cm.ffilter2,1,1,nil,g)
+	if fsg:GetCount()>0 then
+		local ec=fsg:GetFirst()
 		local seq=ec:GetSequence()
 		if seq==5 then seq=1
 		elseif seq==6 then seq=3 end
@@ -78,7 +84,6 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		if g1:GetCount()>0 and (g2:GetCount()==0 or Duel.SelectYesNo(tp,aux.Stringid(m,1))) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local sg1=g1:Select(tp,1,1,nil)
-			Duel.HintSelection(sg1)
 			sg:Merge(sg1)
 			if sg1:GetFirst():IsLocation(LOCATION_FZONE) then
 				g2:Sub(sg1)
@@ -87,7 +92,6 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		if g2:GetCount()>0 and (sg:GetCount()==0 or Duel.SelectYesNo(tp,aux.Stringid(m,2))) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local sg2=g2:Select(tp,1,1,nil)
-			Duel.HintSelection(sg2)
 			sg:Merge(sg2)
 		end
 		Duel.HintSelection(sg)

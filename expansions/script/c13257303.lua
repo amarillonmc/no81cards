@@ -76,7 +76,7 @@ end
 function cm.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	local tf=re:GetTarget()
 	local res,ceg,cep,cev,cre,cr,crp=Duel.CheckEvent(re:GetCode(),true)
-	return eg:IsExists(cm.tgfilter,1,nil,tp) and tf(re,rp,ceg,cep,cev,cre,cr,crp,0,c)
+	return re:GetHandlerPlayer()~=tp and eg:IsExists(cm.tgfilter,1,nil,tp) and tf(re,rp,ceg,cep,cev,cre,cr,crp,0,c)
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

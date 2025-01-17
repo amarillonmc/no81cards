@@ -1,6 +1,7 @@
 --自天空飘落的那片羽
 local cm,m=GetID()
 function cm.initial_effect(c)
+	aux.AddCodeList(c,56433456)
 	--link summon
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,cm.matfilter,1,1)
