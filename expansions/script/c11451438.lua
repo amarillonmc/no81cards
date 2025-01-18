@@ -1,6 +1,5 @@
 --波动武士·冲击波模块
-local m=11451438
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--spsummon condition
@@ -90,7 +89,7 @@ end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sg=e:GetLabelObject()
 	Card.SetMaterial(c,sg)
-	Duel.SendtoGrave(sg,REASON_COST+REASON_MATERIAL)
+	Duel.SendtoGrave(sg,REASON_SPSUMMON+REASON_MATERIAL)
 end
 function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
@@ -124,7 +123,6 @@ function cm.erop(e,tp,eg,ep,ev,re,r,rp)
 	if #tg==0 or not c:IsFaceup() or not c:IsRelateToEffect(e) or c:GetDefense()<1000 or c:IsStatus(STATUS_BATTLE_DESTROYED) then return end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_COPY_INHERIT)
 	e1:SetCode(EFFECT_UPDATE_DEFENSE)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 	e1:SetValue(-1000)

@@ -49,7 +49,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			c:ReplaceEffect(m,0)
 			cm.initial_effect=ini
 		else
-			Duel.SendtoGrave(c,REASON_EFFECT)
+			Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
 			c=Duel.CreateToken(tp,58192742)
 		end
 		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
@@ -62,7 +62,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_EQUIP_LIMIT)
-				e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE)
+				e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				e1:SetValue(cm.eqlimit)
 				tc:RegisterEffect(e1)
