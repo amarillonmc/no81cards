@@ -56,6 +56,17 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
 		e1:SetValue(TYPE_CONTINUOUS)
 		c:RegisterEffect(e1)
+		--local dg=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_SZONE,0,nil,TYPE_SPELL)
+		--local rg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
+		--if #dg>0 and #rg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		   -- Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			--local dgc=dg:Select(tp,1,1,nil):GetFirst()
+			--if Duel.SendtoGrave(dgc,REASON_EFFECT)~=0 then 
+				--Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
+				--local rg=rg:Select(1-tp,1,1,nil)
+				--Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
+			--end
+		--end
 	end
 end
 function cm.valcon(e,re,r,rp)
@@ -99,5 +110,5 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 			end
 			Duel.ShuffleDeck(tp)
 		end
-	end
+	else Duel.Draw(tp,1,REASON_EFFECT) end
 end

@@ -46,7 +46,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		if  Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and tc:IsRelateToEffect(e) and tc:IsControler(tp)  then   
+		if  Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and tc:IsRelateToEffect(e) and tc:IsControler(tp) and Duel.IsPlayerCanSpecialSummonCount(tp,1) then   
 			if not Duel.SelectYesNo(tp,aux.Stringid(m,1)) then return end
 			local g=Duel.GetMatchingGroup(cm.fit2,tp,LOCATION_EXTRA,0,nil,tc)
 			if g:GetCount()>0 then
