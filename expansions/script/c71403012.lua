@@ -1,6 +1,6 @@
 --气泡方块使 J&L
----@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
+---@param c Card
 function c71403012.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,true)

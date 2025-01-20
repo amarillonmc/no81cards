@@ -4,7 +4,7 @@ function c9910420.initial_effect(c)
 	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
 	--to grave
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_HANDES)
+	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,9910420)
@@ -42,11 +42,39 @@ function c9910420.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c9910420.tgfilter,tp,LOCATION_EXTRA,0,1,1,nil)
 	local tc=g:GetFirst()
-	if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE)
-		and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 and Duel.SelectYesNo(tp,aux.Stringid(9910420,0)) then
-		local sg=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,1)
-		Duel.SendtoGrave(sg,REASON_DISCARD+REASON_EFFECT)
+	if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
+		local rg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
+		if #rg>0 and Duel.SelectYesNo(tp,aux.Stringid(9910420,0)) then
+			local rc=rg:RandomSelect(tp,1):GetFirst()
+			local fid=e:GetHandler():GetFieldID()
+			if Duel.Remove(rc,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)~=0 then
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e1:SetCode(EVENT_PHASE+PHASE_END)
+				e1:SetReset(RESET_PHASE+PHASE_END)
+				e1:SetLabel(fid)
+				e1:SetLabelObject(rc)
+				e1:SetCountLimit(1)
+				e1:SetCondition(c9910420.retcon)
+				e1:SetOperation(c9910420.retop)
+				Duel.RegisterEffect(e1,tp)
+				rc:RegisterFlagEffect(9910420,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
+			end
+		end
 	end
+end
+function c9910420.retcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffectLabel(9910420)==e:GetLabel() then
+		return true
+	else
+		e:Reset()
+		return false
+	end
+end
+function c9910420.retop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	Duel.SendtoHand(tc,tc:GetPreviousControler(),REASON_EFFECT)
 end
 function c9910420.cfilter(c,tp)
 	return c:IsFaceup() and c:IsRace(RACE_CYBERSE) and c:IsType(TYPE_FUSION) and c:IsSummonType(SUMMON_TYPE_FUSION)

@@ -56,7 +56,7 @@ function c16372004.cfilter(c)
 		and c:IsAbleToGraveAsCost()
 end
 function c16372004.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c16372004.cfilter,tp,LOCATION_SZONE,LOCATION_SZONE,2,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c16372004.cfilter,tp,LOCATION_SZONE,0,2,nil)
 		and Duel.GetCustomActivityCount(16372004,tp,ACTIVITY_SPSUMMON)==0 end	
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -67,7 +67,7 @@ function c16372004.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetTarget(c16372004.splimitoath)
 	Duel.RegisterEffect(e1,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c16372004.cfilter,tp,LOCATION_SZONE,LOCATION_SZONE,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,c16372004.cfilter,tp,LOCATION_SZONE,0,2,2,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c16372004.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -88,11 +88,8 @@ function c16372004.setstg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c16372004.setsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local b1=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-	local b2=Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0
-	local p=aux.SelectFromOptions(tp,{b1,aux.Stringid(16372000+1,5),tp},{b2,aux.Stringid(16372000+1,6),1-tp})
-	if p~=nil and Duel.MoveToField(c,tp,p,LOCATION_SZONE,POS_FACEUP,true) then
+	if not c:IsRelateToEffect(e) or Duel.GetLocationCount(tp,LOCATION_SZONE)<1 then return end
+	if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)

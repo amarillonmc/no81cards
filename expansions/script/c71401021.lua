@@ -97,8 +97,8 @@ function c71401021.op2(e,tp,eg,ep,ev,re,r,rp)
 			if bg:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN,REASON_EFFECT)==ct and Duel.SelectYesNo(tp,aux.Stringid(71401021,0)) then
 				Duel.BreakEffect()
 				Duel.DisableShuffleCheck()
-				if Duel.Remove(tg,POS_FACEDOWN,REASON_EFFECT)==0 then return end
-				local e2=Effect.CreateEffect(e:GetHandler())
+				if Duel.Remove(bg,POS_FACEDOWN,REASON_EFFECT)==0 then return end
+				local e2=Effect.CreateEffect(c)
 				e2:SetType(EFFECT_TYPE_FIELD)
 				e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 				e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)

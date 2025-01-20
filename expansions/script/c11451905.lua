@@ -72,25 +72,30 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(function(c) return c:IsAbleToHand() and c:GetSummonType()&SUMMON_TYPE_NORMAL==0 end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
-	if chk==0 then return (c:IsCanBeSpecialSummoned(e,0,tp,false,false) or 1==1) and (c:IsSummonable(true,nil) or (c:IsAbleToHand() and c:IsLocation(LOCATION_MZONE) and #g>0)) end
+	if chk==0 then return (c:IsCanBeSpecialSummoned(e,0,tp,false,false) or 1==1) and (c:IsSummonable(true,nil) or (c:IsAbleToHand() and c:IsLocation(LOCATION_MZONE))) end
 	g:AddCard(c)
 	if c:IsLocation(LOCATION_HAND) then
-		Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
+		Duel.SetOperationInfo(0,CATEGORY_SUMMON,c,1,0,0)
 	elseif c:IsLocation(LOCATION_MZONE) then
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,PLAYER_ALL,LOCATION_ONFIELD)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,c,1,PLAYER_ALL,LOCATION_ONFIELD)
 	end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		if c:IsLocation(LOCATION_MZONE) then
-			local g=Duel.GetMatchingGroup(function(c) return c:IsAbleToHand() and c:GetSummonType()&SUMMON_TYPE_NORMAL==0 end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
+			local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+			g:AddCard(c)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+			local sg=g:SelectSubGroup(tp,Group.IsContains,false,1,2,c)
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+			--[[local g=Duel.GetMatchingGroup(function(c) return c:IsAbleToHand() and c:GetSummonType()&SUMMON_TYPE_NORMAL==0 end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 			if #g>0 then
 				g:AddCard(c)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 				local sg=g:SelectSubGroup(tp,Group.IsContains,false,2,2,c)
 				Duel.SendtoHand(sg,nil,REASON_EFFECT)
-			end
+			end--]]
 		elseif c:IsSummonable(true,nil) then
 			Duel.Summon(tp,c,true,nil)
 		end

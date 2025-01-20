@@ -5,6 +5,13 @@ function c98941053.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x120),2,true)	
+	--spsummon condition
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(c98941053.xsplimit)
+	c:RegisterEffect(e0)
 	--handes
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -63,6 +70,9 @@ function c98941053.initial_effect(c)
 		end
 	end	
 end
+function c98941053.xsplimit(e,se,sp,st)
+	return se:GetHandler():IsType(TYPE_SPELL)
+end
 function c98941053.chainop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(0,98941053,RESET_EVENT+RESET_CHAIN,0,1)
 end
@@ -97,13 +107,17 @@ function c98941053.filter1(c,e)
 	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck() and not c:IsImmuneToEffect(e)
 end
 function c98941053.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsAttribute(ATTRIBUTE_EARTH+ATTRIBUTE_WIND+ATTRIBUTE_FIRE+ATTRIBUTE_WATER) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
+end
+function c98941053.check(tp,g,fc)
+	return g:IsExists(Card.IsSetCard,1,nil,0x120)
 end
 function c98941053.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
-		local mg=Duel.GetMatchingGroup(c98941053.filter0,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+		local mg=Duel.GetMatchingGroup(c98941053.filter0,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+		aux.FCheckAdditional=c98941053.check
 		local res=Duel.IsExistingMatchingCard(c98941053.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg,nil,chkf)
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
@@ -114,6 +128,7 @@ function c98941053.target(e,tp,eg,ep,ev,re,r,rp,chk)
 				res=Duel.IsExistingMatchingCard(c98941053.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg3,mf,chkf)
 			end
 		end
+		aux.FCheckAdditional=nil
 		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
@@ -121,8 +136,10 @@ function c98941053.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c98941053.activatep(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(98941053,2)) then return end
+	Duel.Hint(HINT_CARD,0,98941053)
 	local chkf=tp
 	local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c98941053.filter1),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e)
+	aux.FCheckAdditional=c98941053.check
 	local sg1=Duel.GetMatchingGroup(c98941053.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg,nil,chkf)
 	local mg3=nil
 	local sg2=nil
@@ -160,6 +177,7 @@ function c98941053.activatep(e,tp,eg,ep,ev,re,r,rp)
 		end
 		tc:CompleteProcedure()
 	end
+	aux.FCheckAdditional=nil
 end
 function c98941053.cfilter(c)
 	return c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) 

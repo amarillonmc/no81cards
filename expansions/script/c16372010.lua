@@ -25,11 +25,13 @@ function c16372010.initial_effect(c)
 	--summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_SPSUMMON)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e3:SetCondition(c16372010.spellcon)
+	e3:SetCost(c16372010.costoath)
+	e3:SetTarget(c16372010.target)
 	e3:SetOperation(c16372010.activate)
 	c:RegisterEffect(e3)
 	local e33=e3:Clone()
@@ -77,13 +79,10 @@ function c16372010.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
 		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c16372010.setfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)	
-		local b1=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		local b2=Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0
-		if #g>0 and (b1 or b2) and Duel.SelectYesNo(tp,aux.Stringid(16372010,0)) then
-			local p=aux.SelectFromOptions(tp,{b1,aux.Stringid(16372000+1,5),tp},{b2,aux.Stringid(16372000+1,6),1-tp})
+		if #g>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(16372010,0)) then
 			local tc=g:Select(tp,1,1,nil):GetFirst()
 			Duel.BreakEffect()
-			Duel.MoveToField(tc,tp,p,LOCATION_SZONE,POS_FACEUP,true)
+			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -102,11 +101,8 @@ function c16372010.setstg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c16372010.setsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local b1=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-	local b2=Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0
-	local p=aux.SelectFromOptions(tp,{b1,aux.Stringid(16372000+1,5),tp},{b2,aux.Stringid(16372000+1,6),1-tp})
-	if p~=nil and Duel.MoveToField(c,tp,p,LOCATION_SZONE,POS_FACEUP,true) then
+	if not c:IsRelateToEffect(e) or Duel.GetLocationCount(tp,LOCATION_SZONE)<1 then return end
+	if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -121,10 +117,14 @@ function c16372010.cfilter(c)
 end
 function c16372010.spellcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS
-		and aux.NegateSummonCondition() and eg:IsExists(c16372010.cfilter,1,nil)
+		and aux.NegateSummonCondition() and #eg==1 and eg:IsExists(c16372010.cfilter,1,nil)
+end
+function c16372010.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
 end
 function c16372010.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(c16372010.cfilter,nil)
-	Duel.NegateSummon(g)
-	Duel.Destroy(g,REASON_EFFECT)
+	Duel.NegateSummon(eg)
+	Duel.Destroy(eg,REASON_EFFECT)
 end

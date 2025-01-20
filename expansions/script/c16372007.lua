@@ -24,11 +24,14 @@ function c16372007.initial_effect(c)
 	c:RegisterEffect(e2)
 	--loses ATK
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCategory(CATEGORY_ATKCHANGE)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e3:SetCountLimit(1)
 	e3:SetCondition(c16372007.spellcon)
+	e3:SetCost(c16372007.costoath)
+	e3:SetTarget(c16372007.atktg)
 	e3:SetOperation(c16372007.atkop)
 	c:RegisterEffect(e3)
 	Duel.AddCustomActivityCounter(16372007,ACTIVITY_SPSUMMON,c16372007.counterfilter)
@@ -87,11 +90,8 @@ function c16372007.setstg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c16372007.setsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local b1=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-	local b2=Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0
-	local p=aux.SelectFromOptions(tp,{b1,aux.Stringid(16372000+1,5),tp},{b2,aux.Stringid(16372000+1,6),1-tp})
-	if p~=nil and Duel.MoveToField(c,tp,p,LOCATION_SZONE,POS_FACEUP,true) then
+	if not c:IsRelateToEffect(e) or Duel.GetLocationCount(tp,LOCATION_SZONE)<1 then return end
+	if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -103,10 +103,12 @@ function c16372007.setsop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c16372007.spellcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS
-		and not Duel.GetAttacker():IsRace(RACE_PLANT)
+end
+function c16372007.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tc=Duel.GetAttacker()
+	if chk==0 then return not tc:IsRace(RACE_PLANT) and tc:GetAttack()>0 end
 end
 function c16372007.atkop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,16372007)
 	local tc=Duel.GetAttacker()
 	if tc:IsRelateToBattle() and tc:IsFaceup() then
 		local e1=Effect.CreateEffect(e:GetHandler())

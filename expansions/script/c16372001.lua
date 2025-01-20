@@ -2,11 +2,12 @@
 function c16372001.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,16372001)
 	e1:SetCost(c16372001.costoath)
+	e1:SetCondition(c16372001.sumcon)
 	e1:SetTarget(c16372001.sumtg)
 	e1:SetOperation(c16372001.sumop)
 	c:RegisterEffect(e1)
@@ -29,7 +30,7 @@ function c16372001.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
 	e3:SetRange(LOCATION_SZONE)
-	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e3:SetTargetRange(LOCATION_MZONE,0)
 	e3:SetCondition(c16372001.spellcon)
 	e3:SetTarget(c16372001.indtg)
 	e3:SetValue(c16372001.indct)
@@ -53,8 +54,11 @@ end
 function c16372001.splimitoath(e,c)
 	return not c:IsRace(RACE_PLANT)
 end
+function c16372001.sumcon(e,tp,eg,ep,ev,re,r,rp)
+	return not Duel.IsExistingMatchingCard(aux.AND(Card.IsCode,Card.IsFaceup),tp,LOCATION_FZONE,0,1,nil,16372018)
+end
 function c16372001.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsExistingMatchingCard(c16372001.acfilter,tp,LOCATION_DECK,0,1,nil,tp) end
 end
 function c16372001.acfilter(c,tp)
 	return c:IsCode(16372018) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true)
@@ -86,11 +90,8 @@ function c16372001.setstg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c16372001.setsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local b1=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-	local b2=Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0
-	local p=aux.SelectFromOptions(tp,{b1,aux.Stringid(16372000+1,5),tp},{b2,aux.Stringid(16372000+1,6),1-tp})
-	if p~=nil and Duel.MoveToField(c,tp,p,LOCATION_SZONE,POS_FACEUP,true) then
+	if not c:IsRelateToEffect(e) or Duel.GetLocationCount(tp,LOCATION_SZONE)<1 then return end
+	if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)

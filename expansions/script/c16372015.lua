@@ -1,9 +1,17 @@
 --启灵元神·夏日风情
 function c16372015.initial_effect(c)
-	--fusion material
+	aux.AddCodeList(c,16372004,16372005,16372006)
 	c:EnableReviveLimit()
-	aux.AddFusionProcCode3(c,16372004,16372005,16372006,true,true)
-	aux.AddContactFusionProcedure(c,c16372015.ffilter2,LOCATION_ONFIELD,LOCATION_ONFIELD,Duel.SendtoGrave,REASON_COST)
+	--special summon rule
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetRange(LOCATION_EXTRA)
+	e0:SetCondition(c16372015.sprcon)
+	e0:SetTarget(c16372015.sprtg)
+	e0:SetOperation(c16372015.sprop)
+	c:RegisterEffect(e0)
 	--tograve
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOGRAVE)
@@ -11,16 +19,14 @@ function c16372015.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1,16372015)
-	e1:SetCondition(c16372015.tgcon)
 	e1:SetTarget(c16372015.tgtg)
 	e1:SetOperation(c16372015.tgop)
 	c:RegisterEffect(e1)
 	--setself
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetCountLimit(1,16372015+100)
@@ -40,11 +46,30 @@ function c16372015.initial_effect(c)
 	e3:SetOperation(c16372015.spop2)
 	c:RegisterEffect(e3)
 end
-function c16372015.ffilter2(c,fc)
-	return c:IsAbleToGraveAsCost() and (c:IsControler(fc:GetControler()) or c:IsFaceup())
+c16372015.spchecks=aux.CreateChecks(Card.IsCode,{16372004,16372005,16372006})
+function c16372015.sprfilter(c,tp)
+	return c:IsFaceup() and c:IsAbleToGraveAsCost()
 end
-function c16372015.tgcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
+function c16372015.sprcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(c16372015.sprfilter,tp,LOCATION_ONFIELD,0,nil)
+	return g:CheckSubGroupEach(c16372015.spchecks,aux.mzctcheck,tp)
+end
+function c16372015.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetMatchingGroup(c16372015.sprfilter,tp,LOCATION_ONFIELD,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local sg=g:SelectSubGroupEach(tp,c16372015.spchecks,true,aux.mzctcheck,tp)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function c16372015.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	Duel.SendtoGrave(g,REASON_SPSUMMON)
+	g:DeleteGroup()
 end
 function c16372015.tgfilter(c)
 	return c:IsFaceup() and c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS
@@ -61,7 +86,7 @@ function c16372015.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g1,2,0,0)
 end
 function c16372015.cfilter(c,tp)
-	return c:IsPreviousControler(tp) and c:GetOriginalType()&TYPE_MONSTER>0 and c:IsSetCard(0xdc1)
+	return c:IsPreviousControler(tp) and c:GetOriginalType()&0x1>0 and c:IsSetCard(0xdc1) and c:IsLocation(LOCATION_GRAVE)
 end
 function c16372015.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
@@ -79,7 +104,7 @@ function c16372015.setscon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_MZONE)
 end
 function c16372015.setstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 end
 function c16372015.setsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -102,9 +127,9 @@ function c16372015.cfilter2(c)
 end
 function c16372015.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c16372015.cfilter2,tp,LOCATION_SZONE,LOCATION_SZONE,3,c) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c16372015.cfilter2,tp,LOCATION_SZONE,0,3,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c16372015.cfilter2,tp,LOCATION_SZONE,LOCATION_SZONE,3,3,c)
+	local g=Duel.SelectMatchingCard(tp,c16372015.cfilter2,tp,LOCATION_SZONE,0,3,3,c)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c16372015.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)

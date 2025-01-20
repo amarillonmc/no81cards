@@ -2,90 +2,81 @@
 function c9910414.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunFun(c,c9910414.matfilter,aux.FilterBoolFunction(Card.IsAttackBelow,2000),2,true)
-	--spsummon
+	aux.AddFusionProcFunFun(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6950),aux.FilterBoolFunction(Card.IsAttackBelow,2000),2,true)
+	--set
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910414,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(c9910414.spcon)
-	e1:SetTarget(c9910414.sptg)
-	e1:SetOperation(c9910414.spop)
+	e1:SetCondition(c9910414.tfcon)
+	e1:SetTarget(c9910414.tftg)
+	e1:SetOperation(c9910414.tfop)
 	c:RegisterEffect(e1)
-	--remove
+	--spsummon/remove
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910409,1))
-	e2:SetCategory(CATEGORY_REMOVE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetDescription(aux.Stringid(9910414,0))
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,9910414)
-	e2:SetTarget(c9910414.rmtg)
+	e2:SetCountLimit(1)
+	e2:SetCondition(c9910414.condition)
+	e2:SetTarget(c9910414.target)
 	e2:SetOperation(c9910414.rmop)
 	c:RegisterEffect(e2)
-	if not c9910414.global_check then
-		c9910414.global_check=true
-		c9910414[0]=0
-		c9910414[1]=0
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
-		ge1:SetOperation(c9910414.checkop)
-		Duel.RegisterEffect(ge1,0)
-		local ge2=Effect.CreateEffect(c)
-		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-		ge2:SetOperation(c9910414.clearop)
-		Duel.RegisterEffect(ge2,0)
-	end
 end
-function c9910414.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	while tc do
-		if tc:IsSummonType(SUMMON_TYPE_FUSION) then
-			local p=tc:GetSummonPlayer()
-			c9910414[p]=c9910414[p]+1
-		end
-		tc=eg:GetNext()
-	end
-end
-function c9910414.clearop(e,tp,eg,ep,ev,re,r,rp)
-	c9910414[0]=0
-	c9910414[1]=0
-end
-function c9910414.matfilter(c)
-	return c:IsFusionType(TYPE_FUSION) and c:IsFusionSetCard(0x6950)
-end
-function c9910414.spcon(e,tp,eg,ep,ev,re,r,rp)
+function c9910414.tfcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
-function c9910414.spfilter(c,lv,e,tp)
-	return c:IsFusionSetCard(0x6950) and c:IsLevelBelow(lv) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+function c9910414.tffilter(c,tp)
+	return c:IsCode(9910423) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
-function c9910414.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c9910414.spfilter,tp,LOCATION_DECK,0,1,nil,c9910414[tp],e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+function c9910414.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsExistingMatchingCard(c9910414.tffilter,tp,LOCATION_DECK,0,1,nil,tp) end
 end
-function c9910414.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c9910414.spfilter,tp,LOCATION_DECK,0,1,1,nil,c9910414[tp],e,tp)
-		if g:GetCount()>0 then
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-		end
+function c9910414.tfop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local tc=Duel.SelectMatchingCard(tp,c9910414.tffilter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
+	if tc then
+		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 	end
 end
-function c9910414.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsAbleToRemove() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+function c9910414.cfilter(c,tp)
+	return c:IsFaceup() and c:IsRace(RACE_CYBERSE) and c:IsControler(tp)
+end
+function c9910414.condition(e,tp,eg,ep,ev,re,r,rp)
+	return not eg:IsContains(e:GetHandler()) and eg:IsExists(c9910414.cfilter,1,nil,tp)
+end
+function c9910414.spfilter(c,e,tp)
+	return c:IsSetCard(0x6950) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c9910414.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return false end
+	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingTarget(c9910414.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)
+	local b2=Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	if chk==0 then return b1 or b2 end
+	local op=aux.SelectFromOptions(tp,{b1,aux.Stringid(9910414,1)},{b2,aux.Stringid(9910414,2)})
+	if op==1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectTarget(tp,c9910414.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
+		e:SetOperation(c9910414.spop)
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+		e:SetCategory(CATEGORY_REMOVE)
+		e:SetOperation(c9910414.rmop)
+		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	end
+end
+function c9910414.spop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 function c9910414.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

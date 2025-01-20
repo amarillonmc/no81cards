@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,3))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_HAND+LOCATION_MZONE)
@@ -80,7 +80,7 @@ function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetTurnCount()==0 then return end
+	if Duel.GetTurnCount()==0 or c:IsPreviousLocation(LOCATION_ONFIELD) then return end
 	local op=cm[tp] or Duel.SelectYesNo(tp,aux.Stringid(m,0))
 	if op and cm[tp]==nil then cm[tp]=Duel.SelectYesNo(tp,aux.Stringid(m,9)) end
 	if op then

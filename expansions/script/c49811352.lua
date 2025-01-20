@@ -23,7 +23,6 @@ function s.initial_effect(c)
 	--negate
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
-	e3:SetCategory(CATEGORY_DISABLE+CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_MZONE)
@@ -94,9 +93,9 @@ function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetCategory(e:GetCategory()|CATEGORY_TOHAND)
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,g2,#g2,0,0)
 	end
-	if #g3:Filter(Card.IsLocation,nil,LOCATION_GRAVE)>0 then
+	if g3:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)>0 then
 		e:SetCategory(e:GetCategory()|CATEGORY_GRAVE_ACTION)
-		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g3:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g3:Filter(Card.IsLocation,nil,LOCATION_GRAVE),g3:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE),0,0)
 	end
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)

@@ -26,11 +26,13 @@ function c16372008.initial_effect(c)
 	--spsummon
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SUMMON_SUCCESS)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1,16372008)
 	e3:SetCondition(c16372008.spcon)
+	e3:SetCost(c16372008.costoath)
+	e3:SetTarget(c16372008.sptg)
 	e3:SetOperation(c16372008.spop)
 	c:RegisterEffect(e3)
 	local e33=e3:Clone()
@@ -103,11 +105,8 @@ function c16372008.setstg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c16372008.setsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local b1=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-	local b2=Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0
-	local p=aux.SelectFromOptions(tp,{b1,aux.Stringid(16372000+1,5),tp},{b2,aux.Stringid(16372000+1,6),1-tp})
-	if p~=nil and Duel.MoveToField(c,tp,p,LOCATION_SZONE,POS_FACEUP,true) then
+	if not c:IsRelateToEffect(e) or Duel.GetLocationCount(tp,LOCATION_SZONE)<1 then return end
+	if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -118,22 +117,29 @@ function c16372008.setsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c16372008.filter(c,e,tp)
-	local p=e:GetHandler():GetOwner()
-	return c:IsFaceup() and c:IsRace(RACE_PLANT) and e:GetHandler():GetColumnGroup():IsContains(c)
-		and Duel.IsExistingMatchingCard(c16372008.spfilter,p,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,p)
+	return c:IsFaceup() and c:IsRace(RACE_PLANT) and e:GetHandler():GetColumnGroup():IsContains(c)and c:IsLevelAbove(1)
+		and Duel.IsExistingMatchingCard(c16372008.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,c:GetLevel())
 end
-function c16372008.spfilter(c,e,tp)
-	return c:IsRace(RACE_PLANT) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c16372008.spfilter(c,e,tp,lv)
+	return c:IsRace(RACE_PLANT) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevel(lv)
 end
 function c16372008.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c16372008.filter,1,nil,e,tp)
 		and e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS
 end
+function c16372008.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return eg:IsExists(c16372008.filter,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+end
 function c16372008.spop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,16372008)
-	local p=e:GetHandler():GetOwner()
-	local tc=Duel.SelectMatchingCard(p,aux.NecroValleyFilter(c16372008.spfilter),p,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,p):GetFirst()
+	local g=eg:Filter(c16372008.filter,nil,e,tp)
+	local sc=g:GetFirst()
+	if #g>1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		sc=g:Select(tp,1,1,nil)
+	end
+	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c16372008.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp,sc:GetLevel()):GetFirst()
 	if tc then
-		Duel.SpecialSummon(tc,0,p,p,false,false,POS_FACEUP)
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

@@ -38,7 +38,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
 	--actlimit
-	local e4=Effect.CreateEffect(c)
+	--[[local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -46,6 +46,12 @@ function cm.initial_effect(c)
 	e4:SetRange(LOCATION_PZONE)
 	e4:SetValue(1)
 	e4:SetCondition(cm.actcon)
+	c:RegisterEffect(e4)--]]
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_CHAINING)
+	e4:SetRange(LOCATION_PZONE)
+	e4:SetOperation(cm.chainop)
 	c:RegisterEffect(e4)
 	--Destroy
 	local e6=Effect.CreateEffect(c)
@@ -308,6 +314,10 @@ end
 function cm.actcon(e)
 	local tp=e:GetHandlerPlayer()
 	return Duel.IsExistingMatchingCard(cm.tfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.GetCurrentChain()>0 and Duel.GetBattledCount(Duel.GetTurnPlayer())==0
+end
+function cm.chainop(e,tp,eg,ep,ev,re,r,rp)
+	if not Duel.IsExistingMatchingCard(cm.tfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) or Duel.GetBattledCount(Duel.GetTurnPlayer())>0 then return false end
+	Duel.SetChainLimit(function(e,ep,tp) return ep==tp end)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.tfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and ep~=tp and ev>1

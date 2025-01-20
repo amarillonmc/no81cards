@@ -48,7 +48,7 @@ function s.gettype(c)
 end
 function s.altop(e,tp,chk)
 	local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,0)
-	if chk==0 then return g:GetCount()>=3 and g:GetClassCount(s.gettype)==1  end
+	if chk==0 then return g:GetCount()>=3 and g:GetClassCount(s.gettype)==1 and Duel.GetFlagEffect(tp,id)==0 end
 	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function s.GetRaceCount(g)

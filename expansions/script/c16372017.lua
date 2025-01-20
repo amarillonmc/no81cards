@@ -1,19 +1,17 @@
 --启灵元神·冬雪感召
 function c16372017.initial_effect(c)
-	--fusion material
+	aux.AddCodeList(c,16372010,16372011,16372012)
 	c:EnableReviveLimit()
-	aux.AddFusionProcCode3(c,16372010,16372011,16372012,true,true)
-	aux.AddContactFusionProcedure(c,c16372017.ffilter2,LOCATION_ONFIELD,LOCATION_ONFIELD,Duel.SendtoGrave,REASON_COST)
-	--loselp
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetOperation(c16372017.op)
-	c:RegisterEffect(e1)
-	local e10=e1:Clone()
-	e10:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e10)
+	--special summon rule
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetRange(LOCATION_EXTRA)
+	e0:SetCondition(c16372017.sprcon)
+	e0:SetTarget(c16372017.sprtg)
+	e0:SetOperation(c16372017.sprop)
+	c:RegisterEffect(e0)
 	--damage
 	local e11=Effect.CreateEffect(c)
 	e11:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -31,8 +29,7 @@ function c16372017.initial_effect(c)
 	c:RegisterEffect(e12)
 	--setself
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetCountLimit(1,16372017+100)
@@ -51,21 +48,30 @@ function c16372017.initial_effect(c)
 	e3:SetOperation(c16372017.activate)
 	c:RegisterEffect(e3)
 end
-function c16372017.ffilter2(c,fc)
-	return c:IsAbleToGraveAsCost() and (c:IsControler(fc:GetControler()) or c:IsFaceup())
+c16372017.spchecks=aux.CreateChecks(Card.IsCode,{16372010,16372011,16372012})
+function c16372017.sprfilter(c,tp)
+	return c:IsFaceup() and c:IsAbleToGraveAsCost()
 end
-function c16372017.lpfilter(c,tp)
-	return c:IsControler(tp) and not c:IsRace(RACE_PLANT)
+function c16372017.sprcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(c16372017.sprfilter,tp,LOCATION_ONFIELD,0,nil)
+	return g:CheckSubGroupEach(c16372017.spchecks,aux.mzctcheck,tp)
 end
-function c16372017.op(e,tp,eg,ep,ev,re,r,rp)
-	if eg:IsExists(c16372017.lpfilter,1,nil,tp) then
-		Duel.Hint(HINT_CARD,0,16372017)
-		Duel.SetLP(tp,Duel.GetLP(tp)-500)
-	end
-	if eg:IsExists(c16372017.lpfilter,1,nil,1-tp) then
-		Duel.Hint(HINT_CARD,0,16372017)
-		Duel.SetLP(1-tp,Duel.GetLP(1-tp)-500)
-	end
+function c16372017.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetMatchingGroup(c16372017.sprfilter,tp,LOCATION_ONFIELD,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local sg=g:SelectSubGroupEach(tp,c16372017.spchecks,true,aux.mzctcheck,tp)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function c16372017.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	Duel.SendtoGrave(g,REASON_SPSUMMON)
+	g:DeleteGroup()
 end
 function c16372017.op2(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(16372017,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
@@ -83,7 +89,7 @@ function c16372017.setscon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_MZONE)
 end
 function c16372017.setstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 end
 function c16372017.setsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

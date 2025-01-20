@@ -1,4 +1,5 @@
 --本地58台
+---@param c Card
 function c71402001.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroMixProcedure(c,aux.Tuner(Card.IsSummonType,SUMMON_TYPE_NORMAL),nil,nil,c71402001.mfilter,1,99,c71402001.gfilter(c))
@@ -6,10 +7,9 @@ function c71402001.initial_effect(c)
 	--token
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71402001,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN+CATEGORY_DISABLE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCondition(c71402001.con1)
 	e1:SetTarget(c71402001.tg1)
 	e1:SetOperation(c71402001.op1)
 	c:RegisterEffect(e1)
@@ -43,18 +43,22 @@ end
 function c71402001.filter1(c)
 	return c:IsCode(71402002) and c:IsFaceup()
 end
-function c71402001.con1(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(c71402001.filter1,tp,LOCATION_ONFIELD,0,1,nil)
+function c71402001.filter1dis(c)
+	return not c:IsDisabled()
+	--and (c:IsType(TYPE_SPELL+TYPE_TRAP) or (c:IsFacedown() or c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0))
 end
 function c71402001.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	local g=Duel.GetMatchingGroup(c71402001.filter1dis,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c71402001.op1(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	if Duel.IsPlayerCanSpecialSummonMonster(tp,71402002,0,TYPES_TOKEN_MONSTER,5000,5000,12,RACE_FIEND,ATTRIBUTE_LIGHT,POS_FACEUP) then
-		local c=e:GetHandler()
+	local c=e:GetHandler()
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and not Duel.IsExistingMatchingCard(c71402001.filter1,tp,LOCATION_ONFIELD,0,1,nil) and
+		Duel.IsPlayerCanSpecialSummonMonster(tp,71402002,0,TYPES_TOKEN_MONSTER,5000,5000,12,RACE_FIEND,ATTRIBUTE_LIGHT,POS_FACEUP) then
 		local token=Duel.CreateToken(tp,71402002)
 		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
 		local e1=Effect.CreateEffect(c)
@@ -67,9 +71,39 @@ function c71402001.op1(e,tp,eg,ep,ev,re,r,rp)
 		token:RegisterEffect(e1)
 		Duel.SpecialSummonComplete()
 	end
+	local g=Duel.GetMatchingGroup(c71402001.filter1dis,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
+	for tc in aux.Next(g) do
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetCondition(c71402001.discon)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2)
+		if tc:IsType(TYPE_TRAPMONSTER) then
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e3)
+		end
+	end
 end
 function c71402001.atklimit(e,c)
 	return c~=e:GetHandler()
+end
+function c71402001.discon(e)
+	local c=e:GetHandler()
+	return c:IsFaceup() and (c:IsType(TYPE_SPELL+TYPE_TRAP)
+		or c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0)
 end
 function c71402001.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsPublic,tp,LOCATION_HAND,0,1,nil) end

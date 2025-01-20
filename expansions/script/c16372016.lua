@@ -1,9 +1,17 @@
 --启灵元神·秋露星河
 function c16372016.initial_effect(c)
-	--fusion material
+	aux.AddCodeList(c,16372004,16372005,16372006)
 	c:EnableReviveLimit()
-	aux.AddFusionProcCode3(c,16372007,16372008,16372009,true,true)
-	aux.AddContactFusionProcedure(c,c16372016.ffilter2,LOCATION_ONFIELD,LOCATION_ONFIELD,Duel.SendtoGrave,REASON_COST)
+	--special summon rule
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetRange(LOCATION_EXTRA)
+	e0:SetCondition(c16372016.sprcon)
+	e0:SetTarget(c16372016.sprtg)
+	e0:SetOperation(c16372016.sprop)
+	c:RegisterEffect(e0)
 	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DRAW)
@@ -16,8 +24,7 @@ function c16372016.initial_effect(c)
 	c:RegisterEffect(e1)
 	--setself
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetCountLimit(1,16372016+100)
@@ -36,16 +43,38 @@ function c16372016.initial_effect(c)
 	e3:SetOperation(c16372016.spop2)
 	c:RegisterEffect(e3)
 end
-function c16372016.ffilter2(c,fc)
-	return c:IsAbleToGraveAsCost() and (c:IsControler(fc:GetControler()) or c:IsFaceup())
+c16372016.spchecks=aux.CreateChecks(Card.IsCode,{16372004,16372005,16372006})
+function c16372016.sprfilter(c,tp)
+	return c:IsFaceup() and c:IsAbleToGraveAsCost()
+end
+function c16372016.sprcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(c16372016.sprfilter,tp,LOCATION_ONFIELD,0,nil)
+	return g:CheckSubGroupEach(c16372016.spchecks,aux.mzctcheck,tp)
+end
+function c16372016.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetMatchingGroup(c16372016.sprfilter,tp,LOCATION_ONFIELD,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local sg=g:SelectSubGroupEach(tp,c16372016.spchecks,true,aux.mzctcheck,tp)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function c16372016.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	Duel.SendtoGrave(g,REASON_SPSUMMON)
+	g:DeleteGroup()
 end
 function c16372016.cfilter(c)
-	return c:GetOriginalType()&TYPE_MONSTER>0 and c:IsSetCard(0xdc1) and c:IsAbleToDeckAsCost()
+	return c:GetOriginalType()&TYPE_MONSTER>0 and c:IsSetCard(0xdc1) and c:IsAbleToDeckAsCost() and c:IsFaceup()
 end
 function c16372016.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c16372016.cfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_ONFIELD,3,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c16372016.cfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,3,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c16372016.cfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_ONFIELD,3,3,nil)
+	local g=Duel.SelectMatchingCard(tp,c16372016.cfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,3,3,nil)
 	Duel.HintSelection(g)
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
@@ -68,7 +97,7 @@ function c16372016.setscon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_MZONE)
 end
 function c16372016.setstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 end
 function c16372016.setsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

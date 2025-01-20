@@ -32,7 +32,7 @@ local e1=Effect.CreateEffect(c)
 
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE)
@@ -63,9 +63,10 @@ function cm.chk(g,e,tp)
 		or sg:IsExists(Card.IsSynchroSummonable,1,nil,nil,g) or sg:IsExists(Card.IsLinkSummonable,1,nil,g) or sg:IsExists(Card.IsXyzSummonable,1,nil,g)
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil,e)
+	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil,e)
 	if chk==0 then return mg:CheckSubGroup(cm.chk,1,99,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
 end
 function cm.spfit(c,g)
 	return   c:CheckFusionMaterial(g) or c:IsSynchroSummonable(nil,g) or c:IsLinkSummonable(g) or c:IsXyzSummonable(g)
@@ -74,7 +75,7 @@ function cm.spfit2(g,c)
 	return   c:CheckFusionMaterial(g) or c:IsSynchroSummonable(nil,g) or c:IsLinkSummonable(g) or c:IsXyzSummonable(g)
 end
 function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil,e)
+	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil,e)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local fc=Duel.SelectMatchingCard(tp,cm.spfit,tp,LOCATION_EXTRA,0,1,1,nil,mg):GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -92,14 +93,14 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_EXTRA,0,1,nil,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_EXTRA)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_MZONE)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,PLAYER_ALL,LOCATION_MZONE)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_EXTRA,0,1,1,nil)
 		local gc=g:GetFirst()
 		local atk=gc:GetAttack()
-		if gc and Duel.SendtoGrave(gc,REASON_EFFECT)~=0 and gc:IsLocation(LOCATION_GRAVE) and Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,atk) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		if gc and Duel.SendtoGrave(gc,REASON_EFFECT)~=0 and gc:IsLocation(LOCATION_GRAVE) and Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,atk) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local hg=Duel.SelectMatchingCard(tp,cm.desfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,atk)
 		Duel.SendtoHand(hg,nil,REASON_EFFECT)

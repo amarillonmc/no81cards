@@ -1,10 +1,17 @@
 --花信之主 启灵元神
 function c16372013.initial_effect(c)
 	c:SetUniqueOnField(1,0,16372013)
-	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunFunRep(c,c16372013.ffilter,aux.FilterBoolFunction(Card.IsSetCard,0xdc1),5,127,true,true)
-	aux.AddContactFusionProcedure(c,c16372013.ffilter2,LOCATION_ONFIELD,LOCATION_ONFIELD,Duel.SendtoGrave,REASON_COST)
+	--special summon rule
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetRange(LOCATION_EXTRA)
+	e0:SetCondition(c16372013.sprcon)
+	e0:SetTarget(c16372013.sprtg)
+	e0:SetOperation(c16372013.sprop)
+	c:RegisterEffect(e0)
 	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -49,22 +56,40 @@ function c16372013.initial_effect(c)
 	e4:SetOperation(c16372013.op)
 	c:RegisterEffect(e4)
 end
-function c16372013.ffilter(c)
-	return c:IsFusionSetCard(0xdc1) and c:IsFusionType(TYPE_FUSION+TYPE_LINK)
+function c16372013.IsOriginalType(c,type)
+	return c:GetOriginalType()&type>0
 end
-function c16372013.ffilter2(c,fc)
-	return c:IsAbleToGraveAsCost() and (c:IsControler(fc:GetControler()) or c:IsFaceup())
+c16372013.spchecks=aux.CreateChecks(c16372013.IsOriginalType,{TYPE_EFFECT,TYPE_RITUAL,TYPE_FUSION,TYPE_SYNCHRO,TYPE_XYZ,TYPE_LINK})
+function c16372013.sprfilter(c,tp)
+	return c:IsFaceup() and c:IsAbleToGraveAsCost()
 end
-function c16372013.imcon(e)
-	return e:GetHandler():GetOverlayCount()>0
+function c16372013.sprcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(c16372013.sprfilter,tp,LOCATION_ONFIELD,0,nil)
+	return g:CheckSubGroupEach(c16372013.spchecks,aux.mzctcheck,tp)
+end
+function c16372013.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetMatchingGroup(c16372013.sprfilter,tp,LOCATION_ONFIELD,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local sg=g:SelectSubGroupEach(tp,c16372013.spchecks,true,aux.mzctcheck,tp)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function c16372013.sprop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	Duel.SendtoGrave(g,REASON_SPSUMMON)
+	g:DeleteGroup()
 end
 function c16372013.imfilter(c)
-	return c:IsSetCard(0xdc1) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0xdc1) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx()
 end
 function c16372013.imcon(e)
 	local g=Duel.GetMatchingGroup(c16372013.imfilter,e:GetHandlerPlayer(),LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	local ct=g:GetClassCount(Card.GetCode)
-	return ct>9
+	return g:GetClassCount(Card.GetCode)>=9
 end
 function c16372013.efilter(e,te)
 	return te:GetOwnerPlayer()~=e:GetHandlerPlayer()
@@ -77,25 +102,25 @@ function c16372013.copycost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RegisterFlagEffect(16372013,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function c16372013.copyfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xdc1) and not c:IsType(TYPE_TOKEN+TYPE_NORMAL)
+	return c:IsFaceup() and c:IsSetCard(0xdc1) and c:GetOriginalType()&0x1>0
 end
 function c16372013.copytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_SZONE) and c16372013.copyfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c16372013.copyfilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) end
+	if chkc then return chkc:IsLocation(LOCATION_SZONE) and chkc:IsControler(tp) and c16372013.copyfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c16372013.copyfilter,tp,LOCATION_SZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c16372013.copyfilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,nil)
+	Duel.SelectTarget(tp,c16372013.copyfilter,tp,LOCATION_SZONE,0,1,1,nil)
 end
 function c16372013.copyop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc and c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsFaceup() and not tc:IsType(TYPE_TOKEN+TYPE_NORMAL) then
+	if tc and c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		local code=tc:GetOriginalCodeRule()
 		local cid=0
 		if not tc:IsType(TYPE_TRAPMONSTER) then
 			cid=c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,1)
 		end
 		local e2=Effect.CreateEffect(c)
-		e2:SetDescription(aux.Stringid(16372013,3))
+		e2:SetDescription(aux.Stringid(16372013,0))
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 		e2:SetCode(EVENT_PHASE+PHASE_END)
@@ -141,16 +166,17 @@ function c16372013.spellcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS
 end
 function c16372013.spfilter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0xdc1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsFaceupEx() and c:IsSetCard(0xdc1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and c:GetOriginalType()&0x1>0
 end
 function c16372013.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(c16372013.spfilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil,e,tp)
-		and Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(c16372013.spfilter,tp,LOCATION_SZONE+LOCATION_GRAVE,0,1,nil,e,tp)
+		and Duel.IsExistingTarget(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local dc=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil):GetFirst()
+	local dc=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil):GetFirst()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c16372013.spfilter,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,dc,e,tp)
+	local g=Duel.SelectTarget(tp,c16372013.spfilter,tp,LOCATION_SZONE+LOCATION_GRAVE,0,1,1,dc,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,dc,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 	e:SetLabelObject(dc)

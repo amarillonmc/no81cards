@@ -1,11 +1,14 @@
 --赛博空间机甲 影狼
 function c9910425.initial_effect(c)
-	--spsummon condition
+	--search
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetValue(c9910425.splimit)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetCountLimit(1,9910425)
+	e1:SetCost(c9910425.thcost)
+	e1:SetTarget(c9910425.thtg)
+	e1:SetOperation(c9910425.thop)
 	c:RegisterEffect(e1)
 	--atkup
 	local e2=Effect.CreateEffect(c)
@@ -18,11 +21,10 @@ function c9910425.initial_effect(c)
 	c:RegisterEffect(e2)
 	--destroy
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(9910425,0))
 	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(1,9910426)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCondition(c9910425.descon1)
 	e3:SetTarget(c9910425.destg)
@@ -55,8 +57,26 @@ function c9910425.checkop(e,tp,eg,ep,ev,re,r,rp)
 		tc=eg:GetNext()
 	end
 end
-function c9910425.splimit(e,se,sp,st)
-	return se:GetHandler():IsSetCard(0x6950) and se:GetHandler():IsType(TYPE_SPELL+TYPE_TRAP)
+function c9910425.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsAbleToDeckAsCost() end
+	Duel.ConfirmCards(1-tp,c)
+	Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
+end
+function c9910425.thfilter(c)
+	return c:IsCode(9910401) and c:IsAbleToHand()
+end
+function c9910425.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910425.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c9910425.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c9910425.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if #g>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end
 function c9910425.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return c9910425[tp]>0 end

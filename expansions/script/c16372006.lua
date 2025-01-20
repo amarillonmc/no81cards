@@ -21,14 +21,17 @@ function c16372006.initial_effect(c)
 	e2:SetTarget(c16372006.setstg)
 	e2:SetOperation(c16372006.setsop)
 	c:RegisterEffect(e2)
-	--negate
+	--disable
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_CHAIN_SOLVING)
+	e3:SetCategory(CATEGORY_DISABLE)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1)
-	e3:SetCondition(c16372006.negcon)
-	e3:SetOperation(c16372006.negop)
+	e3:SetCondition(c16372006.discon)
+	e3:SetCost(c16372006.costoath)
+	e3:SetTarget(c16372006.distg)
+	e3:SetOperation(c16372006.disop)
 	c:RegisterEffect(e3)
 	Duel.AddCustomActivityCounter(16372006,ACTIVITY_SPSUMMON,c16372006.counterfilter)
 end
@@ -57,7 +60,7 @@ function c16372006.cfilter2(c)
 	return c:IsSetCard(0xdc1) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c16372006.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(c16372006.cfilter1,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil)
+	local b1=Duel.IsExistingMatchingCard(c16372006.cfilter1,tp,LOCATION_SZONE,0,1,nil)
 	local b2=Duel.IsExistingMatchingCard(c16372006.cfilter2,tp,LOCATION_GRAVE,0,1,nil)
 	if chk==0 then return (b1 or b2)
 		and Duel.GetCustomActivityCount(16372006,tp,ACTIVITY_SPSUMMON)==0 end
@@ -72,7 +75,7 @@ function c16372006.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local op=aux.SelectFromOptions(tp,{b1,aux.Stringid(16372006,5),1},{b2,aux.Stringid(16372006,6),2})
 	if op==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,c16372006.cfilter1,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,c16372006.cfilter1,tp,LOCATION_SZONE,0,1,1,nil)
 		Duel.SendtoGrave(g,REASON_COST)
 	elseif op==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -99,11 +102,8 @@ function c16372006.setstg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c16372006.setsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local b1=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-	local b2=Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0
-	local p=aux.SelectFromOptions(tp,{b1,aux.Stringid(16372000+1,5),tp},{b2,aux.Stringid(16372000+1,6),1-tp})
-	if p~=nil and Duel.MoveToField(c,tp,p,LOCATION_SZONE,POS_FACEUP,true) then
+	if not c:IsRelateToEffect(e) or Duel.GetLocationCount(tp,LOCATION_SZONE)<1 then return end
+	if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -113,11 +113,14 @@ function c16372006.setsop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 end
-function c16372006.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER) and not re:GetHandler():IsRace(RACE_PLANT)
+function c16372006.discon(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsActiveType(TYPE_MONSTER) and not re:GetHandler():IsRace(RACE_PLANT) and Duel.IsChainDisablable(ev)
 		and e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS
 end
-function c16372006.negop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,16372006)
-	Duel.NegateEffect(ev,true)
+function c16372006.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
+end
+function c16372006.disop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
 end

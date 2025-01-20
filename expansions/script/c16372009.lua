@@ -24,12 +24,14 @@ function c16372009.initial_effect(c)
 	c:RegisterEffect(e2)
 	--disable
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_NEGATE)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCategory(CATEGORY_DISABLE)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1)
 	e3:SetCondition(c16372009.discon)
+	e3:SetCost(c16372009.costoath)
+	e3:SetTarget(c16372009.distg)
 	e3:SetOperation(c16372009.disop)
 	c:RegisterEffect(e3)
 	Duel.AddCustomActivityCounter(16372009,ACTIVITY_SPSUMMON,c16372009.counterfilter)
@@ -107,11 +109,8 @@ function c16372009.setstg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c16372009.setsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local b1=Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-	local b2=Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0
-	local p=aux.SelectFromOptions(tp,{b1,aux.Stringid(16372000+1,5),tp},{b2,aux.Stringid(16372000+1,6),1-tp})
-	if p~=nil and Duel.MoveToField(c,tp,p,LOCATION_SZONE,POS_FACEUP,true) then
+	if not c:IsRelateToEffect(e) or Duel.GetLocationCount(tp,LOCATION_SZONE)<1 then return end
+	if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 		local e1=Effect.CreateEffect(c)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -127,10 +126,14 @@ end
 function c16372009.discon(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return g and g:IsExists(c16372009.disfilter,1,nil) and Duel.IsChainNegatable(ev)
+	return g and g:IsExists(c16372009.disfilter,1,nil) and Duel.IsChainDisablable(ev)
 		and re:IsActiveType(TYPE_MONSTER) and not re:GetHandler():IsRace(RACE_PLANT)
 		and e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS
 end
+function c16372009.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
+end
 function c16372009.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateActivation(ev)
+	Duel.NegateEffect(ev)
 end
