@@ -160,6 +160,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 									local op=Duel.SelectOption(tp,table.unpack(ops))+1
 									local sel=opval[op]
 									if sel==0 then
+										Duel.BreakEffect()
 										cm[tp]=cm[tp]-1
 										Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 										local g=thg:Select(tp,1,1,nil)
@@ -168,6 +169,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 											Duel.ConfirmCards(1-tp,g)
 										end
 									elseif sel==1 then
+										Duel.BreakEffect()
 										cm[tp]=cm[tp]-2
 										Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 										local tc=spg:Select(tp,1,1,nil):GetFirst()

@@ -295,6 +295,7 @@ end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if pnfl_adjusting then return end
 	pnfl_adjusting=true
+	Duel.BreakEffect()
 	Duel.DisableShuffleCheck()
 	Duel.SendtoGrave(Duel.GetFieldGroup(tp,LOCATION_DECK,0):GetMinGroup(Card.GetSequence),REASON_EFFECT)
 	e:Reset()

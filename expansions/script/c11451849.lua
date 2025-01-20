@@ -43,6 +43,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 					op0(e,tp,eg,ep,ev,re,r,rp)
 					local ct=6-Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 					if ct>0 then
+						Duel.BreakEffect()
 						Duel.Draw(tp,ct,REASON_EFFECT)
 					end
 				end

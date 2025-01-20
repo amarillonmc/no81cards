@@ -9,6 +9,7 @@ function c43387890.initial_effect(c)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
 	e0:SetCondition(c43387890.fucon)
+	e0:SetTarget(c43387890.futg)
 	e0:SetOperation(c43387890.fuop)
 	c:RegisterEffect(e0)
 	--spsummon condition
@@ -66,11 +67,20 @@ function c43387890.fucon(e,c)
 	local mg=Duel.GetMatchingGroup(c43387890.fufilter,tp,LOCATION_MZONE,0,c,c)
 	return c:CheckFusionMaterial(mg,nil,tp|0x200)
 end
-function c43387890.fuop(e,tp,eg,ep,ev,re,r,rp,c)
+function c43387890.futg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local mg=Duel.GetMatchingGroup(c43387890.fufilter,tp,LOCATION_MZONE,0,c,c)
 	local g=Duel.SelectFusionMaterial(tp,c,mg,nil,tp|0x200)
+	if g and #g>0 then
+		g:KeepAlive()
+		e:SetLabelObject(g)
+		return true
+	else return false end
+end
+function c43387890.fuop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
 	c:SetMaterial(g)
 	Duel.Release(g,REASON_COST+REASON_MATERIAL)
+	g:DeleteGroup()
 end
 
 function c43387890.ffilter(c)

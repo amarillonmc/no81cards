@@ -198,6 +198,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 								if exc:GetFlagEffect(m)==0 then exc=nil end
 								local sg=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Filter(cm.spfilter,exc,e,tp)
 								if #sg>0 and Duel.GetMZoneCount(tp)>0 then
+									Duel.BreakEffect()
 									Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 									sg=sg:Select(tp,1,1,nil)
 									Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)

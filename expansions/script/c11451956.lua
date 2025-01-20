@@ -98,6 +98,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 					sg2=Duel.GetMatchingGroup(cm.spfilter3,tp,LOCATION_EXTRA,0,nil,e,tp,mg2,mf,chkf)
 				end
 				if sg1:GetCount()>0 or (sg2~=nil and sg2:GetCount()>0) then
+					Duel.BreakEffect()
 					local sg=sg1:Clone()
 					if sg2 then sg:Merge(sg2) end
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -155,6 +156,6 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(cm.filter2,nil,e:GetLabelObject())
 	for tc in aux.Next(g) do
-		tc:RegisterFlagEffect(m+1,RESET_CHAIN+RESET_EVENT+RESETS_STANDARD,0,1)
+		tc:RegisterFlagEffect(m+1,RESET_CHAIN+RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
 	end
 end

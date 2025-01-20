@@ -196,27 +196,34 @@ function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		if opval[op]==1 then
+			Duel.BreakEffect()
 			e:SetLabel(e:GetLabel()&~0x1)
 			Duel.NegateActivation(ev)
 		elseif opval[op]==2 then
+			Duel.BreakEffect()
 			e:SetLabel(e:GetLabel()&~0x2)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 			Duel.HintSelection(g)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 		elseif opval[op]==3 then
+			Duel.BreakEffect()
 			e:SetLabel(e:GetLabel()&~0x4)
 			Duel.Remove(re:GetHandler(),POS_FACEUP,REASON_EFFECT)
 		elseif opval[op]==4 then
+			Duel.BreakEffect()
 			e:SetLabel(e:GetLabel()&~0x8)
 			Duel.Damage(ep,2200,REASON_EFFECT)
 		elseif opval[op]==5 then
+			Duel.BreakEffect()
 			e:SetLabel(e:GetLabel()&~0x10)
 			Duel.Draw(tp,1,REASON_EFFECT)
 		elseif opval[op]==6 then
+			Duel.BreakEffect()
 			e:SetLabel(e:GetLabel()&~0x20)
 			Duel.DiscardHand(1-tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
 		elseif opval[op]==7 then
+			Duel.BreakEffect()
 			e:SetLabel(e:GetLabel()&~0x40)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE,LOCATION_GRAVE,1,2,nil)
