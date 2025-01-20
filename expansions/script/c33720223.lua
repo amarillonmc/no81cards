@@ -50,7 +50,7 @@ function s.filter(c,tp)
 			end
 		end
 	end
-	return ok and (s.thfilter(c,tp) or s.tgfiler(c,tp))
+	return ok and (s.thfilter(c,tp) or s.tgfilter(c,tp))
 end
 function s.thfilter(c,tp)
 	return not c:IsStatus(STATUS_LEAVE_CONFIRMED) and Duel.IsPlayerCanSendtoHand(1-tp,c)

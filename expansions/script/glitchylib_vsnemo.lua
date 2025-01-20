@@ -1987,6 +1987,90 @@ function Auxiliary.STFilter(f,...)
 				return target:IsST() and (not f or f(target,table.unpack(ext_params)))
 			end
 end
+function Auxiliary.ActivateFilter(f)
+	return	function(c,e,tp)
+				return (not f or f(c,e,tp)) and c:GetActivateEffect():IsActivatable(tp,true,true)
+			end
+end
+function Auxiliary.AttachFilter(f)
+	return	function(c,e,...)
+				return (not f or f(c,e,...)) and not c:IsType(TYPE_TOKEN) and not c:IsImmuneToEffect(e)
+			end
+end
+function Auxiliary.AttachFilter2(f)
+	return	function(c,...)
+				return (not f or f(c,e,...)) and c:IsType(TYPE_XYZ)
+			end
+end
+function Auxiliary.BanishFilter(f,cost,pos)
+	pos = pos and pos or POS_FACEUP
+	return	function(c,_,tp,...)
+				return (not f or f(c,...)) and (not cost and c:IsAbleToRemove(tp,pos) or cost and c:IsAbleToRemoveAsCost(pos))
+			end
+end
+function Auxiliary.ControlFilter(f)
+	return	function(c,...)
+				return (not f or f(c,...)) and c:IsControlerCanBeChanged()
+			end
+end
+function Auxiliary.DestroyFilter(f)
+	return	function(c,e,...)
+				return (not f or f(c,e,...)) and (c:IsOnField() or c:IsDestructable(e))
+			end
+end
+function Auxiliary.DisableFilter(f)
+	return	function(c,...)
+				return (not f or f(c,...)) and aux.NegateAnyFilter(c)
+			end
+end
+function Auxiliary.DiscardFilter(f,cost)
+	local r = (not cost) and REASON_EFFECT or REASON_COST
+	return	function(c)
+				return (not f or f(c)) and c:IsDiscardable(r)
+			end
+end
+function Auxiliary.SearchFilter(f)
+	return	function(c,...)
+				return (not f or f(c,...)) and c:IsAbleToHand()
+			end
+end
+function Auxiliary.SSetFilter(f)
+	return	function(c,...)
+				return (not f or f(c,...)) and c:IsST() and c:IsSSetable()
+			end
+end
+function Auxiliary.ToGYFilter(f,cost)
+	return	function(c,...)
+				return (not f or f(c,...)) and (not cost and c:IsAbleToGrave() or (cost and c:IsAbleToGraveAsCost()))
+			end
+end
+function Auxiliary.ToGraveFilter(f,cost)
+	return aux.ToGYFilter(f,cost)
+end
+function Auxiliary.ToHandFilter(f,cost)
+	return	function(c,...)
+				return (not f or f(c,...)) and (not cost and c:IsAbleToHand() or (cost and c:IsAbleToHandAsCost()))
+			end
+end
+function Auxiliary.ToDeckFilter(f,cost,loc)
+	if not cost then
+		return	function(c,...)
+			return (not f or f(c,...)) and c:IsAbleToDeck()
+		end
+	else
+		local check=Card.IsAbleToDeckOrExtraAsCost
+		if loc then
+			if loc==LOCATION_DECK then
+				check=Card.IsAbleToDeckAsCost
+			elseif loc==LOCATION_EXTRA then
+				check=Card.IsAbleToExtraAsCost
+			end
+		end
+		return	function(c,...)
+					return (not f or f(c,...)) and check(c)
+				end
+	end
+end
 
 --Flag Effects
 function Card.GetFlagEffectWithSpecificLabel(c,flag,label,reset)
