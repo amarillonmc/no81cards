@@ -39,7 +39,9 @@ function c98920056.tgfilter(c)
 	return c:IsSetCard(0x44,0x16f) and c:IsAbleToHand()
 end
 function c98920056.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98920056.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	local b=Duel.IsEnvironment(56433456,PLAYER_ALL,LOCATION_ONFIELD+LOCATION_GRAVE)
+	local tg=Duel.GetMatchingGroup(c98920056.tgfilter,tp,LOCATION_DECK,0,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c98920056.thfilter,tp,LOCATION_DECK,0,1,nil) or (b and #tg>0) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c98920056.thop(e,tp,eg,ep,ev,re,r,rp)

@@ -1,6 +1,7 @@
 --辉煌之代行者 许珀里翁
 local s,id,o=GetID()
 function c98920787.initial_effect(c)
+	aux.AddCodeList(c,56433456)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(98920787,0))
@@ -26,7 +27,7 @@ function c98920787.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c98920787.spfilter(c,tp)
-	return c:IsReleasable(REASON_COST) and (c:IsControler(tp) or Duel.IsEnvironment(56433456)) and Duel.GetMZoneCount(tp,c,tp)>0
+	return c:IsReleasable(REASON_COST) and ((c:IsControler(tp) and c:IsSetCard(0x44)) or Duel.IsEnvironment(56433456)) and Duel.GetMZoneCount(tp,c,tp)>0
 end
 function c98920787.spcost(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local g=Duel.GetMatchingGroup(c98920787.spfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
