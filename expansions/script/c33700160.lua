@@ -11,33 +11,26 @@ function c33700160.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c33700160.filter(c)
-	return c:IsFaceup() 
+	return c:IsFaceup() and c:IsDefenseAbove(0)
 end
 function c33700160.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	 local g=Duel.GetMatchingGroup(c33700160.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c33700160.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	local g=Duel.GetMatchingGroup(c33700160.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	local tg,def=g:GetMaxGroup(Card.GetDefense)
-	if chk==0 then return tg:GetCount()>0  end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tg,tg:GetCount(),0,0)
-   Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,PLAYER_ALL,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tg,#tg,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,PLAYER_ALL,#tg*def)
 end
 function c33700160.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c33700160.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
-		local tg,def=g:GetMaxGroup(Card.GetDefense)
-		 Duel.Destroy(tg,REASON_EFFECT)
+		local tg=g:GetMaxGroup(Card.GetDefense)
+		Duel.Destroy(tg,REASON_EFFECT)
 		local dg=Duel.GetOperatedGroup()
-		local tc=dg:GetFirst()
-		local def=0
-		while tc do
-			local tdef=tc:GetDefense()
-			if tdef>0 then def=def+tdef end
-			tc=dg:GetNext()
+		local rec=dg:GetSum(Card.GetDefense)
+		if rec>0 then
+			Duel.BreakEffect()
+			Duel.Recover(tp,rec,REASON_EFFECT)
+			Duel.Recover(1-tp,rec,REASON_EFFECT)
 		end
-		if def>0 then
-		  Duel.BreakEffect()
-		  Duel.Recover(tp,def,REASON_EFFECT,true)
-		  Duel.Recover(1-tp,def,REASON_EFFECT,true)
-		  Duel.RDComplete()
-end
-end
+	end
 end
