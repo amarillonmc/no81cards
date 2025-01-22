@@ -1,7 +1,6 @@
 --电脑网路标
 --22.01.07
-local m=11451649
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -33,15 +32,14 @@ function cm.xylabel(c,tp)
 	return x,y
 end
 function cm.gradient(y,x)
-	if y>0 and x==0 then return 100 end
-	if y<0 and x==0 then return 110 end
-	if y>0 and x~=0 then return y/x end
-	if y<0 and x~=0 then return y/x+10 end
-	if y==0 and x>0 then return 0 end
-	if y==0 and x<0 then return 10 end
+	if y>0 and x==0 then return math.pi/2 end
+	if y<0 and x==0 then return math.pi*3/2 end
+	if y>=0 and x>0 then return math.atan(y/x) end
+	if x<0 then return math.pi+math.atan(y/x) end
+	if y<0 and x>0 then return 2*math.pi+math.atan(y/x) end
 	return 1000
 end
-function cm.fieldline(x1,y1,x2,y2,tp,...)
+function cm.fieldline(x1,y1,x2,y2,...)
 	for _,k in pairs({...}) do
 		if cm.gradient(y2-y1,x2-x1)==k then return true end
 	end
@@ -49,9 +47,9 @@ function cm.fieldline(x1,y1,x2,y2,tp,...)
 end
 function cm.isdir(lc,x,y,tp)
 	local x0,y0=cm.xylabel(lc,tp)
-	local list={11,110,9,10,1000,0,-1,100,1}
+	local list={5/4,3/2,7/4,1,1000,0,3/4,1/2,1/4}
 	for i=0,8 do
-		if cm.fieldline(x0,y0,x,y,tp,list[i+1]) then return true,i end
+		if cm.fieldline(x0,y0,x,y,list[i+1]*math.pi) then return true,i end
 	end
 	return false,nil
 end
@@ -110,10 +108,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 	e1:SetValue(lm)
 	token:RegisterEffect(e1)
+	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 	for i=0,8 do
 		if lm&(1<<(8-i))>0 then
-			token:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,8-i))
+			token:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,i))
 		end
 	end
-	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 end

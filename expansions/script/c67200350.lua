@@ -19,6 +19,7 @@ function c67200350.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)  
 	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,67200350)
 	e1:SetCondition(c67200350.condition)
 	e1:SetTarget(c67200350.target)
 	e1:SetOperation(c67200350.activate)
@@ -67,6 +68,7 @@ function c67200350.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoGrave(c,REASON_EFFECT)
 			return
 		end
+		if not hc:IsLocation(LOCATION_GRAVE) then return end
 		if not Duel.Equip(tp,c,tc) then return end
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)

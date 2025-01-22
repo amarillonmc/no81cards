@@ -1,8 +1,7 @@
 --心连星
 --21.08.14
 --2021 Happy Chinese Valuntine's Day!
-local m=11451620
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
@@ -36,15 +35,14 @@ function cm.xylabel(c,tp)
 	return x,y
 end
 function cm.gradient(y,x)
-	if y>0 and x==0 then return 100 end
-	if y<0 and x==0 then return 110 end
-	if y>0 and x~=0 then return y/x end
-	if y<0 and x~=0 then return y/x+10 end
-	if y==0 and x>0 then return 0 end
-	if y==0 and x<0 then return 10 end
+	if y>0 and x==0 then return math.pi/2 end
+	if y<0 and x==0 then return math.pi*3/2 end
+	if y>=0 and x>0 then return math.atan(y/x) end
+	if x<0 then return math.pi+math.atan(y/x) end
+	if y<0 and x>0 then return 2*math.pi+math.atan(y/x) end
 	return 1000
 end
-function cm.fieldline(x1,y1,x2,y2,tp,...)
+function cm.fieldline(x1,y1,x2,y2,...)
 	for _,k in pairs({...}) do
 		if cm.gradient(y2-y1,x2-x1)==k then return true end
 	end
@@ -53,10 +51,10 @@ end
 function cm.willbemutuallinked(c,lc,x0,y0,tp,tgp)
 	if tp~=tgp then x0,y0=4-x0,4-y0 end
 	local x,y=cm.xylabel(c,tgp)
-	local list={11,110,9,10,1000,0,-1,100,1}
+	local list={5/4,3/2,7/4,1,1000,0,3/4,1/2,1/4}
 	local ct=c:IsControler(tgp)
 	for i=0,8 do
-		if lc:IsLinkMarker(1<<i) and cm.fieldline(x0,y0,x,y,tgp,list[i+1]) and math.abs(x0-x)<=1 and math.abs(y0-y)<=1 and ((c:IsLinkMarker(1<<(8-i)) and ct) or (c:IsLinkMarker(1<<i) and not ct)) then return true end
+		if lc:IsLinkMarker(1<<i) and cm.fieldline(x0,y0,x,y,list[i+1]*math.pi) and math.abs(x0-x)<=1 and math.abs(y0-y)<=1 and ((c:IsLinkMarker(1<<(8-i)) and ct) or (c:IsLinkMarker(1<<i) and not ct)) then return true end
 	end
 	return false
 end
