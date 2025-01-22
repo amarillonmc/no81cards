@@ -44,9 +44,9 @@ function s.tffilter(c,tp)
 	return c:GetType()&0x20002==0x20002 and c:GetActivateEffect():IsActivatable(tp)
 end
 function s.accost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_DECK,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function s.acop(e,tp,eg,ep,ev,re,r,rp)

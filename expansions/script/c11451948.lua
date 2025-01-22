@@ -14,6 +14,52 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.target3)
 	e4:SetOperation(cm.activate3)
 	c:RegisterEffect(e4)
+	if not cm.global_check then
+		cm.global_check=true
+		local _MoveToField=Duel.MoveToField
+		local _ReturnToField=Duel.ReturnToField
+		local _IsCanOverlay=Card.IsCanOverlay
+		local _Overlay=Duel.Overlay
+		local _Equip=Duel.Equip
+		function Duel.MoveToField(c,tp,...)
+			if c:IsLocation(0xf3) and c:IsHasEffect(m) then
+				return false
+			end
+			return _MoveToField(c,tp,...)
+		end
+		function Duel.ReturnToField(c,...)
+			local tp=c:GetPreviousControler()
+			if c:IsHasEffect(m) then
+				return false
+			end
+			return _ReturnToField(c,...)
+		end
+		function Card.IsCanOverlay(c,...)
+			local tp=c:GetPreviousControler()
+			if c:IsLocation(0xf3) and c:IsHasEffect(m) then
+				return false
+			end
+			return _IsCanOverlay(c,...)
+		end
+		function Duel.Overlay(xc,v,...)
+			local t=Auxiliary.GetValueType(v)
+			local g=Group.CreateGroup()
+			if t=="Card" then g:AddCard(v) else g=v end
+			for c in aux.Next(g) do
+				local tp=c:GetPreviousControler()
+				if c:IsLocation(0xf3) and c:IsHasEffect(m) then
+					g:RemoveCard(c)
+				end
+			end
+			return _Overlay(xc,g,...)
+		end
+		function Duel.Equip(tp,c,mc,...)
+			if c:IsLocation(0xf3) and c:IsHasEffect(m) then
+				return false
+			end
+			return _Equip(tp,c,mc,...)
+		end
+	end
 end
 function cm.target3(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -91,12 +137,24 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e2,true)
-		local e1=e2:Clone()
-		e1:SetCode(EFFECT_CANNOT_SUMMON)
-		tc:RegisterEffect(e1,true)
+		local e4=e2:Clone()
+		e4:SetCode(EFFECT_CANNOT_SUMMON)
+		tc:RegisterEffect(e4,true)
 		local e3=e2:Clone()
 		e3:SetCode(EFFECT_CANNOT_MSET)
 		tc:RegisterEffect(e3,true)
+		local e6=e2:Clone()
+		e6:SetCode(m)
+		tc:RegisterEffect(e6,true)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+		e1:SetRange(LOCATION_HAND)
+		e1:SetTargetRange(1,1)
+		e1:SetValue(function(e,te,tp) return te:GetHandler()==e:GetHandler() and te:IsHasType(EFFECT_TYPE_ACTIVATE) end)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1,true)
 	end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)

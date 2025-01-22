@@ -3272,8 +3272,8 @@ function cm.WhitkinsToGrave(g,reason)
 			if gct>1 then
 				while true do
 					if #mg==0 then break end
-					Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(53767028,15))
-					local sc=mg:SelectUnselect(sg,tp,false,#sg>0,#mg,gct)
+					Duel.Hint(HINT_SELECTMSG,p,aux.Stringid(53767028,15))
+					local sc=mg:SelectUnselect(sg,p,true,#sg>0,#mg,gct)
 					if not sc then break elseif mg:IsContains(sc) then
 						mg:RemoveCard(sc)
 						sg:AddCard(sc)

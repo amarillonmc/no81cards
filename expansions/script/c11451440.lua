@@ -69,13 +69,13 @@ end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sg=e:GetLabelObject()
 	Card.SetMaterial(c,sg)
-	Duel.SendtoGrave(sg,REASON_COST+REASON_MATERIAL)
+	Duel.SendtoGrave(sg,REASON_SPSUMMON+REASON_MATERIAL)
 end
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local b1=re:IsActiveType(TYPE_MONSTER) and Duel.GetFlagEffect(0,m)==0
-	local b2=re:IsActiveType(TYPE_SPELL) and Duel.GetFlagEffect(0,m-1)==0
-	local b3=re:IsActiveType(TYPE_TRAP) and Duel.GetFlagEffect(0,m-2)==0
+	local b1=re:IsActiveType(TYPE_MONSTER) and Duel.GetFlagEffect(tp,m)==0
+	local b2=re:IsActiveType(TYPE_SPELL) and Duel.GetFlagEffect(tp,m-1)==0
+	local b3=re:IsActiveType(TYPE_TRAP) and Duel.GetFlagEffect(tp,m-2)==0
 	return rp==1-tp and Duel.IsChainDisablable(ev) and (Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_REMOVED,0,3,nil) or c:IsAbleToRemove(tp,POS_FACEDOWN)) and (b1 or b2 or b3)
 end
 function cm.filter2(c)
@@ -106,13 +106,13 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 				end
 			end
 			if re:IsActiveType(TYPE_MONSTER) then
-				Duel.RegisterFlagEffect(0,m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+				Duel.RegisterFlagEffect(tp,m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 			end
 			if re:IsActiveType(TYPE_SPELL) then
-				Duel.RegisterFlagEffect(0,m-1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+				Duel.RegisterFlagEffect(tp,m-1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 			end
 			if re:IsActiveType(TYPE_TRAP) then
-				Duel.RegisterFlagEffect(0,m-2,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+				Duel.RegisterFlagEffect(tp,m-2,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 			end
 		end
 	end

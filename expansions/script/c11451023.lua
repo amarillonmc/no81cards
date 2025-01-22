@@ -49,6 +49,7 @@ function cm.SpiritReturnReg(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_DISABLE_EFFECT)
+	e2:SetValue(RESET_TURN_SET)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 	tc:RegisterEffect(e2,true)
@@ -84,28 +85,36 @@ end
 function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
-	local dg=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and c:IsAbleToHand() end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local dg=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and c:IsCanChangePosition() end,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
 	if #g>0 and #dg>0 and ((c:IsLocation(LOCATION_HAND) and loc==LOCATION_HAND and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(m,0))) or (c:IsOnField() and loc&LOCATION_ONFIELD>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(m,0)))) then
 		Duel.Hint(HINT_CARD,0,m)
 		if c:IsLocation(LOCATION_HAND) then Duel.ConfirmCards(1-tp,c) end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-		g=g:Select(tp,1,1,nil)
-		local tc=g:GetFirst()
-		if tc then
-			local s1=tc:IsSummonable(true,nil)
-			local s2=tc:IsMSetable(true,nil)
-			if (s1 and s2 and Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
-				Duel.Summon(tp,tc,true,nil)
-				local g=Group.CreateGroup()
-				Duel.ChangeTargetCard(ev,g)
-				Duel.ChangeChainOperation(ev,cm.repop)
-			else
-				Duel.MSet(tp,tc,true,nil)
-				local g=Group.CreateGroup()
-				Duel.ChangeTargetCard(ev,g)
-				Duel.ChangeChainOperation(ev,cm.repop2)
-			end
+		local g=Group.CreateGroup()
+		Duel.ChangeTargetCard(ev,g)
+		Duel.ChangeChainOperation(ev,cm.repop3)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAIN_SOLVED)
+		e1:SetOperation(cm.smop)
+		e1:SetReset(RESET_CHAIN)
+		e1:SetLabel(Duel.GetCurrentChain())
+		Duel.RegisterEffect(e1,tp)
+	end
+end
+function cm.smop(e,tp,eg,ep,ev,re,r,rp)
+	if ev~=e:GetLabel() then return end
+	local g=Duel.GetMatchingGroup(cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+	g=g:Select(tp,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		local s1=tc:IsSummonable(true,nil)
+		local s2=tc:IsMSetable(true,nil)
+		if (s1 and s2 and Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
+			Duel.Summon(tp,tc,true,nil)
+		else
+			Duel.MSet(tp,tc,true,nil)
 		end
 	end
 end
@@ -135,6 +144,10 @@ function cm.repop2(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(cm.rsop(e))
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+end
+function cm.repop3(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(function(c) return c:IsFacedown() and c:IsCanChangePosition() end,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	Duel.ChangePosition(g,POS_FACEUP_DEFENSE,POS_FACEDOWN_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
 end
 function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()==e:GetLabel()-1

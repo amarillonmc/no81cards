@@ -128,7 +128,7 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 		local i=1
 		for i=1,ev do
 			local te,p=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-			if te and p~=tp and Duel.IsChainDisablable(i) then t[i]=i end
+			if te and p~=tp and Duel.IsChainDisablable(i) then t[#t+1]=i end
 		end
 		if #t>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,5))

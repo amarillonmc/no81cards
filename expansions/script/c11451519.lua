@@ -1,7 +1,6 @@
 --去未知处
 --21.04.21
-local m=11451519
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -85,6 +84,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e2)
 	end

@@ -33,18 +33,18 @@ function cm.initial_effect(c)
 		local _Equip=Duel.Equip
 		function Duel.MoveToField(c,tp,...)
 			if c:IsLocation(LOCATION_EXTRA) and c:IsHasEffect(m) then
-				return
+				return false
 			elseif c:IsLocation(LOCATION_EXTRA) and c:GetOriginalCode()==m then
-				if not cm.spcost(nil,nil,tp,c) then return end
+				if not cm.spcost(nil,nil,tp,c) then return false end
 				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
 			end
 			return _MoveToField(c,tp,...)
 		end
 		function Duel.Equip(tp,c,mc,...)
 			if c:IsLocation(LOCATION_EXTRA) and c:IsHasEffect(m) then
-				return
+				return false
 			elseif c:IsLocation(LOCATION_EXTRA) and c:GetOriginalCode()==m then
-				if not cm.spcost(nil,nil,tp,c) then return end
+				if not cm.spcost(nil,nil,tp,c) then return false end
 				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
 			end
 			return _Equip(tp,c,mc,...)
