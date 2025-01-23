@@ -55,6 +55,19 @@ function cm.initial_effect(c)
 	e6:SetTargetRange(0,LOCATION_MZONE)
 	e6:SetTarget(cm.distg2)
 	c:RegisterEffect(e6)
+	if not cm.global_check then
+		cm.global_check=true
+		local _Overlay=Duel.Overlay
+		function Duel.Overlay(xc,v,...)
+			local t=Auxiliary.GetValueType(v)
+			local g=Group.CreateGroup()
+			if t=="Card" then g:AddCard(v) else g=v end
+			if g:IsExists(Card.IsLocation,1,nil,LOCATION_HAND) then
+				Duel.RaiseEvent(g:Filter(Card.IsLocation,nil,LOCATION_HAND),EVENT_CUSTOM+m+1,e,0,0,0,0)
+			end
+			return _Overlay(xc,v,...)
+		end
+	end
 end
 function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,1500) end
@@ -138,11 +151,21 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
 		e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 		e1:SetLabel(loc)
-		e1:SetCondition(cm.descon)
 		e1:SetCost(cm.descost)
 		e1:SetTarget(cm.destg)
 		e1:SetOperation(cm.desop)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		if sid==1 then
+			e1:SetCondition(cm.descon)
+			local e6=e1:Clone()
+			e6:SetCode(EVENT_CUSTOM+m+1)
+			e6:SetCondition(aux.TRUE)
+			c:RegisterEffect(e6)
+		elseif sid==2 then
+			e1:SetCode(EVENT_LEAVE_FIELD)
+		else
+			e1:SetCode(EVENT_LEAVE_GRAVE)
+		end
 		c:RegisterEffect(e1)
 	end
 end
@@ -151,7 +174,7 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.spfilter2,1,nil,loc)
 end
 function cm.spfilter2(c,loc)
-	return not c:IsLocation(loc) and c:IsPreviousLocation(loc)
+	return c:IsPreviousLocation(loc) and not (c:IsLocation(loc) and c:IsControler(c:GetPreviousControler()))
 end
 function cm.distg(e,c)
 	return c:IsFacedown()

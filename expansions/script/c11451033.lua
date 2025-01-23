@@ -30,6 +30,8 @@ function cm.initial_effect(c)
 		e3:SetValue(function(e,c) local res=c:GetFlagEffect(m)>0 c:ResetFlagEffect(m) return res end)
 		Duel.RegisterEffect(e3,0)
 		local _MoveToField=Duel.MoveToField
+		local _IsCanOverlay=Card.IsCanOverlay
+		local _Overlay=Duel.Overlay
 		local _Equip=Duel.Equip
 		function Duel.MoveToField(c,tp,...)
 			if c:IsLocation(LOCATION_EXTRA) and c:IsHasEffect(m) then
@@ -39,6 +41,33 @@ function cm.initial_effect(c)
 				cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
 			end
 			return _MoveToField(c,tp,...)
+		end
+		function Card.IsCanOverlay(c,...)
+			local tp=c:GetPreviousControler()
+			if c:IsLocation(LOCATION_EXTRA) and c:IsHasEffect(m) then
+				return false
+			elseif c:IsLocation(LOCATION_EXTRA) and c:GetOriginalCode()==m then
+				if not cm.spcost(nil,nil,tp,c) then return false end
+			end
+			return _IsCanOverlay(c,...)
+		end
+		function Duel.Overlay(xc,v,...)
+			local t=Auxiliary.GetValueType(v)
+			local g=Group.CreateGroup()
+			if t=="Card" then g:AddCard(v) else g=v end
+			for c in aux.Next(g) do
+				local tp=c:GetPreviousControler()
+				if c:IsLocation(LOCATION_EXTRA) and c:IsHasEffect(m) then
+					g:RemoveCard(c)
+				elseif c:IsLocation(LOCATION_EXTRA) and c:GetOriginalCode()==m then
+					if not cm.spcost(nil,nil,tp,c) then
+						g:RemoveCard(c)
+					else
+						cm.spcop(nil,tp,nil,nil,nil,nil,nil,nil,c)
+					end
+				end
+			end
+			return _Overlay(xc,g,...)
 		end
 		function Duel.Equip(tp,c,mc,...)
 			if c:IsLocation(LOCATION_EXTRA) and c:IsHasEffect(m) then

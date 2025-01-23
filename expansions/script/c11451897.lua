@@ -91,6 +91,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	local g=Duel.GetDecktopGroup(tp,1)
 	if not g or #g==0 then return end
+	g:GetFirst():SetStatus(STATUS_TO_HAND_WITHOUT_CONFIRM)
 	g:AddCard(c)
 	if Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end

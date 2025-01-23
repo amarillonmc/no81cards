@@ -17,6 +17,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	cm.hand_effect=cm.hand_effect or {}
 	cm.hand_effect[c]=e1
+	local e6=e1:Clone()
+	e6:SetCode(EVENT_CUSTOM+m+1)
+	e6:SetCondition(aux.TRUE)
+	c:RegisterEffect(e6)
 	--shuffle
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(11451416,1))
@@ -29,6 +33,19 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.shtg)
 	e2:SetOperation(cm.shop)
 	c:RegisterEffect(e2)
+	if not cm.global_check then
+		cm.global_check=true
+		local _Overlay=Duel.Overlay
+		function Duel.Overlay(xc,v,...)
+			local t=Auxiliary.GetValueType(v)
+			local g=Group.CreateGroup()
+			if t=="Card" then g:AddCard(v) else g=v end
+			if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then
+				Duel.RaiseEvent(g:Filter(Card.IsLocation,nil,LOCATION_DECK),EVENT_CUSTOM+m+1,e,0,0,0,0)
+			end
+			return _Overlay(xc,v,...)
+		end
+	end
 end
 function cm.cfilter(c,tp)
 	return c:IsPreviousLocation(LOCATION_DECK) and c:GetPreviousControler()==tp and not (c:IsLocation(LOCATION_DECK) and c:IsControler(tp))
@@ -140,10 +157,10 @@ function cm.clfilter(c,tp,seq)
 	return aux.GetColumn(c,tp)==seq
 end
 function cm.filter2(c,e)
-	return (c:IsPosition(POS_FACEDOWN_DEFENSE) or c:IsCanTurnSet()) and c:GetSequence()<=4 and not c:IsImmuneToEffect(e) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+	return (c:IsPosition(POS_FACEDOWN_DEFENSE) or c:IsCanTurnSet()) and c:GetSequence()<=4 and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.ctfilter(c,e)
-	return (c:IsPosition(POS_FACEDOWN_DEFENSE) or c:IsCanTurnSet()) and c:IsControlerCanBeChanged() and not c:IsImmuneToEffect(e) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+	return (c:IsPosition(POS_FACEDOWN_DEFENSE) or c:IsCanTurnSet()) and c:IsControlerCanBeChanged() and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.mzfilter(c,tp)
 	return c:IsLocation(LOCATION_MZONE) and c:IsFacedown() and c:IsControler(tp) and c:GetSequence()<=4

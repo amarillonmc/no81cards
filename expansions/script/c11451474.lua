@@ -56,7 +56,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_ONFIELD,0,3,3,nil)
-	Duel.SendtoGrave(g,REASON_COST)
+	Duel.SendtoGrave(g,REASON_SPSUMMON)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_SPELL
@@ -75,6 +75,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then return end
 	local tc=g:GetFirst()
 	if c:IsRelateToEffect(e) and tc==c then c:CancelToGrave() end
+	if tc:IsOnField() then Duel.HintSelection(Group.FromCards(tc)) end
 	if Duel.SendtoHand(tc,1-tp,REASON_EFFECT)>0 then
 		if tc:IsPreviousLocation(LOCATION_HAND) then Duel.ShuffleHand(tp) end
 		if not tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA) or not tc:IsControler(1-tp) then return end

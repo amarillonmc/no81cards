@@ -27,6 +27,10 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_LEAVE_GRAVE)
 	e4:SetCondition(aux.TRUE)
 	c:RegisterEffect(e4)
+	local e5=e3:Clone()
+	e5:SetCode(EVENT_CUSTOM+m+1)
+	e5:SetCondition(aux.TRUE)
+	c:RegisterEffect(e5)
 	if not cm.global_check then
 		cm.global_check=true
 		cm[0]={}
@@ -41,6 +45,16 @@ function cm.initial_effect(c)
 		ge2:SetCode(EVENT_LEAVE_GRAVE)
 		ge2:SetOperation(cm.chkop2)
 		Duel.RegisterEffect(ge2,0)
+		local _Overlay=Duel.Overlay
+		function Duel.Overlay(xc,v,...)
+			local t=Auxiliary.GetValueType(v)
+			local g=Group.CreateGroup()
+			if t=="Card" then g:AddCard(v) else g=v end
+			if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then
+				Duel.RaiseEvent(g:Filter(Card.IsLocation,nil,LOCATION_DECK),EVENT_CUSTOM+m+1,e,0,0,0,0)
+			end
+			return _Overlay(xc,v,...)
+		end
 	end
 	if not cm.global_check2 then
 		cm.global_check2=true

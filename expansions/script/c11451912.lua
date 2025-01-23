@@ -83,7 +83,7 @@ function cm.initial_effect(c)
 			local tp=tc:GetControler()
 			if 1==1 then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
 				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))
-				local tg=Duel.GetMatchingGroup(cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,nil,nil,tp,tc):CancelableSelect(tp,1,1,nil)
+				local tg=Duel.GetMatchingGroup(cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,tc,nil,tp,tc):CancelableSelect(tp,1,1,nil)
 				if tg and #tg>0 then
 					local e1=Effect.CreateEffect(tg:GetFirst())
 					e1:SetDescription(aux.Stringid(tg:GetFirst():GetOriginalCode(),7))
@@ -107,7 +107,7 @@ function cm.initial_effect(c)
 			local tp=tc:GetControler()
 			if 1==1 then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
 				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))
-				local tg=Duel.GetMatchingGroup(cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,nil,nil,tp,tc):CancelableSelect(tp,1,1,nil)
+				local tg=Duel.GetMatchingGroup(cm.tspfilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,tc,nil,tp,tc):CancelableSelect(tp,1,1,nil)
 				if tg and #tg>0 then 
 					local e1=Effect.CreateEffect(tg:GetFirst())
 					e1:SetDescription(aux.Stringid(tg:GetFirst():GetOriginalCode(),7))
