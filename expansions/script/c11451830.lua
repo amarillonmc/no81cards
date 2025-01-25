@@ -78,6 +78,8 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 		local sg2=g2:SelectSubGroup(1-tp,cm.fselect,false,1,3)
 		if Duel.SendtoDeck(sg1+sg2,nil,2,REASON_EFFECT)>0 then
 			local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+			if Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_DECK):IsExists(Card.IsControler,1,nil,tp) then Duel.ShuffleDeck(tp) end
+			if Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_DECK):IsExists(Card.IsControler,1,nil,1-tp) then Duel.ShuffleDeck(1-tp) end
 			local ct1=#Group.__band(og,sg1)
 			local ct2=#Group.__band(og,sg2)
 			if ct1==0 and ct2==0 then return end

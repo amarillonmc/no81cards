@@ -82,6 +82,8 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 		g=g:Filter(Card.IsAbleToDeck,nil)
 		if #g==0 then return end
 		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+		local og=Duel.GetOperatedGroup()
+		if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
 		local ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 		Duel.Draw(tp,ct,REASON_EFFECT)
 	else

@@ -43,19 +43,29 @@ end
 function c67200350.filter(c,atk)
 	return c:IsType(TYPE_PENDULUM) and c:IsAttackBelow(atk)
 end
+function c67200350.cfilter(c,tp)
+	return c:IsFaceup() and c:IsSummonPlayer(1-tp)
+end
+function c67200350.tgfilter(c,tp,g)
+	return g:IsContains(c) and Duel.IsExistingMatchingCard(c67200350.filter,tp,LOCATION_DECK,0,1,nil,c:GetAttack())
+end
 function c67200350.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if not eg then return false end
-	local tc=eg:GetFirst()
-	local atk=tc:GetAttack()
-	if chkc then return chkc==tc end
-	if chk==0 then return ep~=tp and tc:IsFaceup() and tc:IsOnField() and tc:IsCanBeEffectTarget(e) and Duel.IsExistingMatchingCard(c67200350.filter,tp,LOCATION_DECK,0,1,nil,atk) end
-	Duel.SetTargetCard(eg)
+	local g=eg:Filter(c67200350.cfilter,nil,tp)
+	--local atk=tc:GetAttack()
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c67200350.tgfilter(chkc,tp,g) end
+	if chk==0 then return Duel.IsExistingTarget(c67200350.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp,g) end
+	if g:GetCount()==1 then
+		Duel.SetTargetCard(g)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		Duel.SelectTarget(tp,c67200350.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp,g)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,tc,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,eg,1,0,0)
 end
 function c67200350.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=eg:GetFirst()  
+	local tc=Duel.GetFirstTarget()  
 	local atk=tc:GetAttack()
 	if not c:IsRelateToEffect(e) then return end
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) then

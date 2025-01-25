@@ -11,6 +11,7 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 end
+s.has_text_type=TYPE_DUAL
 function cm.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_PENDULUM)
 end

@@ -49,6 +49,7 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge3,0)
 	end
 end
+s.has_text_type=TYPE_SPIRIT
 function cm.MergedDelayEventCheck1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetTurnCount()<=0 or not eg then return end
 	local c=e:GetHandler()

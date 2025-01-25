@@ -51,7 +51,7 @@ function c65850005.rmop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 and Duel.IsExistingMatchingCard(c65850005.filter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(65850005,2)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,c65850005.setfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,c65850005.setfilter,tp,LOCATION_DECK,0,1,1,nil)
 		if g:GetCount()>0 then
 	local tc=g:GetFirst()
 	if tc and Duel.SSet(tp,tc)~=0 then

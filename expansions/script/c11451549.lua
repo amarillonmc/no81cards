@@ -275,6 +275,7 @@ function cm.erop(e,tp,eg,ep,ev,re,r,rp)
 	if #tg>0 then
 		Duel.SendtoDeck(tg,nil,2,REASON_EFFECT)
 		local og=Duel.GetOperatedGroup()
+		if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
 		local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 		if ct>0 then
 			local rg=Duel.GetDecktopGroup(tp,ct)

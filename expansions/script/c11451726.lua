@@ -193,7 +193,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	if #g==0 then return end
 	local tc=g:GetFirst():GetEquipTarget()
-	if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)>0 and tc:IsFaceup() then
+	if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)>0 and g:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) and tc:IsFaceup() then
 		local sg=Duel.GetMatchingGroup(cm.dfilter,tp,LOCATION_DECK,0,nil,tp)
 		if c:IsRelateToEffect(e) and c:IsLocation(LOCATION_SZONE) and not c:IsStatus(STATUS_LEAVE_CONFIRMED) then sg:AddCard(c) end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)

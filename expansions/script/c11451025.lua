@@ -30,24 +30,52 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.sumtg1)
 	e3:SetOperation(cm.sumop1)
 	c:RegisterEffect(e3)
+	local e31=e3:Clone()
+	e31:SetCode(EVENT_CUSTOM+m+1)
+	c:RegisterEffect(e31)
 	local e4=e3:Clone()
 	e4:SetDescription(aux.Stringid(m,1))
 	e4:SetCondition(cm.sumcon2)
 	e4:SetTarget(cm.sumtg2)
 	e4:SetOperation(cm.sumop2)
 	c:RegisterEffect(e4)
+	local e41=e4:Clone()
+	e41:SetCode(EVENT_CUSTOM+m+1)
+	c:RegisterEffect(e41)
 	local e5=e3:Clone()
 	e5:SetDescription(aux.Stringid(m,2))
 	e5:SetCondition(cm.sumcon3)
 	e5:SetTarget(cm.sumtg)
 	e5:SetOperation(cm.sumop)
 	c:RegisterEffect(e5)
+	local e51=e5:Clone()
+	e51:SetCode(EVENT_CUSTOM+m+1)
+	c:RegisterEffect(e51)
 	local e6=e3:Clone()
 	e6:SetDescription(aux.Stringid(m,4))
 	c:RegisterEffect(e6)
+	local e61=e6:Clone()
+	e61:SetCode(EVENT_CUSTOM+m+1)
+	c:RegisterEffect(e61)
 	local e7=e4:Clone()
 	e7:SetDescription(aux.Stringid(m,4))
 	c:RegisterEffect(e7)
+	local e71=e7:Clone()
+	e71:SetCode(EVENT_CUSTOM+m+1)
+	c:RegisterEffect(e71)
+	if not cm.global_check then
+		cm.global_check=true
+		local _Overlay=Duel.Overlay
+		function Duel.Overlay(xc,v,...)
+			local t=Auxiliary.GetValueType(v)
+			local g=Group.CreateGroup()
+			if t=="Card" then g:AddCard(v) else g=v end
+			if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then
+				Duel.RaiseEvent(g:Filter(Card.IsLocation,nil,LOCATION_DECK),EVENT_CUSTOM+m+1,e,0,0,0,0)
+			end
+			return _Overlay(xc,v,...)
+		end
+	end
 end
 function cm.filter(c)
 	return c:IsType(TYPE_FLIP) and c:IsAbleToHand()
@@ -104,7 +132,7 @@ function cm.smfilter(c)
 	return c:IsSummonable(true,nil) or c:IsMSetable(true,nil)
 end
 function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Draw(tp,1,REASON_EFFECT)<0 then return end
+	if Duel.Draw(tp,1,REASON_EFFECT)<1 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.smfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
 	local tc=g:GetFirst()
@@ -127,7 +155,7 @@ function cm.sumtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function cm.sumop1(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Draw(tp,1,REASON_EFFECT)<0 then return end
+	if Duel.Draw(tp,1,REASON_EFFECT)<1 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
 	local g=Duel.SelectMatchingCard(tp,Card.IsSummonable,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,true,nil)
 	local tc=g:GetFirst()
@@ -142,7 +170,7 @@ function cm.sumtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function cm.sumop2(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Draw(tp,1,REASON_EFFECT)<0 then return end
+	if Duel.Draw(tp,1,REASON_EFFECT)<1 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,Card.IsMSetable,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,true,nil)
 	local tc=g:GetFirst()

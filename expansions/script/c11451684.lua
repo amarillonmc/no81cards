@@ -1,6 +1,5 @@
 --在此的印痕-
-local m=11451684
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -18,6 +17,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.acop)
 	c:RegisterEffect(e2)
 end
+s.has_text_type=TYPE_DUAL
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) end
 	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_MZONE,0,1,nil) end

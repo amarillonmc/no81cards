@@ -21,7 +21,7 @@ function s.initial_effect(c)
 	local e2 = Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_LEAVE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_CANNOT_NEGATE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetOperation(s.regop)
 	c:RegisterEffect(e2)
 	if not s.global_flag then
@@ -106,7 +106,8 @@ function s.chainreg(e, tp, eg, ep, ev, re, r, rp)
 	e:GetHandler():RegisterFlagEffect(id, RESET_EVENT + 0x1fc0000 + RESET_CHAIN, 0, 1)
 end
 function s.drcon(e, tp, eg, ep, ev, re, r, rp)
-	return ep ~= tp and e:GetHandler():GetFlagEffect(id) ~= 0
+	local c=e:GetHandler()
+	return Duel.GetTurnPlayer()~=tp and c:IsPreviousControler(tp) and rp==1-tp and e:GetHandler():GetFlagEffect(id) ~= 0
 end
 function s.drop(e, tp, eg, ep, ev, re, r, rp)
 	Duel.Hint(HINT_CARD, 0, id)

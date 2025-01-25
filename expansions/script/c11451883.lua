@@ -157,6 +157,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		local ng=sg:Filter(Card.IsType,nil,TYPE_NORMAL)
 		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 		local og=Duel.GetOperatedGroup()
+		if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
 		og=Group.__band(og,ng)
 		local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 		Duel.Draw(tp,ct,REASON_EFFECT)
