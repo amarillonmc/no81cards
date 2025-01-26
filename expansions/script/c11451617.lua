@@ -60,18 +60,18 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local cg=Duel.GetMatchingGroup(Card.IsCanChangePosition,tp,0,LOCATION_MZONE,nil)
-	if chk==0 then return #cg>0 end
+local _IsCanTurnSet=Card.IsCanTurnSet
+function Card.IsCanTurnSet(c)
+	return (c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)) or ((_IsCanTurnSet(c) and not c:IsLocation(LOCATION_SZONE) and not c:IsStatus(STATUS_BATTLE_DESTROYED)))
 end
-local _IsCanChangePosition=Card.IsCanChangePosition
-function Card.IsCanChangePosition(c)
-	return _IsCanChangePosition(c) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local cg=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,0,LOCATION_MZONE,nil)
+	if chk==0 then return #cg>0 end
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local cg=Duel.GetMatchingGroup(Card.IsCanChangePosition,tp,0,LOCATION_MZONE,nil)
-	local ct=Duel.ChangePosition(cg,POS_FACEUP_DEFENSE,POS_FACEDOWN_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
+	local cg=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,0,LOCATION_MZONE,nil)
+	local ct=Duel.ChangePosition(cg,POS_FACEDOWN_DEFENSE)
 	if ct>0 and c:IsRelateToEffect(e) and c:GetColumnGroupCount()==0 and Duel.IsPlayerCanDraw(tp,ct) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		local ct2=Duel.Draw(tp,ct,REASON_EFFECT)
 		if ct2>0 then

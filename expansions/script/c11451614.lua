@@ -126,7 +126,7 @@ function Card.IsCanChangePosition(c)
 	return _IsCanChangePosition(c) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function cm.pttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local cg=Duel.GetMatchingGroup(Card.IsCanChangePosition,tp,LOCATION_MZONE,0,nil)
+	local cg=Duel.GetMatchingGroup(function(c) return not c:IsPosition(POS_FACEUP_ATTACK) and c:IsCanChangePosition() end,tp,LOCATION_MZONE,0,nil)
 	if chk==0 then return #cg>0 end
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
@@ -146,9 +146,9 @@ function cm.clfilter(c,tp,seq)
 	return aux.GetColumn(c,tp)==seq
 end
 function cm.ptop(e,tp,eg,ep,ev,re,r,rp)
-	local cg=Duel.GetMatchingGroup(Card.IsCanChangePosition,tp,LOCATION_MZONE,0,nil)
+	local cg=Duel.GetMatchingGroup(function(c) return not c:IsPosition(POS_FACEUP_ATTACK) and c:IsCanChangePosition() end,tp,LOCATION_MZONE,0,nil)
 	local seq=e:GetLabel()
-	local ct=Duel.ChangePosition(cg,POS_FACEUP_DEFENSE,POS_FACEDOWN_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
+	local ct=Duel.ChangePosition(cg,POS_FACEUP_ATTACK)
 	if ct>0 and Duel.GetMatchingGroupCount(cm.clfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,seq)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil)

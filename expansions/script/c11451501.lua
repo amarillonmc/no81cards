@@ -1,7 +1,6 @@
 --星连心
 --21.04.21
-local m=11451501
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

@@ -35,10 +35,10 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()~=100 then return false end
 		e:SetLabel(0)
-		return Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler()) and dg:GetCount()>0
+		return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler(),POS_FACEDOWN) and dg:GetCount()>0
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local cg=Duel.SelectMatchingCard(tp,Card.IsAbleToGraveAsCost,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,dg:GetCount(),e:GetHandler())
+	local cg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,dg:GetCount(),e:GetHandler(),POS_FACEDOWN)
 	local tc=cg:GetFirst()
 	local ctype=0
 	while tc do
@@ -50,7 +50,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		tc=cg:GetNext()
 	end
 	e:SetLabel(0,cg:GetCount())
-	Duel.SendtoGrave(cg,REASON_COST)
+	Duel.Remove(cg,POS_FACEDOWN,REASON_COST)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
 		Duel.SetChainLimit(s.chlimit(ctype))
 	end

@@ -1,0 +1,55 @@
+--舞斗-凯旋的协奏曲
+local s,id,o=GetID()
+function s.initial_effect(c)
+	aux.AddCodeList(c,12823285)
+	--Activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetOperation(s.activate)
+	c:RegisterEffect(e1)
+end
+function s.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local cl=Duel.GetCurrentChain()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EFFECT_PIERCE)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(s.efilter)
+	e1:SetValue(DOUBLE_DAMAGE)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	if cl==7 and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_ONFIELD,0,1,nil)
+	and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(id,2))
+		--cannot activate
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_IGNORE_IMMUNE)
+		e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+		e2:SetTargetRange(0,1)
+		e2:SetValue(s.aclimit)
+		Duel.RegisterEffect(e2,tp)
+		local e3=Effect.CreateEffect(c)
+		e3:SetDescription(aux.Stringid(id,1))
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e3:SetReset(RESET_PHASE+PHASE_END)
+		e3:SetTargetRange(1,0)
+		Duel.RegisterEffect(e3,tp)
+	end
+end
+function s.filter(c)
+	return c:IsFaceup() and c:IsCode(12823285)
+end
+function s.efilter(e,c)
+	return c:IsFaceup() and c:IsCode(12823285)
+end
+function s.aclimit(e,re,tp)
+	local loc=re:GetActivateLocation()
+	return loc&LOCATION_ONFIELD~=0 and re:IsActiveType(TYPE_MONSTER)
+end

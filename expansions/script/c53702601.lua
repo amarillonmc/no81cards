@@ -167,3 +167,76 @@ function s.ClearWorldAttCheck(ap,ep)
 	end
 	return attchk
 end
+function s.ScreemEquips(c,pro)
+	s[53762000]={}
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_EQUIP)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_CONTINUOUS_TARGET)
+	e1:SetTarget(s.ScreemEtarget)
+	e1:SetOperation(s.ScreemEoperation)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_EQUIP)
+	e2:SetCode(EFFECT_SET_ATTACK)
+	e2:SetValue(100)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EFFECT_SET_DEFENSE)
+	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetProperty(EFFECT_FLAG_DELAY+pro)
+	e4:SetCode(EVENT_TO_GRAVE)
+	e4:SetCondition(s.ScreemEDcon)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_EQUIP_LIMIT)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e5:SetValue(1)
+	c:RegisterEffect(e5)
+	if not s.ScreemEquips_check then
+		s.ScreemEquips_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		ge1:SetCode(EVENT_LEAVE_FIELD_P)
+		ge1:SetOperation(s.ScreemEvalcheck)
+		Duel.RegisterEffect(ge1,0)
+	end
+	return e4
+end
+function s.ScreemEDfilter(c)
+	local ec=c:GetPreviousEquipTarget()
+	return ec and c:GetReason()&0x201==0x201 and c:IsFaceup() and ec:IsReason(REASON_XYZ)-- and c:IsSetCard(0xc538)
+end
+function s.ScreemEvalcheck(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(s.ScreemEDfilter,nil)
+	g:ForEach(Card.ResetFlagEffect,53762000)
+	local mg=Group.CreateGroup()
+	for eqc in aux.Next(g) do mg:AddCard(eqc:GetPreviousEquipTarget()) end
+	for ec in aux.Next(mg) do
+		local eqg=Group.CreateGroup()
+		for eqc in aux.Next(g) do if eqc:GetPreviousEquipTarget()==ec then eqg:AddCard(eqc) end end
+		g:ForEach(Card.RegisterFlagEffect,53762000,RESET_EVENT+0x1420000,0,1,eqg:GetClassCount(Card.GetCode))
+	end
+end
+function s.ScreemEtarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+	Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(),1,0,0)
+end
+function s.ScreemEoperation(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if e:GetHandler():IsRelateToEffect(e) and tc:IsRelateToEffect(e) and tc:IsFaceup() then
+		Duel.Equip(tp,e:GetHandler(),tc)
+	end
+end
+function s.ScreemEDcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ec=c:GetPreviousEquipTarget()
+	return ec and c:GetReason()&0x201==0x201 and ec:IsReason(REASON_XYZ)
+end

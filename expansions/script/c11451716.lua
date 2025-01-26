@@ -1,6 +1,5 @@
 --绛胧烈刃射频结系
-local m=11451716
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -70,10 +69,10 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c,tp)
-	return c:IsFaceup() and not c:IsAttack(c:GetBaseAttack()) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetAttack())
+	return c:IsFaceup() and not c:IsAttack(c:GetBaseAttack()) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,math.abs(c:GetAttack()-c:GetBaseAttack()))
 end
 function cm.thfilter(c,atk)
-	return c:IsAbleToHand() and c:IsRace(RACE_PSYCHO) and not c:IsAttack(atk)
+	return c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c:IsAttackBelow(atk)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and cm.filter(chkc) end
@@ -86,7 +85,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		local atk=tc:GetAttack()
+		local atk=math.abs(tc:GetAttack()-tc:GetBaseAttack())
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,atk)
 		if #g>0 then

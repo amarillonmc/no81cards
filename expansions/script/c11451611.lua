@@ -96,7 +96,7 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 			local mi,ma=c:GetTributeRequirement()
 			local e1=Effect.CreateEffect(c)
 			e1:SetDescription(aux.Stringid(m,4))
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_SUMMON_PROC)
 			e1:SetCondition(cm.ttcon)
@@ -116,7 +116,7 @@ function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cacon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousPosition(POS_FACEDOWN) and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) and aux.bpcon()
+	return e:GetHandler():IsPreviousPosition(POS_FACEDOWN) and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) --and aux.bpcon()
 end
 function cm.catg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

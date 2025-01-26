@@ -18,7 +18,6 @@ function s.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1,id)
 	e2:SetCondition(s.setcon)
-	e2:SetCost(s.setcost)
 	e2:SetTarget(s.settg)
 	e2:SetOperation(s.setop)
 	c:RegisterEffect(e2)
@@ -26,15 +25,14 @@ end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
 end
-function s.cfilter(c,type)
-	return c:IsType(type) and c:IsAbleToGraveAsCost() and c:IsFacedown()
+function s.cfilter(c,ctype)
+	return c:IsType(ctype) and c:IsReleasable() and c:IsFacedown()
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local type=bit.band(re:GetActiveType(),0x7)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler(),type) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local cg=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler(),type)
-	Duel.SendtoGrave(cg,REASON_COST)
+	local ctype=bit.band(re:GetActiveType(),0x7)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,aux.ExceptThisCard(e),ctype) end
+	local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(e),ctype)
+	Duel.Release(g,REASON_COST)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -51,16 +49,17 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	return Duel.GetTurnPlayer()==tp and ph==PHASE_MAIN1 or ph==PHASE_MAIN2
+	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0)
+	return g:FilterCount(Card.IsFaceup,nil)==0 and Duel.GetTurnPlayer()==tp and ph==PHASE_MAIN1 or ph==PHASE_MAIN2
 end
 function s.setfilter(c)
-	return c:IsAbleToGraveAsCost() and c:IsFacedown()
+	return c:IsAbleToRemoveAsCost(POS_FACEDOWN)
 end
 function s.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local cg=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
-	Duel.SendtoGrave(cg,REASON_COST)
+	Duel.Remove(cg,POS_FACEDOWN,REASON_COST)
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsSSetable() end

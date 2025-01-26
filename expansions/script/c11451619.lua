@@ -10,7 +10,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	--e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,3))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e2:SetRange(LOCATION_EXTRA)
 	e2:SetCondition(cm.setcon)
 	e2:SetOperation(cm.setop)
@@ -32,6 +32,20 @@ function cm.initial_effect(c)
 	e5:SetRange(0xff)
 	e5:SetValue(TYPE_FUSION)
 	c:RegisterEffect(e5)
+	if cm.counter==nil then
+		cm.counter=true
+		cm[0]={}
+		cm[1]={}
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e3:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+		e3:SetOperation(cm.resetcount)
+		Duel.RegisterEffect(e3,0)
+	end
+end
+function cm.resetcount(e,tp,eg,ep,ev,re,r,rp)
+	cm[0]={}
+	cm[1]={}
 end
 function cm.ffilter(c,fc,sub,mg,sg)
 	return c:IsLevelAbove(1) and (not sg or not sg:IsExists(Card.IsLevel,1,c,c:GetLevel()))
@@ -39,19 +53,20 @@ end
 function cm.dptcheck(g)
 	return g:GetClassCount(Card.GetLevel)==#g
 end
-function cm.cfilter(c)
-	return c:IsLevelAbove(1) and c:IsReleasable(REASON_MATERIAL)
+function cm.cfilter(c,tp)
+	return c:IsLevelAbove(1) and c:IsReleasable(REASON_MATERIAL) and (#cm[tp]==0 or not c:IsLevel(table.unpack(cm[tp])))
 end
 function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil)
+	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil,tp)
 	return mg:CheckSubGroup(cm.dptcheck,2,99) and e:GetHandler():IsSSetable() and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil)
+	local mg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,0,nil,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local tg=mg:SelectSubGroup(tp,cm.dptcheck,true,2,99)
 	if tg and #tg>0 then
+		for tc in aux.Next(tg) do table.insert(cm[tp],tc:GetLevel()) end
 		c:SetMaterial(tg)
 		Duel.Release(tg,REASON_MATERIAL)
 		Duel.BreakEffect()

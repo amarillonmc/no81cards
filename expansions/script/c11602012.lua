@@ -101,8 +101,8 @@ end
 
 function s.e2cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsDiscardable() end
-	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
+	if chk==0 then return true end
+		Duel.SendtoExtraP(c,nil,REASON_COST)
 end
 
 function s.e2rmfilter(c,tp)
@@ -117,6 +117,5 @@ end
 
 function s.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local rg=eg:Filter(s.e2rmfilter,nil,tp)
-	local sg=rg:Filter(Card.IsRelateToEffect,nil,e)
-	Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+	Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 end

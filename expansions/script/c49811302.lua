@@ -64,9 +64,23 @@ function c49811302.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c49811302.spop(e,tp,eg,ep,ev,re,r,rp)
+    local c=e:GetHandler()
     if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
     if Duel.IsPlayerCanSpecialSummonMonster(tp,49811304,0,TYPES_TOKEN_MONSTER,700,700,1,RACE_BEAST,ATTRIBUTE_LIGHT) then
         local token=Duel.CreateToken(tp,49811304)
-        Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
+        Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
+        local e1=Effect.CreateEffect(c)
+        e1:SetType(EFFECT_TYPE_FIELD)
+        e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+        e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+        e1:SetRange(LOCATION_MZONE)
+        e1:SetAbsoluteRange(tp,1,0)
+        e1:SetTarget(c49811302.splimit)
+        e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+        token:RegisterEffect(e1,true)
+        Duel.SpecialSummonComplete()
     end
+end
+function c49811302.splimit(e,c)
+    return not c:IsRace(RACE_BEAST) and c:IsLocation(LOCATION_EXTRA)
 end

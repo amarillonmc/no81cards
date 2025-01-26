@@ -5,7 +5,6 @@ function cm.initial_effect(c)
 	--trigger
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,3))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -173,7 +172,7 @@ end
 function cm.thfilter(c,...)
 	local tab={...}
 	for _,code in ipairs(tab) do
-		if c:GetOriginalCode()==code and c:IsAbleToHand() then return true end
+		if c:GetOriginalCode()==code and c:IsType(TYPE_PENDULUM) and (c:IsFaceup() or not c:IsLocation(LOCATION_MZONE)) then return true end
 	end
 	return false
 end
@@ -185,10 +184,9 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		if c:GetFlagEffect(code)>0 then tab[#tab+1]=code end
 	end
 	if chk==0 then
-		return #tab>0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,table.unpack(tab))
+		return #tab>0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_MZONE,0,1,nil,e,tp,table.unpack(tab))
 	end
 	e:SetLabel(table.unpack(tab))
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_EXTRA)
 end
 function cm.psptg2(code)
 	return function(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -201,12 +199,12 @@ function cm.psptg2(code)
 end
 function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 	local tab={e:GetLabel()}
-	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil,table.unpack(tab))
+	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK+LOCATION_MZONE,0,nil,table.unpack(tab))
 	if #g==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local sg=g:Select(tp,1,1,nil) --SelectSubGroup(tp,aux.dncheck,false,1,g:GetClassCount(Card.GetOriginalCode))
-	if #sg>0 and Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 then
-		Duel.ConfirmCards(1-tp,sg)
+	if #sg>0 then
+		Duel.SendtoExtraP(sg,nil,REASON_EFFECT)
 	end
 end
 function cm.spfilter(c)
@@ -221,6 +219,7 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2))
 	if Duel.GetCurrentChain()>1 then
 		e:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE+0x200)
 	else e:SetProperty(EFFECT_FLAG_DELAY) end

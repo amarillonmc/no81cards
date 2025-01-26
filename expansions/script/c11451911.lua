@@ -75,22 +75,30 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,5))
 			Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
 		end
-		--if (e:IsHasType(EFFECT_TYPE_TRIGGER_O) and c:IsFaceup()) or (e:IsHasType(EFFECT_TYPE_QUICK_O) and c:IsFacedown()) then return false end
 		if Duel.GetCurrentChain()<1 then return false end
 		if c:GetFlagEffect(m+1)>0 then return false end
 		local loc=0
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_HAND end
-		if Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)>0 then loc=loc+LOCATION_EXTRA end
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)>-1 then loc=loc+LOCATION_HAND end
+		if Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)>-1 then loc=loc+LOCATION_EXTRA end
 		if loc==0 or not c:IsLocation(loc) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_PENDULUM,tp,false,false) then return false end
+		local lock1=(c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_MZONE)==0) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)==0)
+		local lock2=false
 		if rpz==nil and lpz==nil then
 			local z1=Duel.CheckLocation(tp,LOCATION_SZONE,0)
 			local z2=Duel.CheckLocation(tp,LOCATION_SZONE,4)
 			if not z1 or not z2 then return false end
-			local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND,0,c,TYPE_PENDULUM)
-			if Duel.GetCurrentChain()>0 then
-				g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,0,c,TYPE_PENDULUM)
+			--if not z1 and not z2 then return false end
+			if not z1 or not z2 then
+				lock2=Duel.GetFieldCard(tp,LOCATION_SZONE,0)
+				if not z2 then lock2=Duel.GetFieldCard(tp,LOCATION_SZONE,4) end
+				if aux.GetValueType(lock2)~="Card" or lock2:GetOriginalType()&TYPE_PENDULUM==0 then return false end
 			end
-			local res=g:CheckSubGroup(cm.fselect,2,2,lv)
+			local g=Duel.GetMatchingGroup(cm.IsOriginalType,tp,LOCATION_HAND,0,c,TYPE_PENDULUM)
+			if Duel.GetCurrentChain()>0 then
+				g=Duel.GetMatchingGroup(cm.IsOriginalType,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,0,c,TYPE_PENDULUM)
+			elseif lock1 or lock2 then return false end
+			g:Sub(g:Filter(Card.IsLocation,nil,LOCATION_PZONE))
+			local res=g:CheckSubGroup(cm.fselect,2,2,lv,lock1,lock2,c)
 			--if res then c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1) end
 			return res
 		elseif rpz==nil or lpz==nil then
@@ -98,16 +106,21 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			if lpz then seq=4 end
 			local z1=Duel.CheckLocation(tp,LOCATION_SZONE,seq)
 			if not z1 then return false end
+			if not z1 then
+				lock2=Duel.GetFieldCard(tp,LOCATION_SZONE,seq)
+				if aux.GetValueType(lock2)~="Card" or lock2:GetOriginalType()&TYPE_PENDULUM==0 then return false end
+			end
 			local pz=lpz or rpz
 			local scale=pz:GetLeftScale()
 			local ds=lv<scale
-			local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND,0,c,TYPE_PENDULUM)
+			local g=Duel.GetMatchingGroup(cm.IsOriginalType,tp,LOCATION_HAND,0,c,TYPE_PENDULUM)
 			local fil=cm.dfilter
 			if lv>scale then fil=cm.hfilter end
 			if Duel.GetCurrentChain()>0 then
-				g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,0,c,TYPE_PENDULUM)
-			end
-			local res=g:IsExists(fil,1,nil,lv)
+				g=Duel.GetMatchingGroup(cm.IsOriginalType,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,0,c,TYPE_PENDULUM)
+			elseif lock1 or lock2 then return false end
+			g:Sub(g:Filter(Card.IsLocation,nil,LOCATION_PZONE))
+			local res=g:IsExists(cm.ffilter,1,nil,lv,lock1,lock2,fil,c)
 			--if res then c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1) end
 			return res
 		else
@@ -120,39 +133,51 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 	end
 	c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+	local lock1=(c:IsLocation(LOCATION_HAND) and Duel.GetLocationCount(tp,LOCATION_MZONE)==0) or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)==0)
+	local lock2=false
 	local sg=Group.CreateGroup()
 	if rpz==nil and lpz==nil then
 		local z1=Duel.CheckLocation(tp,LOCATION_SZONE,0)
 		local z2=Duel.CheckLocation(tp,LOCATION_SZONE,4)
-		if not z1 or not z2 then return false end
-		local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND,0,c,TYPE_PENDULUM)
-		if Duel.GetCurrentChain()>1 then
-			g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,0,c,TYPE_PENDULUM)
+		if not z1 and not z2 then return false end
+		if not z1 or not z2 then
+			lock2=Duel.GetFieldCard(tp,LOCATION_SZONE,0)
+			if not z2 then lock2=Duel.GetFieldCard(tp,LOCATION_SZONE,4) end
+			if aux.GetValueType(lock2)~="Card" or lock2:GetOriginalType()&TYPE_PENDULUM==0 then return false end
 		end
+		local g=Duel.GetMatchingGroup(cm.IsOriginalType,tp,LOCATION_HAND,0,c,TYPE_PENDULUM)
+		if Duel.GetCurrentChain()>1 then
+			g=Duel.GetMatchingGroup(cm.IsOriginalType,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,0,c,TYPE_PENDULUM)
+		elseif lock1 or lock2 then return false end
+		g:Sub(g:Filter(Card.IsLocation,nil,LOCATION_PZONE))
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-		sg=g:SelectSubGroup(tp,cm.fselect,false,2,2,lv)
+		sg=g:SelectSubGroup(tp,cm.fselect,false,2,2,lv,lock1,lock2,c)
 	elseif rpz==nil or lpz==nil then
 		local seq=0
 		if lpz then seq=4 end
 		local z1=Duel.CheckLocation(tp,LOCATION_SZONE,seq)
-		if not z1 then return false end
+		if not z1 then
+			lock2=Duel.GetFieldCard(tp,LOCATION_SZONE,seq)
+			if aux.GetValueType(lock2)~="Card" or lock2:GetOriginalType()&TYPE_PENDULUM==0 then return false end
+		end
 		local pz=lpz or rpz
 		local scale=pz:GetLeftScale()
-		local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND,0,c,TYPE_PENDULUM)
+		local g=Duel.GetMatchingGroup(cm.IsOriginalType,tp,LOCATION_HAND,0,c,TYPE_PENDULUM)
 		local fil=cm.dfilter
 		if lv>scale then fil=cm.hfilter end
 		if Duel.GetCurrentChain()>1 then
-			g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,0,c,TYPE_PENDULUM)
-		end
+			g=Duel.GetMatchingGroup(cm.IsOriginalType,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD,0,c,TYPE_PENDULUM)
+		elseif lock1 or lock2 then return false end
+		g:Sub(g:Filter(Card.IsLocation,nil,LOCATION_PZONE))
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-		sg=g:FilterSelect(tp,fil,1,1,nil,lv)
+		sg=g:FilterSelect(tp,cm.ffilter,1,1,nil,lv,lock1,lock2,fil,c)
 	end
 	for sc in aux.Next(sg) do
 		if not sc:IsLocation(LOCATION_HAND) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+			e1:SetReset(RESET_EVENT+0x4760000)
 			sc:RegisterEffect(e1)
 			local e2=e1:Clone()
 			e2:SetCode(EFFECT_DISABLE_EFFECT)

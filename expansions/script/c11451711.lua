@@ -3,22 +3,16 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--effect1
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(11451711,4))
 	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
-	--e1:SetCountLimit(1)
-	e1:SetCondition(cm.recon)
+	e1:SetCountLimit(1)
+	--e1:SetCondition(cm.recon)
 	e1:SetTarget(cm.retg)
 	e1:SetOperation(cm.reop)
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_MOVE)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_DELAY)
-	e2:SetCondition(cm.mvcon)
-	e2:SetOperation(cm.mvop1)
-	c:RegisterEffect(e2)
 	--effect2
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,2))
@@ -45,14 +39,23 @@ function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	for i=1,7 do t[i]=i+2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_NUMBER)
 	e:SetLabel(Duel.AnnounceNumber(tp,table.unpack(t)))
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0x57e0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2))
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),0,0,0)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2))
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),1,0,0)
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=e:GetLabel()
 	if c:IsRelateToEffect(e) and Duel.Remove(c,nil,REASON_EFFECT+REASON_TEMPORARY)~=0 and c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT) then
-		c:RegisterFlagEffect(m,RESET_EVENT+0x57e0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2))
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_MOVE)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_DELAY)
+		e2:SetCondition(cm.mvcon)
+		e2:SetOperation(cm.mvop1)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e2)
+		e:UseCountLimit(tp,1)
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2))
 		c:RegisterFlagEffect(11451717,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,ct,aux.Stringid(11451717,ct-3))
 		c:RegisterFlagEffect(11451718,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,9-ct,aux.Stringid(11451718,9-ct))
 		local e1=Effect.CreateEffect(c)
@@ -107,15 +110,17 @@ function cm.mvop1(e,tp,eg,ep,ev,re,r,rp)
 		end
 		for i=11451711,11451715 do
 			local ci=_G["c"..i]
-			if ci and cn and cn[i] and Duel.GetFlagEffect(tp,0xffffff+i)==0 and ci.mvop and ci.mvop(e,tp,eg,ep,ev,re,r,rp,2,lab) then
+			if  ci and cn and cn[i] and Duel.GetFlagEffect(tp,0xffffff+i)==0 and ci.mvop and ci.mvop(e,tp,eg,ep,ev,re,r,rp,2,lab) then
 				ops[off]=aux.Stringid(i,3)
 				opval[off-1]=i-11451709
 				off=off+1
 			end
 		end
 		if off==1 then break end
-		ops[off]=aux.Stringid(n,11)
-		opval[off-1]=7
+		if opval[0]~=1 then
+			ops[off]=aux.Stringid(n,11)
+			opval[off-1]=7
+		end
 		--mobile adaption
 		local ops2=ops
 		local op=-1
@@ -149,8 +154,19 @@ end
 function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	local c=e:GetHandler()
 	local ph=Duel.GetCurrentPhase()
+	if c:IsLocation(LOCATION_MZONE) and c:IsFaceup() then
+		if opt==2 then return true end
+		if opt==1 then Duel.RegisterFlagEffect(tp,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
+		Duel.HintSelection(Group.FromCards(c))
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetReset(RESET_PHASE+PHASE_DAMAGE)
+		e1:SetValue(lab*500)
+		c:RegisterEffect(e1)
+	end
 	if ph==PHASE_DAMAGE or ph==PHASE_DAMAGE_CAL then
-		if opt==2 and Duel.GetFlagEffect(0,11451711)==0 then
+		if Duel.GetFlagEffect(0,11451711)==0 then
 			Debug.Message("伤害步骤内不能触发效果战斗。")
 			Duel.RegisterFlagEffect(0,11451711,RESET_PHASE+PHASE_DAMAGE,0,1)
 		end
@@ -163,22 +179,14 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	if fid~=0 then b1=1 end
 	if g and #g>0 then
 		if opt==2 then return true end
-		Duel.HintSelection(Group.FromCards(c))
-		--if Duel.SelectYesNo(tp,aux.Stringid(m,4+b1)) then
+		if Duel.SelectYesNo(tp,aux.Stringid(m,b1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATTACKTARGET)
 			local tc=g:Select(tp,1,1,nil):GetFirst()
 			if tc then
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_UPDATE_ATTACK)
-				e1:SetReset(RESET_PHASE+PHASE_DAMAGE_CAL)
-				e1:SetValue(lab*500)
-				c:RegisterEffect(e1)
 				Duel.CalculateDamage(c,tc)
 			end
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
-			if opt==1 then Duel.RegisterFlagEffect(tp,0xffffff+m,RESET_PHASE+PHASE_END,0,1) end
-		--end
+		end
 	end
 	--c:ResetFlagEffect(11451717)
 end

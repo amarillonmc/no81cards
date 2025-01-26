@@ -44,7 +44,7 @@ end
 
 function s.e1val(e,c)
 	local g=Duel.GetMatchingGroup(s.e1valfilter,tp,LOCATION_MZONE+LOCATION_EXTRA+LOCATION_GRAVE,0,nil)
-	return g:GetCount() * 200
+	return g:GetCount()*200
 end
 
 --e3

@@ -1,11 +1,13 @@
 --死去的女儿
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--spsummon
+	--same effect send this card to grave and spsummon another card check
+	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
+	--synchro
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,id)
@@ -15,13 +17,20 @@ function s.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
-	--selfdestroy
+	--revive
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCode(EFFECT_SELF_DESTROY)
-	e3:SetCondition(c98346606.descon)
+	e3:SetDescription(aux.Stringid(98346606,1))
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e3:SetCode(EVENT_LEAVE_FIELD)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1,id)
+	e3:SetCondition(c98346606.recon)
+	e3:SetCost(aux.bfgcost)
+	e3:SetTarget(c98346606.retg)
+	e3:SetOperation(c98346606.reop)
+	e3:SetLabelObject(e0)	
 	c:RegisterEffect(e3)
 end
 function c98346606.tgfilter(c,e,tp,atk,mc)
@@ -64,9 +73,26 @@ function c98346606.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c98346606.desfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xaf7)
+function c98346606.cfilter(c,tp,rp)
+	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp) and bit.band(c:GetPreviousTypeOnField(),TYPE_SYNCHRO)~=0
+		and (c:IsReason(REASON_BATTLE) or (rp==1-tp and c:IsReason(REASON_EFFECT)))
 end
-function c98346606.descon(e)
-	return not Duel.IsExistingMatchingCard(c98346606.desfilter,e:GetHandler():GetControler(),LOCATION_ONFIELD,0,1,e:GetHandler()) and e:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL)
+function c98346606.recon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c98346606.cfilter,1,nil,tp,rp) and not eg:IsContains(e:GetHandler())
+end
+function c98346606.refilter(c,e,tp)
+	return c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xaf7)
+end
+function c98346606.retg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c98346606.refilter,tp,LOCATION_GRAVE,0,1,e:GetHandler(),e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+end
+function c98346606.reop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c98346606.refilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	if #g>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
 end

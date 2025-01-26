@@ -1,6 +1,5 @@
 --波动神智·点阵波雷达
-local m=11451458
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)

@@ -31,19 +31,19 @@ function cm.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e3:SetTargetRange(1,0)
 	e3:SetCondition(cm.costcon)
-	e3:SetTarget(cm.costtg)
+	--e3:SetTarget(cm.costtg)
 	e3:SetOperation(cm.costop)
 	c:RegisterEffect(e3)
 	if not TRADIATION_OF_CRIMSONBLAZE then
 		TRADIATION_OF_CRIMSONBLAZE=true
 		local _AnnounceNumber=Duel.AnnounceNumber
 		function Duel.AnnounceNumber(p,...)
-			if cm.Number_To_Dice then
+			if cm[1+p] and Duel.SelectYesNo(p,aux.Stringid(m,1)) then
+				Duel.SetChainLimitTillChainEnd(cm.chlimit)
 				local tab={...}
 				local d=Duel.TossDice(p,1)
 				if not tab[d] then d=math.max(d%(#tab),1) end
 				local res1,res2=tab[d],d
-				cm.Number_To_Dice=false
 				_AnnounceNumber(p,res1)
 				return res1,res2
 			else
@@ -59,6 +59,8 @@ function cm.initial_effect(c)
 	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	cm[1]=false
+	cm[2]=false
 	if re:IsActiveType(TYPE_SPELL) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -79,19 +81,19 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetCategory(0)
 	if Duel.CheckEvent(EVENT_CUSTOM+m) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		e:SetCategory(CATEGORY_REMOVE)
-		Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_MZONE)
+		Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,PLAYER_ALL,LOCATION_MZONE)
 		e:SetLabel(1)
 		e:GetHandler():RegisterFlagEffect(0,RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
 	end
 end
 function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_MZONE)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,PLAYER_ALL,LOCATION_MZONE)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if e:GetLabel()==1 and c:IsRelateToEffect(e) and #g>0 then
+	if e:GetLabel()==1 and #g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.HintSelection(sg)
@@ -137,7 +139,7 @@ end
 function cm.costtg(e,te,tp)
 	local code=te:GetOwner():GetOriginalCode()
 	--continuously updating
-	local tab={11451711,11451712,11451713,11451714,11451715,70916046,71100107}
+	local tab={11451711,11451712,11451713,11451714,11451715,70916046,71100107,11451835}
 	for _,ct in pairs(tab) do
 		if ct==code and not te:IsHasType(EFFECT_TYPE_TRIGGER_O) then return true end
 	end
@@ -145,11 +147,8 @@ function cm.costtg(e,te,tp)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	if cm[0] then return end
-	Duel.Hint(HINT_CARD,0,m)
-	if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-		Duel.SetChainLimitTillChainEnd(cm.chlimit)
-		cm.Number_To_Dice=true
-	end
+	cm[1+tp]=true
+	cm[2-tp]=false
 	cm[0]=true
 end
 function cm.chlimit(e,ep,tp)

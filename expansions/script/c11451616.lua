@@ -36,11 +36,11 @@ end
 function cm.filter11(c)
 	return c:IsFacedown() and c:IsLocation(LOCATION_MZONE)
 end
-function cm.thfilter(c,sc,ec)
-	return c:IsRace(RACE_WYRM) and c:IsAbleToHand() and c:IsLevel(sc:GetLevel()+ec:GetLevel(),math.abs(sc:GetLevel()-ec:GetLevel()))
+function cm.thfilter(c,sc,ec,tp)
+	return c:IsRace(RACE_WYRM) and c:IsAbleToHand() and ((c:IsLevel(sc:GetLevel()+ec:GetLevel(),math.abs(sc:GetLevel()-ec:GetLevel())) and sc:IsLevelAbove(1)) or sc:GetControler()~=tp)
 end
 function cm.setfilter(c,ec,tp)
-	return c:IsControler(1-tp) or Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,c,ec)
+	return c:IsAbleToHand() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,c,ec,tp)
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsFacedown,1,nil)
@@ -53,24 +53,34 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,PLAYER_ALL,LOCATION_DECK+LOCATION_MZONE)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,tp,LOCATION_HAND)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	if not c:IsRelateToEffect(e) or not g or #g==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local sg=g:FilterSelect(tp,cm.setfilter,1,1,nil,c,tp)
-	Duel.HintSelection(sg)
-	Duel.ConfirmCards(tp,sg)
-	if #sg==0 or not c:IsAbleToDeck() then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,sg:GetFirst(),c)
-	if #tg>0 and Duel.SendtoHand(tg,nil,REASON_EFFECT)>0 then
-		Duel.ConfirmCards(1-tp,tg)
-		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
-		Duel.ShuffleHand(tp)
+	--Duel.HintSelection(sg)
+	if #sg>0 and Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 and sg:GetFirst():IsLocation(LOCATION_HAND) then
+		Duel.ConfirmCards(tp,sg)
+		Duel.ConfirmCards(1-tp,sg)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(m,4))
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetCode(EFFECT_PUBLIC)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		sg:GetFirst():RegisterEffect(e1,true)
+		if not c:IsAbleToDeck() then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local tg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,sg:GetFirst(),c)
+		if #tg>0 and Duel.SendtoHand(tg,nil,REASON_EFFECT)>0 then
+			Duel.ConfirmCards(1-tp,tg)
+			Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
+			Duel.ShuffleHand(tp)
+		end
 	end
 end
 function cm.filter0(c)

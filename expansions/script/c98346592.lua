@@ -11,7 +11,6 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCondition(c98346592.concon)
 	e1:SetCountLimit(1,id)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTarget(c98346592.contg)
@@ -32,11 +31,8 @@ function s.initial_effect(c)
 	e2:SetOperation(c98346592.rmop)
 	c:RegisterEffect(e2)
 end
-function c98346592.concon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
-end
 function c98346592.confilter(c)
-	return c:IsControlerCanBeChanged()
+	return c:IsFaceup() and c:IsControlerCanBeChanged()
 end
 function c98346592.contg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c98346592.confilter(chkc) end
@@ -72,9 +68,9 @@ function c98346592.rmcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c98346592.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and chkc:IsAbleToHand() and chkc:IsFaceup() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and e:GetHandler():IsAbleToRemove() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand and Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and e:GetHandler():IsAbleToRemove() end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
+	local g=Duel.SelectTarget(tp,Card.IsAbleToHand and Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),1,0,0)
 end
@@ -109,12 +105,5 @@ function c98346592.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c98346592.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	if Duel.ReturnToField(tc) and tc:IsFaceup() then
-		local e1=Effect.CreateEffect(tc)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(300)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		tc:RegisterEffect(e1)
-	end
+	Duel.SpecialSummon(tc,0,tp,tc:GetOwner(),false,false,POS_FACEUP)
 end

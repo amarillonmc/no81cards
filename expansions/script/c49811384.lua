@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	--
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,0))
-	e4:SetCategory(CATEGORY_EQUIP)
+	e4:SetCategory(CATEGORY_EQUIP+CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_TO_GRAVE)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
@@ -133,123 +133,134 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.tgfilter),tp,0x10,0,1,1,nil,tp):GetFirst()
 	if tc then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-		local ec=Duel.SelectMatchingCard(tp,cm.tgfilter2,tp,0x04,0,1,1,nil,tc):GetFirst()
+		local ec=Duel.SelectMatchingCard(tp,cm.tgfilter2,tp,0x04,0x04,1,1,nil,tc):GetFirst()
 		if ec and Duel.Equip(tp,tc,ec) then
-			--送去墓地时效果适用
-			local Equip_table_effect=cm.geteffect(tc)
-			if #Equip_table_effect==1 then
-				local effect=table.unpack(Equip_table_effect)
-				local tg=effect:GetTarget()
-				local op=effect:GetOperation()
-				tc:RegisterEffect(effect)
-				tc:CreateEffectRelation(effect)
-				if not (not tg or tg(effect,tp,eg,ep,ev,re,r,rp,0)) then return end
-				Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
-				if tg then tg(effect,tp,eg,ep,ev,re,r,rp,1) end
-				local ttg=Group.CreateGroup()
-				local ttg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-				if ttg then
-					local ttg2=ttg:GetFirst()
-					while ttg2 do
-						ttg2:CreateEffectRelation(effect)
-						ttg2=ttg:GetNext()
-					end
+			local cg=ec:GetColumnGroup()
+			local tgg=cg:Filter(Card.IsAbleToGrave,ec)
+			if #tgg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+				Duel.BreakEffect()
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+				local tggc=tgg:Select(tp,1,1,nil)
+				if tggc:GetCount()>0 then
+					Duel.HintSelection(tggc)
+					Duel.SendtoGrave(tggc,REASON_EFFECT)
 				end
-				if op then op(effect,tp,eg,ep,ev,re,r,rp,1) end
-				tc:ReleaseEffectRelation(effect)
-				if ttg then
-					local ttg2=ttg:GetFirst()
-					while ttg2 do
-						ttg2:ReleaseEffectRelation(effect)
-						ttg2=ttg:GetNext()
-					end
-				end
-				effect:Reset()
-			elseif #Equip_table_effect==2 then
-				Duel.ClearTargetCard()
-				local effect1,effect2=table.unpack(Equip_table_effect)
-				local tg1=effect1:GetTarget()
-				local tg2=effect2:GetTarget()
-				local op=0
-				tc:RegisterEffect(effect1)
-				tc:CreateEffectRelation(effect1)
-				tc:RegisterEffect(effect2)
-				tc:CreateEffectRelation(effect2)
-				if (not tg1 or tg1(effect1,tp,eg,ep,ev,re,r,rp,0)) and not (not tg2 or tg2(effect2,tp,eg,ep,ev,re,r,rp,0)) then op=Duel.SelectOption(tp,effect1:GetDescription())+1
-				elseif (not tg2 or tg2(effect2,tp,eg,ep,ev,re,r,rp,0)) and not (not tg1 or tg1(effect1,tp,eg,ep,ev,re,r,rp,0)) then op=Duel.SelectOption(tp,effect2:GetDescription())+2 
-				elseif (not tg1 or tg1(effect1,tp,eg,ep,ev,re,r,rp,0)) and (not tg2 or tg2(effect2,tp,eg,ep,ev,re,r,rp,0)) then op=Duel.SelectOption(tp,effect1:GetDescription(),effect2:GetDescription())+1
-				end
-				if op==1 then
-					local tg=effect1:GetTarget()
-					local op=effect1:GetOperation()
-					if not (not tg or tg(effect1,tp,eg,ep,ev,re,r,rp,0)) then return end
-					Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
-					if tg then tg(effect1,tp,eg,ep,ev,re,r,rp) end
-					local ttg=Group.CreateGroup()
-					local ttg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-					if ttg then
-						local ttg2=ttg:GetFirst()
-						while ttg2 do
-							ttg2:CreateEffectRelation(effect1)
-							ttg2=ttg:GetNext()
-						end
-					end
-					if op then op(effect1,tp,eg,ep,ev,re,r,rp) end
-					if ttg then
-						local ttg2=ttg:GetFirst()
-						while ttg2 do
-							ttg2:ReleaseEffectRelation(effect1)
-							ttg2=ttg:GetNext()
-						end
-					end
-				elseif op==2 then
-					local tg=effect2:GetTarget()
-					local op=effect2:GetOperation()
-					if not (not tg or tg(effect2,tp,eg,ep,ev,re,r,rp,0)) then return end
-					Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
-					if tg then tg(effect2,tp,eg,ep,ev,re,r,rp) end
-					local ttg=Group.CreateGroup()
-					local ttg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-					if ttg then
-						local ttg2=ttg:GetFirst()
-						while ttg2 do
-							ttg2:CreateEffectRelation(effect2)
-							ttg2=ttg:GetNext()
-						end
-					end
-					if op then op(effect2,tp,eg,ep,ev,re,r,rp) end
-					if ttg then
-						local ttg2=ttg:GetFirst()
-						while ttg2 do
-							ttg2:ReleaseEffectRelation(effect2)
-							ttg2=ttg:GetNext()
-						end
-					end
-				end
-				tc:ReleaseEffectRelation(effect1)
-				effect1:Reset()
-				tc:ReleaseEffectRelation(effect2)
-				effect2:Reset()
 			end
+			--送去墓地时效果适用
+		--	local Equip_table_effect=cm.geteffect(tc)
+		--	if #Equip_table_effect==1 then
+		--		local effect=table.unpack(Equip_table_effect)
+		--		local tg=effect:GetTarget()
+		--		local op=effect:GetOperation()
+		--		tc:RegisterEffect(effect)
+		--		tc:CreateEffectRelation(effect)
+		--		if not (not tg or tg(effect,tp,eg,ep,ev,re,r,rp,0)) then return end
+		--		Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
+		--		if tg then tg(effect,tp,eg,ep,ev,re,r,rp,1) end
+		--		local ttg=Group.CreateGroup()
+		--		local ttg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+		--		if ttg then
+		--			local ttg2=ttg:GetFirst()
+		--			while ttg2 do
+		--				ttg2:CreateEffectRelation(effect)
+		--				ttg2=ttg:GetNext()
+		--			end
+		--		end
+		--		if op then op(effect,tp,eg,ep,ev,re,r,rp,1) end
+		--		tc:ReleaseEffectRelation(effect)
+		--		if ttg then
+		--			local ttg2=ttg:GetFirst()
+		--			while ttg2 do
+		--				ttg2:ReleaseEffectRelation(effect)
+		--				ttg2=ttg:GetNext()
+		--			end
+		--		end
+		--		effect:Reset()
+		--	elseif #Equip_table_effect==2 then
+		--		Duel.ClearTargetCard()
+		--		local effect1,effect2=table.unpack(Equip_table_effect)
+		--		local tg1=effect1:GetTarget()
+		--		local tg2=effect2:GetTarget()
+		--		local op=0
+		--		tc:RegisterEffect(effect1)
+		--		tc:CreateEffectRelation(effect1)
+		--		tc:RegisterEffect(effect2)
+		--		tc:CreateEffectRelation(effect2)
+		--		if (not tg1 or tg1(effect1,tp,eg,ep,ev,re,r,rp,0)) and not (not tg2 or tg2(effect2,tp,eg,ep,ev,re,r,rp,0)) then op=Duel.SelectOption(tp,effect1:GetDescription())+1
+		--		elseif (not tg2 or tg2(effect2,tp,eg,ep,ev,re,r,rp,0)) and not (not tg1 or tg1(effect1,tp,eg,ep,ev,re,r,rp,0)) then op=Duel.SelectOption(tp,effect2:GetDescription())+2 
+		--		elseif (not tg1 or tg1(effect1,tp,eg,ep,ev,re,r,rp,0)) and (not tg2 or tg2(effect2,tp,eg,ep,ev,re,r,rp,0)) then op=Duel.SelectOption(tp,effect1:GetDescription(),effect2:GetDescription())+1
+		--		end
+		--		if op==1 then
+		--			local tg=effect1:GetTarget()
+		--			local op=effect1:GetOperation()
+		--			if not (not tg or tg(effect1,tp,eg,ep,ev,re,r,rp,0)) then return end
+		--			Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
+		--			if tg then tg(effect1,tp,eg,ep,ev,re,r,rp) end
+		--			local ttg=Group.CreateGroup()
+		--			local ttg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+		--			if ttg then
+		--				local ttg2=ttg:GetFirst()
+		--				while ttg2 do
+		--					ttg2:CreateEffectRelation(effect1)
+		--					ttg2=ttg:GetNext()
+		--				end
+		--			end
+		--			if op then op(effect1,tp,eg,ep,ev,re,r,rp) end
+		--			if ttg then
+		--				local ttg2=ttg:GetFirst()
+		--				while ttg2 do
+		--					ttg2:ReleaseEffectRelation(effect1)
+		--					ttg2=ttg:GetNext()
+		--				end
+		--			end
+		--		elseif op==2 then
+		--			local tg=effect2:GetTarget()
+		--			local op=effect2:GetOperation()
+		--			if not (not tg or tg(effect2,tp,eg,ep,ev,re,r,rp,0)) then return end
+		--			Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
+		--			if tg then tg(effect2,tp,eg,ep,ev,re,r,rp) end
+		--			local ttg=Group.CreateGroup()
+		--			local ttg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+		--			if ttg then
+		--				local ttg2=ttg:GetFirst()
+		--				while ttg2 do
+		--					ttg2:CreateEffectRelation(effect2)
+		--					ttg2=ttg:GetNext()
+		--				end
+		--			end
+		--			if op then op(effect2,tp,eg,ep,ev,re,r,rp) end
+		--			if ttg then
+		--				local ttg2=ttg:GetFirst()
+		--				while ttg2 do
+		--					ttg2:ReleaseEffectRelation(effect2)
+		--					ttg2=ttg:GetNext()
+		--				end
+		--			end
+		--		end
+		--		tc:ReleaseEffectRelation(effect1)
+		--		effect1:Reset()
+		--		tc:ReleaseEffectRelation(effect2)
+		--		effect2:Reset()
+		--	end
 		end
 	end
 end
 
-function cm.geteffect(c)
-	cregister=Card.RegisterEffect
-	table_effect={}
-	Card.RegisterEffect=function(card,effect,flag)
-		if effect and (effect:GetCode()==EVENT_TO_GRAVE and (effect:IsHasType(EFFECT_TYPE_TRIGGER_O) or effect:IsHasType(EFFECT_TYPE_TRIGGER_F)) and effect:IsHasType(EFFECT_TYPE_SINGLE)) then
-			local eff=effect:Clone()
-			table.insert(table_effect,eff)
-		end
-		return 
-	end
-	table_effect={}
-	Duel.CreateToken(0,c:GetOriginalCode())
-	Card.RegisterEffect=cregister
-	return table_effect
-end
+--function cm.geteffect(c)
+--	cregister=Card.RegisterEffect
+--	table_effect={}
+--	Card.RegisterEffect=function(card,effect,flag)
+--		if effect and (effect:GetCode()==EVENT_TO_GRAVE and (effect:IsHasType(EFFECT_TYPE_TRIGGER_O) or effect:IsHasType(EFFECT_TYPE_TRIGGER_F)) and effect:IsHasType(EFFECT_TYPE_SINGLE)) then
+--			local eff=effect:Clone()
+--			table.insert(table_effect,eff)
+--		end
+--		return 
+--	end
+--	table_effect={}
+--	Duel.CreateToken(0,c:GetOriginalCode())
+--	Card.RegisterEffect=cregister
+--	return table_effect
+--end
 
 function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp

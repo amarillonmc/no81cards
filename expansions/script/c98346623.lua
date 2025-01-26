@@ -11,23 +11,23 @@ function s.initial_effect(c)
 	e1:SetTarget(c98346623.acttg)
 	e1:SetOperation(c98346623.activate)
 	c:RegisterEffect(e1)
-	--Revive
+	--indes
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(98346623,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetCountLimit(1,id+o)
-	e2:SetCondition(c98346623.spcon)
-	e2:SetTarget(c98346623.sptg)
-	e2:SetOperation(c98346623.spop)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,id)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
+	e2:SetTarget(c98346623.idtg)
+	e2:SetOperation(c98346623.idop)
 	c:RegisterEffect(e2)
 end
 function c98346623.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:IsCostChecked()
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,98346623,0,TYPES_NORMAL_TRAP_MONSTER,2000,2200,6,RACE_FIEND,ATTRIBUTE_DARK) end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,98346623,0,TYPES_EFFECT_TRAP_MONSTER,2100,400,6,RACE_FIEND,ATTRIBUTE_DARK) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c98346623.disfilter(c)
@@ -36,8 +36,8 @@ end
 function c98346623.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e)
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,98346623,0,TYPES_NORMAL_TRAP_MONSTER,2000,2200,6,RACE_FIEND,ATTRIBUTE_DARK) then return end
-	c:AddMonsterAttribute(TYPE_NORMAL+TYPE_TRAP)
+		or not Duel.IsPlayerCanSpecialSummonMonster(tp,98346623,0,TYPES_EFFECT_TRAP_MONSTER,2100,400,6,RACE_FIEND,ATTRIBUTE_DARK) then return end
+	c:AddMonsterAttribute(TYPE_EFFECT+TYPE_TRAP)
 	if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 then
 		local ct=Duel.GetMatchingGroupCount(c98346623.disfilter,tp,LOCATION_ONFIELD,0,c)
 		local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
@@ -67,24 +67,25 @@ function c98346623.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c98346623.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local loc=e:GetHandler():GetPreviousLocation()
-	return loc&(LOCATION_HAND|LOCATION_DECK|LOCATION_MZONE)==0
+function c98346623.idfilter(c,r,a)
+	return c:IsFaceup()
 end
-function c98346623.spfilter(c,e,tp)
-	return c:IsSetCard(0xaf7) and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c98346623.idtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(tp) and chkc:IsOnField() and c98346623.idfilter(chkc) and not chkc==e:GetHandler() end
+	if chk==0 then return Duel.IsExistingTarget(c98346623.idfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,c98346623.idfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
 end
-function c98346623.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c98346623.spfilter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c98346623.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c98346623.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
-end
-function c98346623.spop(e,tp,eg,ep,ev,re,r,rp)
+function c98346623.idop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetDescription(aux.Stringid(98346623,2))
+		e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
+		e1:SetValue(1)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
 	end
 end

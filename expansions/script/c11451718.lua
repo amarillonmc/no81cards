@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.rmfilter(c)
-	return c:IsSetCard(0x3977) and c:IsType(TYPE_MONSTER) and not cm[c:GetOriginalCode()]
+	return c:IsSetCard(0x3977) and c:IsType(TYPE_MONSTER) --and not cm[c:GetOriginalCode()]
 end
 function cm.rmfilter2(c)
 	return c:IsSetCard(0x3977) and c:IsType(TYPE_MONSTER)
@@ -32,8 +32,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if #g==0 then return end
 	local tc=g:GetFirst()
+	Duel.ConfirmCards(tp,tc)
 	Duel.ConfirmCards(1-tp,tc)
-	if not tc.mvcon or not tc.mvop then return end
+	Duel.ShuffleDeck(tp)
+	if not tc.mvcon or not tc.mvop or cm[tc:GetOriginalCode()] then return end
 	local c=e:GetHandler()
 	local fid=c:GetFieldID()
 	--[[local sg=Duel.GetMatchingGroup(cm.rmfilter2,0,0xff,0xff,nil)
@@ -57,7 +59,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	--Duel.RegisterEffect(e2,tp)--]]
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(tc:GetOriginalCode(),3))
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 	e3:SetTargetRange(1,0)
 	e3:SetCode(m)
@@ -75,7 +77,9 @@ function cm.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.tkop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,11451720,0,TYPES_TOKEN_MONSTER,2000,2000,4,RACE_PSYCHO,ATTRIBUTE_DARK,POS_FACEUP,1-tp) then
-		local token=Duel.CreateToken(tp,11451720)
+		local code=11451720
+		--if e:GetHandler():GetFieldID()%2==1 then code=11451745 end
+		local token=Duel.CreateToken(tp,code)
 		Duel.SpecialSummon(token,0,tp,1-tp,false,false,POS_FACEUP)
 	end
 end

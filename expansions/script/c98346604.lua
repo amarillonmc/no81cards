@@ -30,7 +30,7 @@ function s.initial_effect(c)
 	--special summon from deck
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(98346604,2))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_BATTLE_DESTROYING)
 	e3:SetCountLimit(1,id)

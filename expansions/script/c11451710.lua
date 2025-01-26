@@ -94,7 +94,7 @@ function cm.setfilter(c,tp)
 	return c:IsSSetable() and Duel.IsExistingMatchingCard(cm.pfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,c)
 end
 function cm.tgfilter(c,attr)
-	return c:IsAttribute(attr) and c:IsLevel(10) and c:IsRace(RACE_MACHINE) and c:IsAbleToGrave()
+	return c:IsAttribute(attr) and c:IsAbleToGrave() --and c:IsLevel(10) and c:IsRace(RACE_MACHINE)
 end
 function cm.caop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

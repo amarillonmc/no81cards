@@ -4,20 +4,19 @@ function s.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xaf7),aux.NonTuner(Card.IsSetCard,0xaf7),1)
 	c:EnableReviveLimit()
-	--equip
+	--set t
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(98346598,0))
-	e1:SetCategory(CATEGORY_EQUIP)
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,id)
-	e1:SetTarget(c98346598.eqtg)
-	e1:SetOperation(c98346598.eqop)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetTarget(c98346598.settg)
+	e1:SetOperation(c98346598.setop)
 	c:RegisterEffect(e1)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(98346598,3))
+	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -29,33 +28,16 @@ function s.initial_effect(c)
 	e2:SetOperation(c98346598.spop)
 	c:RegisterEffect(e2)
 end
-function c98346598.eqfilter(c)
-	return c:IsSetCard(0xaf7) and not c:IsForbidden()
+function c98346598.filter(c)
+	return c:IsSetCard(0xaf7) and c:IsType(TYPE_TRAP) and c:IsSSetable()
 end
-function c98346598.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingTarget(c98346598.eqfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g=Duel.SelectTarget(tp,c98346598.eqfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,0,0)
+function c98346598.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end
 end
-function c98346598.eqop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		if not Duel.Equip(tp,tc,c) then return end
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE)
-		e1:SetCode(EFFECT_EQUIP_LIMIT)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(c98346598.eqlimit)
-		tc:RegisterEffect(e1)
-	end
-end
-function c98346598.eqlimit(e,c)
-	return e:GetOwner()==c
+function c98346598.setop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local tc=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
+	if tc then Duel.SSet(tp,tc) end
 end
 function c98346598.spfilter(c,e,tp)
 	return c:IsType(TYPE_TRAP) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),0xaf7,TYPE_MONSTER+TYPE_NORMAL,2500,1600,8,0x8,0x20,POS_FACEUP)

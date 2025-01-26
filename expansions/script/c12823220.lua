@@ -1,0 +1,48 @@
+--舞斗-秘密的协奏曲
+local s,id,o=GetID()
+function s.initial_effect(c)
+	aux.AddCodeList(c,12823200)
+	--Activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetOperation(s.activate)
+	c:RegisterEffect(e1)
+end
+function s.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local cl=Duel.GetCurrentChain()
+	--inactivatable
+	local e2=Effect.CreateEffect(c)
+	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_INACTIVATE)
+	e2:SetValue(s.effectfilter)
+	e2:Reset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(c)
+	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_CANNOT_DISEFFECT)
+	e3:SetValue(s.effectfilter)
+	e3:Reset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e3,tp)
+	if cl==5 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_MUSIC,0,aux.Stringid(id,2))
+		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
+		local e4=Effect.CreateEffect(c)
+		e4:SetDescription(aux.Stringid(id,1))
+		e4:SetType(EFFECT_TYPE_FIELD)
+		e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e4:SetReset(RESET_PHASE+PHASE_END)
+		e4:SetTargetRange(1,0)
+		Duel.RegisterEffect(e4,tp)
+	end
+end
+function s.effectfilter(e,ct)
+	local p=e:GetHandlerPlayer()
+	local te,tp,loc=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
+	local tc=te:GetHandler()
+	return p==tp and bit.band(loc,LOCATION_MZONE)~=0 and tc:IsCode(12823200)
+end
