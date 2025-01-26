@@ -4,10 +4,9 @@ Heartily Strike
 Card Author: nemoma
 Scripted by: XGlitchy30
 ]]
+
 local s,id=GetID()
-if not GLITCHYLIB_LOADED then
-	Duel.LoadScript("glitchylib_vsnemo.lua")
-end
+Duel.LoadScript("glitchylib_vsnemo.lua")
 function s.initial_effect(c)
 	aux.CheckAlreadyRegisteredEffects()
 	aux.EnabledRegisteredEffectMods[EXTRA_DECK_INFO_MODS]=true
@@ -124,10 +123,12 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	aux.HeartilyStrikeCheck=true
 	if chkc then
 		local res=chkc:IsLocation(LOCATION_MZONE) and s.filter(chkc)
+		aux.HeartilyStrikeCheck=false
 		return true
 	end
 	if chk==0 then
 		local res=Duel.IsExists(true,s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+		aux.HeartilyStrikeCheck=false
 		return res
 	end
 	local g=Duel.Select(HINTMSG_TARGET,true,tp,s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
