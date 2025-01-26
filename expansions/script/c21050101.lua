@@ -79,7 +79,7 @@ function c21050101.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c21050101.filter,tp,LOCATION_GRAVE,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc and Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_DECK)
-		and Duel.GetLocationCount(tp,tp,nil,tc)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,true,false)
+		and Duel.GetMZoneCount(tp)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,true,false)
 		and Duel.SelectYesNo(tp,aux.Stringid(21050101,1)) then
 		Duel.BreakEffect()
 		Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)

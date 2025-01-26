@@ -86,5 +86,6 @@ function s.matlimit(e,c)
 	return Duel.IsPlayerAffectedByEffect(tp,id) and e:GetHandler():GetAttack()>c:GetAttack()
 end
 function s.fuslimit(e,c,st)
+	if not c then return false end
 	return Duel.IsPlayerAffectedByEffect(tp,id) and e:GetHandler():GetAttack()>c:GetAttack() and st==SUMMON_TYPE_FUSION
 end

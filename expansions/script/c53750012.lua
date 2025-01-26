@@ -1,6 +1,8 @@
 local m=53750012
 local cm=_G["c"..m]
 cm.name="异律弭埃"
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,3))
@@ -49,10 +51,14 @@ function cm.initial_effect(c)
 		ge1:SetCode(EVENT_CHAIN_SOLVED)
 		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
+		cm[0]={}
 	end
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	re:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+end
+function cm.clearop(e,tp,eg,ep,ev,re,r,rp)
+	cm[0]={}
 end
 function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -130,18 +136,27 @@ function cm.activate4(e,tp,eg,ep,ev,re,r,rp)
 	if #g2>0 then Duel.SendtoGrave(g2,REASON_EFFECT+REASON_RETURN) end
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	local re=Duel.GetChainInfo(ev,CHAININFO_DISABLE_REASON)
-	local rc=re:GetHandler()
-	e:SetLabelObject(rc)
-	return re:IsActiveType(TYPE_MONSTER) and ((rc:IsAbleToHand() and not rc:IsLocation(LOCATION_HAND)) or (rc:IsAbleToGrave() and not rc:IsLocation(LOCATION_GRAVE)))
+	local de=Duel.GetChainInfo(ev,CHAININFO_DISABLE_REASON)
+	local rc=de:GetHandler()
+	cm[0][rc]=rc:GetFieldID()
+	return de:IsActiveType(TYPE_MONSTER) and ((rc:IsAbleToHand() and not rc:IsLocation(LOCATION_HAND)) or (rc:IsAbleToGrave() and not rc:IsLocation(LOCATION_GRAVE)))
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetTargetCard(e:GetLabelObject())
+	if chk==0 then
+		local res=false
+		for rc,fid in pairs(cm[0]) do
+			if fid==rc:GetFieldID() then res=true end
+		end
+		return res
+	end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
+	local g=Group.CreateGroup()
+	for rc,fid in pairs(cm[0]) do
+		if fid==rc:GetFieldID() then g:AddCard(rc) end
+	end
+	local tc=SNNM.Select_1(g,tp,HINTMSG_OPERATECARD)
+	if tc then
 		local th=tc:IsAbleToHand() and not tc:IsLocation(LOCATION_HAND)
 		local tg=tc:IsAbleToGrave() and not tc:IsLocation(LOCATION_GRAVE)
 		local op=0
