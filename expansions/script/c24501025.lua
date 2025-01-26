@@ -59,7 +59,7 @@ end
 function c24501025.effectfilter(e,ct)
 	local p=e:GetHandler():GetControler()
 	local te,tp,loc=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
-	return p==tp and te:GetHandler():IsSetCard(0x501) and bit.band(loc,LOCATION_ONFIELD)~=0
+	return p==tp and te:GetHandler():IsSetCard(0x501)-- and bit.band(loc,LOCATION_ONFIELD)~=0
 end
 --3
 function c24501025.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
