@@ -131,13 +131,13 @@ function c65860055.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,0,0,tp,2000)
 end
 function c65860055.sumfilter(c)
-	return c:IsAbleToHand()
+	return c:IsSummonable(true,nil) and c:IsSetCard(0xa36)
 end
 function c65860055.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Recover(tp,2000,REASON_EFFECT) and Duel.IsExistingMatchingCard(c65860055.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) then
 		Duel.BreakEffect()
 		Duel.ShuffleHand(tp)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
 		local sg=Duel.SelectMatchingCard(tp,c65860055.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
 		if sg:GetCount()>0 then
 			Duel.Summon(tp,sg:GetFirst(),true,nil)
