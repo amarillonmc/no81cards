@@ -86,6 +86,7 @@ function c65899925.spop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_REMOVED,0,1,1,nil)
 		if sg:GetCount()>0 then
 			if Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_HAND,0,1,nil) then
+				Duel.ConfirmCards(1-tp,sg)
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 				local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_HAND,0,1,1,nil)

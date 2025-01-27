@@ -32,7 +32,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 	local sg=Duel.GetMatchingGroup(s.thfilter,tp,0,LOCATION_ONFIELD,nil)
-	if cl==6 and Duel.IsExistingMatchingCard(s.efilter,tp,LOCATION_ONFIELD,0,1,nil)
+	if cl==6 and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_ONFIELD,0,1,nil)
 	and #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_MUSIC,0,aux.Stringid(id,2))
@@ -43,5 +43,8 @@ function s.thfilter(c)
 	return c:IsAbleToHand() and c:IsFaceup()
 end
 function s.efilter(e,c)
+	return c:IsFaceup() and c:IsCode(12823290)
+end
+function s.filter(c)
 	return c:IsFaceup() and c:IsCode(12823290)
 end

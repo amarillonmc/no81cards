@@ -93,9 +93,9 @@ end
 
 
 function c21050102.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,aux.TRUE,2,nil) end
+	if chk==0 then return Duel.CheckReleaseGroup(tp,aux.TRUE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(tp,aux.TRUE,2,2,nil)
+	local g=Duel.SelectReleaseGroup(tp,aux.TRUE,1,1,nil)
 	Duel.Release(g,REASON_COST)
 end
 function c21050102.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)

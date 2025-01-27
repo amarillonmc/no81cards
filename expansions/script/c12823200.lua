@@ -72,7 +72,7 @@ function s.spcon(e,c,tp)
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 
+	if chk==0 then return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 	and Duel.IsPlayerCanSpecialSummon(tp,0,POS_FACEUP,tp,c) end
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -107,6 +107,7 @@ function s.costop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	c:CreateEffectRelation(te)
 end
 function s.checkintab(tab,v)
 	for _,ve in ipairs(tab) do
@@ -144,7 +145,8 @@ function s.thfilter(c)
 	return c:IsSetCard(0xca70) and c:IsAbleToHand() and c:IsFaceupEx()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil) 
+	and e:GetHandler():IsLocation(LOCATION_MZONE) end 
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_REMOVED)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
