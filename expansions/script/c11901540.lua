@@ -80,6 +80,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.thfi3ter(c)
 	return c:IsSetCard(0x409) and c:IsLevelBelow(7) and c:IsAbleToHand()
+        and not (c:IsFacedown() and c:IsLocation(0x20))
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfi3ter,tp,0x30,0,1,nil) end
@@ -87,7 +88,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,s.thfi3ter,tp,0x30,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfi3ter),tp,0x30,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		if g:GetFirst():IsLocation(0x02) then Duel.ConfirmCards(1-tp,g) end

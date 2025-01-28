@@ -1,14 +1,6 @@
 --浮华若梦·绮梦绮梦
 function c65860035.initial_effect(c)
 	c:SetSPSummonOnce(65860035)
-	local e0=Effect.CreateEffect(c)
-	e0:SetDescription(aux.Stringid(65860035,0))
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_LIMIT_SUMMON_PROC)
-	e0:SetCondition(c65860035.ttcon)
-	e0:SetOperation(c65860035.ttop)
-	c:RegisterEffect(e0)
 	--spsummon cost
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(65860035,0))
