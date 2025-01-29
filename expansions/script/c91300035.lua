@@ -18,6 +18,7 @@ function s.initial_effect(c)
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_TO_GRAVE)
+		ge1:SetCondition(s.checkcon)
 		ge1:SetOperation(s.checkop)
 		Duel.RegisterEffect(ge1,0)
 		local ge2=ge1:Clone()
@@ -45,6 +46,9 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 s.hackclad=2
+function s.checkcon(e,tp,eg,ep,ev,re,r,rp)
+	return not re or not re:IsActivated()
+end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
@@ -138,18 +142,16 @@ function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,0xe,1,nil) end
+	Duel.SetTargetPlayer(1-tp)
+	local dam=Duel.GetFieldGroupCount(1-tp,0xe,0)*200
+	Duel.SetTargetParam(dam)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,dam)
 end
 function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local ct=Duel.DiscardHand(p,aux.TRUE,1,60,REASON_EFFECT+REASON_DISCARD)
-	if ct>0 then
-		Duel.BreakEffect()
-		Duel.Draw(p,ct+1,REASON_EFFECT)
-	end
+	local dam=Duel.GetFieldGroupCount(1-tp,0xe,0)*200
+	Duel.Damage(p,dam,REASON_EFFECT)
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

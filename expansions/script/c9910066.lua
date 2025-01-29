@@ -55,6 +55,7 @@ function c9910066.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,ct)
 	Duel.DisableShuffleCheck()
 	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)==0 then return end
+	Duel.DisableShuffleCheck(false)
 	local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
 	if og:GetCount()==0 then return end
 	Duel.HintSelection(og)

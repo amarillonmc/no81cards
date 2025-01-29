@@ -102,7 +102,7 @@ function c19209539.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c19209539.descon(e,tp,eg,ep,ev,re,r,rp)
-	return re
+	return re and re:IsHasType(EFFECT_TYPE_ACTIONS)
 end
 function c19209539.desfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3b50)

@@ -23,21 +23,29 @@ function c9910056.initial_effect(c)
 	e1:SetValue(LOCATION_REMOVED)
 	c:RegisterEffect(e1)
 end
-function c9910056.filter(c)
-	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsRace(RACE_FAIRY) and c:IsAbleToDeck()
+function c9910056.tdfilter(c)
+	return c:IsFaceupEx() and c:IsRace(RACE_FAIRY) and c:IsAbleToDeck()
 end
 function c9910056.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910056.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,2,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910056.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,2,nil)
 		and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c9910056.drop(e,tp,eg,ep,ev,re,r,rp)
+	local rg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910056.tdfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	if rg:GetCount()<2 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910056.filter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,2,2,nil)
-	if g:GetCount()==2 and Duel.SendtoDeck(g,nil,2,REASON_EFFECT)==2 then
-		Duel.BreakEffect()
-		Duel.ShuffleDeck(tp)
-		Duel.Draw(tp,1,REASON_EFFECT)
+	local sg=rg:Select(tp,2,2,nil)
+	if sg:GetCount()>0 then
+		Duel.HintSelection(sg)
+		if Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT) then
+			local og=Duel.GetOperatedGroup()
+			if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
+			if og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) then
+				Duel.BreakEffect()
+				Duel.Draw(tp,1,REASON_EFFECT)
+			end
+		end
 	end
 end
