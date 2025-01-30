@@ -62,9 +62,18 @@ function c53700007.sop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(2)
 		tc:RegisterEffect(e1)
-	elseif e:GetLabel()~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	elseif e:GetLabel()~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsLevelAbove(3) then
 		local token=Duel.CreateToken(tp,53700001)
-		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
+		if Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP) then
+			local e1_2=Effect.CreateEffect(c)
+			e1_2:SetType(EFFECT_TYPE_SINGLE)
+			e1_2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1_2:SetCode(EFFECT_CHANGE_LEVEL)
+			e1_2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1_2:SetValue(tc:GetLevel()-2)
+			token:RegisterEffect(e1_2)
+		end
+		Duel.SpecialSummonComplete()
 		local e2=Effect.CreateEffect(e:GetHandler())
 		e2:SetType(EFFECT_TYPE_FIELD)
 		e2:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)

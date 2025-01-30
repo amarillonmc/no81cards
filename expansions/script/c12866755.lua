@@ -84,7 +84,9 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local chkf=tp
 		local mg1=Duel.GetFusionMaterial(tp)
 		local mg2=Duel.GetMatchingGroup(s.filter0,tp,LOCATION_DECK,0,nil)
+		if mg2:GetCount()>0 then
 		mg1:Merge(mg2)
+		end
 		local res=Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,c,chkf)
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
@@ -98,6 +100,7 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		return res and c:IsRelateToEffect(e)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
