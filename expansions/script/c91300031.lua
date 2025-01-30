@@ -23,11 +23,17 @@ function cm.initial_effect(c)
 	e2:SetTarget(c91300031.thtg)
 	e2:SetOperation(c91300031.thop)
 	c:RegisterEffect(e2)
+	--remain field
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_REMAIN_FIELD)
+	c:RegisterEffect(e3)
 	
 end
 c91300031.hackclad=2
 function c91300031.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
+	e:GetHandler():CancelToGrave()
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function c91300031.filter1(c,e,tp)
@@ -200,7 +206,7 @@ function c91300031.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c91300031.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
 	end

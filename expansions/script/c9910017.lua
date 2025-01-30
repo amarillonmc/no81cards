@@ -45,6 +45,7 @@ function c9910017.initial_effect(c)
 	c:RegisterEffect(e5)
 	--to hand 2
 	local e6=Effect.CreateEffect(c)
+	e6:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e6:SetCode(EVENT_TO_GRAVE)
 	e6:SetProperty(EFFECT_FLAG_DELAY)
