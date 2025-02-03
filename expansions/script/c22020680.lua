@@ -1,6 +1,5 @@
 --人理之基 魔王信长
 function c22020680.initial_effect(c)
-	aux.AddCodeList(c,22020631)
 	c:EnableReviveLimit()
 	aux.AddXyzProcedure(c,nil,6,6)
 	--disable spsummon

@@ -44,7 +44,7 @@ function c22020650.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22020650.filter(c,e,tp,rk,mc)
-	return aux.IsCodeListed(c,22020631) and e:GetHandler():IsCanBeXyzMaterial(c)
+	return aux.IsCodeListed(c,22020631) and c:IsType(TYPE_XYZ) and e:GetHandler():IsCanBeXyzMaterial(c)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function c22020650.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
