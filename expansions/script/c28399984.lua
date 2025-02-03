@@ -61,7 +61,7 @@ function c28399984.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c28399984.tgfilter,tp,LOCATION_DECK,0,nil)
 	if g:GetCount()>=4 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sg=g:Select(tp,4,4,nil)
+		local sg=g:Select(tp,4,99,nil)
 		Duel.SendtoGrave(sg,REASON_EFFECT)
 	end
 end
@@ -98,9 +98,9 @@ function c28399984.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetCountLimit(1)
-	e1:SetReset(RESET_PHASE+PHASE_END)
 	e1:SetCondition(c28399984.discon)
 	e1:SetOperation(c28399984.disop)
+	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
 function c28399984.discon(e,tp,eg,ep,ev,re,r,rp)

@@ -1,8 +1,8 @@
 --曲·启明
 local cm,m,o=GetID()
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x62a)
-	c:SetCounterLimit(0x62a,4)
+	c:EnableCounterPermit(0x62b)
+	c:SetCounterLimit(0x62b,4)
 	
 	aux.AddCodeList(c,60000179)
 	c:EnableReviveLimit()
@@ -88,17 +88,17 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,g)
 		Duel.BreakEffect()
-		e:GetHandler():AddCounter(0x62a,1)
+		e:GetHandler():AddCounter(0x62b,1)
 		local i=math.random(5,10)
 		Duel.Hint(24,0,aux.Stringid(60000179,i))
 	end
 end
 function cm.efilter(e,re)
-	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActivated() and e:GetHandler():GetCounter(0x62a)==4
+	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActivated() and e:GetHandler():GetCounter(0x62b)==4
 end
 function cm.counterop(e,tp,eg,ep,ev,re,r,rp)
-	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL) and e:GetHandler():GetFlagEffect(FLAG_ID_CHAINING)>0 and aux.IsCodeListed(re:GetHandler(),60000179) and e:GetHandler():GetCounter(0x62a)~=4 then
-		e:GetHandler():AddCounter(0x62a,1)
+	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_SPELL) and e:GetHandler():GetFlagEffect(FLAG_ID_CHAINING)>0 and aux.IsCodeListed(re:GetHandler(),60000179) and e:GetHandler():GetCounter(0x62b)~=4 then
+		e:GetHandler():AddCounter(0x62b,1)
 		local i=math.random(5,10)
 		Duel.Hint(24,0,aux.Stringid(60000179,i))
 	end

@@ -38,12 +38,12 @@ function cm.handcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.confil,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62a)>0 end
-	if Duel.GetCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62a)>=4 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-		Duel.RemoveCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62a,4,REASON_COST)
+	if chk==0 then return Duel.GetCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62b)>0 end
+	if Duel.GetCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62b)>=4 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		Duel.RemoveCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62b,4,REASON_COST)
 		e:SetLabel(44)
 	else
-		Duel.RemoveCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62a,1,REASON_COST)
+		Duel.RemoveCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62b,1,REASON_COST)
 		e:SetLabel(11)
 	end
 end

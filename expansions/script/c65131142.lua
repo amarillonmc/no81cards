@@ -13,6 +13,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_REMOVE)
 	e2:SetRange(LOCATION_SZONE)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetCondition(s.rmcon)
 	e2:SetTarget(s.rmtg)
 	e2:SetOperation(s.rmop)
@@ -45,10 +46,18 @@ end
 function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,1,REASON_EFFECT)
 end
+function s.repfilter(c,tp)
+	local loc=c:GetDestination()
+	local rt={c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT)}
+	for i,v in ipairs(rt) do
+		if v:GetValue()==LOCATION_REMOVED then loc=LOCATION_REMOVED end
+	end
+	return c:IsControler(tp) and loc==LOCATION_REMOVED and c:IsAbleToRemove() and c:IsFaceup() and (c:IsLocation(LOCATION_MZONE) and c:IsCanTurnSet() or c:IsLocation(LOCATION_SZONE) and c:IsSSetable(true)) and not c:IsReason(REASON_REPLACE)
+end
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return (c:IsLocation(LOCATION_MZONE+LOCATION_REMOVED+LOCATION_EXTRA) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or c:IsLocation(LOCATION_SZONE)) and c:IsFacedown() and c:GetDestination()==LOCATION_HAND end
-	if Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+	if Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		if c:IsLocation(LOCATION_SZONE) then
 			Duel.ChangePosition(c,POS_FACEUP)
 		else

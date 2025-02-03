@@ -71,8 +71,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.adcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62a)>0 end
-	Duel.RemoveCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62a,1,REASON_COST)
+	if chk==0 then return Duel.GetCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62b)>0 end
+	Duel.RemoveCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62b,1,REASON_COST)
 end
 function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.efil,tp,LOCATION_GRAVE,0,1,nil,tp) end

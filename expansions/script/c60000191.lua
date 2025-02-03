@@ -23,8 +23,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62a)>1 end
-	Duel.RemoveCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62a,2,REASON_COST)
+	if chk==0 then return Duel.GetCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62b)>1 end
+	Duel.RemoveCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62b,2,REASON_COST)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return  (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)

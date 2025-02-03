@@ -1,8 +1,8 @@
 --蒲牢·华钟
 local cm,m,o=GetID()
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x62a)
-	c:SetCounterLimit(0x62a,4)
+	c:EnableCounterPermit(0x62b)
+	c:SetCounterLimit(0x62b,4)
 	c:EnableReviveLimit()
 	--cannot special summon
 	local e0=Effect.CreateEffect(c)
@@ -76,10 +76,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(24,0,aux.Stringid(60000196,6))
 end
 function cm.ctcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsFaceup() and e:GetHandler():IsRelateToBattle() and e:GetHandler():GetCounter(0x62a)<4
+	return e:GetHandler():IsFaceup() and e:GetHandler():IsRelateToBattle() and e:GetHandler():GetCounter(0x62b)<4
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():AddCounter(0x62a,1)
+	e:GetHandler():AddCounter(0x62b,1)
 	local i=math.random(8,10)
 	Duel.Hint(24,0,aux.Stringid(60000196,i))
 end
@@ -103,7 +103,7 @@ end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local bc=c:GetBattleTarget()
-	return bc and c:GetCounter(0x62a)>0
+	return bc and c:GetCounter(0x62b)>0
 end
 function cm.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

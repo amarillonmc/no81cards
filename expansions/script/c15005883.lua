@@ -54,22 +54,31 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+function cm.disfilter(c)
+	return aux.NegateAnyFilter(c) and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c)
+end
+function cm.gcheck(g,tp)
+	return g:IsExists(Card.IsControler,1,nil,tp)
+end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	local p=Duel.GetTurnPlayer()
 	return (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) and p==1-tp
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and e:GetHandler():IsAbleToHand() end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.disfilter,tp,LOCATION_ONFIELD,0,1,nil) and e:GetHandler():IsAbleToHand() end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,tp,LOCATION_ONFIELD)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,2,PLAYER_ALL,LOCATION_ONFIELD)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	if not (e:GetHandler():IsRelateToEffect(e) and Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)>0) then return end
+	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if #g<2 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-	local gc=Duel.SelectMatchingCard(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil):GetFirst()
-	if gc then
-		Duel.HintSelection(Group.FromCards(gc))
+	local cg=g:SelectSubGroup(tp,cm.gcheck,false,2,2,tp)
+	Duel.HintSelection(cg)
+	local gc=cg:GetFirst()
+	while gc do
 		Duel.NegateRelatedChain(gc,RESET_TURN_SET)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -82,5 +91,6 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(RESET_TURN_SET)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		gc:RegisterEffect(e2)
+		gc=cg:GetNext()
 	end
 end

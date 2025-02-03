@@ -1,6 +1,7 @@
 --风来之国的旅者 约翰与珊
 function c71402004.initial_effect(c)
 	--link summon
+	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,nil,2,2,c71402004.lcheck)
 	--atk
 	local e1=Effect.CreateEffect(c)

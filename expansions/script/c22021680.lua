@@ -20,6 +20,17 @@ function c22021680.initial_effect(c)
 	e2:SetTarget(c22021680.target)
 	e2:SetOperation(c22021680.operation)
 	c:RegisterEffect(e2)
+	--destroy
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(22021680,4))
+	e3:SetCategory(CATEGORY_DESTROY)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCondition(c22021680.erecon)
+	e3:SetCost(c22021680.erecost)
+	e3:SetTarget(c22021680.target)
+	e3:SetOperation(c22021680.operation)
+	c:RegisterEffect(e3)
 end
 function c22021680.spfilter(c)
 	return c:IsFaceup() and c:IsCode(22020000) and c:IsAttribute(ATTRIBUTE_LIGHT)
@@ -56,4 +67,18 @@ end
 function c22021680.operation(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 	Duel.Destroy(sg,REASON_EFFECT)
+end
+function c22021680.erecon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsPlayerAffectedByEffect(tp,22020980)
+end
+function c22021680.erecost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+		g:RemoveCard(e:GetHandler())
+		return g:GetCount()>0 and g:FilterCount(Card.IsDiscardable,nil)==g:GetCount()
+	end
+	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
+	Duel.Hint(HINT_CARD,0,22020980)
+	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 end

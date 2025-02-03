@@ -36,7 +36,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c)
-	return c:IsCanAddCounter(0x62a,1) and c:IsFaceup()
+	return c:IsCanAddCounter(0x62b,1) and c:IsFaceup()
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,0,1,nil) end
@@ -46,6 +46,6 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_MZONE,0,1,1,nil)
 	if g:GetCount()>0 then
-		g:GetFirst():AddCounter(0x62a,1)
+		g:GetFirst():AddCounter(0x62b,1)
 	end
 end

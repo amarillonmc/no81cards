@@ -44,26 +44,35 @@ function c10111142.splimit(e,se,sp,st)
 	local sc=se:GetHandler()
 	return sc:IsCode(10111128)
 end
+-- ②效果修正版
 function c10111142.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local bc=c:GetBattleTarget()
 	return c:IsRelateToBattle() and bc and bc:IsFaceup() and bc:IsRelateToBattle()
 end
+
 function c10111142.atkcfilter(c)
 	return c:IsLevelBelow(6) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsSetCard(0x8) and c:IsAbleToGraveAsCost()
 end
+
 function c10111142.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c10111142.atkcfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local tc=Duel.SelectMatchingCard(tp,c10111142.atkcfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-	Duel.SendtoGrave(tc,REASON_COST)
-	e:SetLabel(tc:GetLevel())
+	if tc then
+		Duel.SendtoGrave(tc,REASON_COST)
+		-- 修正：记录攻击力而不是等级
+		e:SetLabel(tc:GetAttack())
+	end
 end
+
 function c10111142.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local bc=c:GetBattleTarget()
+	-- 获取实际攻击力数值
 	local val=e:GetLabel()
 	if c:IsFaceup() and c:IsRelateToBattle() and bc:IsFaceup() and bc:IsRelateToBattle() then
+		-- 应用攻击力变化
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_ATTACK_FINAL)

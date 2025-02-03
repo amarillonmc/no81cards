@@ -39,7 +39,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		local mg=Duel.GetMatchingGroup(cm.pfil,tp,LOCATION_MZONE,0,nil)
 		local num=#mg*4
 		for c in aux.Next(mg) do
-			num=num-c:GetCounter(0x62a)
+			num=num-c:GetCounter(0x62b)
 		end
 		local tgg=Duel.GetMatchingGroup(cm.tgfil,tp,LOCATION_HAND,0,nil)
 		local maxnum=math.min(num,#tgg)
@@ -51,7 +51,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			for i=1,fnum do
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
 				local pg=Duel.GetMatchingGroup(cm.pfil,tp,LOCATION_MZONE,0,nil):Select(tp,1,1,nil)
-				pg:GetFirst():AddCounter(0x62a,1)
+				pg:GetFirst():AddCounter(0x62b,1)
 			end
 			Duel.Draw(tp,fnum,REASON_EFFECT)
 		end
@@ -61,6 +61,6 @@ function cm.tgfil(c)
 	return aux.IsCodeListed(c,60000179) and c:IsAbleToGrave()
 end
 function cm.pfil(c)
-	return c:IsCode(60000179) and c:IsFaceup() and not c:IsDisabled() and c:GetCounter(0x62a)<4
+	return c:IsCode(60000179) and c:IsFaceup() and not c:IsDisabled() and c:GetCounter(0x62b)<4
 end
 

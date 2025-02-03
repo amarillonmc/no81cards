@@ -27,7 +27,7 @@ function cm.filter1(c)
 	return c:IsCode(60000179) and c:IsFaceup() and not c:IsDisabled()
 end
 function cm.filter2(c)
-	return c:IsCode(60000179) and c:IsFaceup() and c:GetCounter(0x62a)==4
+	return c:IsCode(60000179) and c:IsFaceup() and c:GetCounter(0x62b)==4
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_MZONE,0,1,nil) end
@@ -40,7 +40,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Draw(tp,#g1,REASON_EFFECT)
 	else
 		for tc in aux.Next(g1) do
-			if tc:GetCounter(0x62a)<4 then tc:AddCounter(0x62a,4-tc:GetCounter(0x62a)) end
+			if tc:GetCounter(0x62b)<4 then tc:AddCounter(0x62b,4-tc:GetCounter(0x62b)) end
 		end
 	end
 end
@@ -57,7 +57,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,g)
 		local num=0
-		local ct=Duel.GetCounter(tp,LOCATION_MZONE,0,0x62a)
+		local ct=Duel.GetCounter(tp,LOCATION_MZONE,0,0x62b)
 		while ct>=4 do
 			ct=ct-4
 			num=num+1

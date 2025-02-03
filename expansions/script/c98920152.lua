@@ -1,6 +1,6 @@
 --机甲精英骨架
 function c98920152.initial_effect(c)
-	aux.EnableUnionAttribute(c,c98920152.eqlimit)
+	aux.EnableUnionAttribute(c,c98920152.unfilter)
 	--equip
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(98920152,0))
@@ -56,7 +56,7 @@ function c98920152.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
-function c98920152.eqlimit(c)
+function c98920152.unfilter(c)
 	return c:IsRace(RACE_MACHINE)
 end
 function c98920152.filter(c)

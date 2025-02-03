@@ -10,7 +10,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--toh
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -35,23 +35,49 @@ function cm.initial_effect(c)
 	e5:SetTarget(c11561070.eftg)
 	e5:SetLabelObject(e4)
 	c:RegisterEffect(e5)
+	if not c11561070.global_check then
+		c11561070.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_BE_MATERIAL)
+		ge1:SetOperation(c11561070.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function c11561070.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=eg:GetFirst()
+	while tc do
+		if tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and r==REASON_FUSION and tc:IsFaceupEx() then
+		tc:RegisterFlagEffect(11561070,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11561070,4)) end
+		tc=eg:GetNext()
+	end
 end
 function c11561070.eftg(e,c)
 	return c:IsCode(68468459)
 end
-
+function c11561070.thfilter(c)
+	return c:IsFaceupEx() and c:GetFlagEffect(11561070)>0 and c:IsAbleToHand()
+end
+function c11561070.tgfilter(c)
+	return (c:IsCode(68468459) or aux.IsCodeListed(c,68468459)) and c:IsAbleToGrave()
+end
 function c11561070.cnfilter(c)
-	return c:IsFaceup() and not c:IsType(TYPE_FUSION)
+	return c:IsFaceup() and ((c:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(c11561070.tgfilter,tp,LOCATION_DECK,0,1,nil)) or (not c:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(c11561070.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)))
 end
 function c11561070.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c11561070.cnfilter,1,nil,tp)
-end
-function c11561070.thfilter(c,e,tp)
-	return (c:IsCode(68468459) or aux.IsCodeListed(c,68468459)) and c:IsFaceupEx() and c:IsAbleToHand()
+	return eg:IsExists(c11561070.cnfilter,1,nil,tp) and eg:GetCount()==1
 end
 function c11561070.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11561070.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,0,1,0,0)
+	local tc=eg:GetFirst()
+	if chk==0 then return (tc:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(c11561070.tgfilter,tp,LOCATION_DECK,0,1,nil)) or (not tc:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(c11561070.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)) end
+	if not tc:IsType(TYPE_FUSION) then
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,0,1,0,0)
+	elseif tc:IsType(TYPE_FUSION) then
+		e:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_DECKDES)
+		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,0,1,0,0)
+	end
 end
 function c11561070.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
@@ -61,11 +87,22 @@ function c11561070.filter2(c,e,tp,m,f,chkf)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c11561070.spop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,c11561070.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp):GetFirst()
-	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsType(TYPE_MONSTER) and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(11561070,0)) then
-		Duel.BreakEffect()
-		if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
+	local tc=eg:GetFirst()
+	local aaa=0
+	if not tc:IsType(TYPE_FUSION) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local ttc=Duel.SelectMatchingCard(tp,c11561070.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil):GetFirst()
+		if ttc and Duel.SendtoHand(ttc,nil,REASON_EFFECT)~=0 then
+			aaa=1
+		end
+	elseif tc:IsType(TYPE_FUSION) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local ttc=Duel.SelectMatchingCard(tp,c11561070.tgfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
+		if ttc and Duel.SendtoGrave(ttc,REASON_EFFECT)~=0 then
+			aaa=1
+		end
+	end
+	if aaa==1 then
 		local chkf=tp
 		local mg1=Duel.GetFusionMaterial(tp)
 		local res=Duel.IsExistingMatchingCard(c11561070.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
@@ -80,6 +117,7 @@ function c11561070.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		if res and Duel.SelectYesNo(tp,aux.Stringid(11561070,1)) then
 
+		Duel.BreakEffect()
 
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(c11561070.filter1,nil,e)
@@ -117,8 +155,11 @@ function c11561070.spop(e,tp,eg,ep,ev,re,r,rp)
 
 		end
 	end
+
+
+
 end
-end
+--end
 
 
 

@@ -30,8 +30,9 @@ function s.initial_effect(c)
 		g:KeepAlive()
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_CHAIN_END)
+		ge1:SetCode(EVENT_CHAIN_SOLVED)
 		ge1:SetLabelObject(g)
+		ge1:SetCondition(s.recon)
 		ge1:SetOperation(s.reop)
 		Duel.RegisterEffect(ge1,0)
 		local ge2=Effect.CreateEffect(c)
@@ -102,8 +103,10 @@ function s.addop(e,tp,eg,ep,ev,re,r,rp)
 	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and rc and rc:IsStatus(STATUS_LEAVE_CONFIRMED) then
 		g:AddCard(rc)
 		rc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
-		rc:SetStatus(STATUS_LEAVE_CONFIRMED,false)
 	end
+end
+function s.recon(e,tp,eg,ep,ev,re,r,rp)
+	return ev==1
 end
 function s.refilter(c,tp)
 	if not c:IsLocation(LOCATION_SZONE) and c:GetFlagEffect(id)==0 or not c:IsControler(tp) or not c:IsAbleToRemove()then return false end
@@ -116,7 +119,7 @@ end
 function s.rmfilter(c)
 	return c:IsHasEffect(id)~=nil and c:IsAbleToRemove()
 end
-function s.reop(e,tp,eg,ep,ev,re,r,rp)	
+function s.reop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler()
 	local g=e:GetLabelObject()
 	for p=0,1 do
@@ -127,6 +130,7 @@ function s.reop(e,tp,eg,ep,ev,re,r,rp)
 				local rc=rg:Select(p,1,1,nil)
 				Duel.Remove(rc,POS_FACEUP,REASON_EFFECT+REASON_REPLACE)
 				for sc in aux.Next(sg) do
+					sc:SetStatus(STATUS_LEAVE_CONFIRMED,false)
 					Duel.ChangePosition(sc,POS_FACEDOWN)
 				end
 				g=g:Filter(aux.TRUE,sg)
@@ -136,10 +140,6 @@ function s.reop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	for tc in aux.Next(g) do
-		tc:SetStatus(STATUS_LEAVE_CONFIRMED,true)
-	end
-	Duel.SendtoGrave(g,REASON_RULE)
 	Duel.ResetFlagEffect(0,id)
 	Duel.ResetFlagEffect(1,id)
 	g:Clear()

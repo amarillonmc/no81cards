@@ -45,7 +45,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62a)>=4
+	return Duel.GetCounter(e:GetHandlerPlayer(),LOCATION_MZONE,0,0x62b)>=4
 end
 function cm.filter(c)
 	return aux.IsCodeListed(c,60000179) and c:IsAbleToDeck()

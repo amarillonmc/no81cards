@@ -67,10 +67,12 @@ function c28321219.regcon(e,tp,eg,ep,ev,re,r,rp)
 	else return true end
 end
 function c28321219.rmop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,28321219)
 	local tc=e:GetLabelObject()
 	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 end
 function c28321219.posop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,28321219)
 	local tc=e:GetLabelObject()
 	Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
 end

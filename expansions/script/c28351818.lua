@@ -13,6 +13,7 @@ function c28351818.initial_effect(c)
 	e1:SetTarget(c28351818.retg)
 	e1:SetOperation(c28351818.reop)
 	c:RegisterEffect(e1)
+	c28351818.recover_effect=e1
 	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
@@ -23,7 +24,7 @@ function c28351818.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28351818.matfilter(c,syncard)
-	return c:IsTuner(syncard) or Duel.GetLP(c:GetControler())>=9000
+	return c:IsTuner(syncard) or Duel.GetLP(c:GetControler())>8000
 end
 function c28351818.recon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
@@ -32,16 +33,17 @@ function c28351818.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
-function c28351818.cfilter(c,tp)
-	return c:IsAbleToHand() and c:IsLocation(LOCATION_GRAVE) and c:IsControler(tp)
+function c28351818.cfilter(c)
+	return c:IsAttribute(ATTRIBUTE_EARTH) and c:IsAbleToHand()
 end
 function c28351818.reop(e,tp,eg,ep,ev,re,r,rp)
-	local mg=e:GetHandler():GetMaterial()
 	Duel.Recover(tp,1000,REASON_EFFECT)
-	if Duel.GetLP(tp)>=10000 and mg and mg:IsExists(c28351818.cfilter,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(28351818,0)) then
+	local g=Duel.IsExistingMatchingCard(c28351818.cfilter,tp,LOCATION_GRAVE,0,1,nil)
+	if Duel.GetLP(tp)>=10000 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(28351818,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tg=mg:Filter(c28351818.cfilter,nil,tp):Select(tp,1,1,nil)
+		local tg=g:Select(tp,1,1,nil)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 	end
 	if e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsFaceup() then
 		local e1=Effect.CreateEffect(e:GetHandler())

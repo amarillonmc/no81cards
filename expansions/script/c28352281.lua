@@ -20,14 +20,15 @@ function c28352281.initial_effect(c)
 	--
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetCondition(c28352281.condition)
 	e2:SetOperation(c28352281.operation)
 	c:RegisterEffect(e2)
 	--recover
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_RECOVER)
+	e3:SetDescription(aux.Stringid(28352281,0))
+	e3:SetCategory(CATEGORY_RECOVER+CATEGORY_DRAW+CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
@@ -37,6 +38,7 @@ function c28352281.initial_effect(c)
 	e3:SetTarget(c28352281.retg)
 	e3:SetOperation(c28352281.reop)
 	c:RegisterEffect(e3)
+	c28352281.recover_effect=e3
 end
 function c28352281.sprfilter(c)
 	return c:IsRace(RACE_FAIRY) and c:IsType(TYPE_SYNCHRO) and c:IsReleasable(REASON_SPSUMMON)
@@ -136,5 +138,9 @@ function c28352281.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,500)
 end
 function c28352281.reop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Recover(tp,500,REASON_EFFECT)
+	if Duel.Recover(tp,500,REASON_EFFECT)~=0 and Duel.Draw(tp,1,REASON_EFFECT)~=0 then
+		Duel.ShuffleHand(p)
+		Duel.BreakEffect()
+		Duel.DiscardHand(p,nil,1,1,REASON_EFFECT)
+	end
 end

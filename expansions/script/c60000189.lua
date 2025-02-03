@@ -90,14 +90,14 @@ function cm.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=false
 	local b2=false
 	local b3=false
-	if c:GetFlagEffect(m+10000000)==0 and Duel.GetFlagEffect(tp,m+10000000)==0 and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) then b1=true end
+	if c:GetFlagEffect(m+10000000)==0 and Duel.GetFlagEffect(tp,m+10000000)==0 and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then b1=true end
 	if c:GetFlagEffect(m+20000000)==0 and Duel.GetFlagEffect(tp,m+20000000)==0 and Duel.IsExistingMatchingCard(cm.cpfil1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) then b2=true end
 	if c:GetFlagEffect(m+30000000)==0 and Duel.GetFlagEffect(tp,m+30000000)==0 and Duel.IsExistingMatchingCard(cm.cpfil2,tp,LOCATION_DECK,0,1,nil) then b3=true end
 	if chk==0 then return b1 or b2 or b3 end
 	local op=aux.SelectFromOptions(tp,{b1,aux.Stringid(m,5)},{b2,aux.Stringid(m,6)},{b3,aux.Stringid(m,7)})
 	e:SetLabel(op)
 	if op==1 then
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_ONFIELD)
 	elseif op==2 then
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 	elseif op==3 then
@@ -108,7 +108,7 @@ function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local op=e:GetLabel()
 	if op==1 and c:GetFlagEffect(m+10000000)==0 and Duel.GetFlagEffect(tp,m+10000000)==0 then
-		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+		local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 		if #g==0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=g:Select(tp,1,1,nil)

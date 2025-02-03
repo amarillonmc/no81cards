@@ -21,17 +21,20 @@ end
 function s.thfilter2(c)
 	return c:IsSetCard(0xca70) and c:IsFaceup() and c:IsAbleToHand() and not c:IsCode(id)
 end
+function s.filter(c)
+	return c:IsCode(12823205) and c:IsSummonable(true,nil)
+end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
 	local cl=Duel.GetCurrentChain()
 	local c=e:GetHandler()
 	if Duel.Recover(tp,500,REASON_EFFECT)>0 and Duel.Recover(1-tp,500,REASON_EFFECT)>0 then
-		local tg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.thfilter),tp,LOCATION_GRAVE,0,nil)
+		local tg=Duel.GetMatchingGroup(s.filter,tp,LOCATION_HAND,0,nil)
 		if cl==1 and #tg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-			local sg=tg:Select(tp,1,1,nil)
-			if sg then
-			Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+			local tc=tg:Select(tp,1,1,nil):GetFirst()
+			if tc then
+				Duel.Summon(tp,tc,true,nil)
 			end
 		end
 		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.thfilter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
