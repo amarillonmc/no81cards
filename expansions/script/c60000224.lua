@@ -49,8 +49,13 @@ end
 
 -- 双选操作
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	local op=Duel.SelectOption(tp,aux.Stringid(id,1),aux.Stringid(id,2))
-	if op==0 then
+	local c=e:GetHandler()
+	local b1=Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.GetFlagEffect(tp,id+10000000)==0
+		local b2=Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,id+20000000)==0
+			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if not b1 and not b2 then return end
+	local op=aux.SelectFromOptions(tp,{b1,aux.Stringid(id,2)},{b2,aux.Stringid(id,3)})
+	if op==1 then
 		Duel.RegisterFlagEffect(tp,id+10000000,RESET_PHASE+PHASE_END,0,1)
 		-- 检索效果
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -59,7 +64,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
 		end
-	else
+	elseif op==2
 		Duel.RegisterFlagEffect(tp,id+20000000,RESET_PHASE+PHASE_END,0,1)
 		-- 特殊召唤效果
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end

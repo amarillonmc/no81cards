@@ -51,7 +51,7 @@ function cm.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 end
 function cm.fil2(c)
-	return aux.IsCodeListed(c,60000211) and c:IsAbleToHand() and not c:IsCode(m)
+	return aux.IsCodeListed(c,60000211) and c:IsAbleToHand() and not c:IsCode(m) and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP))
 end
 function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local b2=false
