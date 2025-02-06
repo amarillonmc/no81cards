@@ -216,7 +216,7 @@ function c22348354.val(e,c)
 	return Duel.GetMatchingGroupCount(c22348354.atkfilter,c:GetControler(),LOCATION_MZONE,LOCATION_MZONE,nil)*200
 end
 function c22348354.filter(c)
-	return c:IsSetCard(0x970a) and c:IsAbleToDeck() and not c:IsCode(22348354)
+	return c:IsSetCard(0x970a) and c:IsFaceupEx() and c:IsAbleToDeck() and not c:IsCode(22348354)
 end
 function c22348354.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c22348354.filter(chkc) end

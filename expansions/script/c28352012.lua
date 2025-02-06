@@ -48,7 +48,7 @@ function c28352012.reop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(tp,2000,REASON_EFFECT,true)
 	Duel.Recover(1-tp,2000,REASON_EFFECT,true)
 	Duel.RDComplete()
-	local g=Duel.IsExistingMatchingCard(c28352012.cfilter,tp,LOCATION_GRAVE,0,1,nil)
+	local g=Duel.GetMatchingGroup(c28352012.cfilter,tp,LOCATION_GRAVE,0,1,nil)
 	if Duel.GetLP(tp)>=10000 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(28352012,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tg=g:Select(tp,1,1,nil)
@@ -71,7 +71,7 @@ function c28352012.tdcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLP(tp)>=10000
 end
 function c28352012.tdfilter(c,e,tp,eg,ep,ev,re,r,rp)
-	if not c:IsSetCard(0x287) and c:IsLevel(4) and c:IsAbleToDeck() then return false end
+	if not (c:IsSetCard(0x287) and c:IsLevel(4) and c:IsAbleToDeck()) then return false end
 	local te=c.recover_effect
 	if not te then return false end
 	local tg=te:GetTarget()
