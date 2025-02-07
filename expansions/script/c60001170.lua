@@ -66,19 +66,19 @@ function c60001170.wxop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Group.CreateGroup()
 	local c=e:GetHandler()
 	if Duel.NegateActivation(ev) and c:GetFlagEffect(60001168)>0 and (c:IsLocation(LOCATION_SZONE) or c:IsPreviousLocation(LOCATION_SZONE)) and (#g1>0 or #g2>0 or #g3>0) and Duel.SelectYesNo(tp,aux.Stringid(60001170,2)) then
-		if #g1~=0 and Duel.SelectYesNo(tp,aux.Stringid(60001170,3)) then
+		if #g1~=0 and Duel.SelectYesNo(tp,aux.Stringid(60001170,4)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			local sg1=g1:Select(tp,1,1,nil)
 			Duel.HintSelection(sg1)
 			sg:Merge(sg1)
 		end
-		if #g2~=0 and Duel.SelectYesNo(tp,aux.Stringid(60001170,4)) then
+		if #g2~=0 and Duel.SelectYesNo(tp,aux.Stringid(60001170,5)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			local sg2=g2:Select(tp,1,1,nil)
 			Duel.HintSelection(sg2)
 			sg:Merge(sg2)
 		end
-		if #g3~=0 and Duel.SelectYesNo(tp,aux.Stringid(60001170,5)) then
+		if #g3~=0 and Duel.SelectYesNo(tp,aux.Stringid(60001170,3)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 			local sg3=g3:RandomSelect(tp,1)
 			sg:Merge(sg3)

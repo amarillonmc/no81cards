@@ -71,7 +71,7 @@ function c60001168.wxop(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.GetMatchingGroup(c60001168.filter,tp,LOCATION_DECK,0,nil,tp,sg:GetFirst():GetCode())
 	if Duel.SendtoHand(sg,nil,REASON_EFFECT)~=0 and c:GetFlagEffect(60001168)>0 and (c:IsLocation(LOCATION_SZONE) or c:IsPreviousLocation(LOCATION_SZONE)) and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(60001168,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-		local tc=g2:Select(tp,1,1,nil)
+		local tc=g2:Select(tp,1,1,nil):GetFirst()
 		if tc then
 			if tc:IsType(TYPE_MONSTER) then
 				Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,POS_FACEUP,true)
