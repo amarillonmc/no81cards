@@ -53,7 +53,7 @@ function c9910264.activate(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	else
-		if c:IsRelateToEffect(e) and c:IsSSetable(true) then
+		if c:IsRelateToEffect(e) and c:IsFaceup() and c:IsSSetable(true) then
 			if chk then Duel.BreakEffect() end
 			c:CancelToGrave()
 			Duel.ChangePosition(c,POS_FACEDOWN)

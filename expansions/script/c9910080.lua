@@ -50,7 +50,7 @@ function c9910080.rmop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(g)
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 		local ct=Duel.GetOperatedGroup():FilterCount(Card.IsAttribute,nil,ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)
-		if ct==0 and c:IsRelateToEffect(e) and c:IsSSetable(true) then
+		if ct==0 and c:IsRelateToEffect(e) and c:IsFaceup() and c:IsSSetable(true) then
 			Duel.BreakEffect()
 			Duel.ChangePosition(c,POS_FACEDOWN)
 			Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)

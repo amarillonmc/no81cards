@@ -44,7 +44,7 @@ function c9910929.activate(e,tp,eg,ep,ev,re,r,rp)
 	if rc:IsRelateToEffect(re) and Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)~=0 and rc:IsLocation(LOCATION_REMOVED)
 		and c:IsRelateToEffect(e) then
 		c:CancelToGrave()
-		local b1=c:IsSSetable(true)
+		local b1=c:IsFaceup() and c:IsSSetable(true)
 		local b2=c:IsAbleToDeck() and not rc:IsReason(REASON_REDIRECT)
 		if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910929,0),aux.Stringid(9910929,1))==0) then
 			Duel.BreakEffect()

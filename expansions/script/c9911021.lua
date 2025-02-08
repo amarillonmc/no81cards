@@ -70,7 +70,7 @@ function c9911021.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if res and Duel.Release(tc,REASON_EFFECT)>0 then res=true end
 	if res and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)==Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)
-		and c:IsRelateToEffect(e) and c:IsSSetable(true) and Duel.SelectYesNo(tp,aux.Stringid(9911021,0)) then
+		and c:IsRelateToEffect(e) and c:IsFaceup() and c:IsSSetable(true) and Duel.SelectYesNo(tp,aux.Stringid(9911021,0)) then
 		Duel.BreakEffect()
 		c:CancelToGrave()
 		Duel.ChangePosition(c,POS_FACEDOWN)

@@ -89,7 +89,7 @@ function c9910268.activate2(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e3)
 		end
-		if c:IsRelateToEffect(e) and c:IsSSetable(true)
+		if c:IsRelateToEffect(e) and c:IsFaceup() and c:IsSSetable(true)
 			and Duel.IsExistingMatchingCard(c9910268.cfilter2,tp,LOCATION_GRAVE,0,1,nil) then
 			Duel.BreakEffect()
 			c:CancelToGrave()

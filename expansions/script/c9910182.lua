@@ -50,7 +50,7 @@ function c9910182.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmCards(1-tp,rc)
 	if c:IsRelateToEffect(e) then
 		c:CancelToGrave()
-		local b1=c:IsSSetable(true)
+		local b1=c:IsFaceup() and c:IsSSetable(true)
 		local b2=c:IsAbleToDeck()
 		if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910182,0),aux.Stringid(9910182,1))==0) then
 			Duel.BreakEffect()
