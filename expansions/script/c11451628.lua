@@ -3,7 +3,8 @@
 local cm,m=GetID()
 function cm.initial_effect(c)
 	c:SetSPSummonOnce(m)
-	aux.AddSynchroProcedure(c,cm.tfilter,cm.ntfilter,1)
+	aux.AddSynchroMixProcedure(c,cm.tfilter,nil,nil,cm.ntfilter,1,99)
+	--aux.AddSynchroProcedure(c,cm.tfilter,cm.ntfilter,1)
 	c:EnableReviveLimit()
 	--twist synchro
 	local e0=Effect.CreateEffect(c)

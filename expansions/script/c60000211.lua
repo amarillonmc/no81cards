@@ -77,9 +77,8 @@ end
 
 -- 检索效果
 function s.thfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return c:IsCode(60000222)
 		and c:IsAbleToHand()
-		and aux.IsCodeListed(c,id)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end

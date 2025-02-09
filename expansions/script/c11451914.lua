@@ -193,6 +193,7 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		return #tab>0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,e,tp,table.unpack(tab))
 	end
+	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2))
 	e:SetLabel(table.unpack(tab))
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_EXTRA)
 end
