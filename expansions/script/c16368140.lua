@@ -1,11 +1,14 @@
 --幻之数码兽 钢铁加鲁鲁兽·X抗体
 function c16368140.initial_effect(c)
+	--fusion material
 	c:EnableReviveLimit()
+	aux.AddFusionProcCodeFun(c,50218140,aux.FilterBoolFunction(Card.IsFusionSetCard,0xdc3),1,false,false)
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(c16368140.splimit)
 	c:RegisterEffect(e0)
 	--immune
 	local e1=Effect.CreateEffect(c)
@@ -35,16 +38,21 @@ function c16368140.initial_effect(c)
 	e3:SetTarget(c16368140.tg2)
 	e3:SetOperation(c16368140.op2)
 	c:RegisterEffect(e3)
-	--discard deck
+	--tohand
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_TOHAND)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCode(EVENT_PHASE+PHASE_END)
 	e4:SetCountLimit(1)
+	e4:SetCondition(c16368140.thcon)
 	e4:SetTarget(c16368140.thtg)
 	e4:SetOperation(c16368140.thop)
 	c:RegisterEffect(e4)
+end
+function c16368140.splimit(e,se,sp,st)
+	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION or se:GetHandler():IsCode(16364073)
+		or not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 function c16368140.efilter(e,te)
 	return te:IsActiveType(TYPE_SPELL+TYPE_TRAP) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
@@ -70,23 +78,17 @@ function c16368140.op2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(ec,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end
+function c16368140.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,50218140,16364073)
+end
 function c16368140.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
-	local tg=g:GetMinGroup(Card.GetAttack)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tg,1,0,LOCATION_MZONE)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,1-tp,LOCATION_ONFIELD)
 end
 function c16368140.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,1,nil)
 	if g:GetCount()>0 then
-		local tg=g:GetMinGroup(Card.GetAttack)
-		if tg:GetCount()>1 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-			local sg=tg:Select(tp,1,1,nil)
-			Duel.HintSelection(sg)
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		else 
-			Duel.SendtoHand(tg,nil,REASON_EFFECT)
-		end
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
 	end
 end

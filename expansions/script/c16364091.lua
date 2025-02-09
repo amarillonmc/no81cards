@@ -1,11 +1,14 @@
---数码兽 兽人加鲁鲁兽·X抗体
+--幻之数码兽 兽人加鲁鲁兽·X抗体
 function c16364091.initial_effect(c)
+	--fusion material
 	c:EnableReviveLimit()
+	aux.AddFusionProcCodeFun(c,50218106,aux.FilterBoolFunction(Card.IsFusionSetCard,0xdc3),1,false,false)
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(c16364091.splimit)
 	c:RegisterEffect(e0)
 	--destroy
 	local e1=Effect.CreateEffect(c)
@@ -40,6 +43,10 @@ function c16364091.initial_effect(c)
 	e3:SetTarget(c16364091.srtg)
 	e3:SetOperation(c16364091.srop)
 	c:RegisterEffect(e3)
+end
+function c16364091.splimit(e,se,sp,st)
+	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION or se:GetHandler():IsCode(16364073)
+		or not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 function c16364091.dfilter1(c)
 	return c:IsType(0x6) and c:IsFaceup()

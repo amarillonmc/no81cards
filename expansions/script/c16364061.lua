@@ -72,7 +72,7 @@ function c16364061.mfilter(c)
 	return c:IsFaceup() and c:IsXyzType(TYPE_XYZ) and c:IsSetCard(0xdc3)
 end
 function c16364061.ovfilter(c)
-	return c:IsFaceup() and c:IsCode(16364051) and c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,16364057)
+	return c:IsFaceup() and c:IsSetCard(0xdc4) and c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,16364057)
 end
 function c16364061.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)

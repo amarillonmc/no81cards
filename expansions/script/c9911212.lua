@@ -35,7 +35,7 @@ function c9911212.tdfilter(c)
 end
 function c9911212.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9911212.tdfilter(chkc) end
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingTarget(c9911212.tdfilter,tp,LOCATION_GRAVE,0,3,nil) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) and Duel.IsExistingTarget(c9911212.tdfilter,tp,LOCATION_GRAVE,0,3,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,c9911212.tdfilter,tp,LOCATION_GRAVE,0,3,3,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
@@ -46,7 +46,7 @@ function c9911212.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)==0 then return end
 	local g=Duel.GetOperatedGroup()
 	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
-	Duel.Draw(tp,1,REASON_EFFECT)
+	Duel.Draw(tp,2,REASON_EFFECT)
 end
 function c9911212.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
@@ -58,7 +58,7 @@ end
 function c9911212.setfilter(c)
 	local b1=c:IsLocation(LOCATION_HAND) and c:IsSSetable()
 	local b2=c:IsLocation(LOCATION_SZONE) and c:IsSSetable(true)
-	return c:IsType(TYPE_TRAP) and (b1 or b2)
+	return c:IsFaceupEx() and c:IsType(TYPE_TRAP) and (b1 or b2)
 end
 function c9911212.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

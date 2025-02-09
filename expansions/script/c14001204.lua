@@ -54,10 +54,21 @@ end
 function cm.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_CARD,0,m)
-		Duel.Draw(tp,1,REASON_EFFECT)
-		Duel.Recover(tp,400,REASON_EFFECT)
+		--Duel.Draw(tp,1,REASON_EFFECT)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetCountLimit(1)
+		e1:SetOperation(cm.thop)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
 	end
 end
 function cm.indtg(e,c)
 	return c:IsRace(RACE_PLANT)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
+	Duel.Draw(tp,1,REASON_EFFECT)
+	Duel.Recover(tp,400,REASON_EFFECT)
 end

@@ -3,6 +3,26 @@ if EFFECT_ALLOW_EXTRA_XYZ_MATERIAL then return end
 EFFECT_ALLOW_EXTRA_XYZ_MATERIAL = 33720330
 --EFFECT_EXTRA_XYZ_MATERIAL		= will be implemented when needed
 
+EVENT_XYZATTACH					= EVENT_CUSTOM+33720369
+
+local add_xyz_proc, add_xyz_proc_nlv, duel_overlay, card_is_xyz_level, duel_check_xyz_mat, duel_select_xyz_mat, _XyzLevelFreeGoal =
+Auxiliary.AddXyzProcedure, Auxiliary.AddXyzProcedureLevelFree, Duel.Overlay, Card.IsXyzLevel, Duel.CheckXyzMaterial, Duel.SelectXyzMaterial, Auxiliary.XyzLevelFreeGoal
+
+Duel.Overlay=function(xyz,mat)
+	local og,oct
+	if xyz:IsLocation(LOCATION_MZONE) then
+		og=xyz:GetOverlayGroup()
+		oct=#og
+	end
+	local res=duel_overlay(xyz,mat)
+	if oct and xyz:GetOverlayCount()>oct then
+		Duel.RaiseEvent(mat,EVENT_XYZATTACH,nil,0,0,xyz:GetControler(),xyz:GetOverlayCount()-oct)
+	end
+	return res
+end
+
+--
+
 function Auxiliary.XyzMaterialComplete(c,sc,lv,tp)
 	if not c:IsCanBeXyzMaterial(sc) then return false end
 	if c:IsLocation(LOCATION_MZONE) then

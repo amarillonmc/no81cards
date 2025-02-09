@@ -1,3 +1,67 @@
+local EFFECT_FLAG_COPY_INHERIT = EFFECT_FLAG_COPY_INHERIT or EFFECT_FLAG_COPY
+
+--Single Effect template
+function Card.SingleEffect(c,code,val,reset,rc,range,cond,prop,desc)
+	local typ = (SCRIPT_AS_EQUIP==true) and EFFECT_TYPE_EQUIP or EFFECT_TYPE_SINGLE
+	if not reset and not range then
+		range = c:GetOriginalType()&TYPE_FIELD>0 and LOCATION_FZONE or c:GetOriginalType()&TYPE_ST>0 and LOCATION_SZONE or LOCATION_MZONE
+	end
+	
+	local donotdisable=false
+	local rc = rc and rc or c
+    local rct=1
+    if type(reset)=="table" then
+        rct=reset[2]
+        reset=reset[1]
+    end
+	
+	if type(rc)=="table" then
+        donotdisable=rc[2]
+        rc=rc[1]
+    end
+	
+	if not prop then prop=0 end
+	
+	local e=Effect.CreateEffect(rc)
+	e:SetType(typ)
+	if range and not SCRIPT_AS_EQUIP then
+		prop=prop|EFFECT_FLAG_SINGLE_RANGE
+		e:SetRange(range)
+	end
+	e:SetCode(code)
+	if val then
+		e:SetValue(val)
+	end
+	if cond then
+		e:SetCondition(cond)
+	end
+	
+	if reset then
+		if type(reset)~="number" then reset=0 end
+		if rc==c and not donotdisable then
+			reset = reset|RESET_DISABLE
+			prop=prop|EFFECT_FLAG_COPY_INHERIT
+		else
+			prop=prop|EFFECT_FLAG_CANNOT_DISABLE
+		end
+		if reset&RESET_EVENT==0 then
+			reset=reset|RESET_EVENT|RESETS_STANDARD
+		end
+		e:SetReset(reset,rct)
+	end
+	
+	if desc then
+		prop=prop|EFFECT_FLAG_CLIENT_HINT
+		e:SetDescription(desc)
+	end
+	
+	if prop~=0 then
+		e:SetProperty(prop)
+	end	
+	
+	return e
+end
+
 function Auxiliary.ForEach(f,loc1,loc2,exc,n)
 	if not loc1 then loc1=0 end
 	if not loc2 then loc2=0 end
@@ -387,6 +451,77 @@ function Card.DoubleDEF(c,reset,rc,range,cond,prop,desc)
 	return c:ChangeDEF(def,reset,rc,range,cond,prop,desc)
 end
 
+function Glitchy.AddType(c,ctyp,reset,rc,range,cond,prop,desc)
+	local otyp=c:GetType()
+	local e=c:SingleEffect(EFFECT_ADD_TYPE,ctyp,reset,rc,range,cond,prop,desc)
+	c:RegisterEffect(e)
+	if reset then
+		return e,otyp,c:GetType()&ctyp
+	else
+		return e
+	end
+end
+function Glitchy.ChangeAttribute(c,attr,reset,rc,range,cond,prop,desc)
+	local oatt=c:GetAttribute()
+	local e=c:SingleEffect(EFFECT_CHANGE_ATTRIBUTE,attr,reset,rc,range,cond,prop,desc)
+	c:RegisterEffect(e)
+	if reset then
+		return e,oatt,c:GetAttribute()
+	else
+		return e
+	end
+end
+function Glitchy.ChangeRace(c,race,reset,rc,range,cond,prop,desc)
+	local orac=c:GetRace()
+	local e=c:SingleEffect(EFFECT_CHANGE_RACE,race,reset,rc,range,cond,prop,desc)
+	c:RegisterEffect(e)
+	if reset then
+		return e,orac,c:GetRace()
+	else
+		return e
+	end
+end
+function Glitchy.UpdateLevel(c,lv,reset,rc,range,cond,prop,desc)
+	local olv=c:GetLevel()
+	local e=c:SingleEffect(EFFECT_UPDATE_LEVEL,lv,reset,rc,range,cond,prop,desc)
+	c:RegisterEffect(e)
+	if reset then
+		return e,c:GetLevel()-olv
+	else
+		return e
+	end
+end
+function Glitchy.ChangeLevel(c,lv,reset,rc,range,cond,prop,desc)
+	local olv=c:GetLevel()
+	local e=c:SingleEffect(EFFECT_CHANGE_LEVEL,lv,reset,rc,range,cond,prop,desc)
+	c:RegisterEffect(e)
+	if reset then
+		return e,c:GetLevel()-olv
+	else
+		return e
+	end
+end
+function Glitchy.UpdateRank(c,lv,reset,rc,range,cond,prop,desc)
+	local olv=c:GetRank()
+	local e=c:SingleEffect(EFFECT_UPDATE_RANK,lv,reset,rc,range,cond,prop,desc)
+	c:RegisterEffect(e)
+	if reset then
+		return e,c:GetRank()-olv
+	else
+		return e
+	end
+end
+function Glitchy.ChangeRank(c,lv,reset,rc,range,cond,prop,desc)
+	local olv=c:GetRank()
+	local e=c:SingleEffect(EFFECT_CHANGE_RANK,lv,reset,rc,range,cond,prop,desc)
+	c:RegisterEffect(e)
+	if reset then
+		return e,c:GetRank()-olv
+	else
+		return e
+	end
+end
+
 --Protections
 function Card.CannotBeDestroyedByBattle(c,val,cond,reset,rc,range,prop,desc,forced,typ)
 	if not typ and c:IsOriginalType(TYPE_EQUIP) and not range then
@@ -432,6 +567,14 @@ function Card.CannotBeDestroyedByBattle(c,val,cond,reset,rc,range,prop,desc,forc
 		if type(reset)~="number" then reset=0 end
 		prop=prop|EFFECT_FLAG_CANNOT_DISABLE
 		e:SetReset(RESET_EVENT|RESETS_STANDARD|reset,rct)
+		if desc==nil and typ==EFFECT_TYPE_SINGLE then
+			desc=STRING_CANNOT_BE_DESTROYED_BY_BATTLE
+		end
+	end
+	
+	if desc then
+		e:SetDescription(desc)
+		prop=prop|EFFECT_FLAG_CLIENT_HINT
 	end
 	
 	if prop~=0 then
@@ -550,10 +693,6 @@ function Card.Unaffected(c,immunity,cond,reset,rc,range,prop,desc,forced,typ)
 	end
 	
 	local e=Effect.CreateEffect(rc)
-	if desc then
-		e:SetDescription(desc)
-		prop=prop|EFFECT_FLAG_CLIENT_HINT
-	end
 	e:SetType(typ)
 	if range then
 		prop=prop|EFFECT_FLAG_SINGLE_RANGE
@@ -569,6 +708,11 @@ function Card.Unaffected(c,immunity,cond,reset,rc,range,prop,desc,forced,typ)
 		if type(reset)~="number" then reset=0 end
 		prop=prop|EFFECT_FLAG_CANNOT_DISABLE
 		e:SetReset(RESET_EVENT|RESETS_STANDARD|reset,rct)
+	end
+	
+	if desc then
+		e:SetDescription(desc)
+		prop=prop|EFFECT_FLAG_CLIENT_HINT
 	end
 	
 	if prop~=0 then

@@ -1,7 +1,7 @@
 --方舟骑士团-逻各斯
 function c29092320.initial_effect(c)
 --xyz summon
-	aux.AddXyzProcedureLevelFree(c,c29092320.mfilter,aux.TRUE,2,2)
+	aux.AddXyzProcedure(c,nil,6,2)
 	c:EnableReviveLimit()
 	--search
 	local e1=Effect.CreateEffect(c)
@@ -17,7 +17,7 @@ function c29092320.initial_effect(c)
 	c:RegisterEffect(e1)
 	--殁亡
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOGRAVE)
+	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,29092321)
@@ -68,7 +68,7 @@ function c29092320.tgco(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c29092320.tgfilter(c,atk)
-	return c:IsFaceup() and c:IsAttackBelow(atk) and c:IsAbleToGrave()
+	return c:IsFaceup() and c:IsAttackBelow(atk) and c:IsAbleToRemove()
 end
 function c29092320.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -81,7 +81,7 @@ function c29092320.tgop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	local g=Duel.GetMatchingGroup(c29092320.tgfilter,tp,0,LOCATION_MZONE,c,c:GetAttack())
 	if #g>0 then
-		Duel.SendtoGrave(g,REASON_EFFECT)
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	end
 end
 --e3

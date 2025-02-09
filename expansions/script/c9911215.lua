@@ -15,7 +15,7 @@ function c9911215.initial_effect(c)
 	c:RegisterEffect(e1)
 	--negate
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DISABLE)
+	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
@@ -41,7 +41,7 @@ function c9911215.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND)
 		and c:IsRelateToEffect(e) and c:IsSummonType(SUMMON_TYPE_SYNCHRO) then
-		local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
+		local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9911215,0)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 			local sc=g:Select(tp,1,1,nil):GetFirst()
@@ -85,7 +85,12 @@ end
 function c9911215.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
+	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
+	end
 end
 function c9911215.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateEffect(ev)
+	if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.Destroy(eg,REASON_EFFECT)
+	end
 end

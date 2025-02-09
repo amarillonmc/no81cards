@@ -49,10 +49,10 @@ function c16369101.chcon(e,tp,eg,ep,ev,re,r,rp)
 	return rc:IsCode(16369111,16369113)
 end
 function c16369101.chfilter1(c,e,tp)
-	return c:IsSetCard(0xcb1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetMZoneCount(tp,nil)>0
+	return c:IsSetCard(0xcb1,0x3dc2) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetMZoneCount(tp,nil)>0
 end
 function c16369101.chfilter2(c)
-	return c:IsSetCard(0xcb1) and c:IsType(0x6) and c:IsAbleToHand()
+	return c:IsSetCard(0xcb1,0x3dc2) and c:IsType(0x6) and c:IsAbleToHand()
 end
 function c16369101.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(c16369101.chfilter1,tp,LOCATION_GRAVE,0,1,nil,e,tp)

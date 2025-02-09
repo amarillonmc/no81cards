@@ -11,6 +11,8 @@ Duel.LoadScript("glitchylib_constant.lua")
 Duel.LoadScript("glitchylib_regeff.lua")
 Duel.LoadScript("glitchylib_single_vsnemo.lua")
 Duel.LoadScript("glitchylib_cost.lua")
+Duel.LoadScript("glitchylib_merged_event.lua")
+Duel.LoadScript("glitchylib_subgroup.lua")
 
 function Group.ForEach(g,f,...)
 	for tc in aux.Next(g) do
@@ -364,9 +366,9 @@ function Auxiliary.FindInTable(tab,a,...)
 	end
 	
 	for _,param in ipairs(extras) do
-		for _,elem in ipairs(tab) do
+		for pos,elem in ipairs(tab) do
 			if elem==param then
-				return true
+				return pos
 			end
 		end
 	end
@@ -407,6 +409,37 @@ function Auxiliary.ClearTableRecursive(tab)
 end
 
 --Card Actions
+function Duel.ActivateDirectly(tc,tp)
+	local te=tc:GetActivateEffect()
+	if not te:IsActivatable(tp,true,true) then return end
+	if tc:IsType(TYPE_FIELD|TYPE_SOUNDSTAGE) then
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+		if fc then
+			Duel.SendtoGrave(fc,REASON_RULE)
+			Duel.BreakEffect()
+		end
+		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		te:UseCountLimit(tp,1,true)
+		local tep=tc:GetControler()
+		local cost=te:GetCost()
+		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+		if tc:IsSpell(TYPE_FIELD) then
+			Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+		end
+	else
+		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		te:UseCountLimit(tp,1,true)
+		local tep=tc:GetControler()
+		local cost=te:GetCost()
+		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+	end
+end
+function Card.IsDirectlyActivatable(c,tp,ignore_loc)
+	if not c:IsType(TYPE_FIELD|TYPE_CONTINUOUS|TYPE_SOUNDSTAGE) then return false end
+	local e=c:GetActivateEffect()
+	return e and (c:IsType(TYPE_FIELD|TYPE_SOUNDSTAGE) or ignore_loc or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) and e:IsActivatable(tp,true,true)
+end
+
 function Card.IsCanBeAttachedTo(c,xyzc,e,p,r)
 	return xyzc:IsType(TYPE_XYZ) and c:IsCanOverlay(xyzc:GetControler()) and not c:IsForbidden() --futureproofing
 end
@@ -458,6 +491,29 @@ function Card.IsAbleToRemoveTemp(c,tp,r)
 	local pos = c:GetPosition()&POS_FACEDOWN>0 and POS_FACEDOWN or POS_FACEUP
 	return c:IsAbleToRemove(tp,pos,r|REASON_TEMPORARY)
 end
+
+--[[Banish a card temporarily
+- g: 			Card, or Group, to banish
+- e: 			Effect that banishes
+- tp:			Player that performs the banishing
+- pos:			If defined, forces the position the card will be banished in
+- phase:		Specify the Phase during which the banished cards will return to the field. It also accepts RESET_SELF_TURN and RESET_OPPO_TURN. Defaults to PHASE_END
+- id:			Specify the flag that will be registered to the banished cards. Only cards that retain the flag until the end of their banishment period will return to the field
+- phasect:		Specify how many of the specified phases have to pass before the cards can return. Defaults to 1.
+- phasenext:	If true, specifies that the cards will return only after the "next" [phasect] [phase]
+- rc:			If defined, forces the card that will own the global effect that will return the cards to the field. Defaults to e:GetHandler()
+- r:			If defined, forces the reason of the banishment. Defaults to REASON_EFFECT.
+
+- disregard_turncount : If true, the condition for the returning effect will not check whether the actual turn count of the Duel matches the label of the effect
+- counts_turns:			If the number of turns is set, the returning effect will be one that "counts turns" (for interactions with "Pyro Clock of Destiny")
+
+- op:  If defined, replaces the banishing action with a custom one
+- loc:  Set only if you defined a custom "op". Specifies the location the cards must be in after being affected by the effect, in order to be counted as successfully affected
+		and eligible for returning to the field.
+		Defaults to LOCATION_REMOVED
+- lingering_effect_to_reset: If it is a number, resets all flags of the returning cards with that number after returning to the field. If it is an effect, resets the specified effect.
+]]
+
 function Duel.BanishUntil(g,e,tp,pos,phase,id,phasect,phasenext,rc,r,disregard_turncount,counts_turns,op,loc,lingering_effect_to_reset)
 	if not e then
 		e=self_reference_effect
@@ -467,6 +523,7 @@ function Duel.BanishUntil(g,e,tp,pos,phase,id,phasect,phasenext,rc,r,disregard_t
 	end
 	if aux.GetValueType(g)=="Card" then g=Group.FromCards(g) end
 	if not phase then phase=PHASE_END end
+	if not id then id=e:GetOwner():GetOriginalCode() end
 	if not phasect then phasect=1 end
 	if not rc then rc=e:GetHandler() end
 	if not r then r=REASON_EFFECT end
@@ -486,7 +543,8 @@ function Duel.BanishUntil(g,e,tp,pos,phase,id,phasect,phasenext,rc,r,disregard_t
 		end
 	end
 	if ct>0 then
-		local og=g:Filter(Card.IsLocation,nil,loc)
+		local because=r==REASON_COST and aux.BecauseOfThisCost or aux.BecauseOfThisEffect
+		local og=g:Filter(Card.IsLocation,nil,loc):Filter(because,nil,e)
 		if #og>0 then
 			og:KeepAlive()
 			local turnct,turnct2=phasect-1,phasect
@@ -503,8 +561,10 @@ function Duel.BanishUntil(g,e,tp,pos,phase,id,phasect,phasenext,rc,r,disregard_t
 					turnct2=turnct2+1
 				end
 			end
+			
+			local eid=e:GetFieldID()
 			for tc in aux.Next(og) do
-				tc:RegisterFlagEffect(id,RESET_EVENT|RESETS_STANDARD|RESET_PHASE|phase,EFFECT_FLAG_SET_AVAILABLE|EFFECT_FLAG_CLIENT_HINT,turnct2,0,STRING_TEMPORARILY_BANISHED)
+				tc:RegisterFlagEffect(id,RESET_EVENT|RESETS_STANDARD|RESET_PHASE|phase,EFFECT_FLAG_SET_AVAILABLE|EFFECT_FLAG_CLIENT_HINT,turnct2,eid,STRING_TEMPORARILY_BANISHED)
 			end
 			local turnct0 = not p and Duel.GetTurnCount() or Duel.GetTurnCount(p)
 			local e1=Effect.CreateEffect(rc)
@@ -513,14 +573,14 @@ function Duel.BanishUntil(g,e,tp,pos,phase,id,phasect,phasenext,rc,r,disregard_t
 			e1:SetCode(EVENT_PHASE|ph)
 			e1:SetReset(RESET_PHASE|phase,turnct2)
 			e1:SetCountLimit(1)
-			e1:SetLabel(turnct0+turnct)
+			e1:SetLabel(turnct0+turnct,id,eid)
 			e1:SetLabelObject(og)
 			if not counts_turns then
 				e1:SetCondition(aux.TimingCondition(ph,p,disregard_turncount))
 			else
 				e1:SetCondition(aux.TimingConditionButCountsTurns(counts_turns))
 			end
-			e1:SetOperation(aux.ReturnLabelObjectToFieldOp(id,lingering_effect_to_reset))
+			e1:SetOperation(aux.ReturnLabelObjectToFieldOp(id,lingering_effect_to_reset,r))
 			Duel.RegisterEffect(e1,tp)
 			return ct,e1
 		end
@@ -539,12 +599,24 @@ function Auxiliary.TimingCondition(phase,p,disregard_turncount)
 				--Debug.Message(Duel.GetTurnCount().." "..e:GetLabel())
 				--Debug.Message(e:GetLabelObject():GetFirst():GetReasonEffect())
 				--Debug.Message(Duel.GetTurnCount(p).." "..e:GetLabel())
+				local g=e:GetLabelObject()
+				local tct,id,eid=e:GetLabel()
+				if not g or g:FilterCount(Card.HasFlagEffectLabel,nil,id,eid)==0 then
+					e:Reset()
+					return false
+				end
 				local turnct = not p and Duel.GetTurnCount() or Duel.GetTurnCount(p)
-				return Duel.GetCurrentPhase()==phase and (not p or Duel.GetTurnPlayer()==p) and (disregard_turncount or turnct==e:GetLabel())
+				return Duel.GetCurrentPhase()==phase and (not p or Duel.GetTurnPlayer()==p) and (disregard_turncount or turnct==tct)
 			end
 end
 function Auxiliary.TimingConditionButCountsTurns(counts_turns)
 	return	function(e,tp,eg,ep,ev,re,r,rp)
+				local g=e:GetLabelObject()
+				local tct,id,eid=e:GetLabel()
+				if not g or g:FilterCount(Card.HasFlagEffectLabel,nil,id,eid)==0 then
+					e:Reset()
+					return false
+				end
 				local tc=e:GetOwner()
 				local ct=tc:GetTurnCounter()
 				--Debug.Message(ct.." "..counts_turns)
@@ -557,14 +629,15 @@ function Auxiliary.TimingConditionButCountsTurns(counts_turns)
 				return false
 			end
 end
-function Auxiliary.ReturnLabelObjectToFieldOp(id,lingering_effect_to_reset)
+function Auxiliary.ReturnLabelObjectToFieldOp(id,lingering_effect_to_reset,r)
 	return	function(e,tp,eg,ep,ev,re,r,rp)
 				local g=e:GetLabelObject()
 				local ltype=aux.GetValueType(lingering_effect_to_reset)
 				--Debug.Message("OBJSIZE: "..#g)
 				local sg=g:Filter(Card.HasFlagEffect,nil,id)
 				local rg=Group.CreateGroup()
-				for p=tp,1-tp,1-2*tp do
+				local turnp=Duel.GetTurnPlayer()
+				for p=turnp,1-turnp,1-2*turnp do
 					local sg1=sg:Filter(Card.IsPreviousControler,nil,p)
 					if #sg1>0 then
 						local sgm=sg1:Filter(Card.IsPreviousLocation,nil,LOCATION_MZONE)
@@ -595,16 +668,30 @@ function Auxiliary.ReturnLabelObjectToFieldOp(id,lingering_effect_to_reset)
 								rg:Merge(sgs)
 							end
 						end
-						local sgf=sg1:Filter(Card.IsPreviousLocation,nil,LOCATION_FZONE)
+						local sgf=sg1:Filter(Card.IsPreviousLocation,nil,LOCATION_FZONE|LOCATION_HAND|LOCATION_GRAVE)
 						rg:Merge(sgf)
 					end
 				end
 				--Debug.Message(#rg)
+				
+				if ltype=="number" then
+					tc:ResetFlagEffect(lingering_effect_to_reset)
+				elseif ltype=="Effect" then
+					lingering_effect_to_reset:Reset()
+				elseif ltype=="table" then
+					for _,le in ipairs(lingering_effect_to_reset) do
+						le:Reset()
+					end
+				end
+				
+				local tohand,tograve=Group.CreateGroup(),Group.CreateGroup()
 				if #rg>0 then
+					sg:Sub(rg)
 					for tc in aux.Next(rg) do
 						if tc:IsPreviousLocation(LOCATION_FZONE) then
 							Duel.MoveToField(tc,tp,tc:GetPreviousControler(),LOCATION_FZONE,tc:GetPreviousPosition(),true)
-						else
+							
+						elseif tc:IsPreviousLocation(LOCATION_ONFIELD) then
 							local e1
 							if tc:IsInExtra() and tc:IsFaceup() then
 								e1=Effect.CreateEffect(tc)
@@ -619,14 +706,23 @@ function Auxiliary.ReturnLabelObjectToFieldOp(id,lingering_effect_to_reset)
 							--Debug.Message(e:GetOwner())
 							Duel.ReturnToField(tc,tc:GetPreviousPosition(),0xff&(~EXTRA_MONSTER_ZONE))
 							if e1 then e1:Reset() end
-						end
-						if ltype=="number" then
-							tc:ResetFlagEffect(lingering_effect_to_reset)
+							
+						elseif tc:IsPreviousLocation(LOCATION_HAND) then
+							tohand:AddCard(tc)
+							
+						elseif tc:IsPreviousLocation(LOCATION_GRAVE) then
+							tograve:AddCard(tc)
 						end
 					end
 				end
-				if ltype=="Effect" then
-					lingering_effect_to_reset:Reset()
+				if #tohand>0 then
+					Duel.SendtoHand(tohand,nil,r|REASON_RETURN)
+				end
+				if #tograve>0 then
+					Duel.SendtoGrave(tograve,r|REASON_RETURN)
+				end
+				for tc in aux.Next(sg) do
+					Duel.ReturnToField(tc)
 				end
 				g:DeleteGroup()
 			end
@@ -866,7 +962,7 @@ function Duel.Bounce(g)
 	return ct,#cg,cg
 end
 function Duel.SendtoGraveAndCheck(g,p,r)
-	if type(g)=="Card" then g=Group.FromCards(g) end
+	if aux.GetValueType(g)=="Card" then g=Group.FromCards(g) end
 	r = r or REASON_EFFECT
 	local ct=Duel.SendtoGrave(g,r)
 	if ct<=0 then return false end
@@ -1127,9 +1223,6 @@ function Card.GetRating(c)
 	if c:IsOriginalType(TYPE_LINK) then
 		list[3]=c:GetLink()
 	end
-	if c:IsOriginalType(TYPE_TIMELEAP) then
-		list[4]=c:GetFuture()
-	end
 	return list
 end
 function Card.GetRatingAuto(c)
@@ -1211,6 +1304,33 @@ function Card.IsRatingBelow(c,rtyp,...)
 	end
 end
 
+function Card.GetTotalStats(c)
+	return c:GetAttack()+c:GetDefense()
+end
+function Card.GetMinStat(c)
+	return math.min(c:GetAttack(),c:GetDefense())
+end
+function Card.GetMaxStat(c)
+	return math.max(c:GetAttack(),c:GetDefense())
+end
+function Card.GetMinBaseStat(c)
+	return math.min(c:GetBaseAttack(),c:GetBaseDefense())
+end
+function Card.GetMaxBaseStat(c)
+	return math.max(c:GetBaseAttack(),c:GetBaseDefense())
+end
+function Card.IsStats(c,atk,def)
+	return (not atk or c:IsAttack(atk)) and (not def or c:IsDefense(def))
+end
+function Card.GetStats(c)
+	return c:GetAttack(),c:GetDefense()
+end
+function Card.IsBaseStats(c,atk,def)
+	return (not atk or c:GetBaseAttack()==atk) and (not def or c:GetBaseDefense()==def)
+end
+function Card.IsTextStats(c,atk,def)
+	return (not atk or c:GetTextAttack()==atk) and (not def or c:GetTextDefense()==def)
+end
 function Card.IsStats(c,atk,def)
 	return (not atk or c:IsAttack(atk)) and (not def or c:IsDefense(def))
 end
@@ -1444,9 +1564,12 @@ function Auxiliary.RegisterMaxxCEffect(c,id,p,range,event,cond,outchainop,inchai
 		flagrct=flagreset[2]
 		flagreset=flagreset[1]
 	end
+	if type(event)~="table" then event={event} end
+	
+	
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(event)
+	e2:SetCode(event[1])
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCondition(aux.OutsideChainMaxxCCondition(cond))
 	e2:SetOperation(outchainop)
@@ -1465,47 +1588,64 @@ function Auxiliary.RegisterMaxxCEffect(c,id,p,range,event,cond,outchainop,inchai
 		e2:SetRange(range)
 		c:RegisterEffect(e2)
 	end
-	--
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_CONTINUOUS|EFFECT_TYPE_FIELD)
-	e3:SetCode(event)
-	e3:SetCondition(aux.InsideChainMaxxCCondition(cond))
-	e3:SetOperation(aux.RegisterMaxxCFlag(id,flaglabel,flagreset,flagrct))
-	if label then
-		e3:SetLabel(label)
-	end
-	if labelobj then
-		e3:SetLabelObject(labelobj)
-	end
-	if reset then
-		e3:SetReset(reset,rct)
-	end
-	if p then
-		Duel.RegisterEffect(e3,p)
-	else
-		e3:SetRange(range)
-		c:RegisterEffect(e3)
+	if #event>1 then
+		for i=2,#event do
+			local cl=e2:Clone()
+			cl:SetCode(event[i])
+			c:RegisterEffect(cl)
+		end
 	end
 	--
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_CONTINUOUS|EFFECT_TYPE_FIELD)
-	e4:SetCode(EVENT_CHAIN_SOLVED)
-	e4:SetCondition(aux.MaxxCFlagCondition(id,cond))
-	e4:SetOperation(aux.ResolvedChainMaxxCOperation(id,inchainop))
-	if label then
-		e4:SetLabel(label)
-	end
-	if labelobj then
-		e4:SetLabelObject(labelobj)
-	end
-	if reset then
-		e4:SetReset(reset,rct)
-	end
-	if p then
-		Duel.RegisterEffect(e4,p)
-	else
-		e4:SetRange(range)
-		c:RegisterEffect(e4)
+	if inchainop then
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_CONTINUOUS|EFFECT_TYPE_FIELD)
+		e3:SetCode(event[1])
+		e3:SetCondition(aux.InsideChainMaxxCCondition(cond))
+		e3:SetOperation(aux.RegisterMaxxCFlag(id,flaglabel,flagreset,flagrct))
+		if label then
+			e3:SetLabel(label)
+		end
+		if labelobj then
+			e3:SetLabelObject(labelobj)
+		end
+		if reset then
+			e3:SetReset(reset,rct)
+		end
+		if p then
+			Duel.RegisterEffect(e3,p)
+		else
+			e3:SetRange(range)
+			c:RegisterEffect(e3)
+		end
+		--
+		if #event>1 then
+			for i=2,#event do
+				local cl=e3:Clone()
+				cl:SetCode(event[i])
+				c:RegisterEffect(cl)
+			end
+		end
+		--
+		local e4=Effect.CreateEffect(c)
+		e4:SetType(EFFECT_TYPE_CONTINUOUS|EFFECT_TYPE_FIELD)
+		e4:SetCode(EVENT_CHAIN_SOLVED)
+		e4:SetCondition(aux.MaxxCFlagCondition(id,cond))
+		e4:SetOperation(aux.ResolvedChainMaxxCOperation(id,inchainop))
+		if label then
+			e4:SetLabel(label)
+		end
+		if labelobj then
+			e4:SetLabelObject(labelobj)
+		end
+		if reset then
+			e4:SetReset(reset,rct)
+		end
+		if p then
+			Duel.RegisterEffect(e4,p)
+		else
+			e4:SetRange(range)
+			c:RegisterEffect(e4)
+		end
 	end
 	
 	return e2,e3,e4
@@ -1526,9 +1666,18 @@ function Auxiliary.RegisterMaxxCFlag(id,flaglabel,reset,rct)
 	return	function(e,tp,eg,ep,ev,re,r,rp)
 				local lab=0
 				if flaglabel then
-					lab=flaglabel(e,tp,eg,ep,ev,re,r,rp)
+					lab={flaglabel(e,tp,eg,ep,ev,re,r,rp)}
 				end
-				Duel.RegisterFlagEffect(tp,id,resets,0,rct,lab)
+				if type(lab)=="table" then
+					if #lab==1 then
+						Duel.RegisterFlagEffect(tp,id,resets,0,rct,lab[1])
+					else
+						local fe=Duel.RegisterFlagEffect(tp,id,resets,0,rct,0)
+						fe:SetLabel(table.unpack(lab))
+					end
+				else
+					Duel.RegisterFlagEffect(tp,id,resets,0,rct,lab)
+				end
 			end
 end
 function Auxiliary.MaxxCFlagCondition(id)
@@ -1822,75 +1971,6 @@ function Group.CheckSameProperty(g,f,...)
 	return true, chk
 end
 
---sg: This group is initially empty and is gradually filled with cards from g.
---mg: This is a clone of the sample group (g) but it does not contain the cards that failed the loop check
---rescon: The condition that must be satisfied by the cards in the temporary checked group (sg). If the "stop" condition is fulfilled, the card is immediately removed from "sg" and fails the loop check
-function Auxiliary.SelectUnselectLoop(c,sg,mg,e,tp,minc,maxc,rescon)
-	local res=not rescon
-	if #sg>=maxc then return false end
-	sg:AddCard(c)
-	if rescon then
-		local stop
-		res,stop=rescon(sg,e,tp,mg,c)
-		if stop then
-			sg:RemoveCard(c)
-			return false
-		end
-	end
-	if #sg<minc then
-		res=mg:IsExists(Auxiliary.SelectUnselectLoop,1,sg,sg,mg,e,tp,minc,maxc,rescon)
-	elseif #sg<maxc and not res then
-		res=mg:IsExists(Auxiliary.SelectUnselectLoop,1,sg,sg,mg,e,tp,minc,maxc,rescon)
-	end
-	sg:RemoveCard(c)
-	return res
-end
-function Auxiliary.SelectUnselectGroup(g,e,tp,minc,maxc,rescon,chk,seltp,hintmsg,finishcon,breakcon,cancelable)
-	local minc=minc or 1
-	local maxc=maxc or #g
-	if chk==0 then
-		if #g<minc then return false end
-		local eg=g:Clone()
-		for c in aux.Next(g) do
-			if Auxiliary.SelectUnselectLoop(c,Group.CreateGroup(),eg,e,tp,minc,maxc,rescon) then return true end
-			eg:RemoveCard(c)
-		end
-		return false
-	end
-	local hintmsg=hintmsg or 0
-	local sg=Group.CreateGroup()
-	while true do
-		local finishable = #sg>=minc and (not finishcon or finishcon(sg,e,tp,g))
-		local mg=g:Filter(Auxiliary.SelectUnselectLoop,sg,sg,g,e,tp,minc,maxc,rescon)
-		if (breakcon and breakcon(sg,e,tp,mg)) or #mg<=0 or #sg>=maxc then break end
-		Duel.Hint(HINT_SELECTMSG,seltp,hintmsg)
-		local tc=mg:SelectUnselect(sg,seltp,finishable,finishable or (cancelable and #sg==0),minc,maxc)
-		if not tc then break end
-		if sg:IsContains(tc) then
-			sg:RemoveCard(tc)
-		else
-			sg:AddCard(tc)
-		end
-	end
-	return sg
-end
---check for Free Monster Zones
-function Auxiliary.ChkfMMZ(sumcount)
-	return	function(sg,e,tp,mg)
-				return Duel.GetMZoneCount(tp,sg)>=sumcount
-			end
-end
-
---SelectUnselectGroup aux functions
-function Auxiliary.dncheckbrk(g,e,tp,mg,c)
-	local res=g:GetClassCount(Card.GetCode)==#g
-	return res, not res
-end
-function Auxiliary.ogdncheckbrk(g,e,tp,mg,c)
-	local res=g:GetClassCount(Card.GetOriginalCodeRule)==#g
-	return res, not res
-end
-
 --Equip
 function Auxiliary.IsEquippedCond(e)
 	return e:GetHandler():GetEquipTarget()
@@ -2079,7 +2159,7 @@ function Card.GetFlagEffectWithSpecificLabel(c,flag,label,reset)
 	for i=#eset,1,-1 do
 		local e=eset[i]
 		local x=e:GetLabel()
-		if x==label then
+		if not label or x==label then
 			if not reset then
 				return e
 			else
@@ -2095,7 +2175,7 @@ function Duel.GetFlagEffectWithSpecificLabel(p,flag,label,reset)
 	for i=#eset,1,-1 do
 		local e=eset[i]
 		local x=e:GetLabel()
-		if x==label then
+		if not label or x==label then
 			if not reset then
 				return e
 			else
@@ -2135,20 +2215,37 @@ function Duel.PlayerHasFlagEffect(p,id,...)
 	
 	return false
 end
-function Card.UpdateFlagEffectLabel(c,id,ct)
+function Card.UpdateFlagEffectLabel(c,id,ct,regflag)
 	if not ct then ct=1 end
+	if not c:HasFlagEffect(id) then
+		if regflag then
+			c:RegisterFlagEffect(id,RESET_PHASE|PHASE_END,0,1)
+		else
+			return
+		end
+	end
 	return c:SetFlagEffectLabel(id,c:GetFlagEffectLabel(id)+ct)
 end
-function Duel.UpdateFlagEffectLabel(p,id,ct)
+function Duel.UpdateFlagEffectLabel(p,id,ct,regflag)
 	if not ct then ct=1 end
+	if not Duel.PlayerHasFlagEffect(p,id) then
+		if regflag then
+			Duel.RegisterFlagEffect(p,id,RESET_PHASE|PHASE_END,0,1)
+		else
+			return
+		end
+	end
 	return Duel.SetFlagEffectLabel(p,id,Duel.GetFlagEffectLabel(p,id)+ct)
 end
-function Card.HasFlagEffectLabel(c,id,val)
-	if not c:HasFlagEffect(id) then return false end
+function Card.HasFlagEffectLabel(c,id,...)
+	local vals={...}
+	if #vals==0 or not c:HasFlagEffect(id) then return false end
 	local eset={c:GetFlagEffectLabel(id)}
 	for _,label in ipairs({c:GetFlagEffectLabel(id)}) do
-		if label==val then
-			return true
+		for _,val in ipairs(vals) do
+			if label==val then
+				return true
+			end
 		end
 	end
 	return false
@@ -2171,11 +2268,14 @@ function Card.HasFlagEffectLabelHigher(c,id,val)
 	end
 	return false
 end
-function Duel.PlayerHasFlagEffectLabel(tp,id,val)
-	if Duel.GetFlagEffect(tp,id)==0 then return false end
+function Duel.PlayerHasFlagEffectLabel(tp,id,...)
+	local vals={...}
+	if #vals==0 or Duel.GetFlagEffect(tp,id)==0 then return false end
 	for _,label in ipairs({Duel.GetFlagEffectLabel(tp,id)}) do
-		if label==val then
-			return true
+		for _,val in ipairs(vals) do
+			if label==val then
+				return true
+			end
 		end
 	end
 	return false
@@ -2705,26 +2805,39 @@ function Auxiliary.GetMustMaterialGroup(p,eff)
 	return Duel.GetMustMaterial(p,eff)
 end
 
-function Auxiliary.CannotBeTributeOrMaterial(c,forced,reset,prop)
+function Auxiliary.CannotBeTributeOrMaterial(c,f,forced,reset,prop)
+	if f and type(f)~="function" then
+		f,forced,reset,prop=nil,f,forced,reset
+	end
 	local prop=prop or 0
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE|prop)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EFFECT_UNRELEASABLE_SUM)
-	e1:SetValue(1)
+	if f==nil then
+		e1:SetValue(1)
+	else
+		e1:SetValue(Auxiliary.FilterToCannotValue(f))
+	end
 	if reset then
 		e1:SetReset(reset)
 	end
 	c:RegisterEffect(e1,forced)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+	e2:SetValue(1)
 	c:RegisterEffect(e2,forced)
+	
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_UNCOPYABLE|prop)
 	e3:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
-	e3:SetValue(1)
+	if f==nil then
+		e3:SetValue(1)
+	else
+		e3:SetValue(Auxiliary.FilterToCannotValue(f))
+	end
 	if reset then
 		e3:SetReset(reset)
 	end
@@ -3405,19 +3518,40 @@ function Duel.SpecialSummonRedirect(e,g,styp,sump,tp,ign1,ign2,pos,zone,loc,desc
 end
 
 --Special Summon Procedures and After Effect Resolution
-function Auxiliary.ApplyEffectImmediatelyAfterChainResolution(f,c,e,tp,eg,ep,ev,re,r,rp)
+function Auxiliary.ApplyEffectImmediatelyAfterResolution(f,c,e,tp,eg,ep,ev,re,r,rp,ignore_reset)
+	local chain_end=Duel.GetCurrentChain()==1
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAIN_END)
+	e1:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
+	e1:SetCode(chain_end and EVENT_CHAIN_END or EVENT_CHAIN_SOLVED)
 	e1:SetLabelObject(e)
+	e1:OPT()
 	e1:SetOperation(function(_e,_tp,_eg,_ep,_ev,_re,_r,_rp)
-		f(e,tp,eg,ep,ev,re,r,rp,_e)
-		_e:Reset()
+		f(e,tp,eg,ep,ev,re,r,rp,_e,chain_end)
+		if not ignore_reset then
+			_e:Reset()
+		end
 	end
 	)
 	e1:SetOwnerPlayer(tp)
 	Duel.RegisterEffect(e1,tp)
 	return e1
+end
+function Auxiliary.RegisterResetAfterSpecialSummonRule(c,tp,...)
+	local effs={...}
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EVENT_SPSUMMON)
+	e0:SetOperation(function(_e,_tp,_eg,_ep,_ev,_re,_r,_rp)
+		for _,e in ipairs(effs) do
+			e:Reset()
+		end
+		_e:Reset()
+	end
+	)
+	Duel.RegisterEffect(e0,tp)
+	return e0
 end
 
 --Summoning Conditions
@@ -3446,189 +3580,46 @@ function Auxiliary.EnableGlobalEffectTributeOppoCost()
 	end
 end
 
---Location Check
-EFFECT_CARD_HAS_RESOLVED = 47987298
-
-function Auxiliary.AlreadyInRangeCondition(e,re,se)
-	local se=e and e:GetLabelObject():GetLabelObject() or se
-	return	function(c,...)
-				return se==nil or re~=se
-			end
+--Xyz Materials
+function Card.HasCardAttached(c,ac)
+	if not c:IsType(TYPE_XYZ) then return false end
+	return c:GetOverlayGroup():IsContains(ac)
 end
-function Auxiliary.AlreadyInRangeEventCondition(f)
-	return	function(e,tp,eg,ep,ev,re,r,rp)
-				return not eg:IsContains(e:GetHandler()) and eg:IsExists(aux.AlreadyInRangeFilter(e,f),1,nil,e,tp,eg,ep,ev,re,r,rp)
-			end
+function Card.IsAttachedTo(c,xyzc)
+	return c:IsLocation(LOCATION_OVERLAY) and xyzc:HasCardAttached(c)
 end
-function Auxiliary.AlreadyInRangeFilter(e,f,se)
-	local se=e and e:GetLabelObject():GetLabelObject() or se
-	return	function(c,...)
-				return (se==nil or c:GetReasonEffect()~=se) and (not f or f(c,...))
-			end
+function Group.CheckRemoveOverlayCard(g,tp,ct,r)
+	return g:IsExists(Card.CheckRemoveOverlayCard,1,nil,tp,ct,r)
 end
-
-function Auxiliary.AddThisCardBanishedAlreadyCheck(c,setf,getf)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE|EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_REMOVE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetOperation(Auxiliary.ThisCardInLocationAlreadyCheckReg(setf,getf))
-	c:RegisterEffect(e1)
-	return e1
-end
-function Auxiliary.AddThisCardInBackrowAlreadyCheck(c,pos,setf,getf)
-	if pos==POS_FACEDOWN then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_SSET)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetCondition(function(e) return (not e:GetHandler():IsPreviousLocation(LOCATION_SZONE) or e:GetHandler():GetPreviousSequence()<5) and e:GetHandler():IsInBackrow(pos) end)
-		e1:SetOperation(Auxiliary.ThisCardInLocationAlreadyCheckReg(setf,getf,true))
-		Duel.RegisterEffect(e1,0)
-		return e1
+function Group.RemoveOverlayCard(g,tp,min,max,r)
+	local res=0
+	Duel.HintMessage(tp,HINTMSG_REMOVEXYZ)
+	local tg=g:FilterSelect(tp,Card.CheckRemoveOverlayCard,1,1,nil,tp,min,r)
+	if #tg>0 then
+		res=tg:GetFirst():RemoveOverlayCard(tp,min,max,r)
 	end
+	return res
 end
-function Auxiliary.AddThisCardInExtraAlreadyCheck(c,pos,setf,getf)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE|EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_TO_DECK)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetCondition(function(e) return e:GetHandler():IsInExtra(pos) end)
-	e1:SetOperation(Auxiliary.ThisCardInLocationAlreadyCheckReg(setf,getf))
-	c:RegisterEffect(e1)
-	return e1
-end
-function Auxiliary.AddThisCardInFZoneAlreadyCheck(c,setf,getf,skip)
-	if not skip then
-		local e0=Effect.CreateEffect(c)
-		e0:SetType(EFFECT_TYPE_SINGLE)
-		e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e0:SetRange(LOCATION_FZONE)
-		e0:SetCode(EFFECT_CARD_HAS_RESOLVED)
-		c:RegisterEffect(e0)
+function Duel.GetXyzMaterialGroup(tp,s,o,xyzf,matf,...)
+	xyzf=xyzf and xyzf or aux.TRUE
+	matf=matf and matf or aux.TRUE
+	local sloc=s==1 and LOCATION_MZONE or 0
+	local oloc=o==1 and LOCATION_MZONE or 0
+	local g=Group.CreateGroup()
+	local xyzg=Duel.Group(xyzf,tp,sloc,oloc,nil,...):Filter(Card.IsType,nil,TYPE_XYZ)
+	if #xyzg>0 then
+		for xyz in aux.Next(xyzg) do
+			local matg=xyz:GetOverlayGroup():Filter(matf,nil,...)
+			if #matg>0 then
+				g:Merge(matg)
+			end
+		end
 	end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE|EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_MOVE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetCondition(function(e) return not e:GetHandler():IsPreviousLocation(LOCATION_FZONE) and e:GetHandler():IsLocation(LOCATION_FZONE) end)
-	e1:SetOperation(Auxiliary.ThisCardInLocationAlreadyCheckReg(setf,getf,true))
-	c:RegisterEffect(e1)
-	return e1
+	return g
 end
-function Auxiliary.AddThisCardInMZoneAlreadyCheck(c,setf,getf)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE|EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_MOVE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetCondition(function(e) return not e:GetHandler():IsPreviousLocation(LOCATION_MZONE) and e:GetHandler():IsLocation(LOCATION_MZONE) end)
-	e1:SetOperation(Auxiliary.ThisCardInLocationAlreadyCheckReg(setf,getf,true))
-	c:RegisterEffect(e1)
-	return e1
-end
-function Auxiliary.AddThisCardInSZoneAlreadyCheck(c,setf,getf)
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e0:SetRange(LOCATION_SZONE)
-	e0:SetCode(EFFECT_CARD_HAS_RESOLVED)
-	c:RegisterEffect(e0)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE|EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_MOVE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetCondition(function(e)
-		local h=e:GetHandler()
-		return (not h:IsPreviousLocation(LOCATION_SZONE) or c:GetPreviousSequence()>=5) and h:IsLocation(LOCATION_SZONE) and h:GetSequence()<5
-	end)
-	e1:SetOperation(Auxiliary.ThisCardInLocationAlreadyCheckReg(setf,getf,true))
-	c:RegisterEffect(e1)
-	return e1
-end
-function Auxiliary.AddThisCardInPZoneAlreadyCheck(c,setf,getf)
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e0:SetRange(LOCATION_PZONE)
-	e0:SetCode(EFFECT_CARD_HAS_RESOLVED)
-	c:RegisterEffect(e0)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE|EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_MOVE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetCondition(function(e) return not e:GetHandler():IsPreviousLocation(LOCATION_PZONE) and e:GetHandler():IsLocation(LOCATION_PZONE) end)
-	e1:SetOperation(Auxiliary.ThisCardInLocationAlreadyCheckReg(setf,getf))
-	c:RegisterEffect(e1)
-	return e1
-end
-function Effect.SetLabelObjectObject(e,obj)
-	return e:GetLabelObject():SetLabelObject(obj)
-end
-function Effect.GetLabelObjectObject(e)
-	return e:GetLabelObject():GetLabelObject()
-end
-function Auxiliary.ThisCardInLocationAlreadyCheckReg(setf,getf,ignore_reason)
-	if not setf then setf=Effect.SetLabelObject end
-	if not getf then getf=Effect.GetLabelObject end
-	return	function(e,tp,eg,ep,ev,re,r,rp)
-				--condition of continous effect will be checked before other effects
-				--Debug.Message("RE: "..tostring(re))
-				--Debug.Message("GETF: "..tostring(getf(e)))
-				if re==nil then return false end
-				if getf(e)~=nil then return false end
-				--Debug.Message("r: "..tostring(r))
-				if (r&REASON_EFFECT)>0 or ignore_reason then
-					setf(e,re)
-					--e:SetLabelObject(re)
-					local e1=Effect.CreateEffect(e:GetHandler())
-					e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-					e1:SetCode(EVENT_CHAIN_END)
-					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-					e1:SetOperation(Auxiliary.ThisCardInLocationAlreadyReset1(getf))
-					e1:SetLabelObject(e)
-					Duel.RegisterEffect(e1,tp)
-					local e2=e1:Clone()
-					e2:SetCode(EVENT_BREAK_EFFECT)
-					e2:SetOperation(Auxiliary.ThisCardInLocationAlreadyReset2(getf))
-					e2:SetReset(RESET_CHAIN)
-					e2:SetLabelObject(e1)
-					Duel.RegisterEffect(e2,tp)
-				elseif (r&REASON_MATERIAL)>0 or not re:IsActivated() and (r&REASON_COST)>0 then
-					setf(e,re)
-					--e:SetLabelObject(re)
-					local reset_event=EVENT_SPSUMMON
-					if re:GetCode()~=EFFECT_SPSUMMON_PROC then reset_event=EVENT_SUMMON end
-					local e1=Effect.CreateEffect(e:GetHandler())
-					e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-					e1:SetCode(reset_event)
-					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-					e1:SetOperation(Auxiliary.ThisCardInLocationAlreadyReset1(getf))
-					e1:SetLabelObject(e)
-					Duel.RegisterEffect(e1,tp)
-				end
-			
-				return false
-			end
-end
-function Auxiliary.ThisCardInLocationAlreadyReset1(getf)
-	return	function(e)
-				--this will run after EVENT_SPSUMMON_SUCCESS
-				getf(e):SetLabelObject(nil)
-				e:Reset()
-			end
-end
-function Auxiliary.ThisCardInLocationAlreadyReset2(getf)
-	return	function(e)
-				local e1=e:GetLabelObject()
-				getf(e1):SetLabelObject(nil)
-				e1:Reset()
-				e:Reset()
-			end
-end
-
---Subgroup checks
-function Auxiliary.sncheck(g)
-	return g:GetClassCount(Card.GetCode)==1
+function Duel.GetXyzMaterialGroupCount(tp,s,o,xyzf,matf,...)
+	local g=Duel.GetXyzMaterialGroup(tp,s,o,xyzf,matf,...)
+	return #g
 end
 
 --Glitchylib_cond imports
@@ -3731,331 +3722,6 @@ function Duel.IgnoreActionCheck(f,...)
 	end
 	Duel.DisableActionCheck(false)
 	return table.unpack(ret)
-end
-
---MERGED EVENT GROUP HANDLER
-
-local _rmde = Auxiliary.RegisterMergedDelayedEvent
-
-Auxiliary.RegisterMergedDelayedEvent = function(c,code,event,g)
-	if c:IsStatus(STATUS_COPYING_EFFECT) then return end
-	return _rmde(c,code,event,g)
-end
-
-EVENT_COUNTER_ID = 0
-aux.EventCounter = {}
-EVENT_ID = 0
-MERGED_ID = 1
-aux.MustUpdateEventID = {}
-aux.MergedDelayedEventInfotable = {}
-
---[[Raises custom event with a compound Event Group containing all cards that raised the specified event at different times during a Chain.
-Handles correct interactions with Trigger Effects whose resolution depends on the specific card that raised the event (eg. Union Hangar)
-c 								= The card that needs to check for the event
-code 							= The code of the custom event that will be raised. A progressive ID might be needed in some cases, for example when check_if_already_in_location is set (see
-								Dismay from the Dark)
-event							= The event that must be checked. You can specify multiple events by passing a table
-f								= Filter for the cards that are involved in the "event(s)"
-flag							= Specify the id for the flag effect that is used internally by this function
-range							= If specified, these checks will only be performed while "c" is in the "range". Otherwise, the checks are always performed during the Duel
-								 (the latter case applies for private-location Trigger Effects)
-evgcheck						= You can specify an additional check for the compound Event Group before raising the custom event. If this check is not passed, the custom event is not raised.
-check_if_already_in_location	= If a location is specified, the respective AddThisCardInLocationAlreadyCheck will be performed
-operation						= You can invoke a function before raising the custom event. The function must return the Event Value of the custom event.
-simult_check					= You can specify an id for an additional flag that separately keeps track of cards that were simultaneously involved in an instance of the specified event.
-forced							= Raises the custom event even if the final group is empty (required for mandatory Trigger Effects)
-customevgop						= Allows to call a custom function when the cards involved in the local Event Groups are receiving the flag
-								(useful for effects that must keep track of certain properties the cards had in a previous location, see BRAIN Boot Sector)
-]]
-function Auxiliary.RegisterMergedDelayedEventGlitchy(c,code,event,f,flag,range,evgcheck,check_if_already_in_location,operation,simult_check,forced,customevgop)
-	if type(event)~="table" then event={event} end
-	if not f then f=aux.TRUE end
-	if not flag then flag=c:GetOriginalCode() end
-	local se
-	if check_if_already_in_location then
-		if check_if_already_in_location&LOCATION_GRAVE>0 then
-			se=aux.AddThisCardInGraveAlreadyCheck(c)
-		elseif check_if_already_in_location&LOCATION_FZONE>0 then
-			se=aux.AddThisCardInFZoneAlreadyCheck(c)
-		elseif check_if_already_in_location&LOCATION_MZONE>0 then
-			se=aux.AddThisCardInMZoneAlreadyCheck(c)
-		elseif check_if_already_in_location&LOCATION_SZONE>0 then
-			se=aux.AddThisCardInSZoneAlreadyCheck(c)
-		end
-	end
-	
-	local g=Group.CreateGroup()
-	g:KeepAlive()
-	
-	if forced then
-		EVENT_COUNTER_ID = EVENT_COUNTER_ID + 1
-		aux.EventCounter[EVENT_COUNTER_ID]=0
-	end
-	
-	local updateflag=false
-	local private_range=not range and 1 or range&LOCATIONS_PRIVATE
-	local public_range=not range and 0 or range&(~private_range)
-	
-	if private_range>0 then
-		updateflag=true
-		local mt=getmetatable(c)
-		local ge1
-		for _,ev in ipairs(event) do
-			if mt[ev]~=true then
-				mt[ev]=true
-				ge1=Effect.CreateEffect(c)
-				ge1:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-				ge1:SetCode(ev)
-				ge1:SetLabel(code)
-				ge1:SetLabelObject(g)
-				ge1:SetOperation(Auxiliary.MergedDelayEventCheckGlitchy1(ev,flag,f,nil,evgcheck,nil,operation,simult_check,forced,customevgop,EVENT_COUNTER_ID))
-				Duel.RegisterEffect(ge1,0)
-			end
-		end
-		if ge1 then
-			local ge2=ge1:Clone()
-			ge2:SetCode(EVENT_CHAIN_END)
-			ge2:SetOperation(Auxiliary.MergedDelayEventCheckGlitchy2(flag,nil,evgcheck,nil,operation,forced,EVENT_COUNTER_ID))
-			Duel.RegisterEffect(ge2,0)
-		end
-		if simult_check then
-			aux.MustUpdateEventID[c]=false
-			local ge3=Effect.CreateEffect(c)
-			ge3:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-			ge3:SetCode(EVENT_BREAK_EFFECT)
-			ge3:SetOperation(aux.SignalEventIDUpdate)
-			Duel.RegisterEffect(ge3,0)
-			local ge4=ge3:Clone()
-			ge4:SetCode(EVENT_CHAIN_SOLVED)
-			Duel.RegisterEffect(ge4,0)
-			local ge5=ge3:Clone()
-			ge5:SetCode(EVENT_CHAINING)
-			Duel.RegisterEffect(ge5,0)
-		end
-	end
-		
-	if public_range>0 then
-		if updateflag then code=code+100 flag=flag+100 end
-		local ge1
-		for _,ev in ipairs(event) do
-			ge1=Effect.CreateEffect(c)
-			ge1:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-			ge1:SetCode(ev)
-			--ge1:SetRange(range)
-			ge1:SetLabel(code)
-			ge1:SetLabelObject(g)
-			ge1:SetOperation(Auxiliary.MergedDelayEventCheckGlitchy1(ev,flag,f,public_range,evgcheck,se,operation,simult_check,forced,customevgop,EVENT_COUNTER_ID))
-			Duel.RegisterEffect(ge1,0)
-		end
-		local ge2=ge1:Clone()
-		ge2:SetCode(EVENT_CHAIN_END)
-		ge2:SetOperation(Auxiliary.MergedDelayEventCheckGlitchy2(flag,public_range,evgcheck,se,operation,forced,EVENT_COUNTER_ID))
-		Duel.RegisterEffect(ge2,0)
-		if simult_check then
-			aux.MustUpdateEventID[c]=false
-			local ge3=Effect.CreateEffect(c)
-			ge3:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-			ge3:SetCode(EVENT_BREAK_EFFECT)
-			ge3:SetOperation(aux.SignalEventIDUpdate)
-			Duel.RegisterEffect(ge3,0)
-			local ge4=ge3:Clone()
-			ge4:SetCode(EVENT_CHAIN_SOLVED)
-			Duel.RegisterEffect(ge4,0)
-			local ge5=ge3:Clone()
-			ge5:SetCode(EVENT_CHAINING)
-			Duel.RegisterEffect(ge5,0)
-		end
-	end
-	
-end
-function Auxiliary.SignalEventIDUpdate(e,tp,eg,ep,ev,re,r,rp)
-	aux.MustUpdateEventID[e:GetOwner()] = true
-end
-function Auxiliary.MergedDelayEventCheckGlitchy1(event,id,f,range,evgcheck,se,operation,simult_check,forced,customevgop,eid)
-	return	function(e,tp,eg,ep,ev,re,r,rp)
-				local c=e:GetOwner()
-				local tp=c:GetControler()
-				
-				if range then
-					if not c:IsLocation(range) then
-						return
-					end
-					if c:IsLocation(LOCATION_SZONE) and not c:IsHasEffect(EFFECT_CARD_HAS_RESOLVED) then
-						return
-					end
-				end
-				local label = (range) and c:GetFieldID() or 0
-				local g=e:GetLabelObject()
-				if aux.GetValueType(g)~="Group" then return end
-				local obj = aux.GetValueType(se)=="Effect" and se:GetLabelObject() or nil
-				local evg=eg:Filter(f,nil,e,tp,eg,ep,ev,re,r,rp,obj,event)
-				--Debug.Message(#evg)
-				local flagID=id
-				
-				for tc in aux.Next(evg) do
-					if type(id)=="function" then
-						flagID=id(event,tc,e,tp)
-					end
-					tc:RegisterFlagEffect(flagID,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,EFFECT_FLAG_SET_AVAILABLE,1,label)
-					--Debug.Message('Card '..label..' has registered flag: '..tostring(tc:HasFlagEffectLabel(flagID,label)))
-					if simult_check then
-						tc:RegisterFlagEffect(simult_check,RESET_PHASE+PHASE_END,EFFECT_FLAG_SET_AVAILABLE,1,EVENT_ID)
-					end
-					if customevgop then
-						customevgop(tc,e,tp,eg,ep,ev,re,r,rp,evg)
-					end
-				end
-				
-				local updatedEventID=false
-				if aux.MustUpdateEventID[c]==true then
-					updatedEventID=true
-					if forced and type(aux.EventCounter[eid])=="number" and #evg>0 then
-						aux.EventCounter[eid] = aux.EventCounter[eid] + 1
-					end
-					EVENT_ID = EVENT_ID + 1
-					aux.MustUpdateEventID[c]=false
-				end
-				
-				g:Merge(evg)
-				--Debug.Message('gsize '..tostring(#g))
-				if Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_SOLVED) and not Duel.CheckEvent(EVENT_CHAIN_END) then
-					--Debug.Message('nochain')
-					local flags	
-					if type(id)=="function" then
-						flags={id()}
-					else
-						flags={id}
-					end
-					local G=Group.CreateGroup()
-					for _,cid in ipairs(flags) do
-						local _eg=g:Clone()
-						_eg=_eg:Filter(Card.HasFlagEffectLabel,nil,cid,label)
-						--Debug.Message("NOCHAIN_FILTERED_COUNT "..tostring(cid)..": "..tostring(#_eg))
-						G:Merge(_eg)
-					end
-					if g and #g>0 and (#G>0 or forced) then
-						if not evgcheck or evgcheck(G,e,tp,ep,ev,re,r,rp) then
-							--Debug.Message('a')
-							local customev=ev
-							if operation then
-								customev=operation(e,tp,G,ep,ev,re,r,rp,obj,event,updatedEventID)
-							end
-							local counter=(type(aux.EventCounter[eid])=="number" and aux.EventCounter[eid]>0) and aux.EventCounter[eid] or 1
-							for i=1,counter do
-								Duel.RaiseEvent(G,EVENT_CUSTOM+e:GetLabel(),re,r,rp,ep,customev)
-							end
-						end
-						for tc in aux.Next(G) do
-							for _,cid in ipairs(flags) do
-								--tc:ResetFlagEffect(cid)
-								tc:GetFlagEffectWithSpecificLabel(cid,label,true)
-							end
-						end
-						MERGED_ID = MERGED_ID + 1
-					end
-					if type(aux.EventCounter[eid])=="number" then
-						aux.EventCounter[eid]=0
-					end
-					g:Clear()
-				end
-			end
-end
-function Auxiliary.MergedDelayEventCheckGlitchy2(id,range,evgcheck,se,operation,forced,eid)
-	return	function(e,tp,eg,ep,ev,re,r,rp)
-				local c=e:GetOwner()
-				local tp=c:GetControler()
-				if range then					
-					if not c:IsLocation(range) then
-						return
-					end
-					if c:IsLocation(LOCATION_SZONE) and not c:IsHasEffect(EFFECT_CARD_HAS_RESOLVED) then
-						return
-					end
-				end
-				local label = (range) and c:GetFieldID() or 0
-				local g=e:GetLabelObject()
-				if aux.GetValueType(g)~="Group" then return end
-				--Debug.Message('test '..tostring(label).." "..tostring(#g))
-				if #g>0 then
-					local flags
-					if type(id)=="function" then
-						flags={id()}
-					else
-						flags={id}
-					end
-					local G=Group.CreateGroup()
-					for _,cid in ipairs(flags) do
-						local _eg=g:Clone()
-						--Debug.Message(#_eg)
-						--Debug.Message("FLAG: "..tostring(cid))
-						_eg=_eg:Filter(Card.HasFlagEffectLabel,nil,cid,label)
-						--Debug.Message("FILTERED GROUP COUNT: "..tostring(#_eg))
-						G:Merge(_eg)
-					end
-				    if g and #g>0 and (#G>0 or forced) then
-						--Debug.Message('b')
-						if not evgcheck or evgcheck(G,e,tp,ep,ev,re,r,rp) then
-							local customev=ev
-							if operation then
-								local obj = aux.GetValueType(se)=="Effect" and se:GetLabelObject() or nil
-								customev=operation(e,tp,G,ep,ev,re,r,rp,obj)
-							end
-							local counter=(type(aux.EventCounter[eid])=="number" and aux.EventCounter[eid]>0) and aux.EventCounter[eid] or 1
-							for i=1,counter do
-								--Debug.Message(i)
-								Duel.RaiseEvent(G,EVENT_CUSTOM+e:GetLabel(),re,r,rp,ep,customev)
-							end
-						end
-						for tc in aux.Next(G) do
-							for _,cid in ipairs(flags) do
-								--Debug.Message("RESETTED: "..tostring(cid))
-								--tc:ResetFlagEffect(cid)
-								tc:GetFlagEffectWithSpecificLabel(cid,label,true)
-							end
-						end
-						MERGED_ID = MERGED_ID + 1
-					end
-					if type(aux.EventCounter[eid])=="number" then
-						aux.EventCounter[eid]=0
-					end
-					g:Clear()
-				end
-			end
-end
-
-function Auxiliary.SimultaneousEventGroupCheck(g,simult_check,og,gcheck)
-	local sg=g:Filter(Card.HasFlagEffect,nil,simult_check)
-	if #sg~=#g or sg:GetClassCount(Card.GetFlagEffectLabel,simult_check)>1 then return false end
-	local val=sg:GetFirst():GetFlagEffectLabel(simult_check)
-	if g:FilterCount(Card.HasFlagEffectLabel,nil,simult_check,val)~=og:FilterCount(Card.HasFlagEffectLabel,nil,simult_check,val) then
-		return false
-	end
-	return not gcheck or gcheck(g)
-end
-function Auxiliary.SelectSimultaneousEventGroup(g,tp,flag,ct,e,excflag,gcheck,nohint)
-	local ct=ct and ct or 1
-	local fid=e and e:GetHandler():GetFieldID() or 0
-	if excflag then
-		g=g:Filter(aux.NOT(Card.HasFlagEffectLabel),nil,excflag,fid)
-	end
-	if #g==0 then return end
-	if #g==1 then
-		if not nohint then Duel.HintSelection(g) end
-		if excflag then
-			g:GetFirst():RegisterFlagEffect(excflag,RESET_CHAIN,0,1,fid)
-		end
-		return g
-	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-		local tg=g:SelectSubGroup(tp,aux.SimultaneousEventGroupCheck,false,ct,#g,flag,g,gcheck)
-		if not nohint then Duel.HintSelection(tg) end
-		if excflag then
-			for tc in aux.Next(tg) do
-				tc:RegisterFlagEffect(excflag,RESET_CHAIN,0,1,fid)
-			end
-		end
-		return tg
-	end
 end
 
 ---------------------------------------------------------------------------------

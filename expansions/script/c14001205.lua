@@ -59,6 +59,16 @@ function cm.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 		if #g>0 then
 			Duel.SendtoGrave(g,REASON_EFFECT)
 		end
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CANNOT_SUMMON)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		e1:SetTargetRange(1,0)
+		Duel.RegisterEffect(e1,tp)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_CANNOT_MSET)
+		Duel.RegisterEffect(e2,tp)
 	end
 end
 function cm.indtg(e,c)

@@ -203,10 +203,26 @@ function Auxiliary.TributeCost(f,min,max,exc)
 				return g,0
 			end
 end
---Remember to call aux.EnableGlobalEffectTributeOppoCost when using this to Tribute cards controlled by the opponent
+--[[Generates cost that Tributes a cards
+* f 		= Filter for cards that can be Tributed. Use aux.TRUE instead of nil if it is not possible to use additional Tributes from other locations
+* min/max 	= Minimum and maximum amount of cards that can be Tributed
+* exc 		= Card or Group that cannot be Tributed
+* use_hand	= If true, it will be possible to Tribute cards from the hand as well
+* use_oppo 	= If true, it will be possible to Tribute cards on the opponent's field as well. Remember to call aux.EnableGlobalEffectTributeOppoCost if you enable this option.
+* exf		= Filter for cards that can be Tributed, in addition to those that are already Tributable on your field (and hand or opponent's field if use_hand and use_oppo are ture)
+* exlocs	= Additional locations from which cards (that satisfy exf) can be Tributed
+* exmin/exmax = Min and max amount of additional cards (that satisfy exf) that can be Tributed
+* exexc		= Card or Group that is excluded from the additional Tributable cards
+* pretribute = A function that is called before the Tributing occurs
+* gf		= Filter that the group of Tributed cards must satisfy in order to be a valid selection
+* finishcon = Function that determines whether a given selection is valid, even before the maximum amount of selectable cards is reached. If true, finishcon will coincide with gf
+]]
 function Auxiliary.TributeGlitchyCost(f,min,max,exc,use_hand,use_oppo,exf,exloc1,exloc2,exmin,exmax,exexc,pretribute,gf,finishcon)
 	if not min then min=1 end
 	if not max then max=min end
+	if use_hand==nil then use_hand=false end
+	exloc1 = exloc1 or 0
+	exloc2 = exloc2 or 0
 	local isfilter=type(f)=="function"
 	finishcon=finishcon==true and gf or finishcon
 	if exloc2&LOCATION_MZONE>0 then
@@ -215,7 +231,7 @@ function Auxiliary.TributeGlitchyCost(f,min,max,exc,use_hand,use_oppo,exf,exloc1
 	if gf or not (exloc1==0 and exloc2~=LOCATION_MZONE) then
 		return function(e,tp,eg,ep,ev,re,r,rp,chk)
 			if use_oppo then aux.TributeOppoCostFlag=true end
-			local g1=isfilter and Duel.GetReleaseGroup(tp) or Group.CreateGroup()
+			local g1=isfilter and Duel.GetReleaseGroup(tp,use_hand) or Group.CreateGroup()
 			if exf then
 				local g2=Duel.Group(Card.IsReleasable,tp,exloc1,exloc2,exexc):Filter(exf,nil,e,tp)
 				g1:Merge(g2)
@@ -224,7 +240,12 @@ function Auxiliary.TributeGlitchyCost(f,min,max,exc,use_hand,use_oppo,exf,exloc1
 				g1=g1:Filter(f,exc,e,tp)
 			end
 			if chk==0 then
-				local res=gf and aux.SelectUnselectGroup(g1,e,tp,min,max,gf,0) or #g1>=min
+				local res
+				if gf then
+					res=aux.SelectUnselectGroup(g1,e,tp,min,max,gf,0)
+				else
+					res=#g1>=min
+				end
 				aux.TributeOppoCostFlag=false
 				return res
 			end
@@ -242,7 +263,7 @@ function Auxiliary.TributeGlitchyCost(f,min,max,exc,use_hand,use_oppo,exf,exloc1
 			if pretribute then
 				pretribute(sg,e,tp,eg,ep,ev,re,r,rp)
 			end
-			return Duel.Release(sg,REASON_COST)
+			Duel.Release(sg,REASON_COST)
 		end
 	else
 		if exf then
@@ -261,7 +282,7 @@ function Auxiliary.TributeGlitchyCost(f,min,max,exc,use_hand,use_oppo,exf,exloc1
 			if pretribute then
 				pretribute(sg,e,tp,eg,ep,ev,re,r,rp)
 			end
-			return Duel.Release(sg,REASON_COST)
+			Duel.Release(sg,REASON_COST)
 		end
 	end
 end
@@ -328,7 +349,7 @@ function Auxiliary.RevealSelfCost(reset,rct)
 		return	function(e,tp,eg,ep,ev,re,r,rp,chk)
 				local c=e:GetHandler()
 				if chk==0 then return not c:IsPublic() end
-				Duel.ConfirmCards(1-tp,c)
+				if not c:IsLocation(LOCATION_HAND) then Duel.ConfirmCards(1-tp,c) end
 			end
 	else
 		if not rct then rct=1 end
@@ -390,6 +411,11 @@ function Auxiliary.ToGraveSelfCost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAbleToGraveAsCost() end
 	Duel.SendtoGrave(c,REASON_COST)
+end
+function Auxiliary.ToHandSelfCost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsAbleToHandAsCost() end
+	Duel.SendtoHand(c,nil,REASON_COST)
 end
 function Auxiliary.TributeSelfCost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -493,34 +519,63 @@ function Auxiliary.AttackRestrictionCost(oath,reset,desc)
 				c:RegisterEffect(e1)
 			end
 end
-function Auxiliary.SSRestrictionCost(f,oath,reset,id,cf,desc,cost)
+
+--[[Scripts the following restriction: "You cannot Special Summon monsters the turn you activate/use this effect, except [f] monsters".
+* f 	= Filter for the monsters that can still be SSed under the restriction
+* oath	= If true, the restriction is not applied if the activation of the effect is negated
+* reset	= Defines the reset timing for the restriction
+* id	= ID used for the activity counter and the description string
+* cf	= Filter for the activity counter (if not a function, it matches f). It supports LOCATION constants in order to exclude monsters Special Summoned from a specific location from being counted
+		towards the restriction
+* desc	= Description id (0 to 16)
+
+OPTIONAL PARAMS:
+* other = If true, it scripts "You cannot Special Summon OTHER monsters the turn you activate/use this effect, except [f] monsters"
+* cost	= It is possible to invoke an additional user-defined cost function along with the one that handles the restriction.
+]]
+function Auxiliary.SSRestrictionCost(f,oath,reset,id,cf,desc,...)
+	local x={...}
+	local cost	= #x>0 and x[#x] or nil
+	local other	= #x>1 and x[#x-1] or nil
+	
 	if id then
-		if not cf then
-			--aux.AddSSCounter(id,f)
-			Duel.AddCustomActivityCounter(id,ACTIVITY_SPSUMMON,f)
+		local donotcount_function = type(cf)=="function" and cf or f
+		if type(cf)=="number" then
+			local new_donotcount_function = function(c,...)
+				return not c:IsSummonLocation(cf) or donotcount_function(c,...)
+			end
+			Duel.AddCustomActivityCounter(id,ACTIVITY_SPSUMMON,new_donotcount_function)
 		else
-			--aux.AddSSCounter(id,cf)
-			Duel.AddCustomActivityCounter(id,ACTIVITY_SPSUMMON,cf)
+			Duel.AddCustomActivityCounter(id,ACTIVITY_SPSUMMON,donotcount_function)
 		end
 	end
 	local prop=EFFECT_FLAG_PLAYER_TARGET
 	if oath then prop=prop|EFFECT_FLAG_OATH end
 	if desc then prop=prop|EFFECT_FLAG_CLIENT_HINT end
-	if not reset then reset=RESET_PHASE+PHASE_END end
+	if not reset then reset=RESET_PHASE|PHASE_END end
 	
 	return	function(e,tp,eg,ep,ev,re,r,rp,chk)
 				if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_SPSUMMON)==0 and (not cost or cost(e,tp,eg,ep,ev,re,r,rp,chk)) end
 				local e1=Effect.CreateEffect(e:GetHandler())
-				if desc then e1:Desc(desc) end
+				if desc then
+					e1:SetDescription(id,desc)
+				end
 				e1:SetType(EFFECT_TYPE_FIELD)
 				e1:SetProperty(prop)
 				e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 				e1:SetReset(reset)
 				e1:SetTargetRange(1,0)
-				e1:SetTarget(	function(eff,c,sump,sumtype,sumpos,targetp,se)
-									return not f(c,eff,sump,sumtype,sumpos,targetp,se)
-								end
-							)
+				if type(cf)~="number" then
+					e1:SetTarget(	function(eff,c,sump,sumtype,sumpos,targetp,se)
+										return not f(c,eff,sump,sumtype,sumpos,targetp,se) and (not other or se~=e)
+									end
+								)
+				else
+					e1:SetTarget(	function(eff,c,sump,sumtype,sumpos,targetp,se)
+										return not f(c,eff,sump,sumtype,sumpos,targetp,se) and c:IsLocation(cf) and (not other or se~=e)
+									end
+								)
+				end
 				Duel.RegisterEffect(e1,tp)
 				if cost then
 					cost(e,tp,eg,ep,ev,re,r,rp,chk)

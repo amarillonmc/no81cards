@@ -34,12 +34,18 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
+	--
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e4:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
-	e4:SetValue(1)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetCode(EVENT_SUMMON_SUCCESS)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCondition(cm.thcon)
+	e4:SetOperation(cm.xgop)
 	c:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e5)
 end
 function cm.lklimit(e,c)
 	if not c then return false end
@@ -101,4 +107,22 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
+end
+function cm.xgop(e,tp,eg,ep,ev,re,r,rp)
+		 local lg=e:GetHandler():GetLinkedGroup()
+		 local tc1=lg:GetFirst()
+		 while tc1 do
+		 tc1:RegisterFlagEffect(7373632,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(7373632,0))   
+		 tc1=lg:GetNext()  
+	end   
+end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	local lg=e:GetHandler():GetLinkedGroup()
+	return eg:IsExists(cm.cfilter2,1,nil,lg)
+end
+function cm.cfilter2(c,lg)
+	return c:IsRace(RACE_DIVINE) and lg:IsContains(c)
+end
+function cm.lkfilter(c,type)
+	return c:IsFaceup() and c:IsType(type)
 end

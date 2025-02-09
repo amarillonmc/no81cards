@@ -32,10 +32,12 @@ function c9911202.initial_effect(c)
 end
 function c9911202.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
+	local xg=nil
+	if not e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED) then xg=e:GetHandler() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,xg)
 		and Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g1=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
+	local g1=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,0,1,1,xg)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g2=Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,1,nil)
 	g1:Merge(g2)
@@ -60,7 +62,7 @@ end
 function c9911202.setfilter(c)
 	local b1=c:IsLocation(LOCATION_HAND) and c:IsSSetable()
 	local b2=c:IsLocation(LOCATION_SZONE) and c:IsSSetable(true)
-	return c:IsType(TYPE_TRAP) and (b1 or b2)
+	return c:IsFaceupEx() and c:IsType(TYPE_TRAP) and (b1 or b2)
 end
 function c9911202.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

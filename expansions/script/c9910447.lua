@@ -6,6 +6,7 @@ function c9910447.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_LIMIT_ZONE)
+	e1:SetCountLimit(1,9910447+EFFECT_COUNT_CODE_OATH)
 	e1:SetCost(c9910447.cost)
 	e1:SetTarget(c9910447.target)
 	e1:SetOperation(c9910447.activate)
@@ -13,10 +14,6 @@ function c9910447.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 c9910447.fusion_effect=true
-function c9910447.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,2000) end
-	Duel.PayLPCost(tp,2000)
-end
 function c9910447.zones(e,tp,eg,ep,ev,re,r,rp)
 	local zone=0xff
 	local chkf=tp
@@ -42,6 +39,10 @@ function c9910447.zones(e,tp,eg,ep,ev,re,r,rp)
 	if p1 then zone=zone-0x10 end
 	return zone
 end
+function c9910447.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) end
+	Duel.PayLPCost(tp,1000)
+end
 function c9910447.cfilter(c)
 	return c:GetSequence()<5 and (c:IsFacedown() or not c:IsType(TYPE_PENDULUM))
 end
@@ -49,13 +50,13 @@ function c9910447.filter1(c,e)
 	return c:IsAbleToGrave() and not c:IsImmuneToEffect(e)
 end
 function c9910447.exfilter0(c)
-	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and c:IsCanBeFusionMaterial()
+	return c:IsFaceup() and c:IsSetCard(0x3950) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and c:IsCanBeFusionMaterial()
 end
 function c9910447.exfilter1(c,e)
 	return c9910447.exfilter0(c) and not c:IsImmuneToEffect(e)
 end
 function c9910447.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x3950) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c9910447.fcheck(pt)

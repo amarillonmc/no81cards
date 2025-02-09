@@ -2,8 +2,8 @@
 function c29065508.initial_effect(c)
 	aux.AddCodeList(c,29065500) 
 	--xyz summon
-	aux.AddXyzProcedureLevelFree(c,c29065508.mfilter,aux.TRUE,2,2)
---,c29065508.ovfilter,aux.Stringid(29065510,0),c29065508.xyzop)
+	--aux.AddXyzProcedureLevelFree(c,c29065508.mfilter,aux.TRUE,2,2)
+	aux.AddXyzProcedure(c,nil,6,2,c29065508.ovfilter,aux.Stringid(29065508,2),2,c29065508.xyzop)
 	c:EnableReviveLimit()
 	--attack
 	local e2=Effect.CreateEffect(c)
@@ -18,15 +18,15 @@ function c29065508.initial_effect(c)
 	e2:SetOperation(c29065508.btop)
 	c:RegisterEffect(e2)
 	--set
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(29065508,0))
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,29065508)
-	e3:SetCondition(c29065508.secon)
-	e3:SetTarget(c29065508.settg)
-	e3:SetOperation(c29065508.setop)
-	c:RegisterEffect(e3)
+	--local e3=Effect.CreateEffect(c)
+	--e3:SetDescription(aux.Stringid(29065508,0))
+	--e3:SetType(EFFECT_TYPE_IGNITION)
+	--e3:SetRange(LOCATION_MZONE)
+	--e3:SetCountLimit(1,29065508)
+	--e3:SetCondition(c29065508.secon)
+	--e3:SetTarget(c29065508.settg)
+	--e3:SetOperation(c29065508.setop)
+	--c:RegisterEffect(e3)
 	--immune
 	--local e4=Effect.CreateEffect(c)
 	--e4:SetType(EFFECT_TYPE_SINGLE)
@@ -45,6 +45,40 @@ function c29065508.initial_effect(c)
 	--e5:SetCondition(c29065508.imcon)
 	--e5:SetValue(1)
 	--c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(29065508,0))
+	e6:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e6:SetType(EFFECT_TYPE_IGNITION)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCountLimit(1,29065508)
+	e6:SetTarget(c29065508.thtg)
+	e6:SetOperation(c29065508.thop)
+	c:RegisterEffect(e6)
+end
+function c29065508.thfilter(c)
+	return c:IsSetCard(0x87af) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
+end
+function c29065508.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c29065508.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c29065508.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c29065508.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
+end
+function c29065508.ovfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x87af)
+end
+function c29065508.cdfilter(c)
+	return c:IsCode(29065510) and c:IsFaceup()
+end
+function c29065508.xyzop(e,tp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 and Duel.IsExistingMatchingCard(c29065508.cdfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c29065508.imcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

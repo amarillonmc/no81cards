@@ -2,7 +2,7 @@
 local m=98500303
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	aux.AddCodeList(c,10000010,10000020,10000000,98500311,39913299)
+	aux.AddCodeList(c,10000010,10000020,10000000)
 	aux.EnableChangeCode(c,39913299,LOCATION_HAND+LOCATION_GRAVE)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.tgfilter2(c)
-	return c:IsCode(98500311) and c:IsFaceup()
+	return (c:IsCode(98500311) or c:IsCode(98500320)) and c:IsFaceup()
 end
 function cm.srfilter(c)
 	return (aux.IsCodeListed(c,10000000) or aux.IsCodeListed(c,10000010) or aux.IsCodeListed(c,10000020) or c:IsCode(5253985,7373632,59094601,39913299,79339613,42469671,85758066,85182315,79868386,32247099,269012,10000000,10000010,10000020,79387392)) and c:IsAbleToHand()

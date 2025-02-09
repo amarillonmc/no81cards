@@ -1,4 +1,4 @@
-if EFFECT_CHANGE_RECOVER then return end
+if FLAG_ALREADY_CHANGED_BATTLE_RECOVER then return end
 
 --Modified functions for LP-recovering effects
 EFFECT_CHANGE_RECOVER					= 1508
@@ -130,6 +130,25 @@ Auxiliary.damcon1 = function(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	return ex and (cp==tp or cp==PLAYER_ALL) and rr and recovercheck and takedamcheck
+end
+
+--LP Modification Events
+EVENT_LP_CHANGE		= EVENT_CUSTOM+33720360
+
+LP_REASON_UPDATE	= 0x1
+LP_REASON_BECOME	= 0x2
+
+local _SetLP = Duel.SetLP
+
+Duel.SetLP = function(p,val,r,rp)
+	if not r then r=LP_REASON_UPDATE end
+	if not rp then rp=self_reference_effect:GetHandlerPlayer() end
+	local prev=Duel.GetLP(p)
+	local res = _SetLP(p,val)
+	if Duel.GetLP(p)~=prev then
+		Duel.RaiseEvent(self_reference_effect:GetHandler(),EVENT_LP_CHANGE,nil,REASON_EFFECT,rp,p,Duel.GetLP(p)-prev)
+	end
+	return res
 end
 
 --Auxiliary function to handle Muscle Medic (and similar effects) when effects that change LP recovers are being applied

@@ -1,7 +1,7 @@
 --浩瀚开拓者 行星博物馆
 function c9911228.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6958),nil,1)
+	aux.AddSynchroMixProcedure(c,aux.Tuner(aux.FilterBoolFunction(Card.IsSetCard,0x6958)),nil,nil,nil,1,99)
 	c:EnableReviveLimit()
 	--to hand
 	local e1=Effect.CreateEffect(c)
@@ -22,7 +22,7 @@ function c9911228.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e2:SetCountLimit(1,9911229)
+	e2:SetCountLimit(1,9911228)
 	e2:SetCondition(c9911228.spcon)
 	e2:SetCost(c9911228.spcost)
 	e2:SetTarget(c9911228.sptg)
@@ -34,8 +34,7 @@ function c9911228.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c9911228.thfilter(c,e)
-	return c:IsSetCard(0x5958,0x6958) and (Duel.GetTurnCount()~=c:GetTurnID() or c:IsReason(REASON_RETURN))
-		and c:IsCanBeEffectTarget(e) and c:IsAbleToHand()
+	return c:IsSetCard(0x5958,0x6958) and c:IsCanBeEffectTarget(e) and c:IsAbleToHand()
 end
 function c9911228.fselect(g)
 	if #g==1 then return true end
@@ -65,9 +64,9 @@ end
 function c9911228.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsReleasable()
-		and Duel.IsExistingMatchingCard(c9911228.cfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+		and Duel.IsExistingMatchingCard(c9911228.cfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local rg=Duel.SelectMatchingCard(tp,c9911228.cfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local rg=Duel.SelectMatchingCard(tp,c9911228.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	rg:AddCard(c)
 	Duel.Release(rg,REASON_COST)
 end

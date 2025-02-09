@@ -1,5 +1,6 @@
 EFFECT_NO_RECOVER = 33720228				--Affected player cannot gain LP by card effects
 
+EVENT_CHAIN_CREATED 		= EVENT_CUSTOM+33720361 --Event raised at the very start of the Chain Link creation, before the cost is paid (if the effect has no cost, the event is raised before the activation procedures, i.e. targeting)
 EVENT_EFFECTS_DISABLED		= EVENT_CUSTOM+33720327	--Event raised when the effects (mind the "s") of a card are negated (by Infinite Impermanence, Hot Red Dragon Archfiend Abyss, etc...)
 
 aux.EnabledRegisteredEffectMods={}
@@ -225,6 +226,9 @@ if not global_card_effect_table_global_check then
 								if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
 									self_reference_tp = x[2]
 								end
+								if #x>=9 and x[9]~=0 then
+									Duel.RaiseEvent(x[1]:GetHandler(),EVENT_CHAIN_CREATED,x[1],0,x[2],x[2],Duel.GetCurrentChain())
+								end
 								local res=cost(table.unpack(x))
 								self_reference_effect=previous_sre
 								return res
@@ -238,6 +242,9 @@ if not global_card_effect_table_global_check then
 								self_reference_effect=x[1]
 								if #x>1 and type(x[2])=="number" and (x[2]==0 or x[2]==1) then
 									self_reference_tp = x[2]
+								end
+								if #x>=9 and x[9]~=0 and (#x<10 or not x[10]) and (not x[1]:GetCost() or not x[1]:IsCostChecked()) then
+									Duel.RaiseEvent(x[1]:GetHandler(),EVENT_CHAIN_CREATED,x[1],0,x[2],x[2],Duel.GetCurrentChain())
 								end
 								local res=tg(table.unpack(x))
 								self_reference_effect=previous_sre

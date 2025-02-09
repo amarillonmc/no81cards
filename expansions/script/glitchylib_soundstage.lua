@@ -5,12 +5,22 @@ TYPE_SOUNDSTAGE	= 0x2000000000
 
 FLAG_SOUNDSTAGE_CONTRACT = 1082946
 
+EVENT_SOUNDSTAGE_CONTRACT_EXPIRED	= EVENT_CUSTOM+33720357
+
+STRING_SOUNDSTAGE_CONTRACT_EXPIRED	= aux.Stringid(33720357,2)
+
 --Handle card type overwriting
 Auxiliary.SoundStage={}
 
-local get_type, get_orig_type, get_prev_type_field, get_active_type, is_active_type, get_reason, get_fusion_type, get_synchro_type, get_xyz_type, get_link_type, get_ritual_type = 
-	Card.GetType, Card.GetOriginalType, Card.GetPreviousTypeOnField, Effect.GetActiveType, Effect.IsActiveType, Card.GetReason, Card.GetFusionType, Card.GetSynchroType, Card.GetXyzType, Card.GetLinkType, Card.GetRitualType
+local is_type, get_type, get_orig_type, get_prev_type_field, get_active_type, is_active_type, get_fusion_type, get_synchro_type, get_xyz_type, get_link_type, get_ritual_type = 
+	Card.IsType, Card.GetType, Card.GetOriginalType, Card.GetPreviousTypeOnField, Effect.GetActiveType, Effect.IsActiveType, Card.GetFusionType, Card.GetSynchroType, Card.GetXyzType, Card.GetLinkType, Card.GetRitualType
 
+Card.IsType=function(c,typ)
+	if Auxiliary.SoundStage[c] then
+		return c:GetType()&typ>0
+	end
+	return is_type(c,typ)
+end
 Card.GetType=function(c,scard,sumtype,p)
 	local tpe=scard and get_type(c,scard,sumtype,p) or get_type(c)
 	if Auxiliary.SoundStage[c] then
@@ -46,14 +56,6 @@ Effect.IsActiveType=function(e,typ)
 	return e:GetActiveType()&typ>0
 end
 
-Card.GetReason=function(c)
-	local rs=get_reason(c)
-	local rc=c:GetReasonCard()
-	if rc and Auxiliary.SoundStage[rc] then
-		rs=rs|REASON_DRIVE
-	end
-	return rs
-end
 Card.GetFusionType=function(c)
 	local tpe=get_fusion_type(c)
 	if Auxiliary.SoundStage[c] then
@@ -106,6 +108,7 @@ function Auxiliary.AddSoundStageProc(c,e,id,count,bgmid)
 		local cost=e:GetCost()
 		e:SetCost(function(_e,tp,eg,ep,ev,re,r,rp,chk)
 			if chk==0 then return not cost or cost(_e,tp,eg,ep,ev,re,r,rp,chk) end
+			if cost then cost(_e,tp,eg,ep,ev,re,r,rp,chk) end
 			Duel.Hint(HINT_MUSIC,0,aux.Stringid(id,bgmid))
 		end)
 	end
@@ -139,8 +142,9 @@ function Auxiliary.AddSoundStageProc(c,e,id,count,bgmid)
 	c:RegisterEffect(e4)
 	--Send to GY after contract expiration
 	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(STRING_SOUNDSTAGE_CONTRACT_EXPIRED)
 	e6:SetType(EFFECT_TYPE_FIELD|EFFECT_TYPE_CONTINUOUS)
-	e6:SetCode(EVENT_TURN_END)
+	e6:SetCode(EVENT_PHASE|PHASE_END)
 	e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE|EFFECT_FLAG_UNCOPYABLE)
 	e6:SetCountLimit(1)
 	e6:SetRange(LOCATION_FZONE)
@@ -205,7 +209,10 @@ function Auxiliary.SoundStageSelfToGY(count)
 				ct=ct+1
 				c:SetTurnCounter(ct)
 				if ct>=count then
-					Duel.SendtoGrave(c,nil,REASON_RULE)
+					if Duel.SendtoGrave(c,nil,REASON_RULE)>0 then
+						Duel.RaiseSingleEvent(c,EVENT_SOUNDSTAGE_CONTRACT_EXPIRED,e,REASON_RULE,PLAYER_NONE,tp,0)
+						Duel.RaiseEvent(Group.FromCards(c),EVENT_SOUNDSTAGE_CONTRACT_EXPIRED,e,REASON_RULE,PLAYER_NONE,tp,0)
+					end
 				end
 			end
 end

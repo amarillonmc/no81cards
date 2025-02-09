@@ -31,7 +31,7 @@ function c29056009.thfilter(c)
 end
 
 function c29056009.amyfilter(c)
-	return c:IsFaceup() and c:IsCode(29065500)
+	return c:IsFaceup() and (c:IsCode(29065500) or c:IsCode(29065502))
 end
 function c29056009.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29056009.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -55,5 +55,5 @@ function c29056009.cfilter(c)
 end
 function c29056009.ntcon(e,c,minc)
 	if c==nil then return true end
-	return minc==0 and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and not Duel.IsExistingMatchingCard(c29056009.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return minc==0 and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and not Duel.IsExistingMatchingCard(c29056009.cfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
 end

@@ -1,11 +1,14 @@
 --圣之数码兽 战斗暴龙兽·X抗体
 function c16368139.initial_effect(c)
+	--fusion material
 	c:EnableReviveLimit()
+	aux.AddFusionProcCodeFun(c,50218139,aux.FilterBoolFunction(Card.IsFusionSetCard,0xdc3),1,false,false)
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(c16368139.splimit)
 	c:RegisterEffect(e0)
 	--immune
 	local e1=Effect.CreateEffect(c)
@@ -34,13 +37,20 @@ function c16368139.initial_effect(c)
 	e3:SetTarget(aux.nbtg)
 	e3:SetOperation(c16368139.negop)
 	c:RegisterEffect(e3)
+	--tograve
 	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_DESTROY)
+	e4:SetCategory(CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e4:SetTarget(c16368139.destg)
-	e4:SetOperation(c16368139.desop)
+	e4:SetCode(EVENT_BATTLE_START)
+	e4:SetCountLimit(1)
+	e4:SetCondition(c16368139.tgcon)
+	e4:SetTarget(c16368139.tgtg)
+	e4:SetOperation(c16368139.tgop)
 	c:RegisterEffect(e4)
+end
+function c16368139.splimit(e,se,sp,st)
+	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION or se:GetHandler():IsCode(16364073)
+		or not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 function c16368139.efilter(e,te)
 	return te:IsActiveType(TYPE_MONSTER) and te:GetOwner()~=e:GetOwner()
@@ -54,16 +64,19 @@ function c16368139.negop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
 	end
 end
-function c16368139.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_MZONE,1,nil) end
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+function c16368139.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,50218139,16364073)
 end
-function c16368139.desop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)
+function c16368139.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
+end
+function c16368139.tgop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
-		Duel.Destroy(g,REASON_EFFECT)
+		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end

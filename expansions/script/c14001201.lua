@@ -62,7 +62,18 @@ function cm.sumsuc(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
 		end
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+		e1:SetTargetRange(1,0)
+		e1:SetTarget(cm.splimit)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
 	end
+end
+function cm.splimit(e,c)
+	return not c:IsRace(RACE_PLANT)
 end
 function cm.indtg(e,c)
 	return c:IsRace(RACE_PLANT)
