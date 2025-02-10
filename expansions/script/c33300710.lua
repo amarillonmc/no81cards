@@ -72,7 +72,7 @@ function s.lrop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(tp,ev,REASON_EFFECT)
 end
 function s.cond3(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsReason(REASON_EFFECT)
+	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function s.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(s.spfilter1,tp,LOCATION_DECK,0,1,nil)

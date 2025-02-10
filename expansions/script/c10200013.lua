@@ -111,7 +111,8 @@ end
 function c10200013.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then
         return Duel.IsExistingMatchingCard(Card.IsDestructable,tp,0,LOCATION_ONFIELD,1,nil)
-            and Duel.GetFieldGroupCount(tp,1,LOCATION_HAND)>0
+            and Duel.GetFieldGroupCount(1-tp,LOCATION_ONFIELD,0)>0
+            and Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)>0
     end
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,2,0,LOCATION_ONFIELD+LOCATION_HAND)
 end

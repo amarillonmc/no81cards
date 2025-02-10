@@ -64,7 +64,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
 		end
-	elseif op==2
+	elseif op==2 then
 		Duel.RegisterFlagEffect(tp,id+20000000,RESET_PHASE+PHASE_END,0,1)
 		-- 特殊召唤效果
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end

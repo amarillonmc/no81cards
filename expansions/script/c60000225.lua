@@ -30,6 +30,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 		and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=re:GetHandler()
 	if Duel.NegateActivation(ev) and tc:IsRelateToEffect(re) and Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)~=0
 		and tc:IsLocation(LOCATION_REMOVED) and not tc:IsReason(REASON_REDIRECT) then

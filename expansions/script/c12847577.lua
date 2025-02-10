@@ -3,7 +3,7 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_TODECK+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_REMOVE+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
@@ -22,20 +22,20 @@ function s.initial_effect(c)
 	end
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	if rc:IsLocation(LOCATION_HAND) then
+	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	if bit.band(loc,LOCATION_HAND)~=0 and Duel.GetFlagEffect(rp,id)==0 then
 		Duel.RegisterFlagEffect(rp,id,RESET_PHASE+PHASE_END,0,1)
 	end
-	if rc:IsLocation(LOCATION_DECK) then
+	if bit.band(loc,LOCATION_DECK)~=0 and Duel.GetFlagEffect(rp,id+1)==0 then
 		Duel.RegisterFlagEffect(rp,id+1,RESET_PHASE+PHASE_END,0,1)
 	end
-	if rc:IsLocation(LOCATION_ONFIELD) then
+	if bit.band(loc,LOCATION_ONFIELD)~=0 and Duel.GetFlagEffect(rp,id+2)==0 then
 		Duel.RegisterFlagEffect(rp,id+2,RESET_PHASE+PHASE_END,0,1)
 	end
-	if rc:IsLocation(LOCATION_GRAVE) then
+	if bit.band(loc,LOCATION_GRAVE)~=0 and Duel.GetFlagEffect(rp,id+3)==0 then
 		Duel.RegisterFlagEffect(rp,id+3,RESET_PHASE+PHASE_END,0,1)
 	end
-	if rc:IsLocation(LOCATION_REMOVED) then
+	if bit.band(loc,LOCATION_REMOVED)~=0 and Duel.GetFlagEffect(rp,id+4)==0 then
 		Duel.RegisterFlagEffect(rp,id+4,RESET_PHASE+PHASE_END,0,1)
 	end
 end
@@ -94,11 +94,12 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		if #mg7>0 and Duel.GetFlagEffect(1-tp,id+4)>0 then 
 			mg1:Merge(mg7)
 		end
-		if not c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:IsCanBeFusionMaterial()
+		local ge=c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT)
+		if not ge and c:IsCanBeFusionMaterial()
 		and c:IsAbleToRemove() and Duel.GetFlagEffect(1-tp,id+3)>0 then 
 			mg1:AddCard(c)
 		end
-		if c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT) and c:IsCanBeFusionMaterial()
+		if ge and ge:GetValue()&LOCATION_REMOVED and c:IsCanBeFusionMaterial()
 		and c:IsAbleToDeck() and Duel.GetFlagEffect(1-tp,id+4)>0 then 
 			mg1:AddCard(c)
 		end
@@ -171,7 +172,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			Auxiliary.FCheckAdditional=nil
 			Auxiliary.GCheckAdditional=nil
 			tc:SetMaterial(mat1)
-			local gmat=mat1:Filter(Card.IsLocation,nil,LOCATION_HAND+LOCATION_MZONE)
+			local gmat=mat1:Filter(Card.IsLocation,nil,LOCATION_HAND+LOCATION_MZONE+LOCATION_DECK)
 			local rmat=mat1:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
 			local dmat=mat1:Filter(Card.IsLocation,nil,LOCATION_REMOVED)
 			if #gmat>0 then Duel.SendtoGrave(gmat,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION) end

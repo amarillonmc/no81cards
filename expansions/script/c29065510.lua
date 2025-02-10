@@ -60,12 +60,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e12)
 end
 function c29065510.lvtg(e,c)
-	return c:IsRankAbove(1) and c:IsSetCard(0x87af)
+	return c:IsLevelAbove(1) and c:IsSetCard(0x87af)
 end
 function c29065510.lvval(e,c,rc)
-	if rc:IsSetCard(0x87af) then
-	return c:GetRank()
-	end
+	local lv=c:GetLevel()
+	if rc:IsSetCard(0x87af) then return rc:GetRank()+lv*0x10000
+	else return lv end
 end
 -------------------------------------------------
 function cm.stf(c) 

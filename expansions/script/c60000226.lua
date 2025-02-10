@@ -33,6 +33,7 @@ function cm.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
 end
 function cm.activate1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Duel.NegateSummon(eg)
 	if Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)~=0 then
 		-- 结束阶段检索

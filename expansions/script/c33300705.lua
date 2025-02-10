@@ -73,15 +73,7 @@ function s.op2(e,tp,eg,ep,ev,re,r,rp)
 		local lp_diff=math.abs(Duel.GetLP(tp)-Duel.GetLP(1-tp))
 		if lp_diff>=2000 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 			Duel.BreakEffect()
-			if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-				e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-				e1:SetValue(LOCATION_REMOVED)
-				c:RegisterEffect(e1,true)
-			end
+			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		else
 			Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
 		end

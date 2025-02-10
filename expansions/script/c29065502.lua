@@ -55,7 +55,7 @@ end
 function c29065502.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) or (Duel.IsExistingMatchingCard(c29065502.amyfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c29065502.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp)) end
-	if Duel.IsExistingMatchingCard(c29065502.ffilter,tp,LOCATION_MZONE,0,1,nil) then
+	if Duel.IsExistingMatchingCard(c29065502.amyfilter,tp,LOCATION_MZONE,0,1,nil) then
 		e:SetLabel(100)
 		if not Duel.IsPlayerCanDraw(tp,1) then 
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
