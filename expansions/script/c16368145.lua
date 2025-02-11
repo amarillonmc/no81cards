@@ -31,7 +31,7 @@ function c16368145.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(0,1)
+	e3:SetTargetRange(1,1)
 	e3:SetCondition(c16368145.actcon)
 	e3:SetValue(c16368145.actlimit)
 	c:RegisterEffect(e3)
@@ -66,5 +66,6 @@ function c16368145.actcon(e)
 		and Duel.IsExistingMatchingCard(Card.IsCode,e:GetHandlerPlayer(),LOCATION_GRAVE,0,1,nil,50218134,16364073)
 end
 function c16368145.actlimit(e,re,tp)
-	return re:GetActivateLocation()==LOCATION_ONFIELD
+	local rc=re:GetHandler()
+	return rc:IsOnField() or re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
