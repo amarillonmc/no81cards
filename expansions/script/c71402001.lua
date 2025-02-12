@@ -105,10 +105,13 @@ function c71402001.discon(e)
 	return c:IsFaceup() and (c:IsType(TYPE_SPELL+TYPE_TRAP)
 		or c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0)
 end
+function c71402001.filter2(c)
+	return not c:IsPublic()
+end
 function c71402001.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsPublic,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c71402001.filter2,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,Card.IsPublic,tp,LOCATION_HAND,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c71402001.filter2,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.ConfirmCards(1-tp,g)
 	Duel.ShuffleHand(tp)
 	Duel.SetTargetCard(g)
