@@ -54,13 +54,13 @@ function c98920176.damop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Damage(p,val,REASON_EFFECT)
 end
 function c98920176.spfilter(c,e,tp)
-	return c:IsAttribute(ATTRIBUTE_FIRE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevelAbove(1)
+	return c:IsAttribute(ATTRIBUTE_FIRE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and c:IsLevelAbove(1)
 end
 function c98920176.gcheck(sg)
 	return sg:GetSum(Card.GetLevel)<=8
 end
 function c98920176.fselect(g,tp,c)
-	return g:CheckWithSumEqual(Card.GetLevel,8,g:GetCount(),g:GetCount()) and Duel.GetMZoneCount(tp,c)>=g:GetCount()
+	return g:CheckWithSumEqual(Card.GetLevel,8,g:GetCount(),g:GetCount()) and Duel.GetMZoneCount(tp,c)+1>=g:GetCount()
 end
 function c98920176.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c98920176.spfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
@@ -87,7 +87,7 @@ function c98920176.spop(e,tp,eg,ep,ev,re,r,rp)
 	if sg then
 		local tc=sg:GetFirst()
 		while tc do
-			Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
+			Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_DISABLE)
