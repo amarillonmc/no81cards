@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
@@ -56,24 +57,27 @@ function cm.filter2(c,ec,sc)
 	return cm.filter(c,ec) and cm.fieldid(c)==cm.fieldid(sc) and c:IsAbleToRemoveAsCost() and ((c:GetType()&TYPE_QUICKPLAY>0 and c:CheckActivateEffect(true,true,false)~=nil) or (c:GetType()&TYPE_TRAP>0 and c:CheckActivateEffect(false,true,false)~=nil))
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	e:SetLabel(1)
+	--e:SetLabel(1)
 	return true
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local hg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,nil)
 	if chk==0 then
-		if e:GetLabel()~=1 then return false end
-		e:SetLabel(0)
+		if not e:IsCostChecked() or #hg==0 then return false end
+		--e:SetLabel(0)
 		local c=e:GetHandler()
 		if c:GetFlagEffect(m)==0 then return end
 		local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_GRAVE,0,nil,e:GetHandler())
 		if #g<=Duel.GetCurrentChain() then return end
 		local ct=math.min(#g,Duel.GetCurrentChain()+1)
+		if c:IsFaceup() and not c:IsStatus(STATUS_EFFECT_ENABLED) then ct=math.min(#g,Duel.GetCurrentChain()) end
 		local maxc=g:GetMaxGroup(cm.fieldid):GetFirst()
 		for i=1,ct do
 			maxc=g:GetMaxGroup(cm.fieldid):GetFirst()
 			g:RemoveCard(maxc)
 		end
 		local sg=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_GRAVE,0,nil,e:GetHandler(),maxc)
+		--Debug.Message(ct..#sg)
 		return #sg>0
 	end
 	e:SetLabel(0)
@@ -98,6 +102,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	te:SetLabelObject(e:GetLabelObject())
 	e:SetLabelObject(te)
 	Duel.ClearOperationInfo(0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,hg,1,0,0)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -107,8 +112,11 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e:SetLabelObject(te:GetLabelObject())
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
-	if c:IsRelateToEffect(e) and c:IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,nil)
+	if #g>0 then --and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		Duel.BreakEffect()
-		Duel.SendtoHand(c,nil,REASON_EFFECT)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+		g=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
 	end
 end

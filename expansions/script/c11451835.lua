@@ -222,6 +222,15 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 						fc:ReplaceEffect(m,RESET_EVENT+RESETS_STANDARD,1)
 						cm.initial_effect=ini
 					end
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_FIELD)
+					e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_PLAYER_TARGET)
+					e1:SetRange(LOCATION_MZONE)
+					e1:SetTargetRange(1,1)
+					e1:SetValue(function(e,te) return te:GetHandler()==e:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_COPY) and (te:GetCode()~=EVENT_FREE_CHAIN or te:GetType()&(~0x10a)>0) end)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					fc:RegisterEffect(e1,true)
 					Duel.HintSelection(Group.FromCards(fc))
 					Duel.Hint(HINT_CODE,tp,code)
 					fc:SetHint(CHINT_CARD,code)
@@ -237,7 +246,7 @@ function cm.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end
 function cm.filter2(c,e,tp,mg,f,chkf)
-	if not (c:IsType(TYPE_FUSION) and c:IsHasEffect(m) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false)) then return false end
+	if not (c:IsType(TYPE_FUSION) and c:IsHasEffect(m) and c:IsCode(m) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false)) then return false end
 	aux.FCheckAdditional=cm.fcheck
 	local res=c:CheckFusionMaterial(mg,nil,chkf)
 	aux.FCheckAdditional=nil
