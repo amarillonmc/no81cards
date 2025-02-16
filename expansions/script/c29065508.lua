@@ -2,8 +2,9 @@
 function c29065508.initial_effect(c)
 	aux.AddCodeList(c,29065500) 
 	--xyz summon
+	aux.AddXyzProcedure(c,nil,6,2)
 	--aux.AddXyzProcedureLevelFree(c,c29065508.mfilter,aux.TRUE,2,2)
-	aux.AddXyzProcedure(c,nil,6,2,c29065508.ovfilter,aux.Stringid(29065508,2),2,c29065508.xyzop)
+	--aux.AddXyzProcedure(c,nil,6,2,c29065508.ovfilter,aux.Stringid(29065508,2),2,c29065508.xyzop)
 	c:EnableReviveLimit()
 	--attack
 	local e2=Effect.CreateEffect(c)
@@ -116,22 +117,22 @@ end
 function c29065508.bttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
-	c:RegisterFlagEffect(id,RESET_CHAIN,0,1)
+	--c:RegisterFlagEffect(id,RESET_CHAIN,0,1)
 end
 function c29065508.btop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
-		local tc=nil
-		local tg=g:GetMinGroup(Card.GetAttack)
-		if tg:GetCount()>1 then
+	   -- local tc=nil
+	   -- local tg=g:GetMinGroup(Card.GetAttack)
+	   -- if tg:GetCount()>1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATTACKTARGET)
-			local sg=tg:Select(tp,1,1,nil)
+			local sg=g:Select(tp,1,1,nil)
 			Duel.HintSelection(sg)
 			tc=sg:GetFirst()
-		else
-			tc=tg:GetFirst()
-		end
+		--else
+		--	tc=tg:GetFirst()
+		--end
 		if tc:IsType(TYPE_MONSTER) and tc:IsCanBeBattleTarget(c) and tc:IsControler(1-tp) and tc:IsLocation(LOCATION_MZONE) then
 			Duel.CalculateDamage(c,tc)
 		end

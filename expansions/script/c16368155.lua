@@ -74,7 +74,7 @@ function c16368155.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c16368155.desfilter(c,tp)
 	local g=c:GetColumnGroup()
-	return g:IsExists(Card.IsControler,1,nil,1-tp)
+	return g:IsExists(Card.IsControler,1,nil,1-tp) or c:IsControler(1-tp)
 end
 function c16368155.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end

@@ -28,12 +28,12 @@ function c91000404.initial_effect(c)
 	c:RegisterEffect(e2)
 	
 	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_EQUIP)
+	e4:SetCategory(CATEGORY_TOGRAVE+CATEGORY_TOHAND)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,m*4)
+	e4:SetCountLimit(1,m)
 	e4:SetTarget(cm.tg4)
 	e4:SetOperation(cm.op4)
 	c:RegisterEffect(e4)
@@ -78,22 +78,23 @@ end
 function cm.tg2(e,c)
 	return c==e:GetHandler():GetEquipTarget()
 end
-function cm.thfilter2(c)
-	return c:IsSetCard(0x9d2)and c:IsAbleToGrave()
+function cm.thfilter2(c,e,tp)
+	return c:IsSetCard(0x9d2)and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.thfilter(c,e,tp)
-	return  c:IsSetCard(0x9d2) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceup()
+	return  c:IsSetCard(0x9d2) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function cm.tg4(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_REMOVED,0,1,nil,e,tp)end   
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tg,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp)end   
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function cm.op4(e,tp,eg,ep,ev,re,r,rp)
-local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 if g:GetCount()>0 then 
-		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		local g2=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	 Duel.SendtoGrave(g2,REASON_EFFECT)
+		if Duel.SendtoGrave(g,REASON_EFFECT)~=0 and g:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) and Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_REMOVED,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		local g2=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_REMOVED,0,1,1,nil,e,tp)
+	 Duel.SpecialSummon(g2,0,tp,tp,false,false,POS_FACEUP)
 	end
   end
 end

@@ -44,12 +44,32 @@ function s.initial_effect(c)
 	e4:SetTarget(s.sptg)
 	e4:SetOperation(s.spop)
 	c:RegisterEffect(e4)
+	--
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(id,0))
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e5:SetRange(LOCATION_EXTRA)
+	e5:SetOperation(s.linkop)
+	c:RegisterEffect(e5)
+	--
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE)
+	e6:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+	e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
+	e6:SetValue(1)
+	c:RegisterEffect(e6)
+	local e7=e6:Clone()
+	e7:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	c:RegisterEffect(e7) 
+	--
+	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,s.chainfilter)
 end
 function s.lcheck(g,lc)
 	return g:IsExists(Card.IsLinkRace,1,nil,RACE_SPELLCASTER+RACE_DIVINE)
 end
 function s.sprfilter(c,fc,tp)
-	return c:IsCode(98500320) and c:IsAbleToDeckAsCost() and Duel.GetLocationCountFromEx(tp,tp,c,fc)>0 and c:IsCanBeLinkMaterial(fc)
+	return c:IsCode(98500320) and c:IsAbleToGraveAsCost() and Duel.GetLocationCountFromEx(tp,tp,c,fc)>0 and c:IsCanBeLinkMaterial(fc) and Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)>0
 end
 function s.tdcheck(c,fc)
 	return c:IsCode(39913299) and c:IsAbleToDeckAsCost()
@@ -57,14 +77,12 @@ end
 function s.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(s.sprfilter,tp,LOCATION_ONFIELD,0,1,nil,c,tp) and Duel.IsExistingMatchingCard(s.tdcheck,tp,LOCATION_HAND,0,1,nil,c)
+	return Duel.IsExistingMatchingCard(s.sprfilter,tp,LOCATION_ONFIELD,0,1,nil,c,tp)
 end
 function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.SelectMatchingCard(tp,s.sprfilter,tp,LOCATION_ONFIELD,0,1,1,nil,c,tp)
-	local tg=Duel.SelectMatchingCard(tp,s.tdcheck,tp,LOCATION_HAND,0,1,1,nil,c)
-	g:Merge(tg)
 	c:SetMaterial(g)
-	Duel.SendtoDeck(g,nil,2,REASON_SPSUMMON+REASON_COST)
+	Duel.SendtoGrave(g,REASON_LINK)
 	c:CopyEffect(98500320,RESET_EVENT+0xff0000,1)
 end
 function s.filter1(c)
@@ -140,4 +158,16 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.splimit(e,c)
 	return not c:IsRace(RACE_DIVINE) and not c:IsRace(RACE_SPELLCASTER)
+end
+function s.chainfilter(re,tp,cid)
+	return not re:GetHandler():IsCode(39913299,98500303)
+end
+function s.ovfilter(c)
+	return c:IsCode(98500320) and c:IsFaceup()
+end
+function s.linkop(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,id)==0
+		and (Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)>0
+			or Duel.GetCustomActivityCount(id,1-tp,ACTIVITY_CHAIN)>0) end
+	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end

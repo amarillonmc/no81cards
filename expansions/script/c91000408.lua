@@ -38,8 +38,7 @@ function c91000408.initial_effect(c)
 	e6:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e6:SetCode(EVENT_LEAVE_FIELD)
 	e6:SetProperty(EFFECT_FLAG_DELAY)
-	e6:SetCountLimit(1,m*3)
-	e6:SetCost(cm.cost)
+	e6:SetCountLimit(1,m+100)
 	e6:SetTarget(cm.negtg)
 	e6:SetOperation(cm.negop)
 	c:RegisterEffect(e6)
@@ -86,6 +85,17 @@ if g:GetCount()>0 then
 		end 
 	 end
    end
+		local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(cm.counterfilter1)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.counterfilter1(e,c)
+	return  not (c:IsLevel(10) or c:IsRank(10)) and c:IsLocation(LOCATION_EXTRA)
 end
 function cm.eqlimit(e,c)
 	return e:GetLabelObject()==c
@@ -129,6 +139,17 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	   
 		end
+		local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(cm.counterfilter1)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.counterfilter1(e,c)
+	return  not (c:IsLevel(10) or c:IsRank(10)) and c:IsLocation(LOCATION_EXTRA)
 end
 function cm.eqlimit(e,c)
 	return e:GetLabelObject()==c
@@ -166,6 +187,17 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(cm.eqlimit)
 		e1:SetLabelObject(tc)
 		sc:RegisterEffect(e1)
+		local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(cm.counterfilter1)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.counterfilter1(e,c)
+	return  not (c:IsLevel(10) or c:IsRank(10)) and c:IsLocation(LOCATION_EXTRA)
 end
 function cm.eqlimit(e,c)
 	return e:GetLabelObject()==c

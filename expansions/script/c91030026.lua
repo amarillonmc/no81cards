@@ -34,28 +34,7 @@ function c91030026.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTarget(cm.eqtg)
 	e2:SetOperation(cm.eqop)
-
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,m+100)
-	e2:SetTarget(cm.sptg1)
-	e2:SetOperation(cm.spop1)
 	c:RegisterEffect(e2)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetTarget(cm.indtg)
-	e3:SetValue(1)
-	c:RegisterEffect(e3)
-end
-function cm.indtg(e,c)
-	return c:GetMutualLinkedGroupCount()>0
 end
 function cm.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
@@ -161,26 +140,6 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 		ec:RegisterEffect(e5,true)
 	end
 end
-function cm.spfilter1(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,tp,zone) and c:IsSetCard(0x9d3)
-end
-function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local zone=bit.band(e:GetHandler():GetLinkedZone(tp),0x1f)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.spfilter1(chkc,e,tp,zone) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(cm.spfilter1,tp,LOCATION_GRAVE,0,1,nil,e,tp,zone) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,cm.spfilter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,zone)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
-end
-function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
-	local zone=e:GetHandler():GetLinkedZone(tp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and zone&0x1f~=0 then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone)
-	end
-end
-
 function cm.desrepval(e,re,r,rp)
 	return r&(REASON_BATTLE|REASON_EFFECT)~=0
 end

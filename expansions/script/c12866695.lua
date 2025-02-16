@@ -63,7 +63,8 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function s.spfilter(c,e,tp)
-	return not c:IsSummonableCard() and c:IsRace(RACE_FIEND) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	local proc=c:IsCode(12866865) and e:GetHandler():IsCode(id)
+	return not c:IsSummonableCard() and c:IsRace(RACE_FIEND) and c:IsCanBeSpecialSummoned(e,0,tp,proc,proc)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler())>0
@@ -71,12 +72,15 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
 		local tc=g:GetFirst()
-			if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 then
+		local proc=tc:IsCode(12866865) and c:IsCode(id)
+			if Duel.SpecialSummon(tc,0,tp,tp,proc,proc,POS_FACEUP)>0 then
+			if proc then tc:CompleteProcedure() end
 			local fid=e:GetHandler():GetFieldID()
 			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 			local e1=Effect.CreateEffect(e:GetHandler())

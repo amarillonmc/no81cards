@@ -43,7 +43,19 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.sfilter),tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil,e,tp)
-	 Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	 if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0  and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.thfilter2),tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and  Duel.SelectYesNo(tp,aux.Stringid(m,0)) then   
+		local tc=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil):GetFirst()
+		local sc=Duel.SelectMatchingCard(tp,cm.thfilter2,tp,LOCATION_GRAVE,0,1,1,nil):GetFirst()
+		Duel.Equip(tp,sc,tc)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_EQUIP_LIMIT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(cm.eqlimit2)
+		e1:SetLabelObject(tc)
+		sc:RegisterEffect(e1)
+		end 
 end
 function cm.costfilter(c)
 	return c:IsSetCard(0x9d2) and c:IsType(TYPE_MONSTER) and c:IsDiscardable()
@@ -60,4 +72,9 @@ function cm.indct(e,re,r,rp)
 		return 1
 	else return 0 end
 end
-
+function cm.eqlimit(e,c)
+	return e:GetOwner()==c
+end
+function cm.eqlimit2(e,c)
+	return e:GetLabelObject()==c
+end

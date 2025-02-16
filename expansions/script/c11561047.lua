@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--dest
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_COUNTER+CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_COUNTER)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -32,14 +32,14 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e5:SetCondition(c11561047.regcon)
 	e5:SetOperation(c11561047.regop)
-	c:RegisterEffect(e5)
+	--c:RegisterEffect(e5)
 	--material check
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_MATERIAL_CHECK)
 	e3:SetValue(c11561047.valcheck)
 	e3:SetLabelObject(e5)
-	c:RegisterEffect(e3)
+	--c:RegisterEffect(e3)
 	--immune
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
@@ -48,7 +48,7 @@ function cm.initial_effect(c)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCondition(c11561047.effcon)
 	e4:SetValue(1)
-	c:RegisterEffect(e4)
+	--c:RegisterEffect(e4)
 	--cannot be target
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_SINGLE)
@@ -57,12 +57,35 @@ function cm.initial_effect(c)
 	e6:SetRange(LOCATION_MZONE)
 	e6:SetCondition(c11561047.effcon)
 	e6:SetValue(aux.imval1)
-	c:RegisterEffect(e6)
+	--c:RegisterEffect(e6)
 	local e7=e6:Clone()
 	e7:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e7:SetValue(1)
-	c:RegisterEffect(e7)
+	--c:RegisterEffect(e7)
+	--atklimit
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e8:SetCode(EFFECT_UPDATE_ATTACK)
+	e8:SetRange(LOCATION_MZONE)
+	e8:SetValue(c11561047.atkval)
+	c:RegisterEffect(e8)
+	--double attack
+	local e9=Effect.CreateEffect(c)
+	e9:SetType(EFFECT_TYPE_SINGLE)
+	e9:SetCode(EFFECT_EXTRA_ATTACK)
+	e9:SetValue(c11561047.atkcval)
+	c:RegisterEffect(e9)
 	
+end
+function c11561047.atkval(e,c)
+	return e:GetHandler():GetCounter(0x1)*100*Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil):GetCount()
+end
+function c11561047.atkcval(e,c)
+	local c=e:GetHandler()
+	local ct=c:GetCounter(0x1)-1
+	if ct<1 then ct=1 end
+	return ct
 end
 function c11561047.mfilter(g)
 	return g:GetClassCount(Card.GetRace)>2
@@ -90,12 +113,12 @@ function c11561047.cdtcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function c11561047.cdttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()c:GetOverlayCount()
+	local c=e:GetHandler()
 	local ct=c:GetOverlayCount()
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return ct>0 end -- Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,ct,0,0x1)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,0)
+	--Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
+	--Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,0)
 end
 function c11561047.cdtop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -105,20 +128,20 @@ function c11561047.cdtop(e,tp,eg,ep,ev,re,r,rp)
 		local ct=Duel.SendtoGrave(og,REASON_EFFECT) 
 		if ct>0 then
 		c:AddCounter(0x1,ct)
-		if Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil)
-		if g:GetCount()>0 then
-			Duel.HintSelection(g)
-			if Duel.Destroy(g,REASON_EFFECT) then
-				local ccg=Duel.GetOperatedGroup()
-				local cct=ccg:Filter(Card.IsPreviousControler,nil,tp):GetCount()
-				if cct>0 and Duel.IsPlayerCanDraw(tp,cct) then 
-					Duel.Draw(tp,cct,REASON_EFFECT)
-				end
-			end
-		end
-		end
+		--if Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil) then
+		--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		--local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil)
+		--if g:GetCount()>0 then
+		--	Duel.HintSelection(g)
+		--	if Duel.Destroy(g,REASON_EFFECT) then
+		--		local ccg=Duel.GetOperatedGroup()
+		--		local cct=ccg:Filter(Card.IsPreviousControler,nil,tp):GetCount()
+		--		if cct>0 and Duel.IsPlayerCanDraw(tp,cct) then 
+		--			Duel.Draw(tp,cct,REASON_EFFECT)
+		--		end
+		--	end
+		--end
+		--end
 		end
 	end
 end
