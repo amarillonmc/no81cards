@@ -96,9 +96,15 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=g:SelectSubGroup(tp,cm.fselect,false,1,math.min(#g,ft),e,tp,ft1,ft2)
 		local tg=Group.CreateGroup()
-		if #sg>ft2 or (ft1>0 and not Duel.SelectYesNo(tp,aux.Stringid(m,6))) then
+		if ft1>0 then --#sg>ft2 or (ft1>0 and not Duel.SelectYesNo(tp,aux.Stringid(m,6))) then
 			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
-			tg=sg:FilterSelect(tp,cm.spfilter1,math.max(0,#sg-ft2),math.min(#sg,ft1),nil,e,tp,sg,ft1,ft2)
+			sg=sg:Filter(cm.spfilter1,nil,e,tp,sg,ft1,ft2)
+			if #sg-ft2>0 then
+				tg=sg:Select(tp,1,math.min(#sg,ft1),nil)
+			else
+				tg=sg:CancelableSelect(tp,1,math.min(#sg,ft1),nil)
+			end
+			if not tg then tg=Group.CreateGroup() end
 			sg:Sub(tg)
 		end
 		for tc in aux.Next(tg) do

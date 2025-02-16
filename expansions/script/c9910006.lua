@@ -35,6 +35,29 @@ function c9910006.initial_effect(c)
 	e4:SetTarget(c9910006.sctg)
 	e4:SetOperation(c9910006.scop)
 	c:RegisterEffect(e4)
+	--adjust(disablecheck)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
+	e5:SetCode(EVENT_ADJUST)
+	e5:SetRange(0xff)
+	e5:SetLabelObject(e2)
+	e5:SetOperation(c9910006.adjustop)
+	c:RegisterEffect(e5)
+	local e6=e5:Clone()
+	e6:SetLabelObject(e3)
+	c:RegisterEffect(e6)
+end
+function c9910006.eqcfilter(c)
+	return c:GetEquipTarget() or (c:IsFaceup() and c:IsType(TYPE_EQUIP))
+end
+function c9910006.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=e:GetLabelObject()
+	if Duel.IsExistingMatchingCard(c9910006.eqcfilter,tp,LOCATION_ONFIELD,0,1,nil) then
+		e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN)
+	else
+		e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	end
 end
 function c9910006.rpcon(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler())
@@ -69,19 +92,11 @@ function c9910006.rpop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c9910006.eqcfilter(c)
-	return c:GetEquipTarget() or (c:IsFaceup() and c:IsType(TYPE_EQUIP))
-end
 function c9910006.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end
 	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-	if Duel.IsExistingMatchingCard(c9910006.eqcfilter,tp,LOCATION_ONFIELD,0,1,nil)then
-		e:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN)
-	else
-		e:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	end
 end
 function c9910006.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
