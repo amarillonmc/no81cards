@@ -124,24 +124,25 @@ function c98941056.activate(e,tp,eg,ep,ev,re,r,rp)
 				hg:RemoveCard(xc)
 				xc=mat1:GetNext()
 			end
-			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,1-tp,false,false,POS_FACEUP)
+			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
 		else
 			local mat2=Duel.SelectFusionMaterial(tp,tc,mg3,nil,chkf)
 			local fop=ce:GetOperation()
 			fop(ce,e,tp,tc,mat2)
 		end
-		tc:CompleteProcedure()
-	end
-	if ct>0 and Duel.IsExistingMatchingCard(s.tgfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(98941056,3)) then
-		Duel.BreakEffect()
-		local g=Duel.GetMatchingGroup(s.tgfilter1,tp,LOCATION_DECK,0,nil)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sg=g:Select(tp,1,ct,nil)
-		Duel.SendtoGrave(sg,REASON_EFFECT)
+		if tc:IsControlerCanBeChanged() and Duel.IsExistingMatchingCard(s.tgfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(98941056,3)) then
+			Duel.BreakEffect()
+			Duel.GetControl(tc,1-tp)
+			local g=Duel.GetMatchingGroup(s.tgfilter1,tp,LOCATION_DECK,0,nil)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			local sg=g:Select(tp,1,ct,nil)
+			Duel.SendtoGrave(sg,REASON_EFFECT)
+		end
+	   	tc:CompleteProcedure()
 	end
 end
 function s.tgfilter1(c)
-	return c:IsSetCard(0x9d) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	return c:IsSetCard(0x9d) and c:IsAbleToGrave()
 end
 function c98941056.desfilter(c,tp)
 	return c:IsControler(tp)
