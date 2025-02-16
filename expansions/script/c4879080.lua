@@ -105,7 +105,7 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e3)
 		end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,cm.pfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 		local tc1=g:GetFirst()
 		if tc1 then
 			Duel.MoveToField(tc1,tp,tp,LOCATION_SZONE,POS_FACEUP,true)

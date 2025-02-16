@@ -106,7 +106,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local bool,ceg=Duel.CheckEvent(EVENT_CUSTOM+m,true)
-	return eg:IsContains(e:GetHandler()) and bool and ceg:IsExists(cm.spfilter,1,nil)
+	return eg:IsContains(e:GetHandler()) and bool and ceg:IsExists(cm.spfilter,1,nil) and (re==nil or not re:IsActivated())
 end
 function cm.XyzLevelFreeGoal(g,tp,xyzc,gf)
 	return (not gf or gf(g)) and Duel.GetLocationCountFromEx(tp,tp,g,TYPE_XYZ)>0

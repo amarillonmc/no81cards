@@ -60,19 +60,30 @@ end
 function c9911201.setfilter(c)
 	local b1=c:IsLocation(LOCATION_HAND) and c:IsSSetable()
 	local b2=c:IsLocation(LOCATION_SZONE) and c:IsSSetable(true)
-	return c:IsFaceupEx() and c:IsType(TYPE_TRAP) and (b1 or b2)
+	local b3=c:IsLocation(LOCATION_DECK) and c:IsSetCard(0x5958) and c:IsSSetable()
+	return c:IsFaceupEx() and c:IsType(TYPE_TRAP) and (b1 or b2 or b3)
 end
 function c9911201.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c9911201.setfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,nil)
+	local fe=Duel.IsPlayerAffectedByEffect(tp,9911233)
+	local loc=LOCATION_HAND+LOCATION_SZONE
+	if fe then loc=loc+LOCATION_DECK end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9911201.setfilter,tp,loc,0,1,nil)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,9911201,0x5958,TYPES_NORMAL_TRAP_MONSTER,0,2100,2,RACE_PLANT,ATTRIBUTE_EARTH) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function c9911201.setop(e,tp,eg,ep,ev,re,r,rp)
+	local fe=Duel.IsPlayerAffectedByEffect(tp,9911233)
+	local loc=LOCATION_HAND+LOCATION_SZONE
+	if fe then loc=loc+LOCATION_DECK end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local tc=Duel.SelectMatchingCard(tp,c9911201.setfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,1,1,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c9911201.setfilter,tp,loc,0,1,1,nil):GetFirst()
 	if not tc then return end
-	if tc:IsLocation(LOCATION_HAND) then
+	if tc:IsLocation(LOCATION_HAND+LOCATION_DECK) then
+		if tc:IsLocation(LOCATION_DECK) then
+			Duel.Hint(HINT_CARD,0,9911233)
+			fe:UseCountLimit(tp)
+		end
 		if Duel.SSet(tp,tc)==0 then return end
 	else
 		tc:CancelToGrave()

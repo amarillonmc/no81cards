@@ -68,7 +68,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local bool,ceg=Duel.CheckEvent(EVENT_CUSTOM+m,true)
-	return eg:IsContains(e:GetHandler()) and bool and ceg:IsExists(cm.spfilter,1,nil)
+	return eg:IsContains(e:GetHandler()) and bool and ceg:IsExists(cm.spfilter,1,nil) and (re==nil or not re:IsActivated())
 end
 function cm.tdfilter(c,se)
 	return c:IsFaceup() and c:IsSetCard(0x9977) and c:IsAbleToHand()

@@ -169,6 +169,7 @@ function cm.initial_effect(c)
 			end
 		end
 		function Group.CancelableSelect(g,sp,min,max,nc)
+			if Duel.DisableActionCheck then Duel.DisableActionCheck(true) end
 			if Duel.GetFlagEffect(0,m)>0 and min<=1 and max==1 then
 				local ng=g:Clone()
 				if aux.GetValueType(nc)=="Card" then ng:RemoveCard(nc) end
@@ -180,8 +181,10 @@ function cm.initial_effect(c)
 				cm[sp]=cm[sp]+1
 				local tg=ng:RandomSelect(sp,1)
 				if tg:GetFirst() and tg:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) then Duel.ConfirmCards(sp,tg) end
+				if Duel.DisableActionCheck then Duel.DisableActionCheck(false) end
 				return tg
 			else
+				if Duel.DisableActionCheck then Duel.DisableActionCheck(false) end
 				return _CancelableSelect(g,sp,min,max,nc)
 			end
 		end

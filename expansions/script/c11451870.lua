@@ -8,6 +8,22 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
+	--adjust(disablecheck)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetCode(EVENT_ADJUST)
+	e2:SetLabelObject(e1)
+	e2:SetOperation(cm.adjustop)
+	Duel.RegisterEffect(e2,0)
+end
+function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=e:GetLabelObject()
+	if cm.condition(e,e:GetHandler():GetControler(),eg,ep,ev,re,r,rp) then
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN)
+	else
+		e1:SetProperty(0)
+	end
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	local ct=math.abs(Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)-Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD))
@@ -17,10 +33,10 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
 	if chk==0 then return #g>0 end
-	--Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,0,1-tp,LOCATION_ONFIELD)
+	--[[Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,0,1-tp,LOCATION_ONFIELD)
 	if cm.condition(e,tp,eg,ep,ev,re,r,rp) then
 		e:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+0x200)
-	else e:SetProperty(0) end
+	else e:SetProperty(0) end--]]
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
