@@ -183,5 +183,5 @@ function s.thfilter1(c,att)
 	return c:IsSetCard(0x400d) and c:GetAttribute()==att and c:IsAbleToHand()
 end
 function s.tgfilter(c,att)
-	return c:IsSetCard(0x113) and c:GetAttribute()==att and c:IsAbleToHand()
+	return c:GetAttribute()==att and c:IsAbleToGrave()
 end

@@ -78,18 +78,26 @@ function c3679215.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetMatchingGroup(c3679215.filter,0,0xff,0xff,nil)
 		cregister=Card.RegisterEffect
 		esetrange=Effect.SetRange
-		table_effect={}
-		table_range={}
+		eclone=Effect.Clone
+		Naturia_table_effect={}
+		Naturia_table_range={}
 		Effect.SetRange=function(effect,range)
-			table_range[effect]=range
+			Naturia_table_range[effect]=range
 			return esetrange(effect,range)
-			end
+		end
 		c3679215.GetRange=function(effect)
-			if table_range[effect] then 
-				return table_range[effect]
+			if Naturia_table_range[effect] then 
+				return Naturia_table_range[effect]
 			end
 			return nil
+		end
+		Effect.Clone=function(effect)
+			local clone_effect=eclone(effect)
+			if c3679215.GetRange(effect) then
+				Naturia_table_range[clone_effect]=c3679215.GetRange(effect)
 			end
+			return clone_effect
+		end
 		--for i,f in pairs(Effect) do Debug.Message(i) end
 		Card.RegisterEffect=function(card,effect,flag)
 			if effect then
@@ -98,20 +106,21 @@ function c3679215.adjustop(e,tp,eg,ep,ev,re,r,rp)
 					eff:SetValue(3679215)
 					esetrange(eff,LOCATION_HAND+LOCATION_MZONE)
 				end
-				table.insert(table_effect,eff)
+				table.insert(Naturia_table_effect,eff)
 			end
 			return 
 		end
 		for tc in aux.Next(g) do
-			table_effect={}
+			Naturia_table_effect={}
 			tc:ReplaceEffect(3679215,0)
 			Duel.CreateToken(0,tc:GetOriginalCode())
-			for key,eff in ipairs(table_effect) do
+			for key,eff in ipairs(Naturia_table_effect) do
 				cregister(tc,eff)
 			end
 		end
 		Card.RegisterEffect=cregister
 		Effect.SetRange=esetrange
+		Effect.Clone=eclone
 	end
 	e:Reset()
 end

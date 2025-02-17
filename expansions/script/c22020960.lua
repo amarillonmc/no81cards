@@ -11,7 +11,7 @@ function c22020960.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EFFECT_SELF_DESTROY)
-	e2:SetCondition(c22020960.descon)
+	e2:SetCondition(c22020960.sdcon)
 	c:RegisterEffect(e2)
 	--activate from hand
 	local e3=Effect.CreateEffect(c)
@@ -25,9 +25,9 @@ function c22020960.initial_effect(c)
 	e4:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	c:RegisterEffect(e4)
 end
-function c22020960.filter(c)
+function c22020960.sdfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xff1) and c:IsRace(RACE_SPELLCASTER)
 end
-function c22020960.descon(e)
-	return not Duel.IsExistingMatchingCard(c22020960.filter,0,LOCATION_MZONE,0,1,nil)
+function c22020960.sdcon(e)
+	return not Duel.IsExistingMatchingCard(c22020960.sdfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end

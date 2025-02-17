@@ -137,9 +137,9 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then return end
 	local sg=Group.FromCards()
 	if e:GetLabel()==4 then sg=e:GetLabelObject() else sg=e:GetLabelObject():GetLabelObject() end
-	if c:GetFlagEffect(m)==0 then
+	if c:GetFlagEffect(m+99)==0 then
 		sg:Clear()
-		c:RegisterFlagEffect(m,RESET_EVENT+0x1fc0000+RESET_PHASE+PHASE_END,0,1)
+		c:RegisterFlagEffect(m+99,RESET_EVENT+0x1fc0000+RESET_PHASE+PHASE_END,0,1)
 		local e6=Effect.CreateEffect(c)
 		e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e6:SetCode(EVENT_PHASE+PHASE_END)
@@ -157,7 +157,7 @@ function cm.mtfilter(c,rc)
 end
 function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetOwner()
-	if c:GetFlagEffect(m)==0 then return end
+	if c:GetFlagEffect(m+99)==0 then return end
 	local g=e:GetLabelObject():GetLabelObject():Filter(cm.mtfilter,nil,c)
 	if #g>0 then Duel.Overlay(c,g) end
 end

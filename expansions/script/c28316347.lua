@@ -26,7 +26,7 @@ function c28316347.sprcon(e,c)
 	local tp=e:GetHandlerPlayer()
 	return Duel.GetLP(tp)>8000 and Duel.GetMZoneCount(tp)>0 and (c:IsLocation(LOCATION_HAND) or Duel.IsExistingMatchingCard(aux.AND(Card.IsFaceup,Card.IsAttribute),0,LOCATION_MZONE,LOCATION_MZONE,1,nil,ATTRIBUTE_EARTH))
 end
-function c28316347.gspop(e,tp,eg,ep,ev,re,r,rp,c)
+function c28316347.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	if c:IsLocation(LOCATION_HAND) then return end
 	local lp=Duel.GetLP(tp)
 	Duel.SetLP(tp,lp-2000)

@@ -173,7 +173,7 @@ end
 function s.setfilter(c,e,tp,ec)
 	local rc=c:GetReasonCard()
 	local re=c:GetReasonEffect()
-	return ((rc and rc==ec) or (re and re:GetHandler()==ec)) and ((c:IsType(TYPE_MONSTER) and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP+POS_FACEDOWN_DEFENSE,1-tp)) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0)
+	return ((rc and rc==ec) or (re and re:GetHandler()==ec)) and ((c:IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP+POS_FACEDOWN_DEFENSE,tp)) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
 			and c:IsSSetable(true)))
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

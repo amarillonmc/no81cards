@@ -36,9 +36,7 @@ function s.cpcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.costfilter(c)
-	if not (s.listfilter(c) and bit.band(c:GetType(),0x82)==c:GetType() and c:IsAbleToGraveAsCost()) then return end
-	local ae=c:CheckActivateEffect(true,true,false)
-	return ae and (not ae:IsHasCategory(CATEGORY_SPECIAL_SUMMON) or Duel.IsPlayerCanSpecialSummonCount(tp,2))
+	if not (s.listfilter(c) and bit.band(c:GetType(),0x82)==c:GetType() and c:IsAbleToGraveAsCost()) and c:CheckActivateEffect(true,true,false) end
 end
 function s.cpcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_DECK,0,1,nil) end

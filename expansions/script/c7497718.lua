@@ -58,8 +58,8 @@ function s.actarget(e,te,tp)
 end
 function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	--
-	if not s.globle_check then
-		s.globle_check=true
+	if not s.globle_effect_check then
+		s.globle_effect_check=true
 		local g=Duel.GetMatchingGroup(s.filter,0,0xff,0xff,nil)
 		cregister=Card.RegisterEffect
 		esetrange=Effect.SetRange
