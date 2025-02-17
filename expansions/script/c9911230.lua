@@ -16,6 +16,7 @@ function c9911230.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetDescription(aux.Stringid(9911230,1))
 	e2:SetCategory(0)
+	e1:SetProperty(0)
 	e2:SetTarget(c9911230.eftg)
 	e2:SetOperation(c9911230.efop)
 	c:RegisterEffect(e2)
@@ -30,41 +31,21 @@ function c9911230.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,c9911230.costfilter,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
-function c9911230.filter1(c,tp)
-	return c:IsFaceup() and c:IsType(TYPE_NORMAL) and c:IsAbleToHand()
-		and Duel.IsExistingTarget(c9911230.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,c)
-end
-function c9911230.filter2(c)
-	return c:IsFaceup() and c:IsType(TYPE_EFFECT) and c:IsAbleToHand()
+function c9911230.ckfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_NORMAL)
 end
 function c9911230.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(c9911230.filter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) end
+	local ct=Duel.GetMatchingGroupCount(c9911230.ckfilter,tp,LOCATION_MZONE,0,nil)
+	if chkc then return chkc:IsOnField() and chkc:IsAbleToHand() and chkc~=e:GetHandler() end
+	if chk==0 then return ct>0 and Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g1=Duel.SelectTarget(tp,c9911230.filter1,tp,LOCATION_MZONE,0,1,1,nil,tp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g2=Duel.SelectTarget(tp,c9911230.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,g1:GetFirst())
-	g1:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,2,0,0)
-end
-function c9911230.locfilter(c,sp)
-	return c:IsLocation(LOCATION_HAND) and c:IsControler(sp)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,e:GetHandler())
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,#g,0,0)
 end
 function c9911230.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
-	end
-	local ct=Duel.GetOperatedGroup():FilterCount(c9911230.locfilter,nil,tp)
-	if ct==0 then
-		local g2=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-		if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9911230,2)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-			local sg=g2:Select(tp,1,1,nil)
-			Duel.HintSelection(sg)
-			Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		end
 	end
 end
 function c9911230.eftg(e,tp,eg,ep,ev,re,r,rp,chk)

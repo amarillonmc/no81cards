@@ -13,6 +13,7 @@ function c9911459.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
+	c9911459.morfonica_summon_effect=e1
 	--to hand(self)
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SUMMON)
@@ -27,6 +28,26 @@ function c9911459.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EVENT_REMOVE)
 	c:RegisterEffect(e4)
+	--adjust(disablecheck)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
+	e5:SetCode(EVENT_ADJUST)
+	e5:SetRange(0xff)
+	e5:SetLabelObject(e1)
+	e5:SetOperation(c9911459.adjustop)
+	c:RegisterEffect(e5)
+	local e6=e5:Clone()
+	e6:SetLabelObject(e2)
+	c:RegisterEffect(e6)
+end
+function c9911459.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=e:GetLabelObject()
+	if Duel.GetFlagEffect(tp,9921459)~=0 then
+		e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN)
+	else
+		e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	end
 end
 function c9911459.rcfilter1(c,e)
 	return c:IsCanBeEffectTarget(e) and (c:IsAbleToHand() or c:IsAbleToDeck())
@@ -43,6 +64,7 @@ function c9911459.rctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return dg:CheckSubGroup(c9911459.fselect,3,3) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=dg:SelectSubGroup(tp,c9911459.fselect,false,3,3)
+	if chk==9911466 then Duel.HintSelection(g) end
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
