@@ -138,10 +138,10 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 							local e3=Effect.CreateEffect(e:GetHandler())
 							e3:SetType(EFFECT_TYPE_FIELD)
 							e3:SetCode(EFFECT_CHANGE_CODE)
-							e3:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_REPEAT+EFFECT_FLAG_DELAY+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_OATH)
+							e3:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_REPEAT+EFFECT_FLAG_DELAY+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_OATH,EFFECT_FLAG2_WICKED)
 							e3:SetTargetRange(0xff,0xff)
 							e3:SetTarget(function(e,c) return Duel.IsExistingMatchingCard(Card.IsOriginalCodeRule,0,LOCATION_GRAVE,LOCATION_GRAVE,1,c,table.unpack({c:GetOriginalCodeRule()})) end)
-							e3:SetValue(function(e,c) return c:GetOriginalCode()+0x527+c:GetFieldID() end)
+							e3:SetValue(function(e,c) return 0x527+c:GetFieldID() end)
 							e3:SetReset(RESET_PHASE+PHASE_END)
 							Duel.RegisterEffect(e3,tp)
 						end
@@ -274,7 +274,7 @@ function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local bg=Duel.GetMatchingGroup(cm.spcfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,c,e,tp)
-	return #bg>0 and c:IsAbleToRemoveAsCost()
+	return #bg>0 and c:IsAbleToRemoveAsCost() and Duel.GetMZoneCount(tp)>0
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	local c=e:GetHandler()

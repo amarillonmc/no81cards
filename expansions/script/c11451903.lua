@@ -61,9 +61,9 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil)
 	if #g>0 then
+		local code=g:GetFirst():GetCode()
 		if Duel.SendtoHand(g,nil,REASON_EFFECT)>0 and g:GetFirst():IsLocation(LOCATION_HAND) then
 			Duel.ConfirmCards(1-tp,g)
-			local code=g:GetFirst():GetCode()
 			--selfdes
 			local e7=Effect.CreateEffect(c)
 			e7:SetType(EFFECT_TYPE_FIELD)
