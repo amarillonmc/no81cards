@@ -117,7 +117,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if sg2:GetFirst():IsLocation(LOCATION_DECK) then Duel.ShuffleDeck(tp) end
 	Duel.SetTargetCard(sg2)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,sg,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,sg2,1,tp,sg2:GetFirst():GetLocation())
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

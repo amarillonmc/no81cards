@@ -68,7 +68,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetMatchingGroup(cm.spfilter,p,LOCATION_HAND,0,nil,e,tp)
 		if #g>0 then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
+			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
 			local sc=g:Select(p,1,1,nil):GetFirst()
 			local op=aux.SelectFromOptions(tp,{cm.spfilter2(sc,e,tp),aux.Stringid(m,0)},{cm.spfilter1(sc,e,tp),aux.Stringid(m,1)})
 			if op==2 then
