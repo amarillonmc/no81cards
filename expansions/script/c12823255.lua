@@ -30,7 +30,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.SelectMatchingCard(tp,s.atkfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.HintSelection(sg)
 	local tc1=sg:GetFirst()
-	local g=c:GetAttackableTarget()
+	local g=tc1:GetAttackableTarget()
 	if #g>0 and Duel.SelectOption(tp,1157,1117)==0 then
 		local tc2=g:Select(tp,1,1,nil):GetFirst()
 		if tc2 then

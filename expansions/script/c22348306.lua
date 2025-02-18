@@ -19,18 +19,14 @@ function c22348306.thfilter(c)
 end
 function c22348306.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c22348306.thfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-	if chk==0 then return g:GetClassCount(c22348306.GetType)>1 end
+	if chk==0 then return g:GetClassCount(c22348306.jGetType)>1 end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,0)
 end
-function c22348306.GetType(c)
-	if c:IsType(TYPE_TRAP) then return 1
-	elseif c:IsType(TYPE_MONSTER) then return 2
-	elseif c:IsType(TYPE_SPELL) then return 3 
-	else return nil
-	end
+function c22348306.jGetType(c)
+	return bit.band(c:GetType(),0x7)
 end
 function c22348306.tpcheck(g)
-	return g:GetClassCount(c22348306.GetType)==#g
+	return g:GetClassCount(c22348306.jGetType)==#g
 end
 function c22348306.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c22348306.thfilter),tp,LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)

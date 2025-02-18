@@ -39,13 +39,6 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	
 end
-function c22348422.GetType(c)
-	if c:IsType(TYPE_TRAP) then return 1
-	elseif c:IsType(TYPE_MONSTER) then return 2
-	elseif c:IsType(TYPE_SPELL) then return 3 
-	else return nil
-	end
-end
 function c22348422.thcfilter(c,tp)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x970a)
 end
@@ -62,7 +55,7 @@ end
 function c22348422.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.DiscardDeck(tp,1,REASON_EFFECT)
 	local tc=Duel.GetOperatedGroup():GetFirst()
-	if tc and re:GetHandler() and c22348422.GetType(tc)==c22348422.GetType(re:GetHandler()) and Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
+	if tc and re:GetHandler() and bit.band(tc:GetType(),0x7)==bit.band(re:GetHandler():GetType(),0x7) and Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end

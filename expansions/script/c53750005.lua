@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_GRAVE)
 	e1:SetCountLimit(1)
+	e1:SetTarget(cm.regtg)
 	e1:SetOperation(cm.regop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
@@ -22,6 +23,10 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.operation)
 	c:RegisterEffect(e2)
+end
+function cm.regtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetChainLimit(function(e,ep,tp)return tp==ep end)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
