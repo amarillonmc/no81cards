@@ -104,7 +104,7 @@ function s.thfilter(c,fid)
 	return false
 end
 function s.filter(c,e,tp)
-	if not (c:IsType(TYPE_LINK) and c:IsLinkAbove(2) and c:IsFaceup()) then return false end
+	if not (c:IsType(TYPE_LINK) and c:IsSetCard(0x186) and c:IsLinkAbove(2) and c:IsFaceup()) then return false end
 	if not SNNM.IsInTable(c:GetOriginalCode(),s.codetable) then
 		Duel.DisableActionCheck(true)
 		Duel.CreateToken(tp,c:GetOriginalCode())

@@ -78,7 +78,7 @@ function c65010517.op(e,tp,eg,ep,ev,re,r,rp)
 	--accumulate
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_FIELD)
-	e7:SetCode(0x10000000+65010517)
+	e7:SetCode(EFFECT_FLAG_EFFECT+65010517)
 	e7:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e7:SetReset(RESET_PHASE+PHASE_END)
 	e7:SetTargetRange(0,1)

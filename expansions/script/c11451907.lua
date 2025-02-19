@@ -143,16 +143,27 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if chk==0 then return ft>0 and Duel.GetFlagEffect(tp,11451902)>0 end
 	Duel.ResetFlagEffect(tp,11451902)
-	--change code
-	local e3=Effect.CreateEffect(e:GetHandler())
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_CHANGE_CODE)
-	e3:SetProperty(EFFECT_FLAG_OATH)
-	e3:SetTargetRange(0xff,0xff)
-	e3:SetTarget(function(e,c) return Duel.IsExistingMatchingCard(Card.IsOriginalCodeRule,0,LOCATION_GRAVE,LOCATION_GRAVE,1,c,table.unpack({c:GetOriginalCodeRule()})) end)
-	e3:SetValue(function(e,c) return c:GetSequence()*0xfff+c:GetTurnID()*0xff+c:GetFieldID()*0xf+c:GetOriginalCode()+c:GetRealFieldID() end)
-	e3:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e3,tp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetOperation(function(e)
+						if Duel.GetFlagEffect(1,11451901)==0 and Duel.GetCurrentChain()==e:GetLabel() then
+							--change code
+							local e3=Effect.CreateEffect(e:GetHandler())
+							e3:SetType(EFFECT_TYPE_FIELD)
+							e3:SetCode(EFFECT_CHANGE_CODE)
+							e3:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_REPEAT+EFFECT_FLAG_DELAY+EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_OATH,EFFECT_FLAG2_WICKED)
+							e3:SetTargetRange(0xff,0xff)
+							e3:SetTarget(function(e,c) return Duel.IsExistingMatchingCard(Card.IsOriginalCodeRule,0,LOCATION_GRAVE,LOCATION_GRAVE,1,c,table.unpack({c:GetOriginalCodeRule()})) end)
+							e3:SetValue(function(e,c) return 0x527+c:GetFieldID() end)
+							e3:SetReset(RESET_PHASE+PHASE_END)
+							Duel.RegisterEffect(e3,tp)
+						end
+						Duel.RegisterFlagEffect(1,11451901,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+					end)
+	e1:SetReset(RESET_CHAIN)
+	e1:SetLabel(Duel.GetCurrentChain())
+	Duel.RegisterEffect(e1,tp)
 end
 function cm.cpcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
@@ -239,14 +250,17 @@ function cm.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(m)==0 end
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
+function cm.cpfilter0(c)
+	return c:IsFaceup() and c:IsType(TYPE_EFFECT)
+end
 function cm.cpfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_CYBERSE)
+	return c:IsFaceup() and c:IsRace(RACE_CYBERSE) and c:IsLevel(1)
 end
 function cm.cptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(cm.cpfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingTarget(cm.cpfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(cm.cpfilter0,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingTarget(cm.cpfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,cm.cpfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SelectTarget(tp,cm.cpfilter0,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SelectTarget(tp,cm.cpfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 end
 function cm.cpop(e,tp,eg,ep,ev,re,r,rp)

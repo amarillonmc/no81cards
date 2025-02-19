@@ -36,7 +36,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetOperation(cm.aclimit)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	--Duel.RegisterEffect(e2,tp)
-	if c:IsRelateToEffect(e) then
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and c:IsRelateToEffect(e) then
 		Duel.BreakEffect()
 		c:CancelToGrave()
 		Duel.SendtoHand(c,1-tp,REASON_EFFECT)

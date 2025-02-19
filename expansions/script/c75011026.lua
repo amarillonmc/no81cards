@@ -73,6 +73,7 @@ function c75011026.operation(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
 	local b1=true
 	local b2=Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil)
+	local b3=b2 and ct>=2
 	local op=aux.SelectFromOptions(tp,
 		{b1,aux.Stringid(75011026,1)},
 		{b2,aux.Stringid(75011026,2)},

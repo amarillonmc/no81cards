@@ -27,6 +27,7 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_TO_HAND)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetCondition(cm.con)
 	e2:SetCost(cm.spcost)
 	e2:SetOperation(cm.spop)
@@ -56,7 +57,7 @@ function cm.cfilter1(c,tp)
 end
 function cm.cfilter2(c,tp,ec)
 	if not c:IsControler(tp) or c:IsPublic() or not c:IsLocation(LOCATION_HAND) then return end
-	local eset={ec:IsHasEffect(0x20000000+m)}
+	local eset={ec:IsHasEffect(EFFECT_FLAG_EFFECT+m)}
 	for _,te in pairs(eset) do
 		if te:GetLabel()&c:GetType()>0 then return false end
 	end
@@ -96,7 +97,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetLabel(e:GetLabel())
 	e2:SetLabelObject(e3)
 	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(0x20000000+m)
+	e2:SetCode(EFFECT_FLAG_EFFECT+m)
 	e2:SetCondition(function(e) return e:GetLabelObject():GetLabel()<100 end)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	c:RegisterEffect(e2)
