@@ -1,5 +1,5 @@
 --.LiveVTuber Yaezawa Natori
-function c33701108.initial_effect(c)
+function c33701108.initial_effect(c) 
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,9,3)
 	c:EnableReviveLimit()   
@@ -28,7 +28,7 @@ function c33701108.initial_effect(c)
 	e4:SetCondition(c33701108.incon)
 	e4:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
 	e4:SetCode(EFFECT_DISABLE)
-	c:RegisterEffect(e4)   
+	--c:RegisterEffect(e4)   
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_FIELD)
@@ -37,6 +37,7 @@ function c33701108.initial_effect(c)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCategory(CATEGORY_NEGATE)
 	e1:SetCondition(c33701108.discon)
+	e1:SetCost(c33701108.discost)
 	e1:SetTarget(c33701108.distg)
 	e1:SetOperation(c33701108.disop)
 	c:RegisterEffect(e1)
@@ -79,19 +80,27 @@ function c33701108.dfilter(c,tp)
 end
 function c33701108.discon(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) or not Duel.IsChainNegatable(ev) then return false end
-	local ex,tg,tc=Duel.GetOperationInfo(ev,CATEGORY_NEGATE)
-	return re:IsHasCategory(CATEGORY_NEGATE) and ex and tg~=nil and tc+tg:FilterCount(c33701108.dfilter,nil,tp)-tg:GetCount()>0
+	local ex1,tg1,tc1=Duel.GetOperationInfo(ev,CATEGORY_NEGATE)
+	local ex2,tg2,tc2=Duel.GetOperationInfo(ev,CATEGORY_DISABLE) 
+	local b1=ex1 and tg1~=nil and tc1+tg1:FilterCount(c33701108.dfilter,nil,tp)-tg1:GetCount()>0
+	local b2=ex2 and tg2~=nil and tc2+tg2:FilterCount(c33701108.dfilter,nil,tp)-tg2:GetCount()>0
+	return b1 or b2  
+end
+function c33701108.discost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) or e:GetHandler():GetOverlayCount()==0 end 
+	if e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) then 
+		e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	end 
 end
 function c33701108.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end
-function c33701108.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateEffect(ev)
+function c33701108.disop(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler()
+	if Duel.NegateEffect(ev) and c:GetOverlayCount()==0 then  
+		Duel.Draw(tp,1,REASON_EFFECT)
+	end 
 end
-
-
-
-
 
 
