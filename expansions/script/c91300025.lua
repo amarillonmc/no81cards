@@ -4,24 +4,27 @@ function s.initial_effect(c)
 	--direct attack
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_DIRECT_ATTACK)
-	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),0,LOCATION_MZONE)>4 end)
+	e1:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetValue(s.atlimit)
 	c:RegisterEffect(e1)
-	--cannot attack
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE)
-	e8:SetCode(EFFECT_CANNOT_ATTACK)
-	e8:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),0,LOCATION_MZONE)<5 end)
+	e8:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)
+	e8:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e8:SetRange(LOCATION_MZONE)
 	c:RegisterEffect(e8)
-	--direct attack
+	--no battle damage
 	local e9=Effect.CreateEffect(c)
 	e9:SetType(EFFECT_TYPE_SINGLE)
-	e9:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e9:SetRange(LOCATION_MZONE)
-	e9:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
-	e8:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),0,LOCATION_MZONE)<5 end)
-	e9:SetValue(s.atlimit)
+	e9:SetCode(EFFECT_NO_BATTLE_DAMAGE)
 	c:RegisterEffect(e9)
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_SINGLE)
+	e10:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
+	e10:SetValue(1)
+	c:RegisterEffect(e10)
 	--Pos Change
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -68,7 +71,7 @@ function s.initial_effect(c)
 end
 s.hackclad=1
 function s.atlimit(e,c)
-	return true
+	return not (_G["c"..c:GetCode()] and _G["c"..c:GetCode()].hackclad)
 end
 function s.con(e)
 	local tp=e:GetHandlerPlayer()
