@@ -29,20 +29,22 @@ end
 function c9910646.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>0
 end
-function c9910646.thfilter(c,mc)
-	return c:IsSetCard(0xa952) and (c:IsAbleToHand() or (mc:IsType(TYPE_XYZ) and c:IsCanOverlay()))
+function c9910646.thfilter(c,res)
+	return c:IsSetCard(0xa952) and (c:IsAbleToHand() or (res and c:IsCanOverlay()))
 end
 function c9910646.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910646.thfilter,tp,LOCATION_DECK,0,1,nil,e:GetHandler()) end
+	local res=e:GetHandler():IsType(TYPE_XYZ)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910646.thfilter,tp,LOCATION_DECK,0,1,nil,res) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c9910646.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local res=c:IsType(TYPE_XYZ) and c:IsRelateToEffect(e)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,c9910646.thfilter,tp,LOCATION_DECK,0,1,1,nil,c)
+	local g=Duel.SelectMatchingCard(tp,c9910646.thfilter,tp,LOCATION_DECK,0,1,1,nil,res)
 	local tc=g:GetFirst()
 	if tc then
-		if c:IsType(TYPE_XYZ) and tc:IsCanOverlay() and (not tc:IsAbleToHand() or Duel.SelectOption(tp,1190,aux.Stringid(9910646,1))==1) then
+		if res and tc:IsCanOverlay() and (not tc:IsAbleToHand() or Duel.SelectOption(tp,1190,aux.Stringid(9910646,1))==1) then
 			Duel.Overlay(c,Group.FromCards(tc))
 		else
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)

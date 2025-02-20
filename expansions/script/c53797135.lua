@@ -127,9 +127,20 @@ function s.geop(e,tp,eg,ep,ev,re,r,rp)
 				e2:SetCost(s.costchk)
 				e2:SetOperation(s.costop)
 				tc:RegisterEffect(e2,true)
+				local e3=Effect.CreateEffect(tc)
+				e3:SetType(EFFECT_TYPE_FIELD)
+				e3:SetCode(EFFECT_SPSUMMON_PROC_G)
+				e3:SetRange(LOCATION_DECK)
+				e3:SetCondition(s.hintcon)
+				tc:RegisterEffect(e3,true)
 			end
 		end
 	end
+end
+function s.hintcon(e,c)
+	if c==nil then return true end
+	local ct=Duel.GetFlagEffectLabel(c:GetControler(),id) or 0
+	return ct>0
 end
 function s.costchk(e,te_or_c,tp)
 	local ct=Duel.GetFlagEffectLabel(tp,id) or 0
