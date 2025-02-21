@@ -418,12 +418,13 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 			for tc in aux.Next(rg) do
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_CANNOT_TRIGGER)
+				if tc:IsLocation(LOCATION_SZONE) then
+					e1:SetCode(EFFECT_CANNOT_TRIGGER)
+				else
+					e1:SetCode(EFFECT_CANNOT_FLIP_SUMMON)
+				end
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 				tc:RegisterEffect(e1)
-				local e2=e1:Clone()
-				e2:SetCode(EFFECT_CANNOT_FLIP_SUMMON)
-				tc:RegisterEffect(e2)
 			end
 		end 
 	end

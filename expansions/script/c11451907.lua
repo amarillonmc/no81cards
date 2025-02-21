@@ -271,7 +271,7 @@ function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local tc1=g:Filter(Card.IsLocation,nil,LOCATION_MZONE):GetFirst()
 	local tc2=g:Filter(Card.IsLocation,nil,LOCATION_GRAVE):GetFirst()
 	if c:IsRelateToEffect(e) and tc1 and tc1:IsFaceup() and tc2 then
-		local code=tc2:GetOriginalCodeRule()
+		local code=tc2:GetOriginalCode()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -284,7 +284,7 @@ function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(code)
 		tc1:RegisterEffect(e1)
 		--local c1,c2=tc1:GetCode() Debug.Message(c2)
-		if tc1:GetFlagEffect(0xffffff+code+m)==0 then
+		if tc1:GetOriginalCode()~=code and tc1:GetFlagEffect(0xffffff+code+m)==0 then
 			tc1:CopyEffect(code,RESET_EVENT+RESETS_STANDARD)
 			tc1:RegisterFlagEffect(0xffffff+code+m,RESET_EVENT+RESETS_STANDARD,0,1)
 		end
