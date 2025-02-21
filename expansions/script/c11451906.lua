@@ -134,6 +134,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetOperation(function(e)
 						if Duel.GetFlagEffect(1,11451901)==0 and Duel.GetCurrentChain()==e:GetLabel() then
+							Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(11451902,2))
 							--change code
 							local e3=Effect.CreateEffect(e:GetHandler())
 							e3:SetType(EFFECT_TYPE_FIELD)

@@ -50,7 +50,7 @@ function s.damop(e,tp,eg,ep,ev,re,r,rp)
 	if sg:GetCount()>0 then
 		local rec=Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 		if rec>0 then
-			Duel.Damage(1-tp.rec*200,REASON_EFFECT)
+			Duel.Damage(1-tp,rec*200,REASON_EFFECT)
 		end
 	end
 end
