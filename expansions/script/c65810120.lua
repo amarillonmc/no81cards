@@ -43,19 +43,19 @@ function c65810120.disfilter(c)
 end
 function c65810120.discon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return rp==1-tp and Duel.IsChainDisablable(ev) and (re:IsActiveType(TYPE_SPELL) or re:IsActiveType(TYPE_TRAP)) and Duel.CheckReleaseGroupEx(c:GetControler(),c65810120.disfilter,1,REASON_EFFECT,true,nil) and e:GetHandler():GetFlagEffect(id)<=0 and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
+	return rp==1-tp and Duel.IsChainDisablable(ev) and not Duel.IsChainDisabled(ev) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.CheckReleaseGroupEx(c:GetControler(),c65810120.disfilter,1,REASON_EFFECT,true,nil) and Duel.GetFlagEffect(tp,id)==0 and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 function c65810120.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
-	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(65810120,1)) then
+	if Duel.GetFlagEffect(tp,id)==0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 		local tc=Duel.SelectMatchingCard(tp,c65810120.disfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil):GetFirst()
 		if tc and Duel.Release(tc,REASON_EFFECT) then
 			Duel.Hint(HINT_CARD,0,id)
 			Duel.NegateEffect(ev)
 			Duel.Destroy(rc,REASON_EFFECT)
-			e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(65810120,2))
+			Duel.RegisterFlagEffect(tp,id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		end
 	end
 end

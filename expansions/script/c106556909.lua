@@ -36,9 +36,7 @@ function s.cpcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.costfilter(c)
-	if not (s.listfilter(c) and bit.band(c:GetType(),0x82)==c:GetType() and c:IsAbleToGraveAsCost()) then return end
-	local ae=c:CheckActivateEffect(true,true,false)
-	return ae and (not ae:IsHasCategory(CATEGORY_SPECIAL_SUMMON) or Duel.IsPlayerCanSpecialSummonCount(tp,2))
+	return s.listfilter(c) and bit.band(c:GetType(),0x82)==c:GetType() and c:IsAbleToGraveAsCost() and c:CheckActivateEffect(true,true,false)
 end
 function s.cpcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -117,16 +115,20 @@ function s.setfilter(c,e,tp)
 end
 function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
+	local flag=false
 	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
+		flag=flag or tc:IsCode(74677422)
 		local g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local sc=g:Select(tp,1,1,nil):GetFirst()
 			Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
-			if not tc:IsCode(74677422) and not sc:IsCode(74677422) then return end
+		end
+		if flag then
 			local dg=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 			if dg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+				flag=flag or sc:IsCode(74677422)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 				local sg=dg:Select(tp,1,1,nil)
 				Duel.HintSelection(sg)
