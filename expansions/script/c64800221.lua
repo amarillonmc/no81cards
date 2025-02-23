@@ -18,7 +18,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local ct=6-Duel.GetFieldGroupCount(p,0,LOCATION_HAND)
+	local ct=6-Duel.GetFieldGroupCount(p,LOCATION_HAND,0)
 	if ct>0 then
 		Duel.Draw(p,ct,REASON_EFFECT)
 	end  

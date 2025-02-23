@@ -52,7 +52,7 @@ function c60001170.cdter(c)
 	return c:IsFaceup() and c:IsCode(60001179)
 end
 function c60001170.wxcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and re:GetHandler():IsType(TYPE_MONSTER) and Duel.IsChainNegatable(ev) and Duel.IsExistingMatchingCard(c60001170.cdter,tp,LOCATION_ONFIELD,0,1,nil)
+	return rp==1-tp and re:GetHandler():IsType(TYPE_MONSTER) and Duel.IsChainNegatable(ev) --and Duel.IsExistingMatchingCard(c60001170.cdter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c60001170.wxtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
