@@ -77,7 +77,7 @@ function c9911426.rctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c9911426.rcop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) and tc:IsFaceupEx() and tc:GetAttack()>0 then
 		Duel.Recover(tp,tc:GetAttack(),REASON_EFFECT)
 	end
 end

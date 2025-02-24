@@ -58,8 +58,14 @@ function c43990084.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 		if not tc:IsRelateToEffect(e) or aux.NecroValleyNegateCheck(tc) then return end
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and (not tc:IsAbleToDeck() or Duel.SelectOption(tp,aux.Stringid(43990084,2),1152)==1) then
-			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+			if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 and tc:IsLocation(LOCATION_MZONE) then
+				Duel.BreakEffect()
+				Duel.Draw(tp,1,REASON_EFFECT)
+			end
 		else
-			Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			if Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_DECK) then
+				Duel.BreakEffect()
+				Duel.Draw(tp,1,REASON_EFFECT)
+			end
 		end
 end

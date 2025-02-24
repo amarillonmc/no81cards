@@ -2,7 +2,7 @@
 function c9910591.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x955),2,2)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x6956),2,2)
 	--tohand
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_DESTROY+CATEGORY_DISABLE)
@@ -72,7 +72,7 @@ function c9910591.filter1(c)
 	return c:IsFaceup() and c:IsRace(RACE_PSYCHO) and c:IsAbleToHand()
 end
 function c9910591.filter2(c,p)
-	return c:IsFaceup() and c:IsRace(RACE_PSYCHO) and (c:GetFlagEffect(9910591+p)>0 or c:GetFlagEffect(9910593+p)>0)
+	return c:IsFaceup() and c:IsRace(RACE_PSYCHO) and (c:GetFlagEffect(9910591+p)>0 or c:GetFlagEffect(9910592+p)>0)
 end
 function c9910591.filter3(c,b1,b2,p)
 	return (b1 and c9910591.filter1(c)) or (b2 and c9910591.filter2(c,p))
@@ -99,7 +99,7 @@ end
 function c9910591.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local tc=e:GetLabelObject()
-	if tc:IsRelateToEffect(e) and (tc:GetFlagEffect(9910591+tp)>0 or tc:GetFlagEffect(9910593+tp)>0)
+	if tc:IsRelateToEffect(e) and (tc:GetFlagEffect(9910591+tp)>0 or tc:GetFlagEffect(9910592+tp)>0)
 		and Duel.IsExistingMatchingCard(aux.NegateEffectMonsterFilter,tp,0,LOCATION_MZONE,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(9910591,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)

@@ -15,15 +15,18 @@ function c28315544.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28315544,1))
 	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38315544)
+	e2:SetCondition(c28315544.reccon)
 	e2:SetTarget(c28315544.rectg)
 	e2:SetOperation(c28315544.recop)
 	c:RegisterEffect(e2)
 end
 function c28315544.chkfilter(c)
-	return c:IsSetCard(0x283) and not c:IsAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
+	return c:IsSetCard(0x283) and c:IsNonAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
 end
 function c28315544.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28315544.chkfilter,tp,LOCATION_HAND,0,1,nil) end
@@ -42,6 +45,9 @@ function c28315544.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
+end
+function c28315544.reccon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsType,1,nil,TYPE_LINK)
 end
 function c28315544.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x283)

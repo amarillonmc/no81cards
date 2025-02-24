@@ -16,10 +16,10 @@ function c9910213.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 end
 function c9910213.thfilter(c)
-	return c:IsSetCard(0x955) and c:IsAbleToHand() and not c:IsCode(9910213)
+	return c:IsSetCard(0x6956) and c:IsAbleToHand() and not c:IsCode(9910213)
 end
 function c9910213.spfilter(c,e,tp)
-	return c:IsSetCard(0x955) and (c:IsLevelBelow(4) or c:IsLink(1)) and (c:IsAbleToHand() or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
+	return c:IsSetCard(0x6956) and (c:IsLevelBelow(4) or c:IsLink(1)) and (c:IsAbleToHand() or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c9910213.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc,exc,cpchk)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c9910213.spfilter(chkc,e,tp) end

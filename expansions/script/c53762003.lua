@@ -51,7 +51,7 @@ function s.filter(c,tp)
 	return c:IsType(TYPE_MONSTER) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
 end
 function s.thfilter2(c)
-	return c:IsSetCard(0xc538) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsType(TYPE_EQUIP) and c:IsAbleToHand()
+	return c:IsSetCard(0xc538) and c:IsType(TYPE_QUICKPLAY+TYPE_TRAP) and not c:IsType(TYPE_EQUIP) and c:IsAbleToHand()
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_HAND,0,1,nil,tp) and Duel.IsExistingMatchingCard(s.thfilter2,tp,LOCATION_DECK,0,1,nil) end

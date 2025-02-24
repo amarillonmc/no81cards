@@ -32,16 +32,17 @@ function c12869010.filter(c,e,tp,sc)
 	end
 	return ok
 end
-function c12869010.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c12869010.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c12869010.filter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c12869010.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c12869010.filter,tp,LOCATION_MZONE,0,1,1,nil,e,tp,e:GetHandler())
+	Duel.SelectTarget(tp,c12869010.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,LOCATION_HAND)
 end
 function c12869010.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) then return end
 	local zone={}
 	local flag={}
 	for p=0,1 do
@@ -80,9 +81,14 @@ function c12869010.spop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
 end
+function c12869010.costfilter(c)
+	return c:IsSetCard(0x6a70) and c:IsAbleToGraveAsCost()
+end
 function c12869010.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.DiscardHand(tp,Card.IsAbleToGraveAsCost,1,1,REASON_COST)
+	if chk==0 then return Duel.IsExistingMatchingCard(c12869010.costfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c12869010.costfilter,tp,LOCATION_HAND,0,1,1,e:GetHandler())
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c12869010.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and Duel.IsPlayerCanSpecialSummonMonster(tp,12869000,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_WATER) end

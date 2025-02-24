@@ -25,7 +25,7 @@ function c9910209.lkfilter(c)
 	return c:IsRace(RACE_PSYCHO) and c:IsLinkState() and c:IsFaceup()
 end
 function c9910209.filter(c,e,tp)
-	return c:IsSetCard(0x955) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x6956) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910209.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local res=Duel.IsExistingMatchingCard(c9910209.lkfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -62,7 +62,7 @@ function c9910209.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c9910209.thfilter(c)
-	return c:IsSetCard(0x955) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x6956) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c9910209.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910209.thfilter,tp,LOCATION_DECK,0,1,nil) end

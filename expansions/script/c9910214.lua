@@ -19,7 +19,7 @@ function c9910214.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(c9910214.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9910214.spfilter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x955) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsFaceup() and c:IsSetCard(0x6956) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910214.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_REMOVED) and c9910214.spfilter(chkc,e,tp) end

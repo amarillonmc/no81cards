@@ -33,14 +33,11 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectReleaseGroup(tp,s.costfilter,1,1,nil,tp)
 	Duel.Release(g,REASON_COST)
 end
-function s.rmfilter1(c)
-	return c:IsAbleToRemove() and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,c:GetControler(),0,LOCATION_ONFIELD,1,c)
-end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return (not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,12869000,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_WATER) or Duel.IsExistingMatchingCard(s.rmfilter1,tp,LOCATION_ONFIELD,0,1,c)) end
 	local b1=not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
-	local b2=Duel.IsExistingMatchingCard(s.rmfilter1,tp,LOCATION_ONFIELD,0,1,c)
+	local b2=Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil)
 	local op=aux.SelectFromOptions(tp,
 	{b1,aux.Stringid(id,1)},
 	{b2,aux.Stringid(id,2)})
@@ -49,8 +46,8 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0)
 		Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,tp,0)
 	elseif op==2 then
-		local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
-		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,2,0,0)
+		local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
+		Duel.SetOperationInfo(0,CATEGORY_REMOVE,1,g,0,0)
 	end
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -75,13 +72,9 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummonComplete()
 	elseif op==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g1=Duel.SelectMatchingCard(tp,s.rmfilter1,tp,LOCATION_ONFIELD,0,1,1,c)
-		if #g1==0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,g1)
-		g1:Merge(g2)
-		Duel.HintSelection(g1)
-		Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,nil)
+		Duel.HintSelection(g)
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	end
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
@@ -90,13 +83,11 @@ end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsSSetable() end
-	if c:IsLocation(LOCATION_GRAVE) then
-		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,c,1,0,0)
-	end
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,c,1,0,0)
 end
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c) then Duel.SSet(tp,c) end
+	if c:IsRelateToEffect(e) then Duel.SSet(tp,c) end
 	local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(id,4))
 		e1:SetType(EFFECT_TYPE_SINGLE)

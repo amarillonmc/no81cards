@@ -101,8 +101,8 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		else
 			break
 		end
-		Duel.SpecialSummonComplete()
 	end
+	Duel.SpecialSummonComplete()
 end
 function s.gcheck(g,e,tp)
 	return g:IsExists(Card.IsCode,1,nil,12869000)

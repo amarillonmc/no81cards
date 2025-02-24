@@ -51,7 +51,7 @@ function c9910212.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(c9910212.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9910212.seqfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x955)
+	return c:IsFaceup() and c:IsSetCard(0x6956)
 end
 function c9910212.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910212.seqfilter(chkc) end

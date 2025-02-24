@@ -73,7 +73,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		b1=g1:CheckSubGroup(s.fselect1,1,maxlink,tp)
 	end
 	local g2=Duel.GetMatchingGroup(s.spfilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e,tp)
-	b2=g2:GetCount()>=2 and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
+	b2=g2:GetCount()>=2 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	if chk==0 then
 		if not Duel.IsPlayerCanSpecialSummonCount(tp,2) then return false end
 		if ft<=0 then return false end
@@ -142,7 +142,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		if og:GetCount()==g:GetCount() and tg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local rg=tg:Select(tp,1,1,nil)
-			Duel.SynchroSummon(tp,rg:GetFirst(),nil)
+			Duel.SynchroSummon(tp,rg:GetFirst(),nil,og)
 			--Duel.SynchroSummon(tp,rg:GetFirst(),nil,og,#og,#og)
 		end
 		e1:Reset()

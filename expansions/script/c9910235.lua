@@ -26,7 +26,7 @@ function c9910235.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c9910235.filter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c9910235.filter,tp,LOCATION_MZONE,0,1,1,nil)
-	if Duel.GetCurrentChain()>2 then
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.GetCurrentChain()>2 then
 		e:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_REMOVE)
 	else
 		e:SetCategory(CATEGORY_ATKCHANGE)
@@ -35,7 +35,7 @@ end
 function c9910235.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	local zone=LOCATION_ONFIELD+LOCATION_GRAVE 
+	local zone=LOCATION_ONFIELD+LOCATION_GRAVE
 	local link=tc:GetLink()
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		local e1=Effect.CreateEffect(c)

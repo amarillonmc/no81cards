@@ -53,7 +53,7 @@ function c9910224.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910224.tdfilter(c)
-	return c:IsSetCard(0x955) and c:IsAbleToDeck()
+	return c:IsSetCard(0x6956) and c:IsAbleToDeck()
 end
 function c9910224.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

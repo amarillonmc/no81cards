@@ -29,7 +29,7 @@ function c9910207.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910207.mfilter(c)
-	return c:IsLevelBelow(4) and c:IsLinkSetCard(0x955)
+	return c:IsLevelBelow(4) and c:IsLinkSetCard(0x6956)
 end
 function c9910207.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(9910207)<=0
@@ -61,7 +61,7 @@ function c9910207.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(c,POS_FACEUP,REASON_COST)
 end
 function c9910207.spfilter(c,e,tp,ec)
-	return c:IsLinkBelow(1) and c:IsLinkAbove(1) and c:IsSetCard(0x955)
+	return c:IsLinkBelow(1) and c:IsLinkAbove(1) and c:IsSetCard(0x6956)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,ec,c)>0
 end
 function c9910207.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

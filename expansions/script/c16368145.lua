@@ -23,6 +23,7 @@ function c16368145.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
 	e2:SetCondition(c16368145.atkcon)
+	e2:SetCost(c16368145.atkcost)
 	e2:SetOperation(c16368145.atkop)
 	c:RegisterEffect(e2)
 	--activate limit
@@ -31,7 +32,7 @@ function c16368145.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(1,1)
+	e3:SetTargetRange(0,1)
 	e3:SetCondition(c16368145.actcon)
 	e3:SetValue(c16368145.actlimit)
 	c:RegisterEffect(e3)
@@ -41,7 +42,12 @@ function c16368145.splimit(e,se,sp,st)
 		or not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 function c16368145.atkval(e,c)
-	return Duel.GetMatchingGroupCount(aux.AND(Card.IsSetCard,Card.IsFaceup),e:GetHandlerPlayer(),LOCATION_MZONE,0,0xcb1,0xdc3)-1
+	return Duel.GetMatchingGroupCount(aux.AND(Card.IsSetCard,Card.IsFaceup),e:GetHandlerPlayer(),LOCATION_MZONE,0,nil,0xcb1,0xdc3)-1
+end
+function c16368145.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(16368145)==0 end
+	c:RegisterFlagEffect(16368145,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)
 end
 function c16368145.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

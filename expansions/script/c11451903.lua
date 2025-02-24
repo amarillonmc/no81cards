@@ -40,7 +40,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-			e1:SetValue(LOCATION_DECK)
+			e1:SetValue(LOCATION_REMOVED)
 			c:RegisterEffect(e1)
 		end
 	end
@@ -53,7 +53,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil) and c:GetFlagEffect(m)==0 end
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	--c:RegisterFlagEffect(m,RESET_EVENT+0x4620000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
+	c:RegisterFlagEffect(m,RESET_EVENT+0x4620000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3))
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_REMOVED)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)

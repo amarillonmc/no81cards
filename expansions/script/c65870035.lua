@@ -37,7 +37,7 @@ function c65870035.excondition(e)
 end
 
 function c65870035.filter(c)
-	return c:IsSetCard(0x3a37) and c:IsType(TYPE_SPELL+TYPE_MONSTER) and c:IsAbleToHand() and aux.NecroValleyFilter()
+	return c:IsSetCard(0x3a37) and c:IsAbleToHand() and aux.NecroValleyFilter()
 end
 function c65870035.target0(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c65870035.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end

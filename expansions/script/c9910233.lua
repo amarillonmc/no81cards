@@ -22,7 +22,7 @@ function c9910233.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910233.filter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x955) and c:IsAbleToDeck()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6956) and c:IsAbleToDeck()
 end
 function c9910233.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910233.filter(chkc) end
@@ -46,7 +46,7 @@ function c9910233.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910233.recfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x955) and c:GetAttack()>0
+	return c:IsFaceup() and c:IsRace(RACE_PSYCHO) and c:GetAttack()>0
 end
 function c9910233.rectg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c9910233.recfilter(chkc) end

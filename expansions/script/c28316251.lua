@@ -31,6 +31,7 @@ function c28316251.initial_effect(c)
 	e3:SetTarget(c28316251.atktg)
 	e3:SetOperation(c28316251.atkop)
 	c:RegisterEffect(e3)
+c28316251.shinycounter=true
 end
 function c28316251.slfilter(c)
 	return c:IsFaceup() and (c:GetCounter(0x1283)>0 or (c:IsSetCard(0x288) and c:IsLocation(LOCATION_MZONE)))
@@ -53,13 +54,13 @@ function c28316251.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not c:IsRelateToEffect(e) then return end
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c28316251.ctfilter,tp,LOCATION_MZONE,0,1,nil) then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(28316251,4))
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
 		local g=Duel.SelectMatchingCard(tp,c28316251.ctfilter,tp,LOCATION_MZONE,0,1,1,nil)
-		if g:GetFirst():AddCounter(0x1283,1)~=0 and Duel.IsExistingMatchingCard(c28316251.mefilter,tp,LOCATION_MZONE,0,1,c) and c:IsCanTurnSet() and Duel.SelectYesNo(tp,aux.Stringid(28316251,1)) then
-			Duel.ChangePosition(c,POS_FACEDOWN_DEFENSE)
+		if g:GetFirst():AddCounter(0x1283,1)~=0 and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,c) and c:IsCanTurnSet() and Duel.SelectYesNo(tp,aux.Stringid(28316251,1)) then
 			Duel.BreakEffect()
+			Duel.ChangePosition(c,POS_FACEDOWN_DEFENSE)
 			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(28316251,4))
-			local tc=Duel.SelectMatchingCard(tp,c28316251.ctfilter,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
+			local tc=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
 			tc:AddCounter(0x1283,1)
 		end
 	end

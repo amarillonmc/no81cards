@@ -52,7 +52,7 @@ function cm.lvop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e4)
 		if c:GetLevel()~=lv and c:IsLevelAbove(7) then
 			local e5=e4:Clone()
-			e5:SetValue(-4)
+			e5:SetValue(-3)
 			c:RegisterEffect(e5)
 			if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

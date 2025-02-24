@@ -36,12 +36,13 @@ function c12869015.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c12869015.filter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c12869015.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,e,tp,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c12869015.filter,tp,LOCATION_MZONE,0,1,1,nil,e,tp,e:GetHandler())
+	Duel.SelectTarget(tp,c12869015.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,e,tp,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,tp,LOCATION_HAND)
 end
 function c12869015.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) then return end
 	local zone={}
 	local flag={}
 	for p=0,1 do
@@ -83,10 +84,13 @@ function c12869015.spop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e2)
 		end
 end
+function c12869015.costfilter(c)
+	return c:IsSetCard(0x6a70) and c:IsAbleToRemoveAsCost()
+end
 function c12869015.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c12869015.costfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c12869015.costfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c12869015.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)

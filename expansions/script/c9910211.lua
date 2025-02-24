@@ -29,13 +29,13 @@ function c9910211.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910211.mfilter(c)
-	return c:IsLevelBelow(4) and c:IsLinkSetCard(0x955)
+	return c:IsLevelBelow(4) and c:IsLinkSetCard(0x6956)
 end
 function c9910211.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(9910211)<=0
 end
 function c9910211.thfilter(c)
-	return c:IsSetCard(0x955) and c:IsAbleToHand()
+	return c:IsSetCard(0x6956) and c:IsAbleToHand()
 end
 function c9910211.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910211.thfilter(chkc) end
@@ -62,7 +62,7 @@ function c9910211.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(c,POS_FACEUP,REASON_COST)
 end
 function c9910211.spfilter(c,e,tp,ec)
-	return c:IsLink(1) and c:IsSetCard(0x955)
+	return c:IsLink(1) and c:IsSetCard(0x6956)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,ec,c)>0
 end
 function c9910211.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

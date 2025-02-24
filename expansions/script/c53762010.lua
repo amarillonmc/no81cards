@@ -55,7 +55,7 @@ function s.filter(c,ec)
 	return c:GetEquipTarget() and c:GetEquipTarget()==ec and c:IsReleasableByEffect()
 end
 function s.thfilter(c)
-	return c:IsSetCard(0xc538) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:IsSetCard(0xc538) and c:IsType(TYPE_EQUIP+TYPE_QUICKPLAY) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil,e:GetHandler():GetEquipTarget()) end

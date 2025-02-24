@@ -57,7 +57,7 @@ function c9910216.get_zone(c,tp)
 end
 function c9910216.spfilter(c,e,tp)
 	local zone=c9910216.get_zone(c,tp)
-	return zone~=0 and c:IsSetCard(0x955) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
+	return zone~=0 and c:IsSetCard(0x6956) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
 end
 function c9910216.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp)
@@ -85,7 +85,7 @@ function c9910216.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9910216.splimit(e,c)
-	return not c:IsSetCard(0x955)
+	return not c:IsSetCard(0x6956)
 end
 function c9910216.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

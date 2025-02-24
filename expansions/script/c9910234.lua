@@ -29,7 +29,7 @@ function c9910234.condition(e,tp,eg,ep,ev,re,r,rp)
 		local tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_PLAYER)
 		if tgp~=tp then res=true end
 	end
-	return res and rp==tp and re:GetHandler():IsSetCard(0x955)
+	return res and rp==tp and re:GetHandler():IsSetCard(0x6956)
 end
 function c9910234.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
@@ -67,7 +67,7 @@ function c9910234.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c9910234.spfilter(c,e,tp)
-	return c:IsSetCard(0x955) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x6956) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910234.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler())>0

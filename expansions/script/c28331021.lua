@@ -16,12 +16,13 @@ function c28331021.initial_effect(c)
 	--counter
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCondition(c28331021.ctcon)
 	e2:SetOperation(c28331021.ctop)
 	c:RegisterEffect(e2)
+c28331021.shinycounter=true
 end
 function c28331021.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -29,8 +30,8 @@ function c28331021.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	c:SetTurnCounter(0)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetCountLimit(1)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetOperation(c28331021.tgop)
@@ -40,11 +41,11 @@ end
 function c28331021.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=c:GetCounter(0x1283)
-	local ctt=c:GetTurnCounter()
-	ctt=ctt+1
-	c:SetTurnCounter(ctt)
-	if ctt==1 then
-		Duel.SendtoGrave(c,REASON_RULE)
+	local t=c:GetTurnCounter()
+	t=t+1
+	c:SetTurnCounter(t)
+	if t==1 then
+		Duel.SendtoHand(c,nil,REASON_RULE)
 	end
 	if ct>0 then
 		if ct>28 then ct=28 end
@@ -80,7 +81,7 @@ function c28331021.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28331021.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x283)
+	return c:IsRace(RACE_FAIRY) and c:IsFaceup()
 end
 function c28331021.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c28331021.cfilter,1,nil)

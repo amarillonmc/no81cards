@@ -4,6 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--SpecialSummon
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(43990071,0))
 	e1:SetCategory(CATEGORY_DAMAGE+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -16,6 +17,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--set
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(43990071,2))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_DAMAGE)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DELAY)

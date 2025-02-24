@@ -51,7 +51,7 @@ function c9910222.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function c9910222.thfilter(c)
-	return c:IsSetCard(0x955) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(9910222)
+	return c:IsSetCard(0x6956) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(9910222)
 end
 function c9910222.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910222.thfilter,tp,LOCATION_DECK,0,1,nil) end

@@ -35,7 +35,7 @@ function c9910238.lcheck(g)
 		and g:IsExists(Card.IsLinkMarker,1,nil,LINK_MARKER_TOP)
 end
 function c9910238.tdfilter(c)
-	return c:IsRace(RACE_PSYCHO) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+	return c:IsRace(RACE_PSYCHO) and c:IsAbleToDeck()
 end
 function c9910238.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c9910238.tdfilter(chkc) end
@@ -46,7 +46,7 @@ function c9910238.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c9910238.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) and tc:IsRace(RACE_PSYCHO) then
 		Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 	end
 end
@@ -55,7 +55,7 @@ function c9910238.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER) and race&RACE_PSYCHO>0 and re:GetHandler()~=e:GetHandler()
 end
 function c9910238.filter(c,e,tp,ft)
-	return c:IsSetCard(0x955) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x6956) and c:IsType(TYPE_MONSTER)
 		and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c9910238.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

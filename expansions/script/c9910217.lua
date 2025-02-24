@@ -35,7 +35,7 @@ function c9910217.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c9910217.linkfilter(c)
-	return c:IsLinkSummonable(nil) and c:IsSetCard(0x955)
+	return c:IsLinkSummonable(nil) and c:IsSetCard(0x6956)
 end
 function c9910217.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

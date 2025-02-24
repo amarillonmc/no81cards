@@ -30,7 +30,7 @@ function c9910228.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c9910228.thfilter(c)
-	return c:IsCode(9910239) and c:IsAbleToHand()
+	return c:IsCode(9910231) and c:IsAbleToHand()
 end
 function c9910228.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910228.thfilter,tp,LOCATION_DECK,0,1,nil) end

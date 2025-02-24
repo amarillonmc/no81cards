@@ -14,17 +14,17 @@ function c9910237.dcfilter(c)
 	return c:IsRace(RACE_PSYCHO) and c:IsDiscardable(REASON_EFFECT)
 end
 function c9910237.spfilter1(c,e,tp)
-	return c:IsLink(1) and c:IsSetCard(0x955)
+	return c:IsLink(1) and c:IsSetCard(0x6956)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c9910237.tdfilter(c)
 	return c:IsFaceupEx() and c:IsRace(RACE_PSYCHO) and c:IsAbleToDeck()
 end
 function c9910237.spfilter2(c,e,tp)
-	return c:IsSetCard(0x955) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x6956) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910237.tgfilter(c)
-	return c:IsSetCard(0x955) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	return c:IsSetCard(0x6956) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function c9910237.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc,exc)
 	if chkc then

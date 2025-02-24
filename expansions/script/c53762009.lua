@@ -35,7 +35,7 @@ function s.initial_effect(c)
 		Duel.Overlay=function(oc,og)
 			local op=f(oc,og)
 			g:Merge(Group.__add(og,og):Filter(s.cfilter2,nil))
-			if Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_END) then
+			if #g>0 and Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_END) then
 				local _eg=g:Clone()
 				Duel.RaiseEvent(_eg,EVENT_CUSTOM+id,Effect.GlobalEffect(),0,0,0,0)
 				g:Clear()

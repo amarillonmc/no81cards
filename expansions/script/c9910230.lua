@@ -35,7 +35,7 @@ function c9910230.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return g and g:IsContains(c)
 end
 function c9910230.spfilter(c,e,tp)
-	return c:IsSetCard(0x955) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x6956) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910230.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -55,7 +55,7 @@ function c9910230.costfilter(c)
 end
 function c9910230.cpfilter(c,exc,e,tp,eg,ep,ev,re,r,rp)
 	local te=c:CheckActivateEffect(true,true,false)
-	if not (c:IsSetCard(0x955) and c:IsType(TYPE_SPELL) and c:IsAbleToRemoveAsCost() and te and te:GetOperation()) then return false end
+	if not (c:IsSetCard(0x6956) and c:IsType(TYPE_SPELL) and c:IsAbleToRemoveAsCost() and te and te:GetOperation()) then return false end
 	local tg=te:GetTarget()
 	return (not tg) or tg(e,tp,eg,ep,ev,re,r,rp,0,nil,exc,true)
 end

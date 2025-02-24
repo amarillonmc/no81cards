@@ -16,21 +16,24 @@ function c28316345.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28316345,1))
 	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38316345)
+	e2:SetCondition(c28316345.reccon)
 	e2:SetTarget(c28316345.rectg)
 	e2:SetOperation(c28316345.recop)
 	c:RegisterEffect(e2)
 end
 function c28316345.chkfilter(c)
-	return ((c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(ATTRIBUTE_FIRE)) or c:IsCode(28335405)) and not c:IsPublic()
+	return (c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsNonAttribute(ATTRIBUTE_FIRE) or c:IsCode(28335405)) and not c:IsPublic()
 end
 function c28316345.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28316345.chkfilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,c28316345.chkfilter,tp,LOCATION_HAND,0,1,1,nil)
-	if g:GetFirst():IsSetCard(0x286) then e:SetLabel(1) else e:SetLabel(0) end
+	if g:GetFirst():IsLevel(4) then e:SetLabel(1) else e:SetLabel(0) end
 	Duel.ConfirmCards(1-tp,g)
 	Duel.ShuffleHand(tp)
 end
@@ -54,6 +57,9 @@ function c28316345.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
+end
+function c28316345.reccon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_HAND) and #eg==1 and not eg:IsContains(e:GetHandler())
 end
 function c28316345.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x283)
