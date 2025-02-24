@@ -1,0 +1,62 @@
+--轰龙剑士 雾动机龙·强力
+local s,id,o=GetID()
+function s.initial_effect(c)
+	c:EnableReviveLimit()
+	aux.AddFusionProcFun2(c,s.mfilter1,s.mfilter2,true)
+	aux.AddContactFusionProcedure(c,s.cfilter,LOCATION_HAND+LOCATION_EXTRA+LOCATION_ONFIELD+LOCATION_GRAVE,0,Duel.SendtoDeck,nil,2,REASON_SPSUMMON)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xc7))
+	e2:SetValue(aux.tgoval)
+	c:RegisterEffect(e2)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetValue(s.atkval)
+	c:RegisterEffect(e1)
+	local e3=e1:Clone()
+	e3:SetCode(EFFECT_UPDATE_DEFENSE)
+	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_REMOVE)
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCountLimit(1)
+	e4:SetTarget(s.extg)
+	e4:SetOperation(s.exop)
+	c:RegisterEffect(e4)
+end
+function s.mfilter1(c)
+	return c:IsType(TYPE_MONSTER) and c:IsOriginalSetCard(0xc7)
+end
+function s.mfilter2(c)
+	return c:IsType(TYPE_PENDULUM)
+end
+function s.cfilter(c,fc)
+	return c:IsAbleToDeckOrExtraAsCost() and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0 and c:IsFaceupEx()
+end
+function s.atkfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0xc7)
+end
+function s.atkval(e,c)
+	local g=Duel.GetMatchingGroup(s.atkfilter,c:GetControler(),LOCATION_MZONE,LOCATION_MZONE,nil)
+	return #g*300
+end
+function s.extg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_DECK,1,nil,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_DECK)
+end
+function s.exop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_DECK)
+	Duel.ConfirmCards(tp,g)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local sg=g:FilterSelect(tp,Card.IsAbleToRemove,1,1,nil,tp)
+	Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+	Duel.ShuffleDeck(1-tp)
+end

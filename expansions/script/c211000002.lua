@@ -83,11 +83,11 @@ function s.splimit(e,c)
 	return c:IsLocation(LOCATION_EXTRA)
 end
 --remove
-function s.rmfilter(c)
+function s.rmconfilter(c)
 	return c:IsFaceupEx() and c:IsCode(25801745)
 end
 function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.rmfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	return Duel.IsExistingMatchingCard(s.rmconfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsAbleToRemove() end

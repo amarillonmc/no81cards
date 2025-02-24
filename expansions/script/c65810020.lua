@@ -13,7 +13,7 @@ function c65810020.initial_effect(c)
 	e2:SetTargetRange(LOCATION_MZONE,0)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_INSECT))
-	e2:SetValue(1)
+	e2:SetValue(aux.indoval)
 	c:RegisterEffect(e2)
 	--
 	local e3=Effect.CreateEffect(c)
