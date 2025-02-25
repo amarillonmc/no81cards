@@ -40,6 +40,7 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsAbleToGraveAsCost,tp,LOCATION_HAND,0,nil)
 	if chk==0 then return #g>1 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local sg=g:SelectSubGroup(tp,cm.fselect,false,2,2,c)
 	Duel.SendtoGrave(sg,REASON_COST)
 end

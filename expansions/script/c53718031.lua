@@ -60,6 +60,7 @@ function cm.filter(c,tp,e)
 	e1:SetProperty(pro1,pro2)
 	c:RegisterEffect(e1,true)
 	local e2=SNNM.AASTregi(c,e1)
+	e2:SetLabel(c:GetSequence(),0x10002)
 	local res=false
 	if e1:IsActivatable(tp) then res=true end
 	e2:Reset()

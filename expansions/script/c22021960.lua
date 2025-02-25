@@ -37,7 +37,7 @@ function c22021960.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c22021960.filter(c)
-	return aux.IsCodeListed(c,22021960) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsSetCard(0xff1)
+	return aux.IsCodeListed(c,22021960) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsSetCard(0x6ff1)
 end
 function c22021960.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22021960.filter,tp,LOCATION_DECK,0,1,nil) end
