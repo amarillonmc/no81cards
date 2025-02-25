@@ -4,7 +4,7 @@ local cm=c91000407
 function c91000407.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,(function(c) return c:IsLevel(10) end),2,false) 
-	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_MZONE,0,Duel.SendtoGrave,REASON_COST)
+	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_ONFIELD,0,Duel.SendtoGrave,REASON_COST)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_EQUIP)
 	e1:SetCode(EFFECT_SET_CONTROL)

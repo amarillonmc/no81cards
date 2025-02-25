@@ -168,7 +168,6 @@ function s.ClearWorldAttCheck(ap,ep)
 	return attchk
 end
 function s.ScreemEquips(c,pro)
-	s[53762000]={}
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_EQUIP)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -239,4 +238,43 @@ function s.ScreemEDcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ec=c:GetPreviousEquipTarget()
 	return ec and c:GetReason()&0x201==0x201 and ec:IsReason(REASON_XYZ)
+end
+function s.ScreemTraps(c,gete)
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCost(s.ScreemTcost)
+	e1:SetTarget(s.ScreemTtarget)
+	e1:SetOperation(s.ScreemToperation(gete))
+	c:RegisterEffect(e1)
+	return e1
+end
+function s.ScreemTcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
+end
+function s.ScreemTfilter(c)
+	return c:IsSetCard(0xc538) and c:IsType(TYPE_TRAP) and (c:IsAbleToHand() or c:IsSSetable())
+end
+function s.ScreemTtarget(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.ScreemTfilter,tp,LOCATION_DECK,0,1,nil) end
+	e:GetHandler():CreateEffectRelation(e)
+end
+function s.ScreemToperation(gete)
+	return  function(e,tp,eg,ep,ev,re,r,rp)
+				if not e:GetHandler():IsRelateToEffect(e) then return end
+				gete(e:GetHandler())
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+				local tc=Duel.SelectMatchingCard(tp,s.ScreemTfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
+				if tc then
+					if tc:IsAbleToHand() and (not tc:IsSSetable() or Duel.SelectOption(tp,1190,1153)==0) then
+						Duel.SendtoHand(tc,nil,REASON_EFFECT)
+						Duel.ConfirmCards(1-tp,tc)
+					else
+						Duel.SSet(tp,tc)
+					end
+				end
+			end
 end
