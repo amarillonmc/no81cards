@@ -85,7 +85,6 @@ function s.initial_effect(c)
 	e12:SetCode(EFFECT_IMMUNE_EFFECT)
 	e12:SetRange(LOCATION_SZONE)
 	e12:SetValue(s.efilter1)
-	e12:SetOwnerPlayer(tp)
 	c:RegisterEffect(e12)
 	--inactivatable
 	local e13=Effect.CreateEffect(c)
