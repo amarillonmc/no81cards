@@ -36,6 +36,7 @@ function c98920504.filter1(c)
 end
 function c98920504.activate(e,tp,eg,ep,ev,re,r,rp)
 	local sg=e:GetLabelObject()
+	if not sg then return end
 if sg:IsDefenseAbove(2000) then 
 	local conf=Duel.GetFieldGroup(tp,0,LOCATION_SZONE+LOCATION_HAND)
 	if conf:GetCount()>0 then

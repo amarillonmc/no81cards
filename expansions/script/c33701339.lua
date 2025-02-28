@@ -14,7 +14,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Damage(res,1000,REASON_EFFECT)
 	local c=e:GetHandler()
 	if Duel.GetFlagEffect(res,m)==0 then 
-		Duel.RegisterFlagEffect(res,m,RESET_EVENT+0x1ff0000+RESET_PHASE+PHASE_END,0,1,ev)
+		Duel.RegisterFlagEffect(res,m,RESET_PHASE+PHASE_END,0,1,ev)
 	else
 		local label=Duel.GetFlagEffectLabel(res,m)
 		Duel.SetFlagEffectLabel(res,m,label+ev)
