@@ -1,6 +1,6 @@
 --气泡方块使 亚鲁鲁
----@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
+---@param c Card
 function c71403021.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,true)
@@ -87,7 +87,7 @@ function c71403021.opp2(e,tp,eg,ep,ev,re,r,rp)
 		end
 		local op_flag=false
 		if op==0 then
-			op_flag=Duel.Destroy(sg,REASON_EFFECT)>0
+			op_flag=Duel.Destroy(tc,REASON_EFFECT)>0
 		else
 			op_flag=Duel.ChangePosition(tc,POS_FACEUP_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)>0
 		end

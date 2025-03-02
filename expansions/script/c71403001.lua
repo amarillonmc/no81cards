@@ -269,6 +269,12 @@ function yume.OptionalPendulum(e,c,tp)
 		e2:SetReset(RESET_PHASE+PHASE_MAIN1)
 		Duel.RegisterEffect(e2,tp)
 		e1:SetLabelObject(e2)
+		--would be sp summoned as Chain Link 2+
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		e3:SetCode(EVENT_SPSUMMON)
+		e3:SetOperation(yume.RegOpWhenWouldBeSpSummoned)
+		Duel.RegisterEffect(e3,tp)
 		local use_oppo_pend=not self_pend_flag or oppo_pend_flag and Duel.SelectYesNo(tp,aux.Stringid(71403001,5))
 		if use_oppo_pend then
 			Duel.SpecialSummonRule(tp,oppo_lpz,SUMMON_TYPE_PENDULUM)
@@ -283,6 +289,12 @@ function yume.ResetExtraPendulumEffect(e,tp,eg,ep,ev,re,r,rp)
 	local e1=e:GetLabelObject()
 	aux.PendulumChecklist=e:GetLabel()
 	e1:Reset()
+	e:Reset()
+end
+function yume.RegOpWhenWouldBeSpSummoned(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetCurrentChain()>1 then
+		Duel.SetChainLimit(aux.FALSE)
+	end
 	e:Reset()
 end
 function yume.RegPPTPuyopuyoBasicExtraFlag(c)

@@ -1,6 +1,6 @@
 --TETRIS！
----@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
+---@param c Card
 function c71403008.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

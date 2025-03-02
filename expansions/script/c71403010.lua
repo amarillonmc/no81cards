@@ -1,6 +1,6 @@
 --存块！旋转！
----@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
+---@param c Card
 function c71403010.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

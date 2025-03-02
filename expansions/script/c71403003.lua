@@ -1,6 +1,6 @@
 --气泡方块使 I
----@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
+---@param c Card
 function c71403003.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,true)
@@ -95,6 +95,7 @@ function c71403003.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local c_is_in_hand=c:IsLocation(LOCATION_HAND)
 	if not (c:IsRelateToEffect(e) and (c_is_in_hand or c:GetSequence()<5)) then return end
+	local op_flag=false
 	if c_is_in_hand then
 		op_flag=Duel.SendtoExtraP(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()
 	else

@@ -49,7 +49,7 @@ function c71403012.initial_effect(c)
 	yume.PPTCounter()
 end
 function c71403012.filterp2a(c)
-	return c:GetSequence()>4 and c:IsFaceup() and c:IsSetCard(0x715) and c:IsCanChangePosition()
+	return c:GetSequence()<5 and c:IsFaceup() and c:IsSetCard(0x715) and c:IsCanChangePosition()
 end
 function c71403012.filterp2b(c)
 	return c:IsFaceup() and yume.PPTPlacePendExceptFromFieldFilter(c)
@@ -99,6 +99,7 @@ function c71403012.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local c_is_in_hand=c:IsLocation(LOCATION_HAND)
 	if not (c:IsRelateToEffect(e) and (c_is_in_hand or c:GetSequence()<5)) then return end
+	local op_flag=false
 	if c_is_in_hand then
 		op_flag=Duel.SendtoExtraP(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()
 	else

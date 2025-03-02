@@ -1,6 +1,6 @@
 --气泡方块的淘气双子 J&L
----@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
+---@param c Card
 function c71403015.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsXyzType,TYPE_PENDULUM),4,2,nil,nil,99)

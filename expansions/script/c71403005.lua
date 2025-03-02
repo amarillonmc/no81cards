@@ -1,6 +1,6 @@
 --气泡方块使 Z
----@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
+---@param c Card
 function c71403005.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,true)
@@ -49,7 +49,7 @@ function c71403005.initial_effect(c)
 	yume.PPTCounter()
 end
 function c71403005.filterp2a(c)
-	return c:GetSequence()>4 and c:IsFaceup() and c:IsSetCard(0x715) and c:IsCanChangePosition()
+	return c:GetSequence()<5 and c:IsFaceup() and c:IsSetCard(0x715) and c:IsCanChangePosition()
 end
 function c71403005.filterp2b(c)
 	return c:IsSetCard(0x715) and c:IsType(TYPE_PENDULUM)
@@ -102,6 +102,7 @@ function c71403005.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local c_is_in_hand=c:IsLocation(LOCATION_HAND)
 	if not (c:IsRelateToEffect(e) and (c_is_in_hand or c:GetSequence()<5)) then return end
+	local op_flag=false
 	if c_is_in_hand then
 		op_flag=Duel.SendtoExtraP(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()
 	else
@@ -129,17 +130,11 @@ function c71403005.op1(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			oc:RegisterEffect(e2)
 			local e3=Effect.CreateEffect(c)
-			e3:SetType(EFFECT_TYPE_FIELD)
+			e3:SetType(EFFECT_TYPE_SINGLE)
 			e3:SetCode(EFFECT_CANNOT_DISEFFECT)
-			e3:SetRange(LOCATION_MZONE)
-			e3:SetValue(c71403005.efilter)
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			oc:RegisterEffect(e3)
 			oc:RegisterFlagEffect(71403005,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		end
 	end
-end
-function c71403005.efilter(e,ct)
-	local te=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT)
-	return te:GetHandler()==e:GetHandler()
 end

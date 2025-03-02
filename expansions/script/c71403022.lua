@@ -1,6 +1,6 @@
 --气泡方块的见习法师与搭档 亚鲁鲁·娜嘉&卡邦可
----@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
+---@param c Card
 function c71403022.initial_effect(c)
 	--syn summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSynchroType,TYPE_PENDULUM),aux.NonTuner(aux.FilterBoolFunction(Card.IsSynchroType,TYPE_PENDULUM)),1,1)

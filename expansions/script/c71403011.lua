@@ -1,6 +1,6 @@
 --气泡方块的星舰舰长 T
----@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
+---@param c Card
 function c71403011.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsXyzType,TYPE_PENDULUM),4,2,nil,nil,99)
@@ -145,7 +145,7 @@ function c71403011.op2(e,tp,eg,ep,ev,re,r,rp)
 		result=Duel.Destroy(dg,REASON_EFFECT)
 	end
 	if result==0 then return end
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local g=Duel.GetFieldGroup(0,LOCATION_MZONE,LOCATION_MZONE)
 	local oppo_g=g:Filter(Card.IsControler,nil,1-tp)
 	local seq_pos_table={}
 	for tc in aux.Next(oppo_g) do
@@ -154,7 +154,7 @@ function c71403011.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangePosition(g,POS_FACEUP_DEFENSE,POS_FACEUP_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
 	local changed_g=Group.CreateGroup()
 	local unchanged_g=Group.CreateGroup()
-	for seq,pos in ipairs(seq_pos_table) do
+	for seq,pos in pairs(seq_pos_table) do
 		local tc=Duel.GetFieldCard(1-tp,LOCATION_MZONE,seq)
 		if tc then
 			if tc:GetPosition()==pos then

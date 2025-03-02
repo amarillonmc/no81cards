@@ -1,6 +1,6 @@
 --L-J幻象！
----@param c Card
 if not c71403001 then dofile("expansions/script/c71403001.lua") end
+---@param c Card
 function c71403023.initial_effect(c)
 	--destroy
 	local e1=Effect.CreateEffect(c)
@@ -74,7 +74,7 @@ function c71403023.op1(e,tp,eg,ep,ev,re,r,rp)
 			if ct==0 then return end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 			local spg=pg:Select(tp,ct,ct,nil)
-			for pc in aux.Next(pg) do
+			for pc in aux.Next(spg) do
 				Duel.MoveToField(pc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 			end
 			if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_PZONE,0,2,nil,0x715) then

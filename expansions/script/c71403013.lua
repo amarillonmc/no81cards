@@ -72,7 +72,7 @@ function c71403013.opp2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local g=Duel.SelectMatchingCard(tp,c71403013.filterp2b,tp,LOCATION_REMOVED,0,1,1,nil)
 		if g:GetCount()>0 then
-			Duel.SendtoDeck(g,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		end
 	end
 end
@@ -104,6 +104,7 @@ function c71403013.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local c_is_in_hand=c:IsLocation(LOCATION_HAND)
 	if not (c:IsRelateToEffect(e) and (c_is_in_hand or c:GetSequence()<5)) then return end
+	local op_flag=false
 	if c_is_in_hand then
 		op_flag=Duel.SendtoExtraP(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()
 	else
@@ -117,5 +118,5 @@ function c71403013.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,c71403013.filter1,tp,LOCATION_GRAVE,0,1,2,nil)
 	if g:GetCount()==0 then return end
-	Duel.SendtoDeck(g,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end

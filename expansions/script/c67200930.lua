@@ -79,9 +79,9 @@ function c67200930.cfilter(c)
 end
 function c67200930.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c67200931.cfilter,tp,LOCATION_PZONE,0,1,c) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c67200930.cfilter,tp,LOCATION_PZONE,0,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,c67200931.cfilter,tp,LOCATION_PZONE,0,1,1,c)
+	local g=Duel.SelectMatchingCard(tp,c67200930.cfilter,tp,LOCATION_PZONE,0,1,1,c)
 	Duel.SendtoHand(g,nil,REASON_COST)
 end
 function c67200930.stcon(e)
