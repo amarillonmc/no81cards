@@ -219,7 +219,7 @@ fucs.pro = {
 	CAL = EFFECT_FLAG_DAMAGE_CAL		,   --可以在伤害计算时发动
 	OP  = EFFECT_FLAG_EVENT_PLAYER  ,   --发动/处理效果的玩家为触发事件的玩家而不是卡片的持有者，如仪式魔人，万魔殿
 	NR  = EFFECT_FLAG_NO_TURN_RESET  ,   --发条等“这张卡在场上只能发动一次”的效果
-	OE  = 0x40400		   ,   --EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE(out effect)
+	OE  = 0x40400		  ,   --EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE(out effect)
 }
 --Location Variable
 fucs.ran = {
@@ -255,8 +255,6 @@ fucs.res = {
 	SELF = RESET_SELF_TURN  ,
 	OPPO = RESET_OPPO_TURN  ,
 	CH   = RESET_CHAIN  ,
-	PH   = RESET_PHASE  ,
-	EV   = RESET_EVENT  ,
 	-- 以下自动添加 RESET_EVENT
 	DIS  = RESET_DISABLE	,
 	SET  = RESET_TURN_SET   ,
@@ -273,6 +271,9 @@ fucs.res = {
 	----组合时点
 	STD  = RESETS_STANDARD  ,
 	RED  = RESETS_REDIRECT  ,
+	-- 自动添加
+	PH   = RESET_PHASE  ,
+	EV   = RESET_EVENT  ,
 }
 --reason Variable
 fucs.rea = {

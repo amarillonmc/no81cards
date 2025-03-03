@@ -9,7 +9,7 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g = fugf.SelectFilter(tp,"+MSG",nil,nil,1,ev)
+	local g = fugf.Select(tp,"+MSG",nil,nil,1,ev)
 	if #g<=0 then return end
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 end

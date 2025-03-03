@@ -67,7 +67,7 @@ function c118426889.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.ConfirmCards(1-tp,e:GetHandler())
 end
 function c118426889.filter2(c,tp,sc)
-	return c:IsSetCard(0x97) and (c:IsControler(tp) or c:IsFaceup()) and Duel.IsExistingMatchingCard(c118426889.filter4,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,c,sc)
+	return c:IsSetCard(0x97) and (c:IsControler(tp) or c:IsFaceup()) and Duel.IsExistingMatchingCard(c118426889.filter4,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,tp,c,sc)
 end
 function c118426889.filter4(c,tp,mc,sc)
 	return Duel.GetLocationCountFromEx(tp,tp,Group.FromCards(c,mc),sc)>0

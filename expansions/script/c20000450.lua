@@ -7,10 +7,10 @@ function fu_GD.sd_con(e,tp,eg,ep,ev,re,r,rp)
 end
 --Normal initial
 function fu_GD.N_initial(add_cat, f1_loc, f1_func, f1_val)
-	local cm, m = fuef.initial(fu_GD, _glo)
 	local func = function(e,tp) return fugf.GetFilter(tp, f1_loc, f1_func, f1_val) end
-	cm.pe1 = fuef.I():CAT("TD+DR"..(add_cat and "+"..add_cat or "")):RAN("H"):CTL(m):Func("N_cos1,N_tg1(%1),N_op1(%1)", func)
-	cm.pe2 = fuef.FC("DR"):RAN("H"):Func("sd_con,N_op2")
+	local pe = fuef.I():CAT("TD+DR"..(add_cat and "+"..add_cat or "")):RAN("H"):CTL("m"):Func("N_cos1,N_tg1(%1),N_op1(%1)", func)
+	local cm, m = fuef.initial(fu_GD, _glo, "public_effect", pe)
+	cm.pe1 = fuef.FC("DR"):RAN("H"):Func("sd_con,N_op2")
 	return cm, m
 end
 function fu_GD.N_cos1(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -6,59 +6,7 @@ function fugf.Get(_tp, _loc)
 	return Duel.GetFieldGroup(_tp, fusf.Get_Loc(_loc))
 end
 function fugf.Filter(_g, _func, _val, _n, ...)
-	if not _func then return not _n and _g or #_g >= _n end -- nil chk
-	-- trans _val 
-	if type(_val) ~= "table" then _val = { _val } end
-	local temp_val, v_ind = { }, 0
-	for _, f_val in ipairs(_val) do
-		if type(f_val) == "string" then
-			for _, val in fusf.ForTable(fusf.Val_Cuts(f_val, ...)) do
-				v_ind = v_ind + 1
-				temp_val[v_ind] = val
-			end
-		else
-			v_ind = v_ind + 1
-			temp_val[v_ind] = f_val
-		end
-	end
-	_val, temp_val = temp_val
-	-- _func is function
-	if type(_func) == "function" then 
-		_g = _g:Filter(_func, nil, table.unpack(_val, 1, v_ind))
-		return not _n and _g or #_g >= _n
-	end 
-	-- _func is string
-	_func = fusf.PostFix_Trans(_func, ...)
-	if #_func == 1 then
-		_func = fucf[_func[1] ] or Card[_func[1] ] or aux[_func[1] ]
-		_g = _g:Filter(_func, nil, table.unpack(_val, 1, v_ind))
-		return not _n and _g or #_g >= _n
-	end
-	-- multi _func
-	local v_ind, temp_g = 1, { }
-	for _, func in ipairs(_func) do
-		if func == "~" then
-			temp_g[#temp_g] = _g - temp_g[#temp_g]
-		elseif type(func) == "string" and #func == 1 then
-			local valR = table.remove(temp_g)
-			local valL = table.remove(temp_g)
-			local Cal = {
-				["+"] = valL & valR,
-				["-"] = valL - valR,
-				["/"] = valL + valR 
-			}
-			table.insert(temp_g, Cal[func])
-		else
-			if type(func) == "string" then 
-				func = fucf[func] or Card[func] or aux[func]
-			end
-			temp_val, v_ind = _val[v_ind], v_ind + 1
-			if type(temp_val) ~= "table" then temp_val = {temp_val, len = 1} end
-			table.insert(temp_g, _g:Filter(func, nil, table.unpack(temp_val, 1, temp_val.len)))
-		end
-	end
-	_g = table.remove(temp_g)
-	return not _n and _g or #_g >= _n
+	return fusf.Creat_GF(_func, _val, ...)(_g, _n)
 end
 function fugf.GetFilter(_tp, _loc, _func, _val, _n, ...)
 	return fugf.Filter(fugf.Get(_tp, _loc), _func, _val, _n, ...)
@@ -96,8 +44,9 @@ function fucf.AddCode(c, ...)
 end
 fucf.ReviveLimit = Card.EnableReviveLimit
 --------------------------------------"Card function" (use in Filter
-function fucf.Filter(c, func, ...)
-	return fugf.Filter(Group.FromCards(c), func, {...},1)
+function fucf.Filter(c, _func, ...)
+	return fusf.Creat_CF(_func, {...})(c)
+	--return fugf.Filter(Group.FromCards(c), func, {...}, 1)
 end
 fucf.IsRk   = fusf.IsN("GetRank")
 fucf.IsLv   = fusf.IsN("GetLevel")
@@ -185,3 +134,16 @@ fucf.IsAtt  = fusf.Is_Cons("GetAttribute", "att")
 fucf.IsRac  = fusf.Is_Cons("GetRace", "rac")
 fucf.IsPos  = fusf.Is_Cons("GetPosition", "pos", function(card_val, val) return card_val | val == val end)
 fucf.IsPPos = fusf.Is_Cons("GetPreviousPosition", "pos", function(card_val, val) return card_val | val == val end)
+
+---------------------------------------------------------------- procedure
+function fucf.RMFilter(c, rf, e, tp, g1, g2, level_function, greater_or_equal, chk)
+	if rf and not rf(c, e, tp, chk) then return false end
+	if not fucf.Filter(rc, "IsTyp+CanSp", "RI+M", {e, SUMMON_TYPE_RITUAL, tp, false, true}) then return false end
+	local g = g1:Filter(Card.IsCanBeRitualMaterial, c, c) + (g2 or Group.CreateGroup())
+	g = g:Filter(c.mat_filter or aux.TRUE, c, tp)
+	local lv = level_function(c)
+	Auxiliary.GCheckAdditional = Auxiliary.RitualCheckAdditional(c, lv, greater_or_equal)
+	local res = g:CheckSubGroup(Auxiliary.RitualCheck, 1, lv, tp, c, lv, greater_or_equal)
+	Auxiliary.GCheckAdditional = nil
+	return res
+end

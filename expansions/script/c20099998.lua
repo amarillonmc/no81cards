@@ -46,7 +46,7 @@ end
 function fusf.Get_Constant(_constable, _vals)
 	-- string chk
 	if type(_vals) ~= "string" then return _vals end
-	local _res, _first = 0
+	local _res = 0
 	-- cod chk
 	if _constable == "cod" then 
 		-- EVENT_CUSTOM
@@ -56,7 +56,7 @@ function fusf.Get_Constant(_constable, _vals)
 			_res = EVENT_CUSTOM + fusf.M_chk(_vals)
 		-- EVENT_PHASE or EVENT_PHASE_START
 		elseif _vals:match("PH") then
-			for _,_var in ipairs(fusf.CutString(_vals, "+", "Get_Constant_1")) do
+			for _, _var in ipairs(fusf.CutString(_vals, "+", "Get_Constant_1")) do
 				local _constable = _var:match("PH") and "cod" or "pha"
 				_res = _res + fucs[_constable][_var]
 			end
@@ -64,11 +64,13 @@ function fusf.Get_Constant(_constable, _vals)
 		if _res ~= 0 then return _res end
 	end
 	-- find _constable
-	for i,_val in ipairs(fusf.CutString(_vals, "+", "Get_Constant_2")) do
-		if i == 1 then _first = _val end
-		_res = _res + (fusf.NotNil(_val) and fucs[_constable][_val:upper()] or 0)
+	local vals, cons, _des = fusf.CutString(_vals, "+", "Get_Constant_2"), fucs[_constable]
+	for i = #vals, 1, -1 do
+		local _val = vals[i]
+		_des = fucs.des[_val] or _des
+		_res = _res + cons[_val]
 	end
-	return _res, _first
+	return _res, _des
 end
 function fusf.Get_Loc(_loc1, _loc2, _from)
 	-- nil chk
@@ -93,9 +95,10 @@ function fusf.Get_Loc(_loc1, _loc2, _from)
 	end
 	return table.unpack(_locs)
 end
-function fusf.M_chk(_val)
-	if _val < 19999999 then return _val + 20000000 end
-	return _val
+function fusf.M_chk(val) -- val : number|string
+	val = tonumber(val)
+	if val < 19999999 then return val + 20000000 end
+	return val
 end
 function fusf.PostFix_Trans(_str, ...)
 	local vals, res, temp, i = {...}, { }, { }, 1
@@ -144,13 +147,14 @@ function fusf.IsN(_func)
 	return function(_c, _val, _exval)
 		local c_val = Card[_func](_c, _exval)
 		if type(_val) == "string" then
-			local oper, _val = _val:match("([%+%-])(%d+)")
+			local oper, _val = _val:match("%+%-"), _val:match("%d+")
 			_val = tonumber(_val)
 			if oper == "+" then 
 				return c_val >= _val
 			elseif oper == "-" then 
-				return c_val <= _val
+				return c_val <= _val			 
 			end
+			return c_val == _val	
 		end
 		if _val > 0 then return c_val == _val end
 		return c_val <= -_val -- _val = -n
@@ -182,19 +186,22 @@ end
 function fusf.Get_Func(_c, _func, _val)
 	if type(_func) ~= "string" then return _func end
 	local lib = _c.lib or {}
+	local res = function(_func) return _func end
+	if _func:match("~") then
+		_func = _func:sub(2)
+		res = function(_func) return function(...) return not _func(...) end end
+	end
 	-- find cm, lib, fuef, aux
 	if not _val then 
-		return _c[_func] or lib[_func] or fuef[_func] or aux[_func] 
+		return res(_c[_func] or lib[_func] or fuef[_func] or aux[_func])
 	end
 	-- translate vals 
 	for i, val in ipairs(_val) do
-		if tonumber(val) then
-			_val[i] = tonumber(val)
-		end
+		_val[i] = tonumber(val) or val
 	end
 	-- find cm, lib, fuef, aux
 	for _, Lib in ipairs({_c, lib, fuef, aux}) do
-		if Lib[_func] then return Lib[_func](table.unpack(_val)) end
+		if Lib[_func] then return res(Lib[_func](table.unpack(_val))) end
 	end
 	Debug.Message("Get_Func not found : ".._func)
 	return nil
@@ -242,6 +249,72 @@ function fusf.Val_Cuts_Table_Process(_str, ...) -- "f(%1,,3)" -> {"f", vals[1], 
 	res.len = res_ind
 	return res
 end
+function fusf.Creat_CF(_func, _val, ...)
+	if not _func then return function(c) return true end end
+	-- trans _val 
+	if type(_val) ~= "table" then _val = { _val } end
+	local temp_val, v_ind = { }, 0
+	for _, f_val in ipairs(_val) do
+		if type(f_val) == "string" then
+			for _, val in fusf.ForTable(fusf.Val_Cuts(f_val, ...)) do
+				v_ind = v_ind + 1
+				temp_val[v_ind] = val
+			end
+		else
+			v_ind = v_ind + 1
+			temp_val[v_ind] = f_val
+		end
+	end
+	_val, temp_val = temp_val
+	-- _func is function
+	if type(_func) == "function" then 
+		return function(c) 
+			return _func(c, table.unpack(_val, 1, v_ind))
+		end 
+	end 
+	-- _func is string
+	_func = fusf.PostFix_Trans(_func, ...)
+	local fucf, Card, aux = fucf, Card, aux
+	if #_func == 1 then -- _func just one
+		_func = fucf[_func[1] ] or Card[_func[1] ] or aux[_func[1] ]
+		return function(c) 
+			return _func(c, table.unpack(_val, 1, v_ind))
+		end 
+	end
+	-- _func is multi
+	return function(c)
+		local stack, v_ind, temp_val = { }, 1
+		for _, func in ipairs(_func) do
+			if func == "~" then
+				stack[#stack] = not stack[#stack]
+			elseif type(func) == "string" and #func == 1 then
+				local valR, valL = table.remove(stack), table.remove(stack)
+				local Cal = {
+					["+"] = valL and valR,
+					["-"] = valL and not valR,
+					["/"] = valL or valR 
+				}
+				stack[#stack + 1] = Cal[func]
+			else
+				if type(func) == "string" then 
+					func = fucf[func] or Card[func] or aux[func]
+				end
+				temp_val, v_ind = _val[v_ind], v_ind + 1
+				if type(temp_val) ~= "table" then temp_val = {temp_val, len = 1} end
+				stack[#stack + 1] = func(c, table.unpack(temp_val, 1, temp_val.len))
+			end
+		end
+		return table.remove(stack)
+	end
+end
+function fusf.Creat_GF(_func, _val, ...)
+	local ex_val = {...}
+	return function(g, n)
+		g = g:Filter(fusf.Creat_CF(_func, _val, table.unpack(ex_val)), nil)
+		if not n then return g end
+		return n > 0 and #g >= n or #g <= -n
+	end
+end
 function fusf.ForTable(t, n)
 	local i, max = 0, t.len or n
 	return function()
@@ -272,55 +345,46 @@ function fusf.GetDES(_code, _id, m) -- (0), ("n"), (m), ("+1")
 	end
 	return aux.Stringid(_code, _id)  -- _code*16 + _id
 end
-function fusf.GetRES(_flag, _count) -- _flag = a + b/b1/b2 + c | 1
-	if type(_flag) == "string" then
-		local temp = 0
-		if not _count then 
-			_flag = fusf.CutString(_flag, "|", "RES_1")
-			_flag, _count = _flag[1], tonumber(_flag[2])
-		end
-		for _,val in ipairs(fusf.CutString(_flag, "+", "RES_2")) do
-			if val:match("PH") then
-				temp = temp + RESET_PHASE 
-				val = fusf.CutString(val, "/", "RES_2")
-				for i = 2, #val do
-					temp = temp + fucs.pha[val[i] ]
-				end
-			elseif val == "SELF" or val == "OPPO" or val == "CH" or val == "EV" then
-				temp = temp + fucs.res[val]
-			else -- add RESET_EVENT
-				temp = (temp | RESET_EVENT) + fucs.res[val]
-			end
-		end
-		_flag = temp
+function fusf.GetRES(_flag, _count) -- _flag = a + b/b1/b2 + c | 1 
+	if type(_flag) ~= "string" then return {_flag or 0, _count} end
+	if not _count then -- cut count
+		_flag = fusf.CutString(_flag, "|", "RES")
+		_flag, _count = _flag[1], tonumber(_flag[2] or 1)
 	end
+	local stack = { }
+	for _, unit in ipairs(fusf.PostFix_Trans(_flag)) do
+		if unit:match("[+-/]") then
+			local valR, valL = table.remove(stack), table.remove(stack)
+			table.insert(stack, unit == "-" and valL - valR or valL | valR)
+		else
+			table.insert(stack, fucs.res[unit] or fucs.pha[unit])
+		end
+	end
+	_flag = table.remove(stack)
+	if _flag & 0xfff0000 > 0 then _flag = _flag | RESET_EVENT end
+	if _flag & 0x00003ff > 0 then _flag = _flag | RESET_PHASE end
 	return {_flag, _count}
 end
 --------------------------------------"Other Support function"
-function fusf.RegFlag(tp_or_c, cod, res, pro, lab, des)
-	cod = fusf.M_chk(cod)
-	res = fusf.GetRES(res)
-	pro = fusf.Get_Constant("pro", pro)
-	if des then des = fusf.GetDES(des, nil, cod) end
-	if tonumber(tp_or_c) then 
-		Duel.RegisterFlagEffect(tp_or_c, cod, res[1], pro, res[2] or 1, lab or 0)
+function fusf.RegFlag(val, cod, res, pro, lab, des) -- val : Card|Effect|player(number)
+	cod, res, pro = fusf.M_chk(cod), fusf.GetRES(res), fusf.Get_Constant("pro", pro) or 0
+	if des then des, pro = fusf.GetDES(des, nil, cod), (pro or 0)|EFFECT_FLAG_CLIENT_HINT end
+	local typ = aux.GetValueType(val)
+	if typ == "Card" then 
+		val:RegisterFlagEffect(cod, res[1], pro, res[2] or 1, lab or 0, des)
+	elseif typ == "Effect" then 
+		val:GetHandler():RegisterFlagEffect(cod, res[1], pro, res[2] or 1, lab or 0, des)
 	else
-		tp_or_c:RegisterFlagEffect(cod, res[1], pro, res[2] or 1, lab or 0, des)
+		Duel.RegisterFlagEffect(val, cod, res[1], pro, res[2] or 1, lab or 0)
 	end
 end
-function fusf.GetFlag(val, cod, n1, n2)
-	local typ, count = aux.GetValueType(val)
-	if type(cod) == "string" then cod = tonumber(cod) end
-	if cod < 19999999 then cod = cod + 20000000 end
-	if typ == "Card" then count = val:GetFlagEffect(cod) end
-	if typ == "Effect" then count = val:GetHandler():GetFlagEffect(cod) end
-	if typ == "int" then count = Duel.GetFlagEffect(val, cod) end
-	if not n1 then return n2 and (count == n2) or count end
-	if type(n1) == "string" and n1:match("[%+%-]") then
-		local Cal = {
-			["+"] = count >= (n2 or math.abs(tonumber(n1))),
-			["-"] = count <= (n2 or math.abs(tonumber(n1)))
-		}
-		return Cal[n1:match("[%+%-]")]
+function fusf.GetFlag(val, cod) -- val : Card|Effect|player(number)
+	cod = fusf.M_chk(cod)
+	local typ = aux.GetValueType(val)
+	if typ == "Card" then 
+		return val:GetFlagEffect(cod)
+	elseif typ == "Effect" then 
+		return val:GetHandler():GetFlagEffect(cod)
 	end
+	return Duel.GetFlagEffect(val, cod)
 end

@@ -16,11 +16,21 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetChainLimit(cm.tg1f(g))
 end
 function cm.op1con1(e)
-	local tp = e:GetOwnerPlayer()
-	return e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED) and fugf.GetFilter(tp,"M","IsTyp+IsRac+IsPos","RI+M,DR,FU",1)
+	if not fugf.GetFilter(e:GetOwnerPlayer(),"M","IsTyp+IsRac+IsPos","RI+M,DR,FU",1) then return false end
+	local c = e:GetHandler()
+	if c:IsType(TYPE_TRAPMONSTER) then
+		return c:IsFaceup()
+	elseif c:IsType(TYPE_SPELL+TYPE_TRAP) then
+		return c:IsFaceup() and not c:IsDisabled()
+	else
+		return Auxiliary.NegateMonsterFilter(c)
+	end
+end
+function cm.op1con2(e)
+	return fugf.GetFilter(e:GetOwnerPlayer(),"M","IsTyp+IsRac+IsPos","RI+M,DR,FU",1)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local g = Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if #g==0 then return end
-	fuef.S(e,EFFECT_CANNOT_TRIGGER,g):DES(1):PRO("HINT"):CON("op1con1"):RES("STD")(EFFECT_DISABLE)
+	fuef.S(e,EFFECT_DISABLE,g):DES(1):PRO("HINT"):CON("op1con1"):RES("STD")(EFFECT_CANNOT_TRIGGER):CON("op1con2")
 end

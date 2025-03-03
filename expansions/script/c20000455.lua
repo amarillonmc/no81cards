@@ -30,6 +30,6 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.BreakEffect()
 	Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 	tc:CompleteProcedure()
-	if #mg == 1 then fuef.S(e,EFFECT_INDESTRUCTABLE_EFFECT,tc):DES(0):PRO("SR+CD+HINT"):RAN("M"):VAL(1):RES("STD") end
-	if mg:IsExists(Card.IsSetCard,nil,1,0xbfd4) then fuef.S(e,EFFECT_CANNOT_BE_EFFECT_TARGET,tc):DES(1):PRO("HINT"):VAL("tgoval"):RES("STD") end
+	if #mg == 1 then fuef.S(e,EFFECT_INDESTRUCTABLE_EFFECT,tc):DES(m,0):PRO("SR+CD+HINT"):RAN("M"):VAL(1):RES("STD") end
+	if mg:IsExists(Card.IsSetCard,nil,1,0xbfd4) then fuef.S(e,EFFECT_CANNOT_BE_EFFECT_TARGET,tc):DES(m,1):PRO("HINT"):VAL("tgoval"):RES("STD") end
 end
