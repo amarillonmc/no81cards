@@ -44,11 +44,11 @@ function c22348026.spcon(e,c)
 	if c==nil then return true end
 	if c:IsHasEffect(EFFECT_NECRO_VALLEY) then return false end
 	local tp=c:GetControler()
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZON)
-	return ft>-1 and Duel.IsCanRemoveCounter(tp,1,0,0x1613,3,REASON_COST)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	return ft>-1 and Duel.IsCanRemoveCounter(tp,1,0,0x1613,2,REASON_COST)
 end
 function c22348026.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.RemoveCounter(tp,1,0,0x1613,3,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x1613,2,REASON_COST)
 end
 function c22348026.con(e,tp,eg,ep,ev,re,r,rp)  
 	return re and re:GetHandler():IsSetCard(0x613)

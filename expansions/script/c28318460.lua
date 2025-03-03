@@ -57,14 +57,14 @@ function c28318460.activate(e,tp,eg,ep,ev,re,r,rp,op)
 			if tc:IsPreviousLocation(LOCATION_DECK) then
 				Duel.ShuffleDeck(tp)
 			end
-			if not tc:IsLocation(LOCATION_HAND) or Duel.GetLP(tp)<10000 then return end
+			if not tc:IsLocation(LOCATION_HAND) then return end
 			local te=tc.recover_effect
 			if not te then return end
 			local tg=te:GetTarget()
 			if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) and Duel.SelectYesNo(tp,aux.Stringid(28318460,3)) then
 				Duel.BreakEffect()
 				local lp=Duel.GetLP(tp)
-				Duel.SetLP(tp,lp-1000)
+				Duel.SetLP(tp,lp-1500)
 				local op=te:GetOperation()
 				if op then op(e,tp,eg,ep,ev,re,r,rp) end
 			end

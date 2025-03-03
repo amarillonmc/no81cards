@@ -55,7 +55,12 @@ function c10200019.filter2(c)
     return c:IsSetCard(0xe21) and c:IsAbleToHand()
 end
 function c10200019.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(c10200019.filter2,tp,LOCATION_DECK,0,1,nil) end
+    if chk==0 then
+        if not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,0,1,nil) then
+            return false
+        end
+        return Duel.IsExistingMatchingCard(c10200019.filter2,tp,LOCATION_DECK,0,1,nil)
+    end
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_MZONE)
 end

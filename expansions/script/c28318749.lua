@@ -162,7 +162,8 @@ function c28318749.tdop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28318749.immcon(e)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
+	local ph=Duel.GetCurrentPhase()
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and not (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)
 end
 function c28318749.efilter(e,te)
 	if te:IsActiveType(TYPE_SPELL+TYPE_TRAP) and te:GetOwnerPlayer()~=e:GetHandlerPlayer() then

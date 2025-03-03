@@ -5,8 +5,14 @@ function cm.initial_effect(c)
 	aux.AddCodeList(c,93031067)
 	aux.AddLinkProcedure(c,cm.mfilter,1,1)
 	c:EnableReviveLimit()
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e0:SetCode(EVENT_ADJUST)
+	e0:SetRange(0xff)
+	e0:SetOperation(cm.adjustop)
+	c:RegisterEffect(e0)
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -16,14 +22,6 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
 	c:RegisterEffect(e1)
-	local e7=Effect.CreateEffect(c)
-	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e7:SetRange(LOCATION_GRAVE)
-	e7:SetCode(EFFECT_SEND_REPLACE)
-	e7:SetCountLimit(1,m+100000000)
-	e7:SetTarget(cm.reptg)
-	e7:SetValue(aux.TRUE)
-	c:RegisterEffect(e7)
 end
 function cm.mfilter(c)
 	return c:IsLevelBelow(4) and c:IsLinkSetCard(0x13f)
@@ -46,14 +44,61 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function cm.repfilter(c)
-	return c:IsLocation(LOCATION_HAND) and c:GetReason(REASON_DISCARD)
+
+function cm.discfilter(c)
+	return c:IsCode(m) and not c:IsDisabled() and c:IsAbleToRemoveAsCost()
 end
-function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return eg:GetCount()==1 and eg:IsExists(cm.repfilter,1,nil) and e:GetHandler():IsAbleToRemove() and tp==re:GetHandlerPlayer() and re:IsActivated() and re:GetHandler():IsSetCard(0x13f) end
-	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then
-		Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_REPLACE)
-		return true
+function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.discfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	local g=Duel.GetFirstMatchingCard(cm.discfilter,tp,LOCATION_GRAVE,0,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function cm.filter(c)
+	return c:IsSetCard(0x13f) and not c:IsCode(id)
+end
+function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	if not cm.globle_check then
+		cm.globle_check=true
+		local g=Duel.GetMatchingGroup(cm.filter,0,0xff,0xff,nil)
+		cregister=Card.RegisterEffect
+		cisDiscardable=Card.IsDiscardable
+		disexistingmatchingcard=Duel.IsExistingMatchingCard
+		local marked=false
+		Duel.IsExistingMatchingCard=function(filter,player,s,o,count,c_g_n,...)
+			if not Duel.GetFieldGroup(player,s,o) or #Duel.GetFieldGroup(player,s,o)<=0 then
+				s=0xff
+			end
+			return disexistingmatchingcard(filter,player,s,o,count,c_g_n,...)
+		end
+		Card.IsDiscardable=function(card)
+			marked=true
+			return true
+		end
+		Card.RegisterEffect=function(card,effect,flag)
+			if effect and effect:GetType()~=EFFECT_TYPE_FIELD then
+				marked=false
+				local cost=effect:GetCost()
+				if cost and cost(e,tp,eg,ep,ev,re,r,rp,0) then end
+				if marked then 
+					local eff=effect:Clone()
+					table.insert(table_effect,eff) 
+				end
+			end
+			return 
+		end
+		for tc in aux.Next(g) do
+			marked=false
+			table_effect={}
+			Duel.CreateToken(0,tc:GetOriginalCode())
+			for key,eff in ipairs(table_effect) do
+				eff:SetDescription(aux.Stringid(m,0))
+				eff:SetCost(cm.discost)
+				cregister(tc,eff,true)
+			end
+		end
+		Card.RegisterEffect=cregister
+		Card.IsDiscardable=cisDiscardable
+		Duel.IsExistingMatchingCard=disexistingmatchingcard
 	end
-	return false
+	e:Reset()
 end

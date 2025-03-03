@@ -29,7 +29,7 @@ function c28318027.initial_effect(c)
 	e2:SetDescription(aux.Stringid(28318027,1))
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	--e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCountLimit(1)
 	e2:SetTarget(c28318027.rctg)
 	e2:SetOperation(c28318027.rcop)
@@ -167,30 +167,31 @@ end
 function c28318027.rcfilter(c,rk)
 	return c:IsRankAbove(1) and not c:IsRank(rk) and c:IsFaceup()
 end
-function c28318027.rctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c28318027.rcfilter(chkc,e:GetHandler():GetRank()) end
-	if chk==0 then return Duel.IsExistingTarget(c28318027.rcfilter,tp,LOCATION_MZONE,0,1,nil,e:GetHandler():GetRank()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c28318027.rcfilter,tp,LOCATION_MZONE,0,1,1,nil,e:GetHandler():GetRank())
+function c28318027.rctg(e,tp,eg,ep,ev,re,r,rp,chk)
+	--if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c28318027.rcfilter(chkc,e:GetHandler():GetRank()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c28318027.rcfilter,tp,LOCATION_MZONE,0,1,nil,e:GetHandler():GetRank()) end
+	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	--Duel.SelectTarget(tp,c28318027.rcfilter,tp,LOCATION_MZONE,0,1,1,nil,e:GetHandler():GetRank())
 end
 function c28318027.rcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if not (c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsFaceup()) then return end
-	if c:GetRank()==tc:GetRank() then return end
+	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
+	local tc=Duel.SelectMatchingCard(tp,c28318027.rcfilter,tp,LOCATION_MZONE,0,1,1,nil,c:GetRank()):GetFirst()
+	if not tc then return end
+	Duel.HintSelection(Group.FromCards(tc))
 	if Duel.SelectOption(tp,aux.Stringid(28318027,3),aux.Stringid(28318027,4))==0 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_RANK)
 		e1:SetValue(tc:GetRank())
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
 	else
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_CHANGE_RANK)
 		e2:SetValue(c:GetRank())
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e2)
 	end
 end

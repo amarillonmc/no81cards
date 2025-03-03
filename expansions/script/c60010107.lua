@@ -8,19 +8,11 @@ function cm.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA)
-	e0:SetCondition(cm.SynMixCondition(aux.Tuner(Card.IsSetCard,0x62a),nil,nil,aux.NonTuner(nil),1,99,gc))
-	e0:SetTarget(cm.SynMixTarget(aux.Tuner(Card.IsSetCard,0x62a),nil,nil,aux.NonTuner(nil),1,99,gc))
-	e0:SetOperation(cm.SynMixOperation(aux.Tuner(Card.IsSetCard,0x62a),nil,nil,aux.NonTuner(nil),1,99,gc))
+	e0:SetCondition(cm.SynMixCondition(aux.Tuner(Card.IsSetCard,0xc620),nil,nil,aux.NonTuner(nil),1,99,gc))
+	e0:SetTarget(cm.SynMixTarget(aux.Tuner(Card.IsSetCard,0xc620),nil,nil,aux.NonTuner(nil),1,99,gc))
+	e0:SetOperation(cm.SynMixOperation(aux.Tuner(Card.IsSetCard,0xc620),nil,nil,aux.NonTuner(nil),1,99,gc))
 	e0:SetValue(SUMMON_TYPE_SYNCHRO)
 	c:RegisterEffect(e0)
-	
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAIN_END)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetLabelObject(e33)
-	e1:SetOperation(cm.bkop)
-	c:RegisterEffect(e1)
 	--level
 	local e33=Effect.CreateEffect(c)
 	e33:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -30,6 +22,14 @@ function cm.initial_effect(c)
 	e33:SetCondition(cm.lvcon)
 	e33:SetOperation(cm.lvop)
 	c:RegisterEffect(e33)
+	
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_END)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetLabelObject(e33)
+	e1:SetOperation(cm.bkop)
+	c:RegisterEffect(e1)
 	
 	
 end
@@ -68,22 +68,24 @@ function cm.SynMixTarget(f1,f2,f3,f4,minc,maxc,gc)
 				end
 				local g=Group.CreateGroup()
 				local mg
+				local mgchk=false
 				if mg1 then
 					mg=mg1
+					mgchk=true
 				else
 					mg=aux.GetSynMaterials(tp,c)
 				end
 				if smat~=nil then mg:AddCard(smat) end
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-				local c1=mg:FilterSelect(tp,cm.SynMixFilter1,1,1,nil,f1,f2,f3,f4,minc,maxc,c,mg,smat,gc):GetFirst()
+				local c1=mg:FilterSelect(tp,cm.SynMixFilter1,1,1,nil,f1,f2,f3,f4,minc,maxc,c,mg,smat,gc,mgchk):GetFirst()
 				g:AddCard(c1)
 				if f2 then
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-					local c2=mg:FilterSelect(tp,cm.SynMixFilter2,1,1,c1,f2,f3,f4,minc,maxc,c,mg,smat,c1,gc):GetFirst()
+					local c2=mg:FilterSelect(tp,cm.SynMixFilter2,1,1,c1,f2,f3,f4,minc,maxc,c,mg,smat,c1,gc,mgchk):GetFirst()
 					g:AddCard(c2)
 					if f3 then
 						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-						local c3=mg:FilterSelect(tp,cm.SynMixFilter3,1,1,Group.FromCards(c1,c2),f3,f4,minc,maxc,c,mg,smat,c1,c2,gc):GetFirst()
+						local c3=mg:FilterSelect(tp,cm.SynMixFilter3,1,1,Group.FromCards(c1,c2),f3,f4,minc,maxc,c,mg,smat,c1,c2,gc,mgchk):GetFirst()
 						g:AddCard(c3)
 					end
 				end
@@ -92,7 +94,7 @@ function cm.SynMixTarget(f1,f2,f3,f4,minc,maxc,gc)
 				--while i==0 do
 					local mg2=mg:Clone()
 					mg2=mg2:Filter(f4,g,c)
-					local cg=mg2:Filter(cm.SynMixCheckRecursive,g4,tp,g4,mg2,i,minc,maxc,c,g,smat,gc)
+					local cg=mg2:Filter(cm.SynMixCheckRecursive,g4,tp,g4,mg2,i,minc,maxc,c,g,smat,gc,mgchk)
 					--if cg:GetCount()==0 then break end
 					local minct=1
 					if g4:GetCount()~=0 then minct=0 end
@@ -255,9 +257,9 @@ function cm.bkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(bg,nil,2,REASON_EFFECT)
 	local b=#Duel.GetOperatedGroup()
 	local mg=e:GetHandler():GetMaterial()
-	--if a~=0 and b~=0 and #mg~=0 and mg:FilterCount(aux.NecroValleyFilter(cm.mgfilter),nil,tp,e:GetHandler)==#mg and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-	 --   Duel.BreakEffect()
-	 --   local mc=mg:Select(tp,1,1,nil)
-	 --   Duel.SendtoHand(mc,nil,REASON_EFFECT)
-	--end
+	if a~=0 and b~=0 and #mg~=0 and mg:FilterCount(aux.NecroValleyFilter(cm.mgfilter),nil,tp,e:GetHandler())==#mg and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		Duel.BreakEffect()
+		local mc=mg:Select(tp,1,1,nil)
+		Duel.SendtoHand(mc,nil,REASON_EFFECT)
+	end
 end

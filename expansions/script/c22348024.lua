@@ -11,6 +11,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e1:SetCost(c22348024.costt)
 	e1:SetCondition(c22348024.handcon)
 	c:RegisterEffect(e1)
 	--change name
@@ -41,9 +42,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	
 end
+function c22348024.costt(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsCanRemoveCounter(e:GetHandlerPlayer(),1,0,0x1613,1,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x1613,1,REASON_COST)
+end
 
 function c22348024.handcon(e)
-	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_ONFIELD,0)==0
+	return Duel.IsCanRemoveCounter(e:GetHandlerPlayer(),1,0,0x1613,1,REASON_COST)
 end
 function c22348024.filter(c)
 	return c:IsSetCard(0x613) and c:IsDiscardable()

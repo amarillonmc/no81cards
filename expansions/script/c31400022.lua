@@ -2,7 +2,34 @@ local m=31400022
 local cm=_G["c"..m]
 cm.name="娱乐伙伴 异色眼时空之灵摆魔术师"
 function cm.initial_effect(c)
-  aux.EnablePendulumAttribute(c)  
+	if not Auxiliary.PendulumChecklist then
+		Auxiliary.PendulumChecklist=0
+		local ge1=Effect.GlobalEffect()
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+		ge1:SetOperation(Auxiliary.PendulumReset)
+		Duel.RegisterEffect(ge1,0)
+	end
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(1163)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC_G)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_PZONE)
+	e1:SetCondition(Auxiliary.PendCondition())
+	e1:SetOperation(Auxiliary.PendOperation())
+	e1:SetValue(SUMMON_TYPE_PENDULUM)
+	c:RegisterEffect(e1)
+	--register by default
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(1160)
+	e2:SetType(EFFECT_TYPE_ACTIVATE)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_HAND)
+	e2:SetCost(function(e,tp,eg,ep,ev,re,r,rp)
+				local c=e:GetHandler()
+				c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_PHASE+PHASE_END,0,1) end)
+	c:RegisterEffect(e2)
   local e2=Effect.CreateEffect(c)
   e2:SetType(EFFECT_TYPE_FIELD)
   e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
@@ -33,7 +60,7 @@ function cm.desfilter(c)
   return c:IsFaceup() and c:IsSetCard(0x98) and c:IsType(TYPE_PENDULUM)
 end
 function cm.descon(e)
-	return Duel.GetTurnCount()~=e:GetHandler():GetTurnID()
+	return e:GetHandler():GetFlagEffect(m)==0
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
   if chkc then return false end

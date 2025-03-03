@@ -1,6 +1,7 @@
 --OneInAMillion
 local s,id,o=GetID()
 function s.initial_effect(c)
+    aux.AddCodeList(c,13020032)
     --Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -36,14 +37,32 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
         Duel.MoveSequence(tc,SEQ_DECKTOP)
         Duel.ConfirmDecktop(tp,1)
         local ThCheck=false
-        if tc:IsType(TYPE_RITUAL) and tc:IsAbleToHand() then
-            if Duel.SendtoHand(tc,nil,0x40)>0 then
+        local LockCheck=true
+        if tc:IsType(TYPE_RITUAL) then
+            LockCheck=false
+            if tc:IsAbleToHand() and Duel.SendtoHand(tc,nil,0x40)>0 then
                 Duel.ConfirmCards(1-tp,tc)
                 ThCheck=true
             end
         end
-        if not ThCheck then Duel.MoveSequence(tc,SEQ_DECKBOTTOM) end
+        if not ThCheck then
+            Duel.MoveSequence(tc,SEQ_DECKBOTTOM)
+        end
+        if LockCheck then
+            local e1=Effect.CreateEffect(c)
+           	e1:SetType(EFFECT_TYPE_FIELD)
+            e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+            e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+            e1:SetTargetRange(1,1)
+            e1:SetValue(s.aclimit)
+            e1:SetLabel(13020040)
+            e1:SetReset(RESET_PHASE+PHASE_END)
+            Duel.RegisterEffect(e1,tp)
+        end
     end
+end
+function s.aclimit(e,re,tp)
+	return re:GetHandler():IsCode(e:GetLabel())
 end
 function s.rlfil(c) 
 	return c:IsReleasable() and c:GetOriginalType()&TYPE_MONSTER>0
@@ -65,7 +84,7 @@ end
 function s.rspfi1ter(c,e,tp)
     local g=Duel.GetMatchingGroup(s.matfilter,c:GetControler(),0x36,0,c)
 	return c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)
-        and g:CheckSubGroup(s.rlgck,1,#g,c,tp)
+        and g:CheckSubGroup(s.rlgck,1,1,c,tp)
 end 
 function s.matfilter(c)
 	return ((c:IsLocation(0x32) and c:IsAbleToDeck())
@@ -77,6 +96,7 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0x02)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
+    if not Duel.SelectYesNo(tp,aux.Stringid(id,1)) then return end
 	::cancel::
 	local mg=Duel.GetMatchingGroup(s.matfilter,tp,0x36,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -86,11 +106,19 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
         mg:RemoveCard(tc)
 		local lv=tc:GetLevel()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local mat=mg:SelectSubGroup(tp,s.rlgck,false,1,#mg,tc,tp)
+		local mat=mg:SelectSubGroup(tp,s.rlgck,false,1,1,tc,tp)
 		if not mat then goto cancel end
 		tc:SetMaterial(mat)
         local check=false
-        if mat:FilterCount(Card.IsLocation,nil,0x0c)>0 then check=true end
+        local matg=mat:Filter(Card.IsCode,nil,13020032)
+        if mat:FilterCount(Card.IsLocation,nil,0x0c)>0 then
+            check=true
+        elseif #matg>0 then
+            local ctc=matg:GetFirst()
+            if ctc:IsLocation(0x02) then Duel.ConfirmCards(1-tp,ctc) end
+            if ctc:IsLocation(0x10) then Duel.HintSelection(matg) end
+            check=true
+        end
         local mg1=mat:Filter(Card.IsLocation,nil,0x32)
         local mg2=mat:Filter(Card.IsLocation,nil,0x04)
 		if #mg1>0 then Duel.SendtoDeck(mg1,nil,2,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL) end

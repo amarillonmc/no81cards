@@ -1,6 +1,5 @@
 --波动武士·微波防暴铳
-local m=11451432
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)

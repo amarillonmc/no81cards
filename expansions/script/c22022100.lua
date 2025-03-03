@@ -44,7 +44,7 @@ function c22022100.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c22022100.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
 end
 function c22022100.thfilter(c)
-	return c:IsSetCard(0x3ff1) and c:IsAbleToHand()
+	return c:IsSetCard(0xff1) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c22022100.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22022100.thfilter,tp,LOCATION_DECK,0,1,nil) end

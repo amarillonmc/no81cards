@@ -199,7 +199,7 @@ function cm.eqop5(e,tp,eg,ep,ev,re,r,rp)
 			if Duel.Equip(tp,ec,c,true) then
 				local e1=Effect.CreateEffect(ec)
 				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE+EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetProperty(EFFECT_FLAG_OWNER_RELATE+EFFECT_FLAG_CANNOT_DISABLE)
 				e1:SetCode(EFFECT_EQUIP_LIMIT)
 				e1:SetLabelObject(c)
 				e1:SetValue(cm.teqlimit)

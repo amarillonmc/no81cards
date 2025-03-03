@@ -54,5 +54,5 @@ function c22348022.counter(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348022.atkval(e,c)
-	return Duel.GetCounter(0,1,1,0x1613)*-100
+	return Duel.GetCounter(0,1,1,0x1613)*-200
 end

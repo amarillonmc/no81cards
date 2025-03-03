@@ -30,7 +30,6 @@ function cm.initial_effect(c)
 	e3:SetHintTiming(0,TIMING_END_PHASE)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(c22348307.spcon2)
 	e3:SetCost(c22348307.spcost2)
 	e3:SetTarget(c22348307.sptg2)
 	e3:SetOperation(c22348307.spop2)
@@ -75,10 +74,6 @@ function c22348307.thoperation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
-end
-function c22348307.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	local ph=Duel.GetCurrentPhase()
-	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE and aux.dscon()
 end
 function c22348307.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end

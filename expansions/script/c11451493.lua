@@ -1,6 +1,5 @@
 --方舟骑士-安哲拉
-local m=11451493
-local cm=_G["c"..m]
+local cm,m=GetID()
 cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
@@ -34,6 +33,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetRange(LOCATION_MZONE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetCode(EVENT_CHAIN_SOLVING)
 		e1:SetCondition(cm.discon)
 		e1:SetOperation(cm.disop)

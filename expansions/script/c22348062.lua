@@ -31,14 +31,41 @@ function cm.initial_effect(c)
 	--SpecialSummon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(22348060,2))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCondition(c22348062.spcon)
-	e3:SetTarget(c22348062.sptg)
-	e3:SetOperation(c22348062.spop)
+	e3:SetTarget(c22348062.sttg)
+	e3:SetOperation(c22348062.stop)
 	c:RegisterEffect(e3)
+	if not c22348062.global_check then
+		c22348062.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_ADJUST)
+		ge1:SetOperation(c22348062.checkop1)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+local KOISHI_CHECK=false
+if Card.SetCardData then KOISHI_CHECK=true end
+function c22348062.filter1(c)
+	return c:IsOriginalCodeRule(22348062) and c:IsFacedown() and c:IsHasEffect(EFFECT_CHANGE_TYPE) and c:IsType(TYPE_TRAP) and c:GetOriginalType()~=TYPE_TRAP
+end
+function c22348062.filter2(c)
+	return c:IsOriginalCodeRule(22348062) and c:IsFaceup() and c:GetOriginalType()~=0x200021
+end
+function c22348062.checkop1(e,tp,eg,ep,ev,re,r,rp)
+	local phase=Duel.GetCurrentPhase()
+	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL then return end
+	local g1=Duel.GetMatchingGroup(c22348062.filter1,tp,LOCATION_SZONE,LOCATION_SZONE,nil)
+	local g2=Duel.GetMatchingGroup(c22348062.filter2,tp,0xff,0xff,nil)
+	if KOISHI_CHECK and g1:GetCount()>0 then
+		g1:GetFirst():SetCardData(CARDDATA_TYPE,0x4)
+	end
+	if KOISHI_CHECK and g2:GetCount()>0 then
+		g2:GetFirst():SetCardData(CARDDATA_TYPE,0x200021)
+	end
 end
 function c22348062.tgfilter(c)
 	return c:IsAttackAbove(1000) and c:IsFaceup()
@@ -51,12 +78,12 @@ function c22348062.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c22348062.setfilter(c)
-	return c:IsSetCard(0x702) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x3702) and c:IsType(TYPE_MONSTER)
 end
 function c22348062.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsType(TYPE_MONSTER) then
-		if Duel.Destroy(tc,REASON_EFFECT)~=0 and tc:GetControler()==tp and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(22348062,2)) then
+	if tc:IsRelateToEffect(e) and tc:IsType(TYPE_MONSTER) then 
+		if Duel.Destroy(tc,REASON_EFFECT)~=0 and tc:GetPreviousControler()==tp and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(c22348062.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(22348062,2)) then
 			 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 			 local g=Duel.SelectMatchingCard(tp,c22348062.setfilter,tp,LOCATION_DECK,0,1,1,nil)
 			 local tc1=g:GetFirst()
@@ -70,28 +97,31 @@ function c22348062.operation(e,tp,eg,ep,ev,re,r,rp)
 			  e1:SetValue(TYPE_TRAP)
 			  tc1:RegisterEffect(e1)
 			 end
+			 Duel.ConfirmCards(1-tp,tc1)
 		end
 	end
 end
 function c22348062.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler():GetType()==TYPE_TRAP
 end
-function c22348062.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+function c22348062.stfilter(c,e,tp)
+	return (c:IsSetCard(0x3702) or c:GetType()==TYPE_TRAP) and ((c:IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)) or ((c:IsType(TYPE_FIELD) or (c:IsType(TYPE_TRAP+TYPE_SPELL) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0)) and c:IsSSetable(true)))
 end
-function c22348062.spop(e,tp,eg,ep,ev,re,r,rp)
+function c22348062.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)~=0 then
-		Duel.ConfirmCards(1-tp,c)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-		e1:SetValue(LOCATION_REMOVED)
-		c:RegisterEffect(e1,true)
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348062.stfilter,tp,LOCATION_GRAVE,0,1,c,e,tp) end
+end
+function c22348062.stop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local c=e:GetHandler()
+	local g=Duel.SelectMatchingCard(tp,c22348062.stfilter,tp,LOCATION_GRAVE,0,1,1,c,e,tp)
+	local tc=g:GetFirst()
+	if tc and tc:IsType(TYPE_MONSTER) then
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+		Duel.ConfirmCards(1-tp,tc)
+	elseif tc and tc:IsType(TYPE_TRAP+TYPE_SPELL) and (tc:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) then
+		Duel.SSet(tp,tc)
+		Duel.ConfirmCards(1-tp,tc)
 	end
 end
 function c22348062.Condition(e,tp,eg,ep,ev,re,r,rp)

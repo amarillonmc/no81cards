@@ -33,11 +33,8 @@ function c28316355.initial_effect(c)
 	c:RegisterEffect(e3)
 c28316355.shinycounter=true
 end
-function c28316355.slfilter(c)
-	return c:IsFaceup() and (c:GetCounter(0x1283)>0 or (c:IsSetCard(0x288) and c:IsLocation(LOCATION_MZONE)))
-end
 function c28316355.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c28316355.slfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	return Duel.GetCounter(tp,LOCATION_ONFIELD,LOCATION_ONFIELD,0x1283)>0
 end
 function c28316355.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -45,10 +42,7 @@ function c28316355.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c28316355.ctfilter(c)
-	return c:IsSetCard(0x288) and c:IsFaceup() and c:IsCanAddCounter(0x1283,1)
-end
-function c28316355.fyfilter(c)
-	return c:IsSetCard(0x288) and c:IsAttackPos() and c:IsFaceup() and c:IsCanChangePosition()
+	return c:IsLevel(3) and c:IsFaceup() and c:IsCanAddCounter(0x1283,1)
 end
 function c28316355.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -56,19 +50,20 @@ function c28316355.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c28316355.ctfilter,tp,LOCATION_MZONE,0,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
 		local g=Duel.SelectMatchingCard(tp,c28316355.ctfilter,tp,LOCATION_MZONE,0,1,1,nil)
-		if g:GetFirst():AddCounter(0x1283,1)~=0 and Duel.IsExistingMatchingCard(Card.IsCanChangePosition,tp,LOCATION_MZONE,0,1,c) and c:IsCanTurnSet() and Duel.SelectYesNo(tp,aux.Stringid(28316355,1)) then
+		Duel.HintSelection(g)
+		if g:GetFirst():AddCounter(0x1283,1)~=0 and Duel.IsExistingMatchingCard(Card.IsCanChangePosition,tp,LOCATION_MZONE,LOCATION_MZONE,1,c) and c:IsCanTurnSet() and Duel.SelectYesNo(tp,aux.Stringid(28316355,1)) then
 			Duel.BreakEffect()
 			Duel.ChangePosition(c,POS_FACEDOWN_DEFENSE)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-			local ash=Duel.SelectMatchingCard(tp,Card.IsCanChangePosition,tp,LOCATION_MZONE,0,1,1,c)
+			local ash=Duel.SelectMatchingCard(tp,Card.IsCanChangePosition,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,c)
 			Duel.HintSelection(ash)
 			Duel.ChangePosition(ash,POS_FACEUP_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
 		end
 	end
 end
 function c28316355.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1283,3,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x1283,3,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,1,0x1283,3,REASON_COST) end
+	Duel.RemoveCounter(tp,1,1,0x1283,3,REASON_COST)
 end
 function c28316355.thfilter(c)
 	return c:IsSetCard(0x283) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()

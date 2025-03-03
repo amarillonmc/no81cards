@@ -8,7 +8,7 @@ function c29056009.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_SUMMON_PROC)
 	e0:SetCondition(c29056009.ntcon)
-	c:RegisterEffect(e0)
+	--c:RegisterEffect(e0)
 --search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(39392286,0))
@@ -23,7 +23,48 @@ function c29056009.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
+	--chenweiduixiang sp
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(29056009,0))
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_BECOME_TARGET)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1,29056010)
+	e3:SetCondition(c29056009.spcon1)
+	e3:SetTarget(c29056009.sptg)
+	e3:SetOperation(c29056009.spop)
+	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e4:SetCondition(c29056009.spcon2)
+	c:RegisterEffect(e4)
 	c29056009.summon_effect=e1 
+end
+	--chenweiduixiang sp
+function c29056009.tgfilter(c,e)
+	return c:IsLocation(LOCATION_ONFIELD) and c:GetControler()==e:GetHandler():GetControler()
+end
+function c29056009.spcon1(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c29056009.tgfilter,1,nil,e)
+end
+function c29056009.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return (Duel.GetAttacker()==c or Duel.GetAttackTarget()==c)
+end
+function c29056009.spfilter(c,e,tp)
+	return c:IsFaceupEx() and c:IsCode(29065578) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c29056009.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c29056009.spfilter,tp,0x33,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0x33)
+end
+function c29056009.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c29056009.spfilter,tp,0x33,0,1,1,nil,e,tp)
+	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 end
 --search
 function c29056009.thfilter(c)

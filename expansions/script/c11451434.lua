@@ -52,8 +52,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 		g=Duel.GetOperatedGroup()
 		Duel.ConfirmCards(1-tp,g)
 		Duel.ShuffleDeck(tp)
-		local num=g:Filter(cm.filter,nil):GetClassCount(Card.GetLevel)
-		num=math.min(num,2)
+		local num=g:Filter(cm.filter,nil):GetClassCount(Card.GetLevel)//2
 		if num>0 then Duel.Draw(tp,num,REASON_EFFECT) end
 	end
 end

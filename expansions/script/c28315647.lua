@@ -36,7 +36,7 @@ function c28315647.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c28315647.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsLocation(LOCATION_REMOVED) and (re and re:GetHandler():IsSetCard(0x283)) and e:GetHandler():IsReason(REASON_EFFECT)
+	return (re and re:GetHandler():IsSetCard(0x283)) and e:GetHandler():IsReason(REASON_EFFECT)
 end
 function c28315647.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -46,20 +46,18 @@ end
 function c28315647.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	local ct=Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_REMOVED,LOCATION_REMOVED,c)
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and ct>0 then
-		local lv=c:GetLevel()
-		if ct>=lv then ct=lv-1 end
+	if c:IsRelateToEffect(e) and Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP) then
 		local e0=Effect.CreateEffect(c)
 		e0:SetType(EFFECT_TYPE_SINGLE)
-		e0:SetCode(EFFECT_UPDATE_LEVEL)
-		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e0:SetValue(-ct)
+		e0:SetCode(EFFECT_CHANGE_LEVEL)
+		e0:SetValue(1)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e0)
+		Duel.SpecialSummonComplete()
 	end
 end
 function c28315647.tdfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x283) and c:IsAbleToDeck()
+	return c:IsSetCard(0x283) and c:IsFaceup() and c:IsAbleToDeck()
 end
 function c28315647.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c28315647.tdfilter(chkc) end

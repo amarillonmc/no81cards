@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(22348020,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,22348020)
@@ -47,9 +47,10 @@ end
 function c22348020.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c22348020.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 and Duel.ConfirmCards(1-tp,g)~=0 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(22348020,2)) then
+			Duel.ShuffleDeck(tp)
+			Duel.BreakEffect()
+			Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
 function c22348020.condition(e,tp,eg,ep,ev,re,r,rp)

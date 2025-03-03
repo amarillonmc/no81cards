@@ -60,25 +60,6 @@ function c98500308.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ShuffleHand(tp)
 		Duel.SortDecktop(tp,tp,3)
 	else Duel.SortDecktop(tp,tp,4) end
-	Duel.BreakEffect()
-	local op=0
-	local g=Duel.GetFieldGroup(p,LOCATION_HAND,0)
-	if #g>=1 and Duel.IsExistingMatchingCard(c98500308.cfilter,tp,LOCATION_MZONE,0,1,nil) then
-		op=Duel.SelectOption(tp,aux.Stringid(98500308,3),aux.Stringid(98500308,4))
-	elseif #g>=1 then
-		op=Duel.SelectOption(tp,aux.Stringid(98500308,3))
-	else
-		op=Duel.SelectOption(tp,aux.Stringid(98500308,4))+1
-	end 
-	if op==0 then
-		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
-	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sg=Duel.SelectMatchingCard(tp,c98500308.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
-		if #sg>0 then
-			Duel.SendtoGrave(sg,REASON_EFFECT)
-		end
-	end
 end
 function c98500308.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c98500308.filter(chkc) end

@@ -13,7 +13,7 @@ function c11561052.initial_effect(c)
 	c:RegisterEffect(e2)
 	--spsummon
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCode(EVENT_FREE_CHAIN)
@@ -23,23 +23,39 @@ function c11561052.initial_effect(c)
 	e3:SetTarget(c11561052.spstg2)
 	e3:SetOperation(c11561052.spsop2)
 	c:RegisterEffect(e3)
+	--act in hand
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(11561052,2))
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetCondition(c11561052.handcon)
+	c:RegisterEffect(e2)
 	
 end
+function c11561052.hafilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_TRAP)
+end
+function c11561052.handcon(e)
+	return Duel.IsExistingMatchingCard(c11561052.hafilter,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil)
+end
 function c11561052.spfilter2(c,e,tp)
-	return c:GetOriginalType()&TYPE_MONSTER>0 and c:GetType()&TYPE_CONTINUOUS+TYPE_TRAP==TYPE_CONTINUOUS+TYPE_TRAP and c:IsFaceup() and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsSSetable() and (c:GetControler()==tp or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
+	return c:GetOriginalType()&TYPE_MONSTER>0 and c:GetType()&TYPE_CONTINUOUS+TYPE_TRAP==TYPE_CONTINUOUS+TYPE_TRAP and c:IsFaceup() and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsAbleToHand() and (c:GetControler()==tp or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
 end
 function c11561052.spstg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and c11561052.spfilter2(chkc,e,tp) end
 	if chk==0 then return Duel.IsExistingTarget(c11561052.spfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,c11561052.spfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 end
 function c11561052.spsop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local c=e:GetHandler()
-	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and c:IsRelateToEffect(e) and c:IsSSetable() and (c:GetControler()==tp or Duel.GetLocationCount(tp,LOCATION_SZONE)>0) then
+	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and c:IsRelateToEffect(e) and c:IsAbleToHand()  then
 		Duel.BreakEffect()
-		Duel.SSet(tp,c)
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,c)
 	end
 end
 function c11561052.spfilter(c,e,tp)

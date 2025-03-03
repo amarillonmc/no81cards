@@ -1,6 +1,5 @@
 --波动武士·音波刃
-local m=11451433
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)

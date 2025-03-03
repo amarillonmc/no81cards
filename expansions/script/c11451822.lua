@@ -20,6 +20,22 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
+	local e6=e2:Clone()
+	e6:SetCode(EVENT_CUSTOM+m+1)
+	c:RegisterEffect(e6)
+	if not cm.global_check then
+		cm.global_check=true
+		local _Overlay=Duel.Overlay
+		function Duel.Overlay(xc,v,...)
+			local t=Auxiliary.GetValueType(v)
+			local g=Group.CreateGroup()
+			if t=="Card" then g:AddCard(v) else g=v end
+			if g:IsExists(Card.IsLocation,1,nil,LOCATION_REMOVED) then
+				Duel.RaiseEvent(g:Filter(Card.IsLocation,nil,LOCATION_REMOVED),EVENT_CUSTOM+m+1,e,0,0,0,0)
+			end
+			return _Overlay(xc,v,...)
+		end
+	end
 end
 function cm.filter(c,e,tp)
 	return c:IsFaceup() and c:IsCanBeEffectTarget(e) and c:IsLevelAbove(1)

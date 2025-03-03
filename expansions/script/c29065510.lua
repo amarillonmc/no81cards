@@ -119,15 +119,20 @@ end
 function cm.df(c)
 	return cm.stf(c) and c:IsAbleToDeck()
 end
+function cm.df2(c)
+	return cm.stf(c) and c:IsLocation(LOCATION_DECK+LOCATION_EXTRA)
+end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.df,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
+	local gc=Duel.GetMatchingGroupCount(Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,e:GetHandler())
+	local gc2=Duel.GetMatchingGroupCount(cm.df,tp,LOCATION_GRAVE,0,e:GetHandler())
+	if chk==0 then return gc>0 and (gc2<3 or Duel.IsPlayerCanDraw(tp,1)) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.df),tp,LOCATION_GRAVE,0,1,99,nil)
-	local ct=#g
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE,0,1,5,nil)
 	if Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)==0 then return end
+	local ct=g:FilterCount(cm.df2,nil)
 	if ct<3 then return false end
 	local dt=math.floor(ct/3) 
 	Duel.BreakEffect()

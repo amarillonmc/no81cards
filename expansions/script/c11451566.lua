@@ -16,6 +16,74 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.destg)
 	e1:SetOperation(cm.desop)
 	c:RegisterEffect(e1)
+	if not cm.global_check then
+		cm.global_check=true
+		local _Equip=Duel.Equip
+		Duel.Equip=function(p,c,...)
+			if not (c:IsControler(p) and c:IsLocation(LOCATION_SZONE)) then c:RegisterFlagEffect(11451566,RESET_CHAIN,0,1) c:RegisterFlagEffect(11451566,RESET_CHAIN,0,1) end
+			local res=_Equip(p,c,...)
+			return res
+		end
+		local _CRegisterEffect=Card.RegisterEffect
+		function Card.RegisterEffect(c,e,...)
+			local res=_CRegisterEffect(c,e,...)
+			if e:GetCode()==EFFECT_EQUIP_LIMIT and c:GetFlagEffect(11451566)>0 then
+				c:ResetFlagEffect(11451566)
+				cm.deop2(e,0,Group.FromCards(c),0,0,e,0,0)
+			end
+			return res
+		end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_SUMMON_SUCCESS)
+		e1:SetCondition(cm.decon)
+		e1:SetOperation(cm.deop2)
+		Duel.RegisterEffect(e1,0)
+		local e2=e1:Clone()
+		e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(e2,0)
+		local e3=e1:Clone()
+		e3:SetCode(EVENT_MOVE)
+		Duel.RegisterEffect(e3,0)
+		local e4=e1:Clone()
+		e4:SetCode(EVENT_CHAINING)
+		e4:SetCondition(cm.decon3)
+		e4:SetOperation(cm.deop3)
+		Duel.RegisterEffect(e4,0)
+		local e5=Effect.CreateEffect(c)
+		e5:SetType(EFFECT_TYPE_FIELD)
+		e5:SetCode(EFFECT_CANNOT_SUMMON)
+		e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e5:SetTargetRange(1,1)
+		e5:SetTarget(cm.costchk)
+		Duel.RegisterEffect(e5,0)
+	end
+end
+function cm.costchk(e,c,tp,st)
+	if bit.band(st,SUMMON_TYPE_DUAL)~=SUMMON_TYPE_DUAL then return false end
+	if c:GetFlagEffect(11451566)==0 then c:RegisterFlagEffect(11451566,RESET_EVENT+RESETS_STANDARD,0,1) end
+	return false
+end
+function cm.filter12(c,e)
+	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED))) or c:GetFlagEffect(11451566)>1 then return false end
+	if e:GetCode()==EVENT_MOVE then
+		local b1,g1=Duel.CheckEvent(EVENT_SUMMON_SUCCESS,true)
+		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
+		return (not b1 or not g1:IsContains(c)) and (not b2 or not g2:IsContains(c))
+	end
+	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(11451566)>0)
+end
+function cm.decon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.filter12,1,nil,e)
+end
+function cm.deop2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RaiseEvent(eg,EVENT_CUSTOM+11451566,re,r,rp,ep,ev)
+end
+function cm.decon3(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():GetFieldID()==re:GetHandler():GetRealFieldID()
+end
+function cm.deop3(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RaiseEvent(eg,EVENT_CUSTOM+11451566,re,r,rp,ep,ev)
 end
 function cm.lcheck(g)
 	return not g:IsExists(cm.lfilter,1,nil,g)
@@ -88,7 +156,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetDescription(aux.Stringid(m,1))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetRange(LOCATION_MZONE)
-		e1:SetCode(EVENT_MOVE)
+		e1:SetCode(EVENT_CUSTOM+11451566)
 		e1:SetLabel(fd)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_DELAY)
 		e1:SetCondition(cm.descon)
@@ -97,16 +165,16 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1,true)
 		local e2=e1:Clone()
 		e2:SetCode(EVENT_SUMMON_SUCCESS)
-		c:RegisterEffect(e2,true)
+		--c:RegisterEffect(e2,true)
 		local e3=e1:Clone()
 		e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-		c:RegisterEffect(e3,true)
+		--c:RegisterEffect(e3,true)
 	end
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	local fd=e:GetLabel()
 	local tc=cm.GetCardsInZone(tp,fd)
-	return tc and eg:IsContains(tc) and (tc:IsStatus(STATUS_EFFECT_ENABLED) or tc:IsLocation(LOCATION_SZONE)) and not ((Duel.CheckEvent(EVENT_SUMMON_SUCCESS) or Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS)) and e:GetCode()==EVENT_MOVE and tc:IsLocation(LOCATION_MZONE))
+	return tc and eg:IsContains(tc) --and (tc:IsStatus(STATUS_EFFECT_ENABLED) or tc:IsLocation(LOCATION_SZONE)) and not ((Duel.CheckEvent(EVENT_SUMMON_SUCCESS) or Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS)) and e:GetCode()==EVENT_MOVE and tc:IsLocation(LOCATION_MZONE))
 end
 function cm.desfilter(c,p,loc,seq)
 	local seq1=c:GetSequence()

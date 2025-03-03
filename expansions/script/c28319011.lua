@@ -58,14 +58,14 @@ function c28319011.activate(e,tp,eg,ep,ev,re,r,rp,op)
 		if Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 and sc:IsSummonLocation(LOCATION_HAND) then
 			Duel.Recover(tp,1650,REASON_EFFECT)
 		end
-		if Duel.GetLP(tp)>=10000 then
+		if true then
 			local te=sc.recover_effect
 			if not te then return end
 			local tg=te:GetTarget()
 			if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) and Duel.SelectYesNo(tp,aux.Stringid(28319011,3)) then
 				Duel.BreakEffect()
 				local lp=Duel.GetLP(tp)
-				Duel.SetLP(tp,lp-1000)
+				Duel.SetLP(tp,lp-1500)
 				local op=te:GetOperation()
 				if op then op(e,tp,eg,ep,ev,re,r,rp) end
 			end

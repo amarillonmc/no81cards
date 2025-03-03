@@ -12,54 +12,52 @@ function c9910436.initial_effect(c)
 	c:RegisterEffect(e1)
 	--damage
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_REFLECT_BATTLE_DAMAGE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTargetRange(0,1)
-	e2:SetCondition(c9910436.rfcon)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
+	e2:SetValue(c9910436.damval)
 	c:RegisterEffect(e2)
 end
 function c9910436.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_LINK
 end
 function c9910436.atkop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,9910436)
 	local c=e:GetHandler()
-	if Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c)
-		and c:IsFaceup() and Duel.SelectYesNo(tp,aux.Stringid(9910436,0)) then
-		Duel.Hint(HINT_CARD,0,9910436)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local cg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,63,c)
-		Duel.HintSelection(cg)
-		Duel.SendtoGrave(cg,REASON_EFFECT)
-		local oc=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)		
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
-		e1:SetValue(c9910436.atkval)
-		e1:SetLabel(oc)
-		c:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_FIELD)
-		e2:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
-		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e2:SetTargetRange(1,0)
-		e2:SetCondition(c9910436.damcon)
-		e2:SetValue(DOUBLE_DAMAGE)
-		e2:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e2,tp)
+	local ct=0
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,63,c)
+	if #g>0 then
+		Duel.HintSelection(g)
+		Duel.SendtoGrave(g,REASON_EFFECT)
+		ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
+	end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetValue(ct*1000)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	e2:SetValue(1)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	c:RegisterEffect(e2,true)
+end
+function c9910436.GetIntType(c)
+	local typ=bit.band(c:GetOriginalType(),0x7)
+	if TYPE_MONSTER&typ~=0 then
+		return TYPE_MONSTER
+	elseif TYPE_SPELL&typ~=0 then
+		return TYPE_SPELL
+	elseif TYPE_TRAP&typ~=0 then
+		return TYPE_TRAP
 	end
 end
-function c9910436.atkval(e,c)
-	local ph=Duel.GetCurrentPhase()
-	if ph<PHASE_BATTLE_START or ph>PHASE_BATTLE then return 0 end
-	return e:GetLabel()*1400
-end
-function c9910436.damcon(e)
-	local ph=Duel.GetCurrentPhase()
-	return ph>PHASE_MAIN1 and ph<PHASE_MAIN2
-end
-function c9910436.rfcon(e)
-	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()
+function c9910436.damval(e,damp)
+	if damp==1-e:GetHandlerPlayer() then
+		local g=Duel.GetMatchingGroup(Card.IsFaceup,e:GetHandlerPlayer(),0,LOCATION_ONFIELD,nil)
+		return g:GetClassCount(c9910436.GetIntType)*400
+	else return -1 end
 end

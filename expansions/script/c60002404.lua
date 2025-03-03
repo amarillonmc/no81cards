@@ -58,7 +58,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 					local mg=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND+LOCATION_MZONE,0,nil,TYPE_MONSTER)
 					local spg=ssg:Select(tp,1,1,nil)
 					if Duel.GetMZoneCount(tp,c)>0 then
-						Duel.SynchroSummon(tp,spg:GetFirst(),nil)
+						Duel.SynchroSummon(tp,spg:GetFirst(),nil,mg)
 					end
 				end
 			else

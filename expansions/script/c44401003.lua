@@ -53,7 +53,19 @@ function c44401003.operation(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsLocation(LOCATION_HAND+LOCATION_MZONE) then
 		Duel.Summon(tp,tc,true,nil)
 	else
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2)
+		Duel.SpecialSummonComplete()
 		c:RegisterFlagEffect(44401003,RESET_EVENT+RESETS_WITHOUT_TEMP_REMOVE+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401003,0))
 	end
 end

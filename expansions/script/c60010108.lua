@@ -38,7 +38,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,1,REASON_EFFECT)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x62a) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0xc620) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

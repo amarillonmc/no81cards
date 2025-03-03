@@ -11,10 +11,10 @@ function c10200000.initial_effect(c)
     e1:SetTarget(c10200000.tg1)
     e1:SetOperation(c10200000.op1)
     c:RegisterEffect(e1)
-    -- 双召堆墓
+    -- 双召炸卡
     local e2=Effect.CreateEffect(c)
     e2:SetDescription(aux.Stringid(10200000,1))
-    e2:SetCategory(CATEGORY_TOGRAVE)
+    e2:SetCategory(CATEGORY_DESTROY)
     e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
     e2:SetProperty(EFFECT_FLAG_DELAY)
     e2:SetCode(EVENT_SUMMON_SUCCESS)
@@ -55,16 +55,16 @@ function c10200000.op1(e,tp,eg,ep,ev,re,r,rp)
 end
 -- 2
 function c10200000.filter2(c)
-    return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xe21) and c:IsAbleToGrave()
+    return c:IsSetCard(0xe21) and c:IsDestructable()
 end
 function c10200000.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c10200000.filter2,tp,LOCATION_DECK,0,1,nil) end
-    Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+    Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_DECK)
 end
 function c10200000.op2(e,tp,eg,ep,ev,re,r,rp)
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
     local g=Duel.SelectMatchingCard(tp,c10200000.filter2,tp,LOCATION_DECK,0,1,1,nil)
-    if #g>0 then Duel.SendtoGrave(g,REASON_EFFECT) end
+    if #g>0 then Duel.Destroy(g,REASON_EFFECT) end
 end
 -- 3
 function c10200000.filter3(c,e,tp)
