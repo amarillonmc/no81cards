@@ -71,13 +71,14 @@ function c28315443.lvfilter(c,lv)
 	return c:IsRace(RACE_FAIRY) and c:IsFaceup() and not c:IsLevel(lv) and c:IsLevelAbove(1)
 end
 function c28315443.lvtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28315443.lvfilter,tp,LOCATION_MZONE,0,1,nil,e:GetHandler():GetLevel()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c28315443.lvfilter,tp,LOCATION_MZONE,0,1,nil,e:GetHandler():GetLevel()) and e:GetHandler():IsLevelAbove(1) end
 end
 function c28315443.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local tc=Duel.SelectTarget(tp,c28315443.lvfilter,tp,LOCATION_MZONE,0,1,1,nil,c:GetLevel()):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c28315443.lvfilter,tp,LOCATION_MZONE,0,1,1,nil,c:GetLevel()):GetFirst()
+	if not tc then return end
 	Duel.HintSelection(Group.FromCards(tc))
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -86,6 +87,7 @@ function c28315443.lvop(e,tp,eg,ep,ev,re,r,rp)
 	e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 	c:RegisterEffect(e0)
 	if Duel.SelectYesNo(tp,aux.Stringid(28315443,2)) then
+		Duel.BreakEffect()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_LEVEL)
