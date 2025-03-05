@@ -1,3 +1,4 @@
+-- 卡号：10111172
 function c10111172.initial_effect(c)
 	aux.AddCodeList(c,10111169)
 	--atkup
@@ -6,7 +7,7 @@ function c10111172.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetValue(c10111170.val)
+	e1:SetValue(c10111172.val)
 	c:RegisterEffect(e1)
 	--defup
 	local e2=e1:Clone()
@@ -34,7 +35,7 @@ function c10111172.initial_effect(c)
 	e4:SetValue(LOCATION_REMOVED)
 	c:RegisterEffect(e4)
 end
-function c10111170.val(e,c)
+function c10111172.val(e,c)
 	return Duel.GetMatchingGroupCount(c10111170.filter,c:GetControler(),LOCATION_MZONE,LOCATION_MZONE,e:GetHandler())*100
 end
 function c10111172.cfilter(c)

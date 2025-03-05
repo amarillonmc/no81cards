@@ -78,7 +78,7 @@ function s.damop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
-		Duel.ConfirmCards(c)
+		Duel.ConfirmCards(1-tp,c)
 		local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 		local tc=eg:GetFirst()
 		local atk=tc:GetAttack()/2
