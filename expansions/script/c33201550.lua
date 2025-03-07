@@ -23,7 +23,7 @@ function VHisc_ESP.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(VHisc_ESP.spfilter,tp,LOCATION_REMOVED,0,nil)
-	return g:GetCount()>0 and (c:IsLocation(LOCATION_HAND+LOCATION_GRAVE) or (VHisc_CardType==222 and c:IsLocation(LOCATION_DECK) and Duel.GetFlagEffect(tp,33201550)==0))
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and g:GetCount()>0 and (c:IsLocation(LOCATION_HAND+LOCATION_GRAVE) or (VHisc_CardType==222 and c:IsLocation(LOCATION_DECK) and Duel.GetFlagEffect(tp,33201550)==0))
 end
 function VHisc_ESP.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(VHisc_ESP.spfilter,tp,LOCATION_REMOVED,0,nil)

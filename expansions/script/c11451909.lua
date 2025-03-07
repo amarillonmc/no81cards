@@ -132,9 +132,11 @@ function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 	local turne=c[c]
-	if turne then
+	if turne and aux.GetValueType(turne)=="Effect" then
 		local op=turne:GetOperation()
-		op(turne,turne:GetOwnerPlayer(),nil,0,0,0,0,0)
+		if aux.GetValueType(op)=="function" then
+			op(turne,turne:GetOwnerPlayer(),nil,0,0,0,0,0)
+		end
 	end
 	pnfl_desreplace=false
 end
