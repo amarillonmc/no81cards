@@ -6,6 +6,7 @@ function s.initial_effect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(TIMING_STANDBY_PHASE)
 	e1:SetOperation(s.activate)
 	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
 	c:RegisterEffect(e1)
@@ -14,6 +15,9 @@ function s.initial_effect(c)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e2:SetCondition(s.handcon)
 	c:RegisterEffect(e2)
+end
+function s.handcon(e)
+	return Duel.GetCurrentPhase()==PHASE_STANDBY
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local e4=Effect.CreateEffect(e:GetHandler())
@@ -27,9 +31,6 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetOperation(s.costop)
 	e4:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e4,tp)
-end
-function s.handcon(e)
-	return Duel.GetCurrentPhase()==PHASE_STANDBY
 end
 function s.costtg(e,te,tp)
 	e:SetLabelObject(te:GetHandler())

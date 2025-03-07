@@ -34,6 +34,7 @@ function cm.initial_effect(c)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCondition(c22348063.spcon)
+	e3:SetCost(aux.bfgcost)
 	e3:SetTarget(c22348063.thtg)
 	e3:SetOperation(c22348063.thop)
 	c:RegisterEffect(e3)
@@ -44,15 +45,31 @@ function cm.initial_effect(c)
 		ge1:SetCode(EVENT_ADJUST)
 		ge1:SetOperation(c22348063.checkop1)
 		Duel.RegisterEffect(ge1,0)
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_LEAVE_FIELD)
+		ge2:SetOperation(c22348063.checkop2)
+		Duel.RegisterEffect(ge2,0)
 	end
 end
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
+function c22348063.checkfilter(c)
+	return c:IsOriginalCodeRule(22348063)
+end
+function c22348063.checkop2(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(c22348063.checkfilter,nil)
+	local tc=g:GetFirst()
+	while tc do
+		tc:RegisterFlagEffect(22348063,RESET_CHAIN,0,1)
+		tc=g:GetNext()
+	end
+end
 function c22348063.filter1(c)
 	return c:IsOriginalCodeRule(22348063) and c:IsFacedown() and c:IsHasEffect(EFFECT_CHANGE_TYPE) and c:IsType(TYPE_TRAP) and c:GetOriginalType()~=TYPE_TRAP
 end
 function c22348063.filter2(c)
-	return c:IsOriginalCodeRule(22348063) and c:IsFaceup() and c:GetOriginalType()~=0x200021
+	return c:IsOriginalCodeRule(22348063) and c:IsFaceup() and c:GetOriginalType()~=0x200021 and not Duel.GetFlagEffect(tp,22348063)
 end
 function c22348063.checkop1(e,tp,eg,ep,ev,re,r,rp)
 	local phase=Duel.GetCurrentPhase()
