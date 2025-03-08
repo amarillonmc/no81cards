@@ -199,7 +199,7 @@ function cm.LinkOperation(f,minc,maxc,gf)
 				if #g1>0 then
 					--g1:KeepAlive()
 					Duel.ConfirmCards(1-tp,g1)
-					Duel.RaiseEvent(g1,EVENT_CUSTOM+m,e,0,0,0,0)
+					--Duel.RaiseEvent(g1,EVENT_CUSTOM+m,e,0,0,0,0)
 				end
 				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_LINK)
 				g:DeleteGroup()
@@ -276,7 +276,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 		rc:CancelToGrave(false)
 	end
-	re:Reset() --boom!!!
+	--re:Reset() --boom!!!
 end
 function cm.chcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED) and re:GetHandler():IsSetCard(0x97d) and re:GetHandler():GetType()&0x100004==0x100004 and re:IsHasType(EFFECT_TYPE_ACTIVATE)
