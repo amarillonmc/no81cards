@@ -5,13 +5,14 @@ function c24501030.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
-	--search
+	--to hand
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(1190)
-	e1:SetCategory(CATEGORY_SEARCH)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetDescription(aux.Stringid(24501030,3))
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_SZONE)
-	e1:SetCountLimit(1,24501030)
+	e1:SetCost(c24501030.thcost)
 	e1:SetTarget(c24501030.thtg)
 	e1:SetOperation(c24501030.thop)
 	c:RegisterEffect(e1)
@@ -22,30 +23,42 @@ function c24501030.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1,24501031)
-	--e2:SetCondition(c24501030.damcon)
-	e2:SetCost(c24501030.damcost)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e2:SetCost(c24501030.cost)
 	e2:SetTarget(c24501030.damtg)
 	e2:SetOperation(c24501030.damop)
 	c:RegisterEffect(e2)
-	--synchro summon
+	--recover
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(24501030,1))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetCategory(CATEGORY_RECOVER)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_SZONE)
-	e3:SetCountLimit(1,24501032)
-	e3:SetTarget(c24501030.sctg)
-	e3:SetOperation(c24501030.scop)
+	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
+	e3:SetCost(c24501030.cost)
+	e3:SetTarget(c24501030.rectg)
+	e3:SetOperation(c24501030.recop)
 	c:RegisterEffect(e3)
+	--deckdes
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_TO_GRAVE)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetTarget(c24501030.tgtg)
+	e4:SetOperation(c24501030.tgop)
+	c:RegisterEffect(e4)
+end
+function c24501030.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function c24501030.thfilter(c)
-	return c:IsSetCard(0x501) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x501) and not c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c24501030.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c24501030.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c24501030.thop(e,tp,eg,ep,ev,re,r,rp)
@@ -56,10 +69,7 @@ function c24501030.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,tc)
 	end
 end
-function c24501030.damcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(24501030)==0
-end
-function c24501030.damcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c24501030.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGraveAsCost,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
@@ -67,49 +77,24 @@ function c24501030.damcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c24501030.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,3000)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
 end
 function c24501030.damop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Damage(1-tp,3000,REASON_EFFECT)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		c:RegisterFlagEffect(24501030,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
-	end
+	Duel.Damage(1-tp,1000,REASON_EFFECT)
 end
-function c24501030.mfilter(c)
-	return c:IsSetCard(0x501) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
-end
-function c24501030.syncheck(g,tp,syncard)
-	return g:IsExists(c24501030.mfilter,1,nil) and syncard:IsSynchroSummonable(nil,g,#g-1,#g-1) and aux.SynMixHandCheck(g,tp,syncard)
-end
-function c24501030.scfilter(c,tp,mg)
-	return mg:CheckSubGroup(c24501030.syncheck,2,#mg,tp,c)
-end
-function c24501030.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local mg=Duel.GetSynchroMaterial(tp)
-		if mg:IsExists(Card.GetHandSynchro,1,nil) then
-			local mg2=Duel.GetMatchingGroup(nil,tp,LOCATION_HAND,0,nil)
-			if mg2:GetCount()>0 then mg:Merge(mg2) end
-		end
-		return Duel.IsExistingMatchingCard(c24501030.scfilter,tp,LOCATION_EXTRA,0,1,nil,tp,mg)
-	end
+function c24501030.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
-function c24501030.scop(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetSynchroMaterial(tp)
-	if mg:IsExists(Card.GetHandSynchro,1,nil) then
-		local mg2=Duel.GetMatchingGroup(nil,tp,LOCATION_HAND,0,nil)
-		if mg2:GetCount()>0 then mg:Merge(mg2) end
-	end
-	local g=Duel.GetMatchingGroup(c24501030.scfilter,tp,LOCATION_EXTRA,0,nil,tp,mg)
-	if g:GetCount()>0 and e:GetHandler():IsRelateToEffect(e) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=g:Select(tp,1,1,nil)
-		local sc=sg:GetFirst()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-		local tg=mg:SelectSubGroup(tp,c24501030.syncheck,false,2,#mg,tp,sc)
-		Duel.SynchroSummon(tp,sc,nil,tg,#tg-1,#tg-1)
-	end
+function c24501030.recop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Recover(tp,1000,REASON_EFFECT)
+end
+function c24501030.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,3)
+end
+function c24501030.tgop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.DiscardDeck(tp,3,REASON_EFFECT)
 end
