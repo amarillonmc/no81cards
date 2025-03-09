@@ -51,7 +51,8 @@ function c4058.initial_effect(c)
 	e12:SetRange(LOCATION_ONFIELD)
 	e12:SetTargetRange(1,0)
 	e12:SetValue(3)
-	e12:SetTarget(aux.TargetBoolFunction(Card.IsRace,0x8000))
+	e12:SetCondition(c4058.addsumcon)
+	e12:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_REPTILE))
 	c:RegisterEffect(e12)
 	--oath effects
 	local e13=Effect.CreateEffect(c)
@@ -183,6 +184,10 @@ function c4058.initial_effect(c)
 		ge3:SetCode(EVENT_MSET)
 		Duel.RegisterEffect(ge3,0)
 	end
+	Duel.AddCustomActivityCounter(4058,ACTIVITY_NORMALSUMMON,c4058.counterfilter)
+end
+function c4058.counterfilter(c)
+	return c:IsRace(RACE_REPTILE) and c:IsFaceup()
 end
 
 --special summon rule
@@ -242,6 +247,10 @@ end
 --immune
 function c4058.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
+end
+
+function c4058.addsumcon(e)
+	return Duel.GetCustomActivityCount(4058,e:GetHandlerPlayer(),ACTIVITY_NORMALSUMMON)==0
 end
 
 --summon limit

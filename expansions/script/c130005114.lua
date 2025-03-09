@@ -24,7 +24,7 @@ function cm.matfilter(c)
 end
 function cm.syntg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,0,nil)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,e:GetHandler(),nil,g) end
+	if chk==0 then return #g>0 and Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,e:GetHandler(),nil,g) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.synop(e,tp,eg,ep,ev,re,r,rp)
@@ -38,7 +38,7 @@ function cm.synop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,0,nil) 
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,e:GetHandler(),g) end
+	if chk==0 then return #g>0 and Duel.IsExistingMatchingCard(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,e:GetHandler(),g) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
@@ -51,7 +51,7 @@ function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.linktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,0,nil) 
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,e:GetHandler(),g) end
+	if chk==0 then return #g>0 and Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,e:GetHandler(),g) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.linkop(e,tp,eg,ep,ev,re,r,rp)

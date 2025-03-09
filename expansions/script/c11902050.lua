@@ -65,6 +65,7 @@ end
 function s.tgfi2ter(c,tp)
 	return c:IsPreviousLocation(0x14) and c:IsLocation(0x20)
         and c:IsPreviousControler(tp) and c:GetReasonPlayer()==1-tp
+        and c:GetOriginalType()&TYPE_MONSTER>0
 end
 function s.tsfi1ter(c,e,tp,tc)
 	return s.tgfi2ter(c,tp) and c:IsCanBeEffectTarget(e)
