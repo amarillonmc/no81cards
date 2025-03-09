@@ -44,6 +44,7 @@ function c10200003.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c10200003.filter1,tp,LOCATION_EXTRA,0,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_EXTRA)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200003.op1(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
@@ -61,6 +62,7 @@ function c10200003.filter2(c)
 end
 function c10200003.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c10200003.filter2,tp,LOCATION_DECK,0,1,nil) end
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200003.op2(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
@@ -87,12 +89,11 @@ end
 function c10200003.filter3(c)
     return c:IsSetCard(0xe21) and c:IsAbleToDeck()
 end
-
 function c10200003.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c10200003.filter3,tp,LOCATION_GRAVE,0,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
-
 function c10200003.op3(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
     local g=Duel.SelectMatchingCard(tp,c10200003.filter3,tp,LOCATION_GRAVE,0,1,1,nil)

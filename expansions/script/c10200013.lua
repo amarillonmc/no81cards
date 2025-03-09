@@ -53,6 +53,7 @@ function c10200013.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
     end
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_DECK)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200013.op1(e,tp,eg,ep,ev,re,r,rp)
     if not e:GetHandler():IsRelateToEffect(e) then return end
@@ -75,6 +76,7 @@ function c10200013.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
         return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil)
     end
     Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_ONFIELD+LOCATION_GRAVE)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200013.op2(e,tp,eg,ep,ev,re,r,rp)
     local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
@@ -115,6 +117,7 @@ function c10200013.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
             and Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)>0
     end
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,2,0,LOCATION_ONFIELD+LOCATION_HAND)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200013.op3(e,tp,eg,ep,ev,re,r,rp)
     local g1=Duel.GetMatchingGroup(Card.IsDestructable,tp,0,LOCATION_ONFIELD,nil)

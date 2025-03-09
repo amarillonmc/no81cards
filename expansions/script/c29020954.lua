@@ -116,6 +116,6 @@ function c29020954.actfilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_FISH) and c:IsSetCard(0x87af)
 end
 function c29020954.handcon(e)
-	local g=Duel.GetMatchingGroup(c29020954.actfilter,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(c29020954.actfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)
 	return g:GetCount()>=1
 end

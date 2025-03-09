@@ -26,7 +26,7 @@ function c10200016.initial_effect(c)
     c:RegisterEffect(e2)
     -- 效果无效
     local e3=Effect.CreateEffect(c)
-    e3:SetDescription(aux.Stringid(10200016,1))
+    e3:SetDescription(aux.Stringid(10200016,2))
     e3:SetCategory(CATEGORY_DISABLE)
     e3:SetType(EFFECT_TYPE_QUICK_O)
     e3:SetCode(EVENT_FREE_CHAIN)
@@ -35,6 +35,7 @@ function c10200016.initial_effect(c)
     e3:SetCountLimit(1,10200017)
     e3:SetCondition(c10200016.con3)
     e3:SetCost(c10200016.cost3)
+    e3:SetTarget(c10200016.tg3)
     e3:SetOperation(c10200016.op3)
     c:RegisterEffect(e3)
 end
@@ -51,6 +52,7 @@ function c10200016.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
     local g1=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_ONFIELD,0,1,1,nil)
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,1,0,0)
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200016.op1(e,tp,eg,ep,ev,re,r,rp)
     local tc=Duel.GetFirstTarget()
@@ -71,6 +73,12 @@ end
 function c10200016.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+end
+function c10200016.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) end
+	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200016.op3(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()

@@ -3,6 +3,7 @@ function c10200011.initial_effect(c)
     aux.EnablePendulumAttribute(c)
 	--atk up
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(10200011,0))
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
 	e1:SetRange(LOCATION_PZONE)
@@ -12,7 +13,7 @@ function c10200011.initial_effect(c)
 	c:RegisterEffect(e1)
     --双召检索
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(10200011,0))
+	e2:SetDescription(aux.Stringid(10200011,1))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -26,6 +27,7 @@ function c10200011.initial_effect(c)
 	c:RegisterEffect(e3)
     --遗言检索
 	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(10200011,2))
 	e4:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_DESTROYED)
@@ -42,6 +44,7 @@ end
 function c10200011.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c10200011.filter1,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200011.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -58,6 +61,7 @@ end
 function c10200011.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c10200011.filter2,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200011.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

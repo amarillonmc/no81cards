@@ -4,6 +4,14 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x1)
 	c:EnableReviveLimit()
+	--limit summons
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e0:SetOperation(c11561055.lsop)
+	c:RegisterEffect(e0)
+
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
@@ -43,6 +51,18 @@ function cm.initial_effect(c)
 	e4:SetTarget(c11561055.antarget)
 	c:RegisterEffect(e4)
 	
+end
+function c11561055.lsop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_CANNOT_SUMMON)
+	Duel.RegisterEffect(e2,tp)
 end
 function c11561055.antarget(e,c)
 	return c~=e:GetHandler()

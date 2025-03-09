@@ -36,6 +36,7 @@ function c10200022.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_PZONE,0,1,nil,0xe21) end
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_PZONE)
     Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200022.op1(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
@@ -51,6 +52,7 @@ end
 function c10200022.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c10200022.filter2,tp,LOCATION_EXTRA,0,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_EXTRA)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200022.op2(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

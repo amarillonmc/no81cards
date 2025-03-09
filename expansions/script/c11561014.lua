@@ -52,7 +52,7 @@ function c11561014.addop(e,tp,eg,ep,ev,re,r,rp)
 end 
 function c11561014.tkfil(c,e,tp) 
 	local zone=e:GetHandler():GetLinkedZone()
-	return Duel.IsPlayerCanSpecialSummonMonster(tp,11561015,0,TYPES_TOKEN_MONSTER,c:GetAttack(),2500,8,c:GetRace(),c:GetAttribute())   
+	return c:IsType(TYPE_MONSTER) Duel.IsPlayerCanSpecialSummonMonster(tp,11561015,0,TYPES_TOKEN_MONSTER,c:GetAttack(),2500,8,c:GetRace(),c:GetAttribute())   
 end 
 function c11561014.ctcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1,3,REASON_COST) end

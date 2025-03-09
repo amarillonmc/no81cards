@@ -45,6 +45,7 @@ function c10200006.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c10200006.filter1,tp,LOCATION_DECK,0,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_DECK)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200006.op1(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
@@ -63,6 +64,7 @@ function c10200006.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		return dg:GetClassCount(Card.GetCode)>=3
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200006.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c10200006.thfilter,tp,LOCATION_DECK,0,nil)
@@ -85,6 +87,7 @@ function c10200006.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(c10200006.filter3,tp,LOCATION_EXTRA,0,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_EXTRA)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200006.op3(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()

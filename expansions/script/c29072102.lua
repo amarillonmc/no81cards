@@ -1,6 +1,6 @@
 --方舟骑士团-幽灵鲨
 function c29072102.initial_effect(c)
-	--search
+	--to hand/set
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(29072102,0))
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
@@ -38,14 +38,6 @@ function c29072102.initial_effect(c)
 	e3:SetTarget(c29072102.sptg)
 	e3:SetOperation(c29072102.spop)
 	c:RegisterEffect(e3)
-	--indes
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e5:SetValue(1)
-	c:RegisterEffect(e5)
 	Duel.AddCustomActivityCounter(29072102,ACTIVITY_CHAIN,c29072102.chainfilter)
 end
 function c29072102.distg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -99,21 +91,25 @@ function c29072102.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --e3e4
 function c29072102.thfilter(c)
-	return c:IsSetCard(0x67af) and  c:IsAbleToHand()
+	if not (c:IsSetCard(0x67af) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
+	return c:IsAbleToHand() or c:IsSSetable()
 end
 function c29072102.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29072102.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c29072102.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local g=Duel.SelectMatchingCard(tp,c29072102.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	local tc=g:GetFirst()
+	if tc then
+		if tc:IsAbleToHand() and (not tc:IsSSetable() or Duel.SelectOption(tp,1190,1153)==0) then
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
+		else
+			Duel.SSet(tp,tc)
+		end
 	end
 end
-
 
 
 

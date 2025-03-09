@@ -40,6 +40,7 @@ function c10200019.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     local g=Duel.SelectTarget(tp,c10200019.filter1,tp,LOCATION_ONFIELD,0,1,1,nil,e)
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200019.op1(e,tp,eg,ep,ev,re,r,rp)
     local tc=Duel.GetFirstTarget()
@@ -63,6 +64,7 @@ function c10200019.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
     end
     Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
     Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_MZONE)
+    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200019.op2(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

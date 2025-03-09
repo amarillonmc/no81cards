@@ -22,7 +22,20 @@ function c11561052.initial_effect(c)
 	e3:SetCountLimit(1,11561052)
 	e3:SetTarget(c11561052.spstg2)
 	e3:SetOperation(c11561052.spsop2)
-	c:RegisterEffect(e3)
+	--c:RegisterEffect(e3)
+	--spsummon
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_TOHAND)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetRange(LOCATION_GRAVE)
+	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e4:SetCountLimit(1,11561052)
+	e4:SetCondition(c11561052.thcon)
+	e4:SetTarget(c11561052.thtg)
+	e4:SetOperation(c11561052.thop)
+	c:RegisterEffect(e4)
 	--act in hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(11561052,2))
@@ -141,3 +154,27 @@ function c11561052.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+function c11561052.thfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_TRAP)
+end
+function c11561052.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c11561052.thfilter,tp,LOCATION_ONFIELD,0,1,nil)
+end
+function c11561052.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsAbleToHand() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	Group.AddCard(g,c)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,0,0)
+end
+function c11561052.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	local g=Group.CreateGroup()
+	if tc and tc:IsRelateToEffect(e) then Group.AddCard(g,tc) end
+	if c and c:IsRelateToEffect(e) then Group.AddCard(g,c) end
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
+end
+
