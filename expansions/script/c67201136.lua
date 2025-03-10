@@ -12,15 +12,15 @@ function c67201136.initial_effect(c)
 	c:RegisterEffect(e1)  
 	--spsummon
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(67201134,0))
+	e4:SetDescription(aux.Stringid(67201136,0))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_TO_HAND)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCountLimit(1,67201136)
-	e4:SetCondition(c67201134.spcon)
-	e4:SetTarget(c67201134.sptg)
-	e4:SetOperation(c67201134.spop)
+	e4:SetCondition(c67201136.spcon)
+	e4:SetTarget(c67201136.sptg)
+	e4:SetOperation(c67201136.spop)
 	c:RegisterEffect(e4)  
 end
 function c67201136.actcfilter(c)
@@ -47,22 +47,22 @@ function c67201136.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 --
-function c67201134.spcon(e,tp,eg,ep,ev,re,r,rp)
+function c67201136.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsReason(REASON_DRAW)
 end
-function c67201134.spfilter(c,e,tp)
+function c67201136.spfilter(c,e,tp)
 	return c:IsSetCard(0x3670) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c67201134.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c67201136.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c67201134.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and e:GetHandler():IsSSetable() end
+		and Duel.IsExistingMatchingCard(c67201136.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and e:GetHandler():IsSSetable() end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
-function c67201134.spop(e,tp,eg,ep,ev,re,r,rp)
+function c67201136.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c67201134.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,c67201136.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and c:IsRelateToEffect(e) then
 		if Duel.SSet(tp,c)~=0 then

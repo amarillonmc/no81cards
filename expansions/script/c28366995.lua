@@ -48,7 +48,7 @@ function c28366995.cfilter(c)
 end
 function c28366995.reop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(tp,1000,REASON_EFFECT)
-	local g=Duel.IsExistingMatchingCard(c28351818.cfilter,tp,LOCATION_GRAVE,0,1,nil)
+	local g=Duel.GetMatchingGroup(c28366995.cfilter,tp,LOCATION_GRAVE,0,1,nil)
 	if Duel.GetLP(tp)>=10000 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(28366995,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tg=g:Select(tp,1,1,nil)
