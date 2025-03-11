@@ -65,30 +65,33 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	-- Case 1: 只有自己
 	if case==1 then
 		-- 对方怪兽攻防半减
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetTargetRange(0,LOCATION_MZONE)
-		e1:SetValue(function(e,c) return math.ceil(c:GetAttack()/2) end)
-		c:RegisterEffect(e1)
-		
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
-		e2:SetValue(function(e,c) return math.ceil(c:GetDefense()/2) end)
-		c:RegisterEffect(e2)
-		
-		-- 效果无效化
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_FIELD)
-		e3:SetCode(EFFECT_DISABLE)
-		e3:SetRange(LOCATION_MZONE)
-		e3:SetTargetRange(0,LOCATION_MZONE)
-		c:RegisterEffect(e3)
-		
-		local e4=e3:Clone()
-		e4:SetCode(EFFECT_DISABLE_EFFECT)
-		c:RegisterEffect(e4)
+		local g=Duel.GetMatchingGroup(Card.IsFaceup,1-tp,LOCATION_MZONE,0,nil)
+		local tc=g:GetFirst()
+		while tc do
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UPDATE_ATTACK)
+			e1:SetValue(function(e,c) return math.ceil(c:GetAttack()/2) end)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
+			e2:SetValue(function(e,c) return math.ceil(c:GetDefense()/2) end)
+			tc:RegisterEffect(e2)
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetCode(EFFECT_DISABLE)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e3)
+			local e4=Effect.CreateEffect(c)
+			e4:SetType(EFFECT_TYPE_SINGLE)
+			e4:SetCode(EFFECT_DISABLE_EFFECT)
+			e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e4)
+			tc=g:GetNext()
+		end
+	   
 	
 	-- Case 2: 只有对方
 	elseif case==2 then

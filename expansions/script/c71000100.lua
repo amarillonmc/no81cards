@@ -90,7 +90,7 @@ function c71000100.op(e,tp,eg,ep,ev,re,r,rp)
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71000100,0)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-			local sg=st:Select(tp,1,ct,nil)
+			local sg=st:Select(tp,1,1,nil)
 			Duel.SSet(tp,sg)
 		end
 	end

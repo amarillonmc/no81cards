@@ -27,14 +27,13 @@ function c11561003.initial_effect(c)
 	e3:SetOperation(c11561003.diop)  
 	c:RegisterEffect(e3) 
 end
-c11561003.toss_dice=true
 function c11561003.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)==0
 		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function c11561003.rmcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsAbleToRemove() and not Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c.toss_dice end,tp,LOCATION_MZONE,0,1,e:GetHandler()) 
+	return e:GetHandler():IsAbleToRemove() and not Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_DICE)) end,tp,LOCATION_MZONE,0,1,e:GetHandler()) 
 end 
 function c11561003.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
@@ -67,10 +66,10 @@ function c11561003.ditg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
 end 
 function c11561003.thfil(c) 
-	return c.toss_dice and not c:IsCode(11561003) and c:IsAbleToHand() 
+	return c:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_DICE)) and not c:IsCode(11561003) and c:IsAbleToHand() 
 end 
 function c11561003.xspfil(c,e,tp) 
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c.toss_dice and c:IsType(TYPE_MONSTER)   
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_DICE)) and c:IsType(TYPE_MONSTER)   
 end 
 function c11561003.diop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -82,14 +81,6 @@ function c11561003.diop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,sg)   
 		end 
 	elseif dc==3 or dc==4 then 
-		--if Duel.Draw(tp,1,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil) then 
-		--  local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil) 
-		--  Duel.SendtoDeck(sg,nil,1,REASON_EFFECT) 
-		--end 
-		--if Duel.Draw(1-tp,1,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,1-tp,LOCATION_HAND,0,1,nil) then 
-		--  local sg=Duel.SelectMatchingCard(1-tp,Card.IsAbleToDeck,1-tp,LOCATION_HAND,0,1,1,nil) 
-		--  Duel.SendtoDeck(sg,nil,1,REASON_EFFECT) 
-		--end 
 		Duel.Draw(tp,1,REASON_EFFECT) 
 	elseif dc==5 or dc==6 then 
 		if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_MZONE,0,1,nil) then 
@@ -117,14 +108,3 @@ function c11561003.diop(e,tp,eg,ep,ev,re,r,rp)
 		end   
 	end 
 end 
-
-
-
-
-
-
-
-
-
-
-

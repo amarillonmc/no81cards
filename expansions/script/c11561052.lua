@@ -160,12 +160,15 @@ end
 function c11561052.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c11561052.thfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
+function c11561052.tthfilter(c)
+	return c:IsAbleToHand() and c:GetOriginalType()&TYPE_MONSTER==TYPE_MONSTER
+end
 function c11561052.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsAbleToHand() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chkc then return chkc:GetOriginalType()&TYPE_MONSTER==TYPE_MONSTER and chkc:IsAbleToHand() end
+	if chk==0 then return Duel.IsExistingTarget(c11561052.tthfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectTarget(tp,c11561052.tthfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Group.AddCard(g,c)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,0,0)
 end
@@ -178,3 +181,4 @@ function c11561052.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoHand(g,nil,REASON_EFFECT)
 end
 
+c:GetOriginalType()&TYPE_MONSTER==TYPE_MONSTER

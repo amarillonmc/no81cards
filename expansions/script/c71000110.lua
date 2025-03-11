@@ -19,7 +19,7 @@ function c71000110.f2(c)
 end
 function c71000110.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c71000110.f,tp,LOCATION_MZONE,0,1,nil)
-	   and re:IsActiveType(TYPE_SPELL+TYPE_MONSTER)
+	   and re:IsActiveType(TYPE_SPELL)
 	   and Duel.IsChainNegatable(ev)
 end
 function c71000110.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

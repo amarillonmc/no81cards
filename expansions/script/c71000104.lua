@@ -20,6 +20,12 @@ function c71000104.initial_effect(c)
 	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	c:RegisterEffect(e3)
+	--
+	local e4=Effect.CreateEffect(c)
+	e4:SetCode(EVENT_TO_DECK)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetOperation(c71000104.xop)
 end
 function c71000104.filter(c)
 	return c:IsCode(71000101,71000102) and c:IsAbleToHand()
@@ -35,4 +41,13 @@ function c71000104.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,sg)
 	end
+end
+function c71000104.xf(c,tp)
+	return c:GetOwner()
+end
+function c71000104.operation(e,tp,eg,ep,ev,re,r,rp)
+	local d1=eg:FilterCount(c71000104.xf,nil,tp)*300
+	Duel.Damage(1-tp,d1,REASON_EFFECT,true)
+	Duel.Recover(tp,d1,REASON_EFFECT,true)
+	Duel.RDComplete()
 end
