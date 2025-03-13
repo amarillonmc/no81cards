@@ -1,4 +1,4 @@
---涅梅西斯～对价之赐～
+--妄执的巫女 无明
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--summon with 7 tribute
@@ -79,7 +79,7 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp,c)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
 		if c:IsSummonable(true,se)
-			and (not c:IsAbleToGrave() or Duel.SelectOption(tp,1151,1153,1191)==0) then
+			and (not c:IsAbleToGrave() or Duel.SelectOption(tp,1151,1191)==0) then
 			Duel.BreakEffect()
 			Duel.Summon(tp,c,true,se)
 		else
@@ -89,14 +89,14 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp,c)
 	end
 end
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_TRIBUTE
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE)
 end
 function s.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
-	if g:GetCount()>2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
+	if #g>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local sg=g:Select(tp,3,3,nil)
 		Duel.HintSelection(sg)
-		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+		Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end
