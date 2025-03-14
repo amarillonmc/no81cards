@@ -170,7 +170,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		if not sg then
 			local ph=Duel.GetCurrentPhase()
 			if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
-			Duel.RegisterFlagEffect(tp,11451031,RESET_PHASE+ph,0,1)
+			Duel.RegisterFlagEffect(tp,11451031,RESET_CHAIN,0,1)
 			pnfl_adjusting=false
 			return
 		end
@@ -383,7 +383,7 @@ function cm.spcop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,2))
 	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EFFECT_CANNOT_TRIGGER)
 	e1:SetCondition(function(e) if not cm.sfilter(sc,tp) then e:SetProperty(0) e:SetLabel(100) end return e:GetLabel()==0 end)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)

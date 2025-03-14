@@ -165,7 +165,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		if not sg then
 			local ph=Duel.GetCurrentPhase()
 			if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
-			Duel.RegisterFlagEffect(tp,11451031,RESET_PHASE+ph,0,1)
+			Duel.RegisterFlagEffect(tp,11451031,RESET_CHAIN,0,1)
 			pnfl_adjusting=false
 			return
 		end

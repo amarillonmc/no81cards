@@ -41,7 +41,7 @@ function cm.tgfilter(c,tp)
 	return c:IsFaceup() and Duel.IsExistingMatchingCard(cm.cfilter2,tp,LOCATION_DECK+LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,c)
 end
 function cm.cfilter2(c,tc)
-	return c:IsAbleToGrave() and ((tc:IsType(c:GetType()&0x6) and (c:IsFaceupEx() or c:GetEquipTarget() or c:IsLocation(LOCATION_FZONE))) or (tc:IsType(c:GetType()&0x1)) and c:IsFaceupEx() and tc:IsAttribute(c:GetAttribute()))
+	return c:IsAbleToGrave() and ((tc:IsType(c:GetType()&0x6) and (c:IsFaceupEx() or c:GetEquipTarget() or c:IsLocation(LOCATION_FZONE))) or (tc:IsType(c:GetType()&0x1) and c:IsFaceupEx() and tc:IsAttribute(c:GetAttribute())))
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and cm.tgfilter(chkc) end
@@ -54,7 +54,7 @@ function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) then return end
+	if not tc:IsRelateToEffect(e) or not (tc:IsFaceupEx() or tc:GetEquipTarget() or tc:IsLocation(LOCATION_FZONE)) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.cfilter2,tp,LOCATION_DECK+LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,tc,tc)
 	if #g>0 then
