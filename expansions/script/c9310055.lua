@@ -87,14 +87,14 @@ function c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
 		local off=1
 		local ops={} 
 		local opval={}
-		local b1=e:GetLabel()&0x1>0
-		local b2=e:GetLabel()&0x2>0 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
-		local b3=e:GetLabel()&0x4>0 and re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsAbleToRemove()
-		local b4=e:GetLabel()&0x8>0
-		local b5=e:GetLabel()&0x10>0 and Duel.IsPlayerCanDraw(tp,1)
-		local b6=e:GetLabel()&0x20>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
-		local b7=e:GetLabel()&0x40>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)
-		local b8=e:GetLabel()&0x80>0
+		local b1=e:GetLabel()&(0x8-0x1)>0
+		local b2=e:GetLabel()&(0x40-0x8)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+		local b3=e:GetLabel()&(0x200-0x40)>0 and re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsAbleToRemove()
+		local b4=e:GetLabel()&(0x1000-0x200)>0
+		local b5=e:GetLabel()&(0x8000-0x1000)>0 and Duel.IsPlayerCanDraw(tp,1)
+		local b6=e:GetLabel()&(0x40000-0x8000)>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
+		local b7=e:GetLabel()&(0x200000-0x40000)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)
+		local b8=e:GetLabel()&(0x1000000-0x200000)>0
 		if b1 then
 			ops[off]=aux.Stringid(11451505,1)
 			opval[off-1]=1
@@ -131,7 +131,7 @@ function c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
 			off=off+1
 		end
 		if b8 then
-			c9310055.regsop(e,tp,eg,ep,ev,re,r,rp)
+			cm.regsop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		if off==1 then break end
 		ops[off]=aux.Stringid(11451505,2)
@@ -159,34 +159,34 @@ function c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
 		end
 		if opval[op]==1 then
 			Duel.BreakEffect()
-			e:SetLabel(e:GetLabel()&~0x1)
+			e:SetLabel(e:GetLabel()-0x1)
 			Duel.NegateActivation(ev)
 		elseif opval[op]==2 then
 			Duel.BreakEffect()
-			e:SetLabel(e:GetLabel()&~0x2)
+			e:SetLabel(e:GetLabel()-0x8)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 			Duel.HintSelection(g)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 		elseif opval[op]==3 then
 			Duel.BreakEffect()
-			e:SetLabel(e:GetLabel()&~0x4)
+			e:SetLabel(e:GetLabel()-0x40)
 			Duel.Remove(re:GetHandler(),POS_FACEUP,REASON_EFFECT)
 		elseif opval[op]==4 then
 			Duel.BreakEffect()
-			e:SetLabel(e:GetLabel()&~0x8)
+			e:SetLabel(e:GetLabel()-0x200)
 			Duel.Damage(ep,2200,REASON_EFFECT)
 		elseif opval[op]==5 then
 			Duel.BreakEffect()
-			e:SetLabel(e:GetLabel()&~0x10)
+			e:SetLabel(e:GetLabel()-0x1000)
 			Duel.Draw(tp,1,REASON_EFFECT)
 		elseif opval[op]==6 then
 			Duel.BreakEffect()
-			e:SetLabel(e:GetLabel()&~0x20)
+			e:SetLabel(e:GetLabel()-0x8000)
 			Duel.DiscardHand(1-tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
 		elseif opval[op]==7 then
 			Duel.BreakEffect()
-			e:SetLabel(e:GetLabel()&~0x40)
+			e:SetLabel(e:GetLabel()-0x40000)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE,LOCATION_GRAVE,1,2,nil)
 			if #g>0 then
@@ -248,8 +248,8 @@ function c9310055.dissop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9310055.chop(e,tp,eg,ep,ev,re,r,rp)
 	re:SetCategory(re:GetCategory()|CATEGORY_TODECK|CATEGORY_LEAVE_GRAVE)
-	if re:GetLabel()&0xbf~=0 then re:SetLabel(re:GetLabel()|0x40) return end
-	re:SetLabel(re:GetLabel()|0x40)
+	if re:GetLabel()&0x49421~=0 then re:SetLabel(re:GetLabel()+0x40000) return end
+	re:SetLabel(re:GetLabel()+0x40000)
 	local op=re:GetOperation()
 	local repop=function(e,tp,eg,ep,ev,re,r,rp)
 		op(e,tp,eg,ep,ev,re,r,rp)

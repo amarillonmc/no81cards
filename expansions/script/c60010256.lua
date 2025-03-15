@@ -68,7 +68,7 @@ function cm.fil3(c)
 	return c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_SPELL) and c:IsFaceup()
 end
 function cm.fil4(c)
-	return c:IsOriginalCodeRule(60010252) and c:IsFaceup() and c:IsAbleToRemoveAsCost() and c:IsCanBeFusionMaterial()
+	return c:IsOriginalCodeRule(60010252) and c:IsFaceup() and c:IsReleasable() and c:IsCanBeFusionMaterial()
 end
 function cm.spcon(e,c)
 	local tp=e:GetHandlerPlayer()

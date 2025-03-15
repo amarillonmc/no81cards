@@ -41,6 +41,7 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	e:GetHandler():RegisterFlagEffect(1,RESET_PHASE+PHASE_END,0,1)
 	elseif op==2 then
 	e:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
+	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_REMOVED,0,1,3,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,#g,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,#g)

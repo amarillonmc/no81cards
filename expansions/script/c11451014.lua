@@ -183,7 +183,7 @@ function cm.spfilter(c,e,tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,LOCATION_GRAVE,1,nil,e,tp) and c:GetFlagEffect(m)==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,LOCATION_GRAVE,1,c,e,tp) and c:GetFlagEffect(m)==0 end
 	local fid=c:GetFieldID()
 	local e1=Card.RegisterFlagEffect(c,m,RESET_EVENT+0x53e0000+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_OATH,1,fid,aux.Stringid(m,2))
 	local e2=Effect.CreateEffect(c)
