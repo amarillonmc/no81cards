@@ -29,7 +29,7 @@ function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and Duel.IsChainNegatable(ev)
 end
 function cm.costfilter1(c)
-	return c:IsPublic() and c:IsAbleToGraveAsCost()
+	return c:IsPublic() and c:IsAbleToGraveAsCost() and c:IsType(TYPE_MONSTER)
 end
 function cm.costfilter2(c)
 	return c:IsSetCard(0x3623) and c:IsAbleToGraveAsCost()

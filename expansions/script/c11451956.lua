@@ -86,7 +86,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 				local mg1=Duel.GetFusionMaterial(tp):Filter(cm.spfilter2,nil,e)
 				local mg2=Duel.GetMatchingGroup(cm.filter0,tp,LOCATION_DECK,0,nil)
 				mg1:Merge(mg2)
-				aux.FCheckAdditional=cm.fcheck1(c:GetFieldID())
+				aux.FGoalCheckAdditional=cm.fcheck1(c:GetFieldID())
 				local sg1=Duel.GetMatchingGroup(cm.spfilter3,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 				local mg2=nil
 				local sg2=nil
@@ -126,7 +126,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 						end
 					end
 				end
-				aux.FCheckAdditional=nil
+				aux.FGoalCheckAdditional=nil
 			end
 	re:SetOperation(op2)
 	local e1=Effect.CreateEffect(e:GetHandler())

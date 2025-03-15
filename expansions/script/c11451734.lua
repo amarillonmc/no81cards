@@ -101,7 +101,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetDescription(aux.Stringid(11451731,ct))
 	e1:SetLabel(flag)
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(0x20000000+11451731)
+	e1:SetCode(EFFECT_FLAG_EFFECT+11451731)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 	e1:SetTargetRange(1,0)
 	e1:SetReset(RESET_PHASE+PHASE_END)
@@ -139,7 +139,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
 		local mg2=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-		aux.FCheckAdditional=cm.fcheck
+		aux.FGoalCheckAdditional=cm.fcheck
 		local res=Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg2,nil,chkf)
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
@@ -150,7 +150,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 				res=Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg4,mf,chkf)
 			end
 		end
-		aux.FCheckAdditional=nil
+		aux.FGoalCheckAdditional=nil
 		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)

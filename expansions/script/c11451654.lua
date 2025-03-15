@@ -22,7 +22,10 @@ function cm.filter0(c)
 	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToGrave()
 end
 function cm.fcheck(tp,sg,fc)
-	return sg:GetClassCount(Card.GetCode)<=1 and #sg>1
+	return sg:GetClassCount(Card.GetCode)<=1
+end
+function cm.fgcheck(tp,sg,fc)
+	return #sg>1
 end
 function cm.gcheck(sg)
 	return sg:GetClassCount(Card.GetCode)<=1
@@ -40,6 +43,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local mg2=g:Filter(cm.filter0,nil)
 	mg1:Merge(mg2)
 	aux.FCheckAdditional=cm.fcheck
+	aux.FGoalCheckAdditional=cm.fgcheck
 	aux.GCheckAdditional=cm.gcheck
 	local sg1=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 	local mg3=nil
@@ -71,5 +75,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 	end
 	aux.FCheckAdditional=nil
+	aux.FGoalCheckAdditional=nil
 	aux.GCheckAdditional=nil
 end
