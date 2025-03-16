@@ -73,6 +73,7 @@ function c67200825.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c67200825.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local g1=Duel.SelectMatchingCard(tp,c67200825.setfilter1,tp,LOCATION_DECK,0,1,1,c,tp)
 	local tc1=g1:GetFirst()

@@ -94,7 +94,7 @@ end
 
 --
 function c67201135.opcon(e,tp,eg,ep,ev,re,r,rp)
-	return (ev==PLAYER_ALL or ev==tp or ev==1-tp) and not eg:IsContains(c)
+	return (ev==PLAYER_ALL or ev==tp or ev==1-tp) and not eg:IsContains(e:GetHandler())
 end
 function c67201135.filter2(c)
 	return c:IsAbleToDeck()
