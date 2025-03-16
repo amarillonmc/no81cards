@@ -177,8 +177,13 @@ end
 function c28318027.rcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
-	local tc=Duel.SelectMatchingCard(tp,c28318027.rcfilter,tp,LOCATION_MZONE,0,1,1,nil,c:GetRank()):GetFirst()
-	if not tc then return end
+	local g=Duel.GetMatchingGroup(c28318027.rcfilter,tp,LOCATION_MZONE,0,nil,c:GetRank())
+	if #g==0 then return end
+	local tc=g:GetFirst()
+	if #g>1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		tc=g:Select(tp,1,1,nil):GetFirst()
+	end
 	Duel.HintSelection(Group.FromCards(tc))
 	if Duel.SelectOption(tp,aux.Stringid(28318027,3),aux.Stringid(28318027,4))==0 then
 		local e1=Effect.CreateEffect(c)

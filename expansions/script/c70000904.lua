@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCondition(cm.condition)
+	e1:SetCondition(cm.con)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -15,7 +15,7 @@ end
 	function cm.cfilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_CYBERSE) and c:IsAttribute(ATTRIBUTE_DARK)
 end
-	function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
 	return ct==0 or ct==Duel.GetMatchingGroupCount(cm.cfilter,tp,LOCATION_MZONE,0,nil)
 end

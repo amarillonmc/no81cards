@@ -4,27 +4,14 @@ function s.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_TO_GRAVE)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCondition(s.spcon)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-	if not s.global_check then
-		s.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_TO_GRAVE)
-		ge1:SetCondition(s.checkcon)
-		ge1:SetOperation(s.checkop)
-		Duel.RegisterEffect(ge1,0)
-		local ge2=ge1:Clone()
-		ge2:SetCode(EVENT_REMOVE)
-		Duel.RegisterEffect(ge2,0)
-	end
 	--sno0
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
@@ -46,17 +33,6 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 s.hackclad=2
-function s.checkcon(e,tp,eg,ep,ev,re,r,rp)
-	return not re or not re:IsActivated()
-end
-function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	while tc do
-		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
-		Duel.RegisterFlagEffect(1-tp,id,RESET_PHASE+PHASE_END,0,1)
-		tc=eg:GetNext()
-	end
-end
 function s.spfilter(c,e,tp)
 	return c.hackclad==1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
@@ -76,7 +52,7 @@ function s.drfilter2(c,code)
 	return c:IsCode(code) and c:IsAbleToHand()
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,id)>=3
+	return #eg>=2
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)>0

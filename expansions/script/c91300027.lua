@@ -37,7 +37,7 @@ function s.spfilter(c,e,tp)
 	return c.hackclad==1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.costfilter(c)
-	return c:IsType(TYPE_SPELL) and c:IsDiscardable()
+	return c:IsType(TYPE_SPELL) and c:IsAbleToGraveAsCost()
 end
 function s.thfilter(c)
 	return _G["c"..c:GetCode()]  and _G["c"..c:GetCode()].hackclad and not c:IsCode(id) and c:IsAbleToHand()
@@ -106,8 +106,10 @@ function s.mvalue(e,fp,rp,r)
 	return 1-Duel.GetFieldGroupCount(fp,LOCATION_SZONE,0)
 end
 function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.DiscardHand(tp,s.costfilter,1,1,REASON_COST+REASON_DISCARD)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

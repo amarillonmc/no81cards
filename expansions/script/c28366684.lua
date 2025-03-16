@@ -90,8 +90,9 @@ function c28366684.Operation(f,gf,minct,maxct)
 					end
 					c:SetMaterial(mg)
 					c:RegisterFlagEffect(28366684,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,mg:GetFirst():GetLevel())
+					local check=mg:GetClassCount(Card.GetLevel)==1
 					Duel.Overlay(c,mg)
-					if mg:GetClassCount(Card.GetLevel)==1 then
+					if check then
 						local e1=Effect.CreateEffect(c)
 						e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 						e1:SetCode(EVENT_SPSUMMON_SUCCESS)

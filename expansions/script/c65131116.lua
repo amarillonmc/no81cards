@@ -83,6 +83,7 @@ end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetLabel()
 	local te=e:GetLabelObject()
+	Duel.ConfirmDecktop(tp,1)
 	Duel.DiscardDeck(tp,1,REASON_EFFECT)
 	local tc=Duel.GetOperatedGroup():GetFirst()
 	if tc then

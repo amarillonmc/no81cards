@@ -18,8 +18,7 @@ function c28322413.initial_effect(c)
 	e1:SetCategory(CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetRange(LOCATION_MZONE)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e1:SetCondition(c28322413.tdcon)
 	e1:SetCost(c28322413.tdcost)
 	e1:SetTarget(c28322413.tdtg)
@@ -90,8 +89,9 @@ function c28322413.Operation(f,gf,minct,maxct)
 					end
 					c:SetMaterial(mg)
 					c:RegisterFlagEffect(28322413,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,mg:GetFirst():GetLevel())
+					local check=mg:GetClassCount(Card.GetLevel)==1
 					Duel.Overlay(c,mg)
-					if mg:GetClassCount(Card.GetLevel)==1 then
+					if check then
 						local e1=Effect.CreateEffect(c)
 						e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 						e1:SetCode(EVENT_SPSUMMON_SUCCESS)
