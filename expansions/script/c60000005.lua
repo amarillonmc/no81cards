@@ -146,4 +146,5 @@ function cm.iop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_CARD,0,m)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.DiscardDeck(p,d,REASON_EFFECT)
+	Duel.Readjust()
 end

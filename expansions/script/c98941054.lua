@@ -49,13 +49,16 @@ end
 function c98941054.spfilter1(c)
 	return c:IsCode(63436931) and c:IsAbleToRemoveAsCost()
 end
+function c98941054.tdfilter1(c)
+	return c:IsCode(63436931) and c:IsAbleToDeck()
+end
 function c98941054.spfilter2(c,tp)
 	return c:IsHasEffect(48829461,tp) and c:IsAbleToRemoveAsCost() and Duel.GetMZoneCount(tp,c)>0
 end
 function c98941054.xspcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	local b1=Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 		and Duel.IsExistingMatchingCard(c98941054.spfilter1,tp,LOCATION_EXTRA,0,1,nil)
 	local b2=Duel.IsExistingMatchingCard(c98941054.spfilter2,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,tp)
 	return b1 or b2
@@ -103,18 +106,17 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.cfilter(c,e,tp)
 	return c:IsFaceup() and c:IsLevelAbove(7) and c:IsSetCard(0x23)
-		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA+LOCATION_DECK,0,1,nil,e,tp,c:GetLevel(),c:GetAttribute(),c:GetRace(),e:GetHandler())
+		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA+LOCATION_DECK,0,1,nil,e,tp,c:GetLevel(),c:GetRace(),e:GetHandler())
 end
-function s.spfilter(c,e,tp,lv,att,rc,ec)
-	return c:IsLevel(lv) and c:IsAttribute(att) and c:IsRace(rc) and not c:IsSetCard(0x23)
+function s.spfilter(c,e,tp,lv,rc,ec)
+	return c:IsLevel(lv) and c:IsRace(rc) and not c:IsSetCard(0x23)
 		and Duel.GetLocationCountFromEx(tp,tp,ec,c)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.cfilter(chkc,e,tp) end
 	if chk==0 then return e:GetHandler():IsAbleToExtra()
-		and aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL)
-		and Duel.IsExistingTarget(s.cfilter,tp,LOCATION_MZONE,0,1,e:GetHandler(),e,tp) end
+		and Duel.IsExistingTarget(s.cfilter,tp,LOCATION_MZONE,0,1,e:GetHandler(),e,tp)	and Duel.IsExistingMatchingCard(c98941054.tdfilter1,tp,LOCATION_REMOVED,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,s.cfilter,tp,LOCATION_MZONE,0,1,1,e:GetHandler(),e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,e:GetHandler(),1,0,0)
@@ -123,15 +125,21 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and c:IsLocation(LOCATION_EXTRA)
-		and tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		if not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL) then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sc=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_EXTRA+LOCATION_DECK,0,1,1,nil,e,tp,tc:GetLevel(),tc:GetAttribute(),tc:GetRace(),nil):GetFirst()
-		if sc then
-			sc:SetMaterial(nil)
-			if Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)>0 then
-				sc:CompleteProcedure()
+	local g=Duel.GetMatchingGroup(s.tdfilter1,tp,LOCATION_REMOVED,0,nil)
+	if c:IsRelateToEffect(e) and #g>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.HintSelection(sg)
+		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
+		Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		if c:IsLocation(LOCATION_EXTRA) and tc:IsRelateToEffect(e) and tc:IsFaceup() then
+		   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		   local sc=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc:GetLevel(),tc:GetRace(),nil):GetFirst()
+		   if sc then
+			   sc:SetMaterial(nil)
+			   if Duel.SpecialSummon(sc,0,tp,tp,true,false,POS_FACEUP)>0 then
+					sc:CompleteProcedure()
+				end
 			end
 		end
 	end

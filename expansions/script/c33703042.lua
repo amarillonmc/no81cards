@@ -1,81 +1,126 @@
 --虚拟占卜师 狼-半-仙
-local m=33703042
-local cm=_G["c"..m]
-function cm.initial_effect(c)
+local s,id,o=GetID()
+function s.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,9,3,cm.ovfilter,aux.Stringid(m,0))
+	aux.AddXyzProcedure(c,nil,9,3,s.ovfilter,aux.Stringid(id,0),3,nil)
 	c:EnableReviveLimit()
+	-- 新增效果
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,1))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetDescription(aux.Stringid(id,1))
+	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCost(cm.thcost)
-	e1:SetTarget(cm.thtg)
-	e1:SetOperation(cm.thop)
-	e1:SetLabel(1)
+	e1:SetCountLimit(1)
+	e1:SetCost(s.rmcost)
+	e1:SetTarget(s.rmtg)
+	e1:SetOperation(s.rmop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetDescription(aux.Stringid(m,2))
-	e2:SetLabel(2)
-	c:RegisterEffect(e2)
-	local e3=e1:Clone()
-	e3:SetDescription(aux.Stringid(m,3))
-	e3:SetLabel(3)
-	c:RegisterEffect(e3)
 end
-function cm.ovfilter(c)
-	return  (c:IsType(TYPE_XYZ)  and c:IsRankAbove(7)) or (c:IsType(TYPE_SYNCHRO) and c:IsLevelAbove(7))
+function s.ovfilter(c)
+	return c:IsFaceup() and (c:IsRankAbove(7)or c:IsLevelAbove(7))and c:IsType(TYPE_SYNCHRO+TYPE_XYZ)
 end
-function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=e:GetLabel()
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,ct,REASON_COST) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	e:GetHandler():RemoveOverlayCard(tp,ct,ct,REASON_COST)
+-- 新效果相关函数
+function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	local oc=e:GetHandler():GetOverlayCount()
+	e:SetLabel(oc)  -- 记录去除的素材数量
+	e:GetHandler():RemoveOverlayCard(tp,oc,oc,REASON_COST)
 end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED)
+
+function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) end
 end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local temp =e:GetLabel()
-	if temp == 1 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) then
-	local g=Duel.GetDecktopGroup(tp,Duel.GetFieldGroupCount(tp,LOCATION_HAND,0))
-	if  g:FilterCount(Card.IsAbleToRemove,nil,POS_FACEDOWN)==Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) then
-			Duel.DisableShuffleCheck()
-			Duel.ConfirmDecktop(tp,Duel.GetFieldGroupCount(tp,LOCATION_HAND,0))
-			Duel.DisableShuffleCheck()
-			Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
-			local sc =Group.Select(g,tp,1,1,nil)
-			Duel.SendtoHand(sc,tp,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,sc)
-			Duel.ShuffleHand(tp)
-	end
-	elseif temp ==2 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>5 then
-	local g=Duel.GetDecktopGroup(tp,5)
-		if  g:FilterCount(Card.IsAbleToRemove,nil,POS_FACEDOWN)==5 then
-			Duel.DisableShuffleCheck()
-			Duel.ConfirmDecktop(tp,5)
-			Duel.DisableShuffleCheck()
-			Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
-			local sc =Group.Select(g,tp,1,1,nil)
-			Duel.SendtoHand(sc,tp,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,sc)
-			Duel.ShuffleHand(tp)
+
+function s.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local ct=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
+	local oc=e:GetLabel()
+	if ct>0 then
+		local res=false
+		if oc>=3 then
+			res=Duel.SelectYesNo(tp,aux.Stringid(id,2))
 		end
-	elseif temp ==3 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 then
-		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_DECK,0,1,1,nil)
-			Duel.DisableShuffleCheck()
-			Duel.ConfirmCards(1-tp,g)
-			Duel.DisableShuffleCheck()
+		if res then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+			local sg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_DECK,0,ct,ct,nil)
+			Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
+			local xc=sg:GetFirst()
+			while xc do
+				xc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
+				xc=sg:GetNext()
+			end
+
+		else
+			-- 查看并里侧除外
+			local g=Duel.GetDecktopGroup(tp,ct)
+			Duel.ConfirmDecktop(tp,ct)
 			Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
-			local sc =Group.Select(g,tp,1,1,nil)
-			Duel.SendtoHand(sc,tp,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,sc)
-			Duel.ShuffleHand(tp)
+			local xc=g:GetFirst()
+			while xc do
+				xc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
+				xc=g:GetNext()
+			end
+		end
+		
+		-- 追加效果处理
+		if oc>=2 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+			if not res then
+				local exg=Duel.GetDecktopGroup(tp,5)
+				Duel.Remove(exg,POS_FACEDOWN,REASON_EFFECT)
+				local xc=exg:GetFirst()
+				while xc do
+					xc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
+					xc=exg:GetNext()
+				end
+	
+			else
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+				local sg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_DECK,0,5,5,nil)
+				Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
+				local xc=sg:GetFirst()
+				while xc do
+					xc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
+					xc=sg:GetNext()
+				end
+
+			end
+		end
+		
+		-- 修改后的持续效果
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PREDRAW)
+		e1:SetRange(LOCATION_REMOVED)
+		e1:SetCountLimit(1)
+		e1:SetCondition(s.drcon)
+		e1:SetOperation(s.drop)
+		Duel.RegisterEffect(e1,tp)
 	end
-
-
-
+end
+function s.drcon(e,tp,eg,ep,ev,re,r,rp)
+	if not Duel.IsExistingMatchingCard(s.ffilter,tp,LOCATION_REMOVED,0,1,nil) then
+		e:Reset()
+	end
+	return Duel.IsTurnPlayer(tp) 
+		and Duel.IsExistingMatchingCard(s.ffilter,tp,LOCATION_REMOVED,0,1,nil)
+end
+function s.ffilter(c)
+	return c:GetFlagEffect(id)>0  -- 新增过滤函数
 end
 
+-- 新增操作处理函数
+function s.drop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(s.ffilter,tp,LOCATION_REMOVED,0,nil)
+	if #g>0 then
+		local sg=g:RandomSelect(tp,1)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		-- 持续效果
+		local e1=Effect.GlobalEffect()
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_DRAW_COUNT)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(1,0)
+		e1:SetValue(0)
+		e1:SetReset(RESET_PHASE+PHASE_DRAW,1)
+		Duel.RegisterEffect(e1,tp)
+	end
+end

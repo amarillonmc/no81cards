@@ -1,7 +1,8 @@
 tama=tama or {}
 
 --[[To use this, have to add
-xpcall(function() require("expansions/script/c" + "code") end,function() require("script/c" + "code") end) ]]
+xpcall(function() require("expansions/script/c" + "code") end,function() require("script/c" + "code") end)
+ ]]
 TAMA_THEME_CODE=13250000
 tama.loaded_metatable_list=tama.loaded_metatable_list or {}
 --读取卡的metatable，通常以c+code[card]的形式存在
@@ -146,13 +147,40 @@ end
 function tama.isTheme(p,themeCode)
 	return tama.getTheme(p)==themeCode
 end
+--WIP
+--[[
+function tama.setThemeEffects(c,desc,code,p,...)
+	local effects={...}
+	local enableEffects={}
+	local i=1
+	while effects[i] do
+		if aux.GetValueType(effects[i])=="Effect"
+			then enableEffects[i]=effects[i]
+		end
+		i=i+1
+	end
+	local index=tama.save(enableEffects)
+	local e1=Effect.CreateEffect(c)
+	if desc>0 then e1:SetDescription(desc) end
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(TAMA_THEME_CODE)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(code)
+	e1:SetLabel(index)
+	Duel.RegisterEffect(e1,p)
+end
+]]
 --[[
 	_G bind with code
 	metatable bind with card
 	They cannot replace the other
 ]]
+TAMA_COMSIC_FIGHTERS_COUNTER_BOMB=0x351
+TAMA_OPTION_CODE=93130022
+TAMA_COMSIC_FIGHTERS_CODE_ADD_PC=13257300
 function tama.cosmicFighters_optionFilter(c)
-	return c:IsFaceup() and c:IsCode(93130022)
+	return c:IsFaceup() and c:IsCode(TAMA_OPTION_CODE)
 end
 function tama.cosmicFighters_getOptions(c)
 	local og=c:GetCardTarget()
@@ -174,11 +202,20 @@ function tama.cosmicFighters_isInFormation(c)
 	local og=tama.cosmicFighters_getFormation(c)
 	return og:IsContains(c)
 end
+function tama.cosmicFighters_getPowerChargeBuff(c)
+	local fb=0
+	local et=tama.getCardAffectedEffectTable(c,TAMA_COMSIC_FIGHTERS_CODE_ADD_PC)
+	local i=1
+	while et[i] do
+		fb=fb+Effect.GetValue(et[i])
+		i=i+1
+	end
+	return fb
+end
 
---[[some of tamas have alchemical elements.If want to use, add
-	local elements={elements code}
-	eflist={"tama_elements",elements}
-	c+code[c]=eflist
+--[[some of tamas have alchemical elements.If want to use, please refer to the following examples:
+	elements={{"tama_elements",{{TAMA_ELEMENT_WATER,1},{TAMA_ELEMENT_MANA,1}}}}
+	cm[c]=elements
 ]]
 TAMA_ELEMENT_WIND=13254031
 TAMA_ELEMENT_EARTH=13254032
@@ -191,6 +228,20 @@ TAMA_ELEMENT_ENERGY=13254052
 TAMA_ELEMENT_LIFE=13254054
 
 TAMA_ELEMENT_HINTCODE=13254030
+function tama.tamas_isElementTable(codes)
+	if type(codes) ~= "table" or #codes == 0 then
+		return false
+	end
+	for i, element in ipairs(codes) do
+		if type(element) ~= "table" or #element ~= 2 then
+			return false
+		end
+		if type(element[1]) ~= "number" or type(element[2]) ~= "number" then
+			return false
+		end
+	end
+	return true
+end
 --[[check card or elements table has element
 ]]
 function tama.tamas_isExistElement(c,code)
@@ -211,6 +262,7 @@ if A={{A,?},{B,?}},B={{A,?},{C,?}},return true
 if A={{A,?},{B,?}},B={{C,?}},return false
 ]]
 function tama.tamas_isExistElements(c,codes)
+	if not tama.tamas_isElementTable(codes) then return false end
 	local elements=tama.tamas_getElements(c)
 	local i=1
 	while codes[i] do
@@ -226,6 +278,7 @@ if A={{A,?},{B,?}},B={{A,?},{C,?}},return false
 if A={{A,?},{B,?}},B={{C,?}},return false
 ]]
 function tama.tamas_isContainElements(c,codes)
+	if not tama.tamas_isElementTable(codes) then return false end
 	local elements=tama.tamas_getElements(c)
 	local i=1
 	while codes[i] do
@@ -234,10 +287,12 @@ function tama.tamas_isContainElements(c,codes)
 	end
 	return true
 end
---[[check card or elements table equal with a group of elements
+--[[check card or elements table equal with a group of elements.
 if A={{A,1}},B={{A,1}},return true]]
 function tama.tamas_isEqualElements(c,codes)
+	if not tama.tamas_isElementTable(codes) then return false end
 	local elements=tama.tamas_getElements(c)
+	if #elements~=#codes then return false end
 	local i=1
 	while elements[i] do
 		local j=1
@@ -269,10 +324,10 @@ function tama.tamas_getElements(v)
 	local codes={}
 	if aux.GetValueType(v)=="Card" then
 		local elements=tama.getTargetTable(v,"tama_elements")
-		if elements~=nil then
+		if tama.tamas_isElementTable(elements) then
 			codes=elements
 		end
-	elseif type(v)=="table" then
+	elseif tama.tamas_isElementTable(v) then
 		codes=v
 	end
 	return codes

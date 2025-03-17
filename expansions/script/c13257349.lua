@@ -29,7 +29,7 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.bombtg)
 	e4:SetOperation(cm.bombop)
 	c:RegisterEffect(e4)
-	eflist={"bomb",e4}
+	eflist={{"bomb",e4}}
 	cm[c]=eflist
 	
 end
@@ -38,11 +38,11 @@ function cm.eqlimit(e,c)
 end
 function cm.bombcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ec=e:GetHandler():GetEquipTarget()
-	if chk==0 then return ec and ec:IsCanRemoveCounter(tp,0x351,1,REASON_COST) end
-	ec:RemoveCounter(tp,0x351,1,REASON_COST)
+	if chk==0 then return ec and ec:IsCanRemoveCounter(tp,TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1,REASON_COST) end
+	ec:RemoveCounter(tp,TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1,REASON_COST)
 end
 function cm.desfilter(c)
-	return c:IsFaceup() and c:GetAttack()==0
+	return c:IsFaceup() and c:IsAttackBelow(0)
 end
 function cm.bombtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ec=e:GetHandler():GetEquipTarget()
@@ -60,10 +60,10 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetRange(LOCATION_MZONE)
 		e4:SetCode(EFFECT_IMMUNE_EFFECT)
 		e4:SetValue(cm.efilter1)
-		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 		ec:RegisterEffect(e4,true)
 	end
-	Duel.Damage(1-tp,ec:GetAttack(),REASON_EFFECT)
+	Duel.Damage(1-tp,ec:GetBaseAttack(),REASON_EFFECT)
 	local g=Duel.GetMatchingGroup(cm.acfilter,tp,0,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
 		local sc=g:GetFirst()
@@ -72,7 +72,7 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetValue(-ec:GetAttack())
+			e1:SetValue(-ec:GetBaseAttack())
 			sc:RegisterEffect(e1)
 			sc=g:GetNext()
 		end
@@ -83,6 +83,6 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(g,REASON_EFFECT)
 	end
 end
-function cm.efilter1(e,re)
-	return e:GetHandler()~=re:GetHandler()
+function cm.efilter1(e,te)
+	return e:GetHandler()~=te:GetOwner() and not te:GetOwner():IsType(TYPE_EQUIP)
 end

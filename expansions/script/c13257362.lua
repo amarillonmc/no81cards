@@ -104,27 +104,48 @@ function cm.eqfilter(c,ec)
 	return c:IsSetCard(0x3352) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)
 end
 function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_EXTRA)
+	local c=e:GetHandler()
+	local t1=true
+	local t2=e:GetHandler():IsCanAddCounter(TAMA_COSMIC_BATTLESHIP_COUNTER_SHIELD,1)
+	if chk==0 then return t1 or t2 end
+	local op=0
+	if t1 or t2 then
+		local m1={}
+		local n1={}
+		local ct=1
+		if t1 then m1[ct]=aux.Stringid(m,1) n1[ct]=1 ct=ct+1 end
+		if t2 then m1[ct]=aux.Stringid(m,2) n1[ct]=2 ct=ct+1 end
+		local sp=Duel.SelectOption(tp,table.unpack(m1))
+		op=n1[sp+1]
+	end
+	e:SetLabel(op)
+	if op==1 then
+	elseif op==2 then
+		e:SetCategory(CATEGORY_COUNTER)
+	end
 end
 function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local eq=c:GetEquipGroup()
-	local g=eq:Filter(Card.IsAbleToDeck,nil)
-	local op=0
-	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
-	end
-	Duel.BreakEffect()
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
-		local tc=g:GetFirst()
-		if tc then
-			Duel.Equip(tp,tc,c)
+	if e:GetLabel()==1 then
+		if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
+		local eq=c:GetEquipGroup()
+		local g=eq:Filter(Card.IsAbleToDeck,nil)
+		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+			local sg=g:Select(tp,1,1,nil)
+			Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 		end
+		Duel.BreakEffect()
+		if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+			g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
+			local tc=g:GetFirst()
+			if tc then
+				Duel.Equip(tp,tc,c)
+			end
+		end
+	elseif e:GetLabel()==2 then
+		if not c:IsRelateToEffect(e) then return end
+		c:AddCounter(TAMA_COSMIC_BATTLESHIP_COUNTER_SHIELD,1)
 	end
 end

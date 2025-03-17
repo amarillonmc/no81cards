@@ -36,10 +36,14 @@ end
 function c29065513.xxop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
-	if c:IsAttackable() and c:IsRelateToEffect(e) and g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATTACKTARGET)
-		local tc=g:GetMinGroup(Card.GetAttack):Select(tp,1,1,nil):GetFirst()
-		Duel.CalculateDamage(c,tc)
+	if g:GetCount()>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATTACKTARGET)
+			local sg=g:Select(tp,1,1,nil)
+			Duel.HintSelection(sg)
+			tc=sg:GetFirst()
+		if tc:IsType(TYPE_MONSTER) and tc:IsCanBeBattleTarget(c) and tc:IsControler(1-tp) and tc:IsLocation(LOCATION_MZONE) then
+			Duel.CalculateDamage(c,tc)
+		end
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)

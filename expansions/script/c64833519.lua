@@ -27,7 +27,7 @@ function s.initial_effect(c)
 	e2:SetTargetRange(0,1) -- 仅影响对方
 	e2:SetCondition(s.bancon)
 	e2:SetValue(s.aclimit)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 	
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -35,7 +35,7 @@ function s.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCondition(s.bancon)
 	e3:SetOperation(s.regop)
-	c:RegisterEffect(e3)
+	--c:RegisterEffect(e3)
 end
 
 -- 原持有者检测函数

@@ -2,6 +2,7 @@
 function c44401003.initial_effect(c)
 	--summon
 	local e1=Effect.CreateEffect(c)
+	e1:SetHintTiming(0,TIMING_MAIN_END)
 	e1:SetCategory(CATEGORY_SUMMON+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -27,6 +28,7 @@ function c44401003.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e2:SetOperation(c44401003.regop)
 	c:RegisterEffect(e2)
 end
@@ -35,12 +37,13 @@ function c44401003.condition(e,tp,eg,ep,ev,re,r,rp)
 	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
 end
 function c44401003.cfilter(c,e,tp,check)
-	return c:IsSetCard(0xa4a) and ((c:IsLocation(LOCATION_HAND+LOCATION_MZONE) and c:IsSummonable(true,nil)) or (check and c:IsLocation(LOCATION_DECK+LOCATION_REMOVED) and c:IsFaceupEx() and Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
+	return c:IsRace(RACE_PSYCHO) and ((c:IsLocation(LOCATION_HAND+LOCATION_MZONE) and c:IsSummonable(true,nil)) or (check and c:IsLocation(LOCATION_DECK+LOCATION_REMOVED) and c:IsFaceupEx() and Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c44401003.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local check=c:IsSummonType(SUMMON_TYPE_NORMAL) and c:GetFlagEffect(44401003)==0
 	if chk==0 then return Duel.IsExistingMatchingCard(c44401003.cfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_DECK+LOCATION_REMOVED,0,1,nil,e,tp,check) end
+	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401003,4))
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_REMOVED)
 end

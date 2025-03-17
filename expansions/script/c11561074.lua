@@ -39,8 +39,8 @@ function cm.initial_effect(c)
 	
 end
 function c11561074.ffilter(c,fc,sub,mg,sg)
-	return c:IsSetCard(0x133) and c:IsType(TYPE_MONSTER) and (not sg or sg:FilterCount(aux.TRUE,c)==0
-		or (not sg:IsExists(Card.IsLevel,1,c,c:GetLevel()) and not sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute())))
+	return c:IsType(TYPE_MONSTER) and (not sg or sg:FilterCount(aux.TRUE,c)==0
+		or (sg:IsExists(Card.IsSetCard,1,nil,0x133) and not sg:IsExists(Card.IsLevel,1,c,c:GetLevel()) and not sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute())))
 end
 function c11561074.splimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION or not e:GetHandler():IsLocation(LOCATION_EXTRA)
@@ -77,8 +77,11 @@ function c11561074.operation(e,tp,eg,ep,ev,re,r,rp)
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
 end
+function c11561074.scfilter(c,tp)
+	return c:IsControler(tp) and c:IsType(TYPE_FUSION)
+end
 function c11561074.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsControler,1,nil,tp)
+	return eg:IsExists(c11561074.scfilter,1,nil,tp)
 end
 function c11561074.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

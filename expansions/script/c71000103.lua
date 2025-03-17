@@ -16,6 +16,8 @@ function c71000103.initial_effect(c)
 	e2:SetTarget(c71000103.xtg)
 	e2:SetOperation(c71000103.xop)
 	c:RegisterEffect(e2)
+	--
+
 end
 function c71000103.f(c)
 	return c:IsCode(71000101,71000102) and c:IsAbleToHand()

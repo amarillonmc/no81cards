@@ -75,6 +75,7 @@ function cm.iop(e,tp,eg,ep,ev,re,r,rp,c)
 		end
 		Duel.RegisterEffect(e1,tp)
 	end
+	Duel.Readjust()
 end
 function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetTurnPlayer()~=tp or Duel.GetTurnCount()==e:GetValue() then return false end

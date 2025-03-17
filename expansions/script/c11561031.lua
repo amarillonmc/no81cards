@@ -1,7 +1,7 @@
 --料敌机先·张郃
 function c11561031.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,8,3) 
+	aux.AddXyzProcedure(c,nil,8,2) 
 	c:EnableReviveLimit()   
 	--xx
 	local e1=Effect.CreateEffect(c)  
@@ -282,19 +282,21 @@ function c11561031.sktg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c11561031.skop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CHANGE_DAMAGE)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetValue(0)
-	e1:SetReset(RESET_PHASE+PHASE_STANDBY)
-	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_NO_EFFECT_DAMAGE)
-	e2:SetReset(RESET_PHASE+PHASE_STANDBY)
-	Duel.RegisterEffect(e2,tp)
+	local g1=Duel.GetMatchingGroup(aux,TRUE,tp,LOCATION_ONFIELD,0,nil)
+	local tc=g1:GetFirst()
+	while tc do
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_IMMUNE_EFFECT)
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY)
+		e1:SetValue(c11561031.efilter)
+		tc:RegisterEffect(e1)
+		tc=g1:GetNext()
+	end
 end 
+function c11561031.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
+end
 function c11561031.cncon1(e,tp,eg,ep,ev,re,r,rp)  
 	return Duel.GetCurrentPhase()==PHASE_MAIN1  
 end 
@@ -305,23 +307,16 @@ function c11561031.cncon3(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN2 
 end 
 function c11561031.cntg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToChangeControler,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler()) or (Duel.IsExistingMatchingCard(function(c) return Duel.GetLocationCount(1-c:GetControler(),LOCATION_SZONE)>0 end,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil)) end 
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToChangeControler,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler()) end 
 	Duel.SetOperationInfo(0,CATEGORY_CONTROL,nil,1,tp,LOCATION_ONFIELD)
 end 
 function c11561031.cnop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
-	if not (Duel.IsExistingMatchingCard(Card.IsAbleToChangeControler,tp,0,LOCATION_MZONE,1,nil) or (Duel.IsExistingMatchingCard(function(c) return Duel.GetLocationCount(1-c:GetControler(),LOCATION_SZONE)>0 end,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil))) then return end 
+	if not Duel.IsExistingMatchingCard(Card.IsAbleToChangeControler,tp,0,LOCATION_MZONE,1,nil) then return end 
 	local g1=Duel.GetMatchingGroup(Card.IsAbleToChangeControler,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	local g2=Duel.GetMatchingGroup(function(c) return Duel.GetLocationCount(1-c:GetControler(),LOCATION_SZONE)>0 end,tp,LOCATION_SZONE,LOCATION_SZONE,nil) 
-	g1:Merge(g2) 
 	if g1:GetCount()>0 then 
-		local tc=g1:Select(tp,1,1,nil):GetFirst() 
-		if tc:IsLocation(LOCATION_MZONE) then 
-			Duel.GetControl(tc,1-tc:GetControler())  
-		elseif tc:IsLocation(LOCATION_SZONE) then 
-			Duel.MoveToField(tc,tp,1-tc:GetControler(),LOCATION_SZONE,POS_FACEDOWN,true) 
-			Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0) 
-		end  
+		local tc=g1:Select(tp,1,1,nil):GetFirst()
+		Duel.GetControl(tc,1-tc:GetControler(),PHASE_END,1) 
 	end 
 end 
 function c11561031.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)

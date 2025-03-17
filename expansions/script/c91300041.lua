@@ -35,6 +35,12 @@ function s.initial_effect(c)
 	e4:SetCondition(s.atkcon)
 	e4:SetOperation(s.atkop)
 	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_MATERIAL_CHECK)
+	e5:SetValue(s.valcheck)
+	e5:SetLabelObject(e4)
+	c:RegisterEffect(e5)
 end
 function s.ttcon(e,c,minc)
 	if c==nil then return true end
@@ -92,11 +98,17 @@ function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_ADVANCE)
 end
 function s.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
-	if #g>0 then
+	local g=e:GetLabel()
+	local g2=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
+	if #g2>=g and g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local sg=g:Select(tp,3,3,nil)
+		local sg=g2:Select(tp,g,g,nil)
 		Duel.HintSelection(sg)
 		Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
+end
+function s.valcheck(e,c)
+	local mg=c:GetMaterial()
+	local mg1=mg:Filter(Card.IsLocation,nil,LOCATION_HAND)
+	e:GetLabelObject():SetLabel(#mg1)
 end

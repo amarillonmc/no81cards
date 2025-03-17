@@ -8,8 +8,8 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetHintTiming(0,0x1e0)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetHintTiming(TIMING_DAMAGE_STEP)
 	e1:SetTarget(cm.destg)
 	e1:SetOperation(cm.desop)
 	c:RegisterEffect(e1)
@@ -18,8 +18,8 @@ function cm.initial_effect(c)
 	e2:SetCategory(CATEGORY_COUNTER)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
-	e2:SetHintTiming(TIMING_DAMAGE_STEP)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetHintTiming(0,0x1e0)
 	e2:SetTarget(cm.target)
 	e2:SetOperation(cm.activate)
 	c:RegisterEffect(e2)
@@ -27,28 +27,59 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCost(cm.drcost)
-	e3:SetTarget(cm.drtg)
-	e3:SetOperation(cm.drop)
+	e3:SetCountLimit(1,m)
+	e3:SetCost(cm.thcost)
+	e3:SetTarget(cm.thtg)
+	e3:SetOperation(cm.thop)
 	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetRange(LOCATION_REMOVED)
-	c:RegisterEffect(e4)
+	--[[
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_TOHAND)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1,m)
+	e3:SetCost(cm.thcost)
+	e3:SetTarget(cm.thtg)
+	e3:SetOperation(cm.thop)
+	c:RegisterEffect(e3)
+	]]
 	
 end
---function c13257336.check(c,tp)
---  return c and c:IsControler(tp) and c:IsSetCard(0x351)
---end
 function cm.pcfilter(c)
 	return c:IsSetCard(0x351) and c:IsFaceup()
 end
+function cm.cfilter(c)
+	return not c:IsPublic() and c:IsSetCard(0x351) and c:IsType(TYPE_MONSTER)
+end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	--if chk==0 then return c13257336.check(Duel.GetAttacker(),tp) or c13257336.check(Duel.GetAttackTarget(),tp) end
-	if chkc==0 then return chkc:IsOnField() and cm.pcfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.pcfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,cm.pcfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.SetChainLimit(cm.chlimit)
+	if chkc==0 then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.pcfilter(chkc) end
+	local t1=Duel.IsExistingTarget(cm.pcfilter,tp,LOCATION_MZONE,0,1,nil)
+	local t2=Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,nil)
+	if chk==0 then return (t1 or t2) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	local op=0
+	if t1 or t2 then
+		local m1={}
+		local n1={}
+		local ct=1
+		if t1 then m1[ct]=aux.Stringid(m,2) n1[ct]=1 ct=ct+1 end
+		if t2 then m1[ct]=aux.Stringid(m,3) n1[ct]=2 ct=ct+1 end
+		local sp=Duel.SelectOption(tp,table.unpack(m1))
+		op=n1[sp+1]
+	end
+	e:SetLabel(op)
+	if op==1 then
+		e:SetProperty(EFFECT_FLAG_CARD_TARGET)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		Duel.SelectTarget(tp,cm.pcfilter,tp,LOCATION_MZONE,0,1,1,nil)
+		local g=Duel.GetMatchingGroup(aux.NegateMonsterFilter,tp,0,LOCATION_MZONE,nil)
+		Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0)
+	elseif op==2 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+		local sc=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_HAND,0,1,1,nil)
+		Duel.ConfirmCards(1-tp,sc)
+		Duel.ShuffleHand(tp)
+	end
 end
 function cm.chlimit(e,ep,tp)
 	return not e:IsActiveType(TYPE_MONSTER)
@@ -57,20 +88,38 @@ function cm.desfilter(c)
 	return c:IsFaceup() and (c:GetAttack()==0 or (c:GetDefense()==0 and not c:IsType(TYPE_LINK)))
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_SOUND,0,aux.Stringid(m,7))
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
 		local sc=g:GetFirst()
 		while sc do
-			local e1=Effect.CreateEffect(e:GetHandler())
+			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetReset(RESET_EVENT+0x1fe0000)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e1:SetValue(-1000)
 			sc:RegisterEffect(e1)
 			local e2=e1:Clone()
 			e2:SetCode(EFFECT_UPDATE_DEFENSE)
 			sc:RegisterEffect(e2)
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_SINGLE)
+			e3:SetCode(EFFECT_DISABLE)
+			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+			sc:RegisterEffect(e3)
+			local e4=Effect.CreateEffect(c)
+			e4:SetType(EFFECT_TYPE_SINGLE)
+			e4:SetCode(EFFECT_DISABLE_EFFECT)
+			e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+			sc:RegisterEffect(e4)
+			if sc:IsType(TYPE_TRAPMONSTER) then
+				local e5=Effect.CreateEffect(c)
+				e5:SetType(EFFECT_TYPE_SINGLE)
+				e5:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+				e5:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+				sc:RegisterEffect(e5)
+			end
 			sc=g:GetNext()
 		end
 	end
@@ -81,29 +130,31 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsCanAddCounter(0x351,1)
+	return c:IsFaceup() and c:IsCanAddCounter(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and cm.filter(chkc) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.filter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,cm.filter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x351)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsCanAddCounter(0x351,1) then
+	if tc and tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsCanAddCounter(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1) then
 		Duel.Hint(HINT_SOUND,0,aux.Stringid(m-1,7))
-		tc:AddCounter(0x351,1)
+		tc:AddCounter(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1)
 	end
 end
+--[[
 function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeckAsCost,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeckAsCost,tp,LOCATION_HAND,0,1,1,nil)
-	Duel.SendtoDeck(g,nil,2,REASON_COST)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
-function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
 		and c:IsAbleToDeck() end
@@ -117,5 +168,24 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ShuffleDeck(tp)
 		Duel.BreakEffect()
 		Duel.Draw(tp,1,REASON_EFFECT)
+	end
+end
+]]
+function cm.cfilter1(c)
+	return c:IsCode(13257329) and c:IsAbleToDeckAsCost()
+end
+function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cfilter1,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,cfilter1,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToHand() end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetHandler():IsRelateToEffect(e) then
+		Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)
 	end
 end

@@ -3,24 +3,26 @@ local m=13257350
 local cm=_G["c"..m]
 if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x351)
+	c:EnableCounterPermit(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB)
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_COUNTER)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetOperation(cm.addc)
+	e1:SetDescription(aux.Stringid(m,4))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_EQUIP)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCondition(cm.spcon)
+	e1:SetCost(cm.spcost)
+	e1:SetTarget(cm.sptg)
+	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e2)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e0:SetCode(EVENT_PHASE+PHASE_END)
 	e0:SetRange(LOCATION_MZONE)
 	e0:SetCountLimit(1)
-	e0:SetCondition(cm.addcon)
-	e0:SetOperation(cm.addop)
+	e0:SetOperation(cm.atop)
 	c:RegisterEffect(e0)
+	--[[
 	--Power Capsule
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
@@ -33,6 +35,7 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.pctg)
 	e3:SetOperation(cm.pcop)
 	c:RegisterEffect(e3)
+	]]
 	--bomb
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,6))
@@ -42,6 +45,7 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetCountLimit(1)
 	e4:SetCost(cm.bombcost)
+	e4:SetTarget(cm.bombtg)
 	e4:SetOperation(cm.bombop)
 	c:RegisterEffect(e4)
 	local e11=Effect.CreateEffect(c)
@@ -53,17 +57,50 @@ function cm.initial_effect(c)
 	cm[c]=eflist
 	
 end
-function cm.addc(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsCanAddCounter(0x351,1) then
-		e:GetHandler():AddCounter(0x351,1)
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
+end
+function cm.cfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x351) and c:IsAbleToHandAsCost() and not c:IsStatus(STATUS_BATTLE_DESTROYED) and not c:IsCode(m)
+end
+function cm.eqfilter(c,ec)
+	return c:IsSetCard(0x352) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)
+end
+function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SendtoHand(g,nil,REASON_COST)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_EXTRA,0,1,nil,e:GetHandler()) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsRelateToEffect(e) then
+		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+			Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+			local g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
+			if g:GetCount()>0 then
+				local tc=g:GetFirst()
+				Duel.Equip(tp,tc,c)
+			end
+		end
 	end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTargetRange(1,0)
+	Duel.RegisterEffect(e1,tp)
 end
-function cm.addcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
-end
-function cm.addop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():GetAttackAnnouncedCount()==0 and e:GetHandler():IsCanAddCounter(0x351,1) then
-		e:GetHandler():AddCounter(0x351,1)
+function cm.atop(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetHandler():IsCanAddCounter(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1) then
+		e:GetHandler():AddCounter(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1)
 	end
 end
 function cm.eqfilter(c,ec)
@@ -92,18 +129,26 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.bombcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x351,1,REASON_COST) end
-	e:GetHandler():RemoveCounter(tp,0x351,1,REASON_COST)
+	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1,REASON_COST) end
+	e:GetHandler():RemoveCounter(tp,TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1,REASON_COST)
 end
 function cm.rfilter(c)
 	return ((c:IsFaceup() and c:IsLocation(LOCATION_EXTRA)) or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemove()
 end
 function cm.efilter(e,te)
-	return te:GetOwner()~=e:GetOwner()
+	return e:GetHandler()~=te:GetOwner() and not te:GetOwner():IsType(TYPE_EQUIP)
+end
+function cm.desfilter0(c,p)
+	return (c:IsType(TYPE_TOKEN) or c:IsType(TYPE_SPELL+TYPE_TRAP)) and c:IsControler(p)
 end
 function cm.desfilter(c)
-	return (c:IsFaceup() and ((c:GetAttack()==0 or (c:GetDefense()==0 and not c:IsType(TYPE_LINK))) or c:IsType(TYPE_TOKEN)))
+	return (c:IsFaceup() and ((c:IsAttackBelow(0) or c:IsDefenseBelow(0)) or c:IsType(TYPE_TOKEN)))
 		or c:IsType(TYPE_SPELL+TYPE_TRAP)
+end
+function cm.bombtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local g=e:GetHandler():GetColumnGroup():Filter(cm.desfilter0,nil,1-tp)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -114,12 +159,12 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCode(EFFECT_IMMUNE_EFFECT)
 	e4:SetValue(cm.efilter)
-	e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+	e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 	c:RegisterEffect(e4)
 	local e5=Effect.CreateEffect(e:GetHandler())
 	e5:SetType(EFFECT_TYPE_SINGLE)
 	e5:SetCode(EFFECT_UPDATE_ATTACK)
-	e5:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+	e5:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
 	e5:SetValue(500)
 	c:RegisterEffect(e5)
 
@@ -131,7 +176,7 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_UPDATE_ATTACK)
-				e1:SetReset(RESET_EVENT+0x1fe0000)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				e1:SetValue(-800)
 				tc:RegisterEffect(e1)
 				local e2=e1:Clone()

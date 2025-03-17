@@ -104,4 +104,5 @@ function cm.iop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,Duel.GetFlagEffect(tp,m+10000000),nil)
 	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
+	Duel.Readjust()
 end

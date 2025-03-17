@@ -24,6 +24,13 @@ function c44401005.initial_effect(c)
 	e2:SetTarget(c44401005.target)
 	e2:SetOperation(c44401005.operation)
 	c:RegisterEffect(e2)
+	--sign
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e3:SetOperation(c44401005.regop)
+	c:RegisterEffect(e3)
 end
 function c44401005.mfilter(c)
 	return c:IsRace(RACE_PSYCHO) and c:IsSummonableCard()
@@ -71,11 +78,17 @@ function c44401005.operation(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e2)
 	end
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and c:IsSummonType(SUMMON_TYPE_FUSION) and c:GetFlagEffect(44401005)==0 and Duel.IsExistingMatchingCard(c44401005.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(44401005,1)) then
+	if c:IsRelateToEffect(e) and c:IsSummonType(SUMMON_TYPE_FUSION) and c:IsAbleToRemove() and Duel.IsExistingMatchingCard(c44401005.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(44401005,1)) then
+		Duel.Remove(c,POS_FACEUP,REASON_EFFECT)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c44401005.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
-		c:RegisterFlagEffect(44401005,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401005,2))
+		--c:RegisterFlagEffect(44401005,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401005,2))
 	end
+end
+function c44401005.regop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsSummonType(SUMMON_TYPE_FUSION) then return end
+	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_WITHOUT_TEMP_REMOVE,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401005,3))
 end

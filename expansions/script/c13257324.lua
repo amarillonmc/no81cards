@@ -24,7 +24,6 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetHintTiming(0,TIMING_EQUIP)
-	e3:SetCost(cm.cost)
 	e3:SetCondition(cm.descon)
 	e3:SetTarget(cm.destg)
 	e3:SetOperation(cm.desop)
@@ -33,12 +32,6 @@ function cm.initial_effect(c)
 end
 function cm.eqlimit(e,c)
 	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x6352)
-end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local f=tama.cosmicFighters_equipGetFormation(c)
-	if chk==0 then return f and f:GetCount()>c:GetFlagEffect(m) end
-	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetEquipTarget() and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
@@ -56,14 +49,18 @@ function cm.ffilter2(c,g)
 	return g:IsExists(cm.ffilter,1,nil,c)
 end
 function cm.leftfilter(c,seq)
-	return c:GetSequence()>4-seq and c:GetSequence()<5
+	return c:GetSequence()>seq and c:GetSequence()<=5
 end
 function cm.rightfilter(c,seq)
-	return c:GetSequence()<4-seq or c:GetSequence()==5
+	return c:GetSequence()<seq or c:GetSequence()==5
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local f=tama.cosmicFighters_equipGetFormation(e:GetHandler())
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,0,LOCATION_ONFIELD,1,nil,f) end
+	local c=e:GetHandler()
+	local tc=c:GetEquipTarget()
+	local f=tama.cosmicFighters_equipGetFormation(c)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,0,LOCATION_ONFIELD,1,nil,f)
+		and f and c:GetFlagEffect(m)<f:GetCount() end
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	local g=Duel.GetMatchingGroup(Card.IsType,tp,0,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
@@ -78,6 +75,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		local seq=ec:GetSequence()
 		if seq==5 then seq=1
 		elseif seq==6 then seq=3 end
+		if ec:IsControler(tp) then seq=4-seq end
 		local sg=Group.CreateGroup()
 		local g1=g:Filter(cm.leftfilter,nil,seq)
 		local g2=g:Filter(cm.rightfilter,nil,seq)

@@ -6,9 +6,9 @@ function s.initial_effect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.spcon)
 	e1:SetTarget(s.sptg)
@@ -17,18 +17,18 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_TO_HAND)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,id+o*10000)
 	e2:SetCondition(s.hdcon)
 	e2:SetTarget(s.hdtg)
 	e2:SetOperation(s.hdop)
 	c:RegisterEffect(e2)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and aux.IsCodeListed(rc,25000028)
+	local lv,race=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LEVEL,CHAININFO_TRIGGERING_RACE)
+	return re:IsActiveType(TYPE_MONSTER) and lv<=7 and (race&RACE_WARRIOR~=0 or race&RACE_SPELLCASTER~=0)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -78,10 +78,10 @@ function s.thfilter(c,tp)
 	return c:IsAbleToHand() and c:IsHasEffect(25000027,tp)
 end
 function s.hdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_HAND,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_HAND,1,nil,tp) end
 end
 function s.hdop(e,tp,eg,ep,ev,re,r,rp)
-	local ag=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_HAND,nil)
+	local ag=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,0,LOCATION_HAND,nil,tp)
 	local b1=ag:GetCount()>0
 	local b2=Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
 	if not b1 then return end
@@ -94,7 +94,7 @@ function s.hdop(e,tp,eg,ep,ev,re,r,rp)
 	elseif b2 then
 		Duel.Hint(HINT_CARD,0,25000027)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tc=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil,1-tp):GetFirst()
+		local tc=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
 		if tc then
 			local te=tc:IsHasEffect(25000027,tp)
 			if te then

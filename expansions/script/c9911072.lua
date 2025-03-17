@@ -1,5 +1,6 @@
 --吸血鬼魔血 二次脉搏
 function c9911072.initial_effect(c)
+	aux.AddCodeList(c,9911056)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

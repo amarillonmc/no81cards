@@ -31,11 +31,18 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e5:SetCode(EFFECT_SELF_DESTROY)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
+	e5:SetCode(EFFECT_SELF_TOGRAVE)
 	e5:SetRange(LOCATION_SZONE)
 	e5:SetCondition(cm.sdcon)
 	c:RegisterEffect(e5)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE)
+	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e6:SetRange(LOCATION_SZONE)
+	e6:SetCode(EFFECT_IMMUNE_EFFECT)
+	e6:SetValue(cm.efilter1)
+	c:RegisterEffect(e6)
 	
 end
 function cm.eqlimit(e,c)
@@ -46,4 +53,8 @@ function cm.efilter(e,te)
 end
 function cm.sdcon(e)
 	return e:GetHandler():GetEquipTarget() and Duel.GetCurrentPhase()==PHASE_END 
+end
+function cm.efilter1(e,te)
+	local ec=e:GetHandler():GetEquipTarget()
+	return ec and te:GetHandler()==ec
 end

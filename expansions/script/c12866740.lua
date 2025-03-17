@@ -1,7 +1,6 @@
 --电锯恶魔
 local s,id,o=GetID()
 function s.initial_effect(c)
-	c:SetUniqueOnField(1,0,id)
 	c:SetSPSummonOnce(id)
 	c:EnableReviveLimit()
 	aux.AddCodeList(c,12866605)
@@ -34,31 +33,31 @@ function s.initial_effect(c)
 	e3:SetTarget(s.sptg)
 	e3:SetOperation(s.spop)
 	c:RegisterEffect(e3)
-	--effect count
+	--remove
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e4:SetCode(EVENT_CHAINING)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e4:SetOperation(s.count)
+	e4:SetDescription(1102)
+	e4:SetCategory(CATEGORY_REMOVE)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_BATTLED)
+	e4:SetTarget(s.rmtg)
+	e4:SetOperation(s.rmop)
 	c:RegisterEffect(e4)
+	--immune
 	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e5:SetCode(EVENT_CHAIN_NEGATED)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_IMMUNE_EFFECT)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e5:SetRange(LOCATION_MZONE)
-	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e5:SetOperation(s.rst)
+	e5:SetValue(s.efilter)
+	e5:SetCondition(s.pcon)
 	c:RegisterEffect(e5)
-	--activate limit
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_FIELD)
-	e6:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e6:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e6:SetRange(LOCATION_MZONE)
-	e6:SetTargetRange(0,1)
-	e6:SetCondition(s.econ)
-	e6:SetValue(s.elimit)
-	c:RegisterEffect(e6)
+end
+function s.pcon(e,tp,eg,ep,ev,re,r,rp)
+	local ec=e:GetHandler()
+	return ec:IsStatus(STATUS_SPSUMMON_TURN)
+end
+function s.efilter(e,re)
+	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
 end
 function s.mfilter(c)
 	return c:IsFaceupEx() and c:IsAbleToRemoveAsCost()
@@ -117,17 +116,25 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function s.count(e,tp,eg,ep,ev,re,r,rp)
-	if ep==tp or not re:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
-	e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+0x3ff0000+RESET_PHASE+PHASE_END,0,1)
+function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tc=Duel.GetAttacker()
+	if tc==e:GetHandler() then tc=Duel.GetAttackTarget() end
+	if chk==0 then return tc and tc:IsRelateToBattle() and tc:IsAbleToRemove(tp,POS_FACEDOWN,REASON_EFFECT) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,tc,1,0,0)
 end
-function s.rst(e,tp,eg,ep,ev,re,r,rp)
-	if ep==tp or not re:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
-	e:GetHandler():ResetFlagEffect(id)
+function s.rmfilter(c,tp,code)
+	return c:IsAbleToRemove(tp,POS_FACEDOWN,REASON_EFFECT) and c:IsFaceup() and c:IsCode(code) and c:IsType(TYPE_MONSTER)
 end
-function s.econ(e)
-	return e:GetHandler():GetFlagEffect(id)~=0
-end
-function s.elimit(e,te,tp)
-	return te:IsHasType(EFFECT_TYPE_ACTIVATE)
+function s.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetAttacker()
+	local c=e:GetHandler()
+	if tc==e:GetHandler() then tc=Duel.GetAttackTarget() end
+	if tc:IsRelateToBattle() and tc:IsControler(1-tp) and tc:IsAbleToRemove(tp,POS_FACEDOWN,REASON_EFFECT) then
+		local code=tc:GetCode()
+		if Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_REMOVED) and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.rmfilter),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil,tp,code) then
+			Duel.BreakEffect()
+			local rg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.rmfilter),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil,tp,code)
+			Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
+		end
+	end
 end

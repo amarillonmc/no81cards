@@ -62,7 +62,7 @@ function cm.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
 end
 function cm.desfilter(c)
-	return c:IsFaceup() and (c:GetAttack()==0 or (c:GetDefense()==0 and not c:IsType(TYPE_LINK)))
+	return c:IsFaceup() and (c:IsAttackBelow(0) or c:IsDefenseBelow(0))
 end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -89,12 +89,11 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.bombcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ec=e:GetHandler():GetEquipTarget()
-	if chk==0 then return ec and ec:IsCanRemoveCounter(tp,0x351,1,REASON_COST) end
-	ec:RemoveCounter(tp,0x351,1,REASON_COST)
+	if chk==0 then return ec and ec:IsCanRemoveCounter(tp,TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1,REASON_COST) end
+	ec:RemoveCounter(tp,TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1,REASON_COST)
 end
 function cm.bombtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ec=e:GetHandler():GetEquipTarget()
-	if chk==0 then return ec end
+	if chk==0 then return true end
 end
 function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -107,10 +106,9 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetRange(LOCATION_MZONE)
 		e4:SetCode(EFFECT_IMMUNE_EFFECT)
 		e4:SetValue(cm.efilter1)
-		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 		ec:RegisterEffect(e4,true)
 	end
-	Duel.Damage(1-tp,ec:GetAttack(),REASON_EFFECT)
 	local g=Duel.GetMatchingGroup(cm.acfilter,tp,0,LOCATION_MZONE,nil)
 	local tc=g:GetFirst()
 	while tc do
@@ -131,6 +129,6 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(g,REASON_EFFECT)
 	end
 end
-function cm.efilter1(e,re)
-	return e:GetHandler()~=re:GetHandler()
+function cm.efilter1(e,te)
+	return e:GetHandler()~=te:GetOwner() and not te:GetOwner():IsType(TYPE_EQUIP)
 end

@@ -1,6 +1,6 @@
 --方舟骑士-凯尔希
 function c29056009.initial_effect(c)
-	aux.AddCodeList(c,29065500,29065578)
+	aux.AddCodeList(c,29065500,29065502,29065578)
 --summon with no tribute
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(51126152,0))

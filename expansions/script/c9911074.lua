@@ -1,5 +1,6 @@
 --魔血姬-吸血鬼·柏夜
 function c9911074.initial_effect(c)
+	aux.AddCodeList(c,9911056)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_DARK),6,2)
 	c:EnableReviveLimit()

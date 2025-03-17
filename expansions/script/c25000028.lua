@@ -8,10 +8,10 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	--e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1,id)
 	e2:SetCost(s.spcost)
 	e2:SetTarget(s.sptg)
@@ -19,7 +19,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
-	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_SZONE)
@@ -28,8 +28,8 @@ function s.initial_effect(c)
 	e3:SetOperation(s.thop)
 	c:RegisterEffect(e3)
 end
-function s.cfilter(c,tp)
-	return c:IsRace(RACE_INSECT) and c:IsAttribute(ATTRIBUTE_EARTH) and Duel.GetMZoneCount(tp,c)>0
+function s.cfilter1(c,tp)
+	return aux.IsCodeListed(c,id)
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,s.cfilter1,1,nil,tp) end
@@ -42,11 +42,11 @@ function s.spfilter(c,e,tp)
 		and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=c:GetLevel()
 		and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_DECK,0,1,nil,e,tp)
 end
-function s.spfilter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_DECK,0,nil)>4 end
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,5) end
+end
+function s.spfilter(c,e,tp)
+	return c:IsAbleToHand() or (Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,5)
@@ -54,11 +54,15 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.DisableShuffleCheck()
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
-		local sg=g:FilterSelect(tp,s.spfilter,1,1,nil,e,tp)
+		local sg=g:FilterSelect(tp,s.spfilter,0,1,nil,e,tp)
 		if sg:GetCount()>0 then
 			local sc=sg:GetFirst()
-			Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
-			sc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
+			if Duel.GetLocationCount(sc,LOCATION_MZONE)>0 and sc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+				and (not sc:IsAbleToHand() or Duel.SelectOption(tp,1190,1152)==1) then
+				Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
+			else
+				Duel.SendtoHand(sc,nil,REASON_EFFECT)
+			end
 			g:Sub(sg)
 		else
 			return
@@ -73,7 +77,7 @@ end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.thfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(s.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectTarget(tp,s.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
@@ -89,18 +93,14 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetLabel(Duel.GetTurnCount())
 	e1:SetCondition(s.spcon2)
 	e1:SetOperation(s.spop2)
-	if Duel.GetCurrentPhase()<=PHASE_STANDBY then
-		e1:SetReset(RESET_PHASE+PHASE_STANDBY,2)
-	else
-		e1:SetReset(RESET_PHASE+PHASE_STANDBY)
-	end
+	e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.spfilter2(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()~=e:GetLabel() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return Duel.GetTurnPlayer()==tp and Duel.GetTurnCount()~=e:GetLabel() and Duel.GetMZoneCount(tp)>0
 		and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp)
 end
 function s.spop2(e,tp,eg,ep,ev,re,r,rp)

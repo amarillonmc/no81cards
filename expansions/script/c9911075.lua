@@ -1,5 +1,6 @@
 --绝地激斗的恋慕屋敷
 function c9911075.initial_effect(c)
+	aux.AddCodeList(c,9911056)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_HANDES)
@@ -11,7 +12,7 @@ function c9911075.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c9911075.filter(c)
-	return c:IsSetCard(0x8e) and c:IsAbleToHand()
+	return (c:IsCode(9911056) or aux.IsCodeListed(c,9911056)) and c:IsAbleToHand()
 end
 function c9911075.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9911075.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -28,7 +29,7 @@ function c9911075.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ShuffleHand(tp)
 		local b1=Duel.CheckRemoveOverlayCard(tp,1,0,2,REASON_EFFECT)
 		local b2=Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT)
-		if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9911075,0),aux.Stringid(9911075,1))==0) then
+		if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9911075,0),aux.Stringid(9911075,1))==1) then
 			Duel.BreakEffect()
 			Duel.RemoveOverlayCard(tp,1,0,2,2,REASON_EFFECT)
 		elseif b2 then

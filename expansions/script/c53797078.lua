@@ -22,7 +22,7 @@ function s.initial_effect(c)
 	end
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if not re:IsActiveType(TYPE_SPELL) or not re:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
+	if not re:IsActiveType(TYPE_SPELL) or not re:IsHasType(EFFECT_TYPE_ACTIVATE) or re:GetHandler():GetOriginalType()&0x2<=0 then return end
 	local code1,code2=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CODE,CHAININFO_TRIGGERING_CODE2)
 	Duel.RegisterFlagEffect(rp,id,RESET_PHASE+PHASE_END,0,1,code1)
 	Duel.RegisterFlagEffect(rp,id,RESET_PHASE+PHASE_END,0,1,code2)

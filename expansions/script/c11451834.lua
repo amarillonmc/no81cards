@@ -209,7 +209,8 @@ function cm.spfilter2(c,e,tp)
 	return false
 end
 function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():GetSequence()<5 end
+	local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter2),tp,0xff,0,nil,e,tp)
+	if chk==0 then return e:GetHandler():GetSequence()<5 and #sg>0 end
 end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

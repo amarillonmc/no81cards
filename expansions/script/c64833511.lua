@@ -27,7 +27,7 @@ function s.initial_effect(c)
 	e2:SetTargetRange(0,1)
 	e2:SetCondition(s.lockcon)
 	e2:SetValue(s.lockval)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 end
 
 -- ① 抽卡条件判断

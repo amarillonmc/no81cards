@@ -18,6 +18,8 @@ function c71000111.initial_effect(c)
 	e2:SetTarget(c71000111.xtg)
 	e2:SetOperation(c71000111.xop)
 	c:RegisterEffect(e2)
+
+
 end
 function c71000111.f(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsSetCard(0xe73)

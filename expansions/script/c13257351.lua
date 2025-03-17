@@ -41,8 +41,8 @@ function cm.bfilter(c)
 end
 function cm.bombcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ec=e:GetHandler():GetEquipTarget()
-	if chk==0 then return ec and ec:IsCanRemoveCounter(tp,0x351,1,REASON_COST) end
-	ec:RemoveCounter(tp,0x351,1,REASON_COST)
+	if chk==0 then return ec and ec:IsCanRemoveCounter(tp,TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1,REASON_COST) end
+	ec:RemoveCounter(tp,TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1,REASON_COST)
 end
 function cm.bombtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ec=e:GetHandler():GetEquipTarget()
@@ -58,14 +58,29 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e) or not c:IsRelateToEffect(e) or not ec then return end
 	if ec and ec:IsFaceup() then
-		Duel.Destroy(tc,REASON_EFFECT)
-		if tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA+LOCATION_HAND) then return end
-		Duel.BreakEffect()
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e3:SetCode(EVENT_CHAIN_SOLVING)
+		e3:SetCondition(cm.discon1)
+		e3:SetOperation(cm.disop1)
+		e3:SetLabelObject(tc)
+		e3:SetReset(RESET_EVENT+RESET_CHAIN)
+		Duel.RegisterEffect(e3,tp)
 		if not Duel.Equip(tp,tc,ec,false) then return end
 		--Add Equip limit
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE)
+		e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
 		e1:SetCode(EFFECT_EQUIP_LIMIT)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetLabelObject(ec)
@@ -88,12 +103,19 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetRange(LOCATION_MZONE)
 		e4:SetCode(EFFECT_IMMUNE_EFFECT)
 		e4:SetValue(cm.efilter1)
-		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_CHAIN)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 		ec:RegisterEffect(e4,true)
 	else Duel.SendtoGrave(tc,REASON_RULE) end
 end
+function cm.discon1(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	return re:GetHandler()==tc
+end
+function cm.disop1(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
+end
 function cm.phcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp and e:GetHandler():GetEquipTarget()
+	return e:GetHandler():GetEquipTarget()
 end
 function cm.phop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -105,6 +127,6 @@ end
 function cm.eqlimit2(e,c)
 	return e:GetLabelObject()==c
 end
-function cm.efilter1(e,re)
-	return e:GetHandler()~=re:GetHandler()
+function cm.efilter1(e,te)
+	return e:GetHandler()~=te:GetOwner() and not te:GetOwner():IsType(TYPE_EQUIP)
 end

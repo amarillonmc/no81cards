@@ -40,26 +40,7 @@ function cm.eqlimit(e,c)
 	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x6352)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetEquipTarget()
-end
-function cm.desfilter(c,ec)
-	return ec:GetColumnGroup():IsContains(c)
-end
-function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ec=e:GetHandler():GetEquipTarget()
-	if chk==0 then return Duel.IsExistingTarget(cm.desfilter,tp,0,LOCATION_ONFIELD,1,nil,ec) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,cm.desfilter,tp,0,LOCATION_ONFIELD,1,1,nil,ec)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-end
-function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if e:GetHandler():IsRelateToEffect(e) and tc:IsRelateToEffect(e) then
-		Duel.Destroy(tc,REASON_EFFECT)
-	end
-end
-function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsOnField() and re:GetHandler():IsRelateToEffect(re) and (re:IsActiveType(TYPE_MONSTER)
+	return e:GetHandler():GetEquipTarget() and re:GetHandler():IsOnField() and re:GetHandler():IsRelateToEffect(re) and (re:IsActiveType(TYPE_MONSTER)
 		or (re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not re:IsHasType(EFFECT_TYPE_ACTIVATE)))
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -71,3 +52,55 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end
+--[[
+--ec:装备卡,mc:怪兽卡
+function isDiagonal(ec,mc)
+	local eseq=ec:GetSequence()
+	local mseq=mc:GetSequence()
+	if eseq==5 then return false end
+	local ex=0
+	if mseq==5 then 
+		mseq=1 
+		ex=1
+	elseif mseq==6 then 
+		mseq=3
+		ex=1
+	end
+	return math.abs(eseq-mseq)==1+ex
+end
+function cm.getDiagonalGroup(ec,mc,reflect)
+	local g=Group.CreateGroup()
+	g:AddCard(ec)
+	g:AddCard(mc)
+	local eseq=ec:GetSequence()
+	local mseq=mc:GetSequence()
+	local ptr=mseq
+	local ex=0
+	if mseq==5 then 
+		mseq=1 
+		ex=1
+	elseif mseq==6 then 
+		mseq=3
+		ex=1
+	end
+	local toLeft=(eseq-mseq>0)
+	if reflect and ((toLeft and mseq==0) or (not toLeft and mseq==4)) then toLeft=not toLeft end
+	if ex==0 and toLeft and (ptr==2 or ptr==4) then
+		ptr=3
+		ex=1
+	end
+	
+end
+function cm.desop1(e,tp,eg,ep,ev,re,r,rp)
+	local g=Group.CreateGroup()
+	local c=e:GetHandler()
+	local ec=c:GetEquipTarget()
+	if not c:IsRelateToEffect(e) or not ec then return end
+	if c:GetColumnGroup():IsContains(ec) then
+		g:Merge(c:GetColumnGroup():Filter(Card.IsControler,nil,1-tp))
+	elseif isDiagonal(ec,mc) then
+		g:Merge(cm.getDiagonalGroup(ec,mc))
+	end
+	Duel.Destroy(g,REASON_EFFECT)
+end
+]]

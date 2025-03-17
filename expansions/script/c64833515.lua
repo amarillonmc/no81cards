@@ -24,7 +24,7 @@ function s.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(s.invalidcon)
 	e2:SetOperation(s.invalidop)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 end
 
 -- 共用原持有者检测函数

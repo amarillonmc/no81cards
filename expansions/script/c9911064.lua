@@ -1,76 +1,83 @@
---恋慕屋敷的军姬
+--恋慕屋敷的军官
 function c9911064.initial_effect(c)
-	--atk & def
+	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetValue(c9911064.atkval)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetCountLimit(1,9911064)
+	e1:SetCondition(c9911064.spcon)
+	e1:SetCost(c9911064.spcost)
+	e1:SetTarget(c9911064.sptg)
+	e1:SetOperation(c9911064.spop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_UPDATE_DEFENSE)
+	--to hand
+	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_REMOVE)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetCountLimit(1,9911081)
+	e2:SetCost(c9911064.rmcost)
+	e2:SetTarget(c9911064.rmtg)
+	e2:SetOperation(c9911064.rmop)
 	c:RegisterEffect(e2)
-	--redirect
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e3:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(0,LOCATION_MZONE)
-	e3:SetTarget(c9911064.rmtg)
-	e3:SetValue(LOCATION_REMOVED)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
-	--destroy
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_DESTROY)
-	e4:SetType(EFFECT_TYPE_IGNITION)
-	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,9911064)
-	e4:SetTarget(c9911064.destg)
-	e4:SetOperation(c9911064.desop1)
-	c:RegisterEffect(e4)
-	local e5=e4:Clone()
-	e5:SetCategory(CATEGORY_DESTROY+CATEGORY_DISABLE)
-	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_CHAINING)
-	e5:SetCondition(c9911064.descon)
-	e5:SetCost(c9911064.descost)
-	e5:SetOperation(c9911064.desop2)
-	c:RegisterEffect(e5)
 end
-function c9911064.atkval(e,c)
-	return Duel.GetCounter(0,1,1,0x1954)*200
+function c9911064.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
-function c9911064.rmtg(e,c)
-	return c:IsFaceup() and c:GetCounter(0x1954)>0
+function c9911064.cfilter(c)
+	return c:IsSetCard(0x9954) and c:IsType(TYPE_MONSTER) and not c:IsRace(RACE_DRAGON) and not c:IsPublic()
 end
-function c9911064.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) end
-	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+function c9911064.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9911064.cfilter,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g=Duel.SelectMatchingCard(tp,c9911064.cfilter,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.ConfirmCards(1-tp,g)
+	Duel.ShuffleHand(tp)
 end
-function c9911064.desop1(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.Destroy(tc,REASON_EFFECT)
-	end
+function c9911064.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
-function c9911064.descon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp
+function c9911064.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
 end
-function c9911064.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,1,0x1954,4,REASON_COST) end
-	Duel.RemoveCounter(tp,1,1,0x1954,4,REASON_COST)
+function c9911064.tgfilter(c)
+	return c:IsSetCard(0x9954) and c:IsAbleToGraveAsCost()
 end
-function c9911064.desop2(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0
-		and Duel.IsChainDisablable(ev) and Duel.SelectYesNo(tp,aux.Stringid(9911064,0)) then
-		Duel.BreakEffect()
-		Duel.NegateEffect(ev)
+function c9911064.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9911064.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9911064.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
+	local label=0
+	if g:GetFirst():IsLocation(LOCATION_HAND) then label=1 end
+	e:SetLabel(label)
+	Duel.SendtoGrave(g,REASON_COST)
+end
+function c9911064.rmfilter(c,tp)
+	return c:GetCounter(0x1954)>0 and c:IsAbleToRemove(tp,POS_FACEDOWN)
+end
+function c9911064.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9911064.rmfilter(chkc,tp) end
+	if chk==0 then return Duel.IsExistingTarget(c9911064.rmfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) end
+	local ct=1
+	if e:GetLabel()==1 then ct=2 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectTarget(tp,c9911064.rmfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,ct,nil,tp)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,#g,0,0)
+end
+function c9911064.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	if #g>0 then
+		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
 	end
 end

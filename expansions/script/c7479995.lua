@@ -90,7 +90,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,tp)
 end
 function s.settarget(e,c)
-	return c:IsSummonLocation(LOCATION_HAND) and c:IsFaceup()
+	return c:IsSummonLocation(LOCATION_HAND) and c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_SPECIAL)
 end
 function s.poscon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2

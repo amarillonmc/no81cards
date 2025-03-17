@@ -28,7 +28,7 @@ function s.initial_effect(c)
 	e2:SetCondition(s.tgcon)
 	e2:SetTarget(s.tgtg)
 	e2:SetValue(aux.tgoval)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 end
 
 -- 共用原持有者检测函数

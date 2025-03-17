@@ -3,7 +3,7 @@ local m=13257338
 local cm=_G["c"..m]
 if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x351)
+	c:EnableCounterPermit(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_COUNTER)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -36,6 +36,12 @@ function cm.initial_effect(c)
 	e4:SetCost(cm.bombcost)
 	e4:SetOperation(cm.bombop)
 	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e5:SetCode(EFFECT_ADD_CODE)
+	e5:SetValue(13257342)
+	c:RegisterEffect(e5)
 	local e11=Effect.CreateEffect(c)
 	e11:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e11:SetCode(EVENT_SUMMON_SUCCESS)
@@ -46,8 +52,8 @@ function cm.initial_effect(c)
 	
 end
 function cm.addc(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsCanAddCounter(0x351,1) then
-		e:GetHandler():AddCounter(0x351,1)
+	if e:GetHandler():IsCanAddCounter(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1) then
+		e:GetHandler():AddCounter(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1)
 	end
 end
 function cm.eqfilter(c,ec)
@@ -76,56 +82,54 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.bombcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x351,1,REASON_COST) end
-	e:GetHandler():RemoveCounter(tp,0x351,1,REASON_COST)
+	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1,REASON_COST) end
+	e:GetHandler():RemoveCounter(tp,TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1,REASON_COST)
 end
 function cm.desfilter(c,ec)
 	return ec:GetColumnGroup():IsContains(c)
 end
 function cm.efilter(e,te)
-	return te:GetOwner()~=e:GetOwner()
+	return e:GetHandler()~=te:GetOwner() and not te:GetOwner():IsType(TYPE_EQUIP)
 end
 function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_ONFIELD,nil,e:GetHandler())
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		local e4=Effect.CreateEffect(e:GetHandler())
+		e4:SetDescription(aux.Stringid(m,6))
 		e4:SetType(EFFECT_TYPE_SINGLE)
-		e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e4:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_SINGLE_RANGE)
 		e4:SetRange(LOCATION_MZONE)
 		e4:SetCode(EFFECT_IMMUNE_EFFECT)
 		e4:SetValue(cm.efilter)
-		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 		c:RegisterEffect(e4)
 		local e5=Effect.CreateEffect(e:GetHandler())
 		e5:SetType(EFFECT_TYPE_SINGLE)
 		e5:SetCode(EFFECT_UPDATE_ATTACK)
-		e5:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
-		e5:SetValue(700)
+		e5:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
+		e5:SetValue(1000)
 		c:RegisterEffect(e5)
-		--damage
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e3:SetCode(EVENT_CHAINING)
 		e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e3:SetRange(LOCATION_MZONE)
-		e3:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		e3:SetOperation(cm.regop)
 		c:RegisterEffect(e3)
 		local e4=Effect.CreateEffect(c)
 		e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e4:SetCode(EVENT_CHAIN_SOLVED)
 		e4:SetRange(LOCATION_MZONE)
-		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		e4:SetCondition(cm.accon)
 		e4:SetOperation(cm.acop)
 		c:RegisterEffect(e4)
 	end
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler() then
-		e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+0x1fc0000+RESET_CHAIN,0,1)
-	end
+	e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
 end
 function cm.accon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -134,14 +138,14 @@ end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:GetFlagEffect(m)==0 then 
-		c:RegisterFlagEffect(m,RESET_EVENT+0x1ff0000+RESET_PHASE+PHASE_END,0,1,1)
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END,0,1,1)
 	else
 		local label=c:GetFlagEffectLabel(m)
 		c:SetFlagEffectLabel(m,label+c:GetFlagEffect(m+1))
 	end
 	if c:GetFlagEffectLabel(m)>=3 then
 		Duel.Hint(HINT_CARD,1,m)
-		c:AddCounter(0x351,1)
+		c:AddCounter(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1)
 		c:SetFlagEffectLabel(m,0)
 	end
 end

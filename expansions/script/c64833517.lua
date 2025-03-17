@@ -22,16 +22,16 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetCode(EFFECT_CANNOT_ADD_TO_HAND)
+	e2:SetCode(EFFECT_CANNOT_TO_HAND)
 	e2:SetTargetRange(0,1)
 	e2:SetTarget(s.handlimit)
 	e2:SetCondition(s.bancon)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 	
 	local e3=e2:Clone()
-	e3:SetCode(EFFECT_CANNOT_TO_GRAVE)
+	e3:SetCode(EFFECT_CANNOT_DISCARD_DECK)
 	e3:SetTarget(s.graveimit)
-	c:RegisterEffect(e3)
+	--c:RegisterEffect(e3)
 end
 
 -- 原持有者检测函数
@@ -78,5 +78,5 @@ end
 
 -- 墓地封禁判断
 function s.graveimit(e,c,tp)
-	return c:IsLocation(LOCATION_DECK) 
+	return true
 end

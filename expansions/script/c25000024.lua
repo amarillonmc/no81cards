@@ -6,7 +6,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
-	e1:SetCost(s.thcost)
+	--e1:SetCost(s.thcost)
 	e1:SetTarget(s.thtg)
 	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
@@ -17,11 +17,14 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		if e:GetLabel()~=100 then return false end
-		e:SetLabel(0)
-		return Duel.CheckLPCost(tp,1000,true) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
-		and Duel.CheckLPCost(1-tp,1000,true) and Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)>0
+		--if e:GetLabel()~=100 then return false end
+		--e:SetLabel(0)
+		return Duel.CheckLPCost(tp,1000,true) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 and Duel.GetDecktopGroup(tp,1):FilterCount(Card.IsAbleToHand,nil)>0
+		or Duel.CheckLPCost(1-tp,1000,true) and Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)>0 and Duel.GetDecktopGroup(1-tp,1):FilterCount(Card.IsAbleToHand,nil)>0
 	end
+end
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
+	if not (Duel.CheckLPCost(tp,1000,true) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 and Duel.GetDecktopGroup(tp,1):FilterCount(Card.IsAbleToHand,nil)>0 or Duel.CheckLPCost(1-tp,1000,true) and Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)>0 and Duel.GetDecktopGroup(1-tp,1):FilterCount(Card.IsAbleToHand,nil)>0) then return end
 	local lp1=Duel.GetLP(tp)
 	local lp2=Duel.GetLP(1-tp)
 	local t={}
@@ -44,22 +47,17 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local announce2=Duel.AnnounceNumber(1-tp,table.unpack(p))
 	Duel.PayLPCost(tp,announce1,true)
 	Duel.PayLPCost(1-tp,announce2,true)
-	local ttp=0
-	local announce=0
+	local p=0
+	local d=0
 	if announce1>announce2 then
-		ttp=tp
-		announce=announce1
+		p=tp
+		d=announce1/1000
 	elseif announce1==announce2 then
-		ttp=2
+		p=2
 	else
-		ttp=1-tp
-		announce=announce2
+		p=1-tp
+		d=announce2/1000
 	end
-	Duel.SetTargetPlayer(ttp)
-	Duel.SetTargetParam(announce/1000)
-end
-function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if p==2 then
 		Duel.Draw(tp,1,REASON_EFFECT)
 		Duel.Draw(1-tp,1,REASON_EFFECT)

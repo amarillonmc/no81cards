@@ -6,6 +6,8 @@ function c98941055.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
+	e1:SetCondition(c98941055.sumcon)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
@@ -24,6 +26,10 @@ function c98941055.initial_effect(c)
 	e3:SetCondition(s.regcon)
 	e3:SetOperation(s.regop)
 	c:RegisterEffect(e3)
+end
+function c98941055.sumcon(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
+	return (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -56,7 +62,19 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	   e33:SetLabelObject(e0)
 	   c:RegisterEffect(e33,true)
 	   Duel.SpecialSummonComplete()
+   end
+   if Duel.IsExistingMatchingCard(s.sxyzfilter,tp,LOCATION_EXTRA,0,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		Duel.BreakEffect()
+		local g=Duel.GetMatchingGroup(c98941055.sxyzfilter,tp,LOCATION_EXTRA,0,nil)
+		if g:GetCount()>0 then
+		   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		   local tg=g:Select(tp,1,1,nil)
+		   Duel.XyzSummon(tp,tg:GetFirst(),nil)
+		end
 	end
+end
+function s.sxyzfilter(c,tp)
+	return c:IsXyzSummonable(nil) or (c:IsSetCard(0x53,0x9c) and c:IsRank(4) and Duel.GetFlagEffect(tp,c:GetCode())==0)
 end
 function c98941055.xyzfilter1(c,e,lv,ff)
 	if (ff==1 or ff==4) and not c:IsSetCard(0x9c) then return end

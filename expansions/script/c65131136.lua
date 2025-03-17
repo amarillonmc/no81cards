@@ -9,6 +9,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 
 	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_DRAW)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_PHASE+PHASE_END)
 	e3:SetRange(LOCATION_SZONE)
@@ -46,12 +47,14 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetCode(EVENT_PHASE+PHASE_END)
 			e3:SetCountLimit(1)
 			e3:SetLabelObject(e2)
+			e3:SetLabel(3)
 			e3:SetCondition(s.turncon)
 			e3:SetOperation(s.turnop)
 			e3:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN,3)
-			Duel.RegisterEffect(e3,tp)	
-			c:RegisterFlagEffect(1082946,RESET_PHASE+PHASE_END+RESET_OPPO_TURN,0,3)
-			s[c]=e3
+			Duel.RegisterEffect(e3,tp)
+			dc:RegisterFlagEffect(1082946,RESET_PHASE+PHASE_END+RESET_OPPO_TURN,0,3)
+			local cs=getmetatable(dc)
+			cs[dc]=e3
 		end
 	end
 end
@@ -76,7 +79,8 @@ function s.tmfilter(c)
 	return c:GetFlagEffect(1082946)~=0
 end
 function s.tmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.tmfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	local ct=Duel.GetMatchingGroupCount(s.tmfilter,tp,LOCATION_ONFIELD,0,nil)
+	if chk==0 then return ct>0 and Duel.IsPlayerCanDraw(tp,ct) end
 end
 function s.tmop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(s.tmfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
@@ -85,4 +89,6 @@ function s.tmop(e,tp,eg,ep,ev,re,r,rp)
 		local op=turne:GetOperation()
 		op(turne,turne:GetOwnerPlayer(),nil,0,0,0,0,0)
 	end
+	Duel.BreakEffect()
+	Duel.Draw(p,g:GetCount(),REASON_EFFECT)
 end

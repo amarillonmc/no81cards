@@ -3,6 +3,7 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetTarget(cm.target)
@@ -62,6 +63,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	te:SetLabelObject(e:GetLabelObject())
 	e:SetLabelObject(te)
 	Duel.ClearOperationInfo(0)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
@@ -78,11 +80,12 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
-	if not te then return end
-	if not te:GetHandler():IsRelateToEffect(e) then return end
-	e:SetLabelObject(te:GetLabelObject())
-	local op=te:GetOperation()
-	if op then op(e,tp,eg,ep,ev,re,r,rp) end
+	if te and te:GetHandler():IsRelateToEffect(e) and Duel.SendtoDeck(te:GetHandler(),nil,2,REASON_EFFECT)>0 then
+		if te:GetHandler():IsLocation(LOCATION_DECK) then Duel.ShuffleDeck(tp) end
+		e:SetLabelObject(te:GetLabelObject())
+		local op=te:GetOperation()
+		if op then op(e,tp,eg,ep,ev,re,r,rp) end
+	end
 end
 function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 	return ev==e:GetLabel()

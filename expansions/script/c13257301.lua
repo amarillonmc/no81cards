@@ -1,4 +1,4 @@
---超时空战斗机-胜利蛇
+--超时空战斗机-V形蛇
 local m=13257301
 local cm=_G["c"..m]
 if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
@@ -14,6 +14,7 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.pctg)
 	e1:SetOperation(cm.pcop)
 	c:RegisterEffect(e1)
+	--[[
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,5))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -23,6 +24,20 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
 	c:RegisterEffect(e2)
+	]]
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,5))
+	e2:SetCategory(CATEGORY_REMOVE)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,m)
+	e2:SetTarget(cm.rmtg)
+	e2:SetOperation(cm.rmop)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e3)
 	local e11=Effect.CreateEffect(c)
 	e11:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e11:SetCode(EVENT_SUMMON_SUCCESS)
@@ -47,7 +62,7 @@ end
 function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local t1=Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_EXTRA,0,1,nil,c) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-	local t2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,93130022,0,0x4011,c:GetAttack(),c:GetDefense(),c:GetLevel(),c:GetRace(),c:GetAttribute())
+	local t2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,TAMA_OPTION_CODE,0,TYPES_TOKEN_MONSTER,c:GetAttack(),c:GetDefense(),c:GetLevel(),c:GetRace(),c:GetAttribute())
 	local t3=Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil)
 	if chk==0 then return t1 or t2 or t3 end
 	local op=0
@@ -91,9 +106,9 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 		local race=c:GetRace()
 		local att=c:GetAttribute()
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not c:IsRelateToEffect(e) or c:IsFacedown()
-			or not Duel.IsPlayerCanSpecialSummonMonster(tp,93130022,0,0x4011,atk,def,lv,race,att) then return end
-		local token=Duel.CreateToken(tp,93130022)
-		c:CreateRelation(token,RESET_EVENT+0x1fe0000)
+			or not Duel.IsPlayerCanSpecialSummonMonster(tp,TAMA_OPTION_CODE,0,TYPES_TOKEN_MONSTER,atk,def,lv,race,att) then return end
+		local token=Duel.CreateToken(tp,TAMA_OPTION_CODE)
+		c:CreateRelation(token,RESET_EVENT+RESETS_STANDARD)
 		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -101,7 +116,7 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 		e1:SetRange(LOCATION_MZONE)
 		e1:SetValue(cm.tokenatk)
-		e1:SetReset(RESET_EVENT+0xfe0000)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 		token:RegisterEffect(e1,true)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
@@ -111,25 +126,25 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetType(EFFECT_TYPE_SINGLE)
 		e3:SetCode(EFFECT_CHANGE_LEVEL)
 		e3:SetValue(cm.tokenlv)
-		e3:SetReset(RESET_EVENT+0xfe0000)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 		token:RegisterEffect(e3,true)
 		local e4=Effect.CreateEffect(c)
 		e4:SetType(EFFECT_TYPE_SINGLE)
 		e4:SetCode(EFFECT_CHANGE_RACE)
 		e4:SetValue(cm.tokenrace)
-		e4:SetReset(RESET_EVENT+0xfe0000)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 		token:RegisterEffect(e4,true)
 		local e5=Effect.CreateEffect(c)
 		e5:SetType(EFFECT_TYPE_SINGLE)
 		e5:SetCode(EFFECT_CHANGE_ATTRIBUTE)
 		e5:SetValue(cm.tokenatt)
-		e5:SetReset(RESET_EVENT+0xfe0000)
+		e5:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 		token:RegisterEffect(e5,true)
 		local e6=Effect.CreateEffect(c)
 		e6:SetType(EFFECT_TYPE_SINGLE)
 		e6:SetCode(EFFECT_SELF_DESTROY)
 		e6:SetCondition(cm.tokendes)
-		e6:SetReset(RESET_EVENT+0xfe0000)
+		e6:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 		token:RegisterEffect(e6,true)
 		c:SetCardTarget(token)
 		Duel.SpecialSummonComplete()
@@ -160,13 +175,64 @@ end
 function cm.tokendes(e)
 	return not e:GetOwner():GetCardTarget():IsContains(e:GetHandler())
 end
+function cm.rmfilter(c)
+	return c:IsSetCard(0x351) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
+end
+function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
+end
+function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	end
+end
+--[[
+function cm.cfilter(c)
+	return c:IsSetCard(0x351) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+end
+function cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
+	local tep=c:GetControler()
+	local target=PCe:GetTarget()
+	return not target or target(PCe,tep,eg,ep,ev,re,r,rp,0)
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_DECK,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local PCe=tama.getTargetTable(c,"power_capsule")
+	if chk==0 then return PCe and cm.canActivate(c,PCe,eg,ep,ev,re,r,rp) end
+end
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tep=c:GetControler()
+	local PCe=tama.getTargetTable(c,"power_capsule")
+	if PCe and cm.canActivate(c,PCe,eg,ep,ev,re,r,rp) then
+		local target=PCe:GetTarget()
+		local operation=PCe:GetOperation()
+		Duel.ClearTargetCard()
+		e:SetProperty(PCe:GetProperty())
+		c:CreateEffectRelation(PCe)
+		if target then target(PCe,tep,eg,ep,ev,re,r,rp,1) end
+		if operation then operation(PCe,tep,eg,ep,ev,re,r,rp) end
+		c:ReleaseEffectRelation(PCe)
+	end
+end
+]]
+--[[
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x351) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local c=e:GetHandler()
-	if chk==0 then return ft>-1 and c:IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(c13257301.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	if chk==0 then return ft>-1 and c:IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	local sg=c:GetEquipGroup()
 	sg:KeepAlive()
 	e:SetLabelObject(sg)
@@ -193,6 +259,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+]]
 function cm.bgmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
 end

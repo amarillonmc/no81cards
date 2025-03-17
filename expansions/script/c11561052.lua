@@ -180,5 +180,3 @@ function c11561052.thop(e,tp,eg,ep,ev,re,r,rp)
 	if c and c:IsRelateToEffect(e) then Group.AddCard(g,c) end
 	Duel.SendtoHand(g,nil,REASON_EFFECT)
 end
-
-c:GetOriginalType()&TYPE_MONSTER==TYPE_MONSTER

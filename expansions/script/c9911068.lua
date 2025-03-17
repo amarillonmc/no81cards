@@ -8,22 +8,30 @@ function c9911068.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(c9911068.spcon)
 	c:RegisterEffect(e1)
-	--tohand
+	--to hand/set
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_MZONE)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,9911068)
 	e2:SetTarget(c9911068.thtg)
 	e2:SetOperation(c9911068.thop)
 	c:RegisterEffect(e2)
-	--handes
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_HANDES)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e3:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e3:SetOperation(c9911068.haop)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
+	--negate attack
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_REMOVE)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCondition(c9911068.rmcon)
+	e4:SetCost(c9911068.rmcost)
+	e4:SetTarget(c9911068.rmtg)
+	e4:SetOperation(c9911068.rmop)
+	c:RegisterEffect(e4)
 end
 function c9911068.spcfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x9954) and not c:IsRace(RACE_BEAST)
@@ -34,38 +42,45 @@ function c9911068.spcon(e,c)
 		and Duel.IsExistingMatchingCard(c9911068.spcfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
 end
 function c9911068.thfilter(c)
-	return c:IsSetCard(0x9954) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x9954) and c:IsType(TYPE_TRAP) and (c:IsAbleToHand() or c:IsSSetable())
 end
 function c9911068.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9911068.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9911068.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local g=Duel.SelectMatchingCard(tp,c9911068.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
-		Duel.ConfirmCards(1-tp,g)
-		Duel.ShuffleDeck(tp)
-		Duel.ShuffleHand(tp)
-		local b1=Duel.IsCanRemoveCounter(tp,1,1,0x1954,2,REASON_EFFECT)
-		local b2=Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil)
-		if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9911068,0),aux.Stringid(9911068,1))==0) then
-			Duel.BreakEffect()
-			Duel.RemoveCounter(tp,1,1,0x1954,2,REASON_EFFECT)
-		elseif b2 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
-			if sg:GetCount()>0 then
-				Duel.BreakEffect()
-				Duel.SendtoDeck(sg,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
-			end
+	local tc=g:GetFirst()
+	if tc then
+		if tc:IsAbleToHand() and (not tc:IsSSetable() or Duel.SelectOption(tp,1190,1153)==0) then
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
+		else
+			Duel.SSet(tp,tc)
 		end
 	end
 end
-function c9911068.haop(e,tp,eg,ep,ev,re,r,rp)
-	local ct1=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
-	local ct2=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
-	if ct1<ct2 then Duel.DiscardHand(1-tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
-	elseif ct1>ct2 then Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD) end
+function c9911068.rmcon(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if g:GetCount()==0 then return false end
+	local tg=g:GetMaxGroup(Card.GetAttack)
+	return tg:IsContains(Duel.GetAttacker())
+end
+function c9911068.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,1,0x1954,1,REASON_COST) end
+	Duel.RemoveCounter(tp,1,1,0x1954,1,REASON_COST)
+end
+function c9911068.rmfilter(c)
+	return c:IsFacedown() and c:IsAbleToRemove()
+end
+function c9911068.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9911068.rmfilter,tp,0,LOCATION_EXTRA,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_EXTRA)
+end
+function c9911068.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c9911068.rmfilter,tp,0,LOCATION_EXTRA,nil)
+	if g:GetCount()==0 then return end
+	Duel.ShuffleExtra(1-tp)
+	local tc=g:RandomSelect(tp,1):GetFirst()
+	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 end

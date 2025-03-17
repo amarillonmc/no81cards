@@ -39,7 +39,7 @@ function c44401002.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	c:RegisterEffect(e1)
 end
 function c44401002.sumfilter(c)
-	return c:IsSetCard(0xa4a) and c:IsSummonable(true,nil)
+	return c:IsRace(RACE_PSYCHO) and c:IsSummonable(true,nil)
 end
 function c44401002.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

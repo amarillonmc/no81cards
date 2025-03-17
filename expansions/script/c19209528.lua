@@ -15,16 +15,15 @@ function c19209528.initial_effect(c)
 	e1:SetOperation(c19209528.thop)
 	c:RegisterEffect(e1)
 	--monster effect
-	--special summon
+	--set
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,19209529)
-	e2:SetCondition(c19209528.spcon)
-	e2:SetTarget(c19209528.sptg)
-	e2:SetOperation(c19209528.spop)
+	e2:SetCondition(c19209528.setcon)
+	e2:SetCost(c19209528.setcost)
+	e2:SetTarget(c19209528.settg)
+	e2:SetOperation(c19209528.setop)
 	c:RegisterEffect(e2)
 	--equip
 	local e3=Effect.CreateEffect(c)
@@ -65,24 +64,26 @@ function c19209528.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,tc)
 	end
 end
-function c19209528.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return re and re:IsHasType(EFFECT_TYPE_ACTIONS) and e:GetHandler():IsSummonLocation(LOCATION_EXTRA+LOCATION_GRAVE)
+function c19209528.setcon(e,tp,eg,ep,ev,re,r,rp)
+	return not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_PZONE,0,1,nil,19209511)
 end
-function c19209528.spfilter(c,e,tp)
-	return c:IsCode(19209511) and c:IsFaceupEx() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c19209528.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsDiscardable() end
+	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
-function c19209528.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMZoneCount(tp)>0
-		and Duel.IsExistingMatchingCard(c19209528.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp)
-	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_EXTRA)
+function c19209528.psfilter(c)
+	return c:IsCode(19209511) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
-function c19209528.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetMZoneCount(tp)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sc=Duel.SelectMatchingCard(tp,c19209528.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,e,tp):GetFirst()
-	if sc then
-		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
+function c19209528.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.IsExistingMatchingCard(c19209528.psfilter,tp,LOCATION_DECK,0,1,nil) end
+end
+function c19209528.setop(e,tp,eg,ep,ev,re,r,rp)
+	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local g=Duel.SelectMatchingCard(tp,c19209528.psfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 end
 function c19209528.eqfilter(c,rc)

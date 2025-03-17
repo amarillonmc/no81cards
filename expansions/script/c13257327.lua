@@ -1,4 +1,4 @@
---超时空战斗机-银银河战机
+--超时空战斗机-银河风暴
 local m=13257327
 local cm=_G["c"..m]
 if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
@@ -50,7 +50,6 @@ function cm.initial_effect(c)
 	e4:SetCategory(CATEGORY_TODECK)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetHintTiming(0,0x1e0)
 	e4:SetCost(cm.pccost)
@@ -88,13 +87,13 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 		if c:IsFaceup() and c:IsRelateToEffect(e) then
 			if not Duel.Equip(tp,tc,c,false) then return end
 			--Add Equip limit
-			tc:RegisterFlagEffect(m,RESET_EVENT+0x1fe0000,0,0)
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)
 			e:SetLabelObject(tc)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
 			e1:SetCode(EFFECT_EQUIP_LIMIT)
-			e1:SetReset(RESET_EVENT+0x1fe0000)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e1:SetValue(cm.eqlimit)
 			tc:RegisterEffect(e1)
 			--substitute
@@ -102,7 +101,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetType(EFFECT_TYPE_EQUIP)
 			e2:SetCode(EFFECT_DESTROY_SUBSTITUTE)
 			e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-			e2:SetReset(RESET_EVENT+0x1fe0000)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e2:SetValue(cm.repval)
 			tc:RegisterEffect(e2)
 		else Duel.SendtoGrave(tc,REASON_EFFECT) end
@@ -132,13 +131,13 @@ function cm.eqop1(e,tp,eg,ep,ev,re,r,rp)
 		if c:IsFaceup() and c:IsRelateToEffect(e) then
 			if not Duel.Equip(tp,tc,c,false) then return end
 			--Add Equip limit
-			tc:RegisterFlagEffect(m,RESET_EVENT+0x1fe0000,0,0)
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,0)
 			e:GetLabelObject():SetLabelObject(tc)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
 			e1:SetCode(EFFECT_EQUIP_LIMIT)
-			e1:SetReset(RESET_EVENT+0x1fe0000)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e1:SetValue(cm.eqlimit)
 			tc:RegisterEffect(e1)
 			--substitute
@@ -146,7 +145,7 @@ function cm.eqop1(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetType(EFFECT_TYPE_EQUIP)
 			e2:SetCode(EFFECT_DESTROY_SUBSTITUTE)
 			e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-			e2:SetReset(RESET_EVENT+0x1fe0000)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 			e2:SetValue(cm.repval)
 			tc:RegisterEffect(e2)
 		end
@@ -202,8 +201,8 @@ function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local t1=c:GetEquipCount()>0 or Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_EXTRA,0,1,nil,c) and c:IsRelateToEffect(e) and c:IsFaceup()
-	local t2=Duel.IsPlayerCanDraw(tp,1)
+	local t1=Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_EXTRA,0,1,nil,c) and c:IsRelateToEffect(e) and c:IsFaceup() and c:GetFlagEffect(m)==0
+	local t2=Duel.IsPlayerCanDraw(tp,1) and c:GetFlagEffect(m+1)==0
 	if not (t1 or t2) then return end
 	local op=0
 	if t1 or t2 then
@@ -216,6 +215,7 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 		op=n1[sp+1]
 	end
 	if op==1 then
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,0)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		local g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
 		if g:GetCount()>0 then
@@ -223,6 +223,7 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Equip(tp,tc,c)
 		end
 	elseif op==2 then
+		c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,0)
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end

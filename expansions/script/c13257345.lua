@@ -43,7 +43,7 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.bombtg)
 	e4:SetOperation(cm.bombop)
 	c:RegisterEffect(e4)
-	eflist={"bomb",e4}
+	eflist={{"bomb",e4}}
 	cm[c]=eflist
 	
 end
@@ -65,21 +65,24 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_DISABLE)
-	e1:SetReset(RESET_EVENT+0x17a0000)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOGRAVE-RESET_LEAVE)
 	tc:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 	e2:SetCode(EFFECT_DISABLE_EFFECT)
-	e2:SetReset(RESET_EVENT+0x17a0000)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOGRAVE-RESET_LEAVE)
 	tc:RegisterEffect(e2)
 end
 function cm.bombcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ec=e:GetHandler():GetEquipTarget()
-	if chk==0 then return ec and ec:IsCanRemoveCounter(tp,0x351,1,REASON_COST) end
-	ec:RemoveCounter(tp,0x351,1,REASON_COST)
+	if chk==0 then return ec and ec:IsCanRemoveCounter(tp,TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1,REASON_COST) end
+	ec:RemoveCounter(tp,TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1,REASON_COST)
 end
 function cm.bombtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -92,39 +95,51 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetRange(LOCATION_MZONE)
 		e4:SetCode(EFFECT_IMMUNE_EFFECT)
 		e4:SetValue(cm.efilter1)
-		e4:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
 		ec:RegisterEffect(e4,true)
 	end
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local tg=g:Select(tp,1,4,nil)
+	local tg=g:Select(tp,1,2,nil)
 	if tg:GetCount()>0 then
 		Duel.HintSelection(tg)
 		if Duel.Destroy(tg,REASON_EFFECT)>0 then
-			local tc=tg:GetFirst()
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESET_EVENT+RESETS_STANDARD-RESET_TOGRAVE-RESET_REMOVE)
-			tc:RegisterEffect(e1)
-			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			e2:SetReset(RESET_EVENT+RESET_EVENT+RESETS_STANDARD-RESET_TOGRAVE-RESET_REMOVE)
-			tc:RegisterEffect(e2)
-			local e3=Effect.CreateEffect(c)
-			e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-			e3:SetCode(EVENT_CHAIN_SOLVING)
-			e3:SetOperation(cm.disop1)
-			e3:SetLabelObject(tc)
-			e3:SetReset(RESET_EVENT+RESET_EVENT+RESETS_STANDARD-RESET_TOGRAVE-RESET_REMOVE)
-			tc:RegisterEffect(e3)
+			local tg1=Duel.GetOperatedGroup()
+			local tc=tg1:GetFirst()
+			while tc do
+				Duel.NegateRelatedChain(tc,0)
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_DISABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOGRAVE-RESET_LEAVE)
+				tc:RegisterEffect(e1)
+				local e2=Effect.CreateEffect(e:GetHandler())
+				e2:SetDescription(aux.Stringid(m,1))
+				e2:SetType(EFFECT_TYPE_SINGLE)
+				e2:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+				e2:SetCode(EFFECT_DISABLE_EFFECT)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOGRAVE-RESET_LEAVE)
+				tc:RegisterEffect(e2)
+				local e3=Effect.CreateEffect(c)
+				e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e3:SetCode(EVENT_CHAIN_SOLVING)
+				e3:SetCondition(cm.discon1)
+				e3:SetOperation(cm.disop1)
+				e3:SetLabelObject(tc)
+				e3:SetReset(RESET_EVENT+RESET_CHAIN)
+				Duel.RegisterEffect(e3,tp)
+				tc=tg1:GetNext()
+			end
 		end
 	end
+end
+function cm.discon1(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	return re:GetHandler()==tc
 end
 function cm.disop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
-function cm.efilter1(e,re)
-	return e:GetHandler()~=re:GetHandler()
+function cm.efilter1(e,te)
+	return e:GetHandler()~=te:GetOwner() and not te:GetOwner():IsType(TYPE_EQUIP)
 end

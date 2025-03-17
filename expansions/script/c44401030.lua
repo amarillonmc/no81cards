@@ -16,15 +16,15 @@ function c44401030.initial_effect(c)
 	e1:SetTarget(c44401030.target)
 	e1:SetOperation(c44401030.activate)
 	c:RegisterEffect(e1)
-	--set
+	--remove
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_REMOVE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,44401030)
-	e2:SetTarget(c44401030.settg)
-	e2:SetOperation(c44401030.setop)
+	--e2:SetCountLimit(1,44401030)
+	e2:SetTarget(c44401030.rmtg)
+	e2:SetOperation(c44401030.rmop)
 	c:RegisterEffect(e2)
 end
 function c44401030.hcfilter(c)
@@ -74,21 +74,16 @@ function c44401030.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c44401030.rmfilter(c)
-	return c:IsSetCard(0xa4a) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
+	return c:IsSetCard(0xa4a) and c:IsType(TYPE_SPELL) and c:IsAbleToRemove()
 end
-function c44401030.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsSSetable()
-		and Duel.IsExistingMatchingCard(c44401030.rmfilter,tp,LOCATION_DECK,0,1,nil) end
+function c44401030.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c44401030.rmfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
-function c44401030.setop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SSet(tp,c)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local rg=Duel.SelectMatchingCard(tp,c44401030.rmfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if rg:GetCount()>0 then
-			Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
-		end
+function c44401030.rmop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local rg=Duel.SelectMatchingCard(tp,c44401030.rmfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if rg:GetCount()>0 then
+		Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 	end
 end

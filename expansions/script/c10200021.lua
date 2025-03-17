@@ -22,7 +22,7 @@ function c10200021.initial_effect(c)
     e2:SetDescription(aux.Stringid(10200021,1))
     e2:SetCategory(CATEGORY_TOHAND)
     e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-    e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+    e2:SetProperty(EFFECT_FLAG_DELAY)
     e2:SetCode(EVENT_TO_DECK)
     e2:SetRange(LOCATION_SZONE)
     e2:SetCondition(c10200021.con2)
@@ -52,6 +52,11 @@ function c10200021.op1(e,tp,eg,ep,ev,re,r,rp)
         Duel.SendtoHand(g,nil,REASON_EFFECT)
         local code=g:GetFirst():GetOriginalCode()
         Duel.RegisterFlagEffect(tp,10200021+code,RESET_PHASE+PHASE_END,0,1)
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+        local sg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND,0,1,1,nil)
+        if sg:GetCount()>0 then
+            Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+        end
     end
 end
 -- 2
@@ -65,17 +70,24 @@ function c10200021.filter3(c,tp)
     return c:IsSetCard(0xe21) and c:IsAbleToHand() and Duel.GetFlagEffect(tp,10200022+c:GetOriginalCode()) ==0
 end
 function c10200021.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk ==0 then return Duel.IsExistingTarget(c10200021.filter3,tp,LOCATION_GRAVE,0,1,nil) end
-    local g=Duel.SelectTarget(tp,c10200021.filter3,tp,LOCATION_GRAVE,0,1,1,nil)
-    Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+    if chk ==0 then
+        return Duel.IsExistingMatchingCard(c10200021.filter3,tp,LOCATION_GRAVE,0,1,nil,tp)
+    end
+    Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
     Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c10200021.op2(e,tp,eg,ep,ev,re,r,rp)
-    local tc=Duel.GetFirstTarget()
-    if tc and tc:IsRelateToEffect(e) then
-        Duel.SendtoHand(tc,nil,REASON_EFFECT)
-        Duel.ConfirmCards(1-tp,tc)
-        Duel.RegisterFlagEffect(tp,10200022+tc:GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+    local g=Duel.SelectMatchingCard(tp,c10200021.filter3,tp,LOCATION_GRAVE,0,1,1,nil,tp)
+    if g:GetCount()>0 then
+        Duel.SendtoHand(g,nil,REASON_EFFECT)
+        Duel.ConfirmCards(1-tp,g)
+        local code=g:GetFirst():GetOriginalCode()
+        Duel.RegisterFlagEffect(tp,10200022+code,RESET_PHASE+PHASE_END,0,1)
+        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+        local sg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND,0,1,1,nil)
+        if sg:GetCount()>0 then
+            Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+        end
     end
 end

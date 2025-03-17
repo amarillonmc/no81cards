@@ -27,7 +27,7 @@ function s.initial_effect(c)
 	e2:SetTargetRange(0,1)
 	e2:SetCondition(s.splimcon)
 	e2:SetTarget(s.splimit)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 end
 
 -- 原持有者检测函数
@@ -44,21 +44,34 @@ end
 
 -- ① 目标设置
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,LOCATION_MZONE,e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,#g,0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)
 end
 
 -- ① 破坏操作
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,LOCATION_MZONE,e:GetHandler())
-	if #g>0 then
-		Duel.Destroy(g,REASON_EFFECT)
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
+	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,nil)
+	local g3=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
+	local sg=Group.CreateGroup()
+	if g1:GetCount()>0 and ((g2:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(52687916,1))) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg1=g1:Select(tp,1,1,nil)
+		Duel.HintSelection(sg1)
+		sg:Merge(sg1)
 	end
-	local c=e:GetHandler()
-	if c:GetMaterial():FilterCount(s.ownfilter,nil,e:GetHandlerPlayer())>=2 then
-		c:RegisterFlagEffect(0,RESET_EVENT+0x1fe0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(64833501,0))
+	if g2:GetCount()>0 and ((sg:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(52687916,2))) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg2=g2:Select(tp,1,1,nil)
+		Duel.HintSelection(sg2)
+		sg:Merge(sg2)
 	end
+	if g3:GetCount()>0 and (sg:GetCount()==0 or Duel.SelectYesNo(tp,aux.Stringid(52687916,3))) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg3=g3:RandomSelect(tp,1)
+		sg:Merge(sg3)
+	end
+	Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 end
 
 -- ② 条件判断

@@ -23,7 +23,6 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetCost(cm.cost)
 	e3:SetTarget(cm.destg)
 	e3:SetOperation(cm.desop)
 	c:RegisterEffect(e3)
@@ -32,18 +31,17 @@ end
 function cm.eqlimit(e,c)
 	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x6352)
 end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local f=tama.cosmicFighters_equipGetFormation(c)
-	if chk==0 then return f and f:GetCount()>c:GetFlagEffect(m) end
-	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-end
 function cm.desfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and cm.desfilter(chkc) and chkc~=e:GetHandler() end
-	if chk==0 then return Duel.IsExistingTarget(cm.desfilter,tp,0,LOCATION_ONFIELD,1,nil) end
+	local c=e:GetHandler()
+	local tc=c:GetEquipTarget()
+	local f=tama.cosmicFighters_equipGetFormation(c)
+	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and cm.desfilter(chkc) and chkc~=e:GetHandler() end
+	if chk==0 then return Duel.IsExistingTarget(cm.desfilter,tp,0,LOCATION_ONFIELD,1,nil)
+		and f and c:GetFlagEffect(m)<f:GetCount() end
+	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,cm.desfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)

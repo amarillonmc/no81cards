@@ -8,26 +8,20 @@ function c9911060.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(c9911060.spcon)
 	c:RegisterEffect(e1)
-	--draw
+	--recycle
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DRAW)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_PHASE+PHASE_END)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetCondition(c9911060.drcon)
-	e2:SetTarget(c9911060.drtg)
-	e2:SetOperation(c9911060.drop)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e2:SetCountLimit(1,9911060)
+	e2:SetCondition(c9911060.rccon)
+	e2:SetCost(c9911060.rccost)
+	e2:SetTarget(c9911060.rctg)
+	e2:SetOperation(c9911060.rcop)
 	c:RegisterEffect(e2)
-	--change effect
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_CHAIN_SOLVING)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(c9911060.chcon)
-	e3:SetOperation(c9911060.chop)
-	c:RegisterEffect(e3)
 end
 function c9911060.spcfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x9954) and not c:IsRace(RACE_WINDBEAST)
@@ -37,41 +31,52 @@ function c9911060.spcon(e,c)
 	return Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9911060.spcfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
 end
-function c9911060.filter(c)
-	return c:GetCounter(0x1954)>0
+function c9911060.rccon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
-function c9911060.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return tp==Duel.GetTurnPlayer()
-		and Duel.IsExistingMatchingCard(c9911060.filter,tp,LOCATION_MZONE,LOCATION_MZONE,2,nil)
+function c9911060.rccost(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(100)
+	if chk==0 then return true end
 end
-function c9911060.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local gc=Duel.GetMatchingGroupCount(c9911060.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,gc+1) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,gc+1)
+function c9911060.rcfilter1(c,e)
+	return c:IsCanBeEffectTarget(e) and (c:IsAbleToHand() or c:IsAbleToDeck())
 end
-function c9911060.drop(e,tp,eg,ep,ev,re,r,rp)
-	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local gc=Duel.GetMatchingGroupCount(c9911060.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if gc>0 and Duel.Draw(p,gc+1,REASON_EFFECT)~=0 then
-		Duel.ShuffleHand(p)
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
-		local g=Duel.SelectMatchingCard(p,Card.IsAbleToDeck,p,LOCATION_HAND,0,gc,gc,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		end
+function c9911060.rcfilter2(c)
+	return c:IsFaceupEx() and c:IsSetCard(0x9954)
+end
+function c9911060.fselect(g,ct)
+	return g:IsExists(c9911060.rcfilter2,1,nil) and g:IsExists(Card.IsAbleToHand,ct,nil) and g:IsExists(Card.IsAbleToDeck,3-ct,nil)
+end
+function c9911060.rctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local dg=Duel.GetMatchingGroup(c9911060.rcfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil,e)
+	local b1=Duel.IsCanRemoveCounter(tp,1,1,0x1954,3,REASON_COST) and dg:CheckSubGroup(c9911060.fselect,3,3,1)
+	local b2=Duel.IsCanRemoveCounter(tp,1,1,0x1954,6,REASON_COST) and dg:CheckSubGroup(c9911060.fselect,3,3,2)
+	if chkc then return false end
+	if chk==0 then
+		if e:GetLabel()~=100 then return false end
+		e:SetLabel(0)
+		return b1 or b2
 	end
+	local ct=aux.SelectFromOptions(tp,{b1,aux.Stringid(9911060,0)},{b2,aux.Stringid(9911060,1)})
+	Duel.RemoveCounter(tp,1,1,0x1954,ct*3,REASON_COST)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=dg:SelectSubGroup(tp,c9911060.fselect,false,3,3,ct)
+	Duel.SetTargetCard(g)
+	Duel.SetTargetParam(ct)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,ct,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,3-ct,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,3,0,0)
 end
-function c9911060.chcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep==1-tp and re:IsActiveType(TYPE_MONSTER)
-		and Duel.IsExistingMatchingCard(c9911060.filter,tp,LOCATION_MZONE,LOCATION_MZONE,3,nil)
-end
-function c9911060.chop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Group.CreateGroup()
-	Duel.ChangeTargetCard(ev,g)
-	return Duel.ChangeChainOperation(ev,c9911060.repop)
-end
-function c9911060.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,9911060)
-	Duel.RemoveCounter(tp,1,1,0x1954,2,REASON_EFFECT)
+function c9911060.rcop(e,tp,eg,ep,ev,re,r,rp)
+	local ct=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
+	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	if ct==0 or #tg==0 or aux.NecroValleyNegateCheck(tg) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local sg=tg:FilterSelect(tp,Card.IsAbleToHand,ct,ct,nil)
+	Duel.SendtoHand(sg,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,sg)
+	tg:Sub(sg)
+	if #tg>0 then
+		Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	end
 end

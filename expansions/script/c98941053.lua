@@ -101,10 +101,10 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c98941053.filter0(c)
-	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck()
+	return (c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck()
 end
 function c98941053.filter1(c,e)
-	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck() and not c:IsImmuneToEffect(e)
+	return (c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck() and not c:IsImmuneToEffect(e)
 end
 function c98941053.filter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c))
@@ -116,7 +116,7 @@ end
 function c98941053.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
-		local mg=Duel.GetMatchingGroup(c98941053.filter0,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+		local mg=Duel.GetMatchingGroup(c98941053.filter0,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 		aux.FCheckAdditional=c98941053.check
 		local res=Duel.IsExistingMatchingCard(c98941053.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg,nil,chkf)
 		if not res then
@@ -132,13 +132,13 @@ function c98941053.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c98941053.activatep(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.SelectYesNo(tp,aux.Stringid(98941053,2)) then return end
 	Duel.Hint(HINT_CARD,0,98941053)
 	local chkf=tp
-	local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c98941053.filter1),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e)
+	local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(c98941053.filter1),tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e)
 	aux.FCheckAdditional=c98941053.check
 	local sg1=Duel.GetMatchingGroup(c98941053.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg,nil,chkf)
 	local mg3=nil
@@ -180,5 +180,5 @@ function c98941053.activatep(e,tp,eg,ep,ev,re,r,rp)
 	aux.FCheckAdditional=nil
 end
 function c98941053.cfilter(c)
-	return c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) 
+	return c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) or (c:IsLocation(LOCATION_MZONE) and c:IsFaceup())
 end

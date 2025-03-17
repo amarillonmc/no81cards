@@ -30,7 +30,8 @@ function cm.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,4))
 	e4:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW)
-	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
 	e4:SetTarget(cm.destg)
@@ -50,34 +51,17 @@ function cm.feqfilter(c,ec)
 end
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(cm.feqfilter,tp,LOCATION_EXTRA,0,1,nil,e:GetHandler()) end
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_EXTRA)
+		and Duel.IsExistingMatchingCard(cm.feqfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e:GetHandler()) end
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_EXTRA+LOCATION_GRAVE)
 end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or c:IsFacedown() or not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g=Duel.SelectMatchingCard(tp,cm.feqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.feqfilter),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,c)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.Equip(tp,tc,c)
-	end
-end
-function cm.desfilter(c)
-	return c:IsFaceup() and c:GetEquipGroup():IsExists(Card.IsCode,1,nil,13257319)
-end
-function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,0,LOCATION_MZONE,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
-	local g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,g:GetCount())
-end
-function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil)
-	local ct=Duel.Destroy(g,REASON_EFFECT)
-	if ct>0 then
-		Duel.BreakEffect()
-		Duel.Draw(tp,ct,REASON_EFFECT)
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -85,7 +69,28 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	e1:SetTargetRange(1,0)
+	e1:SetTarget(cm.splimit)
 	Duel.RegisterEffect(e1,tp)
+end
+function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return c:IsType(TYPE_EFFECT)
+end
+function cm.desfilter(c)
+	return c:IsFaceup() and not c:IsSetCard(0x351) and c:GetEquipGroup():IsExists(Card.IsCode,1,nil,13257319)
+end
+function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
+	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,g:GetCount())
+end
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(cm.desfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local ct=Duel.Destroy(g,REASON_EFFECT)
+	if ct>0 then
+		Duel.BreakEffect()
+		Duel.Draw(tp,ct,REASON_EFFECT)
+	end
 end
 function cm.pcfilter(c,tp)
 	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE) and c:GetPreviousControler()==tp

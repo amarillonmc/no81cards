@@ -57,12 +57,12 @@ function c44401023.cfilter(c)
 end
 function c44401023.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c44401023.cfilter(chkc) end
-	local ct=math.floor(Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)/2)
-	if chk==0 then return ct>=1 and Duel.IsExistingTarget(c44401023.cfilter,tp,LOCATION_MZONE,0,1,nil) end
+	local ct=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)*2+1
+	if chk==0 then return Duel.IsExistingTarget(c44401023.cfilter,tp,LOCATION_MZONE,0,2,nil) and ct~=1 and Duel.GetDecktopGroup(tp,1):IsExists(Card.IsAbleToHand,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c44401023.cfilter,tp,LOCATION_MZONE,0,1,ct,nil)
+	local g=Duel.SelectTarget(tp,c44401023.cfilter,tp,LOCATION_MZONE,0,2,ct,nil)
 	Duel.SetTargetPlayer(tp)
-	e:SetLabel(#g)
+	e:SetLabel(math.floor(#g/2))
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401023,0))
 end
@@ -72,11 +72,11 @@ end
 function c44401023.thop(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	local ct=e:GetLabel()
-	Duel.ConfirmDecktop(p,ct*2)
-	local g=Duel.GetDecktopGroup(p,ct*2)
-	if g:IsExists(c44401023.thfilter,1,nil) and Duel.SelectYesNo(p,aux.Stringid(44401023,1)) then
+	Duel.ConfirmDecktop(p,ct)
+	local g=Duel.GetDecktopGroup(p,ct)
+	if g:IsExists(Card.IsAbleToHand,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
-		local sg=g:FilterSelect(p,c44401023.thfilter,1,1,nil)
+		local sg=g:FilterSelect(p,Card.IsAbleToHand,1,1,nil)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-p,sg)
 		Duel.ShuffleHand(p)

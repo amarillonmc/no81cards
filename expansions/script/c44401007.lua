@@ -21,16 +21,23 @@ function c44401007.initial_effect(c)
 	c:RegisterEffect(e1)
 	--redirect
 	local e2=Effect.CreateEffect(c)
+	e2:SetHintTiming(TIMING_END_PHASE)
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetHintTiming(TIMING_END_PHASE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
 	e2:SetTarget(c44401007.target)
 	e2:SetOperation(c44401007.operation)
 	c:RegisterEffect(e2)
+	--sign
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e3:SetOperation(c44401007.regop)
+	c:RegisterEffect(e3)
 end
 function c44401007.mfilter(c,fc,sub,mg,sg)
 	return c:IsRace(RACE_PSYCHO) and (not sg or sg:FilterCount(aux.TRUE,c)==0
@@ -85,4 +92,9 @@ function c44401007.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(dg)
 		Duel.Destroy(dg,REASON_EFFECT)
 	end
+end
+function c44401007.regop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsSummonType(SUMMON_TYPE_FUSION) then return end
+	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_WITHOUT_TEMP_REMOVE,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401007,3))
 end

@@ -118,6 +118,7 @@ function cm.iop(e,tp,eg,ep,ev,re,r,rp,c)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
 	end
+	Duel.Readjust()
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return se and se:GetHandler():IsCode(m) and c:GetCode()==e:GetLabel()

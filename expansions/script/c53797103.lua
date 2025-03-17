@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,33900648)
@@ -28,9 +30,10 @@ function s.initial_effect(c)
 	e3:SetTarget(s.attg)
 	e3:SetOperation(s.atop)
 	c:RegisterEffect(e3)
+	SNNM.ClearWorld(c)
 end
 function s.spfilter(c)
-	return aux.IsCodeListed(c,33900648) and c:IsAbleToDeckAsCost()
+	return (c:IsCode(33900648) or aux.IsCodeListed(c,33900648)) and c:IsAbleToDeckAsCost()
 end
 function s.spcon(e,c)
 	if c==nil then return true end
@@ -47,16 +50,7 @@ function s.atcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
 function s.attg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local attchk=0
-	local tc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
-	if tc and tc:IsCode(33900648) and not tc:IsDisabled() and not Duel.IsPlayerAffectedByEffect(1-tp,97811903) then
-		if Duel.IsPlayerAffectedByEffect(1-tp,6089145) then
-			attchk=ATTRIBUTE_LIGHT|ATTRIBUTE_DARK|ATTRIBUTE_EARTH|ATTRIBUTE_WATER|ATTRIBUTE_FIRE|ATTRIBUTE_WIND
-		else
-			local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
-			for tc in aux.Next(g) do attchk=attchk|tc:GetAttribute() end
-		end
-	end
+	local attchk=SNNM.ClearWorldAttCheck(tp,1-tp)
 	if chk==0 then return attchk>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATTRIBUTE)
 	local rc=Duel.AnnounceAttribute(tp,1,attchk)
@@ -79,9 +73,8 @@ function s.atop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.limitcon(e)
 	local tp=e:GetHandlerPlayer()
-	local tc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
-	if not tc or not tc:IsCode(33900648) or tc:IsDisabled() or Duel.IsPlayerAffectedByEffect(1-tp,97811903) then return false end
-	return Duel.IsPlayerAffectedByEffect(1-tp,6089145) or Duel.IsExistingMatchingCard(aux.AND(Card.IsFaceup,Card.IsAttribute),tp,0,LOCATION_MZONE,nil,e:GetLabel())
+	local attchk=SNNM.ClearWorldAttCheck(tp,1-tp)
+	return attchk&(e:GetLabel())>0
 end
 function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return c:IsAttribute(e:GetLabel())

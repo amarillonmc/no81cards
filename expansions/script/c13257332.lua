@@ -1,4 +1,4 @@
---超时空填充胶囊
+--超时空物资胶囊
 local m=13257332
 local cm=_G["c"..m]
 if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
@@ -49,10 +49,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetValue(500)
-			e1:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,2)
+			e1:SetValue(1000)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 			tc:RegisterEffect(e1)
 		end
+		--[[
 		if Duel.GetFlagEffect(tp,m)>=2 then
 			if tc:GetFlagEffect(m)==0 then
 				local e2=Effect.CreateEffect(e:GetHandler())
@@ -61,10 +62,11 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				e2:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 				e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 				e2:SetValue(1)
-				e2:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,2)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 				tc:RegisterEffect(e2)
 			end
 		end
+		]]
 		if Duel.GetFlagEffect(tp,m)>=3 then
 			local code=tc:GetCode()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

@@ -44,6 +44,6 @@ function c71000112.xop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
 		Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)
 		Duel.Recover(tp,700,REASON_EFFECT)
-		Duel.Damage(1-tp,700,REASON_EFFECT)
+		Duel.Damage(1-tp,300,REASON_EFFECT)
 	end
 end

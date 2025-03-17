@@ -48,10 +48,6 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	local b1=Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil)
-	local b2=Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
-	if not b1 then return end
-	if b1 and (not b2 or not Duel.SelectYesNo(tp,aux.Stringid(25000027,2))) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tc=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 		if tc and tc:IsAbleToHand() and (not tc:IsAbleToGrave() or Duel.SelectYesNo(tp,aux.Stringid(id,3))) then
@@ -60,27 +56,13 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		elseif tc then
 			Duel.SendtoGrave(tc,REASON_EFFECT)
 		end
-	else 
-		Duel.Hint(HINT_CARD,0,25000027)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tc=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil,1-tp):GetFirst()
-		if tc then
-			local te=tc:IsHasEffect(25000027,tp)
-			if te then
-				te:UseCountLimit(tp)
-			end
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tc)
-		end
-	end
 end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
-	local ex2,g2,gc2,dp2,dv2=Duel.GetOperationInfo(ev,CATEGORY_SPECIAL_SUMMON)
+	--local ex2,g2,gc2,dp2,dv2=Duel.GetOperationInfo(ev,CATEGORY_SPECIAL_SUMMON)
 	local ex3=re:IsHasCategory(CATEGORY_DRAW)
 	local ex4=re:IsHasCategory(CATEGORY_SEARCH)
 	local ex5=re:IsHasCategory(CATEGORY_TOHAND)
-	return ((ex2 and bit.band(dv2,LOCATION_DECK)==LOCATION_DECK)
-		or ex3 or ex4 or ex5) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainDisablable(ev) and ep==1-tp
+	return (ex3 or ex4 or ex5) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainDisablable(ev) and ep==1-tp
 		and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,0,1,c)
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -91,12 +73,12 @@ end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateEffect(ev) then
 		local b2=Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
-		if Duel.IsPlayerCanDraw(tp,1) and (not b1 or not Duel.SelectYesNo(tp,aux.Stringid(25000027,2))) then
+		if Duel.IsPlayerCanDraw(tp,1) and (not b2 or not Duel.SelectYesNo(tp,aux.Stringid(25000027,2))) then
 			Duel.Draw(tp,1,REASON_EFFECT)
 		elseif Duel.IsPlayerCanDraw(tp,1) then
 			Duel.Hint(HINT_CARD,0,25000027)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local tc=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil,1-tp):GetFirst()
+			local tc=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
 			if tc then
 				local te=tc:IsHasEffect(25000027,tp)
 				if te then

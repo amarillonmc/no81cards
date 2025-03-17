@@ -1,5 +1,6 @@
 --吸血鬼魔血 月圆悲鸣
 function c9911073.initial_effect(c)
+	aux.AddCodeList(c,9911056)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY+CATEGORY_RECOVER+CATEGORY_DAMAGE)
