@@ -98,7 +98,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,g)
 		if Duel.GetFlagEffect(tp,m)>=3 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-			and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.spfilter,tp),LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp)
+			and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp)
 			and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
