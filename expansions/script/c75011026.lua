@@ -66,7 +66,7 @@ end
 function c75011026.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	local g=e:GetHandler():GetOverlayGroup()
-	e:SetLabel(#g)
+	e:SetLabel(g:GetCount())
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c75011026.operation(e,tp,eg,ep,ev,re,r,rp)

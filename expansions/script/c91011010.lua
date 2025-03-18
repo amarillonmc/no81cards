@@ -19,13 +19,10 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e2:SetValue(1)
+	e2:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
 	e2:SetCountLimit(1)
+	e2:SetValue(cm.indct)
 	c:RegisterEffect(e2)
-	local e2b=e2:Clone()
-	e2b:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	c:RegisterEffect(e2b)
 	
 	--加入手卡与特召
 	local e3=Effect.CreateEffect(c)
@@ -76,7 +73,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 --记录攻击次数
-
+function cm.indct(e,re,r,rp)
+	return bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0
+end
 --检索与特召
 
 function cm.thfilter(c)

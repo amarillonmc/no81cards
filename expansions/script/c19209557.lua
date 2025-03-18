@@ -1,6 +1,6 @@
 --心象风景 赎罪
 function c19209557.initial_effect(c)
-	aux.AddCodeList(c,19209525)
+	aux.AddCodeList(c,19209511,19209525)
 	--act in set turn
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -19,6 +19,14 @@ function c19209557.initial_effect(c)
 	e1:SetTarget(c19209557.target)
 	e1:SetOperation(c19209557.activate)
 	c:RegisterEffect(e1)
+	--to deck
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_REMOVE)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCondition(c19209557.tdcon)
+	e2:SetOperation(c19209557.tdop)
+	c:RegisterEffect(e2)
 	if not c19209557.global_check then
 		c19209557.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -37,11 +45,11 @@ end
 function c19209557.actcon(e)
 	return e:GetHandler():GetFlagEffect(19209557)>0
 end
-function c19209557.chkfilter(c)
-	return c:IsCode(19209525) and c:IsFaceup()
+function c19209557.chkfilter(c,code)
+	return c:IsCode(code) and c:IsFaceup()
 end
 function c19209557.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c19209557.chkfilter,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,1,nil)
+	return Duel.IsExistingMatchingCard(c19209557.chkfilter,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,1,nil,19209525)
 end
 function c19209557.cfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
@@ -66,4 +74,37 @@ function c19209557.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
+end
+function c19209557.tdcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c19209557.chkfilter,tp,LOCATION_ONFIELD,0,1,nil,19209511)
+end
+function c19209557.tdop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CUSTOM+19209557)
+	e1:SetOperation(c19209557.regop)
+	e1:SetLabel(0)
+	e1:SetReset(RESET_PHASE+PHASE_END,2)
+	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_TO_GRAVE)
+	e2:SetOperation(c19209557.tdevent)
+	e2:SetReset(RESET_PHASE+PHASE_END,2)
+	Duel.RegisterEffect(e2,tp)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_REMOVE)
+	Duel.RegisterEffect(e3,tp)
+end
+function c19209557.regop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,19209557)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0x30,0x30,1,1,nil)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	local ct=e:GetLabel()
+	ct=ct+1
+	if ct==3 then e:Reset() else e:SetLabel(ct) end
+end
+function c19209557.tdevent(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RaiseEvent(eg,EVENT_CUSTOM+19209557,re,r,rp,ep,ev)
 end
