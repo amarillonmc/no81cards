@@ -37,7 +37,7 @@ function c44401003.condition(e,tp,eg,ep,ev,re,r,rp)
 	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
 end
 function c44401003.cfilter(c,e,tp,check)
-	return c:IsRace(RACE_PSYCHO) and ((c:IsLocation(LOCATION_HAND+LOCATION_MZONE) and c:IsSummonable(true,nil)) or (check and c:IsLocation(LOCATION_DECK+LOCATION_REMOVED) and c:IsFaceupEx() and Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
+	return c:IsRace(RACE_PSYCHO) and c:IsLocation(LOCATION_HAND+LOCATION_MZONE) and c:IsSummonable(true,nil) or check and c:IsSetCard(0xa4a) and c:IsLocation(LOCATION_DECK+LOCATION_REMOVED) and c:IsFaceupEx() and Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c44401003.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

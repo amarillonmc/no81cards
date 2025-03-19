@@ -31,11 +31,14 @@ function s.initial_effect(c)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
 end
+function s.rgfilter(c)
+    return c:IsFaceup() and c:IsType(TYPE_MONSTER)
+end
 function s.rgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(0x20) end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsType,tp,0x20,0x20,1,nil,TYPE_MONSTER) end
+	if chk==0 then return Duel.IsExistingTarget(s.rgfilter,tp,0x20,0x20,1,nil) end
 	Duel.Hint(3,tp,504)
-	local g=Duel.SelectTarget(tp,Card.IsType,tp,0x20,0x20,1,1,nil,TYPE_MONSTER)
+	local g=Duel.SelectTarget(tp,s.rgfilter,tp,0x20,0x20,1,1,nil,TYPE_MONSTER)
 end
 function s.rgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -79,6 +82,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		if res and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+            Duel.BreakEffect()
             s.fusion(e,tp,eg,ep,ev,re,r,rp)
         end
 	end

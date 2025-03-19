@@ -87,6 +87,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		if res and Duel.SelectYesNo(tp,aux.Stringid(id,4)) then
+            Duel.BreakEffect()
             s.fusion(e,tp,eg,ep,ev,re,r,rp)
         end
 	end

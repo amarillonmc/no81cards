@@ -41,18 +41,18 @@ end
 c21692418.SetCard_ZW_ShLight=true  
 function c21692418.hspcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD,e:GetHandler())
 end
 function c21692418.sthfil(c,tp) 
 	return Duel.GetMZoneCount(tp,c)>0 and c:IsFaceup() and c:IsSetCard(0x555) and c:IsAbleToHand() 
 end 
 function c21692418.hsptg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(c21692418.sthfil,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) end 
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(c21692418.sthfil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp) end 
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c21692418.hspop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	local tc=Duel.SelectMatchingCard(tp,c21692418.sthfil,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c21692418.sthfil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,tp):GetFirst()
 	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
