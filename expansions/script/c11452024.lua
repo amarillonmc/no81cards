@@ -89,8 +89,8 @@ function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return loc&LOCATION_HAND>0 and re:GetHandler():IsLocation(LOCATION_HAND) and re:GetHandler():IsPublic()
+	local loc,pos=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_POSITION)
+	return loc&LOCATION_HAND>0 and ((re:GetHandler():IsLocation(LOCATION_HAND) and re:GetHandler():IsPublic()) or pos&POS_FACEUP>0)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

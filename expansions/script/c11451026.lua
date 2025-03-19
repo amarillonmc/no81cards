@@ -164,17 +164,24 @@ function cm.operation4(e,tp,eg,ep,ev,re,r,rp)
 		if #sg>0 and Duel.ChangePosition(sg,POS_FACEUP_DEFENSE,POS_FACEDOWN_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)>0 then
 			local rg=Duel.GetMatchingGroup(cm.sfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 			for tc in aux.Next(rg) do
-				local e1=Effect.CreateEffect(tc)
-				e1:SetDescription(1104)
-				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-				e1:SetCode(EVENT_CUSTOM+m)
-				e1:SetRange(LOCATION_MZONE)
-				e1:SetCountLimit(1)
-				e1:SetCondition(Auxiliary.SpiritReturnConditionForced)
-				e1:SetTarget(Auxiliary.SpiritReturnTargetForced)
-				e1:SetOperation(Auxiliary.SpiritReturnOperation)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				tc:RegisterEffect(e1,true)
+				local e1=nil
+				local _CRegisterEffect=Card.RegisterEffect
+				function Card.RegisterEffect(c,e,...)
+					if e:GetType()&0x801==0x801 and (e:GetCode()==EVENT_SUMMON_SUCCESS or e:GetCode()==EVENT_FLIP) and e:GetOperation() then pcall(e:GetOperation(),e,c:GetControler()) end
+					if e:IsHasType(EFFECT_TYPE_TRIGGER_F) and e:GetCode()==EVENT_PHASE+PHASE_END then e1=e:Clone() end
+					return true
+				end
+				Duel.CreateToken(tp,tc:GetOriginalCode())
+				Card.RegisterEffect=_CRegisterEffect
+				if e1 then
+					Debug.Message(e1:GetCode())
+					e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+					e1:SetCode(EVENT_CUSTOM+m)
+					e1:SetRange(LOCATION_MZONE)
+					e1:SetCountLimit(1)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc:RegisterEffect(e1,true)
+				end
 			end
 			Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+m,e,0,0,0,0)
 		end
