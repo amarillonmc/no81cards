@@ -70,7 +70,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_UPDATE_DEFENSE)
 		tc:RegisterEffect(e2)
-		if tc:IsFaceup() and (tc:GetAttack()==0 and (tc:GetDefense()==0 and not tc:IsType(TYPE_LINK))) then
+		if tc:IsFaceup() and (tc:IsAttackBelow(0) or tc:IsDefenseBelow(0)) then
 			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
