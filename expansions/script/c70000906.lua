@@ -15,6 +15,20 @@ end
 	return c:IsSetCard(0x119) and c:IsType(TYPE_MONSTER)
 end
 	function cm.op(e,tp,eg,ep,ev,re,r,rp,chk)
+	--limit
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCondition(cm.checkcon)
+	e1:SetOperation(cm.checkop)
+	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTargetRange(1,0)
+	e2:SetTarget(cm.splimit)
+	Duel.RegisterEffect(e2,tp)
 	Duel.Exile(e:GetHandler(),REASON_RULE)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_HAND,0,nil)
 	if g:GetCount()>0 then
@@ -48,20 +62,6 @@ end
 		Duel.ConfirmCards(1-tp,d)
 	end
 end
-	--limit
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCondition(cm.checkcon)
-	e1:SetOperation(cm.checkop)
-	Duel.RegisterEffect(e1,tp)
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTargetRange(1,0)
-	e2:SetTarget(cm.splimit)
-	Duel.RegisterEffect(e2,tp)
 end
 	function cm.checkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
@@ -89,5 +89,5 @@ end
 	return c:IsControler(e:GetHandlerPlayer())
 end
 	function cm.splimit(e,c)
-	return not c:IsSetCard(0x119) and not c:IsLocation(LOCATION_EXTRA)
+	return not c:IsSetCard(0x119) and c:IsLocation(LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)
 end
