@@ -77,7 +77,8 @@ function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		BlackLotus_ElementSaber_Effect={}
 		Card.RegisterEffect=function(card,effect,flag)
-			if effect and s.GetRange(effect)==LOCATION_MZONE and (effect:IsHasType(EFFECT_TYPE_QUICK_O) or effect:IsHasType(EFFECT_TYPE_IGNITION)) then
+			if effect and s.GetRange(effect)==LOCATION_MZONE and ((effect:IsHasType(EFFECT_TYPE_QUICK_O) and bit.band(effect:GetCode(),EVENT_FREE_CHAIN)==EVENT_FREE_CHAIN) or effect:IsHasType(EFFECT_TYPE_IGNITION)) then
+				--Duel.Hint(HINT_CARD,0,card:GetCode())
 				local eff=effect:Clone()
 				BlackLotus_ElementSaber_Effect[card:GetCode()]=eff
 			end
@@ -215,11 +216,12 @@ end
 function s.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local ce=BlackLotus_ElementSaber_Effect[c:GetOriginalCode()]
-	local tg=ce:GetTarget()
+	local tg=nil
+	if ce then tg=ce:GetTarget() end
 	if chk==0 then
 		return ce and (not tg or tg(e,tp,eg,ep,ev,re,r,rp,0))
 	end
-	local ce=BlackLotus_ElementSaber_Effect[c:GetOriginalCode()]
+	--local ce=BlackLotus_ElementSaber_Effect[c:GetOriginalCode()]
 	e:SetProperty(ce:GetProperty())
 	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
 	ce:SetLabelObject(e:GetLabelObject())
