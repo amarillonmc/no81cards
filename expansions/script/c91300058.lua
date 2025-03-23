@@ -1,0 +1,87 @@
+--尸气魔龙 阿日·达哈卡
+local s,id,o=GetID()
+function s.initial_effect(c)
+	--link summon
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_ZOMBIE),3,99,s.lcheck)
+	c:EnableReviveLimit()
+	--cannot link material
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	e1:SetValue(1)
+	c:RegisterEffect(e1)
+	--multi
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetOperation(s.atkop)
+	c:RegisterEffect(e2)
+	--chage race
+	local e3=Effect.CreateEffect(c)
+	e3:SetProperty(EFFECT_FLAG_REPEAT+EFFECT_FLAG_DELAY+EFFECT_FLAG_SET_AVAILABLE)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_CHANGE_RACE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(0xff,0xff)
+	e3:SetValue(RACE_ZOMBIE)
+	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+	e4:SetValue(ATTRIBUTE_DARK)
+	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e5:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetTargetRange(1,0)
+	e5:SetCondition(s.con1)
+	e5:SetValue(s.actlimit)
+	c:RegisterEffect(e5)
+	local e6=e5:Clone()
+	e6:SetTargetRange(0,1)
+	e6:SetCondition(s.con2)
+	Duel.RegisterEffect(e6,tp)
+	--link summon
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e0:SetRange(LOCATION_GRAVE)
+	e0:SetCondition(Auxiliary.LinkCondition(aux.FilterBoolFunction(Card.IsLinkRace,RACE_ZOMBIE),3,3,s.lcheck))
+	e0:SetTarget(Auxiliary.LinkTarget(aux.FilterBoolFunction(Card.IsLinkRace,RACE_ZOMBIE),3,3,s.lcheck))
+	e0:SetOperation(Auxiliary.LinkOperation(aux.FilterBoolFunction(Card.IsLinkRace,RACE_ZOMBIE),3,3,s.lcheck))
+	e0:SetValue(SUMMON_TYPE_LINK)
+	c:RegisterEffect(e0)
+end
+s.Findesiecle=true
+function s.matfilter(c)
+	return _G["c"..c:GetCode()] and _G["c"..c:GetCode()].Findesiecle
+end
+function s.lcheck(g,lc)
+	return g:IsExists(s.matfilter,1,nil)
+end
+function s.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_EXTRA_ATTACK)
+	e1:SetValue(c:GetMaterialCount()-1)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+	c:RegisterEffect(e1)
+end
+function s.confilter(c)
+	return c:IsType(TYPE_MONSTER) and c:GetRace()~=c:GetOriginalRace()
+end
+function s.con1(e)
+	local tp=e:GetHandlerPlayer()
+	return e:GetHandler():IsExtraLinkState() and Duel.IsExistingMatchingCard(s,confilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
+end
+function s.con2(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
+	return e:GetHandler():IsExtraLinkState() and Duel.IsExistingMatchingCard(s.confilter,tp,0,LOCATION_MZONE+LOCATION_GRAVE,1,nil)
+end
+function s.actlimit(e,re,tp)
+	return re:IsActiveType(TYPE_SPELL) or re:IsActiveType(TYPE_TRAP)
+end

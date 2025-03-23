@@ -52,11 +52,6 @@ function c10200021.op1(e,tp,eg,ep,ev,re,r,rp)
         Duel.SendtoHand(g,nil,REASON_EFFECT)
         local code=g:GetFirst():GetOriginalCode()
         Duel.RegisterFlagEffect(tp,10200021+code,RESET_PHASE+PHASE_END,0,1)
-        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-        local sg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND,0,1,1,nil)
-        if sg:GetCount()>0 then
-            Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-        end
     end
 end
 -- 2
@@ -84,10 +79,5 @@ function c10200021.op2(e,tp,eg,ep,ev,re,r,rp)
         Duel.ConfirmCards(1-tp,g)
         local code=g:GetFirst():GetOriginalCode()
         Duel.RegisterFlagEffect(tp,10200022+code,RESET_PHASE+PHASE_END,0,1)
-        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-        local sg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND,0,1,1,nil)
-        if sg:GetCount()>0 then
-            Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-        end
     end
 end

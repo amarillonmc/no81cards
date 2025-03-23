@@ -37,12 +37,12 @@ function s.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EFFECT_UPDATE_DEFENSE)
 	c:RegisterEffect(e4)
-	local e5=e3:Clone()
-	e5:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	c:RegisterEffect(e5)
-	local e6=e3:Clone()
-	e6:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	c:RegisterEffect(e6)
+	--local e5=e3:Clone()
+	--e5:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	--c:RegisterEffect(e5)
+	--local e6=e3:Clone()
+	--e6:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	--c:RegisterEffect(e6)
 end
 
 --===== 效果①处理 =====--
@@ -108,5 +108,5 @@ function s.xcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsSetCard(0xe73)
 end
 function s.xval(e,c)
-	return e:GetHandler():GetOverlayCount()*100
+	return e:GetHandler():GetOverlayCount()*300
 end

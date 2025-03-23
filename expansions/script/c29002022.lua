@@ -69,9 +69,13 @@ function c29002022.spop1(e,tp,chk)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetTargetRange(1,0) 
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c29002022.splimit) 
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+end
+function c29002022.splimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return c:IsType(TYPE_EFFECT)
 end
 function c29002022.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end

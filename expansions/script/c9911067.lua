@@ -2,7 +2,6 @@
 function c9911067.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_LIMIT_ZONE)
@@ -17,7 +16,7 @@ function c9911067.filter(c,b)
 	return c:IsSetCard(0x9954) and c:IsType(TYPE_PENDULUM) and ((b and not c:IsForbidden()) or c:IsAbleToHand())
 end
 function c9911067.spfilter(c,e,tp)
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
 function c9911067.zones(e,tp,eg,ep,ev,re,r,rp)
 	local zone=0xff
@@ -48,11 +47,13 @@ function c9911067.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(s)
 	if s==0 then
 		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_GRAVE)
+	else
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	end
 end
-function c9911067.tgfilter(c,attr)
-	return c:IsFaceup() and c:IsAttribute(attr) and c:IsAbleToGrave()
+function c9911067.tgfilter(c,tp)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsControler(tp) and c:IsAbleToGrave()
 end
 function c9911067.activate(e,tp,eg,ep,ev,re,r,rp)
 	local b=Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)
@@ -61,16 +62,21 @@ function c9911067.activate(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabel()==0 and #g1>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tc=g1:Select(tp,1,1,nil):GetFirst()
-		if not tc or Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)==0 then return end
-		local attr=tc:GetAttribute()
-		if tc:IsFaceup() and Duel.IsExistingMatchingCard(c9911067.tgfilter,tp,0,LOCATION_MZONE,1,nil,attr)
-			and Duel.IsCanRemoveCounter(tp,1,1,0x1954,3,REASON_EFFECT)
-			and Duel.SelectYesNo(tp,aux.Stringid(9911067,2)) then
+		if not tc or not Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP_ATTACK) then return end
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_SET_ATTACK)
+		e1:SetValue(0)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		Duel.SpecialSummonComplete()
+		local g=tc:GetColumnGroup():Filter(c9911067.tgfilter,nil,1-tp)
+		if #g>0 and Duel.IsCanRemoveCounter(tp,1,1,0x1954,3,REASON_EFFECT) and Duel.SelectYesNo(tp,aux.Stringid(9911067,2)) then
 			Duel.BreakEffect()
 			if not Duel.RemoveCounter(tp,1,1,0x1954,3,REASON_EFFECT) then return end
-			local g=Duel.SelectMatchingCard(tp,c9911067.tgfilter,tp,0,LOCATION_MZONE,1,1,nil,attr)
-			Duel.HintSelection(g)
-			Duel.SendtoGrave(g,REASON_EFFECT)
+			local sg=g:Select(tp,1,1,nil)
+			Duel.HintSelection(sg)
+			Duel.SendtoGrave(sg,REASON_EFFECT)
 		end
 	end
 	if e:GetLabel()==1 and #g2>0 then

@@ -1,15 +1,22 @@
 --方舟骑士团-临光
 local cm,m,o=GetID()
 function cm.initial_effect(c)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_HANDES)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
-	e1:SetCountLimit(1,m)
-	e1:SetTarget(cm.tg1)
-	e1:SetOperation(cm.op1)
-	c:RegisterEffect(e1)
+	--summon
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(6616912,0))
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_SUMMON_PROC)
+	e0:SetCondition(cm.ntcon)
+	c:RegisterEffect(e0)
+	--local e1=Effect.CreateEffect(c)
+	--e1:SetDescription(aux.Stringid(m,0))
+	--e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_HANDES)
+	--e1:SetType(EFFECT_TYPE_IGNITION)
+	--e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
+	--e1:SetCountLimit(1,m)
+	--e1:SetTarget(cm.tg1)
+	--e1:SetOperation(cm.op1)
+	--c:RegisterEffect(e1)
 	--change effect type
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -18,6 +25,12 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(1,0)
 	c:RegisterEffect(e2)
+end
+function cm.ntcon(e,c,minc)
+	if c==nil then return true end
+	return minc==0 and c:IsLevelAbove(5)
+		and Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)==0
+		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>2 end

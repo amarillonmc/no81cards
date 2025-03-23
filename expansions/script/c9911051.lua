@@ -19,17 +19,6 @@ function c9911051.initial_effect(c)
 	e2:SetTarget(c9911051.tktg)
 	e2:SetOperation(c9911051.tkop)
 	c:RegisterEffect(e2)
-	--control
-	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_CONTROL)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetRange(LOCATION_FZONE)
-	e3:SetCode(EVENT_PHASE+PHASE_END)
-	e3:SetCountLimit(1)
-	e3:SetTarget(c9911051.cttg)
-	e3:SetOperation(c9911051.ctop)
-	c:RegisterEffect(e3)
 end
 function c9911051.thfilter(c)
 	return c:IsSetCard(0x9954) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
@@ -59,22 +48,16 @@ function c9911051.tkop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if Duel.IsPlayerCanSpecialSummonMonster(tp,9911052,0,0x4011,0,0,3,RACE_FIEND,ATTRIBUTE_DARK,POS_FACEUP_ATTACK) then
 		local token=Duel.CreateToken(tp,9911052)
-		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_TUNER)
+		e1:SetValue(c9911051.tnval)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		token:RegisterEffect(e1,true)
+		Duel.SpecialSummonComplete()
 	end
 end
-function c9911051.ctfilter(c)
-	return c:GetCounter(0x1954)>1 and c:IsControlerCanBeChanged()
-end
-function c9911051.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c9911051.ctfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9911051.ctfilter,tp,0,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
-	local g=Duel.SelectTarget(tp,c9911051.ctfilter,tp,0,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_CONTROL,g,1,0,0)
-end
-function c9911051.ctop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.GetControl(tc,tp)
-	end
+function c9911051.tnval(e,c)
+	return e:GetHandler():IsControler(c:GetControler()) and c:IsSetCard(0x9954)
 end

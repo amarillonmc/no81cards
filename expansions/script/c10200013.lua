@@ -1,17 +1,14 @@
 -- 渊灵统御者-溟渊座头鲸
 function c10200013.initial_effect(c)
     aux.EnablePendulumAttribute(c)
-    -- 自爆特召
-    local e1=Effect.CreateEffect(c)
-    e1:SetDescription(aux.Stringid(10200013,0))
-    e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
-    e1:SetType(EFFECT_TYPE_IGNITION)
-    e1:SetRange(LOCATION_PZONE)
-    e1:SetCountLimit(1,10200013)
-    e1:SetCondition(c10200013.con1)
-    e1:SetTarget(c10200013.tg1)
-    e1:SetOperation(c10200013.op1)
-    c:RegisterEffect(e1)
+    -- 三色护航
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetRange(LOCATION_PZONE)
+	e1:SetCondition(c10200013.con1)
+	e1:SetOperation(c10200013.op1)
+	c:RegisterEffect(e1)
     -- 特召除外
     local e2=Effect.CreateEffect(c)
     e2:SetDescription(aux.Stringid(10200013,1))
@@ -38,34 +35,22 @@ function c10200013.initial_effect(c)
 end
 -- 1
 function c10200013.con1(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0xe21)
-        and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_PZONE,0,1,nil,0xe21)
-        and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_EXTRA,0,1,nil,0xe21)
-end
-function c10200013.filter1(c,e,tp)
-    return c:IsSetCard(0xe21) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c10200013.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then
-        return Duel.GetLocationCount(tp,LOCATION_MZONE)>1
-            and not Duel.IsPlayerAffectedByEffect(tp,59822133)
-            and Duel.IsExistingMatchingCard(c10200013.filter1,tp,LOCATION_DECK,0,2,nil,e,tp)
-    end
-    Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
-    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_DECK)
-    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	local c=e:GetHandler()
+	if ev<1 then return false end
+	local te,p=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+	return rp==1-tp and p==tp and te and te:GetHandler():IsSetCard(0xe21)
+		and Duel.GetFlagEffect(tp,10200013)==0
+		and Duel.IsChainDisablable(ev) and not Duel.IsChainDisabled(ev)
 end
 function c10200013.op1(e,tp,eg,ep,ev,re,r,rp)
-    if not e:GetHandler():IsRelateToEffect(e) then return end
-    if Duel.Destroy(e:GetHandler(),REASON_EFFECT)~=0 then
-        if Duel.GetLocationCount(tp,LOCATION_MZONE)<2 then return end
-        local g=Duel.GetMatchingGroup(c10200013.filter1,tp,LOCATION_DECK,0,nil,e,tp)
-        if #g>=2 then
-            Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-            local sg=g:Select(tp,2,2,nil)
-            Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
-        end
-    end
+	if Duel.GetFlagEffect(tp,10200013)==0 and Duel.SelectYesNo(tp,aux.Stringid(10200013,1)) then
+		Duel.Hint(HINT_CARD,0,10200013)
+		Duel.RegisterFlagEffect(tp,10200013,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		if Duel.NegateEffect(ev) then
+			Duel.BreakEffect()
+			Duel.Destroy(e:GetHandler(),REASON_EFFECT)
+		end
+	end
 end
 -- 2
 function c10200013.con2(e,tp,eg,ep,ev,re,r,rp)

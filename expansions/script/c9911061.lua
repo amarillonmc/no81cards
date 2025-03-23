@@ -2,14 +2,15 @@
 function c9911061.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
-	--def position
+	--redirect
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SET_POSITION)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetTargetRange(0,LOCATION_MZONE)
-	e1:SetTarget(c9911061.deftg)
-	e1:SetValue(POS_FACEUP_DEFENSE)
+	e1:SetTarget(c9911061.rmtg)
+	e1:SetValue(LOCATION_REMOVED)
 	c:RegisterEffect(e1)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
@@ -24,6 +25,7 @@ function c9911061.initial_effect(c)
 	--counter
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(9911061,1))
+	e3:SetCategory(CATEGORY_COUNTER)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_HAND)
@@ -34,28 +36,8 @@ function c9911061.initial_effect(c)
 	e3:SetTarget(c9911061.cttg)
 	e3:SetOperation(c9911061.ctop)
 	c:RegisterEffect(e3)
-	--register to grave
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e4:SetCode(EVENT_TO_GRAVE)
-	e4:SetOperation(c9911061.regop)
-	c:RegisterEffect(e4)
-	--to hand / pendulem
-	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(9911061,2))
-	e5:SetCategory(CATEGORY_GRAVE_ACTION+CATEGORY_LEAVE_GRAVE)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e5:SetCode(EVENT_PHASE+PHASE_END)
-	e5:SetCountLimit(1,9911063)
-	e5:SetRange(LOCATION_GRAVE)
-	e5:SetCondition(c9911061.pencon)
-	e5:SetCost(c9911061.pencost)
-	e5:SetTarget(c9911061.pentg)
-	e5:SetOperation(c9911061.penop)
-	c:RegisterEffect(e5)
 end
-function c9911061.deftg(e,c)
+function c9911061.rmtg(e,c)
 	return c:IsFaceup() and c:GetCounter(0x1954)>0
 end
 function c9911061.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -71,18 +53,14 @@ function c9911061.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c9911061.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c9911061.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0
+	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 and c:IsRelateToEffect(e)
 		and Duel.SelectYesNo(tp,aux.Stringid(9911061,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local sg=Duel.GetFieldGroup(tp,LOCATION_PZONE,0):Select(tp,1,1,nil)
-		if sg:GetCount()>0 then
-			Duel.BreakEffect()
-			Duel.HintSelection(sg)
-			Duel.Destroy(sg,REASON_EFFECT)
-		end
+		Duel.BreakEffect()
+		Duel.Destroy(c,REASON_EFFECT)
 	end
 end
 function c9911061.ctcon(e,tp,eg,ep,ev,re,r,rp)
@@ -110,35 +88,9 @@ function c9911061.ctop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmCards(1-tp,cg)
 	Duel.ShuffleHand(tp)
 	local ct=cg:GetCount()
-	for i=1,ct do
+	for i=1,ct*2 do
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
 		tc:AddCounter(0x1954,1)
-	end
-end
-function c9911061.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	c:RegisterFlagEffect(9911061,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-end
-function c9911061.pencon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(9911061)>0
-end
-function c9911061.pencost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,1,0x1954,1,REASON_COST) end
-	Duel.RemoveCounter(tp,1,1,0x1954,1,REASON_COST)
-end
-function c9911061.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToHand()
-		or Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
-end
-function c9911061.penop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local b1=c:IsAbleToHand()
-	local b2=Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)
-	if not c:IsRelateToEffect(e) or not (b1 or b2) then return end
-	if b1 and (not b2 or Duel.SelectOption(tp,1190,1160)==0) then
-		Duel.SendtoHand(c,nil,REASON_EFFECT)
-	else
-		Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 end

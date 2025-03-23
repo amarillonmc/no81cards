@@ -5,67 +5,88 @@ function c9911053.initial_effect(c)
 	--counter
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCondition(c9911053.ctcon1)
 	e1:SetOperation(c9911053.ctop1)
 	c:RegisterEffect(e1)
-	--spsummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetRange(LOCATION_PZONE)
-	e2:SetCountLimit(1,9911053)
-	e2:SetCost(c9911053.spcost)
-	e2:SetTarget(c9911053.sptg)
-	e2:SetOperation(c9911053.spop)
+	e2:SetCondition(c9911053.regcon)
+	e2:SetOperation(c9911053.regop)
 	c:RegisterEffect(e2)
-	--token
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(9911053,1))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
-	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_HAND)
-	e3:SetCountLimit(1,9911054)
-	e3:SetCost(c9911053.tkcost)
-	e3:SetTarget(c9911053.tktg)
-	e3:SetOperation(c9911053.tkop)
+	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e3:SetCode(EVENT_CHAIN_SOLVED)
+	e3:SetRange(LOCATION_PZONE)
+	e3:SetCondition(c9911053.ctcon2)
+	e3:SetOperation(c9911053.ctop2)
+	e3:SetLabelObject(e2)
 	c:RegisterEffect(e3)
-	--register to grave
+	--spsummon
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e4:SetCode(EVENT_TO_GRAVE)
-	e4:SetOperation(c9911053.regop)
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetRange(LOCATION_PZONE)
+	e4:SetCountLimit(1,9911053)
+	e4:SetCost(c9911053.spcost)
+	e4:SetTarget(c9911053.sptg)
+	e4:SetOperation(c9911053.spop)
 	c:RegisterEffect(e4)
-	--pendulem
+	--token
 	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(9911053,2))
-	e5:SetCategory(CATEGORY_LEAVE_GRAVE+CATEGORY_COUNTER)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e5:SetCode(EVENT_PHASE+PHASE_END)
-	e5:SetCountLimit(1,9911055)
-	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e5:SetRange(LOCATION_GRAVE)
-	e5:SetCondition(c9911053.pencon)
-	e5:SetTarget(c9911053.pentg)
-	e5:SetOperation(c9911053.penop)
+	e5:SetDescription(aux.Stringid(9911053,1))
+	e5:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
+	e5:SetType(EFFECT_TYPE_IGNITION)
+	e5:SetRange(LOCATION_HAND)
+	e5:SetCountLimit(1,9911054)
+	e5:SetCost(c9911053.tkcost)
+	e5:SetTarget(c9911053.tktg)
+	e5:SetOperation(c9911053.tkop)
 	c:RegisterEffect(e5)
 end
 function c9911053.cfilter(c,tp)
-	return c:IsSummonPlayer(tp)
+	return c:IsSummonPlayer(tp) and c:IsType(TYPE_EFFECT) and c:IsCanAddCounter(0x1954,2)
 end
 function c9911053.ctcon1(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c9911053.cfilter,1,nil,1-tp)
-end
-function c9911053.addfilter(c)
-	return c:IsType(TYPE_EFFECT) and c:IsCanAddCounter(0x1954,1)
+	return eg:IsExists(c9911053.cfilter,1,nil,1-tp) and not Duel.IsChainSolving()
 end
 function c9911053.ctop1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c9911053.addfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	for tc in aux.Next(g) do
-		tc:AddCounter(0x1954,1)
+	local tg=eg:Filter(c9911053.cfilter,nil,1-tp)
+	for tc in aux.Next(tg) do
+		tc:AddCounter(0x1954,2)
+	end
+end
+function c9911053.regcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c9911053.cfilter,1,nil,1-tp) and Duel.IsChainSolving()
+end
+function c9911053.regop(e,tp,eg,ep,ev,re,r,rp)
+	local tg=eg:Filter(c9911053.cfilter,nil,1-tp)
+	local g=e:GetLabelObject()
+	if g==nil or #g==0 then
+		tg:KeepAlive()
+		e:SetLabelObject(tg)
+	else
+		g:Merge(tg)
+	end
+	Duel.RegisterFlagEffect(tp,9911053,RESET_CHAIN,0,1)
+end
+function c9911053.ctcon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(tp,9911053)>0
+end
+function c9911053.ctop2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ResetFlagEffect(tp,9911053)
+	local g=e:GetLabelObject():GetLabelObject()
+	local tg=g:Filter(c9911053.cfilter,nil,1-tp)
+	local og=Group.CreateGroup()
+	og:KeepAlive()
+	e:GetLabelObject():SetLabelObject(og)
+	g:DeleteGroup()
+	for tc in aux.Next(tg) do
+		tc:AddCounter(0x1954,2)
 	end
 end
 function c9911053.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -81,18 +102,14 @@ function c9911053.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c9911053.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c9911053.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0
+	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 and c:IsRelateToEffect(e)
 		and Duel.SelectYesNo(tp,aux.Stringid(9911053,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local sg=Duel.GetFieldGroup(tp,LOCATION_PZONE,0):Select(tp,1,1,nil)
-		if sg:GetCount()>0 then
-			Duel.BreakEffect()
-			Duel.HintSelection(sg)
-			Duel.Destroy(sg,REASON_EFFECT)
-		end
+		Duel.BreakEffect()
+		Duel.Destroy(c,REASON_EFFECT)
 	end
 end
 function c9911053.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -100,49 +117,44 @@ function c9911053.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return c:IsDiscardable() end
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
+function c9911053.confilter(c)
+	return c:IsSetCard(0x9954) and not c:IsPublic()
+end
 function c9911053.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,9911052,0,0x4011,0,0,3,RACE_FIEND,ATTRIBUTE_DARK,POS_FACEUP_ATTACK) end
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if chk==0 then return ft>0 and Duel.IsExistingMatchingCard(c9911053.confilter,tp,LOCATION_HAND,0,1,e:GetHandler())
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,9911052,0,0x4011,0,0,3,RACE_FIEND,ATTRIBUTE_DARK,POS_FACEUP_ATTACK) end
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function c9911053.tkop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_AVOID_BATTLE_DAMAGE)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetValue(1)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	if Duel.IsPlayerCanSpecialSummonMonster(tp,9911052,0,0x4011,0,0,3,RACE_FIEND,ATTRIBUTE_DARK,POS_FACEUP_ATTACK) then
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local g=Duel.GetMatchingGroup(c9911053.confilter,tp,LOCATION_HAND,0,nil)
+	if ft<=0 or not #g==0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,9911052,0,0x4011,0,0,3,RACE_FIEND,ATTRIBUTE_DARK,POS_FACEUP_ATTACK) then return end
+	if ft>1 and Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local cg=g:Select(tp,1,ft,nil)
+	Duel.ConfirmCards(1-tp,cg)
+	Duel.ShuffleHand(tp)
+	for i=1,#cg do
 		local token=Duel.CreateToken(tp,9911054)
-		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+		if Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_ATTACK) then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+			e1:SetCode(EVENT_LEAVE_FIELD)
+			e1:SetOperation(c9911053.ctop3)
+			token:RegisterEffect(e1,true)
+		end
 	end
+	Duel.SpecialSummonComplete()
 end
-function c9911053.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	c:RegisterFlagEffect(9911053,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+function c9911053.addfilter(c)
+	return c:IsType(TYPE_EFFECT) and c:IsCanAddCounter(0x1954,1)
 end
-function c9911053.pencon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(9911053)>0
-end
-function c9911053.addfilter2(c)
-	return c:IsType(TYPE_EFFECT) and c:IsCanAddCounter(0x1954,2) and c:GetBattledGroupCount()>0
-end
-function c9911053.pentg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9911053.addfilter2(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9911053.addfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
-		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
-	Duel.SelectTarget(tp,c9911053.addfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-end
-function c9911053.penop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return end
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
-		and tc:IsRelateToEffect(e) then
-		tc:AddCounter(0x1954,2)
+function c9911053.ctop3(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(c9911053.addfilter,0,LOCATION_MZONE,LOCATION_MZONE,nil)
+	for tc in aux.Next(g) do
+		tc:AddCounter(0x1954,1)
 	end
+	e:Reset()
 end

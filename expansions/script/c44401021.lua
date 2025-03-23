@@ -30,24 +30,25 @@ function c44401021.cfilter(c)
 end
 function c44401021.spfilter(c,e,tp)
 	local lv=c:GetLevel()
-	return c:IsSetCard(0xa4a) and c:IsType(TYPE_FUSION) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c44401021.cfilter,tp,LOCATION_MZONE+LOCATION_REMOVED,0,math.floor(lv/2),nil) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+	return c:IsSetCard(0xa4a) and c:IsLevelAbove(2) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	and Duel.IsExistingTarget(c44401021.cfilter,tp,LOCATION_MZONE+LOCATION_REMOVED,0,math.floor(lv/2),nil) and (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLocation(LOCATION_EXTRA) or Duel.GetMZoneCount(tp)>0 and c:IsLocation(LOCATION_DECK))
 end
 function c44401021.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()~=1 then return false end
 		e:SetLabel(0)
-		return Duel.IsExistingMatchingCard(c44401021.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
+		return Duel.IsExistingMatchingCard(c44401021.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp)
 	end
 	--confirm
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local fc=Duel.SelectMatchingCard(tp,c44401021.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp):GetFirst()
+	local fc=Duel.SelectMatchingCard(tp,c44401021.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,e,tp):GetFirst()
 	Duel.ConfirmCards(1-tp,fc)
 	e:SetLabelObject(fc)
 	--target
 	local ct=math.floor(fc:GetLevel()/2)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local tg=Duel.SelectTarget(tp,c44401021.cfilter,tp,LOCATION_MZONE+LOCATION_REMOVED,0,ct,ct,nil)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,fc,1,tp,LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,fc,1,tp,LOCATION_DECK+LOCATION_EXTRA)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,tg,ct,tp,LOCATION_MZONE+LOCATION_REMOVED)
 end
 function c44401021.activate(e,tp,eg,ep,ev,re,r,rp)

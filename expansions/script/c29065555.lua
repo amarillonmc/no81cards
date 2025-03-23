@@ -31,7 +31,7 @@ function c29065555.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c29065555.mfilter(c,xyzc)
-	return (c:IsXyzLevel(xyzc,5) or c:IsXyzLevel(xyzc,6)) and c:IsAttribute(ATTRIBUTE_LIGHT)
+	return c:IsXyzLevel(xyzc,6) and c:IsAttribute(ATTRIBUTE_LIGHT)
 end
 function c29065555.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

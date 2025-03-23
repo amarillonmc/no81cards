@@ -54,7 +54,7 @@ function c98500323.initial_effect(c)
 	e5:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1,98550023)
+	e5:SetCountLimit(1,98500523)
 	e5:SetTarget(c98500323.xsptg)
 	e5:SetOperation(c98500323.xspop)
 	c:RegisterEffect(e5)
@@ -161,13 +161,23 @@ function c98500323.stop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end 
 function c98500323.xsptg(e,tp,eg,ep,ev,re,r,rp,chk)
-   if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,98500325,0,TYPES_TOKEN_MONSTER,1000,1000,10,RACE_DIVINE,ATTRIBUTE_DIVINE) end
-	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
+   if chk==0 then return Duel.IsExistingMatchingCard(c98500323.upfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
 end
 function c98500323.xspop(e,tp,eg,ep,ev,re,r,rp)
-   if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
+   local c=e:GetHandler() 
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,c98500323.upfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc and Duel.SSet(tp,tc)~=0 then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+	end
+	Duel.BreakEffect()
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(98500323,5)) then 
 	local token=Duel.CreateToken(tp,98500325)
 	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 	local e4=Effect.CreateEffect(e:GetHandler())
@@ -199,6 +209,7 @@ function c98500323.xspop(e,tp,eg,ep,ev,re,r,rp)
 			token:RegisterEffect(e3,true)
    end
 end
+end
 function c98500323.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(98501323)==0
 end
@@ -216,4 +227,7 @@ function c98500323.thsop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c98500323.regop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(98500323,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
+end
+function c98500323.upfilter(c)
+	return c.IsCode(c,79868386,79339613) and c:IsSSetable()
 end

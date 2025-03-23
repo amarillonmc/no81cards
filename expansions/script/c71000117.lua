@@ -26,7 +26,13 @@ function s.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EFFECT_UPDATE_DEFENSE)
 	c:RegisterEffect(e4)
-
+	local e6=e3:Clone()
+	e6:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	c:RegisterEffect(e6)
+	local e5=e3:Clone()
+	e5:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e5:SetValue(aux.tgoval)
+	c:RegisterEffect(e5)
 end
 
 --===== 效果①处理 =====--

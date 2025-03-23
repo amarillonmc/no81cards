@@ -58,14 +58,14 @@ function c71000100.initial_effect(c)
 	e22:SetOperation(c71000100.op)
 	c:RegisterEffect(e22)
 	--
-	local e21=Effect.CreateEffect(c)
-	e21:SetType(EFFECT_TYPE_SINGLE)
-	e21:SetCode(EFFECT_IMMUNE_EFFECT)
-	e21:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e21:SetRange(LOCATION_MZONE)
-	e21:SetCondition(c71000100.econ)
-	e21:SetValue(c71000100.efilter)
-	c:RegisterEffect(e21)
+	--local e21=Effect.CreateEffect(c)
+	--e21:SetType(EFFECT_TYPE_SINGLE)
+	--e21:SetCode(EFFECT_IMMUNE_EFFECT)
+	--e21:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	--e21:SetRange(LOCATION_MZONE)
+	--e21:SetCondition(c71000100.econ)
+	--e21:SetValue(c71000100.efilter)
+	--c:RegisterEffect(e21)
 end
 function c71000100.splimit(e,se,sp,st)
 	return se:GetHandler():IsCode(71000101,71000102)
@@ -104,9 +104,9 @@ function c71000100.op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c71000100.econ(e)
-	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,71000117)
-end
-function c71000100.efilter(e,te)
-	return te:IsActiveType(TYPE_MONSTER) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
-end
+--function c71000100.econ(e)
+	--return e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,71000117)
+--end
+--function c71000100.efilter(e,te)
+	--return te:IsActiveType(TYPE_MONSTER) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
+--end
