@@ -76,12 +76,8 @@ function cm.fuslimit(e,c,sumtype)
 	return sumtype==SUMMON_TYPE_FUSION
 end
 function cm.efilter(e,re)
-	if Duel.GetTurnPlayer()==e:GetHandlerPlayer() and e:GetHandlerPlayer()~=re:GetOwnerPlayer()
-		and re:IsActivated() and re:IsActiveType(TYPE_MONSTER) then
-		local loc=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_LOCATION)
-		return LOCATION_ONFIELD&loc~=0
-	end
-	return false
+	return te:IsActiveType(TYPE_MONSTER) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
+		and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE
 end
 cm.input ={[[+Y-6-7-O-8]],[[+Y-:-M-?,x]],[[+i-?,w-5-8]],[[+_+\-B-G+h]],[[+_,x-A+Z-D]],[[+Z+W-M-M-8]],[[+X+V--+s-@]],[[+`+[-K-K- ]]}
 cm.string={}
