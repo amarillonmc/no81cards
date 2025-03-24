@@ -121,7 +121,13 @@ function c44401020.retop(e,tp,eg,ep,ev,re,r,rp)
 	g:DeleteGroup()
 	for tc in aux.Next(sg) do
 		if tc:IsPreviousLocation(LOCATION_MZONE) then
-			Duel.ReturnToField(tc)
+			local pos=tc:GetPreviousPosition()
+			if pos==POS_FACEDOWN_ATTACK then
+				pos=POS_FACEUP_ATTACK
+			elseif pos==POS_FACEDOWN_DEFENSE then
+				pos=POS_FACEUP_DEFENSE
+			end
+			Duel.ReturnToField(tc,pos)
 		else
 			Duel.SendtoHand(tc,tc:GetPreviousControler(),REASON_EFFECT)
 		end
