@@ -52,11 +52,18 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
-	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)>0 then
+	if tc --and Duel.SendtoDeck(tc,nil,2,REASON_TEMPORARY)>0 
+		and  Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)>0 
+		then
 		Duel.ConfirmCards(1-tp,tc)
-		Duel.AdjustInstantly()
-		tc:SetStatus(STATUS_SUMMON_TURN,false)
-		tc:SetStatus(STATUS_SPSUMMON_TURN,false)
+		--Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)
+		--Duel.ReturnToField(tc)
+		--Duel.AdjustInstantly()
+		--Debug.Message("0")
+		tc:SetStatus(0x0100,false)
+		--tc:SetStatus(STATUS_SUMMON_TURN,false)
+		--Debug.Message("1")
+		--tc:SetStatus(STATUS_SPSUMMON_TURN,false)
 	end
 end
 function s.eqfilter(c)

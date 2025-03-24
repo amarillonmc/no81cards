@@ -84,12 +84,11 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=eg:Filter(s.cfilter2,nil,tp)
-		--Debug.Message("0")
 	if #g>0 then
-		--Debug.Message("1")
 		for tc in aux.Next(g) do
-			tc:SetStatus(STATUS_SUMMON_TURN,false)
-			tc:SetStatus(STATUS_SPSUMMON_TURN,false)
+			--tc:SetStatus(STATUS_SUMMON_TURN,false)
+			--tc:SetStatus(STATUS_SPSUMMON_TURN,false)
+			tc:SetStatus(0x0100,false)
 		end
 	end
 end
