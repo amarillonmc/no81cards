@@ -13,6 +13,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	if not cm.global_check then
 		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_ADJUST)
+		ge1:SetOperation(cm.adjust)
+		Duel.RegisterEffect(ge1,0)
 		cm[1]=Duel.CreateToken
 		Duel.CreateToken=function(tp,code)
 			local tc=cm[1](tp,code)
@@ -179,5 +184,28 @@ function cm.initial_effect(c)
 				return 0
 			else return cm[16](tg,...) end
 		end
+		local f1=Card.SetEntityCode
+		Card.SetEntityCode=function(sc,code,...)
+			local ocode=sc:GetOriginalCode()
+			if sc:GetFlagEffect(m+500)<=0 then sc:RegisterFlagEffect(m+500,0,0,0,ocode) end
+			local g=Duel.GetMatchingGroup(Card.IsHasEffect,0,LOCATION_EXTRA,LOCATION_EXTRA,nil,m)
+			if not sc:IsOnField() and ocode~=11410000 and code~=sc:GetFlagEffectLabel(m+500) and #g>0 then
+				Frame_Replace_Check=true
+				local sg=g:RandomSelect(0,1)
+				Duel.ConfirmCards(0,sg)
+				Duel.ConfirmCards(1,sg)
+				return 0
+			else return f1(sc,code,...) end
+		end
+		local f2=Card.ReplaceEffect
+		Card.ReplaceEffect=function(sc,code,...)
+			if Frame_Replace_Check then
+				Frame_Replace_Check=false
+				return 0
+			else return f2(sc,code,...) end
+		end
 	end
+end
+function cm.adjust(e,tp,eg,ep,ev,re,r,rp)
+	Frame_Replace_Check=false
 end
