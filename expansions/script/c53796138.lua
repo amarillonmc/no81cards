@@ -185,6 +185,80 @@ function cm.initial_effect(c)
 			else return cm[16](tg,...) end
 		end
 		local f1=Card.SetEntityCode
+		local f2=Card.SetCardData
+		local f3=Card.ReplaceEffect
+		Frame_Replace_Check_1={}
+		Frame_Replace_Check_2={}
+		Frame_Replace_Check_4=false
+		Card.SetEntityCode=function(sc,code,...)
+			local ocode=sc:GetOriginalCode()
+			if sc:GetFlagEffect(m+500)<=0 then sc:RegisterFlagEffect(m+500,0,0,0,ocode) end
+			if not sc:IsOnField() and ocode~=11410000 and code~=sc:GetFlagEffectLabel(m+500) then
+				Frame_Replace_Check_1[sc]=code
+			end
+			local g=Duel.GetMatchingGroup(Card.IsHasEffect,0,LOCATION_EXTRA,LOCATION_EXTRA,nil,m)
+			if Frame_Replace_Check_2[sc] and Frame_Replace_Check_2[sc]==code and #g>0 then
+				Frame_Replace_Check_1[sc]=nil
+				Frame_Replace_Check_2[sc]=nil
+				f3(sc,sc:GetFlagEffectLabel(m+500),0)
+				local sg=g:RandomSelect(0,1)
+				Duel.ConfirmCards(0,sg)
+				Duel.ConfirmCards(1,sg)
+				return 0
+			else return f1(sc,code,...) end
+		end
+		Card.SetCardData=function(sc,data,code)
+			if Frame_Replace_Check_4 then return 0 end
+			if data==CARDDATA_CODE then
+				local ocode=sc:GetOriginalCode()
+				if sc:GetFlagEffect(m+500)<=0 then sc:RegisterFlagEffect(m+500,0,0,0,ocode) end
+			end
+			--[[elseif data=CARDDATA_TYPE then Frame_Replace_Check_3[sc][data]=sc:GetOriginalType()
+			elseif data=CARDDATA_LEVEL then Frame_Replace_Check_3[sc][data]=sc:GetOriginalLevel()
+			elseif data=CARDDATA_ATTRIBUTE then Frame_Replace_Check_3[sc][data]=sc:GetOriginalAttribute()
+			elseif data=CARDDATA_RACE then Frame_Replace_Check_3[sc][data]=sc:GetOriginalRace()
+			elseif data=CARDDATA_ATTACK then Frame_Replace_Check_3[sc][data]=sc:GetTextAttack()
+			elseif data=CARDDATA_DEFENSE then Frame_Replace_Check_3[sc][data]=sc:GetTextDefense()
+			elseif data=CARDDATA_LSCALE then Frame_Replace_Check_3[sc][data]=sc:GetOriginalLeftScale()
+			elseif data=CARDDATA_RSCALE then Frame_Replace_Check_3[sc][data]=sc:GetOriginalRightScale()
+			elseif data=CARDDATA_LINK_MARKER then Frame_Replace_Check_3[sc][data]=sc:GetOriginalLinkMarker() end]]--
+			if data==CARDDATA_CODE and not sc:IsOnField() and ocode~=11410000 and code~=sc:GetFlagEffectLabel(m+500) then
+				Frame_Replace_Check_1[sc]=code
+			end
+			local g=Duel.GetMatchingGroup(Card.IsHasEffect,0,LOCATION_EXTRA,LOCATION_EXTRA,nil,m)
+			if Frame_Replace_Check_2[sc] and Frame_Replace_Check_2[sc]==code and #g>0 then
+				Frame_Replace_Check_1[sc]=nil
+				Frame_Replace_Check_2[sc]=nil
+				Frame_Replace_Check_4=true
+				f1(sc,sc:GetFlagEffectLabel(m+500),true)
+				f3(sc,sc:GetFlagEffectLabel(m+500),true)
+				local sg=g:RandomSelect(0,1)
+				Duel.ConfirmCards(0,sg)
+				Duel.ConfirmCards(1,sg)
+				return 0
+			else return f2(sc,data,code) end
+		end
+		Card.ReplaceEffect=function(sc,code,...)
+			local ocode=sc:GetOriginalCode()
+			if sc:GetFlagEffect(m+500)<=0 then sc:RegisterFlagEffect(m+500,0,0,0,ocode) end
+			if not sc:IsOnField() and ocode~=11410000 and code~=sc:GetFlagEffectLabel(m+500) then
+				Frame_Replace_Check_2[sc]=code
+			end
+			local g=Duel.GetMatchingGroup(Card.IsHasEffect,0,LOCATION_EXTRA,LOCATION_EXTRA,nil,m)
+			if Frame_Replace_Check_1[sc] and Frame_Replace_Check_1[sc]==code and #g>0 then
+				Frame_Replace_Check_1[sc]=nil
+				Frame_Replace_Check_2[sc]=nil
+				f1(sc,sc:GetFlagEffectLabel(m+500),true)
+				local sg=g:RandomSelect(0,1)
+				Duel.ConfirmCards(0,sg)
+				Duel.ConfirmCards(1,sg)
+				if sc:IsLocation(LOCATION_DECK) then Duel.ShuffleDeck(sc:GetControler()) end
+				if sc:IsLocation(LOCATION_EXTRA) then Duel.ShuffleExtra(sc:GetControler()) end
+				if sc:IsLocation(LOCATION_HAND) then Duel.ShuffleHand(sc:GetControler()) end
+				return 0
+			else return f3(sc,code,...) end
+		end
+		--[[local f1=Card.SetEntityCode
 		Card.SetEntityCode=function(sc,code,...)
 			local ocode=sc:GetOriginalCode()
 			if sc:GetFlagEffect(m+500)<=0 then sc:RegisterFlagEffect(m+500,0,0,0,ocode) end
@@ -203,9 +277,11 @@ function cm.initial_effect(c)
 				Frame_Replace_Check=false
 				return 0
 			else return f2(sc,code,...) end
-		end
+		end]]--
 	end
 end
 function cm.adjust(e,tp,eg,ep,ev,re,r,rp)
-	Frame_Replace_Check=false
+	Frame_Replace_Check_1={}
+	Frame_Replace_Check_2={}
+	Frame_Replace_Check_4=false
 end

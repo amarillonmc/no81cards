@@ -34,6 +34,16 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(id,3))
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetTargetRange(LOCATION_SZONE,0)
+	e1:SetCountLimit(1)
+	e1:SetTarget(s.acttg)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 	if not c:IsRelateToEffect(e) then return end
 	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -73,16 +83,6 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetDescription(aux.Stringid(id,3))
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-	e1:SetTargetRange(LOCATION_SZONE,0)
-	e1:SetCountLimit(1)
-	e1:SetTarget(s.acttg)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 end
 function s.acttg(e,c)
 	return bit.band(c:GetType(),TYPE_TRAP+TYPE_COUNTER)==TYPE_TRAP+TYPE_COUNTER

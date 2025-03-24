@@ -78,12 +78,12 @@ function c21050101.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 -- 1
 function c21050101.target(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.IsExistingMatchingCard(function(c) return c:IsAbleToDeck()end,tp,LOCATION_GRAVE,0,1,nil) end
+    if chk==0 then return Duel.IsExistingMatchingCard(function(c) return c:IsAbleToDeck() and c:IsType(TYPE_MONSTER) end,tp,LOCATION_GRAVE,0,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
 end
 function c21050101.operation(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-    local g=Duel.SelectMatchingCard(tp,function(c) return c:IsAbleToDeck()end,tp,LOCATION_GRAVE,0,1,1,nil)
+    local g=Duel.SelectMatchingCard(tp,function(c) return c:IsAbleToDeck() and c:IsType(TYPE_MONSTER) end,tp,LOCATION_GRAVE,0,1,1,nil)
     local tc=g:GetFirst()
     if tc and Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_DECK) then
         if tc:IsType(TYPE_TOON) and Duel.GetMZoneCount(tp)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,true,false)
