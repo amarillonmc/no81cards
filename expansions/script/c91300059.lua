@@ -54,7 +54,7 @@ function s.mattg(e,c)
 end
 function s.matval(e,lc,mg,c,tp)
 	if not (lc:IsRace(0x10) and e:GetHandlerPlayer()==tp) then return false,nil end
-	return true,true
+	return true,not mg or not mg:IsExists(Card.IsControler,1,nil,1-tp)
 end
 function s.filter1(c)
   return _G["c"..c:GetCode()] and _G["c"..c:GetCode()].Findesiecle and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand() 

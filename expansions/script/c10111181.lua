@@ -49,11 +49,15 @@ function c10111181.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c10111181.operation(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.Destroy(eg,REASON_EFFECT)
-		Duel.BreakEffect()
-		Duel.Recover(tp,re:GetHandler():GetBaseAttack(),REASON_EFFECT)
-	end
+    local rc=re:GetHandler()
+    if Duel.NegateActivation(ev) and rc:IsRelateToEffect(re) then
+        if Duel.Destroy(rc,REASON_EFFECT)>0 then  -- 检测破坏是否成功
+            local atk=rc:GetBaseAttack()
+            if atk>0 then  -- 确保攻击力为正数
+                Duel.Recover(tp,atk,REASON_EFFECT)
+            end
+        end
+    end
 end
 function c10111181.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and e:GetHandler():IsPreviousControler(tp)
