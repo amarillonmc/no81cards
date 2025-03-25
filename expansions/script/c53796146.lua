@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local m=53796146
 local cm=_G["c"..m]
 cm.name="永恒的守护神"
@@ -17,17 +19,6 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	if not cm.global_check then
 		cm.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_SUMMON_SUCCESS)
-		ge1:SetOperation(cm.checkop)
-		Duel.RegisterEffect(ge1,0)
-		local ge1_1=ge1:Clone()
-		ge1_1:SetCode(EVENT_MSET)
-		Duel.RegisterEffect(ge1_1,0)
-		local ge2=ge1:Clone()
-		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
-		Duel.RegisterEffect(ge2,0)
 		local ge5=Effect.CreateEffect(c)
 		ge5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge5:SetCode(EVENT_CHANGE_POS)
@@ -36,10 +27,6 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge5,0)
 		local ge6=ge5:Clone()
 		Duel.RegisterEffect(ge6,1)
-		Exxod_IsStatus=Card.IsStatus
-		Card.IsStatus=function(tc,int)
-			if int&(STATUS_SUMMON_TURN|STATUS_SPSUMMON_TURN)~=0 and tc:GetFlagEffect(m)>0 then return true else return Exxod_IsStatus(tc,int) end
-		end
 		Exxod_ChangePosition=Duel.ChangePosition
 		Duel.ChangePosition=function(...)
 			Pos_Changed_by_Effect=true
@@ -49,12 +36,9 @@ function cm.initial_effect(c)
 		end
 	end
 end
-function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	for tc in aux.Next(eg) do tc:RegisterFlagEffect(m,RESET_EVENT+0xec0000+RESET_PHASE+PHASE_END,0,1,e:GetCode()) end
-end
 function cm.reset(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
-	if #eg~=1 or not tc:IsControler(tp) or tc:GetFlagEffect(m)==0 then return end
+	if #eg~=1 or not tc:IsControler(tp) or not tc:IsStatus(0x40000800) then return end
 	Duel.ResetFlagEffect(tp,m+500)
 end
 function cm.thfilter(c)
@@ -116,19 +100,13 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
-	local fg=Duel.GetMatchingGroup(function(c)return c:GetFlagEffect(m)>0 end,tp,0x4,0,nil)
+	local fg=Duel.GetMatchingGroup(Card.IsStatus,tp,0x4,0,nil,0x40000800)
 	if Duel.GetFlagEffect(tp,m+500)>0 then
 		for tc in aux.Next(fg) do
-			if tc:IsFacedown() then
-				if tc:GetFlagEffectLabel(m)==1100 or tc:GetFlagEffectLabel(m)==1106 then tc:SetStatus(STATUS_SUMMON_TURN,false) else tc:SetStatus(STATUS_SPSUMMON_TURN,false) end
-			else
-				if tc:GetFlagEffectLabel(m)==1100 or tc:GetFlagEffectLabel(m)==1106 then tc:SetStatus(STATUS_SUMMON_TURN,true) else tc:SetStatus(STATUS_SPSUMMON_TURN,true) end
-			end
+			if tc:IsFacedown() then tc:SetStatus(0x0100,false) else tc:SetStatus(0x0100,true) end
 		end
 	else
-		for tc in aux.Next(fg) do
-			if tc:GetFlagEffectLabel(m)==1100 or tc:GetFlagEffectLabel(m)==1106 then tc:SetStatus(STATUS_SUMMON_TURN,true) else tc:SetStatus(STATUS_SPSUMMON_TURN,true) end
-		end
+		for tc in aux.Next(fg) do fg:ForEach(Card.SetStatus,0x0100,true) end
 		e:Reset()
 	end
 end

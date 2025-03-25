@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local m=53796144
 local cm=_G["c"..m]
 cm.name="电子光虫-继电蜻蜓"
@@ -25,14 +27,6 @@ function cm.initial_effect(c)
 	Duel.AddCustomActivityCounter(m,ACTIVITY_SPSUMMON,cm.counterfilter)
 	if not cm.global_check then
 		cm.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_SUMMON_SUCCESS)
-		ge1:SetOperation(cm.checkop)
-		Duel.RegisterEffect(ge1,0)
-		local ge2=ge1:Clone()
-		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
-		Duel.RegisterEffect(ge2,0)
 		local ge3=Effect.CreateEffect(c)
 		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge3:SetCode(EVENT_ADJUST)
@@ -48,10 +42,6 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge5,0)
 		local ge6=ge5:Clone()
 		Duel.RegisterEffect(ge6,1)
-		Relaytonbo_IsStatus=Card.IsStatus
-		Card.IsStatus=function(tc,int)
-			if int&(STATUS_SUMMON_TURN|STATUS_SPSUMMON_TURN|STATUS_FORM_CHANGED)~=0 and tc:GetFlagEffect(m)>0 then return true else return Relaytonbo_IsStatus(tc,int) end
-		end
 		Relaytonbo_ChangePosition=Duel.ChangePosition
 		Duel.ChangePosition=function(...)
 			Pos_Changed_by_Effect=true
@@ -68,32 +58,21 @@ function cm.xyzlimit(e,c)
 	if not c then return false end
 	return not c:IsRace(RACE_INSECT)
 end
-function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(function(c)return c:IsRace(RACE_INSECT) and c:IsAttribute(ATTRIBUTE_LIGHT)end,nil)
-	for tc in aux.Next(g) do tc:RegisterFlagEffect(m,RESET_EVENT+0xec0000+RESET_PHASE+PHASE_END,0,1,e:GetCode()) end
-end
 function cm.cfilter(c)
 	return c:IsHasEffect(m) and c:IsAbleToGraveAsCost()
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.cfilter,tp,0x3,0,nil)
-	local fg=Duel.GetMatchingGroup(function(c)return c:GetFlagEffect(m)>0 end,tp,0x4,0,nil)
+	local fg=Duel.GetMatchingGroup(Card.IsStatus,tp,0x4,0,nil,0x40000800)
 	if #g>0 then
-		for tc in aux.Next(fg:Filter(function(c)return c:IsFaceup() and c:IsRace(RACE_INSECT) and c:IsAttribute(ATTRIBUTE_LIGHT)end,nil)) do
-			if tc:GetFlagEffectLabel(m)==1100 then tc:SetStatus(STATUS_SUMMON_TURN,false) else tc:SetStatus(STATUS_SPSUMMON_TURN,false) end
-			if tc:IsStatus(STATUS_FORM_CHANGED) then tc:SetStatus(STATUS_FORM_CHANGED,false) end
-		end
+		fg:Filter(function(c)return c:IsFaceup() and c:IsRace(RACE_INSECT) and c:IsAttribute(ATTRIBUTE_LIGHT)end,nil):ForEach(Card.SetStatus,0x0100,false)
 	else
-		for tc in aux.Next(fg) do
-			if tc:GetFlagEffectLabel(m)==1100 then tc:SetStatus(STATUS_SUMMON_TURN,true) else tc:SetStatus(STATUS_SPSUMMON_TURN,true) end
-			if tc:IsStatus(STATUS_FORM_CHANGED) then tc:SetStatus(STATUS_FORM_CHANGED,true) end
-		end
+		fg:ForEach(Card.SetStatus,0x0100,true)
 	end
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
-	if #eg~=1 or not tc:IsControler(tp) or tc:GetFlagEffect(m)==0 or not Duel.IsExistingMatchingCard(cm.cfilter,tp,0x3,0,1,nil) then return end
-	--tc:SetStatus(STATUS_FORM_CHANGED,false)
+	if #eg~=1 or not tc:IsControler(tp) or not tc:IsStatus(0x40000800) or not Duel.IsExistingMatchingCard(cm.cfilter,tp,0x3,0,1,nil) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local sc=Duel.SelectMatchingCard(tp,cm.cfilter,tp,0x3,0,1,1,nil):GetFirst()
 	if Duel.SendtoGrave(sc,REASON_COST)==0 or not sc:IsLocation(LOCATION_GRAVE) then return end

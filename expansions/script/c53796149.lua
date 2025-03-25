@@ -24,13 +24,6 @@ function s.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_FLIP)
 	c:RegisterEffect(e3)
-	if not s.global_check then
-		s.global_check=true
-		Denji_IsStatus=Card.IsStatus
-		Card.IsStatus=function(tc,int)
-			if int&(STATUS_SUMMON_TURN|STATUS_SPSUMMON_TURN)~=0 and tc:GetFlagEffect(id)>0 then return true else return Denji_IsStatus(tc,int) end
-		end
-	end
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsReason(REASON_DRAW)
@@ -55,7 +48,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	if sg and #sg>0 and Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)~=0 then
 		Duel.ConfirmCards(1-tp,sg)
 		sg:ForEach(Card.RegisterFlagEffect,id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-		sg:ForEach(Card.SetStatus,STATUS_SPSUMMON_TURN,false)
+		sg:ForEach(Card.SetStatus,0x0100,false)
 		sg:KeepAlive()
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)

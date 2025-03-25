@@ -26,6 +26,14 @@ function s.initial_effect(c)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetCondition(s.descon)
 	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_ADJUST)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetOperation(s.adjustop1)
+	c:RegisterEffect(e5)
+	local e6=e5:Clone()
 	if not s.global_check then
 		s.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -36,20 +44,11 @@ function s.initial_effect(c)
 		local ge2=ge1:Clone()
 		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
 		Duel.RegisterEffect(ge2,0)
-		local ge3=Effect.CreateEffect(c)
-		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge3:SetCode(EVENT_ADJUST)
-		ge3:SetOperation(s.adjustop)
-		Duel.RegisterEffect(ge3,0)
 		local ge4=Effect.CreateEffect(c)
 		ge4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge4:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
 		ge4:SetOperation(s.check)
 		Duel.RegisterEffect(ge4,0)
-		local f1=Card.IsStatus
-		Card.IsStatus=function(tc,int)
-			if int&(STATUS_SUMMON_TURN|STATUS_SPSUMMON_TURN)~=0 and tc:GetFlagEffect(id)>0 then return true else return f1(tc,int) end
-		end
 	end
 end
 s.material_type=TYPE_SYNCHRO
@@ -57,17 +56,17 @@ function s.sfilter(c)
 	return c:IsRace(RACE_FAIRY) and c:IsSynchroType(TYPE_SYNCHRO)
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	for tc in aux.Next(eg:Filter(Card.IsFacedown,nil)) do tc:RegisterFlagEffect(id,RESET_EVENT+0x1ec0000+RESET_PHASE+PHASE_END,0,1,e:GetCode()) end
+	for tc in aux.Next(eg:Filter(Card.IsFacedown,nil)) do tc:RegisterFlagEffect(id,RESET_EVENT+0x1fc0000+RESET_PHASE+PHASE_END,0,1,e:GetCode()) end
 end
-function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
+function s.checkfil(c)
+	return c:GetFlagEffect(id)>0 and c:IsFacedown()
+end
+function s.adjustop1(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.GetFieldGroup(0,LOCATION_MZONE,LOCATION_MZONE)
-	local g2=g1:Filter(function(c)return c:GetFlagEffect(id)>0 end,nil)
-	g1:Sub(g2)
-	for tc in aux.Next(g2) do
-		if tc:GetFlagEffectLabel(id)==1106 then tc:SetStatus(STATUS_SUMMON_TURN,false) else tc:SetStatus(STATUS_SPSUMMON_TURN,false) end
-	end
-	for tc in aux.Next(g1) do
-		if tc:GetFlagEffectLabel(id)==1106 then tc:SetStatus(STATUS_SUMMON_TURN,true) else tc:SetStatus(STATUS_SPSUMMON_TURN,true) end
+	local g2=g1:Filter(s.checkfil,nil)
+	if e:GetHandler():IsDisabled() then g1:ForEach(Card.SetStatus,0x0100,true) else
+		g2:ForEach(Card.SetStatus,0x0100,false)
+		Group.__sub(g1,g2):ForEach(Card.SetStatus,0x0100,true)
 	end
 end
 function s.check(e,tp,eg,ep,ev,re,r,rp)
