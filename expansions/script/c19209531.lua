@@ -6,7 +6,7 @@ function c19209531.initial_effect(c)
 	--pendulum effect
 	--to hand
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCountLimit(1,19209531)
@@ -64,8 +64,10 @@ function c19209531.rmop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local sc=Duel.SelectMatchingCard(tp,c19209531.setfilter,tp,LOCATION_DECK,0,1,1,nil,TYPE_TRAP):GetFirst()
-	if sc then Duel.SSet(tp,sc) end
-	sc:RegisterFlagEffect(19209531,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(19209531,0))
+	if sc then
+		Duel.SSet(tp,sc)
+		sc:RegisterFlagEffect(19209531,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(19209531,0))
+	end
 end
 function c19209531.chkfilter(c)
 	return c:IsSetCard(0xb50) and c:IsType(TYPE_PENDULUM) and c:IsFaceup()
