@@ -25,6 +25,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--activate cost
 	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_DICE)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_ACTIVATE_COST)
 	e3:SetRange(LOCATION_SZONE)

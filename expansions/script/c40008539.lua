@@ -30,7 +30,7 @@ function c40008539.lcheck(g)
 	return g:GetClassCount(Card.GetLinkRace)==g:GetCount()
 end
 function c40008539.cfilter(c,e,tp,zone)
-	return Duel.GetMZoneCount(tp,c,tp,LOCATION_REASON_TOFIELD,zone)>0
+	return c:IsAbleToHandAsCost() and Duel.GetMZoneCount(tp,c,tp,LOCATION_REASON_TOFIELD,zone)>0
 		and Duel.IsExistingMatchingCard(c40008539.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetOriginalRace())
 end
 function c40008539.spcost(e,tp,eg,ep,ev,re,r,rp,chk)

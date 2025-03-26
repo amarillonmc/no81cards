@@ -3,7 +3,7 @@ local m=64800044
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,cm.sfilter1,nil,1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsType,TYPE_SYNCHRO),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--to grave
 	local e1=Effect.CreateEffect(c)
@@ -40,9 +40,6 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 cm.material_type=TYPE_SYNCHRO
-function cm.sfilter1(c)
-	return c:IsType(TYPE_SYNCHRO)
-end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,0,LOCATION_MZONE)
