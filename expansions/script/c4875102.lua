@@ -43,7 +43,7 @@ function c4875102.initial_effect(c)
 	e7:SetValue(aux.xyzlimit)
 	c:RegisterEffect(e7)
 end
-c4875102.xyz_number=62
+aux.xyz_number[4875102]=62
 function c4875102.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
@@ -73,7 +73,7 @@ function c4875102.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c4875102.actlimit(e,te,tp)
-	return    te:IsHasType(EFFECT_TYPE_ACTIVATE) and te:IsActiveType(TYPE_SPELL)
+	return	te:IsHasType(EFFECT_TYPE_ACTIVATE) and te:IsActiveType(TYPE_SPELL)
 end
 function c4875102.imfilter(c)
 	return c:IsCode(93717133)

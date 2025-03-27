@@ -28,8 +28,7 @@ function c49678550.initial_effect(c)
 	e2:SetOperation(c49678550.spop)
 	c:RegisterEffect(e2)
 end
-c49678550.xyz_number=102
-
+aux.xyz_number[49678550]=102
 function c49678550.counterfilter(c)
 	return c:IsSetCard(0x86) or not c:IsSummonLocation(LOCATION_HAND) or not c:IsSummonLocation(LOCATION_GRAVE)
 end

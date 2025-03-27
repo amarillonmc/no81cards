@@ -37,7 +37,7 @@ function c79029560.initial_effect(c)
 	e5:SetOperation(c79029560.slop)
 	c:RegisterEffect(e5)
 end
-c79029560.xyz_number=89
+aux.xyz_number[79029560]=89
 function c79029560.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)

@@ -22,6 +22,7 @@ function c114514.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	c:RegisterEffect(e3)
 end
+aux.xyz_number[114514]=114514
 function c114514.rfilter(c,tp)
 	return c:IsControler(tp) and c:IsFaceup() and not c:IsCode(114514)
 end

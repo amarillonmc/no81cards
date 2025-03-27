@@ -24,6 +24,7 @@ function c22348446.initial_effect(c)
 	e2:SetOperation(c22348446.op)
 	c:RegisterEffect(e2)
 end
+aux.xyz_number[22348446]=90
 function c22348446.discon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) or Duel.IsChainDisablable(ev)
 end

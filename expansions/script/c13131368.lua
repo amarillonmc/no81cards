@@ -37,6 +37,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.remop)
 	c:RegisterEffect(e3)
 end
+aux.xyz_number[m]=21
 function cm.ovfilter(c)
 	return c:IsFaceup() and c:IsXyzType(TYPE_XYZ) and c:IsRank(6)
 end

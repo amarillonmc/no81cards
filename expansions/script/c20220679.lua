@@ -4,9 +4,9 @@ function s.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,9,3,s.ovfilter,aux.Stringid(id,4))
 	c:EnableReviveLimit()
-   	--Enable pendulum summon
+	--Enable pendulum summon
 	aux.EnablePendulumAttribute(c,false)
-    --disable
+	--disable
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_DISABLE)
@@ -14,23 +14,23 @@ function s.initial_effect(c)
 	e3:SetTargetRange(0,LOCATION_MZONE)
 	e3:SetTarget(s.distg)
 	c:RegisterEffect(e3)
-   	--Special Summon
+	--Special Summon
 	local e22=Effect.CreateEffect(c)
 	e22:SetDescription(aux.Stringid(id,3))
 	e22:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e22:SetType(EFFECT_TYPE_IGNITION)
 	e22:SetRange(LOCATION_PZONE)
-    e22:SetCountLimit(1,id)
+	e22:SetCountLimit(1,id)
 	e22:SetCost(s.spcost)
 	e22:SetTarget(s.sptg)
 	e22:SetOperation(s.spop)
 	c:RegisterEffect(e22)
-    --特殊召唤不能被无效
-    local e0=Effect.CreateEffect(c)
-    e0:SetType(EFFECT_TYPE_SINGLE)
-    e0:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
-    e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-    c:RegisterEffect(e0)
+	--特殊召唤不能被无效
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	c:RegisterEffect(e0)
 	--xyzlimit
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -40,28 +40,28 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	--remove
 	local e2=Effect.CreateEffect(c)
-    e2:SetDescription(aux.Stringid(id,0))
+	e2:SetDescription(aux.Stringid(id,0))
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-    e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-    e2:SetRange(LOCATION_MZONE)
-    e2:SetCountLimit(1,id)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,id)
 	e2:SetCost(s.rmcost)
 	e2:SetTarget(s.rmtg)
 	e2:SetOperation(s.rmop)
 	c:RegisterEffect(e2)
- 	--banish
+	--banish
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id,1))
 	e4:SetCategory(CATEGORY_REMOVE+CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
- 	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
-    e4:SetCountLimit(1,id)
+	e4:SetCountLimit(1,id)
 	e4:SetTarget(s.bantg)
 	e4:SetOperation(s.banop)
 	c:RegisterEffect(e4)
- 	--multi attack
+	--multi attack
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_EXTRA_ATTACK)
@@ -69,7 +69,7 @@ function s.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetValue(s.val)
 	c:RegisterEffect(e2)
-   	--pendulum
+	--pendulum
 	local e12=Effect.CreateEffect(c)
 	e12:SetDescription(aux.Stringid(id,2))
 	e12:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -80,10 +80,10 @@ function s.initial_effect(c)
 	e12:SetOperation(s.penop)
 	c:RegisterEffect(e12)
 end
-s.xyz_number=95
+aux.xyz_number[id]=95
 s.pendulum_level=9
 function s.chlimit(e,ep,tp)
-    return tp==ep
+	return tp==ep
 end
 function s.ovfilter(c,tp,xyzc)
 	return c:IsFaceup() and c:IsSetCard(0x107b,xyzc,SUMMON_TYPE_XYZ,tp) and c:IsType(TYPE_XYZ,xyzc,SUMMON_TYPE_XYZ,tp)
@@ -106,7 +106,7 @@ end
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>1
 		and not Duel.IsPlayerAffectedByEffect(1-tp,30459350) end
-    Duel.SetChainLimit(s.chlimit)
+	Duel.SetChainLimit(s.chlimit)
 end
 function s.rmfilter(c)
 	return c:IsType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemove()
@@ -129,7 +129,7 @@ end
 function s.bantg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.banfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,0,0)
-    Duel.SetChainLimit(s.chlimit)
+	Duel.SetChainLimit(s.chlimit)
 end
 function s.banop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetFieldGroupCount(1-tp,LOCATION_DECK,0)
@@ -163,7 +163,7 @@ end
 function s.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
 	Duel.SetTargetCard(e:GetHandler())
-    Duel.SetChainLimit(s.chlimit)
+	Duel.SetChainLimit(s.chlimit)
 end
 function s.penop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1) then return false end
@@ -194,4 +194,4 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-end
+end

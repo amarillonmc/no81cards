@@ -86,16 +86,17 @@ function cm.initial_effect(c)
 	e12:SetOperation(cm.atkop)
 	c:RegisterEffect(e12)
 end
-	function cm.spfilter(c)
+aux.xyz_number[m]=1500
+function cm.spfilter(c)
 	return c:IsSetCard(0x1115) and c:IsAbleToRemoveAsCost() and not c:IsCode(m)
 end
-	function cm.spcon(e,c)
+function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_EXTRA,0,14,c)
 end
-	function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_EXTRA,0,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sg=g:CancelableSelect(tp,14,14,nil)
@@ -110,56 +111,56 @@ end
 	Duel.Remove(g,POS_FACEDOWN,REASON_SPSUMMON)
 	g:DeleteGroup()
 end
-	function cm.atkval(e,c)
+function cm.atkval(e,c)
 	if Duel.GetTurnPlayer()==1-e:GetHandlerPlayer() then
 		return 150000
 	else
 		return 1500
 	end
 end
-	function cm.indtg(e,c)
+function cm.indtg(e,c)
 	return c:IsCode(m)
 end
-	function cm.efilter(e,re)
+function cm.efilter(e,re)
 	return e:GetHandlerPlayer()~=re:GetOwnerPlayer()
 end
-	function cm.wincon(e,tp,eg,ep,ev,re,r,rp)
+function cm.wincon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsPreviousControler(tp) and c:GetReasonPlayer()==1-tp
 end
-	function cm.winop(e,tp,eg,ep,ev,re,r,rp)
+function cm.winop(e,tp,eg,ep,ev,re,r,rp)
 	local WIN_REASON_NUMERONIUS_NUMERONIA=0x21
 	Duel.Win(tp,WIN_REASON_NUMERONIUS_NUMERONIA)
 end
-	function cm.filter(c)
+function cm.filter(c)
 	return c:IsSetCard(0x115) and c:IsAbleToGrave()
 end
-	function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
-	function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
+function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_EFFECT)
 end
-	function cm.thfilter(c,tp)
+function cm.thfilter(c,tp)
 	return c:IsSetCard(0x115) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
-	function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.thfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local sg=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,sg,1,0,0)
 end
-	function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 end
-	function cm.op(e,tp,eg,ep,ev,re,r,rp)
+function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
@@ -169,15 +170,15 @@ end
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-	function cm.opfilter(c,tp)
+function cm.opfilter(c,tp)
 	return c:IsSetCard(0x115) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 		and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,c:GetCode())
 end
-	function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.opfilter,tp,LOCATION_DECK,0,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-	function cm.op2(e,tp,eg,ep,ev,re,r,rp)
+function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.opfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
 	if g:GetCount()>0 then
@@ -185,13 +186,13 @@ end
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-	function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and chkc:IsFaceup() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil)
 end
-	function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		local e1=Effect.CreateEffect(e:GetHandler())

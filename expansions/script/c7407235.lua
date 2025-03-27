@@ -38,7 +38,7 @@ function s.initial_effect(c)
 	e2:SetOperation(s.operation)
 	c:RegisterEffect(e2)
 end
-s.xyz_number=69
+aux.xyz_number[id]=69
 --Xyz Summon(normal)
 function s.Xyzfilter2(c,sc)
 	return c:IsSetCard(0x76) and c:IsCanBeXyzMaterial(sc) and c:IsXyzLevel(sc,4)

@@ -45,7 +45,7 @@ function c79029550.initial_effect(c)
 	e5:SetOperation(c79029550.rop)
 	c:RegisterEffect(e5)
 end
-c79029550.xyz_number=0
+aux.xyz_number[79029550]=0
 function c79029550.mfilter(c,xyzc)
 	return c:IsXyzType(TYPE_XYZ)
 end

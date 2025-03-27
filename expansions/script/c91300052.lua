@@ -39,7 +39,7 @@ function s.initial_effect(c)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetTargetRange(1,1)
 	e5:SetValue(s.aclimit)
-	Duel.RegisterEffect(e5)
+	c:RegisterEffect(e5)
 	--tograve
 	local e6=Effect.CreateEffect(c)
 	e6:SetCategory(CATEGORY_TOGRAVE)

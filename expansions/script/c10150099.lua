@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	local e1=rsef.SV_CANNOT_BE_MATERIAL(c,"xyz")
 	local e2=rsef.STO(c,EVENT_ATTACK_ANNOUNCE,{m,1},nil,"dis,atk",nil,cm.atkcon,rscost.rmxyz(2),cm.atktg,cm.atkop)
 end
-cm.xyz_number=62
+aux.xyz_number[10150099]=62
 function cm.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x107b) and c:IsType(TYPE_XYZ) and c:IsRank(8)
 end
