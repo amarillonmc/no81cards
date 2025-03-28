@@ -62,7 +62,8 @@ function c21692404.tddop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsAbleToDeck() and c:IsSetCard(0x555) end,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) then 
 		local sg=Duel.SelectMatchingCard(tp,function(c) return c:IsFaceup() and c:IsAbleToDeck() and c:IsSetCard(0x555) end,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,3,nil) 
 		if Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)~=0 then 
-			Duel.BreakEffect() 
+			Duel.BreakEffect()
+			Duel.ShuffleDeck(tp)
 			Duel.Draw(tp,1,REASON_EFFECT) 
 		end 
 	end  

@@ -158,6 +158,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 			e1:SetValue(TYPE_TRAP+TYPE_COUNTER)
 			c:RegisterEffect(e1)
+			c:SetStatus(STATUS_SET_TURN,true)
 		else
 			c:SetCardData(CARDDATA_TYPE,TYPE_TRAP+TYPE_COUNTER)
 			local e2=Effect.CreateEffect(c)
@@ -214,6 +215,7 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local setg=Group.CreateGroup()
 	for tc in aux.Next(g) do
 		tc:CancelToGrave()
+		--Debug.Message(tc:IsStatus(STATUS_LEAVE_CONFIRMED))
 		if (tc:IsType(TYPE_MONSTER) and Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)>0) or Duel.ChangePosition(tc,POS_FACEDOWN)>0 then flag=1 end
 		local loc=0
 		if tc:IsType(TYPE_FIELD) then loc=LOCATION_FZONE

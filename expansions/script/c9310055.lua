@@ -58,7 +58,7 @@ function c9310055.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetCountLimit(1)
-	e1:SetLabelObject(e)
+	e1:SetLabel(Duel.GetCurrentChain())
 	e1:SetCondition(c9310055.rscon)
 	e1:SetOperation(c9310055.rsop)
 	e1:SetReset(RESET_CHAIN)
@@ -72,7 +72,7 @@ function c9310055.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9310055.rscon(e,tp,eg,ep,ev,re,r,rp)
-	return re==e:GetLabelObject()
+	return ev==e:GetLabel()
 end
 function c9310055.rsop(e,tp,eg,ep,ev,re,r,rp)
 	re:SetOperation(c9310055.activate)

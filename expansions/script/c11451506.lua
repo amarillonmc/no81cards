@@ -53,7 +53,9 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,e:GetHandler())
 	if not g or #g==0 then Duel.GetCurrentChain=_GetCurrentChain e:SetLabelObject(nil) return end
-	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true)
+	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true) --g:GetFirst():GetActivateEffect(),eg,ep,ev,re,r,rp --
+	--Debug.Message(te==g:GetFirst():GetActivateEffect())
+	--if g:GetFirst():IsOriginalSetCard(0x97d) then te=g:GetFirst():GetActivateEffect() end
 	Duel.GetCurrentChain=_GetCurrentChain
 	Duel.ClearTargetCard()
 	g:GetFirst():CreateEffectRelation(e)
@@ -69,7 +71,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetCountLimit(1)
-	e1:SetLabel(ev+1)
+	e1:SetLabel(Duel.GetCurrentChain())
 	e1:SetCondition(cm.rscon)
 	e1:SetOperation(cm.rsop)
 	e1:SetReset(RESET_CHAIN)
@@ -80,7 +82,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
-	if te and te:GetHandler():IsRelateToEffect(e) and Duel.SendtoDeck(te:GetHandler(),nil,2,REASON_EFFECT)>0 then
+	if te and aux.GetValueType(te)=="Effect" and te:GetHandler():IsRelateToEffect(e) and Duel.SendtoDeck(te:GetHandler(),nil,2,REASON_EFFECT)>0 then
 		if te:GetHandler():IsLocation(LOCATION_DECK) then Duel.ShuffleDeck(tp) end
 		e:SetLabelObject(te:GetLabelObject())
 		local op=te:GetOperation()

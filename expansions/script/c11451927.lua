@@ -35,6 +35,14 @@ function cm.initial_effect(c)
 		local _GetActiveType=Effect.GetActiveType
 		local _NegateActivation=Duel.NegateActivation
 		local _ChangeChainOperation=Duel.ChangeChainOperation
+		local _GetType=Effect.GetType
+		local _IsHasType=Effect.IsHasType
+		function Effect.GetType(e)
+			if e:GetDescription()==aux.Stringid(m,0) then return EFFECT_TYPE_ACTIVATE else return _GetType(e) end
+		end
+		function Effect.IsHasType(e,typ)
+			if e:GetDescription()==aux.Stringid(m,0) then return EFFECT_TYPE_ACTIVATE&typ>0 else return _IsHasType(e,typ) end
+		end
 		function Effect.GetActiveType(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
 				return TYPE_TRAP+TYPE_COUNTER
@@ -158,7 +166,7 @@ function cm.LinkOperation(f,minc,maxc,gf)
 				c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,cid)
 				for oc in aux.Next(g1) do
 					local te,te2=oc:GetActivateEffect()
-					if te2 and oc:IsType(TYPE_TRAP) then te=te2 end
+					if oc:GetOriginalCode()==11451827 and te2 and oc:IsType(TYPE_TRAP) then te=te2 end
 					local con=te:GetCondition()
 					local tg=te:GetTarget()
 					local op=te:GetOperation()
@@ -216,6 +224,9 @@ function cm.btg(tg)
 				local c=e:GetLabelObject()
 				c:ResetFlagEffect(m)
 				tg(e,tp,eg,ep,ev,re,r,rp,1)
+				if e:GetHandler():IsType(TYPE_COUNTER) then
+					Duel.SetChainLimit(function(e) return e:GetHandler():IsType(TYPE_COUNTER) and e:IsHasType(EFFECT_TYPE_ACTIVATE) end)
+				end
 			end
 end
 function cm.bop(op)
@@ -231,7 +242,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=te:GetHandler()
 	Duel.ChangePosition(tc,POS_FACEUP)
 	tc:SetStatus(STATUS_EFFECT_ENABLED,false)
-	if tc:IsType(TYPE_COUNTER) then te:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_ACTIVATE) else te:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_ACTIVATE) end
+	--te:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_ACTIVATE)
 	tc:CreateEffectRelation(te)
 	local c=e:GetHandler()
 	local ev0=Duel.GetCurrentChain()+1
@@ -258,7 +269,6 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	--re:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_ACTIVATE)
 	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
-		--rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 		local _NegateActivation=Duel.NegateActivation
 		Duel.NegateActivation=aux.TRUE
 		local ev0=ev
@@ -268,7 +278,7 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EVENT_CHAIN_SOLVED)
 		e1:SetCountLimit(1)
 		e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
-		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) Duel.NegateActivation=_NegateActivation end)
+		e1:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) Duel.NegateActivation=_NegateActivation rc:SetStatus(STATUS_EFFECT_ENABLED,true) end)
 		e1:SetReset(RESET_CHAIN)
 		Duel.RegisterEffect(e1,tp)
 	end

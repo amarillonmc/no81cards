@@ -100,7 +100,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetCountLimit(1)
-	e1:SetLabel(ev+1)
+	e1:SetLabel(Duel.GetCurrentChain())
 	e1:SetCondition(cm.rscon)
 	e1:SetOperation(cm.rsop)
 	e1:SetReset(RESET_CHAIN)
@@ -181,6 +181,11 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.handop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ShuffleHand(tp)
+	if e:GetCode()==EVENT_SPSUMMON_SUCCESS and eg and eg:FilterCount(Card.IsSummonType,nil,SUMMON_TYPE_XYZ)>0 then
+		for tc in aux.Next(eg:GetFirst():GetOverlayGroup()) do
+			tc:CancelToGrave()
+		end
+	end
 end
 function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 	return ev==e:GetLabel()
