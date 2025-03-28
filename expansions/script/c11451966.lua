@@ -74,7 +74,7 @@ function cm.chcon(e,tp,eg,ep,ev,re,r,rp)
 	return rc:IsSetCard(0x836)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x836) and c:IsType(TYPE_QUICKPLAY) and c:IsAbleToHand()
+	return c:IsSetCard(0x836) and c:IsType(TYPE_QUICKPLAY) and c:IsSSetable()
 end
 function cm.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -88,10 +88,10 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeChainOperation(ev,cm.repop)
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+		Duel.SSet(tp,g,tp,true)
+		--Duel.ConfirmCards(1-tp,g)
 	end
 end

@@ -158,7 +158,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.efilter(e,te)
 	if e:GetHandler():GetFlagEffect(m+0xffffff)>0 and te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and te:IsHasType(EFFECT_TYPE_ACTIONS) then
-		if KOISHI_CHECK then
+		if 0==1 then
 			Duel.DisableActionCheck(true)
 			pcall(Duel.HintSelection,Group.FromCards(e:GetHandler()))
 			local tc=te:GetHandler()
@@ -201,6 +201,7 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	pnfl_adjusting=true
 	Duel.Draw(e:GetLabel(),1,REASON_EFFECT)
 	pnfl_adjusting=false
+	e:Reset()
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

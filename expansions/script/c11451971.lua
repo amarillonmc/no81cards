@@ -45,7 +45,10 @@ function cm.initial_effect(c)
 	end
 end
 function cm.tgfilter(c,tp,sc)
-	return c:IsSetCard(0x836) and c:IsAbleToGraveAsCost() and Duel.GetLocationCountFromEx(tp,tp,c,sc)>0 and #Duel.GetMatchingGroup(Card.IsSSetable,tp,LOCATION_HAND,0,nil,true)>0 and (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or (c:IsLocation(LOCATION_SZONE) and c:GetSequence()<4))
+	return c:IsSetCard(0x836) and c:IsAbleToGraveAsCost() and Duel.GetLocationCountFromEx(tp,tp,c,sc)>0 and #Duel.GetMatchingGroup(Card.IsSSetable,tp,LOCATION_HAND,0,nil,true)>0 and (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or (c:IsLocation(LOCATION_SZONE) and c:GetSequence()<4) or #Duel.GetMatchingGroup(cm.setfilter0,tp,LOCATION_HAND,0,nil)>0)
+end
+function cm.setfilter0(c)
+	return c:IsSSetable(true) and c:IsType(TYPE_FIELD)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
@@ -59,6 +62,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local sg=g:Select(tp,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	if not (Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or (sg:GetFirst():IsLocation(LOCATION_SZONE) and sg:GetFirst():GetSequence()<4)) then g2=g2:Filter(cm.setfilter0,nil) end
 	local sg2=g2:Select(tp,1,1,nil)
 	if #sg>0 and #sg2>0 then
 		sg:Merge(sg2)
@@ -71,8 +75,12 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=e:GetLabelObject()
 	local sg=g:Filter(Card.IsOnField,nil)
 	Duel.SendtoGrave(sg,REASON_SPSUMMON+REASON_COST)
-	Duel.MoveToField((g-sg):GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEDOWN,false)
-	Duel.RaiseEvent((g-sg):GetFirst(),EVENT_SSET,e,REASON_SPSUMMON+REASON_COST,tp,tp,0)
+	local loc=LOCATION_SZONE
+	local tc=(g-sg):GetFirst()
+	if tc:IsType(TYPE_FIELD) then loc=LOCATION_FZONE end
+	Duel.MoveToField(tc,tp,tp,loc,POS_FACEDOWN,false)
+	tc:SetStatus(STATUS_SET_TURN,true)
+	Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_SPSUMMON+REASON_COST,tp,tp,0)
 	--Duel.SSet(tp,g-sg,tp,false)
 	g:DeleteGroup()
 end
