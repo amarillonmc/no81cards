@@ -62,8 +62,7 @@ function s.discon(e,tp,eg,ep,ev,re,r,rp)
 	local ex3=re:IsHasCategory(CATEGORY_DRAW)
 	local ex4=re:IsHasCategory(CATEGORY_SEARCH)
 	local ex5=re:IsHasCategory(CATEGORY_TOHAND)
-	return (ex3 or ex4 or ex5) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainDisablable(ev) and ep==1-tp
-		and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,0,1,c)
+	return (ex3 or ex4 or ex5) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainDisablable(ev) and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,0,1,c)
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsPlayerCanDraw(1-tp,1) end

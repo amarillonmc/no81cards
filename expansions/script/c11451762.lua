@@ -84,7 +84,7 @@ function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 		i=i+1
 	end
 	local tp=e:GetHandler():GetOwner()
-	Duel.ResetFlagEffect(tp,m)
+	Duel.ResetFlagEffect(tp,11451767)
 	--local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+m)}
 	--for _,te in pairs(eset) do te:Reset() end
 	if res then
@@ -94,7 +94,7 @@ function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetType(EFFECT_TYPE_FIELD)
 		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 		e3:SetTargetRange(1,0)
-		e3:SetCode(EFFECT_FLAG_EFFECT+m)
+		e3:SetCode(EFFECT_FLAG_EFFECT+11451767)
 		Duel.RegisterEffect(e3,tp)
 	else
 		cm.chain_with_stridgon=0

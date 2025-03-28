@@ -17,7 +17,8 @@ function cm.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCondition(cm.spcon2)
-	e2:SetOperation(cm.spop2(c))
+	e2:SetTarget(cm.sptg2(c))
+	e2:SetOperation(cm.spop2)
 	--effect gain
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
@@ -62,12 +63,20 @@ function cm.spcon2(e,c)
 	local num=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 	return Duel.GetMZoneCount(tp)>0 and (num%c:GetLevel())==0 and num~=0 --and Duel.GetDecktopGroup(tp,c:GetLevel()//2):FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN)==c:GetLevel()//2
 end
-function cm.spop2(sc)
-	return function(e,tp,eg,ep,ev,re,r,rp,c)
+function cm.sptg2(sc)
+	return function(e,tp,eg,ep,ev,re,r,rp,chk,c)
 				local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-				local sg=g:SelectSubGroup(tp,function(g) return g:IsExists(aux.FilterEqualFunction(Card.GetOriginalCode,m),1,nil) end,false,c:GetLevel()//2,c:GetLevel()//2)
-				Duel.Hint(HINT_CARD,0,m)
-				Duel.SendtoGrave(sg,REASON_RETURN)
+				local sg=g:SelectSubGroup(tp,function(g) return g:IsExists(aux.FilterEqualFunction(Card.GetOriginalCode,m),1,nil) end,Duel.IsSummonCancelable(),c:GetLevel()//2,c:GetLevel()//2)
+				if sg then
+					sg:KeepAlive()
+					e:SetLabelObject(sg)
+					return true
+				else return false end
 			end
+end
+function cm.spop2(e,tp,eg,ep,ev,re,r,rp,c)
+	local sg=e:GetLabelObject()
+	Duel.Hint(HINT_CARD,0,m)
+	Duel.SendtoGrave(sg,REASON_RETURN)
 end
