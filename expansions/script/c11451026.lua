@@ -98,6 +98,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 	end
 	if #g>0 then
+		Duel.ConfirmCards(tp,g)
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
 		local tc=g:Select(tp,1,1,nil):GetFirst()
 		local ev0=Duel.GetCurrentChain()

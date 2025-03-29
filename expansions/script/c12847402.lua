@@ -38,8 +38,7 @@ function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 then
+	if tc:IsRelateToEffect(e) and Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_REMOVED) then
 		local og=Duel.GetOperatedGroup():Filter(cm.spfilter,nil,e,tp)
 		if #og<=0 then return end
 		local ft1=Duel.GetLocationCount(tp,LOCATION_MZONE)
@@ -68,8 +67,8 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.SpecialSummonComplete()
 		local cg=spg:Filter(Card.IsFacedown,nil)
-		if #cg>0 then
-			Duel.ConfirmCards(1-tp,g)
+		if #cg>0 and cg:GetFirst():IsLocation(LOCATION_MZONE) then
+			Duel.ConfirmCards(1-tp,cg)
 			end
 		end
 	end

@@ -97,6 +97,7 @@ function cm.ActivateCard(c,tp,oe)
 		end
 	end
 end
+
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	return ph~=PHASE_DAMAGE and ph~=PHASE_DAMAGE_CAL and e:GetHandler():IsReason(REASON_EFFECT)
@@ -177,7 +178,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.symfil,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_MZONE,0,nil,e) 
 	local tc=Duel.SelectMatchingCard(tp,cm.espfil3,tp,LOCATION_EXTRA,0,1,1,nil,g,e,tp):GetFirst()
 	cm.SubGroupParams={function(c,sc) return c:GetSynchroLevel(tc)==sc:GetSynchroLevel(tc) and (not cm.fparams or (cm.fparams[1](c,tc,table.unpack(cm.fparams,2))==cm.fparams[1](sc,tc,table.unpack(cm.fparams,2)))) end,Card.GetLevel,nil,false}
-	local mat1=cm.SelectSubGroup(g,tp,cm.espfil2,false,1,3,tc)  
+	local mat1=g:SelectSubGroup(tp,cm.espfil2,false,1,3,tc)  
 	cm.SubGroupParams={}
 	cm.fparams=nil
 	if mat1:IsExists(function(c) return c:IsLocation(LOCATION_MZONE) and c:IsFacedown() or c:IsLocation(LOCATION_HAND) end,1,nil) then 
@@ -203,34 +204,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	tc:CompleteProcedure()  
 end 
 
-function cm.thfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP)  and (c:IsSetCard(0x181) or aux.IsCodeListed(c,56099748)) and c:IsFaceup() and c:IsSSetable()
-end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingTarget(aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,nil) end
-end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-		local g=Duel.SelectTarget(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,nil)
-		local tc=g:GetFirst()
-		if tc and Duel.SSet(tp,tc)~=0 then
-			local e1=Effect.CreateEffect(c)
-			e1:SetDescription(aux.Stringid(m,1))
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-			e1:SetCondition(cm.setcon)
-			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-		end
-end
-function cm.fit1(c)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x181)
-end
-function cm.setcon(e,c)
-	local tp=e:GetHandlerPlayer()
-	return Duel.IsExistingMatchingCard(cm.fit1,tp,LOCATION_MZONE,0,1,nil)
-end
+
 
 --subgroup optimization
 function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)

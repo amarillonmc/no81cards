@@ -3,7 +3,7 @@ function c78303060.initial_effect(c)
 	--pendulum
 	aux.EnablePendulumAttribute(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x746),nil,1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x746),aux.NonTuner(nil),1)
 	c:EnableReviveLimit()
 	--spsummon
 	local e1=Effect.CreateEffect(c)
@@ -19,8 +19,8 @@ function c78303060.initial_effect(c)
 	--move
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_BE_MATERIAL)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,88303060)
 	e2:SetCondition(c78303060.pencon)
 	e2:SetTarget(c78303060.pentg)
