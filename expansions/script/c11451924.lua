@@ -61,7 +61,7 @@ function cm.dfilter(c,tp)
 	return c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsCanTurnSet() and (not tp or c:IsControler(tp))
 end
 function cm.sfilter(c,e,tp)
-	return (not e or c:IsRelateToEffect(e)) and (cm.dfilter(c,tp) or c:GetColumnGroup():IsExists(cm.dfilter,1,c))
+	return (not e or c:IsRelateToEffect(e)) and (cm.dfilter(c,tp) or c:GetColumnGroup():IsExists(cm.dfilter,1,c,tp))
 end
 function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

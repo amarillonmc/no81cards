@@ -242,7 +242,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=te:GetHandler()
 	Duel.ChangePosition(tc,POS_FACEUP)
 	tc:SetStatus(STATUS_EFFECT_ENABLED,false)
-	--te:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_ACTIVATE)
+	te:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_ACTIVATE)
 	tc:CreateEffectRelation(te)
 	local c=e:GetHandler()
 	local ev0=Duel.GetCurrentChain()+1
@@ -261,13 +261,13 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local e3=e1:Clone()
 	e3:SetCode(EVENT_CHAIN_ACTIVATING)
 	e3:SetCondition(aux.TRUE)
-	e3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) te:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_ACTIVATE) end)
-	--Duel.RegisterEffect(e3,tp)
+	e3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) te:SetType(EFFECT_TYPE_QUICK_F) end)
+	Duel.RegisterEffect(e3,tp)
 	e:Reset()
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	--re:SetType(EFFECT_TYPE_QUICK_F+EFFECT_TYPE_ACTIVATE)
+	--re:SetType(EFFECT_TYPE_QUICK_F) --+EFFECT_TYPE_ACTIVATE)
 	if e:GetCode()==EVENT_CHAIN_SOLVING and rc:IsRelateToEffect(re) then
 		local _NegateActivation=Duel.NegateActivation
 		Duel.NegateActivation=aux.TRUE
