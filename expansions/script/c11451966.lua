@@ -74,12 +74,12 @@ function cm.chcon(e,tp,eg,ep,ev,re,r,rp)
 	return rc:IsSetCard(0x836)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x836) and c:IsType(TYPE_QUICKPLAY) and c:IsSSetable()
+	return c:IsSetCard(0x836) and c:IsType(TYPE_SPELL) and c:IsSSetable()
 end
 function cm.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if rp==tp then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil)
-		else return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_DECK,1,nil) end
+		else return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_DECK,1,nil) and Duel.IsPlayerCanSSet(1-tp) end
 	end
 end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)

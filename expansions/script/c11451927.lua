@@ -38,10 +38,10 @@ function cm.initial_effect(c)
 		local _GetType=Effect.GetType
 		local _IsHasType=Effect.IsHasType
 		function Effect.GetType(e)
-			if e:GetDescription()==aux.Stringid(m,0) then return EFFECT_TYPE_ACTIVATE else return _GetType(e) end
+			if e:GetDescription()==aux.Stringid(m,0) then return 26 else return _GetType(e) end
 		end
 		function Effect.IsHasType(e,typ)
-			if e:GetDescription()==aux.Stringid(m,0) then return EFFECT_TYPE_ACTIVATE&typ>0 else return _IsHasType(e,typ) end
+			if e:GetDescription()==aux.Stringid(m,0) then return 26&typ>0 else return _IsHasType(e,typ) end
 		end
 		function Effect.GetActiveType(e)
 			if e:GetDescription()==aux.Stringid(m,0) then
