@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	--effect2
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,2))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_CHAIN_SOLVED)
 	e2:SetRange(LOCATION_GRAVE)
@@ -112,7 +112,7 @@ function cm.ngtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,nil,1,0,0)
 end
 function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
+	--if not e:GetHandler():IsRelateToEffect(e) then return end
 	local list={}
 	for i=1,ev do
 		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
@@ -122,7 +122,7 @@ function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
 	local num=Duel.AnnounceNumber(tp,table.unpack(list))
 	local te=Duel.GetChainInfo(num,CHAININFO_TRIGGERING_EFFECT)
-	if Duel.NegateActivation(num) and te:GetHandler():IsDestructable() and e:GetHandler():IsRelateToEffect(e) then
+	if Duel.NegateActivation(num) and te:GetHandler():IsRelateToEffect(te) and te:GetHandler():IsDestructable() and e:GetHandler():IsRelateToEffect(e) then
 		local dg=Group.FromCards(e:GetHandler(),te:GetHandler())
 		Duel.Destroy(dg,REASON_EFFECT)
 	end
@@ -139,7 +139,7 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local num=e:GetLabel()
-	if chk==0 then return (num>=2 or (Duel.IsPlayerAffectedByEffect(tp,11451482) and num>=1)) and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and c:GetFlagEffect(m)==0 end
+	if chk==0 then return (num>=2 or (Duel.IsPlayerAffectedByEffect(tp,11451482) and num>=1)) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end --and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and c:GetFlagEffect(m)==0 end
 	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	if Duel.IsPlayerAffectedByEffect(tp,11451482) then
 		if num>=2 then
@@ -154,15 +154,24 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.ResetFlagEffect(tp,11451481)
 		end
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_HAND+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),2,PLAYER_ALL,LOCATION_ONFIELD+c:GetLocation())
+	--Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local tc=g:GetFirst()
+	if not tc then return end
+	local rg=Group.FromCards(c,tc)
+	Duel.SendtoHand(rg,nil,REASON_EFFECT)
+	--[[local c=e:GetHandler()
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) or Duel.GetLocationCount(tp,LOCATION_MZONE)<2 or not c:IsRelateToEffect(e) or not c:IsCanBeSpecialSummoned(e,0,tp,false,false) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		g:AddCard(c)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	end
+	end--]]
 end

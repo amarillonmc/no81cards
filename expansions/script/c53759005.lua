@@ -27,7 +27,8 @@ function cm.initial_effect(c)
 end
 cm.lvup={m-4}
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_SET_TURN) or e:GetHandler():IsHasEffect(EFFECT_QP_ACT_IN_SET_TURN)
+	local c=e:GetHandler()
+	return (not c:IsLocation(LOCATION_HAND) or Duel.GetTurnPlayer()==tp or c:IsHasEffect(EFFECT_QP_ACT_IN_NTPHAND)) and (not c:IsStatus(STATUS_SET_TURN) or c:IsHasEffect(EFFECT_QP_ACT_IN_SET_TURN))
 end
 function cm.tdfilter(c)
 	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsSetCard(0x41) and c:IsAbleToDeck()

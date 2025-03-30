@@ -18,6 +18,24 @@ function cm.initial_effect(c)
 		ge3:SetCode(EVENT_TO_GRAVE)
 		ge3:SetOperation(cm.checkop3)
 		Duel.RegisterEffect(ge3,0)
+		local ec={
+			EVENT_CHAIN_ACTIVATING,
+			EVENT_CHAINING,
+			EVENT_ATTACK_ANNOUNCE,
+			EVENT_BREAK_EFFECT,
+			EVENT_CHAIN_SOLVING,
+			EVENT_CHAIN_SOLVED,
+			EVENT_CHAIN_END,
+			EVENT_SUMMON,
+			EVENT_SPSUMMON
+		}
+		for _,code in ipairs(ec) do
+			local ce=ge3:Clone()
+			ce:SetCode(code)
+			ce:SetLabelObject(ge3)
+			ce:SetOperation(cm.checkop31)
+			Duel.RegisterEffect(ce,0)
+		end
 	end
 end
 function cm.checkop3(e,tp,eg,ep,ev,re,r,rp)
@@ -25,7 +43,10 @@ function cm.checkop3(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(g) do
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,e:GetLabel())
 	end
-	e:SetLabel(e:GetLabel()+1)
+end
+function cm.checkop31(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	te:SetLabel(te:GetLabel()+1)
 end
 function cm.fieldid(c)
 	return c:GetFlagEffectLabel(m)

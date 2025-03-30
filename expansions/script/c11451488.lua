@@ -1,7 +1,7 @@
 --魔人★双子使徒 小雪
 local cm,m=GetID()
 function cm.initial_effect(c)
-	Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
+	--Duel.EnableGlobalFlag(GLOBALFLAG_DETACH_EVENT)
 	--effect1
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_REMOVE)
@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_DETACH_MATERIAL)
+	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(2,m)
@@ -84,10 +84,10 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 end
 function cm.thfilter(c,tp)
-	return c:GetPreviousControler()==tp and c:IsPreviousLocation(LOCATION_OVERLAY)
+	return c:IsPreviousLocation(LOCATION_OVERLAY) --and c:GetPreviousControler()==tp
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.thfilter,1,1,nil,tp) --and not eg:IsContains(e:GetHandler())
+	return eg:IsExists(cm.thfilter,1,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)

@@ -16,16 +16,18 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetRange(LOCATION_GRAVE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e2:SetCode(m)
 	c:RegisterEffect(e2)
+	local custom_code=cm.RegisterMergedEvent_ToSingleCard(c,m,{EVENT_LEAVE_FIELD,EVENT_LEAVE_GRAVE,EVENT_MOVE,EVENT_CUSTOM+m+1})
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetCode(EVENT_LEAVE_FIELD)
+	e4:SetCode(custom_code)
 	e4:SetRange(0xff)
 	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e4:SetOperation(cm.leaveop)
 	c:RegisterEffect(e4)
-	local e5=e4:Clone()
+	--[[local e5=e4:Clone()
 	e5:SetCode(EVENT_LEAVE_GRAVE)
 	c:RegisterEffect(e5)
 	local e6=e4:Clone()
@@ -33,7 +35,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 	local e7=e4:Clone()
 	e7:SetCode(EVENT_CUSTOM+m+1)
-	c:RegisterEffect(e7)
+	c:RegisterEffect(e7)--]]
 	if not cm.global_check then
 		cm.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -65,6 +67,106 @@ function cm.initial_effect(c)
 			end
 			return _Overlay(xc,v,...)
 		end
+	end
+end
+function cm.RegisterMergedEvent_ToSingleCard(c,code,events)
+	local g=Group.CreateGroup()
+	g:KeepAlive()
+	local mt=getmetatable(c)
+	local seed=0
+	if type(events) == "table" then
+		for _, event in ipairs(events) do
+			seed = seed + event
+		end
+	else
+		seed = events
+	end
+	while(mt[seed]==true) do
+		seed = seed + 1
+	end
+	mt[seed]=true
+	local event_code_single = (code ~ (seed << 16)) | EVENT_CUSTOM
+	if type(events) == "table" then
+		for _, event in ipairs(events) do
+			cm.RegisterMergedEvent_ToSingleCard_AddOperation(c,g,event,event_code_single)
+		end
+	else
+		cm.RegisterMergedEvent_ToSingleCard_AddOperation(c,g,events,event_code_single)
+	end
+	return event_code_single
+end
+function cm.RegisterMergedEvent_ToSingleCard_AddOperation(c,g,event,event_code_single)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(event)
+	e1:SetValue(event)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetRange(0xff)
+	e1:SetLabel(event_code_single)
+	e1:SetLabelObject(g)
+	e1:SetOperation(cm.MergedDelayEventCheck1_ToSingleCard)
+	c:RegisterEffect(e1)
+	--[[local _GetCode=Effect.GetCode
+	function Effect.GetCode(e,...)
+		return _GetCode(e,...)==event_code_single and event or _GetCode(e,...)
+	end--]]
+	local ec={
+		EVENT_CHAIN_ACTIVATING,
+		EVENT_CHAINING,
+		EVENT_ATTACK_ANNOUNCE,
+		EVENT_BREAK_EFFECT,
+		EVENT_CHAIN_SOLVING,
+		EVENT_CHAIN_SOLVED,
+		EVENT_CHAIN_END,
+		EVENT_SUMMON,
+		EVENT_SPSUMMON
+	}
+	for _,code in ipairs(ec) do
+		local ce=e1:Clone()
+		ce:SetCode(code)
+		ce:SetOperation(cm.MergedDelayEventCheck2_ToSingleCard)
+		c:RegisterEffect(ce)
+	end
+end
+function cm.MergedDelayEventCheck1_ToSingleCard(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	local c=e:GetOwner()
+	g:Merge(eg)
+	if Duel.GetCurrentChain()==0 and #g>0 then
+		local _eg=g:Clone()
+		if g:IsContains(c) and (c:IsFaceup() or c:IsPreviousPosition(POS_FACEUP)) then 
+			if e:GetValue()==EVENT_MOVE then
+				local loc=0
+				if c:GetPreviousLocation()&LOCATION_ONFIELD>0 then
+					loc=LOCATION_GRAVE
+				elseif c:GetPreviousLocation()&LOCATION_GRAVE>0 then
+					loc=LOCATION_ONFIELD
+				end
+				_eg=_eg:Filter(Card.IsPreviousLocation,nil,loc)
+			end
+			if #_eg>0 then Duel.RaiseEvent(_eg,e:GetLabel(),re,r,rp,ep,ev) end
+		end
+		g:Clear()
+	end
+end
+function cm.MergedDelayEventCheck2_ToSingleCard(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	local c=e:GetOwner()
+	if #g>0 then
+		local _eg=g:Clone()
+		if g:IsContains(c) and (c:IsFaceup() or c:IsPreviousPosition(POS_FACEUP)) then 
+			if e:GetValue()==EVENT_MOVE then
+				local loc=0
+				if c:GetPreviousLocation()&LOCATION_ONFIELD>0 then
+					loc=LOCATION_GRAVE
+				elseif c:GetPreviousLocation()&LOCATION_GRAVE>0 then
+					loc=LOCATION_ONFIELD
+				end
+				_eg=_eg:Filter(Card.IsPreviousLocation,nil,loc)
+			end
+			if #_eg>0 then Duel.RaiseEvent(_eg,e:GetLabel(),re,r,rp,ep,ev) end
+		end
+		g:Clear()
 	end
 end
 function cm.check(e,tp,eg,ep,ev,re,r,rp)
@@ -175,17 +277,7 @@ function cm.leaveop(e,tp,eg,ep,ev,re,r,rp)
 	if not eg:IsContains(c) then return end
 	local g=eg:Clone()
 	if c:IsFacedown() and c:IsPreviousPosition(POS_FACEDOWN) then return end
-	if e:GetCode()==EVENT_MOVE then
-		local loc=0
-		if c:GetPreviousLocation()&LOCATION_ONFIELD>0 then
-			loc=LOCATION_GRAVE
-		elseif c:GetPreviousLocation()&LOCATION_GRAVE>0 then
-			loc=LOCATION_ONFIELD
-		else return end
-		g=eg:Filter(Card.IsPreviousLocation,nil,loc)
-	else
-		Duel.Hint(HINT_CARD,0,m)
-	end
+	Duel.Hint(HINT_CARD,0,m)
 	for tc in aux.Next(g) do
 		if tc:IsPreviousPosition(POS_FACEUP) then
 			local c=e:GetHandler()

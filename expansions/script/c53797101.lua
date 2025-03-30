@@ -22,6 +22,7 @@ function s.initial_effect(c)
 	e3:SetDescription(aux.Stringid(id,2))
 	e3:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e3:SetCountLimit(1,id)
+	e3:SetCondition(s.condition)
 	e3:SetTarget(s.target)
 	e3:SetOperation(s.activate)
 	local e4=Effect.CreateEffect(c)
@@ -65,6 +66,10 @@ function s.hspval2(e,c)
 	local lg=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	for tc in aux.Next(lg) do zone=zone|tc:GetColumnZone(LOCATION_MZONE,1-tp) end
 	return 0,zone
+end
+function s.condition(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return (not c:IsLocation(LOCATION_HAND) or Duel.GetTurnPlayer()==tp or c:IsHasEffect(EFFECT_QP_ACT_IN_NTPHAND)) and (not c:IsStatus(STATUS_SET_TURN) or c:IsHasEffect(EFFECT_QP_ACT_IN_SET_TURN))
 end
 function s.filter(c,e,tp)
 	return c:IsSetCard(0x108) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
