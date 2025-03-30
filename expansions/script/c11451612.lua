@@ -17,6 +17,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	cm.hand_effect=cm.hand_effect or {}
 	cm.hand_effect[c]=e1
+	local e6=e1:Clone()
+	e6:SetCode(EVENT_CUSTOM+m+1)
+	c:RegisterEffect(e6)
 	--shuffle
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(11451416,1))
@@ -29,6 +32,18 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.shtg)
 	e2:SetOperation(cm.shop)
 	c:RegisterEffect(e2)
+	if not cm.global_check then
+		cm.global_check=true
+		local _Overlay=Duel.Overlay
+        function Duel.Overlay(xc,v,...)
+            local t=Auxiliary.GetValueType(v)
+            local g=Group.CreateGroup()
+            if t=="Card" then g:AddCard(v) else g=v end
+            local res=_Overlay(xc,v,...)
+            Duel.RaiseEvent(g,EVENT_CUSTOM+m+1,e1,0,0,0,0)
+            return res
+        end
+	end
 end
 function cm.cfilter(c,tp)
 	return c:IsPreviousLocation(LOCATION_DECK) and c:GetPreviousControler()==tp and not (c:IsLocation(LOCATION_DECK) and c:IsControler(tp))

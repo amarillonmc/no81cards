@@ -1,5 +1,6 @@
 --人理异星 葛饰北斋
 function c22021870.initial_effect(c)
+	aux.AddCodeList(c,22702055)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCode2FunRep(c,22021850,22021860,aux.FilterBoolFunction(Card.IsFusionType,TYPE_EFFECT),1,3,true,true)

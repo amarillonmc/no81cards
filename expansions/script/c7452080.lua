@@ -1,6 +1,7 @@
 --潜海宇宙涡流
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,22702055)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))

@@ -30,10 +30,9 @@ function cm.initial_effect(c)
 			local t=Auxiliary.GetValueType(v)
 			local g=Group.CreateGroup()
 			if t=="Card" then g:AddCard(v) else g=v end
-			if g:IsExists(Card.IsLocation,1,nil,LOCATION_REMOVED) then
-				Duel.RaiseEvent(g:Filter(Card.IsLocation,nil,LOCATION_REMOVED),EVENT_CUSTOM+m+1,e,0,0,0,0)
-			end
-			return _Overlay(xc,v,...)
+			local res=_Overlay(xc,v,...)
+			Duel.RaiseEvent(g,EVENT_CUSTOM+m+1,e1,0,0,0,0)
+			return res
 		end
 	end
 end
@@ -120,11 +119,11 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	e:SetLabel(0)
 	Duel.ResetFlagEffect(tp,m)
 end
-function cm.rfilter(c)
-	return c:GetPreviousLocation()==LOCATION_REMOVED and c:GetPreviousPosition()&POS_FACEDOWN>0
+function cm.rfilter(c,tp)
+	return c:GetPreviousLocation()==LOCATION_REMOVED and c:GetPreviousPosition()&POS_FACEDOWN>0 and c:IsPreviousControler(tp)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return aux.exccon(e) and eg:IsExists(cm.rfilter,1,nil) and not eg:IsContains(e:GetHandler())
+	return aux.exccon(e) and eg:IsExists(cm.rfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToHand() end

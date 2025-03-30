@@ -19,10 +19,11 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_FLIP)
 	c:RegisterEffect(e2)
 	--
+	local custom_code=aux.RegisterMergedDelayedEvent_ToSingleCard(c,m,EVENT_CUSTOM+m)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_CUSTOM+m)
+	e3:SetCode(custom_code)
 	e3:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCondition(cm.sumcon)
@@ -43,21 +44,20 @@ function cm.initial_effect(c)
 		local ge2=ge1:Clone()
 		ge2:SetCode(EVENT_CHAIN_SOLVED)
 		ge2:SetOperation(cm.MergedDelayEventCheck2)
-		Duel.RegisterEffect(ge2,0)
+		--Duel.RegisterEffect(ge2,0)
 		local ge3=ge2:Clone()
 		ge3:SetCode(EVENT_CHAIN_NEGATED)
-		Duel.RegisterEffect(ge3,0)
+		--Duel.RegisterEffect(ge3,0)
 	end
 end
-s.has_text_type=TYPE_SPIRIT
+cm.has_text_type=TYPE_SPIRIT
 function cm.MergedDelayEventCheck1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetTurnCount()<=0 or not eg then return end
 	local c=e:GetHandler()
 	local eg2=eg:Filter(cm.cfilter,nil)
 	local g=e:GetLabelObject()
 	g:Merge(eg2)
-	--if c:IsLocation(LOCATION_MZONE) and c:IsFaceup() then c:RegisterFlagEffect(m-1,RESET_EVENT+RESETS_STANDARD,0,1) end
-	if (Duel.GetCurrentChain()==0 or (Duel.GetCurrentChain()==1 and (Duel.CheckEvent(EVENT_CHAIN_SOLVED) or Duel.CheckEvent(EVENT_CHAIN_NEGATED)))) and #g>0 then
+	if #eg2>0 then --(Duel.GetCurrentChain()==0 or (Duel.GetCurrentChain()==1 and (Duel.CheckEvent(EVENT_CHAIN_SOLVED) or Duel.CheckEvent(EVENT_CHAIN_NEGATED)))) then
 		local _eg=g:Clone()
 		Duel.RaiseEvent(_eg,EVENT_CUSTOM+e:GetLabel(),re,r,rp,ep,ev)
 		g:Clear()

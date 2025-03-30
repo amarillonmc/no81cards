@@ -28,7 +28,6 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e10=e1:Clone()
 	e10:SetCode(EVENT_CUSTOM+m+1)
-	e10:SetCondition(aux.TRUE)
 	c:RegisterEffect(e10)
 	--hand
 	local e2=Effect.CreateEffect(c)
@@ -41,8 +40,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.operation2)
 	c:RegisterEffect(e2)
 	local e20=e2:Clone()
-	e20:SetCode(EVENT_CUSTOM+m+2)
-	e20:SetCondition(aux.TRUE)
+	e20:SetCode(EVENT_CUSTOM+m+1)
 	c:RegisterEffect(e20)
 	--mzone
 	local e3=Effect.CreateEffect(c)
@@ -116,13 +114,9 @@ function cm.initial_effect(c)
 			local t=Auxiliary.GetValueType(v)
 			local g=Group.CreateGroup()
 			if t=="Card" then g:AddCard(v) else g=v end
-			if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then
-				Duel.RaiseEvent(g:Filter(Card.IsLocation,nil,LOCATION_DECK),EVENT_CUSTOM+m+1,e,0,0,0,0)
-			end
-			if g:IsExists(Card.IsLocation,1,nil,LOCATION_HAND) then
-				Duel.RaiseEvent(g:Filter(Card.IsLocation,nil,LOCATION_HAND),EVENT_CUSTOM+m+2,e,0,0,0,0)
-			end
-			return _Overlay(xc,v,...)
+			local res=_Overlay(xc,v,...)
+			Duel.RaiseEvent(g,EVENT_CUSTOM+m+1,e1,0,0,0,0)
+			return res
 		end
 	end
 end

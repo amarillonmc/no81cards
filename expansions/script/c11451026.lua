@@ -29,6 +29,7 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_CHAIN_NEGATED)
 	c:RegisterEffect(e5)
 end
+cm.has_text_type=TYPE_SPIRIT
 function cm.ffilter(c,fc,sub,mg,sg)
 	return c:IsLevelAbove(1) and (not sg or not sg:IsExists(Card.IsLevel,1,c,c:GetLevel()))
 end

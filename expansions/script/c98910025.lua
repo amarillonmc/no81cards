@@ -1,13 +1,13 @@
 --虚幻之地 帕西菲斯
-function c98910025.initial_effect(c)	
+function c98910025.initial_effect(c)
 	aux.AddCodeList(c,22702055)
-		--act in hand
+	--act in hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e2:SetCondition(c98910025.handcon)
-	c:RegisterEffect(e2)  
-  --Activate
+	c:RegisterEffect(e2)
+	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -15,8 +15,8 @@ function c98910025.initial_effect(c)
 	e1:SetCost(c98910025.cost)
 	e1:SetTarget(c98910025.target)
 	e1:SetOperation(c98910025.operation)
-	c:RegisterEffect(e1)	
---equip
+	c:RegisterEffect(e1)
+	--equip
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(98910025,0))
 	e3:SetCategory(CATEGORY_EQUIP)

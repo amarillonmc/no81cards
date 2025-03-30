@@ -53,20 +53,18 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 	local e6=e3:Clone()
 	e6:SetCode(EVENT_CUSTOM+m+1)
-	e6:SetCondition(aux.TRUE)
 	c:RegisterEffect(e6)
 	if not cm.global_check then
 		cm.global_check=true
 		local _Overlay=Duel.Overlay
-		function Duel.Overlay(xc,v,...)
-			local t=Auxiliary.GetValueType(v)
-			local g=Group.CreateGroup()
-			if t=="Card" then g:AddCard(v) else g=v end
-			if g:IsExists(Card.IsLocation,1,nil,LOCATION_HAND) then
-				Duel.RaiseEvent(g:Filter(Card.IsLocation,nil,LOCATION_HAND),EVENT_CUSTOM+m+1,e,0,0,0,0)
-			end
-			return _Overlay(xc,v,...)
-		end
+        function Duel.Overlay(xc,v,...)
+            local t=Auxiliary.GetValueType(v)
+            local g=Group.CreateGroup()
+            if t=="Card" then g:AddCard(v) else g=v end
+            local res=_Overlay(xc,v,...)
+            Duel.RaiseEvent(g,EVENT_CUSTOM+m+1,e1,0,0,0,0)
+            return res
+        end
 		local ge2=Effect.CreateEffect(c)
 		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge2:SetCode(EVENT_CHAIN_ACTIVATING)

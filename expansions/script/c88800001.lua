@@ -1,6 +1,7 @@
 --传说之都 亚特兰蒂斯 深层海域
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,22702055)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)

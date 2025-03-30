@@ -17,7 +17,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.acop)
 	c:RegisterEffect(e2)
 end
-s.has_text_type=TYPE_DUAL
+cm.has_text_type=TYPE_DUAL
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) end
 	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_MZONE,0,1,nil) end

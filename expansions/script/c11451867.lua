@@ -62,10 +62,9 @@ function cm.initial_effect(c)
 			local t=Auxiliary.GetValueType(v)
 			local g=Group.CreateGroup()
 			if t=="Card" then g:AddCard(v) else g=v end
-			if g:IsExists(Card.IsLocation,1,nil,LOCATION_HAND) then
-				Duel.RaiseEvent(g:Filter(Card.IsLocation,nil,LOCATION_HAND),EVENT_CUSTOM+m+1,e,0,0,0,0)
-			end
-			return _Overlay(xc,v,...)
+			local res=_Overlay(xc,v,...)
+			Duel.RaiseEvent(g,EVENT_CUSTOM+m+1,e1,0,0,0,0)
+			return res
 		end
 	end
 end
@@ -92,6 +91,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	sc:RegisterEffect(e1,true)
 	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	sc:RegisterFlagEffect(m,RESET_PHASE+PHASE_END,0,1)
 	Duel.ConfirmCards(tp,sc)
 	Duel.HintSelection(Group.FromCards(sc))
 	--hand
@@ -104,14 +104,19 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetOperation(cm.operation2)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_CUSTOM+m+1)
+	Duel.RegisterEffect(e3,tp)
 end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	local sc=e:GetLabelObject()
-	return eg:IsContains(sc) and sc:IsPreviousLocation(LOCATION_HAND) and not sc:IsLocation(LOCATION_HAND) and sc:GetPreviousPosition()&POS_FACEUP>0
+	return eg:IsContains(sc) and sc:IsPreviousLocation(LOCATION_HAND) and not sc:IsLocation(LOCATION_HAND) and sc:GetPreviousPosition()&POS_FACEUP>0 and sc:GetFlagEffect(m)>0
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local sc=e:GetLabelObject()
 	e:Reset()
+	sc:ResetFlagEffect(m)
 	Duel.Hint(HINT_CARD,0,m)
 	local dr=Duel.IsPlayerCanDraw(tp,1)
 	local sp=c:GetFlagEffect(m)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -159,7 +164,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCondition(cm.descon)
 			local e6=e1:Clone()
 			e6:SetCode(EVENT_CUSTOM+m+1)
-			e6:SetCondition(aux.TRUE)
 			c:RegisterEffect(e6)
 		elseif sid==2 then
 			e1:SetCode(EVENT_LEAVE_FIELD)

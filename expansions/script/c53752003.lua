@@ -2,6 +2,7 @@ local m=53752003
 local cm=_G["c"..m]
 cm.name="冥渡之都 萨尔迦佐"
 function cm.initial_effect(c)
+	aux.AddCodeList(c,22702055)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)

@@ -1,5 +1,6 @@
---海龙
+--海龙-伊卡鲁斯
 function c88990246.initial_effect(c)
+	aux.AddCodeList(c,22702055)
 	--tohand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(88990246,0))

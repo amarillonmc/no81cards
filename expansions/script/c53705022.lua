@@ -2,6 +2,7 @@ local m=53705022
 local cm=_G["c"..m]
 cm.name="幻海杀星"
 function cm.initial_effect(c)
+	aux.AddCodeList(c,22702055)
 	aux.AddLinkProcedure(c,cm.lfilter,1,1)
 	c:SetSPSummonOnce(m)
 	c:EnableReviveLimit()
