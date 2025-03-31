@@ -115,20 +115,19 @@ function s.setfilter(c,e,tp)
 end
 function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	local flag=false
+	local flag=tc:IsCode(74677422)
 	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
-		flag=flag or tc:IsCode(74677422)
 		local g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local sc=g:Select(tp,1,1,nil):GetFirst()
+			flag=flag or sc:IsCode(74677422)
 			Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
 		end
 		if flag then
 			local dg=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 			if dg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-				flag=flag or sc:IsCode(74677422)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 				local sg=dg:Select(tp,1,1,nil)
 				Duel.HintSelection(sg)

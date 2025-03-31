@@ -8,6 +8,7 @@ function s.initial_effect(c)
 	e0:SetTarget(s.resetg)
 	e0:SetValue(aux.TRUE)
 	c:RegisterEffect(e0)
+
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetRange(LOCATION_MZONE)
@@ -63,7 +64,8 @@ function s.cpcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	if not tc then return true end
 	local ag=ng:GetMinGroup(s.distance,c,tp)
-	return not tc:IsLocation(LOCATION_MZONE) or not tc:IsFaceup() or not ag:IsContains(tc)
+	local res=tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() and ag:IsContains(tc)
+	return not res
 end
 function s.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -74,12 +76,17 @@ function s.cpop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if ag:GetCount()>0 then
 		Duel.HintSelection(ag)
-		local cc=c:GetFirstCardTarget()
-		if cc then c:CancelCardTarget(cc) end
+		local ac=e:GetLabelObject()
+		local aid=e:GetLabel()
+		if ac and aid then
+			s.resetcopy(c,ac,aid)
+		end
 		local tc=ag:GetFirst()
 		e:SetLabelObject(tc)
 		c:SetCardTarget(tc)
 		local code=tc:GetOriginalCodeRule()
+		local cid=c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD)
+		e:SetLabel(cid)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -91,11 +98,43 @@ function s.cpop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EFFECT_ADD_CODE)
 		e1:SetValue(code)
 		c:RegisterEffect(e1)
-		if c:GetFlagEffect(0xffffff+code+11451907)==0 then
-			c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD)
-			c:RegisterFlagEffect(0xffffff+code+11451907,RESET_EVENT+RESETS_STANDARD,0,1)
-		end
+		c:RegisterFlagEffect(0xffffff+code+11451907,RESET_EVENT+RESETS_STANDARD,0,1)
+		local re=Effect.CreateEffect(c)
+		re:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		re:SetRange(LOCATION_MZONE)
+		re:SetCode(EVENT_ADJUST)
+		re:SetLabelObject(e)
+		re:SetCondition(s.resetcon)
+		re:SetOperation(s.resetop)
+		re:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(re)
 	end
+end
+function s.resetcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ce=e:GetLabelObject()
+	local tc=ce:GetLabelObject()
+	return not tc:IsLocation(LOCATION_MZONE) or not tc:IsFaceup()
+end
+function s.resetcopy(c,tc,cid)
+	local code=tc:GetOriginalCodeRule()
+	c:CancelCardTarget(tc)
+	local num=c:GetFlagEffect(0xffffff+code+11451907)
+	c:ResetFlagEffect(0xffffff+code+11451907)
+	if num>1 then c:RegisterFlagEffect(0xffffff+code+11451907,RESET_EVENT+RESETS_STANDARD,0,1) end
+	c:ResetEffect(cid,RESET_COPY)
+	local elist={c:IsHasEffect(EFFECT_ADD_CODE)}
+	for _,v in pairs(elist) do
+		if v:GetValue()==code then v:Reset() end
+	end
+end
+function s.resetop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ce=e:GetLabelObject()
+	local cid=ce:GetLabel()
+	local tc=ce:GetLabelObject()
+	s.resetcopy(c,tc,cid)
+	e:Reset()
 end
 function s.efilter(e,te)
 	if te and te:GetHandler() and e:GetHandler()~=te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) and te:GetCode()~=16 and te:GetCode()~=359 then

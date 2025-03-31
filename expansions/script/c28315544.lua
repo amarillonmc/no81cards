@@ -50,7 +50,7 @@ function c28315544.cfilter(c)
 	return c:IsSummonLocation(LOCATION_DECK+LOCATION_EXTRA) and c:IsAttackPos()
 end
 function c28315544.reccon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c28315544.cfilter,1,nil)
+	return eg:IsExists(c28315544.cfilter,1,nil) and not eg:IsContains(e:GetHandler())
 end
 function c28315544.tgfilter(c)
 	return c:IsSetCard(0x283) and c:IsAbleToGrave()

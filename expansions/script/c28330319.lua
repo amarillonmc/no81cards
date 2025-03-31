@@ -66,6 +66,7 @@ function c28330319.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,tc)
 	if not (tc:IsLocation(LOCATION_HAND) and e:GetHandler():IsRelateToEffect(e)) then return end
+	g:RemoveCard(tc)
 	g:AddCard(e:GetHandler())
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end

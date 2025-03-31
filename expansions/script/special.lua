@@ -21,32 +21,89 @@ function Auxiliary.PreloadUds()
 	effect_registered=effect_registered or {}
 	require_list=require_list or {}
 	
-	function require(str)
-		if not require_list[str] then
-			if string.find(str,"%.") then
-				require_list[str]=loadfile(str)
-			else
-				require_list[str]=loadfile(str..".lua")
+	if not require and loadfile then
+		function require(str)
+			require_list=require_list or {}
+			if not require_list[str] then
+				if string.find(str,"%.") then
+					require_list[str]=loadfile(str)
+				else
+					require_list[str]=loadfile(str..".lua")
+				end
+				pcall(require_list[str])
+				return require_list[str]
 			end
-			pcall(require_list[str])
 			return require_list[str]
 		end
-		return require_list[str]
-	end
-	local _dofile=dofile
-	local _loadfile=loadfile
-	function dofile(str)
-		if string.find(str,"%.") then
-			return _dofile(str)
-		else
-			return _dofile(str..".lua")
+		local _dofile=dofile
+		local _loadfile=loadfile
+		function dofile(str)
+			if string.find(str,"%.") then
+				return _dofile(str)
+			else
+				return _dofile(str..".lua")
+			end
+		end
+		function loadfile(str)
+			if string.find(str,"%.") then
+				return _loadfile(str)
+			else
+				return _loadfile(str..".lua")
+			end
 		end
 	end
-	function loadfile(str)
-		if string.find(str,"%.") then
-			return _loadfile(str)
-		else
-			return _loadfile(str..".lua")
+	if not require and Duel.LoadScript then
+		function require(str)
+			require_list=require_list or {}
+			local name=str
+			for word in string.gmatch(str,"%w+") do
+				name=word
+			end
+			if not require_list[str] then
+				require_list[str]=Duel.LoadScript(name..".lua")
+			end
+			return require_list[str]
+		end
+	end
+	if not Duel.LoadScript and loadfile then
+		function Duel.LoadScript(str)
+			require_list=require_list or {}
+			str="expansions/script/"..str
+			if not require_list[str] then
+				if string.find(str,"%.") then
+					require_list[str]=loadfile(str)
+				else
+					require_list[str]=loadfile(str..".lua")
+				end
+				pcall(require_list[str])
+			end
+			return require_list[str]
+		end
+	end
+	if not dofile and Duel.LoadScript then
+		function dofile(str)
+			require_list=require_list or {}
+			local name=str
+			for word in string.gmatch(str,"%w+") do
+				name=word
+			end
+			if not require_list[str] then
+				require_list[str]=Duel.LoadScript(name)
+			end
+			return require_list[str]
+		end
+		function loadfile(str)
+			require_list=require_list or {}
+			local name=str
+			for word in string.gmatch(str,"%w+") do
+				name=word
+			end
+			return function()
+						if not require_list[str] then
+							require_list[str]=Duel.LoadScript(name)
+						end
+						return require_list[str]
+					end
 		end
 	end
 	
