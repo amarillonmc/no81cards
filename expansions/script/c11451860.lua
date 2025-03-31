@@ -265,6 +265,7 @@ function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return false end
 	if chk==0 then return true end
+	e:GetHandler():ClearEffectRelation()
 	local te=e:GetLabelObject()
 	e:SetTarget(aux.FALSE)
 	te:SetTarget(aux.FALSE)

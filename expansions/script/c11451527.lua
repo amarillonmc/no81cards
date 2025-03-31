@@ -134,7 +134,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=eg:Filter(cm.repfilter,c,tp)
 	if Duel.GetFlagEffect(tp,m)~=0 then return false end
 	if g:IsExists(Card.IsOnField,1,nil) then Duel.HintSelection(g) end
-	if not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then return false end
+	if not Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,0)) then return false end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	if #g>1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
@@ -174,7 +174,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,3))
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 	e1:SetTargetRange(1,0)
 	e1:SetReset(RESET_PHASE+PHASE_END)
@@ -235,6 +235,7 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		aux.PendulumChecklist=_PendulumChecklist
 		return res
 	end
+	e:GetHandler():ClearEffectRelation()
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function cm.pspop(e,tp,eg,ep,ev,re,r,rp)

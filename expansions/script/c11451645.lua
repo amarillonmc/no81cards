@@ -60,7 +60,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e4=e0:Clone()
 	e4:SetType(EFFECT_TYPE_QUICK_F)
 	e4:SetCondition(cm.spcon3)
-	Duel.RegisterEffect(e4,tp)
+	--Duel.RegisterEffect(e4,tp)
 end
 function cm.valcheck(e,c)
 	local g=c:GetMaterial()
@@ -91,6 +91,7 @@ function cm.filter2(c,e,tp,mc)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_MZONE,0,1,nil,e,tp) end
+	e:GetHandler():ClearEffectRelation()
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
