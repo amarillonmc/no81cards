@@ -102,7 +102,9 @@ function cm.RegisterMergedEvent_ToSingleCard_AddOperation(c,g,event,event_code_s
 		EVENT_CHAIN_SOLVED,
 		EVENT_CHAIN_END,
 		EVENT_SUMMON,
-		EVENT_SPSUMMON
+		EVENT_SPSUMMON,
+		EVENT_MSET,
+		EVENT_BATTLE_DESTROYED
 	}
 	for _,code in ipairs(ec) do
 		local ce=e1:Clone()
@@ -114,7 +116,8 @@ end
 function cm.MergedDelayEventCheck1_ToSingleCard(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
 	local c=e:GetOwner()
-	g:Merge(eg)
+	if rp~=1-tp then return end
+	g:Merge(eg:Filter(function(c,tp) return c:IsType(TYPE_MONSTER) end,nil))
 	if Duel.CheckEvent(EVENT_MOVE) then
 		local _,meg=Duel.CheckEvent(EVENT_MOVE,true)
 		if meg:IsContains(c) and (c:IsFaceup() or c:IsPublic()) then
@@ -150,8 +153,7 @@ function cm.ThisCardMovedToPublicResetCheck_ToSingleCard(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local num=eg:FilterCount(Card.IsType,nil,TYPE_MONSTER)
-	return num>=1 and rp==1-tp
+	return true --and rp==1-tp
 end
 function cm.tgfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsLocation(LOCATION_GRAVE)
@@ -164,7 +166,7 @@ function cm.spfilter2(c,e,tp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local num=eg:FilterCount(Card.IsType,nil,TYPE_MONSTER)
+	local num=#eg --eg:FilterCount(Card.IsType,nil,TYPE_MONSTER)
 	local tg=eg:Filter(cm.tgfilter,nil)
 	local spg=tg:Filter(cm.spfilter,nil,e,tp)
 	if chk==0 then return (num>=2 or (Duel.IsPlayerAffectedByEffect(tp,11451481) and num>=1)) and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and #spg>0 and c:GetFlagEffect(m)==0 end
@@ -197,7 +199,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp
+	return true --rp==1-tp
 end
 function cm.thfilter(c)
 	return c:IsSetCard(0x97b) and c:IsAbleToHand()

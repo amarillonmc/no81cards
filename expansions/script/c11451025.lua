@@ -90,6 +90,15 @@ function cm.initial_effect(c)
 		end
 	end
 end
+function cm.MergedDelayEventCheck1(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetTurnCount()<=0 or not eg then return end
+	local c=e:GetHandler()
+	local eg2=eg:Filter(cm.cfilter,nil)+eg:Filter(cm.cfilter2,nil)
+	if #eg2>0 then
+		local _eg=eg2:Clone()
+		Duel.RaiseEvent(_eg,EVENT_CUSTOM+m,re,r,rp,ep,ev)
+	end
+end
 function cm.RegisterMergedDelayedEvent_ToSingleCard(c,code,events)
 	local g=Group.CreateGroup()
 	g:KeepAlive()

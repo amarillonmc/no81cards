@@ -56,7 +56,7 @@ function cm.initial_effect(c)
 	local e7=Effect.CreateEffect(c)
 	e7:SetDescription(aux.Stringid(m,1))
 	e7:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e7:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e7:SetCode(EVENT_REMOVE)
 	e7:SetProperty(EFFECT_FLAG_DELAY)
@@ -210,7 +210,7 @@ function cm.spfilter2(c,e,tp)
 end
 function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter2),tp,0xff,0,nil,e,tp)
-	if chk==0 then return e:GetHandler():GetSequence()<5 and #sg>0 end
+	if chk==0 then return e:GetHandler():GetSequence()<5 end --and #sg>0 end
 end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

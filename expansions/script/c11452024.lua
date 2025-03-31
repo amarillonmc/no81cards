@@ -119,7 +119,9 @@ function cm.RegisterMergedEvent_ToSingleCard_AddOperation(c,g,event,event_code_s
 		EVENT_CHAIN_SOLVED,
 		EVENT_CHAIN_END,
 		EVENT_SUMMON,
-		EVENT_SPSUMMON
+		EVENT_SPSUMMON,
+		EVENT_MSET,
+		EVENT_BATTLE_DESTROYED
 	}
 	for _,code in ipairs(ec) do
 		local ce=e1:Clone()
