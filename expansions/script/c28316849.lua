@@ -14,9 +14,9 @@ function c28316849.initial_effect(c)
 	--recover
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28316849,1))
-	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_CHAINING)
+	e2:SetCode(EVENT_TO_HAND)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38316849)
@@ -46,18 +46,29 @@ function c28316849.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function c28316849.reccon(e,tp,eg,ep,ev,re,r,rp)
-	return bit.band(Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION),LOCATION_ONFIELD)~=0
-end
 function c28316849.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x283)
+	return c:IsType(TYPE_MONSTER) and not c:IsReason(REASON_DRAW) and (c:IsPublic() or (not c:IsStatus(STATUS_TO_HAND_WITHOUT_CONFIRM) and (c:IsPreviousLocation(LOCATION_DECK) or c:IsPreviousPosition(POS_FACEUP))))
+end
+function c28316849.reccon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c28316849.cfilter,1,nil)
+end
+function c28316849.atkfilter(c)
+	return c:IsLevelBelow(4) and c:GetEffectCount(EFFECT_DIRECT_ATTACK)==0 and c:IsFaceup()
 end
 function c28316849.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,500)
+	if chk==0 then return e:GetHandler():GetEffectCount(EFFECT_DIRECT_ATTACK)==0 end
 end
 function c28316849.recop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Recover(tp,500,REASON_EFFECT)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(28316849,3))
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DIRECT_ATTACK)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e1)
+	end
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(28316849,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)

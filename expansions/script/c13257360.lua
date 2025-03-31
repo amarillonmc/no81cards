@@ -71,6 +71,8 @@ function cm.initial_effect(c)
 	e11:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e11:SetOperation(cm.bgmop)
 	c:RegisterEffect(e11)
+	eflist={{"bomb",e4}}
+	cm[c]=eflist
 	
 end
 function cm.spcfilter(c,tp)

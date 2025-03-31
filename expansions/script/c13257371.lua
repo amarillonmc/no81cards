@@ -15,7 +15,8 @@ function cm.initial_effect(c)
 	--[[
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,2))
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
+	--e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -104,6 +105,7 @@ function cm.activate1(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
 		end
+		--[[
 		local sg=Duel.GetOperatedGroup():Filter(cm.spfilter,nil,e,tp)
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
@@ -119,6 +121,7 @@ function cm.activate1(e,tp,eg,ep,ev,re,r,rp)
 			end
 			Duel.SpecialSummonComplete()
 		end
+		]]
 		Duel.Hint(11,0,aux.Stringid(m,8))
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())

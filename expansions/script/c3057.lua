@@ -43,7 +43,7 @@ function c3057.initial_effect(c)
 	c:RegisterEffect(e4)
 end 
 function c3057.splimit(e,se,sp,st)
-	return se:GetHandler():IsSetCard(0x1012)
+	return se:GetHandler():IsSetCard(0x851)
 end
 function c3057.spcon(e,c)
 	if c==nil then return true end
@@ -57,7 +57,7 @@ function c3057.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
 function c3057.desfilter(c)
-	return c:IsSetCard(0x1012) and c:IsAbleToDeckAsCost() and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x851) and c:IsAbleToDeckAsCost() and c:IsType(TYPE_MONSTER)
 end
 function c3057.filter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsDestructable()
@@ -95,7 +95,7 @@ function c3057.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c3057.afilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x851) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c3057.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end

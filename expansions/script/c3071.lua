@@ -1,7 +1,7 @@
 --祭礼番判骑士 维娜·谢尔
 function c3071.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x1012),aux.NonTuner(Card.IsSetCard,0x1012),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x851),aux.NonTuner(Card.IsSetCard,0x851),1)
 	c:EnableReviveLimit()
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
@@ -44,12 +44,12 @@ function c3071.initial_effect(c)
 	e4:SetTarget(c3071.retg2)
 	e4:SetOperation(c3071.reop2)
 	c:RegisterEffect(e4)
-end	
+end 
 function c3071.recon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SYNCHRO
 end
 function c3071.cfilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c3071.recost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3071.cfilter,tp,LOCATION_GRAVE,0,1,nil) end
@@ -66,7 +66,7 @@ end
 function c3071.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-	    local g=Duel.SelectMatchingCard(tp,c3071.refilter,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,c3071.refilter,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
 		if g:GetCount()>0 then
 			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 		end
@@ -88,7 +88,7 @@ function c3071.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
-	    local atk=tc:GetAttack()
+		local atk=tc:GetAttack()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_ATTACK)
@@ -105,10 +105,10 @@ function c3071.atkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c3071.efilter(e,te)
-	return not te:GetHandler():IsSetCard(0x1012)
+	return not te:GetHandler():IsSetCard(0x851)
 end
 function c3071.refilter2(c)
-	return c:IsSetCard(0x1012) and c:IsAbleToRemove()
+	return c:IsSetCard(0x851) and c:IsAbleToRemove()
 end
 function c3071.recost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end

@@ -133,7 +133,7 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		local e5=Effect.CreateEffect(e:GetHandler())
 		e5:SetType(EFFECT_TYPE_SINGLE)
 		e5:SetCode(EFFECT_UPDATE_ATTACK)
-		e5:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e5:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
 		e5:SetValue(1000)
 		c:RegisterEffect(e5)
 		local e3=Effect.CreateEffect(c)
@@ -167,7 +167,7 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END,0,1,1)
 	else
 		local label=c:GetFlagEffectLabel(m)
-		c:SetFlagEffectLabel(m,label+c:GetFlagEffect(m+1))
+		c:SetFlagEffectLabel(m,label+1)
 	end
 	if c:GetFlagEffectLabel(m)>=3 then
 		Duel.Hint(HINT_CARD,1,m)

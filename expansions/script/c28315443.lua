@@ -16,7 +16,7 @@ function c28315443.initial_effect(c)
 	e2:SetDescription(aux.Stringid(28315443,1))
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	--e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCountLimit(1)
 	e2:SetTarget(c28315443.lvtg)
 	e2:SetOperation(c28315443.lvop)
@@ -100,12 +100,12 @@ function c28315443.lvop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 end
-function c28315443.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x284)
+function c28315443.atkfilter(c,seq)
+	return c:IsAttribute(ATTRIBUTE_FIRE) and c:IsFaceup() and c:GetSequence()==seq+1
 end
 function c28315443.atkcon(e)
 	local c=e:GetHandler()
-	return Duel.IsExistingMatchingCard(c28315443.atkfilter,c:GetControler(),LOCATION_MZONE,0,1,c)
+	return Duel.IsExistingMatchingCard(c28315443.atkfilter,c:GetControler(),LOCATION_MZONE,0,1,nil,c:GetSequence())
 end
 function c28315443.atkval(e,c)
 	return c:GetLevel()*100

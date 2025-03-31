@@ -73,6 +73,7 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(id,0))
 	local dmg=e:GetHandler():GetBaseAttack()
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(dmg)
@@ -91,7 +92,7 @@ function s.recordcheck(c)
 	for k,v in pairs(copyt) do
 		if k and v then exg:AddCard(k) end
 	end
-	return exg:IsContains(c)
+	return exg:IsExists(Card.IsCode,1,nil,c:GetCode())
 end
 function s.desfilter(c,g,e,tp)
 	return (c:IsAttribute(ATTRIBUTE_FIRE) or c:IsRace(RACE_PYRO) or s.recordcheck(c)) and c:IsFaceup() and c:IsAbleToRemove() and g:IsContains(c) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)

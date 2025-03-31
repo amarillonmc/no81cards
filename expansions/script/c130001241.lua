@@ -29,7 +29,7 @@ function cm.desop(e,tp)
 	rsop.SelectToHand(tp,aux.NecroValleyFilter(cm.thfilter),tp,rsloc.dg,0,1,1,nil,{})
 end
 function cm.tffilter(c,e,tp)
-	return c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and not c:IsLevel(1) and c:IsSetCard(0xa001) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
+	return c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and not c:IsLevel(1) and c:IsSetCard(0x852) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
 end
 function cm.tfop(e,tp)
 	rsop.SelectSolve(HINTMSG_TOFIELD,tp,cm.tffilter,tp,LOCATION_DECK,0,1,1,nil,cm.tffun,tp)

@@ -16,10 +16,11 @@ function c28314946.initial_effect(c)
 	e2:SetDescription(aux.Stringid(28314946,1))
 	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_LEAVE_GRAVE)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38314946)
+	e2:SetCondition(c28314946.reccon)
 	e2:SetTarget(c28314946.rectg)
 	e2:SetOperation(c28314946.recop)
 	c:RegisterEffect(e2)
@@ -45,18 +46,18 @@ function c28314946.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-function c28314946.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x283)
+function c28314946.reccon(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsActiveType(TYPE_MONSTER)
 end
 function c28314946.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,500)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
 function c28314946.thfilter(c)
 	return c:IsSetCard(0x283) and c:IsLevel(4) and c:IsAbleToHand()
 end
 function c28314946.recop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Recover(tp,500,REASON_EFFECT)
+	Duel.Recover(tp,1000,REASON_EFFECT)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(c28314946.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28314946,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

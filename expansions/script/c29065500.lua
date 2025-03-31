@@ -24,6 +24,7 @@ function c29065500.initial_effect(c)
 	local e3=e1:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
+	c29065500.summon_effect=e1   
 	--fdcd
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_IGNITION)
@@ -33,18 +34,14 @@ function c29065500.initial_effect(c)
 	e4:SetTarget(c29065500.fdtg)
 	e4:SetOperation(c29065500.fdop)
 	c:RegisterEffect(e4)
-
-
-	c29065500.summon_effect=e1   
 end
 function c29065500.fdcon(e)
-	return Duel.IsExistingMatchingCard(c29065500.bsfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(c29065500.bsfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
 function c29065500.fdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c29065500.actfilter,tp,LOCATION_DECK,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c29065500.actfilter,e:GetHandlerPlayer(),LOCATION_DECK,0,1,nil,e:GetHandlerPlayer()) end
 end
 function c29065500.fdop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 		local tc=Duel.SelectMatchingCard(tp,c29065500.actfilter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
 		if tc then

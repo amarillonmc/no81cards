@@ -86,12 +86,15 @@ function c11525803.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
 	if chk==0 then return true end
 end
-function c11525803.tdfilter(c)
-	return c:IsSetCard(0x1a3) and c:IsFaceupEx() and c:IsAbleToDeck() and c:IsAbleToHand()
+function c11525803.tdfilter1(c)
+	return c:IsFaceupEx() and c:IsAbleToDeck() and c:IsAbleToHand()
+end
+function c11525803.tdfilter2(c)
+	return c:IsSetCard(0x1a3)
 end
 function c11525803.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if not c11525803.tdfilter(e:GetHandler()) then return false end
-	local ct=Duel.GetMatchingGroupCount(c11525803.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,e:GetHandler())
+	if not c11525803.tdfilter1(e:GetHandler()) then return false end
+	local ct=Duel.GetMatchingGroupCount(c11525803.tdfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,e:GetHandler())
 	if chk==0 then
 		if e:GetLabel()~=1 then return false end
 		e:SetLabel(0)
@@ -106,14 +109,15 @@ function c11525803.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c11525803.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not (c:IsRelateToEffect(e) and c11525803.tdfilter(c)) then return end
+	if not (c:IsRelateToEffect(e) and c11525803.tdfilter1(c)) then return end
 	local ct=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11525803.tdfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,ct,ct,c)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11525803.tdfilter1),tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,ct,ct,c)
 	if g:GetCount()==0 then return end
 	g:AddCard(c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tg=g:Select(tp,1,1,nil)
+	local fg=g:Filter(c11525803.tdfilter2,nil)
+	local tg=fg:Select(tp,1,1,nil)
 	if #tg>0 then
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tg)

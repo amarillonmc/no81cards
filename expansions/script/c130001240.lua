@@ -28,7 +28,7 @@ function c130001240.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c130001240.thfilter(c)
-	return c:IsSetCard(0xa001) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x852) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c130001240.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
@@ -41,7 +41,7 @@ function c130001240.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c130001240.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xa001) and c:IsType(TYPE_PENDULUM)
+	return c:IsFaceup() and c:IsSetCard(0x852) and c:IsType(TYPE_PENDULUM)
 end
 function c130001240.atkval(e,c)
 	local g=Duel.GetMatchingGroup(c130001240.atkfilter,c:GetControler(),LOCATION_EXTRA,0,nil)
@@ -52,7 +52,7 @@ function c130001240.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsReason(REASON_EFFECT)
 end
 function c130001240.thfilter1(c)
-	return c:IsSetCard(0xa001) and c:IsAbleToHand()
+	return c:IsSetCard(0x852) and c:IsAbleToHand()
 end
 function c130001240.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,0,1,nil)

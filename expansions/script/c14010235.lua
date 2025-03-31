@@ -20,7 +20,7 @@ function cm.desfilter(c)
 	return c:IsAbleToRemove()
 end
 function cm.spfilter(c,e,tp)
-	return c:GetLevel()~=1 and c:IsSetCard(0xa001) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:GetLevel()~=1 and c:IsSetCard(0x852) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

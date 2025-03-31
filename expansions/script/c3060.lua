@@ -55,7 +55,7 @@ function c3060.initial_effect(c)
 	c:RegisterEffect(e4)
 end 
 function c3060.splimit(e,se,sp,st)
-	return se:GetHandler():IsSetCard(0x1012)
+	return se:GetHandler():IsSetCard(0x851)
 end
 function c3060.spcon(e,c)
 	if c==nil then return true end
@@ -69,7 +69,7 @@ function c3060.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
 function c3060.cfilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
 end
 function c3060.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3060.cfilter,tp,LOCATION_REMOVED,0,1,nil) end
@@ -78,7 +78,7 @@ function c3060.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function c3060.filter(c,e,tp)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c3060.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -122,7 +122,7 @@ function c3060.lvop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		local c=e:GetHandler()
 		local val=Duel.GetMatchingGroupCount(c3060.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)*1
-		if not Duel.IsPlayerCanSpecialSummonMonster(tp,3061,0,0x1012,0,800,-2,RACE_PLANT,ATTRIBUTE_EARTH) then return end
+		if not Duel.IsPlayerCanSpecialSummonMonster(tp,3061,0,0x851,0,800,-2,RACE_PLANT,ATTRIBUTE_EARTH) then return end
 		local token=Duel.CreateToken(tp,3061)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE)
@@ -138,7 +138,7 @@ function c3060.recost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c3060.refilter(c,e,tp)
-	return c:IsSetCard(0x1012) and c:IsAbleToRemoveAsCost() 
+	return c:IsSetCard(0x851) and c:IsAbleToRemoveAsCost() 
 end
 function c3060.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3060.refilter,tp,LOCATION_DECK,0,1,nil) end

@@ -14,7 +14,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
-	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_F)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
@@ -72,23 +72,34 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(id,0))
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 end
-function s.thfilter(c,tc)
-	return c:IsLevel(tc:GetLevel()) and c:IsAbleToHand()
+function s.thfilter(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.Remove(c,POS_FACEUP,REASON_EFFECT)>0 then
-		local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil,c)
+	if c:IsRelateToEffect(e) and Duel.SendtoGrave(c,REASON_EFFECT)>0 then
+		local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_GRAVE,0,c,e,tp)
 		if #g>0 then
-			Duel.Hint(HINT_SELECTMSG,sp,HINTMSG_ATOHAND)
-			local rg=g:Select(tp,1,1,nil)
-			Duel.SendtoHand(rg,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,rg)
-		else
-			Duel.ConfirmCards(1-tp,Duel.GetFieldGroup(tp,LOCATION_DECK,0))
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local tc=g:Select(tp,1,1,nil):GetFirst()
+			if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_DISABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1)
+				local e2=Effect.CreateEffect(c)
+				e2:SetType(EFFECT_TYPE_SINGLE)
+				e2:SetCode(EFFECT_DISABLE_EFFECT)
+				e2:SetValue(RESET_TURN_SET)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e2)
+			end
+			Duel.SpecialSummonComplete()
 		end
 	end
 end
@@ -101,7 +112,7 @@ function s.recordcheck(c)
 	for k,v in pairs(copyt) do
 		if k and v then exg:AddCard(k) end
 	end
-	return exg:IsContains(c)
+	return exg:IsExists(Card.IsCode,1,nil,c:GetCode())
 end
 function s.desfilter(c,g,e,tp)
 	return (c:IsAttribute(ATTRIBUTE_EARTH) or c:IsRace(RACE_REPTILE) or s.recordcheck(c)) and c:IsFaceup() and c:IsAbleToRemove() and g:IsContains(c) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)

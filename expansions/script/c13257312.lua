@@ -44,6 +44,16 @@ function cm.initial_effect(c)
 	local e6=e5:Clone()
 	e6:SetCode(EFFECT_DISABLE_EFFECT)
 	c:RegisterEffect(e6)
+	local e7=Effect.CreateEffect(c)
+	e7:SetCategory(CATEGORY_POSITION)
+	e7:SetType(EFFECT_TYPE_QUICK_O)
+	e7:SetCode(EVENT_FREE_CHAIN)
+	e7:SetRange(LOCATION_SZONE)
+	e7:SetCountLimit(1)
+	e7:SetCondition(cm.econ)
+	e7:SetTarget(cm.target)
+	e7:SetOperation(cm.activate)
+	c:RegisterEffect(e7)
 	
 end
 function cm.eqlimit(e,c)
@@ -82,4 +92,15 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=ec:GetBattleTarget()
 	tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE,0,1)
 	Duel.AdjustInstantly(e:GetHandler())
+end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	local sg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,sg,sg:GetCount(),0,0)
+end
+function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	local sg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if sg:GetCount()>0 then
+		Duel.ChangePosition(sg,POS_FACEUP_DEFENSE,0,POS_FACEUP_ATTACK,0)
+	end
 end

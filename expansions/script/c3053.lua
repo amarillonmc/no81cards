@@ -24,10 +24,10 @@ function c3053.initial_effect(c)
 	c:RegisterEffect(e2)
 end 
 function c3053.cfilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
 end
 function c3053.sgfilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:GetLevel()==6 and c:IsAbleToGrave()
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:GetLevel()==6 and c:IsAbleToGrave()
 end
 function c3053.sgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3053.cfilter,tp,LOCATION_REMOVED,0,1,nil) end
@@ -58,7 +58,7 @@ function c3053.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanDiscardDeck(tp,2) then return end
 	Duel.ConfirmDecktop(tp,2)
 	local g=Duel.GetDecktopGroup(tp,2)
-	local sg=g:Filter(Card.IsSetCard,nil,0x1012)
+	local sg=g:Filter(Card.IsSetCard,nil,0x851)
 	if sg:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		Duel.ConfirmCards(1-tp,g)

@@ -40,7 +40,7 @@ function c3054.initial_effect(c)
 	c:RegisterEffect(e4)
 end 
 function c3054.splimit(e,se,sp,st)
-	return se:GetHandler():IsSetCard(0x1012)
+	return se:GetHandler():IsSetCard(0x851)
 end
 function c3054.spcon(e,c)
 	if c==nil then return true end
@@ -54,10 +54,10 @@ function c3054.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
 function c3054.cfilter(c)
-	return c:IsSetCard(0x1012) and c:IsAbleToDeckAsCost()
+	return c:IsSetCard(0x851) and c:IsAbleToDeckAsCost()
 end
 function c3054.afilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:GetLevel()==4 and c:IsAbleToHand()
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:GetLevel()==4 and c:IsAbleToHand()
 end
 function c3054.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3054.cfilter,tp,LOCATION_REMOVED,0,1,nil) end
@@ -87,7 +87,7 @@ function c3054.sumop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
 	e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x1012))
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x851))
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end

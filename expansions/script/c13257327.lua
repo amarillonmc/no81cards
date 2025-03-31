@@ -3,6 +3,7 @@ local m=13257327
 local cm=_G["c"..m]
 if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
+	--[[
 	--atk
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,4))
@@ -14,6 +15,7 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.eqtg)
 	e1:SetOperation(cm.eqop)
 	c:RegisterEffect(e1)
+	]]
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,4))
 	e2:SetCategory(CATEGORY_EQUIP)
@@ -26,6 +28,7 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.eqtg1)
 	e2:SetOperation(cm.eqop1)
 	c:RegisterEffect(e2)
+	--[[
 	--atk/def
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -45,6 +48,7 @@ function cm.initial_effect(c)
 	e3:SetValue(cm.defval)
 	e3:SetLabelObject(e1)
 	c:RegisterEffect(e3)
+	]]
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,0))
 	e4:SetCategory(CATEGORY_TODECK)
@@ -108,7 +112,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.eqfilter1(c,tp)
-	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE) and c:GetPreviousControler()==tp
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:GetPreviousControler()==tp
 end
 function cm.eqfilter2(c,e)
 	return c:IsRelateToEffect(e)
@@ -118,7 +122,7 @@ function cm.eqcon1(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.eqtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c and Duel.GetAttacker()==c and tc:IsAbleToChangeControler() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 	Duel.SetTargetCard(eg)
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,eg,1,0,0)
 end
@@ -183,26 +187,24 @@ function cm.eqfilter(c,ec)
 	return c:IsSetCard(0x3352) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)
 end
 function cm.tdfilter(c)
-	return c:IsAbleToDeckAsCost() or c:IsAbleToExtraAsCost()
+	return (c:IsAbleToDeckAsCost() or c:IsAbleToExtraAsCost()) and c:GetEquipTarget()
 end
 function cm.pccost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local eq=e:GetHandler():GetEquipGroup()
-	if chk==0 then return eq:IsExists(cm.tdfilter,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_SZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=eq:FilterSelect(tp,cm.tdfilter,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.tdfilter,tp,LOCATION_SZONE,0,1,1,nil)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local t1=c:GetEquipCount()>0 or Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_EXTRA,0,1,nil,c)
+	local t1=Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_EXTRA,0,1,nil,c)
 	local t2=Duel.IsPlayerCanDraw(tp,1)
-	if chk==0 then return (t1 or t2) and c:GetEquipCount()>0 end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,c:GetEquipGroup(),1,0,0)
+	if chk==0 then return t1 or t2 end
 end
 function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local t1=Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_EXTRA,0,1,nil,c) and c:IsRelateToEffect(e) and c:IsFaceup() and c:GetFlagEffect(m)==0
-	local t2=Duel.IsPlayerCanDraw(tp,1) and c:GetFlagEffect(m+1)==0
+	local t1=Duel.IsExistingMatchingCard(cm.eqfilter,tp,LOCATION_EXTRA,0,1,nil,c) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and c:IsRelateToEffect(e) and c:IsFaceup() and c:GetFlagEffect(m)<3
+	local t2=Duel.IsPlayerCanDraw(tp,1) and c:GetFlagEffect(m)<3
 	if not (t1 or t2) then return end
 	local op=0
 	if t1 or t2 then
@@ -223,7 +225,7 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Equip(tp,tc,c)
 		end
 	elseif op==2 then
-		c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,0)
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,0)
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end

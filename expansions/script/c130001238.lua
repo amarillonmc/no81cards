@@ -39,7 +39,7 @@ function c130001238.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c130001238.thfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xa001) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsSetCard(0x852) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c130001238.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c130001238.thfilter(chkc) end
@@ -60,7 +60,7 @@ function c130001238.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c130001238.costfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xa001) and c:IsAbleToDeckAsCost() and c:IsType(TYPE_MONSTER) 
+	return c:IsFaceup() and c:IsSetCard(0x852) and c:IsAbleToDeckAsCost() and c:IsType(TYPE_MONSTER) 
 end
 function c130001238.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c130001238.costfilter,tp,LOCATION_GRAVE,0,1,nil) end
@@ -69,7 +69,7 @@ function c130001238.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function c130001238.filter(c)
-	return c:IsSetCard(0xa001) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x852) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c130001238.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c130001238.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -89,7 +89,7 @@ function c130001238.thcon2(e,tp,eg,ep,ev,re,r,rp)
 		and c:IsPreviousLocation(LOCATION_SZONE) and c:GetPreviousSequence()==5
 end
 function c130001238.thfilter2(c)
-	return c:IsSetCard(0xa001) and c:IsAbleToHand() 
+	return c:IsSetCard(0x852) and c:IsAbleToHand() 
 end
 function c130001238.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c130001238.thfilter2,tp,LOCATION_DECK,0,1,nil) end

@@ -45,7 +45,7 @@ function cm.initial_effect(c)
 	cm[c]=eflist
 end
 function cm.cfilter(c)
-	return c:IsSetCard(0x351) and c:IsDiscardable(REASON_SPSUMMON)
+	return c:IsDiscardable(REASON_SPSUMMON)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end

@@ -5,9 +5,6 @@ function c29065513.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCode2(c,29065500,29065508,true,true)
-	--change name
-	aux.EnableChangeCode(c,29065500)
-	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -23,15 +20,23 @@ function c29065513.initial_effect(c)
 	e2:SetCode(EFFECT_UPDATE_ATTACK)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetValue(700)
+	e2:SetValue(c29065513.atkval)
 	c:RegisterEffect(e2)
+end
+function c29065513.atkval(e,c)
+	if Duel.GetFlagEffect(tp,29065513)==1 then 
+		return 1400 
+	else
+		return 700
+	end
 end
 function c29065513.branded_fusion_check(tp,sg,fc)
 	return aux.gffcheck(sg,Card.IsFusionCode,29065500,Card.IsFusionCode,29065508)
 end
 function c29065513.xxtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAttackable() and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
+	if chk==0 then return c:IsAttackable() and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) and Duel.GetTurnCount()~=1 end
+	Duel.RegisterFlagEffect(tp,29065513,RESET_PHASE+PHASE_END,0,1)
 end
 function c29065513.xxop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -45,13 +50,6 @@ function c29065513.xxop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.CalculateDamage(c,tc)
 		end
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetValue(700)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 end
 function c29065513.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()

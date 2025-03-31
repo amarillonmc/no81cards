@@ -42,7 +42,7 @@ function c3063.initial_effect(c)
 	c:RegisterEffect(e4)
 end 
 function c3063.splimit(e,se,sp,st)
-	return se:GetHandler():IsSetCard(0x1012)
+	return se:GetHandler():IsSetCard(0x851)
 end
 function c3063.spcon(e,c)
 	if c==nil then return true end
@@ -56,7 +56,7 @@ function c3063.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
 function c3063.cfilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
 end
 function c3063.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3063.cfilter,tp,LOCATION_REMOVED,0,2,nil) end
@@ -96,7 +96,7 @@ function c3063.desop(e,tp,eg,ep,ev,re,r,rp)
 	end   
 end
 function c3063.sgfilter(c)
-	return c:IsSetCard(0x1012) and c:IsAbleToGrave()
+	return c:IsSetCard(0x851) and c:IsAbleToGrave()
 end
 function c3063.sgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3063.sgfilter,tp,LOCATION_DECK,0,1,nil) end

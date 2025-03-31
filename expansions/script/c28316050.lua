@@ -71,7 +71,6 @@ function c28316050.dcop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
 		Duel.SendtoGrave(g,REASON_EFFECT)
-		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tg=Duel.SelectMatchingCard(tp,c28316050.thfilter,tp,LOCATION_DECK,0,1,2,nil)
 		if tg:GetCount()>0 then

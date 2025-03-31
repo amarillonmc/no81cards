@@ -1,7 +1,7 @@
 --叱影军-罗将公
 function c40008571.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xa001),2,2,c40008571.lcheck)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x852),2,2,c40008571.lcheck)
 	c:EnableReviveLimit()
 	c:SetUniqueOnField(1,0,40008571)
 	--spsummon condition
@@ -80,7 +80,7 @@ function c40008571.aclimit(e,re,tp)
 	return re:IsActiveType(TYPE_TRAP) and not re:GetHandler():IsImmuneToEffect(e)
 end
 function c40008571.spfilter(c,e,tp)
-	return c:IsSetCard(0xa001) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x852) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c40008571.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)

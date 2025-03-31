@@ -4,6 +4,18 @@ local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,6))
+	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
+	e1:SetTarget(cm.drtg)
+	e1:SetOperation(cm.drop)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e2)
 	--cannot special summon
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_SINGLE)
@@ -36,17 +48,27 @@ function cm.initial_effect(c)
 	cm[c]=eflist
 	
 end
+function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
+end
 function cm.rfilter(c,tp)
 	return (c:IsControler(tp) or c:IsFaceup()) and (c:IsSetCard(0x351) or c:IsCode(TAMA_OPTION_CODE))
 end
 function cm.hspcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local rg=Duel.GetReleaseGroup(tp,true)
-	return rg:CheckSubGroup(aux.mzctcheck,2,2,tp):Filter(cm.rfilter,c,tp):GetCount()>0
+	local rg=Duel.GetReleaseGroup(tp,true):Filter(cm.rfilter,nil,tp)
+	return rg:CheckSubGroup(aux.mzctcheck,2,2,tp)
 end
 function cm.hsptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local rg=Duel.GetReleaseGroup(tp,true):Filter(cm.rfilter,c,tp)
+	local rg=Duel.GetReleaseGroup(tp,true):Filter(cm.rfilter,nil,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local sg=rg:SelectSubGroup(tp,aux.mzctcheck,true,2,2,tp)
 	if sg then

@@ -34,6 +34,17 @@ function c11525802.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EVENT_RECOVER)
 	c:RegisterEffect(e4)
+	--atk up
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetCode(EFFECT_UPDATE_ATTACK)
+	e5:SetRange(LOCATION_SZONE)
+	e5:SetTargetRange(LOCATION_MZONE,0)
+	e5:SetValue(c11525802.val)
+	c:RegisterEffect(e5)
+end
+function c11525802.val(e,c)
+	return Duel.GetCounter(0,1,0,0x6a)*100
 end
 function c11525802.filter(c,ft)
 	return c:IsSetCard(0x1a3) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()

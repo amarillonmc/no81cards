@@ -47,10 +47,10 @@ function c130001239.initial_effect(c)
 end
 function c130001239.filter1(c,tp)
 	local lv1=c:GetLevel()
-	return lv1>0 and c:IsSetCard(0xa001) and Duel.IsExistingMatchingCard(c130001239.filter2,tp,LOCATION_MZONE,0,1,c,lv1)
+	return lv1>0 and c:IsSetCard(0x852) and Duel.IsExistingMatchingCard(c130001239.filter2,tp,LOCATION_MZONE,0,1,c,lv1)
 end
 function c130001239.filter2(c,lv1)
-	return c:IsSetCard(0xa001) and c:GetLevel()~=lv1
+	return c:IsSetCard(0x852) and c:GetLevel()~=lv1
 end
 function c130001239.spcon(e,c)
 	if c==nil then return true end
@@ -65,7 +65,7 @@ function c130001239.aclimit(e,re,tp)
 	return re:IsActiveType(TYPE_SPELL) and not re:GetHandler():IsImmuneToEffect(e)
 end
 function c130001239.spfilter(c,e,tp)
-	return c:IsSetCard(0xa001) and not c:IsCode(c130001239) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x852) and not c:IsCode(c130001239) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c130001239.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)

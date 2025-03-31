@@ -112,6 +112,6 @@ function s.mattg(e,c)
 	return c:IsRace(0x10)
 end
 function s.matval(e,lc,mg,c,tp)
-	if not (lc:IsRace(0x10) and e:GetHandlerPlayer()==tp) then return false,nil end
+	if (_G["c"..lc:GetCode()] and _G["c"..lc:GetCode()].Findesiecle and lc:IsLinkBelow(2) and e:GetHandlerPlayer()==tp) then return false,nil end
 	return true,true
 end

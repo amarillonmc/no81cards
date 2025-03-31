@@ -26,14 +26,14 @@ function c130001230.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c130001230.cfilter(c,tp)
-	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsSetCard(0xa001)
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsSetCard(0x852)
 		and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:GetPreviousControler()==tp
 end
 function c130001230.desfilter1(c)
 	return c:IsAbleToRemove()
 end
 function c130001230.spfilter(c,e,tp)
-	return c:GetLevel()~=1 and c:IsSetCard(0xa001) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:GetLevel()~=1 and c:IsSetCard(0x852) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c130001230.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -67,7 +67,7 @@ function c130001230.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c130001230.spfilter2(c)
-	return c:IsSetCard(0xa001)  and c:IsType(TYPE_MONSTER) and c:GetLevel()~=1 and c:IsAbleToHand()
+	return c:IsSetCard(0x852)  and c:IsType(TYPE_MONSTER) and c:GetLevel()~=1 and c:IsAbleToHand()
 end
 function c130001230.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c130001230.spfilter2,tp,LOCATION_DECK,0,1,nil) end

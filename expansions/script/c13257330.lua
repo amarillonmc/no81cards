@@ -52,21 +52,13 @@ function cm.cfilter(c)
 	return not c:IsPublic() and c:IsSetCard(0x351) and c:IsType(TYPE_MONSTER)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc==0 then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.pcfilter(chkc) end
+	if chkc then return e:GetLabel()==1 and chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) end
 	local t1=Duel.IsExistingTarget(cm.pcfilter,tp,LOCATION_MZONE,0,1,nil)
 	local t2=Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,nil)
 	if chk==0 then return (t1 or t2) and Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	local op=0
-	if t1 or t2 then
-		local m1={}
-		local n1={}
-		local ct=1
-		if t1 then m1[ct]=aux.Stringid(m,2) n1[ct]=1 ct=ct+1 end
-		if t2 then m1[ct]=aux.Stringid(m,3) n1[ct]=2 ct=ct+1 end
-		local sp=Duel.SelectOption(tp,table.unpack(m1))
-		op=n1[sp+1]
-	end
+	local op=aux.SelectFromOptions(tp,
+		{t1,aux.Stringid(m,2),1},
+		{t2,aux.Stringid(m,3),2})
 	e:SetLabel(op)
 	if op==1 then
 		e:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -175,9 +167,9 @@ function cm.cfilter1(c)
 	return c:IsCode(13257329) and c:IsAbleToDeckAsCost()
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cfilter1,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter1,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,cfilter1,tp,LOCATION_HAND,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter1,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

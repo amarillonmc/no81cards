@@ -1,6 +1,6 @@
 --祭礼巡林士 埃莉尔
 function c3052.initial_effect(c)
-    --spsummon
+	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(3052,0))
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
@@ -21,12 +21,12 @@ function c3052.initial_effect(c)
 	e2:SetTarget(c3052.target)
 	e2:SetOperation(c3052.operation)
 	c:RegisterEffect(e2)
-end	
+end 
 function c3052.cfilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
 end
 function c3052.spfilter(c,e,tp)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:GetLevel()==6 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:GetLevel()==6 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c3052.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3052.cfilter,tp,LOCATION_REMOVED,0,1,nil) end
@@ -61,7 +61,7 @@ function c3052.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,1)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
-	if tc:IsSetCard(0x1012) then
+	if tc:IsSetCard(0x851) then
 		Duel.DisableShuffleCheck()
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 		Duel.Draw(tp,1,REASON_EFFECT)

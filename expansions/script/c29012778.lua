@@ -6,7 +6,7 @@ function c29012778.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcCode2(c,29065500,29079596,true,true)
 	--change name
-	aux.EnableChangeCode(c,29065500)
+	--aux.EnableChangeCode(c,29065500)
 	--atk
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_ATKCHANGE)

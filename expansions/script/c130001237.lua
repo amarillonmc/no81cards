@@ -36,7 +36,7 @@ function c130001237.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c130001237.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xa001)
+	return c:IsFaceup() and c:IsSetCard(0x852)
 end
 function c130001237.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c130001237.cfilter,tp,LOCATION_EXTRA,0,3,nil) end
@@ -71,7 +71,7 @@ function c130001237.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c130001237.thfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsSetCard(0xa001)
+	return c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsSetCard(0x852)
 end
 function c130001237.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c130001237.thfilter,tp,LOCATION_DECK,0,1,nil) end

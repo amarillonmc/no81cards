@@ -22,9 +22,11 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
+	e3:SetCost(cm.descost)
 	e3:SetTarget(cm.destg)
 	e3:SetOperation(cm.desop)
 	c:RegisterEffect(e3)
+	--[[
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
 	e4:SetCategory(CATEGORY_DAMAGE)
@@ -40,6 +42,19 @@ function cm.initial_effect(c)
 	e5:SetCode(EVENT_BATTLE_DESTROYED)
 	e5:SetCondition(cm.damcon1)
 	c:RegisterEffect(e5)
+	]]
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(m,2))
+	e6:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e6:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e6:SetType(EFFECT_TYPE_QUICK_O)
+	e6:SetRange(LOCATION_SZONE)
+	e6:SetCode(EVENT_CHAINING)
+	e6:SetCondition(cm.negcon)
+	e6:SetCost(cm.descost)
+	e6:SetTarget(cm.negtg)
+	e6:SetOperation(cm.negop)
+	c:RegisterEffect(e6)
 	
 end
 function cm.eqlimit(e,c)
@@ -48,13 +63,14 @@ end
 function cm.desfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceup() and not c:IsDisabled()
 end
-function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local tc=c:GetEquipTarget()
 	local f=tama.cosmicFighters_equipGetFormation(c)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,0,LOCATION_ONFIELD,1,nil)
-		and f and c:GetFlagEffect(m)<f:GetCount() end
+	if chk==0 then return f and c:GetFlagEffect(m)<f:GetCount() end
 	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+end
+function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.desfilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
@@ -150,4 +166,38 @@ function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
+end
+function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
+	return re:GetActivateLocation()==LOCATION_GRAVE and Duel.IsChainNegatable(ev)
+end
+function cm.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local ng=Group.CreateGroup()
+	local dg=Group.CreateGroup()
+	for i=1,ev do
+		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+		if tgp~=tp and Duel.IsChainNegatable(i) then
+			local tc=te:GetHandler()
+			ng:AddCard(tc)
+			if tc:IsOnField() and tc:IsRelateToEffect(te) then
+				dg:AddCard(tc)
+			end
+		end
+	end
+	Duel.SetTargetCard(dg)
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,ng,ng:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,dg,dg:GetCount(),0,0)
+end
+function cm.negop(e,tp,eg,ep,ev,re,r,rp)
+	local dg=Group.CreateGroup()
+	for i=1,ev do
+		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+		if tgp~=tp and Duel.NegateActivation(i) then
+			local tc=te:GetHandler()
+			if tc:IsRelateToEffect(e) and tc:IsRelateToEffect(te) then
+				dg:AddCard(tc)
+			end
+		end
+	end
+	Duel.Destroy(dg,REASON_EFFECT)
 end

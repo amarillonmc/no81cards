@@ -47,6 +47,7 @@ function c28361833.initial_effect(c)
 	e4:SetTarget(c28361833.thtg)
 	e4:SetOperation(c28361833.thop)
 	c:RegisterEffect(e4)
+c28361833.shinycounter=true
 end
 function c28361833.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x283)
@@ -156,7 +157,7 @@ function c28361833.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tg)
 	end
-	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.SelectYesNo(tp,aux.Stringid(28361833,4)) then
+	if false and Duel.SelectYesNo(tp,aux.Stringid(28361833,4)) then
 		Duel.Recover(tp,500,REASON_EFFECT)
 	end
 end

@@ -74,7 +74,7 @@ function cm.im(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.efilter(e,te)
-	return e:GetHandler()~=te:GetOwner() and not te:GetOwner():IsType(TYPE_EQUIP)
+	return e:GetHandler()~=te:GetOwner() and e:GetOwner()~=te:GetOwner() and not te:GetOwner():IsType(TYPE_EQUIP)
 end
 function cm.canActivate(c,PCe,eg,ep,ev,re,r,rp)
 	local tep=c:GetControler()

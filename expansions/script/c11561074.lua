@@ -39,7 +39,7 @@ function cm.initial_effect(c)
 	
 end
 function c11561074.ffilter(c,fc,sub,mg,sg)
-	return c:IsType(TYPE_MONSTER) and (not sg or sg:FilterCount(aux.TRUE,c)==0
+	return c:IsType(TYPE_MONSTER) and c:IsRace(RACE_DRAGON) and (not sg or sg:FilterCount(aux.TRUE,c)==0
 		or (sg:IsExists(Card.IsSetCard,1,nil,0x133) and not sg:IsExists(Card.IsLevel,1,c,c:GetLevel()) and not sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute())))
 end
 function c11561074.splimit(e,se,sp,st)

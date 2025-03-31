@@ -28,7 +28,7 @@ function s.pfilter(c,tp)
 	return c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_TRAP) and c:IsFaceup() and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemove() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(s.pfilter,tp,LOCATION_REMOVED,0,1,nil,tp) end
+	if chk==0 then return e:GetHandler():IsAbleToRemove() and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(s.pfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),1,0,0)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -38,14 +38,18 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_PHASE+PHASE_END)
-			e1:SetReset(RESET_PHASE+PHASE_END)
+			if Duel.GetCurrentPhase()==PHASE_STANDBY then
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,2)
+			else
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY)
+			end
 			e1:SetLabelObject(c)
 			e1:SetCountLimit(1)
 			e1:SetOperation(s.retop)
 			Duel.RegisterEffect(e1,tp)
 			if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-			local tc=Duel.SelectMatchingCard(tp,s.pfilter,tp,LOCATION_REMOVED,0,1,1,nil,tp):GetFirst()
+			local tc=Duel.SelectMatchingCard(tp,s.pfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp):GetFirst()
 			if tc then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) end
 		end
 	end

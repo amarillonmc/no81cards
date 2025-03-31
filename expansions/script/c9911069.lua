@@ -1,7 +1,7 @@
 --魔狱之领主 恋慕骑士
 function c9911069.initial_effect(c)
 	--fusion material
-	aux.AddFusionProcFun2(c,c9911069.mfilter1,c9911069.mfilter2,true)
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9954),c9911069.mfilter,true)
 	c:EnableReviveLimit()
 	--atkdown
 	local e1=Effect.CreateEffect(c)
@@ -14,55 +14,60 @@ function c9911069.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EFFECT_UPDATE_DEFENSE)
 	c:RegisterEffect(e2)
-	--to deck/set
+	--negate
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TODECK+CATEGORY_LEAVE_GRAVE+CATEGORY_TOGRAVE)
+	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_ATKCHANGE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetCountLimit(1)
-	e3:SetTarget(c9911069.tdtg)
-	e3:SetOperation(c9911069.tdop)
+	e3:SetCondition(c9911069.negcon)
+	e3:SetTarget(c9911069.negtg)
+	e3:SetOperation(c9911069.negop)
 	c:RegisterEffect(e3)
 end
-function c9911069.mfilter1(c)
-	return c:IsFusionSetCard(0x9954) and c:IsLevel(6)
-end
-function c9911069.mfilter2(c)
+function c9911069.mfilter(c)
 	return c:GetCounter(0x1954)>0 and c:IsFusionType(TYPE_EFFECT)
 end
 function c9911069.atkval(e,c)
 	return Duel.GetCounter(0,1,1,0x1954)*-100
 end
-function c9911069.tdfilter(c)
-	if not (c:IsSetCard(0x9954) and c:IsType(TYPE_SPELL+TYPE_TRAP)) then return false end
-	return c:IsAbleToDeck() or c:IsSSetable()
+function c9911069.negcon(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp and Duel.IsChainNegatable(ev)
 end
-function c9911069.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9911069.tdfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9911069.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c9911069.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
+function c9911069.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,1,0x1954,4,REASON_EFFECT) end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 end
-function c9911069.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		if tc:IsAbleToDeck() and (not tc:IsSSetable() or Duel.SelectOption(tp,aux.Stringid(9911069,0),1153)==0) then
-			if Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_DECK)
-				and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,nil)
-				and Duel.SelectYesNo(tp,aux.Stringid(9911069,1)) then
-				Duel.BreakEffect()
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-				local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,1,nil)
-				Duel.HintSelection(tg)
-				Duel.SendtoGrave(tg,REASON_EFFECT)
-			end
-		else
-			Duel.SSet(tp,tc)
+function c9911069.filter(c,tp)
+	return c:GetCounter(0x1954)>0 and c:IsCanRemoveCounter(tp,0x1954,1,REASON_EFFECT)
+end
+function c9911069.atkfilter(c,tp)
+	return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and not c:IsAttack(3000)
+end
+function c9911069.negop(e,tp,eg,ep,ev,re,r,rp)
+	local sg=Group.CreateGroup()
+	if not Duel.IsCanRemoveCounter(tp,1,1,0x1954,4,REASON_EFFECT) then return end
+	for i=1,4 do
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9911069,i))
+		local sc=Duel.SelectMatchingCard(tp,c9911069.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,tp):GetFirst()
+		sc:RemoveCounter(tp,0x1954,1,REASON_EFFECT)
+		if sc:IsLocation(LOCATION_MZONE) then sg:AddCard(sc) end
+	end
+	if Duel.NegateActivation(ev) and sg:IsExists(c9911069.atkfilter,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(9911069,0)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		local cg=sg:FilterSelect(tp,c9911069.atkfilter,1,1,nil,tp)
+		Duel.HintSelection(cg)
+		local tc=cg:GetFirst()
+		if tc then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+			e1:SetValue(3000)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
 		end
 	end
 end

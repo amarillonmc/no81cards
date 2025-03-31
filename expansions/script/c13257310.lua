@@ -78,6 +78,11 @@ function cm.tg(e,c)
 	if not tc then return false end
 	return c:IsSetCard(0x351) or tc==c
 end
+function cm.tg1(e,c)
+	local tc=e:GetHandler():GetEquipTarget()
+	if not tc then return false end
+	return c:IsSetCard(0x351) or c:IsCode(TAMA_OPTION_CODE)
+end
 function cm.imval(e,re)
 	return re:GetHandler():IsType(TYPE_TRAP)
 end

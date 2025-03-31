@@ -78,14 +78,14 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local rg=Duel.GetMatchingGroup(cm.tfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if chk==0 then return #rg>0 and Duel.IsPlayerCanDiscardDeck(tp,#rg) end
+	if chk==0 then return #rg>0 and Duel.IsPlayerCanDiscardDeck(tp,1) end
 	e:GetHandler():RegisterFlagEffect(m-4,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_OATH,1)
 	--[[local ft=0
 	if not c:IsLocation(LOCATION_SZONE) then ft=1 end
 	local rg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,nil) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end--]]
 	if #rg>0 then
-		Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,#rg)
+		Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,1)
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,PLAYER_ALL,LOCATION_ONFIELD+LOCATION_GRAVE)
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -113,12 +113,19 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rg=Duel.GetMatchingGroup(cm.tfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if #rg>0 and Duel.DiscardDeck(tp,#rg,REASON_EFFECT)>0 then
+	if #rg==0 then return end
+	local t={}
+	for ac=#rg,0,-1 do
+		table.insert(t,ac)
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
+	ac=Duel.AnnounceNumber(tp,table.unpack(t))
+	if Duel.DiscardDeck(tp,ac,REASON_EFFECT) then
 		local g=Duel.GetOperatedGroup()
-		local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
+		local ct=#rg-ac --g:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
 		if ct>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,#rg,#rg,aux.ExceptThisCard(e))
+			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,#rg-ac,#rg-ac,aux.ExceptThisCard(e))
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 		end
 	end

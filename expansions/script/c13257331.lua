@@ -49,21 +49,13 @@ function cm.thfilter(c,code)
 	return c:IsCode(code) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc==0 then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and cm.filter(chkc) end
+	if chkc then return e:GetLabel()==1 and chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) end
 	local t1=Duel.IsExistingTarget(cm.filter,tp,LOCATION_MZONE,0,1,nil,tp)
 	local t2=Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_HAND,0,1,nil)
 	if chk==0 then return t1 or t2 end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	local op=0
-	if t1 or t2 then
-		local m1={}
-		local n1={}
-		local ct=1
-		if t1 then m1[ct]=aux.Stringid(m,2) n1[ct]=1 ct=ct+1 end
-		if t2 then m1[ct]=aux.Stringid(m,3) n1[ct]=2 ct=ct+1 end
-		local sp=Duel.SelectOption(tp,table.unpack(m1))
-		op=n1[sp+1]
-	end
+	local op=aux.SelectFromOptions(tp,
+		{t1,aux.Stringid(m,2),1},
+		{t2,aux.Stringid(m,3),2})
 	e:SetLabel(op)
 	if op==1 then
 		e:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -80,6 +72,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local op=e:GetLabel()
 	if op==1 then
 		local tc=Duel.GetFirstTarget()

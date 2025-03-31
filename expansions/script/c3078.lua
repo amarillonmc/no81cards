@@ -35,7 +35,7 @@ function c3078.condition(e,tp,eg,ep,ev,re,r,rp)
 	return tp~=ep and Duel.GetCurrentChain()==0
 end
 function c3078.cfilter(c)
-	return c:IsSetCard(0x1012) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x851) and c:IsAbleToRemoveAsCost()
 end
 function c3078.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3078.cfilter,tp,LOCATION_HAND,0,1,nil)

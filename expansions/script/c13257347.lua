@@ -81,26 +81,27 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if g:GetCount()>0 then
 		while tc do
-			if tc:IsFaceup() and not tc:IsDisabled() then
-				Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+			if tc:IsFaceup() and tc:IsCanBeDisabledByEffect(e) then
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_DISABLE)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc:RegisterEffect(e1)
-				local e2=e1:Clone()
+				local e2=Effect.CreateEffect(c)
+				e2:SetType(EFFECT_TYPE_SINGLE)
 				e2:SetCode(EFFECT_DISABLE_EFFECT)
-				e2:SetValue(RESET_EVENT+RESETS_STANDARD)
+				e2:SetValue(RESET_TURN_SET)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc:RegisterEffect(e2)
-				local e3=Effect.CreateEffect(c)
-				e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-				e3:SetCode(EVENT_CHAIN_SOLVING)
-				e3:SetCondition(cm.discon1)
-				e3:SetOperation(cm.disop1)
-				e3:SetLabelObject(tc)
-				e3:SetReset(RESET_EVENT+RESET_CHAIN)
-				Duel.RegisterEffect(e3,tp)
+				if tc:IsType(TYPE_TRAPMONSTER) then
+					local e3=Effect.CreateEffect(c)
+					e3:SetType(EFFECT_TYPE_SINGLE)
+					e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+					e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc:RegisterEffect(e3)
+				end
 				Duel.AdjustInstantly()
+				Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 			end
 			tc=g:GetNext()
 		end

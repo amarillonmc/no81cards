@@ -26,13 +26,13 @@ function c3074.initial_effect(c)
 	e3:SetTarget(c3074.sptg)
 	e3:SetOperation(c3074.spop)
 	c:RegisterEffect(e3)
-end	
+end 
 function c3074.dfilter(c,tp)
-	return c:IsSetCard(0x1012) and c:IsAbleToGraveAsCost() and c:GetLevel()>0
+	return c:IsSetCard(0x851) and c:IsAbleToGraveAsCost() and c:GetLevel()>0
 		and Duel.IsExistingMatchingCard(c3074.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetCode(),c:GetLevel())
 end
 function c3074.thfilter(c,code,lv)
-	return c:IsSetCard(0x1012) and c:GetLevel()==lv and not c:IsCode(code) and c:IsAbleToHand()
+	return c:IsSetCard(0x851) and c:GetLevel()==lv and not c:IsCode(code) and c:IsAbleToHand()
 end
 function c3074.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3074.dfilter,tp,LOCATION_HAND,0,1,nil,tp) end
@@ -43,9 +43,9 @@ function c3074.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c3074.thop(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-    if not c:IsRelateToEffect(e) or not tc:IsRelateToEffect(e) then return end
+	if not c:IsRelateToEffect(e) or not tc:IsRelateToEffect(e) then return end
 	local lv=tc:GetLevel()
 	local code=tc:GetCode()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -53,14 +53,14 @@ function c3074.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
-	end	
+	end 
 end
 function c3074.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c3074.spfilter(c,e,tp)
-	return c:IsSetCard(0x1012) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x851) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c3074.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c3074.spfilter(chkc,e,tp) end
@@ -73,7 +73,7 @@ end
 function c3074.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 then
-	    local e1=Effect.CreateEffect(e:GetHandler())
+		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)

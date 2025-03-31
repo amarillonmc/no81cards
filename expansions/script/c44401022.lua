@@ -16,6 +16,7 @@ function c44401022.initial_effect(c)
 	e2:SetCode(EVENT_REMOVE)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	--e2:SetCountLimit(1,44401022)
+	e2:SetCondition(c44401022.thcon)
 	e2:SetTarget(c44401022.thtg)
 	e2:SetOperation(c44401022.thop)
 	c:RegisterEffect(e2)
@@ -48,6 +49,9 @@ function c44401022.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function c44401022.eqlimit(e,c)
 	return e:GetOwner()==c
+end
+function c44401022.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return re and re:IsActivated() and e:GetHandler():IsReason(REASON_EFFECT)
 end
 function c44401022.thfilter(c)
 	return c:IsSetCard(0xa4a) and c:IsFaceup() and c:IsAbleToHand()

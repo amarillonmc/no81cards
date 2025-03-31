@@ -47,7 +47,7 @@ function c3066.initial_effect(c)
 	e4:SetTarget(c3066.distg)
 	e4:SetOperation(c3066.disop)
 	c:RegisterEffect(e4)
-end	
+end 
 function c3066.filter(c,tp)
 	return c:GetPreviousControler()==tp and c:GetPreviousLocation()==LOCATION_HAND
 end
@@ -58,11 +58,11 @@ function c3066.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,1) end
 end
 function c3066.reop(e,tp,eg,ep,ev,re,r,rp)
-    if not Duel.IsPlayerCanDiscardDeck(tp,1) then return end
+	if not Duel.IsPlayerCanDiscardDeck(tp,1) then return end
 	Duel.ConfirmDecktop(tp,1)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
-	if tc:IsSetCard(0x1012) and tc:IsType(TYPE_MONSTER) then
+	if tc:IsSetCard(0x851) and tc:IsType(TYPE_MONSTER) then
 		Duel.DisableShuffleCheck()
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	else
@@ -70,7 +70,7 @@ function c3066.reop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c3066.cfilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c3066.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3066.cfilter,tp,LOCATION_GRAVE,0,2,e:GetHandler()) end
@@ -89,7 +89,7 @@ function c3066.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function c3066.eqfilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(4) 
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(4) 
 end
 function c3066.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c3066.filter(chkc) end
@@ -122,7 +122,7 @@ function c3066.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(atk)
 		tc:RegisterEffect(e2)
 	else 
-	    Duel.SendtoGrave(tc,REASON_EFFECT)
+		Duel.SendtoGrave(tc,REASON_EFFECT)
 	end
 end
 function c3066.eqlimit(e,c)
@@ -137,7 +137,7 @@ function c3066.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Destroy(g,REASON_COST)
 end
 function c3066.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return true end 
+	if chk==0 then return true end 
 	--[[if chk==0 then
 		local h1=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
 		if e:GetHandler():IsLocation(LOCATION_HAND) then h1=h1-1 end
@@ -147,8 +147,8 @@ function c3066.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,PLAYER_ALL,e:GetLabel())
 end
 function c3066.disop(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
+	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-    Duel.DiscardHand(tp,aux.TRUE,e:GetLabel(),e:GetLabel(),REASON_EFFECT+REASON_DISCARD)
+	Duel.DiscardHand(tp,aux.TRUE,e:GetLabel(),e:GetLabel(),REASON_EFFECT+REASON_DISCARD)
 	Duel.DiscardHand(1-tp,aux.TRUE,e:GetLabel(),e:GetLabel(),REASON_EFFECT+REASON_DISCARD)
 end

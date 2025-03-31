@@ -47,7 +47,7 @@ function cm.tecost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoExtraP(c,tp,REASON_COST)
 end
 function cm.tffilter(c,e,tp)
-	return c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and (c:IsSetCard(0xa001) or (c:IsAttribute(ATTRIBUTE_WIND) and c:IsRace(RACE_WARRIOR)))
+	return c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and (c:IsSetCard(0x853) or (c:IsAttribute(ATTRIBUTE_WIND) and c:IsRace(RACE_WARRIOR)))
 end
 function cm.tfop(e,tp)
 	rsop.SelectSolve(HINTMSG_TOFIELD,tp,cm.tffilter,tp,LOCATION_DECK,0,1,1,nil,cm.tffun,tp)

@@ -107,8 +107,7 @@ function c28315548.atkfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x284)
 end
 function c28315548.atkcon(e)
-	local c=e:GetHandler()
-	return Duel.IsExistingMatchingCard(c28315548.atkfilter,c:GetControler(),LOCATION_MZONE,0,1,c)
+	return e:GetHandler():GetSequence()==2
 end
 function c28315548.atkval(e,c)
 	return c:GetLevel()*100

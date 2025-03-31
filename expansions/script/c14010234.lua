@@ -69,10 +69,10 @@ function cm.atkval(e,c)
 	return val
 end
 function cm.desfilter(c,e)
-	return c:IsSetCard(0xa001) and c:GetOriginalType()&TYPE_MONSTER and (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and not c:IsImmuneToEffect(e)
+	return c:IsSetCard(0x852) and c:GetOriginalType()&TYPE_MONSTER and (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and not c:IsImmuneToEffect(e)
 end
 function cm.desfilter3(c)
-	return c:IsSetCard(0xa001) and c:GetOriginalType()&TYPE_MONSTER and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
+	return c:IsSetCard(0x852) and c:GetOriginalType()&TYPE_MONSTER and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
 end
 function cm.fselect3(g,e,tp)
 	local atk=g:GetSum(Card.GetAttack)

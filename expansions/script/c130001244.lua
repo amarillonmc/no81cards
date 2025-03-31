@@ -16,7 +16,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spfilter(c,e,tp)
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsSetCard(0xa001) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (Duel.GetFlagEffect(1-tp,m)>0 or c:IsLocation(LOCATION_HAND))
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsSetCard(0x852) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (Duel.GetFlagEffect(1-tp,m)>0 or c:IsLocation(LOCATION_HAND))
 end
 function cm.act(e,tp)
 	local tc=rscf.GetTargetCard()
@@ -64,7 +64,7 @@ function cm.desfilter(c,e,tp)
 	return Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_DECK,0,1,nil,c,e,tp)
 end
 function cm.spfilter2(c,rc,e,tp)
-	return c:IsSetCard(0xa001) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and ((rc and Duel.GetMZoneCount(tp,rc,tp)>0) or (not rc and Duel.GetLocationCount(tp,LOCATION_MZONE)>0))
+	return c:IsSetCard(0x852) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and ((rc and Duel.GetMZoneCount(tp,rc,tp)>0) or (not rc and Duel.GetLocationCount(tp,LOCATION_MZONE)>0))
 end
 function cm.desop(e,tp)
 	local g1=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)

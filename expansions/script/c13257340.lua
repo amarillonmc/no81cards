@@ -72,11 +72,26 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
+	--[[
 	local c=e:GetHandler()
-	if re~=tp and c:GetFlagEffect(FLAG_ID_CHAINING)>0 then
+	if ep~=tp and c:GetFlagEffect(FLAG_ID_CHAINING)>0 then
 		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
 		if c:GetFlagEffect(m)>=3+tama.cosmicFighters_getPowerChargeBuff(c) then
 			c:ResetFlagEffect(m)
+			c:AddCounter(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1)
+		end
+	end
+	]]
+	local c=e:GetHandler()
+	if ep~=tp and c:GetFlagEffect(FLAG_ID_CHAINING)>0 then
+		if c:GetFlagEffect(m)==0 then 
+			c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_DISABLE,0,1,1)
+		else
+			local label=c:GetFlagEffectLabel(m)
+			c:SetFlagEffectLabel(m,label+1)
+		end
+		if c:GetFlagEffect(m)>=3+tama.cosmicFighters_getPowerChargeBuff(c) then
+			c:SetFlagEffectLabel(m,0)
 			c:AddCounter(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1)
 		end
 	end

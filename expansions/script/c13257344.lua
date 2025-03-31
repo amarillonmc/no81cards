@@ -81,7 +81,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP) then
 		if Duel.GetLocationCount(tp,LOCATION_SZONE)<1 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local g=Duel.SelectMatchingCard(tp,aux. cm.eqfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,c)
+		local g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,c)
 		if g:GetCount()>0 then
 			local tc=g:GetFirst()
 			Duel.Equip(tp,tc,c)

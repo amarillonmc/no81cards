@@ -42,7 +42,7 @@ function c3077.initial_effect(c)
 	e4:SetTarget(c3077.ngtg)
 	e4:SetOperation(c3077.ngop)
 	c:RegisterEffect(e4)
-end	
+end 
 function c3077.tgfilter(c)
 	return c:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED)
 end
@@ -53,7 +53,7 @@ function c3077.discon(e,tp,eg,ep,ev,re,r,rp)
 	return tg and tg:IsExists(c3077.tgfilter,1,nil) and Duel.IsChainNegatable(ev)
 end
 function c3077.cfilter(c)
-	return c:IsSetCard(0x1012) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x851) and c:IsAbleToGraveAsCost()
 end
 function c3077.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3077.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end

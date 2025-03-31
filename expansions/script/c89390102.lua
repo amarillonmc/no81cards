@@ -73,11 +73,12 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(id,0))
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Release(e:GetHandler(),REASON_EFFECT)>0 then
+	if e:GetHandler():IsRelateToEffect(e) and Duel.Release(e:GetHandler(),REASON_EFFECT)>0 then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
@@ -90,7 +91,7 @@ function s.recordcheck(c)
 	for k,v in pairs(copyt) do
 		if k and v then exg:AddCard(k) end
 	end
-	return exg:IsContains(c)
+	return exg:IsExists(Card.IsCode,1,nil,c:GetCode())
 end
 function s.desfilter(c,g,e,tp)
 	return (c:IsAttribute(ATTRIBUTE_LIGHT) or c:IsRace(RACE_MACHINE) or s.recordcheck(c)) and c:IsFaceup() and c:IsAbleToRemove() and g:IsContains(c) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)

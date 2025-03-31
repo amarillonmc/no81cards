@@ -164,14 +164,14 @@ function cm.tpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
 end
 function cm.tptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_DECK,0,nil):GetClassCount(Card.GetCode)>=6 end
+	if chk==0 then return Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_DECK,0,nil):GetClassCount(Card.GetCode)>=4 end
 end
 function cm.tpop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_DECK,0,nil)
-	if g:GetClassCount(Card.GetCode)>=6 then
+	if g:GetClassCount(Card.GetCode)>=4 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		aux.GCheckAdditional=aux.dncheck
-		local rg=g:SelectSubGroup(tp,aux.TRUE,false,6,#g)
+		local rg=g:SelectSubGroup(tp,aux.TRUE,false,4,#g)
 		aux.GCheckAdditional=nil
 		Duel.ConfirmCards(1-tp,rg)
 		Duel.ShuffleDeck(tp)

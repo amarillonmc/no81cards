@@ -22,13 +22,13 @@ function c3075.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c3075.cfilter1(c,tp)
-	return c:IsSetCard(0x1012) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x851) and c:IsAbleToGraveAsCost()
 end
 function c3075.cfilter2(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c3075.filter(c,e,tp)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_FUSION) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return c:IsSetCard(0x851) and c:IsType(TYPE_FUSION) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function c3075.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -60,11 +60,11 @@ function c3075.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	return true
 end
 function c3075.costfilter(c,e,tp,tid,ec)
-	return c:IsSetCard(0x1012) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x851) and c:IsAbleToRemoveAsCost()
 		and Duel.IsExistingMatchingCard(c3075.spfilter,tp,LOCATION_GRAVE,0,1,c,e,tp,tid,ec)
 end
 function c3075.spfilter(c,e,tp,tid,ec)
-	return c:IsSetCard(0x1012) and c:IsCanBeSpecialSummoned(e,0,tp,true,true) and c:IsPreviousLocation(LOCATION_ONFIELD) 
+	return c:IsSetCard(0x851) and c:IsCanBeSpecialSummoned(e,0,tp,true,true) and c:IsPreviousLocation(LOCATION_ONFIELD) 
 		and c:GetTurnID()==tid and c~=ec and c:IsCanBeEffectTarget(e)
 end
 function c3075.sptg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

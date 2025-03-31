@@ -1,7 +1,7 @@
 --祭礼护庭骑士 蕾奥娜·罗萨
 function c3072.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x1012),aux.NonTuner(Card.IsSetCard,0x1012),1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x851),aux.NonTuner(Card.IsSetCard,0x851),1)
 	c:EnableReviveLimit()
 	--cannot special summon
 	local e1=Effect.CreateEffect(c)
@@ -41,7 +41,7 @@ function c3072.initial_effect(c)
 	e4:SetTarget(c3072.sptg)
 	e4:SetOperation(c3072.spop)
 	c:RegisterEffect(e4)
-end	
+end 
 function c3072.ctcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeckAsCost,tp,LOCATION_REMOVED,0,2,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
@@ -71,7 +71,7 @@ function c3072.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end
 end
 function c3072.spfilter(c,e,tp)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c3072.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanDiscardDeck(tp,3) then return end
@@ -83,12 +83,12 @@ function c3072.spop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:FilterSelect(tp,c3072.spfilter,1,1,nil,e,tp)
 		g:Sub(sg)
 		if sg:GetCount()>0 then
-	        Duel.DisableShuffleCheck()
-		    Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
-		end	
+			Duel.DisableShuffleCheck()
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		end 
 		if g:GetCount()>0 then
 			Duel.DisableShuffleCheck()
 			Duel.SendtoGrave(g,REASON_EFFECT)
 		end
-	end	
+	end 
 end

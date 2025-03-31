@@ -38,9 +38,9 @@ function c3076.initial_effect(c)
 	e4:SetTarget(c3076.sptg)
 	e4:SetOperation(c3076.spop)
 	c:RegisterEffect(e4)
-end	
+end 
 function c3076.sgfilter(c)
-	return c:IsSetCard(0x1012) and c:IsAbleToGrave()
+	return c:IsSetCard(0x851) and c:IsAbleToGrave()
 end
 function c3076.sgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3076.sgfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -53,7 +53,7 @@ function c3076.sgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c3076.ovfilter(c,e,tp,mc)
-	return c:IsSetCard(0x1012) and mc:IsCanBeXyzMaterial(c)
+	return c:IsSetCard(0x851) and mc:IsCanBeXyzMaterial(c)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
 end
 function c3076.ovcon(e,tp,eg,ep,ev,re,r,rp)
@@ -68,7 +68,7 @@ end
 function c3076.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=Duel.GetFirstTarget()
 	if rc:IsRelateToEffect(e) and not Duel.GetControl(rc,tp) then
-	    if not rc:IsImmuneToEffect(e) and rc:IsAbleToChangeControler() then
+		if not rc:IsImmuneToEffect(e) and rc:IsAbleToChangeControler() then
 			Duel.Destroy(rc,REASON_EFFECT)
 		end
 		return
@@ -85,26 +85,26 @@ function c3076.ovop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Overlay(sc,mg)
 		end
 		local c=e:GetHandler()
-	    if c:IsRelateToEffect(e) and sc:IsRelateToEffect(e) and not sc:IsImmuneToEffect(e) then
-		    Duel.Overlay(sc,mg)
-	    end
+		if c:IsRelateToEffect(e) and sc:IsRelateToEffect(e) and not sc:IsImmuneToEffect(e) then
+			Duel.Overlay(sc,mg)
+		end
 		sc:SetMaterial(Group.FromCards(rc,c))
 		Duel.Overlay(sc,Group.FromCards(rc,c))
 		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
 		sc:CompleteProcedure()
-	end	
+	end 
 end
 function c3076.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c3076.filter(c,e,tp)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c3076.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-	    and Duel.IsExistingMatchingCard(c3076.filter,tp,LOCATION_REMOVED,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_REMOVED)	
+		and Duel.IsExistingMatchingCard(c3076.filter,tp,LOCATION_REMOVED,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_REMOVED)  
 end
 function c3076.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end

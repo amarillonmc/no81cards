@@ -47,7 +47,7 @@ function c3067.initial_effect(c)
 	e4:SetTarget(c3067.thtg)
 	e4:SetOperation(c3067.thop)
 	c:RegisterEffect(e4)
-end	
+end 
 function c3067.filter(c,tp)
 	return c:GetPreviousControler()==tp 
 end
@@ -58,11 +58,11 @@ function c3067.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,1) end
 end
 function c3067.reop(e,tp,eg,ep,ev,re,r,rp)
-    if not Duel.IsPlayerCanDiscardDeck(tp,1) then return end
+	if not Duel.IsPlayerCanDiscardDeck(tp,1) then return end
 	Duel.ConfirmDecktop(tp,1)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
-	if tc:IsSetCard(0x1012) and tc:IsType(TYPE_MONSTER) then
+	if tc:IsSetCard(0x851) and tc:IsType(TYPE_MONSTER) then
 		Duel.DisableShuffleCheck()
 		Duel.SendtoGrave(tc,REASON_EFFECT)
 	else
@@ -70,7 +70,7 @@ function c3067.reop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c3067.cfilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c3067.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3067.cfilter,tp,LOCATION_GRAVE,0,2,e:GetHandler()) end
@@ -89,7 +89,7 @@ function c3067.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function c3067.eqfilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsLevelBelow(6) 
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsLevelBelow(6) 
 end
 function c3067.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c3067.filter(chkc) end
@@ -122,7 +122,7 @@ function c3067.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(atk)
 		tc:RegisterEffect(e2)
 	else 
-	    Duel.SendtoGrave(tc,REASON_EFFECT)
+		Duel.SendtoGrave(tc,REASON_EFFECT)
 	end
 end
 function c3067.eqlimit(e,c)
@@ -137,19 +137,19 @@ function c3067.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Destroy(g,REASON_COST)
 end
 function c3067.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chkc then return chkc:IsLocation(LOCATION_ONFIELD) end
-    if chk==0 then return true end 
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) end
+	if chk==0 then return true end 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 end
 function c3067.thop(e,tp,eg,ep,ev,re,r,rp)
 	local d1=e:GetLabel()
 	if d1>0 then
-	    local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	    if g:GetCount()>0 then
-		    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		    local ssg=g:Select(tp,d1,d1,nil)
+		local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+		if g:GetCount()>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+			local ssg=g:Select(tp,d1,d1,nil)
 			Duel.HintSelection(ssg)
-	        Duel.SendtoHand(ssg,nil,REASON_EFFECT)
-		end	
-    end   
+			Duel.SendtoHand(ssg,nil,REASON_EFFECT)
+		end 
+	end   
 end

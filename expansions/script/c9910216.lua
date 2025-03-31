@@ -85,7 +85,7 @@ function c9910216.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9910216.splimit(e,c)
-	return not c:IsSetCard(0x6956)
+	return not c:IsRace(RACE_PSYCHO)
 end
 function c9910216.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

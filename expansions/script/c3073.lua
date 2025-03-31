@@ -23,7 +23,7 @@ function c3073.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c3073.cfilter(c)
-	return c:IsSetCard(0x1012) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x851) and c:IsAbleToGraveAsCost()
 end
 function c3073.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3073.cfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
@@ -54,7 +54,7 @@ function c3073.dcoperation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,1)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
-	if tc:IsSetCard(0x1012) then
+	if tc:IsSetCard(0x851) then
 		Duel.DisableShuffleCheck()
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 		Duel.Draw(tp,1,REASON_EFFECT)

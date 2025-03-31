@@ -31,7 +31,6 @@ function cm.initial_effect(c)
 	--Power Capsule
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,0))
-	e4:SetCategory(CATEGORY_EQUIP)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_DESTROYED)
 	e4:SetRange(LOCATION_MZONE)
@@ -97,7 +96,7 @@ end
 function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local t1=true
-	local t2=e:GetHandler():IsCanAddCounter(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1)
+	local t2=c:IsCanAddCounter(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB,1)
 	if chk==0 then return t1 or t2 end
 	local op=0
 	if t1 or t2 then
@@ -111,6 +110,7 @@ function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	e:SetLabel(op)
 	if op==1 then
+		e:SetCategory(CATEGORY_EQUIP)
 	elseif op==2 then
 		e:SetCategory(CATEGORY_COUNTER)
 	end

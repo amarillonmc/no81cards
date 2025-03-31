@@ -1,16 +1,16 @@
 --祭礼魔导商 柯特·蒂姆
 function c3069.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x1012),6,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x851),6,2)
 	c:EnableReviveLimit()
 	--immune
-    local e1=Effect.CreateEffect(c)
-    e1:SetType(EFFECT_TYPE_SINGLE)
-    e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_UNCOPYABLE)
-    e1:SetRange(LOCATION_MZONE)
-    e1:SetCode(EFFECT_IMMUNE_EFFECT)
-    e1:SetValue(c3069.efilter)
-    c:RegisterEffect(e1)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetValue(c3069.efilter)
+	c:RegisterEffect(e1)
 	--to hand 
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(3069,0))
@@ -31,12 +31,12 @@ function c3069.initial_effect(c)
 	e3:SetTarget(c3069.ovtg)
 	e3:SetOperation(c3069.ovop)
 	c:RegisterEffect(e3)
-end	
+end 
 function c3069.efilter(e,te)
-    return te:IsActiveType(TYPE_SPELL+TYPE_TRAP) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
+	return te:IsActiveType(TYPE_SPELL+TYPE_TRAP) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
 end
 function c3069.cfilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_SPELL)
+	return c:IsSetCard(0x851) and c:IsType(TYPE_SPELL)
 end
 function c3069.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(c3069.cfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST)
@@ -59,7 +59,7 @@ end
 function c3069.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=nil
 	if e:GetLabel()==0 then
-	    g=Duel.SelectMatchingCard(tp,c3069.cfilter,tp,LOCATION_DECK,0,1,1,nil)
+		g=Duel.SelectMatchingCard(tp,c3069.cfilter,tp,LOCATION_DECK,0,1,1,nil)
 	else
 		g=Duel.SelectMatchingCard(tp,c3069.cfilter,tp,LOCATION_DECK,0,2,2,nil)
 	end
@@ -77,7 +77,7 @@ end
 function c3069.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-	    local g=Duel.SelectMatchingCard(tp,Card.IsType,tp,0,LOCATION_SZONE,1,2,nil,TYPE_SPELL+TYPE_TRAP)
+		local g=Duel.SelectMatchingCard(tp,Card.IsType,tp,0,LOCATION_SZONE,1,2,nil,TYPE_SPELL+TYPE_TRAP)
 		if g:GetCount()>0 then
 			Duel.Overlay(c,g)
 		end

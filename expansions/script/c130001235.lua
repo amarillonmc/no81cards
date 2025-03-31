@@ -26,14 +26,14 @@ function c130001235.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c130001235.cfilter(c,tp)
-	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsSetCard(0xa001)
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsSetCard(0x852)
 		and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:GetPreviousControler()==tp
 end
 function c130001235.desfilter1(c)
 	return c:IsAbleToRemove()
 end
 function c130001235.spfilter(c,e,tp)
-	return c:IsSetCard(0xa001) and c:GetLevel()~=6 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x852) and c:GetLevel()~=6 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c130001235.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -67,7 +67,7 @@ function c130001235.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c130001235.spfilter2(c,e,tp)
-	return c:IsSetCard(0xa001) and c:GetLevel()~=6 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x852) and c:GetLevel()~=6 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c130001235.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

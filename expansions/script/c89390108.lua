@@ -72,6 +72,7 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(id,0))
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
@@ -83,7 +84,7 @@ function s.thfilter(c)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.Remove(c,POS_FACEUP,REASON_EFFECT)>0 then
+	if c:IsRelateToEffect(e) and Duel.Remove(c,POS_FACEUP,REASON_EFFECT)>0 then
 		local g1=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_HAND,0,nil)
 		if #g1>0 then
 			Duel.Hint(HINT_SELECTMSG,sp,HINTMSG_CONFIRM)
@@ -91,7 +92,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,rg1)
 			local g2=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
 			if #g2>0 then
-				Duel.Hint(HINT_SELECTMSG,sp,HINTMSG_ATOHAND)
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 				local rg2=g2:Select(tp,1,1,nil)
 				Duel.SendtoHand(rg2,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,rg2)
@@ -100,6 +101,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 			end
 		else
 			Duel.ConfirmCards(1-tp,Duel.GetFieldGroup(tp,LOCATION_HAND,0))
+			Duel.ShuffleHand(1-tp)
 		end
 	end
 end
@@ -112,7 +114,7 @@ function s.recordcheck(c)
 	for k,v in pairs(copyt) do
 		if k and v then exg:AddCard(k) end
 	end
-	return exg:IsContains(c)
+	return exg:IsExists(Card.IsCode,1,nil,c:GetCode())
 end
 function s.desfilter(c,g,e,tp)
 	return (c:IsAttribute(ATTRIBUTE_DARK) or c:IsRace(RACE_SPELLCASTER) or s.recordcheck(c)) and c:IsFaceup() and c:IsAbleToRemove() and g:IsContains(c) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)

@@ -3,7 +3,7 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_TOGRAVE)
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_TOGRAVE+CATEGORY_POSITION+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(cm.target)
@@ -36,7 +36,7 @@ function cm.efilter(e)
 	return e:GetCode()==EVENT_SUMMON_SUCCESS and e:IsActivated() and not e:IsHasType(EFFECT_TYPE_SINGLE)
 end
 function cm.efilter2(e)
-	return e:IsHasCategory(CATEGORY_REMOVE) and e:IsActivated()
+	return (e:IsHasCategory(CATEGORY_TOHAND) or e:IsHasCategory(CATEGORY_DRAW)) and e:IsActivated()
 end
 function cm.spfilter(c)
 	return c:IsOriginalEffectProperty(cm.efilter) and c:IsAbleToHand()
@@ -46,6 +46,13 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
 end
+local _IsCanTurnSet=Card.IsCanTurnSet
+function Card.IsCanTurnSet(c)
+	return (c:IsSSetable(true) and c:IsLocation(LOCATION_SZONE)) or ((_IsCanTurnSet(c) and not c:IsLocation(LOCATION_SZONE) and not c:IsStatus(STATUS_BATTLE_DESTROYED)))
+end
+function cm.dsfilter(c)
+	return c:IsFaceup() and c:IsOnField() and c:IsCanTurnSet() and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -53,8 +60,27 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local rg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(e))
-		Duel.HintSelection(rg)
-		Duel.SendtoGrave(rg,REASON_EFFECT)
+		--Duel.HintSelection(rg)
+		local rc=rg:GetFirst()
+		local set=false --cm.dsfilter(rc) or (not rc:IsOnField() and rc:IsSSetable())
+		local sp=false --not rc:IsOnField() and rc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetMZoneCount(tp)>0
+		if set or sp then
+			local opt=aux.SelectFromOptions(tp,{true,aux.Stringid(m,1)},{set,aux.Stringid(m,2)},{sp,aux.Stringid(m,3)})
+			if opt==1 then
+				Duel.SendtoGrave(rg,REASON_EFFECT)
+			elseif opt==2 then
+				if rc:IsOnField() then
+					rc:CancelToGrave()
+					Duel.ChangePosition(rg,POS_FACEDOWN_DEFENSE)
+				else
+					Duel.SSet(tp,rg,tp,false)
+				end
+			else
+				if Duel.SpecialSummon(rc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)>0 then Duel.ConfirmCards(1-tp,rc) end
+			end
+		else
+			Duel.SendtoGrave(rg,REASON_EFFECT)
+		end
 	end
 end
 function cm.spfilter2(c)

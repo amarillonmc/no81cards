@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_EQUIP)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetValue(1000)
+	e1:SetValue(300)
 	c:RegisterEffect(e1)
 	--actlimit
 	local e3=Effect.CreateEffect(c)
@@ -35,6 +35,15 @@ function cm.initial_effect(c)
 	e4:SetTargetRange(LOCATION_MZONE,0)
 	e4:SetTarget(cm.target)
 	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(m,0))
+	e5:SetCategory(CATEGORY_ATKCHANGE)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e5:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
+	e5:SetRange(LOCATION_SZONE)
+	e5:SetCondition(cm.atkcon)
+	e5:SetOperation(cm.atkop)
+	c:RegisterEffect(e5)
 	
 end
 function cm.eqlimit(e,c)
@@ -50,4 +59,23 @@ end
 function cm.target(e,c)
 	local f=tama.cosmicFighters_equipGetFormation(e:GetHandler())
 	return f and f:IsContains(c)
+end
+function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetAttackTarget()
+	local f=tama.cosmicFighters_equipGetFormation(e:GetHandler())
+	return f and Duel.GetAttacker() and f:IsContains(Duel.GetAttacker()) and tc and tc:IsFaceup() and tc:IsControler(1-tp)
+end
+function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ec=c:GetEquipTarget()
+	local tc=Duel.GetAttackTarget()
+	if ec and tc and ec:IsFaceup() and tc:IsFaceup() then
+		local val=math.min(tc:GetAttack(),tc:GetDefense())
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(val)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL)
+		ec:RegisterEffect(e1)
+	end
 end

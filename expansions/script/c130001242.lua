@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	local e3=rsef.STO(c,EVENT_SPSUMMON_SUCCESS,{m,2},nil,"tg,rm","de,dsp",nil,nil,rsop.target({cm.tgfilter,"tg",LOCATION_SZONE },{Card.IsAbleToRemove,"rm",0,LOCATION_MZONE,true,true}),cm.rmop)
 end
 function cm.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0xa001)
+	return c:IsFaceup() and c:IsSetCard(0x852)
 end
 function cm.desfilter(c,e,tp)
 	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,c)

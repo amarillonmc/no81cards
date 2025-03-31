@@ -1,6 +1,6 @@
 --祭礼学者 阿莱亚
 function c3051.initial_effect(c)
-    --to hand
+	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(3051,0))
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
@@ -25,12 +25,12 @@ function c3051.initial_effect(c)
 	e4:SetTarget(c3051.postg)
 	e4:SetOperation(c3051.posop)
 	c:RegisterEffect(e4)
-end	
+end 
 function c3051.cfilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckAsCost()
 end
 function c3051.afilter(c)
-	return c:IsSetCard(0x1012) and c:IsType(TYPE_MONSTER) and c:GetLevel()==6 and c:IsAbleToHand()
+	return c:IsSetCard(0x851) and c:IsType(TYPE_MONSTER) and c:GetLevel()==6 and c:IsAbleToHand()
 end
 function c3051.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c3051.cfilter,tp,LOCATION_REMOVED,0,1,nil) end
@@ -66,5 +66,5 @@ function c3051.posop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.ChangePosition(tc,POS_FACEUP_DEFENCE,0,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,true)
-    end
+	end
 end

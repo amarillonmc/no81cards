@@ -55,7 +55,8 @@ function c72412180.regop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c72412180.thfilter(c,tp)
 	local res=Duel.IsPlayerAffectedByEffect(tp,9911020) and c:IsSetCard(0x9728) and c:IsType(TYPE_MONSTER)
-	return (c:IsCode(72412190) or res) and c:IsAbleToHand()
+	local res2=Duel.GetFlagEffect(tp,72421261)<=0 and c:IsCode(72421260)
+	return (c:IsCode(72412190) or res or res2) and c:IsAbleToHand()
 end
 function c72412180.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnCount()~=e:GetLabel() and Duel.IsExistingMatchingCard(c72412180.thfilter,tp,LOCATION_DECK,0,1,nil,tp)
@@ -68,5 +69,8 @@ function c72412180.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
+		if g:GetFirst():GetCode()==72412160 and not Duel.IsPlayerAffectedByEffect(tp,9911020) then
+		   Duel.RegisterFlagEffect(tp,72421261,RESET_PHASE+PHASE_END,0,1)
+		end
 	end
 end
