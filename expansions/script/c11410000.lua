@@ -97,16 +97,42 @@ if not Duel.LoadScript and loadfile then
 		return require_list[str]
 	end
 end
+if not dofile and Duel.LoadScript then
+	function dofile(str)
+		require_list=require_list or {}
+		local name=str
+		for word in string.gmatch(str,"%w+") do
+			name=word
+		end
+		if not require_list[str] then
+			require_list[str]=Duel.LoadScript(name)
+		end
+		return require_list[str]
+	end
+	function loadfile(str)
+		require_list=require_list or {}
+		local name=str
+		for word in string.gmatch(str,"%w+") do
+			name=word
+		end
+		return function()
+					if not require_list[str] then
+						require_list[str]=Duel.LoadScript(name)
+					end
+					return require_list[str]
+				end
+	end
+end
 function cm.nnfilter(c,ec)
-	if c:GetOriginalType()==0x11 or c:GetOriginalType()==0x1011 then return false end
+	if c:GetOriginalType()&0x11==0x11 and c:GetOriginalType()&TYPE_PENDULUM==0 then return false end
 	if not c.initial_effect then return true end
 	return false
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	--if apricot_nightfall_adjust then return end
 	apricot_nightfall_adjust=true
-	e:Reset()
 	local c=e:GetHandler()
+	e:Reset()
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
 	if c:IsLocation(LOCATION_DECK) and #g>=36 then
@@ -120,16 +146,22 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		if not cm.r then
 			cm.r=Duel.GetFieldGroup(0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_EXTRA):GetSum(Card.GetCode)
 		end
+		--[[local tab={}
+		for i=1,10000000 do
+			tab[cm.r]=true
+			cm.roll(1,#g)
+			if i%100000==0 then Debug.Message(cm.r) end
+			if tab[cm.r] then Debug.Message(i.."  "..cm.r) end
+		end--]]
 		local ct=cm.roll(1,#g)-1
 		local tc=g:Filter(function(c) return c:GetSequence()==ct end,nil):GetFirst()
 		if KOISHI_CHECK then
 			c:SetEntityCode(tc:GetOriginalCode())
-			local ini=cm.initial_effect
-			cm.initial_effect=function() end
-			c:ReplaceEffect(m,0)
-			c:SetStatus(STATUS_EFFECT_REPLACED,false)
-			cm.initial_effect=ini
-			if tc.initial_effect then tc.initial_effect(c) end
+			if tc:GetOriginalType()&0x11~=0x11 or tc:GetOriginalType()&TYPE_PENDULUM>0 then
+				c:ReplaceEffect(tc:GetOriginalCode(),0)
+			else
+				c:ReplaceEffect(80316585,0)
+			end
 			Duel.DisableShuffleCheck()
 			Duel.Exile(tc,0)
 		else
@@ -165,7 +197,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			GetID=function()
 				return _G["c"..int],int,int<100000000 and 1 or 100
 			end
-			require("expansions/script/c"..int)
+			pcall(require,"expansions/script/c"..int)
 			local ini=ac.initial_effect
 			if ini then stack[#stack+1]=ac end
 		end

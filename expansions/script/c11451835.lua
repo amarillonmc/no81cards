@@ -185,13 +185,10 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 		local tc=g2:Select(tp,1,1,nil):GetFirst()
 		local code=tc:GetOriginalCode()
 		if not fc:IsImmuneToEffect(e) then
-			if tc:GetOriginalType()&TYPE_NORMAL==0 then
+			if tc:GetOriginalType()&0x11~=0x11 or tc:GetOriginalType()&TYPE_PENDULUM>0 then
 				fc:ReplaceEffect(code,RESET_EVENT+RESETS_STANDARD,1)
 			else
-				local ini=cm.initial_effect
-				cm.initial_effect=function() end
-				fc:ReplaceEffect(m,RESET_EVENT+RESETS_STANDARD,1)
-				cm.initial_effect=ini
+				fc:ReplaceEffect(80316585,RESET_EVENT+RESETS_STANDARD,1)
 			end
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD)

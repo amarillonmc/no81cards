@@ -44,10 +44,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,58192742,0,0x11,300,200,1,RACE_INSECT,ATTRIBUTE_EARTH) then
 		if KOISHI_CHECK then
 			c:SetEntityCode(58192742,true)
-			local ini=cm.initial_effect
-			cm.initial_effect=function() end
-			c:ReplaceEffect(m,0)
-			cm.initial_effect=ini
+			c:ReplaceEffect(80316585,0)
 		else
 			Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
 			c=Duel.CreateToken(tp,58192742)

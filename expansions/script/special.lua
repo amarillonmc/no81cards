@@ -182,7 +182,15 @@ function Auxiliary.PreloadUds()
 			return 0
 		end
 	end
-
+	if not Card.GetLinkMarker then
+		function Card.GetLinkMarker(c)
+			local res=0
+			for i=0,8 do
+				if i~=4 and c:IsLinkMarker(1<<i) then res=res|(1<<i)
+			end
+			return res
+		end
+	end
 	local _CRegisterEffect=Card.RegisterEffect
 	function Card.RegisterEffect(c,e,...)
 		if aux.GetValueType(c)~="Card" then error("Card.RegisterEffect没有输入正确的Card参数。",2) return end

@@ -68,6 +68,7 @@ function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local g=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,tc,tc:GetLevel())
 	if tc and c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and (not tc:IsLocation(LOCATION_MZONE) or tc:IsFaceup()) and #g>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 		local fc=g:Select(tp,1,1,nil):GetFirst()
 		local code=tc:GetOriginalCode()
 		local e1=Effect.CreateEffect(c)
@@ -78,13 +79,10 @@ function cm.cpop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		fc:RegisterEffect(e1)
 		if fc:IsImmuneToEffect(e) then return end
-		if tc:GetOriginalType()&TYPE_NORMAL==0 then
+		if tc:GetOriginalType()&0x11~=0x11 or tc:GetOriginalType()&TYPE_PENDULUM>0 then
 			fc:ReplaceEffect(code,RESET_EVENT+RESETS_STANDARD,1)
 		else
-			local ini=cm.initial_effect
-			cm.initial_effect=function() end
-			fc:ReplaceEffect(m,RESET_EVENT+RESETS_STANDARD,1)
-			cm.initial_effect=ini
+			fc:ReplaceEffect(80316585,RESET_EVENT+RESETS_STANDARD,1)
 		end
 	end
 end

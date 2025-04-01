@@ -61,12 +61,12 @@ end
 function s.stop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not (tc:IsRelateToEffect(e) and tc:IsControler(tp) and not tc:IsImmuneToEffect(e)) then return end
-	local zone=1<<tc:GetSequence()
+	local zone=1<<4-tc:GetSequence()
 	local oc=Duel.GetMatchingGroup(s.seqfilter,tp,0,LOCATION_MZONE,nil,tc:GetSequence()):GetFirst()
 	if oc then
 		Duel.Destroy(oc,REASON_RULE)
 	end
-	if Duel.SelectYesNo(tp,aux.Stringid(id,2)) and Duel.GetControl(tc,1-tp,0,0,zone) then
+	if Duel.GetControl(tc,1-tp,0,0,zone) then
 		local oc=Duel.GetMatchingGroup(s.seqfilter,tp,0,LOCATION_SZONE,nil,tc:GetSequence()):GetFirst()
 		if oc then
 			Duel.Destroy(oc,REASON_RULE)
@@ -89,5 +89,5 @@ function s.stop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.seqfilter(c,seq)
-	return c:GetSequence()==seq
+	return 4-c:GetSequence()==seq
 end

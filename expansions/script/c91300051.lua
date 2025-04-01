@@ -71,7 +71,7 @@ function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 		return false
 	end
 end
-function s.thfilter(c,chk)
+function s.thfilter(c,e,chk)
 	return c:IsRace(RACE_ZOMBIE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -43,6 +43,7 @@ function c28321714.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(p,ct)
 	local g=Duel.GetDecktopGroup(p,ct)
 	if #g>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:FilterSelect(tp,c28321714.thfilter,0,#g,nil)
 		if #sg>0 then
 			Duel.DisableShuffleCheck()

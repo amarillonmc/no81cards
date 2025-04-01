@@ -48,14 +48,10 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		if KOISHI_CHECK then
 			local code=g:GetFirst():GetOriginalCode()
 			c:SetEntityCode(code)
-			local ini=cm.initial_effect
-			cm.initial_effect=function() end
-			c:ReplaceEffect(m,0)
-			cm.initial_effect=ini
-			if not g:GetFirst():IsType(TYPE_NORMAL) or g:GetFirst():IsType(TYPE_PENDULUM) then
-				local cn=getmetatable(g:GetFirst())
-				if cn then cn.initial_effect(c) end
-				--c:ReplaceEffect(code,0)
+			if g:GetFirst():GetOriginalType()&0x11~=0x11 or g:GetFirst():GetOriginalType()&TYPE_PENDULUM>0 then
+				c:ReplaceEffect(code,0)
+			else
+				c:ReplaceEffect(80316585,0)
 			end
 			Duel.ConfirmCards(1-tp,c)
 			Duel.ShuffleDeck(tp)
