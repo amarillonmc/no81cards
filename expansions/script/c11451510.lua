@@ -203,7 +203,7 @@ function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 		local off=1
 		local ops={} 
 		local opval={}
-		local b1=e:GetLabel()&(0x8-0x1)>0
+		local b1=e:GetLabel()&(0x8-0x1)>0 and re:GetHandler():IsStatus(STATUS_CHAINING)
 		local b2=e:GetLabel()&(0x40-0x8)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 		local b3=e:GetLabel()&(0x200-0x40)>0 and re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsAbleToRemove()
 		local b4=e:GetLabel()&(0x1000-0x200)>0

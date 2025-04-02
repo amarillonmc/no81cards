@@ -82,8 +82,8 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
-	if te and aux.GetValueType(te)=="Effect" and te:GetHandler():IsRelateToEffect(e) and Duel.SendtoDeck(te:GetHandler(),nil,2,REASON_EFFECT)>0 then
-		if te:GetHandler():IsLocation(LOCATION_DECK) then Duel.ShuffleDeck(tp) end
+	if te and aux.GetValueType(te)=="Effect" and te:GetHandler():IsRelateToEffect(e) and Duel.SendtoDeck(te:GetHandler(),nil,2,REASON_EFFECT)>0 and te:GetHandler():IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
+		Duel.ShuffleDeck(tp)
 		e:SetLabelObject(te:GetLabelObject())
 		local op=te:GetOperation()
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end
@@ -106,7 +106,7 @@ function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 		local off=1
 		local ops={} 
 		local opval={}
-		local b1=e:GetLabel()&(0x8-0x1)>0
+		local b1=e:GetLabel()&(0x8-0x1)>0 and re:GetHandler():IsStatus(STATUS_CHAINING)
 		local b2=e:GetLabel()&(0x40-0x8)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 		local b3=e:GetLabel()&(0x200-0x40)>0 and re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsAbleToRemove()
 		local b4=e:GetLabel()&(0x1000-0x200)>0
