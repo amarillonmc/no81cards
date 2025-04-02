@@ -14,8 +14,9 @@ function c28316050.initial_effect(c)
 	c:RegisterEffect(e1)
 	--noctchill dice
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DICE+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_DICE+CATEGORY_DESTROY+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_IGNITION)
+	--e2:SetProperty(EFFECT_FLAG_DICE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38316050)
 	e2:SetTarget(c28316050.dctg)
@@ -28,13 +29,13 @@ function c28316050.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetOperation(c28316050.diceop)
 	c:RegisterEffect(e3)
-c28316050.toss_dice=true
+--c28316050.toss_dice=true
 end
 function c28316050.cfilter(c)
-	return c:IsCode(28346765) and c:IsFaceup()
+	return c:IsType(TYPE_LINK) and c:IsFaceup()
 end
 function c28316050.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c28316050.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	return Duel.IsExistingMatchingCard(c28316050.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c28316050.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -59,18 +60,18 @@ function c28316050.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28316050.thfilter(c)
-	return c:IsSetCard(0x286,0x289) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return (c:IsSetCard(0x289) or c:IsSetCard(0x286) and c:IsType(TYPE_MONSTER)) and c:IsAbleToHand()
 end
 function c28316050.dctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(c28316050.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(c28316050.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
 end
 function c28316050.dcop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) then return end
-	if Duel.TossDice(tp,1)==6 and Duel.IsExistingMatchingCard(c28316050.thfilter,tp,LOCATION_DECK,0,1,nil) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
-		Duel.SendtoGrave(g,REASON_EFFECT)
+	if Duel.TossDice(tp,1)==6 and Duel.IsExistingMatchingCard(nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+		Duel.HintSelection(g)
+		if Duel.Destroy(g,REASON_EFFECT)==0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tg=Duel.SelectMatchingCard(tp,c28316050.thfilter,tp,LOCATION_DECK,0,1,2,nil)
 		if tg:GetCount()>0 then
