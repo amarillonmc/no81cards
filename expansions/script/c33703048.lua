@@ -12,10 +12,10 @@ function cm.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e0:SetCode(EVENT_DESTROYED)
 	e0:SetRange(LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_ONFIELD+LOCATION_REMOVED)
-	e0:SetCondition(cm.calcon)
+	--e0:SetCondition(cm.calcon)
 	e0:SetOperation(cm.calop)
 	e0:SetLabel(0)
-	e0:SetReset(EVENT_PHASE+PHASE_END)
+	--e0:SetReset(EVENT_PHASE+PHASE_END)
 	c:RegisterEffect(e0)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
@@ -49,8 +49,7 @@ function cm.calop(e,tp,eg,ep,ev,re,r,rp)
 		tc=eg:GetNext()
 	end
 	if g:GetCount()~=0 then
-		local temp=e:GetLabel()
-		e:SetLabel(temp+1)
+		Duel.RegisterFlagEffect(1-rp,m,RESET_PHASE+PHASE_END,0,1)
 	end
 	
 end
@@ -63,7 +62,7 @@ function cm.splimit(e)
 end
 
 function cm.sprcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetLabelObject():GetLabel()~=0 and Duel.GetTurnPlayer()==tp 
+	return Duel.GetFlagEffect(tp,m)>0
 end
 function cm.rem(g)
 	return g:GetClassCount(Card.GetCode)==1 and g:GetCount()==3
@@ -85,12 +84,12 @@ function cm.sprop(e,tp,eg,ep,ev,re,r,rp)
 						local e1=Effect.CreateEffect(e:GetHandler())
 						e1:SetType(EFFECT_TYPE_SINGLE)
 						e1:SetCode(EFFECT_SET_ATTACK)
-						e1:SetValue(e:GetLabelObject():GetLabel()*2000)
+						e1:SetValue(Duel.GetFlagEffect(tp,m)*2000)
 						e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 						e:GetHandler():RegisterEffect(e1)
 						local e2=e1:Clone()
 						e2:SetCode(EFFECT_SET_DEFENSE)
-						e2:SetValue(e:GetLabelObject():GetLabel()*2000)
+						e2:SetValue(Duel.GetFlagEffect(tp,m)*2000)
 						e:GetHandler():RegisterEffect(e2)
 					end
 				end
@@ -102,4 +101,4 @@ function cm.sprop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spfilter(c)
 	return c:IsType(TYPE_MONSTER)
-end	
+end 

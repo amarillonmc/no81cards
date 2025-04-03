@@ -53,7 +53,7 @@ function s.ngcfilter(c)
 end
 function s.handcon(e)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)>0
-		and not Duel.IsExistingMatchingCard(s.thcfilter,tp,LOCATION_MZONE,0,1,nil)
+		and not Duel.IsExistingMatchingCard(s.thcfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
 function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())

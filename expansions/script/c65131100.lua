@@ -36,7 +36,7 @@ function s.initial_effect(c)
 		ge22:SetOperation(s.stodop)
 		Duel.RegisterEffect(ge22,0)
 
-		_ConfirmCards=Duel.ConfirmCards
+		local _ConfirmCards=Duel.ConfirmCards
 		function Duel.ConfirmCards(player,targets)
 			_ConfirmCards(player,targets)
 			if aux.GetValueType(targets)=="Card" then
@@ -58,7 +58,30 @@ function s.initial_effect(c)
 				end
 			end
 		end
-		_SortDecktop=Duel.SortDecktop
+		local _SSet=Duel.SSet
+		function Duel.SSet(player,targets,tplayer,bool)
+			local count=_SSet(player,targets,tplayer,bool)
+			if bool and bool==true and aux.GetValueType(targets)=="Card" then
+				local tc=targets
+				if tc:GetOriginalCode()==id then
+					Duel.Hint(HINT_CARD,0,86541496)
+					Duel.Win(tc:GetOwner(),0x0)
+				end
+			end
+			if bool and bool==true and aux.GetValueType(targets)=="Group" then
+				local sg=targets
+				local tc=sg:GetFirst() 
+				while tc do
+					if tc:GetOriginalCode()==id then
+						Duel.Hint(HINT_CARD,0,86541496)
+						Duel.Win(tc:GetOwner(),0x0)
+					end
+					tc=sg:GetNext()
+				end
+			end
+			return count
+		end
+		local _SortDecktop=Duel.SortDecktop
 		function Duel.SortDecktop(sort_player,target_player,count)
 			_SortDecktop(sort_player,target_player,count)
 			local sg=Duel.GetDecktopGroup(target_player,count)

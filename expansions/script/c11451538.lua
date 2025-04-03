@@ -38,7 +38,7 @@ function cm.spfilter(c,e,tp)
 	return c:IsRace(RACE_MACHINE) and c:IsLevel(10) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.fselect(g,tp)
-	return Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,g,tp)
+	return aux.dabcheck(g) and Duel.IsExistingMatchingCard(cm.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,g,tp)
 end
 function cm.xyzfilter(c,g,tp)
 	return c:IsRace(RACE_MACHINE) and c:IsXyzSummonable(g,#g,#g) --and Duel.GetLocationCountFromEx(tp,tp,g,c)>0

@@ -161,7 +161,7 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetReset(RESET_PHASE+PHASE_DAMAGE)
+		e1:SetReset(RESET_PHASE+PHASE_DAMAGE+RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(lab*500)
 		c:RegisterEffect(e1)
 	end
@@ -183,6 +183,12 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATTACKTARGET)
 			local tc=g:Select(tp,1,1,nil):GetFirst()
 			if tc then
+				--[[local e2=Effect.CreateEffect(c)
+				e2:SetType(EFFECT_TYPE_SINGLE)
+				e2:SetCode(EFFECT_CHANGE_INVOLVING_BATTLE_DAMAGE)
+				e2:SetValue(HALF_DAMAGE)
+				e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE)
+				c:RegisterEffect(e2)--]]
 				Duel.CalculateDamage(c,tc)
 			end
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
