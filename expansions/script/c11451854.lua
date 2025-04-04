@@ -275,7 +275,7 @@ function cm.chkval0(e,te)
 		if e:GetHandler():GetFlagEffect(11451854)==0 then
 			local prop=EFFECT_FLAG_SET_AVAILABLE
 			if PNFL_INFLUENCED_HINT or PNFL_DEBUG then prop=prop|EFFECT_FLAG_CLIENT_HINT end
-			e:GetHandler():RegisterFlagEffect(11451854,RESET_EVENT+0x1fc0000,prop,1,0,aux.Stringid(11451854,2))
+			e:GetHandler():RegisterFlagEffect(11451854,RESET_EVENT+RESETS_STANDARD-RESET_LEAVE+RESET_MSCHANGE,prop,1,0,aux.Stringid(11451854,2))
 		end
 	end
 	return false

@@ -71,8 +71,8 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(g) do
 		tc:RegisterFlagEffect(m,0,0,1)
 		local te=tc:GetActivateEffect()
-		if te and (not te:GetDescription() or te:GetDescription()==0) then
-			te:SetDescription(aux.Stringid(m,0))
+		if te then
+			if (not te:GetDescription() or te:GetDescription()==0) then te:SetDescription(aux.Stringid(m,0)) end
 			local e5=Effect.CreateEffect(tc)
 			e5:SetDescription(aux.Stringid(m,1))
 			e5:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
@@ -126,43 +126,42 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.HintSelection(g)
 	if Duel.Destroy(g,REASON_EFFECT)>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-		if #tg>0 and Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)>0 then
-			local eset={e:GetHandler():GetActivateEffect()}
-			local tab,tab2={},{}
-			for i,te in pairs(eset) do
-				if te~=e then
-					local tg=te:GetTarget()
-					local op=te:GetOperation()
-					if (not tg or (tg and tg(te,tp,eg,ep,ev,re,r,rp,0))) and op then
-						tab[#tab+1]=te:GetDescription()
-						tab2[#tab]=i
-					end
-				end
+		if #tg>0 then Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP) end
+	end
+	local eset={e:GetHandler():GetActivateEffect()}
+	local tab,tab2={},{}
+	for i,te in pairs(eset) do
+		if te~=e then
+			local tg=te:GetTarget()
+			local op=te:GetOperation()
+			if (not tg or (tg and tg(te,tp,eg,ep,ev,re,r,rp,0))) and op then
+				tab[#tab+1]=te:GetDescription()
+				tab2[#tab]=i
 			end
-			if #tab==0 then return end
-			tab[#tab+1]=aux.Stringid(m,3)
-			tab2[#tab]=0
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
-			local opt=tab2[1+Duel.SelectOption(tp,table.unpack(tab))]
-			if opt==0 then return end
-			local te=eset[opt]
-			local target=te:GetTarget()
-			local operation=te:GetOperation()
-			Duel.ClearTargetCard()
-			if target then target(te,tp,eg,ep,ev,re,r,rp,1) end
-			local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-			if g then
-				Duel.HintSelection(g)
-				for fc in aux.Next(g) do
-					fc:CreateEffectRelation(te)
-				end
-			end
-			if operation then operation(te,tp,eg,ep,ev,re,r,rp) end
-			if g then
-				for fc in aux.Next(g) do
-					fc:ReleaseEffectRelation(te)
-				end
-			end
+		end
+	end
+	if #tab==0 then return end
+	tab[#tab+1]=aux.Stringid(m,3)
+	tab2[#tab]=0
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
+	local opt=tab2[1+Duel.SelectOption(tp,table.unpack(tab))]
+	if opt==0 then return end
+	local te=eset[opt]
+	local target=te:GetTarget()
+	local operation=te:GetOperation()
+	Duel.ClearTargetCard()
+	if target then target(te,tp,eg,ep,ev,re,r,rp,1) end
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	if g then
+		Duel.HintSelection(g)
+		for fc in aux.Next(g) do
+			fc:CreateEffectRelation(te)
+		end
+	end
+	if operation then operation(te,tp,eg,ep,ev,re,r,rp) end
+	if g then
+		for fc in aux.Next(g) do
+			fc:ReleaseEffectRelation(te)
 		end
 	end
 end
