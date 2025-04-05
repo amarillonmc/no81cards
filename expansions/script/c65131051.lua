@@ -189,8 +189,10 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	if c:GetFlagEffectLabel(id)==fid then
 		Duel.Hint(HINT_CARD,0,id)
 		local ex=0x60
-		if not Duel.CheckLocation(pi,LOCATION_MZONE,i) then 
-			ex=ex|2^i
+		for i=0,4 do
+			if not Duel.CheckLocation(pi,LOCATION_MZONE,i) then 
+				ex=ex|2^i
+			end
 		end
 		if ex==0x7f then
 			Duel.SendtoGrave(c,REASON_RULE+REASON_RETURN)

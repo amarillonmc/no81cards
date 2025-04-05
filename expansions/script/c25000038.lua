@@ -43,7 +43,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 			res=1
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local g=Duel.SelectMatchingCard(tp,s.rmfilter,tp,0,LOCATION_MZONE,1,1,nil)
+			local g=Duel.GetMatchingGroup(s.rmfilter,tp,0,LOCATION_MZONE,nil)
 			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 		end
 		if res==0
