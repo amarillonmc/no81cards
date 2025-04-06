@@ -50,8 +50,8 @@ function c28315943.thfilter(c)
 	return c:IsSetCard(0x283) and c:IsLevel(4) and c:IsAbleToHand()
 end
 function c28315943.recop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Recover(tp,1000,REASON_EFFECT)
-	local b1=Duel.GetLP(tp)>8000 and Duel.IsExistingMatchingCard(c28315943.thfilter,tp,LOCATION_DECK,0,1,nil)
+	if Duel.Recover(tp,1000,REASON_EFFECT)==0 then return end
+	local b1=Duel.IsExistingMatchingCard(c28315943.thfilter,tp,LOCATION_DECK,0,1,nil)
 	local b2=Duel.GetLP(tp)>=10000 and Duel.IsPlayerCanDraw(tp,1)
 	local b3=true
 	if not (b1 or b2) then return end

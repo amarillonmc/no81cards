@@ -86,7 +86,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local operation=c:GetOperation()
 	if operation then operation(e,tp,eg,ep,ev,re,r,rp) end
 	if r and not e:GetHandler():IsLocation(LOCATION_GRAVE) and not e:GetHandler():IsLocation(LOCATION_REMOVED) then
-		Duel.BreakEffect()
+		--Duel.BreakEffect()
 		local ph=Duel.GetCurrentPhase()
 		if Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)~=0 and e:GetHandler():IsLocation(LOCATION_GRAVE) then -- and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE then
 			--Duel.SkipPhase(Duel.GetTurnPlayer(),PHASE_BATTLE,RESET_PHASE+PHASE_BATTLE_STEP,1)
@@ -106,7 +106,7 @@ function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and Duel.GetCurrentChain()~=0
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0xc780000+RESET_CHAIN,0,1)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0xc7a0000+RESET_CHAIN,0,1)
 end
 function cm.condition4(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)>0 and Duel.GetCurrentChain()==1

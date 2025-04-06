@@ -32,7 +32,7 @@ end
 
 --===== 效果①：回收墓地「闡」怪兽 =====--
 function s.thfilter1(c)
-	return c:IsSetCard(0x956) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x966) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 
 function s.thtg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

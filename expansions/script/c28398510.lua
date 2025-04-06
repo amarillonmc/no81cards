@@ -11,22 +11,23 @@ function c28398510.initial_effect(c)
 	e1:SetTarget(c28398510.target)
 	e1:SetOperation(c28398510.activate)
 	c:RegisterEffect(e1)
-	--remove
+	--sleep?
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_REMOVE)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_REMOVE)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCategory(CATEGORY_POSITION)
+	e2:SetType(EFFECT_TYPE_ACTIVATE)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,28398510)
-	e2:SetTarget(c28398510.rmtg)
-	e2:SetOperation(c28398510.rmop)
+	e2:SetTarget(c28398510.sltg)
+	e2:SetOperation(c28398510.slop)
 	c:RegisterEffect(e2)
 end
 function c28398510.sfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()
 end
 function c28398510.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x283)
+	return c:IsFaceup() and c:IsRace(RACE_FAIRY)
 end
 function c28398510.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c28398510.sfilter(chkc) end
@@ -36,7 +37,7 @@ function c28398510.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.SelectTarget(tp,c28398510.sfilter,tp,0,LOCATION_MZONE,1,ct,nil)
 end
 function c28398510.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	local g=Duel.GetTargetsRelateToChain()
 	for tc in aux.Next(g) do
 		if tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() then
 			Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
@@ -67,28 +68,41 @@ end
 function c28398510.aclimit(e,re,tp)
 	return re:GetHandler():IsCode(e:GetLabel()) and re:IsActiveType(TYPE_MONSTER)
 end
-function c28398510.rmfilter(c)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
+function c28398510.tgfilter(c)
+	return c:IsRace(RACE_FAIRY) and c:IsSummonableCard() and c:IsCanTurnSet()
 end
-function c28398510.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28398510.rmfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
+function c28398510.sltg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c28398510.tgfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c28398510.tgfilter,tp,LOCATION_MZONE,0,1,nil) and e:GetHandler():IsSSetable() end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,c28398510.tgfilter,tp,LOCATION_MZONE,0,1,1,nil)
 end
-function c28398510.rmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c28398510.rmfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+function c28398510.slop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	local c=e:GetHandler()
+	if Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)~=0 then
+		local fid=c:GetFieldID()
+		tc:RegisterFlagEffect(28398510,RESET_EVENT+RESETS_STANDARD,0,1,fid)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetCountLimit(1)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e1:SetLabel(fid)
+		e1:SetLabelObject(tc)
+		e1:SetCondition(c28398510.thcon)
+		e1:SetOperation(c28398510.thop)
+		Duel.RegisterEffect(e1,tp)
+		Duel.SSet(tp,c)
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c28398510.splimit)
-	Duel.RegisterEffect(e1,tp)
 end
-function c28398510.splimit(e,c)
-	return not c:IsSetCard(0x283)
+function c28398510.thcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffectLabel(28398510)~=e:GetLabel() then
+		e:Reset()
+		return false
+	else return true end
+end
+function c28398510.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SendtoHand(e:GetLabelObject(),nil,REASON_EFFECT)
 end

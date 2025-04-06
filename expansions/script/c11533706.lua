@@ -137,7 +137,7 @@ function c11533706.xthop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Recover(tp,lv*500,REASON_EFFECT)
 		local mg=Duel.GetRitualMaterial(tp):Filter(function(c) return false end,nil) 
 		local dg=Duel.GetMatchingGroup(c11533706.xrlfil,tp,LOCATION_GRAVE,0,nil) 
-		local xxg=Duel.GetMatchingGroup(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_REMOVED,0,nil,c11533706.xspfil,e,tp,mg,dg,Card.GetLevel,"Equal"):Filter(function(c,lv) return c:IsLevelBelow(lv) end,nil,lv)
+		local xxg=Duel.GetMatchingGroup(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_REMOVED,0,nil,c11533706.xspfil,e,tp,mg,dg,Card.GetLevel,"Equal")
 		if xxg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(11533706,0)) then  
 			local tc=xxg:Select(tp,1,1,nil):GetFirst()  
 			local mat=Group.CreateGroup() 

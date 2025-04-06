@@ -46,7 +46,7 @@ function s.initial_effect(c)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetCondition(s.deson)
 	e4:SetCountLimit(1)
-	e4:SetCode(EVENT_PHASE+PHASE_END)		
+	e4:SetCode(EVENT_PHASE+PHASE_END)	   
 	e4:SetTarget(s.destg)
 	e4:SetOperation(s.desop)   
 	c:RegisterEffect(e4)
@@ -65,7 +65,7 @@ function s.initial_effect(c)
 end
 --1
 function s.immtg(e,c)
-	return c:IsSetCard(0x954)
+	return c:IsSetCard(0x964)
 end
 --2
 function s.aclimit(e,re,tp)
@@ -98,7 +98,7 @@ function s.descon(e)
 end
 
 function s.confilter(c)
-	return c:IsSetCard(0x953)
+	return c:IsSetCard(0x963)
 end
 function s.effcon(e)
 	local g=Duel.GetMatchingGroup(s.confilter,e:GetHandlerPlayer(),LOCATION_REMOVED,0,nil)   

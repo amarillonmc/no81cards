@@ -49,7 +49,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.spfilter(c,tp)
-	return c:IsControler(tp) and c:IsSetCard(0x954) and c:IsFaceup()
+	return c:IsControler(tp) and c:IsSetCard(0x964) and c:IsFaceup()
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.spfilter,1,nil,tp)

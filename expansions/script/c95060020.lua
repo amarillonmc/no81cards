@@ -33,7 +33,7 @@ end
 
 --===== 效果①：检索修正 =====--
 function s.thfilter(c)
-	return c:IsSetCard(0x956) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() -- 修正点
+	return c:IsSetCard(0x966) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() -- 修正点
 end
 
 function s.thtg(e, tp, eg, ep, ev, re, r, rp, chk)
@@ -58,7 +58,7 @@ function s.spcon(e, tp, eg, ep, ev, re, r, rp)
 end
 
 function s.spfilter(c, e, tp)
-	return c:IsSetCard(0x956) and c:IsType(TYPE_MONSTER) and not c:IsCode(95060020) 
+	return c:IsSetCard(0x966) and c:IsType(TYPE_MONSTER) and not c:IsCode(95060020) 
 		and not c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e, 0, tp, false, false)
 end
 

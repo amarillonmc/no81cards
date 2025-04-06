@@ -12,7 +12,7 @@ function c28316347.initial_effect(c)
 	c:RegisterEffect(e1)
 	--recover
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_POSITION)
+	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_RELEASE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,28316347)
@@ -39,8 +39,8 @@ function c28316347.thfilter(c)
 	return c:IsSetCard(0x283) and c:IsLevel(4) and c:IsAbleToHand()
 end
 function c28316347.recop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Recover(tp,1000,REASON_EFFECT)
-	local b1=Duel.GetLP(tp)>8000 and Duel.IsExistingMatchingCard(c28316347.thfilter,tp,LOCATION_DECK,0,1,nil)
+	if Duel.Recover(tp,1000,REASON_EFFECT)==0 then return end
+	local b1=Duel.IsExistingMatchingCard(c28316347.thfilter,tp,LOCATION_DECK,0,1,nil)
 	local b2=Duel.GetLP(tp)>=10000 and Duel.IsExistingMatchingCard(Card.IsReleasableByEffect,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 	local b3=true
 	if not (b1 or b2) then return end

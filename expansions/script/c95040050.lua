@@ -47,7 +47,7 @@ end
 
 --4
 function s.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x954)
+	return c:IsFaceup() and c:IsSetCard(0x964)
 end
 function s.actcon(e)
 	return Duel.IsExistingMatchingCard(s.cfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
@@ -74,7 +74,7 @@ function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x954) and c:IsAbleToHand()
+	return c:IsSetCard(0x964) and c:IsAbleToHand()
 end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

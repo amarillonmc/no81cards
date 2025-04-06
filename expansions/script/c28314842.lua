@@ -13,8 +13,9 @@ function c28314842.initial_effect(c)
 	c:RegisterEffect(e1)
 	--noctchill dice
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DICE)
+	e2:SetCategory(CATEGORY_DICE+CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_IGNITION)
+	--e2:SetProperty(EFFECT_FLAG_DICE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38314842)
 	e2:SetTarget(c28314842.dctg)
@@ -27,7 +28,7 @@ function c28314842.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetOperation(c28314842.diceop)
 	c:RegisterEffect(e3)
-c28314842.toss_dice=true
+--c28314842.toss_dice=true
 end
 function c28314842.cfilter(c)
 	return c:IsSetCard(0x289) and c:IsFaceup()
@@ -54,18 +55,16 @@ function c28314842.dctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
 end
 function c28314842.dcop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) then return end
-	if Duel.TossDice(tp,1)==6 and Duel.CheckLocation(tp,LOCATION_PZONE,0) and Duel.CheckLocation(tp,LOCATION_PZONE,1) and Duel.IsExistingMatchingCard(c28314842.pfilter,tp,LOCATION_DECK,0,2,nil) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
-		Duel.SendtoGrave(g,REASON_EFFECT)
-		Duel.BreakEffect()
+	if Duel.TossDice(tp,1)==6 and Duel.IsExistingMatchingCard(nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+		Duel.HintSelection(g)
+		if Duel.Destroy(g,REASON_EFFECT)==0 then return end
+		if not (Duel.CheckLocation(tp,LOCATION_PZONE,0) and Duel.CheckLocation(tp,LOCATION_PZONE,1) and Duel.IsExistingMatchingCard(c28314842.pfilter,tp,LOCATION_DECK,0,2,nil)) then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		local g=Duel.SelectMatchingCard(tp,c28314842.pfilter,tp,LOCATION_DECK,0,2,2,nil)
-		local pc=g:GetFirst()
-		while pc do
+		for pc in aux.Next(g) do
 			Duel.MoveToField(pc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
-			pc=g:GetNext()
 		end
 	end
 end

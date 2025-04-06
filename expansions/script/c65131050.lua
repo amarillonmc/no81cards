@@ -31,12 +31,13 @@ function s.initial_effect(c)
 	e2:SetOperation(s.repop)
 	c:RegisterEffect(e2)
 	if not s.global_check then
+		s.global_check=true
 		local _MoveToField=Duel.MoveToField
 		local _ReturnToField=Duel.ReturnToField
 		local _Equip=Duel.Equip
 		function Duel.MoveToField(c,tp,...)
-			if c:IsHasEffect(id) then
-				s.tdtg(e,tp,nil,nil,nil,nil,nil,nil,1,c)
+			if c:IsHasEffect(id) and s.tdtg(e,tp,nil,nil,nil,nil,nil,nil,1,c) then
+				return false
 			end
 			return _MoveToField(c,tp,...)
 		end

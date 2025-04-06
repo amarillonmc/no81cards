@@ -1,4 +1,4 @@
---饥饿恶魔
+--死之恶魔
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,12866755)
@@ -17,7 +17,6 @@ function s.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e2:SetCountLimit(1,id)
-	e2:SetCondition(s.condition)
 	e2:SetTarget(s.target)
 	e2:SetOperation(s.operation)
 	c:RegisterEffect(e2)
@@ -38,9 +37,6 @@ function s.splimit(e,se,sp,st)
 end
 function s.cfilter(c)
 	return aux.IsCodeListed(c,12866755) and c:IsFaceup()
-end
-function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function s.filter1(c,e)
 	return not c:IsImmuneToEffect(e)

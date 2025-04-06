@@ -3,8 +3,8 @@ local s, id = GetID()
 function s.initial_effect(c)
 		
 	-- 同调条件：调整 + 调整以外的「闡」怪兽1只以上
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x956),1)
-	c:EnableReviveLimit()	 
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x966),1)
+	c:EnableReviveLimit()	
 	
 	-- 效果①：同调召唤成功时苏生墓地「闡」怪兽
 	local e1 = Effect.CreateEffect(c)
@@ -38,7 +38,7 @@ function s.spcon1(e, tp, eg, ep, ev, re, r, rp)
 end
 
 function s.spfilter1(c,e,tp)
-	return c:IsSetCard(0x956) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x966) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
 function s.sptg1(e, tp, eg, ep, ev, re, r, rp, chk)
@@ -61,7 +61,7 @@ end
 --===== 效果②：墓地特召自身 =====--
 -- 条件：己方场上有「闡」怪兽被特召
 function s.cfilter(c, tp)
-	return c:IsSetCard(0x956) and c:IsType(TYPE_MONSTER) and c:IsControler(tp)
+	return c:IsSetCard(0x966) and c:IsType(TYPE_MONSTER) and c:IsControler(tp)
 end
 
 function s.spcon2(e, tp, eg, ep, ev, re, r, rp)

@@ -69,7 +69,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local operation=c:GetOperation()
 	if operation then operation(e,tp,eg,ep,ev,re,r,rp) end
 	if r and not e:GetHandler():IsLocation(LOCATION_GRAVE) and not e:GetHandler():IsLocation(LOCATION_REMOVED) then
-		Duel.BreakEffect()
+		--Duel.BreakEffect()
 		Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
 	end
 end

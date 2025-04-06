@@ -185,7 +185,7 @@ end
 function c11533716.srfil(c,e,tp)
 	if not (c:IsSetCard(0x3a) and c:IsType(TYPE_MONSTER)) then return false end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	return ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
+	return ft>0 and ((c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)) or (not c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c11533716.tdsptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11533716.srfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end  
@@ -194,8 +194,14 @@ end
 function c11533716.tdspop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	if Duel.IsExistingMatchingCard(c11533716.srfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) then 
-		local tc=Duel.SelectMatchingCard(tp,c11533716.srfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()  
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)  
+		local tc=Duel.SelectMatchingCard(tp,c11533716.srfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
+		if tc and tc:IsType(TYPE_RITUAL) then
+			tc:SetMaterial(nil)
+			Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+			tc:CompleteProcedure()
+		elseif tc then
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)  
+		end
 	end  
 end
 function c11533716.rckfil(c,e,tp) 

@@ -27,7 +27,7 @@ function s.initial_effect(c)
 
 end
 function s.costfilter(c)
-	return c:IsSetCard(0x953) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsSetCard(0x963) and c:IsAbleToDeckOrExtraAsCost()
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -52,7 +52,7 @@ end
 
 
 function s.spfilter(c,e,tp)
-	return not c:IsCode(id) and c:IsSetCard(0x954) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return not c:IsCode(id) and c:IsSetCard(0x964) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler())>0

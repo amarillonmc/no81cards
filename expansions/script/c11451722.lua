@@ -236,18 +236,18 @@ function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=0
 	for i=0,2 do if typ&(1<<i)>0 then ct=ct+1 end end
 	local q1=#g>0 and Duel.IsPlayerCanDraw(tp,ct)
-	if chk==0 then return (b1 or b2 or b3 or b4) or q1 end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 or q1 end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
 end
 function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local bool=c:IsRelateToEffect(e) --and c:IsControler(tp) and c:IsFaceup()
+	local bool=c:IsRelateToEffect(e) and c:IsControler(tp) and c:IsFaceup()
 	local seq=c:GetSequence()
 	local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
 	local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
 	local b3=(seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))
 	local b4=(seq==1 and Duel.CheckLocation(tp,LOCATION_MZONE,5)) or (seq==3 and Duel.CheckLocation(tp,LOCATION_MZONE,6))
-	local q2=bool and (b1 or b2 or b3 or b4)
+	local q2=bool and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0
 	local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,c,tp,false)
 	local typ=0
 	for fc in aux.Next(g) do
@@ -268,7 +268,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 		local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
 		local b3=(seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))
 		local b4=(seq==1 and Duel.CheckLocation(tp,LOCATION_MZONE,5)) or (seq==3 and Duel.CheckLocation(tp,LOCATION_MZONE,6))
-		local q2=bool and (b1 or b2 or b3 or b4)
+		local q2=bool and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0
 		if q2 then
 			Duel.BreakEffect()
 			local flag=0
@@ -277,7 +277,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 			if b3 then if seq==5 then flag=flag|0x2 else flag=flag|0x8 end end
 			if b4 then if seq==1 then flag=flag|0x20 else flag=flag|0x40 end end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-			local s=Duel.SelectField(tp,1,LOCATION_MZONE,0,~flag)
+			local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
 			local nseq=math.log(s&0xff,2)
 			Duel.MoveSequence(c,nseq)
 		end
@@ -288,7 +288,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 		if b3 then if seq==5 then flag=flag|0x2 else flag=flag|0x8 end end
 		if b4 then if seq==1 then flag=flag|0x20 else flag=flag|0x40 end end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-		local s=Duel.SelectField(tp,1,LOCATION_MZONE,0,~flag)
+		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
 		local nseq=math.log(s&0xff,2)
 		Duel.MoveSequence(c,nseq)
 		local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,c,tp,false)

@@ -48,8 +48,8 @@ function c11561070.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and r==REASON_FUSION and tc:IsFaceupEx() then
-		tc:RegisterFlagEffect(11561070,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11561070,4)) end
+		if tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and (r==REASON_FUSION or tc:GetReasonCard():IsType(TYPE_FUSION)) and tc:IsFaceupEx() then
+		tc:RegisterFlagEffect(11561070,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11561070,2)) end
 		tc=eg:GetNext()
 	end
 end
@@ -63,7 +63,7 @@ function c11561070.tgfilter(c)
 	return (c:IsCode(68468459) or aux.IsCodeListed(c,68468459)) and c:IsAbleToGrave()
 end
 function c11561070.cnfilter(c)
-	return c:IsFaceup() and ((c:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(c11561070.tgfilter,tp,LOCATION_DECK,0,1,nil)) or (not c:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(c11561070.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)))
+	return aux.TRUE -- c:IsFaceup() and ((c:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(c11561070.tgfilter,tp,LOCATION_DECK,0,1,nil)) or (not c:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(c11561070.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)))
 end
 function c11561070.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c11561070.cnfilter,1,nil,tp) and eg:GetCount()==1
@@ -79,18 +79,18 @@ function c11561070.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return (Duel.IsExistingMatchingCard(c11561070.ttfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.IsExistingMatchingCard(c11561070.tgfilter,tp,LOCATION_DECK,0,1,nil)) or (Duel.IsExistingMatchingCard(c11561070.ttfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.IsExistingMatchingCard(c11561070.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)) end
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,0,1,0,0)
    -- if not tc:IsType(TYPE_FUSION) then
-   --	 e:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
-   --	 Duel.SetOperationInfo(0,CATEGORY_TOHAND,0,1,0,0)
+   --   e:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
+   --   Duel.SetOperationInfo(0,CATEGORY_TOHAND,0,1,0,0)
    -- elseif tc:IsType(TYPE_FUSION) then
-   --	 e:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_DECKDES)
-   --	 Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,0,1,0,0)
+   --   e:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_DECKDES)
+   --   Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,0,1,0,0)
    -- end
 end
 function c11561070.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end
 function c11561070.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsRace(RACE_DRAGON) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c11561070.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -100,24 +100,27 @@ function c11561070.spop(e,tp,eg,ep,ev,re,r,rp)
 	local ops={}
 	local opval={}
 	if Duel.IsExistingMatchingCard(c11561070.ttfilter1,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.IsExistingMatchingCard(c11561070.tgfilter,tp,LOCATION_DECK,0,1,nil) then
-		ops[off]=aux.Stringid(22348315,3)
+		ops[off]=aux.Stringid(11561070,3)
 		opval[off-1]=1
 		off=off+1
 	end
 	if Duel.IsExistingMatchingCard(c11561070.ttfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.IsExistingMatchingCard(c11561070.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) then
-		ops[off]=aux.Stringid(22348315,4)
+		ops[off]=aux.Stringid(11561070,4)
 		opval[off-1]=2
 		off=off+1
 	end
+	Debug.Message(1)
 	if off==1 then return end
+	Debug.Message(2)
 	local op=Duel.SelectOption(tp,table.unpack(ops))
-	if opval[op]==1 then
+	Debug.Message(opval[op])
+	if opval[op]==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local ttc=Duel.SelectMatchingCard(tp,c11561070.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil):GetFirst()
 		if ttc and Duel.SendtoHand(ttc,nil,REASON_EFFECT)~=0 then
 			aaa=1
 		end
-	elseif opval[op]==2 then
+	elseif opval[op]==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local ttc=Duel.SelectMatchingCard(tp,c11561070.tgfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 		if ttc and Duel.SendtoGrave(ttc,REASON_EFFECT)~=0 then

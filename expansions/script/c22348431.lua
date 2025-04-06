@@ -54,7 +54,7 @@ function c22348431.eqfilter(c,tp)
 	return Duel.IsExistingMatchingCard(c22348431.cfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) and c:IsFaceup()
 end
 function c22348431.cfilter(c)
-	return (c:IsType(TYPE_UNION) or c:IsSetCard(0x970b)) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
+	return (c:IsType(TYPE_UNION) or c:IsSetCard(0x970b)) and not c:IsCode(22348431) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function c22348431.heqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

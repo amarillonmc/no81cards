@@ -82,7 +82,7 @@ function c11560720.xyzcheck(g)
 	return g:GetClassCount(Card.GetRace)==g:GetCount() and g:GetClassCount(Card.GetAttribute)==g:GetCount()
 end
 function c11560720.ovfil(c,tp) 
-	return c:IsType(TYPE_MONSTER) and c:IsControler(1-tp)
+	return c:IsType(TYPE_MONSTER) and c:IsControler(1-tp) and c:IsPreviousLocation(LOCATION_ONFIELD)
 end 
 function c11560720.ovcon(e,tp,eg,ep,ev,re,r,rp) 
 	local g=eg:Filter(c11560720.ovfil,nil,tp)

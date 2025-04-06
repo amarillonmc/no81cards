@@ -137,7 +137,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,nil)
 	if #g>0 then --and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-		Duel.BreakEffect()
+		--Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		g=g:Select(tp,1,1,nil)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)

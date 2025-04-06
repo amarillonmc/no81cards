@@ -52,10 +52,6 @@ function c11513054.tdop(e,tp,eg,ep,ev,re,r,rp)
 		local og=Duel.GetOperatedGroup()
 		Duel.BreakEffect()
 		Duel.Draw(tp,1,REASON_EFFECT)
-		if og:FilterCount(Card.IsSetCard,nil,0x115)==5 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(11513054,0)) then
-			Duel.BreakEffect()
-			Duel.Draw(tp,1,REASON_EFFECT)
-		end 
 	end 
 end 
 function c11513054.spcon(e,tp,eg,ep,ev,re,r,rp) 

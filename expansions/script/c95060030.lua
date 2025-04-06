@@ -10,7 +10,7 @@ function s.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(s.spcon)
-	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)		  
+	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)		 
 	c:RegisterEffect(e1)
 	
 	-- 效果②：墓地除外无效效果（1回合1次）
@@ -30,7 +30,7 @@ end
 
 --===== 效果①：手卡特召条件 =====--
 function s.spfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x956) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x966) and c:IsType(TYPE_MONSTER)
 end
 
 function s.spcon(e, c)

@@ -87,7 +87,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local operation=c:GetOperation()
 	if operation then operation(e,tp,eg,ep,ev,re,r,rp) end
 	if r and not e:GetHandler():IsLocation(LOCATION_GRAVE) and not e:GetHandler():IsLocation(LOCATION_REMOVED) then
-		Duel.BreakEffect()
+		--Duel.BreakEffect()
 		Duel.SendtoGrave(e:GetHandler(),REASON_EFFECT)
 	end
 end
@@ -95,8 +95,8 @@ function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and Duel.GetCurrentChain()~=0
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
-	--0xc780000=RESET_MSCHANGE+RESET_OVERLAY+RESET_REMOVE+RESET_TEMP_REMOVE+RESET_TOHAND+RESET_TODECK
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0xc780000+RESET_CHAIN,0,1)
+	--0xc7a0000=RESET_MSCHANGE+RESET_OVERLAY+RESET_REMOVE+RESET_TEMP_REMOVE+RESET_TOHAND+RESET_TODECK+RESET_TURN_SET
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0xc7a0000+RESET_CHAIN,0,1)
 end
 function cm.condition4(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)>0 and Duel.GetCurrentChain()==1

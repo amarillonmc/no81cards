@@ -1,89 +1,44 @@
 --惧质体 “小丑”
 local m=22348064
 local cm=_G["c"..m]
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
-	--Activate
-	local e0=Effect.CreateEffect(c)
-	e0:SetCategory(CATEGORY_EQUIP+CATEGORY_CONTROL)
-	e0:SetType(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_ACTIVATE)
-	e0:SetCode(EVENT_FREE_CHAIN)
-	e0:SetHintTiming(TIMING_BATTLE_PHASE,TIMINGS_CHECK_MONSTER+TIMING_BATTLE_PHASE)
-	e0:SetRange(LOCATION_SZONE)
-	e0:SetCondition(c22348064.Condition)
-	e0:SetTarget(c22348064.target)
-	e0:SetOperation(c22348064.operation)
-	c:RegisterEffect(e0)
+	local e1,e1_1,e2,e3=SNNM.ActivatedAsSpellorTrap(c,0x4,LOCATION_SZONE,true)
+	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_CONTROL)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CARD_TARGET)
+	e1:SetCondition(c22348064.Condition)
+	e1:SetTarget(c22348064.target)
+	e1:SetOperation(c22348064.operation)
+	e1_1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e1_1:SetRange(0xff)
 	--set
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_MONSTER_SSET)
-	e1:SetValue(TYPE_TRAP)
-	c:RegisterEffect(e1)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_MONSTER_SSET)
+	e4:SetValue(TYPE_TRAP)
+	c:RegisterEffect(e4)
 	--set2
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(22348064,0))
-	e2:SetCategory(CATEGORY_EQUIP+CATEGORY_CONTROL)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetTarget(c22348064.target)
-	e2:SetOperation(c22348064.operation)
-	c:RegisterEffect(e2)
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(22348064,0))
+	e5:SetCategory(CATEGORY_EQUIP+CATEGORY_CONTROL)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP+EFFECT_TYPE_TRIGGER_O)
+	e5:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e5:SetTarget(c22348064.target)
+	e5:SetOperation(c22348064.operation)
+	c:RegisterEffect(e5)
 	--ps
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(22348060,2))
-	e3:SetCategory(CATEGORY_POSITION+CATEGORY_DRAW)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCondition(c22348064.pscon)
-	e3:SetCost(aux.bfgcost)
-	e3:SetTarget(c22348064.pstg)
-	e3:SetOperation(c22348064.psop)
-	c:RegisterEffect(e3)
-	if not c22348064.global_check then
-		c22348064.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_ADJUST)
-		ge1:SetOperation(c22348064.checkop1)
-		Duel.RegisterEffect(ge1,0)
-		local ge2=Effect.CreateEffect(c)
-		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge2:SetCode(EVENT_LEAVE_FIELD)
-		ge2:SetOperation(c22348064.checkop2)
-		Duel.RegisterEffect(ge2,0)
-	end
-end
-local KOISHI_CHECK=false
-if Card.SetCardData then KOISHI_CHECK=true end
-function c22348064.checkfilter(c)
-	return c:IsOriginalCodeRule(22348064)
-end
-function c22348064.checkop2(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(c22348064.checkfilter,nil)
-	local tc=g:GetFirst()
-	while tc do
-		tc:RegisterFlagEffect(22348064,RESET_CHAIN,0,1)
-		tc=g:GetNext()
-	end
-end
-function c22348064.filter1(c)
-	return c:IsOriginalCodeRule(22348064) and c:IsFacedown() and c:IsHasEffect(EFFECT_CHANGE_TYPE) and c:IsType(TYPE_TRAP) and c:GetOriginalType()~=TYPE_TRAP
-end
-function c22348064.filter2(c)
-	return c:IsOriginalCodeRule(22348064) and c:IsFaceup() and c:GetOriginalType()~=0x200021 and not Duel.GetFlagEffect(tp,22348064)
-end
-function c22348064.checkop1(e,tp,eg,ep,ev,re,r,rp)
-	local phase=Duel.GetCurrentPhase()
-	if (phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL then return end
-	local g1=Duel.GetMatchingGroup(c22348064.filter1,tp,LOCATION_SZONE,LOCATION_SZONE,nil)
-	local g2=Duel.GetMatchingGroup(c22348064.filter2,tp,0xff,0xff,nil)
-	if KOISHI_CHECK and g1:GetCount()>0 then
-		g1:GetFirst():SetCardData(CARDDATA_TYPE,0x4)
-	end
-	if KOISHI_CHECK and g2:GetCount()>0 then
-		g2:GetFirst():SetCardData(CARDDATA_TYPE,0x200021)
-	end
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(22348060,2))
+	e6:SetCategory(CATEGORY_POSITION+CATEGORY_DRAW)
+	e6:SetType(EFFECT_TYPE_QUICK_O)
+	e6:SetCode(EVENT_CHAINING)
+	e6:SetRange(LOCATION_GRAVE)
+	e6:SetCondition(c22348064.pscon)
+	e6:SetCost(aux.bfgcost)
+	e6:SetTarget(c22348064.pstg)
+	e6:SetOperation(c22348064.psop)
+	c:RegisterEffect(e6)
 end
 function c22348064.tgfilter(c,tp)
 	return c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsAbleToChangeControler()
@@ -124,7 +79,7 @@ function c22348064.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348064.pscon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():GetType()==TYPE_TRAP
+	return re:IsActiveType(TYPE_TRAP)
 end
 function c22348064.pstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFacedown,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.IsPlayerCanDraw(tp) end

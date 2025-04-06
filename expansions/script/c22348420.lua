@@ -76,7 +76,7 @@ function c22348420.filter(c)
 	return c:IsOnField() and c:IsAbleToHand()
 end
 function c22348420.filter2(c,e,tp,m,f,chkf)
-	return c:IsSetCard(0x133) and c:IsType(TYPE_FUSION) and (not f or f(c))
+	return c:IsRace(RACE_DRAGON) and c:IsType(TYPE_FUSION) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c22348420.fcheck(tp,sg,fc)

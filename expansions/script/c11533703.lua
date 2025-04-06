@@ -27,7 +27,7 @@ function c11533703.initial_effect(c)
 	c:RegisterEffect(e2)
 	--set 
 	local e3=Effect.CreateEffect(c) 
-	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_RELEASE)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
@@ -80,7 +80,7 @@ function c11533703.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11533703.setfilter,tp,LOCATION_DECK,0,1,nil) end
 end
 function c11533703.bgfilter(c)  
-	return c:IsSetCard(0xb4) and c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsAbleToGrave()
+	return c:IsAbleToGrave()
 end  
 function c11533703.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

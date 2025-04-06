@@ -1,6 +1,5 @@
 --waking of dragon palace
-local m=11451416
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=aux.AddRitualProcGreater2(c,nil,LOCATION_HAND+LOCATION_GRAVE,nil,cm.matfilter)
@@ -10,7 +9,7 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_TO_GRAVE)
+	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,m)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
@@ -24,7 +23,7 @@ function cm.matfilter(c)
 	return c:IsAttribute(ATTRIBUTE_WATER)
 end
 function cm.filter(c,tp)
-	return c:IsPreviousSetCard(0x6978) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsSummonType(SUMMON_TYPE_RITUAL) and c:GetReasonPlayer()==tp
+	return c:IsPreviousSetCard(0x6978) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsSummonType(SUMMON_TYPE_RITUAL) and c:GetReasonPlayer()==tp and c:IsPreviousControler(1-tp)
 end
 function cm.filter1(c)
 	return bit.band(c:GetType(),0x82)==0x82 and c:IsAbleToHand()
@@ -33,11 +32,12 @@ function cm.filter2(c)
 	return c:IsSetCard(0x6978) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.filter,1,nil,1-tp)
+	return eg:IsExists(cm.filter,1,nil,1-tp) and not eg:IsContains(e:GetHandler())
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
+	Duel.ConfirmCards(1-tp,e:GetHandler())
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK,0,1,nil) end

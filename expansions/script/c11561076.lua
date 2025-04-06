@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	--def
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11561076,0))
+	e1:SetCategory(CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
@@ -86,7 +87,7 @@ function c11561076.disop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetValue(11561077)
 		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e4)
-		if tc:IsType(TYPE_MONSTER) then
+		--[[if tc:IsType(TYPE_MONSTER) then
 			local e5=Effect.CreateEffect(c)
 			e5:SetType(EFFECT_TYPE_SINGLE)
 			e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -94,7 +95,7 @@ function c11561076.disop(e,tp,eg,ep,ev,re,r,rp)
 			e5:SetValue(0)
 			e5:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e5)
-		end
+			end]]
 		if tc:IsType(TYPE_TRAPMONSTER) then
 			local e6=Effect.CreateEffect(c)
 			e6:SetType(EFFECT_TYPE_SINGLE)
@@ -127,4 +128,11 @@ function c11561076.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(1)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	tc:RegisterEffect(e1)
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e5:SetCode(EFFECT_SET_ATTACK_FINAL)
+	e5:SetValue(0)
+	e5:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	tc:RegisterEffect(e5)
 end

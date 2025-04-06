@@ -20,7 +20,7 @@ function cm.initial_effect(c)
 end
 
 function c22348172.filter(c)
-	return c:IsCode(22348157) and (c:IsFaceup() or c:IsLocation(LOCATION_HAND))
+	return c:IsRace(RACE_MACHINE) and (c:IsFaceup() or c:IsLocation(LOCATION_HAND))
 end
 function c22348172.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,2)

@@ -28,7 +28,7 @@ function s.initial_effect(c)
 end
 
 function s.filter(c)
-	return c:IsSetCard(0x953) and c:IsAbleToRemove()
+	return c:IsSetCard(0x963) and c:IsAbleToRemove()
 end 
 
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -49,7 +49,7 @@ end
 
 
 function s.thfilter(c)
-	return c:IsSetCard(0x953) and c:IsAbleToHand()
+	return c:IsSetCard(0x963) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
@@ -63,12 +63,3 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-
-
-
-
-
-
-
-
-

@@ -4,7 +4,7 @@ local s, id = GetID()
 function s.initial_effect(c)
 	-- 效果①：手卡丢弃发动特召
 	local e1 = Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id, 0))
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
@@ -16,7 +16,7 @@ function s.initial_effect(c)
 	
 	-- 效果②：召唤/特召变4星
 	local e2 = Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id, 1))
+	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -36,7 +36,7 @@ end
 
 -- 效果① 过滤「闡」怪兽
 function s.spfilter(c, e, tp)
-	return not c:IsCode(id) and c:IsSetCard(0x956) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e, 0, tp, false, false)
+	return not c:IsCode(id) and c:IsSetCard(0x966) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e, 0, tp, false, false)
 end
 
 -- 效果① 目标检查

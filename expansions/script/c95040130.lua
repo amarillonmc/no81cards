@@ -39,11 +39,11 @@ function s.initial_effect(c)
 end
 
 function s.target(e,c)
-	return c:IsSetCard(0x954)
+	return c:IsSetCard(0x964)
 end
 
 function s.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x954)
+	return c:IsFaceup() and c:IsSetCard(0x964)
 end
 function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.atkfilter,tp,LOCATION_MZONE,0,1,nil) end

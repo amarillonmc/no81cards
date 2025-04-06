@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	 
 	
 	-- 同调召唤条件：调整 + 调整以外的幻龙族怪兽1只以上
-	c:EnableReviveLimit()	
+	c:EnableReviveLimit()   
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsRace,RACE_WYRM),1)
 	
 	
@@ -59,7 +59,7 @@ end
 --===== 效果②：检索法宝魔法 =====--
 
 function s.thfilter(c)
-	return c:IsSetCard(0x957) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:IsSetCard(0x967) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 
 function s.thtg(e, tp, eg, ep, ev, re, r, rp, chk)

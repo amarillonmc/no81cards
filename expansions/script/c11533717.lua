@@ -57,7 +57,7 @@ function c11533717.initial_effect(c)
 	c:RegisterEffect(e2)
 end 
 function c11533717.filter(c,e,tp)
-	return c:IsSetCard(0x3a) and c:IsLevelBelow(2) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return c:IsSetCard(0x3a) and ((c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)) or (not c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c11533717.ssptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler())>0 and Duel.IsExistingMatchingCard(c11533717.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
@@ -67,7 +67,14 @@ function c11533717.sspop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11533717.filter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	local tc=g:GetFirst()
+		if tc and tc:IsType(TYPE_RITUAL) then
+			tc:SetMaterial(nil)
+			Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+			tc:CompleteProcedure()
+		elseif tc then
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)  
+		end
 end
 
 function c11533717.condition(e,tp,eg,ep,ev,re,r,rp)

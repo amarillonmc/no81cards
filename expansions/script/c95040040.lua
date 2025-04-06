@@ -1,4 +1,4 @@
-local s, id = GetID()--诛仙剑阵·戮仙
+local s, id = GetID()--诛仙剑阵·戮仙EFFECT_FLAG_DELAY+
 function s.initial_effect(c)
  
 	local e4=Effect.CreateEffect(c)
@@ -19,9 +19,9 @@ function s.initial_effect(c)
 
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_REMOVE)
-	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCountLimit(1,954004)
 	e2:SetCondition(s.condtion)
 	e2:SetTarget(s.target)
@@ -46,7 +46,7 @@ end
 
 --4
 function s.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x954)
+	return c:IsFaceup() and c:IsSetCard(0x964)
 end
 function s.actcon(e)
 	return Duel.IsExistingMatchingCard(s.cfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
@@ -73,7 +73,7 @@ function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x954) and c:IsAbleToHand()
+	return c:IsSetCard(0x964) and c:IsAbleToHand()
 end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

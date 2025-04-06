@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	aux.AddCodeList(c,22348157)
 	--change name
-	aux.EnableChangeCode(c,22348157,LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD+LOCATION_GRAVE)
+	aux.EnableChangeCode(c,22348157,LOCATION_HAND+LOCATION_DECK+LOCATION_MZONE+LOCATION_SZONE+LOCATION_GRAVE)
 	--destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(22348169,0))

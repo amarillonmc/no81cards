@@ -42,8 +42,8 @@ function c28315944.sfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()
 end
 function c28315944.recop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Recover(tp,1000,REASON_EFFECT)
-	local b1=Duel.GetLP(tp)>8000 and Duel.IsExistingMatchingCard(c28315944.thfilter,tp,LOCATION_DECK,0,1,nil)
+	if Duel.Recover(tp,1000,REASON_EFFECT)==0 then return end
+	local b1=Duel.IsExistingMatchingCard(c28315944.thfilter,tp,LOCATION_DECK,0,1,nil)
 	local b2=Duel.GetLP(tp)>=10000 and Duel.IsExistingMatchingCard(c28315944.sfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 	local b3=true
 	if not (b1 or b2) then return end

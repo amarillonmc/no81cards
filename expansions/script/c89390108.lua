@@ -145,17 +145,25 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
+	if re:IsActiveType(TYPE_MONSTER) and not s[0][re:GetHandler()] then
+		re:GetHandler():RegisterFlagEffect(id+100,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+	end
 	if Duel.GetCurrentChain()>=4 then
 		for i=1,ev do
 			local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
-			if te:IsActiveType(TYPE_MONSTER) then
+			if te:GetHandler():GetFlagEffect(id+100)>0 then
 				s[0][te:GetHandler()]=1
 			end
 		end
 	end
 end
 function s.regop2(e,tp,eg,ep,ev,re,r,rp)
-	s[0][re:GetHandler()]=nil
+	if re:GetHandler():GetFlagEffect(id+100)>0 then
+		re:GetHandler():IsHasEffect(EFFECT_FLAG_EFFECT+id+100):Reset()
+		if re:GetHandler():GetFlagEffect(id+100)==0 then
+			s[0][re:GetHandler()]=nil
+		end
+	end
 end
 function s.clearop(e,tp,eg,ep,ev,re,r,rp)
 	s[0]={}

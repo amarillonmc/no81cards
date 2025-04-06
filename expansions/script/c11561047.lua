@@ -79,7 +79,7 @@ function cm.initial_effect(c)
 	
 end
 function c11561047.atkval(e,c)
-	return e:GetHandler():GetCounter(0x1)*100*Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil):GetCount()
+	return e:GetHandler():GetCounter(0x1)*100*Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil):GetCount()
 end
 function c11561047.atkcval(e,c)
 	local c=e:GetHandler()
@@ -132,14 +132,14 @@ function c11561047.cdtop(e,tp,eg,ep,ev,re,r,rp)
 		--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		--local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil)
 		--if g:GetCount()>0 then
-		--	Duel.HintSelection(g)
-		--	if Duel.Destroy(g,REASON_EFFECT) then
-		--		local ccg=Duel.GetOperatedGroup()
-		--		local cct=ccg:Filter(Card.IsPreviousControler,nil,tp):GetCount()
-		--		if cct>0 and Duel.IsPlayerCanDraw(tp,cct) then 
-		--			Duel.Draw(tp,cct,REASON_EFFECT)
-		--		end
-		--	end
+		--  Duel.HintSelection(g)
+		--  if Duel.Destroy(g,REASON_EFFECT) then
+		--	  local ccg=Duel.GetOperatedGroup()
+		--	  local cct=ccg:Filter(Card.IsPreviousControler,nil,tp):GetCount()
+		--	  if cct>0 and Duel.IsPlayerCanDraw(tp,cct) then 
+		--		  Duel.Draw(tp,cct,REASON_EFFECT)
+		--	  end
+		--  end
 		--end
 		--end
 		end

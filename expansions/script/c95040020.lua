@@ -2,7 +2,7 @@
 local s, id = GetID()
 --截·通天教主
 function s.initial_effect(c)
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x954),8,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x964),8,2)
 	c:EnableReviveLimit()
 
 	local e3=Effect.CreateEffect(c)
@@ -47,7 +47,7 @@ function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	return true
 end
 function s.cfilter(c)
-	return c:IsSetCard(0x953) and  c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x963) and  c:IsAbleToGraveAsCost()
 end
 
 function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -79,7 +79,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD,nil)
 end
 function s.filter(c)
-	return c:IsSetCard(0x953) and c:IsAbleToHand()
+	return c:IsSetCard(0x963) and c:IsAbleToHand()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end

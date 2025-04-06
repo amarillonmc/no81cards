@@ -6,16 +6,6 @@ function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,6,2)
 	c:EnableReviveLimit()
-	--lv change
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_XYZ_LEVEL)
-	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(c22348177.lvtg)
-	e1:SetValue(c22348177.lvval)
-	c:RegisterEffect(e1)
 	--indes
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -28,7 +18,7 @@ function cm.initial_effect(c)
 	--immune
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(22348177,1))
-	e3:SetCategory(CATEGORY_DESTROY)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_RECOVER)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
@@ -37,17 +27,6 @@ function cm.initial_effect(c)
 	e3:SetTarget(c22348177.imtg)
 	e3:SetOperation(c22348177.imop)
 	c:RegisterEffect(e3)
-	--SpecialSummon
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(22348177,2))
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_RECOVER)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_FREE_CHAIN)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1)
-	e4:SetTarget(c22348177.srtg)
-	e4:SetOperation(c22348177.srop)
-	c:RegisterEffect(e4)
 end
 function c22348177.lvtg(e,c)
 	return c:IsLevelAbove(1) and c:IsCode(22348165)
@@ -68,19 +47,13 @@ function c22348177.imfilter(c)
 	return aux.IsCodeListed(c,22348157) and c:IsFaceup()
 end
 function c22348177.imtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c22348177.imfilter,tp,LOCATION_ONFIELD,0,1,nil) end
-end
-function c22348177.imop(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(c22348177.imfilter,tp,LOCATION_ONFIELD,0,nil)
-	local tc=g1:GetFirst()
-	while tc do
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_IMMUNE_EFFECT)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
-		e1:SetValue(c22348177.efilter)
-		tc:RegisterEffect(e1)
-		tc=g1:GetNext()
+	local c=e:GetHandler()
+	local b1=Duel.IsExistingMatchingCard(c22348177.imfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.GetFlagEffect(tp,22348177)==0
+	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c22348177.spfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,22349177)==0
+	if chk==0 then return b1 or b2 end
+	if b2 and not b1 then
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_DECK)
+		Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,0)
 	end
 end
 function c22348177.efilter(e,re)
@@ -92,22 +65,37 @@ end
 function c22348177.recfilter(c)
 	return c:IsFaceup() and c:IsCode(22348157)
 end
-function c22348177.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c22348177.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,0)
-end
-function c22348177.srop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348177.spfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
-	local ct=Duel.GetMatchingGroupCount(c22348177.recfilter,p,LOCATION_ONFIELD,0,nil)
-	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local ct=Duel.GetMatchingGroupCount(c22348177.recfilter,p,LOCATION_ONFIELD,0,nil)
-		if ct>0 then
-			Duel.BreakEffect()
-		Duel.Recover(tp,ct*800,REASON_EFFECT)
+function c22348177.imop(e,tp,eg,ep,ev,re,r,rp)
+	local b1=Duel.IsExistingMatchingCard(c22348177.imfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.GetFlagEffect(tp,22348177)==0
+	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c22348177.spfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,22349177)==0
+	local op=0
+	if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(22348177,1),aux.Stringid(22348177,2))
+	elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(22348177,1))
+	elseif b2 then op=Duel.SelectOption(tp,aux.Stringid(22348177,2))+1
+	else return end
+	if op==0 then
+		local g1=Duel.GetMatchingGroup(c22348177.imfilter,tp,LOCATION_ONFIELD,0,nil)
+		local tc=g1:GetFirst()
+		while tc do
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_IMMUNE_EFFECT)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+			e1:SetValue(c22348177.efilter)
+			tc:RegisterEffect(e1)
+			tc=g1:GetNext()
 		end
+		Duel.RegisterFlagEffect(tp,22348177,RESET_PHASE+PHASE_END,0,1)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c22348177.spfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,e,tp)
+		if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then
+			local ct=Duel.GetMatchingGroupCount(c22348177.recfilter,p,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+			if ct>0 then
+				Duel.BreakEffect()
+			Duel.Recover(tp,ct*800,REASON_EFFECT)
+			end
+		end
+		Duel.RegisterFlagEffect(tp,22349177,RESET_PHASE+PHASE_END,0,1)
 	end
 end

@@ -35,7 +35,7 @@ function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	return true
 end
 function s.cfilter(c)
-	return c:IsSetCard(0x953) and  c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x963) and  c:IsAbleToGraveAsCost()
 end
 
 function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -67,7 +67,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function s.filter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x954) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsFaceup() and c:IsSetCard(0x964) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and s.filter(chkc,e,tp) end
@@ -83,7 +83,3 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
-
-
-
-

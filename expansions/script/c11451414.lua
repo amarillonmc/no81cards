@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.operation)
 	c:RegisterEffect(e1)
 	cm.hand_effect=cm.hand_effect or {}
-    cm.hand_effect[c]=e1
+	cm.hand_effect[c]=e1
 	--effect2
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -61,7 +61,7 @@ end
 function cm.check(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	for tc in aux.Next(eg) do
-		if (tc:IsLocation(LOCATION_MZONE) or (not tc:IsOnField() and tc:GetOriginalType()&0x1>0)) and tc:IsSetCard(0x6978) and tc:IsReason(REASON_RELEASE) then
+		if (tc:IsLocation(LOCATION_MZONE) or (not tc:IsOnField() and tc:GetOriginalType()&0x1>0)) and tc:IsRace(RACE_SEASERPENT) and tc:IsReason(REASON_RELEASE) then
 			local p=tc:GetReasonPlayer()
 			cm[p]=cm[p]+1
 		end
@@ -93,7 +93,7 @@ function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL) and Duel.GetCurrentChain()~=0
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0xc780000+RESET_CHAIN,0,1)
+	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+0xc7a0000+RESET_CHAIN,0,1)
 end
 function cm.condition4(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)>0 and Duel.GetCurrentChain()==1

@@ -45,11 +45,13 @@ function cm.initial_effect(c)
 end
 c22348153.lvup={22348152,22348154}
 c22348153.lvdn={22348152}
+function c22348153.cpcfilter(c)
+	return c:IsFacedown() or not c:IsSetCard(0x41)
+end
 function c22348153.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	return not Duel.IsExistingMatchingCard(c22348153.cpcfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function c22348153.filter(c)
 	local tp=c:GetControler()

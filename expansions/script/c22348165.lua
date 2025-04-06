@@ -31,7 +31,18 @@ function cm.initial_effect(c)
 	e6:SetCondition(c22348165.negcon)
 	e6:SetOperation(c22348165.negop)
 	c:RegisterEffect(e6)
+	--xyzlv
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_XYZ_LEVEL)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetValue(c22348165.xyzlv)
+	c:RegisterEffect(e3)
 	
+end
+function c22348165.xyzlv(e,c,rc)
+	return 0x60000+e:GetHandler():GetLevel()
 end
 function c22348165.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
