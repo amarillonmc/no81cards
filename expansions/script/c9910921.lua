@@ -39,6 +39,8 @@ function c9910921.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,300)
 	if Duel.GetCurrentChain()>1 then
 		e:SetCategory(CATEGORY_DAMAGE+CATEGORY_TOGRAVE)
+	else
+		e:SetCategory(CATEGORY_DAMAGE)
 	end
 end
 function c9910921.tgfilter(c)
