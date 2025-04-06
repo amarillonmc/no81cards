@@ -18,6 +18,13 @@ function c71000175.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetOperation(c71000175.chainop)
 	c:RegisterEffect(e1)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	e3:SetValue(1)
+	c:RegisterEffect(e3)
 end
 
 --===== 效果①处理 =====--

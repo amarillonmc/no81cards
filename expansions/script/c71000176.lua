@@ -27,7 +27,7 @@ function c71000176.initial_effect(c)
 	e12:SetCode(EFFECT_SPSUMMON_PROC)
 	e12:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e12:SetCountLimit(1,71000176)
-	e12:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	e12:SetRange(LOCATION_GRAVE)
 	e12:SetCondition(c71000176.spcon)
 	c:RegisterEffect(e12)
 

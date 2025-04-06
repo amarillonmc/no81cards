@@ -1,0 +1,85 @@
+--陷阱大崩落
+local cm,m=GetID()
+function c71500017.initial_effect(c)
+		local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_GRAVE_ACTION)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	--e1:SetCost(cm.cost)
+	e1:SetTarget(cm.target)
+	e1:SetOperation(cm.activate)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(10045474,0))
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetCondition(cm.handcon)
+	c:RegisterEffect(e2)
+	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
+end
+function cm.fit0(c)
+	return not c:IsType(TYPE_TRAP)
+end
+function cm.handcon(e)
+	return Duel.GetMatchingGroupCount(cm.fit0,e:GetHandlerPlayer(),LOCATION_GRAVE,0,nil)==0
+end
+function cm.chainfilter(re,tp,cid)
+	return re:GetHandler():IsType(TYPE_TRAP)
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetCustomActivityCount(m,tp,ACTIVITY_CHAIN)==0 end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(cm.aclimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function cm.aclimit(e,re,tp)
+	return not re:GetHandler():IsType(TYPE_TRAP)
+end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
+	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:GetCount(),0,0)
+end
+function cm.fit(c)
+	return c:IsType(TYPE_TRAP) and c:IsFaceup() and c:IsSSetable()
+end 
+function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	local sg1=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
+	Duel.Destroy(sg1,REASON_EFFECT)
+	local a=Duel.GetOperatedGroup():Filter(Card.IsType,nil,TYPE_TRAP):GetCount()
+	local sg2=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
+	Duel.Destroy(sg2,REASON_EFFECT)
+	local b=Duel.GetOperatedGroup():Filter(Card.IsType,nil,TYPE_TRAP):GetCount()
+	local s1=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	local s2=a+b
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.fit),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,math.min(s1,s2),math.min(s1,s2),nil)
+	Duel.SSet(tp,g)
+	local tc=g:GetFirst()
+	while tc do 
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetDescription(aux.Stringid(m,0))
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+	tc=g:GetNext()
+	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(cm.aclimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
