@@ -49,20 +49,20 @@ function c22348456.bmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		if e:GetLabel()~=100 then return false end
 		e:SetLabel(0)
-		return Duel.IsExistingMatchingCard(c22348456.bmfilter1,tp,LOCATION_ONFIELD,0,1,nil) and eg:GetFirst():IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		return Duel.IsExistingMatchingCard(c22348456.bmfilter1,tp,LOCATION_ONFIELD,0,1,nil) and eg:GetFirst():IsType(TYPE_MONSTER) and Duel.GetLocationCount(eg:GetFirst():GetControler(),LOCATION_SZONE)>0
 	end
 	e:SetLabel(0)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c22348456.bmfilter1,tp,LOCATION_ONFIELD,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
-	e:SetLabelObject(g:GetFirst())
+	e:SetLabel(g:GetFirst():GetType())
 end
 function c22348456.bmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=re:GetHandler()
-	local pc=e:GetLabelObject()
-	if tc:IsRelateToEffect(re) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
+	local tt=e:GetLabel()
+	if tc:IsRelateToEffect(re) and Duel.GetLocationCount(eg:GetFirst():GetControler(),LOCATION_SZONE)>0 then
+		Duel.MoveToField(tc,tp,eg:GetFirst():GetControler(),LOCATION_SZONE,POS_FACEDOWN,true)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -70,7 +70,7 @@ function c22348456.bmop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		e1:SetValue(TYPE_SPELL)
 		tc:RegisterEffect(e1)
-		if pc:IsType(TYPE_SPELL) then
+		if bit.band(tt,0x2)~=0 then
 			local e2=Effect.CreateEffect(c)
 			e2:SetDescription(aux.Stringid(22348456,0))
 			e2:SetCategory(CATEGORY_DRAW)
@@ -82,7 +82,7 @@ function c22348456.bmop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 			tc:RegisterEffect(e2)
 		end
-		if pc:IsType(TYPE_TRAP) then
+		if bit.band(tt,0x4)~=0 then
 			local e3=Effect.CreateEffect(c)
 			e3:SetDescription(aux.Stringid(22348456,1))
 			e3:SetCategory(CATEGORY_DESTROY)
@@ -93,7 +93,7 @@ function c22348456.bmop(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 			tc:RegisterEffect(e3)
 		end
-		if pc:IsType(TYPE_MONSTER) then
+		if bit.band(tt,0x1)~=0 then
 			local e4=Effect.CreateEffect(c)
 			e4:SetDescription(aux.Stringid(22348456,2))
 			e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
