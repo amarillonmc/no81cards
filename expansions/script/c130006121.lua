@@ -67,8 +67,9 @@ function s.spcon(e,c)
 	local c=e:GetHandler()
 	if c==nil then return true end
 	local tp=c:GetControler()
+	local p=Duel.GetTurnPlayer()
 	local g=Duel.GetMatchingGroup(s.mfilter,tp,LOCATION_GRAVE,0,nil)
-	return g:IsExists(s.mfilter,1,nil)
+	return Duel.GetLocationCount(1-p,LOCATION_MZONE)>0 and g:IsExists(s.mfilter,1,nil)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
