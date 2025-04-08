@@ -208,7 +208,7 @@ function cm.rmfil(c,lv)
 	return c:IsType(TYPE_SYNCHRO) and c:IsLevelBelow(lv-1) and c:IsAbleToRemove()
 end
 function cm.lvcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) and e:GetHandler():GetFlagEffect(m)~=0
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) --and e:GetHandler():GetFlagEffect(m)~=0
 end
 function cm.ttlv(c)
 	return c:GetOriginalLevel()
@@ -228,8 +228,8 @@ function cm.lvop(e,tp,eg,ep,ev,re,r,rp)
 		local rg=Duel.GetMatchingGroup(cm.rmfil,tp,LOCATION_EXTRA,0,nil,xlv):Select(tp,1,1,nil)
 		if rg and Duel.Remove(rg,POS_FACEUP,REASON_EFFECT) then
 			local rmvg=Duel.GetOperatedGroup()
-			e:SetLabelObject(rmvg)
 			rmvg:KeepAlive()
+			e:SetLabelObject(rmvg)
 			local code=rmvg:GetFirst():GetCode()
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)

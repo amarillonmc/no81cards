@@ -61,7 +61,7 @@ function s.chkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+id,e,r,rp,ep,ev)
 end
 function s.mfilter(c)
-	return c:GetLevel()>c:GetOriginalLevel() and c:IsAbleToDeckAsCost()
+	return c:IsRace(RACE_WARRIOR) and c:GetLevel()>c:GetOriginalLevel() and c:IsAbleToDeckAsCost()
 end
 function s.spcon(e,c)
 	local c=e:GetHandler()
@@ -69,7 +69,7 @@ function s.spcon(e,c)
 	local tp=c:GetControler()
 	local p=Duel.GetTurnPlayer()
 	local g=Duel.GetMatchingGroup(s.mfilter,tp,LOCATION_GRAVE,0,nil)
-	return Duel.GetLocationCount(1-p,LOCATION_MZONE)>0 and g:IsExists(s.mfilter,1,nil)
+	return Duel.GetLocationCount(1-p,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,true,true,POS_FACEUP,1-p) and g:IsExists(s.mfilter,1,nil)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

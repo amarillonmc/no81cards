@@ -57,7 +57,7 @@ function cm.cfilter(c)
 	return c:IsFaceup()
 end  
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)  
-	return e:GetHandler():GetFlagEffect(m)==0 and (re:IsActiveType(TYPE_SPELL) or re:IsActiveType(TYPE_TRAP) or re:IsActivatable(TYPE_MONSTER)) and rp~=tp and Duel.IsChainDisablable(ev) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return e:GetHandler():GetFlagEffect(m)==0 and rp~=tp and Duel.IsChainDisablable(ev) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end  
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)  
 	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then  

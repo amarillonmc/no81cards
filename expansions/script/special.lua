@@ -292,8 +292,7 @@ function Auxiliary.PreloadUds()
 	function Duel.ReturnToField(c,...)
 		local res=_ReturnToField(c,...)
 		if res then
-			c:SetStatus(STATUS_SUMMON_TURN,false)
-			c:SetStatus(STATUS_SPSUMMON_TURN,false)
+			c:SetStatus(0x100,false)
 		end
 		return res
 	end
