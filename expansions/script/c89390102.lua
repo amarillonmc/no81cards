@@ -69,7 +69,12 @@ function s.actcon(e)
 	return e:GetHandler():GetColumnGroupCount()>=2
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetColumnGroup():IsContains(re:GetHandler()) or e:GetHandler()==re:GetHandler()
+	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
+	seq=aux.MZoneSequence(seq)
+	local cseq=aux.SZoneSequence(e:GetHandler():GetSequence())
+	if not bit.band(loc,LOCATION_ONFIELD)==loc then return false end
+	if e:GetHandlerPlayer()==re:GetHandlerPlayer() then return seq==cseq end
+	return seq==4-cseq
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

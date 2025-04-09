@@ -77,7 +77,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.tttcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,m)
+	return Duel.IsPlayerAffectedByEffect(e:GetHandlerPlayer(),m)
 end
 function cm.indtg(e,c)
 	local tc=e:GetHandler()

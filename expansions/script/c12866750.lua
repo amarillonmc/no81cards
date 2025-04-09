@@ -113,12 +113,11 @@ function s.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local lp=Duel.GetLP(tp)
 	Duel.SetLP(tp,lp-2000)
+	local g=e:GetLabelObject():GetLabelObject()
 	if Duel.GetLP(tp)<lp and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and 
-	Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-		local g=e:GetLabelObject():GetLabelObject()
-		if g and g:IsExists(s.spfilter2,1,nil,e,tp) then
-		local tc=g:Select(tp,1,1,nil)
+	#g>0 and g:IsExists(s.spfilter2,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+		local sg=g:Filter(s.spfilter2,nil,e,tp)
+		local tc=sg:Select(tp,1,1,nil)
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-		end
 	end
 end

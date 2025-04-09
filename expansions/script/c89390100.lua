@@ -69,19 +69,23 @@ function s.actcon(e)
 	return e:GetHandler():GetColumnGroupCount()>=2
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetColumnGroup():IsContains(re:GetHandler()) or e:GetHandler()==re:GetHandler()
+	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
+	seq=aux.MZoneSequence(seq)
+	local cseq=aux.SZoneSequence(e:GetHandler():GetSequence())
+	if not bit.band(loc,LOCATION_ONFIELD)==loc then return false end
+	if e:GetHandlerPlayer()==re:GetHandlerPlayer() then return seq==cseq end
+	return seq==4-cseq
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(id,0))
-	local dmg=e:GetHandler():GetBaseAttack()
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(dmg)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,dmg)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,e:GetHandler():GetBaseAttack())
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Damage(p,d,REASON_EFFECT)
+	local c=e:GetHandler()
+	if c:IsFaceup() and c:IsRelateToEffect(e) then
+		local atk=c:GetBaseAttack()
+		Duel.Damage(tp,atk,REASON_EFFECT)
+	end
 end
 function s.eftg(e,c)
 	return c:IsType(TYPE_EFFECT) and e:GetHandler():GetColumnGroup():IsContains(c)
