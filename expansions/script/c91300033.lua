@@ -193,10 +193,10 @@ function c91300033.speop(e,tp,eg,ep,ev,re,r,rp)
 		if rc and Duel.SendtoDeck(rc,nil,SEQ_DECKTOP,REASON_EFFECT) and rc:IsLocation(0x41) then
 			local og=Duel.GetOperatedGroup()
 			local tc=og:GetFirst()
-			if tc and tc:IsCode(91300025) then
+			if tc and (tc:IsCode(91300025) or tc:IsCode(91300032) or tc:IsCode(91300033) or tc:IsCode(91300034)) then
 				c:RegisterFlagEffect(91301025,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(91300032,3))
 			end
-			if tc and tc:IsCode(91300032) then
+			--[[if tc and tc:IsCode(91300032) then
 				c:RegisterFlagEffect(91301032,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(91300032,4))
 			end
 			if tc and tc:IsCode(91300033) then
@@ -204,7 +204,7 @@ function c91300033.speop(e,tp,eg,ep,ev,re,r,rp)
 			end
 			if tc and tc:IsCode(91300034) then
 				c:RegisterFlagEffect(91301034,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(91300032,6))
-			end
+			end]]
 		end
 	end
 end
@@ -254,7 +254,7 @@ function c91300033.rmhconfz(e,tp,eg,ep,ev,re,r,rp)
 end
 function c91300033.toexcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToExtraAsCost() and c:GetFlagEffect(25824) and c:GetFlagEffect(25824)<5 end
+	if chk==0 then return c:IsAbleToExtraAsCost() and c:GetFlagEffectLabel(25824) and c:GetFlagEffectLabel(25824)<5 end
 	Duel.SendtoDeck(c,nil,SEQ_DECKTOP,REASON_COST)
 end
 function c91300033.rmhtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -365,7 +365,7 @@ function c91300033.jkfcop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c91300033.fdcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if re:IsActiveType(TYPE_MONSTER) then
+	if re:IsActiveType(TYPE_MONSTER) and c:GetOwner()==1-tp then
 		local flag=c:GetFlagEffectLabel(91300033)
 		if flag then
 			c:SetFlagEffectLabel(91300033,flag+1)

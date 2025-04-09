@@ -134,7 +134,7 @@ function cm.MergedDelayEventCheck1_ToSingleCard(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
 	local c=e:GetOwner()
 	g:Merge(eg)
-	if Duel.GetCurrentChain()==0 and #g>0 then
+	if Duel.GetCurrentChain()==0 and #g>0 and not g:IsExists(function(c) return c:GetEquipCount()>0 or c:GetOverlayCount()>0 end,1,nil) then
 		local _eg=g:Clone()
 		if g:IsContains(c) and (c:IsFaceup() or c:IsPreviousPosition(POS_FACEUP)) then 
 			if e:GetValue()==EVENT_MOVE then

@@ -3,7 +3,7 @@ function c9310055.initial_effect(c)
 	aux.AddCodeList(c,9310055)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_NEGATE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -77,7 +77,7 @@ function c9310055.rscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9310055.rsop(e,tp,eg,ep,ev,re,r,rp)
 	re:SetOperation(c9310055.activate)
-	re:SetCategory(CATEGORY_TOHAND+CATEGORY_NEGATE+CATEGORY_DESTROY)
+	re:SetCategory(CATEGORY_TOHAND+CATEGORY_NEGATE)
 	re:SetLabel(0)
 end
 function c9310055.chcon(e,tp,eg,ep,ev,re,r,rp)
@@ -248,7 +248,7 @@ function c9310055.dissop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function c9310055.chop(e,tp,eg,ep,ev,re,r,rp)
-	re:SetCategory(re:GetCategory()|CATEGORY_TODECK|CATEGORY_LEAVE_GRAVE)
+	--re:SetCategory(re:GetCategory()|CATEGORY_TODECK|CATEGORY_GRAVE_ACTION)
 	if re:GetLabel()&0x49421~=0 then re:SetLabel(re:GetLabel()+0x40000) return end
 	re:SetLabel(re:GetLabel()+0x40000)
 	local op=re:GetOperation()

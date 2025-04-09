@@ -251,7 +251,7 @@ function cm.dissop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
-	re:SetCategory(re:GetCategory()|CATEGORY_NEGATE)
+	--re:SetCategory(re:GetCategory()|CATEGORY_NEGATE)
 	if re:GetLabel()&0x49421~=0 then re:SetLabel(re:GetLabel()+0x1) return end
 	re:SetLabel(re:GetLabel()+0x1)
 	local op=re:GetOperation()

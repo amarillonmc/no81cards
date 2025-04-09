@@ -69,9 +69,14 @@ function s.actcon(e)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
-	seq=aux.MZoneSequence(seq)
-	local cseq=aux.SZoneSequence(e:GetHandler():GetSequence())
-	if not bit.band(loc,LOCATION_ONFIELD)==loc then return false end
+	if loc==LOCATION_MZONE then
+		seq=aux.MZoneSequence(seq)
+	elseif loc==LOCATION_SZONE then
+		seq=aux.SZoneSequence(seq)
+	else
+		return false
+	end
+	local cseq=aux.MZoneSequence(e:GetHandler():GetSequence())
 	if e:GetHandlerPlayer()==re:GetHandlerPlayer() then return seq==cseq end
 	return seq==4-cseq
 end

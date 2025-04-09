@@ -3,7 +3,7 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_LEAVE_GRAVE)
+	e1:SetCategory(CATEGORY_GRAVE_ACTION)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCondition(cm.condition)
@@ -81,7 +81,7 @@ function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	re:SetOperation(cm.activate)
-	re:SetCategory(CATEGORY_LEAVE_GRAVE)
+	re:SetCategory(CATEGORY_GRAVE_ACTION)
 	re:SetLabel(0)
 end
 function cm.chcon(e,tp,eg,ep,ev,re,r,rp)
@@ -252,7 +252,7 @@ function cm.dissop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
-	re:SetCategory(re:GetCategory()|CATEGORY_DAMAGE)
+	--re:SetCategory(re:GetCategory()|CATEGORY_DAMAGE)
 	if re:GetLabel()&0x49421~=0 then re:SetLabel(re:GetLabel()+0x200) return end
 	re:SetLabel(re:GetLabel()+0x200)
 	local op=re:GetOperation()

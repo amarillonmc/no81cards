@@ -73,7 +73,7 @@ function cm.filter(c,e)
 		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
 		return not c:IsPreviousLocation(LOCATION_ONFIELD) and (not b1 or not g1:IsContains(c)) and (not b2 or not g2:IsContains(c))
 	end
-	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(m)>0)
+	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(m)>0) and not c:IsPreviousLocation(LOCATION_SZONE)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	if cm.mv then cm.mv=nil return false end
@@ -123,7 +123,7 @@ function cm.roll(min,max)
 			return math.floor(cm.r*min)+1
 		else
 			max=max-min+1
-			return math.floor(cm.r*max+min)
+			return math.floor(cm.r*max)+min
 		end
 	end
 	return cm.r

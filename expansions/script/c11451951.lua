@@ -45,14 +45,14 @@ function cm.initial_effect(c)
 		ge2:SetOperation(cm.chkop2)
 		Duel.RegisterEffect(ge2,0)
 		local _Overlay=Duel.Overlay
-        function Duel.Overlay(xc,v,...)
-            local t=Auxiliary.GetValueType(v)
-            local g=Group.CreateGroup()
-            if t=="Card" then g:AddCard(v) else g=v end
-            local res=_Overlay(xc,v,...)
-            Duel.RaiseEvent(g,EVENT_CUSTOM+m+1,e1,0,0,0,0)
-            return res
-        end
+		function Duel.Overlay(xc,v,...)
+			local t=Auxiliary.GetValueType(v)
+			local g=Group.CreateGroup()
+			if t=="Card" then g:AddCard(v) else g=v end
+			local res=_Overlay(xc,v,...)
+			Duel.RaiseEvent(g,EVENT_CUSTOM+m+1,e1,0,0,0,0)
+			return res
+		end
 	end
 	if not cm.global_check2 then
 		cm.global_check2=true
@@ -109,7 +109,7 @@ function cm.filter12(c,e)
 		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
 		return not c:IsPreviousLocation(LOCATION_ONFIELD) and (not b1 or not g1:IsContains(c)) and (not b2 or not g2:IsContains(c))
 	end
-	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(m-4)>0)
+	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(m-4)>0) and not c:IsPreviousLocation(LOCATION_SZONE)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter12,1,nil,e)

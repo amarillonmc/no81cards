@@ -117,7 +117,7 @@ function cm.RegisterMergedDelayedEvent_ToSingleCard(c,code,events)
 									g2:Clear()
 								end 
 							end 
-							if Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_END) and not g:IsExists(Card.IsStatus,1,nil,STATUS_ACT_FROM_HAND) then
+							if Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_END) and not g:IsExists(Card.IsStatus,1,nil,STATUS_ACT_FROM_HAND) and not g2:IsExists(function(c) return c:GetEquipCount()>0 or c:GetOverlayCount()>0 end,1,nil) then
 								local _eg=g:Clone()
 								local _eg2=g2:Clone()
 								if #g>0 and #g2>0 then

@@ -283,7 +283,7 @@ function cm.dissop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
-	re:SetCategory(re:GetCategory()|CATEGORY_DRAW)
+	--re:SetCategory(re:GetCategory()|CATEGORY_DRAW)
 	if re:GetLabel()&0x49421~=0 then re:SetLabel(re:GetLabel()+0x1000) return end
 	re:SetLabel(re:GetLabel()+0x1000)
 	local op=re:GetOperation()

@@ -363,7 +363,7 @@ function cm.dissop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
-	re:SetCategory(re:GetCategory()|CATEGORY_HANDES)
+	--re:SetCategory(re:GetCategory()|CATEGORY_HANDES)
 	if re:GetLabel()&0x49421~=0 then re:SetLabel(re:GetLabel()+0x8000) return end
 	re:SetLabel(re:GetLabel()+0x8000)
 	local op=re:GetOperation()

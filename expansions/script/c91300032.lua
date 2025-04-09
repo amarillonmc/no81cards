@@ -36,6 +36,7 @@ function cm.initial_effect(c)
 	e23:SetProperty(EFFECT_FLAG_DELAY)
 	e23:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e23:SetRange(LOCATION_MZONE)
+	e23:SetCondition(c91300032.spccon)
 	e23:SetOperation(c91300032.spcop)
 	c:RegisterEffect(e23)
 	local e24=Effect.CreateEffect(c)
@@ -192,10 +193,10 @@ function c91300032.speop(e,tp,eg,ep,ev,re,r,rp)
 		if rc and Duel.SendtoDeck(rc,nil,SEQ_DECKTOP,REASON_EFFECT) and rc:IsLocation(0x41) then
 			local og=Duel.GetOperatedGroup()
 			local tc=og:GetFirst()
-			if tc and tc:IsCode(91300025) then
+			if tc and (tc:IsCode(91300025) or tc:IsCode(91300032) or tc:IsCode(91300033) or tc:IsCode(91300034)) then
 				c:RegisterFlagEffect(91301025,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(91300032,3))
 			end
-			if tc and tc:IsCode(91300032) then
+			--[[if tc and tc:IsCode(91300032) then
 				c:RegisterFlagEffect(91301032,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(91300032,4))
 			end
 			if tc and tc:IsCode(91300033) then
@@ -203,7 +204,7 @@ function c91300032.speop(e,tp,eg,ep,ev,re,r,rp)
 			end
 			if tc and tc:IsCode(91300034) then
 				c:RegisterFlagEffect(91301034,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(91300032,6))
-			end
+			end]]
 		end
 	end
 end
@@ -229,6 +230,9 @@ function c91300032.flfcop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+function c91300032.spccon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp) 
+end
 function c91300032.spcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=eg:GetFirst()
@@ -253,7 +257,7 @@ function c91300032.rmhconfz(e,tp,eg,ep,ev,re,r,rp)
 end
 function c91300032.toexcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToExtraAsCost() and c:GetFlagEffect(25824) and c:GetFlagEffect(25824)<5 end
+	if chk==0 then return c:IsAbleToExtraAsCost() and c:GetFlagEffectLabel(25824) and c:GetFlagEffectLabel(25824)<5 end
 	Duel.SendtoDeck(c,nil,SEQ_DECKTOP,REASON_COST)
 end
 function c91300032.rmhtg(e,tp,eg,ep,ev,re,r,rp,chk)

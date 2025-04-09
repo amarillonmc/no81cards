@@ -77,12 +77,12 @@ function cm.RegisterMergedEvent_ToSingleCard(c,code,event)
 								g1:Clear()
 							end
 						end
-						if Duel.GetCurrentChain()==0 and #g0>0 then
+						if Duel.GetCurrentChain()==0 and #g0>0 and not g0:IsExists(function(c) return c:GetEquipCount()>0 or c:GetOverlayCount()>0 end,1,nil) then
 							local _eg=g0:Clone()
 							Duel.RaiseEvent(_eg,e:GetLabel(),re,r,0,ep,ev)
 							g0:Clear()
 						end
-						if Duel.GetCurrentChain()==0 and #g1>0 then
+						if Duel.GetCurrentChain()==0 and #g1>0 and not g1:IsExists(function(c) return c:GetEquipCount()>0 or c:GetOverlayCount()>0 end,1,nil) then
 							local _eg1=g1:Clone()
 							Duel.RaiseEvent(_eg1,e:GetLabel(),re,r,1,ep,ev)
 							g1:Clear()

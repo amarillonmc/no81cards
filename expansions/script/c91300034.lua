@@ -158,8 +158,9 @@ function cm.initial_effect(c)
 	local e72=Effect.CreateEffect(c)
 	e72:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e72:SetProperty(EFFECT_FLAG_DELAY)
-	e72:SetCode(EVENT_CHAINING)
+	e72:SetCode(EVENT_TO_HAND)
 	e72:SetRange(LOCATION_MZONE)
+	e72:SetCondition(c91300034.thcon)
 	e72:SetOperation(c91300034.thcop)
 	c:RegisterEffect(e72)
 	local e73=Effect.CreateEffect(c)
@@ -194,10 +195,10 @@ function c91300034.speop(e,tp,eg,ep,ev,re,r,rp)
 		if rc and Duel.SendtoDeck(rc,nil,SEQ_DECKTOP,REASON_EFFECT) and rc:IsLocation(0x41) then
 			local og=Duel.GetOperatedGroup()
 			local tc=og:GetFirst()
-			if tc and tc:IsCode(91300025) then
+			if tc and (tc:IsCode(91300025) or tc:IsCode(91300032) or tc:IsCode(91300033) or tc:IsCode(91300034)) then
 				c:RegisterFlagEffect(91301025,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(91300032,3))
 			end
-			if tc and tc:IsCode(91300032) then
+			--[[if tc and tc:IsCode(91300032) then
 				c:RegisterFlagEffect(91301032,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(91300032,4))
 			end
 			if tc and tc:IsCode(91300033) then
@@ -205,7 +206,7 @@ function c91300034.speop(e,tp,eg,ep,ev,re,r,rp)
 			end
 			if tc and tc:IsCode(91300034) then
 				c:RegisterFlagEffect(91301034,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(91300032,6))
-			end
+			end]]
 		end
 	end
 end
@@ -255,7 +256,7 @@ function c91300034.rmhconfz(e,tp,eg,ep,ev,re,r,rp)
 end
 function c91300034.toexcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToExtraAsCost() and c:GetFlagEffect(25824) and c:GetFlagEffect(25824)<5 end
+	if chk==0 then return c:IsAbleToExtraAsCost() and c:GetFlagEffectLabel(25824) and c:GetFlagEffectLabel(25824)<5 end
 	Duel.SendtoDeck(c,nil,SEQ_DECKTOP,REASON_COST)
 end
 function c91300034.rmhtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -420,6 +421,9 @@ function c91300034.hdlfcop(e,tp,eg,ep,ev,re,r,rp)
 			c:RegisterFlagEffect(25824,RESET_EVENT+RESETS_STANDARD,0,1,1)
 		end
 	end
+end
+function c91300034.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsControler,1,nil,1-tp) 
 end
 function c91300034.thcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

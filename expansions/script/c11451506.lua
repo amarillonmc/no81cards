@@ -94,7 +94,7 @@ function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	re:SetOperation(cm.activate)
-	re:SetCategory(0)
+	re:SetCategory(CATEGORY_TODECK)
 	re:SetLabel(0)
 	re:SetProperty(0)
 end
@@ -266,7 +266,7 @@ function cm.dissop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
-	re:SetCategory(re:GetCategory()|CATEGORY_TOHAND)
+	--re:SetCategory(re:GetCategory()|CATEGORY_TOHAND)
 	if re:GetLabel()&0x49421~=0 then re:SetLabel(re:GetLabel()+0x8) return end
 	re:SetLabel(re:GetLabel()+0x8)
 	local op=re:GetOperation()

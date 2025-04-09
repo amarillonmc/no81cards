@@ -84,7 +84,7 @@ function cm.filter12(c,e)
 		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
 		return (not b1 or not g1:IsContains(c)) and (not b2 or not g2:IsContains(c)) --and not c:IsPreviousLocation(LOCATION_ONFIELD)
 	end
-	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(11451848)>0)
+	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(11451848)>0) and not c:IsPreviousLocation(LOCATION_SZONE)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	if 1==0 and eg:GetFirst():IsCode(m-3) and e:GetCode()==EVENT_MOVE then
