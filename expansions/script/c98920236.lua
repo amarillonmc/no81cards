@@ -46,9 +46,9 @@ function c98920236.thfilter(c)
 	return c:IsFaceup() and c:IsAbleToHand()
 end
 function c98920236.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c98920236.thcfilter,1,nil,tp) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c98920236.thcfilter,1,REASON_COST,true,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroupEx(tp,c98920236.thcfilter,1,1,nil,tp)
+	local g=Duel.SelectReleaseGroupEx(tp,c98920236.thcfilter,1,1,REASON_COST,true,nil,tp)
 	Duel.Release(g,REASON_COST)
 end
 function c98920236.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
