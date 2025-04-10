@@ -71,8 +71,8 @@ function cm.initial_effect(c)
 			return res
 		end
 	end--]]
-	if not PNFL_TOFIELD_DELAY_CHECK then
-		PNFL_TOFIELD_DELAY_CHECK=true
+	if not PNFL_TOFIELD_CHECK then
+		PNFL_TOFIELD_CHECK=true
 		local _Equip=Duel.Equip
 		Duel.Equip=function(p,c,...)
 			if not (c:IsControler(p) and c:IsLocation(LOCATION_SZONE)) then c:RegisterFlagEffect(11451409,RESET_CHAIN,0,1) c:RegisterFlagEffect(11451409,RESET_CHAIN,0,1) end
@@ -97,6 +97,12 @@ function cm.initial_effect(c)
 		local e2=e1:Clone()
 		e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 		Duel.RegisterEffect(e2,0)
+		local e11=e1:Clone()
+		e11:SetCode(EVENT_SUMMON_NEGATED)
+		Duel.RegisterEffect(e11,0)
+		local e21=e1:Clone()
+		e21:SetCode(EVENT_SPSUMMON_NEGATED)
+		Duel.RegisterEffect(e21,0)
 		local e3=e1:Clone()
 		e3:SetCode(EVENT_MOVE)
 		Duel.RegisterEffect(e3,0)
@@ -112,11 +118,6 @@ function cm.initial_effect(c)
 		e5:SetTargetRange(1,1)
 		e5:SetTarget(cm.costchk)
 		Duel.RegisterEffect(e5,0)
-		local e6=Effect.CreateEffect(c)
-		e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e6:SetCode(EVENT_CHAIN_ACTIVATING)
-		e6:SetOperation(function() Duel.RegisterFlagEffect(0,11451409,RESET_CHAIN,0,1) end)
-		Duel.RegisterEffect(e6,0)
 	end
 end
 cm.traveler_saga=true
@@ -132,7 +133,7 @@ function cm.filter12(c,e)
 		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
 		return (not b1 or not g1:IsContains(c)) and (not b2 or not g2:IsContains(c)) and not c:IsPreviousLocation(LOCATION_ONFIELD)
 	end
-	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(11451409)>0) and not c:IsPreviousLocation(LOCATION_SZONE)
+	return not ((e:GetCode()==EVENT_SUMMON_SUCCESS or e:GetCode()==EVENT_SUMMON_NEGATED) and c:GetFlagEffect(11451409)>0) and not c:IsPreviousLocation(LOCATION_SZONE)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter12,1,nil,e)
@@ -148,13 +149,7 @@ function cm.descon3(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():GetFieldID()==re:GetHandler():GetRealFieldID()
 end
 function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAIN_ACTIVATING)
-	e1:SetCountLimit(1)
-	e1:SetOperation(function(e) Duel.RaiseEvent(eg,EVENT_CUSTOM+11451409,re,r,rp,ep,ev) end)
-	e1:SetReset(RESET_CHAIN)
-	Duel.RegisterEffect(e1,0)
+	Duel.RaiseEvent(eg,EVENT_CUSTOM+11451409,re,r,rp,ep,ev)
 end
 function cm.merge(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

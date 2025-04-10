@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 		cm.global_check=true
 		local _Equip=Duel.Equip
 		Duel.Equip=function(p,c,...)
-			if not c:IsOnField() then c:RegisterFlagEffect(m,RESET_CHAIN,0,1) end
+			if not c:IsOnField() and not c:IsHasEffect(EFFECT_EQUIP_LIMIT) then c:RegisterFlagEffect(m,RESET_CHAIN,0,1) end
 			local res=_Equip(p,c,...)
 			return res
 		end
@@ -44,6 +44,12 @@ function cm.initial_effect(c)
 		local e2=e1:Clone()
 		e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 		Duel.RegisterEffect(e2,0)
+		local e11=e1:Clone()
+		e11:SetCode(EVENT_SUMMON_NEGATED)
+		Duel.RegisterEffect(e11,0)
+		local e21=e1:Clone()
+		e21:SetCode(EVENT_SPSUMMON_NEGATED)
+		Duel.RegisterEffect(e21,0)
 		local e3=e1:Clone()
 		e3:SetCode(EVENT_MOVE)
 		Duel.RegisterEffect(e3,0)
@@ -73,7 +79,7 @@ function cm.filter(c,e)
 		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
 		return not c:IsPreviousLocation(LOCATION_ONFIELD) and (not b1 or not g1:IsContains(c)) and (not b2 or not g2:IsContains(c))
 	end
-	return not (e:GetCode()==EVENT_SUMMON_SUCCESS and c:GetFlagEffect(m)>0) and not c:IsPreviousLocation(LOCATION_SZONE)
+	return not ((e:GetCode()==EVENT_SUMMON_SUCCESS or e:GetCode()==EVENT_SUMMON_NEGATED) and c:GetFlagEffect(m)>0) and not c:IsPreviousLocation(LOCATION_SZONE)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	if cm.mv then cm.mv=nil return false end

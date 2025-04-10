@@ -29,10 +29,10 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
-	e2:SetCode(EVENT_MOVE)
+	e2:SetCode(EVENT_CUSTOM+11451409)
 	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetCondition(cm.actcon)
-	e2:SetCost(cm.bfgcost)
+	e2:SetCost(aux.bfgcost)
 	e2:SetOperation(cm.actop)
 	c:RegisterEffect(e2)
 	--change code
@@ -95,6 +95,84 @@ function cm.initial_effect(c)
 			return res
 		end
 	end
+	if not PNFL_TOFIELD_CHECK then
+		PNFL_TOFIELD_CHECK=true
+		local _Equip=Duel.Equip
+		Duel.Equip=function(p,c,...)
+			if not (c:IsControler(p) and c:IsLocation(LOCATION_SZONE)) then c:RegisterFlagEffect(11451409,RESET_CHAIN,0,1) c:RegisterFlagEffect(11451409,RESET_CHAIN,0,1) end
+			local res=_Equip(p,c,...)
+			return res
+		end
+		local _CRegisterEffect=Card.RegisterEffect
+		function Card.RegisterEffect(c,e,bool)
+			local res=_CRegisterEffect(c,e,bool)
+			if e:GetCode()==EFFECT_EQUIP_LIMIT and c:GetFlagEffect(11451409)>0 then
+				c:ResetFlagEffect(11451409)
+				cm.desop21(e,0,Group.FromCards(c),0,0,e,0,0)
+			end
+			return res
+		end
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_SUMMON_SUCCESS)
+		e1:SetCondition(cm.descon1)
+		e1:SetOperation(cm.desop21)
+		Duel.RegisterEffect(e1,0)
+		local e2=e1:Clone()
+		e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(e2,0)
+		local e11=e1:Clone()
+		e11:SetCode(EVENT_SUMMON_NEGATED)
+		Duel.RegisterEffect(e11,0)
+		local e21=e1:Clone()
+		e21:SetCode(EVENT_SPSUMMON_NEGATED)
+		Duel.RegisterEffect(e21,0)
+		local e3=e1:Clone()
+		e3:SetCode(EVENT_MOVE)
+		Duel.RegisterEffect(e3,0)
+		local e4=e1:Clone()
+		e4:SetCode(EVENT_CHAINING)
+		e4:SetCondition(cm.descon31)
+		e4:SetOperation(cm.desop31)
+		Duel.RegisterEffect(e4,0)
+		local e5=Effect.CreateEffect(c)
+		e5:SetType(EFFECT_TYPE_FIELD)
+		e5:SetCode(EFFECT_CANNOT_SUMMON)
+		e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e5:SetTargetRange(1,1)
+		e5:SetTarget(cm.costchk1)
+		Duel.RegisterEffect(e5,0)
+	end
+end
+function cm.costchk1(e,c,tp,st)
+	if bit.band(st,SUMMON_TYPE_DUAL)~=SUMMON_TYPE_DUAL then return false end
+	if c:GetFlagEffect(11451409)==0 then c:RegisterFlagEffect(11451409,RESET_EVENT+RESETS_STANDARD,0,1) end
+	return false
+end
+function cm.filter12(c,e)
+	if not (c:IsOnField() and (c:IsFacedown() or c:IsStatus(STATUS_EFFECT_ENABLED))) or c:GetFlagEffect(11451409)>1 then return false end
+	if e:GetCode()==EVENT_MOVE then
+		local b1,g1=Duel.CheckEvent(EVENT_SUMMON_SUCCESS,true)
+		local b2,g2=Duel.CheckEvent(EVENT_SPSUMMON_SUCCESS,true)
+		return (not b1 or not g1:IsContains(c)) and (not b2 or not g2:IsContains(c)) and not c:IsPreviousLocation(LOCATION_ONFIELD)
+	end
+	return not ((e:GetCode()==EVENT_SUMMON_SUCCESS or e:GetCode()==EVENT_SUMMON_NEGATED) and c:GetFlagEffect(11451409)>0) and not c:IsPreviousLocation(LOCATION_SZONE)
+end
+function cm.descon1(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.filter12,1,nil,e)
+end
+function cm.desop21(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetCurrentChain()>0 and Duel.GetFlagEffect(0,11451409)==0 then
+		cm.desop31(e,tp,eg,ep,ev,re,r,rp)
+	else
+		Duel.RaiseEvent(eg,EVENT_CUSTOM+11451409,re,r,rp,ep,ev)
+	end
+end
+function cm.descon31(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():GetFieldID()==re:GetHandler():GetRealFieldID()
+end
+function cm.desop31(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RaiseEvent(eg,EVENT_CUSTOM+11451409,re,r,rp,ep,ev)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetDecktopGroup(e:GetHandlerPlayer(),1):IsContains(e:GetHandler())
@@ -140,10 +218,10 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.actfilter(c)
-	return c:IsLocation(LOCATION_SZONE) and c:GetSequence()==5 and c:IsType(TYPE_FIELD) and c:IsFaceup() and not c:IsCode(11451631)
+	return c:GetPreviousLocation()&LOCATION_ONFIELD==0 and c:IsOnField() and c:IsFaceup() and c:IsCode(11451631) --c:IsLocation(LOCATION_SZONE) and c:GetSequence()==5 and c:IsType(TYPE_FIELD) and 
 end
 function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.actfilter,1,nil) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND))
+	return eg:IsExists(cm.actfilter,1,nil)
 end
 function cm.bfgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
