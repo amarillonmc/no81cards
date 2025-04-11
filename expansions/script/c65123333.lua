@@ -14,6 +14,7 @@ local _Effect=tableclone(Effect)
 local _Group=tableclone(Group)
 local _Debug=tableclone(Debug)
 local _Auxiliary=tableclone(Auxiliary)
+local _pcall=pcall
 function s.initial_effect(c)
 	local control_player=0
 	if _Duel.GetFieldGroupCount(1,LOCATION_DECK,0)>0 then control_player=1 end
@@ -25,7 +26,8 @@ function s.initial_effect(c)
 		_Debug.SetPlayerInfo(1-control_player,8000,0,0)
 	elseif CardCount==1 then
 		s.Wild_Mode=true
-		if KOISHI_CHECK then
+		if false then
+		--if KOISHI_CHECK then
 			function Card.RegisterEffect(ec,e,bool)
 				if s.cfilter(ec,id) then
 					return _Card.RegisterEffect(ec,e,bool)
@@ -93,11 +95,11 @@ function s.initial_effect(c)
 		local cg=_Duel.GetMatchingGroup(s.cfilter,control_player,LOCATION_EXTRA,0,nil,id)
 		local tc1=_Group.GetFirst(cg)
 		local tc2=_Group.GetNext(cg)
-		pcall(_Duel.MoveToField,tc1,control_player,control_player,4,1,true,1)
+		_pcall(_Duel.MoveToField,tc1,control_player,control_player,4,1,true,1)
 		s.atkfun(tc1)
-		pcall(_Duel.MoveToField,tc2,control_player,control_player,4,1,true,16)
+		_pcall(_Duel.MoveToField,tc2,control_player,control_player,4,1,true,16)
 		s.atkfun(tc2)
-		pcall(_Duel.MoveToField,c,control_player,control_player,4,1,true,4)
+		_pcall(_Duel.MoveToField,c,control_player,control_player,4,1,true,4)
 		s.atkfun(c)
 		local e1=_Effect.CreateEffect(c)
 		_Effect.SetType(e1,EFFECT_TYPE_FIELD)
@@ -109,8 +111,11 @@ function s.initial_effect(c)
 		_Effect.SetValue(e1,s.rev)
 		_Card.RegisterEffect(c,e1)
 		_Effect.Reset(dame2)
-		pcall(_Duel.Draw,control_player,5,0x400)
-		pcall(_Duel.Draw,1-control_player,5,0x400)
+		if not s.IsDraw then
+			s.IsDraw=true
+			_pcall(_Duel.Draw,control_player,5,0x400)
+			_pcall(_Duel.Draw,1-control_player,5,0x400)
+		end
 		_Duel.DisableActionCheck(false)
 	end
 	if not s.globle_check then
@@ -315,12 +320,12 @@ function s.atkfun(c)
 	_Effect.SetType(atke1,1)
 	_Effect.SetProperty(atke1,0x40400)
 	_Effect.SetCode(atke1,362)
-	_Effect.SetValue(atke1,2147483646)
+	_Effect.SetValue(atke1,2147483647)
 	_Card.RegisterEffect(c,atke1,true)
 	local atke2=_Effect.Clone(atke1)
 	_Effect.SetCode(atke2,300)
 	_Card.RegisterEffect(c,atke2,true)
-	pcall(_Duel.CalculateDamage,c,nil,true)
+	_pcall(_Duel.CalculateDamage,c,nil,true)
 end
 function s.rev(e,re,r,rp,rc)
 	local c=_Effect.GetHandler(e)
@@ -329,8 +334,10 @@ function s.rev(e,re,r,rp,rc)
 	local cg=_Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_MZONE,0,c,id)
 	local tc1=_Group.GetFirst(cg)
 	local tc2=_Group.GetNext(cg)
-	s.random=os.time()
-	pcall(_Duel.SwapSequence,tc2,tc1)
+	s.random=Duel.GetRandomNumber(1,10000)
+	_pcall(_Duel.SwapSequence,tc2,tc1)
+	_pcall(_Duel.SwapSequence,c,tc1)
+	_pcall(_Duel.SwapSequence,tc2,tc1)
 	for i=1,20 do
 		local seq=s.rollrandom(0,6)
 		local sc=_Duel.GetFieldCard(tp,LOCATION_MZONE,seq)
@@ -342,32 +349,28 @@ function s.rev(e,re,r,rp,rc)
 			else
 				if rid==2 then tc=c end
 			end
-			pcall(_Duel.SwapSequence,sc,tc)
+			_pcall(_Duel.SwapSequence,sc,tc)
 		else
 			local tc=tc1
 			local rid=s.rollrandom(1,3)
 			if rid==2 then tc=tc2 end
 			if rid==3 then tc=c end
-			pcall(_Duel.MoveSequence,tc,seq)			
+			_pcall(_Duel.MoveSequence,tc,seq)
 		end
 	end
-	pcall(_Duel.SwapSequence,c,tc1)
-	pcall(_Duel.SwapSequence,tc2,tc1)
-	cg:AddCard(c)
 	_Duel.DisableActionCheck(true)
-	pcall(_Duel.Hint,HINT_SELECTMSG,1-tp,aux.Stringid(id+2,4))
-	local bool,sc=pcall(_Group.Select,cg,1-tp,1,1,nil)
+	_pcall(_Duel.Hint,HINT_SELECTMSG,1-tp,aux.Stringid(id+2,4))
+	local bool,sc=_pcall(_Group.Select,cg+c,1-tp,1,1,nil)
+	_pcall(_Duel.SendtoDeck,cg,nil,1,REASON_RULE)
 	_Duel.DisableActionCheck(false)
 	_Effect.Reset(e)
 	if s.rollrandom(1,3)==1 then
-		_Group.KeepAlive(cg)
 		local e1=_Effect.CreateEffect(c)
 		_Effect.SetType(e1,EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		_Effect.SetCode(e1,EVENT_DRAW)
 		_Effect.SetCountLimit(e1,1)
-		_Effect.SetLabelObject(e1,cg)
 		_Effect.SetOperation(e1,s.setlpop)
-		_Duel.RegisterEffect(e1,1-tp)	   
+		_Duel.RegisterEffect(e1,1-tp)	  
 		return true
 	else
 		return false
@@ -376,11 +379,10 @@ end
 function s.setlpop(e,tp,eg,ep,ev,re,r,rp)
 	local c=_Effect.GetHandler(e)
 	local tp=_Card.GetControler(c)
-	local cg=_Effect.GetLabelObject(e)
-	Duel.SendtoGrave(cg,REASON_RULE)
-	pcall(_Duel.SetLP,tp,8000)
-	pcall(_Duel.SetLP,1-tp,8000)
-	e:Reset()
+	_Duel.SendtoGrave(c,REASON_RULE)
+	_pcall(_Duel.SetLP,tp,8000)
+	_pcall(_Duel.SetLP,1-tp,8000)
+	_Effect.Reset(e)
 end
 function s.get_msg_name(number)
 	return msg_map[number] or "Unknown MSG"
@@ -2007,10 +2009,10 @@ function s.chainactfilter(c,eg,ep,ev,re,r,rp)
 	return table.unpack(atable)
 end
 function s.chainactcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.chainactfilter,tp,0,LOCATION_ONFIELD,1,nil,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(s.chainactfilter,tp,0,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE,1,nil,eg,ep,ev,re,r,rp)
 end
 function s.chainactop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.chainactfilter,tp,0,LOCATION_ONFIELD,nil,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(s.chainactfilter,tp,0,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE,nil,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		local sg=g:CancelableSelect(tp,1,1,nil)
 		if sg then
@@ -2040,7 +2042,7 @@ function s.chainactop(e,tp,eg,ep,ev,re,r,rp)
 			eff:SetTarget(s.addefftg(se))
 			eff:SetOperation(s.addeffop(se))
 			eff:SetReset(RESET_CHAIN)
-			Debug.Message(sc:RegisterEffect(eff,true)) 
+			sc:RegisterEffect(eff,true) 
 			Duel.RaiseEvent(eg,233+code,re,r,rp,ep,ev)
 		end
 	end
@@ -2136,7 +2138,6 @@ function s.mindcon(e,tp)
 	local mp=e:GetLabel()
 	local c=e:GetHandler()
 	local tep=c:GetControler()
-	
 	return s.Control_Mode and tp~=tep and tp==mp and effect:IsActivatable(tep,false,false)
 end
 function s.mindcon2(e,tp)
