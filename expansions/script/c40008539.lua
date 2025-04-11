@@ -1,4 +1,4 @@
---空牙团的刀语 瑞玛茹
+--空牙团的刀语 穆勒瑟
 function c40008539.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
@@ -36,8 +36,8 @@ end
 function c40008539.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then e:SetLabel(1) return true end
 end
-function c40008539.spfilter(c,e,tp)
-	return c:IsSetCard(0x114) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c40008539.spfilter(c,e,tp,race)
+	return c:IsSetCard(0x114) and c:GetOriginalRace()~=race and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c40008539.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -54,7 +54,7 @@ function c40008539.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabelObject(g:GetFirst())
 	local cc=e:GetLabelObject()
 	local zone=e:GetHandler():GetLinkedZone(tp)
-	local g=Duel.GetMatchingGroup(c40008539.spfilter,tp,LOCATION_DECK,0,cc,e,tp,cc:GetOriginalRace(),zone)
+	local g=Duel.GetMatchingGroup(c40008539.spfilter,tp,LOCATION_DECK,0,cc,e,tp,cc:GetOriginalRace())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function c40008539.spfilter2(c,e,tp,race,zone)
@@ -62,12 +62,15 @@ function c40008539.spfilter2(c,e,tp,race,zone)
 end
 function c40008539.spop(e,tp,eg,ep,ev,re,r,rp)
 	local cc=e:GetLabelObject()
-	if e:GetHandler():IsRelateToEffect(e) then
-		local zone=e:GetHandler():GetLinkedZone(tp)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c40008539.spfilter2,tp,LOCATION_DECK,0,1,1,cc,e,tp,cc:GetOriginalRace(),zone)
-		Duel.SpecialSummon(g:GetFirst(),0,tp,tp,false,false,POS_FACEUP,zone)
-	end
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	local zone=bit.band(e:GetHandler():GetLinkedZone(tp),0x1f)
+	if zone==0 then return end
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)
+	if ft<1 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c40008539.spfilter2,tp,LOCATION_DECK,0,1,1,nil,e,tp,cc:GetOriginalRace(),zone)
+	Duel.SpecialSummon(g:GetFirst(),0,tp,tp,false,false,POS_FACEUP,zone)
 end
 function c40008539.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
@@ -89,5 +92,3 @@ function c40008539.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-
-
