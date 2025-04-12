@@ -94,7 +94,7 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.SendtoDeck(g,tp,2,REASON_EFFECT)
 			else
 				Duel.BreakEffect()
-				if Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT+REASON_TEMPORARY)~=0 and not c:IsReason(REASON_REDIRECT) then
+				if Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT+REASON_TEMPORARY)~=0 and c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT) then --and c:GetOriginalCode()==m then
 					local e1=Effect.CreateEffect(c)
 					e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 					e1:SetCode(EVENT_PHASE+PHASE_END)

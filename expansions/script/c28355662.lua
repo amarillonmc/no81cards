@@ -31,7 +31,7 @@ function c28355662.initial_effect(c)
 end
 function c28355662.excondition(e)
 	local tp=e:GetHandlerPlayer()
-	return Duel.GetTurnPlayer()==tp and (Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,2500)) or (Duel.GetLP(tp)>3000 and Duel.CheckLPCost(tp,4000))
+	return Duel.GetTurnPlayer()==tp and (Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,2500) or Duel.GetLP(tp)>3000 and Duel.CheckLPCost(tp,4000))
 end
 function c28355662.excost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

@@ -216,7 +216,7 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		e:Reset()
 	else
-		Duel.Remove(c,nil,REASON_EFFECT+REASON_TEMPORARY)
+		--Duel.Remove(c,nil,REASON_EFFECT+REASON_TEMPORARY)
 		flag=flag+1
 		c:ResetFlagEffect(m+4)
 		local cid=11451859

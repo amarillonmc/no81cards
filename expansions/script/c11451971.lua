@@ -90,7 +90,7 @@ function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)~=0 and c:GetOriginalCode()==m then
+	if c:IsRelateToEffect(e) and Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then --and c:GetOriginalCode()==m then
 		if Duel.GetCurrentPhase()==PHASE_STANDBY then
 			local tid=Duel.GetTurnCount()
 			local e1=Effect.CreateEffect(e:GetHandler())

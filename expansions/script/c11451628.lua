@@ -342,7 +342,7 @@ function cm.synop(e,tp,eg,ep,ev,re,r,rp,syncard,f,min,max)
 	Duel.SetSynchroMaterial(g)
 	if #g>0 and Duel.Remove(g,POS_FACEUP,REASON_MATERIAL+REASON_SYNCHRO+REASON_TEMPORARY)>0 then
 		local fid=c:GetFieldID()
-		local og=Duel.GetOperatedGroup()
+		local og=Duel.GetOperatedGroup():Filter(cm.rffilter,nil)
 		for oc in aux.Next(og) do
 			oc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
 		end
