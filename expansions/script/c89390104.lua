@@ -26,7 +26,7 @@ function s.initial_effect(c)
 end
 function s.chainfilter(re,tp,cid)
 	local loc=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)
-	return not (re:IsActiveType(TYPE_MONSTER) and loc&(LOCATION_HAND)>0)
+	return not (re:IsActiveType(TYPE_MONSTER) and loc&(LOCATION_HAND+LOCATION_GRAVE)>0)
 end
 function s.chaincon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>2 or Duel.GetFlagEffect(tp,id)==0

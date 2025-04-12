@@ -71,7 +71,7 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
 	if loc==LOCATION_MZONE then
 		seq=aux.MZoneSequence(seq)
-	elseif loc==LOCATION_SZONE then
+	elseif bit.band(loc,LOCATION_SZONE)==LOCATION_SZONE then
 		seq=aux.SZoneSequence(seq)
 	else
 		return false
@@ -111,7 +111,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 			end
 		else
 			Duel.ConfirmCards(1-tp,Duel.GetFieldGroup(tp,LOCATION_HAND,0))
-			Duel.ShuffleHand(1-tp)
+			Duel.ShuffleHand(tp)
 		end
 	end
 end

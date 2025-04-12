@@ -72,7 +72,7 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
 	if loc==LOCATION_MZONE then
 		seq=aux.MZoneSequence(seq)
-	elseif loc==LOCATION_SZONE then
+	elseif bit.band(loc,LOCATION_SZONE)==LOCATION_SZONE then
 		seq=aux.SZoneSequence(seq)
 	else
 		return false
