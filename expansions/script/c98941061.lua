@@ -95,7 +95,7 @@ function c98941061.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function c98941061.eqfilter(c,rc,e,tp,chk)
-	return (c:IsRace(rc) or c:IsSetCard(0x179))
+	return (c:IsRace(rc) or c:IsSetCard(0x179)) and c:IsType(TYPE_MONSTER)
 		and  Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and c:CheckUniqueOnField(tp) and not c:IsForbidden()
 end
 function c98941061.spop(e,tp,eg,ep,ev,re,r,rp)
