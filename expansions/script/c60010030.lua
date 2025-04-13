@@ -45,7 +45,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.fil(c,race,attr)
-	return c:IsRace(race) and c:IsAttribute(attr)
+	return (c:IsRace(race) and c:IsAttribute(attr)) or aux.IsCodeListed(c,60010029)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

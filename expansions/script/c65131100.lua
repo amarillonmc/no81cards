@@ -60,6 +60,8 @@ function s.initial_effect(c)
 		end
 		local _SSet=Duel.SSet
 		function Duel.SSet(player,targets,tplayer,bool)
+			tplayer=tplayer or player
+			bool=bool~=false
 			local count=_SSet(player,targets,tplayer,bool)
 			if bool and bool==true and aux.GetValueType(targets)=="Card" then
 				local tc=targets

@@ -4,7 +4,10 @@ function cm.initial_effect(c) end
 if pnfl then return end
 pnfl=cm
 
---subgroup optimization
+--子集判断、选取函数优化版.11451549.
+--采用顺序迭代的深度搜索，等效于逐层剪枝递归而不是原版代码的第一层剪枝
+--通过分类、排序、跳过三个人工辅助函数提升效率.注意，分类函数要保证同类卡选取时【完全等效】
+--满足条件的组之间有包含关系时（如等级合计是5的倍数）goalstop取false.check取true则等价于CheckSubGroup
 function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 	--classif: function to classify cards, e.g. function(c,tc) return c:GetLevel()==tc:GetLevel() end
 	--sortif: function of subgroup search order, high to low. e.g. Card.GetLevel
@@ -12,6 +15,7 @@ function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 	--goalstop: do you want to backtrack after reaching the goal? true/false
 	--check: do you want to return true after reaching the goal firstly? true/false
 	local classif,sortf,passf,goalstop,check=table.unpack(cm.SubGroupParams)
+	goalstop=goalstop~=false
 	min=min or 1
 	max=max or #g
 	local sg=Group.CreateGroup()
@@ -186,6 +190,104 @@ function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 		return nil
 	end
 end
+
+--将不入连锁效果变为允许手动排序的状态
+function cm.enableeffectsort(...)
+	for _,e in pairs({...}) do
+		local c=e:GetHandler()
+		if not e:IsHasType(EFFECT_TYPE_CONTINUOUS) then return end
+		local event=e:GetCode()
+		if event==EVENT_FREE_CHAIN or event&EVENT_PHASE>0 then return end
+		if e:IsHasProperty(EFFECT_FLAG_DELAY) then event=event+0x100000 end
+		cm.continuoustab=cm.continuoustab or {}
+		if not cm.continuoustab[event] then
+			cm.continuoustab[event]={[0]={},[1]={}}
+			local ec={
+				EVENT_CHAIN_ACTIVATING,
+				EVENT_CHAINING,
+				EVENT_ATTACK_ANNOUNCE,
+				EVENT_BREAK_EFFECT,
+				EVENT_CHAIN_SOLVING,
+				EVENT_CHAIN_SOLVED,
+				EVENT_CHAIN_END,
+				EVENT_SUMMON,
+				EVENT_SPSUMMON,
+				EVENT_MSET,
+				EVENT_BATTLE_DESTROYED
+			}
+			for _,code in ipairs(ec) do
+				if code~=event%0x100000 then
+					local ge1=Effect.CreateEffect(c)
+					ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+					ge1:SetCode(code)
+					ge1:SetOperation(function() cm.continuoustab[event]={[0]={},[1]={}} end)
+					Duel.RegisterEffect(ge1,0)
+				end
+			end
+		end
+		local con=e:GetCondition() or aux.TRUE
+		local op=e:GetOperation() or aux.TRUE
+		e:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+							local c=e:GetHandler()
+							local p=c:GetControler()
+							local res=con(e,tp,eg,ep,ev,re,r,rp)
+							if res and not c:IsDisabled() then
+								table.insert(cm.continuoustab[event][p],e)
+							end
+							return res
+						end)
+		e:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+							local c=e:GetHandler()
+							local p=c:GetControler()
+							if cm.continuoustab[event]["resolving"] then
+								op(e,tp,eg,ep,ev,re,r,rp)
+								cm.continuoustab[event]["resolving"]=nil
+								e:Reset()
+							elseif cm.continuoustab[event]["sorting"] or #cm.continuoustab[event][p]>1 then
+								cm.continuoustab[event]["sorting"]=#cm.continuoustab[event][p]>1
+								local opt=1
+								if cm.continuoustab[event]["sorting"] then
+									local tab,tab2,tab3={},{},{}
+									local g=Group.CreateGroup()
+									for i,te in pairs(cm.continuoustab[event][p]) do
+										g:AddCard(te:GetHandler())
+										tab[i]=te:GetDescription()
+										tab2[te:GetHandler()]=tab2[te:GetHandler()] or {}
+										table.insert(tab2[te:GetHandler()],te:GetDescription())
+										tab3[te:GetHandler()]=tab3[te:GetHandler()] or {}
+										table.insert(tab3[te:GetHandler()],i)
+									end
+									Duel.Hint(HINT_SELECTMSG,p,aux.Stringid(m,0))
+									local tc=g:Select(p,1,1,nil):GetFirst()
+									local s=1
+									if #tab2[tc]>1 then s=1+Duel.SelectOption(p,table.unpack(tab2[tc])) end
+									opt=tab3[tc][s]
+								end
+								local de=cm.continuoustab[event][p][opt]
+								table.remove(cm.continuoustab[event][p],opt)
+								if e==de then
+									op(e,tp,eg,ep,ev,re,r,rp)
+								else
+									local ce=de:Clone()
+									local fid=ce:GetFieldID()
+									ce:SetCondition(aux.TRUE)
+									ce:SetCode(EVENT_CUSTOM+m+event*0xffff+fid)
+									Duel.RegisterEffect(ce,de:GetHandler():GetControler())
+									cm.continuoustab[event]["resolving"]=true
+									if not eg then
+										Duel.RaiseEvent(de:GetHandler(),EVENT_CUSTOM+m+event*0xffff+fid,re,r,rp,ep,ev)
+									else
+										Duel.RaiseEvent(eg,EVENT_CUSTOM+m+event*0xffff+fid,re,r,rp,ep,ev)
+									end
+									cm.continuoustab[event]["resolving"]=nil
+									ce:Reset()
+								end
+							else
+								op(e,tp,eg,ep,ev,re,r,rp)
+							end
+						end)
+	end
+end 
 
 --card,zone,(p,loc,seq),(x,y)的转换.x为纵列号,y为横行号.
 

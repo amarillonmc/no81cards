@@ -70,7 +70,7 @@ function c22348391.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c22348391.spfilter2(c,e,tp)
-	return aux.IsCodeListed(c,22348157) and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(c22348391.thfilter,tp,LOCATION_DECK,0,1,c)
+	return aux.IsCodeListed(c,22348157) and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_MACHINE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(c22348391.thfilter,tp,LOCATION_DECK,0,1,c)
 end
 function c22348391.thfilter(c)
 	return c:IsCode(22348157) and c:IsAbleToHand()
