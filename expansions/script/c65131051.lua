@@ -171,6 +171,7 @@ function s.acop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e1,tp)
 		pnfl_adjusting=false
 	end
+	pnfl_adjusting=false
 	e:Reset()
 end
 function s.retfilter(c,fid)

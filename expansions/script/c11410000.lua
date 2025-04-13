@@ -157,11 +157,9 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:Filter(function(c) return c:GetSequence()==ct end,nil):GetFirst()
 		if KOISHI_CHECK then
 			c:SetEntityCode(tc:GetOriginalCode())
-			if tc:GetOriginalType()&0x11~=0x11 or tc:GetOriginalType()&TYPE_PENDULUM>0 then
-				c:ReplaceEffect(tc:GetOriginalCode(),0)
-			else
-				c:ReplaceEffect(80316585,0)
-			end
+			c:ReplaceEffect(80316585,0)
+			c:SetStatus(STATUS_EFFECT_REPLACED,false)
+			if tc.initial_effect then tc.initial_effect(c) end
 			Duel.DisableShuffleCheck()
 			Duel.Exile(tc,0)
 		else
