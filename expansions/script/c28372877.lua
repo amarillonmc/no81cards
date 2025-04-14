@@ -2,7 +2,7 @@
 function c28372877.initial_effect(c)
 	--Activate
 	local e0=Effect.CreateEffect(c)
-	e0:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e0:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	e0:SetOperation(c28372877.activate)
@@ -48,20 +48,17 @@ function c28372877.initial_effect(c)
 	e5:SetOperation(c28372877.tdop)
 	c:RegisterEffect(e5)
 end
-function c28372877.filter(c)
-	return c:IsSetCard(0x285) and c:IsAbleToDeck()
-end
 function c28372877.thfilter(c)
 	return c:IsSetCard(0x285) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c28372877.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(c28372877.filter,tp,LOCATION_HAND,0,nil)
+	local g1=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_HAND,0,nil,0x285)
 	local g2=Duel.GetMatchingGroup(c28372877.thfilter,tp,LOCATION_DECK,0,nil)
 	if #g1>0 and #g2>1 and Duel.SelectYesNo(tp,aux.Stringid(28372877,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local tg=g1:Select(tp,1,1,nil)
-		Duel.ConfirmCards(1-tp,tg)
-		Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local dg=g1:Select(tp,1,1,nil)
+		Duel.ConfirmCards(1-tp,dg)
+		Duel.Destroy(dg,REASON_EFFECT)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g2:Select(tp,2,2,nil)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
@@ -85,7 +82,7 @@ function c28372877.damval(e,re,val,r,rp,rc)
 	return 0
 end
 function c28372877.tdfilter(c)
-	return c:IsSetCard(0x285) and c:IsAbleToDeck() and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
+	return c:IsSetCard(0x285) and c:IsAbleToDeck() and c:IsFaceupEx()
 end
 function c28372877.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c28372877.cfilter(chkc) end

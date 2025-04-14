@@ -30,9 +30,13 @@ function c11561006.initial_effect(c)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER)   
 	e3:SetRange(LOCATION_MZONE) 
 	e3:SetCost(c11561006.xdescost) 
-	e3:SetTarget(c11561006.xdestg) 
-	e3:SetOperation(c11561006.xdesop) 
+	e3:SetCondition(c11561006.condition)
+	e3:SetOperation(c11561006.xdesop2) 
 	c:RegisterEffect(e3) 
+end
+function c11561006.condition(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
+	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
 function c11561006.addtg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local x=e:GetHandler():GetMaterialCount() 
@@ -73,6 +77,31 @@ function c11561006.xdestg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,11561006)<e:GetHandler():GetLinkedGroupCount() end
 	Duel.RegisterFlagEffect(tp,11561006,RESET_PHASE+PHASE_END,0,1)
 end 
+function c11561006.xdesop2(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler()
+	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
+	local e0=Effect.CreateEffect(c) 
+	e0:SetType(EFFECT_TYPE_SINGLE) 
+	e0:SetCode(EFFECT_IMMUNE_EFFECT) 
+	e0:SetRange(LOCATION_MZONE) 
+	e0:SetValue(function(e,te) 
+	return e:GetOwner()~=te:GetOwner() end) 
+	e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN) 
+	c:RegisterEffect(e0)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE) 
+		e1:SetCode(EFFECT_UPDATE_ATTACK) 
+		e1:SetRange(LOCATION_MZONE) 
+		e1:SetValue(2000) 
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END) 
+		c:RegisterEffect(e1)
+	if Duel.IsExistingMatchingCard(function(c,atk) return c:GetAttack()<atk and c:IsFaceup() end,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,c:GetAttack()) and Duel.SelectYesNo(tp,aux.Stringid(11561006,0)) then 
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local dg=Duel.SelectMatchingCard(tp,function(c,atk) return c:GetAttack()<atk and c:IsFaceup() end,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,c:GetAttack())
+		Duel.Destroy(dg,REASON_EFFECT)
+	end 
+end
+
 function c11561006.xdesop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
 	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end

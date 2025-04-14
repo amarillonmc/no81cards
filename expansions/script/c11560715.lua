@@ -42,7 +42,7 @@ function c11560715.initial_effect(c)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCondition(c11560715.discon)
 	e4:SetOperation(c11560715.disop)
-	c:RegisterEffect(e4)
+	--c:RegisterEffect(e4)
 end
 c11560715.SetCard_SR_Saier=true  
 function c11560715.mfilter(c,xyzc)

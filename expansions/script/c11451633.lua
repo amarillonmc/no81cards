@@ -42,7 +42,7 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(11451631,6))
 	e2:SetCategory(CATEGORY_DRAW+CATEGORY_TODECK)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e2:SetCode(EVENT_LEAVE_FIELD)
@@ -207,8 +207,7 @@ function cm.actfilter(c,se)
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP) and (code1==11451631 or code2==11451631)
 end
 function cm.actcon(e,tp,eg,ep,ev,re,r,rp)
-	local se=e:GetLabelObject():GetLabelObject()
-	return eg:IsExists(cm.actfilter,1,nil,se) and (not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND))
+	return eg:IsExists(cm.actfilter,1,nil,se)
 end
 function cm.actg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end

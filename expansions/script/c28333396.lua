@@ -24,11 +24,12 @@ function c28333396.initial_effect(c)
 	e2:SetCondition(c28333396.indescon)
 	c:RegisterEffect(e2)
 	--defense
-	local e3=Effect.CreateEffect(c)
+	local e3z=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetRange(LOCATION_FZONE)
-	e3:SetTargetRange(LOCATION_MZONE,0)
 	e3:SetCode(EFFECT_UPDATE_DEFENSE)
+	e3:SetRange(LOCATION_FZONE)
+	e3:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_FAIRY))
+	e3:SetTargetRange(LOCATION_MZONE,0)
 	e3:SetCondition(c28333396.defcon)
 	e3:SetValue(500)
 	c:RegisterEffect(e3)
@@ -70,7 +71,7 @@ function c28333396.rmlimit(e,c,tp,r,re)
 end
 function c28333396.defcon(e)
 	local ph=Duel.GetCurrentPhase()
-	return Duel.IsExistingMatchingCard(c28333396.filter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil) and Duel.GetTurnPlayer()~=e:GetHandler():GetControler() and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+	return Duel.IsExistingMatchingCard(c28333396.filter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil) and Duel.GetTurnPlayer()~=e:GetHandlerPlayer() and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
 function c28333396.rfilter(c)
 	return c:IsSetCard(0x283) and c:IsFaceup() and c:IsAbleToHand()
@@ -81,6 +82,7 @@ function c28333396.fthtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,nil,0,0)
 end
 function c28333396.fthop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tg=Duel.SelectMatchingCard(tp,c28333396.rfilter,tp,LOCATION_MZONE,0,1,7,nil)
 	if tg:GetCount()>0 then Duel.SendtoHand(tg,nil,REASON_EFFECT) end
 end

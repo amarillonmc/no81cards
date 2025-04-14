@@ -48,7 +48,7 @@ function c22348177.imfilter(c)
 end
 function c22348177.imtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local b1=Duel.IsExistingMatchingCard(c22348177.imfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.GetFlagEffect(tp,22348177)==0
+	local b1=Duel.IsExistingMatchingCard(c22348177.imfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil) and Duel.GetFlagEffect(tp,22348177)==0
 	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c22348177.spfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,22349177)==0
 	if chk==0 then return b1 or b2 end
 	if b2 and not b1 then
@@ -66,7 +66,7 @@ function c22348177.recfilter(c)
 	return c:IsFaceup() and c:IsCode(22348157)
 end
 function c22348177.imop(e,tp,eg,ep,ev,re,r,rp)
-	local b1=Duel.IsExistingMatchingCard(c22348177.imfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.GetFlagEffect(tp,22348177)==0
+	local b1=Duel.IsExistingMatchingCard(c22348177.imfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil) and Duel.GetFlagEffect(tp,22348177)==0
 	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c22348177.spfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,22349177)==0
 	local op=0
 	if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(22348177,1),aux.Stringid(22348177,2))
@@ -74,16 +74,20 @@ function c22348177.imop(e,tp,eg,ep,ev,re,r,rp)
 	elseif b2 then op=Duel.SelectOption(tp,aux.Stringid(22348177,2))+1
 	else return end
 	if op==0 then
-		local g1=Duel.GetMatchingGroup(c22348177.imfilter,tp,LOCATION_ONFIELD,0,nil)
-		local tc=g1:GetFirst()
-		while tc do
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_IMMUNE_EFFECT)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
-			e1:SetValue(c22348177.efilter)
-			tc:RegisterEffect(e1)
-			tc=g1:GetNext()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil)
+		if g:GetCount()>0 and Duel.Destroy(g,REASON_EFFECT)~=0 then
+			local g1=Duel.GetMatchingGroup(c22348177.imfilter,tp,LOCATION_ONFIELD,0,nil)
+			local tc=g1:GetFirst()
+			while tc do
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_IMMUNE_EFFECT)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+				e1:SetValue(c22348177.efilter)
+				tc:RegisterEffect(e1)
+				tc=g1:GetNext()
+			end
 		end
 		Duel.RegisterFlagEffect(tp,22348177,RESET_PHASE+PHASE_END,0,1)
 	else

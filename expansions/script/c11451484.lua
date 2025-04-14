@@ -1,14 +1,13 @@
 --魔人★双子相杀
 local cm,m=GetID()
 function cm.initial_effect(c)
-	Duel.EnableGlobalFlag(GLOBALFLAG_SPSUMMON_COUNT)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMING_ATTACK+TIMING_END_PHASE)
-	--e1:SetCost(cm.cost)
+	e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -23,6 +22,29 @@ function cm.initial_effect(c)
 	local e6=e5:Clone()
 	e6:SetValue(0x6d)
 	c:RegisterEffect(e6)
+	if not cm.global_check then
+		cm.global_check=true
+		cm[0]=0
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
+		ge1:SetOperation(cm.check)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+		ge2:SetOperation(cm.clear)
+		Duel.RegisterEffect(ge2,0)
+	end
+end
+function cm.check(e,tp,eg,ep,ev,re,r,rp,chk)
+	if eg:IsExists(cm.counterfilter,1,nil) then cm[0]=cm[0]+1 end
+end
+function cm.clear(e,tp,eg,ep,ev,re,r,rp)
+	cm[0]=0
+end
+function cm.counterfilter(c)
+	return c:IsPreviousLocation(LOCATION_DECK)
 end
 function cm.chkfilter1(c,e,tp)
 	return c:IsSetCard(0x97b) and c:IsType(TYPE_MONSTER) and not c:IsHasEffect(EFFECT_REVIVE_LIMIT) and Duel.IsPlayerCanSpecialSummon(tp,0,POS_FACEUP,tp,c) and Duel.IsExistingMatchingCard(cm.chkfilter2,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetAttribute())
@@ -38,18 +60,32 @@ function cm.filter2(c,e,tp,att)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local act=e:IsHasType(EFFECT_TYPE_ACTIVATE)
-	local sp=Duel.GetActivityCount(tp,ACTIVITY_SPSUMMON)
-	if chk==0 then return not act or sp<2 end
+	if chk==0 then return not act or cm[0]<2 end
 	if act then
-		local e1=Effect.CreateEffect(e:GetHandler())
+		--[[local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_SPSUMMON_COUNT_LIMIT)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 		e1:SetTargetRange(1,0)
 		e1:SetValue(2-sp)
 		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
+		Duel.RegisterEffect(e1,tp)--]]
+		local e4=Effect.CreateEffect(e:GetHandler())
+		e4:SetType(EFFECT_TYPE_FIELD)
+		e4:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+		e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+		e4:SetTargetRange(1,1)
+		e4:SetCondition(cm.econ)
+		e4:SetValue(cm.elimit)
+		e4:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e4,tp)
 	end
+end
+function cm.econ(e)
+	return cm[0]>=2
+end
+function cm.elimit(e,c)
+	return c:IsLocation(LOCATION_DECK)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.chkfilter1,tp,LOCATION_DECK,0,1,nil,e,tp) end

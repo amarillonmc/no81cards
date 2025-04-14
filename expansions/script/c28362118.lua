@@ -30,6 +30,7 @@ function c28362118.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
 	--e2:SetCondition(c28362118.spcon)
+	e2:SetCost(c28362118.spcost)
 	e2:SetTarget(c28362118.sptg)
 	e2:SetOperation(c28362118.spop)
 	c:RegisterEffect(e2)
@@ -129,15 +130,19 @@ function c28362118.matcheck(e,c)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+RESET_DISABLE)
 	c:RegisterEffect(e1)
 end
+function c28362118.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+end
 function c28362118.spfilter(c,e,tp)
 	return c:IsLevel(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c28362118.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c28362118.spfilter(chkc,e,tp) end
 	if chk==0 then return Duel.IsExistingTarget(c28362118.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)
-		and Duel.GetMZoneCount(tp)>0 and e:GetHandler():GetBaseAttack()>=1000 end
+		and Duel.GetMZoneCount(tp)>0 and e:GetHandler():GetAttack()>=1000 end
 	local ft=Duel.IsPlayerAffectedByEffect(tp,59822133) and 1 or Duel.GetMZoneCount(tp)
-	ft=math.min(ft,(math.floor(e:GetHandler():GetBaseAttack()/1000)))
+	ft=math.min(ft,(math.floor(e:GetHandler():GetAttack()/1000)))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,c28362118.spfilter,tp,LOCATION_GRAVE,0,1,ft,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,g:GetCount(),0,0)

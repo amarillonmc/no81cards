@@ -146,7 +146,7 @@ function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end  
+	if chk==0 then return true end
 	local c=e:GetHandler()
 	if not c:IsLocation(LOCATION_FZONE) then Duel.MoveToField(c,tp,tp,LOCATION_FZONE,POS_FACEUP,true) end
 	if not KOISHI_CHECK or Duel.GetMasterRule()>=4 then Duel.MoveSequence(c,6) end

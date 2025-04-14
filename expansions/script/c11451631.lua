@@ -185,10 +185,8 @@ function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
-	if Duel.Draw(tp,1,REASON_EFFECT)>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,tp)
-		Duel.SendtoGrave(g,REASON_EFFECT)
+	if Duel.Draw(tp,1,REASON_EFFECT)>0 and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>Duel.GetFieldGroupCount(tp,0,LOCATION_HAND) then
+		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
 	end
 	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())
 end

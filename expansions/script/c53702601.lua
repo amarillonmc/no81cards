@@ -2,6 +2,33 @@ if AD_Database_3 then return end
 AD_Database_3=true
 SNNM=SNNM or {}
 local s=SNNM
+if not Card.GetLinkMarker then
+	function Card.GetLinkMarker(c)
+		local res=0
+		for i=0,8 do
+			if i~=4 and c:IsLinkMarker(1<<i) then res=res|(1<<i) end
+		end
+		return res
+	end
+end
+function s.GetOriginalCode(card_object)
+	local target_metatable = getmetatable(card_object)
+	if not target_metatable then return nil end
+	for key, value in pairs(_G) do
+		if type(key) == "string" and value == target_metatable and string.sub(key, 1, 1) == 'c' then
+			local code_str = string.sub(key, 2)
+			local code_num = tonumber(code_str)
+			if code_num then
+				 return code_num
+			else
+				 -- 如果卡号可能包含非数字字符（虽然不太可能），可以返回字符串
+				 -- return code_str
+				 return nil -- 或者标记错误，卡号通常是数字
+			end
+		end
+	end
+	return nil -- 未找到
+end
 function s.LostLink(c)
 	if AD_LostLink_check then return end
 	AD_LostLink_check=true
@@ -277,4 +304,214 @@ function s.ScreemToperation(gete)
 					end
 				end
 			end
+end
+function s.roll(min_val, max_val)
+	-- 1. 种子初始化 (如果需要)
+	if not s.Party_time_random_seed then
+		local result = 0
+		-- 获取并累加玩家0卡组顶5张卡的Code
+		local g0 = Duel.GetDecktopGroup(0, 5)
+		if g0 then -- 检查确保获取成功
+			local tc0 = g0:GetFirst()
+			while tc0 do
+				result = result + tc0:GetCode()
+				tc0 = g0:GetNext()
+			end
+			-- g0:DeleteGroup() -- Lua的垃圾回收通常会处理，但显式删除有时被认为更干净
+		end
+
+		-- 获取并累加玩家1卡组顶5张卡的Code
+		local g1 = Duel.GetDecktopGroup(1, 5)
+		if g1 then -- 检查确保获取成功
+			 local tc1 = g1:GetFirst()
+			while tc1 do
+				result = result + tc1:GetCode()
+				tc1 = g1:GetNext()
+			end
+			-- g1:DeleteGroup() -- 同上
+		end
+
+		-- 健壮性：防止种子为0 (LCG对种子0可能表现不佳)
+		if result == 0 then result = 1 end
+		s.Party_time_random_seed = result
+	end
+
+	-- 2. 更新伪随机数生成器的状态 (LCG)
+	-- 即使输入无效，也更新状态以保持序列的一致性
+	s.Party_time_random_seed = (s.Party_time_random_seed * 16807) % 2147484647
+	-- 健壮性：防止更新后种子变为0
+	if s.Party_time_random_seed == 0 then s.Party_time_random_seed = 1 end
+
+	-- 3. 处理输入参数
+	-- 情况 A: 只提供了一个参数 (视为 [1, min_val] 的范围)
+	if max_val == nil then
+		if min_val == nil then
+			Duel.Hint(HINT_MESSAGE, 0, "Party_time_roll Error: Missing arguments.")
+			return 1 -- 或者返回错误，或者一个默认值
+		end
+		max_val = tonumber(min_val)
+		min_val = 1 -- 默认最小值为 1
+	else
+		-- 情况 B: 提供了两个参数
+		min_val = tonumber(min_val)
+		max_val = tonumber(max_val)
+	end
+
+	-- 4. 输入验证
+	if min_val == nil or max_val == nil or min_val > max_val then
+		Duel.Hint(HINT_MESSAGE, 0, "Party_time_roll Error: Invalid range (min="..tostring(min_val)..", max="..tostring(max_val)..").")
+		-- 返回一个合理的值，避免脚本错误
+		return (min_val and max_val == nil and min_val >= 1) and 1 or (min_val or 1)
+	end
+
+	-- 5. 处理 min == max 的情况
+	if min_val == max_val then
+		return min_val
+	end
+
+	-- 6. 归一化并映射到正确范围 [min_val, max_val]
+	-- random_value_normalized 的范围是 [0, 1)
+	local random_value_normalized = s.Party_time_random_seed / 2147484647
+
+	-- 正确的计算公式:
+	-- range_size 是可能结果的数量 (max - min + 1)
+	local range_size = max_val - min_val + 1
+	-- 乘以 range_size 得到 [0, range_size)
+	-- floor 取整得到 0 到 range_size - 1
+	-- 加上 min_val 平移到 [min_val, max_val]
+	local result = math.floor(random_value_normalized * range_size) + min_val
+
+	-- 最终健壮性检查 (理论上不需要，但防止浮点数精度问题)
+	if result < min_val then result = min_val end
+	if result > max_val then result = max_val end
+
+	return result
+end
+function s.zero_seal_check(tid,e,tct)
+	local ct=tct or 1
+	local c=e:GetHandler()
+	local con=e:GetCondition() or aux.TRUE
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(e:GetCode())
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetRange(LOCATION_GRAVE)
+	e1:SetLabel(ct,tid)
+	e1:SetCondition(s.zero_seal_con(con))
+	e1:SetOperation(s.zero_seal_op)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_NO_TURN_RESET+EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetCode(tid)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetTargetRange(1,0)
+	e2:SetCountLimit(1)
+	e2:SetLabel(ct)
+	e2:SetCondition(function(e)return e:GetHandler():GetFlagEffect(53797144)>=e:GetLabel()end)
+	c:RegisterEffect(e2)
+	local mt=_G["c"..tid]
+	if mt.global_effect then return end
+	mt.global_effect=true
+	s.zero_seal_effects={}
+	local ge0=Effect.GlobalEffect()
+	ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	ge0:SetCode(EVENT_ADJUST)
+	ge0:SetLabel(tid)
+	ge0:SetOperation(s.zero_seal_geop)
+	Duel.RegisterEffect(ge0,0)
+end
+function s.zero_seal_con(con)
+	return  function(e,...)
+				local label=e:GetHandler():GetFlagEffectLabel(53797644) or 0
+				return con(e,...) and label>0
+			end
+end
+function s.zero_seal_op(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ct,tid=e:GetLabel()
+	local label=c:GetFlagEffectLabel(53797144) or 0
+	if label<ct and label>=0 then
+		c:ResetFlagEffect(53797144)
+		c:RegisterFlagEffect(53797144,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,label+1,aux.Stringid(tid,label+2))
+	end
+end
+function s.zero_seal_geop(e,tp,eg,ep,ev,re,r,rp)
+	local rg=Duel.GetMatchingGroup(aux.NOT(Card.IsSetCard),0,LOCATION_DECK,LOCATION_DECK,nil,0xa533)
+	for rc in aux.Next(rg) do
+		local le=s.zero_seal_effects[rc]
+		if le and type(le)=="table" then
+			for _,v in pairs(le) do v:Reset() end
+			rc:ResetFlagEffect(tid)
+		end
+	end
+	local tid=e:GetLabel()
+	local g=Duel.GetMatchingGroup(function(c)return c:GetFlagEffect(tid)<=0 and c:IsSetCard(0xa533)end,0,LOCATION_DECK,LOCATION_DECK,nil)
+	if #g==0 then return end
+	local mt=_G["c"..tid]
+	for tc in aux.Next(g) do
+		tc:RegisterFlagEffect(tid,RESET_EVENT+RESETS_STANDARD,0,1)
+		local te=tc.zero_seal_effect
+		local e1=te:Clone()
+		e1:SetDescription(aux.Stringid(tid,1))
+		e1:SetCategory(e:GetCategory()|mt.category)
+		e1:SetRange(LOCATION_DECK)
+		local tg=te:GetTarget() or aux.TRUE
+		local op=te:GetOperation()
+		e1:SetTarget(s.zero_seal_extg(tg,mt.extg))
+		e1:SetOperation(s.zero_seal_exop(op,mt.exop))
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1,true)
+		local e2=s.Act(tc,e1)
+		e2:SetRange(LOCATION_DECK)
+		e2:SetLabel(tid)
+		e2:SetCost(s.zero_seal_costchk)
+		e2:SetOperation(s.zero_seal_costop)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2,true)
+		s.zero_seal_effects[tc]={e1,e2}
+	end
+end
+function s.zero_seal_extg(tg,extg)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+				if chkc then return tg(e,tp,eg,ep,ev,re,r,rp,0,chkc) end
+				if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc) and extg(e,tp,eg,ep,ev,re,r,rp,0) end
+				tg(e,tp,eg,ep,ev,re,r,rp,1)
+				extg(e,tp,eg,ep,ev,re,r,rp,1)
+				Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+			end
+end
+function s.zero_seal_exop(op,exop)
+	return  function(e,tp,...)
+				local res=(Duel.GetFlagEffect(tp,s.GetOriginalCode(e:GetHandler()))>0)
+				op(e,tp,...)
+				if res then return end
+				exop(e,tp,...)
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_FIELD)
+				e1:SetCode(EFFECT_IMMUNE_EFFECT)
+				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+				e1:SetTargetRange(0,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_REMOVED)
+				e1:SetValue(s.zero_seal_efilter)
+				local ct=(Duel.GetTurnPlayer()==tp and 1) or 2
+				e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN,ct)
+				Duel.RegisterEffect(e1,tp)
+			end
+end
+function s.zero_seal_efilter(e,re)
+	return e:GetOwnerPlayer()==re:GetOwnerPlayer() and not re:GetOwner():IsSetCard(0xa533)
+end
+function s.zero_seal_costchk(e,te,tp)
+	return Duel.IsPlayerAffectedByEffect(tp,e:GetLabel())
+end
+function s.zero_seal_costop(e,tp,eg,ep,ev,re,r,rp)
+	local le={Duel.IsPlayerAffectedByEffect(tp,e:GetLabel())}
+	local g=Group.CreateGroup()
+	for _,v in pairs(le) do g:AddCard(v:GetOwner()) end
+	local tc=s.Select_1(g,tp,aux.Stringid(53797145,14))
+	local ce=nil
+	for _,v in pairs(le) do if v:GetOwner()==tc then ce=v end end
+	ce:UseCountLimit(tp)
+	ce:GetHandler():ResetFlagEffect(53797144)
+	ce:GetHandler():RegisterFlagEffect(53797144,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,-1,aux.Stringid(53797145,15))
 end

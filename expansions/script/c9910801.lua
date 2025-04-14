@@ -1,85 +1,79 @@
---曙龙祭司 诺缇瓦尔格
+--曙龙祭司 纳斯梅德尔
 function c9910801.initial_effect(c)
-	--to field
+	--equip
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910801,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(c9910801.tfcon)
-	e1:SetCost(c9910801.tfcost)
-	e1:SetTarget(c9910801.tftg)
-	e1:SetOperation(c9910801.tfop)
+	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetRange(LOCATION_MZONE+LOCATION_SZONE)
+	e1:SetCountLimit(1,9910801)
+	e1:SetTarget(c9910801.eqtg)
+	e1:SetOperation(c9910801.eqop)
 	c:RegisterEffect(e1)
 	--release
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_RELEASE)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_DESTROYED)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_TO_GRAVE)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e2:SetCountLimit(1,9910804)
+	e2:SetCondition(c9910801.rlcon)
 	e2:SetCost(c9910801.rlcost)
 	e2:SetOperation(c9910801.rlop)
 	c:RegisterEffect(e2)
 end
-function c9910801.tfcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp)
+function c9910801.eqfilter(c,tp)
+	return c:IsFaceupEx() and c:IsSetCard(0x6951) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(3)
+		and c:CheckUniqueOnField(tp,LOCATION_SZONE) and not c:IsForbidden()
 end
-function c9910801.tfcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsDiscardable() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
-end
-function c9910801.tffilter(c)
-	return c:IsSetCard(0x6951) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
-end
-function c9910801.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(c9910801.tffilter,tp,LOCATION_DECK,0,1,nil) end
-end
-function c9910801.tfop(e,tp,eg,ep,ev,re,r,rp)
+function c9910801.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if ft<1 then return end
-	if ft>2 then ft=2 end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,c9910801.tffilter,tp,LOCATION_DECK,0,1,ft,nil)
-	if #g==0 then return end
-	local ac=g:GetFirst()
-	local bc=g:GetNext()
-	if Duel.MoveToField(ac,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
-		local res=bc and Duel.MoveToField(bc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-		local e1=Effect.CreateEffect(c)
-		e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-		ac:RegisterEffect(e1)
-		if res then
-			local e2=Effect.CreateEffect(c)
-			e2:SetCode(EFFECT_CHANGE_TYPE)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-			e2:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-			bc:RegisterEffect(e2)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and chkc:IsFaceup() end
+	if chk==0 then return (c:IsLocation(LOCATION_MZONE) or c:GetEquipTarget()) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.IsExistingMatchingCard(c9910801.eqfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,c,1,0,0)
+end
+function c9910801.eqop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910801.eqfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp)
+		local ec=g:GetFirst()
+		if ec then
+			if not Duel.Equip(tp,ec,tc) then return end
+			--equip limit
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_EQUIP_LIMIT)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetLabelObject(tc)
+			e1:SetValue(c9910801.eqlimit)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			ec:RegisterEffect(e1)
+			if not c:IsRelateToEffect(e) then return end
+			Duel.BreakEffect()
+			Duel.Destroy(c,REASON_EFFECT)
 		end
 	end
 end
-function c9910801.tgfilter(c,tp)
-	local rac=c:GetRace()
-	local labels={Duel.GetFlagEffectLabel(tp,9910821)}
-	local flag=0
-	for i=1,#labels do flag=bit.bor(flag,labels[i]) end
-	return bit.band(c:GetType(),0x81)==0x81 and c:IsRace(RACE_DRAGON+RACE_SEASERPENT+RACE_WYRM) and c:IsAbleToGraveAsCost()
-		and bit.band(flag,rac)==0
+function c9910801.eqlimit(e,c)
+	return c==e:GetLabelObject()
+end
+function c9910801.rlcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPreviousLocation(LOCATION_HAND) and bit.band(r,REASON_DISCARD)~=0
+end
+function c9910801.tgfilter(c)
+	return c:IsSetCard(0x6951) and c:IsAbleToGraveAsCost()
 end
 function c9910801.rlcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910801.tgfilter,tp,LOCATION_DECK,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910801.tgfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c9910801.tgfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
-	e:SetLabel(g:GetFirst():GetRace())
+	local g=Duel.SelectMatchingCard(tp,c9910801.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c9910801.rlop(e,tp,eg,ep,ev,re,r,rp)
@@ -98,7 +92,6 @@ function c9910801.rlop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCondition(c9910801.rlcon2)
 	e1:SetOperation(c9910801.rlop2)
 	Duel.RegisterEffect(e1,tp)
-	Duel.RegisterFlagEffect(tp,9910821,0,0,1,e:GetLabel())
 end
 function c9910801.rlcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnCount()~=e:GetLabel()

@@ -22,7 +22,7 @@ function c11533717.initial_effect(c)
 	--e1:SetOperation(c11533717.operation)
 	--c:RegisterEffect(e1) 
 	--atk
-	local e12=Effect.CreateEffect(c) 
+--[[local e12=Effect.CreateEffect(c) 
 	e12:SetDescription(aux.Stringid(11533717,0))
 	e12:SetCategory(CATEGORY_ATKCHANGE)
 	e12:SetType(EFFECT_TYPE_QUICK_O)
@@ -32,6 +32,17 @@ function c11533717.initial_effect(c)
 	e12:SetCost(c11533717.atkcost)
 	e12:SetTarget(c11533717.atktg)
 	e12:SetOperation(c11533717.atkop)
+	c:RegisterEffect(e12) ]]
+	local e12=Effect.CreateEffect(c) 
+	e12:SetDescription(aux.Stringid(11533717,0))
+	e12:SetCategory(CATEGORY_ATKCHANGE)
+	e12:SetType(EFFECT_TYPE_QUICK_O)
+	e12:SetCode(EVENT_FREE_CHAIN) 
+	e12:SetRange(LOCATION_HAND+LOCATION_MZONE)  
+	e12:SetCountLimit(1,11533717) 
+	e12:SetCost(c11533717.atkcost)
+	e12:SetTarget(c11533717.settg)
+	e12:SetOperation(c11533717.setop)
 	c:RegisterEffect(e12) 
 	local e11=Effect.CreateEffect(c) 
 	e11:SetDescription(aux.Stringid(11533717,1))
@@ -56,6 +67,39 @@ function c11533717.initial_effect(c)
 	e2:SetOperation(c11533717.spop)
 	c:RegisterEffect(e2)
 end 
+function c11533717.setfilter(c)
+	return c:IsSetCard(0x18e) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+end
+function c11533717.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c11533717.setfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+end
+aux.NecroValleyFilter(c79387392.setfilter)
+function c11533717.setop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11533717.setfilter),tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc and Duel.SSet(tp,tc)~=0 then
+		if tc:IsType(TYPE_QUICKPLAY) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetDescription(aux.Stringid(11533717,2))
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+		end
+		if tc:IsType(TYPE_TRAP) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetDescription(aux.Stringid(11533717,2))
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+		end
+	end
+end
 function c11533717.filter(c,e,tp)
 	return c:IsSetCard(0x3a) and ((c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)) or (not c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end

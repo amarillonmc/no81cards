@@ -27,24 +27,23 @@ function c28321714.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<2 then return false end
 		return Duel.GetDecktopGroup(tp,2) and Duel.IsPlayerCanRemove(tp)
 	end
-	local ct=2
-	if Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil):GetClassCount(Card.GetAttribute)>=3 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=3 and Duel.SelectOption(tp,aux.Stringid(28321714,0),aux.Stringid(28321714,1))==1 then
-		ct=3
-	end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(ct)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function c28321714.thfilter(c)
 	return c:IsSetCard(0x286) and c:IsAbleToHand()
 end
 function c28321714.activate(e,tp,eg,ep,ev,re,r,rp)
-	local p,ct=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	local ct=2
+	if Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,LOCATION_MZONE,nil):GetClassCount(Card.GetAttribute)>=3 and Duel.GetFieldGroupCount(p,LOCATION_DECK,0)>=3 and Duel.SelectOption(p,aux.Stringid(28321714,0),aux.Stringid(28321714,1))==1 then
+		ct=3
+	end
 	Duel.ConfirmDecktop(p,ct)
 	local g=Duel.GetDecktopGroup(p,ct)
 	if #g>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=g:FilterSelect(tp,c28321714.thfilter,0,#g,nil)
+		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
+		local sg=g:FilterSelect(p,c28321714.thfilter,0,#g,nil)
 		if #sg>0 then
 			Duel.DisableShuffleCheck()
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
@@ -53,7 +52,7 @@ function c28321714.activate(e,tp,eg,ep,ev,re,r,rp)
 			g:Sub(sg)
 		end
 		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
-		local ct=Duel.GetTurnPlayer()==tp and 2 or 1
+		local ct=Duel.GetTurnPlayer()==p and 2 or 1
 		local fid=e:GetHandler():GetFieldID()
 		for tc in aux.Next(g) do
 			tc:RegisterFlagEffect(28321714,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,EFFECT_FLAG_CLIENT_HINT,ct,fid,aux.Stringid(28321714,3))
@@ -69,7 +68,7 @@ function c28321714.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCondition(c28321714.thcon)
 		e1:SetOperation(c28321714.thop)
 		e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,ct)
-		Duel.RegisterEffect(e1,tp)
+		Duel.RegisterEffect(e1,p)
 	end
 end
 function c28321714.cfilter(c,fid)
@@ -79,13 +78,14 @@ function c28321714.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local fid,ct=e:GetLabel()
 	if Duel.GetTurnCount()<ct then return false end
 	local g=e:GetLabelObject()
-	if not (g and g:IsExists(c28321714.cfilter,1,nil,fid)) then
+	if g:IsExists(c28321714.cfilter,1,nil,fid) then
 		g:DeleteGroup()
 		e:Reset()
 		return false
 	else return true end
 end
 function c28321714.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,28321714)
 	local fid,ct=e:GetLabel()
 	local g=e:GetLabelObject()
 	local sg=g:Filter(c28321714.cfilter,nil,fid)

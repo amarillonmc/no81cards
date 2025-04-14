@@ -36,10 +36,10 @@ function c11533716.initial_effect(c)
 	--draw and to deck 
 	local e2=Effect.CreateEffect(c) 
 	e2:SetDescription(aux.Stringid(11533716,2)) 
-	e2:SetCategory(CATEGORY_DRAW+CATEGORY_TODECK)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O) 
 	e2:SetCode(EVENT_TO_HAND) 
-	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_SZONE)  
 	e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) 
 	return (re==nil or not re:GetHandler():IsCode(11533716)) and eg:IsExists(function(c) return not c:IsPreviousLocation(LOCATION_DECK) end,1,nil) end) 
@@ -49,10 +49,10 @@ function c11533716.initial_effect(c)
 	c:RegisterEffect(e2)  
 	local e2=Effect.CreateEffect(c) 
 	e2:SetDescription(aux.Stringid(11533716,2)) 
-	e2:SetCategory(CATEGORY_DRAW+CATEGORY_TODECK)
+	e2:SetCategory(CATEGORY_DRAW+CATEGORY_SEARCH+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O) 
 	e2:SetCode(EVENT_TO_DECK) 
-	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_SZONE)  
 	e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) 
 	return (re==nil or not re:GetHandler():IsCode(11533716)) end) 
@@ -159,20 +159,24 @@ end
 function c11533716.tdgck(g) 
 	return g:IsExists(Card.IsSetCard,1,nil,0x18e,0x3a) 
 end 
+function c11533716.scfilter(c)
+	return c:IsSetCard(0x3a) and c:IsAbleToHand()
+end
 function c11533716.drtdtg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local g=Duel.GetMatchingGroup(function(c,e) return c:IsAbleToDeck() and c:IsCanBeEffectTarget(e) end,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e)
-	if chk==0 then return g:CheckSubGroup(c11533716.tdgck,5,5) and Duel.IsPlayerCanDraw(tp,1) end 
-	local sg=g:SelectSubGroup(tp,c11533716.tdgck,false,5,5) 
-	Duel.SetTargetCard(sg)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1) 
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,sg:GetCount(),0,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(c11533716.scfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end 
 function c11533716.drtdop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler() 
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e) 
-	if Duel.Draw(tp,1,REASON_EFFECT)~=0 and g:GetCount()>0 then 
-		Duel.SendtoDeck(g,nil,2,REASON_EFFECT) 
-	end 
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c32807846.filter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
+		Duel.ConfirmCards(1-tp,g)
+		local dg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e)
+			if dg:CheckSubGroup(c11533716.tdgck,5,5) and Duel.SelectYesNo(tp,aux.Stringid(11533716,0)) then
+				local sg=g:SelectSubGroup(tp,c11533716.tdgck,false,5,5) 
+				Duel.SendtoDeck(g,nil,2,REASON_EFFECT) 
+			end
+	end
 end 
 function c11533716.tdfil(c) 
 	if not (c:IsType(TYPE_RITUAL) and c:IsAbleToDeck()) then return false end 
@@ -185,21 +189,17 @@ end
 function c11533716.srfil(c,e,tp)
 	if not (c:IsSetCard(0x3a) and c:IsType(TYPE_MONSTER)) then return false end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	return ft>0 and ((c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)) or (not c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
+	return ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c11533716.tdsptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11533716.srfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end  
+	if chk==0 then return Duel.IsExistingMatchingCard(c11533716.srfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end  
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)  
 end 
 function c11533716.tdspop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
-	if Duel.IsExistingMatchingCard(c11533716.srfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) then 
-		local tc=Duel.SelectMatchingCard(tp,c11533716.srfil,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
-		if tc and tc:IsType(TYPE_RITUAL) then
-			tc:SetMaterial(nil)
-			Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-			tc:CompleteProcedure()
-		elseif tc then
+	if Duel.IsExistingMatchingCard(c11533716.srfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) then 
+		local tc=Duel.SelectMatchingCard(tp,c11533716.srfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
+		if tc then
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)  
 		end
 	end  

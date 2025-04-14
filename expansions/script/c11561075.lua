@@ -39,7 +39,7 @@ function c11561075.thfilter1(c)
 	return c:IsType(TYPE_MONSTER) and c:IsLevelAbove(0) and Duel.IsExistingTarget(c11561075.thfilter2,tp,0,LOCATION_GRAVE,1,nil,c)
 end
 function c11561075.thfilter2(c,tc)
-	return c:IsLevel(tc:GetLevel()) and not c:IsAttribute(tc:GetAttribute()) and c:IsAbleToHand()
+	return c:IsAttribute(tc:GetAttribute()) and not c:IsRace(tc:Getrace()) and c:IsAbleToHand()
 end
 function c11561075.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(1-tp) and c11561075.thfilter1(chkc) end

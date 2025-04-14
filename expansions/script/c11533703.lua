@@ -1,7 +1,7 @@
 --影灵衣归魂 艾丽娅儿
 function c11533703.initial_effect(c)
 	--spirit return
-	aux.EnableSpiritReturn(c,EVENT_SUMMON_SUCCESS,EVENT_FLIP)
+	--aux.EnableSpiritReturn(c,EVENT_SUMMON_SUCCESS,EVENT_FLIP)
 	--ritual level
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -9,12 +9,12 @@ function c11533703.initial_effect(c)
 	e0:SetValue(c11533703.rlevel)
 	c:RegisterEffect(e0)
 	--cannot special summon
-	local e1=Effect.CreateEffect(c)
+   --[[local e1=Effect.CreateEffect(c)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(aux.FALSE)
-	c:RegisterEffect(e1) 
+	c:RegisterEffect(e1)]] 
 	--to hand 
 	local e2=Effect.CreateEffect(c) 
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -25,7 +25,7 @@ function c11533703.initial_effect(c)
 	e2:SetTarget(c11533703.thtg)
 	e2:SetOperation(c11533703.thop)
 	c:RegisterEffect(e2)
-	--set 
+	--set
 	local e3=Effect.CreateEffect(c) 
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -80,7 +80,7 @@ function c11533703.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11533703.setfilter,tp,LOCATION_DECK,0,1,nil) end
 end
 function c11533703.bgfilter(c)  
-	return c:IsAbleToGrave()
+	return c:IsAbleToGrave() and c:IsSetCard(0xb4)
 end  
 function c11533703.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

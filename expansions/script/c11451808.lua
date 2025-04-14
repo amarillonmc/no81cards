@@ -4,7 +4,7 @@ function cm.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_ACTION)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
@@ -43,7 +43,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0x129) and c:IsType(TYPE_EQUIP) and c:IsAbleToGraveAsCost() and c:CheckUniqueOnField(tp) and not c:IsForbidden()
+	return c:IsFaceupEx() and c:IsSetCard(0x129) and c:GetType()&0x40002==0x40002 and c:IsAbleToGraveAsCost() and c:CheckUniqueOnField(tp) and not c:IsForbidden() and (c:IsLocation(LOCATION_SZONE) or Duel.GetLocationCount(c:GetControler(),LOCATION_SZONE)>0)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,nil)
@@ -65,7 +65,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
 		local tc=Duel.GetFirstTarget()
-		if tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+		if tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then --and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
 			Duel.Equip(tp,tc,c,false)
 			if not tc:IsHasEffect(EFFECT_EQUIP_LIMIT) then
 				local e1=Effect.CreateEffect(c)

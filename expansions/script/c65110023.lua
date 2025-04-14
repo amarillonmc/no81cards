@@ -7,7 +7,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCountLimit(1,id)
-	e1:SetCost(s.cost)
+	e1:SetCondition(s.con)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
@@ -25,16 +25,10 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.mofilter(c)
-	return c:IsFaceup() and c:IsCode(65110000) and not c:IsLocation(LOCATION_FZONE)
+	return c:IsFaceup() and c:IsCode(65110000)
 end
-function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.mofilter,tp,LOCATION_ONFIELD,0,1,nil) end
-	local mc=Duel.SelectMatchingCard(tp,s.mofilter,tp,LOCATION_ONFIELD,0,1,1,nil):GetFirst()
-	if mc:IsLocation(LOCATION_SZONE) then
-		Duel.MoveSequence(mc,5)
-	else
-		Duel.MoveToField(mc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-	end
+function s.con(e,tp,eg,ep,ev,re,r,rp,chk)
+	return Duel.IsExistingMatchingCard(s.mofilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,0,1,nil) end

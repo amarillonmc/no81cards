@@ -31,22 +31,15 @@ function c28355662.initial_effect(c)
 end
 function c28355662.excondition(e)
 	local tp=e:GetHandlerPlayer()
-	return Duel.GetTurnPlayer()==tp and (Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,2500) or Duel.GetLP(tp)>3000 and Duel.CheckLPCost(tp,4000))
+	return Duel.GetTurnPlayer()==tp and (Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,2000) or Duel.GetLP(tp)>3000 and Duel.CheckLPCost(tp,4000))
 end
 function c28355662.excost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.PayLPCost(tp,2000)
 end
 function c28355662.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.CheckLPCost(tp,2000)
-	local b2=Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,500)
-	local b3=Duel.IsPlayerAffectedByEffect(tp,28368431)
-	if chk==0 then return b1 or b2 end
-	if b3 or not b1 or (b2 and Duel.SelectYesNo(tp,aux.Stringid(28355662,0))) then
-		Duel.PayLPCost(tp,500)
-	else
-		Duel.PayLPCost(tp,2000)
-	end
+	if chk==0 then return Duel.GetLP(tp)<=3000 or Duel.CheckLPCost(tp,2000) end
+	if Duel.GetLP(tp)>3000 then Duel.PayLPCost(tp,2000) end
 end
 function c28355662.spfilter(c,e,tp)
 	return c:IsSetCard(0x285) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)

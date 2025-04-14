@@ -27,12 +27,13 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.costop)
 	c:RegisterEffect(e4)
 	--set
+	local custom_code=cm.RegisterMergedEvent_ToSingleCard(c,m,EVENT_LEAVE_FIELD)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(11451631,6))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
-	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetCode(custom_code)
 	local e21=aux.AddThisCardInGraveAlreadyCheck(c)
 	e2:SetLabelObject(e21)
 	e2:SetCondition(cm.actcon)
@@ -362,5 +363,108 @@ function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 			Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 		end--]]
+	end
+end
+
+function cm.RegisterMergedEvent_ToSingleCard(c,code,events)
+	local g=Group.CreateGroup()
+	g:KeepAlive()
+	local mt=getmetatable(c)
+	local seed=0
+	if type(events) == "table" then
+		for _, event in ipairs(events) do
+			seed = seed + event
+		end
+	else
+		seed = events
+	end
+	while(mt[seed]==true) do
+		seed = seed + 1
+	end
+	mt[seed]=true
+	local event_code_single = (code ~ (seed << 16)) | EVENT_CUSTOM
+	if type(events) == "table" then
+		for _, event in ipairs(events) do
+			cm.RegisterMergedEvent_ToSingleCard_AddOperation(c,g,event,event_code_single)
+		end
+	else
+		cm.RegisterMergedEvent_ToSingleCard_AddOperation(c,g,events,event_code_single)
+	end
+	--listened to again
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e3:SetCode(EVENT_MOVE)
+	e3:SetLabelObject(g)
+	e3:SetOperation(cm.ThisCardMovedToPublicResetCheck_ToSingleCard)
+	c:RegisterEffect(e3)
+	return event_code_single
+end
+function cm.RegisterMergedEvent_ToSingleCard_AddOperation(c,g,event,event_code_single)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(event)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetRange(0xff)
+	e1:SetLabel(event_code_single)
+	e1:SetLabelObject(g)
+	e1:SetOperation(cm.MergedDelayEventCheck1_ToSingleCard)
+	c:RegisterEffect(e1)
+	local ec={
+		EVENT_CHAIN_ACTIVATING,
+		EVENT_CHAINING,
+		EVENT_ATTACK_ANNOUNCE,
+		EVENT_BREAK_EFFECT,
+		EVENT_CHAIN_SOLVING,
+		EVENT_CHAIN_SOLVED,
+		EVENT_CHAIN_END,
+		EVENT_SUMMON,
+		EVENT_SPSUMMON,
+		EVENT_MSET,
+		EVENT_BATTLE_DESTROYED
+	}
+	for _,code in ipairs(ec) do
+		local ce=e1:Clone()
+		ce:SetCode(code)
+		ce:SetOperation(cm.MergedDelayEventCheck2_ToSingleCard)
+		c:RegisterEffect(ce)
+	end
+end
+function cm.MergedDelayEventCheck1_ToSingleCard(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	local c=e:GetOwner()
+	g:Merge(eg)
+	if Duel.CheckEvent(EVENT_MOVE) then
+		local _,meg=Duel.CheckEvent(EVENT_MOVE,true)
+		if meg:IsContains(c) and (c:IsFaceup() or c:IsPublic()) then
+			g:Clear()
+		end
+	end
+	if Duel.GetCurrentChain()==0 and #g>0 and not g:IsExists(function(c) return c:GetEquipCount()>0 or c:GetOverlayCount()>0 end,1,nil) then
+		local _eg=g:Clone()
+		Duel.RaiseEvent(_eg,e:GetLabel(),re,r,rp,ep,ev)
+		g:Clear()
+	end
+end
+function cm.MergedDelayEventCheck2_ToSingleCard(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	if Duel.CheckEvent(EVENT_MOVE) then
+		local _,meg=Duel.CheckEvent(EVENT_MOVE,true)
+		local c=e:GetOwner()
+		if meg:IsContains(c) and (c:IsFaceup() or c:IsPublic()) then
+			g:Clear()
+		end
+	end
+	if #g>0 then
+		local _eg=g:Clone()
+		Duel.RaiseEvent(_eg,e:GetLabel(),re,r,rp,ep,ev)
+		g:Clear()
+	end
+end
+function cm.ThisCardMovedToPublicResetCheck_ToSingleCard(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetOwner()
+	local g=e:GetLabelObject()
+	if c:IsFaceup() or c:IsPublic() then
+		g:Clear()
 	end
 end

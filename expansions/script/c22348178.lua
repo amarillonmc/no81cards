@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	aux.AddCodeList(c,22348157)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,nil,2,2,c22348178.lcheck)
+	aux.AddLinkProcedure(c,nil,2,3,c22348178.lcheck)
 	--Destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(22348178,0))
@@ -98,15 +98,15 @@ function c22348178.cfilter(c)
 end
 function c22348178.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(c22348178.cfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c22348178.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c22348178.cfilter,tp,LOCATION_ONFIELD,0,1,nil) then
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,c22348178.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil)
 		if g:GetCount()>0 then
 			Duel.Destroy(g,REASON_EFFECT)
 		end

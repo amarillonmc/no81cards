@@ -42,35 +42,10 @@ function c28368431.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28368431.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.CheckLPCost(tp,2000)
-	local b2=Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,500)
-	local b3=Duel.IsPlayerAffectedByEffect(tp,28368431)
-	if chk==0 then return b1 or b2 end
-	if b3 or not b1 or (b2 and Duel.SelectYesNo(tp,aux.Stringid(28368431,0))) then
-		Duel.PayLPCost(tp,500)
-	else
-		Duel.PayLPCost(tp,2000)
-	end
+	if chk==0 then return Duel.GetLP(tp)<=3000 or Duel.CheckLPCost(tp,2000) end
+	if Duel.GetLP(tp)>3000 then Duel.PayLPCost(tp,2000) end
 end
 function c28368431.activate(e,tp,eg,ep,ev,re,r,rp)
-	--costchange
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_LPCOST_CHANGE)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetValue(c28368431.costchange)
-	Duel.RegisterEffect(e1,tp)
-	--code
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(28368431)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetTargetRange(1,0)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	e2:SetCondition(c28368431.condition)
-	Duel.RegisterEffect(e2,tp)
 	--recover
 	local e3=Effect.CreateEffect(e:GetHandler())
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

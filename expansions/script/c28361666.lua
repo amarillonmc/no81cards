@@ -8,18 +8,18 @@ function c28361666.initial_effect(c)
 	e1:SetTarget(c28361666.target)
 	e1:SetOperation(c28361666.activate)
 	c:RegisterEffect(e1)
-	--to hand
+	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28361666,1))
-	e2:SetCategory(CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	--e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCondition(c28361666.thcon)
+	e2:SetCondition(c28361666.spcon)
 	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(c28361666.thtg)
-	e2:SetOperation(c28361666.thop)
+	e2:SetTarget(c28361666.sptg)
+	e2:SetOperation(c28361666.spop)
 	c:RegisterEffect(e2)
 end
 function c28361666.spfilter(c,e,tp)
@@ -55,22 +55,23 @@ function c28361666.accon(e)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,LOCATION_MZONE,nil)
 	return g:GetClassCount(Card.GetAttribute)<3
 end
-function c28361666.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsSummonLocation,1,nil,LOCATION_EXTRA)
+function c28361666.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE
 end
-function c28361666.thfilter(c)
-	return c:IsSetCard(0x286) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+function c28361666.hspfilter(c,e,tp)
+	return c:IsSetCard(0x286) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c28361666.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28361666.thfilter,tp,LOCATION_GRAVE,0,1,nil)
-		and Duel.GetCurrentChain()==0 end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
+function c28361666.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetMZoneCount(tp)>0
+		and Duel.IsExistingMatchingCard(c28361666.hspfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
-function c28361666.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,c28361666.thfilter,tp,LOCATION_GRAVE,0,1,1,nil):GetFirst()
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+function c28361666.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetMZoneCount(tp)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sc=Duel.SelectMatchingCard(tp,c28361666.hspfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp):GetFirst()
+	if sc then
+		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

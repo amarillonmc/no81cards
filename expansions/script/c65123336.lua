@@ -148,7 +148,7 @@ function s.humancheck(pid,bool)
 		{lpoint<2,aux.Stringid(id,9)},
 		{lpoint<3,aux.Stringid(id,10)}
 	)
-	if op==1 then		
+	if op==1 then	   
 		Debug.Message(pid.."号位玩家被识别为人机！") 
 	elseif op==2 then
 		s.IsHuman[pid]=true
@@ -376,7 +376,7 @@ function s.checkStraight(c,g)
 	local cpoint=s.getpoint(c)
 	for i=3,14 do
 		if codetable[i]==true then
-			count=count+1	 
+			count=count+1	
 		else
 			if count>=5 and i>=cpoint then
 				return true,i-count,i-1
@@ -420,7 +420,7 @@ function s.checkPairs(c,g)
 	if not codetable[cpoint] then return false,nil,nil end
 	for i=3,14 do
 		if codetable[i]==true then
-			count=count+1	 
+			count=count+1	
 		else
 			if count>=3 and i>=cpoint then
 				return true,i-count,i-1
@@ -481,15 +481,15 @@ function s.fpair(g)
 	return g:GetClassCount(s.getpoint)==1
 end
 function s.fpair1(g,hg)
-	local eg=hg:Filter(aux.TRUE,g)
+	local eg=hg-g
 	return g:GetClassCount(s.getpoint)==1 and eg:GetCount()>0
 end
 function s.fpair2(g,hg)
-	local eg=hg:Filter(aux.TRUE,g)
+	local eg=hg-g
 	return g:GetClassCount(s.getpoint)==1 and eg:CheckSubGroup(s.fpair,2,2)
 end
 function s.fflight(g,hg)
-	local eg=hg:Filter(aux.TRUE,g)  
+	local eg=hg-g
 	return g:GetClassCount(s.getpoint)==1 and eg:CheckSubGroup(s.fpair,3,3)
 end
 function s.handcon(e,tp,eg,ep,ev,re,r,rp)
@@ -538,7 +538,7 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 						for i=fmax+1,cpoint-1 do
 							local cg1=cg:Filter(s.pointsame,nil,i)
 							sg:AddCard(cg1:GetFirst())
-							cg=cg:Filter(aux.TRUE,cg1)
+							cg=cg-cg1
 						end
 					end
 					fmax=cpoint
@@ -547,12 +547,12 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 						for i=cpoint+1,fmin-1 do
 							local cg1=cg:Filter(s.pointsame,nil,i)
 							sg:AddCard(cg1:GetFirst())
-							cg=cg:Filter(aux.TRUE,cg1)
+							cg=cg-cg1
 						end
 					end
 					fmin=cpoint
 				end
-				cg=cg:Filter(aux.TRUE,cg:Filter(s.pointsame,nil,point,cpoint))
+				cg=cg-cg:Filter(s.pointsame,nil,point,cpoint)
 			end
 		else
 			if not finish then
@@ -562,7 +562,7 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 			break
 		end
 	end
-	local eg=g:Filter(aux.TRUE,sg)
+	local eg=g-sg
 	if cardtype==Pair then
 		local ispairs,min2,max2=s.checkPairs(c,g)
 		if ispairs and Duel.SelectYesNo(p,aux.Stringid(id,1)) then
@@ -580,7 +580,7 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 								local eg1=eg:Filter(s.pointsame,nil,i)
 								sg:AddCard(eg1:GetFirst())
 								sg:AddCard(eg1:GetNext())
-								eg=eg:Filter(aux.TRUE,eg1)
+								eg=eg-eg1
 							end
 						end
 						fmax=cpoint
@@ -590,12 +590,12 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 								local eg1=eg:Filter(s.pointsame,nil,i)
 								sg:AddCard(eg1:GetFirst())
 								sg:AddCard(eg1:GetNext())
-								eg=eg:Filter(aux.TRUE,eg1)
+								eg=eg-eg1
 							end
 						end
 						fmin=cpoint
 					end
-					eg=eg:Filter(aux.TRUE,eg:Filter(s.pointsame,nil,cpoint))
+					eg=eg-eg:Filter(s.pointsame,nil,cpoint)
 				else
 					break
 				end
@@ -606,7 +606,7 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 			else
 				return
 			end
-		end		
+		end	 
 	end
 	if cardtype==ThreeOfAKind and eg:GetCount()>0 and Duel.SelectYesNo(p,aux.Stringid(id,2)) then
 		while sg:GetCount()<5 do
@@ -621,8 +621,8 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		cardtype=sg:GetCount()==4 and ThreeWithOne or ThreeWithTwo
-	end	
-	eg=g:Filter(aux.TRUE,sg)
+	end 
+	eg=g-sg
 	local fg=g:Filter(s.updownfilter,sg,fmin,fmax)
 	while (cardtype==ThreeOfAKind or cardtype==Flight0) and fg:CheckSubGroup(s.fpair,3,3) and Duel.SelectYesNo(p,aux.Stringid(id,3)) do  
 		mg=fg:SelectSubGroup(p,s.fpair1,true,3,3,eg)
@@ -633,7 +633,7 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 			sg:Merge(mg)
 			cardtype=Flight0
 			fg=g:Filter(s.updownfilter,sg,fmin,fmax)
-			eg=g:Filter(aux.TRUE,sg)
+			eg=g-sg
 		else
 			break
 		end
@@ -644,11 +644,11 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 			local cpoint=mg:GetFirst():GetCode()%20
 			fmin=math.min(fmin,cpoint)
 			fmax=math.max(fmax,cpoint)
-			mg:Merge(g:Select(p,1,1,Group.__add(mg,sg)))
+			mg:Merge(g:Select(p,1,1,mg+sg))
 			sg:Merge(mg)
 			cardtype=Flight1
 			fg=g:Filter(s.updownfilter,sg,fmin,fmax)
-			eg=g:Filter(aux.TRUE,sg)
+			eg=g-sg
 		else
 			break
 		end
@@ -659,11 +659,11 @@ function s.handop(e,tp,eg,ep,ev,re,r,rp)
 			local cpoint=mg:GetFirst():GetCode()%20
 			fmin=math.min(fmin,cpoint)
 			fmax=math.max(fmax,cpoint)
-			mg:Merge(g:Filter(aux.TRUE,Group.__add(mg,sg)):SelectSubGroup(p,s.fpair,true,2,2))
+			mg:Merge(g-mg-sg):SelectSubGroup(p,s.fpair,true,2,2)
 			sg:Merge(mg)
 			cardtype=Flight2
 			fg=g:Filter(s.updownfilter,sg,fmin,fmax)
-			eg=g:Filter(aux.TRUE,sg)
+			eg=g-sg
 		else
 			break
 		end
@@ -719,7 +719,7 @@ function s.movecard(cardtype,mg)
 			Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^i)
 			tc=mg1:GetNext()
 		end
-		local mg2=mg:Filter(aux.TRUE,mg1)
+		local mg2=mg-mg1
 		local tc=mg2:GetFirst()
 		Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^3)
 	elseif cardtype==ThreeWithTwo then
@@ -730,7 +730,7 @@ function s.movecard(cardtype,mg)
 			Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^i)
 			tc=mg1:GetNext()
 		end
-		local mg2=mg:Filter(aux.TRUE,mg1)
+		local mg2=mg-mg1
 		local tc=mg2:GetFirst()
 		for i=3,4 do
 			Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^i)
@@ -744,7 +744,7 @@ function s.movecard(cardtype,mg)
 			Duel.MoveToField(tc,p,p,LOCATION_MZONE,POS_FACEUP_ATTACK,false,2^i)
 			tc=mg1:GetNext()
 		end
-		local mg2=mg:Filter(aux.TRUE,mg1)
+		local mg2=mg-mg1
 		local tc=mg2:GetFirst()
 		for i=0,1 do
 			Duel.MoveToField(tc,p,p,LOCATION_SZONE,POS_FACEUP,false,2^i)
@@ -786,7 +786,7 @@ function s.movecard(cardtype,mg)
 		for i=0,9 do
 			local tg=mg:GetMinGroup(s.getpoint)
 			if not tg then break end
-			mg=mg:Filter(aux.TRUE,tg)
+			mg=mg-tg
 			local tc=tg:GetFirst()
 			local seq=i%5
 			if i<=4 then
@@ -831,7 +831,7 @@ function s.movecard(cardtype,mg)
 					tc=mg1:GetNext()
 				end
 			end
-			mg=mg:Filter(aux.TRUE,mg1)
+			mg=mg-mg1
 		end
 		if count>=3 then
 			Debug.Message("完成成就：卢食传说")
@@ -850,13 +850,13 @@ function s.movecard(cardtype,mg)
 			elseif mg1:GetCount()==2 then
 				local rc=mg1:GetFirst()
 				table.insert(mgtable2,Group.FromCards(rc))
-				table.insert(mgtable2,mg1:Filter(aux.TRUE,rc))
+				table.insert(mgtable2,mg1-rc)
 			elseif mg1:GetCount()==4 then
 				local rc=mg1:GetFirst()
 				table.insert(mgtable2,Group.FromCards(rc))
-				table.insert(mgtable1,mg1:Filter(aux.TRUE,rc))
+				table.insert(mgtable1,mg1-rc)
 			end
-			mg=mg:Filter(aux.TRUE,mg1)
+			mg=mg-mg1
 		end
 		for tc in aux.Next(mg) do
 			table.insert(mgtable2,Group.FromCards(tc))
@@ -912,9 +912,9 @@ function s.movecard(cardtype,mg)
 			elseif mg1:GetCount()==4 then
 				local rg=Group.FromCards(mg1:GetFirst(),mg1:GetNext())
 				table.insert(mgtable2,rg)
-				table.insert(mgtable2,mg1:Filter(aux.TRUE,rg))
+				table.insert(mgtable2,mg1-rg)
 			end
-			mg=mg:Filter(aux.TRUE,mg1)
+			mg=mg-mg1
 		end
 		for i=1,count do
 			local loc=i%2==1 and LOCATION_MZONE or LOCATION_SZONE
@@ -1054,11 +1054,11 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 			mg=upg:SelectSubGroup(p,s.fpair1,true,3,3,g)
 			if mg and mg:GetCount()==3 then
 				point=s.getpoint(mg:GetFirst())
-				local mg2=g:Filter(aux.TRUE,mg):SelectSubGroup(p,s.fpair,true,2,2)
-				mg:Merge(mg2)						 
+				local mg2=(g-mg):SelectSubGroup(p,s.fpair,true,2,2)
+				mg:Merge(mg2)						
 				ischain=true
 			end
-		elseif cardtype==Pairs then			
+		elseif cardtype==Pairs then		 
 			local count=s.lastcard:GetCount()
 			local cardtable=s.checkPairs2(point,upg,count/2)
 			if #cardtable>0 then
@@ -1077,7 +1077,7 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 								cg=cg:Filter(s.straightfilter,nil,v.min,v.max,sc:GetCode()%20)
 								break
 							end
-						end						
+						end					 
 					else
 						break
 					end
@@ -1108,7 +1108,7 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 					end
 					if bool then table.insert(abletable,i) end
 				end
-				upg=upg:Filter(aux.TRUE,cg)
+				upg=upg-cg
 			end
 			if #abletable>0 then
 				ischainable=true
@@ -1149,15 +1149,15 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 					local cpoint=cg:GetFirst():GetCode()%20
 					if cpoint==1 then codetable[14]=true end
 					codetable[cpoint]=true
-					local bool=true		   
+					local bool=true		
 					for i=cpoint,cpoint+count-1 do
 						eg:Merge()
 						if codetable[i]~=true then bool=false end
 					end
-					local eg=Group.__add(g:Filter(s.pointup,nil,cpoint+count-1),g:Filter(s.pointdown,nil,cpoint))
+					local eg=g:Filter(s.pointup,nil,cpoint+count-1)+g:Filter(s.pointdown,nil,cpoint)
 					if bool and eg:GetCount()>=count then table.insert(abletable,i) end
 				end
-				upg=upg:Filter(aux.TRUE,cg)
+				upg=upg-cg
 			end
 			if #abletable>0 then
 				ischainable=true
@@ -1200,17 +1200,17 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 					local cpoint=cg:GetFirst():GetCode()%20
 					if cpoint==1 then codetable[14]=true end
 					codetable[cpoint]=true
-					local bool=true		   
+					local bool=true		
 					for i=cpoint,cpoint+count-1 do
 						eg:Merge()
 						if codetable[i]~=true then bool=false end
 					end
-					local eg=Group.__add(g:Filter(s.pointup,nil,cpoint+count-1),g:Filter(s.pointdown,nil,cpoint))
+					local eg=g:Filter(s.pointup,nil,cpoint+count-1)+g:Filter(s.pointdown,nil,cpoint)
 					if bool and eg:CheckSubGroup(s.fpairs,2*count,2*count,count) then
 						table.insert(abletable,i)
 					end
 				end
-				upg=upg:Filter(aux.TRUE,cg)
+				upg=upg-cg
 			end
 			if #abletable>0 then
 				ischainable=true
@@ -1232,7 +1232,7 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 					end
 				end
 				local cp=s.getpoint(mg:GetMinGroup():GetFirst())
-				local eg=g:Filter(aux.TRUE,sg)
+				local eg=g-sg
 				sg:Merge(eg:SelectSubGroup(p,s.fpairs,true,2*count,2*count,count)) 
 				if sg:GetCount()==s.lastcard:GetCount() then
 					point=cp

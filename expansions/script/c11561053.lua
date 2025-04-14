@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,11571053)
+	e3:SetCountLimit(1,11561053)
 	e3:SetCost(c11561053.tkcost)
 	e3:SetTarget(c11561053.dsptg)
 	e3:SetOperation(c11561053.dspop)
@@ -63,18 +63,31 @@ function c11561053.dspop(e,tp,eg,ep,ev,re,r,rp)
 	local tc1,tc2=Duel.GetFirstTarget()
 	if tc1~=e:GetLabelObject() then tc1,tc2=tc2,tc1 end
 	if tc1:IsControler(tp) and tc1:IsRelateToEffect(e) and Duel.Destroy(tc1,REASON_EFFECT)>0 and tc2:IsRelateToEffect(e) then
-		if Duel.SpecialSummon(tc2,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local g=Duel.GetOperatedGroup()
-		if g:GetFirst():IsType(TYPE_LINK) then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-			e1:SetValue(1)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e:GetHandler():RegisterEffect(e1)
-		end
-		end
+
+	if tc2 and Duel.SpecialSummonStep(tc2,0,tp,tp,false,false,POS_FACEUP) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc2:RegisterEffect(e1,true)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc2:RegisterEffect(e2,true)
 	end
+	Duel.SpecialSummonComplete()
+
+	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c11561053.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
 
 function c11561053.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -86,7 +99,7 @@ function c11561053.rtgfilter(c)
 end
 function c11561053.tktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c11561053.rtgfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c11561053.rtgfilter,tp,LOCATION_REMOVED,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,11561054,0,TYPES_TOKEN_MONSTER,0,0,3,RACE_FIEND,ATTRIBUTE_LIGHT) end
+	if chk==0 then return Duel.IsExistingTarget(c11561053.rtgfilter,tp,LOCATION_REMOVED,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,11561054,0,TYPES_TOKEN_MONSTER,0,0,3,RACE_ZOMBIE,ATTRIBUTE_LIGHT) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,c11561053.rtgfilter,tp,LOCATION_REMOVED,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
@@ -99,18 +112,16 @@ function c11561053.tkop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RETURN)
 	end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	if Duel.IsPlayerCanSpecialSummonMonster(tp,11561054,0,TYPES_TOKEN_MONSTER,0,0,3,RACE_FIEND,ATTRIBUTE_LIGHT) then
+	if Duel.IsPlayerCanSpecialSummonMonster(tp,11561054,0,TYPES_TOKEN_MONSTER,0,0,3,RACE_ZOMBIE,ATTRIBUTE_LIGHT) then
 		local token=Duel.CreateToken(tp,11561054)
 		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c11561053.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+			e1:SetValue(1)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			c:RegisterEffect(e1)
 end
 function c11561053.splimit(e,c)
 	return not c:IsRace(RACE_ZOMBIE+RACE_FIEND)

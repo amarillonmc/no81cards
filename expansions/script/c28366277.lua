@@ -20,6 +20,7 @@ function c28366277.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetLabelObject(e0)
 	e2:SetCondition(c28366277.spcon)
 	e2:SetTarget(c28366277.sptg)
@@ -27,15 +28,8 @@ function c28366277.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28366277.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.CheckLPCost(tp,2000)
-	local b2=Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,500)
-	local b3=Duel.IsPlayerAffectedByEffect(tp,28368431)
-	if chk==0 then return b1 or b2 end
-	if b3 or not b1 or (b2 and Duel.SelectYesNo(tp,aux.Stringid(28366277,0))) then
-		Duel.PayLPCost(tp,500)
-	else
-		Duel.PayLPCost(tp,2000)
-	end
+	if chk==0 then return Duel.GetLP(tp)<=3000 or Duel.CheckLPCost(tp,2000) end
+	if Duel.GetLP(tp)>3000 then Duel.PayLPCost(tp,2000) end
 end
 function c28366277.thfilter(c)
 	return c:IsSetCard(0x285) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

@@ -108,7 +108,7 @@ function c11561056.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(11581056)==0 end
 	e:GetHandler():RegisterFlagEffect(11581056,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11581056,3))
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
-	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+11561056,e,0,0,0,0)
+	--Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+11561056,e,0,0,0,0)
 	if re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
 	end
@@ -128,7 +128,7 @@ function c11561056.remtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(11571056)==0 and eg:GetFirst():IsAbleToRemove() end
 	e:GetHandler():RegisterFlagEffect(11571056,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11581056,1))
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
-	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+11561056,e,0,0,0,0)
+	--Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+11561056,e,0,0,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
 end
 function c11561056.remop(e,tp,eg,ep,ev,re,r,rp)
@@ -143,7 +143,7 @@ function c11561056.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(11561056)==0 end
 	e:GetHandler():RegisterFlagEffect(11561056,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11581056,2))
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
-	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+11561056,e,0,0,0,0)
+	--Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+11561056,e,0,0,0,0)
 end
 function c11561056.desop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetHandler():IsRelateToEffect(re) then
