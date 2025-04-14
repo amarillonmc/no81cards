@@ -168,7 +168,7 @@ function c11533716.drtdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end 
 function c11533716.drtdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c32807846.filter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c11533716.scfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 		Duel.ConfirmCards(1-tp,g)
 		local dg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e)

@@ -196,15 +196,15 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local b1=false
 	local b2=false
 	local b3=false
-	if re and re:GetHandler() then
-		b1=(pl==1-c:GetOwner())
+	--[[if re and re:GetHandler() then
+		b1=(re:GetHandler():GetControler()==1-c:GetOwner())
 	end
 	if c:GetReasonCard() then
 		b2=(c:GetReasonCard():GetControler()==1-c:GetOwner())
 	end
 	if c:GetReasonEffect() and c:GetReasonEffect():GetHandler() then
-		b3=(c:GetReasonEffect():GetHandlerPlayer()==1-c:GetOwner())
-	end
+		b3=(c:GetReasonEffect():GetHandler():GetControler()==1-c:GetOwner())
+	end]]
 	return (c:GetReasonPlayer()==1-c:GetOwner() or b1 or b2 or b3) and (not (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE))
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

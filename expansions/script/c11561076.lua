@@ -32,10 +32,13 @@ function cm.initial_effect(c)
 end
 function c11561076.costfilter(c,tp,g)
 	return c:IsSetCard(0xe5)
-		and Duel.IsExistingMatchingCard(aux.NegateMonsterFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,Group.FromCards(c))
+		and Duel.IsExistingMatchingCard(c11561076.NegateFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,Group.FromCards(c))
+end
+function c11561076.NegateFilter(c)
+	return c:IsFaceup() and not c:IsDisabled() and ((c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0) or c:IsType(0x6))
 end
 function c11561076.fselect(g,tp)
-	return Duel.IsExistingMatchingCard(aux.NegateMonsterFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,g:GetCount(),g)
+	return Duel.IsExistingMatchingCard(c11561076.NegateFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,g:GetCount(),g)
 		and Duel.CheckReleaseGroup(tp,aux.IsInGroup,#g,nil,g)
 end
 function c11561076.discost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -52,14 +55,14 @@ function c11561076.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local ct=e:GetLabel()
 	local g1=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
-	local g=g1:Filter(aux.NegateMonsterFilter,nil)
+	local g=g1:Filter(c11561076.NegateFilter,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,ct,0,0)
 end
 function c11561076.disop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
 	local c=e:GetHandler()
 	local g1=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
-	local g=g1:Filter(aux.NegateMonsterFilter,nil)
+	local g=g1:Filter(c11561076.NegateFilter,nil)
 	if g:GetCount()>=ct then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
 		local dg=g:Select(tp,ct,ct,nil)
@@ -119,7 +122,7 @@ end
 function c11561076.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local tc=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	local tc=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil):GetFirst()
 	--battle indestructable
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

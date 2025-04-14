@@ -171,7 +171,7 @@ function c28335633.tdcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c28335633.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
-	Duel.HintSelection(e:GetHandler())
+	Duel.HintSelection(Group.FromCards(e:GetHandler()))
 	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c28335633.tdfilter(c)
