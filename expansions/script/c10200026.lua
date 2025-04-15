@@ -57,7 +57,7 @@ function c10200026.op2(e,tp,eg,ep,ev,re,r,rp)
     local ct=Duel.GetFlagEffect(tp,10200026)
     ct=ct+1
     Duel.RegisterFlagEffect(tp,10200026,RESET_PHASE+PHASE_END,0,1,ct)
-    if Duel.SelectYesNo(tp, aux.Stringid(10200026,3)) then
+    if Duel.SelectYesNo(tp,aux.Stringid(10200026,3)) then
         if ct >= 1 then
             local g1=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
             for tc in aux.Next(g1) do
@@ -68,9 +68,11 @@ function c10200026.op2(e,tp,eg,ep,ev,re,r,rp)
                 e1:SetReset(RESET_EVENT+RESETS_STANDARD)
                 tc:RegisterEffect(e1)
             end
+            e:GetHandler():RegisterFlagEffect(0,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(10200026,4))
         end
         if ct >= 2 then
             Duel.Damage(1-tp,500,REASON_EFFECT)
+            e:GetHandler():RegisterFlagEffect(0,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(10200026,5))
         end
         if ct >= 3 then
             local g2=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
@@ -82,9 +84,11 @@ function c10200026.op2(e,tp,eg,ep,ev,re,r,rp)
                 e1:SetReset(RESET_EVENT+RESETS_STANDARD)
                 tc:RegisterEffect(e1)
             end
+            e:GetHandler():RegisterFlagEffect(0,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(10200026,6))
         end
         if ct >= 4 then
             Duel.Draw(tp,1,REASON_EFFECT)
+            e:GetHandler():RegisterFlagEffect(0,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(10200026,7))
         end
         if ct >= 5 then
             local g3=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
@@ -93,6 +97,7 @@ function c10200026.op2(e,tp,eg,ep,ev,re,r,rp)
                 local sg=g3:Select(tp,1,1,nil)
                 Duel.Destroy(sg,REASON_EFFECT)
             end
+            e:GetHandler():RegisterFlagEffect(0,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(10200026,8))
         end
     end
 end

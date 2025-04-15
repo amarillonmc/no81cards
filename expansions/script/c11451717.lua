@@ -41,7 +41,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		tc:ResetFlagEffect(11451718)
 		local rc=tc
-		if tc:GetReasonEffect() and tc:GetReasonEffect():GetOwner() then rc=tc:GetReasonEffect():GetOwner() end
+		if tc:GetReasonEffect() then rc=tc:GetReasonEffect():GetOwner() end
 		local e1=Effect.CreateEffect(rc)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(m)

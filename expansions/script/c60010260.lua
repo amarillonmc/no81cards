@@ -55,6 +55,10 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		local fc=Duel.SelectMatchingCard(tp,cm.mfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,re:GetHandler()):GetFirst()
 		local fg=Group.FromCards(re:GetHandler(),fc)
 		c:SetMaterial(fg)
+		if fg:IsExists(Card.IsFacedown,1,nil) then 
+			Duel.ConfirmCards(1,fg:Filter(Card.IsFacedown,nil))
+			Duel.ConfirmCards(0,fg:Filter(Card.IsFacedown,nil))
+		end
 		if Duel.SendtoGrave(fg,REASON_SPSUMMON)==2 then
 			Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)
 		end
@@ -66,7 +70,7 @@ function cm.mfilter2(c,tc)
 		and #Group.FromCards(c,tc):Filter(cm.mfilter3,nil)>0
 end
 function cm.mfilter3(c)
-	return c:IsCode(60010252) and c:IsFaceup()
+	return c:IsCode(60010252) --and c:IsFaceup()
 end
 
 function cm.uop(e,tp,eg,ep,ev,re,r,rp)

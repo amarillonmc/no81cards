@@ -46,7 +46,9 @@ end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=e:GetLabel()
+	local rep=c:IsStatus(STATUS_EFFECT_REPLACED)
 	if c:IsRelateToEffect(e) and Duel.Remove(c,nil,REASON_EFFECT+REASON_TEMPORARY)~=0 and c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT) then
+		if rep then c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3)) end
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_MOVE)
@@ -201,7 +203,8 @@ function cm.returntofield(tc,e)
 	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then
 		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)
 	else
-		local rc=tc:GetReasonEffect():GetOwner() or tc
+		local rc=tc
+		if tc:GetReasonEffect() then rc=tc:GetReasonEffect():GetOwner() end
 		local e1=Effect.CreateEffect(rc)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(m)

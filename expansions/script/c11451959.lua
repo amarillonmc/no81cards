@@ -22,6 +22,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
 	Duel.SendtoHand(c,1-tp,REASON_COST)
+	Duel.ShuffleHand(tp)
 	Duel.ShuffleHand(1-tp)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
