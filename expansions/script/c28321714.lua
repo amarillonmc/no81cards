@@ -78,7 +78,7 @@ function c28321714.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local fid,ct=e:GetLabel()
 	if Duel.GetTurnCount()<ct then return false end
 	local g=e:GetLabelObject()
-	if g:IsExists(c28321714.cfilter,1,nil,fid) then
+	if not g:IsExists(c28321714.cfilter,1,nil,fid) then
 		g:DeleteGroup()
 		e:Reset()
 		return false

@@ -50,7 +50,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c,atk)
 
 		--destroy
 		local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-		if Duel.IsExistingMatchingCard(cm.mpfilter,tp,LOCATION_MZONE,0,1,nil) and sg:GetCount()>0
+		if Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)<Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE) and sg:GetCount()>=0
 			and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.BreakEffect()
 			Duel.Destroy(sg,REASON_EFFECT)

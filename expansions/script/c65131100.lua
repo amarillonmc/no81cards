@@ -48,38 +48,37 @@ function s.initial_effect(c)
 			end
 			if aux.GetValueType(targets)=="Group" then
 				local sg=targets
-				local tc=sg:GetFirst() 
-				while tc do
+				for tc in aux.Next(sg) do
 					if tc:GetOriginalCode()==id and tc:GetOwner()~=player then
 						Duel.Hint(HINT_CARD,0,86541496)
 						Duel.Win(player,0x0)
 					end
-					tc=sg:GetNext()
 				end
 			end
 		end
 		local _SSet=Duel.SSet
 		function Duel.SSet(player,targets,tplayer,bool)
-			tplayer=tplayer or player
-			bool=bool~=false
-			local count=_SSet(player,targets,tplayer,bool)
-			if bool and bool==true and aux.GetValueType(targets)=="Card" then
-				local tc=targets
-				if tc:GetOriginalCode()==id then
-					Duel.Hint(HINT_CARD,0,86541496)
-					Duel.Win(tc:GetOwner(),0x0)
+			if not tplayer then tplayer=player end
+			local lost=false
+			if bool and bool==true then
+				if aux.GetValueType(targets)=="Card" then
+					local tc=targets
+					if tc:GetOriginalCode()==id and tc:GetOwner()==tplayer then
+						local lost=true
+					end
+				elseif aux.GetValueType(targets)=="Group" then
+					local sg=targets
+					for tc in aux.Next(sg) do
+						if tc:GetOriginalCode()==id and tc:GetOwner()==tplayer then
+							local lost=true
+						end
+					end
 				end
 			end
-			if bool and bool==true and aux.GetValueType(targets)=="Group" then
-				local sg=targets
-				local tc=sg:GetFirst() 
-				while tc do
-					if tc:GetOriginalCode()==id then
-						Duel.Hint(HINT_CARD,0,86541496)
-						Duel.Win(tc:GetOwner(),0x0)
-					end
-					tc=sg:GetNext()
-				end
+			local count=_SSet(player,targets,tplayer,bool)
+			if lost then
+				Duel.Hint(HINT_CARD,0,86541496)
+				Duel.Win(1-tplayer,0x0)
 			end
 			return count
 		end
@@ -87,13 +86,11 @@ function s.initial_effect(c)
 		function Duel.SortDecktop(sort_player,target_player,count)
 			_SortDecktop(sort_player,target_player,count)
 			local sg=Duel.GetDecktopGroup(target_player,count)
-			local tc=sg:GetFirst() 
-			while tc do
+			for tc in aux.Next(sg) do
 				if tc:GetOriginalCode()==id and tc:GetOwner()~=sort_player then
 					Duel.Hint(HINT_CARD,0,86541496)
 					Duel.Win(sort_player,0x0)
 				end
-				tc=sg:GetNext()
 			end
 		end
 	end
