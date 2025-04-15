@@ -171,7 +171,7 @@ function s.LExtraMaterialCount(mg,lc,tp)
 		local le={tc:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
 		local Not_LExtra=true
 		for _,te in pairs(le) do
-			local sg=mg:Filter(s.TRUE,tc)
+			local sg=mg:Filter(aux.TRUE,tc)
 			local f=te:GetValue()
 			local related,valid=f(te,lc,sg,tc,tp)
 			if related and valid then
