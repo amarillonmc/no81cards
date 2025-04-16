@@ -371,7 +371,7 @@ end
 function yume.stellar_memories.RegCostLimit(e,tp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_OATH)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 	e1:SetCode(EFFECT_CANNOT_MSET)
 	e1:SetTargetRange(1,1)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsControler,tp))
@@ -488,6 +488,7 @@ function yume.stellar_memories.RitualUltimateOperation(greater_or_equal,summon_l
 				::RitualUltimateSelectStart::
 				local mg=Duel.GetMatchingGroup(yume.stellar_memories.RitualBanishFilter,tp,mat_location,0,nil,tp)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+				aux.RCheckAdditional=yume.stellar_memories.RCheckAdditional
 				local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(yume.stellar_memories.RitualUltimateFilter),tp,summon_location,0,1,1,nil,e,tp,mg,nil,yume.stellar_memories.RitualLevelFunction,greater_or_equal)
 				local tc=tg:GetFirst()
 				local mat=nil
@@ -503,7 +504,10 @@ function yume.stellar_memories.RitualUltimateOperation(greater_or_equal,summon_l
 					aux.GCheckAdditional=yume.stellar_memories.RitualCheckAdditional(tc,lv,greater_or_equal)
 					mat=mg:SelectSubGroup(tp,yume.stellar_memories.RitualCheck,true,1,lv,tp,tc,lv,greater_or_equal)
 					aux.GCheckAdditional=nil
-					if not mat then goto RitualUltimateSelectStart end
+					if not mat then 
+						aux.RCheckAdditional=nil
+						goto RitualUltimateSelectStart
+					end
 					tc:SetMaterial(mat)
 					Duel.Remove(mat,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
 					Duel.BreakEffect()
@@ -513,6 +517,7 @@ function yume.stellar_memories.RitualUltimateOperation(greater_or_equal,summon_l
 				if extra_operation then
 					extra_operation(e,tp,eg,ep,ev,re,r,rp,tc,mat)
 				end
+				aux.RCheckAdditional=nil
 			end
 end
 function yume.stellar_memories.MultiRitualBanishFilter(c,tp)
