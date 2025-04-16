@@ -98,7 +98,28 @@ end
 -- 除外效果
 function s.exccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
-	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
+	local tc=e:GetHandler()
+	if tc:IsRelateToEffect(e) and Duel.Remove(tc,0,REASON_COST+REASON_TEMPORARY)~=0
+		and tc:IsLocation(LOCATION_REMOVED) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(id,1))
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+		e1:SetLabelObject(tc)
+		e1:SetCountLimit(1)
+		e1:SetCondition(s.retcon)
+		e1:SetOperation(s.retop)
+		if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()<=PHASE_STANDBY then
+			e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2)
+			e1:SetValue(Duel.GetTurnCount())
+			tc:RegisterFlagEffect(id,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,2)
+		else
+			e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
+			e1:SetValue(0)
+			tc:RegisterFlagEffect(id,RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,0,1)
+		end
+		Duel.RegisterEffect(e1,tp)
+	end
 end
 
 function s.excop(e,tp,eg,ep,ev,re,r,rp)
@@ -126,18 +147,6 @@ function s.excop(e,tp,eg,ep,ev,re,r,rp)
 	
 	local desc=math.random(5,10)
 	Duel.Hint(24,0,aux.Stringid(id,desc))
-	-- 回归效果
-	local c=e:GetHandler()
-	c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_PHASE+PHASE_STANDBY)
-	e3:SetCountLimit(1)
-	e3:SetLabel(Duel.GetTurnCount())
-	e3:SetCondition(s.retcon)
-	e3:SetOperation(s.retop)
-	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,2)
-	Duel.RegisterEffect(e3,tp)
 end
 
 -- 发动权限筛选
@@ -150,12 +159,10 @@ function s.actop(e,tp,eg,ep,ev,re,r,rp)
 end
 -- 回归效果
 function s.retcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()~=e:GetLabel() and e:GetOwner():GetFlagEffect(id)>0
+	if Duel.GetTurnPlayer()~=tp or Duel.GetTurnCount()==e:GetValue() then return false end
+	return e:GetLabelObject():GetFlagEffect(id)~=0
 end
 function s.retop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetOwner()
-	if c:IsLocation(LOCATION_REMOVED) and c:IsFaceup() then
-		Duel.ReturnToField(c)
-	end
-	e:Reset()
+	local tc=e:GetLabelObject()
+	Duel.ReturnToField(tc)
 end

@@ -80,7 +80,7 @@ function c98941055.xyzfilter1(c,e,lv,ff)
 	if (ff==1 or ff==4) and not c:IsSetCard(0x9c) then return end
 	if ff==2 and not c:IsAttribute(ATTRIBUTE_LIGHT) then return end
 	if ff==3 and not c:IsSetCard(0x53) then return end
-	return c:IsSetCard(0x9c,0x53) and c:IsCanBeXyzMaterial(e:GetHandler())
+	return c:IsSetCard(0x9c,0x53) and c:IsLevel(4) and c:IsCanBeXyzMaterial(e:GetHandler())
 end
 function c98941055.xyzfilter2(c,e)
 	return c:IsCode(98941055) and c:IsCanBeXyzMaterial(e:GetHandler()) and Duel.GetMZoneCount(c:GetControler(),c,c:GetControler())>0 and c:IsLevel(4)
@@ -96,7 +96,7 @@ function c98941055.tg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 	local c=e:GetHandler()
 	local lv=c:GetLevel()
 	local ff=0
-	if c:IsSetCard(0x109c) and not c:IsType(TYPE_PENDULUM) then ff=1
+	if c:IsCode(42589641) and not c:IsType(TYPE_PENDULUM) then ff=1
 	elseif c:IsCode(2091298) then ff=2
 	elseif c:IsCode(26329679) then ff=3
 	elseif c:IsCode(64414267) then ff=4 end
