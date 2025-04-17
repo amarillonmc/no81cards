@@ -42,7 +42,7 @@ end
 function cm.chkop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if c:IsReason(REASON_DISCARD) then
-		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451742,0))
+		c:RegisterFlagEffect(0,RESET_EVENT+0x1f20000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451742,0))
 	end
 end
 function cm.limit(e,tp,eg,ep,ev,re,r,rp)
@@ -101,7 +101,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetDescription(aux.Stringid(11451731,ct))
 	e1:SetLabel(flag)
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(0x20000000+11451731)
+	e1:SetCode(EFFECT_FLAG_EFFECT+11451731)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 	e1:SetTargetRange(1,0)
 	e1:SetReset(RESET_PHASE+PHASE_END)

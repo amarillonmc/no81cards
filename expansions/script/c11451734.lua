@@ -38,11 +38,28 @@ function cm.initial_effect(c)
 		ge1:SetOperation(cm.limit)
 		Duel.RegisterEffect(ge1,0)
 	end
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_DISCARD)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
 function cm.chkop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if c:IsReason(REASON_DISCARD) then
-		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451742,0))
+		c:RegisterFlagEffect(0,RESET_EVENT+0x1f20000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451742,0))
+	end
+end
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		if tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) then
+			tc:RegisterFlagEffect(m-1,RESET_EVENT+0x1f20000,0,1)
+		end
+		tc=eg:GetNext()
 	end
 end
 function cm.limit(e,tp,eg,ep,ev,re,r,rp)
@@ -127,7 +144,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.mfilter(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsReason(REASON_DISCARD) and c:IsType(TYPE_MONSTER)
+	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and (c:IsReason(REASON_DISCARD) or c:GetFlagEffect(m-1)>0) and c:IsType(TYPE_MONSTER)
 end
 function cm.spfilter(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)

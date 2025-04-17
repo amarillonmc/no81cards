@@ -41,12 +41,8 @@ end
 function s.addop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
-	if g:GetCount()>0 then
-		Duel.ConfirmCards(tp,g)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)
-		Duel.ShuffleHand(1-tp)
-	end
+	if g:GetCount()==0 then return end
+	local sg=g:RandomSelect(tp,1)
+	Duel.SendtoGrave(sg,REASON_DISCARD+REASON_EFFECT)
 	e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end

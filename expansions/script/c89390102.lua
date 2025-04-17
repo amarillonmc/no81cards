@@ -14,10 +14,9 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
-	e2:SetCategory(CATEGORY_RELEASE+CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_QUICK_F)
 	e2:SetCode(EVENT_CHAINING)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
 	e2:SetCondition(s.condition)
@@ -88,7 +87,8 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsRelateToEffect(e) and Duel.Release(e:GetHandler(),REASON_EFFECT)>0 then
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.Remove(c,POS_FACEUP,REASON_EFFECT)>0 then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
