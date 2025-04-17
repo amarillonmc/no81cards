@@ -9,6 +9,7 @@ function cm.initial_effect(c)
 	e3:SetLabelObject(c)
 	e3:SetCondition(cm.discon)
 	e3:SetOperation(cm.disop)
+	--pnfl.continuouseffect(e3)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
 	e2:SetRange(LOCATION_MZONE)
@@ -23,6 +24,11 @@ function cm.initial_effect(c)
 	--e6:SetCondition(cm.discon)
 	e6:SetOperation(cm.disop)
 	c:RegisterEffect(e6)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_SINGLE)
+	e7:SetCode(m)
+	e7:SetRange(LOCATION_MZONE)
+	c:RegisterEffect(e7)
 	--cm[c]=e6
 	--tohand
 	local e1=Effect.CreateEffect(c)
@@ -30,7 +36,7 @@ function cm.initial_effect(c)
 	--e1:SetCode(EVENT_LEAVE_FIELD_P)
 	e1:SetCode(EFFECT_SEND_REPLACE)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	--e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetTarget(cm.leaveop)
 	e1:SetValue(aux.FALSE)
 	local e4=e2:Clone()
@@ -71,13 +77,19 @@ end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	if loc&LOCATION_ONFIELD~=0 and not c:IsDisabled() then cm.chainout[c:GetControler()][#cm.chainout[c:GetControler()]+1]=c end
+	if loc&LOCATION_ONFIELD~=0 and not c:IsDisabled() then
+		local tab=cm.chainout[c:GetControler()]
+		--[[for _,tc in ipairs(tab) do
+			if c==tc then c=nil end
+		end--]]
+		if c then tab[#tab+1]=c end
+	end
 	return loc&LOCATION_ONFIELD~=0
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local lastc=(#cm.chainout[1-Duel.GetTurnPlayer()]==0 and cm.chainout[c:GetControler()][(#cm.chainout[c:GetControler()])]==c) or (c:GetControler()==1-Duel.GetTurnPlayer() and cm.chainout[c:GetControler()][(#cm.chainout[c:GetControler()])]==c)
-	if c==e:GetLabelObject() and not lastc then return end
+	if c:IsHasEffect(m) and not lastc and e:GetCode()==EVENT_CHAIN_SOLVING then return end
 	if Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)~=0 and c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT) then --and c:GetOriginalCode()==m then
 		if Duel.GetCurrentPhase()==PHASE_STANDBY then
 			local tid=Duel.GetTurnCount()
