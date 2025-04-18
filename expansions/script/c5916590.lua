@@ -7,6 +7,7 @@ function s.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,1))
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(TIMING_END_PHASE,TIMING_END_PHASE+TIMING_STANDBY_PHASE)
@@ -89,20 +90,18 @@ function s.getsearchgroup(c,e,tp,eg,ep,ev,re,r,rp)
 		return true
 	end
 	Card.IsAbleToHand=function(card)
-		search_effect=true
+		s.discard_effect=true
 		return cisabletohand(card)
 	end
 	Card.IsAbleToHandAsCost=function(card)
-		search_effect=true
+		s.discard_effect=true
 		return cisabletohandascost(card)
 	end
 	Card.RegisterEffect=function(card,effect,flag)
 		if effect and effect:GetType()~=EFFECT_TYPE_FIELD then
-			search_effect=false
+			s.discard_effect=false
 			local cost=effect:GetCost()
-			local tg=effect:GetTarget()
 			if cost and cost(e,tp,eg,ep,ev,re,r,rp,0) then end
-			if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) then end
 		end
 		return 
 	end
