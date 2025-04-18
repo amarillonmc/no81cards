@@ -1,14 +1,16 @@
---隐秘的拉比林斯王
+--隐秘的白之王
 local cm,m,o=GetID()
 function cm.initial_effect(c)
 
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e2:SetTargetRange(LOCATION_ONFIELD,0)
-	e2:SetTarget(cm.indtg)
-	e2:SetValue(1)
-	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e3:SetTargetRange(LOCATION_ONFIELD,0)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTarget(cm.indtg)
+	e3:SetValue(1)
+	c:RegisterEffect(e3)
 	
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
