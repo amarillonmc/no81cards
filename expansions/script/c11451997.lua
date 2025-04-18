@@ -117,7 +117,7 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	if lastc then --c~=e:GetLabelObject() and  --and (c:IsControler(1-Duel.GetTurnPlayer()) or not Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsType(TYPE_EFFECT) and not c:IsDisabled() end,Duel.GetTurnPlayer(),0,LOCATION_MZONE,1,nil)) then
+	if lastc and e:GetCode()==EVENT_CHAIN_SOLVING then --c~=e:GetLabelObject() and  --and (c:IsControler(1-Duel.GetTurnPlayer()) or not Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsType(TYPE_EFFECT) and not c:IsDisabled() end,Duel.GetTurnPlayer(),0,LOCATION_MZONE,1,nil)) then
 		--cm.disop(c[c],tp,eg,ep,ev,re,r,rp)
 		Duel.RaiseEvent(c,EVENT_CUSTOM+m,re,r,rp,ep,ev)
 	end

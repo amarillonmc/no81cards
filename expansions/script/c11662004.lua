@@ -93,7 +93,7 @@ function c11662004.lvfilter1(c,tp)
 	return c11662004.lvfilter(c) and Duel.IsExistingMatchingCard(c11662004.lvfilter2,tp,LOCATION_MZONE,0,1,c,c:GetLevel())
 end
 function c11662004.lvfilter2(c,lv)
-	return c11662004.lvfilter(c) and not c:IsLevel(lv)
+	return c:IsFaceup() and c:IsLevelAbove(1) and not c:IsLevel(lv)
 end
 function c11662004.lvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c11662004.lvfilter1(chkc,tp) end
