@@ -9,6 +9,7 @@ function cm.initial_effect(c)
 	e11:SetCode(EVENT_FREE_CHAIN)
 	e11:SetRange(LOCATION_HAND)
 	e11:SetCountLimit(1,m)
+	e11:SetCondition(cm.thcon1)
 	e11:SetTarget(cm.thtg)
 	e11:SetOperation(cm.thop)
 	c:RegisterEffect(e11)
@@ -17,10 +18,11 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetCountLimit(1,m+10000000)
+	e2:SetCondition(cm.thcon2)
 	c:RegisterEffect(e2)
 	local e3=e11:Clone()
 	e3:SetDescription(aux.Stringid(m,3))
-	e3:SetCondition(cm.thcon)
+	e3:SetCondition(cm.thcon3)
 	e3:SetCountLimit(1,m+20000000)
 	c:RegisterEffect(e3)
 	--spsummon
@@ -30,6 +32,15 @@ function cm.initial_effect(c)
 	e1:SetCondition(cm.con)
 	e1:SetOperation(cm.op)
 	c:RegisterEffect(e1)
+end
+function cm.thcon1(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsMainPhase()
+end
+function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp
+end
+function cm.thcon3(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentChain()>=3
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsLocation(LOCATION_GRAVE) and r==REASON_SYNCHRO
@@ -60,7 +71,4 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoDeck(sg,nil,SEQ_DECKTOP,REASON_EFFECT)
 		end
 	end
-end
-function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentChain()>=3
 end
