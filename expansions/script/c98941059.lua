@@ -1,6 +1,7 @@
 --魊影的恐惧 羽
 local s,id,o=GetID()
 function c98941059.initial_effect(c)
+	--小鱼
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(98941059,3))
 	e0:SetType(EFFECT_TYPE_FIELD)
@@ -18,6 +19,24 @@ function c98941059.initial_effect(c)
 	e33:SetTarget(c98941059.eftg1)
 	e33:SetLabelObject(e0)
 	c:RegisterEffect(e33)
+	--大蛇
+	local e10=Effect.CreateEffect(c)
+	e10:SetDescription(aux.Stringid(98941059,3))
+	e10:SetType(EFFECT_TYPE_FIELD)
+	e10:SetCode(EFFECT_SPSUMMON_PROC)
+	e10:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e10:SetRange(LOCATION_EXTRA)
+	e10:SetCondition(c98941059.con1)
+	e10:SetTarget(c98941059.tg1)
+	e10:SetOperation(c98941059.op1)
+	e10:SetValue(SUMMON_TYPE_SYNCHRO)
+	local e30=Effect.CreateEffect(c)
+	e30:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e30:SetRange(LOCATION_MZONE)
+	e30:SetTargetRange(LOCATION_EXTRA,0)
+	e30:SetTarget(c98941059.eftg2)
+	e30:SetLabelObject(e10)
+	c:RegisterEffect(e30)
 	--spsummon itself
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -84,13 +103,66 @@ function c98941059.op(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 	g2:DeleteGroup()
 end
 function c98941059.eftg1(e,c)
-	return c:IsSetCard(0x18a)
+	return c:IsSetCard(0x18a) and not c:IsCode(72309040)
+end
+function c98941059.synfilter1(c)
+	return c:IsRace(RACE_FISH) and ((c:IsFaceup() and c:IsLocation(LOCATION_MZONE)) or not c:IsLocation(LOCATION_MZONE)) and c:IsAbleToRemove()
+end
+function c98941059.con1(e,c,smat)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ft<=0 then return false end
+	local g=Duel.GetMatchingGroup(c98941059.synfilter1,c:GetControler(),LOCATION_DECK+LOCATION_MZONE,0,nil)
+	aux.GCheckAdditional=c98941059.hspgcheck
+	local res=g:CheckSubGroup(c98941059.hspcheck,2,#g)
+	aux.GCheckAdditional=nil
+	return res
+end
+function c98941059.hspgcheck(g)
+	--Duel.SetSelectedCard(g)
+	return g:GetSum(Card.GetLevel)<=10
+end
+function c98941059.hspcheck(g)
+	--Duel.SetSelectedCard(g)
+	return g:GetSum(Card.GetLevel)==10 and g:IsExists(Card.IsType,1,nil,TYPE_TUNER) and g:IsExists(c98941059.notunerfilter,1,nil) 
+end
+function c98941059.notunerfilter(c)
+	return not c:IsType(TYPE_TUNER)
+end
+function c98941059.tg1(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
+	local mg=Duel.GetMatchingGroup(c98941059.synfilter1,c:GetControler(),LOCATION_DECK+LOCATION_MZONE,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	aux.GCheckAdditional=c98941059.hspgcheck
+	local g=mg:SelectSubGroup(tp,c98941059.hspcheck,false,2,#mg)
+	aux.GCheckAdditional=nil
+	if g then
+		g:KeepAlive()
+		e:SetLabelObject(g)
+		return true
+	else return false end
+end
+function c98941059.op1(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+	local g=e:GetLabelObject()
+	c:SetMaterial(g)
+	local g2=g:Filter(Card.IsLocation,nil,LOCATION_DECK)
+	local g1=g:Clone()
+	g1:Sub(g2)
+	Duel.SendtoGrave(g1,REASON_MATERIAL+REASON_SYNCHRO)
+	Duel.Remove(g2,POS_FACEUP,REASON_MATERIAL+REASON_SYNCHRO)
+	Duel.RegisterFlagEffect(tp,98941059,RESET_PHASE+PHASE_END,0,1)
+	g:DeleteGroup()
+	g1:DeleteGroup()
+	g2:DeleteGroup()
+end
+function c98941059.eftg2(e,c)
+	return c:IsCode(72309040)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function s.costfilter(c)
-	return c:IsRace(RACE_FISH) and c:IsAbleToRemoveAsCost()
+	return c:IsRace(RACE_FISH) and c:IsAbleToRemoveAsCost() and not c:IsCode(98941059)
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
