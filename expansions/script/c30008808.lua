@@ -65,12 +65,12 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local l=e:GetLabel()==1
 	if chk==0 then
 		e:SetLabel(0)
-		return l and Duel.CheckReleaseGroupEx(tp,cm.cfilter,1,nil,tp)
+		return l and Duel.CheckReleaseGroupEx(tp,cm.cfilter,1,REASON_COST,true,nil,tp)
 	end
 	if l then
 		e:SetLabel(0)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local sg=Duel.SelectReleaseGroupEx(tp,cm.cfilter,1,1,nil,tp)
+		local sg=Duel.SelectReleaseGroupEx(tp,cm.cfilter,1,1,REASON_COST,true,nil,tp)
 		Duel.Release(sg,REASON_COST)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

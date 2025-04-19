@@ -100,7 +100,7 @@ function c28315746.lvop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 end
-function c28315746.atkfilter(c)
+function c28315746.atkfilter(c,seq)
 	return c:IsAttribute(ATTRIBUTE_FIRE) and c:IsFaceup() and c:GetSequence()==seq-1
 end
 function c28315746.atkcon(e)
