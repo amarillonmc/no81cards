@@ -59,8 +59,9 @@ function s.initial_effect(c)
 		local _SSet=Duel.SSet
 		function Duel.SSet(player,targets,tplayer,bool)
 			if not tplayer then tplayer=player end
+			if not bool then bool=true end
 			local lost=false
-			if bool and bool==true then
+			if bool==true then
 				if aux.GetValueType(targets)=="Card" then
 					local tc=targets
 					if tc:GetOriginalCode()==id and tc:GetOwner()==tplayer then

@@ -45,7 +45,8 @@ if not cm.lblsz then
 				single=1
 			end
 		end
-		if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK,0,1,nil,m) and single==1 and Duel.GetFlagEffect(tp,m)==0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_DECK,0,1,nil,m) and single==1 and Duel.GetFlagEffect(tp,m)==0 
+			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 			local tg=Duel.SelectMatchingCard(tp,Card.IsCode,tp,LOCATION_DECK,0,1,1,nil,m)
 			if Duel.SpecialSummon(tg,0,tp,tp,false,false,POS_FACEUP)~=0 then
