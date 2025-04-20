@@ -1,5 +1,5 @@
 function c71000174.initial_effect(c)
-
+	c:SetSPSummonOnce(71000174)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,c71000174.mfilter,1,1)
 	 --效果②
@@ -14,8 +14,10 @@ function c71000174.initial_effect(c)
 	e2:SetTarget(c71000174.drtg)
 	e2:SetOperation(c71000174.drop)
 	c:RegisterEffect(e2)
-	--get effect
+	
 end
+
+	--get effect
 
 --===== 效果①处理 =====--
 function c71000174.mfilter(c)

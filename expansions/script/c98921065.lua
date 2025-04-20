@@ -71,7 +71,7 @@ function c98921065.tdop(e,tp,eg,ep,ev,re,r,rp)
 			and Duel.GetMatchingGroup(c98921065.xfilter,tp,LOCATION_GRAVE,0,nil):GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(98921065,0)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local ssg=Duel.GetMatchingGroup(c98921065.xfilter,tp,LOCATION_GRAVE,0,nil)
+			local ssg=Duel.GetMatchingGroup(c98921065.xfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,nil)
 			local sg=Duel.SelectMatchingCard(tp,c98921065.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 			local tc=sg:GetFirst()

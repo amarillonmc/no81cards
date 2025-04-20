@@ -1,6 +1,7 @@
 --秘计螺旋 扩容
 local cm,m=GetID()
 function cm.initial_effect(c)
+	c:SetSPSummonOnce(11451971)
 	--spsummon condition
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -12,7 +13,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_SPSUMMON_PROC)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e3:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	--e3:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e3:SetRange(LOCATION_EXTRA)
 	e3:SetCondition(cm.spcon)
 	e3:SetTarget(cm.sptg)
@@ -118,10 +119,12 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
 end
 function cm.adop(e,tp,eg,ep,ev,re,r,rp)
-	if DEFECT_ORAL_COUNT==3 and Duel.IsPlayerAffectedByEffect(0,m) then
-		DEFECT_ORAL_COUNT=5
-	elseif DEFECT_ORAL_COUNT==5 and not Duel.IsPlayerAffectedByEffect(0,m) then
-		DEFECT_ORAL_COUNT=3
+	DEFECT_ORAL_COUNT=DEFECT_ORAL_COUNT or 3
+	local ct=3+2*#{Duel.IsPlayerAffectedByEffect(0,11451971)}-#{Duel.IsPlayerAffectedByEffect(0,11451973)}
+	if DEFECT_ORAL_COUNT<ct then
+		DEFECT_ORAL_COUNT=ct
+	elseif DEFECT_ORAL_COUNT>ct then
+		DEFECT_ORAL_COUNT=ct
 		for tp=0,1 do
 			local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451961)}
 			while #eset>DEFECT_ORAL_COUNT do

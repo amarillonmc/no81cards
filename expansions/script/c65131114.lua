@@ -60,11 +60,12 @@ function s.setfilter(c)
 	return c:IsSetCard(0x836) and c:IsSSetable()
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.setfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(s.setfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(s.setfilter,tp,LOCATION_GRAVE,0,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local ct=math.min((Duel.GetLocationCount(tp,LOCATION_SZONE)),2)
-	local g=Duel.SelectTarget(tp,s.setfilter,tp,LOCATION_GRAVE,0,1,ct,nil)
+	local g=Duel.SelectTarget(tp,s.setfilter,tp,LOCATION_GRAVE,0,1,ct,c)
 end
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -77,13 +78,13 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 		tg=tg:Select(tp,1,ft,nil)
 	end
 	Duel.SSet(tp,tg)
-	for tc in aux.Next(tg) do	  
+	for tc in aux.Next(tg) do	 
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)	  
+		tc:RegisterEffect(e1)	 
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)

@@ -26,7 +26,7 @@ function c71000173.initial_effect(c)
 	e4:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetTargetRange(1,0)
+	e4:SetAbsoluteRange(tp,1,0)
 	e4:SetTarget(c71000173.splimit)
 	c:RegisterEffect(e4)
 end

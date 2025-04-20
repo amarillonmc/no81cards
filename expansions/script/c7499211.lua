@@ -14,7 +14,7 @@ function s.initial_effect(c)
 	e1:SetHintTiming(TIMING_END_PHASE,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetDescription(aux.Stringid(id,0))
 	--e1:SetCategory(CATEGORY_DRAW+CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
-	e1:SetCategory(CATEGORY_DRAW+CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -40,20 +40,20 @@ end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.tgfilter(chkc) end
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToGrave() and Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	if chk==0 then return --and Duel.IsPlayerCanDraw(tp,1) and 
+		Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local tc=Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil):GetFirst()
 	--Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,Group.FromCards(tc,c),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,Group.FromCards(tc,c),1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	--Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function s.spfilter(c,e,tp)
 	return s.ArtlienWorm(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and (c:IsLocation(LOCATION_DECK) and Duel.GetMZoneCount(tp)>0 or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
 end
 function s.drop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Draw(tp,1,REASON_EFFECT)==0 then return end
+	--if Duel.Draw(tp,1,REASON_EFFECT)==0 then return end
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	local g=Group.FromCards(tc,c)

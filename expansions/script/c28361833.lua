@@ -18,13 +18,6 @@ function c28361833.initial_effect(c)
 	e0:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x286))
 	e0:SetLabelObject(ge0)
 	c:RegisterEffect(e0)
-	--cannot special summon
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetValue(aux.synlimit)
-	c:RegisterEffect(e1)
 	--hokura power
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -38,15 +31,6 @@ function c28361833.initial_effect(c)
 	e3:SetOperation(c28361833.regop)
 	e3:SetLabelObject(e2) 
 	c:RegisterEffect(e3)
-	--to hand
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
-	e4:SetType(EFFECT_TYPE_IGNITION)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1)
-	e4:SetTarget(c28361833.thtg)
-	e4:SetOperation(c28361833.thop)
-	c:RegisterEffect(e4)
 c28361833.shinycounter=true
 end
 function c28361833.cfilter(c)
@@ -69,6 +53,19 @@ end
 function c28361833.regop(e,tp,eg,ep,ev,re,r,rp)
 	local vt=e:GetLabelObject():GetLabel()
 	local c=e:GetHandler()
+	if vt>=2 then
+		--to hand
+		local e0=Effect.CreateEffect(c)
+		e0:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+		e0:SetType(EFFECT_TYPE_IGNITION)
+		e0:SetRange(LOCATION_MZONE)
+		e0:SetCountLimit(1)
+		e0:SetTarget(c28361833.thtg)
+		e0:SetOperation(c28361833.thop)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e0)
+		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28361833,5))
+	end
 	if vt>=3 then
 		--battle indes
 		local e1=Effect.CreateEffect(c)

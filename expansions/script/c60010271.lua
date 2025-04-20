@@ -67,7 +67,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetCategory(CATEGORY_NEGATE)
 				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 				e1:SetCode(EVENT_CHAINING)
-				e1:SetLabel(Duel.GetCurrentChain())
+				e1:SetLabel(Duel.GetCurrentChain()-1)
 				e1:SetOperation(cm.op)
 				Duel.RegisterEffect(e1,tp)
 			end

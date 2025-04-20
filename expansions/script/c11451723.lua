@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	--move
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_DISABLE)
+	e2:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
@@ -160,14 +160,6 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabelObject(tc)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
-		--type
-		local e2=Effect.CreateEffect(c)
-		e2:SetCode(EFFECT_CHANGE_TYPE)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e2:SetValue(TYPE_EQUIP+TYPE_TRAP)
-		c:RegisterEffect(e2)
 	end
 end
 function cm.eqlimit(e,c)
@@ -177,7 +169,7 @@ function cm.mcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()==1
 end
 function cm.nfilter(c,lc,tp,bool)
-	--if not c:IsFaceup() then return false,false end
+	if not c:IsFaceup() then return false,false end
 	if cm.islinkdirstate(c) then return true,true end
 	if not bool then return false,false end
 	local seq=lc:GetSequence()
@@ -197,8 +189,15 @@ function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b3=(seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))
 	local b4=(seq==1 and Duel.CheckLocation(tp,LOCATION_MZONE,5)) or (seq==3 and Duel.CheckLocation(tp,LOCATION_MZONE,6))
 	local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,c,tp,false)
-	local q1=#g>0
+	local typ=0
+	for fc in aux.Next(g) do
+		typ=typ|bit.band(fc:GetType(),0x7)
+	end
+	local ct=0
+	for i=0,2 do if typ&(1<<i)>0 then ct=ct+1 end end
+	local q1=#g>0 and Duel.IsPlayerCanDraw(tp,ct)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 or q1 end
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
 end
 function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -210,33 +209,19 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	local b4=(seq==1 and Duel.CheckLocation(tp,LOCATION_MZONE,5)) or (seq==3 and Duel.CheckLocation(tp,LOCATION_MZONE,6))
 	local q2=bool and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0
 	local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,c,tp,false)
-	local q1=#g>0
+	local typ=0
+	for fc in aux.Next(g) do
+		typ=typ|bit.band(fc:GetType(),0x7)
+	end
+	local ct=0
+	for i=0,2 do if typ&(1<<i)>0 then ct=ct+1 end end
+	local q1=#g>0 and Duel.IsPlayerCanDraw(tp,ct)
 	if not q1 and not q2 then return end
 	local opt=aux.SelectFromOptions(tp,{q1,aux.Stringid(m,1)},{q2,aux.Stringid(m,2)})
 	if opt==1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-		local tc=g:Select(tp,1,1,nil):GetFirst()
-		if tc then
-			local fid=tc:GetRealFieldID()
-			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(m,3))
-			--disable
-			local e4=Effect.CreateEffect(c)
-			e4:SetType(EFFECT_TYPE_FIELD)
-			e4:SetCode(EFFECT_ACTIVATE_COST)
-			e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e4:SetTargetRange(1,1)
-			e4:SetLabel(fid)
-			e4:SetTarget(cm.actarget)
-			e4:SetOperation(cm.costop)
-			Duel.RegisterEffect(e4,tp)
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e1:SetCode(EVENT_CHAIN_SOLVING)
-			e1:SetLabel(fid)
-			e1:SetCondition(cm.discon)
-			e1:SetOperation(cm.disop)
-			Duel.RegisterEffect(e1,tp)
-		end
+		local d=Duel.Draw(tp,ct,REASON_EFFECT)
+		Duel.ShuffleHand(tp)
+		Duel.DiscardHand(tp,nil,d-1,d-1,REASON_EFFECT+REASON_DISCARD)
 		local bool=c:IsRelateToEffect(e) and c:IsControler(tp) and c:IsFaceup()
 		local seq=c:GetSequence()
 		local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
@@ -267,47 +252,18 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 		local nseq=math.log(s&0xff,2)
 		Duel.MoveSequence(c,nseq)
 		local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,c,tp,false)
-		local q1=#g>0
+		local typ=0
+		for fc in aux.Next(g) do
+			typ=typ|bit.band(fc:GetType(),0x7)
+		end
+		local ct=0
+		for i=0,2 do if typ&(1<<i)>0 then ct=ct+1 end end
+		local q1=#g>0 and Duel.IsPlayerCanDraw(tp,ct)
 		if q1 then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-			local tc=g:Select(tp,1,1,nil):GetFirst()
-			if tc then
-				Duel.HintSelection(Group.FromCards(tc))
-				local fid=tc:GetRealFieldID()
-				tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(m,3))
-				--disable
-				local e4=Effect.CreateEffect(c)
-				e4:SetType(EFFECT_TYPE_FIELD)
-				e4:SetCode(EFFECT_ACTIVATE_COST)
-				e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-				e4:SetTargetRange(1,1)
-				e4:SetLabel(fid)
-				e4:SetTarget(cm.actarget)
-				e4:SetOperation(cm.costop)
-				Duel.RegisterEffect(e4,tp)
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-				e1:SetCode(EVENT_CHAIN_SOLVING)
-				e1:SetLabel(fid)
-				e1:SetCondition(cm.discon)
-				e1:SetOperation(cm.disop)
-				Duel.RegisterEffect(e1,tp)
-			end
+			local d=Duel.Draw(tp,ct,REASON_EFFECT)
+			Duel.ShuffleHand(tp)
+			Duel.DiscardHand(tp,nil,d-1,d-1,REASON_EFFECT+REASON_DISCARD)
 		end
 	end
-end
-function cm.actarget(e,te,tp)
-	e:SetLabelObject(te)
-	return te:GetHandler():GetFlagEffectLabel(m)==e:GetLabel()
-end
-function cm.costop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetLabelObject():GetHandler():RegisterFlagEffect(m,RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(m,3))
-end
-function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return re:GetHandler():GetFlagEffectLabel(m)==e:GetLabel() and loc&LOCATION_ONFIELD~=0
-end
-function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateEffect(ev)
 end

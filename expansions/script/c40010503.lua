@@ -59,7 +59,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(3000)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
-		if Duel.GetFlagEffect(tp,m)>1 then
+		if Duel.GetFlagEffect(tp,m)>1 or c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,40020005) then
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetCode(EFFECT_EXTRA_ATTACK)

@@ -65,7 +65,7 @@ function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,cm.mtfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,LOCATION_GRAVE+LOCATION_MZONE,1,1,e:GetHandler(),e)
 	if g:GetCount()>0 then
 		Duel.Overlay(c,g)
-		if Duel.GetFlagEffect(tp,m)>1 and e:GetHandler():IsAttackable() then
+		if (Duel.GetFlagEffect(tp,m)>1 or c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,40020005))  and e:GetHandler():IsAttackable() then
 			if not c:IsAttackable() or not c:IsRelateToEffect(e) then return end 
 			value=c:GetAttack()
 			ef=c:IsHasEffect(EFFECT_DEFENSE_ATTACK)

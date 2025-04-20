@@ -20,7 +20,7 @@ function c67201135.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_DRAW)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_CUSTOM+67201135)
+	e3:SetCode(EVENT_DRAW)
 	e3:SetRange(LOCATION_HAND)
 	e3:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e3:SetCondition(c67201135.opcon)
@@ -94,7 +94,7 @@ end
 
 --
 function c67201135.opcon(e,tp,eg,ep,ev,re,r,rp)
-	return (ev==PLAYER_ALL or ev==tp or ev==1-tp) and not eg:IsContains(e:GetHandler())
+	return not eg:IsContains(e:GetHandler())
 end
 function c67201135.filter2(c)
 	return c:IsAbleToDeck()

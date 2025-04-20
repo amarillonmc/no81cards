@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetHintTiming(TIMING_ATTACK,0x11e0)
 	e3:SetCountLimit(1,m-40)
-	e3:SetCondition(function(e,tp) return Duel.GetTurnPlayer()==tp end)
+	--e3:SetCondition(function(e,tp) return Duel.GetTurnPlayer()==tp end)
 	e3:SetCost(cm.spcost)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.spop)
@@ -49,7 +49,7 @@ function cm.filter3(c,e,tp)
 	return c:IsSetCard(0x97a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.filter4(c)
-	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsType(TYPE_TUNER)
+	return c:IsAttribute(ATTRIBUTE_DARK) --and c:IsType(TYPE_TUNER)
 end
 function cm.filter5(c)
 	return Duel.IsPlayerAffectedByEffect(c:GetControler(),11451461) and ((c:IsOnField() and c:IsStatus(STATUS_EFFECT_ENABLED)) or c:IsLocation(LOCATION_HAND))
@@ -191,7 +191,7 @@ function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 					end
 				end
 			end
-            if check then return false end
+			if check then return false end
 		--classification is essential for efficiency, and this part is only for backup
 		else
 			iter={1}
@@ -392,7 +392,7 @@ function cm.returntofield(tc)
 			Duel.BreakEffect()
 		end
 		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-        return
+		return
 	end
 	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then
 		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)

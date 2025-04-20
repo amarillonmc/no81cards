@@ -14,7 +14,7 @@ function c28314946.initial_effect(c)
 	--recover
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28314946,1))
-	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_GRAVE_ACTION)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -54,14 +54,14 @@ function c28314946.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
 function c28314946.thfilter(c)
-	return c:IsSetCard(0x283) and c:IsLevel(4) and c:IsAbleToHand()
+	return c:IsSetCard(0x283) and c:IsLevel(4) and c:IsAbleToHand() and aux.NecroValleyFilter()(c)
 end
 function c28314946.recop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(tp,1000,REASON_EFFECT)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(c28314946.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28314946,2)) then
+	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(c28314946.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28314946,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tg=Duel.SelectMatchingCard(tp,c28314946.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+		local tg=Duel.SelectMatchingCard(tp,c28314946.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tg)
 	end

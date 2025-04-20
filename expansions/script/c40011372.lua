@@ -78,7 +78,7 @@ function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		rct=rct+1
 		loc=loc+LOCATION_HAND
 	end
-	if Duel.GetFlagEffect(tp,m)>1 then
+	if Duel.GetFlagEffect(tp,m)>1 or c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,40020005)  then
 		Duel.SetChainLimit(cm.chlimit)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_EXTRA)

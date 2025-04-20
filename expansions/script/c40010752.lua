@@ -69,7 +69,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local gh=Duel.GetDecktopGroup(tp,1)
 	local gc=gh:GetFirst()
 	local type=bit.band(gc:GetType(),0x7)
-	if Duel.GetFlagEffect(tp,m)>1 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 and gc:IsAbleToHand() then
+	if (Duel.GetFlagEffect(tp,m)>1 or c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,40020005) ) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 and gc:IsAbleToHand() then
 		Duel.BreakEffect()
 		--Duel.ConfirmDecktop(p,2)
 		if Duel.SendtoHand(gc,nil,REASON_EFFECT)~=0 then

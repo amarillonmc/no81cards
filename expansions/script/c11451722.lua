@@ -16,7 +16,6 @@ function cm.initial_effect(c)
 	--move
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
@@ -154,6 +153,14 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabelObject(tc)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e1)
+		--type
+		local e2=Effect.CreateEffect(c)
+		e2:SetCode(EFFECT_CHANGE_TYPE)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+		e2:SetValue(TYPE_EQUIP+TYPE_TRAP)
+		c:RegisterEffect(e2)
 		--aclimit
 		local ge0=Effect.CreateEffect(tc)
 		ge0:SetType(EFFECT_TYPE_FIELD)
@@ -208,18 +215,11 @@ end
 function cm.mcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()==1
 end
-function cm.nfilter(c,lc,tp,bool)
-	if not c:IsFaceup() then return false,false end
-	if cm.islinkdirstate(c) then return true,true end
-	if not bool then return false,false end
-	local seq=lc:GetSequence()
-	local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
-	local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
-	local b3=(seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))
-	local b4=(seq==1 and Duel.CheckLocation(tp,LOCATION_MZONE,5)) or (seq==3 and Duel.CheckLocation(tp,LOCATION_MZONE,6))
-	local x0,y0=cm.xylabel(lc,0)
-	if (b1 and cm.willbelinkdir(c,x0-1,y0,tp)) or (b2 and cm.willbelinkdir(c,x0+1,y0,tp)) or (b3 and cm.willbelinkdir(c,x0,y0-1,tp)) or (b4 and cm.willbelinkdir(c,x0,y0+1,tp)) then return true,false end
-	return false,false
+function cm.nfilter(c)
+	return c:IsType(TYPE_EQUIP) and c:IsOriginalEffectProperty(cm.sp_filter) and c:CheckActivateEffect(false,false,false)~=nil
+end
+function cm.sp_filter(e)
+	return e:IsActivated() and e:IsHasCategory(CATEGORY_SPECIAL_SUMMON)
 end
 function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -228,16 +228,8 @@ function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
 	local b3=(seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))
 	local b4=(seq==1 and Duel.CheckLocation(tp,LOCATION_MZONE,5)) or (seq==3 and Duel.CheckLocation(tp,LOCATION_MZONE,6))
-	local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,c,tp,false)
-	local typ=0
-	for fc in aux.Next(g) do
-		typ=typ|bit.band(fc:GetType(),0x7)
-	end
-	local ct=0
-	for i=0,2 do if typ&(1<<i)>0 then ct=ct+1 end end
-	local q1=#g>0 and Duel.IsPlayerCanDraw(tp,ct)
+	local q1=Duel.IsExistingMatchingCard(cm.nfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 or q1 end
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
 end
 function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -248,20 +240,50 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	local b3=(seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))
 	local b4=(seq==1 and Duel.CheckLocation(tp,LOCATION_MZONE,5)) or (seq==3 and Duel.CheckLocation(tp,LOCATION_MZONE,6))
 	local q2=bool and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0
-	local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,c,tp,false)
-	local typ=0
-	for fc in aux.Next(g) do
-		typ=typ|bit.band(fc:GetType(),0x7)
-	end
-	local ct=0
-	for i=0,2 do if typ&(1<<i)>0 then ct=ct+1 end end
-	local q1=#g>0 and Duel.IsPlayerCanDraw(tp,ct)
+	local q1=Duel.IsExistingMatchingCard(cm.nfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 	if not q1 and not q2 then return end
 	local opt=aux.SelectFromOptions(tp,{q1,aux.Stringid(m,1)},{q2,aux.Stringid(m,2)})
 	if opt==1 then
-		local d=Duel.Draw(tp,ct,REASON_EFFECT)
-		Duel.ShuffleHand(tp)
-		Duel.DiscardHand(tp,nil,d-1,d-1,REASON_EFFECT+REASON_DISCARD)
+		local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+		local sg=g:Select(tp,1,1,nil)
+		if #sg>0 then
+			local tc=sg:GetFirst()
+			local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(false,false,true)
+			local zones=0xff
+			if te:IsHasProperty(EFFECT_FLAG_LIMIT_ZONE) then
+				local val=te:GetValue()
+				zones=val(te,tp,ceg,cep,cev,cre,cr,crp)
+			end
+			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true,zones)
+			Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
+			te:UseCountLimit(tp,1,true)
+			local cost=te:GetCost()
+			local target=te:GetTarget()
+			local operation=te:GetOperation()
+			e:SetCategory(te:GetCategory())
+			e:SetProperty(te:GetProperty())
+			Duel.ClearTargetCard()
+			if not tc:IsType(TYPE_EQUIP) then tc:CancelToGrave(false) end
+			tc:CreateEffectRelation(te)
+			if cost then cost(te,tp,ceg,cep,cev,cre,cr,crp,1) end
+			if target then target(te,tp,ceg,cep,cev,cre,cr,crp,1) end
+			local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+			if g then
+				for fc in aux.Next(g) do
+					fc:CreateEffectRelation(te)
+				end
+			end
+			if operation then
+				operation(te,tp,ceg,cep,cev,cre,cr,crp)
+			end
+			tc:ReleaseEffectRelation(te)
+			if g then
+				for fc in aux.Next(g) do
+					fc:ReleaseEffectRelation(te)
+				end
+			end
+		end
 		local bool=c:IsRelateToEffect(e) and c:IsControler(tp) and c:IsFaceup()
 		local seq=c:GetSequence()
 		local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
@@ -291,19 +313,48 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
 		local nseq=math.log(s&0xff,2)
 		Duel.MoveSequence(c,nseq)
-		local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,c,tp,false)
-		local typ=0
-		for fc in aux.Next(g) do
-			typ=typ|bit.band(fc:GetType(),0x7)
-		end
-		local ct=0
-		for i=0,2 do if typ&(1<<i)>0 then ct=ct+1 end end
-		local q1=#g>0 and Duel.IsPlayerCanDraw(tp,ct)
+		local q1=Duel.IsExistingMatchingCard(cm.nfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		if q1 then
-			Duel.BreakEffect()
-			local d=Duel.Draw(tp,ct,REASON_EFFECT)
-			Duel.ShuffleHand(tp)
-			Duel.DiscardHand(tp,nil,d-1,d-1,REASON_EFFECT+REASON_DISCARD)
+			local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			local sg=g:Select(tp,1,1,nil)
+			if #sg>0 then
+				local tc=sg:GetFirst()
+				local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(false,false,true)
+				local zones=0xff
+				if te:IsHasProperty(EFFECT_FLAG_LIMIT_ZONE) then
+					local val=te:GetValue()
+					zones=val(te,tp,ceg,cep,cev,cre,cr,crp)
+				end
+				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true,zones)
+				Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
+				te:UseCountLimit(tp,1,true)
+				local cost=te:GetCost()
+				local target=te:GetTarget()
+				local operation=te:GetOperation()
+				e:SetCategory(te:GetCategory())
+				e:SetProperty(te:GetProperty())
+				Duel.ClearTargetCard()
+				if not tc:IsType(TYPE_EQUIP) then tc:CancelToGrave(false) end
+				tc:CreateEffectRelation(te)
+				if cost then cost(te,tp,ceg,cep,cev,cre,cr,crp,1) end
+				if target then target(te,tp,ceg,cep,cev,cre,cr,crp,1) end
+				local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+				if g then
+					for fc in aux.Next(g) do
+						fc:CreateEffectRelation(te)
+					end
+				end
+				if operation then
+					operation(te,tp,ceg,cep,cev,cre,cr,crp)
+				end
+				tc:ReleaseEffectRelation(te)
+				if g then
+					for fc in aux.Next(g) do
+						fc:ReleaseEffectRelation(te)
+					end
+				end
+			end
 		end
 	end
 end

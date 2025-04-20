@@ -66,7 +66,7 @@ function cm.filter3(c,e,tp)
 	return c:IsSetCard(0x97a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.filter4(c)
-	return c:IsAttribute(ATTRIBUTE_EARTH) and c:IsType(TYPE_TUNER)
+	return c:IsAttribute(ATTRIBUTE_EARTH) --and c:IsType(TYPE_TUNER)
 end
 function cm.filter5(c)
 	return Duel.IsPlayerAffectedByEffect(c:GetControler(),11451461) and ((c:IsOnField() and c:IsStatus(STATUS_EFFECT_ENABLED)) or c:IsLocation(LOCATION_HAND))
@@ -206,7 +206,7 @@ function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 					end
 				end
 			end
-            if check then return false end
+			if check then return false end
 		--classification is essential for efficiency, and this part is only for backup
 		else
 			iter={1}

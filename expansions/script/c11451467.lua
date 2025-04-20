@@ -72,7 +72,7 @@ function cm.filter3(c,e,tp)
 	return c:IsSetCard(0x97a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.filter4(c)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_TUNER)
+	return c:IsAttribute(ATTRIBUTE_LIGHT) --and c:IsType(TYPE_TUNER)
 end
 function cm.filter5(c)
 	return Duel.IsPlayerAffectedByEffect(c:GetControler(),11451461) and ((c:IsOnField() and c:IsStatus(STATUS_EFFECT_ENABLED)) or c:IsLocation(LOCATION_HAND))
@@ -81,9 +81,9 @@ function cm.filter6(c,e)
 	return c:GetFlagEffectLabel(m)==e:GetLabel()
 end
 function cm.fselect(g,ng,goal,tp)
-	if not (g:IsExists(cm.filter4,1,nil) and g:GetSum(cm.lvplus)>=goal) then
+	if g:GetSum(cm.lvplus)<goal then
 		return false
-	elseif g:GetSum(cm.lvplus)==goal and Duel.GetMZoneCount(tp,g)>0 then
+	elseif g:IsExists(cm.filter4,1,nil) and g:GetSum(cm.lvplus)==goal and Duel.GetMZoneCount(tp,g)>0 then
 		return true
 	end
 	local _SubGroupParams=cm.SubGroupParams
@@ -96,7 +96,7 @@ function cm.fselect(g,ng,goal,tp)
 	return tc
 end
 function cm.fselect3(g,g1,lv,tp)
-	return g:GetSum(cm.lvplus)==lv and Duel.GetMZoneCount(tp,g+g1)>0
+	return g:GetSum(cm.lvplus)==lv and Duel.GetMZoneCount(tp,g+g1)>0 and (g+g1):IsExists(cm.filter4,1,nil)
 end
 function cm.hspgcheck(ng,goal,tp)
 	return function(g,c,mg)
@@ -229,7 +229,7 @@ function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 					end
 				end
 			end
-            if check then return false end
+			if check then return false end
 		--classification is essential for efficiency, and this part is only for backup
 		else
 			iter={1}
@@ -466,7 +466,7 @@ function cm.returntofield(tc)
 			Duel.BreakEffect()
 		end
 		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-        return
+		return
 	end
 	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then
 		Duel.SendtoGrave(tc,REASON_RULE+REASON_RETURN)

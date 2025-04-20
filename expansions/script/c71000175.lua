@@ -25,6 +25,17 @@ function c71000175.initial_effect(c)
 	e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetAbsoluteRange(tp,1,0)
+	e4:SetTarget(c71000175.splimit)
+	c:RegisterEffect(e4)
+end
+function c71000175.splimit(e,c)
+	return not c:IsRace(RACE_SPELLCASTER)
 end
 
 --===== 效果①处理 =====--

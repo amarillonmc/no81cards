@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	--sp
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
-	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_DRAW+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_LEAVE_FIELD)
 	e1:SetRange(LOCATION_HAND)
@@ -65,7 +65,7 @@ function cm.check0(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.tbfilter(c)
-	return c:IsType(TYPE_RITUAL) and c:IsFaceup()
+	return c:IsFaceup() and c:IsType(TYPE_RITUAL) 
 end
 function cm.ttcon(e,c,minc)
 	if c==nil then return true end
@@ -95,6 +95,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return ct>0 and Duel.IsPlayerCanDraw(tp,ct) end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,ct,tp,LOCATION_HAND)
 end
 function cm.acfilter(c,tp,eg,ep,ev,re,r,rp)
 	if not c:IsSetCard(0x6978) then return end
@@ -125,120 +126,123 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Draw(tp,ct,REASON_EFFECT)>0 then
 		local g=Duel.GetOperatedGroup()
 		Duel.ConfirmCards(tp,g)
-		local sg=g:Filter(cm.acfilter,nil,tp,eg,ep,ev,re,r,rp)
-		if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
+		local sg=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Filter(cm.acfilter,nil,tp,eg,ep,ev,re,r,rp)
+		if #sg>0 then --and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-			local c=sg:Select(tp,1,1,nil):GetFirst()
-			g:RemoveCard(c)
-			local b1,b2=false,false
-			if c:IsType(TYPE_SPELL+TYPE_TRAP) and ((c:CheckActivateEffect(false,false,false)~=nil and c:GetActivateEffect():GetCode()~=EVENT_CHAINING and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (c:IsType(TYPE_CONTINUOUS) and c:GetActivateEffect():IsActivatable(tp)) or (c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true))) then b1=true end
-			local te=c.hand_effect
-			if te and not (te[c]:GetCode()==EVENT_CHAINING and te[c]:IsHasType(EFFECT_TYPE_QUICK_O)) and not (c:IsType(TYPE_MONSTER) and cm[te] and cm[te][tp] and cm[te][tp]==Duel.GetTurnCount()) then
-				te=te[c]
-				local con=te:GetCondition() or aux.TRUE
-				if te:IsHasType(EFFECT_TYPE_TRIGGER_O) then con=aux.TRUE end
-				local cons=false
-				local _GetTurnPlayer=Duel.GetTurnPlayer
-				local _GetCurrentPhase=Duel.GetCurrentPhase
-				for i=0,1 do
-					for j=PHASE_MAIN1,PHASE_BATTLE do
-						Duel.GetTurnPlayer=function() return i end
-						Duel.GetCurrentPhase=function() return j end
-						if con(te,tp,eg,ep,ev,re,r,rp) then cons=true break end
+			local cg=sg:CancelableSelect(tp,1,1,nil)
+			if cg and #cg>0 then
+				local c=cg:GetFirst()
+				g:RemoveCard(c)
+				local b1,b2=false,false
+				if c:IsType(TYPE_SPELL+TYPE_TRAP) and ((c:CheckActivateEffect(false,false,false)~=nil and c:GetActivateEffect():GetCode()~=EVENT_CHAINING and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (c:IsType(TYPE_CONTINUOUS) and c:GetActivateEffect():IsActivatable(tp)) or (c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true))) then b1=true end
+				local te=c.hand_effect
+				if te and not (te[c]:GetCode()==EVENT_CHAINING and te[c]:IsHasType(EFFECT_TYPE_QUICK_O)) and not (c:IsType(TYPE_MONSTER) and cm[te] and cm[te][tp] and cm[te][tp]==Duel.GetTurnCount()) then
+					te=te[c]
+					local con=te:GetCondition() or aux.TRUE
+					if te:IsHasType(EFFECT_TYPE_TRIGGER_O) then con=aux.TRUE end
+					local cons=false
+					local _GetTurnPlayer=Duel.GetTurnPlayer
+					local _GetCurrentPhase=Duel.GetCurrentPhase
+					for i=0,1 do
+						for j=PHASE_MAIN1,PHASE_BATTLE do
+							Duel.GetTurnPlayer=function() return i end
+							Duel.GetCurrentPhase=function() return j end
+							if con(te,tp,eg,ep,ev,re,r,rp) then cons=true break end
+						end
+					end
+					Duel.GetTurnPlayer=_GetTurnPlayer
+					Duel.GetCurrentPhase=_GetCurrentPhase
+					local cost=te:GetCost() or aux.TRUE
+					local tg=te:GetTarget() or aux.TRUE
+					b2=cons and cost(te,tp,eg,ep,ev,re,r,rp,0) and tg(te,tp,eg,ep,ev,re,r,rp,0)
+				end
+				if b1 and b2 then
+					local op=Duel.SelectOption(tp,aux.Stringid(m,2),aux.Stringid(m,3))
+					if op==0 then b2=false else b1=false end
+				end
+				local tc=c
+				if b1 then
+					if tc:CheckActivateEffect(false,false,false)~=nil and c:GetActivateEffect():GetCode()~=EVENT_CHAINING and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+						Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+						Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
+						local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(false,false,true)
+						te:UseCountLimit(tp,1,true)
+						local cost=te:GetCost()
+						local target=te:GetTarget()
+						local operation=te:GetOperation()
+						e:SetCategory(te:GetCategory())
+						e:SetProperty(te:GetProperty())
+						Duel.ClearTargetCard()
+						if not tc:IsType(TYPE_EQUIP+TYPE_CONTINUOUS+TYPE_FIELD) and not tc:IsHasEffect(EFFECT_REMAIN_FIELD) then tc:CancelToGrave(false) end
+						tc:CreateEffectRelation(te)
+						if cost then cost(te,tp,ceg,cep,cev,cre,cr,crp,1) end
+						if target then target(te,tp,ceg,cep,cev,cre,cr,crp,1) end
+						local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+						if g then
+							for fc in aux.Next(g) do
+								fc:CreateEffectRelation(te)
+							end
+						end
+						if operation then operation(te,tp,ceg,cep,cev,cre,cr,crp) end
+						tc:ReleaseEffectRelation(te)
+						if g then
+							for fc in aux.Next(g) do
+								fc:ReleaseEffectRelation(te)
+							end
+						end
+					elseif tc:IsType(TYPE_FIELD) then
+						local te=tc:GetActivateEffect()
+						local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+						if fc then
+							Duel.SendtoGrave(fc,REASON_RULE)
+							Duel.BreakEffect()
+						end
+						Duel.DisableShuffleCheck()
+						Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+						te:UseCountLimit(tp,1,true)
+						local tep=tc:GetControler()
+						local cost=te:GetCost()
+						if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+						Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+					elseif tc:IsType(TYPE_CONTINUOUS) then
+						local te=tc:GetActivateEffect()
+						Duel.DisableShuffleCheck()
+						Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+						te:UseCountLimit(tp,1,true)
+						local tep=tc:GetControler()
+						local cost=te:GetCost()
+						if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 					end
 				end
-				Duel.GetTurnPlayer=_GetTurnPlayer
-				Duel.GetCurrentPhase=_GetCurrentPhase
-				local cost=te:GetCost() or aux.TRUE
-				local tg=te:GetTarget() or aux.TRUE
-				b2=cons and cost(te,tp,eg,ep,ev,re,r,rp,0) and tg(te,tp,eg,ep,ev,re,r,rp,0)
-			end
-			if b1 and b2 then
-				local op=Duel.SelectOption(tp,aux.Stringid(m,2),aux.Stringid(m,3))
-				if op==0 then b2=false else b1=false end
-			end
-			local tc=c
-			if b1 then
-				if tc:CheckActivateEffect(false,false,false)~=nil and c:GetActivateEffect():GetCode()~=EVENT_CHAINING and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
-					Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+				if b2 then
+					Duel.ConfirmCards(1-tp,tc)
 					Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
-					local te,ceg,cep,cev,cre,cr,crp=tc:CheckActivateEffect(false,false,true)
-					te:UseCountLimit(tp,1,true)
+					local te=tc.hand_effect[tc]
+					te:UseCountLimit(tp,1)
 					local cost=te:GetCost()
 					local target=te:GetTarget()
 					local operation=te:GetOperation()
 					e:SetCategory(te:GetCategory())
 					e:SetProperty(te:GetProperty())
 					Duel.ClearTargetCard()
-					if not tc:IsType(TYPE_EQUIP+TYPE_CONTINUOUS+TYPE_FIELD) and not tc:IsHasEffect(EFFECT_REMAIN_FIELD) then tc:CancelToGrave(false) end
 					tc:CreateEffectRelation(te)
-					if cost then cost(te,tp,ceg,cep,cev,cre,cr,crp,1) end
-					if target then target(te,tp,ceg,cep,cev,cre,cr,crp,1) end
+					if cost then cost(te,tp,eg,ep,ev,re,r,rp,1) end
+					local _GetTurnPlayer=Duel.GetTurnPlayer
+					Duel.GetTurnPlayer=function() return 1-tp end
+					if target then target(te,tp,eg,ep,ev,re,r,rp,1) end
+					Duel.GetTurnPlayer=_GetTurnPlayer
 					local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 					if g then
 						for fc in aux.Next(g) do
 							fc:CreateEffectRelation(te)
 						end
 					end
-					if operation then operation(te,tp,ceg,cep,cev,cre,cr,crp) end
+					if operation then operation(te,tp,eg,ep,ev,re,r,rp) end
 					tc:ReleaseEffectRelation(te)
 					if g then
 						for fc in aux.Next(g) do
 							fc:ReleaseEffectRelation(te)
 						end
-					end
-				elseif tc:IsType(TYPE_FIELD) then
-					local te=tc:GetActivateEffect()
-					local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
-					if fc then
-						Duel.SendtoGrave(fc,REASON_RULE)
-						Duel.BreakEffect()
-					end
-					Duel.DisableShuffleCheck()
-					Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
-					te:UseCountLimit(tp,1,true)
-					local tep=tc:GetControler()
-					local cost=te:GetCost()
-					if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-					Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
-				elseif tc:IsType(TYPE_CONTINUOUS) then
-					local te=tc:GetActivateEffect()
-					Duel.DisableShuffleCheck()
-					Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-					te:UseCountLimit(tp,1,true)
-					local tep=tc:GetControler()
-					local cost=te:GetCost()
-					if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-				end
-			end
-			if b2 then
-				Duel.ConfirmCards(1-tp,tc)
-				Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
-				local te=tc.hand_effect[tc]
-				te:UseCountLimit(tp,1)
-				local cost=te:GetCost()
-				local target=te:GetTarget()
-				local operation=te:GetOperation()
-				e:SetCategory(te:GetCategory())
-				e:SetProperty(te:GetProperty())
-				Duel.ClearTargetCard()
-				tc:CreateEffectRelation(te)
-				if cost then cost(te,tp,eg,ep,ev,re,r,rp,1) end
-				local _GetTurnPlayer=Duel.GetTurnPlayer
-				Duel.GetTurnPlayer=function() return 1-tp end
-				if target then target(te,tp,eg,ep,ev,re,r,rp,1) end
-				Duel.GetTurnPlayer=_GetTurnPlayer
-				local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-				if g then
-					for fc in aux.Next(g) do
-						fc:CreateEffectRelation(te)
-					end
-				end
-				if operation then operation(te,tp,eg,ep,ev,re,r,rp) end
-				tc:ReleaseEffectRelation(te)
-				if g then
-					for fc in aux.Next(g) do
-						fc:ReleaseEffectRelation(te)
 					end
 				end
 			end

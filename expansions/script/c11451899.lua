@@ -56,13 +56,13 @@ function cm.initial_effect(c)
 	end
 end
 function cm.etg(e,c)
-	return c:GetFlagEffect(m+0xffffff+e:GetFieldID())==0
+	return c:GetFlagEffect(m)==0
 end
 function cm.eval(e,te,c)
-	local res=c:GetFlagEffect(m+0xffffff+e:GetFieldID())==0 and te:IsActivated() --and te:GetOwner()~=e:GetOwnerPlayer()
+	local res=c:GetFlagEffect(m)==0 and te:IsActivated() --and te:GetOwner()~=e:GetOwnerPlayer()
 	if res then
 		Duel.Hint(HINT_CARD,0,m)
-		c:RegisterFlagEffect(m+0xffffff+e:GetFieldID(),RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))
 	end
 	return res
 end

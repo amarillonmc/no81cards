@@ -54,7 +54,7 @@ end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and aux.NegateAnyFilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	if Duel.GetFlagEffect(tp,m)>1 then
+	if Duel.GetFlagEffect(tp,m)>1  or c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,40020005) then
 		ct=3
 	else
 		ct=1

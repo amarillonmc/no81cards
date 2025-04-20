@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	--move
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
@@ -177,7 +177,7 @@ function cm.mcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()==1
 end
 function cm.nfilter(c,lc,tp,bool)
-	if not c:IsAbleToHand() then return false,false end
+	--if not c:IsAbleToHand() then return false,false end
 	if cm.islinkdirstate(c) then return true,true end
 	if not bool then return false,false end
 	local seq=lc:GetSequence()
@@ -214,9 +214,9 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	if not q1 and not q2 then return end
 	local opt=aux.SelectFromOptions(tp,{q1,aux.Stringid(m,1)},{q2,aux.Stringid(m,2)})
 	if opt==1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
-		if tc then Duel.SendtoHand(tc,nil,REASON_EFFECT) end
+		if tc and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then Duel.SendtoHand(tc,nil,REASON_EFFECT) elseif tc then Duel.Destroy(tc,REASON_EFFECT) end
 		local bool=c:IsRelateToEffect(e) and c:IsControler(tp) and c:IsFaceup()
 		local seq=c:GetSequence()
 		local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
@@ -250,9 +250,9 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 		local q1=#g>0
 		if q1 then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 			local tc=g:Select(tp,1,1,nil):GetFirst()
-			if tc then Duel.SendtoHand(tc,nil,REASON_EFFECT) end
+			if tc and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then Duel.SendtoHand(tc,nil,REASON_EFFECT) elseif tc then Duel.Destroy(tc,REASON_EFFECT) end
 		end
 	end
 end

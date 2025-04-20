@@ -25,7 +25,7 @@ function s.initial_effect(c)
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetType(EFFECT_TYPE_QUICK_F)
 	e2:SetCode(EVENT_BECOME_TARGET)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
@@ -62,14 +62,16 @@ function s.thfilter(c)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and s.thfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(s.thfilter,tp,LOCATION_REMOVED,0,1,nil) end
+	if chk==0 then return true 
+		--Duel.IsExistingTarget(s.thfilter,tp,LOCATION_REMOVED,0,1,nil) 
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectTarget(tp,s.thfilter,tp,LOCATION_REMOVED,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,#g,0,0)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) then
+	if tc and tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(id,7))
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -171,7 +173,7 @@ function s.LExtraMaterialCount(mg,lc,tp)
 		local le={tc:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
 		local Not_LExtra=true
 		for _,te in pairs(le) do
-			local sg=mg:Filter(aux.TRUE,tc)
+			local sg=mg:Filter(s.TRUE,tc)
 			local f=te:GetValue()
 			local related,valid=f(te,lc,sg,tc,tp)
 			if related and valid then

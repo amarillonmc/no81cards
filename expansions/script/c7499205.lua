@@ -37,7 +37,9 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsReason(REASON_DRAW)
+	local loc=e:GetHandler():GetPreviousLocation()
+	return loc&(LOCATION_DECK)==0
+	--return not e:GetHandler():IsReason(REASON_DRAW)
 end
 function s.tgfilter(c)
 	return s.ArtlienWorm(c) and c:IsAbleToGrave()
