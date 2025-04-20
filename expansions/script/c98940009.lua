@@ -150,14 +150,30 @@ function c98940009.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c98940009.filter,tp,LOCATION_EXTRA,0,1,nil,mg) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
+function c98940009.xksfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsCanOverlay()
+end
 function c98940009.lksfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_DARK)
+	return c:IsType(TYPE_MONSTER) and c:IsCanBeLinkMaterial(nil)
+end
+function c98940009.gselect1(sg,c)
+	return sg:IsExists(Card.IsSetCard,1,nil,0x11b) and c:IsXyzSummonable(sg,#sg,#sg)
+end
+function c98940009.xyzfilter(c,mg)
+	return c:IsType(TYPE_XYZ) and mg:CheckSubGroup(c98940009.gselect1,1,#mg,c)
+end
+function c98940009.linkfilter(c,mg)
+	return c:IsType(TYPE_LINK) and mg:CheckSubGroup(c98940009.gselect2,1,#mg,c)
+end
+function c98940009.gselect2(sg,c)
+	return sg:IsExists(Card.IsSetCard,1,nil,0x11b) and c:IsLinkSummonable(sg,nil,#sg,#sg)
 end
 function c98940009.reop(e,tp,eg,ep,ev,re,r,rp)
-	local mg=Duel.GetMatchingGroup(c98940009.lksfilter,tp,LOCATION_MZONE,0,nil)
-	local g1=Duel.GetMatchingGroup(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,nil,nil,mg)
-	local g2=Duel.GetMatchingGroup(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,nil,mg)
-	if mg:GetCount()>0 and (g1:GetCount()>0 or g2:GetCount()>0) then
+	local mg1=Duel.GetMatchingGroup(c98940009.xksfilter,tp,LOCATION_MZONE,0,nil)
+	local mg2=Duel.GetMatchingGroup(c98940009.lksfilter,tp,LOCATION_MZONE,0,nil)
+	local g1=Duel.GetMatchingGroup(c98940009.xyzfilter,tp,LOCATION_EXTRA,0,nil,mg1)
+	local g2=Duel.GetMatchingGroup(c98940009.linkfilter,tp,LOCATION_EXTRA,0,nil,mg2)
+	if (mg1:GetCount()>0 and g1:GetCount()>0) or (mg2:GetCount()>0 and g2:GetCount()>0) then
 	  if Duel.SelectYesNo(tp,aux.Stringid(98940009,0)) then  
 		if g1:GetCount()>0 and (g2:GetCount()==0 or Duel.SelectOption(tp,1165,1166)==0) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -166,7 +182,7 @@ function c98940009.reop(e,tp,eg,ep,ev,re,r,rp)
 		elseif g2:GetCount()>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local sg2=g2:Select(tp,1,1,nil)
-			Duel.LinkSummon(tp,sg2:GetFirst(),mg)
+			Duel.LinkSummon(tp,sg2:GetFirst(),nil)
 		 end
 	   end
 	end

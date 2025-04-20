@@ -29,7 +29,7 @@ function c98941055.initial_effect(c)
 end
 function c98941055.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	return (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
+	return (ph==PHASE_MAIN1 or ph==PHASE_MAIN2) or Duel.IsEnvironment(98940011)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

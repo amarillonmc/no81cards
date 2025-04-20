@@ -148,18 +148,6 @@ function c98941044.pspop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		end
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c98941044.spelimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-end
-function c98941044.spelimit(e,c)
-	return c:IsLocation(LOCATION_EXTRA)
-		and not c:IsSetCard(0x10c)
 end
 function c98941044.lfilter(c)
 	return c:IsLinkSummonable(nil) and c:IsSetCard(0x10c)
@@ -177,14 +165,6 @@ function c98941044.lactivate(e,tp,eg,ep,ev,re,r,rp)
 	if tc then
 		Duel.LinkSummon(tp,tc,nil)
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c98941044.spelimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 end
 function c98941044.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
