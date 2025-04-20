@@ -435,7 +435,7 @@ function cm.resop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function cm.disop5(e,tp,eg,ep,ev,re,r,rp)
-	local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_LOCATION)
+	local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)
 	if p~=tp and bit.band(loc,LOCATION_ONFIELD)~=0 then
 		Duel.NegateEffect(ev)
 	end
