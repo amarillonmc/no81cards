@@ -66,7 +66,7 @@ function cm.spfilter1(c,e,tp)
 end
 
 function cm.spfilter2(c,e,tp)
-	return c:IsCode(21123811) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
+	return c:IsCode(71527471) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function cm.fitn(g,e,tp)
 	return (g:FilterCount(Card.IsType,nil,TYPE_FUSION)>0 and g:FilterCount(Card.IsType,nil,TYPE_SYNCHRO)>0 and g:FilterCount(Card.IsType,nil,TYPE_XYZ)>0 and g:FilterCount(Card.IsType,nil,TYPE_LINK)>0 and Duel.IsExistingMatchingCard(cm.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp)) or Duel.IsExistingMatchingCard(cm.spfilter1,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp)

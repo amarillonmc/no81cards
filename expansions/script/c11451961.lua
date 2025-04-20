@@ -142,14 +142,16 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 		if te:GetLabel()==e:GetLabel() then res=true break end
 	end
 	if not res then e:Reset() return end
-	local d=Duel.TossDice(tp,1)
-	if d>5 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,0,1,nil,tp,d)
-	if #g>0 then
-		Duel.Hint(HINT_CARD,0,m)
-		Duel.HintSelection(g)
-		Duel.Destroy(g,REASON_EFFECT)
+	for i=1,1+#{Duel.IsPlayerAffectedByEffect(0,11451973)} do
+		local d=Duel.TossDice(tp,1)
+		if d>5 then return end
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
+		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,0,1,nil,tp,d)
+		if #g>0 then
+			Duel.Hint(HINT_CARD,0,m)
+			Duel.HintSelection(g)
+			Duel.Destroy(g,REASON_EFFECT)
+		end
 	end
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)

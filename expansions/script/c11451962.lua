@@ -138,22 +138,24 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 		if te:GetLabel()==e:GetLabel() then res=true break end
 	end
 	if not res then e:Reset() return end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
-	local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
-	if #g>0 then
-		--Duel.HintSelection(g)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetDescription(aux.Stringid(m,4))
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_IMMUNE_EFFECT)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		--e1:SetCondition(cm.recon)
-		e1:SetValue(cm.efilter)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		g:GetFirst():RegisterEffect(e1,true)
-		local eid=e1:GetFieldID()
-		e1:SetLabel(eid)
-		g:GetFirst():RegisterFlagEffect(m+0xffffff,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
+	for i=1,1+#{Duel.IsPlayerAffectedByEffect(0,11451973)} do
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
+		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
+		if #g>0 then
+			--Duel.HintSelection(g)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetDescription(aux.Stringid(m,4))
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_IMMUNE_EFFECT)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			--e1:SetCondition(cm.recon)
+			e1:SetValue(cm.efilter)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+			g:GetFirst():RegisterEffect(e1,true)
+			local eid=e1:GetFieldID()
+			e1:SetLabel(eid)
+			g:GetFirst():RegisterFlagEffect(m+0xffffff,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
+		end
 	end
 end
 function cm.efilter(e,te)

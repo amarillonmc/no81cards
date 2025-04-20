@@ -118,7 +118,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	de:SetDescription(aux.Stringid(11451961+#eset,8))
 	de:SetLabel(eid)
 	de:SetType(EFFECT_TYPE_FIELD)
-	de:SetCode(0x20000000+11451961)
+	de:SetCode(EFFECT_FLAG_EFFECT+11451961)
 	de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 	de:SetTargetRange(1,0)
 	Duel.RegisterEffect(de,tp)
@@ -145,13 +145,15 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 				if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) end
 				e:SetTarget(tg)
 				tg(e,tp,eg,ep,ev,re,r,rp,1)
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
-				local g=Duel.SelectMatchingCard(tp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,0x1972,1)
-				if #g>0 then
-					local prop1,prop2=e:GetProperty()
-					te:SetProperty(prop1|EFFECT_FLAG_IGNORE_IMMUNE,prop2)
-					g:GetFirst():AddCounter(0x1972,1)
-					te:SetProperty(prop1,prop2)
+				for i=1,1+#{Duel.IsPlayerAffectedByEffect(0,11451973)} do
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
+					local g=Duel.SelectMatchingCard(tp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,0x1972,1)
+					if #g>0 then
+						local prop1,prop2=e:GetProperty()
+						te:SetProperty(prop1|EFFECT_FLAG_IGNORE_IMMUNE,prop2)
+						g:GetFirst():AddCounter(0x1972,1)
+						te:SetProperty(prop1,prop2)
+					end
 				end
 			end
 	te:SetTarget(tg2)
@@ -166,10 +168,12 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 		if te:GetLabel()==e:GetLabel() then res=true break end
 	end
 	if not res then e:Reset() return end
-	Duel.Hint(HINT_SELECTMSG,rp,HINTMSG_COUNTER)
-	local g=Duel.SelectMatchingCard(rp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,0x1972,1)
-	if #g>0 then
-		g:GetFirst():AddCounter(0x1972,1)
+	for i=1,1+#{Duel.IsPlayerAffectedByEffect(0,11451973)} do
+		Duel.Hint(HINT_SELECTMSG,rp,HINTMSG_COUNTER)
+		local g=Duel.SelectMatchingCard(rp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,0x1972,1)
+		if #g>0 then
+			g:GetFirst():AddCounter(0x1972,1)
+		end
 	end
 end
 function cm.efilter(e,re)
