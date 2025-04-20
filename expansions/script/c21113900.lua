@@ -54,12 +54,12 @@ function c21113900.check_or_add_new_limit(add_or_not)
 	end
 	local ag = Duel.GetFieldGroup(0,0xff,0xff)
 	for tc in aux.Next(ag) do
-		if tc:IsHasEffect(tp,EFFECT_CANNOT_TRIGGER) then
+		if tc:IsHasEffect(EFFECT_CANNOT_TRIGGER) then
 			local limit_table = {tc:IsHasEffect(EFFECT_CANNOT_TRIGGER)}
 			for _, limit_effect in ipairs(limit_table) do
-				if c21113900.record_doesnot_contain(record_redirect,limit_effect) then
+				if c21113900.record_doesnot_contain(record_limit_trigger,limit_effect) then
 					if add_or_not then
-						table.insert(record_redirect,limit_effect)
+						table.insert(record_limit_trigger,limit_effect)
 						table.insert(resolve_table,limit_effect)
 					end
 					is_new_limit = true
@@ -158,4 +158,15 @@ function c21113900.op(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTargetRange(1,0)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+	e2:SetTarget(c21113900.ssplimit)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	e2:SetTargetRange(1,0)
+	Duel.RegisterEffect(e2,tp)
+end
+function c21113900.ssplimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return not c:IsSetCard(0xc914)
 end
