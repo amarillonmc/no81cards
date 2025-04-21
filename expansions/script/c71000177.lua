@@ -1,7 +1,7 @@
 --七仟陌
 function c71000177.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_SPELLCASTER),7,3,c71000177.ovfilter,aux.Stringid(id,0),3,c71000177.xyzop)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_SPELLCASTER),7,3,c71000177.ovfilter,aux.Stringid(71000177,0),3,c71000177.xyzop)
 	c:EnableReviveLimit()
 	--macro cosmos
 	local e22=Effect.CreateEffect(c)
@@ -18,7 +18,7 @@ function c71000177.initial_effect(c)
 	--remove
 
 	--
-	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,c71000177.chainfilter)
+	Duel.AddCustomActivityCounter(71000177,ACTIVITY_CHAIN,c71000177.chainfilter)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
@@ -29,19 +29,20 @@ function c71000177.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c71000177.splimit(e,c)
-	return not c:IsRace(RACE_SPELLCASTER)
+	return not c:IsRace(RACE_SPELLCASTER) 
 end
-function c71000177.chainfilter(re,tp,cid)
+
+function c71000177.chainfilter(re,tp,c71000177)
 	return not re:GetHandler():IsCode(71000175)
 end
 function c71000177.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xe73)
 end
 function c71000177.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,id)==0
-		and (Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)>0
-			or Duel.GetCustomActivityCount(id,1-tp,ACTIVITY_CHAIN)>0) end
-	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	if chk==0 then return Duel.GetFlagEffect(tp,71000177)==0
+		and (Duel.GetCustomActivityCount(71000177,tp,ACTIVITY_CHAIN)>0
+			or Duel.GetCustomActivityCount(71000177,1-tp,ACTIVITY_CHAIN)>0) end
+	Duel.RegisterFlagEffect(tp,71000177,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c71000177.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
