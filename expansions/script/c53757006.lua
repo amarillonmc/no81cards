@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_CHAINING)
+	e2:SetCode(EVENT_CUSTOM+53757098)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(cm.trcon)
@@ -45,8 +45,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
 end
 function cm.trcon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	return tc:IsCode(m-1) or tc==e:GetHandler()
+	return eg:IsExists(Card.IsCode,1,nil,m-1) or eg:IsContains(e:GetHandler())
 end
 function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil,tp,POS_FACEDOWN) end

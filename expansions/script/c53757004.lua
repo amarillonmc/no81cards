@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_CHAINING)
+	e2:SetCode(EVENT_CUSTOM+53757098)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(cm.trcon)
@@ -49,8 +49,7 @@ function cm.pop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.trcon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	return tc:IsCode(m-1) or tc==e:GetHandler()
+	return eg:IsExists(Card.IsCode,1,nil,m-1) or eg:IsContains(e:GetHandler())
 end
 function cm.cfilter(c,s)
 	if not c:IsRace(RACE_DRAGON) or not c:GetType()&0x20002~=0x20002 then return false end

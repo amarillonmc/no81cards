@@ -41,7 +41,8 @@ function s.filter(c,tp)
 	return c:IsFaceup() and c:IsSetCard(0x9a7b) and g:GetClassCount(Card.GetCode)>=7
 end
 function s.tgfilter(c,code)
-	return c:IsFaceupEx() and c:IsSetCard(0x9a7b) and not c:IsCode(code) and c:IsAbleToRemove()
+	return c:IsFaceupEx() and c:IsSetCard(0x9a7b) and not c:IsCode(code) and c:IsAbleToRemove() and 
+	c:IsType(TYPE_MONSTER)
 end
 function s.skitg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

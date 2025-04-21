@@ -59,8 +59,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.trcon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=eg:GetFirst()
-	return tc:IsCode(m-1) or tc==e:GetHandler()
+	return eg:IsExists(Card.IsCode,1,nil,m-1) or eg:IsContains(e:GetHandler())
 end
 function cm.trtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end
