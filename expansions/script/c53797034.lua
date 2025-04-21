@@ -38,7 +38,7 @@ function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function s.thfilter(c)
-	return c:GetType()&0x20002==0x20002 and c.fusion_effect and c:IsAbleToHand()
+	return c:GetType()&0x20002==0x20002 and c:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_FUSION_SUMMON)) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

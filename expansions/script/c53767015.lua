@@ -29,12 +29,6 @@ function s.initial_effect(c)
 		s.global_check=true
 		local sg=Group.CreateGroup()
 		sg:KeepAlive()
-		local ge0=Effect.GlobalEffect()
-		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge0:SetCode(EVENT_ADJUST)
-		ge0:SetLabelObject(sg)
-		ge0:SetOperation(s.geop)
-		Duel.RegisterEffect(ge0,0)
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_CHAIN_SOLVED)
@@ -53,8 +47,11 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGraveAsCost,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
+function s.quick_filter(e)
+	return e:GetCode()==EVENT_BECOME_TARGET and e:IsActivated() and e:IsHasType(EFFECT_TYPE_SINGLE)
+end
 function s.thfilter(c)
-	return c:GetFlagEffect(id)>0 and c:IsAbleToHand()
+	return c:IsOriginalEffectProperty(s.quick_filter) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -90,22 +87,4 @@ function s.rtop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ChangePosition(tg,POS_FACEUP_DEFENSE,POS_FACEDOWN_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
 		end
 	end
-end
-function s.geop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=e:GetLabelObject()
-	local g=Duel.GetMatchingGroup(nil,0,0xff,0xff,sg)
-	if #g==0 then return end
-	sg:Merge(g)
-	local cp={}
-	local f=Card.RegisterEffect
-	Card.RegisterEffect=function(tc,te,bool)
-		if te:GetCode()==EVENT_BECOME_TARGET and te:IsActivated() and te:GetType()&EFFECT_TYPE_SINGLE~=0 then table.insert(cp,te:Clone()) end
-		return f(tc,te,bool)
-	end
-	for tc in aux.Next(g) do
-		Duel.CreateToken(tp,tc:GetOriginalCode())
-		if #cp>0 then tc:RegisterFlagEffect(id,0,0,0) end
-		cp={}
-	end
-	Card.RegisterEffect=f
 end

@@ -21,24 +21,15 @@ function s.initial_effect(c)
 	e2:SetTarget(s.fstg)
 	e2:SetOperation(s.fsop)
 	c:RegisterEffect(e2)
-	if not s.global_check then
-		s.global_check=true
-		local sg=Group.CreateGroup()
-		sg:KeepAlive()
-		local ge0=Effect.GlobalEffect()
-		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge0:SetCode(EVENT_ADJUST)
-		ge0:SetLabelObject(sg)
-		ge0:SetOperation(s.geop)
-		Duel.RegisterEffect(ge0,0)
-	end
 end
-s.fusion_effect=true
 function s.matfilter(c,fc)
 	return c:IsRace(RACE_INSECT) and c:IsFusionType(TYPE_FUSION)
 end
+function s.quick_filter(e)
+	return e:GetCode()==EVENT_BECOME_TARGET and e:IsActivated() and e:IsHasType(EFFECT_TYPE_SINGLE)
+end
 function s.costfilter(c,tp)
-	return c:GetFlagEffect(id)>0 and c:IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(s.tffilter,tp,LOCATION_DECK,0,1,c,tp)
+	return c:IsOriginalEffectProperty(s.quick_filter) and c:IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(s.tffilter,tp,LOCATION_DECK,0,1,c,tp)
 end
 function s.tffilter(c,tp)
 	return c:GetType()&0x20002==0x20002 and c:GetActivateEffect():IsActivatable(tp)
@@ -177,22 +168,4 @@ function s.fsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	aux.FCheckAdditional=nil
 	aux.GCheckAdditional=nil
-end
-function s.geop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=e:GetLabelObject()
-	local g=Duel.GetMatchingGroup(nil,0,0xff,0xff,sg)
-	if #g==0 then return end
-	sg:Merge(g)
-	local cp={}
-	local f=Card.RegisterEffect
-	Card.RegisterEffect=function(tc,te,bool)
-		if te:GetCode()==EVENT_BECOME_TARGET and te:IsActivated() and te:GetType()&EFFECT_TYPE_SINGLE~=0 then table.insert(cp,te:Clone()) end
-		return f(tc,te,bool)
-	end
-	for tc in aux.Next(g) do
-		Duel.CreateToken(tp,tc:GetOriginalCode())
-		if #cp>0 then tc:RegisterFlagEffect(id,0,0,0) end
-		cp={}
-	end
-	Card.RegisterEffect=f
 end
