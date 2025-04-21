@@ -173,8 +173,8 @@ function c11533716.drtdop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 		local dg=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e)
 			if dg:CheckSubGroup(c11533716.tdgck,5,5) and Duel.SelectYesNo(tp,aux.Stringid(11533716,0)) then
-				local sg=g:SelectSubGroup(tp,c11533716.tdgck,false,5,5) 
-				Duel.SendtoDeck(g,nil,2,REASON_EFFECT) 
+				local sg=dg:SelectSubGroup(tp,c11533716.tdgck,false,5,5) 
+				Duel.SendtoDeck(sg,nil,2,REASON_EFFECT) 
 			end
 	end
 end 

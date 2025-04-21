@@ -191,9 +191,7 @@ function pnflpf.debug(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
-local m=11451851
-local cm=_G["c"..m]
-if not cm then return end
+local cm,m=GetID()
 function cm.initial_effect(c)
 	if not PNFL_PROPHECY_FLIGHT_CHECK then
 		pnfl_prophecy_flight_initial(c)
@@ -421,10 +419,15 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		local op=function(e,tp)
 					if ct>=3 then e:Reset() return end
 					ct=ct+1
-					--e:GetHandler():SetTurnCounter(ct)
-					Duel.Hint(HINT_CARD,0,m)
+					--Duel.Hint(HINT_CARD,0,m)
 					local tc=cm.GetCardsInZone(tp,fd)
-					if tc then Duel.Destroy(tc,REASON_EFFECT) end
+					if tc then
+						Duel.Destroy(tc,REASON_EFFECT)
+						e:GetHandler():SetTurnCounter(ct)
+					else
+						Duel.Hint(HINT_ZONE,tp,fd)
+						e:GetHandler():SetTurnCounter(ct)
+					end
 				end
 		if Duel.GetCurrentChain()==1 then
 			op(e,tp)

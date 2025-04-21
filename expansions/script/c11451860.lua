@@ -167,6 +167,13 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local fd=Duel.SelectField(tp,2,LOCATION_SZONE,0,~0x1f00)
 	for i=0,4 do
 		if fd&(1<<(8+i))>0 then
+			local de=Effect.CreateEffect(c)
+			de:SetDescription(aux.Stringid(m,i))
+			de:SetType(EFFECT_TYPE_FIELD)
+			de:SetCode(EFFECT_FLAG_EFFECT+m+0xffff+i)
+			de:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+			de:SetTargetRange(1,0)
+			Duel.RegisterEffect(de,tp)
 			local table={1<<0|1<<28,1<<1|1<<27,1<<2|1<<26,1<<3|1<<25,1<<4|1<<24}
 			for j=0,32 do
 				if (1<<j)&(table[i+1])~=0 then
@@ -253,6 +260,7 @@ function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
 		if tp==1 then cid=5-i end
 		local cl=cm.column
 		cm.column=cm.column&~(1<<cid)
+		Duel.ResetFlagEffect(tp,m+0xffff+i)
 		if cl~=0 and cm.column==0 then
 			if SetCardData then
 				Duel.Hint(24,0,aux.Stringid(m,8))
