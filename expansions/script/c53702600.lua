@@ -297,13 +297,6 @@ function cm.TentuScout(c)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(aux.FALSE)
 	c:RegisterEffect(e1)
-	--[[local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_TRIBUTE_LIMIT)
-	e2:SetValue(function(e,c)
-		return (not c:IsAttribute(e:GetHandler():GetAttribute()) and not c:IsType(TYPE_SPIRIT)) or (c:IsFacedown() and c:IsControler(1-e:GetHandlerPlayer()))
-	end)
-	c:RegisterEffect(e2)--]]
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
@@ -428,15 +421,9 @@ function cm.AASTadjustop(otyp,ext)
 	return
 	function(e,tp,eg,ep,ev,re,r,rp)
 	local adjt={}
-	if ext then adjt=ext else adjt={e:GetLabelObject()} end
+	if ext then adjt={ext} else adjt={e:GetLabelObject()} end
 	if #adjt==0 then e:Reset() return end
 	for _,te in pairs(adjt) do
-	--local te=e:GetLabelObject()
-	--if not te then Debug.Message(e:GetLabel()) return else Debug.Message(555) return end
-	--if aux.GetValueType(te)~="Effect" then Debug.Message(aux.GetValueType(te)) return end
-	--Debug.Message(#te)
-	--Debug.Message(te:GetOwner():GetCode())
-	
 	local c=te:GetHandler()
 	if not c:IsStatus(STATUS_CHAINING) and c:IsStatus(STATUS_EFFECT_ENABLED) then
 		local xe={c:IsHasEffect(53765099)}
@@ -595,8 +582,6 @@ function cm.AASTcostop(otyp)
 	return
 	function(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
---Debug.Message(9999)
---Debug.Message(aux.GetValueType(te))
 	local c=te:GetHandler()
 	local xe1=cm.AASTregi(c,te)
 	if otyp&0x80000~=0 then
@@ -670,21 +655,6 @@ function cm.AASTrsop(e,tp,eg,ep,ev,re,r,rp)
 		rc:CancelToGrave(false)
 	end
 	re:Reset()
-	--[[local e1=Effect.CreateEffect(rc)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_END)
-	e1:SetCountLimit(1)
-	e1:SetLabelObject(re)
-	e1:SetOperation(cm.AASTreset)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-	e:Reset()
-end
-function cm.AASTreset(e,tp,eg,ep,ev,re,r,rp)
-	local xe={e:GetOwner():IsHasEffect(53765099)}
-	for _,v in pairs(xe) do if v:GetLabelObject()==e:GetLabelObject() then v:Reset() end end
-	e:Reset()]]
 end
 function cm.AASTregi(c,e)
 	local e1=Effect.CreateEffect(c)
@@ -1091,7 +1061,7 @@ function cm.SetAsSpellorTrapCheck(c,type)
 				end
 			end
 			local b=true
-			if sc.SSetableMonster and (ly>0 or Duel.GetFlagEffectLabel(0,53759000)==0) then
+			if sc.initial_effect and sc.SSetableMonster and (ly>0 or Duel.GetFlagEffectLabel(0,53759000)==0) then
 				if ly>0 then cm["Card_Prophecy_Certain_ACST_"..ly]=true end
 			else b=ADIMI_IsSSetable(sc,bool) end
 			return b
@@ -1415,7 +1385,7 @@ function cm.SpellorTrapSPable(c)
 					break
 				end
 			end
-			if sc.SpecialSummonableSpellorTrap and (ly>0 or Duel.GetFlagEffectLabel(0,53759000)==0) and not sc:IsLocation(LOCATION_MZONE) then
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (ly>0 or Duel.GetFlagEffectLabel(0,53759000)==0) and not sc:IsLocation(LOCATION_MZONE) then
 				if sc:IsHasEffect(EFFECT_REVIVE_LIMIT) and not sc:IsStatus(STATUS_PROC_COMPLETE) and not bool1 then b=res end
 				local zcheck=false
 				for i=0,6 do
@@ -1487,7 +1457,7 @@ function cm.SpellorTrapSPable(c)
 		local ADSTSP_SpecialSummon=Duel.SpecialSummon
 		Duel.SpecialSummon=function(tg,st,sp,stp,bool1,...)
 			tg=Group.__add(tg,tg)
-			local g=tg:Filter(function(c)return c.SpecialSummonableSpellorTrap end,nil)
+			local g=tg:Filter(function(c)return c.initial_effect and c.SpecialSummonableSpellorTrap end,nil)
 			if #g>0 then
 				bool1=true
 				for tc in aux.Next(g) do
@@ -1499,7 +1469,7 @@ function cm.SpellorTrapSPable(c)
 		end
 		local ADSTSP_SpecialSummonStep=Duel.SpecialSummonStep
 		Duel.SpecialSummonStep=function(tc,st,sp,stp,bool1,...)
-			if tc.SpecialSummonableSpellorTrap then
+			if tc.initial_effect and tc.SpecialSummonableSpellorTrap then
 				bool1=true
 				local data=tc.SSST_Data
 				tc:AddMonsterAttribute(data[1])
@@ -1519,7 +1489,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&(TYPE_MONSTER|data[1])~=0) else b=ADSTSP_IsType(sc,int) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&(TYPE_MONSTER|data[1])~=0) else b=ADSTSP_IsType(sc,int) end
 			return b
 		end
 		local ADSTSP_IsSynchroType=Card.IsSynchroType
@@ -1535,7 +1505,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&(TYPE_MONSTER|data[1])~=0) else b=ADSTSP_IsSynchroType(sc,int) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&(TYPE_MONSTER|data[1])~=0) else b=ADSTSP_IsSynchroType(sc,int) end
 			return b
 		end
 		local ADSTSP_IsXyzType=Card.IsXyzType
@@ -1551,7 +1521,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&(TYPE_MONSTER|data[1])~=0) else b=ADSTSP_IsXyzType(sc,int) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&(TYPE_MONSTER|data[1])~=0) else b=ADSTSP_IsXyzType(sc,int) end
 			return b
 		end
 		local ADSTSP_IsLinkType=Card.IsLinkType
@@ -1567,7 +1537,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&(TYPE_MONSTER|data[1])~=0) else b=ADSTSP_IsLinkType(sc,int) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&(TYPE_MONSTER|data[1])~=0) else b=ADSTSP_IsLinkType(sc,int) end
 			return b
 		end
 		local ADSTSP_CGetType=Card.GetType
@@ -1583,7 +1553,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=TYPE_MONSTER|data[1] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=TYPE_MONSTER|data[1] end
 			return b
 		end
 		local ADSTSP_GetSynchroType=Card.GetSynchroType
@@ -1599,7 +1569,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=TYPE_MONSTER|data[1] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=TYPE_MONSTER|data[1] end
 			return b
 		end
 		local ADSTSP_GetXyzType=Card.GetXyzType
@@ -1615,7 +1585,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=TYPE_MONSTER|data[1] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=TYPE_MONSTER|data[1] end
 			return b
 		end
 		local ADSTSP_GetLinkType=Card.GetLinkType
@@ -1631,7 +1601,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=TYPE_MONSTER|data[1] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=TYPE_MONSTER|data[1] end
 			return b
 		end
 		local ADSTSP_IsRace=Card.IsRace
@@ -1647,7 +1617,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&data[2]~=0) else b=ADSTSP_IsRace(sc,int) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&data[2]~=0) else b=ADSTSP_IsRace(sc,int) end
 			return b
 		end
 		local ADSTSP_GetRace=Card.GetRace
@@ -1663,7 +1633,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[2] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[2] end
 			return b
 		end
 		local ADSTSP_GetOriginalRace=Card.GetOriginalRace
@@ -1679,7 +1649,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[2] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[2] end
 			return b
 		end
 		local ADSTSP_GetLinkRace=Card.GetLinkRace
@@ -1695,7 +1665,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[2] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[2] end
 			return b
 		end
 		local ADSTSP_IsAttribute=Card.IsAttribute
@@ -1711,7 +1681,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&data[3]~=0) else b=ADSTSP_IsAttribute(sc,int) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&data[3]~=0) else b=ADSTSP_IsAttribute(sc,int) end
 			return b
 		end
 		local ADSTSP_IsNonAttribute=Card.IsNonAttribute
@@ -1727,7 +1697,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&data[3]==0) else b=ADSTSP_IsNonAttribute(sc,int) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int&data[3]==0) else b=ADSTSP_IsNonAttribute(sc,int) end
 			return b
 		end
 		local ADSTSP_GetAttribute=Card.GetAttribute
@@ -1743,7 +1713,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[3] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[3] end
 			return b
 		end
 		local ADSTSP_GetOriginalAttribute=Card.GetOriginalAttribute
@@ -1759,7 +1729,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[3] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[3] end
 			return b
 		end
 		local ADSTSP_GetLinkAttribute=Card.GetLinkAttribute
@@ -1775,7 +1745,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[3] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[3] end
 			return b
 		end
 		local ADSTSP_IsLevel=Card.IsLevel
@@ -1791,7 +1761,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int==data[4]) else b=ADSTSP_IsLevel(sc,int,...) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int==data[4]) else b=ADSTSP_IsLevel(sc,int,...) end
 			return b
 		end
 		local ADSTSP_IsLevelAbove=Card.IsLevelAbove
@@ -1807,7 +1777,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int<=data[4]) else b=ADSTSP_IsLevelAbove(sc,int) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int<=data[4]) else b=ADSTSP_IsLevelAbove(sc,int) end
 			return b
 		end
 		local ADSTSP_IsLevelBelow=Card.IsLevelBelow
@@ -1823,7 +1793,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int>=data[4]) else b=ADSTSP_IsLevelBelow(sc,int) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int>=data[4]) else b=ADSTSP_IsLevelBelow(sc,int) end
 			return b
 		end
 		local ADSTSP_GetLevel=Card.GetLevel
@@ -1839,7 +1809,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[4] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[4] end
 			return b
 		end
 		local ADSTSP_GetOriginalLevel=Card.GetOriginalLevel
@@ -1855,7 +1825,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[4] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[4] end
 			return b
 		end
 		local ADSTSP_IsAttack=Card.IsAttack
@@ -1871,7 +1841,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int==data[5]) else b=ADSTSP_IsAttack(sc,int,...) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int==data[5]) else b=ADSTSP_IsAttack(sc,int,...) end
 			return b
 		end
 		local ADSTSP_IsAttackAbove=Card.IsAttackAbove
@@ -1887,7 +1857,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int<=data[5]) else b=ADSTSP_IsAttackAbove(sc,int) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int<=data[5]) else b=ADSTSP_IsAttackAbove(sc,int) end
 			return b
 		end
 		local ADSTSP_IsAttackBelow=Card.IsAttackBelow
@@ -1903,7 +1873,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int>=data[5]) else b=ADSTSP_IsAttackBelow(sc,int) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int>=data[5]) else b=ADSTSP_IsAttackBelow(sc,int) end
 			return b
 		end
 		local ADSTSP_GetAttack=Card.GetAttack
@@ -1919,7 +1889,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[5] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[5] end
 			return b
 		end
 		local ADSTSP_GetBaseAttack=Card.GetBaseAttack
@@ -1935,7 +1905,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[5] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[5] end
 			return b
 		end
 		local ADSTSP_IsDefense=Card.IsDefense
@@ -1951,7 +1921,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int==data[6]) else b=ADSTSP_IsDefense(sc,int,...) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int==data[6]) else b=ADSTSP_IsDefense(sc,int,...) end
 			return b
 		end
 		local ADSTSP_IsDefenseAbove=Card.IsDefenseAbove
@@ -1967,7 +1937,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int<=data[6]) else b=ADSTSP_IsDefenseAbove(sc,int) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int<=data[6]) else b=ADSTSP_IsDefenseAbove(sc,int) end
 			return b
 		end
 		local ADSTSP_IsDefenseBelow=Card.IsDefenseBelow
@@ -1983,7 +1953,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int>=data[6]) else b=ADSTSP_IsDefenseBelow(sc,int) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=(int>=data[6]) else b=ADSTSP_IsDefenseBelow(sc,int) end
 			return b
 		end
 		local ADSTSP_GetDefense=Card.GetDefense
@@ -1999,7 +1969,7 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[6] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[6] end
 			return b
 		end
 		local ADSTSP_GetBaseDefense=Card.GetBaseDefense
@@ -2015,11 +1985,11 @@ function cm.SpellorTrapSPable(c)
 			local res1=ly>0 and (cm["Card_Prophecy_L_Check_"..ly] or cm["Card_Prophecy_Certain_SP_"..ly])
 			local res2=Duel.GetFlagEffectLabel(0,53759000)==0 and not sc:IsLocation(LOCATION_MZONE)
 			local data=sc.SSST_Data
-			if sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[6] end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and (res1 or res2) then b=data[6] end
 			return b
 		end
 		local ADSTSP_IsCanBeEffectTarget=Card.IsCanBeEffectTarget
-		Card.IsCanBeEffectTarget=function(sc,se)
+		Card.IsCanBeEffectTarget=function(sc,...)
 			local b=true
 			local ly=0
 			for i=1,114 do
@@ -2028,7 +1998,7 @@ function cm.SpellorTrapSPable(c)
 					break
 				end
 			end
-			if sc.SpecialSummonableSpellorTrap and cm["Card_Prophecy_Certain_SP_"..ly] then b=res else b=ADSTSP_IsCanBeEffectTarget(sc,se) end
+			if sc.initial_effect and sc.SpecialSummonableSpellorTrap and cm["Card_Prophecy_Certain_SP_"..ly] then b=res else b=ADSTSP_IsCanBeEffectTarget(sc,...) end
 			return b
 		end
 	end
@@ -2323,16 +2293,6 @@ function cm.HTAmvrsop(e,tp,eg,ep,ev,re,r,rp)
 		rc:CancelToGrave(false)
 	end
 	if re then re:Reset() end
-	--[[local e1=Effect.CreateEffect(rc)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetCode(EVENT_CHAIN_END)
-	e1:SetCountLimit(1)
-	e1:SetLabelObject(re)
-	e1:SetOperation(cm.AASTreset)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-	e:Reset()--]]
 end
 function cm.HTAmvhint(code)
 	return
@@ -2357,7 +2317,7 @@ function cm.DragoronMergedDelay(c)
 	g:KeepAlive()
 	local ge1=Effect.CreateEffect(c)
 	ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	ge1:SetCode(EVENT_CHAINING)
+	ge1:SetCode(EVENT_CHAIN_SOLVING)
 	ge1:SetLabelObject(g)
 	ge1:SetOperation(cm.DragoronM1)
 	Duel.RegisterEffect(ge1,0)

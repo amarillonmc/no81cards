@@ -278,7 +278,7 @@ function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	local ng=Duel.GetMatchingGroup(cm.clfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,e:GetLabel())
-	local ag=ng:Filter(Card.IsCanBeEffectTarget,e)
+	local ag=ng:Filter(Card.IsCanBeEffectTarget,nil,e)
 	if #ag>0 then Duel.SetTargetCard(ag) end
 end
 function Group.ForEach(group,func,...)

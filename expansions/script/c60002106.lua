@@ -40,7 +40,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thcost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetCustomActivityCount(703897,tp,ACTIVITY_SPSUMMON)==0
+	if chk==0 then return Duel.GetCustomActivityCount(60002106,tp,ACTIVITY_SPSUMMON)==0
 		and aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,0) end
 	aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,1)
 end

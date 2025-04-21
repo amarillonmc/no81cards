@@ -234,11 +234,11 @@ function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	if c:IsOnField() then
 		local ng=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
-		local ag=ng:GetMinGroup(cm.distance2,c,tp):Filter(Card.IsCanBeEffectTarget,e)
+		local ag=ng:GetMinGroup(cm.distance2,c,tp):Filter(Card.IsCanBeEffectTarget,nil,e)
 		if #ag>0 then Duel.SetTargetCard(ag) end
 	else
 		local ng=Duel.GetMatchingGroup(cm.gsfilter,tp,LOCATION_GRAVE,0,nil,c)
-		local ag=ng:Filter(Card.IsCanBeEffectTarget,e)
+		local ag=ng:Filter(Card.IsCanBeEffectTarget,nil,e)
 		if #ag>0 then Duel.SetTargetCard(ag) end
 	end
 end
