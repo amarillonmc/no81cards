@@ -67,7 +67,7 @@ function c71000177.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(g)
 		Duel.SendtoDeck(g,nil,CATEGORY_TODECK,REASON_EFFECT)
 		local st=Duel.GetMatchingGroup(c71000177.stfilter,tp,LOCATION_DECK,0,nil)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71000177,0)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 			local sg=st:Select(tp,1,1,nil)
