@@ -157,9 +157,39 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:Filter(function(c) return c:GetSequence()==ct end,nil):GetFirst()
 		if KOISHI_CHECK then
 			c:SetEntityCode(tc:GetOriginalCode())
-			c:ReplaceEffect(80316585,0)
-			c:SetStatus(STATUS_EFFECT_REPLACED,false)
-			if tc.initial_effect then tc.initial_effect(c) end
+			if not tc.initial_effect then
+				c:ReplaceEffect(80316585,0)
+				c:SetStatus(STATUS_EFFECT_REPLACED,false)
+			else
+				cm.proeffects=cm.proeffects or {}
+				local _SetProperty=Effect.SetProperty
+				local _Clone=Effect.Clone
+				Effect.SetProperty=function(pe,prop1,prop2)
+					if not prop2 then prop2=0 end
+					if prop1&EFFECT_FLAG_UNCOPYABLE~=0 then
+						cm.proeffects[pe]={prop1,prop2}
+						prop1=prop1&(~EFFECT_FLAG_UNCOPYABLE)
+					else
+						cm.proeffects[pe]=nil
+					end
+					return _SetProperty(pe,prop1,prop2)
+				end
+				Effect.Clone=function(pe)
+					local ce=pe:Clone()
+					if cm.proeffects[pe] then
+						cm.proeffects[ce]=cm.proeffects[pe]
+					end
+					return ce
+				end
+				c:ReplaceEffect(tc:GetOriginalCode(),0)
+				c:SetStatus(STATUS_EFFECT_REPLACED,false)
+				Effect.SetProperty=_SetProperty
+				Effect.Clone=_Clone
+				for ke,vp in pairs(cm.proeffects) do
+					local prop1,prop2=table.unpack(vp)
+					ke:SetProperty(prop1|EFFECT_FLAG_UNCOPYABLE,prop2)
+				end
+			end
 			Duel.DisableShuffleCheck()
 			Duel.Exile(tc,0)
 		else

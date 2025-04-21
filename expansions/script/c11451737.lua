@@ -43,9 +43,33 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	if tc and Duel.SSet(tp,tc)~=0 and c:IsRelateToEffect(e) and c:IsAbleToDeck() then
 		if KOISHI_CHECK then
 			c:SetEntityCode(m+48,true)
+			cm.proeffects=cm.proeffects or {}
+			local _SetProperty=Effect.SetProperty
+			local _Clone=Effect.Clone
+			Effect.SetProperty=function(pe,prop1,prop2)
+				if not prop2 then prop2=0 end
+				if prop1&EFFECT_FLAG_UNCOPYABLE~=0 then
+					cm.proeffects[pe]={prop1,prop2}
+					prop1=prop1&(~EFFECT_FLAG_UNCOPYABLE)
+				else
+					cm.proeffects[pe]=nil
+				end
+				return _SetProperty(pe,prop1,prop2)
+			end
+			Effect.Clone=function(pe)
+				local ce=pe:Clone()
+				if cm.proeffects[pe] then
+					cm.proeffects[ce]=cm.proeffects[pe]
+				end
+				return ce
+			end
 			c:ReplaceEffect(m+48,0)
-			c:EnableReviveLimit()
-			aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1,1)
+			Effect.SetProperty=_SetProperty
+			Effect.Clone=_Clone
+			for ke,vp in pairs(cm.proeffects) do
+				local prop1,prop2=table.unpack(vp)
+				ke:SetProperty(prop1|EFFECT_FLAG_UNCOPYABLE,prop2)
+			end
 			local loc=c:GetLocation()
 			Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,c)
