@@ -38,7 +38,6 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 			{b3,aux.Stringid(m,2)})
 	if op==1 then 
 	local g=Duel.SelectTarget(tp,cm.filter1,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.HintSelection(g)
 	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)	
@@ -60,7 +59,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:GetFlagEffect(1)>0  then
 	 local tc=Duel.GetFirstTarget()
-	if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and
+	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and
 		 Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_QUICKPLAY)>=3
 		and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 		and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then

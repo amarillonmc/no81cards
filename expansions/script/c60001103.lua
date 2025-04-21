@@ -58,6 +58,7 @@ end
 
 function cm.sprcon(e,c)
 	if c==nil then return true end
+	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(cm.getfusionfilter,tp,LOCATION_GRAVE,0,nil)
 	return g:GetClassCount(Card.GetCode)>=3 and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
