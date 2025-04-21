@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local m=53729016
 local cm=_G["c"..m]
 cm.name="晶栖秘所"
@@ -43,7 +45,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local tcode=c.downside_code
 	Duel.Hint(HINT_CARD,0,m)	
 	c:SetEntityCode(tcode,true)
-	c:ReplaceEffect(tcode,0,0)
+	SNNM.ReplaceEffect(c,tcode,0,0)
 	Duel.Hint(HINT_CARD,0,tcode)
 	Duel.RaiseEvent(c,EVENT_ADJUST,nil,0,PLAYER_NONE,PLAYER_NONE,0)
 end

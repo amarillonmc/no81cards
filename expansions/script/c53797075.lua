@@ -23,7 +23,9 @@ function s.initial_effect(c)
 				e1:SetReset(RESET_PHASE+PHASE_END)
 				Duel.RegisterEffect(e1,0)
 			end
-			return f1(p,tg,tp,bool)
+			local res=0
+			if tp then res=f1(p,tg,tp,bool) else res=f1(p,tg) end
+			return res
 		end
 	end
 end

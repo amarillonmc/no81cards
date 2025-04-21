@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local m=53729003
 local cm=_G["c"..m]
 cm.name="心化大贤 祭心"
@@ -6,7 +8,6 @@ cm.downside_code=m+2
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	local es=aux.AddLinkProcedure(c,cm.matfilter,1,1)
-	es:SetProperty(es:GetProperty()&(~EFFECT_FLAG_UNCOPYABLE))
 	es:SetValue(es:GetValue()|SUMMON_VALUE_SELF)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -42,7 +43,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local tcode=c.downside_code
 	Duel.Hint(HINT_CARD,0,m)	
 	c:SetEntityCode(tcode,true)
-	c:ReplaceEffect(tcode,0,0)
+	SNNM.ReplaceEffect(c,tcode,0,0)
 	Duel.Hint(HINT_CARD,0,m+2)
 	Duel.RaiseEvent(c,EVENT_ADJUST,nil,0,PLAYER_NONE,PLAYER_NONE,0)
 end

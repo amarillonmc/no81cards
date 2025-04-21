@@ -2687,11 +2687,8 @@ function cm.AllEffectReset(c)
 	Duel.RegisterFlagEffect(0,53702700,0,0,0)
 end
 function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
-	--if Duel.GetFlagEffect(0,53702700)>0 then return end
-	--Duel.RegisterFlagEffect(0,53702700,0,0,0)
-	local g=Duel.GetMatchingGroup(function(c)return c:GetFlagEffect(53702700)==0 end,0,0xff,0xff,nil)
+	local g=Duel.GetMatchingGroup(function(c)return c:GetFlagEffect(53702700)==0 and c.initial_effect end,0,0xff,0xff,nil)
 	if #g==0 then return end
-	--Debug.Message(99)
 	local reg=Card.RegisterEffect
 	local rstg=Duel.GetMatchingGroup(function(c)return c.Snnm_Ef_Rst and c:GetFlagEffect(53702700)==0 end,0,0xff,0xff,nil)
 	local rstt={}
@@ -2783,44 +2780,6 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 			_G["c"..sc:GetOriginalCode()].pend_effect=se
 		end
 		end
-		--[[if cm.IsInTable(53796005,rstt) then
-		local cd,et=se:GetCode(),se:GetType()
-		if (cd==EVENT_SUMMON_SUCCESS or cd==EVENT_FLIP_SUMMON_SUCCESS or cd==EVENT_SPSUMMON_SUCCESS) and et&EFFECT_TYPE_SINGLE and et&(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_TRIGGER_O)~=0 then
-			local ex1=Effect.CreateEffect(sc)
-			ex1:SetType(EFFECT_TYPE_FIELD)
-			ex1:SetCode(EFFECT_ACTIVATE_COST)
-			ex1:SetRange(0xff)
-			ex1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_PLAYER_TARGET)
-			ex1:SetTargetRange(1,1)
-			ex1:SetLabelObject(se)
-			ex1:SetTarget(function(e,te,tp)return te==e:GetLabelObject()end)
-			ex1:SetCost(function(e,te,tp)return Duel.GetFlagEffect(0,53796005)==0 end)
-			sc:RegisterEffect(ex1)
-			local x=true
-			if sc:IsHasEffect(53796005) then
-			for _,i in ipairs{sc:IsHasEffect(53796005)} do
-				if i:GetOperation()==se:GetOperation() then x=false end
-			end
-			end
-			if x then
-			local ex2=se:Clone()
-			ex2:SetCode(EVENT_LEAVE_FIELD)
-			sc:RegisterEffect(ex2)
-			local ex3=ex1:Clone()
-			ex3:SetLabelObject(ex2)
-			ex3:SetTarget(function(e,te,tp)return te==e:GetLabelObject()end)
-			ex3:SetCost(function(e,te,tp)return Duel.GetFlagEffect(0,53796005)>0 end)
-			sc:RegisterEffect(ex3)
-			local ex4=Effect.CreateEffect(sc)
-			ex4:SetType(EFFECT_TYPE_SINGLE)
-			ex4:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-			ex4:SetCode(53796005)
-			ex4:SetRange(0xff)
-			ex4:SetOperation(se:GetOperation())
-			sc:RegisterEffect(ex4)
-			end
-		end
-		end--]]
 		if cm.IsInTable(53799017,rstt) then
 		if se:GetType()==EFFECT_TYPE_ACTIVATE then
 			local tg=se:GetTarget()
@@ -2839,52 +2798,49 @@ function cm.AllEffectRstop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 		end
-		local e1=Effect.CreateEffect(sc)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetRange(0xff)
-		e1:SetCode(53702701)
-		e1:SetLabelObject(se)
-		reg(sc,e1,true)
-		--if se:GetCode()==EFFECT_ADD_TYPE then Debug.Message(sc:GetCode()) end
 		return reg(sc,se,bool)
 	end
-	--[[AD_Avoid_RegisterEffect=Duel.RegisterEffect
-	Duel.RegisterEffect=function(...)
-		return
-	end--]]
---local cscs=g:GetFirst()
-	for tc in aux.Next(g) do
-		if tc.initial_effect then
---Debug.Message(tc:GetCode())
-			local ini=cm.initial_effect
-			cm.initial_effect=function() end
-			--if cscs:IsCode(53715006) then Debug.Message(cscs:IsType(TYPE_EFFECT)) end
-			if tc:GetFlagEffect(53702700)>0 then
-				local le={tc:IsHasEffect(53702701)}
-				for _,v in pairs(le) do v:GetLabelObject():Reset() v:Reset() end
-			else
-				if tc:GetOriginalType()&0x1~=0 and tc:GetOriginalType()&0x20==0 then
-					local le1={tc:IsHasEffect(EFFECT_ADD_TYPE)}
-					tc:ReplaceEffect(m,0)
-					local le2={tc:IsHasEffect(EFFECT_ADD_TYPE)}
-					cm.RemoveElements(le1,le2)
-					for _,v in pairs(le2) do v:Reset() end
-				else tc:ReplaceEffect(m,0) end
-			end
-			--if cscs:IsCode(53715006) then Debug.Message(cscs:IsType(TYPE_EFFECT)) end
-			cm.initial_effect=ini
-			tc.initial_effect(tc)
-			--if cscs:IsCode(53715006) then Debug.Message(cscs:IsType(TYPE_EFFECT)) end
-		end
-	end
+	for tc in aux.Next(g) do cm.ReplaceEffect(tc,tc:GetOriginalCode(),0) end
 	Card.RegisterEffect=reg
-	--Duel.RegisterEffect=AD_Avoid_RegisterEffect
 	if cm.IsInTable(53759012,rstt) then Effect.SetLabelObject=c53759012[1] end
 	if #helltaker>0 then Effect.SetLabelObject=AD_Helltaker end
 	Duel.ResetFlagEffect(0,53764007)
 	g:ForEach(Card.RegisterFlagEffect,53702700,0,0,0)
 	e:Reset()
+end
+function cm.ReplaceEffect(c,...)
+	local proeffects={}
+	local tempro=Effect.SetProperty
+	Effect.SetProperty=function(pe,prop1,prop2)
+		if not prop2 then prop2=0 end
+		if prop1&EFFECT_FLAG_UNCOPYABLE~=0 then
+			proeffects[pe]={prop1,prop2}
+			prop1=prop1&(~EFFECT_FLAG_UNCOPYABLE)
+		end
+		return tempro(pe,prop1,prop2)
+	end
+	local temclo=Effect.Clone
+	Effect.Clone=function(ce)
+		local cle=temclo(ce)
+		if proeffects[ce] then proeffects[cle]=proeffects[ce] end
+		return cle
+	end
+	local rid=0
+	if c:GetOriginalType()&0x1~=0 and c:GetOriginalType()&0x20==0 then
+		local le1={c:IsHasEffect(EFFECT_ADD_TYPE)}
+		rid=c:ReplaceEffect(...)
+		local le2={c:IsHasEffect(EFFECT_ADD_TYPE)}
+		cm.RemoveElements(le1,le2)
+		for _,v in pairs(le2) do v:Reset() end
+	else rid=c:ReplaceEffect(...) end
+	c:SetStatus(STATUS_EFFECT_REPLACED,false)
+	Effect.SetProperty=tempro
+	Effect.Clone=temclo
+	for ke,vp in pairs(proeffects) do
+		local prop1,prop2=table.unpack(vp)
+		ke:SetProperty(prop1|EFFECT_FLAG_UNCOPYABLE,prop2)
+	end
+	return rid
 end
 function cm.reni(c,sdes,scat,styp,spro,scod,sran,sct,sht,scon,scos,stg,sop)
 	if scon==0 then scon=aux.TRUE end
@@ -3152,6 +3108,7 @@ function cm.ReturnLock(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.Intersection(table1, table2)
+	if type(table1)~="table" or type(table2)~="table" then return false,{} end
 	local commonElements = {}
 	local elementsInTable1 = {}
 	for _, value in ipairs(table1) do
@@ -3179,24 +3136,19 @@ function cm.Merge(table1, table2)
 	end
 end
 function cm.Merged(array1, array2)
+	local t1 = (type(array1) == "table") and array1 or {}
+	local t2 = (type(array2) == "table") and array2 or {}
 	local merged = {}
-
-	-- 添加第一个数组的元素到 merged 中
-	for _, v in ipairs(array1) do
+	for _, v in ipairs(t1) do
 		merged[v] = true
 	end
-
-	-- 添加第二个数组的元素到 merged 中
-	for _, v in ipairs(array2) do
+	for _, v in ipairs(t2) do
 		merged[v] = true
 	end
-
-	-- 构建最终的结果数组
 	local result = {}
 	for k, _ in pairs(merged) do
 		table.insert(result, k)
 	end
-
 	return result
 end
 function cm.Remove(tbl,value)
@@ -3246,13 +3198,6 @@ function cm.MultiDual(c)
 	e2:SetOperation(cm.MultiDualCheck)
 	e2:SetCountLimit(1,EFFECT_COUNT_CODE_DUEL+53753000)
 	c:RegisterEffect(e2)
-	--[[local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_SUMMON_COST)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetOperation(cm.MultiDualReset)
-	c:RegisterEffect(e3)--]]
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetCode(EFFECT_MULTI_SUMMONABLE)

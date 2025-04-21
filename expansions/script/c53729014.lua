@@ -6,8 +6,7 @@ cm.downside_code=m+25
 if not require and dofile then function require(str) return dofile(str..".lua") end end
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
-	local es=aux.AddLinkProcedure(c,function(c)return c:IsLevelBelow(4) and c:IsLinkRace(RACE_PYRO)end,1,1)
-	es:SetProperty(es:GetProperty()&(~EFFECT_FLAG_UNCOPYABLE))
+	aux.AddLinkProcedure(c,function(c)return c:IsLevelBelow(4) and c:IsLinkRace(RACE_PYRO)end,1,1)
 	c:EnableReviveLimit()
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)

@@ -249,27 +249,8 @@ function s.geop(e,tp,eg,ep,ev,re,r,rp)
 		local res=f(tc,te,bool)
 		local con=te:GetCondition()
 		if con then te:SetCondition(s.con(con)) end
-		local e1=Effect.CreateEffect(tc)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetRange(0xff)
-		e1:SetCode(id+500)
-		e1:SetLabelObject(te)
-		f(tc,e1,true)
 		return f(tc,te,bool)
 	end
-	for tc in aux.Next(cg) do
-		if tc.initial_effect then
-			local ini=s.initial_effect
-			s.initial_effect=function() end
-			if tc:GetFlagEffect(53702700)>0 then
-				local le={tc:IsHasEffect(id+500)}
-				for _,v in pairs(le) do v:GetLabelObject():Reset() v:Reset() end
-			else tc:ReplaceEffect(id,0) end
-			s.initial_effect=ini
-			tc.initial_effect(tc)
-			tc:RegisterFlagEffect(53702700,0,0,0)
-		end
-	end
+	for tc in aux.Next(cg) do cm.ReplaceEffect(tc,tc:GetOriginalCode(),0) end
 	Card.RegisterEffect=f
 end

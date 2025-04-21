@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local m=53796107
 local cm=_G["c"..m]
 cm.name="侵入魔鬼指令"
@@ -138,15 +140,7 @@ function cm.start(e,tp,eg,ep,ev,re,r,rp)
 		end
 		return cm[7](tc,e,f)
 	end
-	for tc in aux.Next(g1) do
-		if tc.initial_effect then
-			local ini=cm.initial_effect
-			cm.initial_effect=function() end
-			tc:ReplaceEffect(m,0)
-			cm.initial_effect=ini
-			tc.initial_effect(tc)
-		end
-	end
+	for tc in aux.Next(g1) do cm.ReplaceEffect(tc,tc:GetOriginalCode(),0) end
 	Card.RegisterEffect=cm[7]
 	local g2=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,0,0xff,0xff,nil,22009013,62007535,84488827,85505315)
 	for tc in aux.Next(g2) do

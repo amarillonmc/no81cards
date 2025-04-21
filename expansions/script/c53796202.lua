@@ -151,26 +151,9 @@ function s.spsummon(tc,tp)
 			local op=se:GetOperation()
 			se:SetCondition(s.rcon(con,cost,tg,op))
 		end
-		local e2=Effect.CreateEffect(sc)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
-		e2:SetRange(0xff)
-		e2:SetCode(id+500)
-		e2:SetLabelObject(se)
-		reg(sc,e2,true)
 		return reg(sc,se,bool)
 	end
-	if tc.initial_effect then
-		local ini=s.initial_effect
-		s.initial_effect=function() end
-		if tc:GetFlagEffect(53702700)>0 then
-			local le={tc:IsHasEffect(id+500)}
-			for _,v in pairs(le) do v:GetLabelObject():Reset() v:Reset() end
-		else tc:ReplaceEffect(id,0) end
-		s.initial_effect=ini
-		tc.initial_effect(tc)
-		tc:RegisterFlagEffect(53702700,0,0,0)
-	end
+	if tc.initial_effect then s.ReplaceEffect(tc,tc:GetOriginalCode(),0) end
 	Card.RegisterEffect=reg
 	return Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 end

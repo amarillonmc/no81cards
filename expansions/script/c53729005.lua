@@ -1,3 +1,5 @@
+if not require and dofile then function require(str) return dofile(str..".lua") end end
+if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 local m=53729005
 local cm=_G["c"..m]
 cm.name="心化根绝神 阿日阿"
@@ -9,7 +11,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EFFECT_SEND_REPLACE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE)
 	e1:SetTarget(cm.rtg)
 	e1:SetValue(function(e,c)return true end)
 	c:RegisterEffect(e1)
@@ -47,7 +49,7 @@ function cm.backop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(tp,Group.FromCards(c))
 		Duel.ConfirmCards(1-tp,Group.FromCards(c))
 	end
-	c:ReplaceEffect(tcode,0,0)
+	SNNM.ReplaceEffect(c,tcode,0,0)
 	Duel.Hint(HINT_CARD,0,tcode)
 	if c:IsLocation(LOCATION_HAND) then Duel.ShuffleHand(c:GetControler()) end
 	Duel.RaiseEvent(e:GetHandler(),EVENT_ADJUST,nil,0,PLAYER_NONE,PLAYER_NONE,0)
@@ -59,7 +61,7 @@ function cm.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tcode=c.upside_code
 	Duel.Hint(HINT_CARD,0,m)	
 	c:SetEntityCode(tcode,true)
-	c:ReplaceEffect(tcode,0,0)
+	SNNM.ReplaceEffect(c,tcode,0,0)
 	Duel.Hint(HINT_CARD,0,m-2)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
@@ -91,7 +93,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tcode=tc.downside_code
 	Duel.Hint(HINT_CARD,0,code) 
 	tc:SetEntityCode(tcode,true)
-	tc:ReplaceEffect(tcode,0,0)
+	SNNM.ReplaceEffect(tc,tcode,0,0)
 	Duel.Hint(HINT_CARD,0,tcode)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
