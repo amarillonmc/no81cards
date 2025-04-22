@@ -14,7 +14,6 @@ function c71000174.initial_effect(c)
 	e2:SetTarget(c71000174.drtg)
 	e2:SetOperation(c71000174.drop)
 	c:RegisterEffect(e2)
-	
 end
 
 	--get effect

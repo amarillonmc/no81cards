@@ -18,18 +18,18 @@ function c71000175.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetOperation(c71000175.chainop)
 	c:RegisterEffect(e1)
-	
+	--splimit
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetRange(LOCATION_MZONE)
 	e4:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetAbsoluteRange(tp,1,0)
+	e4:SetTargetRange(1,0)
 	e4:SetTarget(c71000175.splimit)
 	c:RegisterEffect(e4)
 end
-function c71000175.splimit(e,c)
-	return not c:IsRace(RACE_SPELLCASTER) 
+function c71000175.splimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return not c:IsRace(RACE_SPELLCASTER)
 end
 
 --===== 效果①处理 =====--

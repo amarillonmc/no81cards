@@ -37,18 +37,18 @@ function c71000176.initial_effect(c)
 	e12:SetRange(LOCATION_GRAVE)
 	e12:SetCondition(c71000176.spcon)
 	c:RegisterEffect(e12)
+	--splimit
 	local e41=Effect.CreateEffect(c)
 	e41:SetType(EFFECT_TYPE_FIELD)
+	e41:SetRange(LOCATION_MZONE)
 	e41:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e41:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e41:SetRange(LOCATION_MZONE)
-	e41:SetAbsoluteRange(tp,1,0)
+	e41:SetTargetRange(1,0)
 	e41:SetTarget(c71000176.splimit)
 	c:RegisterEffect(e41)
 end
-function c71000176.splimit(e,c)
+function c71000176.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not c:IsRace(RACE_SPELLCASTER)
-
 end
 --1
 
