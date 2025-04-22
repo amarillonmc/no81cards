@@ -175,7 +175,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 					return _SetProperty(pe,prop1,prop2)
 				end
 				Effect.Clone=function(pe)
-					local ce=pe:Clone()
+					local ce=_Clone(pe)
 					if cm.proeffects[pe] then
 						cm.proeffects[ce]=cm.proeffects[pe]
 					end
