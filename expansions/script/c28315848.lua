@@ -18,7 +18,7 @@ function c28315848.initial_effect(c)
 	--shhis spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28315848,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_PZONE)
 	e2:SetCountLimit(1,28315848)
