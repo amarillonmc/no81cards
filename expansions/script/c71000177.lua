@@ -17,21 +17,22 @@ function c71000177.initial_effect(c)
 	aux.EnableChangeCode(c,71000100,LOCATION_MZONE)
 	--remove
 
-	--splimit
+	--
+	Duel.AddCustomActivityCounter(71000177,ACTIVITY_CHAIN,c71000177.chainfilter)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetRange(LOCATION_MZONE)
 	e4:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e4:SetTargetRange(1,0)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetAbsoluteRange(c:GetControler(),1,0)
 	e4:SetTarget(c71000177.splimit)
 	c:RegisterEffect(e4)
 end
-function c71000177.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsRace(RACE_SPELLCASTER)
+function c71000177.splimit(e,c)
+	return not c:IsRace(RACE_SPELLCASTER) 
 end
 
-function c71000177.chainfilter(re,tp,c71000177)
+function c71000177.chainfilter(re,tp,cid)
 	return not re:GetHandler():IsCode(71000175)
 end
 function c71000177.ovfilter(c)
