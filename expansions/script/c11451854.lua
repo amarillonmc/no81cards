@@ -415,8 +415,9 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.HintSelection(tg)
 		if Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)>0 then
-			local rg=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_REMOVED)
+			local rg=Duel.GetOperatedGroup() --:Filter(Card.IsLocation,nil,LOCATION_REMOVED)
 			rg:KeepAlive()
+			Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(m,4))
 			for tc in aux.Next(rg) do
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_FIELD)

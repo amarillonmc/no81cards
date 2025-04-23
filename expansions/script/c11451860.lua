@@ -167,7 +167,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local fd=Duel.SelectField(tp,2,LOCATION_SZONE,0,~0x1f00)
 	for i=0,4 do
 		if fd&(1<<(8+i))>0 then
-			c:RegisterFlagEffect(EFFECT_FLAG_EFFECT+m+0xffff+i,RESET_EVENT+RESETS_STANDARD-RESET_TOGRAVE-RESET_LEAVE,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,i))
+			c:RegisterFlagEffect(EFFECT_FLAG_EFFECT+m+0xffff+i,RESET_EVENT+RESET_TOHAND+RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,i))
 			local de=Effect.CreateEffect(c)
 			de:SetDescription(aux.Stringid(m,i))
 			de:SetType(EFFECT_TYPE_FIELD)
