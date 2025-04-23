@@ -47,6 +47,8 @@ function c98941057.initial_effect(c)
 	end	
 	end
 end
+local KOISHI_CHECK=false
+if Card.SetCardData then KOISHI_CHECK=true end
 function c98941057.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if re:GetValue()~=98941058 then return end
@@ -191,31 +193,51 @@ function c98941057.actarget2(e,te,tp)
 	return tc:IsSetCard(0xd0) and te:IsHasType(EFFECT_TYPE_QUICK_O) and tc:IsLocation(LOCATION_HAND) and tc:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function c98941057.costop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	local tc=te:GetHandler()
-	local tp=te:GetHandlerPlayer()
-	local te2=te:Clone()
-	tc:RegisterEffect(te2)
-	te2:UseCountLimit(tp)
-	te:SetType(EFFECT_TYPE_ACTIVATE)
 	Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
-	local ge3=Effect.CreateEffect(tc)
-	ge3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	ge3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	ge3:SetCode(EVENT_CHAIN_SOLVED)
-	ge3:SetLabelObject(te)
-	ge3:SetReset(RESET_PHASE+PHASE_END)
-	ge3:SetOperation(c98941057.resetop)
-	Duel.RegisterEffect(ge3,tp)
-	local ge4=ge3:Clone()
-	ge4:SetCode(EVENT_CHAIN_NEGATED)
-	Duel.RegisterEffect(ge4,tp)
+	c:CreateEffectRelation(te) 
+	local te2=te:Clone()
+	e:SetLabelObject(te2)
+	te:SetType(26)
+	tc:RegisterEffect(te2,true)
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(tc)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+	e1:SetOperation(c98941057.rsop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
 end
 function c98941057.resetop(e,tp,eg,ep,ev,re,r,rp)
-	if re==e:GetLabelObject() and re:IsHasType(EFFECT_TYPE_ACTIVATE) then
-		e:Reset()
-		re:Reset()
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
 	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+		rc:CancelToGrave(false)
+		--if KOISHI_CHECK then
+			--rc:SetCardData(CARDDATA_TYPE,TYPE_MONSTER+TYPE_EFFECT)
+			local e2=Effect.CreateEffect(rc)
+			e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+			e2:SetCode(EVENT_MOVE)
+			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e2:SetOperation(function(e)
+				--rc:SetCardData(CARDDATA_TYPE,TYPE_MONSTER+TYPE_EFFECT+TYPE_PENDULUM)
+				e:Reset()
+			end)
+			rc:RegisterEffect(e2)
+		--end
+	end
+	re:Reset()
 end
 function c98941057.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
