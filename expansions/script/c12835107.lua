@@ -170,9 +170,9 @@ function s.moveop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e2:SetValue(-500)
 		if s.roll(1,2)==1 then
-			if c:IsAttackBelow(499) then return end
+			if tc:IsAttackBelow(499) then return end
 		else
-			if c:IsDefenseBelow(499) then return end
+			if tc:IsDefenseBelow(499) then return end
 			e2:SetCode(EFFECT_UPDATE_DEFENSE)
 		end
 		tc:RegisterEffect(e2)

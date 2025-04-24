@@ -12,26 +12,20 @@ function c65899905.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c65899905.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	e:SetLabel(100)
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.Draw(tp,1,REASON_COST)
 end
 function c65899905.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 and not Duel.CheckPhaseActivity()
 end
 function c65899905.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then 
-		if e:GetLabel()~=100 then return false end
-		e:SetLabel(0)
-		return Duel.IsPlayerCanDraw(tp,1)
+	if chk==0 then
+		return Duel.IsPlayerCanDraw(tp,2)
 	end
-	Duel.Draw(tp,1,REASON_COST)
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
 end
 function c65899905.operation(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+	Duel.Draw(tp,1,REASON_EFFECT)
 	Duel.BreakEffect()
 	Duel.Draw(tp,1,REASON_EFFECT)
 	Duel.SkipPhase(tp,PHASE_MAIN1,RESET_PHASE+PHASE_END,1)
