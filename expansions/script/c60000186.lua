@@ -92,8 +92,7 @@ function cm.bkop(e,tp,eg,ep,ev,re,r,rp,c)
 		if op==0 then
 			Duel.SendtoDeck(c,nil,0,REASON_EFFECT)
 			Duel.BreakEffect()
-			local num=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)
-			local ug=Duel.GetFieldGroup(tp,LOCATION_DECK,0):Sub(Duel.GetDecktopGroup(tp,num-1))
+			local ug=Duel.GetFieldGroup(tp,LOCATION_DECK,0):Filter(cm.location,nil)
 			Duel.SendtoHand(ug,nil,REASON_EFFECT)
 		elseif op==1 then
 			Duel.SendtoDeck(c,nil,1,REASON_EFFECT)
@@ -102,6 +101,9 @@ function cm.bkop(e,tp,eg,ep,ev,re,r,rp,c)
 			Duel.SendtoHand(ug,nil,REASON_EFFECT)
 		end
 	end
+end
+function cm.location(c)
+	return c:GetSequence()==0
 end
 --random
 function getrand()

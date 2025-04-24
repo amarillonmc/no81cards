@@ -23,6 +23,10 @@ function cm.initial_effect(c)
 		Duel.Equip=function(p,c,...)
 			if not c:IsOnField() and not c:IsHasEffect(EFFECT_EQUIP_LIMIT) then c:RegisterFlagEffect(m,RESET_CHAIN,0,1) end
 			local res=_Equip(p,c,...)
+			if c:IsHasEffect(EFFECT_EQUIP_LIMIT) then
+				c:ResetFlagEffect(m)
+				Duel.RaiseEvent(Group.FromCards(c),EVENT_CUSTOM+m,e,0,0,0,0)
+			end
 			return res
 		end
 		local _CRegisterEffect=Card.RegisterEffect

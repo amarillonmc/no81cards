@@ -1,5 +1,6 @@
 --命运从未公平
 function c60010130.initial_effect(c)
+	aux.AddCodeList(c,60010029)
 	aux.AddCodeList(c,60010051)
 	--Activate
 	local e0=Effect.CreateEffect(c)
@@ -56,7 +57,7 @@ function c60010130.condition(e,tp,eg,ep,ev,re,r,rp)
 	return SpaceCheck[tp]
 end
 function c60010130.thfilter(c)
-	return c:IsCode(60010051) and c:IsAbleToHand()
+	return c:IsCode(60010051,60010029) and c:IsAbleToHand()
 end
 function c60010130.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c60010130.thfilter,tp,LOCATION_DECK,0,nil)

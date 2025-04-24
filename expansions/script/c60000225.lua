@@ -53,7 +53,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.SelectYesNo(tp,aux.Stringid(id,4)) then
+	if Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 		if #g>0 then

@@ -30,6 +30,10 @@ function cm.initial_effect(c)
 		Duel.Equip=function(p,c,...)
 			if not (c:IsControler(p) and c:IsLocation(LOCATION_SZONE)) and not c:IsHasEffect(EFFECT_EQUIP_LIMIT) then c:RegisterFlagEffect(11451848,RESET_CHAIN,0,1) c:RegisterFlagEffect(11451848,RESET_CHAIN,0,1) end
 			local res=_Equip(p,c,...)
+			if c:IsHasEffect(EFFECT_EQUIP_LIMIT) then
+				c:ResetFlagEffect(11451848)
+				cm.desop2(e,0,Group.FromCards(c),0,0,e,0,0)
+			end
 			return res
 		end
 		local _CRegisterEffect=Card.RegisterEffect
@@ -256,6 +260,7 @@ function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	local i=e:GetLabel()
 	local ng=Duel.GetMatchingGroup(cm.clfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp,i)
 	local res=#Group.__band(ng,eg)>0
+	--if #ng>0 then Debug.Message(i..ng:GetFirst():GetCode()..eg:GetFirst():GetCode()) end
 	if res then
 		local cid=i+1
 		if tp==1 then cid=5-i end
@@ -280,7 +285,7 @@ function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return false end
 	if chk==0 then return true end
-	e:GetHandler():ClearEffectRelation()
+	--e:GetHandler():ClearEffectRelation()
 	local te=e:GetLabelObject()
 	e:SetTarget(aux.FALSE)
 	te:SetTarget(aux.FALSE)

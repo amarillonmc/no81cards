@@ -62,16 +62,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			and (not tc:IsAbleToRemove() or Duel.SelectYesNo(tp,aux.Stringid(m,3))) then
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 			local fid=e:GetHandler():GetFieldID()
-		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,fid)		
-		else
-			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
-		end
-	end
-	c:ResetFlagEffect(1)
-	elseif c:GetFlagEffect(2)>0  then
-	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP,0x60)
-	local e1=Effect.CreateEffect(e:GetHandler())
+		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,fid)	  
+		local fid=e:GetHandler():GetFieldID()		
+		tc:RegisterFlagEffect(595626,RESET_EVENT+RESETS_STANDARD,0,1,fid)
+		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetCountLimit(1)
@@ -80,7 +74,15 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabelObject(tc)
 		e1:SetCondition(cm.tgcon)
 		e1:SetOperation(cm.tgop)
-		Duel.RegisterEffect(e1,tp)
+		Duel.RegisterEffect(e1,tp)  
+		else
+			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		end
+	end
+	c:ResetFlagEffect(1)
+	elseif c:GetFlagEffect(2)>0  then
+	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP,0x60)		
 	c:ResetFlagEffect(2)
 	elseif c:GetFlagEffect(3)>0  then
 	local g=Duel.SelectMatchingCard(tp,cm.lfilter,tp,LOCATION_EXTRA,0,1,1,nil)

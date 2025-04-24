@@ -112,7 +112,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		g:AddCard(ac)
 		if g:GetClassCount(Card.GetRace)==g:GetCount() and g:GetClassCount(Card.GetAttribute)==g:GetCount() then
 			cg:AddCard(ac)
-			Debug.Message("1")
+			--Debug.Message("1")
 		end
 		g:RemoveCard(ac)
 		ac=dg:GetNext()

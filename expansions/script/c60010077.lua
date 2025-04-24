@@ -28,6 +28,7 @@ function c60010077.initial_effect(c)
 	e2:SetOperation(c60010077.operation)
 	c:RegisterEffect(e2)
 	--
+	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_MZONE)
@@ -36,7 +37,7 @@ function c60010077.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c60010077.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_FZONE,0,1,nil)
+	return not Duel.IsExistingMatchingCard(aux.TRUE,e:GetHandlerPlayer(),LOCATION_FZONE,0,1,nil)
 end
 function c60010077.filter(c,tp)
 	return c:IsCode(60010029) and c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)

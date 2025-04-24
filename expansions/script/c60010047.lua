@@ -38,7 +38,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		end 
 		te:UseCountLimit(tp,1,true)
 		cm.ActivateCard(ec,tp,e)
-		if (not (ec:IsType(TYPE_CONTINUOUS) or ec:IsType(TYPE_FIELD) or ec:IsType(TYPE_EQUIP))) and ec:IsRelateToEffect(e) then
+		if not (ec:IsType(TYPE_CONTINUOUS) or ec:IsType(TYPE_FIELD) or ec:IsType(TYPE_EQUIP)) then
 			 Duel.SendtoGrave(ec,REASON_RULE)
 		end
 	end

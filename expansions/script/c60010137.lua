@@ -1,6 +1,7 @@
 --铭记于心的约定
 function c60010137.initial_effect(c)
 	aux.AddCodeList(c,60010031)
+	aux.AddCodeList(c,60010029)
 	--Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetCategory(CATEGORY_SEARCH)
@@ -62,7 +63,7 @@ function c60010137.condition(e,tp,eg,ep,ev,re,r,rp)
 	return SpaceCheck[tp]
 end
 function c60010137.thfilter(c)
-	return c:IsCode(60010031) and c:IsAbleToHand()
+	return c:IsCode(60010031,60010029) and c:IsAbleToHand()
 end
 function c60010137.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c60010137.thfilter,tp,LOCATION_DECK,0,nil)
@@ -84,7 +85,6 @@ function c60010137.drop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
-	e1:SetReset(RESET_PHASE+PHASE_END)
 	e1:SetOperation(c60010137.draw)
 	Duel.RegisterEffect(e1,tp)
 end
@@ -98,6 +98,7 @@ function c60010137.draw(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SSet(tp,sg)
 		end
 	end
+	e:Reset()
 end
 function c60010137.ownerfilter(c,tp)
 	return c:IsCode(60010031) and c:IsFaceup() and c:IsSummonPlayer(tp)
@@ -106,13 +107,13 @@ function c60010137.decon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c60010137.ownerfilter,1,nil,tp)
 end
 function c60010137.detg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_MZONE,1,nil) end
+	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c60010137.deop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)
 	if #g>0 then
 		Duel.HintSelection(g)
 		Duel.Destroy(g,REASON_EFFECT)

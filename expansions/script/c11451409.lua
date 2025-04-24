@@ -77,6 +77,10 @@ function cm.initial_effect(c)
 		Duel.Equip=function(p,c,...)
 			if not (c:IsControler(p) and c:IsLocation(LOCATION_SZONE)) then c:RegisterFlagEffect(11451409,RESET_CHAIN,0,1) c:RegisterFlagEffect(11451409,RESET_CHAIN,0,1) end
 			local res=_Equip(p,c,...)
+			if c:IsHasEffect(EFFECT_EQUIP_LIMIT) then
+				c:ResetFlagEffect(11451409)
+				cm.desop2(e,0,Group.FromCards(c),0,0,e,0,0)
+			end
 			return res
 		end
 		local _CRegisterEffect=Card.RegisterEffect

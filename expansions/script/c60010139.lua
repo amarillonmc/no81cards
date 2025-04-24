@@ -1,6 +1,7 @@
 --片刻，留在眼底
 function c60010139.initial_effect(c)
 	aux.AddCodeList(c,60010078)
+	aux.AddCodeList(c,60010029)
 	--Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetCategory(CATEGORY_SEARCH)
@@ -54,7 +55,7 @@ function c60010139.condition(e,tp,eg,ep,ev,re,r,rp)
 	return SpaceCheck[tp]
 end
 function c60010139.thfilter(c)
-	return c:IsCode(60010078) and c:IsAbleToHand()
+	return c:IsCode(60010078,60010029) and c:IsAbleToHand()
 end
 function c60010139.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c60010139.thfilter,tp,LOCATION_DECK,0,nil)

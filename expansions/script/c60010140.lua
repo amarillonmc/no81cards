@@ -1,6 +1,7 @@
 --烦恼着，幸福着
 function c60010140.initial_effect(c)
 	aux.AddCodeList(c,60010059)
+	aux.AddCodeList(c,60010029)
 	--Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetCategory(CATEGORY_SEARCH)
@@ -63,7 +64,7 @@ function c60010140.condition(e,tp,eg,ep,ev,re,r,rp)
 	return SpaceCheck[tp]
 end
 function c60010140.thfilter(c)
-	return c:IsCode(60010059) and c:IsAbleToHand()
+	return c:IsCode(60010059,60010029) and c:IsAbleToHand()
 end
 function c60010140.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c60010140.thfilter,tp,LOCATION_DECK,0,nil)

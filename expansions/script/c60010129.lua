@@ -1,6 +1,7 @@
 --梦应归于何处
 function c60010129.initial_effect(c)
-	aux.AddCodeList(c,60010028)
+	aux.AddCodeList(c,60010029)
+	aux.AddCodeList(c,60010128)
 	--Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetCategory(CATEGORY_SEARCH)
@@ -54,7 +55,7 @@ function c60010129.condition(e,tp,eg,ep,ev,re,r,rp)
 	return SpaceCheck[tp]
 end
 function c60010129.thfilter(c)
-	return c:IsCode(60010128) and c:IsAbleToHand()
+	return c:IsCode(60010128,60010029) and c:IsAbleToHand()
 end
 function c60010129.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c60010129.thfilter,tp,LOCATION_DECK,0,nil)

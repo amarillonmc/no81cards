@@ -60,7 +60,7 @@ function c60010136.condition(e,tp,eg,ep,ev,re,r,rp)
 	return SpaceCheck[tp]
 end
 function c60010136.thfilter(c)
-	return c:IsCode(60010056) and c:IsAbleToHand()
+	return c:IsCode(60010056,60010029) and c:IsAbleToHand()
 end
 function c60010136.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c60010136.thfilter,tp,LOCATION_DECK,0,nil)
