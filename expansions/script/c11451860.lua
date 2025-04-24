@@ -351,21 +351,22 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	pnfl_adjusting=true
 	Duel.Hint(HINT_CARD,0,m)
 	local sg=Duel.GetMatchingGroup(cm.shfilter,tp,0xff,0xff,nil)
-	if #sg==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,5))
-	local tc=sg:Select(tp,1,1,nil):GetFirst()
-	Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
-	local eset={tc:IsHasEffect(EFFECT_FLAG_EFFECT+m)}
-	local te=eset[1]:GetLabelObject()
-	if #eset>1 then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,6))
-		local ct=Duel.AnnounceNumber(tp,table.unpack(aux.idx_table,1,#eset))
-		te=eset[ct]:GetLabelObject()
+	if #sg>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,5))
+		local tc=sg:Select(tp,1,1,nil):GetFirst()
+		Duel.Hint(HINT_CARD,0,tc:GetOriginalCode())
+		local eset={tc:IsHasEffect(EFFECT_FLAG_EFFECT+m)}
+		local te=eset[1]:GetLabelObject()
+		if #eset>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,6))
+			local ct=Duel.AnnounceNumber(tp,table.unpack(aux.idx_table,1,#eset))
+			te=eset[ct]:GetLabelObject()
+		end
+		local tg=te:GetTarget() or aux.TRUE
+		local op=te:GetOperation() or aux.TRUE
+		tg(e,tp,eg,ep,ev,re,r,rp,1)
+		op(e,tp,eg,ep,ev,re,r,rp) --recursive!!!
 	end
-	local tg=te:GetTarget() or aux.TRUE
-	local op=te:GetOperation() or aux.TRUE
-	tg(e,tp,eg,ep,ev,re,r,rp,1)
-	op(e,tp,eg,ep,ev,re,r,rp) --recursive!!!
 	e:Reset()
 	pnfl_adjusting=false
 end
