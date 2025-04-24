@@ -345,6 +345,9 @@ function c98941057.gcheck(g)
 	return g:FilterCount(Card.IsCode,nil,98941057)==1 
 		and g:FilterCount(Card.IsLocation,nil,LOCATION_DECK)<=1
 end
+function c98941057.ppfilter(c)
+	return not c:IsForbidden()
+end
 function c98941057.acost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local b1=Duel.CheckReleaseGroup(tp,c98941057.costfilter,1,nil)
@@ -359,16 +362,17 @@ function c98941057.acost(e,tp,eg,ep,ev,re,r,rp,chk)
 		if Duel.GetTurnPlayer()==e:GetHandlerPlayer() then sk=1 end
 		local tg=g:SelectSubGroup(tp,c98941057.gcheck,false,sk,2)
 		Duel.ConfirmCards(1-tp,tg)
+		local cou=Duel.GetFieldGroupCount(tp,LOCATION_PZONE,0)
 		if not c:IsCode(78949372) and (not b1 or Duel.SelectYesNo(tp,aux.Stringid(98941057,1))) then
-		   sc=tg:GetFirst()
-		   while sc do
-			   if (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.SelectYesNo(tp,aux.Stringid(98941057,3)) then
-			  	   Duel.MoveToField(sc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
-			   else
-				   Duel.SendtoExtraP(sc,nil,REASON_EFFECT)
-			   end
-			   sc=tg:GetNext()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
+			local sg=tg:FilterSelect(tp,c98941057.ppfilter,0,2-cou,nil)
+			local tc=sg:GetFirst()
+			while tc do
+				Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+				tc=sg:GetNext()
 			end
+			tg:Sub(sg)
+			Duel.SendtoExtraP(tg,nil,REASON_EFFECT)
 			if c:IsCode(51250293) then 
 				e:SetLabel(LOCATION_DECK) 
 			end
