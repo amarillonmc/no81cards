@@ -113,9 +113,10 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rg=Duel.GetMatchingGroup(cm.tfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if #rg==0 then return end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,aux.ExceptThisCard(e))
+	if #rg==0 or Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)*2+#g<#rg then return end
 	local t={}
-	for ac=#rg,0,-1 do
+	for ac=math.min(#rg,Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)),math.max(0,math.ceil((#rg-#g)/2)),-1 do
 		table.insert(t,ac)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
