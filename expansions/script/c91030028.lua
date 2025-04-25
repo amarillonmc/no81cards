@@ -35,7 +35,7 @@ end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local b1=Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,id)==0
-	local b2=c:IsReleasableByEffect() and Duel.GetMZoneCount(tp,c,tp)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133)  and Duel.IsExistingMatchingCard(s.spfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)	 and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)   and Duel.GetFlagEffect(tp,id+1)==0
+	local b2=c:IsReleasableByEffect() and Duel.GetMZoneCount(tp,c,tp)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133)  and Duel.IsExistingMatchingCard(s.spfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)	and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)   and Duel.GetFlagEffect(tp,id+1)==0
 	if chk==0 then return b1 or b2 end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_DECK+LOCATION_GRAVE)
@@ -43,7 +43,7 @@ end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 local b1=Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,id)==0
-	local b2=c:IsReleasableByEffect() and Duel.GetMZoneCount(tp,c,tp)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133)  and Duel.IsExistingMatchingCard(s.spfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)	 and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)   and Duel.GetFlagEffect(tp,id+1)==0
+	local b2=c:IsReleasableByEffect() and Duel.GetMZoneCount(tp,c,tp)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133)  and Duel.IsExistingMatchingCard(s.spfilter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)	and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)   and Duel.GetFlagEffect(tp,id+1)==0
 	local op=0
 	if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(id,0),aux.Stringid(id,1))
 	elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(id,0))
@@ -59,6 +59,7 @@ local b1=Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) and Duel
 			if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
 			local op=te:GetOperation()
 			if op then op(e,tp,eg,ep,ev,re,r,rp) end
+		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
 		end
 	else
 		Duel.Release(c,REASON_EFFECT)
@@ -68,6 +69,7 @@ local b1=Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) and Duel
 			g1:Merge(g2)
 			local sg=g1:SelectSubGroup(tp,s.fselect,false,2,2)
 			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
 		end
 	end
 end
@@ -95,7 +97,7 @@ function s.cfilter(c,tp)
 	return c:IsSetCard(0x9d3) and c:IsAbleToRemoveAsCost()  and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE,0,1,c)
 end
 function s.thfilter(c,tp)
-	return c:IsSetCard(0x9d3) and c:IsType(TYPE_SPELL) and c:IsSSetable() and c:IsType(TYPE_QUICKPLAY)	 
+	return c:IsSetCard(0x9d3) and c:IsType(TYPE_SPELL) and c:IsSSetable() and c:IsType(TYPE_QUICKPLAY)   
 end
 function s.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE,0,1,nil) end

@@ -83,7 +83,7 @@ function c33700931.activate(e,tp,eg,ep,ev,re,r,rp)
 			for i=1,2 do 
 				local p2=player[i]
 				local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsCanBeSpecialSummoned),p2,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,0,p2,false,false)
-				if Duel.GetLocationCount(p2,LOCATION_MZONE)>0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(33700931,3)) then
+				if Duel.GetLocationCount(p2,LOCATION_MZONE)>0 and #g>0 and Duel.SelectYesNo(p2,aux.Stringid(33700931,3)) then
 					Duel.Hint(HINT_SELECTMSG,p2,HINTMSG_SPSUMMON)
 					local sg=g:Select(p2,1,1,nil)
 					Duel.SpecialSummon(sg,0,p2,p2,false,false,POS_FACEUP)
