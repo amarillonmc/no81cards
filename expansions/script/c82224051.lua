@@ -22,16 +22,26 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.reptg)  
 	c:RegisterEffect(e2)  
 end
+function cm.xmfilter(c,tp,e)
+	return c:IsCanOverlay(tp) and not c:IsStatus(STATUS_DESTROY_CONFIRMED) and not c:IsImmuneToEffect(e)
+end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local c=e:GetHandler()  
-	if chk==0 then return c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE) and Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) end  
+	if chk==0 then return c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+		and Duel.IsExistingMatchingCard(cm.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,tp,e) end  
 	if Duel.SelectEffectYesNo(tp,c,96) then  
-		local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)  
+		local g=Duel.GetMatchingGroup(cm.xmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c,tp,e)  
 		if g:GetCount()>0 then  
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)  
 			local sg=g:Select(tp,1,1,nil)  
 			Duel.HintSelection(sg)  
-			Duel.Overlay(e:GetHandler(),sg)  
+			local tc=sg:GetFirst()
+			local og=tc:GetOverlayGroup()
+			if og:GetCount()>0 then
+				Duel.SendtoGrave(og,REASON_RULE)
+			end
+			tc:CancelToGrave()
+			Duel.Overlay(c,Group.FromCards(tc))
 		end 
 		return true  
 	else
