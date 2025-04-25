@@ -60,7 +60,7 @@ end
 function cm.ccon(e)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_MZONE,0)>1
 end
-cm.input ={[[+Y-6-7-O-8]],[[+Y-:-M-?,x]],[[+i-?,w-5-8]],[[+_+\-B-G+h]],[[+_,x-A+Z-D]],[[+Z+W-M-M-8]],[[+X+V--+s-@]],[[+`+[-K-K- ]]}
+cm.input ={[[+Z+Z,r-?+p]],[[+Z+`-+-N-6]],[[+j+d-7- +T]],[[+Z-7,y,x+d]],[[+Z-3+\-B,x]],[[+Y-!-,-=+p]],[[+X+V--+s-@]],[[+_+[+q-*-$]]}
 cm.string={}
 cm.string[1]={"Celestial Gate!","这张卡回到手卡，这个回合每次场上的卡回到手卡，对方场上1张卡破坏"}
 cm.string[2]={"北斗千手杀!","这个回合对方是已把效果发动过7次以上时,对方场上的怪兽全部破坏"}

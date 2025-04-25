@@ -43,6 +43,7 @@ function c28335633.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local cg=g:SelectSubGroup(tp,aux.dabcheck,false,1,ft)
 		Duel.ConfirmCards(1-tp,cg)
+		Duel.ShuffleHand(tp)
 		local tab={}
 		local ct=0
 		for tc in aux.Next(cg) do

@@ -35,7 +35,7 @@ function cm.eftg(e,c)
 	return e:GetHandler():GetEquipTarget()==c
 end
 function cm.spfilter(c,e,tp,link)
-	return c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLink(link)
+	return c:IsType(TYPE_LINK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLink(link) and c:IsLinkAbove(2)
 end
 function cm.stg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local link=math.ceil((Duel.GetCurrentChain()+1)/2)

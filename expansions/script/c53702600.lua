@@ -421,7 +421,9 @@ function cm.AASTadjustop(otyp,ext)
 	return
 	function(e,tp,eg,ep,ev,re,r,rp)
 	local adjt={}
-	if ext then adjt={ext} else adjt={e:GetLabelObject()} end
+	if ext then
+		if type(ext)=="table" then adjt=ext else adjt={ext} end
+	else adjt={e:GetLabelObject()} end
 	if #adjt==0 then e:Reset() return end
 	for _,te in pairs(adjt) do
 	local c=te:GetHandler()
@@ -2425,7 +2427,7 @@ function cm.DragoronActivate(c,code)
 		Duel.RegisterEffect(ge2,0)
 		local ge3=Effect.CreateEffect(c)
 		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge3:SetProperty(EFFECT_FLAG_DELAY)
+		--ge3:SetProperty(EFFECT_FLAG_DELAY)
 		ge3:SetCode(EVENT_MOVE)
 		ge3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 			local g=Duel.GetMatchingGroup(nil,0,0xff,0xff,nil)
@@ -2578,7 +2580,7 @@ function cm.DragoronActivate(c,code)
 		Card.GetActivateEffect=function(ac)
 			local re=ADGD_GetActivateEffect(ac)
 			local le={ac:IsHasEffect(53757000)}
-			if #le>0 then
+			if #le>0 and not ac:IsLocation(LOCATION_FZONE) then
 				le=le[1]
 				re=le:GetLabelObject()
 			end
