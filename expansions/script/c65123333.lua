@@ -370,7 +370,7 @@ function s.rev(e,re,r,rp,rc)
 		_Effect.SetCode(e1,EVENT_DRAW)
 		_Effect.SetCountLimit(e1,1)
 		_Effect.SetOperation(e1,s.setlpop)
-		_Duel.RegisterEffect(e1,1-tp)	  
+		_Duel.RegisterEffect(e1,1-tp)	 
 		return true
 	else
 		return false
@@ -2021,11 +2021,11 @@ function s.chainactop(e,tp,eg,ep,ev,re,r,rp)
 			local se=etable[1]
 			if #etable>1 then
 				local op=aux.SelectFromOptions(tp,
-				{etable[1],etable[1]:GetDescription()},
-				{etable[2],etable[2]:GetDescription()},
-				{etable[3],etable[3]:GetDescription()},
-				{etable[4],etable[4]:GetDescription()},
-				{etable[5],etable[5]:GetDescription()})
+				{#etable>=1 and etable[1],etable[1]:GetDescription()},
+				{#etable>=2 and etable[2],etable[2]:GetDescription()},
+				{#etable>=3 and etable[3],etable[3]:GetDescription()},
+				{#etable>=4 and etable[4],etable[4]:GetDescription()},
+				{#etable>=5 and etable[5],etable[5]:GetDescription()})
 				se=etable[op]
 			end
 			local code=sc:GetOriginalCode()

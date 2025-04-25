@@ -97,7 +97,7 @@ function s.spfilter1(c,e,tp)
 	return not c:IsType(TYPE_TOKEN) and c:IsLocation(LOCATION_GRAVE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,1-tp)
 end
 function s.spfilter2(c,e,tp)
-	return not c:IsType(TYPE_TOKEN) and not c:IsLocation(LOCATION_GRAVE) and not c:IsLocation(LOCATION_EXTRA) and not c:IsLocation(LOCATION_DECK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return not c:IsType(TYPE_TOKEN) and not (c:IsLocation(LOCATION_EXTRA) and c:IsFacedown()) and not c:IsLocation(LOCATION_DECK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local cg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
@@ -113,7 +113,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 		if #spg1>0 and ft1>0 then 
 			if #spg1>ft1 then 
 				local spg=spg1
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,4))
 				spg1=spg:Select(tp,ft1,ft1,nil)
 			end
 			if Duel.SpecialSummon(spg1,0,tp,1-tp,false,false,POS_FACEUP)~=0 then
@@ -128,7 +128,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 		if #spg2>0 and ft2>0 then 
 			if #spg2>ft2 then 
 				local spg=spg2
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,5))
 				spg2=spg:Select(tp,ft2,ft2,nil)
 			end
 			Duel.SpecialSummon(spg2,0,tp,tp,false,false,POS_FACEUP)

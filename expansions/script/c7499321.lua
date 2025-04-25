@@ -69,12 +69,13 @@ function s.initial_effect(c)
 	--
 	if not s.global_effect then
 		s.global_effect=true
-		local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		e3:SetCode(EVENT_CHAIN_SOLVED)
-		e3:SetCondition(s.trcon)
-		e3:SetOperation(s.trop)
-		Duel.RegisterEffect(e3,0)
+		local ge3=Effect.CreateEffect(c)
+		ge3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		ge3:SetCode(EVENT_CHAIN_SOLVED)
+		ge3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		ge3:SetCondition(s.trcon)
+		ge3:SetOperation(s.trop)
+		Duel.RegisterEffect(ge3,0)
 	end
 end
 function s.rmcfilter(c)

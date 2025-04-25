@@ -15,6 +15,10 @@ function c65899930.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local ec=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler()):GetFirst()
 	if ec then
+	if ec:IsType(TYPE_XYZ) and ec:GetOverlayCount()>0 then
+	local mg=ec:GetOverlayGroup()
+	Duel.SendtoGrave(mg,REASON_RULE)
+	end
 		Duel.Exile(ec,0)
 	end
 end
