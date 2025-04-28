@@ -33,10 +33,11 @@ end
 
 -- ①：判断是否对方卡片效果发动且可以无效
 function cm.effect1_condition(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp and re:IsActiveType(TYPE_EFFECT) and re:GetHandler():IsLocation(LOCATION_ONFIELD)
-	if not Duel.IsChainDisablable(ev) then return false end
+	if not Duel.IsChainDisablable(ev) or rp~=1-tp then return false end
 	local te,p=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return te and p==tp and rp==1-tp
+	if not te or p~=tp then return false end
+	local tc=te:GetHandler()
+	return  te:IsActiveType(TYPE_MONSTER) or  te:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
 function cm.filter(c,tpe)
 	return c:IsType(tpe) and c:IsDiscardable()
@@ -44,15 +45,16 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local rtype=bit.band(re:GetActiveType(),0x7)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,nil,c,rtype) end
-	Duel.DiscardHand(tp,cm.filter,1,1,REASON_COST+REASON_DISCARD,nil,c,rtype)
+	if chk==0 then return e:GetHandler():IsDiscardable()
+		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_HAND,0,1,c,rtype) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+	--local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND,0,1,1,c,rtype)
+	--g:AddCard(c)
+	--Duel.SendtoGrave(g,REASON_DISCARD+REASON_COST)
+	Duel.DiscardHand(tp,cm.filter,1,1,REASON_COST+REASON_DISCARD,c,rtype)
 end
 -- ①：无效并破坏
 function cm.effect1_target(e,tp,eg,ep,ev,re,r,rp,chk)
-
-
-
-
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) then
@@ -66,7 +68,8 @@ function cm.effect1_operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		if Duel.Destroy(eg,REASON_EFFECT) and c:IsRelateToEffect(e) then
 			Duel.BreakEffect()
-			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+			Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,false,false,POS_FACEUP)
+
 		end
 	end
 end
