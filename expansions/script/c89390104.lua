@@ -87,7 +87,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(lg) do
 		zone=bit.bor(zone,tc:GetColumnZone(LOCATION_MZONE,tp))
 	end
-	if c:IsRelateToEffect(e) then
+	if zone>0 and c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP,zone)
 	end
 end

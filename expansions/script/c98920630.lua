@@ -44,6 +44,7 @@ function c98920630.spfilter(c,e,tp)
 end
 function c98920630.recop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c98920630.spfilter,tp,LOCATION_DECK+LOCATION_HAND,0,nil,e,tp)
+	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
