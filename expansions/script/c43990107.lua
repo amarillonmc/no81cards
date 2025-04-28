@@ -5,7 +5,6 @@ function c43990107.initial_effect(c)
 	-- 超量召唤规则
 	c:EnableReviveLimit()
 	aux.AddXyzProcedureLevelFree(c,c43990107.mfilter,nil,2,99)
-	aux.AddXyzProcedure(c,aux.TRUE,4,1)
 	
 	-- 效果①：破怪+检索+自爆连锁
 	local e1=Effect.CreateEffect(c)

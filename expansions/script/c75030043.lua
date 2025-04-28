@@ -37,7 +37,6 @@ end
 function s.indestg(e,c)
 	return c==e:GetHandler():GetBattleTarget()
 end
-
 function s.retcon(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToBattle() then return false end
 	local t=nil
@@ -55,6 +54,3 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(e:GetLabelObject(),nil,REASON_EFFECT)
 	end
 end
-
-
-

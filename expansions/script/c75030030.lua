@@ -16,15 +16,15 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.lvop)
 	c:RegisterEffect(e1)
 	--battle atkup
-	local e1=Effect.CreateEffect(c)  
+	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_RECOVER)
-	e1:SetType(EFFECT_TYPE_IGNITION)  
-	e1:SetRange(LOCATION_MZONE)   
-	e1:SetCountLimit(1,m+10000000)  
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1,m+10000000)
 	e1:SetCost(cm.cost)
-	e1:SetOperation(cm.op)  
-	c:RegisterEffect(e1)  
+	e1:SetOperation(cm.op)
+	c:RegisterEffect(e1)
 end
 function cm.filter(c)
 	return c:IsFaceup()
@@ -38,7 +38,7 @@ end
 function cm.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		local e1=Effect.CreateEffect(e:GetHandler())	
+		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(m,1))
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
@@ -51,14 +51,14 @@ function cm.lvop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.bttg(e,c)
-	return c~=e:GetHandler() 
+	return c~=e:GetHandler()
 end
-function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=e:GetHandler():GetOverlayGroup()
 	local ct=g:GetCount()
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,ct,REASON_COST) end 
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,ct,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,ct,ct,REASON_COST)
-end  
+end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	--atk change
@@ -73,7 +73,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetOperation(cm.atkop)
 	e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	c:RegisterEffect(e3)	
+	c:RegisterEffect(e3)
 	--draw(battle)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -103,7 +103,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetValue(math.ceil(atk/2))
 		c:RegisterEffect(e2)
 		if tc:IsFaceup() and tc:IsRelateToBattle(e) and not tc:IsImmuneToEffect(e) then
-			local e1=Effect.CreateEffect(c)
+			local e1=Effect.CreateDuel(e)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_SET_ATTACK_FINAL)
 			e1:SetReset(RESET_PHASE+PHASE_DAMAGE_CAL)

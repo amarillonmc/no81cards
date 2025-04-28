@@ -16,12 +16,12 @@ function s.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCountLimit(1,id+o)
+	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.dspcon)
 	e1:SetTarget(s.dsptg)
 	e1:SetOperation(s.dspop)
 	c:RegisterEffect(e1)
----------
+	--
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -29,7 +29,7 @@ function s.initial_effect(c)
 	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
----------
+	--
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,0))
 	e3:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)

@@ -18,14 +18,16 @@ function c71000176.initial_effect(c)
 	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsCode,71000100))
+	e2:SetTarget(c71000176.indtg)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
 	e3:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e3:SetValue(aux.indoval)
 	c:RegisterEffect(e3)
 	local e4=e2:Clone()
-	e4:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
+	e4:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
+	e4:SetValue(aux.indoval)
 	c:RegisterEffect(e4)
 	--3
 	local e12=Effect.CreateEffect(c)
@@ -50,7 +52,9 @@ function c71000176.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not c:IsRace(RACE_SPELLCASTER)
 end
 --1
-
+function c71000176.indtg(e,c)
+	return c:IsCode(71000100) and c~=e:GetHandler()
+end
 function c71000176.f(c)
 	return  c:IsAbleToHand() and c:IsSetCard(0xe73)
 end 

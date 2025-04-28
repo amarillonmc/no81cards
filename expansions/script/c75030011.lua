@@ -22,7 +22,6 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local a=Duel.GetAttacker()
 	if a:IsSetCard(0x5751) then
 		Duel.RegisterFlagEffect(a:GetControler(),id,nil,0,1)
-		--Debug.Message("攻击次数:"..Duel.GetFlagEffect(a:GetControler(),id))
 	end
 end
 function s.cfilter(c)

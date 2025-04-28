@@ -2,13 +2,13 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--activate
-	 aux.AddXyzProcedure(c,nil,5,3)
+	aux.AddXyzProcedure(c,nil,5,3)
 	c:EnableReviveLimit()
-	local e2=Effect.CreateEffect(c) 
+	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e2:SetCode(EVENT_PHASE+PHASE_BATTLE_START) 
-	e2:SetRange(LOCATION_MZONE) 
+	e2:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
+	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
 	e2:SetTarget(s.negtg)
 	e2:SetOperation(s.negop)
@@ -54,28 +54,27 @@ function s.initial_effect(c)
 	e1:SetOperation(s.atkop)
 	c:RegisterEffect(e1)
 end
-
 function s.econ(e)
 	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,75030004)
 end
 -----jiance
-function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end  
+function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,g:GetCount(),0,0)
 end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
-	if g:GetCount()>0 then 
-		local tc=g:GetFirst() 
-		while tc do 
+	if g:GetCount()>0 then
+		local tc=g:GetFirst()
+		while tc do
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetCode(EFFECT_DISABLE) 
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)  
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE)
 		tc:RegisterEffect(e1)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_DISABLE_EFFECT)
@@ -85,12 +84,11 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 			local e3=e1:Clone()
 			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
 			tc:RegisterEffect(e3)
-		end 
-		tc=g:GetNext() 
-		end 
+		end
+		tc=g:GetNext()
+		end
 	end
 end
-
 function s.efilter(e,te)
 	return te:IsActiveType(TYPE_MONSTER) and te:GetOwnerPlayer()~=e:GetHandlerPlayer()
 end
@@ -101,7 +99,6 @@ function s.lv_or_rk(c)
 	if c:IsType(TYPE_XYZ) then return c:GetRank()
 	else return c:GetLevel() end
 end
-
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
