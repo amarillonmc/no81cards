@@ -64,7 +64,7 @@ function c43990076.filter1(c,e)
 	return c:IsOnField() and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
 end
 function c43990076.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsRace(RACE_ILLUSION) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x5510) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c43990076.filter3(c)
