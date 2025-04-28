@@ -59,6 +59,7 @@ function cm.initial_effect(c)
 	e01:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e01:SetCode(EVENT_CHAIN_SOLVED)
 	e01:SetRange(LOCATION_SZONE)
+	e01:SetProperty(EFFECT_FLAG_DELAY)
 	e01:SetCondition(cm.actcon2)
 	e01:SetTarget(cm.acttg)
 	e01:SetOperation(cm.actop)
@@ -119,7 +120,7 @@ function cm.actfilter(c,tp)
 	return cm.Crooked_Cook(c) and c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
 function cm.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.actfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.actfilter,tp,LOCATION_DECK,0,1,nil,tp) end
 end
 function cm.actop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,4))
