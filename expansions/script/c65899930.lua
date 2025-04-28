@@ -20,5 +20,6 @@ function c65899930.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoGrave(mg,REASON_RULE)
 	end
 		Duel.Exile(ec,0)
+		Duel.RaiseEvent(ec,EVENT_LEAVE_FIELD,e,REASON_EFFECT,tp,nil,nil)
 	end
 end
