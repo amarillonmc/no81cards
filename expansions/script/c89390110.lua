@@ -74,7 +74,7 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=g:GetFirst()
 	if rc and Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)~=0 and rc:IsLocation(LOCATION_REMOVED) then
 		Duel.BreakEffect()
-		if Duel.Draw(tp,2,REASON_EFFECT)==2 and Duel.IsExistingMatchingCard(s.movefilter,tp,0,LOCATION_MZONE,1,nil,1-tp) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		if Duel.Draw(tp,2,REASON_EFFECT)==2 and Duel.IsExistingMatchingCard(s.movefilter,tp,0,LOCATION_MZONE,1,nil,1-tp) then
 			local mg=Duel.SelectMatchingCard(tp,s.movefilter,tp,0,LOCATION_MZONE,1,1,nil,1-tp)
 			local seq=mg:GetFirst():GetSequence()
 			local flag=0
