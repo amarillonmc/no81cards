@@ -38,11 +38,11 @@ end
 function s.excost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then 
-		return Duel.IsExistingMatchingCard(s.excost1_filter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,c)
+		return Duel.IsExistingMatchingCard(s.excost1_filter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_EXTRA,0,1,c)
 			and c:IsAbleToRemove()
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,s.excost1_filter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,c)
+	local g=Duel.SelectMatchingCard(tp,s.excost1_filter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_EXTRA,0,1,1,c)
 	g:AddCard(c)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	e:SetLabel(g:FilterCount(Card.IsSetCard,nil,0xe73)) 
