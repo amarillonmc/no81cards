@@ -110,7 +110,7 @@ function c29059050.eqfilter(c,tp)
 end
 function c29059050.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingTarget(aux.NecroValleyFilter(c29059050.eqfilter),tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,c,tp)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c29059050.eqfilter),tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil)
 		and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_GRAVE+LOCATION_EXTRA)
 end

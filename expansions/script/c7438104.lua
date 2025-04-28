@@ -143,7 +143,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD)
-	e5:SetTargetRange(0,LOCATION_ONFIELD)
+	e5:SetTargetRange(0,LOCATION_MZONE)
 	e5:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	e5:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
 	e5:SetReset(RESET_PHASE+PHASE_END)
@@ -160,6 +160,12 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local e8=e5:Clone()
 	e8:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	Duel.RegisterEffect(e8,tp)
+	local e9=e5:Clone()
+	e9:SetCode(EFFECT_UNRELEASABLE_SUM)
+	Duel.RegisterEffect(e9,tp)
+	local e10=e5:Clone()
+	e10:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+	Duel.RegisterEffect(e10,tp)
 	--client
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
@@ -170,7 +176,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e3,1-tp)
 end
 function cm.lockcon(e)
-	return Duel.GetCurrentPhase()~=PHASE_MAIN1 
+	return Duel.GetCurrentPhase()==PHASE_MAIN1
 end
 function cm.fuslimit(e,c,sumtype)
 	return sumtype==SUMMON_TYPE_FUSION

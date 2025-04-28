@@ -1,14 +1,6 @@
 --方舟骑士-凯尔希
 function c29056009.initial_effect(c)
 	aux.AddCodeList(c,29065500,29065502,29065578)
---summon with no tribute
-	local e0=Effect.CreateEffect(c)
-	e0:SetDescription(aux.Stringid(51126152,0))
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_SUMMON_PROC)
-	e0:SetCondition(c29056009.ntcon)
-	--c:RegisterEffect(e0)
 --search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(39392286,0))
@@ -54,7 +46,7 @@ function c29056009.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetAttacker()==c or Duel.GetAttackTarget()==c)
 end
 function c29056009.spfilter(c,e,tp)
-	return c:IsFaceupEx() and c:IsCode(29065578) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(29065578) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c29056009.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c29056009.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end
