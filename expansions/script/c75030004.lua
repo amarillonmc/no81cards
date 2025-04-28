@@ -51,12 +51,12 @@ function c75030004.initial_effect(c)
 end
 function c75030004.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttacker() 
-	if tc:IsSetCard(0x753) then 
+	if tc:IsSetCard(0x5751) then 
 		Duel.RegisterFlagEffect(tc:GetControler(),75030004,0,0,1) 
 	end
 end
 function c75030004.thfilter(c)
-	return c:IsSetCard(0x753) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x5751) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c75030004.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75030004.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -105,7 +105,7 @@ function c75030004.xxop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_UPDATE_ATTACK) 
 	e2:SetTargetRange(LOCATION_MZONE,0) 
 	e2:SetTarget(function(e,c) 
-	return c:IsSetCard(0x753) end) 
+	return c:IsSetCard(0x5751) end) 
 	e2:SetValue(1000) 
 	Duel.RegisterEffect(e2,tp) 
 end  

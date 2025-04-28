@@ -4,10 +4,10 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--seach
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,11561061)
 	e1:SetTarget(c11561061.rhtg)
 	e1:SetOperation(c11561061.rhop)
@@ -31,39 +31,91 @@ end
 function c11561061.rhfilter(c,e,tp)
 	return c:IsSetCard(0x133) and c:IsLevelAbove(7) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
+function c11561061.filter0(c)
+	return c:IsOnField() and c:IsAbleToHand()
+end
 function c11561061.filter1(c,e)
-	return not c:IsImmuneToEffect(e)
+	return c:IsOnField() and c:IsAbleToHand() and not c:IsImmuneToEffect(e)
 end
 function c11561061.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and c:IsRace(RACE_DRAGON) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
+function c11561061.disfilter(c)
+	return c:IsDiscardable() and (c:IsSetCard(0x133) or c:IsRace(RACE_DRAGON))
+end
 function c11561061.rhtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c11561061.rhfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	local b1=Duel.IsExistingMatchingCard(c11561061.rhfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	local chkf=tp
+	local mg1=Duel.GetFusionMaterial(tp):Filter(c11561061.filter0,nil)
+	local b2=Duel.IsExistingMatchingCard(c11561061.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
+	if not b2 then
+		local ce=Duel.GetChainMaterial(tp)
+		if ce~=nil then
+			local fgroup=ce:GetTarget()
+			local mg3=fgroup(ce,e,tp)
+			local mf=ce:GetValue()
+			b2=Duel.IsExistingMatchingCard(c11561061.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg3,mf,chkf)
+		end
+	end
+	if chk==0 then return b1 or b2 end
+	--Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c11561061.rhop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c11561061.rhfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then
-
+	local b1=Duel.IsExistingMatchingCard(c11561061.rhfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	local chkf=tp
+	local mg1=Duel.GetFusionMaterial(tp):Filter(c11561061.filter0,nil)
+	local b2=Duel.IsExistingMatchingCard(c11561061.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
+	if not b2 then
+		local ce=Duel.GetChainMaterial(tp)
+		if ce~=nil then
+			local fgroup=ce:GetTarget()
+			local mg3=fgroup(ce,e,tp)
+			local mf=ce:GetValue()
+			b2=Duel.IsExistingMatchingCard(c11561061.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg3,mf,chkf)
+		end
+	end
+	if not (b1 or b2) then return end
+	local op=aux.SelectFromOptions(tp,
+		{b1,aux.Stringid(11561061,0)},
+		{b2,aux.Stringid(11561061,1)})
+	if op==1 then
+		c11561061.spop2(e,tp,eg,ep,ev,re,r,rp)
 		local chkf=tp
-		local mg1=Duel.GetFusionMaterial(tp)
-		local res=Duel.IsExistingMatchingCard(c11561061.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
-		if not res then
+		local mg1=Duel.GetFusionMaterial(tp):Filter(c11561061.filter0,nil)
+		local b2=Duel.IsExistingMatchingCard(c11561061.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
+		if not b2 then
 			local ce=Duel.GetChainMaterial(tp)
 			if ce~=nil then
 				local fgroup=ce:GetTarget()
-				local mg2=fgroup(ce,e,tp)
+				local mg3=fgroup(ce,e,tp)
 				local mf=ce:GetValue()
-				res=Duel.IsExistingMatchingCard(c11561061.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg2,mf,chkf)
+				b2=Duel.IsExistingMatchingCard(c11561061.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg3,mf,chkf)
 			end
 		end
-		if res and Duel.SelectYesNo(tp,aux.Stringid(11561061,0)) then
-
-		Duel.BreakEffect()
-
+		if Duel.IsExistingMatchingCard(c11561061.disfilter,tp,LOCATION_HAND,0,1,nil) and b2 and Duel.SelectYesNo(tp,aux.Stringid(11561061,2)) then
+			Duel.BreakEffect()
+			Duel.DiscardHand(tp,c11561061.disfilter,1,1,REASON_EFFECT+REASON_DISCARD)
+			c11561061.fsop(e,tp,eg,ep,ev,re,r,rp)
+		end
+	else
+		c11561061.fsop(e,tp,eg,ep,ev,re,r,rp)
+		if Duel.IsExistingMatchingCard(c11561061.disfilter,tp,LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(c11561061.rhfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(11561061,2)) then
+			Duel.BreakEffect()
+			Duel.DiscardHand(tp,c11561061.disfilter,1,1,REASON_EFFECT+REASON_DISCARD)
+			c11561061.spop2(e,tp,eg,ep,ev,re,r,rp)
+		end
+	end
+end
+function c11561061.spop2(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetMZoneCount(tp)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sc=Duel.SelectMatchingCard(tp,c11561061.rhfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
+	if sc then
+		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+function c11561061.fsop(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(c11561061.filter1,nil,e)
 	local sg1=Duel.GetMatchingGroup(c11561061.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
@@ -85,7 +137,7 @@ function c11561061.rhop(e,tp,eg,ep,ev,re,r,rp)
 		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
 			local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
 			tc:SetMaterial(mat1)
-			Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
+			Duel.SendtoHand(mat1,nil,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			Duel.BreakEffect()
 			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
 		else
@@ -95,12 +147,7 @@ function c11561061.rhop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		tc:CompleteProcedure()
 	end
-		end
-	end
-
-
 end
-
 
 
 

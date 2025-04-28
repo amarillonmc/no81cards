@@ -1,5 +1,10 @@
 --神威骑士堡中门炮
 function c24501033.initial_effect(c)
+	--act in hand
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	c:RegisterEffect(e4)
 	--Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
@@ -12,6 +17,7 @@ function c24501033.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_SZONE)
+	e1:SetCountLimit(1,24501033)
 	e1:SetCost(c24501033.spcost)
 	e1:SetTarget(c24501033.sptg)
 	e1:SetOperation(c24501033.spop)
@@ -19,24 +25,25 @@ function c24501033.initial_effect(c)
 	--select
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(24501033,3))
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1)
-	e2:SetCost(c24501033.slcost)
+	--e2:SetCountLimit(1)
+	--e2:SetCost(c24501033.slcost)
 	e2:SetTarget(c24501033.sltg)
 	--e2:SetOperation(c24501033.slop)
 	c:RegisterEffect(e2)
-	--to hand/deck
+	--set
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TODECK+CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	--e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_GRAVE)
-	--e3:SetCountLimit(1)
-	e3:SetTarget(c24501033.tdtg)
-	e3:SetOperation(c24501033.tdop)
+	e3:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e3:SetCost(c24501033.setcost)
+	e3:SetTarget(c24501033.settg)
+	e3:SetOperation(c24501033.setop)
 	c:RegisterEffect(e3)
 end
 function c24501033.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -69,12 +76,22 @@ function c24501033.slcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGraveAsCost,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
-function c24501033.sltg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+function c24501033.tgfilter(c,eg)
+	return eg:IsContains(c) and c:IsSetCard(0x501) and c:IsLevelAbove(2) and c:IsFaceup()
+end
+function c24501033.sltg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c24501033.tgfilter(chkc,eg) end
+	if chk==0 then return Duel.IsExistingTarget(c24501033.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,eg) end
+	if eg:GetCount()==1 then
+		Duel.SetTargetCard(eg)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+		Duel.SelectTarget(tp,c24501033.tgfilter,tp,LOCATION_MZONE,0,1,1,nil,eg)
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EFFECT)
 	local b1=Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
 	local b2=true
-	local b3=true
+	local b3=Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil)
 	local op=aux.SelectFromOptions(tp,
 		{b1,aux.Stringid(24501033,0)},
 		{b2,aux.Stringid(24501033,1)},
@@ -83,26 +100,68 @@ function c24501033.sltg(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetCategory(CATEGORY_DESTROY)
 		e:SetOperation(c24501033.desop)
 		local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:GetCount(),0,0)
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,1,0,0)
 	elseif op==2 then
 		e:SetCategory(CATEGORY_DAMAGE)
 		e:SetOperation(c24501033.damop)
 		Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,3000)
 	elseif op==3 then
-		e:SetCategory(CATEGORY_RECOVER)
-		e:SetOperation(c24501033.recop)
-		Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,3000)
+		e:SetCategory(CATEGORY_DISABLE)
+		e:SetOperation(c24501033.disop)
 	end
 end
 function c24501033.desop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-	Duel.Destroy(sg,REASON_EFFECT)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsLevelAbove(1) then
+		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local dg=g:Select(tp,1,tc:GetLevel(),nil)
+		if #dg==0 then return end
+		Duel.HintSelection(dg)
+		Duel.Destroy(dg,REASON_EFFECT)
+	end
 end
 function c24501033.damop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Damage(1-tp,3000,REASON_EFFECT)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
+		Duel.Damage(1-tp,tc:GetAttack(),REASON_EFFECT)
+	end
 end
-function c24501033.recop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Recover(tp,3000,REASON_EFFECT)
+function c24501033.disop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsLevelAbove(1) then
+		local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+		local dg=g:Select(tp,1,tc:GetLevel(),nil)
+		if #dg==0 then return end
+		Duel.HintSelection(dg)
+		for dc in aux.Next(dg) do
+			Duel.NegateRelatedChain(dc,RESET_TURN_SET)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			dc:RegisterEffect(e1)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			dc:RegisterEffect(e2)
+		end
+	end
+end
+function c24501033.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDiscardDeckAsCost(tp,3) end
+	Duel.DiscardDeck(tp,3,REASON_COST)
+end
+function c24501033.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+end
+function c24501033.setop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	end
 end
 function c24501033.tdfilter(c)
 	return c:IsSetCard(0x501) and c:IsAbleToHand() and c:IsAbleToDeck()

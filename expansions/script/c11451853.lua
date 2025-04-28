@@ -204,7 +204,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e0)
 	--search
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_COIN+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
+	e1:SetCategory(CATEGORY_COIN+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCode(EVENT_CHAINING)
@@ -266,7 +266,8 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_DECK,0,nil,e,tp)
+	if #g>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		if PNFL_PROPHECY_FLIGHT_TACTIC_VIEW then
 			local g=Duel.GetMatchingGroup(Card.IsHasEffect,tp,LOCATION_DECK,0,nil,11451851)
 			local g1=g:Filter(pnflpf.tdfilter,nil)
@@ -284,10 +285,42 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			end
 			tpg:DeleteGroup()
 		end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-		if #g>0 then
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		local g1=g-g:Filter(Card.IsHasEffect,nil,11451851)
+		local g2=g1
+		local sg
+		local ph=Duel.GetCurrentPhase()
+		if ph==PHASE_END or ph==PHASE_BATTLE_START then g2=g1:Filter(function(c) return c[c] and c[c]==Duel.GetCurrentPhase() end,nil) end
+		if #g2>0 and #g2<#g1 then
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
+			sg=g2:CancelableSelect(tp,1,1,nil)
+			if not sg then
+				if #g1>0 and #g1<#g then
+					Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
+					sg=g1:CancelableSelect(tp,1,1,nil)
+					if not sg then
+						Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
+						sg=g:Select(tp,1,1,nil)
+					end
+				else
+					Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
+					sg=g:Select(tp,1,1,nil)
+				end
+			end
+		else
+			if #g1>0 and #g1<#g then
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
+				sg=g1:CancelableSelect(tp,1,1,nil)
+				if not sg then
+					Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
+					sg=g:Select(tp,1,1,nil)
+				end
+			else
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
+				sg=g:Select(tp,1,1,nil)
+			end
+		end
+		if #sg>0 then
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
 	if c:IsRelateToEffect(e) then
@@ -335,8 +368,22 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 				end
 				tpg:DeleteGroup()
 			end
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451851,1))
-			fc=tg:Select(tp,1,1,nil):GetFirst()
+			local g1=tg
+			local fg
+			local ph=Duel.GetCurrentPhase()
+			if ph==PHASE_END or ph==PHASE_BATTLE_START then g1=tg-tg:Filter(function(c) return c[c] and c[c]==Duel.GetCurrentPhase() end,nil) end
+			if #g1>0 and #g1<#tg then
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451851,1))
+				fg=g1:CancelableSelect(tp,1,1,nil)
+				if not fg then
+					Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451851,11))
+					fg=tg:Select(tp,1,1,nil)
+				end
+			else
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451851,11))
+				fg=tg:Select(tp,1,1,nil)
+			end
+			fc=fg:GetFirst()
 		end
 		if #Group.__band(Duel.GetDecktopGroup(tp,#tg),tg)~=#tg then
 			if fc then tg:RemoveCard(fc) end

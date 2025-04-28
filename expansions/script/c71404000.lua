@@ -559,7 +559,7 @@ function yume.stellar_memories.MainZoneFilter(c,tp)
 	return c:IsLocation(LOCATION_MZONE) and c:IsControler(tp) and c:GetSequence()<5
 end
 function yume.stellar_memories.MultiRitualSelectToUseFilter(c,e,tp,summon_location,level_function,greater_or_equal)
-	return Duel.IsExistingMatchingCard(yume.stellar_memories.MultiRitualSelectToSummonFilter,tp,summon_location,0,1,c,e,tp,c,level_function,greater_or_equal)
+	return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(yume.stellar_memories.MultiRitualSelectToSummonFilter),tp,summon_location,0,1,c,e,tp,c,level_function,greater_or_equal)
 end
 function yume.stellar_memories.MultiRitualSelectToSummonFilter(c,e,tp,mc,level_function,greater_or_equal)
 	return c:GetOriginalType()&0x81==0x81 and yume.stellar_memories.RitualMonsterFilter(c,e,tp)
@@ -601,7 +601,7 @@ function yume.stellar_memories.MultiRitualOperation(greater_or_equal,summon_loca
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 				local mat=mg:Select(tp,1,1,nil)
 				local mc=mat:GetFirst()
-				local sg=Duel.GetMatchingGroup(yume.stellar_memories.MultiRitualSelectToSummonFilter,tp,summon_location,0,mc,e,tp,mc,Card.GetLink,greater_or_equal)
+				local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(yume.stellar_memories.MultiRitualSelectToSummonFilter),tp,summon_location,0,mc,e,tp,mc,Card.GetLink,greater_or_equal)
 				if sg:GetCount()==0 then return end
 				if mc:IsLocation(LOCATION_MZONE) then ft=ft+1 end
 				if ct and ct<ft then ft=ct end
@@ -656,7 +656,7 @@ function yume.stellar_memories.OptionalMultiRitualSummon(e,tp,msg,greater_or_equ
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local mat=mg:Select(tp,1,1,nil)
 	local mc=mat:GetFirst()
-	local sg=Duel.GetMatchingGroup(yume.stellar_memories.MultiRitualSelectToSummonFilter,tp,summon_location,0,mc,e,tp,mc,Card.GetLink,greater_or_equal)
+	local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(yume.stellar_memories.MultiRitualSelectToSummonFilter),tp,summon_location,0,mc,e,tp,mc,Card.GetLink,greater_or_equal)
 	if sg:GetCount()==0 then return end
 	if mc:IsLocation(LOCATION_MZONE) then ft=ft+1 end
 	if ct and ct<ft then ft=ct end
@@ -697,7 +697,71 @@ function yume.stellar_memories.OptionalMultiRitualSummon(e,tp,msg,greater_or_equ
 		Duel.SpecialSummonComplete()
 	end
 end
-
+function yume.stellar_memories.BanishSpellFilter(c,sid,tp)
+	return c:IsCode(sid) and c:IsAbleToRemove(tp)
+end
+function yume.stellar_memories.SendSpellFilter(c,sid)
+	return c:IsCode(sid) and c:IsFaceup() and c:IsAbleToDeck()
+end
+function yume.stellar_memories.BanishorSendSpellCheck(sid,tp)
+	return Duel.IsExistingMatchingCard(yume.stellar_memories.BanishSpellFilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,1,nil,sid,tp)
+		or Duel.IsExistingMatchingCard(yume.stellar_memories.SendSpellFilter,tp,LOCATION_REMOVED,0,1,nil,sid)
+end
+function yume.stellar_memories.BanishorSendSpell(sid,tp,msg1,msg2)
+	local g1=Duel.GetMatchingGroup(aux.NecroValleyFilter(yume.stellar_memories.BanishSpellFilter),tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,nil,sid,tp)
+	local g2=Duel.GetMatchingGroup(yume.stellar_memories.SendSpellFilter,tp,LOCATION_REMOVED,0,nil,sid)
+	local op=aux.SelectFromOptions(tp,
+		{#g1>0,msg1},
+		{#g2>0,msg2})
+	if op==1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local g=g1:Select(tp,1,1,nil)
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	elseif op==2 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local g=g2:Select(tp,1,1,nil)
+		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+end
+--filters for common spell effects
+function yume.stellar_memories.SpellActivationBanishFilter(c,cid,tp)
+	return c:IsCode(cid) and c:IsAbleToRemove(tp)
+end
+function yume.stellar_memories.SpellActivationSearchFilter(c,rid)
+	return c:IsCode(rid) and c:IsAbleToHand()
+end
+function yume.stellar_memories.SpellActivationSendFilter(c,lid)
+	return c:IsCode(lid) and c:IsAbleToExtra()
+end
+function yume.stellar_memories.BanishedSpellCon(cid)
+	return	function(e,tp,eg,ep,ev,re,r,rp)
+				return re and re:GetHandler():IsCode(cid)
+end
+--spell for low level and low link
+function yume.stellar_memories.LowSpellActivationTg(rid,lid)
+	return	function(e,tp,eg,ep,ev,re,r,rp,chk)
+				if chk==0 then
+					return Duel.IsExistingMatchingCard(yume.stellar_memories.SpellActivationSearchFilter,tp,LOCATION_DECK,0,1,nil,rid)
+						or Duel.IsExistingMatchingCard(yume.stellar_memories.SpellActivationBanishFilter,tp,LOCATION_EXTRA,0,1,nil,lid,tp)
+				end
+end
+function yume.stellar_memories.LowSpellActivationOp(rid,lid,msg1,msg2)
+	return	function(e,tp,eg,ep,ev,re,r,rp)
+				local g1=Duel.GetMatchingGroup(yume.stellar_memories.SpellActivationSearchFilter,tp,LOCATION_DECK,0,nil,rid)
+				local g2=Duel.GetMatchingGroup(yume.stellar_memories.SpellActivationBanishFilter,tp,LOCATION_EXTRA,0,nil,lid,tp)
+				local op=aux.SelectFromOptions(tp,
+					{#g1>0,msg1},
+					{#g2>0,msg2})
+				if op==1 then
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+					local g=g1:Select(tp,1,1,nil)
+					Duel.SendtoHand(g,nil,REASON_EFFECT)
+					Duel.ConfirmCards(1-tp,g)
+				elseif op==2 then
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+					local g=g2:Select(tp,1,1,nil)
+					Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+				end
+end
 function yume.stellar_memories.LinkSummonFilter(c)
 	return c:IsLinkSummonable(nil) and c:IsRace(RACE_SPELLCASTER)
 end

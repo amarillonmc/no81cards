@@ -1,0 +1,91 @@
+--救愈！拂晓纹章士！
+local s,id,o=GetID()
+function s.initial_effect(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_RECOVER)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCondition(s.descon)
+	e1:SetTarget(s.rectg)
+	e1:SetOperation(s.effop)
+	c:RegisterEffect(e1)
+end
+function s.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1500)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1500)
+end
+function s.cfilter(c)
+	return c:IsFaceup() and c:IsCode(75030024)
+end
+function s.descon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
+end
+function s.effcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN2
+end
+function s.effop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if Duel.Recover(tp,1500,REASON_EFFECT)~=0 then
+		local e0=Effect.CreateEffect(c)
+		e0:SetDescription(aux.Stringid(75030035,0))
+		e0:SetType(EFFECT_TYPE_FIELD)
+		e0:SetCode(0x20000000+75030035)
+		e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e0:SetTargetRange(1,0)
+		Duel.RegisterEffect(e0,tp)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CANNOT_DISABLE_SPSUMMON)
+		e1:SetProperty(EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_SET_AVAILABLE)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_CANNOT_DISABLE_SUMMON)
+		Duel.RegisterEffect(e2,tp)
+		--
+		local e3h=Effect.CreateEffect(c)
+		e3h:SetDescription(aux.Stringid(75030035,1))
+		e3h:SetType(EFFECT_TYPE_FIELD)
+		e3h:SetCode(0x20000000+75030035)
+		e3h:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e3h:SetTargetRange(1,0)
+		Duel.RegisterEffect(e3h,tp)
+		--
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetCode(EFFECT_CANNOT_INACTIVATE)
+		e3:SetValue(s.effectfilter)
+		e3:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e3,tp)
+		--
+		local e4h=Effect.CreateEffect(c)
+		e4h:SetDescription(aux.Stringid(75030035,2))
+		e4h:SetType(EFFECT_TYPE_FIELD)
+		e4h:SetCode(0x20000000+75030035)
+		e4h:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e4h:SetTargetRange(1,0)
+		Duel.RegisterEffect(e4h,tp)
+		--
+		local e4=Effect.CreateEffect(c)
+		e4:SetType(EFFECT_TYPE_FIELD)
+		e4:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+		e4:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		e4:SetTargetRange(LOCATION_SZONE,0)
+		e4:SetTarget(aux.TargetBoolFunction(Card.IsType,TYPE_SPELL+TYPE_TRAP))
+		e4:SetValue(aux.tgoval)
+		e4:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e4,tp)
+		--
+		local e5=e4:Clone()
+		e5:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+		e5:SetValue(aux.indoval)
+		Duel.RegisterEffect(e5,tp)
+	end
+end
+function s.effectfilter(e,ct)
+	local p=e:GetHandlerPlayer()
+	local te,tp=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
+	return p==tp and (te:IsActiveType(TYPE_MONSTER) or te:IsHasType(EFFECT_TYPE_ACTIVATE)) and te:IsHasCategory(CATEGORY_SPECIAL_SUMMON)
+end

@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep2(c,aux.FilterBoolFunction(Card.IsRace,RACE_ILLUSION),13,127,false)
+	aux.AddFusionProcFunRep2(c,43990090.ffilter,5,127,false)
 	--e1
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(43990090,0))
@@ -41,6 +41,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	
 
+end
+function c43990090.ffilter(c,fc,sub,mg,sg)
+	return c:IsRace(RACE_ILLUSION) and c:IsType(TYPE_FUSION)
 end
 function c43990090.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

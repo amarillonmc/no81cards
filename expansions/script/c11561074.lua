@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,c11561074.ffilter,2,false)
-	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_MZONE+LOCATION_HAND,0,Duel.SendtoGrave,REASON_COST)
+	aux.AddContactFusionProcedure(c,Card.IsAbleToDeckAsCost,LOCATION_MZONE+LOCATION_HAND,0,aux.tdcfop(c))
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

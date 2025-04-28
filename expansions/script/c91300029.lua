@@ -11,6 +11,11 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
+	local e10=e1:Clone()
+	e10:SetType(EFFECT_TYPE_IGNITION)
+	e10:SetCountLimit(1,91301026)
+	e10:SetCost(s.spcost)
+	c:RegisterEffect(e10)
 	--flip
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DAMAGE)
@@ -49,6 +54,21 @@ function s.mvfilter(c)
 end
 function s.mvfilter2(c,tp)
 	return c:IsFaceup() and _G["c"..c:GetCode()]  and _G["c"..c:GetCode()].hackclad and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE,PLAYER_NONE,0)>1
+end
+function s.cffilter(c)
+	return c:IsCode(91300039) and not c:IsPublic()
+end
+function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.cffilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local tc=Duel.SelectMatchingCard(tp,s.cffilter,tp,LOCATION_HAND,0,1,1,e:GetHandler()):GetFirst()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(91300039,1))
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e1:SetCode(EFFECT_PUBLIC)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+	tc:RegisterEffect(e1)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)>0

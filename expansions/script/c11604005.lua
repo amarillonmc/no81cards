@@ -31,14 +31,14 @@ function s.copy(c,e,tp,ct)
 	end
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return  Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,7)
+	if chk==0 then return  Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummon(tp) end
+	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,6)
 	--Duel.SetOperationInfo(0,CATEGORY_TOEXTRA+CATEGORY_TOHAND,nil,1,1-tp,LOCATION_MZONE)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=0
-	local cont=7
+	local cont=6
 	--
 	local g=Duel.GetMatchingGroup(Card.IsType,tp,0,LOCATION_DECK,nil,TYPE_MONSTER)
 	local dcount=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)
@@ -61,7 +61,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(1-tp,dcount-seq)
 	if spcard:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetMZoneCount(1-tp)>0 then
 		Duel.DisableShuffleCheck()
-		Duel.SpecialSummon(spcard,0,tp,1-tp,true,false,POS_FACEUP)	  
+		Duel.SpecialSummon(spcard,0,tp,1-tp,true,false,POS_FACEUP)  
 		--Duel.DiscardDeck(1-tp,dcount-seq-1,REASON_EFFECT+REASON_REVEAL)
 		Duel.ShuffleDeck(1-tp)
 	else
@@ -74,7 +74,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		if res[i]==1 then
 			ct=ct+1
 		end
-	end	 
+	end  
 	if  spcard:IsFaceup() then
 		s.copy(spcard,e,tp,ct)
 	end
@@ -89,5 +89,5 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not se:GetHandler():IsSetCard(0x9224)
+	return not (se:GetHandler():IsSetCard(0x9224) or c:IsSetCard(0x9224))
 end

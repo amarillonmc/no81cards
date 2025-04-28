@@ -27,7 +27,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.cfilter1(c)
-	return c:IsFaceup() and c:IsSetCard(0x75f)
+	return c:IsFaceup() and c:IsSetCard(0x9751)
 end
 function s.cfilter2(c)
 	return c:IsFaceup() and c:IsCode(75027001)

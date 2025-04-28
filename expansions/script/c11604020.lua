@@ -41,8 +41,8 @@ function s.copy(c,e,tp,ct)
 				e2:SetValue(1)
 				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 				c:RegisterEffect(e2)				
-			end			
-		end	
+			end		 
+		end 
 	end
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -58,12 +58,12 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ct=0
 	local cont=4
 	local tc=Duel.GetFirstTarget()
-	local res={Duel.TossCoin(tp,cont)}	
+	local res={Duel.TossCoin(tp,cont)}  
 	for i=1,cont do
 		if res[i]==1 then
 			ct=ct+1
 		end
-	end		
+	end	 
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		s.copy(tc,e,tp,ct)
 	end
@@ -78,5 +78,5 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not se:GetHandler():IsSetCard(0x9224)
+	return not (se:GetHandler():IsSetCard(0x9224) or c:IsSetCard(0x9224))
 end

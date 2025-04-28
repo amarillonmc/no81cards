@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunFun(c,cm.ft,cm.ffilter,2,true)
+	aux.AddFusionProcFunFun(c,cm.fuf,cm.ffilter,2,true)
 	--splimit
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -48,7 +48,7 @@ function cm.initial_effect(c)
 	e4:SetDescription(aux.Stringid(m,3))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetRange(LOCATION_REMOVED)
+	e4:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
 	e4:SetCode(EVENT_PHASE+PHASE_END)
 	e4:SetCountLimit(1)
 	e4:SetCondition(cm.spcon)
@@ -57,37 +57,34 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4) 
 end
 --fusion material
-function cm.ft(c)
-	return c:IsFusionType(TYPE_FUSION) or c:IsRace(RACE_MACHINE)
-end
 function cm.ffilter(c)
 	return c:IsFusionType(TYPE_FUSION) 
 end
---Effect 1
-function cm.release(c,tp)
-	return  Duel.IsPlayerCanRelease(tp,c)
+function cm.fuf(c)
+	return c:IsFusionType(TYPE_FUSION) or c:IsRace(RACE_MACHINE)
 end
-function cm.fselect(g)
-	return g:IsExists(Card.IsType,1,nil,TYPE_FUSION)
+--Effect 1
+function cm.fr(c,tp)
+	return c:IsType(TYPE_MONSTER)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(cm.release,tp,LOCATION_MZONE,0,nil,tp)
-	if chk==0 then return g:CheckSubGroup(cm.fselect,3,3) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,cm.fr,3,REASON_COST,true,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local rg=g:SelectSubGroup(tp,cm.fselect,false,3,3)
-	Duel.Release(rg,REASON_COST)
+	local g=Duel.SelectReleaseGroupEx(tp,cm.fr,3,3,REASON_COST,true,nil,tp)
+	Duel.Release(g,REASON_COST)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsAbleToHand() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,2,e:GetHandler()) end
+	local loc=LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED 
+	if chkc then return chkc~=e:GetHandler() and chkc:IsAbleToHand() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,loc,loc,2,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,2,2,e:GetHandler())
+	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,loc,loc,2,2,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,0,0)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS) 
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
-	if tg:GetCount()>0 then
+	if #tg>0 then
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 	end
 end
@@ -141,8 +138,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			local ft2=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)
 			local ft=math.min((Duel.GetLocationCount(tp,LOCATION_MZONE)),(ft2-ft1))
 			if ft<=0 then return end
-			local c=e:GetHandler()
 			if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
+			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.fusionfilter),tp,LOCATION_GRAVE,0,1,ft,nil,e,tp)
 			if g:GetCount()>0 then

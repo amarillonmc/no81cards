@@ -44,10 +44,10 @@ function c9910875.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g0=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	local ct=math.floor(#g0/2)
 	local g=Duel.GetMatchingGroup(c9910875.thfilter,tp,LOCATION_DECK,0,nil)
-	if ct>0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(9910875,0)) then
+	if ct>0 and #g>=ct and Duel.SelectYesNo(tp,aux.Stringid(9910875,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=g:Select(tp,1,ct,nil)
+		local sg=g:Select(tp,ct,ct,nil)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,sg)
 	end

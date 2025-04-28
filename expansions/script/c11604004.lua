@@ -20,7 +20,7 @@ function s.initial_effect(c)
 		ge1:SetCode(EVENT_CHAINING)
 		ge1:SetOperation(s.checkop)
 		Duel.RegisterEffect(ge1,0)
-	end	
+	end 
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
@@ -30,7 +30,7 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 				for _,i in ipairs{Duel.GetFlagEffectLabel(rp,id)} do
 					if i==tc:GetCode() then return end  
 				end
-			end				
+			end			 
 			Duel.RegisterFlagEffect(rp,id,0,0,0,tc:GetCode())
 		end
 		tc=eg:GetNext()
@@ -38,7 +38,7 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	local set={Duel.GetFlagEffectLabel(tp,id)}
-	return (#set)>=5 --Duel.GetFlagEffect(e:GetHandlerPlayer(),id)>4
+	return (#set)>=5 -- Duel.GetFlagEffect(e:GetHandlerPlayer(),id)>1 
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
@@ -50,12 +50,12 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
-		local tc=g:GetFirst()		
+		local tc=g:GetFirst()	   
 		Duel.SendtoHand(tc,tp,REASON_RULE,1-tp)
 		if tc:IsLocation(LOCATION_EXTRA+LOCATION_HAND) and tc:IsCanBeSpecialSummoned(e,0,tp,true,false) and (tc:IsLocation(LOCATION_HAND) and Duel.GetMZoneCount(tp)>0
 			or tc:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,tc)>0) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.BreakEffect()
 			Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
-		end	
+		end 
 	end
 end

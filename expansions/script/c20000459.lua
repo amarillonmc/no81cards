@@ -2,7 +2,7 @@
 dofile("expansions/script/c20000450.lua")
 local cm, m = fu_GD.RM_initial()
 --e1
-cm.e1 = fuef.FTO("DR"):PRO("DE+TG"):RAN("M"):CTL(1):Func("sd_con,tg1,op1")
+cm.e1 = fuef.FTO("DR"):PRO("DE+TG"):RAN("M"):CTL(1):Func("SelfDraw_con,tg1,op1")
 function cm.tg1f(g)
 	return function(e,ep,tp)
 		return not g:IsContains(e:GetHandler())

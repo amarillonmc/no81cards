@@ -2,44 +2,33 @@
 function c24501030.initial_effect(c)
 	--Activate
 	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(24501030,4))
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
-	--to hand
+	--set
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(24501030,3))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetDescription(aux.Stringid(24501030,1))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_SZONE)
-	e1:SetCost(c24501030.thcost)
-	e1:SetTarget(c24501030.thtg)
-	e1:SetOperation(c24501030.thop)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e1:SetCost(c24501030.setcost)
+	e1:SetTarget(c24501030.settg)
+	e1:SetOperation(c24501030.setop)
 	c:RegisterEffect(e1)
 	--Damage
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(24501030,0))
+	e2:SetDescription(aux.Stringid(24501030,2))
 	e2:SetCategory(CATEGORY_DAMAGE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
-	e2:SetCost(c24501030.cost)
+	--e2:SetCondition(c24501030.damcon)
 	e2:SetTarget(c24501030.damtg)
 	e2:SetOperation(c24501030.damop)
 	c:RegisterEffect(e2)
-	--recover
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(24501030,1))
-	e3:SetCategory(CATEGORY_RECOVER)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetRange(LOCATION_SZONE)
-	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
-	e3:SetCost(c24501030.cost)
-	e3:SetTarget(c24501030.rectg)
-	e3:SetOperation(c24501030.recop)
-	c:RegisterEffect(e3)
 	--deckdes
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
@@ -50,23 +39,26 @@ function c24501030.initial_effect(c)
 	e4:SetOperation(c24501030.tgop)
 	c:RegisterEffect(e4)
 end
-function c24501030.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+function c24501030.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return not e:GetHandler():IsPublic() end
+	Duel.ConfirmCards(1-tp,e:GetHandler())
 end
-function c24501030.thfilter(c)
-	return c:IsSetCard(0x501) and not c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+function c24501030.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 end
-function c24501030.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c24501030.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+function c24501030.spfilter(c,e,tp)
+	return c:IsSetCard(0x501) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c24501030.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,c24501030.thfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+function c24501030.setop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) and Duel.IsExistingMatchingCard(c24501030.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)>0 and Duel.SelectYesNo(tp,aux.Stringid(24501030,0)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c24501030.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
+		if sc then
+			Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
+		end
 	end
 end
 function c24501030.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -75,13 +67,26 @@ function c24501030.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGraveAsCost,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
 end
-function c24501030.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
+function c24501030.tgfilter(c,eg)
+	return eg:IsContains(c) and c:IsSetCard(0x501) and c:IsAttackAbove(1) and c:IsFaceup()
+end
+function c24501030.damtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c24501030.tgfilter(chkc,eg) end
+	if chk==0 then return Duel.IsExistingTarget(c24501030.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,eg) end
+	if eg:GetCount()==1 then
+		Duel.SetTargetCard(eg)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		Duel.SelectTarget(tp,c24501030.tgfilter,tp,LOCATION_MZONE,0,1,1,nil,eg)
+	end
+	--Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,0)
 end
 function c24501030.damop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Damage(1-tp,1000,REASON_EFFECT)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
+		Duel.Damage(1-tp,math.floor(tc:GetAttack()/2),REASON_EFFECT)
+	end
 end
 function c24501030.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

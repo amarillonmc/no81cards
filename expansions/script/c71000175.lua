@@ -18,7 +18,7 @@ function c71000175.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetOperation(c71000175.chainop)
 	c:RegisterEffect(e1)
-	--splimit
+	
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetRange(LOCATION_MZONE)

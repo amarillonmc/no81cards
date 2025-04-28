@@ -12,7 +12,8 @@ function s.initial_effect(c)
 	--disable
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK+CATEGORY_TOGRAVE)
+	--e1:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -43,21 +44,27 @@ function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function s.tfilter(c)
-	return c:IsSummonLocation(LOCATION_EXTRA) and s.ArtlienWorm(c) and c:IsFaceup()
+	return c:IsSummonLocation(LOCATION_EXTRA) and s.ArtlienWorm(c) and c:IsFaceup() and (c:IsAbleToDeck() or c:IsAbleToGrave())
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and s.tfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(s.tfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsChainDisablable(ev) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,s.tfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
+	--Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if Duel.NegateEffect(ev) and tc:IsRelateToEffect(e) then
 		Duel.BreakEffect()
-		Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		if ((not tc:IsAbleToGrave()) or Duel.SelectOption(tp,aux.Stringid(id,3),1191)==0) then
+			Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		else
+			Duel.SendtoGrave(tc,REASON_EFFECT)
+		end
+		--Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		--[[local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(id,10))
 		e1:SetType(EFFECT_TYPE_SINGLE)

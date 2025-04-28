@@ -32,7 +32,7 @@ end
 
 --===== 效果①处理 =====--
 function s.excost1_filter(c)
-	return c:IsAbleToRemove() and (c:IsLocation(LOCATION_HAND) or c:IsLocation(LOCATION_ONFIELD))  and c:IsSetCard(0xe73)
+	return c:IsAbleToRemove() and (c:IsLocation(LOCATION_HAND) or c:IsLocation(LOCATION_ONFIELD) or c:IsLocation(LOCATION_EXTRA))  and c:IsSetCard(0xe73)
 end
 
 function s.excost1(e,tp,eg,ep,ev,re,r,rp,chk)

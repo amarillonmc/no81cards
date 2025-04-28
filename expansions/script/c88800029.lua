@@ -1,4 +1,3 @@
---以父之名
 function c88800029.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -7,56 +6,50 @@ function c88800029.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,88800029+EFFECT_COUNT_CODE_OATH)
-	e1:SetCondition(c88800029.condition)
 	e1:SetTarget(c88800029.target)
 	e1:SetOperation(c88800029.activate)
 	c:RegisterEffect(e1)
-	--activate
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(88800029,1))
-	e2:SetType(EFFECT_TYPE_ACTIVATE)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCountLimit(1,88800029+EFFECT_COUNT_CODE_OATH)
-	e2:SetTarget(c88800029.tg)
-	e2:SetOperation(c88800029.spop)
-	c:RegisterEffect(e2)
 end
-function c88800029.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,0,1,nil)
+function c88800029.filter1(c,e,tp)
+	return c:IsSetCard(0xc02) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c88800029.filter(c,e,tp)
-	return c:IsSetCard(0xc02) and c:IsLevel(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c88800029.filter2(c,e,tp)
+	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsRace(RACE_WARRIOR) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c88800029.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c88800029.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c88800029.filter1,tp,LOCATION_DECK,0,1,nil,e,tp)
+		and not Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil)
+	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c88800029.filter2,tp,LOCATION_HAND,0,1,nil,e,tp)
+	if chk==0 then return b1 or b2 end
+	local op=0
+	if b1 and b2 then
+		op=Duel.SelectOption(tp,aux.Stringid(88800029,0),aux.Stringid(88800029,1))
+	elseif b1 then
+		op=Duel.SelectOption(tp,aux.Stringid(88800029,0))
+	else
+		op=Duel.SelectOption(tp,aux.Stringid(88800029,1))+1
+	end
+	e:SetLabel(op)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_HAND)
 end
 function c88800029.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c88800029.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	end
-end
-function c88800029.spfilter(c,e,tp)
-	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsRace(RACE_WARRIOR) and c:IsLevel(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c88800029.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c88800029.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
-end
-function c88800029.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c88800029.spfilter,tp,LOCATION_HAND,0,1,2,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	local op=e:GetLabel()
+	if op==0 then
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,c88800029.filter1,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+		if #g>0 then
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		end
+	else
+		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+		if ft<=0 then return end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,c88800029.filter2,tp,LOCATION_HAND,0,1,math.min(ft,2),nil,e,tp)
+		if #g>0 then
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		end
 	end
 end

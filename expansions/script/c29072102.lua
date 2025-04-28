@@ -1,4 +1,5 @@
 --方舟骑士团-幽灵鲨
+c29072102.named_with_Arknight=1
 function c29072102.initial_effect(c)
 	--to hand/set
 	local e1=Effect.CreateEffect(c)
@@ -12,18 +13,13 @@ function c29072102.initial_effect(c)
 	e1:SetTarget(c29072102.thtg)
 	e1:SetOperation(c29072102.thop)
 	c:RegisterEffect(e1)
-	--negate
+	--indes
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(29072102,3))
-	e2:SetCategory(CATEGORY_NEGATE)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetCountLimit(1,29072102)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(c29072102.con)
-	e2:SetCost(c29072102.cost)
-	e2:SetTarget(c29072102.distg)
-	e2:SetOperation(c29072102.disop)
+	e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e2:SetValue(1)
 	c:RegisterEffect(e2)
 	--sp
 	local e3=Effect.CreateEffect(c)
@@ -31,7 +27,7 @@ function c29072102.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_NEGATE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
-	e3:SetRange(LOCATION_HAND)
+	e3:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e3:SetCountLimit(1,29072102)
 	e3:SetCost(c29072102.cost)
 	e3:SetCondition(c29072102.con)
@@ -39,13 +35,6 @@ function c29072102.initial_effect(c)
 	e3:SetOperation(c29072102.spop)
 	c:RegisterEffect(e3)
 	Duel.AddCustomActivityCounter(29072102,ACTIVITY_CHAIN,c29072102.chainfilter)
-end
-function c29072102.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
-end
-function c29072102.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateEffect(ev)
 end
 --cost
 function c29072102.chainfilter(re,tp,cid)
@@ -78,14 +67,26 @@ end
 function c29072102.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 end
 function c29072102.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.SelectYesNo(tp,aux.Stringid(29072102,2)) then
-			Duel.NegateEffect(ev)
+		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+			if c:IsSummonLocation(LOCATION_GRAVE) then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+				e1:SetValue(LOCATION_REMOVED)
+				e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+				c:RegisterEffect(e1,true)
+			end
+			if Duel.SelectYesNo(tp,aux.Stringid(29072102,2)) then
+				Duel.NegateEffect(ev)
+			end
 		end
 	end
 end

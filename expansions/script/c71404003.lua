@@ -23,7 +23,7 @@ function c71404003.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_LEAVE_FIELD)
-	e2:SetCategory(CATEGORY_EQUIP)
+	e2:SetCategory(CATEGORY_EQUIP+CATEGORY_TODECK+CATEGORY_REMOVE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,71504003)
 	e2:SetCost(yume.stellar_memories.LimitCost)
@@ -73,7 +73,8 @@ function c71404003.filter2(c)
 end
 function c71404003.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(c71404003.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+		and Duel.IsExistingMatchingCard(c71404003.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
+		and yume.stellar_memories.BanishorSendSpellCheck(71404014,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c71404003.op2(e,tp,eg,ep,ev,re,r,rp)
@@ -95,24 +96,10 @@ function c71404003.op2(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
-	e2:SetTargetRange(LOCATION_HAND+LOCATION_ONFIELD,0)
-	e2:SetTarget(c71404003.mattg)
-	e2:SetValue(c71404003.matval)
-	e2:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e2,tp)
+	yume.stellar_memories.BanishorSendSpell(71404014,tp,aux.Stringid(71404003,2),aux.Stringid(71404003,3))
 end
 function c71404003.eqlimit(e,c)
 	return e:GetOwner()==c
-end
-function c71404003.mattg(e,c)
-	return c:IsFaceupEx() and c:IsType(TYPE_SPELL)
-end
-function c71404003.matval(e,lc,mg,c,tp)
-	if not (lc:IsRace(RACE_SPELLCASTER) and e:GetHandlerPlayer()==tp) then return false,nil end
-	return true,true
 end
 function c71404003.con3(e)
 	local qc=e:GetHandler():GetEquipTarget()

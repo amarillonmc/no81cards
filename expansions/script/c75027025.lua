@@ -37,7 +37,7 @@ function s.initial_effect(c)
 ----3
 end
 function s.cfilter(c)
-	return c:IsSetCard(0x75f) and c:IsFaceup()
+	return c:IsSetCard(0x9751) and c:IsFaceup()
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)

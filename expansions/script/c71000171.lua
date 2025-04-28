@@ -23,7 +23,6 @@ function c71000171.initial_effect(c)
 	e12:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e12:SetCondition(c71000171.spcon)
 	c:RegisterEffect(e12)
-	--splimit
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetRange(LOCATION_MZONE)

@@ -92,6 +92,16 @@ function cm.initial_effect(c)
 	aux.AddFusionProcFunRep(c,cm.matfilter,2,true)
 	--redirect
 	aux.AddBanishRedirect(c)
+	--remove
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e3:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTarget(cm.rmtarget)
+	e3:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
+	e3:SetValue(LOCATION_REMOVED)
+	c:RegisterEffect(e3)
 	--todeck
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(m,2))
@@ -104,22 +114,25 @@ function cm.initial_effect(c)
 	e0:SetTarget(cm.tdtg)
 	e0:SetOperation(cm.tdop)
 	c:RegisterEffect(e0)
-	--Destroy
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_SEARCH+CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetCountLimit(1)
-	e2:SetTarget(cm.destg)
-	e2:SetOperation(cm.desop)
-	c:RegisterEffect(e2)
+	--tohand
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCondition(cm.thcon)
+	e1:SetTarget(cm.thtg)
+	e1:SetOperation(cm.thop)
+	c:RegisterEffect(e1)
 end
 function cm.matfilter(c)
 	return c:IsSetCard(0x3327) and not c:IsType(TYPE_FUSION)
+end
+
+--e3
+function cm.rmtarget(e,c)
+	return c:IsType(TYPE_MONSTER)
 end
 
 --e0
@@ -136,9 +149,11 @@ function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,nil,tp,LOCATION_GRAVE+LOCATION_HAND)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 or Duel.GetMatchingGroupCount(cm.ffilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,nil,e,tp)<1 then return end
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ft<1 or Duel.GetMatchingGroupCount(cm.ffilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,nil,e,tp)<1 then return end
+	if ft>2 then ft=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.ffilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,2,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,cm.ffilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,ft,nil,e,tp)
 	if g:GetCount()>0 then
 		for tc in aux.Next(g) do
 			if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
@@ -156,33 +171,22 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
---e2
-function cm.sfilter(c)
-	return c:IsSetCard(0x3327) 
+--e1
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
-function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local c=e:GetHandler()
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g1=Duel.SelectTarget(tp,cm.desfilter,tp,0,LOCATION_ONFIELD,1,1,c)
-	g1:AddCard(c)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,g1:GetCount(),0,0)
+function cm.thfilter(c)
+	return c:IsType(TYPE_MONSTER) and (c:IsLocation(LOCATION_ONFIELD) or c:IsFaceup()) and c:IsAbleToHand()
 end
-function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		tg:AddCard(c)
-		local dec=Duel.Destroy(tg,REASON_EFFECT)
-		if dec>0 and Duel.IsExistingMatchingCard(cm.sfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,1)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local g=Duel.SelectMatchingCard(tp,cm.sfilter,tp,LOCATION_DECK,0,1,1,nil)
-			if g:GetCount()>0 then
-				Duel.SendtoHand(g,nil,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,g)
-			end
-		end
-	end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE+LOCATION_REMOVED) and cm.thfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_MZONE+LOCATION_REMOVED,LOCATION_MZONE+LOCATION_REMOVED,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_MZONE+LOCATION_REMOVED,LOCATION_MZONE+LOCATION_REMOVED,1,1,e:GetHandler())
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
 end

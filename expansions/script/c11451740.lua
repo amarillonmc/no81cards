@@ -1,6 +1,5 @@
 --泪渊炙燃的不归路
-local m=11451740
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -87,12 +86,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 		res=Duel.Draw(p,dcount-seq,REASON_EFFECT)--]]
 		local ct=Duel.Draw(p,1,REASON_EFFECT)
-		while ct>0 do
+		for i=1,3 do
+			if ct<=0 then break end
 			local dc=Duel.GetOperatedGroup():GetFirst()
 			Duel.ConfirmCards(1-p,dc)
 			res=res+1
 			ct=0
-			if dc:IsSetCard(0x6977) and not dc:IsLevel(8) then
+			if dc:IsSetCard(0x6977) then
 				Duel.BreakEffect()
 				ct=Duel.Draw(p,1,REASON_EFFECT)
 			end

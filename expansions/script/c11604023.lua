@@ -37,12 +37,12 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	--local tc=Duel.GetFieldCard(1-tp,LOCATION_EXTRA,Duel.GetFieldGroupCount(1-tp,LOCATION_EXTRA,0)-1)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,0,LOCATION_EXTRA,1,nil,e,tp)  end 
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,12)  
+	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,7)  
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=0
-	local cont=12
+	local cont=7
 
 	local g=Duel.GetMatchingGroup(s.spfilter,tp,0,LOCATION_EXTRA,nil,e,tp)
 	local tc=g:RandomSelect(tp,1):GetFirst()
@@ -69,6 +69,6 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not se:GetHandler():IsSetCard(0x9224)
+	return not (se:GetHandler():IsSetCard(0x9224) or c:IsSetCard(0x9224))
 end
 

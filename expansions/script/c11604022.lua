@@ -21,12 +21,12 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,Card.IsFacedown,tp,0,LOCATION_MZONE,1,1,nil)
 	if g:GetCount()<1 then return end
 	Duel.HintSelection(g)
-	local tc=g:GetFirst()		
+	local tc=g:GetFirst()	   
 	Duel.SendtoHand(tc,tp,REASON_EFFECT,tp)
 	if tc:IsLocation(LOCATION_EXTRA+LOCATION_HAND) and tc:IsCanBeSpecialSummoned(e,0,tp,true,false) and (tc:IsLocation(LOCATION_HAND) and Duel.GetMZoneCount(tp)>0 or tc:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,tc)>0) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		Duel.BreakEffect()
 		Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
-	end	
+	end 
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
@@ -38,5 +38,5 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not se:GetHandler():IsSetCard(0x9224)
+	return not (se:GetHandler():IsSetCard(0x9224) or c:IsSetCard(0x9224))
 end

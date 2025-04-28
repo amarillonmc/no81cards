@@ -29,13 +29,50 @@ function c28317923.initial_effect(c)
 	e3:SetDescription(aux.Stringid(28317923,2))
 	e3:SetCategory(CATEGORY_DAMAGE+CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetCode(EVENT_CUSTOM+28317923)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e3:SetCondition(c28317923.tgcon)
 	e3:SetTarget(c28317923.tgtg)
 	e3:SetOperation(c28317923.tgop)
 	c:RegisterEffect(e3)
+	if not c28317923.global_check then
+		c28317923.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
+		--ge1:SetCondition(c28317923.checkcon)
+		ge1:SetOperation(c28317923.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function c28317923.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Clone()
+	g:KeepAlive()
+	if eg:IsExists(Card.IsSummonPlayer,1,nil,0) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAIN_END)
+		e1:SetLabel(0)
+		e1:SetLabelObject(g)
+		e1:SetOperation(c28317923.regop)
+		Duel.RegisterEffect(e1,tp)
+	end
+	if eg:IsExists(Card.IsSummonPlayer,1,nil,1) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_CHAIN_END)
+		e1:SetLabel(1)
+		e1:SetLabelObject(g)
+		e1:SetOperation(c28317923.regop)
+		Duel.RegisterEffect(e1,tp)
+	end
+end
+function c28317923.regop(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	Duel.RaiseEvent(g,EVENT_CUSTOM+28317923,e,0,0,e:GetLabel(),0)
+	g:DeleteGroup()
+	e:Reset()
 end
 function c28317923.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -61,16 +98,20 @@ function c28317923.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28317923.filter1(c,e)
-	return not c:IsImmuneToEffect(e) and c:IsSetCard(0x285)
+	return not c:IsImmuneToEffect(e)
 end
 function c28317923.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsRace(RACE_FAIRY) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
-function c28317923.fstg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c28317923.fcheck(tp,sg,fc)
+	return sg:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_DARK)
+end
+function c28317923.fstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
-		local mg1=Duel.GetFusionMaterial(tp):Filter(c28317923.filter1,nil,e)
+		local mg1=Duel.GetFusionMaterial(tp)
+		aux.FCheckAdditional=c28317923.fcheck
 		local res=Duel.IsExistingMatchingCard(c28317923.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
@@ -81,14 +122,15 @@ function c28317923.fstg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 				res=Duel.IsExistingMatchingCard(c28317923.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg2,mf,chkf)
 			end
 		end
+		aux.FCheckAdditional=nil
 		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
-	--Duel.SetChainLimit(c28317923.limit(e:GetHandler()))
 end
 function c28317923.fsop(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(c28317923.filter1,nil,e)
+	aux.FCheckAdditional=c28317923.fcheck
 	local sg1=Duel.GetMatchingGroup(c28317923.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 	local mg2=nil
 	local sg2=nil
@@ -118,12 +160,10 @@ function c28317923.fsop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		tc:CompleteProcedure()
 	end
-	if Duel.GetLP(tp)>3000 then
-		Duel.Damage(tp,2000,REASON_EFFECT)
-	end
+	aux.FCheckAdditional=nil
 end
 function c28317923.tgcon(e,tp,eg,ep,ev,re,r,rp)
-	return not eg:IsContains(e:GetHandler()) and eg:IsExists(Card.IsSummonPlayer,1,nil,tp)
+	return not eg:IsContains(e:GetHandler()) and tp==ep--eg:IsExists(Card.IsSummonPlayer,1,nil,tp)
 end
 function c28317923.tgfilter(c)
 	return c:IsSetCard(0x285) and c:IsAbleToGrave()

@@ -13,6 +13,12 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
+	local e10=e1:Clone()
+	e10:SetType(EFFECT_TYPE_IGNITION)
+	e10:SetCountLimit(1,91301026)
+	e10:SetCondition(aux.TRUE)
+	e10:SetCost(s.spcost)
+	c:RegisterEffect(e10)
 	if not s.global_check then
 		s.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -81,6 +87,21 @@ function s.dfilter(c,p,seq,loc)
 end
 function s.drfilter2(c,code)
 	return c:IsCode(code) and c:IsAbleToHand()
+end
+function s.cffilter(c)
+	return c:IsCode(91300039) and not c:IsPublic()
+end
+function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.cffilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local tc=Duel.SelectMatchingCard(tp,s.cffilter,tp,LOCATION_HAND,0,1,1,e:GetHandler()):GetFirst()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(91300039,1))
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+	e1:SetCode(EFFECT_PUBLIC)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+	tc:RegisterEffect(e1)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(1-tp,id)>=7

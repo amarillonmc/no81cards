@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-	e1:SetRange(LOCATION_DECK)
+	e1:SetRange(LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.con)
 	e1:SetOperation(cm.op)
@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-	e1:SetRange(LOCATION_DECK)
+	e1:SetRange(LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCountLimit(1,m)
 	e1:SetCondition(cm.con2)
 	e1:SetOperation(cm.op2)
@@ -35,20 +35,26 @@ end
 function cm.con(e,c)
 	local tp=e:GetHandlerPlayer()
 	if c==nil then return true end
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetLP(tp)>=Duel.GetLP(1-tp)*4 and Duel.GetTurnPlayer()==tp
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)-Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>=1 and Duel.GetTurnPlayer()==tp
 end
 function cm.con2(e,c)
 	local tp=e:GetHandlerPlayer()
 	if c==nil then return true end
-	return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0 and Duel.GetLP(1-tp)>=Duel.GetLP(tp)*4 and Duel.GetTurnPlayer()==tp
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)-Duel.GetFieldGroupCount(1-tp,0,LOCATION_HAND)>=1 and Duel.GetTurnPlayer()==tp
 end
 function cm.op(e,tp)
 	local c=e:GetHandler()
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		Duel.BreakEffect()
+		Duel.Draw(tp,1,REASON_EFFECT)
+	end
 end
 function cm.op2(e,tp)
 	local c=e:GetHandler()
-	Duel.SpecialSummon(c,0,tp,1-tp,false,false,POS_FACEUP)
+	if Duel.SpecialSummon(c,0,tp,1-tp,false,false,POS_FACEUP)~=0 then
+		Duel.BreakEffect()
+		Duel.Draw(1-tp,1,REASON_EFFECT)
+	end
 end
 function cm.thfilter(c)
 	return c:IsCode(60002256)

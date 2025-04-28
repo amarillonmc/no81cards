@@ -91,7 +91,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 -------2
 function s.costfilter(c)
-	return (c:IsCode(75027004) or c:IsSetCard(0x75f) and c:IsType(TYPE_SPELL+TYPE_TRAP)) and c:IsAbleToGraveAsCost()
+	return (c:IsCode(75027004) or c:IsSetCard(0x9751) and c:IsType(TYPE_SPELL+TYPE_TRAP)) and c:IsAbleToGraveAsCost()
 end
 function s.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

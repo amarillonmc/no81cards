@@ -37,7 +37,7 @@ end
 c75030026.toss_coin=true
 function c75030026.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttacker() 
-	if tc:IsSetCard(0x753) then 
+	if tc:IsSetCard(0x5751) then 
 		Duel.RegisterFlagEffect(tc:GetControler(),75030026,0,0,1) 
 	end
 end
@@ -70,7 +70,7 @@ function c75030026.xxxop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET) 
 				e1:SetTargetRange(1,0) 
 				e1:SetReset(RESET_PHASE+PHASE_BATTLE) 
-				Duel.RegisterEffect(e1,tp)	  
+				Duel.RegisterEffect(e1,tp)	
 			elseif b2 then 
 				local g=Duel.GetMatchingGroup(function(c) return c:IsFaceup() and c:IsRace(RACE_PYRO) end,tp,LOCATION_MZONE,0,nil) 
 				local tc=g:GetFirst() 
@@ -119,7 +119,7 @@ function c75030026.xxop(e,tp,eg,ep,ev,re,r,rp)
 end 
 function c75030026.bxxcon(e,tp,eg,ep,ev,re,r,rp)
 	local a,b=Duel.GetBattleMonster(tp) 
-	return a and b and a:IsSetCard(0x753)
+	return a and b and a:IsSetCard(0x5751)
 end
 function c75030026.bxxop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 

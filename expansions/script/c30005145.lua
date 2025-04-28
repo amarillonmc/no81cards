@@ -3,7 +3,7 @@ local m=30005145
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_MONSTER),3)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_MONSTER),2)
 	c:EnableReviveLimit()
 	--Effect 1   
 	local e3=Effect.CreateEffect(c)
@@ -33,17 +33,23 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.ctop)
 	c:RegisterEffect(e2)
 	--Effect 3 
-	local e12=Effect.CreateEffect(c)
-	e12:SetDescription(aux.Stringid(m,5))
-	e12:SetCategory(CATEGORY_TODECK+CATEGORY_TOEXTRA+CATEGORY_GRAVE_ACTION)
-	e12:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e12:SetRange(LOCATION_GRAVE)
-	e12:SetCode(EVENT_PHASE+PHASE_STANDBY)
-	e12:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e12:SetCountLimit(1)
-	e12:SetTarget(cm.tetg)
-	e12:SetOperation(cm.teop)
-	c:RegisterEffect(e12)  
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetCode(EVENT_LEAVE_FIELD)
+	e4:SetOperation(cm.leaveop)
+	c:RegisterEffect(e4)
+	--local e12=Effect.CreateEffect(c)
+	--e12:SetDescription(aux.Stringid(m,5))
+	--e12:SetCategory(CATEGORY_TODECK+CATEGORY_TOEXTRA+CATEGORY_GRAVE_ACTION)
+	--e12:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	--e12:SetRange(LOCATION_GRAVE)
+	--e12:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	--e12:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	--e12:SetCountLimit(1)
+	--e12:SetTarget(cm.tetg)
+	--e12:SetOperation(cm.teop)
+	--c:RegisterEffect(e12)  
 end
 --Effect 1
 function cm.eqfilter(c)
@@ -129,6 +135,28 @@ function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 	--c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)  
 end
 --Effect 3 
+function cm.leaveop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:GetLocation()==LOCATION_ONFIELD then return false end
+	c:RegisterFlagEffect(m+300,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,2,0,aux.Stringid(m,0))
+	local e21=Effect.CreateEffect(c)
+	e21:SetCategory(CATEGORY_TODECK+CATEGORY_TOEXTRA)
+	e21:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e21:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e21:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	e21:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e21:SetCountLimit(1)
+	e21:SetCondition(cm.thcon)
+	e21:SetTarget(cm.tetg)
+	e21:SetOperation(cm.teop)
+	e21:SetLabel(Duel.GetTurnCount())
+	e21:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+	c:RegisterEffect(e21) 
+end
+function cm.thcon(e)	 
+	local c=e:GetHandler()
+	return Duel.GetTurnCount()==e:GetLabel()+1
+end 
 function cm.tetg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return false end
@@ -147,3 +175,4 @@ function cm.teop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end  
+

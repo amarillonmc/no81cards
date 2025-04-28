@@ -34,7 +34,7 @@ function c75030028.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end 
 end  
 function c75030028.spfil(c,e,tp)
-	return c:IsSetCard(0x753,0x754) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x5751,0x6751) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c75030028.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -42,7 +42,7 @@ function c75030028.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c75030028.thfil(c) 
-	return c:IsAbleToHand() and c:IsSetCard(0x753,0x754) and c:IsType(TYPE_MONSTER) 
+	return c:IsAbleToHand() and c:IsSetCard(0x5751,0x6751) and c:IsType(TYPE_MONSTER) 
 end 
 function c75030028.activate(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
@@ -56,7 +56,7 @@ function c75030028.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c75030028.repfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x753,0x754) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x5751,0x6751) and c:IsType(TYPE_MONSTER)
 		and c:IsOnField() and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
 function c75030028.reptg(e,tp,eg,ep,ev,re,r,rp,chk)

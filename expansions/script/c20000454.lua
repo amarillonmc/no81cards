@@ -1,76 +1,64 @@
 --创导龙裔的秘仪
 dofile("expansions/script/c20000450.lua")
-local cm, m = fu_GD.RS_initial("IsTyp","RI+S")
-cm.e1 = fuef.A():CAT("SP"):Func("tg_is_cos,tg1,op1")
+local cm, m = fuef.initial(fu_GD)
+cm.e1 = fuef.A():CAT("RE"):Func("tg1,op1")
+cm.e2 = fuef.FTO("LEA"):CAT("TD+DR+GA"):PRO("DE"):RAN("G"):CTL(m):Func("DRM_leave_con,tg2,op2")
 --e1
-function cm.rm_chk(rc, e, tp, hg, rg, count)
-	if not fucf.Filter(rc, "IsTyp+IsRac+CanSp", "RI+M,DR", {e, SUMMON_TYPE_RITUAL, tp, false, true}) then return false end
-	hg = hg:Filter(Card.IsCanBeRitualMaterial, rc, rc):Filter(rc.mat_filter or aux.TRUE, rc, tp)
-	if #hg == 0 then return false end 
-	if not rg then
-		for hc in aux.Next(hg) do
-			if rc:GetLevel()==aux.RitualCheckAdditionalLevel(hc,rc) and (not rc.mat_group_check or rc.mat_group_check(Group.FromCards(hc),tp)) then return true end
-		end
-		return false
-	end
-	rg = rg:Filter(aux.TRUE, rc)
-	for hc in aux.Next(hg) do
-		local n = math.abs(rc:GetLevel() - aux.RitualCheckAdditionalLevel(hc, rc))
-		if not count then 
-			if #(rg - hc) >= n and (rg - hc):CheckSubGroup(cm.reg_chk, n, n, e, tp) then 
-				return true
-			end
-		elseif not rg:IsContains(hc) then 
-			if n == count and fucf.GChk(rc) then 
-				return true
-			end
-		end
-	end
-	return false
-end
-function cm.reg_chk(rg, e, tp, hg, rmg)
-	if Duel.GetMZoneCount(tp, rg, tp) == 0 then return false end
-	if not hg then return true end
-	local diff = 0
-	for rc in aux.Next(rmg) do
-		local hmg = hg:Filter(Card.IsCanBeRitualMaterial, rc, rc):Filter(rc.mat_filter or aux.TRUE, rc, tp)
-		for mc in aux.Next(hmg) do
-			diff = diff | (1 << math.abs(rc:GetLevel() - aux.RitualCheckAdditionalLevel(mc, rc)))
-		end
-	end
-	return diff & (1 << #rg) > 0 and fugf.Filter((rmg - rg), cm.rm_chk, {e, tp, hg, rg, #rg}, 1)
-end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local rg = fugf.GetFilter(tp,"HMG","IsTyp+AbleTo","M,*R")
-	local hg = fugf.GetFilter(tp,"H","IsTyp+IsSet","M,bfd4")
-	local nrg = fugf.GetFilter(tp, "HG", cm.rm_chk, {e, tp, hg}) -- no rg
-	local mrg = fugf.GetFilter(tp, "HG", cm.rm_chk, {e, tp, hg, rg}) -- must rg
-	if chk==0 then
-		if e:GetLabel()~=100 then return false end
-		e:SetLabel(0)
-		return #(nrg + mrg) > 0
-	end
-	local reg = Group.CreateGroup()
-	if #mrg > 0 and (#nrg == 0 or Duel.SelectYesNo(tp,aux.Stringid(m,0))) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		reg = rg:SelectSubGroup(tp, cm.reg_chk, true, 1, #rg, e, tp, hg, (nrg + mrg))
-		Duel.Remove(reg,POS_FACEUP,REASON_COST)
-	end
-	reg:KeepAlive()
-	e:SetLabelObject(reg)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+	if chk==0 then return fugf.GetFilter(tp,"HG","IsTyp+IsRac+CanSp+AbleTo","RI+M,DR,%1,*R",1,{e,"RI",tp}) and fugf.GetFilter(tp,"H","IsTyp+IsPublic","M",1) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
-	local rg = e:GetLabelObject()
-	local hg = fugf.GetFilter(tp,"H","IsTyp+IsSet","M,bfd4")
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tc = fugf.Select(tp,"HG",cm.rm_chk,{e,tp,hg,rg,#rg}):GetFirst()
-	if not tc then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	hg = fugf.Filter(hg,"IsLv+IsCanBeRitualMaterial",{tc:GetLevel()-#rg,tc}):FilterSelect(tp,tc.mat_filter or aux.TRUE,1,1,tc,tp)
-	tc:SetMaterial(hg)
-	Duel.ReleaseRitualMaterial(hg)
-	Duel.BreakEffect()
-	Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-	tc:CompleteProcedure()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local rg = fugf.Select(tp,"HG","IsTyp+IsRac+CanSp+AbleTo","RI+M,DR,%1,*R",1,1,{e,"RI",tp})
+	if #rg ~= 1 then return end
+	if Duel.Remove(rg,POS_FACEUP,REASON_EFFECT) == 0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local sg = fugf.Select(tp,"H","IsTyp+IsPublic","M",1)
+	if #sg ~= 1 then return end
+	Duel.ConfirmCards(1-tp,sg)
+	local fid = rg:GetFirst():GetFieldID()
+	fusf.RegFlag(rg + sg, m, "STD", "HINT", fid, 0)
+	fuef.FC(e,"ADJ",tp):Func("op1con1,op1op1"):LAB(fid)
+end
+function cm.op1con1(e,tp,eg,ep,ev,re,r,rp)
+	local fid = e:GetLabel()
+	local rc = fugf.GetFilter(tp,"R","IsFlagLab",{m,fid}):GetFirst()
+	local sc = fugf.GetFilter(tp,"H","IsFlagLab",{m,fid}):GetFirst()
+	if not (rc and sc) then 
+		e:Reset()
+		return false
+	end
+	return sc:IsCanBeRitualMaterial(rc) and sc:IsLevelAbove(rc:GetLevel()) and (sc.mat_filter or aux.TRUE)(rc)
+end
+function cm.op1op1(e,tp,eg,ep,ev,re,r,rp)
+	local fid = e:GetLabel()
+	local rc = fugf.GetFilter(tp,"R","IsFlagLab",{m,fid}):GetFirst()
+	local sg = fugf.GetFilter(tp,"H","IsFlagLab",{m,fid})
+	if not rc or #sg ~= 1 then return end
+	rc:SetMaterial(sg)
+	Duel.Hint(HINT_CARD,0,m)
+	Duel.ReleaseRitualMaterial(sg)
+	Duel.SpecialSummon(rc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+	rc:CompleteProcedure()
+	e:Reset()
+end
+--e2
+function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and e:GetHandler():IsAbleToDeck() and fugf.GetFilter(tp,"D","IsTyp+AbleTo","RI+S,D",1) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.op2f(g,c)
+	return g:IsContains(c)
+end
+function cm.op2(e,tp,eg,ep,ev,re,r,rp)
+	local max, maxn = 2, #fugf.GetFilter(tp, "M", "IsTyp", "RI+M") + 1
+	if Duel.IsPlayerAffectedByEffect(tp, 20000457) and maxn > max then max = maxn end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	Duel.SetSelectedCard(e:GetHandler())
+	local g = fugf.GetFilter(tp,"G","AbleTo+GChk","D"):SelectSubGroup(tp,cm.op2f,false,1,max,e:GetHandler())
+	if Duel.SendtoDeck(g, nil, 2, REASON_EFFECT) == 0 then return end
+	if not fu_GD.SetDeckTop(e, tp, fugf.GetNoP("D","IsTyp+AbleTo","RI+S,D")) then return end
+	fu_GD.DrawReturn(tp, 1)
 end

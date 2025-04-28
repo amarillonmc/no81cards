@@ -55,9 +55,13 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x625,1,REASON_COST)
 end
 function cm.thop2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Damage(1-tp,500,REASON_EFFECT)
-	Duel.Recover(tp,500,REASON_EFFECT)
-	Duel.Draw(tp,1,REASON_EFFECT)
+	--Duel.Damage(1-tp,500,REASON_EFFECT)
+	if Duel.Recover(tp,500,REASON_EFFECT)~=0 then
+		Duel.BreakEffect()
+		if Duel.IsPlayerCanDraw(tp) and Duel.GetFlagEffect(tp,m+40000000)<2 then
+			if Duel.Draw(tp,1,REASON_EFFECT)~=0 then Duel.RegisterFlagEffect(tp,m+40000000,RESET_PHASE+PHASE_END,0,1) end
+		end
+	end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1000)
 end
 function cm.filter(c)
@@ -88,7 +92,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		tc=g:GetNext()
 	end 
-	Duel.Damage(1-tp,dmg,REASON_EFFECT)
+	--Duel.Damage(1-tp,dmg,REASON_EFFECT)
 end
 function cm.cfilter(c,tp)
 	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)

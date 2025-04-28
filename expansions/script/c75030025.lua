@@ -31,7 +31,7 @@ function c75030025.initial_effect(c)
 	c:RegisterEffect(e2) 
 end
 function c75030025.mfilter(c,xyzc)
-	return c:IsXyzType(TYPE_XYZ) and c:IsLevel(4)
+	return c:IsXyzType(TYPE_XYZ) and c:IsRace(RACE_PYRO) 
 end
 function c75030025.xyzcheck(g)
 	return g:GetClassCount(Card.GetRank)==1
@@ -49,7 +49,7 @@ function c75030025.drrop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end 
 function c75030025.spfil(c,e,tp) 
-	return c:IsSetCard(0x754,0x753) and not c:IsCode(75030025) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
+	return c:IsSetCard(0x5751,0x6751) and not c:IsCode(75030025) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
 end 
 function c75030025.spgck(g,e,tp) 
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>=g:GetCount() and g:GetCount()==g:GetClassCount(Card.GetCode) and not Duel.IsPlayerAffectedByEffect(tp,59822133) 

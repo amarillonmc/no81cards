@@ -2,7 +2,7 @@
 local cm,m,o=GetID()
 function cm.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_PYRO),4,3)
+	aux.AddXyzProcedure(c,nil,4,2)
 	c:EnableReviveLimit()
 	--battle target lock
 	local e1=Effect.CreateEffect(c)

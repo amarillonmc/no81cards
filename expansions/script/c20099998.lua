@@ -1,11 +1,15 @@
 dofile("expansions/script/c20099999.lua")
 if fusf then return end
 fusf = { }
---------------------------------------"Support function"
-function fusf.CutString(_str, _cut, _from)
-	if type(_str) ~= "string" then Debug.Message("Invalid _str in CutString <- ".._from) end
-	if type(_cut) ~= "string" or #_cut == 0 then Debug.Message("Invalid _cut in CutString <- ".._from) end
-	local str, list, char = _str.._cut, {}, ""
+--------------------------------------"String function"
+function string:Cut(_from, _cut)
+	_cut = _cut or "," -- default
+	if type(self) ~= "string" or type(_cut) ~= "string" then
+		local _p = (type(self) ~= "string" and "1" or "")..(type(_cut) ~= "string" and "2" or "")
+		Debug.Message("Invalid parameter ".._p.." in string:Cut <- ".._from)
+		return nil
+	end
+	local str, list, char = self.._cut, {}, ""
 	for unit in str:gmatch(".") do
 		if unit == _cut then
 			table.insert(list, char)
@@ -16,18 +20,80 @@ function fusf.CutString(_str, _cut, _from)
 	end
 	return list
 end
-function fusf.GetCardTable(_c)
-	local cs, typ = { }, aux.GetValueType(_c)
-	if typ == "Effect" then
-		cs[1] = _c:GetHandler()
-	elseif typ == "Card" then
-		cs[1] = _c
-	elseif typ == "Group" then
-		for c in aux.Next(_c) do
-			cs[#cs+1] = c
+function string:ForCut(_from, _cut)
+	_cut = _cut or "," -- default
+	if type(self) ~= "string" or type(_cut) ~= "string" then
+		local _p = (type(self) ~= "string" and "1" or "")..(type(_cut) ~= "string" and "2" or "")
+		Debug.Message("Invalid parameter ".._p.." in string:ForCut <- ".._from)
+		return nil
+	end
+	local list = self:Cut("string:ForCut <- ".._from, _cut)
+	local ind, max = 0, #list
+	return function()
+		if ind >= max then return nil end
+		ind = ind + 1
+		return ind, list[ind]
+	end
+end
+--------------------------------------"Support function"
+function fusf.Debug(msg)
+	if fuef.DebugMode then Debug.Message(msg) end
+end
+function fusf.ValToDebug(...)
+	local tab, res = {...}, ""
+	for i = 1, select("#", ...) do
+		if type(tab[i]) == "userdata" then 
+			res = res..", "..aux.GetValueType(tab[i])
+		else
+			res = res..", "..tostring(tab[i])
 		end
 	end
-	return cs
+	return res:sub(3)
+end
+function fusf.Getcm(val)
+	local c = fusf.ToCard(val, true)
+	if getmetatable(val) == fuef then
+		c = val.e:GetOwner()
+	end
+	if not c then 
+		Debug.Message("Cant Get cm "..tostring(val))
+		return { } 
+	end
+	return _G["c"..val.e:GetOwner():GetCode()]
+end
+function fusf.CutHex(val, add)
+	-- 转换 typ 等并分割
+	if type(val) == "string" then return val end
+	add = add or "+"
+	local parts = {}
+	local bit = 1
+	while val > 0 do
+		if val % 2 == 1 then
+			table.insert(parts, string.format("0x%X", bit))
+		end
+		val = math.floor(val / 2)
+		bit = bit * 2
+	end
+	for i = 1, math.floor(#parts / 2) do
+		parts[i], parts[#parts - i + 1] = parts[#parts - i + 1], parts[i]
+	end
+	return table.concat(parts, add)
+end
+function fusf.ToCard(val, is_owner)
+	local g = fusf.ToGroup(val, is_owner)
+	if g then return g:GetFirst() end
+	return false
+end
+function fusf.ToGroup(val, is_owner)
+	local typ = aux.GetValueType(val)
+	if typ == "Effect" then
+		return Group.FromCards(is_owner and val:GetOwner() or val:GetHandler())
+	elseif typ == "Card" then
+		return Group.FromCards(val)
+	elseif typ == "Group" then
+		return val
+	end
+	return false
 end
 function fusf.IsNil(...)
 	local vals = {...}
@@ -46,54 +112,54 @@ end
 function fusf.Get_Constant(_constable, _vals)
 	-- string chk
 	if type(_vals) ~= "string" then return _vals end
-	local _res = 0
+	local res = 0
 	-- cod chk
 	if _constable == "cod" then 
 		-- EVENT_CUSTOM
 		if _vals:match("CUS") then
 			_vals = _vals:sub(5)
 			-- owner code or number
-			_res = EVENT_CUSTOM + fusf.M_chk(_vals)
+			res = EVENT_CUSTOM + fusf.M_chk(_vals)
 		-- EVENT_PHASE or EVENT_PHASE_START
 		elseif _vals:match("PH") then
-			for _, _var in ipairs(fusf.CutString(_vals, "+", "Get_Constant_1")) do
-				local _constable = _var:match("PH") and "cod" or "pha"
-				_res = _res + fucs[_constable][_var]
+			for _, val in _vals:ForCut("Get_Constant_1", "+") do
+				local _constable = val:match("PH") and "cod" or "pha"
+				res = res + fucs[_constable][val]
 			end
 		end
-		if _res ~= 0 then return _res end
+		if res ~= 0 then return res end
 	end
 	-- find _constable
-	local vals, cons, _des = fusf.CutString(_vals, "+", "Get_Constant_2"), fucs[_constable]
+	local vals, cons, des = _vals:Cut("Get_Constant_2", "+"), fucs[_constable]
 	for i = #vals, 1, -1 do
 		local _val = vals[i]
-		_des = fucs.des[_val] or _des
-		_res = _res + cons[_val]
+		des = fucs.des[_val] or des
+		res = res + cons[_val]
 	end
-	return _res, _des
+	return res, des
 end
-function fusf.Get_Loc(_loc1, _loc2, _from)
+function fusf.Get_Loc(_loc_s, _loc_o, _from)
 	-- nil chk
-	if not fusf.NotNil(_loc1, _loc2) then 
-		Debug.Message(_from..", Get_Loc")
+	if not fusf.NotNil(_loc_s, _loc_o) then 
+		Debug.Message("Get_Loc <- ".._from)
 		return nil
 	end
-	local _locs = {0, 0}
-	-- _loc2 chk
-	if _loc2 then _locs[2] = _loc2 end
-	-- _loc1 string chk
-	if type(_loc1) ~= "string" then 
-		_locs[1] = _loc1 
-		return table.unpack(_locs)
+	local p_loc = {0, 0}
+	-- _loc_o chk
+	if _loc_o then p_loc[2] = _loc_o end
+	-- _loc_s string chk
+	if type(_loc_s) ~= "string" then 
+		p_loc[1] = _loc_s 
+		return table.unpack(p_loc)
 	end
-	-- _loc1 is string and find fucs.ran
+	-- _loc_s is string and find fucs.ran
 	local _res = 0
-	for i,_loc in ipairs(fusf.CutString(_loc1, "+", "Get_Loc")) do
-		for j = 1,#_loc do
-			_locs[i] = _locs[i] + fucs.ran[_loc:sub(j,j):upper()]
+	for i, loc in _loc_s:ForCut("Get_Loc", "+") do
+		for j = 1, #loc do
+			p_loc[i] = p_loc[i] + fucs.ran[loc:sub(j,j):upper()]
 		end
 	end
-	return table.unpack(_locs)
+	return table.unpack(p_loc)
 end
 function fusf.M_chk(val) -- val : number|string
 	val = tonumber(val)
@@ -147,7 +213,7 @@ function fusf.IsN(_func)
 	return function(_c, _val, _exval)
 		local c_val = Card[_func](_c, _exval)
 		if type(_val) == "string" then
-			local oper, _val = _val:match("%+%-"), _val:match("%d+")
+			local oper, _val = _val:match("[%+%-]"), _val:match("%d+")
 			_val = tonumber(_val)
 			if oper == "+" then 
 				return c_val >= _val
@@ -207,47 +273,46 @@ function fusf.Get_Func(_c, _func, _val)
 	return nil
 end
 function fusf.Val_Cuts(_val, ...) -- "f1,f2(v1,v2),(v3)" -> {"f1", {"f2", "v1", "v2"}, {"v3"}}, ... use in vi = %i
-	local res, res_ind, temp = { }, 0, { }
-	--local place, f_chk, f_temp, sets = 1, 0, "", { }
-	for _, val in ipairs(fusf.CutString(_val, ",", "Val_Cuts_1")) do
+	local res_lst, res_ind, temp = { }, 0, { }
+	for _, val in _val:ForCut("Val_Cuts") do
 		res_ind = res_ind + 1
 		local is_st = val:match("%(")
 		local is_ed = val:match("%)")
 		-- is f(v1)
 		if is_st and is_ed then -- f(v1) -> {"f", "v1"}
-			res[res_ind] = fusf.Val_Cuts_Table_Process(val, ...)
+			res_lst[res_ind] = fusf.Val_Cuts_Table_Process(val, ...)
 		elseif is_st then -- f(v1,v2,v3) st f(v1
 			temp, res_ind = val, res_ind - 1
 		elseif is_ed then -- f(v1,v2,v3) ed v3) -> {"f", "v1", "v2", "v3"}
-			res[res_ind] = fusf.Val_Cuts_Table_Process(temp..","..val, ...)
+			res_lst[res_ind] = fusf.Val_Cuts_Table_Process(temp..","..val, ...)
 			temp = ""
 		elseif #temp > 0 then -- f(v1,v2,v3) mid v2
 			temp, res_ind = temp..","..val, res_ind - 1
 		elseif val:match("%%") then
-			res[res_ind] = ({...})[tonumber(val:sub(2))]
+			res_lst[res_ind] = ({...})[tonumber(val:sub(2))]
 		elseif val ~= "" then
-			res[res_ind] = val
+			res_lst[res_ind] = val
 		end
 	end
-	res.len = res_ind
-	return res
+	res_lst.len = res_ind
+	return res_lst
 end
 function fusf.Val_Cuts_Table_Process(_str, ...) -- "f(%1,,3)" -> {"f", vals[1], nil, "3"}
-	local vals, res, st = {...}, { }, _str:find("%(")
-	if st ~= 1 then res[1] = _str:sub(1, st - 1) end -- has f
-	if st + 1 == #_str then return res end -- "f()" -> {"f"}
+	local vals, res_lst, st = {...}, { }, _str:find("%(")
+	if st ~= 1 then res_lst[1] = _str:sub(1, st - 1) end -- has f
+	if st + 1 == #_str then return res_lst end -- "f()" -> {"f"}
 	_str = _str:sub(st + 1, #_str - 1)
-	local res_ind = #res
-	for _, val in ipairs(fusf.CutString(_str, ",", "Val_Cuts_Table_Process")) do
+	local res_ind = #res_lst
+	for _, val in _str:ForCut("Val_Cuts_Table_Process") do
 		res_ind = res_ind + 1
 		if val:match("%%") then
-			res[res_ind] = vals[tonumber(val:sub(2))]
+			res_lst[res_ind] = vals[tonumber(val:sub(2))]
 		elseif val ~= "" then
-			res[res_ind] = val
+			res_lst[res_ind] = val
 		end
 	end
-	res.len = res_ind
-	return res
+	res_lst.len = res_ind
+	return res_lst
 end
 function fusf.Creat_CF(_func, _val, ...)
 	if not _func then return function(c) return true end end
@@ -343,12 +408,12 @@ function fusf.GetDES(_code, _id, m) -- (0), ("n"), (m), ("+1")
 			_code, _id = 0,  fucs.des[_code]
 		end
 	end
-	return aux.Stringid(_code, _id)  -- _code*16 + _id
+	return aux.Stringid(_code, _id)  -- _code * 16 + _id
 end
 function fusf.GetRES(_flag, _count) -- _flag = a + b/b1/b2 + c | 1 
 	if type(_flag) ~= "string" then return {_flag or 0, _count} end
 	if not _count then -- cut count
-		_flag = fusf.CutString(_flag, "|", "RES")
+		_flag = _flag:Cut("fusf.GetRES", "|")
 		_flag, _count = _flag[1], tonumber(_flag[2] or 1)
 	end
 	local stack = { }
@@ -372,6 +437,10 @@ function fusf.RegFlag(val, cod, res, pro, lab, des) -- val : Card|Effect|player(
 	local typ = aux.GetValueType(val)
 	if typ == "Card" then 
 		val:RegisterFlagEffect(cod, res[1], pro, res[2] or 1, lab or 0, des)
+	elseif typ == "Group" then 
+		for c in aux.Next(val) do
+			c:RegisterFlagEffect(cod, res[1], pro, res[2] or 1, lab or 0, des)
+		end
 	elseif typ == "Effect" then 
 		val:GetHandler():RegisterFlagEffect(cod, res[1], pro, res[2] or 1, lab or 0, des)
 	else
@@ -387,4 +456,9 @@ function fusf.GetFlag(val, cod) -- val : Card|Effect|player(number)
 		return val:GetHandler():GetFlagEffect(cod)
 	end
 	return Duel.GetFlagEffect(val, cod)
+end
+function fusf.Equip(e,tp,ec,c)
+	if not (ec and c and Duel.Equip(tp, ec, c)) then return false end
+	local eq = function(e, c) return c == e:GetLabelObject() end
+	return fuef.S(e, EFFECT_EQUIP_LIMIT, ec):PRO("CD"):VAL(eq):OBJ(c):RES("STD")
 end

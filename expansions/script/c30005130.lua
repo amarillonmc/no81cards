@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCondition(cm.spcon)
+	--e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.anctg)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
@@ -42,17 +42,22 @@ function cm.initial_effect(c)
 	e32:SetOperation(cm.retop)
 	c:RegisterEffect(e32)  
 	--Effect 3 
-	local e12=Effect.CreateEffect(c)
-	e12:SetDescription(aux.Stringid(m,5))
-	e12:SetCategory(CATEGORY_TODECK+CATEGORY_TOEXTRA+CATEGORY_GRAVE_ACTION)
-	e12:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e12:SetRange(LOCATION_GRAVE)
-	e12:SetCode(EVENT_PHASE+PHASE_STANDBY)
-	e12:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e12:SetCountLimit(1)
-	e12:SetTarget(cm.tetg)
-	e12:SetOperation(cm.teop)
-	c:RegisterEffect(e12)  
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e4:SetCode(EVENT_LEAVE_FIELD)
+	e4:SetOperation(cm.leaveop)
+	c:RegisterEffect(e4)
+	--local e21=Effect.CreateEffect(c)
+	--e21:SetCategory(CATEGORY_TODECK+CATEGORY_TOEXTRA)
+	--e21:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	--e21:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	--e21:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	--e21:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	--e21:SetCountLimit(1)
+	--e21:SetTarget(cm.thtg)
+	--e21:SetOperation(cm.thop)
+	--c:RegisterEffect(e21) 
 end
 function cm.ffilter(c,fc,sub,mg,sg)
 	if not sg then return true end
@@ -63,7 +68,7 @@ function cm.ffilter(c,fc,sub,mg,sg)
 end
 function cm.matlimit(e,c,fc,st)
 	if st~=SUMMON_TYPE_FUSION then return true end
-	return c:IsLocation(LOCATION_HAND) or c:IsControler(fc:GetControler())   and c:IsOnField()
+	return c:IsLocation(LOCATION_HAND) or c:IsControler(fc:GetControler()) and c:IsOnField()
 end
 --Effect 1
 function cm.valcheck(e,c)
@@ -95,6 +100,7 @@ function cm.codeop(ac1,ac2,ac3,ac4,ac5)
 		function (e,tp,eg,ep,ev,re,r,rp)
 			local c=e:GetHandler()
 			local tsp=e:GetHandlerPlayer()
+			c:SetHint(CHINT_CARD,ac1)
 			local e12=Effect.CreateEffect(c)
 			e12:SetType(EFFECT_TYPE_FIELD)
 			e12:SetRange(LOCATION_MZONE)
@@ -163,6 +169,27 @@ function cm.filter2(c,e,tp,m,f,chkf)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 --Effect 3 
+function cm.leaveop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:GetLocation()==LOCATION_ONFIELD then return false end
+	c:RegisterFlagEffect(m+300,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,2,0,aux.Stringid(m,0))
+	local e21=Effect.CreateEffect(c)
+	e21:SetCategory(CATEGORY_TODECK+CATEGORY_TOEXTRA)
+	e21:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e21:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e21:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	e21:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e21:SetCountLimit(1)
+	e21:SetCondition(cm.thcon)
+	e21:SetTarget(cm.tetg)
+	e21:SetOperation(cm.teop)
+	e21:SetLabel(Duel.GetTurnCount())
+	e21:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+	c:RegisterEffect(e21) 
+end
+function cm.thcon(e)	 
+	return Duel.GetTurnCount()==e:GetLabel()+1
+end 
 function cm.tefilter(c)
 	return c:IsAbleToDeck() and c:IsType(TYPE_MONSTER)
 end
@@ -185,4 +212,3 @@ function cm.teop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
  
-

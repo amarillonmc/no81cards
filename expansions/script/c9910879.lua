@@ -13,11 +13,10 @@ function c9910879.initial_effect(c)
 	c:RegisterEffect(e1)
 	--destroy
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_NEGATE)
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetCountLimit(1,9910880)
 	e2:SetCondition(c9910879.descon)
 	e2:SetCost(aux.bfgcost)
@@ -66,18 +65,18 @@ function c9910879.cfilter2(c)
 	return c:IsSummonLocation(LOCATION_EXTRA) and c:IsFaceup() and c:IsRace(RACE_MACHINE)
 end
 function c9910879.descon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
+	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainDisablable(ev)
 		and Duel.IsExistingMatchingCard(c9910879.cfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
 function c9910879.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rc=re:GetHandler()
 	if chk==0 then return rc:IsRelateToEffect(re) and rc:IsDestructable() end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,rc,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end
 function c9910879.desop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if rc:IsRelateToEffect(re) and Duel.Destroy(rc,REASON_EFFECT)~=0 then
-		Duel.NegateActivation(ev)
+		Duel.NegateEffect(ev)
 	end
 end

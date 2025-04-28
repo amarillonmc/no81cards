@@ -8,7 +8,7 @@ function c71404004.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71404004,0))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOEXTRA+CATEGORY_GRAVE_SPSUMMON)
+	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_TODECK+CATEGORY_REMOVE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_DRAW_PHASE+TIMING_END_PHASE)
@@ -83,7 +83,6 @@ function c71404004.MultiRitualToDeckFilter(c)
 end
 function c71404004.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local op_flag=false
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if ft>0 and c:IsFaceup() and c:IsRelateToEffect(e) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
@@ -98,12 +97,12 @@ function c71404004.op1(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				e1:SetValue(c71404004.eqlimit)
 				tc:RegisterEffect(e1)
-				op_flag=true
-				
 			end
 		end
 	end
-	if op_flag then
+	yume.stellar_memories.BanishorSendSpell(71404014,tp,aux.Stringid(71404003,2),aux.Stringid(71404003,3))
+	--Optional Multi Ritual(decommissioned)
+	if false then
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 		if ft<=0 then return end
 		::cancel::
@@ -115,7 +114,7 @@ function c71404004.op1(e,tp,eg,ep,ev,re,r,rp)
 		mg=mg:Filter(yume.stellar_memories.MultiRitualSelectToUseFilter,nil,e,tp,summon_location,Card.GetLink,greater_or_equal)
 		if mg:GetCount()==0 or not Duel.SelectYesNo(tp,msg) then return end
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local mat=mg:Select(tp,1,1,nil)
 		local mc=mat:GetFirst()
 		local sg=Duel.GetMatchingGroup(yume.stellar_memories.MultiRitualSelectToSummonFilter,tp,summon_location,0,mc,e,tp,mc,Card.GetLink,greater_or_equal)

@@ -38,7 +38,7 @@ function c75030001.initial_effect(c)
 end 
 function c75030001.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttacker() 
-	if tc:IsSetCard(0x753) then 
+	if tc:IsSetCard(0x5751) then 
 		Duel.RegisterFlagEffect(tc:GetControler(),75030001,0,0,1) 
 	end
 end
@@ -56,7 +56,7 @@ function c75030001.hsptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0) 
 end 
 function c75030001.hthfil(c) 
-	return c:IsAbleToHand() and c:IsSetCard(0x753) and c:IsType(TYPE_SPELL+TYPE_TRAP) 
+	return c:IsAbleToHand() and c:IsSetCard(0x5751) and c:IsType(TYPE_SPELL+TYPE_TRAP) 
 end 
 function c75030001.hspop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
@@ -89,7 +89,7 @@ function c75030001.xxop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetTarget(function(e,c)
-	return c:IsSetCard(0x753) end) 
+	return c:IsSetCard(0x5751) end) 
 	e1:SetValue(function(e,re,r,rp)
 	if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then
 		return 1

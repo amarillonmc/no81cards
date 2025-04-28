@@ -32,12 +32,12 @@ function s.initial_effect(c)
 	e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x75f))
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x9751))
 	c:RegisterEffect(e1)
 	--destroy
 end
 function s.mfilter(c)
-	return c:IsLevelBelow(4) and c:IsLinkSetCard(0x75f)
+	return c:IsLevelBelow(4) and c:IsLinkSetCard(0x9751)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)

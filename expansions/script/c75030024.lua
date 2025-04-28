@@ -27,7 +27,7 @@ function c75030024.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c75030024.spckfil(c,tp) 
-	return c:IsSetCard(0x754,0x753) and c:IsPreviousControler(tp)  
+	return c:IsSetCard(0x6751,0x3751) and c:IsPreviousControler(tp)  
 end 
 function c75030024.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c75030024.spckfil,1,nil,tp)

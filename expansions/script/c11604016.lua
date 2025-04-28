@@ -27,7 +27,7 @@ function s.copy(c,e,tp,ct)
 			or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.BreakEffect()
 			Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
-		end	
+		end 
 	end
 end
 function s.spfilter(c)
@@ -37,20 +37,20 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(s.spfilter,tp,0,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,s.spfilter,tp,0,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,10)
+	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,8)
 	--Duel.SetOperationInfo(0,CATEGORY_TOEXTRA+CATEGORY_TOHAND,nil,1,1-tp,LOCATION_MZONE)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=0
-	local cont=10
+	local cont=8
 	local tc=Duel.GetFirstTarget()
-	local res={Duel.TossCoin(tp,cont)}	
+	local res={Duel.TossCoin(tp,cont)}  
 	for i=1,cont do
 		if res[i]==1 then
 			ct=ct+1
 		end
-	end		
+	end  
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		s.copy(tc,e,tp,ct)
 	end
@@ -65,5 +65,5 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not se:GetHandler():IsSetCard(0x9224)
+	return not (se:GetHandler():IsSetCard(0x9224) or c:IsSetCard(0x9224))
 end

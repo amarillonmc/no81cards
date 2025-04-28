@@ -60,14 +60,14 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local cont=4
 	local tc=Duel.GetFirstTarget()
 	if tc:GetFlagEffect(id)~=0 then
-		cont=10
+		cont=8
 	end
 	local res={Duel.TossCoin(tp,cont)}  
 	for i=1,cont do
 		if res[i]==1 then
 			ct=ct+1
 		end
-	end	 
+	end  
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		s.copy(tc,e,tp,ct)
 	end
@@ -82,5 +82,5 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not se:GetHandler():IsSetCard(0x9224)
+	return not (se:GetHandler():IsSetCard(0x9224) or c:IsSetCard(0x9224))
 end

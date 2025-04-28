@@ -42,7 +42,7 @@ function c75030002.initial_effect(c)
 end 
 function c75030002.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttacker() 
-	if tc:IsSetCard(0x753) then 
+	if tc:IsSetCard(0x5751) then 
 		Duel.RegisterFlagEffect(tc:GetControler(),75030002,0,0,1) 
 	end
 end
@@ -60,7 +60,7 @@ function c75030002.hsptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0) 
 end 
 function c75030002.hthfil(c) 
-	return c:IsAbleToHand() and c:IsSetCard(0x753) and c:IsType(TYPE_SPELL+TYPE_TRAP) 
+	return c:IsAbleToHand() and c:IsSetCard(0x5751) and c:IsType(TYPE_SPELL+TYPE_TRAP) 
 end 
 function c75030002.hspop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
@@ -94,7 +94,7 @@ function c75030002.xxop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetValue(HALF_DAMAGE)  
 	e2:SetCondition(function(e) 
 	local tp=e:GetHandlerPlayer() 
-	return Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsSetCard(0x753) end,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end) 
+	return Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsSetCard(0x5751) end,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end) 
 	Duel.RegisterEffect(e2,tp)
 end 
 

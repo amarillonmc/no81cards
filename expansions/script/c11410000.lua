@@ -237,11 +237,11 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			local ini=ac.initial_effect
 			if ini then ac.initial_effect(ac) end
 		end
+		Debug.Message("Protocol Request Complete. 杏花宵®漏洞解决方案已上线。共修复漏洞"..#stack.."个。")
 	end
 end
 if not apricot_nightfall_preload then
 	apricot_nightfall_preload=true
 	pcall(dofile,"expansions/script/special.lua")
 	if Auxiliary.PreloadUds and not PreloadUds_Done then Auxiliary.PreloadUds() end
-	--Debug.Message("Protocol Request Complete. 杏花宵®漏洞解决方案已上线。")
 end

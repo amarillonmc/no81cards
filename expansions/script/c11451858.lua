@@ -59,6 +59,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g1=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 	local g2=Duel.GetMatchingGroup(cm.refilter,tp,LOCATION_DECK,0,nil)
 	if chk==0 then return g2:GetClassCount(Card.GetCode)>=3 and #g1<3 end
+	--e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2))
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,3-#g1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED)
 end
@@ -84,7 +85,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter1(c)
-	local eset={c:IsHasEffect(0x20000000+m)}
+	local eset={c:IsHasEffect(EFFECT_FLAG_EFFECT+m)}
 	if #eset>0 then return eset[1]:GetLabelObject() end
 	return false
 end
@@ -93,7 +94,7 @@ function cm.imop(e,te)
 		if te:GetHandler():IsLocation(LOCATION_DECK) and not cm.filter1(te:GetHandler()) then
 			local se=Effect.CreateEffect(e:GetHandler())
 			se:SetType(EFFECT_TYPE_SINGLE)
-			se:SetCode(0x20000000+m)
+			se:SetCode(EFFECT_FLAG_EFFECT+m)
 			se:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE)
 			se:SetReset(RESET_EVENT+RESETS_STANDARD)
 			te:GetHandler():RegisterEffect(se,true)

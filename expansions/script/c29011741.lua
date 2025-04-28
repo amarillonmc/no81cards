@@ -1,4 +1,5 @@
 --方舟骑士团-斯卡蒂
+c29011741.named_with_Arknight=1
 function c29011741.initial_effect(c)
 	--SearchCard
 	local e1=Effect.CreateEffect(c)
@@ -22,53 +23,26 @@ function c29011741.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetRange(LOCATION_HAND)
+	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e2:SetCountLimit(1,29011742)
 	e2:SetCost(c29011741.cost)
-	e2:SetCondition(c29011741.con)
+	e2:SetCondition(c29011741.spcon)
 	e2:SetTarget(c29011741.sptg)
 	e2:SetOperation(c29011741.spop)
 	c:RegisterEffect(e2)
-	--Destroy
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(29011741,3))
-	e4:SetCategory(CATEGORY_DESTROY)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,29011742)
-	e4:SetCost(c29011741.cost)
-	e4:SetCondition(c29011741.con)
-	e4:SetTarget(c29011741.destg)
-	e4:SetOperation(c29011741.desop)
-	c:RegisterEffect(e4)
 	Duel.AddCustomActivityCounter(29011741,ACTIVITY_CHAIN,c29011741.chainfilter)
-end
---Destroy
-function c29011741.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-end
-function c29011741.desop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.HintSelection(g)
-		Duel.Destroy(g,REASON_EFFECT)
-	end
 end
 --SpecialSummon and Destroy
 function c29011741.cfilter(c)
 	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER)
 end
-function c29011741.con(e,tp,eg,ep,ev,re,r,rp)
+function c29011741.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c29011741.cfilter,1,nil) and not eg:IsContains(e:GetHandler())
 end
 function c29011741.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 
 end
@@ -77,9 +51,17 @@ function c29011741.defilter(c)
 end
 function c29011741.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c29011741.defilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+			if c:IsSummonLocation(LOCATION_GRAVE) then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+				e1:SetValue(LOCATION_REMOVED)
+				e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+				c:RegisterEffect(e1,true)
+			end
 			local g=Duel.GetMatchingGroup(c29011741.defilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 			if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(29011741,2)) then
 				Duel.BreakEffect()

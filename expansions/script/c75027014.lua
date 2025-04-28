@@ -34,7 +34,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,2,nil,0x75f)
+	return g:IsExists(Card.IsLinkSetCard,2,nil,0x9751)
 end
 function s.thfilter(c)
 	return c:IsCode(75027004) and c:IsAbleToHand()

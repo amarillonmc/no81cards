@@ -2,29 +2,32 @@
 function c24501027.initial_effect(c)
 	--Activate
 	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(24501027,4))
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
-	--to hand
+	--set
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(24501027,3))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetDescription(aux.Stringid(24501027,1))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_SZONE)
-	e1:SetCost(c24501027.thcost)
-	e1:SetTarget(c24501027.thtg)
-	e1:SetOperation(c24501027.thop)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e1:SetCost(c24501027.setcost)
+	e1:SetTarget(c24501027.settg)
+	e1:SetOperation(c24501027.setop)
 	c:RegisterEffect(e1)
 	--destroy
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(24501027,2))
 	e2:SetCategory(CATEGORY_DESTROY)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1)
-	--e2:SetCondition(c24501027.descon)
-	e2:SetCost(c24501027.descost)
+	--e2:SetCountLimit(1)
+	e2:SetCondition(c24501027.descon)
+	--e2:SetCost(c24501027.descost)
 	e2:SetTarget(c24501027.destg)
 	e2:SetOperation(c24501027.desop)
 	c:RegisterEffect(e2)
@@ -38,74 +41,70 @@ function c24501027.initial_effect(c)
 	e3:SetOperation(c24501027.tgop)
 	c:RegisterEffect(e3)
 end
-function c24501027.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+function c24501027.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return not e:GetHandler():IsPublic() end
+	Duel.ConfirmCards(1-tp,e:GetHandler())
 end
-function c24501027.thfilter(c)
-	return c:IsSetCard(0x501) and not c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+function c24501027.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 end
-function c24501027.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c24501027.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+function c24501027.setfilter(c)
+	return c:IsSetCard(0x501) and c:IsSSetable()
 end
-function c24501027.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,c24501027.thfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+function c24501027.setop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) and Duel.IsExistingMatchingCard(c24501027.setfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(24501027,0)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+		local sc=Duel.SelectMatchingCard(tp,c24501027.setfilter,tp,LOCATION_GRAVE,0,1,1,nil):GetFirst()
+		Duel.SSet(tp,sc)
+			if sc:IsType(TYPE_QUICKPLAY) then
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				sc:RegisterEffect(e1)
+			end
+			if sc:IsType(TYPE_TRAP) then
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				sc:RegisterEffect(e1)
+			end
 	end
+end
+function c24501027.cfilter(c,e)
+	return c:IsSetCard(0x501) and c:IsFaceup() and c:IsCanBeEffectTarget(e)
 end
 function c24501027.descon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(24501027)==0
+	return eg:IsExists(c24501027.cfilter,1,nil,e)
 end
-function c24501027.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGraveAsCost,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
-	Duel.SendtoGrave(g,REASON_COST)
+function c24501027.tgfilter(c,eg)
+	return eg:IsContains(c) and c:IsSetCard(0x501) and c:IsLevelAbove(2) and c:IsFaceup()
 end
-function c24501027.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local b1=Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0)>0
-	local b2=Duel.GetMatchingGroupCount(Card.IsType,tp,0,LOCATION_ONFIELD,c,TYPE_SPELL+TYPE_TRAP)>0
-	if chk==0 then return b1 or b2 end
-	local s=0
-	if b1 and not b2 then
-		s=Duel.SelectOption(tp,aux.Stringid(24501027,0))
+function c24501027.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c24501027.tgfilter(chkc,eg) end
+	if chk==0 then return Duel.IsExistingTarget(c24501027.tgfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,eg) and Duel.GetFieldGroupCount(1-tp,LOCATION_ONFIELD,0)>0 end
+	if eg:GetCount()==1 then
+		Duel.SetTargetCard(eg)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		Duel.SelectTarget(tp,c24501027.tgfilter,tp,LOCATION_MZONE,0,1,1,nil,eg)
 	end
-	if not b1 and b2 then
-		s=Duel.SelectOption(tp,aux.Stringid(24501027,1))+1
-	end
-	if b1 and b2 then
-		s=Duel.SelectOption(tp,aux.Stringid(24501027,0),aux.Stringid(24501027,1))
-	end
-	e:SetLabel(s)
-	local g=nil
-	if s==0 then
-		g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil)
-	end
-	if s==1 then
-		g=Duel.GetMatchingGroup(Card.IsType,tp,0,LOCATION_ONFIELD,c,TYPE_SPELL+TYPE_TRAP)
-	end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function c24501027.desop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=nil
-	if e:GetLabel()==0 then
-		g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_MZONE,nil)
-	end
-	if e:GetLabel()==1 then
-		g=Duel.GetMatchingGroup(Card.IsType,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e),TYPE_SPELL+TYPE_TRAP)
-	end
-	if g:GetCount()>0 then
-		Duel.Destroy(g,REASON_EFFECT)
-	end
-	if c:IsRelateToEffect(e) then
-		c:RegisterFlagEffect(24501027,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsLevelAbove(2) then
+		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local dg=g:Select(tp,1,math.floor(tc:GetLevel()/2),nil)
+		if #dg==0 then return end
+		Duel.HintSelection(dg)
+		Duel.Destroy(dg,REASON_EFFECT)
 	end
 end
 function c24501027.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)

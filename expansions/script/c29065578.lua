@@ -1,45 +1,88 @@
 --Mon3tr
 local cm,m,o=GetID()
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
+	aux.AddCodeList(c,29056009)
 	c:SetUniqueOnField(1,1,m)
-	--destroy replace
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_DESTROY_REPLACE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetTarget(cm.reptg)
-	e2:SetValue(cm.repval)
-	e2:SetOperation(cm.repop)
-	c:RegisterEffect(e2)
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCode(EFFECT_SELF_DESTROY)
-	e5:SetCondition(cm.con5)
-	c:RegisterEffect(e5)
+	--c:EnableReviveLimit()
+	--cannot special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(cm.splimit)
+	c:RegisterEffect(e1)
+	--remove
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,1))
+	e3:SetCategory(CATEGORY_REMOVE)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1)
+	e3:SetCondition(cm.rmcon)
+	e3:SetTarget(cm.rmtg)
+	e3:SetOperation(cm.rmop)
+	c:RegisterEffect(e3)
+	--To hand
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_TOHAND)
+	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCountLimit(1)
+	e4:SetTarget(cm.thtg)
+	e4:SetOperation(cm.thop)
+	c:RegisterEffect(e4)
 end
-function cm.filter(c,tp)
-	return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE)
-		and c:IsSetCard(0x87af) and not c:IsReason(REASON_REPLACE)
+function cm.splimit(e,se,sp,st)
+	local sc=se:GetHandler()
+	return sc and sc:IsSetCard(0x87af)
 end
-function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp)
-		and c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED) end
-	return Duel.SelectEffectYesNo(tp,c,96)
+function cm.cfilter(c)
+	return c:IsFaceup() and c:IsCode(29056009)
 end
-function cm.repval(e,c)
-	return cm.filter(c,e:GetHandlerPlayer())
+function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
-function cm.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Destroy(e:GetHandler(),REASON_EFFECT+REASON_REPLACE)
+function cm.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and chkc:IsAbleToRemove() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
---e4
-function cm.con4(e)
-	return Duel.GetAttacker()==e:GetHandler() or Duel.GetAttackTarget()==e:GetHandler()
+function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+	end
 end
---e5
-function cm.con5(e)
-	return not Duel.GetMatchingGroup(Card.IsFaceup,e:GetHandler():GetControler(),LOCATION_MZONE,0,nil):IsExists(Card.IsCode,1,nil,29038040,29056009) 
+function cm.thfilter(c)
+	return c:IsSetCard(0x87af) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and cm.thfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectTarget(tp,cm.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
+	end
+end
+
+
+
+
+
+
+
+
+
+

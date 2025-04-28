@@ -38,12 +38,12 @@ function c75030003.initial_effect(c)
 end 
 function c75030003.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttacker() 
-	if tc:IsSetCard(0x753) then 
+	if tc:IsSetCard(0x5751) then 
 		Duel.RegisterFlagEffect(tc:GetControler(),75030003,0,0,1) 
 	end
 end
 function c75030003.hpbfil(c) 
-	return c:IsType(TYPE_MONSTER)  and c:IsRace(RACE_PYRO) and c:IsAttribute(ATTRIBUTE_LIGHT) and not c:IsCode(75030003) and not c:IsPublic()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x5751) and not c:IsCode(75030003) and not c:IsPublic()
 end 
 function c75030003.hspcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75030003.hpbfil,tp,LOCATION_HAND,0,1,nil) end 
@@ -56,7 +56,7 @@ function c75030003.hsptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0) 
 end 
 function c75030003.hthfil(c) 
-	return c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x753) and not c:IsCode(75030003)
+	return c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_PYRO) and c:IsAttribute(ATTRIBUTE_LIGHT) and not c:IsCode(75030003)
 end 
 function c75030003.hspop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
@@ -92,7 +92,7 @@ function c75030003.xxop(e,tp,eg,ep,ev,re,r,rp)
 end 
 function c75030003.damcon(e,tp,eg,ep,ev,re,r,rp)
 	local ac,bc=Duel.GetBattleMonster(tp)
-	return ep~=tp and ac and ac:IsSetCard(0x753) 
+	return ep~=tp and ac and ac:IsSetCard(0x5751) 
 end
 function c75030003.damop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeBattleDamage(ep,ev+800) 

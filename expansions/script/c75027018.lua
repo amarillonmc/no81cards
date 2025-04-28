@@ -79,7 +79,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.tdfilter(c)
-	return (c:IsSetCard(0x75f) or c:IsCode(75027004)) and c:IsAbleToDeck()
+	return (c:IsSetCard(0x9751) or c:IsCode(75027004)) and c:IsAbleToDeck()
 		and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

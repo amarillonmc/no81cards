@@ -34,15 +34,15 @@ function c75030022.initial_effect(c)
 end
 function c75030022.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttacker() 
-	if tc:IsSetCard(0x753) then 
+	if tc:IsSetCard(0x5751) then 
 		Duel.RegisterFlagEffect(tc:GetControler(),75030022,0,0,1) 
 	end
 end
 function c75030022.spfil(c,e,tp) 
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK) and c:IsSetCard(0x753) and Duel.IsExistingMatchingCard(c75030022.espfil,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)  
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK) and c:IsSetCard(0x5751) and Duel.IsExistingMatchingCard(c75030022.espfil,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)  
 end 
 function c75030022.espfil(c,e,tp,sc) 
-	return sc:IsCanBeXyzMaterial(c) and c:IsType(TYPE_XYZ) and c:IsSetCard(0x753) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0 
+	return sc:IsCanBeXyzMaterial(c) and c:IsType(TYPE_XYZ) and c:IsSetCard(0x5751) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0 
 end 
 function c75030022.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(c75030022.spfil,tp,LOCATION_GRAVE,0,1,nil,e,tp) end 

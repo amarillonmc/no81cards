@@ -29,7 +29,7 @@ function c75030020.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c75030020.thfil(c,tp)
-	return c:IsSetCard(0x754,0x753) and c:IsFaceup() and c:IsAbleToHand() and Duel.GetMZoneCount(tp,c)>0
+	return c:IsSetCard(0x5751,0x6751) and c:IsFaceup() and c:IsAbleToHand() and Duel.GetMZoneCount(tp,c)>0
 end
 function c75030020.hsptg(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local c=e:GetHandler()
@@ -54,7 +54,7 @@ function c75030020.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c75030020.spop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,1-tp,false,false,POS_FACEUP_DEFENSE)~=0 then		 
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,1-tp,false,false,POS_FACEUP_DEFENSE)~=0 then	  
 		--indes
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)

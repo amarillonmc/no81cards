@@ -19,15 +19,15 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
 	--tohand
-	local e3=Effect.CreateEffect(c)
+	--[[local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	--e3:SetCondition(cm.con2)
 	e3:SetCost(aux.bfgcost)
 	e3:SetOperation(cm.op2)
-	c:RegisterEffect(e3)
-	--[[local e3=Effect.CreateEffect(c)
+	c:RegisterEffect(e3)--]]
+	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetRange(LOCATION_GRAVE)
@@ -58,7 +58,7 @@ function cm.initial_effect(c)
 		ge4:SetCondition(cm.rscon)
 		ge4:SetOperation(cm.reset)
 		Duel.RegisterEffect(ge4,0)
-	end--]]
+	end
 end
 function cm.check(e,tp,eg,ep,ev,re,r,rp)
 	local tf=re:GetHandler():IsRelateToEffect(re)
@@ -129,7 +129,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoGrave(tc,REASON_EFFECT+REASON_DISCARD)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentChain()>0
+	return Duel.GetCurrentChain()>0 and Duel.GetTurnPlayer()==tp
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -137,7 +137,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 		for i=1,Duel.GetCurrentChain() do
 			local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
 			local tc=te:GetHandler()
-			if tc:IsRelateToEffect(te) and tc:IsAbleToHand() and not (tc:IsLocation(LOCATION_HAND) or (tc:IsLocation(LOCATION_EXTRA) and tc:IsFacedown()) or tc:IsOnField()) then g:AddCard(tc) end
+			if tc:IsRelateToEffect(te) and tc:IsAbleToHand() and not (tc:IsLocation(LOCATION_HAND) or (tc:IsLocation(LOCATION_EXTRA) and tc:IsFacedown())) then g:AddCard(tc) end
 		end
 		return #g>0
 	end
@@ -155,7 +155,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	while type(cm[i])=="table" do
 		local te,tf,cid=table.unpack(cm[i])
 		local tc=te:GetHandler()
-		if ((i<=Duel.GetCurrentChain() and tc:IsRelateToEffect(te)) or (i>Duel.GetCurrentChain() and tf and tc:GetRealFieldID()==cid)) and tc:IsAbleToHand() and not (tc:IsLocation(LOCATION_HAND) or (tc:IsLocation(LOCATION_EXTRA) and tc:IsFacedown()) or tc:IsOnField()) then g:AddCard(tc) end
+		if ((i<=Duel.GetCurrentChain() and tc:IsRelateToEffect(te)) or (i>Duel.GetCurrentChain() and tf and tc:GetRealFieldID()==cid)) and tc:IsAbleToHand() and not (tc:IsLocation(LOCATION_HAND) or (tc:IsLocation(LOCATION_EXTRA) and tc:IsFacedown())) then g:AddCard(tc) end
 		i=i+1
 	end
 	if #g>0 then

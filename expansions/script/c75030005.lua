@@ -46,7 +46,7 @@ function c75030005.initial_effect(c)
 end
 function c75030005.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttacker() 
-	if tc:IsSetCard(0x753) then 
+	if tc:IsSetCard(0x5751) then 
 		Duel.RegisterFlagEffect(tc:GetControler(),75030005,0,0,1) 
 	end
 end

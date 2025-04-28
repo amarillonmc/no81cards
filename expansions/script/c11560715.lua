@@ -66,32 +66,30 @@ end
 
 
 function c11560715.ovcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and e:GetHandler():GetFlagEffect(11560715)==0
+	return rp==1-tp-- and e:GetHandler():GetFlagEffect(11560715)==0
 end 
 function c11560715.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end
 end
-function c11560715.matfilter(c)
-	return c:IsCanOverlay()
+function c11560715.loccheck(g)
+	return g:GetClassCount(Card.GetLocation)==1
 end
 function c11560715.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c11560715.matfilter),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsCanOverlay),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,nil)
 	if g:GetCount()>0 then
-	   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	   local og=g:Select(tp,1,1,nil)
-	   local tc=og:GetFirst()
-	   if tc and not tc:IsImmuneToEffect(e) then
-		tc:CancelToGrave()
-		local og=tc:GetOverlayGroup()
-		if og:GetCount()>0 then
-			Duel.SendtoGrave(og,REASON_RULE)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+		local og=g:SelectSubGroup(tp,c11560715.loccheck,false,1,3)
+		Duel.HintSelection(og)
+		for tc in aux.Next(og) do
+			if tc:IsImmuneToEffect(e) then
+				og:RemoveCard(tc)
+			else
+				tc:CancelToGrave()
+			end
 		end
-	   Duel.Overlay(c,tc) end
-	end
-	if c:IsRelateToEffect(e) then
-		c:RegisterFlagEffect(11560715,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
+	   Duel.Overlay(c,og)
 	end
 end
 
@@ -132,9 +130,9 @@ function c11560715.xxop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(tc:GetBaseAttack()/2)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
-				if Duel.IsExistingMatchingCard(c11560715.mxfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,1,nil) and c:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(11560715,0)) then 
+				if Duel.IsExistingMatchingCard(c11560715.mxfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and c:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(11560715,0)) then 
 						Duel.BreakEffect()
-					local oc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11560715.mxfilter),tp,LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,1,1,c):GetFirst()  
+					local oc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11560715.mxfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,c):GetFirst()  
 					if oc and not oc:IsImmuneToEffect(e) then
 					oc:CancelToGrave()
 		local og=oc:GetOverlayGroup()
@@ -145,9 +143,9 @@ function c11560715.xxop(e,tp,eg,ep,ev,re,r,rp)
 					end
 				end 
 		elseif tc:IsType(TYPE_SPELL+TYPE_TRAP) then 
-				if Duel.SendtoHand(tc,tp,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(c11560715.gsfilter,tp,LOCATION_GRAVE+LOCATION_MZONE,LOCATION_GRAVE+LOCATION_MZONE,1,c) and c:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(11560715,0)) then 
+				if Duel.SendtoHand(tc,tp,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(c11560715.gsfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c) and c:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(11560715,0)) then 
 						Duel.BreakEffect()
-					local oc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11560715.gsfilter),tp,LOCATION_GRAVE+LOCATION_MZONE,LOCATION_GRAVE+LOCATION_MZONE,1,1,c):GetFirst()  
+					local oc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11560715.gsfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,c):GetFirst()  
 					if oc and not oc:IsImmuneToEffect(e) then
 		local og=oc:GetOverlayGroup()
 		if og:GetCount()>0 then

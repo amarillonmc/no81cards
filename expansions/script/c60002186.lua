@@ -100,7 +100,9 @@ function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
-		Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)
+		if e:GetHandler():IsAbleToHand() and Duel.GetFlagEffect(tp,m+40000000)<4 then
+			if Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)~=0 then Duel.RegisterFlagEffect(tp,m+40000000,RESET_PHASE+PHASE_END,0,1) end
+		end
 		if Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local g=Duel.SelectMatchingCard(tp,cm.xfilter,tp,0,LOCATION_MZONE,1,1,nil)

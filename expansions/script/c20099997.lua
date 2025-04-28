@@ -2,29 +2,35 @@ dofile("expansions/script/c20099998.lua")
 if fucf then return end
 fucf, fugf = { }, { }
 -------------------------------------- Group function
-function fugf.Get(_tp, _loc)
-	return Duel.GetFieldGroup(_tp, fusf.Get_Loc(_loc))
+function fugf.Get(p, loc)
+	return Duel.GetFieldGroup(p, fusf.Get_Loc(loc))
 end
-function fugf.Filter(_g, _func, _val, _n, ...)
-	return fusf.Creat_GF(_func, _val, ...)(_g, _n)
+function fugf.Filter(g, f, v, n, ...)
+	return fusf.Creat_GF(f, v, ...)(g, n)
 end
-function fugf.GetFilter(_tp, _loc, _func, _val, _n, ...)
-	return fugf.Filter(fugf.Get(_tp, _loc), _func, _val, _n, ...)
+function fugf.GetFilter(p, loc, f, v, n, ...)
+	return fugf.Filter(fugf.Get(p, loc), f, v, n, ...)
 end
-function fugf.Select(_tp, _g, _func, _val, _min, _max, ...)
-	local g = _g
-	if type(_g) == "string" then g = fugf.Get(_tp, _g) end -- _g is loc
-	if _func then 
-		if type(_func) == "number" then -- _func is _min
-			_min, _max = _func, _val or _func
-		else -- _func is _func
-			g = fugf.Filter(g, _func, _val, nil, ...)
-		end
+function fugf.GetNoP(loc, f, v, n, ...)
+	local val = {...}
+	return function(p)
+		return fugf.GetFilter(p, loc, f, v, n, table.unpack(val))
 	end
-	return g:Select(_tp, _min or 1, _max or _min or 1, nil)
 end
-function fugf.SelectTg(_tp, _g, _func, _val, _min, _max, ...)
-	local g = fugf.Select(_tp, _g, _func, _val, _min, _max, ...)
+function fugf.Select(p, g, f, v, min, max, ...)
+	if type(g) == "string" then g = fugf.Get(p, g) end -- _g is loc
+	if type(f) == "number" then -- f is min
+		min, max = f, v
+	elseif f then -- f is func
+		g = fugf.Filter(g, f, v, nil, ...)
+	end
+	min = min or 1
+	max = max or min
+	if #g == min then return g end
+	return g:Select(p, min, max, nil)
+end
+function fugf.SelectTg(p, g, f, v, min, max, ...)
+	local g = fugf.Select(p, g, f, v, min, max, ...)
 	Duel.SetTargetCard(g)
 	return g
 end
@@ -33,7 +39,7 @@ function fucf.AddCode(c, ...)
 	local codes = { }
 	for _, _code in ipairs({...}) do
 		if type(_code) == "string" then 
-			for _, cod in ipairs(fusf.CutString(_code, ",", "AddCode")) do
+			for _, cod in _code:ForCut("fucf.AddCode") do
 				codes[#codes + 1] = fusf.M_chk(cod)
 			end
 		else
@@ -68,11 +74,11 @@ function fucf.Not(c,val)
 	end
 	return false
 end
-function fucf.IsSet(c,set)
-	if type(set) == "number" then return c:IsSetCard(set) end
-	for _,Set in ipairs(fusf.CutString(set, "/")) do
-		Set=tonumber(Set,16)
-		if Set and c:IsSetCard(Set) then return true end
+function fucf.IsSet(c, sets)
+	if type(sets) == "number" then return c:IsSetCard(sets) end
+	for _, set in sets:ForCut("fucf.IsSet", "/") do
+		set = tonumber(set, 16)
+		if set and c:IsSetCard(set) then return true end
 	end
 	return false
 end
@@ -90,6 +96,11 @@ function fucf.AbleTo(c,loc)
 end
 function fucf.CanSp(c, e, typ, tp, nochk, nolimit, pos, totp, zone)
 	if not tp then tp = e:GetHandlerPlayer() end
+	if typ == SUMMON_TYPE_RITUAL or typ == "RI" then
+		typ = SUMMON_TYPE_RITUAL
+		nochk = nochk or false
+		nolimit = nolimit or true
+	end
 	return c:IsCanBeSpecialSummoned(e, typ, tp, nochk or false, nolimit or false, pos or POS_FACEUP, totp or tp,zone or 0xff)
 end
 function fucf.IsCode(c, _cod)
@@ -97,7 +108,7 @@ function fucf.IsCode(c, _cod)
 	if aux.GetValueType(_cod) == "number" then
 		cod = {_cod}
 	elseif aux.GetValueType(_cod) == "string" then
-		cod = fusf.CutString(_cod, "+")
+		cod = _cod:Cut("fucf.IsCode", "+")
 	elseif aux.GetValueType(_cod) == "table" then
 		cod = _cod
 	end
@@ -112,17 +123,27 @@ function fucf.HasCode(c, _cod)
 	if aux.GetValueType(_cod) == "number" then
 		cod = {_cod}
 	elseif aux.GetValueType(_cod) == "string" then
-		cod = fusf.CutString(_cod, "+")
+		cod = _cod:Cut("fucf.HasCode", "+")
 	end
 	for i,v in ipairs(cod) do
 		has = has or c.card_code_list[fusf.M_chk(tonumber(v))]
 	end
 	return has
 end
+function fucf.CanEq(c, tp)
+	return c:CheckUniqueOnField(tp) and Duel.GetLocationCount(tp, LOCATION_SZONE) > 0
+end
+function fucf.IsFlagLab(c, _cod, _lab)
+	return c:GetFlagEffectLabel(_cod) == _lab
+end
+function fucf.IsCon(c, p)
+	if type(p) == "string" then p = tonumber(p) end
+	return c:IsControler(p)
+end
+fucf.InGroup = function(c, g) return g:IsContains(c) end
 fucf.TgChk  = Card.IsCanBeEffectTarget
 fucf.GChk   = function(c) return not c:IsHasEffect(EFFECT_NECRO_VALLEY) end
 fucf.IsImm  = Card.IsImmuneToEffect
-fucf.IsCon  = Card.IsControler
 fucf.IsPCon = Card.IsPreviousControler
 fucf.IsLoc  = function(c,loc) return c:IsLocation(fusf.Get_Loc(loc)) end
 fucf.IsPLoc = function(c,loc) return c:IsPreviousLocation(fusf.Get_Loc(loc)) end
@@ -134,7 +155,6 @@ fucf.IsAtt  = fusf.Is_Cons("GetAttribute", "att")
 fucf.IsRac  = fusf.Is_Cons("GetRace", "rac")
 fucf.IsPos  = fusf.Is_Cons("GetPosition", "pos", function(card_val, val) return card_val | val == val end)
 fucf.IsPPos = fusf.Is_Cons("GetPreviousPosition", "pos", function(card_val, val) return card_val | val == val end)
-
 ---------------------------------------------------------------- procedure
 function fucf.RMFilter(c, rf, e, tp, g1, g2, level_function, greater_or_equal, chk)
 	if rf and not rf(c, e, tp, chk) then return false end

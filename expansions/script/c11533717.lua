@@ -62,7 +62,7 @@ function c11533717.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN) 
 	e2:SetRange(LOCATION_GRAVE) 
 	e2:SetCountLimit(1,21533717)
-	e2:SetCost(c11533717.cost) 
+	--e2:SetCost(c11533717.cost) 
 	e2:SetTarget(c11533717.sptg)
 	e2:SetOperation(c11533717.spop)
 	c:RegisterEffect(e2)
@@ -78,13 +78,13 @@ function c11533717.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11533717.setfilter),tp,LOCATION_DECK+LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 	local tc=g:GetFirst()
-	if tc and Duel.SSet(tp,tc)~=0 then
+	if tc and Duel.SSet(tp,tc)~=0 and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 then
 		if tc:IsType(TYPE_QUICKPLAY) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetDescription(aux.Stringid(11533717,2))
 			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 			e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1)
 		end
@@ -144,14 +144,14 @@ function c11533717.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end 
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 	--immune
-	local e1=Effect.CreateEffect(e:GetHandler())
+	--[[local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_IMMUNE_EFFECT)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3a))
 	e1:SetValue(c11533717.efilter)
 	e1:SetReset(RESET_CHAIN)
-	Duel.RegisterEffect(e1,tp)
+	Duel.RegisterEffect(e1,tp)]]
 end 
 function c11533717.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end 

@@ -45,15 +45,27 @@ function cm.initial_effect(c)
 	e0:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	e0:SetCondition(cm.actcon)
 	c:RegisterEffect(e0)
-	--rth or search
+	--search
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(TIMING_MAIN_END,TIMING_MAIN_END)
-	e1:SetCondition(cm.condition)
-	e1:SetTarget(cm.target)
+	e1:SetHintTiming(TIMING_END_PHASE,TIMING_END_PHASE)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
+	--activate
+	local e01=Effect.CreateEffect(c)
+	e01:SetDescription(aux.Stringid(m,1))
+	e01:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e01:SetCode(EVENT_CHAIN_SOLVED)
+	e01:SetRange(LOCATION_SZONE)
+	e01:SetCondition(cm.actcon2)
+	e01:SetTarget(cm.acttg)
+	e01:SetOperation(cm.actop)
+	c:RegisterEffect(e01)
+	local e02=e01:Clone()
+	e02:SetCode(7438201)
+	c:RegisterEffect(e02)
 	--destroyed
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,2))
@@ -74,58 +86,22 @@ end
 function cm.actcon(e)
 	return Duel.IsExistingMatchingCard(cm.confilter,e:GetHandlerPlayer(),LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
-function cm.setfilter(c,tp)
-	return cm.Crooked_Cook(c) and c:IsType(TYPE_FIELD) and not c:IsForbidden() and c:CheckUniqueOnField(1-tp)
-end
-function cm.rthfilter(c)
-	return cm.Crooked_Cook_Enree(c) and c:IsAbleToHand()
-end
 function cm.thfilter(c)
 	return cm.Crooked_Cook(c) and c:IsAbleToHand()
 end
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
-end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil,tp)
-	local b2=true
-	if chk==0 then return b1 or b2 end
-	local op=0
-	if b1 and b2 then
-		op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))
-	elseif b1 then
-		op=Duel.SelectOption(tp,aux.Stringid(m,0))
-	else
-		op=Duel.SelectOption(tp,aux.Stringid(m,1))+1
-	end
-	e:SetLabel(op)
-end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local op=e:GetLabel()
-	if op==0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-		local tc=Duel.SelectMatchingCard(tp,cm.setfilter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
-		if tc then
-			local fc=Duel.GetFieldCard(1-tp,LOCATION_SZONE,5)
-			if fc then
-				Duel.SendtoGrave(fc,REASON_RULE)
-				Duel.BreakEffect()
-			end
-			Duel.MoveToField(tc,tp,1-tp,LOCATION_FZONE,POS_FACEUP,true)
-		end
-	else
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetCountLimit(1)
-		e1:SetCondition(cm.thcon)
-		e1:SetOperation(cm.thop)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e1:SetLabel(Duel.GetTurnCount())
+	e1:SetCountLimit(1)
+	e1:SetCondition(cm.thcon)
+	e1:SetOperation(cm.thop)
+	e1:SetReset(RESET_PHASE+PHASE_STANDBY,2)
+	Duel.RegisterEffect(e1,tp)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil)
+	return Duel.GetTurnCount()==e:GetLabel()+1 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
@@ -136,6 +112,33 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
+function cm.actcon2(e,tp,eg,ep,ev,re,r,rp)
+	return re and re:GetHandler()==e:GetHandler() and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+function cm.actfilter(c,tp)
+	return cm.Crooked_Cook(c) and c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)
+end
+function cm.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.actfilter,tp,LOCATION_DECK,0,1,nil) end
+end
+function cm.actop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,4))
+	local tc=Duel.SelectMatchingCard(tp,cm.actfilter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
+	if tc then
+		local fc=Duel.GetFieldCard(tp,0,LOCATION_FZONE)
+		if fc then
+			Duel.SendtoGrave(fc,REASON_RULE)
+			Duel.BreakEffect()
+		end
+		Duel.MoveToField(tc,tp,1-tp,LOCATION_FZONE,POS_FACEUP,true)
+		local te=tc:GetActivateEffect()
+		te:UseCountLimit(tp,1,true)
+		local tep=tc:GetControler()
+		local cost=te:GetCost()
+		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+		Duel.RaiseEvent(tc,7438201,te,0,tp,tp,Duel.GetCurrentChain())
+	end
+end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsReason(REASON_EFFECT)
@@ -143,16 +146,24 @@ end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	--Recover by battle
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_RECOVER)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EVENT_BATTLE_DAMAGE)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetCondition(cm.recon)
+	e1:SetTarget(cm.retg)
+	e1:SetOperation(cm.reop)
+	Duel.RegisterEffect(e1,tp)
+	--client
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_RECOVER)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e3:SetCode(EVENT_BATTLE_DAMAGE)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+	e3:SetTargetRange(1,0)
+	e3:SetDescription(aux.Stringid(m,5))
 	e3:SetReset(RESET_PHASE+PHASE_END)
-	e3:SetCondition(cm.recon)
-	e3:SetTarget(cm.retg)
-	e3:SetOperation(cm.reop)
-	Duel.RegisterEffect(e3,tp)
+	Duel.RegisterEffect(e3,1-tp)
 end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
@@ -163,6 +174,10 @@ function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,PLAYER_ALL,300)
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Recover(tp,300,REASON_EFFECT)
-	Duel.Recover(1-tp,300,REASON_EFFECT)
+	if Duel.GetLP(tp)>0 then
+		Duel.Recover(tp,300,REASON_EFFECT)
+	end
+	if Duel.GetLP(1-tp)>0 then
+		Duel.Recover(1-tp,300,REASON_EFFECT)
+	end
 end

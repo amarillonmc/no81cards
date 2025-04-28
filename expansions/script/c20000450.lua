@@ -1,16 +1,23 @@
 --创导龙裔·觉醒者
 dofile("expansions/script/c20000000.lua")
 fu_GD = fu_GD or { }
---self_draw_con
-function fu_GD.sd_con(e,tp,eg,ep,ev,re,r,rp)
+--
+function fu_GD.SelfDraw_con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()~=PHASE_DRAW and rp==tp
+end
+function fu_GD.DRM_leave_con(e,tp,eg,ep,ev,re,r,rp)
+	return fugf.Filter(eg,"IsTyp+IsRac+IsPLoc","RI+M,DR,M",1)
+end
+function fu_GD.CanReturnDraw_tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp) and fugf.GetFilter(tp,"H","AbleTo+Not",{"D",e},1) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
 end
 --Normal initial
 function fu_GD.N_initial(add_cat, f1_loc, f1_func, f1_val)
-	local func = function(e,tp) return fugf.GetFilter(tp, f1_loc, f1_func, f1_val) end
+	local func = fugf.GetNoP(f1_loc, f1_func, f1_val)
 	local pe = fuef.I():CAT("TD+DR"..(add_cat and "+"..add_cat or "")):RAN("H"):CTL("m"):Func("N_cos1,N_tg1(%1),N_op1(%1)", func)
 	local cm, m = fuef.initial(fu_GD, _glo, "public_effect", pe)
-	cm.pe1 = fuef.FC("DR"):RAN("H"):Func("sd_con,N_op2")
+	cm.pe1 = fuef.FC("DR"):RAN("H"):Func("SelfDraw_con,N_op2")
 	return cm, m
 end
 function fu_GD.N_cos1(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -19,37 +26,49 @@ function fu_GD.N_cos1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function fu_GD.N_tg1(func)
 	return function(e,tp,eg,ep,ev,re,r,rp,chk)
-		local tg = func(e,tp,eg,ep,ev,re,r,rp)
-		if chk==0 then return Duel.IsPlayerCanDraw(tp) and fugf.GetFilter(tp,"H","AbleTo+Not",{"D",e},1) and #tg>0 end
-		Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
+		if chk==0 then return fu_GD.CanReturnDraw_tg(e,tp,eg,ep,ev,re,r,rp,chk) and #func(tp)>0 end
+		fu_GD.CanReturnDraw_tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
+end
+function fu_GD.ReturnDeck(e, tp)
+	-- 这张卡以外的自己手卡最多2张回到卡组洗切
+	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
+	local max, maxn = 2, #fugf.GetFilter(tp, "M", "IsTyp", "RI+M") + 1
+	if Duel.IsPlayerAffectedByEffect(tp, 20000457) and maxn > max then max = maxn end
+	local g = fugf.Select(tp, "H", "AbleTo+Not", {"D", e}, 1, max)
+	return Duel.SendtoDeck(g, nil, 2, REASON_EFFECT)
+end
+function fu_GD.SetDeckTop(e, tp, func)
+	-- 在卡组最上面放置
+	local max = Duel.IsPlayerAffectedByEffect(tp, 20000458) and (#fugf.GetFilter(tp, "M", "IsTyp", "RI+M") + 1) or 1
+	Duel.Hint(HINT_SELECTMSG, tp, aux.Stringid(20000450, 1))
+	local g = fugf.Select(tp, func(tp), "GChk", nil, 1, max)
+	if #g == 0 then return false end
+	local gg = fugf.Filter(g, "IsLoc", "G")
+	if #gg > 0 then Duel.SendtoDeck(gg, nil, 0, REASON_EFFECT) end
+	Duel.ShuffleDeck(tp) 
+	for c in aux.Next(g) do
+		Duel.MoveSequence(c, SEQ_DECKTOP)
+	end
+	if #g > 1 then Duel.SortDecktop(tp, tp, #g) end
+	Duel.ConfirmDecktop(tp, #g)
+	return true
+end
+function fu_GD.DrawReturn(tp, ct)
+	-- 那之后，自己抽出回去的数量
+	if Duel.IsPlayerAffectedByEffect(tp, 20000459) and Duel.SelectYesNo(tp, aux.Stringid(20000459, 0)) then 
+		Duel.Hint(HINT_CARD, 1-tp, 20000459)
+		ct = ct + 1 
+	end
+	Duel.BreakEffect()
+	Duel.Draw(tp, ct, REASON_EFFECT)
 end
 function fu_GD.N_op1(func)
 	return function(e,tp,eg,ep,ev,re,r,rp)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local max, maxn = 2, #fugf.GetFilter(tp,"M","IsTyp","RI+M") + 1
-		if Duel.IsPlayerAffectedByEffect(tp,20000457) then max = maxn end
-		local g = fugf.Select(tp,"H","AbleTo+Not",{"D",e}, 1, max)
-		if #g==0 then return end
-		if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)==0 then return end
-		max = Duel.IsPlayerAffectedByEffect(tp,20000458) and maxn or 1
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-		local tg = fugf.Select(tp, func(e,tp,eg,ep,ev,re,r,rp), "GChk", nil, 1, max)
-		if #tg==0 then return end
-		if fugf.Filter(tg,"IsLoc","G",1) then Duel.SendtoDeck(tg:Filter(Card.IsLocation,nil,LOCATION_GRAVE),nil,0,REASON_EFFECT) end
-		Duel.ShuffleDeck(tp) 
-		for tc in aux.Next(tg) do
-			Duel.MoveSequence(tc,SEQ_DECKTOP)
-		end
-		if #tg>1 then Duel.SortDecktop(tp,tp,#tg) end
-		Duel.ConfirmDecktop(tp,#tg)
-		Duel.BreakEffect()
-		max = #g
-		if Duel.IsPlayerAffectedByEffect(tp,20000459) and Duel.SelectYesNo(tp,aux.Stringid(20000459,0)) then 
-			Duel.Hint(HINT_CARD,1-tp,20000459)
-			max = max + 1 
-		end
-		Duel.Draw(tp,max,REASON_EFFECT)
+		local ct = fu_GD.ReturnDeck(e, tp)
+		if ct == 0 then return end
+		if not fu_GD.SetDeckTop(e, tp, func) then return end
+		fu_GD.DrawReturn(tp, ct)
 	end
 end
 function fu_GD.N_op2(e,tp,eg,ep,ev,re,r,rp)
@@ -63,16 +82,6 @@ function fu_GD.N_op2op2(e,tp,eg,ep,ev,re,r,rp)
 		e:GetLabelObject():Reset()
 		e:Reset()
 	end
-end
--- ritual spell initial
-function fu_GD.RS_initial(f1_func, f1_val)
-	local cm, m = fuef.initial(fu_GD)
-	local func = function(e,tp) return fugf.GetFilter(tp, "G", f1_func, f1_val) end
-	cm.pe1 = fuef.FTO("LEA"):CAT("TD+DR+GA"):PRO("DE"):RAN("G"):CTL(m):Func("RS_con1,N_tg1(%1),N_op1(%1)", func)
-	return cm, m
-end
-function fu_GD.RS_con1(e,tp,eg,ep,ev,re,r,rp)
-	return fugf.Filter(eg,"IsTyp+IsPLoc","RI+M,M",1) and aux.exccon(e)
 end
 -- ritual monster initial
 function fu_GD.RM_initial(_glo)

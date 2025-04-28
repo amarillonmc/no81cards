@@ -1,4 +1,4 @@
---兴灭之蒙昧灵 佛莱格瑞
+--熔凝之蒙昧灵 佛莱格瑞
 function c9911114.initial_effect(c)
 	--summon with 1 tribute
 	local e1=Effect.CreateEffect(c)
@@ -67,13 +67,10 @@ function c9911114.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_DISCARD+REASON_COST)
 end
 function c9911114.thfilter(c)
-	return c:IsSetCard(0xa954) and (c:IsAbleToHand() or c:IsAbleToGrave())
+	return c:IsSetCard(0xa954) and not c:IsLevel(7) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
 function c9911114.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9911114.thfilter,tp,LOCATION_DECK,0,1,nil) end
-end
-function c9911114.disfilter(c)
-	return aux.NegateAnyFilter(c) and c:IsAbleToRemove()
 end
 function c9911114.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -93,37 +90,29 @@ function c9911114.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	local g1=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0):Filter(Card.IsSetCard,nil,0xa954)
-	local g2=Duel.GetMatchingGroup(c9911114.disfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local g2=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if res and g1 and g1:GetClassCount(Card.GetCode)>=3 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(9911114,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-		local tc=g2:Select(tp,1,1,nil):GetFirst()
-		if not tc then return end
-		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		local tg=g2:Select(tp,1,1,nil)
+		Duel.HintSelection(tg)
+		local sc=tg:GetFirst()
+		Duel.NegateRelatedChain(sc,RESET_TURN_SET)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		sc:RegisterEffect(e1)
+		local e2=e1:Clone()
 		e2:SetCode(EFFECT_DISABLE_EFFECT)
 		e2:SetValue(RESET_TURN_SET)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e2)
-		if tc:IsType(TYPE_TRAPMONSTER) then
-			local e3=Effect.CreateEffect(c)
-			e3:SetType(EFFECT_TYPE_SINGLE)
-			e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		sc:RegisterEffect(e2)
+		if sc:IsType(TYPE_TRAPMONSTER) then
+			local e3=e1:Clone()
 			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
-			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e3)
+			sc:RegisterEffect(e3)
 		end
-		Duel.AdjustInstantly()
-		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	end
 end
 function c9911114.sumcon(e,tp,eg,ep,ev,re,r,rp)
@@ -141,7 +130,7 @@ function c9911114.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c9911114.sumfilter(c)
-	return c:IsSetCard(0xa954) and c:IsSummonable(true,nil,1)
+	return c:IsSetCard(0xa954) and (c:IsSummonable(true,nil,1) or c:IsMSetable(true,nil,1))
 end
 function c9911114.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9911114.sumfilter,tp,LOCATION_HAND,0,1,nil) end
@@ -154,6 +143,12 @@ function c9911114.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c9911114.sumfilter,tp,LOCATION_HAND,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then
-		Duel.Summon(tp,tc,true,nil,1)
+		local s1=tc:IsSummonable(true,nil,1)
+		local s2=tc:IsMSetable(true,nil,1)
+		if (s1 and s2 and Duel.SelectPosition(tp,tc,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)==POS_FACEUP_ATTACK) or not s2 then
+			Duel.Summon(tp,tc,true,nil,1)
+		else
+			Duel.MSet(tp,tc,true,nil,1)
+		end
 	end
 end

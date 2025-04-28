@@ -73,13 +73,13 @@ function cm.initial_effect(c)
 	--double attack
 	local e9=Effect.CreateEffect(c)
 	e9:SetType(EFFECT_TYPE_SINGLE)
-	e9:SetCode(EFFECT_EXTRA_ATTACK)
+	e9:SetCode(EFFECT_EXTRA_ATTACK_MONSTER)
 	e9:SetValue(c11561047.atkcval)
 	c:RegisterEffect(e9)
 	
 end
 function c11561047.atkval(e,c)
-	return e:GetHandler():GetCounter(0x1)*100*Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil):GetCount()
+	return e:GetHandler():GetCounter(0x1)*150*Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil):GetCount()
 end
 function c11561047.atkcval(e,c)
 	local c=e:GetHandler()
@@ -134,11 +134,11 @@ function c11561047.cdtop(e,tp,eg,ep,ev,re,r,rp)
 		--if g:GetCount()>0 then
 		--  Duel.HintSelection(g)
 		--  if Duel.Destroy(g,REASON_EFFECT) then
-		--	  local ccg=Duel.GetOperatedGroup()
-		--	  local cct=ccg:Filter(Card.IsPreviousControler,nil,tp):GetCount()
-		--	  if cct>0 and Duel.IsPlayerCanDraw(tp,cct) then 
-		--		  Duel.Draw(tp,cct,REASON_EFFECT)
-		--	  end
+		--	local ccg=Duel.GetOperatedGroup()
+		--	local cct=ccg:Filter(Card.IsPreviousControler,nil,tp):GetCount()
+		--	if cct>0 and Duel.IsPlayerCanDraw(tp,cct) then 
+		--		Duel.Draw(tp,cct,REASON_EFFECT)
+		--	end
 		--  end
 		--end
 		--end

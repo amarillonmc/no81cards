@@ -1,6 +1,5 @@
 --漫然溯醒的长夜梦
-local m=11451739
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)

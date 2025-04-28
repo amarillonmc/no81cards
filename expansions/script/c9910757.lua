@@ -27,16 +27,16 @@ function c9910757.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910757.repfilter(c,tp)
-	return c:IsControler(tp) and c:IsOnField()
-		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+	return c:IsControler(tp) and c:IsOnField() and not c:IsReason(REASON_REPLACE)
+		and (c:IsReason(REASON_BATTLE) or c:IsReason(REASON_EFFECT) and c:GetReasonPlayer()==1-tp)
 end
 function c9910757.confilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xc950)
 end
 function c9910757.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToGrave() and not c:IsStatus(STATUS_DESTROY_CONFIRMED) and eg:IsExists(c9910757.repfilter,1,nil,tp)
-		and Duel.IsExistingMatchingCard(c9910757.confilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return c:IsAbleToGrave() and not c:IsStatus(STATUS_DESTROY_CONFIRMED)
+		and eg:IsExists(c9910757.repfilter,1,nil,tp) and Duel.IsPlayerCanDiscardDeck(tp,3) end
 	return Duel.SelectEffectYesNo(tp,c,96)
 end
 function c9910757.desrepval(e,c)
@@ -44,12 +44,9 @@ function c9910757.desrepval(e,c)
 end
 function c9910757.desrepop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910757)
-	local c=e:GetHandler()
-	if Duel.SendtoGrave(c,REASON_EFFECT)>0 and c:IsLocation(LOCATION_GRAVE)
-		and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(9910757,0)) then
-		Duel.BreakEffect()
-		Duel.Draw(tp,1,REASON_EFFECT)
-	end
+	local g=Duel.GetDecktopGroup(tp,3)
+	g:AddCard(e:GetHandler())
+	Duel.SendtoGrave(g,REASON_EFFECT+REASON_REPLACE)
 end
 function c9910757.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)

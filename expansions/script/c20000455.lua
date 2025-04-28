@@ -1,7 +1,8 @@
 --创导龙裔的转生
 dofile("expansions/script/c20000450.lua")
-local cm, m = fu_GD.RS_initial("IsTyp+IsRac","M,SP")
+local cm, m = fuef.initial(fu_GD)
 cm.e1 = fuef.A():CAT("SP"):Func("tg1,op1")
+cm.e2 = fuef.FC(EFFECT_DESTROY_REPLACE):RAN("G"):Func("val2,tg2,op2")
 --e1
 function cm.tg1ff(g,tp,c,lv)
 	Duel.SetSelectedCard(g)
@@ -33,3 +34,41 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	if #mg == 1 then fuef.S(e,EFFECT_INDESTRUCTABLE_EFFECT,tc):DES(m,0):PRO("SR+CD+HINT"):RAN("M"):VAL(1):RES("STD") end
 	if mg:IsExists(Card.IsSetCard,nil,1,0xbfd4) then fuef.S(e,EFFECT_CANNOT_BE_EFFECT_TARGET,tc):DES(m,1):PRO("HINT"):VAL("tgoval"):RES("STD") end
 end
+--e2
+function cm.val2(e,c)
+	return fucf.Filter(c,"IsPos+IsTyp+IsRac+IsRea+IsLoc+IsCon","FU,RI+M,DR,EFF+BAT-REP,M",e:GetHandlerPlayer())
+end
+function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToRemove() 
+		and fugf.Filter(eg,"IsPos+IsTyp+IsRac+IsRea+IsLoc+IsCon","FU,RI+M,DR,EFF+BAT-REP,M,"..tp,1) end
+	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+end
+function cm.op2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT)
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,4 +1,4 @@
---远古造物 钝脚全棱兽
+--远古造物 窃墓鼹
 dofile("expansions/script/c9910700.lua")
 function c9910753.initial_effect(c)
 	--special summon

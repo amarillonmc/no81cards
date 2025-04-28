@@ -354,7 +354,7 @@ function c98941057.acost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b2=Duel.GetMatchingGroup(c98941057.chkfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_MZONE,0,nil)
 	local b3=Duel.GetMatchingGroup(c98941057.chkfilter1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_MZONE,0,nil)
 	if chk==0 then return b1 or b2 or (b3 and Duel.GetTurnPlayer()==e:GetHandlerPlayer()) end
-	if b2 then
+	if b2 or (b3 and Duel.GetTurnPlayer()==e:GetHandlerPlayer()) then
 		e:SetLabel(0)
 		local g=Duel.GetMatchingGroup(c98941057.chkfilter2,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_MZONE,0,nil) 
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)

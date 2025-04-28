@@ -33,16 +33,16 @@ function c75030008.initial_effect(c)
 	e2:SetRange(LOCATION_SZONE) 
 	e2:SetTargetRange(LOCATION_MZONE,0) 
 	e2:SetTarget(function(e,c) 
-	return c:IsSetCard(0x753) end)
+	return c:IsSetCard(0x5751) end)
 	e2:SetValue(function(e,te) 
-	return not te:GetOwner():IsSetCard(0x753) end) 
+	return not te:GetOwner():IsSetCard(0x5751) end) 
 	e2:SetCondition(function(e) 
 	local ph=Duel.GetCurrentPhase() 
 	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE end) 
 	c:RegisterEffect(e2)
 end
 function c75030008.thfilter(c) 
-	return c:IsSetCard(0x753,0x751) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x5751,0x3751) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c75030008.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75030008.thfilter,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():GetFlagEffect(75030008)==0 end
@@ -59,7 +59,7 @@ function c75030008.thop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end 
 function c75030008.spfil(c,e,tp) 
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x753)  
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x5751)  
 end 
 function c75030008.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75030008.spfil,tp,LOCATION_HAND,0,1,nil,e,tp) and e:GetHandler():GetFlagEffect(75030008)==0 end

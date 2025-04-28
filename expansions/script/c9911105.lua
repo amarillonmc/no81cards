@@ -1,6 +1,6 @@
 --蒙昧神迹-星移的脉动
 function c9911105.initial_effect(c)
-	--activate
+	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -8,6 +8,19 @@ function c9911105.initial_effect(c)
 	e1:SetTarget(c9911105.target)
 	e1:SetOperation(c9911105.activate)
 	c:RegisterEffect(e1)
+	--to deck
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(9911105,2))
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,9911105)
+	e2:SetCondition(c9911105.tdcon)
+	e2:SetCost(aux.bfgcost)
+	e2:SetTarget(c9911105.tdtg)
+	e2:SetOperation(c9911105.tdop)
+	c:RegisterEffect(e2)
 end
 function c9911105.cfilter(c)
 	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_NORMAL)
@@ -54,4 +67,22 @@ function c9911105.activate(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_EXTRA_SET_COUNT)
 	Duel.RegisterEffect(e2,tp)
 	Duel.RegisterFlagEffect(tp,9911105,RESET_PHASE+PHASE_END,0,1)
+end
+function c9911105.tdcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsSummonType,1,nil,SUMMON_TYPE_ADVANCE)
+end
+function c9911105.tdfilter(c)
+	return c:IsFaceupEx() and c:IsAbleToDeck()
+end
+function c9911105.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9911105.tdfilter,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,1-tp,LOCATION_GRAVE+LOCATION_REMOVED)
+end
+function c9911105.tdop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9911105.tdfilter),tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,2,nil)
+	if tg:GetCount()>0 then
+		Duel.HintSelection(tg)
+		Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	end
 end

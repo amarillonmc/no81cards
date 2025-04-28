@@ -33,32 +33,22 @@ function c24501001.initial_effect(c)
 end
 --tg
 function c24501001.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	e:SetLabel(1)
-	if chk==0 then return true end
+	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
-function c24501001.costfilter(c,tp)
-	return c:IsSetCard(0x501) and c:IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(c24501001.tgfilter,tp,LOCATION_DECK,0,1,nil,c:GetType()&0x7)
-end
-function c24501001.tgfilter(c,typ)
-	return c:IsType(typ) and c:IsSetCard(0x501) and c:IsAbleToGrave()
+function c24501001.tgfilter(c)
+	return c:IsSetCard(0x501) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function c24501001.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		if e:GetLabel()==0 then return false end
-		e:SetLabel(0)
-		return Duel.IsExistingMatchingCard(c24501001.costfilter,tp,LOCATION_HAND,0,1,nil,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c24501001.costfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
-	Duel.SetTargetCard(g)
-	Duel.SendtoGrave(g,REASON_COST)
+	if chk==0 then return Duel.IsExistingMatchingCard(c24501001.tgfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function c24501001.tgop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c24501001.tgfilter,tp,LOCATION_DECK,0,1,1,nil,tc:GetType()&0x7)
-	if #g>0 then
-		Duel.SendtoGrave(g,REASON_EFFECT)
+	local tc=Duel.SelectMatchingCard(tp,c24501001.tgfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
+	if tc and Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) and Duel.IsPlayerCanDiscardDeck(tp,3) and Duel.SelectYesNo(tp,aux.Stringid(24501001,0)) then
+		Duel.BreakEffect()
+		Duel.DiscardDeck(tp,3,REASON_EFFECT)
 	end
 end
 function c24501001.destg(e,tp,eg,ep,ev,re,r,rp,chk)

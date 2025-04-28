@@ -1,4 +1,4 @@
---荣枯之蒙昧灵 伊甸撒哈拉
+--蓊萧之蒙昧灵 伊甸撒哈拉
 function c9911104.initial_effect(c)
 	--summon with 1 tribute
 	local e1=Effect.CreateEffect(c)
