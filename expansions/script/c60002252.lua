@@ -28,7 +28,7 @@ end
 function cm.spcon(e,c)
 	local num=Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_MZONE,nil)
 	if c==nil then return true end
-	return num>=5
+	return num>=4
 		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function cm.thfilter(c)
