@@ -91,7 +91,7 @@ end
 
 function s.cfilter(c,tp,rp)
 	local bc=c:GetBattleTarget()
-	return c:IsPreviousPosition(POS_FACEUP) and c:IsSetCard(0x605) and c:IsType(TYPE_MONSTER) and ((c:IsReason(REASON_BATTLE) and bc:IsControler(1-tp)) or (rp==1-tp and c:IsReason(REASON_EFFECT))) and c:IsControler(tp)
+	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousSetCard(0x605) and ((c:IsReason(REASON_BATTLE)) or (rp==1-tp and c:IsReason(REASON_EFFECT))) and c:IsPreviousControler(tp)
 end
 function s.con2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter,1,nil,tp,rp) and not eg:IsContains(e:GetHandler())
