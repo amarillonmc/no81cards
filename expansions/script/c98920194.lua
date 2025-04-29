@@ -65,7 +65,7 @@ function c98920194.costfilter(c)
 	return c:IsType(TYPE_XYZ) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsAbleToGraveAsCost()
 end
 function c98920194.cfilter(c)
-	return c:IsType(TYPE_FUSION) and c:IsRace(RACE_MACHINE)
+	return c:IsType(TYPE_XYZ) and c:IsAttribute(ATTRIBUTE_WATER)
 end
 function c98920194.indcon(e)
 	return Duel.IsExistingMatchingCard(c98920194.cfilter,e:GetHandlerPlayer(),LOCATION_GRAVE,0,1,nil)
