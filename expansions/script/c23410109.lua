@@ -4,7 +4,7 @@ function cm.initial_effect(c)
 	aux.AddCodeList(c,23410101)
 	c:EnableReviveLimit()
 	--fusion material
-	aux.AddFusionProcFunRep(c,cm.ffilter,6,true)
+	--aux.AddFusionProcFunRep(c,cm.ffilter,6,true)
 	--code
 	aux.EnableChangeCode(c,23410101,LOCATION_MZONE)
 	--special summon rule
@@ -131,7 +131,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp,c)
 		local og=mg:Filter(Card.IsLocation,nil,LOCATION_MZONE)
 		if #og>0 and #sg==5 and Duel.GetLocationCountFromEx(tp,tp,sg,c)==0 then
 			cg=og
-		end	   
+		end	
 		Duel.Hint(3,tp,HINTMSG_FMATERIAL)
 		local tc=cg:SelectUnselect(cancel_group,tp,button,false,3,6)
 		if not tc then break end
@@ -139,7 +139,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp,c)
 			 sg:RemoveCard(tc)
 		else
 			sg:AddCard(tc)
-		end	   
+		end	
 	end
 	c:SetMaterial(sg)
 	if sg:IsExists(Card.IsFacedown,1,nil) then 
