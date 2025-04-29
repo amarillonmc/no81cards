@@ -96,9 +96,6 @@ function c9911370.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,c9911370.filter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,g)
 end
-function c9911370.filter2(c,e)
-	return c:IsRelateToEffect(e) and c:IsFaceup()
-end
 function c9911370.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e):Filter(Card.IsFaceup,nil)

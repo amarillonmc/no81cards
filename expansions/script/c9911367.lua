@@ -71,6 +71,7 @@ function c9911367.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local tc=g:RandomSelect(tp,1):GetFirst()
 	if tc then
+		Duel.ConfirmCards(tp,tc)
 		tc:RegisterFlagEffect(9911368,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,66)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -78,6 +79,8 @@ function c9911367.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
 	end
+	Duel.AdjustAll()
+	Duel.ShuffleHand(1-tp)
 end
 function c9911367.sumfilter(c)
 	return c:IsAttribute(ATTRIBUTE_WATER) and c:IsSummonable(true,nil)

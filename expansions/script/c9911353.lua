@@ -46,6 +46,7 @@ function c9911353.repop(e,tp,eg,ep,ev,re,r,rp)
 	if ct>2 then ct=2 end
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_CONFIRM)
 	local sg=g:Select(1-tp,ct,ct,nil)
+	Duel.ConfirmCards(tp,sg)
 	for tc in aux.Next(sg) do
 		tc:RegisterFlagEffect(9911353,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,66)
 		local e1=Effect.CreateEffect(e:GetHandler())
