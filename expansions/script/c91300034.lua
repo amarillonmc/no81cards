@@ -192,11 +192,12 @@ function c91300034.speop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local tg=g:FilterSelect(tp,c91300034.tdfilter,1,1,nil)
 		local rc=tg:GetFirst()
-		if rc and Duel.SendtoDeck(rc,nil,SEQ_DECKTOP,REASON_EFFECT) and Duel.ShuffleDeck(tp) and rc:IsLocation(0x41) then
+		if rc and Duel.SendtoDeck(rc,nil,SEQ_DECKTOP,REASON_EFFECT)~=0 and rc:IsLocation(0x41) then
 			local og=Duel.GetOperatedGroup()
 			local tc=og:GetFirst()
 			if tc and (tc:IsCode(91300025) or tc:IsCode(91300032) or tc:IsCode(91300033) or tc:IsCode(91300034)) then
 				c:RegisterFlagEffect(91301025,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(91300032,3))
+				Duel.ShuffleDeck(tp)
 			end
 			--[[if tc and tc:IsCode(91300032) then
 				c:RegisterFlagEffect(91301032,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,1,aux.Stringid(91300032,4))
