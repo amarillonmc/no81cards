@@ -81,8 +81,7 @@ function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
+	local tg=Duel.GetTargetsRelateToChain():Filter(aux.NecroValleyFilter(aux.TRUE),nil)
 		if c:IsRelateToEffect(e) and c:IsFaceup() then
 		if Duel.GetLocationCount(tp,LOCATION_SZONE)>=tg:GetCount() then
 		local tc=tg:GetFirst()
