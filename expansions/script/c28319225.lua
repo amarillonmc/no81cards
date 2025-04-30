@@ -217,5 +217,5 @@ function c28319225.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function c28319225.actcon(e)
-	return Duel.GetTurnPlayer()==1-tp
+	return Duel.GetTurnPlayer()==1-e:GetHandlerPlayer()
 end
