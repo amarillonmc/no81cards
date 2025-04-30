@@ -70,6 +70,24 @@ function cm.initial_effect(c)
 		PNFL_MIRROR_CONFIRM[0]={}
 		PNFL_MIRROR_CONFIRM[1]={}
 		PNFL_MIRROR_MULTI={}
+		PNFL_MIRROR_QUICK={}
+		PNFL_MIRROR_QUICK[0]=0xff
+		PNFL_MIRROR_QUICK[1]=0xff
+		local e0=Effect.CreateEffect(c)
+		Effect.SetType(e0,EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		Effect.SetCode(e0,EVENT_ADJUST)
+		Effect.SetOperation(e0,function(e)
+			local ct0=Duel.GetMatchingGroupCount(cm.mfilter,0,0xff,0,nil)
+			local ct1=Duel.GetMatchingGroupCount(cm.mfilter,0,0,0xff,nil)
+			if ct0>0 and Duel.SelectYesNo(0,aux.Stringid(11451031,6)) then
+				PNFL_MIRROR_QUICK[0]=0xbe
+			end
+			if ct1>0 and Duel.SelectYesNo(1,aux.Stringid(11451031,6)) then
+				PNFL_MIRROR_QUICK[1]=0xbe
+			end
+			e:Reset()
+		end)
+		Duel.RegisterEffect(e0,0)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_ACTIVATE_COST)
@@ -102,7 +120,7 @@ function cm.initial_effect(c)
 		local ge3=Effect.CreateEffect(c)
 		ge3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge3:SetCode(EVENT_CHAINING)
-		ge3:SetCondition(function(e,tp) return Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0,1,nil) and not pnfl_adjusting and Duel.GetFlagEffect(tp,11451031)==0 end)
+		ge3:SetCondition(function(e,tp) return Duel.IsExistingMatchingCard(cm.mfilter,tp,PNFL_MIRROR_QUICK[tp],0,1,nil) and not pnfl_adjusting and Duel.GetFlagEffect(tp,11451031)==0 end)
 		ge3:SetOperation(cm.adjustop)
 		Duel.RegisterEffect(ge3,0)
 		local ge31=ge3:Clone()
@@ -115,7 +133,7 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge41,1)
 		local ge5=ge3:Clone()
 		ge5:SetCode(EVENT_CHAIN_SOLVED)
-		ge5:SetCondition(function(e,tp) return Duel.IsExistingMatchingCard(cm.mfilter,tp,0xff,0,1,nil) and Duel.GetCurrentChain()==1 and not pnfl_adjusting and Duel.GetFlagEffect(tp,11451031)==0 end)
+		ge5:SetCondition(function(e,tp) return Duel.IsExistingMatchingCard(cm.mfilter,tp,PNFL_MIRROR_QUICK[tp],0,1,nil) and Duel.GetCurrentChain()==1 and not pnfl_adjusting and Duel.GetFlagEffect(tp,11451031)==0 end)
 		Duel.RegisterEffect(ge5,0)
 		local ge51=ge5:Clone()
 		Duel.RegisterEffect(ge51,1)
