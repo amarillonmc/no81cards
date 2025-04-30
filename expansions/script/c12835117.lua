@@ -88,8 +88,8 @@ function cm.op5(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(3,tp,HINTMSG_EQUIP)
 	local g=Duel.SelectMatchingCard(tp,cm.w,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
-	if tc and c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		if Duel.Equip(tp,c,tc)>0 then
+	if tc and c:IsRelateToEffect(e) and tc:IsFaceup() then
+		if Duel.Equip(tp,c,tc) then
 			Duel.BreakEffect()
 			Duel.Draw(tp,1,REASON_EFFECT)
 		end
