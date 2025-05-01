@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	cm.aozora_field_effect=e2
 end
 function cm.filter(c)
-	return c:IsCode(53734011) and ((c:IsLocation(LOCATION_DECK) and c:IsSSetable()) or (c:IsLocation(LOCATION_FZONE) and c:IsCanTurnSet()))
+	return c:IsCode(53734012) and ((c:IsLocation(LOCATION_DECK) and c:IsSSetable()) or (c:IsLocation(LOCATION_FZONE) and c:IsCanTurnSet()))
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_FZONE,0,1,nil) end

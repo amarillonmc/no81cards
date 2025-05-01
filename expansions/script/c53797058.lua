@@ -97,6 +97,6 @@ end
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(1-tp,LOCATION_MZONE)<1 then return end
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_SPSUMMON)
-	local sc=Duel.SelectMatchingCard(1-tp,s.setfilter,1-tp,LOCATION_HAND,0,1,1,nil,e,tp):GetFirst()
+	local sc=Duel.SelectMatchingCard(1-tp,s.spfilter,1-tp,LOCATION_HAND,0,1,1,nil,e,tp):GetFirst()
 	if sc then Duel.SpecialSummon(sc,0,1-tp,1-tp,false,false,POS_FACEUP) end
 end
