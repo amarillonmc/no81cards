@@ -1,5 +1,6 @@
 --闪耀的萤火 市川雏菜
 function c28316556.initial_effect(c)
+	aux.AddCodeList(c,28316050)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(28316556,0))
@@ -47,7 +48,7 @@ function c28316556.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28316556.thfilter(c)
-	return c:IsSetCard(0x283) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToHand()
+	return c:IsSetCard(0x283) and c:IsFaceupEx() and c:IsAbleToHand()
 end
 function c28316556.dctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28316556.thfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil) end

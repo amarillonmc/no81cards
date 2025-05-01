@@ -74,6 +74,7 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
 		local mg1=Group.CreateGroup()
+		local mg4=Group.CreateGroup()
 		local mg3=Duel.GetMatchingGroup(s.filter3,tp,LOCATION_HAND,0,c)
 		if #mg3>0 and Duel.GetFlagEffect(1-tp,id)>0 then 
 			mg1:Merge(mg3)
@@ -95,14 +96,19 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			mg1:Merge(mg7)
 		end
 		local ge=c:IsHasEffect(EFFECT_TO_GRAVE_REDIRECT)
+		if ge and ge:GetValue()&LOCATION_DECK and c:IsCanBeFusionMaterial()
+		and c:IsAbleToGrave() and Duel.GetFlagEffect(1-tp,id+1)>0 then 
+			mg4:AddCard(c)
+		end
 		if not ge and c:IsCanBeFusionMaterial()
 		and c:IsAbleToRemove() and Duel.GetFlagEffect(1-tp,id+3)>0 then 
-			mg1:AddCard(c)
+			mg4:AddCard(c)
 		end
 		if ge and ge:GetValue()&LOCATION_REMOVED and c:IsCanBeFusionMaterial()
 		and c:IsAbleToDeck() and Duel.GetFlagEffect(1-tp,id+4)>0 then 
-			mg1:AddCard(c)
+			mg4:AddCard(c)
 		end
+		if #mg4>0 then mg1:Merge(mg4) end
 		Auxiliary.FCheckAdditional=s.fcheck
 		Auxiliary.GCheckAdditional=s.gcheck
 		local res=Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)

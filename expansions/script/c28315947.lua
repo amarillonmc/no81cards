@@ -1,5 +1,6 @@
 	--闪耀的萤火 樋口円香
 function c28315947.initial_effect(c)
+	aux.AddCodeList(c,28316050)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(28315947,0))
