@@ -105,10 +105,12 @@ end
 function s.filter(c,e,tp)
 	if not (c:IsType(TYPE_LINK) and c:IsSetCard(0x186) and c:IsLinkAbove(2) and c:IsFaceup()) then return false end
 	if not SNNM.IsInTable(c:GetOriginalCode(),s.codetable) then
-		Duel.DisableActionCheck(true)
-		Duel.CreateToken(tp,c:GetOriginalCode())
-		Duel.DisableActionCheck(false)
+		--Duel.DisableActionCheck(true)
+		--Duel.CreateToken(tp,c:GetOriginalCode())
+		--Duel.DisableActionCheck(false)
+		c:ReplaceEffect(c:GetOriginalCode(),RESET_EVENT+RESETS_STANDARD)
 		table.insert(s.codetable,c:GetOriginalCode())
+		--c:ResetEffect(cid,RESET_COPY)
 	end
 	local g=Group.__add(e:GetHandler(),Duel.GetMatchingGroup(s.thfilter,tp,0,0xfd,nil,c:GetFieldID()))
 	return g:IsExists(Card.IsAbleToHand,1,nil)
@@ -117,6 +119,27 @@ function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
 	local tc=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_MZONE,0,1,1,nil,e,tp):GetFirst()
+	if not EFFECT_REMOVE_LINK_MARKER_KOISHI and not Duel.Exile then
+		EFFECT_REMOVE_LINK_MARKER_KOISHI=id+1000
+		local _GetLink=Card.GetLink
+		local _GetLinkCount=aux.GetLinkCount
+		Card.GetLink=function(c) if c:IsHasEffect(id+1000) then return math.max(0,_GetLink(c)) else return _GetLink(c) end end
+		aux.GetLinkCount=function(c) if c:IsHasEffect(id+1000) then if c:IsLinkType(TYPE_LINK) and _GetLink(c)>1 then return 1+0x10000*math.max(0,_GetLink(c)) else return 1 end else return _GetLinkCount(c) end end
+		---#{c:IsHasEffect(id+1000)}
+		Card.GetLinkMarker=function(c)
+								local res=0
+								for i=0,8 do
+									if i~=4 and c:IsLinkMarker(1<<i) then
+										local add=true
+										for _,te in pairs({c:IsHasEffect(id+1000)}) do
+											if 1<<i==te:GetValue() then add=false end
+										end
+										if add then res=res|(1<<i) end
+									end
+								end
+								return res
+							end
+	end
 	local mark=tc:GetLinkMarker()
 	local t1,t2={},{}
 	for i=0,8 do
@@ -131,16 +154,20 @@ function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetValue(0x001*(2^t1[op]))
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	tc:RegisterEffect(e1,true)
+	--Debug.Message(#{tc:IsHasEffect(id+1000)})
+	--Debug.Message(tc:GetLink())
+	--Debug.Message(aux.GetLinkCount(tc))
 	Duel.SetTargetCard(tc)
 	local g=Group.__add(e:GetHandler(),Duel.GetMatchingGroup(s.thfilter,tp,0,0xfd,nil,tc:GetFieldID())):Filter(Card.IsAbleToHand,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
 end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) then return end
-	local g=Group.__add(e:GetHandler(),Duel.GetMatchingGroup(s.thfilter,tp,0,0xfd,nil,tc:GetFieldID())):Filter(Card.IsAbleToHand,nil)
+	local g=Group.CreateGroup()
+	if tc:IsRelateToEffect(e) then g=Duel.GetMatchingGroup(s.thfilter,tp,0,0xfd,nil,tc:GetFieldID()):Filter(Card.IsAbleToHand,nil) end
+	if e:GetHandler():IsRelateToEffect(e) then g:AddCard(e:GetHandler()) end
 	if g:GetCount()>0 then Duel.SendtoHand(g,nil,REASON_EFFECT) end
-	if tc:GetFlagEffect(id+500)>0 then return end
+	if not tc:IsRelateToEffect(e) or tc:GetFlagEffect(id+500)>0 then return end
 	tc:RegisterFlagEffect(id+500,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
