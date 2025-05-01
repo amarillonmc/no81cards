@@ -76,7 +76,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 		e4:SetTargetRange(1,1)
 		e4:SetCondition(cm.econ)
-		e4:SetValue(cm.elimit)
+		e4:SetTarget(cm.elimit)
 		e4:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e4,tp)
 	end
