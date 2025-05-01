@@ -19,13 +19,13 @@ end
 function c79029510.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	local opt=0
-	local g=Duel.GetFieldGroup(p,LOCATION_HAND,0):Filter(c79029510.filter,nil)
+	local g=Duel.GetFieldGroup(p,0,LOCATION_HAND):Filter(c79029510.filter,nil)
 	if Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_HAND,0,1,nil,89252157)
 	and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_HAND,0,1,nil,97574404)
 	and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_HAND,0,1,nil,99030164)
 	and Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_HAND,0,1,nil,57935140)
 		and Duel.SelectYesNo(tp,aux.Stringid(79029510,2)) then
-		Duel.ConfirmCards(1-p,g)
+		Duel.ConfirmCards(p,g)
 		opt=1
 	end
 	if opt==0 then
