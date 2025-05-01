@@ -11,6 +11,7 @@ function cm.initial_effect(c)
 	e1:SetCondition(function(e) return not cm.spcost(e,nil,e:GetHandlerPlayer()) end)
 	c:RegisterEffect(e1)
 	if not cm.global_check then
+		pnfl_CancelableSelect=pnfl_CancelableSelect or Group.CancelableSelect
 		--replace
 		local e3=Effect.CreateEffect(c)
 		e3:SetDescription(aux.Stringid(m,2))
@@ -179,7 +180,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		local tg=g:Filter(function(c) return c:IsFacedown() and c:IsControler(1-tp) end,nil)
 		Duel.ConfirmCards(tp,tg)
 		Duel.Hint(HINT_SELECTMSG,0,aux.Stringid(11451031,4))
-		local sg=g:CancelableSelect(tp,1,1,nil)
+		local sg=pnfl_CancelableSelect(g,tp,1,1,nil)
 		if not sg then
 			local ph=Duel.GetCurrentPhase()
 			if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end

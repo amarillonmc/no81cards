@@ -134,7 +134,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 						e:SetCost(cost)
 						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 						local tc=Duel.SelectMatchingCard(tp,Card.IsSSetable,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
-						Duel.SSet(tp,tc,tp,false)
+						if tc then Duel.SSet(tp,tc,tp,false) end
 					end
 		if not tc:IsHasEffect(m) then
 			cost2=function(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -145,7 +145,7 @@ function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 						if #g>0 then
 							Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 							local tc=(g+c):Select(tp,1,1,nil):GetFirst()
-							Duel.SSet(tp,tc,tp,true)
+							if tc then Duel.SSet(tp,tc,tp,true) end
 						else
 							Duel.SSet(tp,c,tp,true)
 						end
@@ -234,8 +234,9 @@ function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	if c:IsOnField() then
 		local ng=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
-		local ag=ng:GetMinGroup(cm.distance2,c,tp):Filter(Card.IsCanBeEffectTarget,nil,e)
-		if #ag>0 then Duel.SetTargetCard(ag) end
+		local ag=ng:GetMinGroup(cm.distance2,c,tp)
+		if ag and #ag>0 then ag=ag:Filter(Card.IsCanBeEffectTarget,nil,e) end
+		if ag and #ag>0 then Duel.SetTargetCard(ag) end
 	else
 		local ng=Duel.GetMatchingGroup(cm.gsfilter,tp,LOCATION_GRAVE,0,nil,c)
 		local ag=ng:Filter(Card.IsCanBeEffectTarget,nil,e)

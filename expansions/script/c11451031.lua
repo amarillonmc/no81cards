@@ -26,6 +26,7 @@ function cm.initial_effect(c)
 	if not cm.global_check then
 		cm.global_check=true
 		cm.activate_sequence={}
+		pnfl_CancelableSelect=pnfl_CancelableSelect or Group.CancelableSelect
 		local _GetActivateLocation=Effect.GetActivateLocation
 		local _GetActivateSequence=Effect.GetActivateSequence
 		local _NegateActivation=Duel.NegateActivation
@@ -184,7 +185,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		local tg=g:Filter(function(c) return c:IsFacedown() and c:IsControler(1-tp) end,nil)
 		Duel.ConfirmCards(tp,tg)
 		Duel.Hint(HINT_SELECTMSG,0,aux.Stringid(11451031,4))
-		local sg=g:CancelableSelect(tp,1,1,nil)
+		local sg=pnfl_CancelableSelect(g,tp,1,1,nil)
 		if not sg then
 			local ph=Duel.GetCurrentPhase()
 			if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end

@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 		local _CRemoveOverlayCard=Card.RemoveOverlayCard
 		local _FilterSelect=Group.FilterSelect
 		local _Select=Group.Select
+		pnfl_CancelableSelect=Group.CancelableSelect
 		local _CancelableSelect=Group.CancelableSelect
 		local _SelectUnselect=Group.SelectUnselect
 		local function Local_RandomSelect(g,tp,ct)
@@ -174,7 +175,7 @@ function cm.initial_effect(c)
 				local ng=g:Clone()
 				if aux.GetValueType(nc)=="Card" then ng:RemoveCard(nc) end
 				if aux.GetValueType(nc)=="Group" then ng:Sub(nc) end	
-				if not Duel.SelectYesNo(sp,aux.Stringid(m,2)) then return Group.CreateGroup() end
+				if not Duel.SelectYesNo(sp,aux.Stringid(m,2)) then return nil end
 				Duel.Hint(HINT_CARD,0,m)
 				--local ct=Duel.GetFlagEffectLabel(sp,m)
 				--Duel.SetFlagEffectLabel(sp,m,ct+1)
@@ -235,7 +236,7 @@ function cm.roll(min,max)
 			return math.floor(cm.r*min)+1
 		else
 			max=max-min+1
-			return math.floor(cm.r*max+min)
+			return math.floor(cm.r*max)+min
 		end
 	end
 	return cm.r
