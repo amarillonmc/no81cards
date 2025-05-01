@@ -11,7 +11,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.thfilter(c,e,tp)
-	return c:IsType(TYPE_MONSTER) and (c:IsSetCard(0x1c5) or Duel.IsExistingMatchingCard(aux.AND(Card.IsFaceup,Card.IsCode),tp,LOCATION_MZONE,0,1,nil,89480012,89480013) and c:IsRace(RACE_REPTILE)) and (c:IsAbleToHand() or Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(aux.AND(Card.IsFaceup,Card.IsCode),tp,LOCATION_MZONE,0,1,nil,89480012) and Duel.IsExistingMatchingCard(aux.AND(Card.IsFaceup,Card.IsCode),tp,LOCATION_MZONE,0,1,nil,89480013) and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
+	return c:IsType(TYPE_MONSTER) and (c:IsSetCard(0xc20) or Duel.IsExistingMatchingCard(aux.AND(Card.IsFaceup,Card.IsCode),tp,LOCATION_MZONE,0,1,nil,89480012,89480013) and c:IsRace(RACE_REPTILE)) and (c:IsAbleToHand() or Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(aux.AND(Card.IsFaceup,Card.IsCode),tp,LOCATION_MZONE,0,1,nil,89480012) and Duel.IsExistingMatchingCard(aux.AND(Card.IsFaceup,Card.IsCode),tp,LOCATION_MZONE,0,1,nil,89480013) and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end

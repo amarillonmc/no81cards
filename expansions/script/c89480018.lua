@@ -81,10 +81,11 @@ function s.setcon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.settg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return eg:GetFirst():IsAbleToHand() end
+	Duel.SetTargetCard(eg:GetFirst())
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,eg:GetFirst(),1,0,0)
 end
 function s.setop2(e,tp,eg,ep,ev,re,r,rp)
-	local c=eg:GetFirst()
+	local c=Duel.GetFirstTarget()
 	if c:IsRelateToEffect(e) then
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
 	end

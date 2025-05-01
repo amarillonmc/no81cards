@@ -16,8 +16,8 @@ function s.filter(c)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and aux.NegateAnyFilter(chkc) end
-	if chk==0 then return e:IsCostChecked() or Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
-	local sgt=Duel.GetMatchingGroupCount(s.filter,LOCATION_MZONE,0,nil)
+	if chk==0 then return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
+	local sgt=Duel.GetMatchingGroupCount(s.filter,tp,LOCATION_MZONE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,sgt,nil)
 end
@@ -32,19 +32,19 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e1)
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetCode(EFFECT_DISABLE_EFFECT)
 			e2:SetValue(RESET_TURN_SET)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e2)
 			if tc:IsType(TYPE_TRAPMONSTER) then
 				local e3=Effect.CreateEffect(c)
 				e3:SetType(EFFECT_TYPE_SINGLE)
 				e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
-				e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+				e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 				tc:RegisterEffect(e3)
 			end
 			local e4=Effect.CreateEffect(c)
@@ -52,7 +52,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 			e4:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
 			e4:SetValue(1)
-			e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e4)
 			local e5=e4:Clone()
 			e5:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
@@ -71,7 +71,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsExistingMatchingCard(aux.AND(Card.IsFaceup,Card.IsCode),tp,LOCATION_MZONE,0,1,nil,89480012) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 		Duel.Recover(tp,n*800,REASON_EFFECT)
 	end
-	if Duel.IsExistingMatchingCard(aux.AND(Card.IsFaceup,Card.IsCode),tp,LOCATION_MZONE,0,1,nil,89480013) and Duel.SelectYesNo(tp,aux.Stringid(id,1))
+	if Duel.IsExistingMatchingCard(aux.AND(Card.IsFaceup,Card.IsCode),tp,LOCATION_MZONE,0,1,nil,89480013) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		Duel.Damage(1-tp,n*500,REASON_EFFECT)
 	end
 end

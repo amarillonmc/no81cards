@@ -42,7 +42,7 @@ end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sg=Duel.GetMatchingGroup(s.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 and sg:FilterCount(s.xfilter,nil,tp)>0 and c:IsType(TYPE_XYZ) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+	if Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 and sg:FilterCount(s.xfilter,nil,tp)>0 and c:IsType(TYPE_XYZ) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		local tc=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,1)
 		Duel.Overlay(c,tc)
 	end
@@ -63,12 +63,14 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if ft<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local sg=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	local sg=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 	if sg:GetCount()>0 and Duel.SSet(tp,sg)==#sg then
+		local tc=sg:GetFirst()
 		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(id,2))
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CANNOT_TRIGGER)
-		e1:SetCondition(s.actcon)
+		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
 	end

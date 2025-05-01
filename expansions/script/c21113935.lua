@@ -57,17 +57,17 @@ function c21113935.initial_effect(c)
 	Duel.AddCustomActivityCounter(21113935,ACTIVITY_SPSUMMON,c21113935.counter)	
 end
 function c21113935.counter(c)
-	return c:IsSetCard(0xc914)
+	return c:IsSetCard(0xc904)
 end
 function c21113935.GetLinkCount(c)
 	if c:IsType(TYPE_LINK) then
-		if c:IsSetCard(0xc914) and c:IsDisabled() then
+		if c:IsSetCard(0xc904) and c:IsDisabled() then
 			return 1+0x10000*c:GetLink()*2
 		else 
 			return 1+0x10000*c:GetLink()
 		end	
 	else
-		if c:IsSetCard(0xc914) and c:IsDisabled() then
+		if c:IsSetCard(0xc904) and c:IsDisabled() then
 			return 2
 		else			
 			return 1 
@@ -99,7 +99,7 @@ function c21113935.linkcon()
 					if max<maxc then maxc=max end
 					if minc>maxc then return false end
 				end
-				local f = function(c) return c:IsFaceup() and c:IsLinkSetCard(0xc914) end
+				local f = function(c) return c:IsFaceup() and c:IsLinkSetCard(0xc904) end
 				local tp=c:GetControler()
 				local mg=nil
 				if og then
@@ -126,7 +126,7 @@ function c21113935.linktg()
 					if max<maxc then maxc=max end
 					if minc>maxc then return false end
 				end
-				local f = function(c) return c:IsFaceup() and c:IsLinkSetCard(0xc914) end
+				local f = function(c) return c:IsFaceup() and c:IsLinkSetCard(0xc904) end
 				local mg=nil
 				if og then
 					mg=og:Filter(Auxiliary.LConditionFilter,nil,f,c,e)
@@ -171,7 +171,7 @@ function c21113935.opq(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function c21113935.q(c)
-	return c:IsFaceup() and c:IsSetCard(0xc914)
+	return c:IsFaceup() and c:IsSetCard(0xc904)
 end
 function c21113935.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,4)>0 end
@@ -221,7 +221,7 @@ function c21113935.cost4(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function c21113935.w(c)
-	return c:IsSetCard(0xc914) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0xc904) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function c21113935.opq2(e,tp,eg,ep,ev,re,r,rp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
@@ -245,10 +245,10 @@ function c21113935.op4(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c21113935.e(c,e,tp)
-	return c:IsSetCard(0xc914) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,4)>0 and c:IsFaceupEx() 
+	return c:IsSetCard(0xc904) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,4)>0 and c:IsFaceupEx() 
 end
 function c21113935.con4_(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffectLabel(tp,21113935+1)==0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c21113935.e),tp,0x30,0,1,nil,e,tp) and Duel.GetTurnPlayer()==1-tp
+	return Duel.GetFlagEffect(tp,21113935+1)==0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c21113935.e),tp,0x30,0,1,nil,e,tp) and Duel.GetTurnPlayer()==1-tp
 end
 function c21113935.op4_(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(21113935,3)) then
@@ -274,5 +274,5 @@ function c21113935.op5(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c21113935.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsSetCard(0xc914)
+	return not c:IsSetCard(0xc904)
 end

@@ -53,6 +53,9 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
+function s.splimit(e,c)
+	return not c:IsRace(RACE_REPTILE)
+end
 function s.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,1000) end
 	Duel.PayLPCost(tp,1000)
@@ -63,6 +66,10 @@ end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 end
+function s.gselect(g,ft)
+	local fc=g:FilterCount(Card.IsType,nil,TYPE_FIELD)
+	return fc<=1 and aux.dncheck(g) and #g-fc<=ft
+end
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
@@ -70,7 +77,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,ft)
+		local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,ft+1,ft)
 		if sg:GetCount()>0 and Duel.SSet(tp,sg)==#sg then
 			c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
 			for tc in aux.Next(sg) do
