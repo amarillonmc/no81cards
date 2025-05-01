@@ -107,7 +107,7 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 		if tc:GetOriginalType()&TYPE_MONSTER~=0 then
 			local e1=Effect.CreateEffect(tc)
 			e1:SetCategory(CATEGORY_DESTROY)
-			e1:SetType(EFFECT_TYPE_QUICK_O)
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_CUSTOM+94145021)
 			e1:SetRange(LOCATION_SZONE)
 			e1:SetCountLimit(1)
