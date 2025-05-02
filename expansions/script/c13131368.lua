@@ -77,27 +77,21 @@ function cm.remtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 end
-function cm.remop(e,tp,eg,ep,ev,re,r,rp) 
+function cm.ogfilter(c)
+	return c:IsType(TYPE_TOKEN) or (c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT))
+end
+function cm.remop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_MZONE,nil) 
-	local x=Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-	if e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,57707471) and x>0 then 
+	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,0,LOCATION_MZONE,nil)
+	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)==0 then return end
+	local og=Duel.GetOperatedGroup():Filter(cm.ogfilter,nil)
+	if e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,57707471) and #og>0 then
 		Duel.BreakEffect()
-		Duel.Damage(1-tp,800,REASON_EFFECT) 
-		if c:IsRelateToEffect(e) then 
-		local og=g:Select(tp,1,1,nil) 
-		Duel.Overlay(c,og)  
-		end 
-	end  
-end 
-
-
-
-
-
-
-
-
-
-
-
+		Duel.Damage(1-tp,#og*800,REASON_EFFECT)
+		if c:IsRelateToEffect(e) and og:IsExists(Card.IsCanOverlay,1,nil) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+			local og=g:FilterSelect(tp,Card.IsCanOverlay,1,1,nil)
+			Duel.Overlay(c,og)
+		end
+	end
+end

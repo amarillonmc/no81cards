@@ -96,7 +96,7 @@ function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 		local b3=e:GetLabel()&(0x200-0x40)>0 and re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsAbleToRemove()
 		local b4=e:GetLabel()&(0x1000-0x200)>0
 		local b5=e:GetLabel()&(0x8000-0x1000)>0 and Duel.IsPlayerCanDraw(tp,1)
-		local b6=e:GetLabel()&(0x40000-0x8000)>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
+		local b6=e:GetLabel()&(0x40000-0x8000)>0 and Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 		local b7=e:GetLabel()&(0x200000-0x40000)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)
 		local b8=e:GetLabel()&(0x1000000-0x200000)>0
 		if b1 then
@@ -130,7 +130,7 @@ function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 			off=off+1
 		end
 		if b7 then
-			ops[off]=aux.Stringid(9310055,1)
+			ops[off]=aux.Stringid(m,1)
 			opval[off-1]=7
 			off=off+1
 		end
@@ -187,7 +187,16 @@ function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 		elseif opval[op]==6 then
 			Duel.BreakEffect()
 			e:SetLabel(e:GetLabel()-0x8000)
-			Duel.DiscardHand(1-tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+			Duel.HintSelection(g)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetDescription(aux.Stringid(11451031,2))
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetCode(EFFECT_CANNOT_TRIGGER)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			g:GetFirst():RegisterEffect(e1)
 		elseif opval[op]==7 then
 			Duel.BreakEffect()
 			e:SetLabel(e:GetLabel()-0x40000)

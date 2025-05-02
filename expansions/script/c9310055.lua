@@ -1,15 +1,16 @@
 --悠久之音：单调
-function c9310055.initial_effect(c)
-	aux.AddCodeList(c,9310055)
+local cm,m=GetID()
+function cm.initial_effect(c)
+	aux.AddCodeList(c,m)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_NEGATE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e1:SetCondition(c9310055.condition)
-	e1:SetTarget(c9310055.target)
-	e1:SetOperation(c9310055.activate)
+	e1:SetCondition(cm.condition)
+	e1:SetTarget(cm.target)
+	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	--release
 	local e2=Effect.CreateEffect(c)
@@ -18,10 +19,10 @@ function c9310055.initial_effect(c)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e2:SetCondition(c9310055.condition)
-	e2:SetCost(c9310055.cost)
-	e2:SetTarget(c9310055.target)
-	e2:SetOperation(c9310055.activate)
+	e2:SetCondition(cm.condition)
+	e2:SetCost(cm.cost)
+	e2:SetTarget(cm.target)
+	e2:SetOperation(cm.activate)
 	c:RegisterEffect(e2)
 	--remain field
 	local e3=Effect.CreateEffect(c)
@@ -34,23 +35,23 @@ function c9310055.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CHAIN_SOLVING)
 	e4:SetRange(LOCATION_SZONE)
-	e4:SetCondition(c9310055.chcon)
-	e4:SetOperation(c9310055.chop)
+	e4:SetCondition(cm.chcon)
+	e4:SetOperation(cm.chop)
 	c:RegisterEffect(e4)
 end
-function c9310055.condition(e,tp,eg,ep,ev,re,r,rp)
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return re:IsActiveType(TYPE_MONSTER) and not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
-function c9310055.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
-function c9310055.disfilter(c)
-	return c:IsFaceup() and c:IsAbleToHand() and not c:IsCode(9310055)
+function cm.disfilter(c)
+	return c:IsFaceup() and c:IsAbleToHand() and not c:IsCode(m)
 end
-function c9310055.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9310055.disfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.disfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_ONFIELD)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -59,31 +60,31 @@ function c9310055.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetCountLimit(1)
 	e1:SetLabel(Duel.GetCurrentChain())
-	e1:SetCondition(c9310055.rscon)
-	e1:SetOperation(c9310055.rsop)
+	e1:SetCondition(cm.rscon)
+	e1:SetOperation(cm.rsop)
 	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,tp)
 end
-function c9310055.activate(e,tp,eg,ep,ev,re,r,rp)
+function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,c9310055.disfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.disfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
 	   if not re:GetHandler():IsStatus(STATUS_CHAINING) then return end
 	   Duel.NegateActivation(ev)
 	end
 end
-function c9310055.rscon(e,tp,eg,ep,ev,re,r,rp)
+function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 	return ev==e:GetLabel()
 end
-function c9310055.rsop(e,tp,eg,ep,ev,re,r,rp)
-	re:SetOperation(c9310055.activate)
+function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
+	re:SetOperation(cm.activate)
 	re:SetCategory(CATEGORY_TOHAND+CATEGORY_NEGATE)
 	re:SetLabel(0)
 end
-function c9310055.chcon(e,tp,eg,ep,ev,re,r,rp)
+function cm.chcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED) and re:GetHandler():IsSetCard(0x97d) and re:GetHandler():GetType()&0x100004==0x100004 and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
-function c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
+function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 	while 1==1 do
 		local off=1
 		local ops={} 
@@ -93,7 +94,7 @@ function c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
 		local b3=e:GetLabel()&(0x200-0x40)>0 and re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsAbleToRemove()
 		local b4=e:GetLabel()&(0x1000-0x200)>0
 		local b5=e:GetLabel()&(0x8000-0x1000)>0 and Duel.IsPlayerCanDraw(tp,1)
-		local b6=e:GetLabel()&(0x40000-0x8000)>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
+		local b6=e:GetLabel()&(0x40000-0x8000)>0 and Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 		local b7=e:GetLabel()&(0x200000-0x40000)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)
 		local b8=e:GetLabel()&(0x1000000-0x200000)>0
 		if b1 then
@@ -127,7 +128,7 @@ function c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
 			off=off+1
 		end
 		if b7 then
-			ops[off]=aux.Stringid(9310055,1)
+			ops[off]=aux.Stringid(m,1)
 			opval[off-1]=7
 			off=off+1
 		end
@@ -184,7 +185,16 @@ function c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
 		elseif opval[op]==6 then
 			Duel.BreakEffect()
 			e:SetLabel(e:GetLabel()-0x8000)
-			Duel.DiscardHand(1-tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+			Duel.HintSelection(g)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetDescription(aux.Stringid(11451031,2))
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetCode(EFFECT_CANNOT_TRIGGER)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			g:GetFirst():RegisterEffect(e1)
 		elseif opval[op]==7 then
 			Duel.BreakEffect()
 			e:SetLabel(e:GetLabel()-0x40000)
@@ -197,7 +207,7 @@ function c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
 		elseif opval[op]==8 then break end
 	end
 end
-function c9310055.regsop(e,tp,eg,ep,ev,re,r,rp)
+function cm.regsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	--if Duel.GetFlagEffect(tp,11451928)>0 then return end
 	--Duel.RegisterFlagEffect(tp,11451928,RESET_PHASE+PHASE_END,0,1)
@@ -218,8 +228,8 @@ function c9310055.regsop(e,tp,eg,ep,ev,re,r,rp)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_CHAIN_SOLVING)
-	e3:SetCondition(c9310055.disscon)
-	e3:SetOperation(c9310055.dissop)
+	e3:SetCondition(cm.disscon)
+	e3:SetOperation(cm.dissop)
 	--e3:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e3,tp)
 	--indes
@@ -228,37 +238,37 @@ function c9310055.regsop(e,tp,eg,ep,ev,re,r,rp)
 	e4:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
 	e4:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e4:SetCondition(function() return Duel.GetTurnPlayer()==tp end)
-	e4:SetTarget(c9310055.indtg)
+	e4:SetTarget(cm.indtg)
 	e4:SetValue(function(e) e:SetLabel(1) return 1 end)
 	--e4:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e4,tp)
 end
-function c9310055.indtg(e,c)
+function cm.indtg(e,c)
 	local tc=e:GetHandler()
 	return c:IsFaceup() and e:GetLabel()==0
 end
-function c9310055.disscon(e,tp,eg,ep,ev,re,r,rp)
+function cm.disscon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_SPELL) and Duel.GetTurnPlayer()==tp
 end
-function c9310055.dissop(e,tp,eg,ep,ev,re,r,rp)
+function cm.dissop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 	if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Remove(re:GetHandler(),POS_FACEUP,REASON_EFFECT)
 	end
 	e:Reset()
 end
-function c9310055.chop(e,tp,eg,ep,ev,re,r,rp)
+function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	--re:SetCategory(re:GetCategory()|CATEGORY_TODECK|CATEGORY_GRAVE_ACTION)
 	if re:GetLabel()&0x49421~=0 then re:SetLabel(re:GetLabel()+0x40000) return end
 	re:SetLabel(re:GetLabel()+0x40000)
 	local op=re:GetOperation()
 	local repop=function(e,tp,eg,ep,ev,re,r,rp)
 		op(e,tp,eg,ep,ev,re,r,rp)
-		c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
+		cm.addition(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if re:GetHandler():GetOriginalCode()==11451510 or (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
 		repop=function(e,tp,eg,ep,ev,re,r,rp)
-			c9310055.addition(e,tp,eg,ep,ev,re,r,rp)
+			cm.addition(e,tp,eg,ep,ev,re,r,rp)
 			op(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end

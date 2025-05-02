@@ -33,7 +33,7 @@ function c9910607.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 end
 function c9910607.ogfilter(c)
-	return c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT)
+	return c:IsType(TYPE_TOKEN) or (c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT))
 end
 function c9910607.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
