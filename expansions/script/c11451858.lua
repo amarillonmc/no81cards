@@ -82,6 +82,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if #g1==3 then
 		g1=g1:FilterSelect(tp,Card.IsAbleToHand,1,1,nil)
 		Duel.SendtoHand(g1,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g1)
 	end
 end
 function cm.filter1(c)
