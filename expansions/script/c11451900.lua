@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e4=e1:Clone()
 	e4:SetValue(0xc977)
-	c:RegisterEffect(e4)
+	--c:RegisterEffect(e4)
 	--cannot special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -37,7 +37,21 @@ function cm.scon(e,tp,eg,ep,ev,re,r,rp)
 	return (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
 end
 function cm.sfilter(c,mc,mg)
-	return c:IsSynchroSummonable(mc,mg) or c:IsLinkSummonable(mg,mc) or mg:CheckSubGroup(cm.xfilter,1,#mg,c,mc)
+	local e1=Effect.CreateEffect(c)
+	if c:IsType(TYPE_LINK) then
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
+		e1:SetRange(LOCATION_EXTRA)
+		e1:SetTargetRange(LOCATION_HAND,0)
+		e1:SetTarget(aux.TargetBoolFunction(Card.IsLevel,1))
+		e1:SetValue(cm.matval)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e1,true)
+	end
+	local res=c:IsSynchroSummonable(mc,mg) or c:IsLinkSummonable(mg,mc) or mg:CheckSubGroup(cm.xfilter,1,#mg,c,mc)
+	e1:Reset()
+	return res
 end
 function cm.xfilter(g,c,mc)
 	return g:IsContains(mc) and c:IsXyzSummonable(g,#g,#g)
@@ -67,9 +81,7 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 	if tc:IsSynchroSummonable(c,mg) then
 		Duel.SynchroSummon(tp,tc,c,mg)
-	elseif tc:IsLinkSummonable(mg,c) then
-		Duel.LinkSummon(tp,tc,mg,c)
-	else
+	elseif mg:CheckSubGroup(cm.xfilter,1,#mg,tc,c) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 		local mg2=mg:SelectSubGroup(tp,cm.xfilter,false,1,#mg,tc,c)
 		local e1=Effect.CreateEffect(e:GetHandler())
@@ -83,7 +95,23 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetCode(EVENT_SPSUMMON_NEGATED)
 		Duel.RegisterEffect(e3,tp)
 		Duel.XyzSummon(tp,tc,mg2,0)
+	else
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
+		e1:SetRange(LOCATION_EXTRA)
+		e1:SetTargetRange(LOCATION_HAND,0)
+		e1:SetTarget(aux.TargetBoolFunction(Card.IsLevel,1))
+		e1:SetValue(cm.matval)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1,true)
+		Duel.LinkSummon(tp,tc,mg,c)
 	end
+end
+function cm.matval(e,lc,mg,c,tp)
+	if lc~=e:GetHandler() then return false,nil end
+	return true,true
 end
 function cm.handop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ShuffleHand(tp)
