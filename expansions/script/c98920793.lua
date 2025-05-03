@@ -32,7 +32,7 @@ function c98920793.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
 function c98920793.cfilter(c)
-	return c:IsFaceup() and not c:IsSetCard(0x135)
+	return c:IsFaceup() and not c:IsRace(RACE_CYBERSE)
 end
 function c98920793.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
@@ -45,7 +45,7 @@ end
 function s.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_DECK)
 end
 function c98920793.thfilter(c)
 	return c:IsCode(79015062) and c:IsAbleToHand()
