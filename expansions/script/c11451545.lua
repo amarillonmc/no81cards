@@ -83,14 +83,45 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end --Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,mg) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
+function cm.slfilter(c,mg,e,tp)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e1:SetTarget(aux.TargetBoolFunction(cm.matfilter,e,tp))
+	e1:SetValue(cm.matval)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e1,true)
+	local res=c:IsLinkSummonable(mg)
+	e1:Reset()
+	return res
+end
+function cm.matval(e,lc,mg,c,tp)
+	if lc~=e:GetHandler() then return false,nil end
+	return true,true
+end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,e,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,1,nil,mg)
+	local g=Duel.SelectMatchingCard(tp,cm.slfilter,tp,LOCATION_EXTRA,0,1,1,nil,mg,e,tp)
 	local tc=g:GetFirst()
-	if tc then Duel.LinkSummon(tp,tc,mg) end
+	if tc then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
+		e1:SetRange(LOCATION_EXTRA)
+		e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+		e1:SetTarget(aux.TargetBoolFunction(cm.matfilter,e,tp))
+		e1:SetValue(cm.matval)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1,true)
+		Duel.LinkSummon(tp,tc,mg)
+	end
 end
 function cm.costfilter(c,tp)
 	return c:IsSetCard(0x129) and c:IsAbleToGraveAsCost() and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,c:GetCode())

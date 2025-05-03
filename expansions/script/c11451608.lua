@@ -56,7 +56,25 @@ function cm.filter1(c)
 	return c:IsSetCard(0x10) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
 function cm.filter2(c,mg)
-	return (c:IsSynchroSummonable(nil,mg) or c:IsLinkSummonable(mg)) --and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
+	local e1=Effect.CreateEffect(c)
+	if c:IsType(TYPE_LINK) then
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
+		e1:SetRange(LOCATION_EXTRA)
+		e1:SetTargetRange(LOCATION_HAND,0)
+		e1:SetTarget(aux.TRUE)
+		e1:SetValue(cm.matval)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e1,true)
+	end
+	local res=c:IsSynchroSummonable(nil,mg) or c:IsLinkSummonable(mg)
+	e1:Reset()
+	return res
+end
+function cm.matval(e,lc,mg,c,tp)
+	if lc~=e:GetHandler() then return false,nil end
+	return true,true
 end
 function cm.filter3(c)
 	return c:IsType(TYPE_MONSTER) and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
@@ -101,6 +119,16 @@ function cm.slop(e,tp,eg,ep,ev,re,r,rp)
 				if tc:IsSynchroSummonable(nil,mg) then
 					Duel.SynchroSummon(tp,tc,nil,mg)
 				else
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_FIELD)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+					e1:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
+					e1:SetRange(LOCATION_EXTRA)
+					e1:SetTargetRange(LOCATION_HAND,0)
+					e1:SetTarget(aux.TRUE)
+					e1:SetValue(cm.matval)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc:RegisterEffect(e1,true)
 					Duel.LinkSummon(tp,tc,mg)
 				end
 			end
