@@ -61,7 +61,7 @@ end
 --
 function c75000851.effcon(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_SYNCHRO)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
-		and e:GetHandler():GetReasonCard():IsSetCard(0x756)
+		and e:GetHandler():GetReasonCard():IsSetCard(0xc751)
 end
 function c75000851.effop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -88,7 +88,7 @@ function c75000851.effop(e,tp,eg,ep,ev,re,r,rp)
 	rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(75000851,2))
 end
 function c75000851.thfilter(c)
-	return c:IsSetCard(0x756) and c:IsAbleToHand()
+	return c:IsSetCard(0xc751) and c:IsAbleToHand()
 end
 function c75000851.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75000851.thfilter,tp,LOCATION_DECK,0,1,nil) end

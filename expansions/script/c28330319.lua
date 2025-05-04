@@ -54,8 +54,7 @@ function c28330319.thfilter(c)
 	return c:IsSetCard(0x286) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c28330319.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28330319.thfilter,tp,LOCATION_GRAVE,0,1,nil)
-		and Duel.GetCurrentChain()==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(c28330319.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
 end
 function c28330319.thop(e,tp,eg,ep,ev,re,r,rp)

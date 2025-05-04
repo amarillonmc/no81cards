@@ -24,11 +24,11 @@ function c75000869.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c75000869.matval(e,c)
-	return c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x756)
+	return c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0xc751)
 end
 --
 function c75000869.cfilter1(c,tp)
-	return c:IsSetCard(0x756) and Duel.GetMZoneCount(tp,c)>0 and (c:IsFaceup() or c:IsControler(tp))
+	return c:IsSetCard(0xc751) and Duel.GetMZoneCount(tp,c)>0 and (c:IsFaceup() or c:IsControler(tp))
 end
 function c75000869.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,c75000869.cfilter1,1,nil,tp) end

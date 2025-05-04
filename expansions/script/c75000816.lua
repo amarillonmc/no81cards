@@ -1,7 +1,7 @@
 --将骑领主 焰刃之艾利乌德
 function c75000816.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x755),1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0xa751),1)
 	c:EnableReviveLimit()  
 
 	--position
@@ -21,7 +21,7 @@ end
 
 --
 function c75000816.posfilter(c)
-	return c:IsCanChangePosition() and c:IsSetCard(0x755)
+	return c:IsCanChangePosition() and c:IsSetCard(0xa751)
 end
 function c75000816.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c75000816.posfilter(chkc) end

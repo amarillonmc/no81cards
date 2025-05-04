@@ -17,6 +17,15 @@ function c19209559.initial_effect(c)
 	e1:SetTarget(c19209559.chtg)
 	e1:SetOperation(c19209559.chop)
 	c:RegisterEffect(e1)
+	--immune
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_IMMUNE_EFFECT)
+	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetTargetRange(LOCATION_SZONE,0)
+	e2:SetValue(c19209559.efilter)
+	c:RegisterEffect(e2)
 end
 function c19209559.chkfilter(c)
 	return c:IsCode(19209531) and c:IsFaceup()
@@ -49,9 +58,17 @@ function c19209559.repop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
 		local g=Duel.GetTargetsRelateToChain()
+		local c=e:GetHandler()
+		if c:IsRelateToEffect(e) then g:AddCard(c) end
 		if tc:IsLocation(LOCATION_HAND) and #g>0 then
 			Duel.BreakEffect()
 			Duel.Destroy(g,REASON_EFFECT)
 		end
 	end
+end
+function c19209559.efilter(e,te,c)
+	if te:GetOwnerPlayer()==e:GetHandlerPlayer() or not te:IsActivated() then return false end
+	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	return not g or not g:IsContains(c)
 end

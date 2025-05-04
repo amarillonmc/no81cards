@@ -9,9 +9,9 @@ function cm.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_EXTRA+LOCATION_GRAVE)
-	e0:SetCondition(cm.XyzConditionAlter(nil,10,2,99,cm.ovfilter,1165,cm.xyzop2))
-	e0:SetTarget(cm.XyzTargetAlter(nil,10,2,99,cm.ovfilter,1165,cm.xyzop2))
-	e0:SetOperation(Auxiliary.XyzOperationAlter(nil,10,2,99,cm.ovfilter,1165,cm.xyzop2))
+	e0:SetCondition(aux.XyzCondition(cm.ovfilter,10,1,99))
+	e0:SetTarget(aux.XyzTarget(cm.ovfilter,10,1,99))
+	e0:SetOperation(aux.XyzOperation(cm.ovfilter,10,1,99))
 	e0:SetValue(SUMMON_TYPE_XYZ)
 	c:RegisterEffect(e0)
 	--aux.AddXyzProcedure(c,nil,10,2,cm.ovfilter,1165,99,cm.xyzop2)
@@ -25,7 +25,7 @@ function cm.initial_effect(c)
 	e0:SetRange(LOCATION_GRAVE)
 	e0:SetCondition(cm.xyzcon)
 	e0:SetOperation(cm.xyzop)
-	c:RegisterEffect(e0)
+	--c:RegisterEffect(e0)
 	--activate from hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -54,7 +54,7 @@ function cm.initial_effect(c)
 	e4:SetDescription(aux.Stringid(m,1))
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetCode(EFFECT_SUMMON_PROC)
-	e4:SetTargetRange(LOCATION_HAND,LOCATION_HAND)
+	e4:SetTargetRange(0,LOCATION_HAND)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetCondition(cm.otcon2)
 	e4:SetTarget(cm.ottg)
@@ -69,6 +69,27 @@ function cm.initial_effect(c)
 	e6:SetCode(m)
 	e6:SetRange(LOCATION_EXTRA+LOCATION_GRAVE)
 	c:RegisterEffect(e6)
+	--to grave
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetCode(EVENT_RELEASE)
+	e2:SetOperation(cm.regop)
+	c:RegisterEffect(e2)
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	e1:SetCountLimit(1)
+	e1:SetCondition(cm.adcon)
+	e1:SetTarget(cm.adtg)
+	e1:SetOperation(cm.adop)
+	c:RegisterEffect(e1)
+	local e4=e1:Clone()
+	e4:SetProperty(EFFECT_FLAG_BOTH_SIDE)
+	e4:SetCondition(cm.adcon2)
+	c:RegisterEffect(e4)
 	if not cm.global_check then
 		cm.global_check=true
 		local ge1=Effect.GlobalEffect(c)
@@ -76,6 +97,69 @@ function cm.initial_effect(c)
 		ge1:SetCode(EVENT_BATTLED)
 		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
+		cm[0]=nil
+		cm[1]=nil
+		local _IsExistingMatchingCard=Duel.IsExistingMatchingCard
+		local _SelectMatchingCard=Duel.SelectMatchingCard
+		local _GetMatchingGroup=Duel.GetMatchingGroup
+		local _IsXyzSummonable=Card.IsXyzSummonable
+		local _IsSpecialSummonable=Card.IsSpecialSummonable
+		function Duel.GetMatchingGroup(f,p,s,o,nc,...)
+			local s1=s&LOCATION_EXTRA>0 and LOCATION_GRAVE or 0
+			local o1=o&LOCATION_EXTRA>0 and LOCATION_GRAVE or 0
+			cm[0]=false
+			local g=_GetMatchingGroup(f,p,s1,o1,nc,...):Filter(function(c) return c:GetOriginalCode()==m end,nil)
+			if cm[0] and #g>0 then
+				cm[0]=false
+				local sg=_GetMatchingGroup(f,p,s,o,nc,...)
+				return sg+g
+			end
+			cm[0]=false
+			local sg=_GetMatchingGroup(f,p,s,o,nc,...)
+			return sg
+		end
+		function Card.IsXyzSummonable(c,mg,min,max,...)
+			cm[0]=true
+			return _IsXyzSummonable(c,mg,min,max,...)
+		end
+		function Card.IsSpecialSummonable(c,sumtype,...)
+			if sumtype==SUMMON_TYPE_XYZ then
+				return c:IsXyzSummonable(nil)
+			end
+			return _IsSpecialSummonable(c,sumtype,...)
+		end
+		function Duel.IsExistingMatchingCard(f,p,s,o,ct,nc,...)
+			local g=Duel.GetMatchingGroup(f,p,s,o,nc,...)
+			return #g>=ct
+		end
+		function Duel.SelectMatchingCard(sp,f,p,s,o,min,max,nc,...)
+			local g=Duel.GetMatchingGroup(f,p,s,o,nc,...)
+			return g:Select(sp,min,max,nc)
+		end
+	end
+end
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	c:RegisterFlagEffect(m,RESET_EVENT+0x1f20000+RESET_PHASE+PHASE_END,0,1)
+end
+function cm.adcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(m)>0
+end
+function cm.adcon2(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(m)>0 and tp~=e:GetHandlerPlayer()
+end
+function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local hg=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Filter(Card.IsAbleToDeck,nil)
+	if chk==0 then return #hg>0 and Duel.IsPlayerCanDraw(tp,#hg) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,hg,#hg,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,#hg)
+end
+function cm.adop(e,tp,eg,ep,ev,re,r,rp)
+	local hg=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Filter(Card.IsAbleToDeck,nil)
+	local ct=Duel.SendtoDeck(hg,nil,2,REASON_EFFECT)
+	if ct>0 then
+		if Duel.GetOperatedGroup():IsExists(function(c) return c:IsLocation(LOCATION_DECK) and c:IsControler(tp) end,1,nil) then Duel.ShuffleDeck(tp) end
+		Duel.Draw(tp,ct,REASON_EFFECT)
 	end
 end
 function cm.extfilter(c)

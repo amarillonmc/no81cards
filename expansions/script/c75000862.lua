@@ -27,10 +27,10 @@ function c75000862.cfilter(c,tc)
 end
 function c75000862.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_SYNCHRO_MATERIAL,tp,false,false)
-		and Duel.IsExistingMatchingCard(c75000862.cfilter,tp,LOCATION_EXTRA,0,1,nil,c) and c:IsSetCard(0x756)
+		and Duel.IsExistingMatchingCard(c75000862.cfilter,tp,LOCATION_EXTRA,0,1,nil,c) and c:IsSetCard(0xc751)
 end
 function c75000862.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and c75000862.spfilter(chkc,e,tp) end
+	if chkc then return chkc:IsLocation(LOCATION_REMOVED+LOCATION_GRAVE) and chkc:IsControler(tp) and c75000862.spfilter(chkc,e,tp) end
 	if chk==0 then return Duel.IsPlayerCanSpecialSummonCount(tp,2)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingTarget(c75000862.spfilter,tp,LOCATION_REMOVED,0,1,nil,e,tp) end
@@ -64,7 +64,7 @@ function c75000862.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75000862.cfilter1(c)
-	return c:IsSetCard(0x756) and c:IsAbleToRemove() and not c:IsCode(75000862)
+	return c:IsSetCard(0xc751) and c:IsAbleToRemove() and not c:IsCode(75000862)
 end
 function c75000862.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c75000862.cfilter1(chkc) end

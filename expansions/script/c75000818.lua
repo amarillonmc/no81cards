@@ -15,7 +15,7 @@ function c75000818.initial_effect(c)
 end
 --
 function c75000818.tgfilter(c)
-	return c:IsSetCard(0x755) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	return c:IsSetCard(0xa751) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function c75000818.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75000818.tgfilter,tp,LOCATION_DECK,0,1,nil) end

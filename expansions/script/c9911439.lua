@@ -24,6 +24,7 @@ function c9911439.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1)
 	e3:SetCondition(c9911439.imcon)
 	e3:SetCost(c9911439.imcost)
 	e3:SetOperation(c9911439.imop)
@@ -64,7 +65,8 @@ function c9911439.rmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9911439.imcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep==1-tp
+	local ph=Duel.GetCurrentPhase()
+	return ep==1-tp and Duel.GetTurnPlayer()~=tp and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
 end
 function c9911439.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) end

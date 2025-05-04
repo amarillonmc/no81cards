@@ -41,7 +41,7 @@ function c75000861.initial_effect(c)
 	c:RegisterEffect(e3)	
 end
 function c75000861.thfilter(c) 
-	return c:IsSetCard(0x756,0x751) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0xc751,0x3751) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c75000861.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75000861.thfilter,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():GetFlagEffect(75000861)==0 end
@@ -58,7 +58,7 @@ function c75000861.thop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end 
 function c75000861.spfil(c,e,tp) 
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x756)  
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xc751)  
 end 
 function c75000861.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75000861.spfil,tp,LOCATION_HAND,0,1,nil,e,tp) and e:GetHandler():GetFlagEffect(75000861)==0 end
@@ -81,7 +81,7 @@ function c75000861.sccon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c75000861.scconfilter,1,nil,tp)
 end
 function c75000861.mfilter(c)
-	return c:IsSetCard(0x756) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
+	return c:IsSetCard(0xc751) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
 function c75000861.syncheck(g,tp,syncard)
 	return g:IsExists(c75000861.mfilter,1,nil) and syncard:IsSynchroSummonable(nil,g,#g-1,#g-1) and aux.SynMixHandCheck(g,tp,syncard)

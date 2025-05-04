@@ -28,7 +28,7 @@ function c75000859.initial_effect(c)
 	c:RegisterEffect(e3)	
 end
 function c75000859.spfilter(c,tp,se)
-	return c:IsControler(tp) and (c:IsType(TYPE_SYNCHRO) or c:IsSetCard(0x756)) and c:IsFaceup()
+	return c:IsControler(tp) and (c:IsType(TYPE_SYNCHRO) or c:IsSetCard(0xc751)) and c:IsFaceup()
 		and (se==nil or c:GetReasonEffect()~=se)
 end
 function c75000859.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -55,7 +55,7 @@ function c75000859.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75000859.filter(c,e,tp)
-	return c:IsSetCard(0x756) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xc751) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c75000859.sptg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c75000859.filter(chkc,e,tp) end

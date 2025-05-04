@@ -74,7 +74,7 @@ function c75000802.cpop1(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75000802.spfilter(c,e,tp)
-	return c:IsSetCard(0x755) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa751) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c75000802.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

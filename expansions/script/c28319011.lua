@@ -55,8 +55,16 @@ function c28319011.activate(e,tp,eg,ep,ev,re,r,rp,op)
 	elseif op==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sc=Duel.SelectMatchingCard(tp,c28319011.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
-		if Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 and sc:IsSummonLocation(LOCATION_HAND) then
-			Duel.Recover(tp,1650,REASON_EFFECT)
+		if Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) and sc:IsSummonLocation(LOCATION_GRAVE) then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetDescription(aux.Stringid(28319011,5))
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
+			e1:SetValue(LOCATION_DECKBOT)
+			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+			sc:RegisterEffect(e1)
+			Duel.SpecialSummonComplete()
 		end
 		if true then
 			local te=sc.recover_effect

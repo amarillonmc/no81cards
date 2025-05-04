@@ -1,7 +1,7 @@
 --心之魔龙 开花伊冬
 function c75000865.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x756),1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0xc751),1)
 	c:EnableReviveLimit()   
 	--add
 	local e1=Effect.CreateEffect(c)
@@ -71,7 +71,7 @@ function c75000865.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75000865.costfilter(c)
-	return c:IsSetCard(0x756) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xc751) and c:IsAbleToRemoveAsCost()
 end
 function c75000865.atdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75000865.costfilter,tp,LOCATION_GRAVE,0,1,nil) end

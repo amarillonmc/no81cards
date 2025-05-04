@@ -72,7 +72,7 @@ function s.geop(e,tp,eg,ep,ev,re,r,rp)
 		ge1:SetValue(s.evalue)
 		Duel.RegisterEffect(ge1,0)
 	end
-	local g=Duel.GetMatchingGroup(function(c)return c:IsType(TYPE_TRAP) and c:GetActivateEffect()end,0,LOCATION_DECK+LOCATION_GRAVE,LOCATION_DECK+LOCATION_GRAVE,nil)
+	local g=Duel.GetMatchingGroup(function(c)return c:IsType(TYPE_TRAP) and c:GetActivateEffect()end,0,LOCATION_DECK,LOCATION_DECK,nil)
 	for tc in aux.Next(g) do
 		local le={tc:GetActivateEffect()}
 		for i,v in pairs(le) do
@@ -81,12 +81,12 @@ function s.geop(e,tp,eg,ep,ev,re,r,rp)
 				local e1=v:Clone()
 				local tg=v:GetTarget() or aux.TRUE
 				e1:SetTarget(s.chtg(tg))
-				e1:SetRange(LOCATION_DECK+LOCATION_GRAVE)
+				e1:SetRange(LOCATION_DECK+)
 				e1:SetHintTiming(TIMING_SUMMON+TIMING_SPSUMMON)
 				tc:RegisterEffect(e1,true)
 				table.insert(s.CAe,e1)
 				local e2=SNNM.Act(tc,e1)
-				e2:SetRange(LOCATION_DECK+LOCATION_GRAVE)
+				e2:SetRange(LOCATION_DECK)
 				e2:SetCost(s.costchk)
 				e2:SetOperation(s.costop)
 				tc:RegisterEffect(e2,true)

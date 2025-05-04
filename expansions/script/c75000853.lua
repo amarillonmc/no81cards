@@ -25,7 +25,7 @@ function c75000853.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c75000853.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x756)
+	return c:IsFaceup() and c:IsSetCard(0xc751)
 end
 function c75000853.spcon(e,c)
 	if c==nil then return true end
@@ -39,7 +39,7 @@ function c75000853.mfilter(c,e,tp,mc)
 		and Duel.IsExistingMatchingCard(c75000853.scfilter,tp,LOCATION_EXTRA,0,1,nil,mg)
 end
 function c75000853.scfilter(c,mg,tp)
-	return c:IsSetCard(0x756) and c:IsSynchroSummonable(nil,mg) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
+	return c:IsSetCard(0xc751) and c:IsSynchroSummonable(nil,mg) and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0
 end
 function c75000853.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

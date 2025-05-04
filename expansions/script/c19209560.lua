@@ -6,6 +6,16 @@ function c19209560.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
+	--select
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetCountLimit(1,19209560)
+	e3:SetCode(c19209560.cost)
+	e3:SetTarget(c19209560.sltg)
+	e3:SetOperation(c19209560.slop)
+	c:RegisterEffect(e3)
 	--spsummon
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(1152)
@@ -14,11 +24,35 @@ function c19209560.initial_effect(c)
 	e4:SetCode(EVENT_CHAINING)
 	e4:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e4:SetRange(LOCATION_SZONE)
-	e4:SetCountLimit(1,19209560)
+	--e4:SetCountLimit(1,19209560)
 	e4:SetCondition(c19209560.spcon)
 	e4:SetTarget(c19209560.sptg)
 	e4:SetOperation(c19209560.spop)
 	c:RegisterEffect(e4)
+end
+function c19209560.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
+end
+function c19209560.cfilter(c,e,tp)
+	if not c:IsCode(19209533) then return false end
+	return c:IsAbleToRemove() or (Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
+end
+function c19209560.sltg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c19209560.cfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
+end
+function c19209560.slop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c19209560.cfilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
+	if tc then
+		if tc:IsAbleToRemove() and (not tc:IsCanBeSpecialSummoned(e,0,tp,false,false) or Duel.GetMZoneCount(tp)<=0 or Duel.SelectOption(tp,1192,1152)==0) then
+			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		else
+			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+		end
+	end
 end
 function c19209560.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local code,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CODE,CHAININFO_TRIGGERING_LOCATION)

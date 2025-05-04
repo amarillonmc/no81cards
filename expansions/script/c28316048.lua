@@ -14,7 +14,7 @@ function c28316048.initial_effect(c)
 	--recover
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28316048,1))
-	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -27,7 +27,6 @@ function c28316048.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_LEAVE_GRAVE)
 	c:RegisterEffect(e3)
-c28316048.shinycounter=true
 end
 function c28316048.chkfilter(c)
 	return c:IsSetCard(0x283) and c:IsNonAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
@@ -56,21 +55,17 @@ end
 function c28316048.reccon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c28316048.cfilter,1,nil)
 end
-function c28316048.ctfilter(c)
-	return c:IsCanAddCounter(0x1283,1) and c:IsFaceup()
-end
 function c28316048.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28316048.ctfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,nil,nil) end
 end
 function c28316048.thfilter(c)
 	return c:IsAbleToHand() and c:IsSetCard(0x283)
 end
 function c28316048.recop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
-	local cg=Duel.SelectMatchingCard(tp,c28316048.ctfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-	if #cg>0 then
-		Duel.HintSelection(cg)
-		cg:GetFirst():AddCounter(0x1283,1)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sc=Duel.SelectMatchingCard(tp,Card.IsLinkSummonable,tp,LOCATION_EXTRA,0,1,1,nil,nil):GetFirst()
+	if sc then
+		Duel.LinkSummon(tp,sc,nil)
 	end
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c28316048.thfilter),tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28316048,2)) then

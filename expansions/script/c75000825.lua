@@ -49,7 +49,7 @@ function c75000825.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function c75000825.spfilter(c,e,tp)
-	return c:IsSetCard(0x755) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa751) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c75000825.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler())>0
@@ -70,7 +70,7 @@ function c75000825.spop(e,tp,eg,ep,ev,re,r,rp)
 			if tg then
 				Duel.SendtoHand(tg,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,tg)
-			end	  
+			end   
 		end
 	end
 end

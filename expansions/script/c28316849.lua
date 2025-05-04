@@ -14,7 +14,7 @@ function c28316849.initial_effect(c)
 	--to deck
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28316849,1))
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON+CATEGORY_COUNTER)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_TO_HAND)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -24,6 +24,7 @@ function c28316849.initial_effect(c)
 	e2:SetTarget(c28316849.rectg)
 	e2:SetOperation(c28316849.recop)
 	c:RegisterEffect(e2)
+c28316849.shinycounter=true
 end
 function c28316849.chkfilter(c)
 	return c:IsSetCard(0x283) and c:IsNonAttribute(ATTRIBUTE_WIND) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
@@ -70,9 +71,9 @@ function c28316849.recop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.GetMZoneCount(tp)>0
 		and Duel.IsExistingMatchingCard(c28316849.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(28316849,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=Duel.SelectMatchingCard(tp,c28316849.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
-		if sg:GetCount()>0 then
-			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		local sc=Duel.SelectMatchingCard(tp,c28316849.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
+		if sc and Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 then
+			sc:AddCounter(0x1283,1)
 		end
 	end
 end

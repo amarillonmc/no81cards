@@ -1,89 +1,85 @@
---美梦的 皮亚尼
+--无边幻梦 美梦的皮亚妮
 function c75075600.initial_effect(c)
-	--special summon
+	-- 特殊召唤
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(75075600,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_HAND)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCountLimit(1,75075600)
-	e1:SetCondition(c75075600.spcon)
-	e1:SetTarget(c75075600.sptg)
-	e1:SetOperation(c75075600.spop)
-	c:RegisterEffect(e1) 
-	--destroy
+	e1:SetCondition(c75075600.con1)
+	e1:SetTarget(c75075600.tg1)
+	e1:SetOperation(c75075600.op1)
+	c:RegisterEffect(e1)
+	-- 效果篡改
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(75075600,1))
-	e2:SetCategory(CATEGORY_POSITION)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,75075601)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetTarget(c75075600.postg)
-	e2:SetOperation(c75075600.posop)
-	c:RegisterEffect(e2)  
-	----
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(75075600,2))
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_PHASE+PHASE_STANDBY)
-	e3:SetRange(LOCATION_MZONE)
-	--e3:SetCountLimit(1)
-	e3:SetCondition(c75075600.atkcon)
-	e3:SetOperation(c75075600.atkop)
-	c:RegisterEffect(e3) 
-	local e4=e3:Clone()
-	e4:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
-	c:RegisterEffect(e4)
+	e2:SetCondition(c75075600.con2)
+	e2:SetTarget(c75075600.tg2)
+	e2:SetOperation(c75075600.op2)
+	c:RegisterEffect(e2)
 end
-function c75075600.cfilter(c)
-	return c:IsFacedown()
+-- 1
+function c75075600.con1(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFieldCard(tp,LOCATION_FZONE,0)==nil
 end
-function c75075600.spfilter(c,e,tp)
-	return c:IsRace(RACE_FAIRY) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_DEFENSE)
+function c75075600.filter1(c,tp)
+	return c:IsType(TYPE_FIELD) and c:IsSetCard(0x5754) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
-function c75075600.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
-		or Duel.IsExistingMatchingCard(c75075600.cfilter,tp,LOCATION_MZONE,0,1,nil)
-end
-function c75075600.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and not Duel.IsPlayerAffectedByEffect(tp,59822133)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and Duel.IsExistingMatchingCard(c75075600.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+function c75075600.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+			and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
+			and Duel.IsExistingMatchingCard(c75075600.filter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function c75075600.spop(e,tp,eg,ep,ev,re,r,rp)
+function c75075600.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
-	if Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c75075600.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-		if g:GetCount()>0 then
-			Duel.SpecialSummonStep(g:GetFirst(),0,tp,tp,false,false,POS_DEFENSE)
+	if c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c) then
+		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+			local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c75075600.filter1),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
+			if tc then
+				local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+				if fc then
+					Duel.SendtoGrave(fc,REASON_RULE)
+					Duel.BreakEffect()
+				end
+				Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+				local te=tc:GetActivateEffect()
+				te:UseCountLimit(tp,1,true)
+				local cost=te:GetCost()
+				if cost then cost(te,tp,eg,ep,ev,re,r,rp,1) end
+				Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+			end
 		end
 	end
-	Duel.SpecialSummonComplete()
 end
---
-function c75075600.postg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanChangePosition() end
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,e:GetHandler(),1,0,0)
+-- 2
+function c75075600.con2(e,tp,eg,ep,ev,re,r,rp)
+    local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+    return ep==1-tp and loc==LOCATION_HAND and re:IsActiveType(TYPE_MONSTER) and Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)>0 and Duel.GetFieldCard(tp,LOCATION_FZONE,0)~=nil and Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)~=nil
 end
-function c75075600.posop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.ChangePosition(c,POS_FACEUP_DEFENSE,POS_FACEDOWN_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)
-	end
+function c75075600.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+    if chk==0 then
+        return Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)>0
+    end
 end
---
-function c75075600.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPosition(POS_FACEUP_DEFENSE)
+function c75075600.op2(e,tp,eg,ep,ev,re,r,rp)
+	local g=Group.CreateGroup()
+	Duel.ChangeTargetCard(ev,g)
+	Duel.ChangeChainOperation(ev,c75075600.op22)
 end
-function c75075600.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if g>0 then
-		Duel.Recover(tp,g*500,REASON_EFFECT)
-	end
+function c75075600.op22(e,tp,eg,ep,ev,re,r,rp)
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+    local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil)
+    if #g>0 then
+        Duel.Destroy(g,REASON_EFFECT)
+    end
 end
-

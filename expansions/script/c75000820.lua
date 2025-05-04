@@ -1,7 +1,7 @@
 --碎岩领主 焰刃之海克托尔
 function c75000820.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x755),1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0xa751),1)
 	c:EnableReviveLimit()  
 
 	--position
@@ -21,7 +21,7 @@ end
 
 --
 function c75000820.posfilter(c)
-	return c:IsCanChangePosition() and c:IsSetCard(0x755)
+	return c:IsCanChangePosition() and c:IsSetCard(0xa751)
 end
 function c75000820.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c75000820.posfilter(chkc) end
@@ -54,5 +54,5 @@ function c75000820.posop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c75000820.spfilter(c,e,tp)
-	return c:IsSetCard(0x755) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa751) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

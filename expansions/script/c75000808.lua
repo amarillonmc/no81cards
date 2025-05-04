@@ -34,7 +34,7 @@ function c75000808.initial_effect(c)
 end
 function c75000808.cfilter(c,tp)
 	return c:IsFaceup() and c:IsControler(tp)
-		and c:IsSetCard(0x3755) and not c:IsCode(75000808) 
+		and c:IsSetCard(0xa751) and not c:IsCode(75000808) 
 end
 function c75000808.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c75000808.cfilter,1,nil,tp)
@@ -54,11 +54,11 @@ end
 --
 function c75000808.scfilter1(c,e,tp,mc)
 	local mg=Group.FromCards(c,mc)
-	return c:IsSetCard(0x3755) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa751) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and Duel.IsExistingMatchingCard(c75000808.scfilter2,tp,LOCATION_EXTRA,0,1,nil,mg)
 end
 function c75000808.scfilter2(c,mg)
-	return c:IsSynchroSummonable(nil,mg) and c:IsSetCard(0x755)
+	return c:IsSynchroSummonable(nil,mg) and c:IsSetCard(0xa751)
 end
 function c75000808.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

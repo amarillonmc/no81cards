@@ -4,7 +4,7 @@ function s.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCode3(c,21401210,21401211,21401212,true,true)
-	aux.AddContactFusionProcedure(c,s.futionflt, LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,aux.tdcfop(c))
+	aux.AddContactFusionProcedure(c,s.futionflt, LOCATION_HAND+LOCATION_GRAVE,0,aux.tdcfop(c))
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

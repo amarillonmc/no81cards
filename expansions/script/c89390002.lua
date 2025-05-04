@@ -39,7 +39,6 @@ function cm.initial_effect(c)
 		Duel.RegisterEffect(ge4,0)
 	end
 end
-cm.fusion_effect=true
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp
 end

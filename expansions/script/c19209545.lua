@@ -59,8 +59,8 @@ function c19209545.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,c19209545.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 end
-function c19209545.pfilter(c,code)
-	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0xb50) and not c:IsCode(code) and not c:IsForbidden() and aux.NecroValleyFilter()(c)
+function c19209545.pfilter(c,sc)
+	return c:IsType(TYPE_PENDULUM) and c:IsSetCard(0xb50) and c:GetCurrentScale()-sc==1 and not c:IsForbidden() and aux.NecroValleyFilter()(c)
 end
 function c19209545.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -73,10 +73,10 @@ function c19209545.setop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoExtraP(tc,nil,REASON_EFFECT)
 		if tc:IsLocation(LOCATION_EXTRA) then check=true end
 	end
-	if check and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.IsExistingMatchingCard(c19209545.pfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tc:GetCode()) and Duel.SelectYesNo(tp,aux.Stringid(19209545,1)) then
+	if check and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.IsExistingMatchingCard(c19209545.pfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tc:GetRightScale()) and Duel.SelectYesNo(tp,aux.Stringid(19209545,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-		local pc=Duel.SelectMatchingCard(tp,c19209545.pfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tc:GetCode()):GetFirst()
+		local pc=Duel.SelectMatchingCard(tp,c19209545.pfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tc:GetRightScale()):GetFirst()
 		if pc then Duel.MoveToField(pc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) end
 	end
 end

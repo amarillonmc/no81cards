@@ -52,7 +52,7 @@ function c75000806.spop2(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75000806.posfilter(c)
-	return c:IsAttackPos() and c:IsCanChangePosition() and c:IsSetCard(0x755)
+	return c:IsAttackPos() and c:IsCanChangePosition() and c:IsSetCard(0xa751)
 end
 function c75000806.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c75000806.posfilter(chkc) end
@@ -62,7 +62,7 @@ function c75000806.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
 end
 function c75000806.thfilter(c)
-	return c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x755) and not c:IsAttribute(ATTRIBUTE_FIRE)
+	return c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa751) and not c:IsAttribute(ATTRIBUTE_FIRE)
 end
 function c75000806.posop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

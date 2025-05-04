@@ -22,7 +22,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.ovfilter(c)
-	return c:IsFaceup() and c:IsSummonableCard() and c:IsRace(RACE_REPTILE)
+	return c:IsFaceup() and c:IsSummonableCard() and c:IsRace(RACE_REPTILE) and c:IsLevel(8)
 end
 function s.xyzop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end

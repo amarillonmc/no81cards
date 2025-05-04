@@ -109,7 +109,7 @@ function c28321714.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28321714.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c28321714.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c28321714.tgfilter,tp,LOCATION_DECK,0,1,2,nil)
 	if #g>0 then
 		Duel.SendtoGrave(g,REASON_EFFECT)
 	end

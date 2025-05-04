@@ -1,7 +1,7 @@
 --业炎之理 弗尔布雷兹
 function c75000857.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x756),1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0xc751),1)
 	c:EnableReviveLimit()   
 	--add
 	local e1=Effect.CreateEffect(c)

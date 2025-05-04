@@ -2,7 +2,6 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,1))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
@@ -11,11 +10,6 @@ function s.initial_effect(c)
 	e1:SetTarget(s.settg)
 	e1:SetOperation(s.setop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetDescription(aux.Stringid(id,2))
-	e2:SetTarget(s.drtg)
-	e2:SetOperation(s.drop)
-	c:RegisterEffect(e2)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -28,12 +22,16 @@ end
 function s.chaincon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>2 or Duel.GetFlagEffect(tp,id)==0
 end
-function s.setfilter(c,tp)
-	return c:IsSetCard(0xcd1) and c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_TRAP) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
+function s.filter(c,mg)
+	return c:IsFacedown() and c:IsLevel(9) and mg:IsExists(s.gcheck,1,nil,c)
+end
+function s.gcheck(c,tc)
+	return c:IsType(TYPE_MONSTER) and c:IsRace(tc:GetRace()) and c:IsAttribute(tc:GetAttribute()) and c:IsLevel(3) and c:IsAbleToRemove()
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(p,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,nil,1-tp) end
+	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_EXTRA,0,1,nil,g) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 	if Duel.GetCurrentChain()<4 then Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1) end
 end
 function s.movefilter(c,tp)
@@ -42,39 +40,15 @@ function s.movefilter(c,tp)
 	return (seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1))
 end
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if Duel.GetLocationCount(1-tp,LOCATION_SZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,1,nil,1-tp)
+	local mg=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_EXTRA,0,1,1,nil,mg)
 	local tc=g:GetFirst()
-	if tc and Duel.MoveToField(tc,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true) and Duel.IsExistingMatchingCard(s.movefilter,tp,0,LOCATION_MZONE,1,nil,1-tp) then
-		local mg=Duel.SelectMatchingCard(tp,s.movefilter,tp,0,LOCATION_MZONE,1,1,nil,1-tp)
-		local seq=mg:GetFirst():GetSequence()
-		local flag=0
-		if seq>0 and Duel.CheckLocation(1-tp,LOCATION_MZONE,seq-1) then flag=flag|(1<<(seq-1)) end
-		if seq<4 and Duel.CheckLocation(1-tp,LOCATION_MZONE,seq+1) then flag=flag|(1<<(seq+1)) end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-		local s=Duel.SelectDisableField(tp,1,0,LOCATION_MZONE,~flag<<16)
-		local nseq=math.log(s,2)
-		Duel.MoveSequence(mg:GetFirst(),nseq-16)
-	end
-end
-function s.rmfilter(c)
-	return c:IsSetCard(0xcd1) and c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_TRAP) and c:IsAbleToRemove()
-end
-function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.rmfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) and Duel.IsPlayerCanDraw(tp,2) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
-	if Duel.GetCurrentChain()<4 then Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1) end
-end
-function s.drop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,s.rmfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
-	local rc=g:GetFirst()
-	if rc and Duel.Remove(rc,POS_FACEUP,REASON_EFFECT)~=0 and rc:IsLocation(LOCATION_REMOVED) then
-		Duel.BreakEffect()
-		if Duel.Draw(tp,2,REASON_EFFECT)==2 and Duel.IsExistingMatchingCard(s.movefilter,tp,0,LOCATION_MZONE,1,nil,1-tp) then
+	if tc then
+		Duel.ConfirmCards(1-tp,tc)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg=mg:FilterSelect(tp,s.gcheck,1,1,nil,tc)
+		if Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(s.movefilter,tp,0,LOCATION_MZONE,1,nil,1-tp) then
 			local mg=Duel.SelectMatchingCard(tp,s.movefilter,tp,0,LOCATION_MZONE,1,1,nil,1-tp)
 			local seq=mg:GetFirst():GetSequence()
 			local flag=0

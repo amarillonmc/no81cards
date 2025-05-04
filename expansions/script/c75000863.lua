@@ -22,11 +22,11 @@ function c75000863.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c75000863.matval(e,c)
-	return c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x756)
+	return c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0xc751)
 end
 --
 function c75000863.costfilter(c)
-	return c:IsSetCard(0x756) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xc751) and c:IsAbleToRemoveAsCost()
 end
 function c75000863.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() and Duel.IsExistingMatchingCard(c75000863.costfilter,tp,LOCATION_DECK,0,1,nil) end

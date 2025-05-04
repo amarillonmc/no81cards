@@ -16,7 +16,7 @@ function c75000819.initial_effect(c)
 end
 --
 function c75000819.posfilter(c)
-	return c:IsCanChangePosition() and c:IsSetCard(0x755)
+	return c:IsCanChangePosition() and c:IsSetCard(0xa751)
 end
 function c75000819.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c75000819.posfilter(chkc) end

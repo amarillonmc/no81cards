@@ -19,7 +19,7 @@ function c75000814.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER) 
 end
 function c75000814.costfilter(c)
-	return c:IsSetCard(0x755) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(ATTRIBUTE_FIRE) and c:IsAbleToGraveAsCost() and c:IsLocation(LOCATION_HAND+LOCATION_DECK)
+	return c:IsSetCard(0xa751) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(ATTRIBUTE_FIRE) and c:IsAbleToGraveAsCost() and c:IsLocation(LOCATION_HAND+LOCATION_DECK)
 end
 function c75000814.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c75000814.costfilter,tp,LOCATION_HAND+LOCATION_DECK,0,e:GetHandler())

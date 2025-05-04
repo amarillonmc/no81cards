@@ -25,7 +25,7 @@ function c75000812.initial_effect(c)
 end
 --
 function c75000812.damtg(e,c)
-	return c:IsSetCard(0x755) and bit.band(c:GetBattleTarget():GetOriginalRace(),RACE_DRAGON)==RACE_DRAGON
+	return c:IsSetCard(0xa751) and bit.band(c:GetBattleTarget():GetOriginalRace(),RACE_DRAGON)==RACE_DRAGON
 end
 --
 function c75000812.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -37,7 +37,7 @@ function c75000812.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(c,REASON_COST)
 end
 function c75000812.spfilter(c,e,tp,rc)
-	return c:IsSetCard(0x755)
+	return c:IsSetCard(0xa751)
 		and not c:IsCode(75000812)
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end

@@ -1,7 +1,7 @@
 --继承的意志 罗伊
 function c75000855.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x756),1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0xc751),1)
 	c:EnableReviveLimit() 
 	--to hand
 	local e1=Effect.CreateEffect(c)
@@ -33,7 +33,7 @@ function c75000855.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c75000855.tgfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x756) and c:IsAbleToHand()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xc751) and c:IsAbleToHand()
 end
 function c75000855.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75000855.tgfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -50,7 +50,7 @@ function c75000855.tgop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75000855.scfilter1(c)
-	return c:IsSetCard(0x756) and c:IsAbleToHand() and c:IsFaceup() and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0xc751) and c:IsAbleToHand() and c:IsFaceup() and c:IsType(TYPE_MONSTER)
 end
 function c75000855.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

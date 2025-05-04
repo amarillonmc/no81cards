@@ -34,10 +34,10 @@ function c9911056.hspcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.CheckLPCost(tp,1000)
+		and Duel.CheckLPCost(tp,2000)
 end
 function c9911056.hspop(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.PayLPCost(tp,1000)
+	Duel.PayLPCost(tp,2000)
 end
 function c9911056.ctfilter(c)
 	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsSetCard(0x9954)
@@ -55,29 +55,22 @@ function c9911056.spop1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9911056.spfilter2(c,e,tp)
+	local lv=c:GetLevel()
 	return c:IsSetCard(0x8e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetMZoneCount(tp)>0
-		and c:GetLevel()>0 and Duel.IsCanRemoveCounter(tp,1,1,0x1954,c:GetLevel(),REASON_COST)
+		and lv>=1 and lv<=9 and Duel.IsCanRemoveCounter(tp,1,1,0x1954,lv,REASON_COST)
 end
 function c9911056.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(c9911056.spfilter2,tp,LOCATION_HAND+LOCATION_DECK,0,nil,e,tp)
-	if chk==0 then return g:GetCount()>0 end
+	local g=Duel.GetMatchingGroup(c9911056.spfilter2,tp,LOCATION_DECK,0,nil,e,tp)
+	if chk==0 then return e:IsCostChecked() and g:GetCount()>0 end
 	local lvt={}
-	local tc=g:GetFirst()
-	while tc do
-		local tlv=tc:GetLevel()
-		lvt[tlv]=tlv
-		tc=g:GetNext()
+	for i=1,9 do
+		if not g:IsExists(Card.IsLevel,1,nil,i) then lvt[#lvt+1]=i end
 	end
-	local pc=1
-	for i=1,12 do
-		if lvt[i] then lvt[i]=nil lvt[pc]=i pc=pc+1 end
-	end
-	lvt[pc]=nil
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9911056,2))
-	local lv=Duel.AnnounceNumber(tp,table.unpack(lvt))
+	Duel.Hint(HINT_SELECTMSG,tp,HINGMSG_LVRANK)
+	local lv=Duel.AnnounceLevel(tp,1,9,table.unpack(lvt))
 	Duel.RemoveCounter(tp,1,1,0x1954,lv,REASON_COST)
 	e:SetLabel(lv)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c9911056.spfilter3(c,lv,e,tp)
 	return c:IsSetCard(0x8e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevel(lv)
@@ -86,7 +79,7 @@ end
 function c9911056.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local lv=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c9911056.spfilter3,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,lv,e,tp)
+	local g=Duel.SelectMatchingCard(tp,c9911056.spfilter3,tp,LOCATION_DECK,0,1,1,nil,lv,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end

@@ -43,7 +43,7 @@ function c75000829.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75000829.tgfilter1(c,tp)
-	return c:IsPreviousLocation(LOCATION_EXTRA) and c:IsPreviousControler(tp) and c:IsSetCard(0x755) and c:IsType(TYPE_SYNCHRO)
+	return c:IsPreviousLocation(LOCATION_EXTRA) and c:IsPreviousControler(tp) and c:IsSetCard(0xa751) and c:IsType(TYPE_SYNCHRO)
 end
 function c75000829.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c75000829.tgfilter1,1,nil,tp)

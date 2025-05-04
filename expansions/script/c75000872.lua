@@ -37,7 +37,7 @@ function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
 end
 function s.cfilter(c)
-	return c:IsSetCard(0x756) and c:IsAbleToRemove()
+	return c:IsSetCard(0xc751) and c:IsAbleToRemove()
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and s.cfilter(chkc) end
@@ -66,7 +66,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.filter(c)
-	return c:IsSetCard(0x756) and c:IsAbleToHand() and not c:IsCode(id) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0xc751) and c:IsAbleToHand() and not c:IsCode(id) and c:IsType(TYPE_MONSTER)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)

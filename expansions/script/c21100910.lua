@@ -1,0 +1,228 @@
+--环球旅行家 C
+local m=21100910
+local cm=_G["c"..m]
+function cm.initial_effect(c)
+	aux.EnablePendulumAttribute(c)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_ADJUST)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetRange(0xff)
+	e0:SetCountLimit(1)
+	e0:SetOperation(cm.op0)
+	c:RegisterEffect(e0)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EFFECT_SEND_REPLACE)
+	e1:SetRange(LOCATION_HAND+LOCATION_ONFIELD)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetCondition(cm.con)
+	e1:SetTarget(cm.tg)
+	e1:SetValue(cm.val)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetHintTiming(0,TIMING_END_PHASE)
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
+	e2:SetRange(LOCATION_PZONE)
+	e2:SetCountLimit(1,m+1)
+	e2:SetTarget(cm.tg2)
+	e2:SetOperation(cm.op2)
+	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_TOEXTRA)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCountLimit(1,m+2)
+	e3:SetCondition(cm.con3)
+	e3:SetTarget(cm.tg3)
+	e3:SetOperation(cm.op3)
+	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetRange(LOCATION_REMOVED)
+	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e4:SetCondition(cm.con4)
+	e4:SetOperation(cm.op4)
+	c:RegisterEffect(e4)
+	if not cm._ then
+	cm._ = true
+		cm.A = {0,0}
+		cm.A_status = {true,true}
+		cm.A_string = {"「环球旅行家 玛玛」记录过的区域为 ","「环球旅行家 玛玛」记录过的区域为 "}
+		cm["1"] = function(_c) return _c:IsAbleToHand() and not _c:IsLocation(LOCATION_HAND) end
+		cm["2"] = function(_c) return _c:IsAbleToDeck() end
+		cm["3"] = function(_c) return _c:IsAbleToGrave() end
+		cm["4"] = function(_c) return _c:IsAbleToRemove() end
+		cm["5"] = function(_c) return _c:GetType()&TYPE_PENDULUM>0 and _c:IsAbleToExtra() end
+		cm._return = 
+			function(_c, _s) 
+				if _s == 1 then 
+					Duel.SendtoHand(_c,nil,REASON_EFFECT)
+					Duel.ConfirmCards(1-_c:GetOwner(),_c)
+					if cm.A[_c:GetOwner()+1]&LOCATION_HAND==0 then 
+						cm.A_string[_c:GetOwner()+1] = cm.A_string[_c:GetOwner()+1].." 手卡"
+						Debug.Message("「环球旅行家 玛玛」已记录「手卡」")
+						Debug.Message(cm.A_string[_c:GetOwner()+1])
+						
+					end
+					cm.A[_c:GetOwner()+1] = cm.A[_c:GetOwner()+1] | LOCATION_HAND
+				elseif _s == 2 then
+					Duel.SendtoDeck(_c,_c:GetOwner(),2,REASON_EFFECT)
+					Duel.ConfirmCards(1-_c:GetOwner(),_c)
+					if cm.A[_c:GetOwner()+1]&LOCATION_DECK==0 then 	
+						cm.A_string[_c:GetOwner()+1] = cm.A_string[_c:GetOwner()+1].." 卡组"
+						Debug.Message("「环球旅行家 玛玛」已记录「卡组」")
+						Debug.Message(cm.A_string[_c:GetOwner()+1])
+					end
+					cm.A[_c:GetOwner()+1] = cm.A[_c:GetOwner()+1] | LOCATION_DECK	
+				elseif _s == 3 then
+					Duel.SendtoGrave(_c,REASON_EFFECT)
+					if cm.A[_c:GetOwner()+1]&LOCATION_GRAVE==0 then 
+						cm.A_string[_c:GetOwner()+1] = cm.A_string[_c:GetOwner()+1].." 墓地"
+						Debug.Message("「环球旅行家 玛玛」已记录「墓地」")
+						Debug.Message(cm.A_string[_c:GetOwner()+1])
+					end
+					cm.A[_c:GetOwner()+1] = cm.A[_c:GetOwner()+1] | LOCATION_GRAVE
+				elseif _s == 4 then	
+					Duel.Remove(_c,POS_FACEUP,REASON_EFFECT)
+					if cm.A[_c:GetOwner()+1]&LOCATION_REMOVED==0 then 
+						cm.A_string[_c:GetOwner()+1] = cm.A_string[_c:GetOwner()+1].." 除外"
+						Debug.Message("「环球旅行家 玛玛」已记录「除外」")
+						Debug.Message(cm.A_string[_c:GetOwner()+1])
+					end
+					cm.A[_c:GetOwner()+1] = cm.A[_c:GetOwner()+1] | LOCATION_REMOVED
+				elseif _s == 5 then	
+					Duel.SendtoExtraP(_c,_c:GetOwner(),REASON_EFFECT)
+					if cm.A[_c:GetOwner()+1]&LOCATION_EXTRA==0 then 
+						cm.A_string[_c:GetOwner()+1] = cm.A_string[_c:GetOwner()+1].." 额外"						
+						Debug.Message("「环球旅行家 玛玛」已记录「额外」")
+						Debug.Message(cm.A_string[_c:GetOwner()+1])
+					end
+					cm.A[_c:GetOwner()+1] = cm.A[_c:GetOwner()+1] | LOCATION_EXTRA
+				end
+				cm.A_status[_c:GetOwner()+1] = true
+			end
+	end	
+end
+function cm.con(e,tp,eg,ep,ev,re,r,rp)
+	return cm.A_status[tp+1] and e:GetHandler():IsLocation(LOCATION_HAND+LOCATION_ONFIELD)
+end
+function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if not e or not eg then return end
+	local c=e:GetHandler()
+	if chk==0 then return cm["1"](c) or cm["2"](c) or cm["3"](c) or cm["4"](c) or cm["5"](c) end
+	cm.A_status[tp+1] = false
+	local x
+	while true do
+		x = math.random(1,5)
+		if cm[tostring(x)](c) then break end
+	end
+	cm._return(c,x)
+	return false
+end
+function cm.val(e,c)
+	return false
+end
+function cm.op0(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(tp,m)==0 then
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_REMOVED)
+	e1:SetCountLimit(1,m)
+	e1:SetCondition(cm.spcon)
+	e1:SetValue(SUMMON_VALUE_SELF)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e2:SetTargetRange(LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_REMOVED,0)
+	e2:SetTarget(cm.sptg)
+	e2:SetLabelObject(e1)
+	Duel.RegisterEffect(e2,tp)
+	Duel.RegisterFlagEffect(tp,m,0,0,0)
+	end
+	e:Reset()
+end
+function cm.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return cm.A[c:GetOwner()+1]&c:GetLocation()>0 and (not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0 or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
+end
+function cm.sptg(e,c)
+	return c:IsSetCard(0x3919) and not c:IsCode(m)
+end
+function cm.q(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx() and c:IsSetCard(0x3919) and (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0) and not c:IsCode(m)
+end
+function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
+end
+function cm.op2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.Destroy(c,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.q),tp,cm.A[c:GetOwner()+1],0,1,nil,e,tp) then
+	Debug.Message(cm.A_string[c:GetOwner()+1])
+		if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		Duel.BreakEffect()
+		Duel.Hint(3,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.q),tp,cm.A[c:GetOwner()+1],0,1,1,nil,e,tp)
+			if #g>0 then
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+			end
+		end
+	end
+end
+function cm.con3(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_VALUE_SELF)
+end
+function cm.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local hand = cm.A[c:GetOwner()+1]&LOCATION_HAND>0 and Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_HAND,nil)>0
+	local deck = cm.A[c:GetOwner()+1]&LOCATION_DECK>0 and Duel.GetMatchingGroupCount(Card.IsAbleToHand,tp,0,LOCATION_DECK,nil)>0
+	local grave = cm.A[c:GetOwner()+1]&LOCATION_GRAVE>0 and Duel.GetMatchingGroupCount(Card.IsAbleToHand,tp,0,LOCATION_GRAVE,nil)>0
+	local remove = cm.A[c:GetOwner()+1]&LOCATION_REMOVED>0 and Duel.GetMatchingGroupCount(Card.IsAbleToHand,tp,0,LOCATION_REMOVED,nil)>0
+	local extra = cm.A[c:GetOwner()+1]&LOCATION_EXTRA>0 and Duel.GetMatchingGroupCount(aux.TRUE,tp,0,LOCATION_EXTRA,nil)>0
+	if chk==0 then return hand or deck or grave or remove or extra end
+	Duel.Hint(3,tp,aux.Stringid(m,7))
+	local loc=aux.SelectFromOptions(tp,{hand,aux.Stringid(m,2),LOCATION_HAND},{deck,aux.Stringid(m,3),LOCATION_DECK},{grave,aux.Stringid(m,4),LOCATION_GRAVE},{remove,aux.Stringid(m,5),LOCATION_REMOVED},{extra,aux.Stringid(m,6),LOCATION_EXTRA})
+	if loc == LOCATION_HAND then
+		Debug.Message("宣言了手卡")
+	elseif loc == LOCATION_DECK then
+		e:SetCategory(e:GetCategory()+CATEGORY_SEARCH)
+		Debug.Message("宣言了卡组")
+	elseif loc == LOCATION_GRAVE then
+		e:SetCategory(e:GetCategory()+CATEGORY_GRAVE_ACTION)
+		Debug.Message("宣言了墓地")
+	elseif loc == LOCATION_REMOVED then
+		Debug.Message("宣言了除外区域")
+	elseif loc == LOCATION_EXTRA then
+		Debug.Message("宣言了额外卡组")
+	end
+	e:SetLabel(loc)
+end
+function cm.op3(e,tp,eg,ep,ev,re,r,rp)
+	local loc=e:GetLabel()
+	if loc&(LOCATION_HAND|LOCATION_DECK|LOCATION_GRAVE|LOCATION_REMOVED|LOCATION_EXTRA) == 0 then return end
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(aux.TRUE),tp,0,loc,nil)
+	if #g>0 then
+		local sg=g:RandomSelect(tp,1)
+		if not sg:GetFirst():IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK) then
+			Duel.SendtoHand(sg,tp,REASON_EFFECT)
+		else
+			Duel.SendtoDeck(sg,tp,2,REASON_EFFECT)
+		end
+		Duel.ConfirmCards(1-tp,sg)
+	end
+end
+function cm.con4(e,tp,eg,ep,ev,re,r,rp)
+	local ct=Duel.GetCurrentChain()
+	return e:GetHandler():IsSpecialSummonable(SUMMON_VALUE_SELF) and ct==0 and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+end
+function cm.op4(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SpecialSummonRule(tp,e:GetHandler(),SUMMON_VALUE_SELF)
+end

@@ -1,7 +1,7 @@
 --苍天剑士 焰刃之琳
 function c75000811.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x755),1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0xa751),1)
 	c:EnableReviveLimit() 
 	--to hand
 	local e1=Effect.CreateEffect(c)
@@ -33,7 +33,7 @@ function c75000811.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c75000811.tgfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3755) and c:IsAbleToGrave()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa751,0xa751)  and c:IsAbleToGrave()
 end
 function c75000811.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75000811.tgfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -62,7 +62,7 @@ function c75000811.tgop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75000811.scfilter1(c)
-	return c:IsSetCard(0x755) and c:IsAbleToHand()
+	return c:IsSetCard(0xa751) and c:IsAbleToHand()
 end
 function c75000811.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

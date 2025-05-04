@@ -35,25 +35,43 @@ end
 function cm.con(e,c)
 	local tp=e:GetHandlerPlayer()
 	if c==nil then return true end
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)-Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>=1 and Duel.GetTurnPlayer()==tp
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)-Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>=2 and Duel.GetTurnPlayer()==tp
 end
 function cm.con2(e,c)
 	local tp=e:GetHandlerPlayer()
 	if c==nil then return true end
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)-Duel.GetFieldGroupCount(1-tp,0,LOCATION_HAND)>=1 and Duel.GetTurnPlayer()==tp
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)-Duel.GetFieldGroupCount(1-tp,0,LOCATION_HAND)>=2 and Duel.GetTurnPlayer()==tp
 end
 function cm.op(e,tp)
 	local c=e:GetHandler()
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		Duel.BreakEffect()
-		Duel.Draw(tp,1,REASON_EFFECT)
+		if Duel.Draw(tp,1,REASON_EFFECT)~=0 then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_CANNOT_TO_HAND)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetTargetRange(1,0)
+			e1:SetTarget(aux.TargetBoolFunction(Card.IsLocation,LOCATION_DECK))
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+		end
 	end
 end
 function cm.op2(e,tp)
 	local c=e:GetHandler()
 	if Duel.SpecialSummon(c,0,tp,1-tp,false,false,POS_FACEUP)~=0 then
 		Duel.BreakEffect()
-		Duel.Draw(1-tp,1,REASON_EFFECT)
+		if Duel.Draw(1-tp,1,REASON_EFFECT)~=0 then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_CANNOT_TO_HAND)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetTargetRange(0,1)
+			e1:SetTarget(aux.TargetBoolFunction(Card.IsLocation,LOCATION_DECK))
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+		end
 	end
 end
 function cm.thfilter(c)

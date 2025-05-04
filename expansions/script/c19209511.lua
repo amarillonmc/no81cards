@@ -11,6 +11,7 @@ function c19209511.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCountLimit(1,19209511)
+	e1:SetCondition(c19209511.spcon)
 	e1:SetTarget(c19209511.sptg)
 	e1:SetOperation(c19209511.spop)
 	c:RegisterEffect(e1)
@@ -34,6 +35,9 @@ function c19209511.initial_effect(c)
 	e3:SetTarget(c19209511.pentg)
 	e3:SetOperation(c19209511.penop)
 	c:RegisterEffect(e3)
+end
+function c19209511.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,19209544)
 end
 function c19209511.tdfilter(c)
 	return c:IsSetCard(0x3b50) and c:IsAbleToDeck() and c:IsFaceupEx() and Duel.GetMZoneCount(tp,c)>0 and bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0

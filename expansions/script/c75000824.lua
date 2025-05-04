@@ -39,7 +39,7 @@ function c75000824.mtcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
 function c75000824.cfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x755) and c:IsAbleToDeckAsCost()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa751) and c:IsAbleToDeckAsCost()
 end
 function c75000824.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -61,7 +61,7 @@ function c75000824.mtop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75000824.cfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x755) and c:IsControler(tp) and c:IsSummonLocation(LOCATION_EXTRA)
+	return c:IsFaceup() and c:IsSetCard(0xa751) and c:IsControler(tp) and c:IsSummonLocation(LOCATION_EXTRA)
 end
 function c75000824.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c75000824.cfilter,1,nil,tp)
@@ -70,7 +70,7 @@ function c75000824.tgfilter(c,tp,eg)
 	return eg:IsContains(c) and Duel.IsExistingMatchingCard(c75000824.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetAttribute())
 end
 function c75000824.thfilter(c,att)
-	return c:IsSetCard(0x755) and c:IsAbleToGrave() and c:IsAttribute(att) 
+	return c:IsSetCard(0xa751) and c:IsAbleToGrave() and c:IsAttribute(att) 
 end
 function c75000824.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c75000824.tgfilter(chkc,tp,eg) end

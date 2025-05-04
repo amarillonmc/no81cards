@@ -24,7 +24,7 @@ function c75000821.initial_effect(c)
 	c:RegisterEffect(e2)	
 end
 function c75000821.spfilter(c,e,tp)
-	return ((c:IsType(TYPE_MONSTER) and c:IsSetCard(0x755) and c:IsLevel(4)) or c:IsCode(75000825)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return ((c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa751) and c:IsLevel(4)) or c:IsCode(75000825)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c75000821.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c75000821.spfilter(chkc,e,tp) end
@@ -35,10 +35,10 @@ function c75000821.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 function c75000821.filter(c)
-	return c:IsSetCard(0x755) and c:IsType(TYPE_SYNCHRO) and c:IsFaceup()
+	return c:IsSetCard(0xa751) and c:IsType(TYPE_SYNCHRO) and c:IsFaceup()
 end
 function c75000821.synfilter(c)
-	return c:IsSynchroSummonable(nil) and c:IsSetCard(0x755)
+	return c:IsSynchroSummonable(nil) and c:IsSetCard(0xa751)
 end 
 function c75000821.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -68,7 +68,7 @@ function c75000821.thop1(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c75000821.tdfilter(c)
-	return c:IsSetCard(0x755) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+	return c:IsSetCard(0xa751) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
 function c75000821.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c75000821.tdfilter(chkc) end
