@@ -69,7 +69,7 @@ end
 
 
 function s.syncfilter(c)
-	return c:IsSynchroSummonable(nil)
+	return c:IsType(TYPE_SYNCHRO) and c:IsSynchroSummonable(nil)
 end
 function s.sctarg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.syncfilter,tp,LOCATION_EXTRA,0,1,nil) and Duel.CheckLPCost(tp,800) end
@@ -88,7 +88,7 @@ function s.scop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.xyzfilter(c)
-	return c:IsXyzSummonable(nil)
+	return c:IsType(TYPE_XYZ) and c:IsXyzSummonable(nil)
 end
 function s.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.xyzfilter,tp,LOCATION_EXTRA,0,1,nil) and Duel.CheckLPCost(tp,800) end
