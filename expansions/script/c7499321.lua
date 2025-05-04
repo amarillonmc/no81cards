@@ -72,7 +72,6 @@ function s.initial_effect(c)
 		local ge3=Effect.CreateEffect(c)
 		ge3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 		ge3:SetCode(EVENT_CHAIN_SOLVED)
-		ge3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 		ge3:SetCondition(s.trcon)
 		ge3:SetOperation(s.trop)
 		Duel.RegisterEffect(ge3,0)
@@ -142,7 +141,9 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function s.efilter(e,re)
+	--Debug.Message("0")
 	if e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActivated() then
+	--Debug.Message("01")
 		e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,4))
 		return true
 	end
@@ -152,12 +153,16 @@ function s.efilter2(c)
 	return c:GetFlagEffect(id)>0
 end
 function s.trcon(e,tp,eg,ep,ev,re,r,rp)
+	--Debug.Message("02")
 	return Duel.IsExistingMatchingCard(s.efilter2,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 end
 function s.trop(e,tp,eg,ep,ev,re,r,rp)
+	--Debug.Message("03")
 	local g=Duel.GetMatchingGroup(s.efilter2,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if #g>0 then
+	--Debug.Message("04")
 		for tc in aux.Next(g) do
+	--Debug.Message("05")
 			tc:ResetFlagEffect(id)
 			Duel.RaiseSingleEvent(tc,EVENT_CUSTOM+id,e,0,0,0,0)
 		end
@@ -166,12 +171,14 @@ end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) end
 	if chk==0 then return true end
+	--Debug.Message("06")
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
 	g:AddCard(e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
+	--Debug.Message("07")
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e) then
 		Duel.Destroy(Group.FromCards(tc,e:GetHandler()),REASON_EFFECT)
@@ -255,6 +262,6 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 end
-function s.efilter(e,te)
+--[[function s.efilter(e,te)
 	return te:GetOwnerPlayer()~=e:GetHandlerPlayer()
-end
+end]]
