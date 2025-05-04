@@ -26,7 +26,7 @@ function c9910819.initial_effect(c)
 	e3:SetTarget(c9910819.spthtg)
 	e3:SetOperation(c9910819.spthop)
 	c:RegisterEffect(e3)
-	aux.RegisterMergedDelayedEvent(c,9910819,EVENT_DISCARD)
+	aux.RegisterMergedDelayedEvent(c,9910819,EVENT_TO_GRAVE)
 end
 function c9910819.spfilter(c,e,tp,lv)
 	return c:GetLevel()<lv and c:IsSetCard(0x6951) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,true)
