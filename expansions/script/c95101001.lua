@@ -50,7 +50,8 @@ function c95101001.costfilter(c)
 end
 function c95101001.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c95101001.costfilter,tp,LOCATION_ONFIELD,0,1,nil) end
-	local g=Duel.GetMatchingGroup(c95101001.costfilter,tp,LOCATION_ONFIELD,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectMatchingCard(tp,c95101001.costfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	Duel.SendtoHand(g,nil,REASON_COST)
 end
 function c95101001.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
