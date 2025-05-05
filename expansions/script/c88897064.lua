@@ -79,10 +79,10 @@ function s.efilter(e,te)
 	return te:GetOwner()~=e:GetOwner()
 end
 function s.thfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x40) and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x40) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_REMOVED,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
@@ -130,17 +130,16 @@ function s.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	  if Duel.GetMatchingGroupCount(Card.IsSetCard,tp,LOCATION_REMOVED,0,nil,0x40)>=3 then
-		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	end
+end
+function s.drcfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x40)
 end
 function s.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if Duel.Draw(p,d,REASON_EFFECT)>0 and Duel.IsPlayerCanDraw(tp,1)
-			and Duel.GetMatchingGroupCount(Card.IsSetCard,tp,LOCATION_REMOVED,0,nil,0x40)>=3
+			and Duel.GetMatchingGroupCount(s.drcfilter,tp,LOCATION_REMOVED,0,nil)>=3
 			and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 			Duel.BreakEffect()
-			Duel.ShuffleDeck(tp)
 			Duel.Draw(tp,1,REASON_EFFECT)
 		end
 end
