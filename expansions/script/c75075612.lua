@@ -68,7 +68,7 @@ function c75075612.initial_effect(c)
 end
 -- 1
 function c75075612.con1(e)
-	return Duel.IsExistingMatchingCard(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil,0x5754)
+	return Duel.IsExistingMatchingCard(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil,0x5754)
 end
 function c75075612.tg1(e,c)
     return c:IsSetCard(0x5754) and c:IsFaceup()

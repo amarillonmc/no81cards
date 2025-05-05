@@ -52,7 +52,7 @@ function c75075614.tg1(e,c)
     return c:IsFaceup() and Duel.IsExistingMatchingCard(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil,0x5754) and not c:IsSetCard(0x5754)
 end
 function c75075614.con1(e)
-	return Duel.IsExistingMatchingCard(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil,0x5754)
+	return Duel.IsExistingMatchingCard(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil,0x5754)
 end
 function c75075614.con11(e,tp,eg,ep,ev,re,r,rp)
     return re:GetHandler()==e:GetHandler()

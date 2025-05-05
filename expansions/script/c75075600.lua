@@ -64,7 +64,7 @@ end
 -- 2
 function c75075600.con2(e,tp,eg,ep,ev,re,r,rp)
     local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-    return ep==1-tp and loc==LOCATION_HAND and re:IsActiveType(TYPE_MONSTER) and Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)>0 and Duel.GetFieldCard(tp,LOCATION_FZONE,0)~=nil and Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)~=nil
+    return ep==1-tp and loc==LOCATION_HAND and re:IsActiveType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(aux.TRUE,e:GetHandlerPlayer(),LOCATION_FZONE,LOCATION_FZONE,1,nil)
 end
 function c75075600.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then

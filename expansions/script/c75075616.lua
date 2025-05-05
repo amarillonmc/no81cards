@@ -83,7 +83,7 @@ function c75075616.op0(e,tp,eg,ep,ev,re,r,rp)
 end
 -- 1
 function c75075616.con1(e)
-	return Duel.IsExistingMatchingCard(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil,0x5754)
+	return Duel.IsExistingMatchingCard(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil,0x5754)
 end
 function c75075616.tg1(e,c)
     return c:IsSetCard(0x5754) and c:IsType(TYPE_MONSTER)
