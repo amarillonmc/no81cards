@@ -50,6 +50,7 @@ function c19209564.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.DisableShuffleCheck(true)
 	Duel.SendtoHand(sc,tp,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,sc)
+	Duel.ShuffleHand(tp)
 	if sc:IsLocation(LOCATION_HAND) and Duel.GetCustomActivityCount(19209564,1-tp,ACTIVITY_CHAIN)~=0 and sc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetMZoneCount(tp)>0 and Duel.SelectYesNo(tp,aux.Stringid(19209564,0)) then
 		Duel.BreakEffect()
 		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)

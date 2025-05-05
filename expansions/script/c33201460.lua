@@ -54,14 +54,15 @@ end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
 	local g=Duel.GetMatchingGroup(s.exfilter,tp,0,LOCATION_HAND,nil)
-	if g:GetCount()>0 and ct then
+	if ct and g:GetCount()>=ct then
 		local sg=g:RandomSelect(tp,ct)
 		Duel.ConfirmCards(tp,sg)
 		local tc=sg:GetFirst()
-		while tc do
-			if VHisc_HDST.nck(tc) then Duel.Destroy(tc,REASON_EFFECT) end
+		for tc in aux.Next(g) do
+--			if VHisc_HDST.nck(tc) then Duel.Destroy(tc,REASON_EFFECT) end
 			if not VHisc_HDST.codeck(VHisc_STCN,tc) then
 				local code=tc:GetOriginalCode()
+				sg:Remove(s.fgfilter,nil,code)
 				VHisc_STCN[#VHisc_STCN+1]=code
 				local fg=Duel.GetMatchingGroup(s.fgfilter,tp,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK+LOCATION_EXTRA+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK+LOCATION_EXTRA+LOCATION_REMOVED,nil,code)
 				for fc in aux.Next(fg) do
@@ -70,8 +71,8 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 					end
 				end
 			end
-			tc=sg:GetNext()
 		end
+		Duel.Destroy(sg,REASON_EFFECT)
 		Duel.ShuffleHand(1-tp)
 	end 
 end

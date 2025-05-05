@@ -36,8 +36,10 @@ function s.initial_effect(c)
 	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,s.chainfilter)
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if not re:GetHandler():IsSetCard(0x3520) then
-		Duel.RegisterFlagEffect(re:GetHandlerPlayer(),id,RESET_PHASE+PHASE_END,0,1)
+	for tc in aux.Next(eg) do
+		if tc:GetReason()&REASON_EFFECT==0 or not tc:GetReasonEffect():GetHandler():IsSetCard(0x3520) then
+			Duel.RegisterFlagEffect(tc:GetReasonPlayer(),id,RESET_PHASE+PHASE_END,0,1)
+		end
 	end
 end
 function s.chainfilter(re,tp,cid)
@@ -66,7 +68,7 @@ function s.aclimit(e,re,tp)
 	return re:GetHandler():IsLocation(LOCATION_REMOVED) and not re:GetHandler():IsSetCard(0x3520)
 end
 function s.raclimit(e,c,rp,r,re)
-	return r&REASON_EFFECT~=0 and not re:GetHandler():IsSetCard(0x3520)
+	return r&REASON_EFFECT==0 or not re:GetHandler():IsSetCard(0x3520)
 end
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>2 end
