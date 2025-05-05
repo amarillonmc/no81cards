@@ -26,15 +26,18 @@ function c95101006.initial_effect(c)
 	e2:SetOperation(c95101006.disop)
 	c:RegisterEffect(e2)
 end
+function c95101006.spcfilter(c,tp)
+	return c:IsAbleToHandAsCost() and Duel.GetMZoneCount(tp,c)>0
+end
 function c95101006.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHandAsCost,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c95101006.spcfilter,tp,LOCATION_MZONE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHandAsCost,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c95101006.spcfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
 	Duel.SendtoHand(g,nil,REASON_COST)
 end
 function c95101006.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function c95101006.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -51,7 +54,8 @@ function c95101006.costfilter(c)
 end
 function c95101006.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c95101006.costfilter,tp,LOCATION_ONFIELD,0,1,nil) end
-	local g=Duel.GetMatchingGroup(c95101006.costfilter,tp,LOCATION_ONFIELD,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g=Duel.SelectMatchingCard(tp,c95101006.costfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	Duel.SendtoHand(g,nil,REASON_COST)
 end
 function c95101006.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
