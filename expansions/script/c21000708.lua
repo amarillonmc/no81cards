@@ -65,7 +65,7 @@ function s.prop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.spfilter(c)
-	return c:IsSetCard(0x605) and not c:IsForbidden()
+	return c:IsSetCard(0x605) and not c:IsForbidden() and c:IsFaceupEx()
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return tp==Duel.GetTurnPlayer() and Duel.GetTurnCount()~=e:GetLabel() and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.spfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0

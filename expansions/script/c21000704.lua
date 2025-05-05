@@ -65,7 +65,7 @@ function s.prop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			local g2=Duel.SelectMatchingCard(tp,s.filter3,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 			if g2:GetCount()>0 then
-				Duel.SendtoDeck(g2,nil,nil,REASON_EFFECT)
+				Duel.SendtoDeck(g2,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 			end
 		end
 	end
