@@ -81,7 +81,7 @@ function s.geop(e,tp,eg,ep,ev,re,r,rp)
 				local e1=v:Clone()
 				local tg=v:GetTarget() or aux.TRUE
 				e1:SetTarget(s.chtg(tg))
-				e1:SetRange(LOCATION_DECK+)
+				e1:SetRange(LOCATION_DECK)
 				e1:SetHintTiming(TIMING_SUMMON+TIMING_SPSUMMON)
 				tc:RegisterEffect(e1,true)
 				table.insert(s.CAe,e1)
