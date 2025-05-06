@@ -95,13 +95,14 @@ function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 			if j==7 then password_new[j]=math.floor(password[num]*2/3+1) end
 			if j==8 then password_new[j]=math.floor(password[num]*(-1)+1) end
 		end
-		password=password_new
+		--password=password_new
+		password={table.unpack(password_new)}
 		local password_final=0
 		for j=1,8 do
 			password_final=password_final+((j+1)*(password[j]^j))
 		end
 		--Debug.Message(password_final)
-		if password_final==11739853951437 then e:SetLabel(1) break end
+		if password_final==-3229810063 then e:SetLabel(1) break end
 	end
 	if Strong_Boxer_password_second>1 then
 		local SB_password=math.floor(Strong_Boxer_password_second)
@@ -125,14 +126,15 @@ function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 				if j==8 then password_new[j]=math.floor(password[num]*(-1)+1) end
 			end
 		end
-		password=password_new
+		--password=password_new
+		password={table.unpack(password_new)}
 		local password_final=0
 		for j=1,8 do
 			password_final=password_final+((j+1)*(password[j]^j))
 		end
 		--Debug.Message(tostring(password_final))
 		if --password_final<(-(10^33)) and math.ceil(password_final/(10^20))==-78158280878458 
-		password_final==-875573228
+		password_final==824557903
 		then e:SetLabel(100) end
 	end
 end
