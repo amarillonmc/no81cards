@@ -55,7 +55,7 @@ function s.initial_effect(c)
 				end
 			end
 			s.trcheck=nil
-			return f2(sc,se,bool)
+			return s.checking or f2(sc,se,bool)
 		end
 		local f3=Duel.RegisterEffect
 		Duel.RegisterEffect=function(se,sp)
@@ -67,7 +67,7 @@ function s.initial_effect(c)
 				end
 			end
 			s.trcheck=nil
-			return f3(se,sp)
+			return s.checking or f3(se,sp)
 		end
 	end
 end
@@ -108,7 +108,10 @@ function s.filter(c,e,tp)
 		--Duel.DisableActionCheck(true)
 		--Duel.CreateToken(tp,c:GetOriginalCode())
 		--Duel.DisableActionCheck(false)
-		c:ReplaceEffect(c:GetOriginalCode(),RESET_EVENT+RESETS_STANDARD)
+		s.checking=true
+		if c.initial_effect then c.initial_effect(c) end
+		s.checking=false
+		--c:ReplaceEffect(c:GetOriginalCode(),RESET_EVENT+RESETS_STANDARD)
 		table.insert(s.codetable,c:GetOriginalCode())
 		--c:ResetEffect(cid,RESET_COPY)
 	end
