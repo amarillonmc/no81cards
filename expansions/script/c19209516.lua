@@ -73,7 +73,7 @@ function c19209516.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 end
 function c19209516.efilter(e,c,rp,r,re)
-	return re and r&REASON_EFFECT>0 and rp==1-e:GetHandlerPlayer()
+	return c==e:GetHandler() and re and r&REASON_EFFECT>0 and rp==1-e:GetHandlerPlayer()
 end
 function c19209516.pfilter(c)
 	return c:IsCode(19209511) and not c:IsForbidden()
