@@ -7,13 +7,13 @@ function s.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_CANNOT_SUMMON)
 	e0:SetCondition(s.excon)
-	c:RegisterEffect(e0)
+	--c:RegisterEffect(e0)
 	local e00=Effect.CreateEffect(c)
 	e00:SetType(EFFECT_TYPE_SINGLE)
 	e00:SetCode(EFFECT_SUMMON_COST)
 	e00:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e00:SetOperation(s.nsoath)
-	c:RegisterEffect(e00)	
+	c:RegisterEffect(e00)   
 	
 	--summon self
 	local e1=Effect.CreateEffect(c)
@@ -83,17 +83,17 @@ function s.cosop(e,tp,eg,ep,ev,re,r,rp)
 	local hflg = (#hg>0)
 	local op=aux.SelectFromOptions(tp,{gflg,aux.Stringid(id,2)},{hflg,aux.Stringid(id,3)})
 	if op==1 then
-		local g = Duel.SelectMatchingCard(tp,s.graveflt,tp,LOCATION_DECK,0,1,1,nil)	
+		local g = Duel.SelectMatchingCard(tp,s.graveflt,tp,LOCATION_DECK,0,1,1,nil) 
 		if Duel.SendtoGrave(g,REASON_EFFECT) <= 0 then
 			return
 		end
 	elseif op==2 then
-		local g = Duel.SelectMatchingCard(tp,s.handflt,tp,LOCATION_DECK,0,1,1,nil)	
+		local g = Duel.SelectMatchingCard(tp,s.handflt,tp,LOCATION_DECK,0,1,1,nil)  
 		if Duel.SendtoHand(g,nil,REASON_EFFECT) <= 0 then
 			return
 		else
 			Duel.ConfirmCards(1-tp,g)
-		end	
+		end 
 	else
 		return
 	end
