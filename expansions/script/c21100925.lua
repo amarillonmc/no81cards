@@ -174,17 +174,32 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	cm.A_status[tp+1] = false
 	local x
 	while true do
+		globetrot.g = globetrot.g + 1
 		x = Duel.GetRandomNumber(1,5)
 		x = globetrot.random(x)
+		if globetrot.g > 5 then
+			while true do
+				x = Duel.GetRandomNumber(1,5)
+				if cm[tostring(x)](c) then
+					for i = 1, globetrot.x do
+						if globetrot.pair[i]["first"] == x then
+							globetrot.pair[i]["second"] = globetrot.pair[i]["second"] + 1
+						end
+					end
+				goto A
+				end
+			end
+		end			
 		if cm[tostring(x)](c) then 
 			for i = 1, globetrot.x do
 				if globetrot.pair[i]["first"] == x then
 					globetrot.pair[i]["second"] = globetrot.pair[i]["second"] + 1
 				end
 			end
-			break
+		break 
 		end
 	end
+	::A::
 	cm._return(c,x)
 	return false
 end
