@@ -52,6 +52,7 @@ function cm.initial_effect(c)
 		_globetrot=true
 		globetrot = {}
 		globetrot.x = 5
+		globetrot.g = 0
 		globetrot.pair = {}
 		for i = 1, globetrot.x do
 			globetrot.pair[i] = {}
