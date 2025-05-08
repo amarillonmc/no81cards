@@ -50,14 +50,14 @@ function c60001168.setop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60001168.wxcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and Duel.IsChainNegatable(ev)
+	return rp==1-tp
 end
 function c60001168.wxtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60001168.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c60001168.filter(c,tp,code)
-	return c:IsCode(60001179) and ((c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()) or (c:IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) and c:GetOriginalCode()~=code
+	return c:IsCode(60001179) and ((c:IsType(TYPE_SPELL+TYPE_TRAP) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (c:IsType(TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) and c:GetOriginalCode()~=code and not c:IsForbidden()
 end
 function c60001168.filterx(c)
 	return c:IsCode(60001179) and c:IsAbleToHand() 
@@ -76,7 +76,7 @@ function c60001168.wxop(e,tp,eg,ep,ev,re,r,rp)
 			if tc:IsType(TYPE_MONSTER) then
 				Duel.MoveToField(tc,tp,tp,LOCATION_MZONE,POS_FACEUP,true)
 			elseif tc:IsType(TYPE_SPELL+TYPE_TRAP) then
-				Duel.SSet(tp,tc)
+				Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			end
 		end
 	end
