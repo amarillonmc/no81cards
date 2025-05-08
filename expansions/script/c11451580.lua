@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetValue(11451480)
 	e2:SetCountLimit(1)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
 	e2:SetCondition(cm.con)
@@ -39,7 +40,7 @@ function cm.xyzcheck(g)
 	return g:GetFirst():GetAttribute()&g:GetNext():GetAttribute()>0
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not re:GetOwner():IsOriginalSetCard(0x97f) and re:GetValue()~=11451480
+	return re:GetValue()~=11451480
 end
 function cm.filter(c,re)
 	return c:IsCanOverlay() and c:IsRelateToEffect(re)

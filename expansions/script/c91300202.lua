@@ -31,13 +31,29 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.thop)  
 	c:RegisterEffect(e4)  
 	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,aux.FALSE)
-	if not cm.global_check then
-		cm.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_CHAIN_SOLVED)
-		ge1:SetOperation(cm.checkop)
-		Duel.RegisterEffect(ge1,0)
+	if not cm.skill then 
+		cm.skill, cm.cal = {}, {}
+		cm.skill[3406751] = { "OzhxV11dQUVdWV4SdllGVBU4MjIxODIx", "ajjajajdjpHRtZPXqqbXuYTeu7nUtZPeiLTajajcipvRo6zXobDUnrvenpPUpIjVjLLVqLXdv5DRo6zXuYjUuL/dv5PehL7Um4HUpIjdrovQgLgD1ISS1LmZ1ZKF3a++" }
+		cm.skill[3797356] = { "NzHRtKPUp6bdvLfevbnXrLgxNDg0MjEx", "YTHch63WiZvdqqrdpLrUnoHXooHSqp7Uj4PSsr7UpLner6jdu6PUu5DZi78D1J2Q3IqR3Iy416aOHdGXjdSniN2tjtyMuNarvNe0ktG3jNS9md27nNWRhd2suzg0MjEx" }
+		cm.skill[176476] = { "NTF8W1pYXRFiXFdAV18TNDg0", "ajHai6HRhJHXuZnRo6/XvIjSsbrXuZnbhL3Wj7bSsbrXuZnSsrvai6HQgJvXuZnRqLzWj53RnKfVrrwF3b6Y0rie3bSP07GN3p+40beY3aWW17i2" }
+		cm.skill[3954837] = { "ITLUuKXXpKbTj6bUgL3XtokQNDI=", "BjLUm4vXpIjRrovWib4D1L2b0oCQ1K291Lu416G616yt0b2g17uc2o611q6217Kb0beM1ZGA16y9MTQy" }
+		cm.skill[98254] = { "IzTbs5fbpp7asbTVq7DUqavXtL0y", "uzTajq3XjZTXvJXXqqrXuYTUuL/XvJXRsbbajq3WiZ7UpLzUr6jXvqXXu5zXobrdjbjajq3WiZ7XqqrXobzXno3Up43UnrsH15iT176416G616qu1Luj1L6a2Zqb2Yur1YyY1LmT1KS/1q6206WS1q6216G616qu1q621YmN1qCa15iT16GCGgXRsbYy" }
+		cm.skill[7513023] = { "KTHftJ/VgrDVjJjfq7XdgYnWnrfViLPdjJM4OA==", "ADHQh6jUhJjUvJndqq/dsIHXsbPUvJnXjb3Qv5vUj4nUqqbdlbwKCAEB3aeL16SU1Lm+OA==" }
+		cm.skill[8643346] = { "LjLRl4/SsYHSuZfSuIPQj5LRo7Lbjr7SkLfSrKUV", "RDLcjavRjpLRv5PRqazRuoLSu7nRv5Pbjr7RrprctZjRhYPRrojQirjSuLgF172e0bK41JCx1Kyj2pO51aar1bud0bK53Y6817eJ1KW78IXRt7v2hQrSqq32hdSgiR3RnLoHAgIE3Y691buN1Jy+172Y16aQ0bK2" }
+		cm.skill[951803] = { "LzHUvabXp6bWlK/XuoLUlJTViLjzhteBhdSMgNSOshA=", "sjHZjqjUjZHUvJDZkJnVj5bZkJnVj5bUnKnUrZnXra7YpoXUvpvXrbgA152Q3o291L6e1YqU17u72LOS162u2KaF1qWA1J6I16eI1L6g1LuZ2Y621qu1ANWJm9exm9S0jNekudevrdWMrdWJi9mOqNSNkdS8kNartdekudevrdS+oNS7mTE=" }
+		cm.chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+		cm.reslst = {
+			98254, 147780, 176476, 415684, 951803, 991299, 1316582, 1493584, 2116118, 2125179, 2184833, 2356627, 3406751, 3797356, 3954837, 4283402, 4291711, 
+			4444113, 4781291, 5259484, 5741745, 6569607, 6797883, 6957760, 7127743, 7161770, 7487633, 7513023, 7581718, 8643346, 9293568, 9327173, 9537408,
+		}
+		cm.cal[1] = function(n) return (n * 5 + 7) % 97 end
+		cm.cal[2] = function(n) return (n * 3 - 4) % 89 end
+		cm.cal[3] = function(n) return (n + 11) % 83 end
+		cm.cal[4] = function(n) return (n * 2 + 19) % 91 end
+		cm.cal[5] = function(n) return (n * 6 - 5) % 79 end
+		cm.cal[6] = function(n) return (n + 23) % 67 end
+		cm.cal[7] = function(n) return (n * 4 + 3) % 73 end
+		cm.cal[8] = function(n) return (n * 7 - 2) % 61 end
 	end
 end
 function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -60,61 +76,67 @@ end
 function cm.ccon(e)
 	return Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_MZONE,0)>1
 end
-cm.input ={[[+Z+Z,r-?+p]],[[+Z+`-+-N-6]],[[+j+d-7- +T]],[[+Z-7,y,x+d]],[[+Z-3+\-B,x]],[[+Y-!-,-=+p]],[[+X+V--+s-@]],[[+_+[+q-*-$]]}
-cm.string={}
-cm.string[1]={"Celestial Gate!","这张卡回到手卡，这个回合每次场上的卡回到手卡，对方场上1张卡破坏"}
-cm.string[2]={"北斗千手杀!","这个回合对方是已把效果发动过7次以上时,对方场上的怪兽全部破坏"}
-cm.string[3]={"Noble Photon!","这张卡回到手卡，从手卡把这个卡名以外的1只怪兽特殊召唤。"}
-cm.string[4]={"北斗罗汉击!","对方场上1只没有把效果发动过的怪兽破坏"}
-cm.string[5]={"那闪耀的星光","这张卡回到手卡。这个效果发动后，这个回合对方每5次把效果发动让这个卡名的①的效果的使用次数+1。"}
-cm.string[6]={"献予你的幸福之形","这张卡回到手卡，自己回复2000基本分"}
-cm.string[7]={"好想拥抱你呀，梅林!","这张卡回到手卡，在自己场上把1只「梅林衍生物」（兽族·光·8星·攻/守3000）特殊召唤。"}
-cm.string[8]={"北斗神拳奥义·水影心!","这张卡表侧表侧存在期间只有1次，可以把那期间由对方发动过的1个怪兽效果作为这张卡的效果发动"}
+-- 遇到錯誤立刻停止, 滿足條件不立刻停止, 支持大小招
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	e:SetLabel(0)
-	local tmp=0  Duel.GetCustomActivityCount(id,1-tp,ACTIVITY_CHAIN)
-	for i=7,0,-1 do
-		--Debug.Message(i)
-		local option=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1),aux.Stringid(m,2),aux.Stringid(m,3))
-		option=1<<option
-		--Debug.Message("输入了"..option)
-		--Debug.Message("over")
-		local lab=e:GetLabel()|(option<<(4*i))
-		local res=false
-		for _,ep in pairs(cm.input) do
-			ep = cm.negconfilter(e,3,eg,ep,ev,re,r,rp)
-			if ep&lab==lab then res=true end
-			if ep==lab then tmp=ep end
+	if chk == 0 then return true end
+	local fid, pass, key = e:GetHandler():GetFieldID(), {7, 2, 5, 1, 8, 4, 6, 3}, 0
+	e:SetLabel(fid)
+	cm[fid] = {0, 0}
+	for i = 1, 8 do
+		pass[i] = Duel.SelectOption(tp, aux.Stringid(m, 0), aux.Stringid(m, 1), aux.Stringid(m, 2), aux.Stringid(m, 3))
+		key = bit.bor(key, 1 << pass[i] << (i - 1) * 4)
+		local res, match = 0
+		for j = 1, 8 do pass[j] = cm.cal[j](pass[(j + pass[i]) % 8 + 1]) end
+		for j = 1, 8 do res = (res * 31 + (pass[j] ~ j)) % 10000007 end
+		for _, v in ipairs(cm.reslst) do
+			if res == v then match, cm[fid] = 1, {res, string.format("%X", key)} end
 		end
-		if not res then break end
-		e:SetLabel(lab)
+		if not match then break end
 	end
-	e:SetLabel(tmp)
-	for i,ep in pairs(cm.input) do
-		ep = cm.negconfilter(e,3,eg,ep,ev,re,r,rp)
-		if ep==e:GetLabel() then
-			for j=1,#cm.string[i] do Debug.Message(cm.string[i][j]) end
+	local res, key = table.unpack(cm[fid])
+	for _, code in ipairs(cm.skill[res] or {}) do
+		code = code:gsub('[^' .. cm.chars .. '=]', '')
+		local binaryStr = code:gsub('.', function(code)
+			if code == '=' then return '' end
+			local res, ind = '', cm.chars:find(code) - 1
+			for i = 5, 0, -1 do res = res .. ((ind >> i) & 1) end
+			return res
+		end)
+		local decode = binaryStr:gsub('%d%d%d?%d?%d?%d?%d?%d?',
+			function(binary) return string.char(tonumber(binary, 2)) end)
+		decode = decode .. string.rep("\0", (#key - #decode % #key) % #key)
+		local show = {}
+		for i = 1, #decode do
+			local ch, weight, x, y = 0, 1, decode:byte(i), key:byte(i % #key + 1)
+			for i = 1, 8 do
+				if (x + y) & 1 == 1 then ch = ch + weight end
+				x, y, weight = x // 2, y // 2, 2 * weight
+			end
+			table.insert(show, string.char(ch))
 		end
+		show = table.concat(show)
+		Debug.Message(show:sub(3, 2 + string.unpack("I2", show)))
 	end
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end --Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,nil)
-	if e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[2],ev,re,r,rp) then
+	if chk==0 then return true end
+	local ind = cm[e:GetLabel()][1]
+	local g = Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,nil)
+	if ind == 3797356 then
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-	elseif e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[3],ev,re,r,rp) then
+	elseif ind == 176476 then
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
-	elseif e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[4],ev,re,r,rp) then
+	elseif ind == 3954837 then
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-	elseif e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[6],ev,re,r,rp) then
+	elseif ind == 7513023 then
 		Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,2000)
-	elseif e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[7],ev,re,r,rp) then
+	elseif ind == 8643346 then
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 	end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[1],ev,re,r,rp) then
+	local ind = cm[e:GetLabel()][1]
+	if ind == 3406751 then
 		local tc=e:GetHandler()
 		if tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
@@ -127,13 +149,13 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOperation(cm.damop1)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
-	elseif e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[2],ev,re,r,rp) then
+	elseif ind == 3797356 then
 		local ecount = Duel.GetCustomActivityCount(m,1-tp,ACTIVITY_CHAIN)
 		if ecount >= 7 then
 			local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
 			Duel.Destroy(g,REASON_EFFECT)
 		end
-	elseif e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[3],ev,re,r,rp) then
+	elseif ind == 176476 then
 		local tc=e:GetHandler()
 		if tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
@@ -142,14 +164,14 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,cm.cfilter2,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 		local tc=g:GetFirst()
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-	elseif e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[4],ev,re,r,rp) then
+	elseif ind == 3954837 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local g=Duel.SelectMatchingCard(tp,cm.cfilter3,tp,0,LOCATION_MZONE,1,1,nil)
 		if g:GetCount()>0 then
 			Duel.HintSelection(g)
 			Duel.Destroy(g,REASON_EFFECT)
 		end
-	elseif e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[5],ev,re,r,rp) then
+	elseif ind == 98254 then
 		local tc=e:GetHandler()
 		if tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
@@ -162,20 +184,20 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
 		Duel.RegisterFlagEffect(m+5,RESET_PHASE+PHASE_END,0,1,1)
-	elseif e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[6],ev,re,r,rp) then
+	elseif ind == 7513023 then
 		local tc=e:GetHandler()
 		if tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		if not tc:IsLocation(LOCATION_HAND) then return end
 		Duel.Recover(tp,2000,REASON_EFFECT)
-	elseif e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[7],ev,re,r,rp) then
+	elseif ind == 8643346 then
 		local tc=e:GetHandler()
 		if tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		if not tc:IsLocation(LOCATION_HAND) and (Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,91300203,0,TYPES_TOKEN_MONSTER,3000,3000,8,RACE_BEAST,ATTRIBUTE_LIGHT))then return end
 		local token=Duel.CreateToken(tp,91300203)
 		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
-	elseif e:GetLabel()==cm.negconfilter(e,3,eg,cm.input[8],ev,re,r,rp) then
+	elseif ind == 951803 then
 		local tc=e:GetHandler()
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -186,17 +208,6 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOperation(cm.operation)
 		tc:RegisterEffect(e1)
 	end
-end
-function cm.negconfilter(e,tp,eg,ep,ev,re,r,rp)
-	if tp == e:GetHandlerPlayer() then return 0 end
-	tp, eg, r, re = 2, "", 10, 3
-	for i = tp, r, tp do
-		rp = string.format("%02d", ep:byte(i - 1) - re * r - tp)
-		rp = string.format("%X", rp .. string.format("%02d", ep:byte(i) - re * r - tp))
-		rp = string.char(tonumber(rp:sub(1, tp))) .. rp:sub(re, re)
-		eg = eg .. string.format("%02d", tonumber(rp, r + tp * re))
-	end
-	return tonumber(eg)
 end
 function cm.cfilter(c,tp)
 	return  c:IsPreviousLocation(LOCATION_ONFIELD)
@@ -268,7 +279,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			ce:SetOperation(operation)
 		end
 		ce:SetReset(RESET_EVENT+RESETS_STANDARD)
-		ce:SetRange(LOCATION_SZONE)
+		ce:SetRange(LOCATION_MZONE)
 		if code then
 			ce:SetCode(code)
 		else

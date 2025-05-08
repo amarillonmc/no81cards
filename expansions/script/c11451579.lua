@@ -23,6 +23,7 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,1))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetValue(11451480)
 	e2:SetCountLimit(1)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
 	e2:SetCondition(cm.con)
@@ -51,7 +52,7 @@ function cm.check(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Group.CreateGroup()
 	for tc in aux.Next(eg) do
 		local te=tc:GetReasonEffect()
-		if te and (te:GetOwner():IsOriginalSetCard(0x97f) or te:GetValue()==11451480) and tc:IsReason(REASON_EFFECT) then return end
+		if te and te:GetValue()==11451480 and tc:IsReason(REASON_EFFECT) then return end
 		if tc:GetReasonPlayer()==0 and tc:GetControler()==0 then
 			g1:AddCard(tc)
 		elseif tc:GetReasonPlayer()==1 and tc:GetControler()==1 then

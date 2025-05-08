@@ -58,8 +58,8 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:RandomSelect(tp,ct)
 		Duel.ConfirmCards(tp,sg)
 		local tc=sg:GetFirst()
-		for tc in aux.Next(g) do
---			if VHisc_HDST.nck(tc) then Duel.Destroy(tc,REASON_EFFECT) end
+		for tc in aux.Next(sg) do
+--		  if VHisc_HDST.nck(tc) then Duel.Destroy(tc,REASON_EFFECT) end
 			if not VHisc_HDST.codeck(VHisc_STCN,tc) then
 				local code=tc:GetOriginalCode()
 				sg:Remove(s.fgfilter,nil,code)

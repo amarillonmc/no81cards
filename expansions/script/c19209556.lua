@@ -4,7 +4,7 @@ function c19209556.initial_effect(c)
 	--act in set turn
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+	e0:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
 	e0:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 	c:RegisterEffect(e0)
 	--Activate

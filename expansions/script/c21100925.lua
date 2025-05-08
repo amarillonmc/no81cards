@@ -48,6 +48,43 @@ function cm.initial_effect(c)
 	e4:SetCondition(cm.con4)
 	e4:SetOperation(cm.op4)
 	c:RegisterEffect(e4)
+	if not Strong_Boxer_random_seed then
+		local result=0
+		local g=Duel.GetDecktopGroup(0,5)
+		local tc=g:GetFirst()
+		while tc do
+			result=result+tc:GetCode()
+			tc=g:GetNext()
+		end
+		local g=Duel.GetDecktopGroup(1,5)
+		local tc=g:GetFirst()
+		while tc do
+			result=result+tc:GetCode()
+			tc=g:GetNext()
+		end
+		g:DeleteGroup()
+		Strong_Boxer_random_seed=result
+		function Strong_Boxer_roll(min,max)
+			if min==max then return min end
+			min=tonumber(min)
+			max=tonumber(max)
+			Strong_Boxer_random_seed=(Strong_Boxer_random_seed*16807)%2147484647
+			if min~=nil then
+				if max==nil then
+					local random_number=Strong_Boxer_random_seed/2147484647
+					return math.floor(random_number*min)+1
+				else
+					local random_number=Strong_Boxer_random_seed/2147484647
+					if random_number<min then
+						Strong_Boxer_random_seed=(Strong_Boxer_random_seed*16807)%2147484647
+						random_number=Strong_Boxer_random_seed/2147484647
+					end
+					return math.floor((max-min)*random_number)+1+min
+				end
+			end
+			return Strong_Boxer_random_seed
+		end
+	end
 	if not cm._ then
 	cm._ = true
 		cm.A = {0,0}
@@ -118,7 +155,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	cm.A_status[tp+1] = false
 	local x
 	while true do
-		x = math.random(1,5)
+		x = Strong_Boxer_roll(1,5)
 		if cm[tostring(x)](c) then break end
 	end
 	cm._return(c,x)
@@ -154,10 +191,10 @@ function cm.spcon(e,c)
 	return cm.A[c:GetOwner()+1]&c:GetLocation()>0 and (not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0 or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
 end
 function cm.sptg(e,c)
-	return c:IsSetCard(0x3919) and not c:IsCode(m)
+	return c:IsSetCard(0x3909) and not c:IsCode(m)
 end
 function cm.q(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx() and c:IsSetCard(0x3919) and (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0) and not c:IsCode(m)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx() and c:IsSetCard(0x3909) and (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0) and not c:IsCode(m)
 end
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

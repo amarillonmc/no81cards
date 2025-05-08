@@ -35,7 +35,7 @@ function cm.filter(c)
 	local re=c:GetReasonEffect()
 	if not re then return false end
 	local rc=re:GetOwner()
-	if not (c:IsType(TYPE_MONSTER) and rc:IsOriginalSetCard(0xc976) and c:IsPreviousLocation(LOCATION_DECK)) then return false end
+	if not (c:IsType(TYPE_MONSTER) and re:GetValue()==11451910 and c:IsPreviousLocation(LOCATION_DECK)) then return false end
 	local b1=not c:IsLocation(LOCATION_HAND+LOCATION_REMOVED)
 	local b2=c:IsLocation(LOCATION_HAND) and (c:IsPublic() or not c:IsStatus(STATUS_TO_HAND_WITHOUT_CONFIRM))
 	local b3=c:IsLocation(LOCATION_REMOVED) and c:IsFaceup()

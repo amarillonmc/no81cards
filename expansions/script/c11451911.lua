@@ -56,13 +56,33 @@ function cm.pspcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.dfilter(c,lv)
-	return c:IsType(TYPE_PENDULUM) and c:GetLeftScale()<lv
+	return c:GetOriginalType()&TYPE_PENDULUM>0 and c:GetLeftScale()<lv
 end
 function cm.hfilter(c,lv)
-	return c:IsType(TYPE_PENDULUM) and c:GetLeftScale()>lv
+	return c:GetOriginalType()&TYPE_PENDULUM>0 and c:GetLeftScale()>lv
 end
-function cm.fselect(g,lv)
-	return g:IsExists(cm.dfilter,1,nil,lv) and g:IsExists(cm.hfilter,1,nil,lv) and g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)<=1
+function cm.lhfilter(c,pc)
+	local tp=pc:GetControler()
+	return Duel.GetMZoneCount(tp,c)>0
+end
+function cm.lefilter(c,pc)
+	local tp=pc:GetControler()
+	return Duel.GetLocationCountFromEx(tp,tp,c,TYPE_PENDULUM)>0
+end
+function cm.fselect(g,lv,lock1,lock2,c)
+	--if lock2 and not g:IsContains(lock2) then return false end
+	if lock1 and c:IsLocation(LOCATION_HAND) and not g:IsExists(cm.lhfilter,1,nil,c) then return false end
+	if lock1 and c:IsLocation(LOCATION_EXTRA) and not g:IsExists(cm.lefilter,1,nil,c) then return false end
+	return g:IsExists(cm.dfilter,1,nil,lv) and g:IsExists(cm.hfilter,1,nil,lv) and g:FilterCount(Card.IsLocation,nil,LOCATION_DECK)<=1 and g:FilterCount(Card.IsLocation,nil,LOCATION_ONFIELD)<=1
+end
+function cm.ffilter(c,lv,lock1,lock2,fil,pc)
+	if lock1 and c:IsLocation(LOCATION_HAND) and not cm.lhfilter(c,pc) then return false end
+	if lock1 and c:IsLocation(LOCATION_EXTRA) and not cm.lefilter(c,pc) then return false end
+	--if lock2 and not c==lock2 then return false end
+	return fil(c,lv)
+end
+function cm.IsOriginalType(c,typ)
+	return c:GetOriginalType()&typ>0
 end
 function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -131,7 +131,7 @@ function c75075610.cost7(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c75075610.filter7(c,tp)
-	return c:IsSetCard(0x5754) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true)
+	return c:IsSetCard(0x5754) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true) and c:IsType(TYPE_FIELD)
 end
 function c75075610.tg7(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75075610.filter7,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,tp) end
