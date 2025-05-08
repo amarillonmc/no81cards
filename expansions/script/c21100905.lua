@@ -114,7 +114,7 @@ function cm.initial_effect(c)
 		cm["2"] = function(_c) return _c:IsAbleToDeck() end
 		cm["3"] = function(_c) return _c:IsAbleToGrave() end
 		cm["4"] = function(_c) return _c:IsAbleToRemove() end
-		cm["5"] = function(_c) return _c:GetType()&TYPE_PENDULUM>0 and _c:IsAbleToExtra() end
+		cm["5"] = function(_c) return _c:IsAbleToExtra() end
 		cm._return = 
 			function(_c, _s) 
 				if _s == 1 then 
@@ -235,10 +235,10 @@ function cm.spcon(e,c)
 	return cm.A[c:GetOwner()+1]&c:GetLocation()>0 and (not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0 or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
 end
 function cm.sptg(e,c)
-	return c:IsSetCard(0x3909) and not c:IsCode(m)
+	return c:IsSetCard(0x3919) and not c:IsCode(m)
 end
 function cm.q(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx() and c:IsSetCard(0x3909) and (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0) and not c:IsCode(m)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx() and c:IsSetCard(0x3919) and (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0) and not c:IsCode(m)
 end
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

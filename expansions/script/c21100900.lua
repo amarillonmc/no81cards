@@ -57,8 +57,8 @@ function cm.initial_effect(c)
 		for i = 1, globetrot.x do
 			globetrot.pair[i] = {}
 			globetrot.pair[i]["first"] = i
-			globetrot.pair[i]["second"] = 0	
-		end		
+			globetrot.pair[i]["second"] = 0 
+		end	 
 		function globetrot.quick_sort(start, last)
 			local left, right = start, last
 			if left < right then
@@ -101,7 +101,7 @@ function cm.initial_effect(c)
 			globetrot.quick_sort(1, globetrot.x)
 			if s <= 3 and res ~= globetrot.pair[1]["first"] and globetrot.pair[globetrot.x]["second"] - globetrot.pair[1]["second"] > 1 then
 				res = globetrot.pair[1]["first"]
-			end			
+			end		 
 			return res
 		end
 	end
@@ -114,7 +114,7 @@ function cm.initial_effect(c)
 		cm["2"] = function(_c) return _c:IsAbleToDeck() end
 		cm["3"] = function(_c) return _c:IsAbleToGrave() end
 		cm["4"] = function(_c) return _c:IsAbleToRemove() end
-		cm["5"] = function(_c) return _c:GetType()&TYPE_PENDULUM>0 and _c:IsAbleToExtra() end
+		cm["5"] = function(_c) return _c:IsAbleToExtra() end
 		cm._return = 
 			function(_c, _s) 
 				if _s == 1 then 
@@ -130,12 +130,12 @@ function cm.initial_effect(c)
 				elseif _s == 2 then
 					Duel.SendtoDeck(_c,_c:GetOwner(),2,REASON_EFFECT)
 					Duel.ConfirmCards(1-_c:GetOwner(),_c)
-					if cm.A[_c:GetOwner()+1]&LOCATION_DECK==0 then 	
+					if cm.A[_c:GetOwner()+1]&LOCATION_DECK==0 then  
 						cm.A_string[_c:GetOwner()+1] = cm.A_string[_c:GetOwner()+1].." 卡组"
 						Debug.Message("「环球旅行家 紫菠萝」已记录「卡组」")
 						Debug.Message(cm.A_string[_c:GetOwner()+1])
 					end
-					cm.A[_c:GetOwner()+1] = cm.A[_c:GetOwner()+1] | LOCATION_DECK	
+					cm.A[_c:GetOwner()+1] = cm.A[_c:GetOwner()+1] | LOCATION_DECK   
 				elseif _s == 3 then
 					Duel.SendtoGrave(_c,REASON_EFFECT)
 					if cm.A[_c:GetOwner()+1]&LOCATION_GRAVE==0 then 
@@ -144,7 +144,7 @@ function cm.initial_effect(c)
 						Debug.Message(cm.A_string[_c:GetOwner()+1])
 					end
 					cm.A[_c:GetOwner()+1] = cm.A[_c:GetOwner()+1] | LOCATION_GRAVE
-				elseif _s == 4 then	
+				elseif _s == 4 then 
 					Duel.Remove(_c,POS_FACEUP,REASON_EFFECT)
 					if cm.A[_c:GetOwner()+1]&LOCATION_REMOVED==0 then 
 						cm.A_string[_c:GetOwner()+1] = cm.A_string[_c:GetOwner()+1].." 除外"
@@ -152,10 +152,10 @@ function cm.initial_effect(c)
 						Debug.Message(cm.A_string[_c:GetOwner()+1])
 					end
 					cm.A[_c:GetOwner()+1] = cm.A[_c:GetOwner()+1] | LOCATION_REMOVED
-				elseif _s == 5 then	
+				elseif _s == 5 then 
 					Duel.SendtoExtraP(_c,_c:GetOwner(),REASON_EFFECT)
 					if cm.A[_c:GetOwner()+1]&LOCATION_EXTRA==0 then 
-						cm.A_string[_c:GetOwner()+1] = cm.A_string[_c:GetOwner()+1].." 额外"						
+						cm.A_string[_c:GetOwner()+1] = cm.A_string[_c:GetOwner()+1].." 额外"					  
 						Debug.Message("「环球旅行家 紫菠萝」已记录「额外」")
 						Debug.Message(cm.A_string[_c:GetOwner()+1])
 					end
@@ -163,7 +163,7 @@ function cm.initial_effect(c)
 				end
 				cm.A_status[_c:GetOwner()+1] = true
 			end
-	end	
+	end 
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return cm.A_status[tp+1] and e:GetHandler():IsLocation(LOCATION_HAND+LOCATION_ONFIELD)
@@ -191,7 +191,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 				goto A
 				end
 			end
-		end			
+		end		 
 		if cm[tostring(x)](c) then 
 			for i = 1, globetrot.x do
 				if globetrot.pair[i]["first"] == x then
@@ -235,10 +235,10 @@ function cm.spcon(e,c)
 	return cm.A[c:GetOwner()+1]&c:GetLocation()>0 and (not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0 or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
 end
 function cm.sptg(e,c)
-	return c:IsSetCard(0x3909) and not c:IsCode(m)
+	return c:IsSetCard(0x3919) and not c:IsCode(m)
 end
 function cm.q(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx() and c:IsSetCard(0x3909) and (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0) and not c:IsCode(m)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx() and c:IsSetCard(0x3919) and (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0) and not c:IsCode(m)
 end
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
