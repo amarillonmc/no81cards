@@ -48,41 +48,60 @@ function cm.initial_effect(c)
 	e4:SetCondition(cm.con4)
 	e4:SetOperation(cm.op4)
 	c:RegisterEffect(e4)
-	if not Strong_Boxer_random_seed then
-		local result=0
-		local g=Duel.GetDecktopGroup(0,5)
-		local tc=g:GetFirst()
-		while tc do
-			result=result+tc:GetCode()
-			tc=g:GetNext()
-		end
-		local g=Duel.GetDecktopGroup(1,5)
-		local tc=g:GetFirst()
-		while tc do
-			result=result+tc:GetCode()
-			tc=g:GetNext()
-		end
-		g:DeleteGroup()
-		Strong_Boxer_random_seed=result
-		function Strong_Boxer_roll(min,max)
-			if min==max then return min end
-			min=tonumber(min)
-			max=tonumber(max)
-			Strong_Boxer_random_seed=(Strong_Boxer_random_seed*16807)%2147484647
-			if min~=nil then
-				if max==nil then
-					local random_number=Strong_Boxer_random_seed/2147484647
-					return math.floor(random_number*min)+1
-				else
-					local random_number=Strong_Boxer_random_seed/2147484647
-					if random_number<min then
-						Strong_Boxer_random_seed=(Strong_Boxer_random_seed*16807)%2147484647
-						random_number=Strong_Boxer_random_seed/2147484647
+	if not _globetrot then
+		_globetrot=true
+		globetrot = {}
+		globetrot.x = 5
+		globetrot.pair = {}
+		for i = 1, globetrot.x do
+			globetrot.pair[i] = {}
+			globetrot.pair[i]["first"] = i
+			globetrot.pair[i]["second"] = 0	
+		end		
+		function globetrot.quick_sort(start, last)
+			local left, right = start, last
+			if left < right then
+				while left < right do
+					while globetrot.pair[left]["second"] <= globetrot.pair[start]["second"] and left < last do
+						left = left + 1
 					end
-					return math.floor((max-min)*random_number)+1+min
+					while globetrot.pair[right]["second"] >= globetrot.pair[start]["second"] and right > start do
+						right = right - 1
+					end
+					if left < right then
+						local _first = globetrot.pair[left]["first"]
+						local _second = globetrot.pair[left]["second"]
+						globetrot.pair[left]["first"] = globetrot.pair[right]["first"]
+						globetrot.pair[left]["second"] = globetrot.pair[right]["second"]
+						globetrot.pair[right]["first"] = _first
+						globetrot.pair[right]["second"] = _second
+					else
+						break
+					end
 				end
+				local _first = globetrot.pair[start]["first"]
+				local _second = globetrot.pair[start]["second"]
+				globetrot.pair[start]["first"] = globetrot.pair[right]["first"]
+				globetrot.pair[start]["second"] = globetrot.pair[right]["second"]
+				globetrot.pair[right]["first"] = _first
+				globetrot.pair[right]["second"] = _second
+				globetrot.quick_sort(start, right - 1)
+				globetrot.quick_sort(right + 1, last)
 			end
-			return Strong_Boxer_random_seed
+		end
+		
+		function globetrot.random(seed,num)
+			local s = num or 0
+			seed = math.floor(math.abs(seed))
+			seed = (seed * 16807) % 2147483647
+			local n = seed % 5
+			n = (n < 0) and (n + 5) or n
+			local res = n + 1
+			globetrot.quick_sort(1, globetrot.x)
+			if s <= 3 and res ~= globetrot.pair[1]["first"] and globetrot.pair[globetrot.x]["second"] - globetrot.pair[1]["second"] > 1 then
+				res = globetrot.pair[1]["first"]
+			end			
+			return res
 		end
 	end
 	if not cm._ then
@@ -155,8 +174,16 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	cm.A_status[tp+1] = false
 	local x
 	while true do
-		x = Strong_Boxer_roll(1,5)
-		if cm[tostring(x)](c) then break end
+		x = Duel.GetRandomNumber(1,5)
+		x = globetrot.random(x)
+		if cm[tostring(x)](c) then 
+			for i = 1, globetrot.x do
+				if globetrot.pair[i]["first"] == x then
+					globetrot.pair[i]["second"] = globetrot.pair[i]["second"] + 1
+				end
+			end
+			break
+		end
 	end
 	cm._return(c,x)
 	return false
