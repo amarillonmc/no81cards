@@ -178,6 +178,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 		x = Duel.GetRandomNumber(1,5)
 		x = globetrot.random(x)
 		if globetrot.g > 5 then
+		globetrot.g = 0
 			while true do
 				x = Duel.GetRandomNumber(1,5)
 				if cm[tostring(x)](c) then
