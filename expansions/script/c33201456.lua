@@ -55,6 +55,7 @@ end
 function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) then Duel.SendtoGrave(c,REASON_RULE) return end
 	if c:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsControler(1-tp) and tc:IsRelateToEffect(e) then
 		if not Duel.Equip(tp,c,tc) then return end
 		--equip limit

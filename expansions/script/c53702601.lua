@@ -30,21 +30,29 @@ function s.GetOriginalCode(card_object)
 	return nil -- 未找到
 end
 function s.LostLink(c)
-	if AD_LostLink_check then return end
-	AD_LostLink_check=true
+	--if AD_LostLink_check then return end
+	--AD_LostLink_check=true
 	local markers={0x1,0x2,0x4,0x8,0x20,0x40,0x80,0x100}
+	local _GetLink=Card.GetLink
+	local _IsLink=Card.IsLink
+	local _IsLinkAbove=Card.IsLinkAbove
+	local _IsLinkBelow=Card.IsLinkBelow
 	Card.GetLink=function(sc)
+		if c~=sc or not sc:IsLocation(LOCATION_MZONE) then return _GetLink(sc) end
 		return s.NumNumber(sc:GetLinkMarker(),markers)
 	end
 	Card.IsLink=function(sc,...)
+		if c~=sc or not sc:IsLocation(LOCATION_MZONE) then return _IsLink(sc,...) end
 		local t={...}
 		for _,v in ipairs(t) do if s.NumNumber(sc:GetLinkMarker(),markers)==v then return true end end
 		return false
 	end
 	Card.IsLinkAbove=function(sc,link)
+		if c~=sc or not sc:IsLocation(LOCATION_MZONE) then return _IsLinkAbove(sc,link) end
 		if s.NumNumber(sc:GetLinkMarker(),markers)>=link then return true else return false end
 	end
 	Card.IsLinkBelow=function(sc,link)
+		if c~=sc or not sc:IsLocation(LOCATION_MZONE) then return _IsLinkBelow(sc,link) end
 		if s.NumNumber(sc:GetLinkMarker(),markers)<=link then return true else return false end
 	end
 end

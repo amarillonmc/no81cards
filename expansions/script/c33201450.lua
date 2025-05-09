@@ -36,7 +36,7 @@ end
 
 -------------code check------------------
 function VHisc_HDST.nck(c)
-	return c.VHisc_hdst or (VHisc_HDST.global_check and VHisc_HDST.codeck(VHisc_STCN,c))
+	return c.VHisc_hdst or (VHisc_HDST.global_check and VHisc_HDST.codeck(VHisc_STCN,c)) or c:GetFlagEffect(33201450)>0
 end
 
 
