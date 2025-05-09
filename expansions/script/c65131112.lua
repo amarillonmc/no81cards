@@ -32,7 +32,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_HAND,0,1,1,nil)
 	if g:GetCount()>0 then
 		local dc=g:GetFirst()
-		if Duel.SSet(tp,dc,tp,false)==0 then return end	 
+		if Duel.SSet(tp,dc,tp,false)==0 then return end  
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetDescription(aux.Stringid(id,2))
@@ -87,6 +87,6 @@ function s.reop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=te:GetHandler()
 	rc:CancelToGrave()
 	if Duel.SendtoHand(rc,tp,REASON_EFFECT)==0 then
-		rc:CancelToGrave(true)
+		rc:CancelToGrave(false)
 	end
 end

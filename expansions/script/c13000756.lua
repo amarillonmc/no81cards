@@ -4,6 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--xyz summon
 	c:EnableReviveLimit()
+	c:SetSPSummonOnce(m)
 	aux.AddXyzProcedureLevelFree(c,cm.mfilter,cm.xyzcheck,2,2,cm.ovfilter,aux.Stringid(m,0))
 	--change effect 
 	local e2=Effect.CreateEffect(c)
