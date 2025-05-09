@@ -1,4 +1,5 @@
 --方舟骑士团-年
+c29002020.named_with_Arknight=1
 function c29002020.initial_effect(c)
 	c:EnableReviveLimit()  
 	--special summon rule
@@ -18,17 +19,21 @@ function c29002020.initial_effect(c)
 	e2:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e2:SetValue(c29002020.splimit)
 	c:RegisterEffect(e2) 
+	--draw
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_DEFENSE_ATTACK)
+	e4:SetDescription(aux.Stringid(29002020,1))
+	e4:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetTargetRange(LOCATION_MZONE,0)
-	e4:SetTarget(c29002020.atktg)
-	e4:SetValue(1)
+	e4:SetCountLimit(1)
+	e4:SetCondition(c29002020.drcon)
+	e4:SetTarget(c29002020.drtg)
+	e4:SetOperation(c29002020.dract)
 	c:RegisterEffect(e4)
 	--indes
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(29002020,1))
+	e3:SetDescription(aux.Stringid(29002020,2))
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
@@ -47,6 +52,23 @@ function c29002020.initial_effect(c)
 		Duel.RegisterEffect(ge2,0)
 	end
 end
+--
+function c29002020.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
+end
+function c29002020.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c29002020.dract(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,1) then
+		local dc=Duel.DiscardHand(tp,Card.IsDiscardable,1,99,REASON_EFFECT+REASON_DISCARD,nil)
+		if dc>0 then
+			Duel.Draw(tp,dc,REASON_EFFECT)
+		end
+	end
+end
+--
 function c29002020.atktg(e,c)
 	return c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end

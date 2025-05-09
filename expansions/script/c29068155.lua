@@ -53,5 +53,5 @@ function c29068155.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --e3
 function c29068155.tgtg(e,c)
-	return c~=e:GetHandler()
+	return c~=e:GetHandler() and c:IsSetCard(0x87af)
 end
