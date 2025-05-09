@@ -29,7 +29,7 @@ function cm.ffilter(c,c2)
 end
 function cm.filter(c,e,g)
 	local g2=g:Filter(cm.ffilter, nil,c)
-	return c:IsCanBeEffectTarget(e) and #g2>0
+	return c:IsCanBeEffectTarget(e) and g2 and #g2>0
 end
 function cm.filter2(c)
 	return c:IsType(TYPE_EQUIP) and not c:IsForbidden() and aux.IsCodeListed(c, yr)
@@ -42,7 +42,7 @@ function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.GetMatchingGroup(cm.filter,tp,QY_gs,QY_gs,nil,e,g)
 	-- local g3=Duel.GetMatchingGroup(cm.filter2,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,nil)
 	-- local g4=Duel.GetMatchingGroup(cm.filter,tp,QY_gs,QY_gs,nil,e,g3)
-	return #g2>0 or (Duel.GetTurnPlayer()==e:GetHandlerPlayer() and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil))
+	return g2 and #g2>0 or (Duel.GetTurnPlayer()==e:GetHandlerPlayer() and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil))
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
@@ -57,7 +57,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.GetMatchingGroup(cm.filter2,tp,oc,0,nil)
 	local g2=Duel.GetMatchingGroup(cm.filter,tp,QY_gs,QY_gs,nil,e,g)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and g:IsContains(chkc) end
-	if chk==0 then return #g2>0 end
+	if chk==0 then return g2 and #g2>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	Duel.SelectTarget(tp,cm.filter3,tp,QY_gs,QY_gs,1,1,nil,g2)
 end
@@ -75,7 +75,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter5(c,e,tp)
-	return c:IsType(TYPE_SPELL + TYPE_EQUIP) and c:IsAbleToDeck()
+	return c:IsAbleToDeck()
 end
 function cm.filter6(c,e,tp)
 	return c:IsType(TYPE_EQUIP) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
