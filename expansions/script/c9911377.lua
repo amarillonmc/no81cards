@@ -35,7 +35,7 @@ function c9911377.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=eg:Filter(Card.IsLocation,nil,LOCATION_GRAVE+LOCATION_REMOVED)
 	if #tg>0 then
 		for tc in aux.Next(tg) do
-			tc:RegisterFlagEffect(9911379,RESET_EVENT+RESETS_STANDARD,0,1)
+			tc:RegisterFlagEffect(9911379,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910212,0))
 		end
 	end
 end
