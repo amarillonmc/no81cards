@@ -21,6 +21,31 @@ function Auxiliary.PreloadUds()
 	effect_registered=effect_registered or {}
 	require_list=require_list or {}
 	
+	if not loadfile and Card.CopyEffect then
+		function loadfile(str)
+			require_list=require_list or {}
+			local name=nil
+			for word in string.gmatch(str,"%d+") do
+				name=word
+			end
+			if not name then error("调用了文件名不为卡号的库。",2) return end
+			return function()
+						local g=Duel.GetFieldGroup(0,0xff,0xff)
+						if #g>0 then
+							local cid=g:GetFirst():CopyEffect(name,RESET_CHAIN)
+							g:GetFirst():ResetEffect(cid,RESET_COPY)
+						end
+					end
+		end
+		function dofile(str)
+			local f=loadfile(str)
+			if f then f() end
+		end
+		function require(str)
+			local f=loadfile(str)
+			if f then f() end
+		end
+	end
 	if not require and loadfile then
 		function require(str)
 			require_list=require_list or {}
@@ -84,7 +109,7 @@ function Auxiliary.PreloadUds()
 		function dofile(str)
 			require_list=require_list or {}
 			local name=str
-			for word in string.gmatch(str,"%w+") do
+			for word in string.gmatch(str,"[%w+%.+]") do
 				name=word
 			end
 			if not require_list[str] then
@@ -95,7 +120,7 @@ function Auxiliary.PreloadUds()
 		function loadfile(str)
 			require_list=require_list or {}
 			local name=str
-			for word in string.gmatch(str,"%w+") do
+			for word in string.gmatch(str,"[%w+%.+]") do
 				name=word
 			end
 			return function()
@@ -106,7 +131,7 @@ function Auxiliary.PreloadUds()
 					end
 		end
 	end
-	
+
 	local release_set={"CheckReleaseGroup","SelectReleaseGroup"}
 	local release_set2={"CheckReleaseGroupEx","SelectReleaseGroupEx"}
 	--(p,f,ct,exc) (p,f,min,max,exc)
@@ -295,6 +320,12 @@ function Auxiliary.PreloadUds()
 			c:SetStatus(0x100,false)
 		end
 		return res
+	end
+
+	local _Draw=Duel.Draw
+	function Duel.Draw(p,ct,...)
+		if ct<=0 then return 0 end
+		return _Draw(p,ct,...)
 	end
 	
 	--From REIKAI
