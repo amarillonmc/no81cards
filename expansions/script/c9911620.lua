@@ -54,8 +54,8 @@ function c9911620.dsop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9911620,0))
 	local g1=g:SelectSubGroup(tp,c9911620.fselect,false,2,2,eg)
 	if not g1 or #g1~=2 then return end
-	Duel.ConfirmCards(tp,g1)
-	Duel.ConfirmCards(1-tp,g1)
+	if g1:IsExists(Card.IsFaceup,1,nil) then Duel.HintSelection(g1) end
+	if g1:IsExists(Card.IsFacedown,1,nil) then Duel.ConfirmCards(1-tp,g1) end
 	local lv1=g1:GetFirst():GetLevel()
 	local lv2=g1:GetNext():GetLevel()
 	if lv1>lv2 then lv1,lv2=lv2,lv1 end

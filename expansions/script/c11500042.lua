@@ -356,10 +356,10 @@ function s.initial_effect(c)
 				end
 				return rz
 			else
-				return _SelectDisableField(tp,count,s,o,filter)
+				return _SelectDisableField(tp,count,sl,ol,filter)
 			end
 		end
-		function Duel.SelectField(tp,count,sl,ol,filter)
+		function Duel.SelectField(tp,count,sl,ol,filter,...)
 			if Duel.IsPlayerAffectedByEffect(0,id) then
 				local zonet=0
 				if sl&LOCATION_SZONE>0 then
@@ -400,7 +400,7 @@ function s.initial_effect(c)
 				Debug.Message(rz)
 				return rz
 			else
-				return _SelectField(tp,count,s,o,filter)
+				return _SelectField(tp,count,sl,ol,filter,...)
 			end   
 		end
 		local _AnnounceAttribute=Duel.AnnounceAttribute
@@ -544,7 +544,7 @@ function s.roll(min,max)
 		for i=0,10 do
 			result=result+(ct[g:RandomSelect(2,1):GetFirst()]<<(3*i))
 		end
-		s.r=result&0xffffffff	   
+		s.r=result&0xffffffff	  
 	end
 	min=tonumber(min)
 	max=tonumber(max)

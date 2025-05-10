@@ -50,9 +50,10 @@ function c9911619.conop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_HAND+LOCATION_ONFIELD,loc)
 	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9911619,0))
-	local tc=g:Select(tp,1,1,nil):GetFirst()
-	Duel.ConfirmCards(tp,tc)
-	Duel.ConfirmCards(1-tp,tc)
+	local sg=g:Select(tp,1,1,nil)
+	local tc=sg:GetFirst()
+	if tc:IsFaceup() then Duel.HintSelection(sg)
+	else Duel.ConfirmCards(1-tc:GetControler(),tc) end
 	local code=tc:GetOriginalCode()
 	if code==9911601 or code==9911614 then
 		if Duel.SelectYesNo(tp,aux.Stringid(9911619,1)) then

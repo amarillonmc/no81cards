@@ -45,8 +45,10 @@ end
 function c9911435.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,9910871) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local tc=Duel.SelectMatchingCard(tp,Card.IsCode,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,9910871):GetFirst()
-	Duel.ConfirmCards(1-tp,tc)
+	local g=Duel.SelectMatchingCard(tp,Card.IsCode,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,9910871)
+	local tc=g:GetFirst()
+	if tc:IsFaceup() then Duel.HintSelection(g)
+	else Duel.ConfirmCards(1-tp,tc) end
 end
 function c9911435.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
