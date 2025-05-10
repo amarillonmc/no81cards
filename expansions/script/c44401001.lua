@@ -49,10 +49,14 @@ function c44401001.rmop(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsExistingMatchingCard(c44401001.thfilter,tp,LOCATION_REMOVED,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(44401001,0)) then
 		--to hand
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tg=Duel.SelectMatchingCard(tp,c44401001.thfilter,tp,LOCATION_REMOVED,0,1,1,nil)
-		Duel.SendtoHand(tg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tg)
+		local tg=Duel.GetMatchingGroup(c44401001.thfilter,tp,LOCATION_REMOVED,0,nil)
+		local tc=tg:GetFirst()
+		if #tg>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			tc=tg:Select(tp,1,1,nil):GetFirst()
+		end
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
 	end
 end
 function c44401001.runcon(e,tp,eg,ep,ev,re,r,rp)
