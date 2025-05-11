@@ -58,7 +58,7 @@ function c9910080.rmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910080.tdfilter(c,att)
-	return c:IsType(TYPE_MONSTER) and c:IsAttribute(att) and c:IsAbleToDeck()
+	return c:IsFaceup() and c:IsAttribute(att) and c:IsAbleToDeck()
 end
 function c9910080.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
