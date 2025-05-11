@@ -8,12 +8,16 @@ function c91300021.initial_effect(c)
 	e1:SetTarget(c91300021.sttg)
 	e1:SetOperation(c91300021.stop)
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e2:SetCode(EVENT_LEAVE_FIELD_P)
-	e2:SetOperation(c91300021.ndop)
-	c:RegisterEffect(e2)
+	if not c91300021.global_check then
+		c91300021.global_check=true
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		ge2:SetCode(EVENT_CHAIN_SOLVED)
+		ge2:SetCondition(c91300021.ndcon)
+		ge2:SetOperation(c91300021.ndop)
+		Duel.RegisterEffect(ge2,tp)
+	end
 end
 function c91300021.stcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 and not Duel.CheckPhaseActivity()
@@ -52,6 +56,10 @@ function c91300021.stop(e,tp,eg,ep,ev,re,r,rp,chk)
 	e4:SetTargetRange(1,0)
 	e4:SetReset(RESET_PHASE+PHASE_MAIN1+RESET_SELF_TURN)
 	Duel.RegisterEffect(e4,tp)
+	Duel.RegisterFlagEffect(tp,91300021,RESET_PHASE+PHASE_BATTLE,0,1)
+end
+function c91300021.ndcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(tp,91300021)~=0
 end
 function c91300021.ndop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
