@@ -54,7 +54,7 @@ end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
 	local g=Duel.GetMatchingGroup(s.exfilter,tp,0,LOCATION_HAND,nil)
-	if g:GetCount()>0 and ct then
+	if ct and g:GetCount()>=ct then
 		local sg=g:RandomSelect(tp,ct)
 		Duel.ConfirmCards(tp,sg)
 		local tc=sg:GetFirst()
