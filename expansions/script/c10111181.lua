@@ -2,19 +2,19 @@ function c10111181.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunFun(c,c10111181.f1filter,c10111181.f2filter,1,true)
 	aux.AddContactFusionProcedure(c,c10111181.cfilter,LOCATION_MZONE+LOCATION_GRAVE,0,aux.tdcfop(c))
-	--negate
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(10111181,0))
-	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1,10111181)
-	e1:SetCondition(c10111181.condition)
-	e1:SetTarget(c10111181.target)
-	e1:SetOperation(c10111181.operation)
-	c:RegisterEffect(e1)
+    --negate
+    local e1=Effect.CreateEffect(c)
+    e1:SetDescription(aux.Stringid(10111181,0))
+    e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY+CATEGORY_RECOVER)
+    e1:SetType(EFFECT_TYPE_QUICK_O)
+    e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+    e1:SetCode(EVENT_CHAINING)
+    e1:SetRange(LOCATION_MZONE)
+    e1:SetCountLimit(1,10111181)
+    e1:SetCondition(c10111181.condition)
+    e1:SetTarget(c10111181.target)
+    e1:SetOperation(c10111181.operation)
+    c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(10111181,1))
@@ -34,12 +34,19 @@ end
 function c10111181.f2filter(c)
 	return c:IsSetCard(0x1185) and c:IsLevel(8)
 end
-function c10111181.cfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsAbleToDeckOrExtraAsCost()
+-- 新增涂鸦兽字段检查函数
+function c10111181.fieldfilter(c)
+    return c:IsSetCard(0x1185) and c:IsFaceup() and not c:IsCode(10111181)
 end
+
+-- 修改后的发动条件
 function c10111181.condition(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
+    local c=e:GetHandler()
+    return rp==1-tp 
+        and re:IsActiveType(TYPE_MONSTER)
+        and Duel.IsExistingMatchingCard(c10111181.fieldfilter,tp,LOCATION_MZONE,0,1,nil) -- 新增字段检查
+        and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+        and Duel.IsChainNegatable(ev)
 end
 function c10111181.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
