@@ -11,6 +11,37 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.tg1)
 	e1:SetOperation(cm.op1)
 	c:RegisterEffect(e1)
+	--to hand
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetCategory(CATEGORY_TOHAND)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_ATTACK_ANNOUNCE)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,m+1)
+	e2:SetTarget(cm.thtg)
+	e2:SetOperation(cm.thop)
+	c:RegisterEffect(e2)
+end
+--e2
+function cm.thfilter(c,g)
+	return c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and g:IsContains(c)
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local cg=e:GetHandler():GetColumnGroup()
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,0,LOCATION_ONFIELD,1,nil,cg) end
+	local g=Duel.GetMatchingGroup(cm.thfilter,tp,0,LOCATION_ONFIELD,nil,cg)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local cg=c:GetColumnGroup()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		local g=Duel.GetMatchingGroup(cm.thfilter,tp,0,LOCATION_ONFIELD,nil,cg)
+		if g:GetCount()>0 then
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
+		end
+	end
 end
 --e1
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -25,7 +56,7 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,3):Filter(Card.IsAttribute,nil,ATTRIBUTE_LIGHT)
 	local sg=Duel.GetMatchingGroup(cm.opf1,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
 	Duel.ShuffleDeck(tp)
-	if #g>0 and #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(6459419,1)) then
+	if #g>0 and #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(29039869,1)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
