@@ -47,6 +47,42 @@ function s.initial_effect(c)
 	e2:SetValue(s.repval)
 	e2:SetOperation(s.repop)
 	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCode(id)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(1,0)
+	c:RegisterEffect(e3)
+	if not s.global_check then
+		s.global_check=true
+		local _DiscardDeck = Duel.DiscardDeck
+		
+		function Duel.DiscardDeck(p,v,r)
+			local g=Duel.GetDecktopGroup(p,v)
+			local eset={Duel.IsPlayerAffectedByEffect(p,id)}
+			for _,e in ipairs(eset) do
+				if s.reptg(e,p,g,p,0,self_reference_effect,r,p,0) then
+					local eg=g:Filter(s.repfilter,nil)
+					if #eg>0 then
+						Duel.ConfirmCards(p,eg)
+					end
+					local rg=s.reptg(e,p,g,p,0,self_reference_effect,r,p,id)
+					if aux.GetValueType(rg)=="Group" then
+						g:Sub(rg)
+						if #g>0 then
+							s.donotapply=true
+							local ct=Duel.SendtoGrave(g,r,self_reference_tp)
+							s.donotapply=false
+							Duel.Draw(p,1,REASON_EFFECT)
+							return ct
+						end
+					end
+				end
+			end
+			return _DiscardDeck(p,v,r)
+		end
+	end
 	if not s.MergedDelayedEventInfotable then
 		s.MergedDelayedEventInfotable={}
 		local ge1=Effect.GlobalEffect()
@@ -57,6 +93,8 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
+s.donotapply=false
+
 function s.resetop()
 	aux.ClearTableRecursive(s.MergedDelayedEventInfotable)
 end
@@ -100,28 +138,42 @@ end
 
 --E2
 function s.repfilter(c)
-	return not c:IsLocation(LOCATION_SZONE|LOCATION_DECK) and c:GetDestination()==LOCATION_GRAVE and (c:IsMonster() or c:IsLocation(LOCATION_MZONE))
-		and c:IsSetCard(ARCHE_BRAND_810) and c:IsAbleToDeck()
-		and (not c:IsOnField() or c:IsFaceup())
+	local deckchk=c:IsLocation(LOCATION_DECK)
+	local dest=c:GetDestination()
+	return not c:IsLocation(LOCATION_SZONE) and (dest==LOCATION_GRAVE or (deckchk and c:DestinationRedirect(LOCATION_GRAVE)==0)) and c:IsFaceupEx() and (c:IsMonster() or c:IsLocation(LOCATION_MZONE))
+		and c:IsSetCard(ARCHE_BRAND_810)
+		and (c:IsAbleToDeck() or deckchk)
 end
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return r&(REASON_BATTLE|REASON_EFFECT)>0 and eg:IsExists(s.repfilter,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
+	if chk==0 then return not s.donotapply and r&(REASON_BATTLE|REASON_EFFECT)>0 and eg:IsExists(s.repfilter,1,nil) and Duel.IsPlayerCanDraw(tp,1) end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler()) then
+		Duel.Hint(HINT_CARD,tp,id)
 		local c=e:GetHandler()
 		local g=eg:Filter(s.repfilter,nil)
 		local ct=#g
 		local fid=e:GetFieldID()
 		e:SetLabel(fid)
 		if ct>1 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			g=g:Select(tp,1,ct,nil)
 		end
-		for tc in aux.Next(g) do
-			tc:RegisterFlagEffect(FLAG_REDIRECTED,0,0,1,fid)
+		if chk~=id then
+			for tc in aux.Next(g) do
+				tc:RegisterFlagEffect(FLAG_REDIRECTED,0,0,1,fid)
+			end
 		end
 		local seq=#g==1 and SEQ_DECKBOTTOM or SEQ_DECKTOP
-		if Duel.SendtoDeck(g,nil,seq,REASON_EFFECT)>0 then
+		local dg=g:Filter(Card.IsLocation,nil,LOCATION_DECK)
+		if #dg>0 then
+			Duel.ConfirmCards(1-tp,dg)
+		end
+		local tg=g:Filter(aux.TRUE,dg)
+		Duel.HintSelection(tg)
+		local ct=Duel.SendtoDeck(tg,nil,seq,REASON_EFFECT)
+		if ct>0 or #dg>0 then
 			local rg=Duel.GetGroupOperatedByThisEffect(e):Filter(Card.IsLocation,nil,LOCATION_DECK)
+			local check=#rg==0
+			rg:Merge(dg)
 			if #rg>1 then
 				local og=rg:Filter(Card.IsLocation,nil,LOCATION_DECK)
 				local ct1=og:FilterCount(Card.IsControler,nil,tp)
@@ -144,11 +196,20 @@ function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 						Duel.MoveSequence(tc,SEQ_DECKBOTTOM)
 					end
 				end
+			elseif check then
+				local tc=rg:GetFirst()
+				Duel.MoveSequence(tc,SEQ_DECKBOTTOM)
 			end
-			Duel.Draw(tp,1,REASON_EFFECT)
+			if chk==id then
+				return rg
+			else
+				Duel.Draw(tp,1,REASON_EFFECT)
+			end
 		end
 		return true
-	else return false end
+	else
+		return false
+	end
 end
 function s.repval(e,c)
 	return c:HasFlagEffectLabel(FLAG_REDIRECTED,e:GetLabel())
