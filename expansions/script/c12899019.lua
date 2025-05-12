@@ -32,7 +32,7 @@ function s.initial_effect(c)
 	--search
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(1109)
-	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e4:SetCategory(CATEGORY_TOHAND)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_GRAVE)
 	e4:SetCountLimit(1,id)
@@ -83,15 +83,15 @@ end
 function s.thfilter(c)
 	local b1=c:IsAbleToHand() 
 	local b2=c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
-	return c:IsSetCard(0x6a71) and (b1 or b2)
+	return c:IsSetCard(0x6a71) and (b1 or b2) and c:IsFaceupEx()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_REMOVED,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_REMOVED)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_REMOVED,0,1,1,nil)
 	local tc=g:GetFirst()
 	local b1=tc:IsAbleToHand() 
 	local b2=tc:IsType(TYPE_SPELL+TYPE_TRAP) and tc:IsSSetable()
