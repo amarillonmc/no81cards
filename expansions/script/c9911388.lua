@@ -109,12 +109,14 @@ function c9911388.matop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(9911388,2))
 	Duel.ResetFlagEffect(tp,9911388)
+	e:Reset()
 end
 function c9911388.resetop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ResetFlagEffect(tp,9911389)
 	if re and e:GetLabelObject() and re==e:GetLabelObject() and Duel.GetFlagEffect(tp,9911390)~=0 then
 		Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(9911388,2))
 		Duel.ResetFlagEffect(tp,9911388)
+		e:Reset()
 	end
 end
 function c9911388.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
