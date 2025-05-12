@@ -37,7 +37,7 @@ function c75080018.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c75080018.lcheck(g,lc)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x758)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3754)
 end
 function c75080018.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
@@ -49,7 +49,7 @@ function c75080018.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(75080018)~=0
 end
 function c75080018.spfilter(c,e,tp,zone)
-	return c:IsSetCard(0x758) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
+	return c:IsSetCard(0x3754) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
 end
 function c75080018.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -84,5 +84,5 @@ function c75080018.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function c75080018.effectfilter(e,ct)
 	local te,tp=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return e:GetHandler():GetControler()==tp and te:GetHandler():IsSetCard(0x283)
+	return e:GetHandler():GetControler()==tp and te:GetHandler():IsSetCard(0x3754)
 end

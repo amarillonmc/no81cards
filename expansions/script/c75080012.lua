@@ -12,7 +12,7 @@ function c75080012.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c75080012.thfilter(c)
-	return c:IsSetCard(0x758) and c:IsAbleToHand()
+	return c:IsSetCard(0x3754) and c:IsAbleToHand()
 end
 function c75080012.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c75080012.thfilter(chkc) end
@@ -22,7 +22,7 @@ function c75080012.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,#g,0,0)
 end
 function c75080012.spfilter(c,e,tp)
-	return c:IsSetCard(0x758) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return c:IsSetCard(0x3754) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c75080012.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

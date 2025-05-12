@@ -1,0 +1,65 @@
+--朔望怀乡
+local s,id=GetID()
+function s.activate(c)
+    local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1)
+	e1:SetOperation(s.op)
+	c:RegisterEffect(e1)
+end
+function s.thfilter(c)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0x5ca0)
+		and c:IsAbleToHand()
+end
+function s.op(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
+	if g:GetCount()>0 and Duel.GetFlagEffect(tp,id)==0
+     and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
+        Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
+	end
+end
+function s.exsummon(c)
+    local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,1))
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
+	e1:SetRange(LOCATION_FZONE)
+	e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x5ca0))
+	c:RegisterEffect(e1)
+end
+function s.indes(c)
+    local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,2))
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetRange(LOCATION_GRAVE)
+	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+    e1:SetCountLimit(1,id)
+	e1:SetCost(aux.bfgcost)
+	e1:SetOperation(s.inop)
+	c:RegisterEffect(e1)
+end
+function s.inop(e,tp,eg,ep,ev,re,r,rp)
+    local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e1:SetTargetRange(LOCATION_ONFIELD,0)
+	e1:SetTarget(s.inlimit)
+	e1:SetValue(aux.tgoval)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function s.inlimit(e,c)
+	return c:IsFaceup() and c:IsRace(RACE_WYRM)
+end
+function s.initial_effect(c)
+	s.activate(c)
+    s.exsummon(c)
+    s.indes(c)
+end

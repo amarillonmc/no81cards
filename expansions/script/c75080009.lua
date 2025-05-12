@@ -21,7 +21,7 @@ function c75080009.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c75080009.spfilter(c,ft)
-	return c:IsFaceup() and c:IsSetCard(0x758) and c:IsAbleToHandAsCost()
+	return c:IsFaceup() and c:IsSetCard(0x3754) and c:IsAbleToHandAsCost()
 		and (ft>0 or c:GetSequence()<5)
 end
 function c75080009.spcon(e,c)

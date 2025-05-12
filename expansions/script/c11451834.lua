@@ -248,7 +248,7 @@ function cm.bfgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,1)
 end
 function cm.thfilter(c)
-	return c:IsAbleToHand() and c:IsSetCard(0x979)
+	return c:IsAbleToHand() and c:IsSetCard(0x1979)
 end
 function cm.actop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())

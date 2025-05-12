@@ -13,14 +13,14 @@ function c44401020.initial_effect(c)
 	e1:SetValue(c44401020.effectfilter)
 	c:RegisterEffect(e1)
 	--extra summon
-	local e2=Effect.CreateEffect(c)
+	--[[local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(44401020,1))
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
 	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa4a))
-	c:RegisterEffect(e2)
+	c:RegisterEffect(e2)]]--
 	--search
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(44401020,0))
@@ -61,7 +61,7 @@ end
 function c44401020.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and chkc:IsAbleToRemove() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_MZONE,0,1,nil)
-		 and Duel.IsExistingMatchingCard(c44401020.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil) end
+		 and Duel.IsExistingMatchingCard(c44401020.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil) and Duel.GetFlagEffect(tp,44401020) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,0,1,1,nil)
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401020,4))
@@ -72,6 +72,15 @@ function c44401020.gcheck(sg,tp)
 	return sg:FilterCount(Card.IsLocation,nil,LOCATION_DECK)<=1 and sg:FilterCount(Card.IsLocation,nil,LOCATION_REMOVED)<=1
 end
 function c44401020.thop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetDescription(aux.Stringid(44401020,1))
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
+	e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa4a))
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+	Duel.RegisterFlagEffect(tp,44401020,RESET_PHASE+PHASE_END,0,1)
 	local g=Duel.GetMatchingGroup(c44401020.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tg=g:SelectSubGroup(tp,c44401020.gcheck,false,1,2)

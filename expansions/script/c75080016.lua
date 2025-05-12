@@ -23,7 +23,7 @@ function c75080016.initial_effect(c)
 end
 function c75080016.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and chkc:IsAbleToHand() end
-	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,75080017,0x758,TYPES_TOKEN_MONSTER,0,0,4,RACE_WINDBEAST,ATTRIBUTE_WIND) and Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_MZONE,0,1,nil) and Duel.GetMZoneCount(tp)>0 end
+	if chk==0 then return Duel.IsPlayerCanSpecialSummonMonster(tp,75080017,0x3754,TYPES_TOKEN_MONSTER,0,0,4,RACE_WINDBEAST,ATTRIBUTE_WIND) and Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_MZONE,0,1,nil) and Duel.GetMZoneCount(tp)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
@@ -47,7 +47,7 @@ function c75080016.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c75080016.thfilter(c)
-	return c:IsSetCard(0x758) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x3754) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c75080016.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c75080016.thfilter,tp,LOCATION_DECK,0,1,nil)
@@ -62,7 +62,7 @@ function c75080016.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c75080016.cfilter(c)
-	return c:IsPreviousSetCard(0x758) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP)
+	return c:IsPreviousSetCard(0x3754) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP)
 end
 function c75080016.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c75080016.cfilter,1,nil)

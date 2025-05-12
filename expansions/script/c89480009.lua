@@ -21,6 +21,14 @@ function s.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SSET)
 	c:RegisterEffect(e3)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_CHANGE_POS)
+	e3:SetCondition(s.spcon2)
+	c:RegisterEffect(e3)
+	local e4=e2:Clone()
+	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e4:SetCondition(s.spcon2)
+	c:RegisterEffect(e4)
 end
 s.fusion_effect=true
 function s.filter1(c,e)
@@ -101,4 +109,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.spelimit(e,c)
 	return not c:IsRace(RACE_BEAST)
+end
+function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsFacedown,1,nil)
 end

@@ -97,12 +97,12 @@ function c75080001.thop(e,tp,eg,ep,ev,re,r,rp)
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_SINGLE)
 		e3:SetCode(EFFECT_ADD_SETCODE)
-		e3:SetValue(0x758)
+		e3:SetValue(0x3754)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		ac:RegisterEffect(e3)
 		ac:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,2,0,aux.Stringid(75080001,1))
 	end
 end
 function c75080001.splimit(e,c)
-	return not c:IsSetCard(0x758) and c:IsLocation(LOCATION_HAND)
+	return not c:IsSetCard(0x3754) and c:IsLocation(LOCATION_HAND)
 end

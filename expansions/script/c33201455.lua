@@ -11,7 +11,7 @@ function s.initial_effect(c)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DISABLE+CATEGORY_SPECIAL_SUMMON)
 	e1:SetLabel(0)
 	e1:SetCountLimit(1)
 	e1:SetTarget(s.tg)
@@ -55,7 +55,7 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetCode(EFFECT_CANNOT_TRIGGER)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e2)
-			Duel.Draw(tp,1,REASON_EFFECT)
 		end
 	end
+	if e:GetLabel()==1 then Duel.Draw(tp,1,REASON_EFFECT) end
 end

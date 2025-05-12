@@ -91,12 +91,14 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeChainOperation(ev,cm.repop)
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
+	if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_DISABLE)
 	e2:SetTargetRange(0,LOCATION_ONFIELD)
 	e2:SetTarget(cm.disable)
-	e2:SetReset(RESET_PHASE+PHASE_END)
+	e2:SetReset(RESET_PHASE+ph)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.disable(e,c)

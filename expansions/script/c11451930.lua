@@ -96,7 +96,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=g:SelectSubGroup(tp,cm.fselect,false,1,math.min(#g,ft),e,tp,ft1,ft2)
 		local tg=Group.CreateGroup()
-		if ft1>0 then --#sg>ft2 or (ft1>0 and not Duel.SelectYesNo(tp,aux.Stringid(m,6))) then
+		if #sg>ft2 or (ft1>0 and not Duel.SelectYesNo(tp,aux.Stringid(m,6))) then
 			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
 			sg=sg:Filter(cm.spfilter1,nil,e,tp,sg,ft1,ft2)
 			if #sg-ft2>0 then
@@ -114,12 +114,42 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP)
 		end
 		Duel.SpecialSummonComplete()
-		local g1=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,nil)
+		--[[local g1=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,nil)
 		if g1:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,5)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local sc=g1:Select(tp,1,1,nil):GetFirst()
 			Duel.SynchroSummon(tp,sc,nil)
+		end--]]
+		Duel.AdjustAll()
+		local tp=1-tp
+		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,nil,e,tp)
+		local ft1=Duel.GetMZoneCount(1-tp)
+		local ft2=Duel.GetMZoneCount(tp)
+		local ft=ft1+ft2
+		if (g:IsExists(cm.spfilter4,1,nil,e,tp) or (not Duel.IsPlayerAffectedByEffect(tp,59822133) and g:CheckSubGroup(cm.fselect,2,math.min(#g,ft),e,tp,ft1,ft2))) and Duel.SelectYesNo(tp,aux.Stringid(m,5)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sg=g:SelectSubGroup(tp,cm.fselect,false,1,math.min(#g,ft),e,tp,ft1,ft2)
+			local tg=Group.CreateGroup()
+			if #sg>ft2 or (ft1>0 and not Duel.SelectYesNo(tp,aux.Stringid(m,6))) then
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
+				sg=sg:Filter(cm.spfilter1,nil,e,tp,sg,ft1,ft2)
+				if #sg-ft2>0 then
+					tg=sg:Select(tp,1,math.min(#sg,ft1),nil)
+				else
+					tg=sg:CancelableSelect(tp,1,math.min(#sg,ft1),nil)
+				end
+				if not tg then tg=Group.CreateGroup() end
+				sg:Sub(tg)
+			end
+			for tc in aux.Next(tg) do
+				Duel.SpecialSummonStep(tc,0,tp,1-tp,false,false,POS_FACEUP)
+			end
+			for sc in aux.Next(sg) do
+				Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP)
+			end
+			Duel.SpecialSummonComplete()
 		end
 	end
 end

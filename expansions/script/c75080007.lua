@@ -76,7 +76,7 @@ function c75080007.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c75080007.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x758)
+	return c:IsFaceup() and c:IsSetCard(0x3754)
 end
 function c75080007.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c75080005.filter(chkc) end

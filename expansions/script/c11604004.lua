@@ -25,7 +25,7 @@ end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsSetCard(0x9224) and tc:IsType(TYPE_QUICKPLAY) and rp==tp  then
+		if tc:IsSetCard(0x9224) and tc:IsType(TYPE_QUICKPLAY)  then
 			if Duel.GetFlagEffect(rp,id)~=0 then
 				for _,i in ipairs{Duel.GetFlagEffectLabel(rp,id)} do
 					if i==tc:GetCode() then return end  
@@ -38,7 +38,7 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	local set={Duel.GetFlagEffectLabel(tp,id)}
-	return (#set)>=5 -- Duel.GetFlagEffect(e:GetHandlerPlayer(),id)>1 
+	return  (#set)>=5  -- Duel.GetFlagEffect(e:GetHandlerPlayer(),id)>1 
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end

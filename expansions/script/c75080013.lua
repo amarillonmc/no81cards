@@ -29,13 +29,13 @@ function c75080013.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c75080013.thcfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x758)
+	return c:IsFaceup() and c:IsSetCard(0x3754)
 end
 function c75080013.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c75080013.thcfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c75080013.thfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x758) and c:IsAbleToGrave()
+	return c:IsFaceup() and c:IsSetCard(0x3754) and c:IsAbleToGrave()
 end
 function c75080013.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end

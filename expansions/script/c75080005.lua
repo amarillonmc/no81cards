@@ -22,7 +22,7 @@ function c75080005.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c75080005.thfilter(c)
-	return c:IsSetCard(0x758) and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and c:IsAbleToHand()
+	return c:IsSetCard(0x3754) and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and c:IsAbleToHand()
 end
 function c75080005.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -69,7 +69,7 @@ function c75080005.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c75080005.filter(c)
-	return c:IsFaceup() and c:GetLevel()>0 and c:IsSetCard(0x758)
+	return c:IsFaceup() and c:GetLevel()>0 and c:IsSetCard(0x3754)
 end
 function c75080005.lvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c75080005.filter(chkc) end

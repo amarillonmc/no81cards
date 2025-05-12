@@ -19,6 +19,14 @@ function s.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SSET)
 	c:RegisterEffect(e3)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_CHANGE_POS)
+	e3:SetCondition(s.spcon2)
+	c:RegisterEffect(e3)
+	local e4=e2:Clone()
+	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e4:SetCondition(s.spcon2)
+	c:RegisterEffect(e4)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local e4=Effect.CreateEffect(e:GetHandler())
@@ -34,13 +42,8 @@ function s.cfilter(c,seq2)
 	return c:IsFaceup() and c:IsSetCard(0xc21) and c:IsType(TYPE_FUSION) and seq1==4-seq2
 end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
-	if loc==LOCATION_MZONE then
-		seq=aux.MZoneSequence(seq)
-	elseif bit.band(loc,LOCATION_SZONE)==LOCATION_SZONE then
-		seq=aux.SZoneSequence(seq)
-	else
-		return false
-	end
+	local loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
+	seq=aux.GetLocalColumn(loc,seq)
 	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not re:GetHandler():IsSetCard(0xc21) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil,seq)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
@@ -57,4 +60,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,c)
 	end
+end
+function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsFacedown,1,nil)
 end

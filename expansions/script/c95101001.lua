@@ -43,7 +43,7 @@ function c95101001.initial_effect(c)
 end
 function c95101001.splimit(e,c)
 	if not c then return false end
-	return not aux.IsCodeListed(c,95101001)
+	return aux.IsCodeListed(c,95101001)
 end
 function c95101001.costfilter(c,tp)
 	return aux.IsCodeListed(c,95101001) and c:IsFaceup() and Duel.GetMZoneCount(tp,c)>0 and c:IsAbleToHandAsCost()

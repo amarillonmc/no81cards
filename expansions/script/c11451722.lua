@@ -16,6 +16,7 @@ function cm.initial_effect(c)
 	--move
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
+	e2:SetCategory(CATEGORY_GRAVE_ACTION)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
@@ -313,9 +314,9 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
 		local nseq=math.log(s&0xff,2)
 		Duel.MoveSequence(c,nseq)
-		local q1=Duel.IsExistingMatchingCard(cm.nfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		local q1=Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.nfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		if q1 then
-			local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
+			local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.nfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,nil)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 			local sg=g:Select(tp,1,1,nil)
 			if #sg>0 then

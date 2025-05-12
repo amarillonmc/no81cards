@@ -132,10 +132,14 @@ end
 function s.mvalue(e,fp,rp,r)
 	return 1-Duel.GetFieldGroupCount(fp,LOCATION_SZONE,0)
 end
+function s.drfilter(c)
+	return c:IsAbleToRemoveAsCost(POS_FACEDOWN)
+end
 function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetExtraTopGroup(tp,2)
-	if chk==0 then return g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN)==2 end
-	Duel.Remove(g,POS_FACEDOWN,REASON_COST)
+	local g=Duel.GetMatchingGroup(s.drfilter,tp,LOCATION_EXTRA,0,nil)
+	if chk==0 then return #g>=2 end
+	local rg=g:RandomSelect(tp,2)
+	Duel.Remove(rg,POS_FACEDOWN,REASON_COST)
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end

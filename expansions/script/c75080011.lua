@@ -37,7 +37,7 @@ function c75080011.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)<4
 end
 function c75080011.filter(c,e,tp)
-	return c:IsSetCard(0x758) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3754) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c75080011.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

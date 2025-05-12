@@ -25,7 +25,7 @@ function cm.spfilter2(c,e,tp)
 	return (c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetMZoneCount(tp)>0)
 end
 function cm.spfilter(c,e,tp)
-	return cm.spfilter1(c,e,tp) or cm.spfilter2(c,e,tp)
+	return cm.spfilter2(c,e,tp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -54,6 +54,7 @@ function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if Duel.Draw(p,d,REASON_EFFECT)>0 then
 		local og=Duel.GetOperatedGroup()
@@ -70,11 +71,24 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
 			local sc=g:Select(p,1,1,nil):GetFirst()
-			local op=aux.SelectFromOptions(tp,{cm.spfilter2(sc,e,tp),aux.Stringid(m,0)},{cm.spfilter1(sc,e,tp),aux.Stringid(m,1)})
+			local op=1 --aux.SelectFromOptions(tp,{cm.spfilter2(sc,e,tp),aux.Stringid(m,0)},{cm.spfilter1(sc,e,tp),aux.Stringid(m,1)})
 			if op==2 then
 				Duel.SpecialSummon(sc,0,tp,1-tp,false,false,POS_FACEUP)
 			elseif op==1 then
-				Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
+				if Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) then
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_DISABLE)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					sc:RegisterEffect(e1)
+					local e2=Effect.CreateEffect(c)
+					e2:SetType(EFFECT_TYPE_SINGLE)
+					e2:SetCode(EFFECT_DISABLE_EFFECT)
+					e2:SetValue(RESET_TURN_SET)
+					e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+					sc:RegisterEffect(e2)
+				end
+				Duel.SpecialSummonComplete()
 			end
 		end
 		local og=Duel.GetMatchingGroup(Card.IsAbleToDeck,p,LOCATION_HAND,0,nil)

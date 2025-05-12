@@ -22,10 +22,10 @@ function c75080003.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c75080003.thfilter1(c)
-	return c:IsSetCard(0x758) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x3754) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c75080003.thfilter2(c)
-	return c:IsSetCard(0x758) and c:IsAbleToHand()
+	return c:IsSetCard(0x3754) and c:IsAbleToHand()
 end
 function c75080003.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -76,7 +76,7 @@ function c75080003.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c75080003.copyfilter(c)
-	return c:IsType(TYPE_MONSTER) and not c:IsSetCard(0x758) and c:IsFaceup()
+	return c:IsType(TYPE_MONSTER) and not c:IsSetCard(0x3754) and c:IsFaceup()
 end
 function c75080003.copytg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

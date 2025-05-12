@@ -250,7 +250,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.ShuffleHand(tp)
 				g:Sub(sg)
 			end
-			Duel.SendtoGrave(g,REASON_EFFECT+REASON_REVEAL)
+			Duel.ShuffleDeck(tp)
 		end
 	end
 end

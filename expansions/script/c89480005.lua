@@ -2,10 +2,11 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xc21),aux.FilterBoolFunction(Card.IsFacedown),true)
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xc21),s.mfilter,true)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.regcon)
 	e1:SetOperation(s.regop)
@@ -31,6 +32,9 @@ function s.initial_effect(c)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
 end
+function s.mfilter(c)
+	return c:GetPosition()==POS_FACEDOWN_DEFENSE
+end
 function s.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
@@ -44,17 +48,16 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function s.ssfilter(c)
-	return c:IsCode(92650018,95545183,91951471,81601517,92958307,31834488,35480699,81057455,62091148,98173209,67381587,31785398,97997309,27170599,86516889,7617062,37055344,40838625,74640994,28369508,19739265,56294501,89320376,69599136,90075978,14087893,38436986,58882608,59069885,74611888,32152870,69320362,98414735,74213995,73567374,41215808,78942513,8080257,81210420,53329234,30748475,19671102,60398723,12923641,27781371,41356845,23912837,28273805,80168720) and c:IsSSetable()
+function s.ssfilter(c,tp)
+	return c:IsCode(92650018,95545183,91951471,81601517,92958307,31834488,35480699,81057455,62091148,98173209,67381587,31785398,97997309,27170599,86516889,7617062,37055344,40838625,74640994,28369508,19739265,56294501,89320376,69599136,90075978,14087893,38436986,58882608,59069885,74611888,32152870,69320362,98414735,74213995,73567374,41215808,78942513,8080257,81210420,53329234,30748475,19671102,60398723,12923641,27781371,41356845,23912837,28273805,80168720,59293853) and c:IsSSetable() and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(s.ssfilter,tp,LOCATION_DECK,0,1,nil)
+	return Duel.IsExistingMatchingCard(s.ssfilter,tp,LOCATION_DECK,0,1,nil,tp)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,s.ssfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.ssfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.SSet(tp,tc)
@@ -88,6 +91,6 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if #g>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)>0
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 	end
 end

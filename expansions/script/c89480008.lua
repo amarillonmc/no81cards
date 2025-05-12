@@ -1,7 +1,8 @@
 --梦马女王 -夜之母马-
-function c89480008.initial_effect(c)
+local s,id,o=GetID()
+function s.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddFusionProcMix(c,false,true,aux.FilterBoolFunction(Card.IsFusionCode,89480004),aux.FilterBoolFunction(Card.IsFusionSetCard,0xc21),aux.FilterBoolFunction(Card.IsFacedown),nil)
+	aux.AddFusionProcMix(c,false,true,aux.FilterBoolFunction(Card.IsFusionCode,89480004),aux.FilterBoolFunction(Card.IsFusionSetCard,0xc21),s.mfilter,nil)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetRange(LOCATION_MZONE)
@@ -29,6 +30,9 @@ function c89480008.initial_effect(c)
 	e3:SetCondition(s.discon)
 	e3:SetOperation(s.disop)
 	c:RegisterEffect(e3)
+end
+function s.mfilter(c)
+	return c:GetPosition()==POS_FACEDOWN_DEFENSE
 end
 function s.target(e,c)
 	return c:IsPosition(POS_FACEDOWN_DEFENSE)
@@ -72,11 +76,7 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if rc:IsRelateToEffect(re) and rc:IsCanTurnSet() and Duel.SelectYesNo(1-tp,aux.Stringid(id,2)) then
 		Duel.ChangePosition(rc,POS_FACEDOWN_DEFENSE)
-		Duel.NegateEffect(0)
-		return
-	end
-	if Duel.NegateEffect(ev) and rc():IsRelateToEffect(re) then
+	elseif Duel.NegateEffect(ev) and rc:IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
 	end
 end
-

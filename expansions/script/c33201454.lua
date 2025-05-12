@@ -9,7 +9,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
-	e1:SetCountLimit(1,id+10000)
+	e1:SetCountLimit(1+10000)
 	e1:SetLabel(0)
 	e1:SetCondition(s.condition)
 	e1:SetTarget(s.target)
@@ -50,17 +50,15 @@ end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateAttack() then
 		Duel.SkipPhase(1-tp,PHASE_BATTLE,RESET_PHASE+PHASE_BATTLE_STEP,1)
-		local c=e:GetHandler()
-		if c:IsLocation(LOCATION_HAND) then Duel.SendtoGrave(c,REASON_EFFECT) end
+	end
 		if e:GetLabel()==1 and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then 
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,2,nil)
 			if g:GetCount()>0 then
-				Duel.SendtoHand(g,tp,REASON_EFFECT)
+				Duel.SendtoHand(g,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,g)
 			end
 		end
-	end
 end
 
 

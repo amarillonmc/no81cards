@@ -172,7 +172,7 @@ end
 function cm.thfilter(c,...)
 	local tab={...}
 	for _,code in ipairs(tab) do
-		if c:GetOriginalCode()==code and c:IsType(TYPE_PENDULUM) and (c:IsFaceup() or not c:IsLocation(LOCATION_MZONE)) then return true end
+		if c:GetOriginalCode()==code and c:IsType(TYPE_PENDULUM) and (c:IsFaceup() or not c:IsLocation(LOCATION_ONFIELD)) then return true end
 	end
 	return false
 end
@@ -184,7 +184,7 @@ function cm.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		if c:GetFlagEffect(code)>0 then tab[#tab+1]=code end
 	end
 	if chk==0 then
-		return #tab>0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_MZONE,0,1,nil,e,tp,table.unpack(tab))
+		return #tab>0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_ONFIELD,0,1,nil,e,tp,table.unpack(tab))
 	end
 	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2))
 	e:SetLabel(table.unpack(tab))
@@ -200,7 +200,7 @@ function cm.psptg2(code)
 end
 function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 	local tab={e:GetLabel()}
-	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK+LOCATION_MZONE,0,nil,table.unpack(tab))
+	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK+LOCATION_ONFIELD,0,nil,table.unpack(tab))
 	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local sg=g:Select(tp,1,1,nil) --SelectSubGroup(tp,aux.dncheck,false,1,g:GetClassCount(Card.GetOriginalCode))
