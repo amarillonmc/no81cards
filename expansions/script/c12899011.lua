@@ -17,15 +17,12 @@ function cm.initial_effect(c)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
---cannot link material
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e3:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
-	
-	--splimit
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetCode(EFFECT_SPSUMMON_COST)
@@ -33,18 +30,17 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.ckfilter(c)
-	return c:IsSetCard(0x5a71)) and c:IsFaceup()
+	return c:IsSetCard(0x5a71) and c:IsFaceup()
 end
 function cm.lspcost(e,c,tp,st)
 	if bit.band(st,SUMMON_TYPE_LINK)~=SUMMON_TYPE_LINK then return true end
 	return Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_MZONE,0,1,nil)
 end
-
 function cm.ckfilter(c)
 	return ((not c:IsSetCard(0x5a71)) and c:IsFaceup()) or c:IsFacedown()
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return  not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_MZONE,0,1,nil)
+	return not Duel.IsExistingMatchingCard(cm.ckfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
