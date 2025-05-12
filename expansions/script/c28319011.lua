@@ -64,8 +64,8 @@ function c28319011.activate(e,tp,eg,ep,ev,re,r,rp,op)
 			e1:SetValue(LOCATION_DECKBOT)
 			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
 			sc:RegisterEffect(e1)
-			Duel.SpecialSummonComplete()
 		end
+		Duel.SpecialSummonComplete()
 		if true then
 			local te=sc.recover_effect
 			if not te then return end
