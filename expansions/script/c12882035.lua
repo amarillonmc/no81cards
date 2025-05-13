@@ -77,7 +77,6 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_CHAINING)
-	e1:SetCountLimit(1)
 	e1:SetCondition(s.repcon)
 	e1:SetOperation(s.repop2)
 	e1:SetReset(RESET_PHASE+PHASE_END)
@@ -94,7 +93,7 @@ end
 function s.repcon(e,tp,eg,ep,ev,re,r,rp)
 	local ex,tg,tc=Duel.GetOperationInfo(ev,CATEGORY_DESTROY)
 	local rc=re:GetHandler()
-	return ex and re:IsActiveType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP) and rc:IsRelateToEffect(re) and Duel.IsExistingMatchingCard(aux.TRUE,rp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,rc) and rp==tp and rc:IsDestructable()
+	return ex and re:IsActiveType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP) and rc:IsRelateToEffect(re) and Duel.IsExistingMatchingCard(aux.TRUE,rp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,rc) and rp==tp and rc:IsDestructable() and Duel.GetFlagEffect(tp,id)==0
 end
 function s.repop2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
@@ -102,7 +101,7 @@ function s.repop2(e,tp,eg,ep,ev,re,r,rp)
 		local g=Group.CreateGroup()
 		Duel.ChangeTargetCard(ev,g)
 		Duel.ChangeChainOperation(ev,s.repop)
-		e:Reset()
+		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 function s.tdfilter(c)

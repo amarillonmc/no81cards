@@ -21,7 +21,7 @@ function s.initial_effect(c)
 	e2:SetOperation(s.setop)
 	c:RegisterEffect(e2)
 end
-function s.repfilter(c,tp)
+function s.repfilter(c)
 	return c:IsOnField() and c:IsReason(REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -29,7 +29,8 @@ function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and eg:IsExists(s.repfilter,1,nil,tp) 
 	and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
-		local g=eg:Filter(s.repfilter,nil,tp)
+		local g=eg:Filter(s.repfilter,nil)
+		Duel.HintSelection(g)
 		if g:GetCount()==1 then
 			e:SetLabelObject(g:GetFirst())
 		else

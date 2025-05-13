@@ -68,12 +68,12 @@ function s.spfilter(c,e,tp)
 	return c:IsSetCard(0x5a7d) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.desfilter(c,p)
-	return c:IsSetCard(0x5a7d) and not c:IsCode(id) and not s.MujicaDestroyedRecords[p][c:GetCode()]
+	return c:IsSetCard(0x5a7d) and not c:IsCode(id) and not s.MujicaDestroyedRecords[p][c:GetCode()] and c:IsFaceupEx()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
-		and Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,tp) end
+		and Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
 end
@@ -84,7 +84,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	if #sg==0 then return end
 	if Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local dg=Duel.SelectMatchingCard(tp,s.desfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,tp)
+		local dg=Duel.SelectMatchingCard(tp,s.desfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,tp)
 		if #dg>0 then
 			Duel.HintSelection(dg)
 			Duel.Destroy(dg,REASON_EFFECT)
