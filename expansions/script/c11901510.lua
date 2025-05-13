@@ -87,11 +87,14 @@ function s.ciop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
     local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	local tg=g:Filter(s.fi2ter,c,e,tp)
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 and #tg>0 then 
-		Duel.Hint(3,tp,520)
-        local sg=tg:Select(tp,1,1,nil)
-        Duel.HintSelection(sg)
-        local tc=sg:GetFirst()
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 and #tg>0 then
+        local tc=tg:GetFirst()
+        if #tg>1 then
+            Duel.Hint(3,tp,520)
+            local sg=tg:Select(tp,1,1,nil)
+            Duel.HintSelection(sg)
+            tc=sg:GetFirst()
+        end
         Duel.GetControl(tc,tp)
 	end 
 end

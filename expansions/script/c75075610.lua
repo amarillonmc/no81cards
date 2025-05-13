@@ -3,7 +3,7 @@ function c75075610.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep2(c,c75075610.filter0,2,127,true)
-    --cannot be target
+	--cannot be target
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -16,7 +16,7 @@ function c75075610.initial_effect(c)
 	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e2:SetValue(aux.tgoval)
 	c:RegisterEffect(e2)
-    local e3=e1:Clone()
+	local e3=e1:Clone()
 	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	e3:SetValue(aux.indoval)
 	c:RegisterEffect(e3)
@@ -24,16 +24,16 @@ function c75075610.initial_effect(c)
 	e4:SetCode(EFFECT_CANNOT_REMOVE)
 	e4:SetValue(c75075610.val1)
 	c:RegisterEffect(e4)
-    --synchro summon success
+	--synchro summon success
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(75075610,0))
 	e5:SetCategory(CATEGORY_ATKCHANGE)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
-    e5:SetCode(EVENT_FREE_CHAIN)
+	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_MZONE)
-    e5:SetCountLimit(1,75075608)
-    e5:SetTarget(c75075610.con5)
-    e5:SetCost(c75075610.cost5)
+	e5:SetCountLimit(1,75075608)
+	e5:SetTarget(c75075610.con5)
+	e5:SetCost(c75075610.cost5)
 	e5:SetOperation(c75075610.op5)
 	c:RegisterEffect(e5)
 	--remove
@@ -48,7 +48,7 @@ function c75075610.initial_effect(c)
 	e6:SetTarget(c75075610.tg6)
 	e6:SetOperation(c75075610.op6)
 	c:RegisterEffect(e6)
-    --play fieldspell
+	--play fieldspell
 	local e7=Effect.CreateEffect(c)
 	e7:SetDescription(aux.Stringid(75075610,2))
 	e7:SetType(EFFECT_TYPE_QUICK_O)
@@ -76,7 +76,7 @@ function c75075610.val1(e,re,rp)
 end
 -- 2
 function c75075610.con5(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
+	return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
 end
 function c75075610.costfilter5(c)
 	return c:IsAbleToGraveAsCost()
@@ -101,28 +101,33 @@ function c75075610.op5(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 -- 3
+function c75075610.cost6(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckReleaseGroup(tp,Card.IsSetCard,1,nil,0x5754) end
+	local g=Duel.SelectReleaseGroup(tp,Card.IsSetCard,1,1,nil,0x5754)
+	Duel.Release(g,REASON_COST)
+end
 function c75075610.filter6(c,ft,tp)
 	return c:IsSetCard(0x5754)
 		and (ft>0 or (c:IsControler(tp) and c:GetSequence()<5)) and (c:IsControler(tp) or c:IsFaceup())
 end
 function c75075610.filter66(c)
-    return c:IsFaceup() and c:IsAbleToRemove() and not c:IsAttack(c:GetBaseAttack())
+	return c:IsFaceup() and c:IsAbleToRemove() and not c:IsAttack(c:GetBaseAttack())
 end
 function c75075610.tg6(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then
-        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-        return Duel.IsExistingMatchingCard(c75075610.filter66,tp,0,LOCATION_MZONE,1,nil) 
-    end
-    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-    Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_MZONE)
+	if chk==0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		return Duel.IsExistingMatchingCard(c75075610.filter66,tp,0,LOCATION_MZONE,1,nil) 
+	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_MZONE)
 end
 function c75075610.op6(e,tp,eg,ep,ev,re,r,rp)
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-    local g=Duel.SelectMatchingCard(tp,c75075610.filter66,tp,0,LOCATION_MZONE,1,1,nil)
-    if #g>0 then
-        Duel.HintSelection(g)
-        Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-    end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,c75075610.filter66,tp,0,LOCATION_MZONE,1,1,nil)
+	if #g>0 then
+		Duel.HintSelection(g)
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	end
 end
 -- 4
 function c75075610.cost7(e,tp,eg,ep,ev,re,r,rp,chk)
