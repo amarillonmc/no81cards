@@ -47,13 +47,11 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if aux.NecroValleyFilter()(tc) and tc:IsRelateToEffect(e) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local dg=Duel.SelectMatchingCard(tp,s.desfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
-		if #dg>0 and Duel.Destroy(dg,REASON_EFFECT)~=0 then
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tc)
-		end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local dg=Duel.SelectMatchingCard(tp,s.desfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
+	if #dg>0 and Duel.Destroy(dg,REASON_EFFECT)~=0 and aux.NecroValleyFilter()(tc) and tc:IsRelateToEffect(e) then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
 	end
 end
 function s.seqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
