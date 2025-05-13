@@ -72,6 +72,7 @@ function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_HAND) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,nil)
+		local g1=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 		if #g>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 			local tg=g:CancelableSelect(tp,1,#g,nil)
@@ -79,9 +80,9 @@ function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.HintSelection(tg)
 				Duel.SendtoHand(tg,nil,REASON_EFFECT)
 			end
-		elseif Duel.GetMatchingGroupCount(nil,tp,LOCATION_ONFIELD,0,nil)==0 then
+		elseif #g==0 and #g1>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local tg=g:CancelableSelect(tp,1,1,nil)
+			local tg=g1:CancelableSelect(tp,1,1,nil)
 			if tg and #tg>0 then
 				Duel.HintSelection(tg)
 				Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
