@@ -1,5 +1,6 @@
 --魂锁之盾
 local s,id,o=GetID()
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function s.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -34,6 +35,8 @@ function s.initial_effect(c)
 	e4:SetTarget(s.tgtg)
 	e4:SetOperation(s.tgop)
 	c:RegisterEffect(e4)
+	elements={{"tama_elements",{{TAMA_ELEMENT_EARTH,2},{TAMA_ELEMENT_ORDER,1}}}}
+	s[c]=elements
 	
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)

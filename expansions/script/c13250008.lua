@@ -29,12 +29,12 @@ function s.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>2 and Duel.CheckChainUniqueness()
 end
 function s.costfilter(c)
-	return c:IsSetCard(0x355) and c:IsAbleToRemoveAsCost() and c:IsFaceup() and c:IsCode(id)
+	return c:IsSetCard(0x355) and c:IsAbleToRemoveAsCost() and c:IsFaceup() and not c:IsCode(id)
 end
 function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_REMOVED,0,1,nil) end
 	local g=Duel.GetMatchingGroup(s.costfilter,tp,LOCATION_REMOVED,0,nil)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end
