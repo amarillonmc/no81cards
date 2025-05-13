@@ -1,5 +1,6 @@
 --魂锁 附锁链的炮弹
 local s,id,o=GetID()
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function s.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -10,6 +11,18 @@ function s.initial_effect(c)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.operation)
 	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,0))
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetCondition(s.ahcon)
+	e2:SetCost(s.ahcost)
+	e2:SetTarget(s.ahtg)
+	e2:SetOperation(s.ahop)
+	c:RegisterEffect(e2)
+	elements={{"tama_elements",{{TAMA_ELEMENT_EARTH,1},{TAMA_ELEMENT_ENERGY,1}}}}
+	s[c]=elements
 	
 end
 function s.desfilter1(c)
@@ -115,4 +128,31 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.eqlimit(e,c)
 	return e:GetHandler():GetEquipTarget()==c or c:IsControler(e:GetHandlerPlayer())
+end
+function s.ahcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetEquipTarget() and Duel.GetTurnPlayer()==tp
+end
+function s.ahcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+end
+function s.ahtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
+end
+function s.ahop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local g=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,2,nil)
+	if g:GetCount()>0 then
+		local sc=g:GetFirst()
+		while sc do
+			local batk=sc:GetBaseAttack()
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_SET_BASE_ATTACK_FINAL)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			e1:SetValue(math.ceil(batk/2))
+			sc:RegisterEffect(e1)
+			sc=g:GetNext()
+		end
+	end
 end
