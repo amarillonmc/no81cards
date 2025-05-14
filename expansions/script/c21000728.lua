@@ -41,7 +41,7 @@ function s.xyzlimit(e,c)
 end
 function s.prop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,id,0x611,TYPES_NORMAL_TRAP_MONSTER,1000,0,4,RACE_PSYCHO,ATTRIBUTE_EARTH) then return end
+	if not c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,id,0x611,TYPES_NORMAL_TRAP_MONSTER,1000,0,4,RACE_PSYCHO,ATTRIBUTE_EARTH) then return end
 	c:AddMonsterAttribute(TYPE_NORMAL)
 	Duel.SpecialSummonStep(c,0,tp,tp,true,false,POS_FACEUP)
 	Duel.SpecialSummonComplete()
