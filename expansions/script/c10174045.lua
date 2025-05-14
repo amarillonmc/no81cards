@@ -4,6 +4,7 @@ local m,cm=rscf.DefineCard(10174045)
 function cm.initial_effect(c)
 	local e1=rscf.SetSummonCondition(c,false)
 	local e2=rsef.QO(c,nil,{m,0},nil,"sp,rm",nil,LOCATION_HAND+LOCATION_GRAVE,rscon.excard(aux.TRUE,LOCATION_ONFIELD,LOCATION_ONFIELD,10),rscost.regflag,cm.tg,cm.op)
+	e2:SetCountLimit(1,m+EFFECT_COUNT_CODE_CHAIN)
 end
 function cm.cfilter(c,tp)
 	return c:IsAbleToRemove(c,tp,POS_FACEDOWN) and Duel.GetMZoneCount(tp,c,tp)>0
