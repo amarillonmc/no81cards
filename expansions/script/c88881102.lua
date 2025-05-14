@@ -26,13 +26,17 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.cfilter(c,tp)
-	return c:IsFaceup() and c:IsAbleToHandAsCost() and Duel.GetMZoneCount(tp,c)>0
+	return c:IsFaceup() and (c:IsAbleToHandAsCost() or c:IsAbleToGraveAsCost()) and Duel.GetMZoneCount(tp,c)>0
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
-	Duel.SendtoHand(g,nil,REASON_COST)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local tc=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_MZONE,0,1,1,nil,tp):GetFirst()
+	if tc:IsAbleToHandAsCost() and (not tc:IsAbleToGraveAsCost() or Duel.SelectOption(tp,1104,1191)==0) then
+		Duel.SendtoHand(tc,nil,REASON_COST)
+	else
+		Duel.SendtoGrave(tc,REASON_COST)
+	end
 end
 function s.spfilter(c,e,tp)
 	return c:IsSetCard(0xc09) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
