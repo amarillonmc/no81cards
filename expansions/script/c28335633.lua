@@ -168,7 +168,7 @@ function c28335633.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(tg,REASON_EFFECT)
 end
 function c28335633.tdcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsType,1,nil,TYPE_MONSTER)
+	return eg:IsExists(Card.IsType,1,nil,TYPE_MONSTER) and not eg:IsContains(e:GetHandler())
 end
 function c28335633.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end

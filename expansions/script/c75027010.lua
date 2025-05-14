@@ -10,7 +10,6 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCountLimit(1,id)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
@@ -59,6 +58,16 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOperation(s.thop)
 		Duel.RegisterEffect(e1,tp)
 	end
+end
+function s.thcon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffectLabel(id)~=e:GetLabel() then
+		e:Reset()
+		return false
+	else return true end
+end
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SendtoHand(e:GetLabelObject(),nil,REASON_EFFECT)
 end
 --------1longhua
 function s.cfilter(c)
