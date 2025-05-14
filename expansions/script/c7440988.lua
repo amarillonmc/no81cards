@@ -46,7 +46,8 @@ function s.hspcon(e,c)
 	return Duel.IsExistingMatchingCard(s.hspfilter,tp,LOCATION_GRAVE,0,1,nil,tp,c)
 end
 function s.hsptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(s.hspfilter,tp,LOCATION_GRAVE,0,nil)
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(s.hspfilter,tp,LOCATION_GRAVE,0,nil,tp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
 	if tc then
