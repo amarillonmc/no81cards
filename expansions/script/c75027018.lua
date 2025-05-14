@@ -7,7 +7,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e0)
 	--to hand
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id+0,0))
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetCountLimit(1,id)
