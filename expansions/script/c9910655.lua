@@ -49,7 +49,7 @@ function c9910655.activate(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	if lv>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,9910655,0,0x11,0,3000,lv,RACE_MACHINE,ATTRIBUTE_LIGHT)
+	if lv>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,9910655,0xa952,0x11,0,3000,lv,RACE_MACHINE,ATTRIBUTE_LIGHT)
 		and c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.SelectYesNo(tp,aux.Stringid(9910655,2)) then
 		Duel.BreakEffect()
