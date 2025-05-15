@@ -1,7 +1,7 @@
 --伪宇宙战争机器-日珥龙
 local m=13257251
 local cm=_G["c"..m]
-if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
+xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -93,8 +93,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK,0,1,ct,nil,e,tp)
 		if g:GetCount()>0 then
-			Duel.SpecialSummonStep(t1,0,tp,tp,false,false,POS_FACEUP)
 			for tc in aux.Next(g) do
+				Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
 				local e1=Effect.CreateEffect(e:GetHandler())
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_SET_ATTACK)
