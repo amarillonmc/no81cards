@@ -144,16 +144,23 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local xg=Duel.GetOverlayGroup(tp,1,1)
 	g:Merge(xg)
 	local tg=eeg:Filter(cm.xfilter,nil,1-tp,g)
-	Duel.SetTargetCard(tg)
-	--Duel.HintSelection(tg)
+	if re:GetHandler():IsRelateToEffect(re) and Duel.GetCurrentChain()==ev+1 then
+		Duel.SetTargetCard(eeg)
+		Duel.HintSelection(eeg)
+	end
+	if re:GetActivateLocation()==LOCATION_GRAVE then
+		e:SetCategory(e:GetCategory()|CATEGORY_GRAVE_ACTION)
+	else
+		e:SetCategory(e:GetCategory()&~CATEGORY_GRAVE_ACTION)
+	end
 end
-function cm.imfilter(c,e)
-	return c:IsRelateToEffect(e) and c:IsCanOverlay() and not c:IsImmuneToEffect(e)
+function cm.imfilter(c,e,re)
+	return c:IsRelateToEffect(re) and c:IsCanOverlay() and not c:IsImmuneToEffect(e)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local cg=tg:Filter(cm.imfilter,nil,e)
+	local cg=tg:Filter(cm.imfilter,nil,e,re)
 	if c:IsRelateToEffect(e) and #cg>0 then
 		Duel.Overlay(c,cg)
 	end
