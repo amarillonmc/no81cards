@@ -31,11 +31,15 @@ function c28317923.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e3:SetCode(EVENT_CUSTOM+28317923)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetRange(LOCATION_HAND+LOCATION_MZONE)
+	e3:SetRange(LOCATION_HAND)
 	e3:SetCondition(c28317923.tgcon)
 	e3:SetTarget(c28317923.tgtg)
 	e3:SetOperation(c28317923.tgop)
 	c:RegisterEffect(e3)
+	local ee3=e3:Clone()
+	ee3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	ee3:SetRange(LOCATION_MZONE)
+	c:RegisterEffect(ee3)
 	if not c28317923.global_check then
 		c28317923.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -49,28 +53,16 @@ end
 function c28317923.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Clone()
 	g:KeepAlive()
-	if eg:IsExists(Card.IsSummonPlayer,1,nil,0) then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_CHAIN_END)
-		e1:SetLabel(0)
-		e1:SetLabelObject(g)
-		e1:SetOperation(c28317923.regop)
-		Duel.RegisterEffect(e1,tp)
-	end
-	if eg:IsExists(Card.IsSummonPlayer,1,nil,1) then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_CHAIN_END)
-		e1:SetLabel(1)
-		e1:SetLabelObject(g)
-		e1:SetOperation(c28317923.regop)
-		Duel.RegisterEffect(e1,tp)
-	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_END)
+	e1:SetLabelObject(g)
+	e1:SetOperation(c28317923.regop)
+	Duel.RegisterEffect(e1,tp)
 end
 function c28317923.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
-	Duel.RaiseEvent(g,EVENT_CUSTOM+28317923,e,0,0,e:GetLabel(),0)
+	Duel.RaiseEvent(g,EVENT_CUSTOM+28317923,e,0,0,0,0)
 	g:DeleteGroup()
 	e:Reset()
 end
@@ -163,7 +155,7 @@ function c28317923.fsop(e,tp,eg,ep,ev,re,r,rp)
 	aux.FCheckAdditional=nil
 end
 function c28317923.tgcon(e,tp,eg,ep,ev,re,r,rp)
-	return not eg:IsContains(e:GetHandler()) and tp==ep--eg:IsExists(Card.IsSummonPlayer,1,nil,tp)
+	return not eg:IsContains(e:GetHandler()) and eg:IsExists(Card.IsSummonPlayer,1,nil,tp)-- and tp==ep
 end
 function c28317923.tgfilter(c)
 	return c:IsSetCard(0x285) and c:IsAbleToGrave()
