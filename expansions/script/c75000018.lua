@@ -24,7 +24,7 @@ function c75000018.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_CANNOT_INACTIVATE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetValue(c18444733.efilter)
+	e2:SetValue(c75000018.efilter)
 	c:RegisterEffect(e2)
 	--immune effect
 	local e3=Effect.CreateEffect(c)
