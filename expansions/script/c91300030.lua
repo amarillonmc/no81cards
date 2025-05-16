@@ -13,11 +13,14 @@ function s.initial_effect(c)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
 	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,aux.FALSE)
-	local e10=e1:Clone()
+	local e10=Effect.CreateEffect(c)
+	e10:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e10:SetType(EFFECT_TYPE_IGNITION)
+	e10:SetRange(LOCATION_HAND)
 	e10:SetCountLimit(1,91301026)
 	e10:SetCost(s.spcost)
 	e10:SetTarget(s.sptg2)
+	e10:SetOperation(s.spop)
 	c:RegisterEffect(e10)
 	--sno0
 	local e2=Effect.CreateEffect(c)
@@ -77,7 +80,7 @@ function s.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)>0 
-		and Duel.GetCustomActivityCount(id,1-tp,ACTIVITY_CHAIN)>=26
+		and Duel.GetCustomActivityCount(id,1-tp,ACTIVITY_CHAIN)>=13
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE,1-tp) and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 or Duel.IsExistingMatchingCard(s.mvfilter2,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_HAND+LOCATION_DECK)
 end
