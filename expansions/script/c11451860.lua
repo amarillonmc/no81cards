@@ -173,6 +173,8 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local fd=Duel.SelectField(tp,2,LOCATION_SZONE,0,~0x1f00)
 	for i=0,4 do
 		if fd&(1<<(8+i))>0 then
+			Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,i))
+			Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,i))
 			c:RegisterFlagEffect(EFFECT_FLAG_EFFECT+m+0xffff+i,RESET_EVENT+RESET_TOHAND+RESET_TOFIELD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,i))
 			local de=Effect.CreateEffect(c)
 			de:SetDescription(aux.Stringid(m,i))
