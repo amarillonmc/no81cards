@@ -6,8 +6,7 @@ function c98941056.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(TIMING_DRAW_PHASE,TIMING_DRAW_PHASE+TIMING_END_PHASE)
-	e1:SetCost(s.cost1)
-	e1:SetTarget(s.tg1)
+	e1:SetOperation(s.trueac)
 	c:RegisterEffect(e1)
 	local e0=e1:Clone()
 	e0:SetDescription(aux.Stringid(id,6))
@@ -26,28 +25,25 @@ function c98941056.initial_effect(c)
 	e2:SetTarget(s.target)
 	e2:SetOperation(s.activate)
 	c:RegisterEffect(e2)	
-	local e10=e2:Clone()
-	e10:SetDescription(aux.Stringid(id,7))
-	e10:SetRange(LOCATION_DECK)
-	e10:SetCondition(s.descon)
-	e10:SetCost(s.cost2)
-	c:RegisterEffect(e10)
 	--change effect
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(98941056,2))
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
-	e3:SetRange(LOCATION_SZONE)
+	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,id+o)
 	e3:SetTarget(c98941056.chtg)
 	e3:SetOperation(c98941056.chop)
-	c:RegisterEffect(e3)
-	local e11=e3:Clone()
-	e11:SetDescription(aux.Stringid(id,8))
-	e11:SetRange(LOCATION_DECK)
-	e11:SetCondition(s.descon)
-	e11:SetCost(s.cost2)
-	c:RegisterEffect(e11)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetTargetRange(LOCATION_MZONE,0)
+	e4:SetTarget(c98941056.eftg)
+	e4:SetLabelObject(e3)
+	c:RegisterEffect(e4)
+end
+function c98941056.eftg(e,c)
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x9d)
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
@@ -56,9 +52,25 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 		rc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	end
 end
-function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,EFFECT_FLAG_OATH,1)
+function c98941056.thfilter(c)
+	return c:IsSetCard(0x9d) and c:IsAbleToHand()
+end
+function c98941056.extfilter(c)
+	return c:IsFaceup() and c:IsSummonLocation(LOCATION_EXTRA)
+end
+function c98941056.trueac(e,tp,eg,ep,ev,re,r,rp)
+	local g1=Duel.GetMatchingGroup(c98941056.extfilter,tp,0,LOCATION_MZONE,nil)
+	local g2=Duel.GetMatchingGroup(c98941056.thfilter,tp,LOCATION_DECK,0,nil)
+	if g1:GetCount()>0 and g2:GetCount()>0 and Duel.GetFlagEffect(tp,id+3)==0 and Duel.SelectYesNo(tp,aux.Stringid(98941056,7)) then
+		local ct=g1:GetClassCount(Card.GetCode)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g2:SelectSubGroup(tp,aux.dncheck,false,1,ct)
+		if sg and sg:GetCount()>0 then
+		   Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		   Duel.ConfirmCards(1-tp,sg)
+	   end
+	   Duel.RegisterFlagEffect(tp,id+3,RESET_PHASE+PHASE_END,0,1)
+	end
 end
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)<Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
@@ -101,6 +113,8 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c98941056.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
+	local c=e:GetHandler()
+	if c:IsFacedown() or not c:IsOnField() then return end
 	local mg1=Duel.GetFusionMaterial(tp):Filter(c98941056.filter3,nil,e)
 	local mg2=Duel.GetMatchingGroup(c98941056.filter1,tp,0,LOCATION_MZONE,nil,e)
 	mg1:Merge(mg2)
@@ -142,14 +156,6 @@ function c98941056.activate(e,tp,eg,ep,ev,re,r,rp)
 			local fop=ce:GetOperation()
 			fop(ce,e,tp,tc,mat2)
 		end
-		if tc:IsControlerCanBeChanged() and Duel.IsExistingMatchingCard(s.tgfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(98941056,3)) then
-			Duel.BreakEffect()
-			Duel.GetControl(tc,1-tp)
-			local g=Duel.GetMatchingGroup(s.tgfilter1,tp,LOCATION_DECK,0,nil)
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local sg=g:Select(tp,1,ct,nil)
-			Duel.SendtoGrave(sg,REASON_EFFECT)
-		end
 	   	tc:CompleteProcedure()
 	end
 end
@@ -173,7 +179,7 @@ function c98941056.yyfilter(c)
 	return c:IsSetCard(0x9d)
 end
 function c98941056.disfilter(c)
-	return c:IsCode(98941056) and c:IsFaceup()
+	return c:IsSetCard(0x9d) and c:IsFaceup()
 end
 function s.filterx(c)
 	return c:IsSetCard(0x9d) and c:IsType(TYPE_MONSTER)
@@ -194,6 +200,8 @@ function c98941056.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c98941056.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
+	local c=e:GetHandler()
+	if c:IsFacedown() or not c:IsOnField() then return end
 	Duel.ChangeTargetCard(ev,g)
 	Duel.ChangeChainOperation(ev,c98941056.repop)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -204,7 +212,7 @@ function c98941056.chop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c98941056.repop(e,tp,eg,ep,ev,re,r,rp)
-	local oog=Duel.GetMatchingGroup(c98941056.disfilter,tp,LOCATION_SZONE,0,nil)
+	local oog=Duel.GetMatchingGroup(c98941056.disfilter,tp,LOCATION_MZONE,0,nil)
 	if oog:GetCount()==0 then 
 		local g=Duel.GetMatchingGroup(s.filterx,1-tp,LOCATION_GRAVE,0,nil)
 	 	if not Duel.IsPlayerAffectedByEffect(1-tp,59822133) and g:IsExists(s.sfilter1,1,nil,e,1-tp,g) then
