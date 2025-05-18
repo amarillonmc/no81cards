@@ -119,14 +119,31 @@ end
 function cm.seqfilter(c,tc,tp)
 	local x1,y1=cm.xylabel(c,tp)
 	local x2,y2=cm.xylabel(tc,tp)
-	return (math.abs(y1-y2)==1 or y1==y2) and math.abs(x1-x2)==1
+	return math.abs(y1-y2)<=1 and math.abs(x1-x2)<=1 and cm.islinkdir(tc,x1,y1,tp)
 end
 function cm.distarget(e,c)
 	return (c:IsType(TYPE_EFFECT+TYPE_SPELL+TYPE_TRAP) or c:GetOriginalType()&TYPE_EFFECT~=0) and cm.seqfilter(c,e:GetHandler(),0)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	local tl=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	if tl==LOCATION_SZONE and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and cm.seqfilter(re:GetHandler(),e:GetHandler(),0) then
+	local lc=e:GetHandler()
+	local p,loc,seq=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_SEQUENCE)
+	local x=seq
+	local y=0
+	if p==tp then
+		if loc&LOCATION_MZONE>0 and x<=4 then y=1
+		elseif loc&LOCATION_MZONE>0 and x==5 then x,y=1,2
+		elseif loc&LOCATION_MZONE>0 and x==6 then x,y=3,2
+		elseif loc&LOCATION_SZONE>0 and x<=4 then y=0
+		else x,y=-1,0.5 end
+	elseif p==1-tp then
+		if loc&LOCATION_MZONE>0 and x<=4 then x,y=4-x,3
+		elseif loc&LOCATION_MZONE>0 and x==5 then x,y=3,2
+		elseif loc&LOCATION_MZONE>0 and x==6 then x,y=1,2
+		elseif loc&LOCATION_SZONE>0 and x<=4 then x,y=4-x,4
+		else x,y=5,3.5 end
+	end
+	local x2,y2=cm.xylabel(lc,tp)
+	if bit.band(loc,LOCATION_ONFIELD)~=0 and math.abs(y-y2)<=1 and math.abs(x-x2)<=1 and cm.islinkdir(lc,x,y,tp) then
 		Duel.NegateEffect(ev)
 	end
 end
