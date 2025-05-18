@@ -121,7 +121,7 @@ function yume.PPTSetFromGraveTg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function yume.PPTSetFromGraveOp(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SSet(tp,c)~=0 then
+	if c:IsRelateToChain() and Duel.SSet(tp,c)~=0 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
@@ -204,7 +204,7 @@ function yume.PPTTetrisBasicMoveTg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function yume.PPTTetrisBasicMoveOp(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or c:GetSequence()<5 or c:IsImmuneToEffect(e) or not c:IsControler(tp) or Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)<=0 then return end
+	if not c:IsRelateToChain() or c:GetSequence()<5 or c:IsImmuneToEffect(e) or not c:IsControler(tp) or Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 	local fd=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
 	Duel.Hint(HINT_ZONE,tp,fd)
@@ -212,9 +212,9 @@ function yume.PPTTetrisBasicMoveOp(e,tp,eg,ep,ev,re,r,rp)
 	local pseq=c:GetSequence()
 	Duel.MoveSequence(c,seq)
 	Duel.AdjustAll()
-	if c:IsLocation(LOCATION_MZONE) and c:GetSequence()==seq then
+	--if c:IsLocation(LOCATION_MZONE) and c:GetSequence()==seq then
 		yume.OptionalPendulum(e,c,tp)
-	end
+	--end
 end
 function yume.OptionalPendulum(e,c,tp)
 	local lpz=Duel.GetFieldCard(tp,LOCATION_PZONE,0)
@@ -337,7 +337,7 @@ function yume.PPTPuyopuyoBasicMoveTg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function yume.PPTPuyopuyoBasicMoveOp(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or c:GetSequence()<5 or c:IsImmuneToEffect(e) or not c:IsControler(tp) or Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)<=0 then return end
+	if not c:IsRelateToChain() or c:GetSequence()<5 or c:IsImmuneToEffect(e) or not c:IsControler(tp) or Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 	local fd=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
 	Duel.Hint(HINT_ZONE,tp,fd)
@@ -413,6 +413,12 @@ function yume.PPTPuyopuyoBasicMoveOp(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_PHASE+PHASE_MAIN1)
 		Duel.RegisterEffect(e2,tp)
 		e1:SetLabelObject(e2)
+		--would be sp summoned as Chain Link 2+
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		e3:SetCode(EVENT_SPSUMMON)
+		e3:SetOperation(yume.RegOpWhenWouldBeSpSummoned)
+		Duel.RegisterEffect(e3,tp)
 		local use_oppo_pend=not self_pend_flag or oppo_pend_flag and Duel.SelectYesNo(tp,aux.Stringid(71403001,5))
 		if use_oppo_pend then
 			Duel.SpecialSummonRule(tp,oppo_lpz,SUMMON_TYPE_PENDULUM)
@@ -450,7 +456,7 @@ function yume.PPTPuyopuyoExMoveOp(e,tp,eg,ep,ev,re,r,rp)
 	local pseq=c:GetSequence()
 	Duel.MoveSequence(c,seq)
 	Duel.AdjustAll()
-	if not c:IsLocation(LOCATION_MZONE) or c:GetSequence()~=seq then return end
+	--if not c:IsLocation(LOCATION_MZONE) or c:GetSequence()~=seq then return end
 	local loc=0
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then loc=loc+LOCATION_HAND end
 	if Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_PENDULUM)>0 then loc=loc+LOCATION_EXTRA end
@@ -519,6 +525,12 @@ function yume.PPTPuyopuyoExMoveOp(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_PHASE+PHASE_MAIN1)
 		Duel.RegisterEffect(e2,tp)
 		e1:SetLabelObject(e2)
+		--would be sp summoned as Chain Link 2+
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		e3:SetCode(EVENT_SPSUMMON)
+		e3:SetOperation(yume.RegOpWhenWouldBeSpSummoned)
+		Duel.RegisterEffect(e3,tp)
 		local use_oppo_pend=not self_pend_flag or oppo_pend_flag and Duel.SelectYesNo(tp,aux.Stringid(71403001,5))
 		if use_oppo_pend then
 			Duel.SpecialSummonRule(tp,oppo_lpz,SUMMON_TYPE_PENDULUM)

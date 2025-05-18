@@ -41,7 +41,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 --e1
 function cm.cof1(c)
-	return not c:IsCode(m) and c:IsSetCard(0x87af) and (c:IsAttribute(ATTRIBUTE_LIGHT) or c:IsType(TYPE_TUNER)) and c:IsAbleToGraveAsCost()
+	return not c:IsCode(m) and c:IsSetCard(0x87af) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToGraveAsCost()
 end
 function cm.cos1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cof1,tp,LOCATION_DECK,0,1,nil) end

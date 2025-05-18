@@ -47,7 +47,7 @@ function cm.initial_effect(c)
 	
 end
 function cm.eqlimit(e,c)
-	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x3352) and c:IsSummonableCard()
+	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x3352) and not c:IsSummonableCard()
 end
 function cm.tfilter(c,ec)
 	local eg=ec:GetEquipGroup()
@@ -66,8 +66,8 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 		if c:GetFlagEffect(m)<=0 then
 			c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1,0)
 		end
-		c:SetFlagEffectLabel(m,ct+1)
 		local ct=c:GetFlagEffectLabel(m)
+		c:SetFlagEffectLabel(m,ct+1)
 		if ct==3+tama.cosmicFighters_getPowerChargeBuff(c) then
 			Duel.Hint(HINT_MESSAGE,tp,aux.Stringid(m,1))
 		end
@@ -102,32 +102,30 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil,ec)
 	local tc=g:GetFirst()
-	if g:GetCount()>0 then
-		while tc do
-			if tc:IsFaceup() and tc:IsCanBeDisabledByEffect(e) then
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_DISABLE)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				tc:RegisterEffect(e1)
-				local e2=Effect.CreateEffect(c)
-				e2:SetType(EFFECT_TYPE_SINGLE)
-				e2:SetCode(EFFECT_DISABLE_EFFECT)
-				e2:SetValue(RESET_TURN_SET)
-				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-				tc:RegisterEffect(e2)
-				if tc:IsType(TYPE_TRAPMONSTER) then
-					local e3=Effect.CreateEffect(c)
-					e3:SetType(EFFECT_TYPE_SINGLE)
-					e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
-					e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-					tc:RegisterEffect(e3)
-				end
-				Duel.AdjustInstantly()
-				Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+	while tc do
+		if tc:IsFaceup() and tc:IsCanBeDisabledByEffect(e) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+			if tc:IsType(TYPE_TRAPMONSTER) then
+				local e3=Effect.CreateEffect(c)
+				e3:SetType(EFFECT_TYPE_SINGLE)
+				e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+				e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e3)
 			end
-			tc=g:GetNext()
+			Duel.AdjustInstantly()
+			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 		end
+		tc=g:GetNext()
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)

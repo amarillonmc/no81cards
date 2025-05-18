@@ -22,6 +22,7 @@ function c28319111.initial_effect(c)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCondition(c28319111.tdcon)
+	e2:SetCost(c28319111.tdcost)
 	e2:SetTarget(c28319111.tdtg)
 	e2:SetOperation(c28319111.tdop)
 	c:RegisterEffect(e2)
@@ -61,15 +62,14 @@ function c28319111.activate(e,tp,eg,ep,ev,re,r,rp,op)
 		if Duel.SendtoGrave(sg,REASON_EFFECT)==0 then return end
 		Duel.BreakEffect()
 		Duel.Recover(tp,500,REASON_EFFECT)
-		if true then
+		if Duel.GetLP(tp)>=1500 then
 			local tc=sg:Filter(Card.IsType,nil,TYPE_MONSTER):GetFirst()
 			local te=tc.recover_effect
 			if not te then return end
 			local tg=te:GetTarget()
 			if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) and Duel.SelectYesNo(tp,aux.Stringid(28319111,3)) then
 				Duel.BreakEffect()
-				local lp=Duel.GetLP(tp)
-				Duel.SetLP(tp,lp-1500)
+				Duel.PayLPCost(tp,1500)
 				local op=te:GetOperation()
 				if op then op(e,tp,eg,ep,ev,re,r,rp) end
 			end
@@ -79,6 +79,10 @@ end
 function c28319111.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	return bit.band(Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION),LOCATION_ONFIELD)~=0 and rp==tp and rc and rc:IsSetCard(0x287)
+end
+function c28319111.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1500) end
+	Duel.PayLPCost(tp,1500)
 end
 function c28319111.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeck() end

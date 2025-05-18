@@ -61,7 +61,7 @@ function cm.eqlimit(e,c)
 	return not c:GetEquipGroup():IsExists(Card.IsSetCard,1,e:GetHandler(),0x6352)
 end
 function cm.desfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceup() and not c:IsDisabled()
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceup()
 end
 function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

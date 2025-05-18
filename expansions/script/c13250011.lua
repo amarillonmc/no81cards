@@ -1,5 +1,6 @@
 --魂锁链王·轮
 local s,id,o=GetID()
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function s.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionCode,13250003),2,true)
@@ -43,6 +44,8 @@ function s.initial_effect(c)
 	e5:SetCost(s.atcost)
 	e5:SetOperation(s.atop)
 	c:RegisterEffect(e5)
+	elements={{"tama_elements",{{TAMA_ELEMENT_EARTH,3},{TAMA_ELEMENT_ENERGY,2}}}}
+	s[c]=elements
 	
 end
 function s.splimit(e,se,sp,st)

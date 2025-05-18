@@ -87,7 +87,10 @@ function cm.bombcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.bombtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
+	if g:GetCount()>0 then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	end
 end
 function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

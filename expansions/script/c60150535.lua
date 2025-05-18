@@ -1,7 +1,18 @@
 --幻想乐章的高潮·梦幻
 function c60150535.initial_effect(c)
+	--xyz summon
+	aux.AddXyzProcedure(c,c60150535.mfilter,11,3)
+	c:EnableReviveLimit()
+	--spsummon limit
+	local e11=Effect.CreateEffect(c)
+	e11:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e11:SetType(EFFECT_TYPE_SINGLE)
+	e11:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e11:SetValue(aux.xyzlimit)
+	c:RegisterEffect(e11)
 	--destroy
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(60150535,0))
 	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -12,27 +23,28 @@ function c60150535.initial_effect(c)
 	c:RegisterEffect(e2)
 	--special summon
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(60150535,0))
+	e3:SetDescription(aux.Stringid(60150535,1))
 	e3:SetCategory(CATEGORY_DAMAGE)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_BATTLE_DAMAGE)
-	e3:SetCountLimit(1,60150535)
 	e3:SetCondition(c60150535.thcon)
 	e3:SetTarget(c60150535.thtg)
 	e3:SetOperation(c60150535.thop)
 	c:RegisterEffect(e3)
 	--
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(60150535,0))
+	e1:SetDescription(aux.Stringid(60150535,2))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
 	e1:SetCondition(c60150535.actcon)
 	e1:SetCost(c60150535.thcost)
 	e1:SetTarget(c60150535.thtg2)
 	e1:SetOperation(c60150535.thop2)
 	c:RegisterEffect(e1)
+end
+function c60150535.mfilter(c)
+	return c:IsRace(RACE_FIEND) and c:IsAttribute(ATTRIBUTE_LIGHT)
 end
 function c60150535.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_XYZ and e:GetHandler():GetOverlayGroup():IsExists(Card.IsType,1,nil,TYPE_XYZ)
@@ -68,7 +80,7 @@ function c60150535.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Damage(p,d,REASON_EFFECT)
 end
 function c60150535.actcon(e)
-	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,60150513)
+	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,60150535)
 end
 function c60150535.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end

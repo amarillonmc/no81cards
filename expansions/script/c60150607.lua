@@ -3,28 +3,32 @@ function c60150607.initial_effect(c)
 	--Activate
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(60150607,0))
-	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_ACTIVATE)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetHintTiming(0,0x1e0)
-	e3:SetCountLimit(1,60150607+EFFECT_COUNT_CODE_OATH)
+	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e3:SetTarget(c60150607.target2)
 	e3:SetOperation(c60150607.activate2)
 	c:RegisterEffect(e3)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(60150607,1))
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
-	e1:SetCategory(CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e1:SetHintTiming(0,0x1e0)
-	e1:SetCountLimit(1,60150607+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c60150607.target)
 	e1:SetOperation(c60150607.activate)
 	c:RegisterEffect(e1)
+	--remain field
+	local e9=Effect.CreateEffect(c)
+	e9:SetType(EFFECT_TYPE_SINGLE)
+	e9:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e9:SetCode(EFFECT_REMAIN_FIELD)
+	c:RegisterEffect(e9)
 end
 function c60150607.splimit(e,c)
 	return not c:IsSetCard(0x3b21)
@@ -38,7 +42,7 @@ function c60150607.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,c60150607.spfilter2,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
-	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(60150607,1))
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60150607.spfilter(c,e,tp)
 	return c:IsSetCard(0x3b21) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -64,7 +68,7 @@ function c60150607.filter0(c,e,immchk)
 end
 function c60150607.filter1(c,e,tp,immchk)
 	if immchk and c:IsImmuneToEffect(e) then return false end
-	return c:IsAbleToGrave() or (c:IsType(TYPE_PENDULUM) and c:IsAbleToDeck())
+	return c:IsAbleToGrave() or (c:IsType(TYPE_PENDULUM) and c:IsAbleToExtra())
 end
 function c60150607.filter2(c,e,tp,m,f,chkf)
 	return (c:IsSetCard(0x3b21) and c:IsType(TYPE_FUSION)) and (not f or f(c))
@@ -73,11 +77,11 @@ end
 function c60150607.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and PLAYER_NONE or tp
-		local mg1=Duel.GetFusionMaterial(tp):Filter(c60150602.filter1,nil,e,tp)
+		local mg1=Duel.GetFusionMaterial(tp):Filter(c60150607.filter1,nil,e,tp)
 		local ct1=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD+LOCATION_HAND,0)
 		local ct2=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD+LOCATION_HAND)
 		if ct1<ct2 then
-			local sg=Duel.GetMatchingGroup(c60150607.filter0,tp,LOCATION_EXTRA,0,nil,e)
+			local sg=Duel.GetMatchingGroup(c60150607.filter0,tp,LOCATION_EXTRA,LOCATION_EXTRA,nil,e)
 			mg1:Merge(sg)
 			local res=Duel.IsExistingMatchingCard(c60150607.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
 			if not res then
@@ -105,7 +109,7 @@ function c60150607.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
-	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(60150607,0))
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60150607.gfilter(c)
 	return c:IsType(TYPE_PENDULUM) and not c:IsLocation(LOCATION_EXTRA)
@@ -115,11 +119,11 @@ function c60150607.gfilter2(c)
 end
 function c60150607.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and PLAYER_NONE or tp
-	local mg1=Duel.GetFusionMaterial(tp):Filter(c60150602.filter1,nil,e,tp,true)
+	local mg1=Duel.GetFusionMaterial(tp):Filter(c60150607.filter1,nil,e,tp,true)
 	local ct1=Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD+LOCATION_HAND,0)
 	local ct2=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD+LOCATION_HAND)
 	if ct1<ct2 then
-		local sg=Duel.GetMatchingGroup(c60150607.filter0,tp,LOCATION_EXTRA,0,nil,e,true)
+		local sg=Duel.GetMatchingGroup(c60150607.filter0,tp,LOCATION_EXTRA,LOCATION_EXTRA,nil,e,true)
 		mg1:Merge(sg)
 		local sg1=Duel.GetMatchingGroup(c60150607.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 		local mg2=nil

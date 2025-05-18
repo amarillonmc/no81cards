@@ -107,7 +107,7 @@ function cm.pctg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local ct=1
 		if t1 then m1[ct]=aux.Stringid(m,1) n1[ct]=1 ct=ct+1 end
 		if t2 then m1[ct]=aux.Stringid(m,2) n1[ct]=2 ct=ct+1 end
-		if t2 then m1[ct]=aux.Stringid(m,3) n1[ct]=2 ct=ct+1 end
+		if t2 then m1[ct]=aux.Stringid(m,3) n1[ct]=3 ct=ct+1 end
 		local sp=Duel.SelectOption(tp,table.unpack(m1))
 		op=n1[sp+1]
 	end
@@ -141,7 +141,6 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 			local sg=g:Select(tp,1,1,nil)
 			Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 		end
-		Duel.BreakEffect()
 		if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,5)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 			g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)

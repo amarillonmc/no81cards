@@ -1,7 +1,7 @@
 --幻想的第四乐章·背叛
 function c60150516.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,c60150516.mfilter,10,3)
+	aux.AddXyzProcedure(c,c60150516.mfilter,10,2)
 	c:EnableReviveLimit()
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -91,7 +91,7 @@ function c60150516.atkop(e,tp,eg,ep,ev,re,r,rp)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(ev)
+		e1:SetValue(ev+100)
 		e1:SetReset(RESET_EVENT+0x1ff0000)
 		c:RegisterEffect(e1)
 	end

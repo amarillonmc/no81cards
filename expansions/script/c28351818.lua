@@ -61,8 +61,6 @@ function c28351818.thfilter(c,e,tp)
 end
 function c28351818.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28351818.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c28351818.tgfilter(c)
 	return c:IsSetCard(0x287) and c:IsAbleToGrave()
@@ -87,8 +85,7 @@ function c28351818.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if Duel.GetLP(tp)>=10000 and tc:GetType()==TYPE_TRAP and tc:CheckActivateEffect(false,true,false)~=nil and Duel.SelectYesNo(tp,aux.Stringid(28351818,1)) then
-		local lp=Duel.GetLP(tp)
-		Duel.SetLP(tp,lp-1000)
+		Duel.PayLPCost(tp,1000)
 		local te=tc:CheckActivateEffect(false,true,false)
 		local op=te:GetOperation()
 		if op then op(e,tp,eg,ep,ev,re,r,rp) end

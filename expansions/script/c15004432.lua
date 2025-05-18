@@ -19,6 +19,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--SearchCard
 	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,1))
 	e4:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
@@ -41,17 +42,18 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local se=e:GetLabelObject():GetLabelObject()
 	if c:IsLocation(LOCATION_HAND) then se=nil end
-	return eg:IsExists(cm.cfilter,1,nil,tp,se)
+	return eg:IsExists(cm.cfilter,1,c,tp,se)
 end
 function cm.filter(c,tp,g)
 	return c:IsAbleToDeck() and cm.cfilter(c,tp) and g:IsContains(c)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and cm.filter(chkc,tp,eg) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(cm.filter,tp,LOCATION_GRAVE,0,1,nil,tp,eg) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+		and Duel.IsExistingTarget(cm.filter,tp,LOCATION_GRAVE,0,1,c,tp,eg) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,nil,tp,eg)
+	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_GRAVE,0,1,1,c,tp,eg)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end

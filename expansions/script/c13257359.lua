@@ -115,7 +115,6 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			local sg=g:Select(tp,1,1,nil)
 			Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 		end
-		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
 		local tc=g:GetFirst()

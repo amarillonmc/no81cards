@@ -66,8 +66,8 @@ function cm.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local m1={}
 		local n1={}
 		local ct=1
-		if t1 then m1[ct]=aux.Stringid(m,1) n1[ct]=1 ct=ct+1 end
-		if t2 then m1[ct]=aux.Stringid(m,2) n1[ct]=2 ct=ct+1 end
+		if t1 then m1[ct]=aux.Stringid(m,2) n1[ct]=1 ct=ct+1 end
+		if t2 then m1[ct]=aux.Stringid(m,3) n1[ct]=2 ct=ct+1 end
 		local sp=Duel.SelectOption(tp,table.unpack(m1))
 		op=n1[sp+1]
 	end

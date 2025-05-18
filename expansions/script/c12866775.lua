@@ -72,12 +72,11 @@ function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ct=math.min(ft,2)
 	local g1=Duel.SelectTarget(tp,s.eqfilter2,tp,LOCATION_GRAVE,0,1,1,nil,tp)
 	if ct>1 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-	Duel.BreakEffect()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g2=Duel.SelectTarget(tp,s.eqfilter1,tp,LOCATION_GRAVE,0,1,1,g1,tp)
-	g1:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g1,g1:GetCount(),0,0)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+		local g2=Duel.SelectTarget(tp,s.eqfilter1,tp,LOCATION_GRAVE,0,1,1,g1,tp)
+		g1:Merge(g2)
 	end
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g1,g1:GetCount(),0,0)
 end
 function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -121,9 +120,6 @@ function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	local g1=Duel.GetMatchingGroup(s.negfilter,tp,LOCATION_SZONE,0,nil,g)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,1,0,0)
-	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
-	end
 end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -133,9 +129,7 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and g:GetCount()>0 then
 		Duel.HintSelection(g)
 		if Duel.Destroy(g,REASON_EFFECT)~=0 then
-			if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-			Duel.Destroy(eg,REASON_EFFECT)
-			end
+			Duel.NegateActivation(ev) 
 		end
 	end
 end

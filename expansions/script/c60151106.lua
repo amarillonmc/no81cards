@@ -1,49 +1,34 @@
---├红枫指挥官 文┤
+--艾奇军团 指挥官
 function c60151106.initial_effect(c)
 	--sp
 	local e12=Effect.CreateEffect(c)
 	e12:SetType(EFFECT_TYPE_FIELD)
 	e12:SetCode(EFFECT_SPSUMMON_PROC)
 	e12:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e12:SetRange(LOCATION_HAND)
+	e12:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e12:SetCondition(c60151106.spcon2)
 	e12:SetOperation(c60151106.spop2)
 	c:RegisterEffect(e12)
 	--coin
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(60151101,2))
-	e1:SetCategory(CATEGORY_COIN+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetCountLimit(1,6011106)
-	e1:SetCondition(c60151106.coincon)
 	e1:SetTarget(c60151106.cointg)
 	e1:SetOperation(c60151106.coinop)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
-	local e111=Effect.CreateEffect(c)
-	e111:SetDescription(aux.Stringid(60151101,2))
-	e111:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e111:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e111:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e111:SetCode(EVENT_SUMMON_SUCCESS)
-	e111:SetCountLimit(1,6011106)
-	e111:SetCondition(c60151106.coincon2)
-	e111:SetTarget(c60151106.cointg)
-	e111:SetOperation(c60151106.coinop)
-	c:RegisterEffect(e111)
-	local e222=e111:Clone()
-	e222:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e222)
 	--
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(60151106,1))
-	e3:SetCategory(CATEGORY_DRAW+CATEGORY_TODECK+CATEGORY_TOGRAVE)
+	e3:SetDescription(aux.Stringid(60151106,3))
+	e3:SetCategory(CATEGORY_DRAW+CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetCountLimit(1,60151106)
 	e3:SetCondition(c60151106.spcon)
@@ -59,7 +44,7 @@ function c60151106.coincon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsHasEffect(60151199)
 end
 function c60151106.spfilter2(c)
-	return c:IsSetCard(0x9b23) and c:IsType(TYPE_MONSTER) and not c:IsCode(60151106) and c:IsAbleToGrave()
+	return c:IsSetCard(0x9b23) and not c:IsCode(60151106) and c:IsAbleToGrave()
 end
 function c60151106.spcon2(e,c)
 	if c==nil then return true end
@@ -100,11 +85,12 @@ function c60151106.spop2(e,tp,eg,ep,ev,re,r,rp,c)
 	end
 end
 function c60151106.cointg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsExistingMatchingCard(c60151106.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
 	if e:GetHandler():IsHasEffect(60151199) then
 		Duel.SetChainLimit(c60151106.chlimit)
 		Duel.RegisterFlagEffect(tp,60151106,RESET_CHAIN,0,1)
 	else
+		e:SetCategory(CATEGORY_COIN+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
 		Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
 	end
@@ -167,7 +153,6 @@ function c60151106.xyzlimit(e,c)
 end
 function c60151106.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsReason(REASON_EFFECT) and re:GetHandler()~=e:GetHandler()
-		and re:GetHandler():IsSetCard(0x9b23)
 end
 function c60151106.filter(c)
 	return c:IsSetCard(0x9b23) and c:IsAbleToDeck()
@@ -177,22 +162,19 @@ function c60151106.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		and Duel.IsExistingMatchingCard(c60151106.filter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60151106.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c60151106.filter,tp,LOCATION_GRAVE,0,1,2,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
-		Duel.ShuffleDeck(tp)
-		if Duel.Draw(tp,1,REASON_EFFECT)~=0 then 
-			local g2=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
-			if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(60151101,0)) then
-				Duel.BreakEffect()
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-				local sg=g2:Select(tp,1,1,nil)
-				Duel.SendtoGrave(sg,REASON_EFFECT)
-			end
+	local tg=Duel.SelectMatchingCard(tp,c60151106.filter,tp,LOCATION_GRAVE,0,1,2,nil)
+	if tg:GetCount()>0 then
+		Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		local g=Duel.GetOperatedGroup()
+		if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
+		local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+		if ct>0 then
+			Duel.BreakEffect()
+			Duel.Draw(tp,1,REASON_EFFECT)
 		end
 	end
 end

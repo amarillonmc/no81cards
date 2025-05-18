@@ -2,6 +2,7 @@
 local m=13257366
 local cm=_G["c"..m]
 if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
+function cm.initial_effect(c)
 	c:EnableCounterPermit(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB)
 	--special summon
 	local e1=Effect.CreateEffect(c)
@@ -10,6 +11,7 @@ if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,func
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetCode(EVENT_TO_GRAVE)
+	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
@@ -30,24 +32,25 @@ if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,func
 	e11:SetOperation(cm.bgmop)
 	c:RegisterEffect(e11)
 	eflist={{"power_capsule",e4}}
+	cm[c]=eflist
 end
-function cm.thfilter1(c,e,tp)
+function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0x351) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
-function cm.thfilter2(c)
+function cm.thfilter(c)
 	return c:IsCode(13257329) and c:IsAbleToHand()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.thfilter1,tp,LOCATION_DECK,0,1,nil,e,tp) end
+		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local sg=Duel.GetMatchingGroup(cm.thfilter2,tp,LOCATION_DECK,0,nil)
+		local sg=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
 		if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,6)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			sg=sg:Select(tp,1,1,nil)
@@ -57,6 +60,12 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ShuffleDeck(tp)
 		end
 	end
+end
+function cm.pcfilter(c,tp)
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE) and c:GetPreviousControler()==tp
+end
+function cm.pccon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.pcfilter,1,nil,1-tp)
 end
 function cm.eqfilter(c,ec)
 	return c:IsSetCard(0x352) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)
@@ -99,7 +108,6 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 			local sg=g:Select(tp,1,1,nil)
 			Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 		end
-		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)
 		local tc=g:GetFirst()

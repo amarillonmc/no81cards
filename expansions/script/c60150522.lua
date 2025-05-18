@@ -1,11 +1,11 @@
 --幻想的第五乐章·魔鬼的晚会 魔女回旋曲
 function c60150522.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,c60150522.mfilter,10,3)
+	aux.AddXyzProcedure(c,c60150522.mfilter,10,2)
 	c:EnableReviveLimit()
 	--
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(4417407,0))
+	e1:SetDescription(aux.Stringid(60150522,0))
 	e1:SetCategory(CATEGORY_RELEASE+CATEGORY_SPECIAL_SUMMON)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
@@ -18,7 +18,7 @@ function c60150522.initial_effect(c)
 	c:RegisterEffect(e1)
 	--atkup
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(62121,1))
+	e3:SetDescription(aux.Stringid(60150522,1))
 	e3:SetCategory(CATEGORY_ATKCHANGE)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
@@ -33,6 +33,7 @@ function c60150522.cfilter(c)
 end
 function c60150522.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMatchingGroupCount(c60150522.cfilter,0,LOCATION_MZONE,LOCATION_MZONE,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60150522.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -68,6 +69,7 @@ function c60150522.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60150522.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

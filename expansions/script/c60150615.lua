@@ -1,6 +1,5 @@
 --千夜 地狱看守者
 function c60150615.initial_effect(c)
-	c:SetUniqueOnField(1,0,60150615)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,c60150615.ffilter,aux.FilterBoolFunction(c60150615.ffilter2),false)
@@ -21,6 +20,14 @@ function c60150615.initial_effect(c)
 	e3:SetCondition(c60150615.sprcon)
 	e3:SetOperation(c60150615.sprop)
 	c:RegisterEffect(e3)
+	--atk
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_SET_DEFENSE_FINAL)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE,EFFECT_FLAG2_WICKED)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetValue(c60150615.defval)
+	c:RegisterEffect(e4)
 	--at limit
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_FIELD)
@@ -31,42 +38,59 @@ function c60150615.initial_effect(c)
 	e6:SetTarget(c60150615.atlimit)
 	e6:SetValue(1)
 	c:RegisterEffect(e6)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD)
+	e7:SetCode(EFFECT_MUST_ATTACK)
+	e7:SetRange(LOCATION_MZONE)
+	e7:SetTargetRange(0,LOCATION_MZONE)
+	c:RegisterEffect(e7)
+	--
+	local e11=Effect.CreateEffect(c)
+	e11:SetType(EFFECT_TYPE_FIELD)
+	e11:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e11:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e11:SetTargetRange(0,1)
+	e11:SetRange(LOCATION_MZONE)
+	e11:SetValue(1)
+	e11:SetCondition(c60150615.actcon)
+	c:RegisterEffect(e11)
 	--indes
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e5:SetValue(1)
-	c:RegisterEffect(e5)
-	local e4=e5:Clone()
-	e4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	c:RegisterEffect(e4)
-	--destroy2
 	local e8=Effect.CreateEffect(c)
-	e8:SetDescription(aux.Stringid(60150615,0))
-	e8:SetCategory(CATEGORY_TOHAND)
-	e8:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e8:SetRange(LOCATION_MZONE)
-	e8:SetCountLimit(1)
-	e8:SetCode(EVENT_PHASE+PHASE_END)
-	e8:SetCondition(c60150615.condition2)
-	e8:SetCost(c60150615.cost)
-	e8:SetTarget(c60150615.target2)
-	e8:SetOperation(c60150615.operation2)
+	e8:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e8:SetValue(1)
 	c:RegisterEffect(e8)
-	if not c60150615.global_check then
-		c60150615.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_ATTACK_ANNOUNCE)
-		ge1:SetOperation(c60150615.check)
-		Duel.RegisterEffect(ge1,0)
-		local ge2=Effect.CreateEffect(c)
-		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge2:SetCode(EVENT_ATTACK_DISABLED)
-		ge2:SetOperation(c60150615.check2)
-		Duel.RegisterEffect(ge2,0)
+	local e9=e8:Clone()
+	e9:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	c:RegisterEffect(e9)
+	--destroy2
+	local e10=Effect.CreateEffect(c)
+	e10:SetDescription(aux.Stringid(60150615,5))
+	e10:SetType(EFFECT_TYPE_QUICK_O)
+	e10:SetCode(EVENT_FREE_CHAIN)
+	e10:SetRange(LOCATION_MZONE)
+	e10:SetCountLimit(1)
+	e10:SetCost(c60150615.cost)
+	e10:SetTarget(c60150615.target2)
+	e10:SetOperation(c60150615.operation2)
+	c:RegisterEffect(e10)
+end
+function c60150615.actcon(e)
+	local ph=Duel.GetCurrentPhase()
+	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+end
+function c60150615.defvalf(c)
+	return c:IsFaceup()
+end
+function c60150615.defval(e,c)
+	local g=Duel.GetMatchingGroup(c60150615.defvalf,e:GetHandlerPlayer(),0,LOCATION_MZONE,nil)
+	if g:GetCount()==0 then
+		return e:GetHandler():GetBaseDefense()
+	else
+		local tg,val=g:GetMaxGroup(Card.GetAttack)
+		return val
 	end
 end
 function c60150615.ffilter(c)
@@ -88,12 +112,12 @@ function c60150615.spfilter2(c,fc)
 		and c:IsAbleToDeckOrExtraAsCost() 
 end
 function c60150615.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3b21) and (c:GetSequence()==6 or c:GetSequence()==7)
+	return c:IsFaceup() and c:IsSetCard(0x3b21)
 end
 function c60150615.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c60150615.filter,tp,LOCATION_ONFIELD,0,nil)
+	local g=Duel.GetMatchingGroup(c60150615.filter,tp,LOCATION_PZONE,0,nil)
 	if g:GetCount()>0 then
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
 			and Duel.IsExistingMatchingCard(c60150615.spfilter1,tp,LOCATION_ONFIELD,0,1,nil,tp,c)
@@ -107,7 +131,7 @@ function c60150615.gfilter(c)
 end
 function c60150615.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g1=Duel.SelectMatchingCard(tp,c60150615.spfilter1,tp,LOCATION_ONFIELD,0,1,1,nil,tp,c)
-	local g2=Duel.SelectMatchingCard(tp,c60150615.spfilter2,tp,LOCATION_ONFIELD,0,1,1,g1:GetFirst(),c)
+	local g2=Duel.SelectMatchingCard(tp,c60150615.spfilter2,tp,LOCATION_MZONE,0,1,1,g1:GetFirst(),c)
 	g1:Merge(g2)
 	local tc=g1:GetFirst()
 	while tc do
@@ -148,19 +172,17 @@ function c60150615.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c60150615.filter2(c)
 	local ct=c:GetFlagEffectLabel(60150615)
-	return (not ct or ct==0) and c:IsAbleToHand()
+	return c:IsAbleToHand()
 end
 function c60150615.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return tp~=Duel.GetTurnPlayer()
 end
 function c60150615.cfilter(c)
-	return c:IsSetCard(0x3b21) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsSetCard(0x3b21) and c:IsFaceup() and c:IsAbleToDeckOrExtraAsCost()
 end
 function c60150615.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) 
-		and Duel.IsExistingMatchingCard(c60150615.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
-	local g=Duel.GetMatchingGroup(c60150615.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c60150615.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) end
+	local g=Duel.GetMatchingGroup(c60150615.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)
 	if g:GetCount()>0 then
 		local g2=g:Filter(c60150615.gfilter,nil)
 		if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(60150618,0)) then
@@ -185,13 +207,22 @@ function c60150615.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c60150615.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c60150615.filter2,tp,0,LOCATION_MZONE,1,nil) end
-	local g=Duel.GetMatchingGroup(c60150615.filter2,tp,0,LOCATION_MZONE,e:GetHandler())
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
+	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60150615.operation2(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c60150615.filter2,tp,0,LOCATION_MZONE,e:GetHandler())
-	Duel.SendtoHand(g,nil,2,REASON_EFFECT)
+	local c=e:GetHandler()
+	local tp=e:GetHandlerPlayer()
+	--Pos Change
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_SET_POSITION)
+	e2:SetTargetRange(0,LOCATION_MZONE)
+	e2:SetValue(POS_FACEUP_ATTACK)
+	Duel.RegisterEffect(e2,tp)
+	local e3=e2:Clone()
+	e3:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
+	Duel.RegisterEffect(e3,tp)
 end
 function c60150615.check(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()

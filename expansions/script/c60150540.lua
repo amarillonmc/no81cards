@@ -9,23 +9,23 @@ function c60150540.initial_effect(c)
 	c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(60150540,0))
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_SPSUMMON_PROC)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e2:SetRange(LOCATION_HAND)
-	e2:SetCountLimit(1,60150540)
 	e2:SetCondition(c60150540.spcon)
 	e2:SetOperation(c60150540.spop)
 	c:RegisterEffect(e2)
-	--封特招
+	--[[封特招
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetOperation(c60150540.desop2)
-	c:RegisterEffect(e3)
+	c:RegisterEffect(e3)]]
 	--sp
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(60150540,0))
+	e4:SetDescription(aux.Stringid(60150540,1))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_MZONE)
@@ -33,9 +33,19 @@ function c60150540.initial_effect(c)
 	e4:SetTarget(c60150540.sptg)
 	e4:SetOperation(c60150540.spop2)
 	c:RegisterEffect(e4)
+	
+	
+	--effect gain
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_BE_MATERIAL)
+	e2:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
+	e2:SetCondition(c60150540.efcon)
+	e2:SetOperation(c60150540.efop)
+	c:RegisterEffect(e2)
 end
 function c60150540.spfilter(c)
-	return c:IsSetCard(0xab20) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xab20) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c60150540.spcon(e,c)
 	if c==nil then return true end
@@ -75,13 +85,9 @@ function c60150540.xyzfilter(c,e,tp,al,mb)
 		and al:IsCanBeXyzMaterial(c) and mb:IsCanBeXyzMaterial(c)
 end
 function c60150540.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingTarget(c60150540.cfilter,tp,LOCATION_HAND,0,1,nil,e,tp,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local cg=Duel.SelectMatchingCard(tp,c60150540.cfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp,e:GetHandler())
-	Duel.ConfirmCards(1-tp,cg)
+	if chk==0 then return Duel.IsExistingTarget(c60150540.lvfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,nil,e,tp,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,c60150540.lvfilter,tp,0,LOCATION_GRAVE+LOCATION_ONFIELD,1,1,nil,e,tp,e:GetHandler())
-	Duel.ShuffleHand(tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c60150540.spop2(e,tp,eg,ep,ev,re,r,rp)
@@ -106,4 +112,33 @@ function c60150540.spop2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
 		sc:CompleteProcedure()
 	end
+end
+
+function c60150540.efcon(e,tp,eg,ep,ev,re,r,rp)
+	return r==REASON_XYZ and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+end
+function c60150540.efop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local rc=c:GetReasonCard()
+	local e1=Effect.CreateEffect(rc)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetDescription(aux.Stringid(60150540,2))
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
+	e1:SetCountLimit(1)
+	e1:SetValue(c60150540.valcon)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	rc:RegisterEffect(e1,true)
+	if not rc:IsType(TYPE_EFFECT) then
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_ADD_TYPE)
+		e2:SetValue(TYPE_EFFECT)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		rc:RegisterEffect(e2,true)
+	end
+end
+function c60150540.valcon(e,re,r,rp)
+	return bit.band(r,REASON_BATTLE)~=0
 end

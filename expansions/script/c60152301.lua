@@ -1,4 +1,4 @@
---连接姬 虹村雪
+--星海游侠 妮克斯
 local m=60152301
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e11)
 	--XYZ
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(60152301,5))
+	e2:SetDescription(aux.Stringid(60152301,9))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_TO_GRAVE)
@@ -50,7 +50,7 @@ end
 function c60152301.e1tgfilter(c,tp)
 	local code=c:GetCode()
 	return c:IsFaceup() and c:IsSetCard(0xcb26) and c:IsType(TYPE_MONSTER) 
-		and Duel.IsExistingTarget(c60152301.e1tgfilter2,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,code)
+		and Duel.IsExistingMatchingCard(c60152301.e1tgfilter2,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,code)
 end
 function c60152301.e1tgfilter2(c,code)
 	return c:IsSetCard(0xcb26) and c:IsType(TYPE_MONSTER) and not c:IsCode(code)
@@ -64,6 +64,7 @@ function c60152301.e1tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c60152301.e1op(e,tp,eg,ep,ev,re,r,rp)
 	local tc0=Duel.GetFirstTarget()
+	if not tc0:IsRelateToEffect(e) or tc0:IsFacedown() then return end
 	local code=tc0:GetCode()
 	local g=Duel.GetMatchingGroup(c60152301.e1tgfilter2,tp,LOCATION_DECK+LOCATION_EXTRA,0,nil,code)
 	if g:GetCount()>0 then
@@ -90,7 +91,8 @@ function c60152301.e1op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60152301.e2con(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+	local ph=Duel.GetCurrentPhase()
+	return ph~=PHASE_DAMAGE and ph~=PHASE_DAMAGE_CAL and e:GetHandler():IsReason(REASON_EFFECT)
 end
 function c60152301.e2tgfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xcb26) and c:IsType(TYPE_XYZ)
@@ -102,13 +104,13 @@ function c60152301.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60152301.e2opfilter(c,e)
-	return not c:IsImmuneToEffect(e) and not c:IsCode(60152301)
+	return not c:IsImmuneToEffect(e)
 end
 function c60152301.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetOverlayCount(tp,1,1)
 	local g0=Duel.GetMatchingGroup(c60152301.e2tgfilter,tp,LOCATION_MZONE,0,nil)
 	local g00=Duel.GetMatchingGroup(c60152301.e2opfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e)
-	if (g0:GetCount()>0 and g00:GetCount()>0) and ct>0 then
+	if (#g0+#g00)>0 and ct>0 then
 		if Duel.SelectYesNo(tp,aux.Stringid(60152301,8)) then
 			Duel.RemoveOverlayCard(tp,1,1,1,3,REASON_EFFECT)
 		else
@@ -121,16 +123,18 @@ function c60152301.e2op(e,tp,eg,ep,ev,re,r,rp)
 			local tc2=g2:GetFirst()
 			Duel.Overlay(tc2,g1)
 		end
-	elseif g0:GetCount()==0 and ct>0 then
-		Duel.RemoveOverlayCard(tp,1,1,1,3,REASON_EFFECT)
-	elseif g0:GetCount()>0 and not ct==0 then
+	elseif (#g0+#g00)>0 and ct==0 then
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(60152301,6))
-		local g1=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c60152301.e2opfilter),tp,LOCATION_GRAVE,0,1,2,nil,e)
+		local g1=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c60152301.e2opfilter),tp,LOCATION_GRAVE,LOCATION_GRAVE,1,2,nil,e)
 		Duel.HintSelection(g1)
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(60152301,7))
 		local g2=Duel.SelectMatchingCard(tp,c60152301.e2tgfilter,tp,LOCATION_MZONE,0,1,1,nil)
 		Duel.HintSelection(g2)
 		local tc2=g2:GetFirst()
 		Duel.Overlay(tc2,g1)
+	elseif (#g0+#g00)==0 and ct>0 then
+		Duel.RemoveOverlayCard(tp,1,1,1,3,REASON_EFFECT)
+	else
+		return false
 	end
 end

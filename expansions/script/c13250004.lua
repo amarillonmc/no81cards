@@ -1,5 +1,6 @@
 --魂锁 高热的锁链
 local s,id,o=GetID()
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function s.initial_effect(c)
 	--Activate(summon)
 	local e1=Effect.CreateEffect(c)
@@ -23,6 +24,8 @@ function s.initial_effect(c)
 	e2:SetTarget(s.thtg)
 	e2:SetOperation(s.thop)
 	c:RegisterEffect(e2)
+	elements={{"tama_elements",{{TAMA_ELEMENT_EARTH,1},{TAMA_ELEMENT_FIRE,1}}}}
+	s[c]=elements
 	
 end
 function s.descon(e,tp,eg,ep,ev,re,r,rp)

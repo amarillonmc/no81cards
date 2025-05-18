@@ -55,34 +55,32 @@ function c11513082.checkop(e,tp,eg,ep,ev,re,r,rp)
 		tc=eg:GetNext()
 	end
 end
-function c11513082.pbfil(c,e,tp)
-	return not c:IsPublic() and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck() and Duel.IsExistingMatchingCard(c11513082.thfil,tp,LOCATION_DECK,0,1,nil,e,tp,c)
+function c11513082.pbfil(c)
+	return not c:IsPublic() and c:IsAbleToDeck()-- and Duel.IsExistingMatchingCard(c11513082.thfil,tp,LOCATION_DECK,0,1,nil,e,tp,c)
 end
-function c11513082.thfil(c,e,tp,pc)
-	return c:IsSetCard(0x195) and c:IsType(TYPE_MONSTER) and not c:IsAttribute(pc:GetAttribute()) and c:IsAbleToHand()
+function c11513082.thfil(c)
+	return c:IsSetCard(0x195) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c11513082.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11513082.pbfil,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c11513082.pbfil,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,c11513082.pbfil,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-	Duel.SetTargetCard(g)
+	--Duel.SetTargetCard(g)
 	Duel.ConfirmCards(1-tp,g)
-	Duel.RaiseEvent(g,EVENT_CUSTOM+9091064,e,REASON_COST,tp,tp,0)
+	if g:GetFirst():IsSetCard(0x195) then
+		Duel.RaiseEvent(g,EVENT_CUSTOM+9091064,e,REASON_COST,tp,tp,0)
+	end
 	Duel.ShuffleHand(tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end  
 function c11513082.thop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
-	local pc=Duel.GetFirstTarget()
-	if pc==nil then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,c11513082.thfil,tp,LOCATION_DECK,0,1,1,nil,e,tp,pc):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c11513082.thfil,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if tc then
 		Duel.SendtoHand(tc,tp,REASON_EFFECT) 
 		Duel.ConfirmCards(1-tp,tc)  
-		if pc:IsRelateToEffect(e) then 
 			Duel.SendtoDeck(pc,nil,2,REASON_EFFECT) 
-		end 
 	end
 end 
 function c11513082.damcon(e,tp,eg,ep,ev,re,r,rp) 

@@ -14,54 +14,67 @@ function c60150621.initial_effect(c)
 	--move
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(60150621,0))
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(2)
-    e3:SetTarget(c60150621.mvtg)
+	e3:SetCountLimit(1)
+	--e3:SetCost(c60150621.mvcost)
+	e3:SetTarget(c60150621.mvtg)
 	e3:SetOperation(c60150621.seqop)
 	c:RegisterEffect(e3)
-	--Activate
+	
+	--disable field
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(60150621,1))
-	e4:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND)
-	e4:SetType(EFFECT_TYPE_IGNITION)
+	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1)
-	e4:SetCost(c60150621.cost)
-	e4:SetTarget(c60150621.target)
-	e4:SetOperation(c60150621.activate)
+	e4:SetCode(EFFECT_DISABLE_FIELD)
+	e4:SetValue(c60150621.disval)
 	c:RegisterEffect(e4)
 end
 function c60150621.ffilter(c)
 	return c:IsSetCard(0x5b21) and c:IsType(TYPE_MONSTER)
 end
 function c60150621.ffilter2(c)
-	return c:IsSetCard(0x3b21) and c:IsAttribute(ATTRIBUTE_LIGHT)
+	return (c:IsSetCard(0x3b21) and c:IsAttribute(ATTRIBUTE_LIGHT)) or c:IsHasEffect(60150643)
 end
 function c60150621.splimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
 end
+function c60150621.mvcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+end
+function c60150621.mvcostf(e,te)
+	return te:GetOwner()~=e:GetOwner()
+end
 function c60150621.mvtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) end
-    if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_MZONE,0,1,nil)
-        and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_CONTROL)>0 end
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60150621.seqop(e,tp,eg,ep,ev,re,r,rp)
-    if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-    local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
-    local nseq=math.log(s,2)
-    if Duel.MoveSequence(e:GetHandler(),nseq)~=0 then
-		local e5=Effect.CreateEffect(e:GetHandler())
-		e5:SetType(EFFECT_TYPE_SINGLE)
-		e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e5:SetRange(LOCATION_MZONE)
-		e5:SetCode(EFFECT_IMMUNE_EFFECT)
-		e5:SetValue(1)
-		e5:SetReset(RESET_PHASE+RESET_CHAIN)
-		e:GetHandler():RegisterEffect(e5)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) or c:IsImmuneToEffect(e) or not c:IsControler(tp) or Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)<=0 then return end
+	local e5=Effect.CreateEffect(e:GetHandler())
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCode(EFFECT_IMMUNE_EFFECT)
+	e5:SetValue(c60150621.mvcostf)
+	e5:SetReset(RESET_PHASE+RESET_CHAIN)
+	e:GetHandler():RegisterEffect(e5,true)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+	local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
+	Duel.Hint(HINT_ZONE,tp,s)
+	local nseq=math.log(s,2)
+	Duel.MoveSequence(c,nseq)
+	if c:GetSequence()==nseq and Duel.SelectYesNo(tp,aux.Stringid(60150621,1)) then
+		local cg=c:GetColumnGroup()
+		local g=Duel.GetMatchingGroup(c60150621.thfilter,tp,0,LOCATION_ONFIELD,nil,cg)
+		local g2=Duel.GetMatchingGroup(c60150621.thfilter2,tp,0,LOCATION_ONFIELD,nil,e,tp)
+		Duel.BreakEffect()
+		Duel.Destroy(g,REASON_EFFECT)
+		Duel.SendtoHand(g2,nil,REASON_EFFECT)
 	end
 end
 function c60150621.thfilter(c,g)
@@ -123,19 +136,13 @@ function c60150621.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.SendtoDeck(sg,nil,2,REASON_COST)
 		end
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetCode(EFFECT_CANNOT_ATTACK)
-	e1:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
-	e:GetHandler():RegisterEffect(e1,true)
 end
 function c60150621.desfilter2(c,s,tp)
 	local seq=c:GetSequence()
 	return math.abs(seq-s)==1 and c:IsControler(tp)
 end
 function c60150621.activate(e,tp,eg,ep,ev,re,r,rp)
-    local c=e:GetHandler()
+	local c=e:GetHandler()
 	local cg=c:GetColumnGroup()
 	local g=Duel.GetMatchingGroup(c60150621.thfilter,tp,0,LOCATION_ONFIELD,nil,cg)
 	if Duel.Destroy(g,REASON_EFFECT)~=0 then
@@ -143,4 +150,8 @@ function c60150621.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		Duel.SendtoHand(g2,nil,REASON_EFFECT)
 	end
+end
+function c60150621.disval(e)
+	local c=e:GetHandler()
+	return c:GetColumnZone(LOCATION_ONFIELD,0)
 end

@@ -56,7 +56,7 @@ function s.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or aux.fuslimit(e,se,sp,st)
 end
 function s.eqfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:CheckUniqueOnField(tp)
+	return c:IsType(TYPE_MONSTER) and c:CheckUniqueOnField(tp) and c:GetBaseAttack()<=1500
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

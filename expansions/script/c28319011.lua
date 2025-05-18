@@ -22,6 +22,7 @@ function c28319011.initial_effect(c)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCondition(c28319011.tdcon)
+	e2:SetCost(c28319011.tdcost)
 	e2:SetTarget(c28319011.tdtg)
 	e2:SetOperation(c28319011.tdop)
 	c:RegisterEffect(e2)
@@ -55,25 +56,14 @@ function c28319011.activate(e,tp,eg,ep,ev,re,r,rp,op)
 	elseif op==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sc=Duel.SelectMatchingCard(tp,c28319011.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
-		if Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) and sc:IsSummonLocation(LOCATION_GRAVE) then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetDescription(aux.Stringid(28319011,5))
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
-			e1:SetValue(LOCATION_DECKBOT)
-			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-			sc:RegisterEffect(e1)
-		end
-		Duel.SpecialSummonComplete()
-		if true then
+		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
+		if Duel.GetLP(tp)>=1500 then
 			local te=sc.recover_effect
 			if not te then return end
 			local tg=te:GetTarget()
 			if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) and Duel.SelectYesNo(tp,aux.Stringid(28319011,3)) then
 				Duel.BreakEffect()
-				local lp=Duel.GetLP(tp)
-				Duel.SetLP(tp,lp-1500)
+				Duel.PayLPCost(tp,1500)
 				local op=te:GetOperation()
 				if op then op(e,tp,eg,ep,ev,re,r,rp) end
 			end
@@ -84,13 +74,15 @@ function c28319011.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	return bit.band(Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION),LOCATION_ONFIELD)~=0 and rp==tp and rc and rc:IsSetCard(0x287)
 end
+function c28319011.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,1500) end
+	Duel.PayLPCost(tp,1500)
+end
 function c28319011.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeck() end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,tp,LOCATION_GRAVE)
 end
 function c28319011.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local lp=Duel.GetLP(tp)
-	Duel.SetLP(tp,lp-1500)
 	local te=e:GetHandler():CheckActivateEffect(false,true,false)
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end

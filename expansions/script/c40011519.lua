@@ -5,29 +5,25 @@ function c40011519.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_MONSTER_SSET)
 	e1:SetValue(TYPE_TRAP)
-	c:RegisterEffect(e1)   
-	--set 
-	local e2=Effect.CreateEffect(c)  
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O) 
-	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,40011519)  
-	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(c40011519.actg)
-	e2:SetOperation(c40011519.acop)
-	c:RegisterEffect(e2)   
-	--trap effect 
+	c:RegisterEffect(e1)
+	--transform
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_MOVE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetCondition(c40011519.transcon)
+	e2:SetOperation(c40011519.transop)
+	c:RegisterEffect(e2)
+	--set
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_ACTIVATE) 
-	e3:SetCode(EVENT_SUMMON)
-	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-	e3:SetRange(LOCATION_SZONE)
-	e3:SetCountLimit(1,40011519+1)
-	e3:SetCondition(c40011519.discon) 
-	e3:SetTarget(c40011519.distg)
-	e3:SetOperation(c40011519.disop)
-	c:RegisterEffect(e3) 
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCountLimit(1,40011519)
+	e3:SetCost(aux.bfgcost)
+	e3:SetTarget(c40011519.actg)
+	e3:SetOperation(c40011519.acop)
+	c:RegisterEffect(e3)
 end
 function c40011519.acfilter(c,tp)
 	return c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)
@@ -53,37 +49,19 @@ function c40011519.acop(e,tp,eg,ep,ev,re,r,rp)
 		local tep=tc:GetControler()
 		local cost=te:GetCost()
 		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
-		Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain()) 
-		if tc:IsCode(40011525) and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(40011519,0)) then 
-			Duel.BreakEffect() 
+		Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
+		if tc:IsCode(40011525) and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(40011519,0)) then
+			Duel.BreakEffect()
 			Duel.Draw(tp,1,REASON_EFFECT)
-		end  
+		end
 	end
 end
-function c40011519.discon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler() 
-	if not (c:IsFacedown()) then return false end 
-	return ep==1-tp and Duel.GetCurrentChain()==0  
-	and (e:GetHandler():GetTurnID()~=Duel.GetTurnCount() or e:GetHandler():IsHasEffect(EFFECT_TRAP_ACT_IN_SET_TURN)) 
-end 
-function c40011519.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end  
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,eg:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-end
-function c40011519.disop(e,tp,eg,ep,ev,re,r,rp) 
+function c40011519.transcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.NegateSummon(eg)
-	if Duel.Destroy(eg,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
-		c:CancelToGrave() 
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) 
-	end 
-end 
-
-
-
-
-
-
-
+	return c:GetOriginalCode()==40011519 and c:IsLocation(LOCATION_SZONE) and c:IsFacedown()
+end
+function c40011519.transop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	c:SetEntityCode(9911634,true)
+	c:ReplaceEffect(9911634,0,0)
+end

@@ -4,6 +4,7 @@ local cm=_G["c"..m]
 if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 local trigonm=13257380
 function cm.initial_effect(c)
+	c:EnableCounterPermit(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,3))
 	e1:SetCategory(CATEGORY_EQUIP)
@@ -79,6 +80,9 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.pcfilter(c,tp)
 	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE) and c:GetPreviousControler()==tp
+end
+function cm.eqfilter(c,ec)
+	return c:IsSetCard(0x352) and c:IsType(TYPE_MONSTER) and c:CheckEquipTarget(ec)
 end
 function cm.pccon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.pcfilter,1,nil,1-tp)

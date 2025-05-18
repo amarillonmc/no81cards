@@ -5,32 +5,25 @@ function c40011513.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_MONSTER_SSET)
 	e1:SetValue(TYPE_TRAP)
-	c:RegisterEffect(e1)   
-	--to hand  
-	local e2=Effect.CreateEffect(c)  
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e2:SetType(EFFECT_TYPE_IGNITION) 
-	--e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCountLimit(1,40011513)
-	--e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-	--return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2 end)
-	e2:SetCost(c40011513.thcost)
-	e2:SetTarget(c40011513.thtg)
-	e2:SetOperation(c40011513.thop)
+	c:RegisterEffect(e1)
+	--transform
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_MOVE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetCondition(c40011513.transcon)
+	e2:SetOperation(c40011513.transop)
 	c:RegisterEffect(e2)
-	--trap effect 
+	--to hand
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
-	e3:SetType(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_ACTIVATE) 
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-	e3:SetRange(LOCATION_SZONE)
-	e3:SetCountLimit(1,40011513+1)
-	e3:SetCondition(c40011513.discon) 
-	e3:SetTarget(c40011513.distg)
-	e3:SetOperation(c40011513.disop)
-	c:RegisterEffect(e3) 
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_HAND)
+	e3:SetCountLimit(1,40011513)
+	e3:SetCost(c40011513.thcost)
+	e3:SetTarget(c40011513.thtg)
+	e3:SetOperation(c40011513.thop)
+	c:RegisterEffect(e3)
 end
 function c40011513.dfilter(c)
 	return c:IsSetCard(0xaf1b) and c:IsDiscardable()
@@ -43,7 +36,6 @@ function c40011513.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	g:AddCard(e:GetHandler())
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
-
 function c40011513.filter1(c)
 	return c:IsCode(40011525) and c:IsAbleToHand()
 end
@@ -68,31 +60,12 @@ function c40011513.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,sg1)
 	end
 end
-function c40011513.discon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler() 
-	if not (c:IsFacedown()) then return false end 
-	return rp==1-tp and re:IsActiveType(TYPE_TRAP) and Duel.IsChainDisablable(ev) 
-	and (e:GetHandler():GetTurnID()~=Duel.GetTurnCount() or e:GetHandler():IsHasEffect(EFFECT_TRAP_ACT_IN_SET_TURN)) 
-end 
-function c40011513.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end  
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)  
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-end
-function c40011513.disop(e,tp,eg,ep,ev,re,r,rp) 
+function c40011513.transcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.NegateActivation(ev) and c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
-		c:CancelToGrave() 
-		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsEnvironment(40011525,tp) and Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(40011513,0)) then  
-			Duel.BreakEffect()
-			local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil) 
-			Duel.Destroy(dg,REASON_EFFECT)
-		end 
-	end 
-end 
-
-
-
-
-
-
+	return c:GetOriginalCode()==40011513 and c:IsLocation(LOCATION_SZONE) and c:IsFacedown()
+end
+function c40011513.transop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	c:SetEntityCode(9911632,true)
+	c:ReplaceEffect(9911632,0,0)
+end

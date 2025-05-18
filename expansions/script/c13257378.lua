@@ -41,12 +41,19 @@ function cm.atkval(e,c)
 	return g:GetCount()*1200
 end
 function cm.econ(e)
-	return Duel.IsExistingMatchingCard(cm.filter,e:GetHandlerPlayer(),LOCATION_MZONE,0,2,e:GetHandler(),c:GetCode())
+	local c=e:GetHandler()
+	return Duel.IsExistingMatchingCard(cm.filter,e:GetHandlerPlayer(),LOCATION_MZONE,0,2,c,c:GetCode())
 end
 function cm.efilter(e,te)
 	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and not(g~=nil and g:IsContains(c))
+end
+function cm.pcfilter(c,tp)
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE) and c:GetPreviousControler()==tp
+end
+function cm.pccon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.pcfilter,1,nil,1-tp)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -89,13 +96,13 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 			e1:SetValue(1)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
+			c:RegisterEffect(e1)
 			local e2=e1:Clone()
 			e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-			tc:RegisterEffect(e2)
+			c:RegisterEffect(e2)
 		end
 		if Duel.GetFlagEffect(tp,m)<=0 then
-			Duel.RegisterFlagEffect(tp,m,0,0,0)
+			Duel.RegisterFlagEffect(tp,m,0,0,0,0)
 		end
 		local ct=Duel.GetFlagEffectLabel(tp,m)
 		if ct<2 then
@@ -142,7 +149,7 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 			e4:SetType(EFFECT_TYPE_FIELD)
 			e4:SetCode(EFFECT_SKIP_M1)
 			e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e4:SetTargetRange(0,1)
+			e4:SetTargetRange(1,0)
 			if Duel.GetTurnPlayer()==tp and ph>=PHASE_MAIN1 then
 				e4:SetLabel(tct)
 				e4:SetCondition(cm.bpcon)

@@ -55,9 +55,19 @@ end
 function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ec=e:GetHandler():GetEquipTarget()
+	if not c:IsRelateToEffect(e) or not ec then return end
+	if ec then
+		local e4=Effect.CreateEffect(e:GetHandler())
+		e4:SetType(EFFECT_TYPE_SINGLE)
+		e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e4:SetRange(LOCATION_MZONE)
+		e4:SetCode(EFFECT_IMMUNE_EFFECT)
+		e4:SetValue(cm.efilter1)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+		ec:RegisterEffect(e4,true)
+	end
 	local tc=Duel.GetFirstTarget()
-	if not tc:IsRelateToEffect(e) or not c:IsRelateToEffect(e) or not ec then return end
-	if ec and ec:IsFaceup() then
+	if tc:IsRelateToEffect(e) then
 		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -76,36 +86,34 @@ function cm.bombop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetLabelObject(tc)
 		e3:SetReset(RESET_EVENT+RESET_CHAIN)
 		Duel.RegisterEffect(e3,tp)
-		if not Duel.Equip(tp,tc,ec,false) then return end
-		--Add Equip limit
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
-		e1:SetCode(EFFECT_EQUIP_LIMIT)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetLabelObject(ec)
-		e1:SetValue(cm.eqlimit2)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
-		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-		e2:SetCode(EVENT_PHASE+PHASE_END)
-		e2:SetRange(LOCATION_SZONE)
-		e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_OWNER_RELATE)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e2:SetCountLimit(1)
-		e2:SetCondition(cm.phcon)
-		e2:SetOperation(cm.phop)
-		tc:RegisterEffect(e2)
-		local e4=Effect.CreateEffect(e:GetHandler())
-		e4:SetType(EFFECT_TYPE_SINGLE)
-		e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e4:SetRange(LOCATION_MZONE)
-		e4:SetCode(EFFECT_IMMUNE_EFFECT)
-		e4:SetValue(cm.efilter1)
-		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
-		ec:RegisterEffect(e4,true)
-	else Duel.SendtoGrave(tc,REASON_RULE) end
+		
+		if ec and ec:IsFaceup() and tc:GetOriginalType()&TYPE_MONSTER>0 and Duel.Equip(tp,tc,ec,false) then
+			--Add Equip limit
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
+			e1:SetCode(EFFECT_EQUIP_LIMIT)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e1:SetLabelObject(ec)
+			e1:SetValue(cm.eqlimit2)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
+			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+			e2:SetCode(EVENT_PHASE+PHASE_END)
+			e2:SetRange(LOCATION_SZONE)
+			e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_OWNER_RELATE)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			e2:SetCountLimit(1)
+			e2:SetCondition(cm.phcon)
+			e2:SetOperation(cm.phop)
+			tc:RegisterEffect(e2)
+		elseif tc:GetOriginalType()&TYPE_MONSTER>0 then
+			Duel.SendtoGrave(tc,REASON_RULE)
+		else
+			Duel.SendtoGrave(tc,REASON_EFFECT)
+		end
+	end
 end
 function cm.discon1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()

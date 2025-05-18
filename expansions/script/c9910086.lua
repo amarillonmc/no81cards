@@ -47,8 +47,7 @@ function c9910086.repfilter(c,tp)
 end
 function c9910086.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsReason(REASON_RELEASE) and c:IsAbleToRemove()
-		and eg:IsExists(c9910086.repfilter,1,nil,tp) end
+	if chk==0 then return c:IsAbleToRemove() and eg:IsExists(c9910086.repfilter,1,nil,tp) end
 	return Duel.SelectEffectYesNo(tp,c,96)
 end
 function c9910086.repval(e,c)

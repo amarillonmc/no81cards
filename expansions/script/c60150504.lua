@@ -2,7 +2,7 @@
 function c60150504.initial_effect(c)
 	--summon with no tribute
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(51126152,0))
+	e2:SetDescription(aux.Stringid(60150504,0))
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_SUMMON_PROC)
@@ -10,7 +10,7 @@ function c60150504.initial_effect(c)
 	c:RegisterEffect(e2)
 	--特招
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(95503687,0))
+	e1:SetDescription(aux.Stringid(60150504,1))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_HANDES+CATEGORY_DRAW)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetType(EFFECT_TYPE_IGNITION)

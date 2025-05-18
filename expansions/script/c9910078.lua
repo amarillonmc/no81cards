@@ -9,16 +9,14 @@ function c9910078.initial_effect(c)
 	e1:SetTarget(c9910078.target)
 	e1:SetOperation(c9910078.operation)
 	c:RegisterEffect(e1)
-	--Negate
+	--salvage or negate
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_NEGATE)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_REMOVE+CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetCountLimit(1,9910079)
 	e2:SetCondition(c9910078.condition2)
-	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c9910078.target2)
 	e2:SetOperation(c9910078.operation2)
 	c:RegisterEffect(e2)
@@ -60,15 +58,24 @@ function c9910078.filter2(c,tp)
 	return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsSetCard(0x9951)
 end
 function c9910078.condition2(e,tp,eg,ep,ev,re,r,rp)
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not re:IsActiveType(TYPE_MONSTER) then return false end
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	return g and g:IsExists(c9910078.filter2,1,nil,tp)
-		and Duel.IsChainNegatable(ev)
 end
 function c9910078.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	local b1=e:GetHandler():IsAbleToHand()
+	local b2=e:GetHandler():IsAbleToRemove() and Duel.IsChainDisablable(ev)
+	if chk==0 then return b1 or b2 end
 end
 function c9910078.operation2(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateActivation(ev)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	local b1=c:IsAbleToHand()
+	local b2=c:IsAbleToRemove() and Duel.IsChainDisablable(ev)
+	if b1 and (not b2 or Duel.SelectOption(tp,1190,1192)==0) then
+		Duel.SendtoHand(c,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,c)
+	elseif Duel.Remove(c,POS_FACEUP,REASON_EFFECT)>0 then
+		Duel.NegateEffect(ev)
+	end
 end

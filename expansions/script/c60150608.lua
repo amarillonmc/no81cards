@@ -16,16 +16,34 @@ function c60150608.initial_effect(c)
 	local e3=e1:Clone()
 	e3:SetCode(EVENT_SPSUMMON)
 	c:RegisterEffect(e3)
+	--remain field
+	local e9=Effect.CreateEffect(c)
+	e9:SetType(EFFECT_TYPE_SINGLE)
+	e9:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e9:SetCode(EFFECT_REMAIN_FIELD)
+	c:RegisterEffect(e9)
+	--act in hand
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e8:SetCondition(c60150608.handcon)
+	c:RegisterEffect(e8)
+end
+function c60150608.handconf(c)
+	return c:IsFaceup() and ((c:IsSetCard(0x3b21) and c:IsType(TYPE_FUSION)) or (c:IsSetCard(0x9b21) and c:IsType(TYPE_FUSION)))
+end
+function c60150608.handcon(e)
+	return Duel.IsExistingMatchingCard(c60150608.handconf,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
 function c60150608.cfilter(c)
-	return c:IsSetCard(0x3b21) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsFaceup() and c:IsSetCard(0x3b21) and c:IsAbleToDeckOrExtraAsCost()
 end
 function c60150608.gfilter(c)
 	return c:IsType(TYPE_PENDULUM)
 end
 function c60150608.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c60150608.cfilter,tp,LOCATION_MZONE,0,1,nil) end
-	local g=Duel.GetMatchingGroup(c60150608.cfilter,tp,LOCATION_MZONE,0,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c60150608.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,e:GetHandler()) end
+	local g=Duel.GetMatchingGroup(c60150608.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,e:GetHandler())
 	if g:GetCount()>0 then
 		local g2=g:Filter(c60150608.gfilter,nil)
 		if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(60150608,0)) then
@@ -53,15 +71,19 @@ function c60150608.condition1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()==0
 end
 function c60150608.target1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,eg:GetCount()) end
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE_SUMMON,eg,eg:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,eg:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,eg:GetCount())
+end
+function c60150608.activate1f(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,true,true) and (c:IsLocation(LOCATION_DECK) or c:IsLocation(LOCATION_EXTRA))
 end
 function c60150608.activate1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateSummon(eg)
-	if Duel.SendtoDeck(eg,nil,2,REASON_EFFECT)~=0 then
-		Duel.BreakEffect()
-		Duel.Draw(tp,eg:GetCount(),REASON_EFFECT)
+	if Duel.SendtoDeck(eg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)==0 then return end
+	local g=Duel.GetOperatedGroup()
+	local g2=g:Filter(c60150608.activate1f,nil,e,tp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>=g2:GetCount() and Duel.SelectYesNo(tp,aux.Stringid(60150608,3)) then 
+		Duel.SpecialSummon(g2,0,tp,tp,true,true,POS_FACEUP)
 	end
 end

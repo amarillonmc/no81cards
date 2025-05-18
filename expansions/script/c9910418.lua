@@ -2,7 +2,7 @@
 function c9910418.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFunRep(c,9910401,c9910418.matfilter,1,63,true,true)
+	aux.AddFusionProcCodeFun(c,9910401,c9910418.matfilter,2,true,true)
 	--to deck & spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON)

@@ -1,4 +1,4 @@
---连接姬 莫妮卡·韦斯文特
+--星海游侠 奥罗拉
 local m=60152304
 local cm=_G["c"..m]
 function cm.initial_effect(c)
@@ -68,10 +68,11 @@ function c60152304.e1op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60152304.e2con(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+	local ph=Duel.GetCurrentPhase()
+	return ph~=PHASE_DAMAGE and ph~=PHASE_DAMAGE_CAL and e:GetHandler():IsReason(REASON_EFFECT)
 end
 function c60152304.e2tgfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsDestructable()
+	return c:IsDestructable()
 end
 function c60152304.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60152304.e2tgfilter,tp,0,LOCATION_ONFIELD,1,nil) end
@@ -84,6 +85,6 @@ function c60152304.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,c60152304.e2tgfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
-		Duel.Destroy(g,REASON_EFFECT)
+		Duel.Destroy(g,REASON_EFFECT,LOCATION_DECK)
 	end
 end

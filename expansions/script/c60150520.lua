@@ -2,11 +2,11 @@
 function c60150520.initial_effect(c)
 	c:SetUniqueOnField(1,1,60150520)
 	--xyz summon
-	aux.AddXyzProcedure(c,c60150520.mfilter,9,3)
+	aux.AddXyzProcedure(c,c60150520.mfilter,9,9)
 	c:EnableReviveLimit()
 	--atkup
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(28297833,0))
+	e1:SetDescription(aux.Stringid(60150520,0))
 	e1:SetCategory(CATEGORY_TODECK+CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DELAY)
@@ -58,22 +58,23 @@ function c60150520.initial_effect(c)
 	c:RegisterEffect(e13)
 	--Special Summon
 	local e14=Effect.CreateEffect(c)
-	e14:SetDescription(aux.Stringid(35952884,1))
+	e14:SetDescription(aux.Stringid(60150520,1))
 	e14:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e14:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE)
 	e14:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e14:SetCode(EVENT_LEAVE_FIELD)
+	e14:SetCountLimit(1,60150520)
 	e14:SetCondition(c60150520.sumcon)
 	e14:SetTarget(c60150520.sumtg)
 	e14:SetOperation(c60150520.sumop)
 	c:RegisterEffect(e14)
-	--spsummon limit
+	--[[spsummon limit
 	local e111=Effect.CreateEffect(c)
 	e111:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e111:SetType(EFFECT_TYPE_SINGLE)
 	e111:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e111:SetValue(c60150520.splimit)
-	c:RegisterEffect(e111)
+	c:RegisterEffect(e111)]]
 end
 function c60150520.mfilter(c)
 	return c:IsRace(RACE_FIEND) and c:IsAttribute(ATTRIBUTE_LIGHT)
@@ -103,6 +104,7 @@ function c60150520.sumtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,c60150520.filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60150520.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -127,7 +129,7 @@ function c60150520.tdop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_BASE_ATTACK)
 		e1:SetReset(RESET_EVENT+0x1ff0000)
-		e1:SetValue(g:GetCount()*200)
+		e1:SetValue(g:GetCount()*300)
 		c:RegisterEffect(e1)
 	end
 end

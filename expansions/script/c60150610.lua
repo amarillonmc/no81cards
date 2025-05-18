@@ -1,15 +1,14 @@
 --千夜 灵火
 function c60150610.initial_effect(c)
-	c:SetUniqueOnField(1,0,60150610)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,c60150610.ffilter,aux.FilterBoolFunction(c60150610.ffilter2),false)
-    --splimit
-    local e2=Effect.CreateEffect(c)
-    e2:SetType(EFFECT_TYPE_SINGLE)
-    e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-    e2:SetCode(EFFECT_SPSUMMON_CONDITION)
-    e2:SetRange(LOCATION_EXTRA)
+	--splimit
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e2:SetRange(LOCATION_EXTRA)
 	e2:SetValue(c60150610.splimit)
 	c:RegisterEffect(e2)
 	--special summon rule
@@ -21,22 +20,24 @@ function c60150610.initial_effect(c)
 	e3:SetCondition(c60150610.sprcon)
 	e3:SetOperation(c60150610.sprop)
 	c:RegisterEffect(e3)
-    --atk up
-    local e5=Effect.CreateEffect(c)
-    e5:SetType(EFFECT_TYPE_SINGLE)
-    e5:SetCode(EFFECT_UPDATE_ATTACK)
-    e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-    e5:SetRange(LOCATION_MZONE)
-    e5:SetValue(c60150610.atkval)
-    c:RegisterEffect(e5)
+	--atk up
+	--local e5=Effect.CreateEffect(c)
+	--e5:SetType(EFFECT_TYPE_SINGLE)
+	--e5:SetCode(EFFECT_UPDATE_ATTACK)
+	--e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	--e5:SetRange(LOCATION_MZONE)
+	--e5:SetValue(c60150610.atkval)
+	--c:RegisterEffect(e5)
 	--destroy
 	local e9=Effect.CreateEffect(c)
-	e9:SetDescription(aux.Stringid(60150610,0))
-	e9:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e9:SetCategory(CATEGORY_DESTROY)
-	e9:SetCode(EVENT_BATTLE_DESTROYING)
+	e9:SetDescription(aux.Stringid(60150610,7))
+	e9:SetType(EFFECT_TYPE_QUICK_O)
+	e9:SetCategory(CATEGORY_DESTROY+CATEGORY_DAMAGE)
+	e9:SetCode(EVENT_FREE_CHAIN)
+	e9:SetRange(LOCATION_MZONE)
+	e9:SetCountLimit(1)
 	e9:SetCost(c60150610.cost)
-	e9:SetCondition(c60150610.decon)
+	--e9:SetCondition(c60150610.decon)
 	e9:SetTarget(c60150610.detg)
 	e9:SetOperation(c60150610.deop)
 	c:RegisterEffect(e9)
@@ -48,13 +49,11 @@ function c60150610.ffilter2(c)
 	return c:IsAttribute(ATTRIBUTE_FIRE) or c:IsHasEffect(60150618)
 end
 function c60150610.cfilter(c)
-	return c:IsSetCard(0x3b21) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsSetCard(0x3b21) and c:IsFaceup() and c:IsAbleToDeckOrExtraAsCost()
 end
 function c60150610.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) 
-		and Duel.IsExistingMatchingCard(c60150610.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end
-    Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
-	local g=Duel.GetMatchingGroup(c60150610.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c60150610.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil) end
+	local g=Duel.GetMatchingGroup(c60150610.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)
 	if g:GetCount()>0 then
 		local g2=g:Filter(c60150610.gfilter,nil)
 		if g2:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(60150618,0)) then
@@ -79,10 +78,10 @@ function c60150610.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c60150610.cfilter2(c)
-    return c:IsFaceup() and c:IsSetCard(0x3b21)
+	return c:IsFaceup() and c:IsSetCard(0x3b21)
 end
 function c60150610.atkval(e,c)
-    return Duel.GetMatchingGroupCount(c60150610.cfilter2,c:GetControler(),LOCATION_EXTRA,0,nil)*200
+	return Duel.GetMatchingGroupCount(c60150610.cfilter2,c:GetControler(),LOCATION_EXTRA,0,nil)*200
 end
 function c60150610.decon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -95,15 +94,20 @@ function c60150610.detg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60150610.filter2,tp,0,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(c60150610.filter2,tp,0,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60150610.deop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectMatchingCard(tp,c60150610.filter2,tp,0,LOCATION_ONFIELD,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
-		Duel.Destroy(g,REASON_EFFECT)
 		local atk=g:GetFirst():GetBaseAttack()
-		Duel.Damage(1-tp,atk,REASON_EFFECT)
+		local atk2=g:GetFirst():GetAttack()*2
+		if Duel.Destroy(g,REASON_EFFECT)~=0 then
+			Duel.Damage(1-tp,atk,REASON_EFFECT)
+		else
+			Duel.Damage(1-tp,atk2,REASON_EFFECT)
+		end
 	end
 end
 function c60150610.splimit(e,se,sp,st)
@@ -118,12 +122,12 @@ function c60150610.spfilter2(c,fc)
 		and c:IsAbleToDeckOrExtraAsCost()
 end
 function c60150610.filter(c)
-    return c:IsFaceup() and c:IsSetCard(0x3b21) and (c:GetSequence()==6 or c:GetSequence()==7)
+	return c:IsFaceup() and c:IsSetCard(0x3b21)
 end
 function c60150610.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-    local g=Duel.GetMatchingGroup(c60150610.filter,tp,LOCATION_ONFIELD,0,nil)
+	local g=Duel.GetMatchingGroup(c60150610.filter,tp,LOCATION_PZONE,0,nil)
 	if g:GetCount()>0 then
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
 			and Duel.IsExistingMatchingCard(c60150610.spfilter1,tp,LOCATION_ONFIELD,0,1,nil,tp,c)
@@ -137,7 +141,7 @@ function c60150610.gfilter(c)
 end
 function c60150610.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g1=Duel.SelectMatchingCard(tp,c60150610.spfilter1,tp,LOCATION_ONFIELD,0,1,1,nil,tp,c)
-	local g2=Duel.SelectMatchingCard(tp,c60150610.spfilter2,tp,LOCATION_ONFIELD,0,1,1,g1:GetFirst(),c)
+	local g2=Duel.SelectMatchingCard(tp,c60150610.spfilter2,tp,LOCATION_MZONE,0,1,1,g1:GetFirst(),c)
 	g1:Merge(g2)
 	local tc=g1:GetFirst()
 	while tc do

@@ -1,5 +1,6 @@
 --魂锁链士
 local s,id,o=GetID()
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function s.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,s.ffilter,2,true)
@@ -38,6 +39,8 @@ function s.initial_effect(c)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetValue(s.efilter)
 	c:RegisterEffect(e4)
+	elements={{"tama_elements",{{TAMA_ELEMENT_EARTH,1},{TAMA_ELEMENT_ENERGY,1}}}}
+	s[c]=elements
 	
 end
 function s.ffilter(c)

@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
 	e3:SetRange(LOCATION_SZONE)
-	e3:SetTargetRange(LOCATION_MZONE,0)
+	e3:SetTargetRange(LOCATION_ONFIELD,0)
 	e3:SetTarget(cm.indtg)
 	e3:SetCountLimit(4)
 	e3:SetValue(cm.valcon)
@@ -46,8 +46,7 @@ function cm.eqlimit(e,c)
 end
 function cm.indtg(e,c)
 	local bool=e:GetHandler():GetEquipTarget()==c or (e:GetHandler():GetEquipTarget() and e:GetHandler():GetEquipTarget():GetEquipGroup():IsContains(c))
-	if bool then Duel.HintSelection(Group.CreateGroup(c)) end
-	return bool and Duel.SelectYesNo(e:GetHandler():GetControler(),aux.Stringid(m,0))
+	return bool --and Duel.HintSelection(Group.CreateGroup(c)) and Duel.SelectYesNo(e:GetHandlerPlayer(),aux.Stringid(m,0))
 end
 function cm.valcon(e,re,r,rp)
 	return bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0

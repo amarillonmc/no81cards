@@ -1,7 +1,18 @@
 --幻想乐章的高潮·舞会
 function c60150536.initial_effect(c)
+	--xyz summon
+	aux.AddXyzProcedure(c,c60150536.mfilter,11,3)
+	c:EnableReviveLimit()
+	--spsummon limit
+	local e11=Effect.CreateEffect(c)
+	e11:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e11:SetType(EFFECT_TYPE_SINGLE)
+	e11:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e11:SetValue(aux.xyzlimit)
+	c:RegisterEffect(e11)
 	--
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(60150536,0))
 	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -28,8 +39,8 @@ function c60150536.initial_effect(c)
 	c:RegisterEffect(e5)
 	--
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(60150536,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
+	e1:SetDescription(aux.Stringid(60150536,1))
+	e1:SetCategory(CATEGORY_POSITION)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -39,6 +50,9 @@ function c60150536.initial_effect(c)
 	e1:SetTarget(c60150536.thtg)
 	e1:SetOperation(c60150536.thop)
 	c:RegisterEffect(e1)
+end
+function c60150536.mfilter(c)
+	return c:IsRace(RACE_FIEND) and c:IsAttribute(ATTRIBUTE_LIGHT)
 end
 function c60150536.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_XYZ and e:GetHandler():GetOverlayGroup():IsExists(Card.IsType,1,nil,TYPE_XYZ)
@@ -77,10 +91,10 @@ function c60150536.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function c60150536.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) end
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsOnField,tp,0,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(60150536,1))
-	local g=Duel.SelectTarget(tp,Card.IsOnField,tp,0,LOCATION_MZONE,1,5,nil)
+	local d=Duel.GetMatchingGroupCount(Card.IsOnField,tp,0,LOCATION_MZONE,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(60150536,2))
+	local g=Duel.SelectTarget(tp,Card.IsOnField,tp,0,LOCATION_MZONE,1,d,nil)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
 end
 function c60150536.thop(e,tp,eg,ep,ev,re,r,rp)
@@ -88,5 +102,9 @@ function c60150536.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
 	if tg:GetCount()>0 then
 		Duel.ChangePosition(tg,POS_FACEUP_DEFENSE,POS_FACEUP_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK,true)
+	end
+	Group.RemoveCard(g,tg)
+	if #g>0 then
+		Duel.SendtoGrave(g,REASON_RULE,1-tp)
 	end
 end

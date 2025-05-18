@@ -1,8 +1,16 @@
 --千夜 黑白
 function c60150616.initial_effect(c)
-	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3b21),2,2)
+	--fusion summon
+	aux.AddFusionProcFunRep(c,c60150616.ffilter,2,true)
+	aux.AddContactFusionProcedure(c,aux.FilterBoolFunction(Card.IsReleasable,REASON_SPSUMMON),LOCATION_MZONE,0,Duel.Release,REASON_SPSUMMON+REASON_MATERIAL)
+	--splimit
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c60150616.splimit)
+	c:RegisterEffect(e1)
 	--tograve
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(60150616,0))
@@ -10,8 +18,8 @@ function c60150616.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e4:SetTarget(c60150616.tgtg)
-	e4:SetOperation(c60150616.tgop)
+	e4:SetTarget(c60150616.e4tg)
+	e4:SetOperation(c60150616.e4op)
 	c:RegisterEffect(e4)
 	--atk
 	local e5=Effect.CreateEffect(c)
@@ -21,24 +29,31 @@ function c60150616.initial_effect(c)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetValue(c60150616.adval)
 	c:RegisterEffect(e5)
-	--spm
-	local e7=Effect.CreateEffect(c)
-	e7:SetDescription(aux.Stringid(60150616,1))
-	e7:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e7:SetCode(EVENT_TO_GRAVE)
-	e7:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e7:SetCountLimit(1,60150616)
-	e7:SetCondition(c60150616.descon)
-	e7:SetTarget(c60150616.destg)
-	e7:SetOperation(c60150616.desop)
+	local e7=e5:Clone()
+	e7:SetCode(EFFECT_SET_DEFENSE)
 	c:RegisterEffect(e7)
-	local e8=e7:Clone()
-	e8:SetCode(EVENT_REMOVE)
-	c:RegisterEffect(e8)
-	local e9=e7:Clone()
-	e9:SetCode(EVENT_TO_DECK)
-	c:RegisterEffect(e9)
+	
+	--spsummon
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(60150616,2))
+	e6:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e6:SetType(EFFECT_TYPE_QUICK_O)
+	e6:SetCode(EVENT_CHAINING)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCountLimit(1,60150616)
+	e6:SetCondition(c60150616.spcon)
+	e6:SetTarget(c60150616.sptg)
+	e6:SetOperation(c60150616.spop)
+	c:RegisterEffect(e6)
+end
+function c60150616.ffilter(c,fc,sub,mg,sg)
+	return c:IsFusionSetCard(0x3b21) and (not sg or not sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()))
+end
+function c60150616.splimit(e,se,sp,st)
+	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or aux.fuslimit(e,se,sp,st)
+end
+function c60150616.e1tg(e,c)
+	return e:GetHandler():GetLinkedGroup():IsContains(c)
 end
 function c60150616.spfilter2(c)
 	return c:IsSetCard(0x3b21) and c:IsCanBeFusionMaterial() and c:IsAbleToDeckOrExtraAsCost()
@@ -59,9 +74,9 @@ function c60150616.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function c60150616.tgfilter(c)
-	return c:IsSetCard(0x3b21) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x3b21) and c:IsType(TYPE_PENDULUM)
 end
-function c60150616.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c60150616.e4tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60150616.tgfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
@@ -71,7 +86,7 @@ end
 function c60150616.gfilter2(c)
 	return c:IsAbleToGrave()
 end
-function c60150616.tgop(e,tp,eg,ep,ev,re,r,rp)
+function c60150616.e4op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c60150616.tgfilter,tp,LOCATION_DECK,0,nil)
 	local g2=g:Filter(c60150616.gfilter,nil)
 	local g3=g:Filter(c60150616.gfilter2,nil)
@@ -90,23 +105,23 @@ end
 function c60150616.adval(e,c)
 	return Duel.GetFieldGroupCount(c:GetControler(),0,LOCATION_ONFIELD)*800
 end
-function c60150616.descon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousPosition(POS_FACEUP) and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+
+function c60150616.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp
 end
-function c60150616.filter(c,e,tp)
-	return c:IsSetCard(0x3b21) and not c:IsCode(60150616) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c60150616.spfilter(c,e,tp)
+	return c:IsSetCard(0x3b21) and c:IsType(TYPE_PENDULUM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and ((c:IsLocation(LOCATION_DECK) and Duel.GetMZoneCount(tp)>0)
+			or (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0))
 end
-function c60150616.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c60150616.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+function c60150616.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c60150616.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_EXTRA)
 end
-function c60150616.desop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+function c60150616.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c60150616.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	local g=Duel.SelectMatchingCard(tp,c60150616.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,e,tp)
+	if #g>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

@@ -2,7 +2,7 @@
 function c60150503.initial_effect(c)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(82888408,0))
+	e1:SetDescription(aux.Stringid(60150503,1))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -11,6 +11,9 @@ function c60150503.initial_effect(c)
 	e1:SetTarget(c60150503.sptg)
 	e1:SetOperation(c60150503.spop)
 	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_REMOVE)
+	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_BE_MATERIAL)
@@ -19,12 +22,12 @@ function c60150503.initial_effect(c)
 	e3:SetOperation(c60150503.efop)
 	c:RegisterEffect(e3)
 	--封特招
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e4:SetCondition(c60150503.descon)
-	e4:SetOperation(c60150503.desop)
-	c:RegisterEffect(e4)
+	--local e4=Effect.CreateEffect(c)
+	--e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	--e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	--e4:SetCondition(c60150503.descon)
+	--e4:SetOperation(c60150503.desop)
+	--c:RegisterEffect(e4)
 end
 function c60150503.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_SPECIAL+1
@@ -43,12 +46,14 @@ function c60150503.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_HAND) and bit.band(r,REASON_DISCARD)~=0
 end
 function c60150503.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60150503.spop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
-		Duel.SpecialSummon(e:GetHandler(),1,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 function c60150503.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)

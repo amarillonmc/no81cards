@@ -1,5 +1,6 @@
 --魂锁链王·轴
 local s,id,o=GetID()
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function s.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,s.ffilter,3,true)
@@ -40,7 +41,9 @@ function s.initial_effect(c)
 	c:RegisterEffect(e6)
 	local e7=e6:Clone()
 	e7:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	c:RegisterEffect(e7)   
+	c:RegisterEffect(e7)
+	elements={{"tama_elements",{{TAMA_ELEMENT_EARTH,3},{TAMA_ELEMENT_ENERGY,2}}}}
+	s[c]=elements
 	
 end
 function s.ffilter(c)

@@ -1,7 +1,7 @@
 --幻想曲的不安定
 function c60150538.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xab20),10,3)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xab20),10,2)
 	c:EnableReviveLimit()
 	--destroy replace
 	local e7=Effect.CreateEffect(c)
@@ -74,7 +74,7 @@ function c60150538.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c60150538.filter(c)
-	return c:IsAttackPos()
+	return c:IsFaceup()
 end
 function c60150538.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -89,7 +89,7 @@ function c60150538.operation(e,tp,eg,ep,ev,re,r,rp)
 					e1:SetType(EFFECT_TYPE_SINGLE)
 					e1:SetCode(EFFECT_ADD_TYPE)
 					e1:SetValue(TYPE_EFFECT)
-					e1:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+					e1:SetReset(RESET_EVENT+0x1fe0000)
 					tc:RegisterEffect(e1)
 				end
 				local e2=Effect.CreateEffect(c)
@@ -100,7 +100,7 @@ function c60150538.operation(e,tp,eg,ep,ev,re,r,rp)
 				e2:SetCode(EVENT_BATTLE_START)
 				e2:SetCondition(c60150538.condition2)
 				e2:SetOperation(c60150538.operation2)
-				e2:SetReset(RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END)
+				e2:SetReset(RESET_EVENT+0x1fe0000)
 				tc:RegisterEffect(e2)
 				tc=g:GetNext()
 			end

@@ -28,7 +28,6 @@ function c10202929.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(10202929,1))
 	e4:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
-	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_FZONE)
 	e4:SetCountLimit(1,10202929)
@@ -45,7 +44,7 @@ function c10202929.nttg(e,c)
 end
 --2
 function c10202929.chainop(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetHandler():IsAttribute(ATTRIBUTE_WATER) and ep==tp then
+	if aux.IsCodeListed(re:GetHandler(),22702055) and c:IsType(TYPE_MONSTER) and ep==tp then
 		Duel.SetChainLimit(c10202929.chainlm)
 	end
 end
@@ -54,26 +53,27 @@ function c10202929.chainlm(e,rp,tp)
 end
 --3
 function c10202929.tdfilter(c)
-	return c:IsAbleToDeck() and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and (aux.IsCodeListed(c,22702055) or (c:IsType(TYPE_NORMAL) and c:IsAttribute(ATTRIBUTE_WATER)) or c:IsSetCard(0x177))
+    return c:IsAbleToDeck()
+    and c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA)
+    and (aux.IsCodeListed(c,22702055)
+        or (c:IsType(TYPE_NORMAL) and c:IsAttribute(ATTRIBUTE_WATER))
+        or c:IsSetCard(0x177))
 end
-function c10202929.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c10202929.tdfilter(chkc) end
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingTarget(c10202929.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c10202929.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,3,3,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+function c10202929.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c10202929.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,3,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,0,0)
 end
 function c10202929.drop(e,tp,eg,ep,ev,re,r,rp)
-	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if #tg==0 then return end
-	Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	local g=Duel.GetOperatedGroup()
-	if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then Duel.ShuffleDeck(tp) end
-	local ct=g:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-	if ct>0 then
-		Duel.BreakEffect()
-		Duel.Draw(tp,1,REASON_EFFECT)
+	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c10202929.tdfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,3,3,nil)
+	if #g>0 then
+		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		if Duel.IsPlayerCanDraw(tp,1)
+			and Duel.SelectYesNo(tp,aux.Stringid(10202929,1)) then
+			Duel.BreakEffect()
+			Duel.ShuffleDeck(tp)
+			Duel.Draw(tp,1,REASON_EFFECT)
+		end
 	end
 end

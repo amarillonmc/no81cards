@@ -5,32 +5,28 @@ function c40011510.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_MONSTER_SSET)
 	e1:SetValue(TYPE_TRAP)
-	c:RegisterEffect(e1)   
-	--set 
-	local e2=Effect.CreateEffect(c)  
-	e2:SetType(EFFECT_TYPE_QUICK_O) 
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMING_MAIN_END)
-	e2:SetRange(LOCATION_HAND)
-	e2:SetCountLimit(1,40011510)
-	e2:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2 end)
-	e2:SetCost(c40011510.setcost)
-	e2:SetTarget(c40011510.settg)
-	e2:SetOperation(c40011510.setop)
+	c:RegisterEffect(e1)
+	--transform
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_MOVE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetCondition(c40011510.transcon)
+	e2:SetOperation(c40011510.transop)
 	c:RegisterEffect(e2)
-	--trap effect 
+	--set
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_NEGATE+CATEGORY_SPECIAL_SUMMON+CATEGORY_DAMAGE)
-	e3:SetType(EFFECT_TYPE_QUICK_O+EFFECT_TYPE_ACTIVATE) 
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-	e3:SetRange(LOCATION_SZONE)
-	e3:SetCountLimit(1,40011510+1)
-	e3:SetCondition(c40011510.discon) 
-	e3:SetTarget(c40011510.distg)
-	e3:SetOperation(c40011510.disop)
-	c:RegisterEffect(e3) 
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetHintTiming(0,TIMING_MAIN_END)
+	e3:SetRange(LOCATION_HAND)
+	e3:SetCountLimit(1,40011510)
+	e3:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+		return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2 end)
+	e3:SetCost(c40011510.setcost)
+	e3:SetTarget(c40011510.settg)
+	e3:SetOperation(c40011510.setop)
+	c:RegisterEffect(e3)
 end
 function c40011510.dfilter(c)
 	return c:IsSetCard(0xaf1b) and c:IsDiscardable()
@@ -47,54 +43,37 @@ function c40011510.setfilter(c)
 	return c:IsSetCard(0xaf1b) and not c:IsCode(40011510) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function c40011510.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c40011510.setfilter,tp,LOCATION_DECK,0,1,nil) end 
+	if chk==0 then return Duel.IsExistingMatchingCard(c40011510.setfilter,tp,LOCATION_DECK,0,1,nil) end
 end
-function c40011510.setop(e,tp,eg,ep,ev,re,r,rp) 
-	local c=e:GetHandler() 
+function c40011510.setop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local tc=Duel.SelectMatchingCard(tp,c40011510.setfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst() 
+	local tc=Duel.SelectMatchingCard(tp,c40011510.setfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if tc then
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true) 
+		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
 		e1:SetValue(TYPE_TRAP)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
-		tc:RegisterEffect(e1)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetDescription(aux.Stringid(40011510,0))
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+		e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2)
 		Duel.ConfirmCards(1-tp,tc)
 	end
 end
-function c40011510.discon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler() 
-	if not (c:IsFacedown()) then return false end 
-	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainDisablable(ev) 
-	and (e:GetHandler():GetTurnID()~=Duel.GetTurnCount() or e:GetHandler():IsHasEffect(EFFECT_TRAP_ACT_IN_SET_TURN)) 
-end 
-function c40011510.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end  
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)  
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-end
-function c40011510.disop(e,tp,eg,ep,ev,re,r,rp) 
+function c40011510.transcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.NegateActivation(ev) and c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
-		c:CancelToGrave() 
-		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsEnvironment(40011525,tp) then  
-			Duel.BreakEffect()
-			Duel.Damage(1-tp,1200,REASON_EFFECT)
-		end 
-	end 
-end 
-
-
-
-
-
-
+	return c:GetOriginalCode()==40011510 and c:IsLocation(LOCATION_SZONE) and c:IsFacedown()
+end
+function c40011510.transop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	c:SetEntityCode(9911631,true)
+	c:ReplaceEffect(9911631,0,0)
+end

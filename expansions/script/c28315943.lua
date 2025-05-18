@@ -13,7 +13,7 @@ function c28315943.initial_effect(c)
 	c:RegisterEffect(e1)
 	--recover
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_DRAW+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,28315943)
@@ -32,14 +32,13 @@ function c28315943.chkfilter(c)
 end
 function c28315943.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	if c:IsLocation(LOCATION_HAND) then return end
-	if Duel.IsExistingMatchingCard(c28315943.chkfilter,tp,LOCATION_HAND,0,1,nil) and Duel.SelectOption(tp,aux.Stringid(28315943,3),aux.Stringid(28315943,5))==0 then
+	if Duel.IsExistingMatchingCard(c28315943.chkfilter,tp,LOCATION_HAND,0,1,nil) and Duel.SelectOption(tp,aux.Stringid(28315943,3),aux.Stringid(28315943,6))==0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local g=Duel.SelectMatchingCard(tp,c28315943.chkfilter,tp,LOCATION_HAND,0,1,1,nil)
 		Duel.ConfirmCards(1-tp,g)
 		Duel.ShuffleHand(tp)
 	else
-		local lp=Duel.GetLP(tp)
-		Duel.SetLP(tp,lp-2000)
+		Duel.PayLPCost(tp,2000)
 	end
 end
 function c28315943.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -59,6 +58,7 @@ function c28315943.recop(e,tp,eg,ep,ev,re,r,rp)
 		{b1,aux.Stringid(28315943,0)},
 		{b2,aux.Stringid(28315943,1)},
 		{b3,aux.Stringid(28315943,2)})
+	if op~=3 then Duel.BreakEffect() end
 	if op==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c28315943.thfilter,tp,LOCATION_DECK,0,1,1,nil)

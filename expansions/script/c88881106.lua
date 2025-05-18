@@ -42,7 +42,7 @@ function s.spcop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c)
-	return not c:IsType(TYPE_LINK+TYPE_XYZ) and c:IsLocation(LOCATION_EXTRA)
+	return not c:IsType(TYPE_LINK) and c:IsLocation(LOCATION_EXTRA)
 end
 function s.condition(e,c)
 	if c==nil then return true end

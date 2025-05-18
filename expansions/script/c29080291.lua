@@ -25,6 +25,16 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetTargetRange(1,0)
 	c:RegisterEffect(e2)
+
+	--pos
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,2))
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAIN_SOLVING)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCondition(cm.condition)
+	e3:SetOperation(cm.operation)
+	c:RegisterEffect(e3)
 end
 function cm.ntcon(e,c,minc)
 	if c==nil then return true end
@@ -59,4 +69,42 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ShuffleHand(tp)
 		end
 	end
+end
+function cm.descheck(c,tp)
+	return c:IsOnField() and c:IsControler(tp)
+end
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
+	if not c:IsPosition(POS_FACEUP_ATTACK) then return false end
+	if re:IsHasCategory(CATEGORY_NEGATE)
+		and Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT):IsHasType(EFFECT_TYPE_ACTIVATE) then return false end
+	local ex,tg,tc=Duel.GetOperationInfo(ev,CATEGORY_DESTROY)
+	return rp==1-tp and ex and tg~=nil and tc+tg:FilterCount(cm.descheck,nil,tp)-tg:GetCount()>0
+end
+function cm.check(c)
+	return c:IsFaceup() and c:IsSetCard(0x87af)
+end
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsPosition(POS_FACEUP_ATTACK) and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then
+		Duel.Hint(HINT_CARD,0,m)
+		Duel.ChangePosition(c,POS_FACEUP_DEFENSE)
+		local g=Duel.GetMatchingGroup(cm.check,tp,LOCATION_MZONE,0,nil)
+		if g:GetCount()>0 then
+			for tc in aux.Next(g) do
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_IMMUNE_EFFECT)
+				e1:SetRange(LOCATION_MZONE)
+				e1:SetLabelObject(re)
+				e1:SetValue(cm.efilter)
+				e1:SetReset(RESET_EVENT+RESET_CHAIN)
+				tc:RegisterEffect(e1)
+			end
+		end
+	end
+end
+function cm.efilter(e,re)
+	return re==e:GetLabelObject()
 end

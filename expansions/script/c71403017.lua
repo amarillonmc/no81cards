@@ -119,6 +119,7 @@ function c71403017.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
 	if ct>0 and g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(71403017,1)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=g:Select(tp,1,ct,nil)
 		Duel.Destroy(dg,REASON_EFFECT)
 	end

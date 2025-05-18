@@ -22,6 +22,7 @@ function c95101001.initial_effect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetCountLimit(4,95101001-1)
 	e1:SetCost(c95101001.spcost)
 	e1:SetTarget(c95101001.sptg)
 	e1:SetOperation(c95101001.spop)
@@ -43,7 +44,7 @@ function c95101001.initial_effect(c)
 end
 function c95101001.splimit(e,c)
 	if not c then return false end
-	return aux.IsCodeListed(c,95101001)
+	return not aux.IsCodeListed(c,95101001)
 end
 function c95101001.costfilter(c,tp)
 	return aux.IsCodeListed(c,95101001) and c:IsFaceup() and Duel.GetMZoneCount(tp,c)>0 and c:IsAbleToHandAsCost()

@@ -1,53 +1,62 @@
 --幻想曲 被褪去的面具
 function c60150530.initial_effect(c)
-	--synchro summon
-	aux.AddSynchroProcedure(c,c60150530.tfilter,aux.NonTuner(nil),1)
-	c:EnableReviveLimit()
-	--remove
+	--special summon rule
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(60150530,0))
-	e1:SetCategory(CATEGORY_TODECK)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetTarget(c60150530.tdtg)
-	e1:SetOperation(c60150530.tdop)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCountLimit(1,60150530+EFFECT_COUNT_CODE_OATH)
+	e1:SetCondition(c60150530.e1con)
+	e1:SetTarget(c60150530.e1tg)
+	e1:SetOperation(c60150530.e1op)
 	c:RegisterEffect(e1)
-	--xyzlv
+	--set
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_XYZ_LEVEL)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetValue(c60150530.xyzlv)
+	e2:SetDescription(aux.Stringid(60150530,1))
+	e2:SetCategory(CATEGORY_TOGRAVE)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,6010530)
+	e2:SetTarget(c60150530.e2tg)
+	e2:SetOperation(c60150530.e2op)
 	c:RegisterEffect(e2)
 end
-function c60150530.xyzlv(e,c,rc)
-	return 0xa0000+e:GetHandler():GetLevel()
+function c60150530.e1tgf(c,tp)
+	return c:IsType(TYPE_XYZ)
+		and c:CheckRemoveOverlayCard(tp,1,REASON_SPSUMMON)
 end
-function c60150530.tfilter(c)
-	return c:IsSetCard(0xab20)
+function c60150530.e1con(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.CheckRemoveOverlayCard(tp,1,1,1,REASON_SPSUMMON)
 end
-function c60150530.filter(c)
-	return c:IsType(TYPE_XYZ) and c:IsAbleToDeck()
+function c60150530.e1tg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetMatchingGroup(c60150530.e1tgf,tp,LOCATION_MZONE,LOCATION_MZONE,c)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DEATTACHFROM)
+	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
+	if tc then
+		e:SetLabelObject(tc)
+		return true
+	else return false end
 end
-function c60150530.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(c60150530.filter,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.GetMatchingGroup(c60150530.filter,tp,LOCATION_GRAVE,0,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
+function c60150530.e1op(e,tp,eg,ep,ev,re,r,rp,c)
+	local tc=e:GetLabelObject()
+	tc:RemoveOverlayCard(tp,1,1,REASON_SPSUMMON)
 end
-function c60150530.tdop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,c60150530.filter,tp,LOCATION_GRAVE,0,1,2,nil)
+function c60150530.e2tgf(c)
+	return c:IsSetCard(0xab20) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+end
+function c60150530.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c60150530.e2tgf,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+end
+function c60150530.e2op(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c60150530.e2tgf,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
-		Duel.HintSelection(g)
-		if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)>0 then
-			local g1=Duel.GetOperatedGroup():GetCount()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,g1,nil)
-			if g2:GetCount()>0 then
-				Duel.HintSelection(g2)
-				Duel.SendtoDeck(g2,nil,2,REASON_EFFECT)
-			end
-		end
+		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end

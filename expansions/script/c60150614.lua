@@ -1,15 +1,14 @@
 --千夜 斩
 function c60150614.initial_effect(c)
-	c:SetUniqueOnField(1,0,60150614)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,c60150614.ffilter,aux.FilterBoolFunction(c60150614.ffilter2),false)
-    --splimit
-    local e2=Effect.CreateEffect(c)
-    e2:SetType(EFFECT_TYPE_SINGLE)
-    e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-    e2:SetCode(EFFECT_SPSUMMON_CONDITION)
-    e2:SetRange(LOCATION_EXTRA)
+	--splimit
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e2:SetRange(LOCATION_EXTRA)
 	e2:SetValue(c60150614.splimit)
 	c:RegisterEffect(e2)
 	--special summon rule
@@ -34,8 +33,8 @@ function c60150614.initial_effect(c)
 	c:RegisterEffect(e7)
 	--3
 	local e8=Effect.CreateEffect(c)
-	e8:SetDescription(aux.Stringid(60150614,4))
-	e8:SetCategory(CATEGORY_REMOVE+CATEGORY_TODECK+CATEGORY_DRAW)
+	e8:SetDescription(aux.Stringid(60150614,0))
+	e8:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
 	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e8:SetCode(EVENT_BATTLED)
 	e8:SetCondition(c60150614.atcon)
@@ -62,12 +61,12 @@ function c60150614.spfilter2(c,fc)
 		and c:IsAbleToDeckOrExtraAsCost() 
 end
 function c60150614.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3b21) and (c:GetSequence()==6 or c:GetSequence()==7)
+	return c:IsFaceup() and c:IsSetCard(0x3b21)
 end
 function c60150614.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c60150614.filter,tp,LOCATION_ONFIELD,0,nil)
+	local g=Duel.GetMatchingGroup(c60150614.filter,tp,LOCATION_PZONE,0,nil)
 	if g:GetCount()>0 then
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
 			and Duel.IsExistingMatchingCard(c60150614.spfilter1,tp,LOCATION_ONFIELD,0,1,nil,tp,c)
@@ -81,7 +80,7 @@ function c60150614.gfilter(c)
 end
 function c60150614.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g1=Duel.SelectMatchingCard(tp,c60150614.spfilter1,tp,LOCATION_ONFIELD,0,1,1,nil,tp,c)
-	local g2=Duel.SelectMatchingCard(tp,c60150614.spfilter2,tp,LOCATION_ONFIELD,0,1,1,g1:GetFirst(),c)
+	local g2=Duel.SelectMatchingCard(tp,c60150614.spfilter2,tp,LOCATION_MZONE,0,1,1,g1:GetFirst(),c)
 	g1:Merge(g2)
 	local tc=g1:GetFirst()
 	while tc do
@@ -144,22 +143,15 @@ function c60150614.atcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c60150614.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local bc=e:GetHandler():GetBattleTarget()
-	if chk==0 then return bc and bc:IsRelateToBattle() and bc:IsStatus(STATUS_BATTLE_DESTROYED) end
-	local opt=Duel.SelectOption(tp,aux.Stringid(60150614,4),aux.Stringid(60150614,5),aux.Stringid(60150614,6))
-	e:SetLabel(opt)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,bc,1,0,0)
+	if chk==0 then return bc and bc:IsRelateToBattle() and bc:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,bc,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetChainLimit(aux.FALSE)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60150614.atop(e,tp,eg,ep,ev,re,r,rp)
 	local bc=e:GetHandler():GetBattleTarget()
 	if not bc:IsRelateToBattle() then return end
-	if e:GetLabel()==0 and bc:IsRelateToBattle() then
-		Duel.Remove(bc,POS_FACEUP,REASON_EFFECT)
-	end
-	if e:GetLabel()==1 and bc:IsRelateToBattle() then
-		Duel.SendtoDeck(bc,nil,2,POS_FACEUP,REASON_EFFECT)
-	end
-	if e:GetLabel()==2 then
-		Duel.Draw(tp,1,REASON_EFFECT)
-	end
+	Duel.SendtoDeck(bc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	Duel.Draw(tp,1,REASON_EFFECT)
 end

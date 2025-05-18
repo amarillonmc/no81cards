@@ -10,19 +10,21 @@ function c9910090.initial_effect(c)
 	e1:SetTarget(c9910090.sptg)
 	e1:SetOperation(c9910090.spop)
 	c:RegisterEffect(e1)
-	--limit
+	--atk up
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetRange(LOCATION_GRAVE)
+	e2:SetDescription(aux.Stringid(9910090,0))
+	e2:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DESTROY)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCode(EVENT_REMOVE)
 	e2:SetCountLimit(1,9910091)
-	e2:SetCondition(c9910090.limcon)
-	e2:SetCost(c9910090.limcost)
-	e2:SetOperation(c9910090.limop)
+	e2:SetTarget(c9910090.atktg)
+	e2:SetOperation(c9910090.atkop)
 	c:RegisterEffect(e2)
 end
 function c9910090.cfilter(c,tp)
-	return Duel.GetMZoneCount(tp,c)>0 and c:IsRace(RACE_FAIRY) and c:IsOnField()
+	return Duel.GetMZoneCount(tp,c)>0 and c:IsRace(RACE_FAIRY)
 end
 function c9910090.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,c9910090.cfilter,1,nil,tp) end
@@ -31,7 +33,7 @@ function c9910090.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 end
 function c9910090.tgfilter(c)
-	return c:IsSetCard(0x9951) and c:IsAbleToGrave()
+	return c:IsSetCard(0x9951) and c:IsAbleToGrave() and not c:IsCode(9910090)
 end
 function c9910090.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -41,17 +43,8 @@ function c9910090.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910090.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local loc=c:GetLocation()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		if loc==LOCATION_HAND then
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CHANGE_LEVEL)
-			e1:SetValue(4)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			c:RegisterEffect(e1,true)
-		end
-		if loc==LOCATION_GRAVE then
+	if c:IsRelateToChain() and aux.NecroValleyFilter()(c) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		if c:IsSummonLocation(LOCATION_GRAVE) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -67,24 +60,30 @@ function c9910090.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c9910090.limcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp
+function c9910090.atkfilter(c)
+	return c:IsFaceup() and c:IsRace(RACE_FAIRY)
 end
-function c9910090.limcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsReason(REASON_RELEASE) and c:IsAbleToRemoveAsCost() end
-	Duel.Remove(c,POS_FACEUP,REASON_COST)
+function c9910090.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c9910090.atkfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910090.atkfilter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,c9910090.atkfilter,tp,LOCATION_MZONE,0,1,1,nil)
 end
-function c9910090.limop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetReset(RESET_CHAIN)
-	e1:SetTargetRange(1,1)
-	e1:SetTarget(c9910090.splimit)
-	Duel.RegisterEffect(e1,tp)
-end
-function c9910090.splimit(e,c)
-	return not c:IsRace(RACE_FAIRY)
+function c9910090.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsType(TYPE_MONSTER) and not tc:IsImmuneToEffect(e) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(500)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
+		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910090,1)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local tg=g:Select(tp,1,1,nil)
+			Duel.HintSelection(tg)
+			Duel.Destroy(tg,REASON_EFFECT)
+		end
+	end
 end

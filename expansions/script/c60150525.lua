@@ -4,7 +4,7 @@ function c60150525.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_GRAVE)
+	e1:SetRange(LOCATION_GRAVE+LOCATION_HAND)
 	e1:SetCountLimit(1,60150525)
 	e1:SetCost(c60150525.hspcost)
 	e1:SetTarget(c60150525.hsptg)
@@ -43,12 +43,12 @@ function c60150525.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60150525.rfilter(c)
-	return c:IsSetCard(0xab20) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xab20) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function c60150525.hspcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c60150525.rfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c60150525.rfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,c60150525.rfilter,tp,LOCATION_GRAVE,0,1,1,e:GetHandler())
+	local g=Duel.SelectMatchingCard(tp,c60150525.rfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,e:GetHandler())
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c60150525.hsptg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -80,21 +80,21 @@ function cm.spcfilter(c,tp)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end
+	local tp=c:GetControler()
 	return Duel.IsExistingMatchingCard(cm.spcfilter,tp,LOCATION_MZONE,0,1,nil,c:GetControler())
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,c)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=Duel.SelectMatchingCard(tp,cm.spcfilter,tp,LOCATION_MZONE,0,1,1,nil,c:GetControler())
-	if sg then
-		sg:KeepAlive()
-		e:SetLabelObject(sg)
+	local g=Duel.GetMatchingGroup(cm.spcfilter,tp,LOCATION_MZONE,0,nil,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
+	if tc then
+		e:SetLabelObject(tc)
 		return true
 	else return false end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=e:GetLabelObject()
-	Duel.SendtoDeck(g,tp,SEQ_DECKSHUFFLE,REASON_SPSUMMON)
-	g:DeleteGroup()
+	local rc=e:GetLabelObject()
+	Duel.SendtoDeck(rc,tp,SEQ_DECKSHUFFLE,REASON_SPSUMMON)
 end
 function cm.efilter(e,te)
 	local c=e:GetHandler()
@@ -104,7 +104,7 @@ function cm.acop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if ep~=tp and c:GetFlagEffect(FLAG_ID_CHAINING)>0 and ((c:IsAttribute(ATTRIBUTE_LIGHT) and re:IsActiveType(TYPE_MONSTER)) or (c:IsAttribute(ATTRIBUTE_DARK) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP))) then
 		if c:GetFlagEffect(m)==0 then 
-			c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END,0,1,1)
+			c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_DISABLE,0,1,1)
 		else
 			local label=c:GetFlagEffectLabel(m)
 			c:SetFlagEffectLabel(m,label+1)

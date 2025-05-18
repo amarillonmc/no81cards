@@ -70,7 +70,6 @@ function cm.netg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.neop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.NegateActivation(ev)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsRelateToEffect(e) then
 		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
 			Duel.Hint(HINT_MUSIC,0,aux.Stringid(m,7))
@@ -81,6 +80,7 @@ function cm.neop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Equip(tp,tc,c)
 			end
 		end
+		Duel.NegateActivation(ev)
 	end
 end
 function cm.pcfilter(c,tp)

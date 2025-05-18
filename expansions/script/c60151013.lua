@@ -23,9 +23,9 @@ function c60151013.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,6011013)
 	e3:SetCode(EVENT_TO_HAND)
-	e3:SetCondition(c60151013.condition)
-	e3:SetTarget(c60151013.target2)
-	e3:SetOperation(c60151013.operation2)
+	e3:SetCondition(c60151013.e3con)
+	e3:SetTarget(c60151013.e3tg)
+	e3:SetOperation(c60151013.e3op)
 	c:RegisterEffect(e3)
 end
 function c60151013.filter(c,e,tp)
@@ -50,18 +50,37 @@ function c60151013.cfilter(c,tp)
 		and c:IsPreviousLocation(LOCATION_ONFIELD)
 		and c:IsType(TYPE_MONSTER) and c:IsSetCard(0x5b23)
 end
-function c60151013.condition(e,tp,eg,ep,ev,re,r,rp)
+function c60151013.e3con(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c60151013.cfilter,1,nil,tp)
 end
-function c60151013.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,60151014,0,0x4011,2000,2000,6,RACE_FIEND,ATTRIBUTE_DARK) end
-	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
+function c60151013.e3tgf(c,e,tp)
+	return c:IsSetCard(0x5b23) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c60151013.operation2(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
-		or not Duel.IsPlayerCanSpecialSummonMonster(tp,60151014,0,0x4011,2000,2000,6,RACE_FIEND,ATTRIBUTE_DARK) then return end
-	local token=Duel.CreateToken(tp,60151014)
-	Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
+function c60151013.e3tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c60151013.e3tgf,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+end
+function c60151013.e3op(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c60151013.e3tgf,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		local tc=g:GetFirst()
+		if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+		end
+		Duel.SpecialSummonComplete()
+	end
 end

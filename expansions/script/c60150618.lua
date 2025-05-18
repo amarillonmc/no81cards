@@ -1,6 +1,7 @@
---天玲 永远的羁绊
+--天玲
 function c60150618.initial_effect(c)
-	aux.AddXyzProcedure(c,c60150618.mfilter,4,2)
+	--link summon
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_PENDULUM),2,2,c60150618.lcheck)
 	c:EnableReviveLimit()
 	--
 	local e12=Effect.CreateEffect(c)
@@ -9,6 +10,7 @@ function c60150618.initial_effect(c)
 	c:RegisterEffect(e12)
 	--tograve
 	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(60150618,2))
 	e4:SetCategory(CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -18,6 +20,7 @@ function c60150618.initial_effect(c)
 	c:RegisterEffect(e4)
 	--to deck
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(60150618,3))
 	e1:SetCategory(CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_MZONE)
@@ -28,6 +31,9 @@ function c60150618.initial_effect(c)
 	e1:SetOperation(c60150618.thop)
 	c:RegisterEffect(e1)
 end
+function c60150618.lcheck(g,lc)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3b21)
+end
 function c60150618.mfilter(c)
 	return c:IsSetCard(0x3b21)
 end
@@ -37,6 +43,7 @@ end
 function c60150618.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60150618.tgfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60150618.gfilter(c)
 	return c:IsType(TYPE_PENDULUM)
@@ -60,9 +67,14 @@ function c60150618.tgop(e,tp,eg,ep,ev,re,r,rp)
 		return false
 	end
 end
+function c60150618.thcostf(c)
+	return c:IsSetCard(0x3b21) and c:IsType(TYPE_PENDULUM) and c:IsAbleToGraveAsCost()
+end
 function c60150618.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	if chk==0 then return Duel.IsExistingMatchingCard(c60150618.thcostf,tp,LOCATION_EXTRA,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c60150618.thcostf,tp,LOCATION_EXTRA,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c60150618.tgfilter2(c)
 	return true
@@ -70,6 +82,7 @@ end
 function c60150618.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c60150618.tgfilter2,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) end
 	local g=Duel.GetMatchingGroup(c60150618.tgfilter2,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60150618.gfilter3(c)
 	return c:IsAbleToDeck()

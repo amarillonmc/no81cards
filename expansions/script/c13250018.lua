@@ -1,5 +1,6 @@
 --魂锁 铁索连环
 local s,id,o=GetID()
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function s.initial_effect(c)
 	--act in hand
 	local e0=Effect.CreateEffect(c)
@@ -40,6 +41,8 @@ function s.initial_effect(c)
 	e3:SetTarget(s.destg)
 	e3:SetOperation(s.desop)
 	c:RegisterEffect(e3)
+	elements={{"tama_elements",{{TAMA_ELEMENT_EARTH,2},{TAMA_ELEMENT_WATER,1}}}}
+	s[c]=elements
 end
 function s.handcon(e)
 	return Duel.GetCurrentChain()>1

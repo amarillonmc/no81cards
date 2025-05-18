@@ -41,7 +41,7 @@ function c11513042.lcheck(g)
 end 
 function c11513042.lmlimit(e)
 	local c=e:GetHandler()
-	return c:IsStatus(STATUS_SPSUMMON_TURN) and c:IsSummonType(SUMMON_TYPE_LINK)
+	return c:IsSummonType(SUMMON_TYPE_LINK)
 end
 function c11513042.spfil(c,e,tp) 
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevelAbove(1)   

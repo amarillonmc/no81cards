@@ -1,6 +1,7 @@
 --魂锁 心灵枷锁
 local s,id,o=GetID()
 local tokenId=0x1d
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function s.initial_effect(c)
 	c:EnableCounterPermit(tokenId)
 	--act in hand
@@ -54,6 +55,8 @@ function s.initial_effect(c)
 	e6:SetCode(EFFECT_SELF_DESTROY)
 	e6:SetCondition(s.descon)
 	c:RegisterEffect(e6)
+	elements={{"tama_elements",{{TAMA_ELEMENT_MANA,1},{TAMA_ELEMENT_LIFE,1}}}}
+	s[c]=elements
 	
 end
 function s.handcon(e)

@@ -27,7 +27,7 @@ function c28316558.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28316558.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	return Duel.GetTurnPlayer()==tp or (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
 end
 function c28316558.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

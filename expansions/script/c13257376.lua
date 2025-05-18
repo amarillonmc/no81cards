@@ -1,9 +1,15 @@
 --超时空战斗机-卡比
-local m=13257377
+local m=13257376
 local cm=_G["c"..m]
 if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function cm.initial_effect(c)
-	c:EnableReviveLimit()
+	--splimit
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(cm.splimit)
+	c:RegisterEffect(e0)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -46,6 +52,9 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	
 end
+function cm.splimit(e,se,sp,st)
+	return se:IsHasType(EFFECT_TYPE_ACTIONS)
+end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
@@ -82,7 +91,7 @@ function cm.destg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return tc and tc:IsFaceup() end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tc,1,0,0)
 end
-function ccm.desop1(e,tp,eg,ep,ev,re,r,rp)
+function cm.desop1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetHandler():GetBattleTarget()
 	if tc:IsRelateToBattle() then
 		Duel.Destroy(tc,REASON_EFFECT)

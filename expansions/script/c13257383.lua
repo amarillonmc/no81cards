@@ -41,7 +41,7 @@ function cm.initial_effect(c)
 	e6:SetCondition(cm.pccon)
 	e6:SetTarget(cm.pctg)
 	e6:SetOperation(cm.pcop)
-	c:RegisterEffect(e2)
+	c:RegisterEffect(e6)
 	eflist={{"power_capsule",e6}}
 	cm[c]=eflist
 	

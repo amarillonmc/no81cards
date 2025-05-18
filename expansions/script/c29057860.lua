@@ -99,7 +99,7 @@ function cm.ctltg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function cm.thfilter(c)
-	return cm.ArcKnightPCardFilter(c) and (c:IsType(TYPE_PENDULUM) or c:IsAttribute(ATTRIBUTE_LIGHT)) and c:IsAbleToHand()
+	return cm.ArcKnightPCardFilter(c) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToHand()
 end
 function cm.ctlop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<3 then return end

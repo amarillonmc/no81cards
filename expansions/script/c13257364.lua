@@ -3,6 +3,7 @@ local m=13257364
 local cm=_G["c"..m]
 xpcall(function() require("expansions/script/tama") end,function() require("script/tama") end)
 function cm.initial_effect(c)
+	c:EnableCounterPermit(TAMA_COMSIC_FIGHTERS_COUNTER_BOMB)
 	--double attack
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -74,7 +75,9 @@ function cm.seqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 	local fd=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
+	local seq=math.log(fd,2)
 	Duel.Hint(HINT_ZONE,tp,fd)
+	e:SetLabel(seq)
 end
 function cm.seqop(e,tp,eg,ep,ev,re,r,rp)
 	local seq=e:GetLabel()
@@ -126,7 +129,6 @@ function cm.pcop(e,tp,eg,ep,ev,re,r,rp)
 			local sg=g:Select(tp,1,1,nil)
 			Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 		end
-		Duel.BreakEffect()
 		if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 			g=Duel.SelectMatchingCard(tp,cm.eqfilter,tp,LOCATION_EXTRA,0,1,1,nil,c)

@@ -28,8 +28,7 @@ function c28315944.sprcon(e,c)
 end
 function c28315944.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	if c:IsLocation(LOCATION_HAND) then return end
-	local lp=Duel.GetLP(tp)
-	Duel.SetLP(tp,lp-2000)
+	Duel.PayLPCost(tp,2000)
 end
 function c28315944.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -51,6 +50,7 @@ function c28315944.recop(e,tp,eg,ep,ev,re,r,rp)
 		{b1,aux.Stringid(28315944,0)},
 		{b2,aux.Stringid(28315944,1)},
 		{b3,aux.Stringid(28315944,2)})
+	if op~=3 then Duel.BreakEffect() end
 	if op==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c28315944.thfilter,tp,LOCATION_DECK,0,1,1,nil)

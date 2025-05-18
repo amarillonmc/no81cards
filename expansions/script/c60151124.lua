@@ -1,14 +1,14 @@
---├军团亚席 虚空之卡莉普拉┤
+--艾奇军团 虚空之影
 local m=60151124
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x9b23),2,2)
+	aux.AddXyzProcedure(c,c60151124.xyzfilter,4,2)
 	--coin
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(60151101,2))
-	e1:SetCategory(CATEGORY_COIN+CATEGORY_TOGRAVE+CATEGORY_DAMAGE)
+	e1:SetCategory(CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -16,18 +16,9 @@ function cm.initial_effect(c)
 	e1:SetTarget(c60151124.cointg)
 	e1:SetOperation(c60151124.coinop)
 	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DAMAGE)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
-	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetCondition(c60151124.atkcon2)
-	e2:SetTarget(c60151124.cointg)
-	e2:SetOperation(c60151124.coinop)
-	c:RegisterEffect(e2)
 	--juo gai
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(60151124,2))
+	e3:SetDescription(aux.Stringid(60151124,4))
 	e3:SetCategory(CATEGORY_REMOVE+CATEGORY_TOGRAVE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
@@ -39,11 +30,14 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 c60151124.toss_coin=true
+function c60151124.xyzfilter(c)
+	return c:IsSetCard(0x9b23)
+end
 function c60151124.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_LINK and not e:GetHandler():IsHasEffect(60151199)
+	return e:GetHandler():GetSummonType()==SUMMON_TYPE_XYZ
 end
 function c60151124.atkcon2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetSummonType()==SUMMON_TYPE_LINK and e:GetHandler():IsHasEffect(60151199)
+	return e:GetHandler():GetSummonType()==SUMMON_TYPE_XYZ and e:GetHandler():IsHasEffect(60151199)
 end
 function c60151124.cointg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -51,6 +45,7 @@ function c60151124.cointg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetChainLimit(c60151124.chlimit)
 		Duel.RegisterFlagEffect(tp,60151124,RESET_CHAIN,0,1)
 	else
+		e:SetCategory(CATEGORY_COIN+CATEGORY_TOGRAVE+CATEGORY_DAMAGE)
 		Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
 	end
@@ -146,32 +141,37 @@ function c60151124.tdtgfilter2(c,tc)
 	return c:IsSetCard(0x9b23) and (c:IsAbleToGrave() or c:IsAbleToHand()) and c:GetCode()~=tc:GetCode()
 end
 function c60151124.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(c60151124.tdtgfilter,tp,LOCATION_GRAVE,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c60151124.tdtgfilter,tp,LOCATION_GRAVE,0,1,nil,tp) and e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_EFFECT) end
+
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectTarget(tp,c60151124.tdtgfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60151124.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-			local g=Duel.SelectMatchingCard(tp,c60151124.tdtgfilter2,tp,LOCATION_DECK,0,1,1,nil,tc)
-			local tc2=g:GetFirst()
-			if tc2:IsAbleToHand() and tc2:IsAbleToGrave() then
-				if Duel.SelectYesNo(tp,aux.Stringid(60151124,3)) then
+	if e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_EFFECT) then
+		if tc:IsRelateToEffect(e) then
+			if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)~=0 then
+				Duel.BreakEffect()
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
+				local g=Duel.SelectMatchingCard(tp,c60151124.tdtgfilter2,tp,LOCATION_DECK,0,1,1,nil,tc)
+				local tc2=g:GetFirst()
+				if tc2:IsAbleToHand() and tc2:IsAbleToGrave() then
+					if Duel.SelectYesNo(tp,aux.Stringid(60151124,3)) then
+						Duel.SendtoHand(tc2,nil,REASON_EFFECT)
+						Duel.ConfirmCards(1-tp,tc2)
+					else
+						Duel.SendtoGrave(tc2,REASON_EFFECT)
+					end
+				elseif tc2:IsAbleToHand() and not tc2:IsAbleToGrave() then
+					Duel.SendtoGrave(tc2,REASON_EFFECT)
+				elseif not tc2:IsAbleToHand() and tc2:IsAbleToGrave() then
 					Duel.SendtoHand(tc2,nil,REASON_EFFECT)
 					Duel.ConfirmCards(1-tp,tc2)
-				else
-					Duel.SendtoGrave(tc2,REASON_EFFECT)
 				end
-			elseif tc2:IsAbleToHand() and not tc2:IsAbleToGrave() then
-				Duel.SendtoGrave(tc2,REASON_EFFECT)
-			elseif not tc2:IsAbleToHand() and tc2:IsAbleToGrave() then
-				Duel.SendtoHand(tc2,nil,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,tc2)
 			end
 		end
 	end

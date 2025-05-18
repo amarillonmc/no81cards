@@ -1,49 +1,33 @@
---├红瑰执行官 音┤
+--艾奇军团 执行官
 function c60151107.initial_effect(c)
 	--sp
 	local e12=Effect.CreateEffect(c)
 	e12:SetType(EFFECT_TYPE_FIELD)
 	e12:SetCode(EFFECT_SPSUMMON_PROC)
 	e12:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e12:SetRange(LOCATION_GRAVE)
+	e12:SetRange(LOCATION_GRAVE+LOCATION_HAND)
 	e12:SetCondition(c60151107.spcon2)
 	e12:SetOperation(c60151107.spop2)
 	c:RegisterEffect(e12)
 	--coin
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(60151101,2))
-	e1:SetCategory(CATEGORY_COIN+CATEGORY_DESTROY+CATEGORY_TOGRAVE)
+	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetCountLimit(1,6011107)
-	e1:SetCondition(c60151107.coincon)
 	e1:SetTarget(c60151107.cointg)
 	e1:SetOperation(c60151107.coinop)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
-	local e111=Effect.CreateEffect(c)
-	e111:SetDescription(aux.Stringid(60151101,2))
-	e111:SetCategory(CATEGORY_DESTROY)
-	e111:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e111:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
-	e111:SetCode(EVENT_SUMMON_SUCCESS)
-	e111:SetCountLimit(1,6011107)
-	e111:SetCondition(c60151107.coincon2)
-	e111:SetTarget(c60151107.cointg)
-	e111:SetOperation(c60151107.coinop)
-	c:RegisterEffect(e111)
-	local e222=e111:Clone()
-	e222:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e222)
 	--
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(60151107,1))
+	e3:SetDescription(aux.Stringid(60151107,3))
 	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetCountLimit(1,60151107)
 	e3:SetCondition(c60151107.spcon)
@@ -59,7 +43,7 @@ function c60151107.coincon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsHasEffect(60151199)
 end
 function c60151107.spfilter2(c)
-	return c:IsSetCard(0x9b23) and c:IsType(TYPE_MONSTER) and not c:IsCode(60151107) and c:IsAbleToGrave()
+	return c:IsSetCard(0x9b23) and not c:IsCode(60151107) and c:IsAbleToGrave()
 end
 function c60151107.spcon2(e,c)
 	if c==nil then return true end
@@ -100,11 +84,13 @@ function c60151107.spop2(e,tp,eg,ep,ev,re,r,rp,c)
 	end
 end
 function c60151107.cointg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(c60151107.filter,tp,0,LOCATION_MZONE,1,nil,c:GetAttack()) end
 	if e:GetHandler():IsHasEffect(60151199) then
 		Duel.SetChainLimit(c60151107.chlimit)
 		Duel.RegisterFlagEffect(tp,60151107,RESET_CHAIN,0,1)
 	else
+		e:SetCategory(CATEGORY_COIN+CATEGORY_DESTROY+CATEGORY_TOGRAVE)
 		Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
 	end
@@ -144,7 +130,6 @@ function c60151107.coinop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c60151107.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsReason(REASON_EFFECT) and re:GetHandler()~=e:GetHandler()
-		and re:GetHandler():IsSetCard(0x9b23)
 end
 function c60151107.filter3(c)
 	return c:IsDestructable()
@@ -153,6 +138,7 @@ function c60151107.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c60151107.filter3,tp,0,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(c60151107.filter3,tp,0,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60151107.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

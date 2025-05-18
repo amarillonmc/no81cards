@@ -1,13 +1,11 @@
---超连接姬 丹野七香
-local m=60152312
-local cm=_G["c"..m]
-function cm.initial_effect(c)
+--星海游侠 泽菲拉·泽塔
+function c60152312.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xcb26),6,2,nil,nil,99)
 	c:EnableReviveLimit()
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_WARRIOR),3,2,nil,nil,99)
 	--
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(60152311,0))
+	e1:SetDescription(aux.Stringid(60152312,0))
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -17,7 +15,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(60152312,0))
+	e2:SetDescription(aux.Stringid(60152312,1))
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
@@ -30,7 +28,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--summon
 	local e99=Effect.CreateEffect(c)
-	e99:SetDescription(aux.Stringid(60152311,4))
+	e99:SetDescription(aux.Stringid(60152312,2))
 	e99:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e99:SetType(EFFECT_TYPE_QUICK_O)
 	e99:SetRange(LOCATION_MZONE)
@@ -45,16 +43,16 @@ function c60152312.e1con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function c60152312.e1tgfilter(c,e)
-	return c:IsSetCard(0xcb26) and c:IsType(TYPE_MONSTER) and not c:IsImmuneToEffect(e)
+	return not c:IsImmuneToEffect(e)
 end
 function c60152312.e1tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c60152312.e1tgfilter,tp,LOCATION_GRAVE,0,1,nil,e) and e:GetHandler():IsFaceup() and e:GetHandler():IsLocation(LOCATION_MZONE) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(60152311,0))
+	if chk==0 then return Duel.IsExistingMatchingCard(c60152312.e1tgfilter,tp,LOCATION_GRAVE+LOCATION_OVERLAY,LOCATION_GRAVE+LOCATION_OVERLAY,1,nil,e) and e:GetHandler():IsFaceup() and e:GetHandler():IsLocation(LOCATION_MZONE) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60152312.e1op(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsLocation(LOCATION_MZONE) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(60152311,1))
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c60152312.e1tgfilter),tp,LOCATION_GRAVE,0,1,1,nil,e)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c60152312.e1tgfilter),tp,LOCATION_GRAVE+LOCATION_OVERLAY,LOCATION_GRAVE+LOCATION_OVERLAY,1,1,nil,e)
 	Duel.HintSelection(g)
 	Duel.Overlay(e:GetHandler(),g)
 end
@@ -111,7 +109,7 @@ function c60152312.e99tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectTarget(tp,c60152312.e99tgfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
-	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(60152311,4))
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60152312.e99op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -133,7 +131,7 @@ function c60152312.e99op(e,tp,eg,ep,ev,re,r,rp)
 			if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then 
 				local og=tc:GetOverlayGroup()
 				if og:GetCount()>0 then
-					Duel.SendtoGrave(og,REASON_RULE)
+					Duel.Overlay(tc2,og)
 				end
 				Duel.Overlay(tc2,Group.FromCards(tc))
 			end
@@ -142,7 +140,7 @@ function c60152312.e99op(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_IMMUNE_EFFECT)
 				e1:SetRange(LOCATION_MZONE)
-				e1:SetValue(c60152311.e99opfilter)
+				e1:SetValue(c60152312.e99opfilter)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+RESET_CHAIN)
 				tc2:RegisterEffect(e1)
 			end

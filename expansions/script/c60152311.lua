@@ -1,10 +1,8 @@
---超连接姬 安芸真琴
-local m=60152311
-local cm=_G["c"..m]
-function cm.initial_effect(c)
+--星海游侠 妮克斯·贝塔
+function c60152311.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xcb26),6,2,nil,nil,99)
 	c:EnableReviveLimit()
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_WARRIOR),3,2,nil,nil,99)
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(60152311,0))
@@ -19,7 +17,6 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(60152311,2))
 	e2:SetCategory(CATEGORY_ATKCHANGE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,60152311)
@@ -45,16 +42,16 @@ function c60152311.e1con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function c60152311.e1tgfilter(c,e)
-	return c:IsSetCard(0xcb26) and c:IsType(TYPE_MONSTER) and not c:IsImmuneToEffect(e)
+	return not c:IsImmuneToEffect(e)
 end
 function c60152311.e1tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c60152311.e1tgfilter,tp,LOCATION_GRAVE,0,1,nil,e) and e:GetHandler():IsFaceup() and e:GetHandler():IsLocation(LOCATION_MZONE) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(60152311,0))
+	if chk==0 then return Duel.IsExistingMatchingCard(c60152311.e1tgfilter,tp,LOCATION_GRAVE+LOCATION_OVERLAY,LOCATION_GRAVE+LOCATION_OVERLAY,1,nil,e) and e:GetHandler():IsFaceup() and e:GetHandler():IsLocation(LOCATION_MZONE) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60152311.e1op(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsLocation(LOCATION_MZONE) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(60152311,1))
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c60152311.e1tgfilter),tp,LOCATION_GRAVE,0,1,1,nil,e)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c60152311.e1tgfilter),tp,LOCATION_GRAVE+LOCATION_OVERLAY,LOCATION_GRAVE+LOCATION_OVERLAY,1,1,nil,e)
 	Duel.HintSelection(g)
 	Duel.Overlay(e:GetHandler(),g)
 end
@@ -77,16 +74,17 @@ function c60152311.e2op(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(atk)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetDescription(aux.Stringid(60152311,3))
-		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e2:SetCode(EVENT_PRE_BATTLE_DAMAGE)
-		e2:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		e2:SetCondition(c60152311.e2opcon)
-		e2:SetOperation(c60152311.e2opop)
-		c:RegisterEffect(e2)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_CHANGE_INVOLVING_BATTLE_DAMAGE)
+		e3:SetCondition(c60152311.damcon)
+		e3:SetValue(aux.ChangeBattleDamage(1,DOUBLE_DAMAGE))
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e3,true)
 	end
+end
+function c60152311.damcon(e)
+	return e:GetHandler():GetBattleTarget()~=nil
 end
 function c60152311.e2opcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and e:GetHandler():GetBattleTarget()~=nil
@@ -113,7 +111,7 @@ function c60152311.e99tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectTarget(tp,c60152311.e99tgfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
-	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(60152311,4))
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60152311.e99op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -135,7 +133,7 @@ function c60152311.e99op(e,tp,eg,ep,ev,re,r,rp)
 			if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then 
 				local og=tc:GetOverlayGroup()
 				if og:GetCount()>0 then
-					Duel.SendtoGrave(og,REASON_RULE)
+					Duel.Overlay(tc2,og)
 				end
 				Duel.Overlay(tc2,Group.FromCards(tc))
 			end

@@ -1,6 +1,7 @@
 --魂锁制造业
 local s,id,o=GetID()
 local tokenId=0x1d
+if not tama then xpcall(function() dofile("expansions/script/tama.lua") end,function() dofile("script/tama.lua") end) end
 function s.initial_effect(c)
 	c:EnableCounterPermit(tokenId)
 	--Activate
@@ -51,6 +52,8 @@ function s.initial_effect(c)
 	e6:SetTarget(s.thtg1)
 	e6:SetOperation(s.thop1)
 	c:RegisterEffect(e6)
+	elements={{"tama_elements",{{TAMA_ELEMENT_EARTH,1},{TAMA_ELEMENT_ENERGY,2}}}}
+	s[c]=elements
 	
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
