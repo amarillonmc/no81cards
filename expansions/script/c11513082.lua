@@ -65,7 +65,7 @@ function c11513082.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11513082.pbfil,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,c11513082.pbfil,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-	--Duel.SetTargetCard(g)
+	Duel.SetTargetCard(g)
 	Duel.ConfirmCards(1-tp,g)
 	if g:GetFirst():IsSetCard(0x195) then
 		Duel.RaiseEvent(g,EVENT_CUSTOM+9091064,e,REASON_COST,tp,tp,0)
@@ -75,6 +75,7 @@ function c11513082.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end  
 function c11513082.thop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
+	local pc=Duel.GetFirstTarget()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tc=Duel.SelectMatchingCard(tp,c11513082.thfil,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
 	if tc then

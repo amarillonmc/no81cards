@@ -58,7 +58,7 @@ function c75000009.op1(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c75000009.thfilter(c)
-	return aux.AddCodeList(c,75000001) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return aux.IsCodeOrListed(c,75000001) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c75000009.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75000009.thfilter,tp,LOCATION_DECK,0,1,nil) end

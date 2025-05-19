@@ -49,14 +49,14 @@ end
 function c75000017.damcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=c:GetReasonCard()
-	return c:IsLocation(LOCATION_GRAVE) and  (aux.IsCodeListed(c,75000001) or c:IsCode(75000001)) and r&REASON_FUSION+REASON_LINK~=0
+	return c:IsLocation(LOCATION_GRAVE) and rc:IsSetCard(0x3751) and r&REASON_FUSION+REASON_LINK~=0
 end
 function c75000017.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,500)
 end
 function c75000017.spfilter(c,e,tp)
-	return c:IsSetCard(0x120) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) and not c:IsCode(18236002)
+	return (c:IsCode(75000001) or aux.IsCodeListed(c,75000001)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) and not c:IsCode(75000017)
 end
 function c75000017.damop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c75000017.spfilter,tp,LOCATION_DECK+LOCATION_HAND,0,nil,e,tp)
