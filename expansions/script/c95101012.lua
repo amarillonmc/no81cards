@@ -32,7 +32,7 @@ end
 function c95101012.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c95101012.costfilter,tp,LOCATION_MZONE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,c95101012.costfilter,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,c95101012.costfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
 	Duel.SendtoHand(g,nil,REASON_COST)
 end
 function c95101012.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
