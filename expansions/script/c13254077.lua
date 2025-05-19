@@ -16,8 +16,8 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetTarget(s.smtg)
-	e1:SetOperation(s.smop)
+	e1:SetTarget(cm.smtg)
+	e1:SetOperation(cm.smop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -28,26 +28,26 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
-	if not s.global_check then
+	if not cm.global_check then
 		s.global_check=true
 		s[0]=0
 		s[1]=0
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_SUMMON)
-		ge1:SetOperation(s.regop)
+		ge1:SetOperation(cm.regop)
 		Duel.RegisterEffect(ge1,0)
 	end
 	
 end
-function s.regop(e,tp,eg,ep,ev,re,r,rp)
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=eg:GetFirst()
-	if s[ep]==0 and c:IsCode(m) then s[ep]=1 end
+	if cm[ep]==0 and c:IsCode(m) then cm[ep]=1 end
 end
 function cm.ntcon(e,c,minc)
 	if c==nil then return true end
 	return minc==0 and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and s[c:GetControler()]==0
+		and cm[c:GetControler()]==0
 end
 function cm.thfilter(c)
 	return c:IsSetCard(0x3356) and c:IsAbleToHand()

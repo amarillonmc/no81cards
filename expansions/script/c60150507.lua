@@ -1,5 +1,13 @@
 --幻想曲 纯白的女骑士
 function c60150507.initial_effect(c)
+	--summon with no tribute
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(60150505,0))
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_SUMMON_PROC)
+	e0:SetCondition(c60150507.ntcon)
+	c:RegisterEffect(e0)
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(60150507,0))
@@ -36,6 +44,10 @@ function c60150507.initial_effect(c)
 	e3:SetOperation(c60150507.lvop)
 	c:RegisterEffect(e3)]]
 	Duel.AddCustomActivityCounter(60150507,ACTIVITY_SPSUMMON,c60150507.counterfilter)
+end
+function c60150507.ntcon(e,c,minc)
+	if c==nil then return true end
+	return minc==0 and c:GetLevel()>4 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function c60150507.counterfilter(c)
 	return (c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsRace(RACE_FIEND))

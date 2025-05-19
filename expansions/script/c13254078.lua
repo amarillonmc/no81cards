@@ -24,7 +24,7 @@ function s.initial_effect(c)
 	e3:SetTarget(s.pctg)
 	e3:SetOperation(s.pcop)
 	c:RegisterEffect(e3)
-	elements={{"tama_elements",{{TAMA_ELEMENT_ORDER,1},{TAMA_ELEMENT_CHAOS,1}}}
+	elements={{"tama_elements",{{TAMA_ELEMENT_ORDER,1},{TAMA_ELEMENT_CHAOS,1}}}}
 	s[c]=elements
 	
 end

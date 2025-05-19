@@ -44,9 +44,11 @@ function c10202929.nttg(e,c)
 end
 --2
 function c10202929.chainop(e,tp,eg,ep,ev,re,r,rp)
-	if aux.IsCodeListed(re:GetHandler(),22702055) and c:IsType(TYPE_MONSTER) and ep==tp then
-		Duel.SetChainLimit(c10202929.chainlm)
-	end
+    if aux.IsCodeListed(re:GetHandler(),22702055)
+        and re:GetHandler():IsType(TYPE_MONSTER)
+        and ep==tp then
+        Duel.SetChainLimit(c10202929.chainlm)
+    end
 end
 function c10202929.chainlm(e,rp,tp)
 	return tp==rp
