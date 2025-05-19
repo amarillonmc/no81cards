@@ -61,6 +61,33 @@ function c118776531.initial_effect(c)
 		ge2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
 		ge2:SetOperation(c118776531.clearop)
 		Duel.RegisterEffect(ge2,0)
+		
+		local st=Effect.SetTarget
+		Effect.SetTarget=function(e,tg)
+			if e:GetDescription()==aux.Stringid(58984738,1) or e:GetDescription()==aux.Stringid(22499034,1) then
+				return st(e,c118776531.tg)
+			else
+				return st(e,tg)
+			end
+		end
+		local so=Effect.SetOperation
+		Effect.SetOperation=function(e,op)
+			if e:GetDescription()==aux.Stringid(58984738,1) or e:GetDescription()==aux.Stringid(22499034,1) then
+				return so(e,c118776531.op)
+			else
+				return so(e,op)
+			end
+		end
+		local rg=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0xff,0xff,nil,58984738,22499034)
+		for tc in aux.Next(rg) do
+			if tc.initial_effect then
+				local tinit=c118776531.initial_effect
+				c118776531.initial_effect=function() end
+				tc:ReplaceEffect(118776531,0)
+				c118776531.initial_effect=tinit
+				tc.initial_effect(tc)
+			end
+		end
 	end
 end
 
@@ -163,22 +190,6 @@ end
 
 
 --change script
-local st=Effect.SetTarget
-Effect.SetTarget=function(e,tg)
-	if e:GetDescription()==aux.Stringid(58984738,1) or e:GetDescription()==aux.Stringid(22499034,1) then
-		return st(e,c118776531.tg)
-	else
-		return st(e,tg)
-	end
-end
-local so=Effect.SetOperation
-Effect.SetOperation=function(e,op)
-	if e:GetDescription()==aux.Stringid(58984738,1) or e:GetDescription()==aux.Stringid(22499034,1) then
-		return so(e,c118776531.op)
-	else
-		return so(e,op)
-	end
-end
 
 function c118776531.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
