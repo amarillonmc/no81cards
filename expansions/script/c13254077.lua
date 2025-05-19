@@ -29,7 +29,7 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
 	if not cm.global_check then
-		s.global_check=true
+		cm.global_check=true
 		s[0]=0
 		s[1]=0
 		local ge1=Effect.CreateEffect(c)
