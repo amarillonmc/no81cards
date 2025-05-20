@@ -48,7 +48,7 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then Duel.SSet(tp,tc) end
 end
-function cm.thfilter(c,check)
+function cm.thfilter(c,e,tp,check)
 	return c:IsSetCard(0x15b) and not c:IsCode(m) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand()
 		or check and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
 end

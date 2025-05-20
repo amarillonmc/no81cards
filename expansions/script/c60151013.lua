@@ -29,7 +29,7 @@ function c60151013.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c60151013.filter(c,e,tp)
-	return c:IsRace(RACE_SPELLCASTER) and c:IsSetCard(0x5b23) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x5b23) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c60151013.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c60151013.filter(chkc,e,tp) end
