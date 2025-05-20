@@ -114,7 +114,7 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,0)
 end
 function s.thfilter(c,code)
-	return c:IsSetCard(0x3ca0) and c:IsType(TYPE_TRAP) and not c:IsCode(code) and c:IsAbleToHand()
+	return c:IsSetCard(0x3c10) and c:IsType(TYPE_TRAP) and not c:IsCode(code) and c:IsAbleToHand()
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -141,7 +141,7 @@ function s.initial_effect(c)
 	s.tohand(c)
 end
 function s.lfilter(c)
-	return c:IsLinkSetCard(0x3ca0) and c:IsType(TYPE_LINK)
+	return c:IsLinkSetCard(0x3c10) and c:IsType(TYPE_LINK)
 end
 function s.lcheck(g)
 	return g:IsExists(s.lfilter,1,nil)

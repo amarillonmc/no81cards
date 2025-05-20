@@ -1,7 +1,7 @@
 --面灵气 秦心※冬雪
 local s,id=GetID()
 function s.sprule(c)
-    aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3ca0),aux.NonTuner(aux.FilterBoolFunction(Card.IsSetCard,0x3ca0)),1,1)
+    aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3c10),aux.NonTuner(aux.FilterBoolFunction(Card.IsSetCard,0x3c10)),1,1)
 	c:EnableReviveLimit()
     local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(id,0))
@@ -15,11 +15,11 @@ function s.sprule(c)
 	c:RegisterEffect(e0)
 end
 function s.sprfilter1(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x3ca0) and c:IsSynchroType(TYPE_LINK)
+	return c:IsFaceup() and c:IsSetCard(0x3c10) and c:IsSynchroType(TYPE_LINK)
 		and Duel.IsExistingMatchingCard(s.sprfilter2,tp,LOCATION_MZONE,0,1,c)
 end
 function s.sprfilter2(c)
-	return c:IsFaceup() and c:IsSetCard(0x3ca0) and c:GetLevel()==4 and c:IsCanBeSynchroMaterial() and c:IsType(TYPE_TUNER)
+	return c:IsFaceup() and c:IsSetCard(0x3c10) and c:GetLevel()==4 and c:IsCanBeSynchroMaterial() and c:IsType(TYPE_TUNER)
 end
 function s.spcon(e,c)
 	if c==nil then return true end
@@ -53,10 +53,10 @@ function s.e1con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function s.tdfilter(c,e)
-	return c:IsSetCard(0x3ca0) and c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsCanBeEffectTarget(e) and c:IsAbleToDeck()
+	return c:IsSetCard(0x3c10) and c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsCanBeEffectTarget(e) and c:IsAbleToDeck()
 end
 function s.spfilter(c,ct,e,tp)
-	return c:IsSetCard(0x3ca0) and c:IsType(TYPE_LINK) and c:IsLink(ct)
+	return c:IsSetCard(0x3c10) and c:IsType(TYPE_LINK) and c:IsLink(ct)
 	and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function s.fselect(g,e,tp)
@@ -98,7 +98,7 @@ function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c,tp,sumtp,sumpos)
-	return bit.band(sumtp,SUMMON_TYPE_LINK)==SUMMON_TYPE_LINK and not c:IsSetCard(0x3ca0)
+	return bit.band(sumtp,SUMMON_TYPE_LINK)==SUMMON_TYPE_LINK and not c:IsSetCard(0x3c10)
 end
 function s.eff2(c)
 	local e1=Effect.CreateEffect(c)
@@ -119,7 +119,7 @@ function s.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetCurrentChain()
 	if ct<2 then return end
 	local te,p=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return te and te:IsActiveType(TYPE_MONSTER) and te:GetHandler():IsSetCard(0x3ca0) and p==tp and rp==1-tp
+	return te and te:IsActiveType(TYPE_MONSTER) and te:GetHandler():IsSetCard(0x3c10) and p==tp and rp==1-tp
 end
 function s.tdfilter2(c)
 	return c:IsType(TYPE_EQUIP) and c:IsFaceup() and c:IsAbleToHand()

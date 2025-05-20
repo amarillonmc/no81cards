@@ -14,13 +14,13 @@ function s.change(c)
 	c:RegisterEffect(e1)
 end
 function s.tdfilter(c,tp)
-	if c:IsFacedown() or not c:IsSetCard(0x3ca0) or not c:IsType(TYPE_EQUIP) or not c:IsAbleToDeck() then return false end
+	if c:IsFacedown() or not c:IsSetCard(0x3c10) or not c:IsType(TYPE_EQUIP) or not c:IsAbleToDeck() then return false end
 	local ec=c:GetEquipTarget()
 	local code=c:GetCode()
 	return Duel.IsExistingMatchingCard(s.eqfilter,tp,LOCATION_DECK,0,1,nil,code,ec,tp)
 end
 function s.eqfilter(c,code)
-	return c:IsSetCard(0x3ca0) and c:IsType(TYPE_SPELL) and not c:IsCode(code)
+	return c:IsSetCard(0x3c10) and c:IsType(TYPE_SPELL) and not c:IsCode(code)
 end
 function s.chtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsAbleToDeck() end

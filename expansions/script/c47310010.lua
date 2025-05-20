@@ -19,13 +19,13 @@ function s.eqcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and (re:IsActiveType(TYPE_MONSTER) or  re:GetHandler():IsType(TYPE_SPELL))
 end
 function s.defilter(c)
-    return c:IsSetCard(0x3ca0)
+    return c:IsSetCard(0x3c10)
 end
 function s.eqfilter(c,tc,code,tp)
     return Hnk.eqfilter(c,tc,tp) and not c:IsCode(code)
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chkc then return chkc:IsOnField() and chkc:IsSetCard(0x3ca0) end
+    if chkc then return chkc:IsOnField() and chkc:IsSetCard(0x3c10) end
     local c=e:GetHandler()
     if chk==0 then return Duel.IsExistingTarget(s.defilter,tp,LOCATION_ONFIELD,0,1,c) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

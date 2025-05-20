@@ -15,7 +15,7 @@ function s.tfcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsPublic()
 end
 function s.pfilter(c,tp)
-	return c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0x5ca0)
+	return c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0x5c10)
 		and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function s.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -62,7 +62,7 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject(),POS_FACEUP)
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x5ca0) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x5c10) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end

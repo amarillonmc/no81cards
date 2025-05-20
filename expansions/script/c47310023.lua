@@ -50,7 +50,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function s.efilter(e,te)
-	return not te:GetOwner():IsSetCard(0x3ca0)
+	return not te:GetOwner():IsSetCard(0x3c10)
 end
 function s.eff2(c)
     local e1=Effect.CreateEffect(c)
@@ -67,7 +67,7 @@ function s.eff2(c)
 	c:RegisterEffect(e1)
 end
 function s.filter(c)
-    return c:IsSetCard(0x3ca0) and c:IsFaceup() and c:IsType(TYPE_EQUIP)
+    return c:IsSetCard(0x3c10) and c:IsFaceup() and c:IsType(TYPE_EQUIP)
 end
 function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_SZONE,0,1,nil) end

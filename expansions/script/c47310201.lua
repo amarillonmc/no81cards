@@ -84,7 +84,7 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function s.thfilter(c)
-	return (c:IsRace(RACE_WYRM) or (c:IsSetCard(0x5ca0) and c:IsType(TYPE_SPELL+TYPE_TRAP))) and c:IsAbleToHand()
+	return (c:IsRace(RACE_WYRM) or (c:IsSetCard(0x5c10) and c:IsType(TYPE_SPELL+TYPE_TRAP))) and c:IsAbleToHand()
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,5)

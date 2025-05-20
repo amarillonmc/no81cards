@@ -11,7 +11,7 @@ function s.aih(c)
 	c:RegisterEffect(e1)
 end
 function s.aihtg(e,c)
-	return c:IsSetCard(0x3ca0) and c:IsPublic()
+	return c:IsSetCard(0x3c10) and c:IsPublic()
 end
 function s.eq(c)
 	local e1=Effect.CreateEffect(c)
@@ -26,10 +26,10 @@ function s.eq(c)
 	c:RegisterEffect(e1)
 end
 function s.filter(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3ca0) and Duel.IsExistingMatchingCard(Hnk.eqfilter,tp,LOCATION_DECK,0,1,nil,c,tp)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x3c10) and Duel.IsExistingMatchingCard(Hnk.eqfilter,tp,LOCATION_DECK,0,1,nil,c,tp)
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chkc:IsSetCard(0x3ca0) end
+	if chkc then return chkc:IsOnField() and chkc:IsSetCard(0x3c10) end
 	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,0,1,1,nil,tp)
@@ -58,7 +58,7 @@ function s.atkup(c)
 	c:RegisterEffect(e1)
 end
 function s.pbfilter(c)
-	return c:IsSetCard(0x3ca0) and c:IsType(TYPE_TRAP) and not c:IsPublic()
+	return c:IsSetCard(0x3c10) and c:IsType(TYPE_TRAP) and not c:IsPublic()
 end
 function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.pbfilter,tp,LOCATION_HAND,0,1,nil) end
@@ -72,7 +72,7 @@ function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	tc:RegisterEffect(e1)
 end
 function s.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3ca0)
+	return c:IsFaceup() and c:IsSetCard(0x3c10)
 end
 function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.atkfilter,tp,LOCATION_MZONE,0,1,nil) end

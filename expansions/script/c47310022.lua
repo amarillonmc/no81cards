@@ -45,7 +45,7 @@ function s.todeck(c)
     c:RegisterEffect(e1)
 end
 function s.tdfilter(c)
-    return c:IsSetCard(0x3ca0) and c:IsAbleToRemove()
+    return c:IsSetCard(0x3c10) and c:IsAbleToRemove()
 end
 function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) end

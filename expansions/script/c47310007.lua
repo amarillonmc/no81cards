@@ -30,7 +30,7 @@ function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return tp~=Duel.GetTurnPlayer() and e:GetOwner():GetFlagEffect(id)>0
 end
 function s.filter(c)
-	return c:IsSetCard(0x3ca0) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:IsSetCard(0x3c10) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetLabelObject()
@@ -51,7 +51,7 @@ function s.set(c)
 	c:RegisterEffect(e1)
 end
 function s.thfilter(c)
-	if not (c:IsSetCard(0x3ca0) and c:IsType(TYPE_TRAP)) then return false end
+	if not (c:IsSetCard(0x3c10) and c:IsType(TYPE_TRAP)) then return false end
 	return c:IsAbleToHand() or c:IsSSetable()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

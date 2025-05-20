@@ -14,7 +14,7 @@ function s.eff1(c)
 	c:RegisterEffect(e1)
 end
 function s.sfilter(c)
-	return c:IsSetCard(0x3ca0) and c:IsAbleToHand()
+	return c:IsSetCard(0x3c10) and c:IsAbleToHand()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsAbleToHand() end

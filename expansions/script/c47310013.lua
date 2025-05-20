@@ -17,7 +17,7 @@ function s.filter(c)
 	return c:IsAbleToGrave()
 end
 function s.eqfilter(c)
-	return c:IsType(TYPE_EQUIP) and c:IsSetCard(0x3ca0) and c:IsFaceup()
+	return c:IsType(TYPE_EQUIP) and c:IsSetCard(0x3c10) and c:IsFaceup()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end

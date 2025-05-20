@@ -12,7 +12,7 @@ function s.sprule(c)
 	c:RegisterEffect(e1)
 end
 function s.mfilter(c)
-	return c:IsLinkSetCard(0x3ca0)
+	return c:IsLinkSetCard(0x3c10)
 end
 function s.spsummon(c)
     local e1=Effect.CreateEffect(c)
@@ -38,7 +38,7 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.Remove(c,POS_FACEUP,REASON_COST)
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x3ca0) and not c:IsCode(47310026) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3c10) and not c:IsCode(47310026) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and s.spfilter(chkc,e,tp) and chkc:IsControler(tp) end
@@ -71,7 +71,7 @@ function s.atk(c)
 	e1:SetCode(EFFECT_DIRECT_ATTACK)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3ca0))
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x3c10))
 	c:RegisterEffect(e1)
     local e2=e1:Clone()
     e2:SetCode(EFFECT_UPDATE_ATTACK)
@@ -93,7 +93,7 @@ function s.spsummonself(c)
 	c:RegisterEffect(e1)
 end
 function s.lffilter(c,tp)
-    return c:IsSetCard(0x3ca0) and c:IsType(TYPE_MONSTER) and c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp)
+    return c:IsSetCard(0x3c10) and c:IsType(TYPE_MONSTER) and c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
     return eg:IsExists(s.lffilter,1,nil,tp) and rp==1-tp

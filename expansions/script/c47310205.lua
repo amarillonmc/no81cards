@@ -11,7 +11,7 @@ function s.spsummon(c)
 	c:RegisterEffect(e1)
 end
 function s.spfilter(c,e,tp)
-    return c:IsSetCard(0x5ca0) and c:IsType(TYPE_DUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+    return c:IsSetCard(0x5c10) and c:IsType(TYPE_DUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.dualfilter(c)
 	return c:IsDualState() and c:IsFaceup()

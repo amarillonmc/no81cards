@@ -12,7 +12,7 @@ function s.todeck(c)
 	c:RegisterEffect(e1)
 end
 function s.tdfilter(c,e)
-	return (c:IsRace(RACE_WYRM) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x5ca0))) and c:IsCanBeEffectTarget(e) and c:IsAbleToDeck()
+	return (c:IsRace(RACE_WYRM) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x5c10))) and c:IsCanBeEffectTarget(e) and c:IsAbleToDeck()
 end
 function s.thfilter(c,g)
     return g:IsExists(Card.IsCode,1,nil,c:GetCode()) and c:IsAbleToHand()

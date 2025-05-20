@@ -18,7 +18,7 @@ function s.desfilter(c)
     return c:IsType(TYPE_EQUIP) and c:IsFaceup()
 end
 function s.eqfilter(c,tp,ec)
-    return c:IsSetCard(0x3ca0) and c:IsType(TYPE_EQUIP) and not c:IsCode(47310021) and c:CheckEquipTarget(ec) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
+    return c:IsSetCard(0x3c10) and c:IsType(TYPE_EQUIP) and not c:IsCode(47310021) and c:CheckEquipTarget(ec) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsOnField() and chkc:IsAbleToDeck() and chkc:IsControler(tp) end
@@ -65,7 +65,7 @@ function s.remove(c)
     c:RegisterEffect(e1)
 end
 function s.rmfilter(c)
-    return c:IsSetCard(0x3ca0) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
+    return c:IsSetCard(0x3c10) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
 end
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.rmfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end

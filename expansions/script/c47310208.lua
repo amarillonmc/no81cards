@@ -25,7 +25,7 @@ function s.dualfilter(c)
 	return c:IsDualState() and c:IsFaceup()
 end
 function s.thfilter(c)
-    return c:IsSetCard(0x5ca0) and c:IsAbleToHand()
+    return c:IsSetCard(0x5c10) and c:IsAbleToHand()
 end
 function s.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local check=Duel.IsExistingMatchingCard(s.dualfilter,tp,LOCATION_MZONE,0,1,nil)

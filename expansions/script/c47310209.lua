@@ -10,7 +10,7 @@ function s.activate(c)
 	c:RegisterEffect(e1)
 end
 function s.thfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0x5ca0)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and c:IsSetCard(0x5c10)
 		and c:IsAbleToHand()
 end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
@@ -31,7 +31,7 @@ function s.exsummon(c)
 	e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
 	e1:SetRange(LOCATION_FZONE)
 	e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x5ca0))
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x5c10))
 	c:RegisterEffect(e1)
 end
 function s.indes(c)

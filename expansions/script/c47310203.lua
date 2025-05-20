@@ -17,7 +17,7 @@ function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsPublic()
 end
 function s.costfilter(c,ec,e,tp)
-	if not c:IsSetCard(0x5ca0) or not c:IsType(TYPE_MONSTER) or c:IsPublic() then return false end
+	if not c:IsSetCard(0x5c10) or not c:IsType(TYPE_MONSTER) or c:IsPublic() then return false end
 	local g=Group.FromCards(c,ec)
 	return g:IsExists(s.tgspfilter,1,nil,g,e,tp)
 end

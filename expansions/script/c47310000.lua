@@ -50,7 +50,7 @@ function Hata_no_Kokoro.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function Hata_no_Kokoro.eqfilter(c,tc,tp)
 	if not c:IsType(TYPE_EQUIP) then return false end
-    return c:IsSetCard(0x3ca0) and c:CheckEquipTarget(tc) and c:CheckUniqueOnField(tp,LOCATION_SZONE) and not c:IsForbidden()
+    return c:IsSetCard(0x3c10) and c:CheckEquipTarget(tc) and c:CheckUniqueOnField(tp,LOCATION_SZONE) and not c:IsForbidden()
 end
 function Hata_no_Kokoro.spop(loc)
     return function(e,tp,eg,ep,ev,re,r,rp)
@@ -94,10 +94,10 @@ function Hata_no_Kokoro.hnk_equip(c,id,e)
     c:RegisterEffect(e3)
 end
 function Hata_no_Kokoro.eqlimit(e,c)
-	return c:IsSetCard(0x3ca0)
+	return c:IsSetCard(0x3c10)
 end
 function Hata_no_Kokoro.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3ca0)
+	return c:IsFaceup() and c:IsSetCard(0x3c10)
 end
 function Hata_no_Kokoro.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and Hata_no_Kokoro.filter(chkc) end
@@ -125,7 +125,7 @@ function Hata_no_Kokoro.anger_eq(c)
 	c:RegisterEffect(e2)
 end
 function Hata_no_Kokoro.eftg(e,c)
-	return e:GetOwner():GetEquipTarget()==c and c:IsSetCard(0x3ca0)
+	return e:GetOwner():GetEquipTarget()==c and c:IsSetCard(0x3c10)
 end
 function Hata_no_Kokoro.efcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -193,13 +193,13 @@ function Hata_no_Kokoro.steff2(c,id)
 	c:RegisterEffect(e1)
 end
 function Hata_no_Kokoro.tdfilterq(c)
-	return c:IsSetCard(0x3ca0) and c:IsType(TYPE_EQUIP) and c:IsAbleToDeck()
+	return c:IsSetCard(0x3c10) and c:IsType(TYPE_EQUIP) and c:IsAbleToDeck()
 end
 function Hata_no_Kokoro.tdfilter(c)
-	return c:IsSetCard(0x3ca0) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+	return c:IsSetCard(0x3c10) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
 function Hata_no_Kokoro.tdtgq(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chkc then return chkc:IsSetCard(0x3ca0) and chkc:IsAbleToDeck() end
+    if chkc then return chkc:IsSetCard(0x3c10) and chkc:IsAbleToDeck() end
     if chk==0 then return Duel.IsExistingTarget(Hata_no_Kokoro.tdfilterq,tp,LOCATION_GRAVE,0,1,nil) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
     local g=Duel.SelectTarget(tp,Hata_no_Kokoro.tdfilterq,tp,LOCATION_GRAVE,0,1,1,nil)
@@ -207,7 +207,7 @@ function Hata_no_Kokoro.tdtgq(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,tp,LOCATION_GRAVE)
 end
 function Hata_no_Kokoro.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chkc then return chkc:IsSetCard(0x3ca0) and chkc:IsAbleToDeck() end
+    if chkc then return chkc:IsSetCard(0x3c10) and chkc:IsAbleToDeck() end
     if chk==0 then return Duel.IsExistingTarget(Hata_no_Kokoro.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
     local g=Duel.SelectTarget(tp,Hata_no_Kokoro.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)

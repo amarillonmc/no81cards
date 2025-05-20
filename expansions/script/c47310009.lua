@@ -16,7 +16,7 @@ function s.spsummon(c)
 	Duel.AddCustomActivityCounter(id,ACTIVITY_SPSUMMON,s.counterfilter)
 end
 function s.counterfilter(c)
-	return not c:IsSummonLocation(LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED) or c:IsSetCard(0x3ca0)
+	return not c:IsSummonLocation(LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED) or c:IsSetCard(0x3c10)
 end
 function s.cfilter(c)
 	return c:GetSequence()<5
@@ -36,10 +36,10 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c)
-	return not c:IsSetCard(0x3ca0) and c:IsLocation(LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED)
+	return not c:IsSetCard(0x3c10) and c:IsLocation(LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED)
 end
 function s.filter(c,e,tp)
-	return c:IsSetCard(0x3ca0) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3c10) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

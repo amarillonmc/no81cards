@@ -5,7 +5,7 @@ function s.sprule(c)
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,99,s.lcheck)
 end
 function s.lcheck(g)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3ca0)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3c10)
 end
 function s.tohand(c)
     local e1=Effect.CreateEffect(c)
@@ -24,7 +24,7 @@ function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function s.thfilter(c,e,tp)
-	return c:IsSetCard(0x3ca0) and c:IsFaceupEx() and (c:IsAbleToHand() or (c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) and Duel.GetMZoneCount(tp)>0))
+	return c:IsSetCard(0x3c10) and c:IsFaceupEx() and (c:IsAbleToHand() or (c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE) and Duel.GetMZoneCount(tp)>0))
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and s.thfilter(chkc) and chkc:IsControler(tp) end
@@ -67,7 +67,7 @@ function s.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and r==REASON_LINK
 end
 function s.tdfilters(c,tp)
-    return c:IsSetCard(0x3ca0) and c:IsFaceupEx() and c:IsAbleToDeck()
+    return c:IsSetCard(0x3c10) and c:IsFaceupEx() and c:IsAbleToDeck()
      and Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,c)
 end
 function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -101,10 +101,10 @@ function s.draw(c)
 	c:RegisterEffect(e1)
 end
 function s.lffilter(c,tp)
-    return c:IsSetCard(0x3ca0) and c:IsType(TYPE_EQUIP) and c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp)
+    return c:IsSetCard(0x3c10) and c:IsType(TYPE_EQUIP) and c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp)
 end
 function s.drfilter(c)
-    return c:IsSetCard(0x3ca0) and c:IsType(TYPE_LINK) and c:IsFaceup()
+    return c:IsSetCard(0x3c10) and c:IsType(TYPE_LINK) and c:IsFaceup()
 end
 function s.drcon(e,tp,eg,ep,ev,re,r,rp)
     return eg:IsExists(s.lffilter,1,nil,tp) and Duel.IsExistingMatchingCard(s.drfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -119,7 +119,7 @@ function s.eqcfilter(c,ec)
     return ec:CheckEquipTarget(c) and c:IsFaceup()
 end
 function s.eqfilter(c,tp)
-    return c:IsType(TYPE_EQUIP) and c:IsSetCard(0x3ca0) and Duel.IsExistingMatchingCard(s.eqcfilter,tp,LOCATION_MZONE,0,1,nil,c)
+    return c:IsType(TYPE_EQUIP) and c:IsSetCard(0x3c10) and Duel.IsExistingMatchingCard(s.eqcfilter,tp,LOCATION_MZONE,0,1,nil,c)
 end
 function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

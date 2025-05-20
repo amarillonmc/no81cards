@@ -31,7 +31,7 @@ function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x309) and c:IsAbleToHand() and c:IsType(TYPE_TRAP) or c:IsType(TYPE_SPELL)
+	return c:IsSetCard(0x309) and c:IsAbleToHand() and (c:IsType(TYPE_TRAP) or c:IsType(TYPE_SPELL))
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemove() and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end

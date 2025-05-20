@@ -19,7 +19,7 @@ function s.tfcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(c,POS_FACEUP,REASON_COST)
 end
 function s.pfilter(c,tp)
-	return c:IsType(TYPE_EQUIP) and c:IsSetCard(0x3ca0)
+	return c:IsType(TYPE_EQUIP) and c:IsSetCard(0x3c10)
 		and not c:IsForbidden() and c:CheckUniqueOnField(tp)
 end
 function s.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -27,7 +27,7 @@ function s.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.IsExistingMatchingCard(s.pfilter,tp,LOCATION_DECK,0,1,nil,tp) end
 end
 function s.eqfilter(c,tc)
-    return tc:CheckEquipTarget(c) and c:IsSetCard(0x3ca0) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
+    return tc:CheckEquipTarget(c) and c:IsSetCard(0x3c10) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
 function s.tfop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
@@ -64,7 +64,7 @@ function s.eff3(c)
 	c:RegisterEffect(e1)
 end
 function s.thfilter(c)
-    return c:IsSetCard(0x3ca0) and c:IsAbleToHand()
+    return c:IsSetCard(0x3c10) and c:IsAbleToHand()
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()

@@ -6,7 +6,7 @@ function s.sprule(c)
 	aux.AddLinkProcedure(c,s.matfilter,1,1)
 end
 function s.matfilter(c)
-	return c:IsLinkSetCard(0x3ca0) and not c:IsType(TYPE_LINK)
+	return c:IsLinkSetCard(0x3c10) and not c:IsType(TYPE_LINK)
 end
 function s.search(c)
     local e1=Effect.CreateEffect(c)
@@ -48,7 +48,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c)
-	return not c:IsSetCard(0x3ca0) and c:IsLocation(LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED)
+	return not c:IsSetCard(0x3c10) and c:IsLocation(LOCATION_HAND+LOCATION_DECK+LOCATION_REMOVED)
 end
 function s.tohand(c)
     local e1=Effect.CreateEffect(c)
@@ -64,7 +64,7 @@ function s.tohand(c)
 	c:RegisterEffect(e1)
 end
 function s.thfilter2(c)
-	return c:IsSetCard(0x3ca0) and c:IsType(TYPE_EQUIP+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x3c10) and c:IsType(TYPE_EQUIP+TYPE_TRAP) and c:IsAbleToHand()
 end
 function s.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsLocation(LOCATION_GRAVE) and s.thfilter2(chkc) and chkc:IsControler(tp) end

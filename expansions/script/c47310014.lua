@@ -15,7 +15,7 @@ function s.eff1(c)
 	c:RegisterEffect(e1)
 end
 function s.confilter(c)
-	return c:IsSetCard(0x3ca0) and c:IsFaceup()
+	return c:IsSetCard(0x3c10) and c:IsFaceup()
 end
 function s.con(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.confilter,tp,LOCATION_ONFIELD,0,1,nil)
