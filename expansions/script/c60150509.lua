@@ -11,7 +11,7 @@ function c60150509.initial_effect(c)
 	e12:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e12:SetType(EFFECT_TYPE_IGNITION)
 	e12:SetCountLimit(1,60150509)
-	e12:SetRange(LOCATION_SZONE)
+	e12:SetRange(LOCATION_FZONE)
 	--e12:SetCondition(c60150509.condition)
 	e12:SetTarget(c60150509.target)
 	e12:SetOperation(c60150509.operation)
@@ -21,7 +21,7 @@ function c60150509.initial_effect(c)
 	e23:SetDescription(aux.Stringid(60150509,2))
 	e23:SetType(EFFECT_TYPE_IGNITION)
 	e23:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e23:SetRange(LOCATION_SZONE)
+	e23:SetRange(LOCATION_FZONE)
 	e23:SetCountLimit(1,6010509)
 	e23:SetCondition(c60150509.tgcon)
 	e23:SetCost(c60150509.cost)
@@ -69,9 +69,7 @@ function c60150509.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_HAND)
 end
 function c60150509.operation(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	if Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)>0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c60150509.filter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
