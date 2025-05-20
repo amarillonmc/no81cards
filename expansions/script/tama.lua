@@ -328,7 +328,10 @@ function tama.tamas_getElements(v)
 		local et=tama.getCardAffectedEffectTable(v,TAMA_CODE_ADD_ELEMENT)
 		local i=1
 		while et[i] do
-			tama.tamas_increaseElements(codes1,Effect.GetValue(et[i]))
+			local f=Effect.GetValue(et[i])
+			if aux.GetValueType(f)=="function" then
+				codes1=tama.tamas_increaseElements(codes1,f())
+			end
 			i=i+1
 		end
 		return codes1
