@@ -160,6 +160,7 @@ function c11561078.xfilter(c,tp)
 	return c:IsHasEffect(11561078,tp)
 end
 function c11561078.cfilter(c)
+	local tp=c:GetControler()
 	return c:IsCode(93717133,18963306,88177324) and Duel.IsExistingMatchingCard(c11561078.thfilter,tp,LOCATION_DECK,0,3,nil,c:GetCode()) and Duel.GetMatchingGroup(c11561078.thfilter,tp,LOCATION_DECK,0,nil,c:GetCode()):GetClassCount(Card.GetCode)>2
 end
 function c11561078.thfilter(c,code)
