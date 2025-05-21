@@ -2,17 +2,17 @@
 local s,id=GetID()
 function s.todeck(c)
     local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_SZONE)
     e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,id)
-	e1:SetTarget(s.sptg)
-	e1:SetOperation(s.spop)
+	e1:SetTarget(s.tdtg)
+	e1:SetOperation(s.tdop)
 	c:RegisterEffect(e1)
 end
 function s.tdfilter(c,e)
-	return (c:IsRace(RACE_WYRM) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x5c10))) and c:IsCanBeEffectTarget(e) and c:IsAbleToDeck()
+	return (c:IsRace(RACE_WYRM) or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x5c10))) and c:IsFaceupEx() and c:IsCanBeEffectTarget(e) and c:IsAbleToDeck()
 end
 function s.thfilter(c,g)
     return g:IsExists(Card.IsCode,1,nil,c:GetCode()) and c:IsAbleToHand()
@@ -20,7 +20,7 @@ end
 function s.slcheck(sg,tp)
     return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,sg)
 end
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return false end
     local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e)
 	if chk==0 then return #g>3 and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,g) end
@@ -30,7 +30,7 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,tg,#tg,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function s.spop(e,tp,eg,ep,ev,re,r,rp)
+function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
     if #tg>0 then
         Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
