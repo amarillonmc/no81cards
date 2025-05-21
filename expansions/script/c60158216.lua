@@ -50,7 +50,7 @@ function c60158216.e1conf(c)
 	return c:IsFaceup() and (c:IsCode(60158001) or c:IsType(TYPE_LINK))
 end
 function c60158216.e1con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c60158216.e1conf,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and rp==1-tp
+	return Duel.IsExistingMatchingCard(c60158216.e1conf,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and rp==1-tp
 end
 function c60158216.e1tgf(c)
 	return c:IsType(TYPE_LINK) and c:IsAbleToRemove()
