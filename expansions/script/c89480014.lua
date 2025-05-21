@@ -44,6 +44,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(s.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 and sg:FilterCount(s.xfilter,nil,tp)>0 and c:IsType(TYPE_XYZ) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		local tc=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,1)
+		Duel.BreakEffect()
 		Duel.Overlay(c,tc)
 	end
 end
