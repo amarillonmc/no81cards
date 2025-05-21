@@ -127,7 +127,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	if ce and aux.GetValueType(ce)=="Effect" then de:SetLabelObject(ce) end
 end
 function cm.recon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE)
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and rp==tp
 end
 local KOISHI_CHECK=false
 if Duel.DisableActionCheck then KOISHI_CHECK=true end
@@ -142,7 +142,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,2))
 		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
 		if #g>0 then
-			--Duel.HintSelection(g)
+			Duel.HintSelection(g)
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetDescription(aux.Stringid(m,4))
 			e1:SetType(EFFECT_TYPE_SINGLE)
