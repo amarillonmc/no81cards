@@ -46,7 +46,8 @@ end
 function c67200960.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp)
 		and chkc:IsFaceup() and chkc:IsSetCard(0x67a) end
-	if chk==0 then return Duel.IsExistingTarget(c67200960.tgfilter,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(c67200960.tgfilter,tp,LOCATION_MZONE,0,1,nil) 
+	and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,c67200960.tgfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	local tc=g:GetFirst()
