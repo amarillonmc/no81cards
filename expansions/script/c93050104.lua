@@ -1,5 +1,5 @@
---「寄生兽」超量怪兽
-local s,id= GetID()
+--寄生兽 ⅴ型
+local s,id,o=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddXyzProcedure(c,nil,1,2,nil,nil,99)
@@ -17,7 +17,7 @@ function s.initial_effect(c)
 	e1:SetTarget(s.eqtg)
 	e1:SetOperation(s.eqop)
 	c:RegisterEffect(e1)
-	local e2 = Effect.CreateEffect(c)
+	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id, 1))
 	e2:SetCategory(CATEGORY_EQUIP)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
@@ -25,9 +25,9 @@ function s.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,id+1000)
-	e2:SetCost(s.cost2)
-	e2:SetTarget(s.target2)
-	e2:SetOperation(s.operation2)
+	e2:SetCost(s.epcost2)
+	e2:SetTarget(s.eqtg2)
+	e2:SetOperation(s.eqop2)
 	e2:SetHintTiming(0, TIMINGS_CHECK_MONSTER + TIMING_END_PHASE)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
@@ -40,68 +40,60 @@ function s.epcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk == 0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function s.eqfilter(c,tp)
+function s.filter(c)
 	return c:IsFaceup()
-	and Duel.IsExistingMatchingCard(s.eqmonsterfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp)
-	and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 end
-function s.eqmonsterfilter(c,tp)
+function s.eqfilter(c)
 	return c:IsSetCard(0xcf1) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.eqfilter(chkc,tp) end
-	if chk==0 then return Duel.IsExistingTarget(s.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	Duel.SelectTarget(tp,s.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.filter(chkc) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 end
 function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local ec=Duel.SelectMatchingCard(tp,s.eqmonsterfilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
-		if ec then
-			if not Duel.Equip(tp,ec,tc) then return end
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_EQUIP_LIMIT)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetValue(function(e,c) return c==tc end)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			ec:RegisterEffect(e1)
-		end
-	end
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.eqfilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,nil)
+	if g:GetCount()<=0 or Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+	local ec=g:Select(tp,1,1,nil):GetFirst()
+	Duel.Equip(tp,ec,tc)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_EQUIP_LIMIT)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e1:SetLabelObject(tc)
+	e1:SetValue(s.eqlimit)
+	ec:RegisterEffect(e1)
 end
-function s.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.epcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
 end
-function s.filter2(c,tp)
-	return c:IsFaceup() and c:IsControler(1-tp)
-	and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+function s.eqtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.filter(chkc) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingTarget(s.filter,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 end
-function s.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and s.filter2(chkc,tp) end
-	if chk==0 then return Duel.IsExistingTarget(s.filter2,tp,0,LOCATION_MZONE,1,nil,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g=Duel.SelectTarget(tp,s.filter2,tp,0,LOCATION_MZONE,1,1,nil,tp)
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,e:GetHandler(), 1, 0, 0)
-end
-function s.operation2(e, tp, eg, ep, ev, re, r, rp)
+function s.eqop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and c:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		Duel.Equip(tp,c,tc)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_EQUIP_LIMIT)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(function(e,c) return c==tc end)
-		c:RegisterEffect(e1)
-	end
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
+	Duel.Equip(tp,c,tc)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_EQUIP_LIMIT)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e1:SetLabelObject(tc)
+	e1:SetValue(s.eqlimit)
+	c:RegisterEffect(e1)
 end
-function s.eqlimit(e, c)
-	return e:GetOwner() == c
+function s.eqlimit(e,c)
+	return c==e:GetLabelObject()
 end
 function s.cval(e,c)
 	return e:GetHandlerPlayer()

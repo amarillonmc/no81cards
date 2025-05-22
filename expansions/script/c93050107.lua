@@ -1,4 +1,5 @@
-local s,id=GetID()
+--寄生兽的诞生
+local s,id,o=GetID()
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_EQUIP)
@@ -23,37 +24,36 @@ function s.initial_effect(c)
 	e2:SetOperation(s.mtop)
 	c:RegisterEffect(e2)
 end
-function s.eqfilter(c,tp)
+function s.filter(c)
 	return c:IsFaceup()
-	and Duel.IsExistingMatchingCard(s.eqmonsterfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,tp)
-	and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 end
-function s.eqmonsterfilter(c,tp)
+function s.eqfilter(c)
 	return c:IsSetCard(0xcf1) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.eqfilter(chkc,tp) end
-	if chk==0 then return Duel.IsExistingTarget(s.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	Duel.SelectTarget(tp,s.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.filter(chkc) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingTarget(s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 end
 function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local ec=Duel.SelectMatchingCard(tp,s.eqmonsterfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
-		if ec then
-			if not Duel.Equip(tp,ec,tc) then return end
-			-- Equip Limit
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_EQUIP_LIMIT)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetValue(function(e,c) return c==tc end)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			ec:RegisterEffect(e1)
-		end
-	end
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.eqfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,nil)
+	if g:GetCount()<=0 or Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or tc:IsFacedown() or not tc:IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
+	local ec=g:Select(tp,1,1,nil):GetFirst()
+	Duel.Equip(tp,ec,tc)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_EQUIP_LIMIT)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e1:SetLabelObject(tc)
+	e1:SetValue(s.eqlimit)
+	ec:RegisterEffect(e1)
+end
+function s.eqlimit(e,c)
+	return c==e:GetLabelObject()
 end
 function s.filter1(c,e,tp)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0xcf1)

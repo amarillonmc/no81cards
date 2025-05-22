@@ -48,7 +48,7 @@ function c28381214.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28381214.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,2,2,nil)
-	if Duel.SendtoHand(tg,nil,REASON_EFFECT)==0 then return end
+	if #tg~=2 or Duel.SendtoHand(tg,nil,REASON_EFFECT)==0 then return end
 	Duel.ConfirmCards(1-tp,tg)
 	if tc:IsRelateToEffect(e) then Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT) end
 	local b1=Duel.IsExistingMatchingCard(c28381214.chkfilter,tp,LOCATION_HAND,0,2,nil,0x284)
@@ -57,49 +57,40 @@ function c28381214.thop(e,tp,eg,ep,ev,re,r,rp)
 	local b3=Duel.IsExistingMatchingCard(c28381214.chkfilter,tp,LOCATION_HAND,0,2,nil,0x286)
 		and Duel.IsExistingMatchingCard(c28381214.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
 	local b4=Duel.IsExistingMatchingCard(c28381214.chkfilter,tp,LOCATION_HAND,0,2,nil,0x287)
-	local b5=true
 	if not (b1 or b2 or b3 or b4) then return end
 	local op=aux.SelectFromOptions(tp,
 		{b1,aux.Stringid(28381214,0)},
 		{b2,aux.Stringid(28381214,1)},
 		{b3,aux.Stringid(28381214,2)},
 		{b4,aux.Stringid(28381214,3)},
-		{b5,aux.Stringid(28381214,4)})
-	if op~=5 then
-		Duel.BreakEffect()
-		Duel.ShuffleHand(tp)
-	end
+		{true,aux.Stringid(28381214,4)})
+	if op~=5 then c28381214.confirm(tp,op) end
 	if op==1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local g=Duel.SelectMatchingCard(tp,c28381214.chkfilter,tp,LOCATION_HAND,0,2,2,nil,0x284)
-		Duel.ConfirmCards(1-tp,g)
-		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local tg=Duel.SelectMatchingCard(tp,c28381214.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 		if #tg>0 then Duel.SendtoGrave(tg,REASON_EFFECT) end
 	elseif op==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local g=Duel.SelectMatchingCard(tp,c28381214.chkfilter,tp,LOCATION_HAND,0,2,2,nil,0x285)
-		Duel.ConfirmCards(1-tp,g)
-		Duel.BreakEffect()
 		Duel.Damage(tp,1000,REASON_EFFECT,true)
 		Duel.Damage(1-tp,1000,REASON_EFFECT,true)
 		Duel.RDComplete()
 	elseif op==3 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local g=Duel.SelectMatchingCard(tp,c28381214.chkfilter,tp,LOCATION_HAND,0,2,2,nil,0x286)
-		Duel.ConfirmCards(1-tp,g)
-		Duel.BreakEffect()
 		Duel.ShuffleHand(tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=Duel.SelectMatchingCard(tp,c28381214.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 		if #sg>0 then Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP) end
 	elseif op==4 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local g=Duel.SelectMatchingCard(tp,c28381214.chkfilter,tp,LOCATION_HAND,0,2,2,nil,0x287)
-		Duel.ConfirmCards(1-tp,g)
-		Duel.BreakEffect()
 		Duel.Recover(tp,1000,REASON_EFFECT)
 	end
+	Duel.ShuffleHand(tp)
+end
+function c28381214.confirm(tp,op)
+	Duel.ShuffleHand(tp)
+	local code=op==1 and 0x284 or op==2 and 0x285 or op==3 and 0x286 or op==4 and 0x287
+	local g=Duel.GetMatchingGroup(c28381214.chkfilter,tp,LOCATION_HAND,0,nil,code)
+	if #g>2 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+		g=g:Select(tp,2,2,nil)
+	end
+	Duel.ConfirmCards(1-tp,g)
 	Duel.ShuffleHand(tp)
 end

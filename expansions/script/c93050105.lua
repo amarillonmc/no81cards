@@ -1,5 +1,5 @@
--- 寄生兽的场地魔法卡
-local s,id=GetID()
+--寄生兽的栖息地
+local s,id,o=GetID()
 function s.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
