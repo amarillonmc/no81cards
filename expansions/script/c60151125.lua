@@ -111,17 +111,18 @@ function c60151125.disop(e,tp,eg,ep,ev,re,r,rp)
 	if res==1 then
 		local rc=re:GetHandler()
 		Duel.NegateEffect(ev)
-		if rc:IsRelateToEffect(re) and not rc:IsImmuneToEffect(e) then
-			if rc:IsType(TYPE_MONSTER) then 
+		if not rc:IsImmuneToEffect(e) then
+			if rc:IsType(TYPE_XYZ) then 
 				local og=rc:GetOverlayGroup()
 				if og:GetCount()>0 then
 					Duel.SendtoGrave(og,REASON_RULE)
 				end
 				Duel.Overlay(e:GetHandler(),Group.FromCards(rc))
-			end
-			if rc:IsType(TYPE_SPELL+TYPE_TRAP) then 
+			elseif rc:IsType(TYPE_SPELL+TYPE_TRAP) then 
 				rc:CancelToGrave()
 				Duel.Overlay(e:GetHandler(),Group.FromCards(rc))
+			else 
+				return false
 			end
 		end
 	end
