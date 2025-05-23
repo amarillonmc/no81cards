@@ -62,7 +62,8 @@ function c33200740.spop(e,tp,eg,ep,ev,re,r,rp)
 	local count=tc:GetLink()
 	if tc:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,tc)>0 and Duel.IsCanRemoveCounter(tp,LOCATION_ONFIELD,0,0x32a,count,REASON_EFFECT) then
 		if Duel.RemoveCounter(tp,LOCATION_ONFIELD,0,0x32a,count,REASON_EFFECT) then
-			Duel.SpecialSummon(tc,SUMMON_TYPE_LINK,tp,tp,false,false,POS_FACEUP)
+			tc:SetMaterial(nil)
+			if Duel.SpecialSummon(tc,SUMMON_TYPE_LINK,tp,tp,false,false,POS_FACEUP)>0 then tc:CompleteProcedure() end
 		end
 	end
 	local e2=Effect.CreateEffect(c)
@@ -89,7 +90,7 @@ function c33200740.counttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(33200740,1))
 end
 function c33200740.cfilter(c)
-	return c:IsSetCard(0xc32a) and c:IsAbleToDeck()
+	return c:IsFaceup() and c:IsSetCard(0xc32a) and c:IsAbleToDeck()
 end
 function c33200740.counter(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)

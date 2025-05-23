@@ -46,7 +46,7 @@ function c33200734.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c33200734.thfilter(c)
-	return c:IsSetCard(0xc32a) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsSetCard(0xc32a) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c33200734.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c33200734.thfilter,tp,LOCATION_REMOVED,0,1,nil) end
