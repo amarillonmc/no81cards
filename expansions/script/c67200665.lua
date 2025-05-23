@@ -31,7 +31,7 @@ function c67200665.initial_effect(c)
 	c:RegisterEffect(e3)	 
 end
 function c67200665.spfilter(c)
-	return c:IsFaceup() and c:IsAbleToGraveAsCost() and c:IsSetCard(0x667b)
+	return c:IsFaceup() and c:IsAbleToGraveAsCost() and c:IsSetCard(0x667b) and bit.band(c:GetOriginalType(),TYPE_MONSTER)==TYPE_MONSTER
 end
 function c67200665.fselect(g,tp)
 	return aux.mzctcheck(g,tp)
