@@ -66,7 +66,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not e:GetHandler():IsRelateToEffect(e) then return end
 	if tc:IsRelateToEffect(e) then
-		local atk=tc:IsFaceup() and tc:GetAttack() or 0
+		local atk=tc:IsFaceup() and tc:GetBaseAttack() or 0
 		if Duel.Destroy(tc,REASON_EFFECT)>0 and atk~=0 then
 			Duel.Damage(1-tp,atk/2,REASON_EFFECT)
 			Duel.BreakEffect()

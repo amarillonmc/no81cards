@@ -48,16 +48,21 @@ function cm.matfilter1(c)
 	return c:IsType(TYPE_TUNER) or (c:IsType(TYPE_PENDULUM) and c:IsSummonType(SUMMON_TYPE_PENDULUM))
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and Duel.IsChainNegatable(ev) and re:IsActiveType(TYPE_MONSTER) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) 
+	return Duel.IsChainNegatable(ev) and re:IsActiveType(TYPE_MONSTER) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) 
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=re:GetHandler()
-	local atk=tc:GetBaseAttack()
+	local rc=re:GetHandler()
 	if Duel.NegateActivation(ev) then
+		local atk=0
+		if rc:IsRelateToEffect(re) and (rc:IsFaceup() or not rc:IsLocation(LOCATION_MZONE)) then
+			atk=rc:GetBaseAttack()
+		else
+			atk=rc:GetTextAttack()
+		end
 		Duel.SetLP(tp,math.ceil(Duel.GetLP(tp)-atk))
 	end
 end
