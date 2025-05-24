@@ -194,7 +194,7 @@ function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_SET_AVAILABLE)
 			e1:SetCode(EFFECT_CANNOT_TRIGGER)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			g:GetFirst():RegisterEffect(e1)
+			g:GetFirst():RegisterEffect(e1,true)
 		elseif opval[op]==7 then
 			Duel.BreakEffect()
 			e:SetLabel(e:GetLabel()-0x40000)
