@@ -34,7 +34,7 @@ function xg.epp(c, id, su, ...) --XG.epp(c,id,su,...) 不推荐使用
 		end
 		for _, o in pairs(l2) do
 			if su[o] == nil or su[o] == "" then
-				su[o] = cm.TRUE
+				su[o] = aux.TRUE
 			end
 		end
 	else
@@ -53,7 +53,7 @@ function xg.epp(c, id, su, ...) --XG.epp(c,id,su,...) 不推荐使用
 			end
 		end
 	end
-	e1:SetDescription(cm.Stringid(id, su["Description"]))
+	e1:SetDescription(aux.Stringid(id, su["Description"]))
 	e1:SetCategory(su["Category"])
 	e1:SetProperty(su["Property"])
 	e1:SetType(su["Type"])
@@ -129,7 +129,7 @@ function xg.epp2(c, id, cf, co, ta, qy, h1, h2, h3, h4, zc) --XG.epp2(c,m,2,nil,
 end
 
 function xg.ky(tp, id, zh) --简易选择是否
-	return Duel.SelectYesNo(tp, cm.Stringid(id, zh))
+	return Duel.SelectYesNo(tp, aux.Stringid(id, zh))
 end
 
 --失落之魂
@@ -192,7 +192,7 @@ hj = hj or {}
 cm = it
 function cm.GetEffectValue(e, ...) --检测e是否函数，是的场合执行函数内容
 	local v = e:GetValue()
-	if cm.GetValueType(v) == "function" then
+	if aux.GetValueType(v) == "function" then
 		return v(e, ...)
 	else
 		return v
