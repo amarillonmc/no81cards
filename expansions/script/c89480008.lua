@@ -51,11 +51,7 @@ function s.copytg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,s.efffilter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_MZONE,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	local te=tc.ceffect
-	if tc:IsLocation(LOCATION_DECK) then
-		Duel.SendtoGrave(g,REASON_COST+REASON_RELEASE)
-	else
-		Duel.Release(g,REASON_COST)
-	end
+	Duel.Release(g,REASON_COST)
 	e:SetProperty(te:GetProperty())
 	Duel.ClearTargetCard()
 	e:SetLabelObject(te)
