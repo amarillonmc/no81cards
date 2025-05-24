@@ -49,8 +49,9 @@ function s.hsptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(s.hspfilter,tp,LOCATION_GRAVE,0,nil,tp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
-	if tc then
+	local tg=g:CancelableSelect(tp,1,1,nil) --SelectUnselect(nil,tp,false,true,1,1)
+	if tg and #tg>0 then
+		local tc=tg:GetFirst()
 		e:SetLabelObject(tc)
 		return true
 	else return false end
