@@ -81,7 +81,6 @@ function c28381214.thop(e,tp,eg,ep,ev,re,r,rp)
 	elseif op==4 then
 		Duel.Recover(tp,1000,REASON_EFFECT)
 	end
-	Duel.ShuffleHand(tp)
 end
 function c28381214.confirm(tp,op)
 	Duel.ShuffleHand(tp)
