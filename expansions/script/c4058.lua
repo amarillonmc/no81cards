@@ -129,43 +129,6 @@ function c4058.initial_effect(c)
 	e25:SetRange(LOCATION_ONFIELD)
 	e25:SetOperation(c4058.actop)
 	c:RegisterEffect(e25)
-	--public
-	local e26=Effect.CreateEffect(c)
-	e26:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e26:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
-	e26:SetCode(EVENT_TO_GRAVE)
-	e26:SetRange(LOCATION_ONFIELD)
-	e26:SetCondition(c4058.con)
-	e26:SetOperation(c4058.op)
-	c:RegisterEffect(e26)
-	local e27=e26:Clone()
-	e27:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e27)
-	local e28=e26:Clone()
-	e28:SetCode(EVENT_TO_HAND)
-	c:RegisterEffect(e28)
-	local e29=e26:Clone()
-	e29:SetCode(EVENT_TO_DECK)
-	c:RegisterEffect(e29)
-	local e30=e26:Clone()
-	e30:SetCode(EVENT_REMOVE)
-	c:RegisterEffect(e30)
-	local e31=Effect.CreateEffect(c)
-	e31:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e31:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
-	e31:SetCode(EVENT_CHAIN_SOLVED)
-	e31:SetRange(LOCATION_ONFIELD)
-	e31:SetOperation(c4058.pubop)
-	c:RegisterEffect(e31)
-	local e32=e31:Clone()
-	e32:SetCode(EVENT_SUMMON)
-	c:RegisterEffect(e32)
-	local e33=Effect.CreateEffect(c)
-	e33:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
-	e33:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e33:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e33:SetOperation(c4058.sumsuc)
-	c:RegisterEffect(e33)
 	--plus effect
 	if not c4058.global_check then
 		c4058.global_check=true
@@ -348,36 +311,6 @@ function c4058.actop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetActivateLocation()~=LOCATION_HAND then return end
 	if not rc:IsCode(16067089,93217231,80678380,1683982) then return end
 	Duel.RegisterFlagEffect(rc:GetControler(),rc:GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
-end
-
---public
-function c4058.cfilter(c,tp)
-	return c:GetPreviousControler()==tp
-		and (c:IsPreviousLocation(LOCATION_DECK) or c:GetSummonLocation()==LOCATION_DECK
-			or (c:IsControler(tp) and c:IsPreviousLocation(LOCATION_DECK))
-			or c:IsLocation(LOCATION_DECK)) and not c:IsReason(REASON_DRAW)
-end
-function c4058.con(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c4058.cfilter,1,nil,tp)
-end
-function c4058.op(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
-	if g:GetCount()<=1 then return end
-	c:RegisterFlagEffect(4058,RESET_EVENT+0x1fc0000+RESET_CHAIN,0,1)
-end
-function c4058.pubop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:GetFlagEffect(4058)~=0 and Duel.IsExistingMatchingCard(c4058.dafilter,tp,LOCATION_DECK,0,2,nil) then
-		local sg=Duel.GetMatchingGroup(c4058.dafilter,tp,LOCATION_DECK,0,nil)
-		Duel.ConfirmCards(tp,sg)
-	end
-end
-function c4058.sumsuc(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(c4058.dafilter,tp,LOCATION_DECK,0,2,nil) then
-		local sg=Duel.GetMatchingGroup(c4058.dafilter,tp,LOCATION_DECK,0,nil)
-		Duel.ConfirmCards(tp,sg)
-	end
 end
 
 --plus effect

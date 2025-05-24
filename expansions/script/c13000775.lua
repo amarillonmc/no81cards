@@ -34,12 +34,36 @@ function cm.filter3(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-  local c=e:GetHandler() 
-  local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.filter3),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,c,e,tp)--排除自己
-  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-  local sc=mg:Select(tp,1,1,nil):GetFirst()
-  Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
-  --没有写把怪兽无效的部分，可以补上
+	local c=e:GetHandler() 
+	local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.filter3),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,c,e,tp)--排除自己
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sc=mg:Select(tp,1,1,nil):GetFirst()
+	if Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	--没有写把怪兽无效的部分，可以补上
+	local sg=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(53971455,2)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+		local tg=sg:Select(tp,1,1,nil)
+		Duel.HintSelection(tg)
+		local sc=tg:GetFirst()
+		Duel.NegateRelatedChain(sc,RESET_TURN_SET)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetCode(EFFECT_DISABLE)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		sc:RegisterEffect(e2)
+		local e3=e2:Clone()
+		e3:SetCode(EFFECT_DISABLE_EFFECT)
+		e3:SetValue(RESET_TURN_SET)
+		sc:RegisterEffect(e3)
+		if sc:IsType(TYPE_TRAPMONSTER) then
+			local e4=e2:Clone()
+			e4:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+			sc:RegisterEffect(e4)
+		end
+	end
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.filter3),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e,tp)
