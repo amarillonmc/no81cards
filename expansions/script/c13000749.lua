@@ -17,31 +17,25 @@ end
 function cm.chkfilter(c,i)
 	return c:GetSequence()==i
 end
+function cm.rdfi0ter(c,e)
+    return c:IsType(TYPE_RITUAL)
+        and ((c:IsType(TYPE_MONSTER) and c:IsReleasable())
+        or (c:IsType(TYPE_SPELL) and c:IsDestructable(e)))
+end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	local snum=Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_DECK,0,nil,TYPE_RITUAL)
-	if snum<=0 then return end
+    if not e:GetHandler():IsRelateToEffect(e) then return end
 	local g2=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
 	if not g2 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g1=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_HAND,0,1,snum,nil)
+	local g1=Duel.SelectMatchingCard(tp,cm.rdfi0ter,tp,0x0e,0,1,20,e:GetHandler(),e)
 	if not g1 then return end
-	snum=g1:GetCount()+1
-	local num=0
-	Duel.ConfirmCards(1-tp,g1)
-	for i=1,#g2,1 do
-		if num==snum then break end
-		local tc=Duel.GetMatchingGroup(cm.chkfilter,tp,LOCATION_DECK,0,nil,#g2-i):GetFirst()
-		if tc:IsType(TYPE_RITUAL) then
-			snum=snum+1
-		end
-		num=num+1
-	end
-	if num>=#g2 then
-		Duel.ConfirmDecktop(tp,#g2)
-		Duel.ShuffleDeck(tp)
-		Duel.ShuffleHand(tp)
-		return
-	end
+    g1:AddCard(e:GetHandler())
+	local num=g1:GetCount()*3
+    if num>#g2 then num=#g2 end
+	local rlg=g1:Filter(Card.IsType,nil,TYPE_MONSTER)
+    Duel.Release(rlg,REASON_EFFECT)
+    local dsg=g1:Filter(Card.IsType,nil,TYPE_SPELL)
+    Duel.Destroy(dsg,REASON_EFFECT)
 	Duel.ConfirmDecktop(tp,num)
 	Duel.ShuffleHand(tp)
 	::cancel::
@@ -128,9 +122,7 @@ end
 
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	 local c=e:GetHandler()
-	 if chk==0 then return c:IsDiscardable() end
-	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
-	
+	 if chk==0 then return not c:IsPublic() end
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -189,6 +181,3 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e6)
 	end
 end
-
-
-

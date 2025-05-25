@@ -45,7 +45,7 @@ function c9910060.xyzop(e,tp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sg=g:SelectSubGroup(tp,aux.gfcheck,false,2,2,Card.IsAttribute,ATTRIBUTE_LIGHT,ATTRIBUTE_DARK)
 	Duel.Remove(sg,POS_FACEUP,REASON_COST)
-	Duel.RegisterFlagEffect(tp,9910060,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,9910060,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c9910060.effcon(e)
 	return e:GetHandler():GetOverlayCount()>0
