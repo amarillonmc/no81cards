@@ -81,7 +81,7 @@ function c28316345.recop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.GetMZoneCount(tp)>0 and Duel.IsExistingMatchingCard(c28316345.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(28316345,2)) then
+	if aux.GetAttributeCount(g)>=3 and Duel.GetMZoneCount(tp)>0 and Duel.IsExistingMatchingCard(c28316345.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(28316345,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=Duel.SelectMatchingCard(tp,c28316345.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 		if sg:GetCount()>0 then

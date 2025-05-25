@@ -36,7 +36,7 @@ end
 function c28321714.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	local ct=2
-	if Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,LOCATION_MZONE,nil):GetClassCount(Card.GetAttribute)>=3 and Duel.GetFieldGroupCount(p,LOCATION_DECK,0)>=3 and Duel.SelectOption(p,aux.Stringid(28321714,0),aux.Stringid(28321714,1))==1 then
+	if aux.GetAttributeCount(Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,LOCATION_MZONE,nil))>=3 and Duel.GetFieldGroupCount(p,LOCATION_DECK,0)>=3 and Duel.SelectOption(p,aux.Stringid(28321714,0),aux.Stringid(28321714,1))==1 then
 		ct=3
 	end
 	Duel.ConfirmDecktop(p,ct)

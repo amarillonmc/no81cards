@@ -181,7 +181,7 @@ end
 function c28335633.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,0,LOCATION_MZONE,LOCATION_MZONE,nil)
-	local ct=g:GetClassCount(Card.GetAttribute)
+	local ct=aux.GetAttributeCount(g)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(0x30) and c28335633.tdfilter(chkc) and chkc~=c end
 	if chk==0 then return Duel.IsExistingTarget(c28335633.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,c) and Duel.IsPlayerCanDraw(tp,1) and ct>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)

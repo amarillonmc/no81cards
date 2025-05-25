@@ -59,7 +59,7 @@ end
 function c28314946.recop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Recover(tp,1000,REASON_EFFECT)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(c28314946.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28314946,2)) then
+	if aux.GetAttributeCount(g)>=3 and Duel.IsExistingMatchingCard(c28314946.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28314946,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tg=Duel.SelectMatchingCard(tp,c28314946.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)

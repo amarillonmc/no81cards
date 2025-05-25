@@ -76,7 +76,7 @@ function c28316048.recop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,tc)
 	end
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if g:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(c28316048.spfilter,tp,0xff,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(28316048,2)) then
+	if aux.GetAttributeCount(g)>=3 and Duel.IsExistingMatchingCard(c28316048.spfilter,tp,0xff,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(28316048,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sc=Duel.SelectMatchingCard(tp,c28316048.spfilter,tp,0xff,0,1,1,nil,e,tp):GetFirst()
 		for _,sumtype in pairs({0,SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ,SUMMON_TYPE_LINK,SUMMON_TYPE_SPECIAL,SUMMON_VALUE_SELF}) do
