@@ -4,10 +4,15 @@ local yr = 13020010
 xpcall(function() dofile("expansions/script/c16670000.lua") end, function() dofile("script/c16670000.lua") end) --引用库
 function cm.initial_effect(c)
 	aux.AddCodeList(c, yr)
-	aux.AddEquipSpellEffect(c, true, true, nil, nil)
+	--aux.AddEquipSpellEffect(c, true, true, Card.IsFaceup, nil)
+	aux.AddEquipSpellEffect(c, true, true, Card.IsFaceup, nil)
 	local e1 = xg.epp2(c, m, 4, EVENT_EQUIP, EFFECT_FLAG_DAMAGE_STEP + EFFECT_FLAG_DELAY, QY_mx, nil, nil, cm.target,
 		cm.operation, true)
 	e1:SetCountLimit(1, m)
+	local e2 = Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_EQUIP)
+	e2:SetCode(EFFECT_CANNOT_DISABLE)
+	c:RegisterEffect(e2)
 	local e3 = Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_TRIGGER_O)
@@ -22,7 +27,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
-function aux.AddEquipSpellEffect(c, is_self, is_opponent, filter, eqlimit, pause, skip_target)
+function cm.AddEquipSpellEffect(c, is_self, is_opponent, filter, eqlimit, pause, skip_target)
 	local value = (type(eqlimit) == "function") and eqlimit or 1
 	if pause == nil then pause = false end
 	if skip_target == nil then skip_target = false end
@@ -82,9 +87,10 @@ end
 function cm.target(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
 	local c = e:GetHandler()
 	local tc = e:GetHandler():GetEquipTarget()
-	local dg = eg:Filter(cm.filter1, nil, tc, c)
+	--local dg = eg:Filter(cm.filter1, nil, tc, c)
 	local g = Duel.GetMatchingGroup(cm.filter, tp, LOCATION_DECK + QY_md, 0, nil)
-	if chk == 0 then return #dg > 0 and tc and tc:IsCanChangePosition() and #g > 0 end
+	--if chk == 0 then return #dg > 0 and tc and tc:IsCanChangePosition() and #g > 0 end
+	if chk == 0 then return tc and tc:IsCanChangePosition() and #g > 0 end
 	Duel.SetOperationInfo(0, CATEGORY_POSITION, tc, 1, 0, 0)
 end
 
@@ -92,14 +98,17 @@ function cm.operation(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
 	local tc = c:GetEquipTarget()
 	if not c:IsRelateToEffect(e) then return end
-	if tc and Duel.ChangePosition(tc, POS_FACEUP_DEFENSE, POS_FACEUP_DEFENSE, POS_FACEUP_ATTACK, POS_FACEUP_ATTACK) ~= 0 then
+	--if tc and Duel.ChangePosition(tc, POS_FACEUP_DEFENSE, POS_FACEUP_DEFENSE, POS_FACEUP_ATTACK, POS_FACEUP_ATTACK) ~= 0 then
+	if tc and Duel.ChangePosition(tc, POS_FACEDOWN_DEFENSE) ~= 0 then
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_ATOHAND)
 		local g = Duel.SelectMatchingCard(tp, cm.filter, tp, LOCATION_DECK + QY_md, 0, 1, 1, nil)
 		if g:GetCount() > 0 then
 			if Duel.SendtoHand(g, nil, REASON_EFFECT) ~= 0 then
 				Duel.ConfirmCards(1 - tp, g)
 				if xg.ky(tp, m, 1) then
-					Duel.ChangePosition(tc, POS_FACEUP_DEFENSE, POS_FACEUP_DEFENSE, POS_FACEUP_ATTACK, POS_FACEUP_ATTACK)
+					--Duel.ChangePosition(tc, POS_FACEUP_DEFENSE, POS_FACEUP_DEFENSE, POS_FACEUP_ATTACK, POS_FACEUP_ATTACK)
+					Duel.ChangePosition(tc, POS_FACEUP_DEFENSE, POS_FACEDOWN_DEFENSE, POS_FACEUP_ATTACK,
+						POS_FACEUP_ATTACK)
 				end
 			end
 		end
@@ -120,11 +129,11 @@ function cm.filter6(c, e, tp, id, g)
 end
 
 function cm.filter5(c, e, tp)
-	return c:IsType(TYPE_EQUIP)
+	return c:IsType(TYPE_EQUIP) or c:IsType(TYPE_UNION)
 end
 
 function cm.filter4(c, c2)
-	return c2:CheckEquipTarget(c) and not c:IsCode(m)
+	return c:CheckEquipTarget(c2) and not c:IsCode(m)
 end
 
 function cm.cost(e, tp, eg, ep, ev, re, r, rp, chk)
@@ -147,6 +156,7 @@ function cm.desop(e, tp, eg, ep, ev, re, r, rp)
 	local g2 = Duel.GetMatchingGroup(cm.filter5, tp, LOCATION_GRAVE + QY_cw, 0, nil, e, tp)
 	local g1 = Duel.SelectMatchingCard(tp, cm.filter6, tp, LOCATION_GRAVE + QY_cw, 0, 1, 1, nil, e, tp, m, g2):GetFirst()
 	Duel.SpecialSummon(g1, 0, tp, tp, false, false, POS_FACEUP)
-	g2 = g2:Filter(cm.filter4, nil, g1)
+	--g2 = g2:Filter(cm.filter4, nil, g1)
+	g2 = g2:FilterSelect(tp, cm.filter4, 1, 1, nil, g1):GetFirst()
 	Duel.Equip(tp, g2, g1, true)
 end

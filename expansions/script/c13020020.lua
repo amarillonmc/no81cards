@@ -20,6 +20,12 @@ function cm.initial_effect(c)
     e3:SetOperation(cm.desop)
     c:RegisterEffect(e3)
     --
+    local e2 = Effect.CreateEffect(c)
+    e2:SetType(EFFECT_TYPE_EQUIP)
+    e2:SetCode(EFFECT_UPDATE_ATTACK)
+    e2:SetCondition(cm.atkcon)
+    e2:SetValue(cm.atkval)
+    c:RegisterEffect(e2)
     local e4 = Effect.CreateEffect(c)
     e4:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_CONTINUOUS)
     e4:SetCode(EVENT_LEAVE_FIELD_P)
@@ -51,6 +57,16 @@ function cm.filter(c)
     return c:IsCode(yr) and c:IsAbleToHand()
 end
 
+function cm.atkcon(e)
+    return Duel.GetCurrentPhase() == PHASE_DAMAGE_CAL and e:GetHandler():GetBattleTarget()
+end
+
+function cm.atkval(e, c)
+    local tc = e:GetHandler():GetBattleTarget()
+
+    return math.max(tc:GetAttack(), tc:GetDefense())
+end
+
 function cm.filter1(c, ec, c2)
     return c:GetEquipTarget() == ec and c == c2
 end
@@ -58,9 +74,10 @@ end
 function cm.target(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
     local c = e:GetHandler()
     local tc = e:GetHandler():GetEquipTarget()
-    local dg = eg:Filter(cm.filter1, nil, tc, c)
+    --local dg = eg:Filter(cm.filter1, nil, tc, c)
     local kx, zzx, sxx, zzjc, sxjc, zzl = it.sxbl()
-    if chk == 0 then return #dg > 0 and tc and zzx > 0 end
+    --if chk == 0 then return #dg > 0 and tc and zzx > 0 end
+    if chk == 0 then return tc and zzx > 0 end
     local zz, sx, lv = it.sxblx(tp, kx, zzx, sxx, zzl)
     e:SetLabel(zz, sx, lv)
     Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, c, 1, 0, 0)

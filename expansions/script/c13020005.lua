@@ -6,8 +6,9 @@ function cm.initial_effect(c)
 	c:SetSPSummonOnce(m)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFunRep(c, 13020000, aux.FilterBoolFunction(Card.IsType, TYPE_EFFECT), 1, 127, true, true)
-	local e1 = aux.AddContactFusionProcedure(c, cm.ffilter, LOCATION_ONFIELD + LOCATION_HAND, 0, Duel.Remove, POS_FACEUP,
+	--aux.AddFusionProcCodeFunRep(c, 13020000, aux.FilterBoolFunction(Card.IsType, TYPE_EFFECT), 1, 127, true, true)
+	aux.AddFusionProcFun2(c, cm.filter66, aux.FilterBoolFunction(Card.IsType, TYPE_EFFECT), true)
+	local e1 = cm.AddContactFusionProcedure(c, cm.ffilter, LOCATION_ONFIELD + LOCATION_HAND, 0, Duel.Remove, POS_FACEUP,
 		REASON_COST + REASON_MATERIAL):SetValue(SUMMON_VALUE_SELF)
 
 	local e2 = Effect.CreateEffect(c)
@@ -30,6 +31,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
+function cm.filter66(c)
+	return aux.IsCodeListed(c, yr)
+end
+
 function cm.ffilter(c, fc, sub, mg, sg)
 	return c:IsAbleToRemoveAsCost() and (c:GetOriginalType() & TYPE_UNION ~= 0 or c:GetOriginalType() & TYPE_EQUIP ~= 0)
 end
@@ -38,7 +43,7 @@ function cm.filter(c, c2)
 	return c:IsType(TYPE_EQUIP) and not c:IsForbidden() and aux.IsCodeListed(c, yr) and c:CheckEquipTarget(c2)
 end
 
-function aux.AddContactFusionProcedure(c, filter, self_location, opponent_location, mat_operation, ...)
+function cm.AddContactFusionProcedure(c, filter, self_location, opponent_location, mat_operation, ...)
 	self_location = self_location or 0
 	opponent_location = opponent_location or 0
 	local operation_params = { ... }
@@ -86,13 +91,15 @@ function cm.desop(e, tp, eg, ep, ev, re, r, rp)
 		g = g:GetFirst()
 		local mg = Group.CreateGroup()
 		mg:AddCard(c)
-		local g2 = Duel.GetMatchingGroup(cm.TRUE, tp, 0, LOCATION_MZONE, nil)
+		local g2 = Duel.GetMatchingGroup(aux.TRUE, tp, 0, LOCATION_MZONE, nil)
 		mg:Merge(g2)
 		local tc = c
 		if g:IsLocation(LOCATION_GRAVE) and #mg > 1 then
 			tc = mg:Select(tp, 1, 1, nil):GetFirst()
+			Duel.Equip(tp, g, tc, true)
+		else
+			Duel.Equip(tp, g, tc, true)
 		end
-		Duel.Equip(tp, g, tc, true, true)
 		Duel.BreakEffect()
 		Duel.Remove(c, POS_FACEUP, REASON_EFFECT)
 	end

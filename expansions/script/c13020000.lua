@@ -91,6 +91,23 @@ function cm.spop2(e, tp, eg, ep, ev, re, r, rp)
         e3:SetReset(RESET_EVENT + RESETS_REDIRECT)
         e3:SetValue(LOCATION_REMOVED)
         tc:RegisterEffect(e3, true)
+        local e2 = Effect.CreateEffect(c)
+        e2:SetType(EFFECT_TYPE_SINGLE)
+        e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+        e2:SetRange(LOCATION_MZONE)
+        e2:SetReset(RESET_EVENT + RESETS_REDIRECT)
+        e2:SetCode(EFFECT_UPDATE_ATTACK)
+        e2:SetValue(cm.atkval)
+        tc:RegisterEffect(e2)
         Duel.SpecialSummonComplete()
     end
+end
+
+function cm.atkval(e, c)
+    return Duel.GetMatchingGroupCount(cm.atkfilter, e:GetHandlerPlayer(), LOCATION_GRAVE + LOCATION_REMOVED, 0, nil) *
+        500
+end
+
+function cm.atkfilter(c)
+    return aux.IsCodeListed(c, yr) and c:IsType(TYPE_EQUIP)
 end
