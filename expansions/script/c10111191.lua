@@ -25,7 +25,7 @@ function c10111191.initial_effect(c)
 	e3:SetTarget(c10111191.sumtg)
 	e3:SetOperation(c10111191.sumop)
 	c:RegisterEffect(e3)
-    -- 召唤成功时效果
+   -- 召唤成功时效果
     local e4=Effect.CreateEffect(c)
     e4:SetDescription(aux.Stringid(10111191,0))
     e4:SetCategory(CATEGORY_REMOVE+CATEGORY_TOHAND)
@@ -85,9 +85,9 @@ function c10111191.sumop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
--- 素材检查
+-- 素材检查（保持不变）
 function c10111191.valcheck(e,c)
-    local g=c:GetMaterial() -- 正确获取解放素材的方式
+    local g=c:GetMaterial()
     if g:IsExists(Card.IsSetCard,1,nil,0x1185) then
         e:GetLabelObject():SetLabel(1)
     else
@@ -98,10 +98,10 @@ end
 -- 目标选择
 function c10111191.tg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then 
-        return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,nil) 
+        return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,nil) 
     end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-    local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,1,nil)
+    local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,1,nil)
     if #g>0 then
         e:SetLabelObject(g:GetFirst())
         if e:GetLabel()==1 then
@@ -115,7 +115,7 @@ end
 -- 效果处理
 function c10111191.op(e,tp,eg,ep,ev,re,r,rp)
     local tc=e:GetLabelObject()
-    if not tc or not tc:IsLocation(LOCATION_GRAVE) then return end
+    if not tc or not tc:IsLocation(LOCATION_SZONE+LOCATION_GRAVE) then return end
     
     local replace=(e:GetLabel()==1)
     

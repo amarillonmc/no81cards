@@ -15,13 +15,29 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
+	if not s.global_check then
+		s.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
+		ge1:SetOperation(s.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end 
 	Duel.AddCustomActivityCounter(id,ACTIVITY_SPSUMMON,s.counterfilter)
 end
+function s.fit1(c)
+	return c:IsLevelBelow(2) or c:IsLinkBelow(2) or c:IsRankBelow(2)
+end
+function s.checkop(e,tp,eg,ep,ev,re,r,rp) 
+	if eg:IsExists(s.fit1,1,nil) then 
+		Duel.RegisterFlagEffect(rp,id,0,0,0)  
+	end  
+end
 function s.counterfilter(c)
-	return c:IsLevel(3) or c:IsLink(3) or c:IsRank(3)
+	return c:IsLevelAbove(3) or c:IsLinkAbove(3) or c:IsRankAbove(3)
 end
 function s.splimit(e,c)
-	return not (c:IsLevel(3) or c:IsLink(3) or c:IsRank(3))
+	return not (c:IsLevelAbove(3) or c:IsLinkAbove(3) or c:IsRankAbove(3))
 end
 function s.costfilter(c,tp)
 	return c:IsAbleToGraveAsCost() or c:IsAbleToRemoveAsCost()
@@ -30,7 +46,7 @@ function s.cfilter(c)
 	return c:GetSequence()<5
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler()) and Duel.GetCustomActivityCount(id,tp,ACTIVITY_SPSUMMON)==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler()) and Duel.GetFlagEffect(tp,id)<1 end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
