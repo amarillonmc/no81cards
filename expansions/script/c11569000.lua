@@ -51,7 +51,7 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCountFromEx(1-tp,tp,nil,nil)<=0 then return end
+	if Duel.GetMZoneCount(1-tp)<=0 then return end
 	local zg=Duel.GetFieldGroup(tp,LOCATION_DECK+LOCATION_GRAVE,0)
 	if zg:IsExists(s.spfilter,1,nil,e,tp) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
