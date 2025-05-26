@@ -23,6 +23,13 @@ function s.copy(c,e,tp,ct)
 	c:RegisterEffect(e1)
 	if c:GetAttack()==0 then
 		Duel.SendtoHand(c,tp,REASON_EFFECT,tp)
+		local cont1=Duel.GetMatchingGroupCount(s.filter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+		local cont2=Duel.GetMatchingGroupCount(s.filter1,tp,0,LOCATION_ONFIELD,nil) 
+		if ct>cont1 and cont2>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local g=Duel.SelectMatchingCard(tp,s.filter1,tp,0,LOCATION_ONFIELD,1,1,nil)
+			Duel.SendtoHand(g:GetFirst(),tp,REASON_EFFECT,tp)
+		end
 		if c:IsLocation(LOCATION_EXTRA+LOCATION_HAND) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and (c:IsLocation(LOCATION_HAND) and Duel.GetMZoneCount(tp)>0
 			or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.BreakEffect()
@@ -48,15 +55,15 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=0
 	local cont1=Duel.GetMatchingGroupCount(s.filter1,c:GetControler(),LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	local cont2=Duel.GetMatchingGroupCount(s.filter,c:GetControler(),LOCATION_ONFIELD,LOCATION_ONFIELD,nil) 
-	local cont=cont1+cont2
+	--local cont2=Duel.GetMatchingGroupCount(s.filter,c:GetControler(),LOCATION_ONFIELD,LOCATION_ONFIELD,nil) 
+	local cont=cont1*2
 	local tc=Duel.GetFirstTarget()
 	local res={Duel.TossCoin(tp,cont)}  
 	for i=1,cont do
 		if res[i]==1 then
 			ct=ct+1
 		end
-	end	 
+	end  
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		s.copy(tc,e,tp,ct)
 	end

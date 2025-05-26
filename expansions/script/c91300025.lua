@@ -38,19 +38,39 @@ function s.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
 	c:RegisterEffect(e3)
-	--cannot be target
+	--immune
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetCode(EFFECT_IMMUNE_EFFECT)
 	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e4:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(s.con)
-	e4:SetValue(aux.imval1)
+	e4:SetValue(s.efilter)
 	c:RegisterEffect(e4)
-	local e5=e4:Clone()
-	e5:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e5:SetValue(aux.tgoval)
+	--must attack
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetCode(EFFECT_MUST_ATTACK)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetTargetRange(0,LOCATION_MZONE)
+	e5:SetTarget(s.atktg)
 	c:RegisterEffect(e5)
+	local e6=e5:Clone()
+	e6:SetCode(EFFECT_MUST_ATTACK_MONSTER)
+	e6:SetValue(s.atklimit)
+	c:RegisterEffect(e6)
+	--cannot be target
+	--local e4=Effect.CreateEffect(c)
+	--e4:SetType(EFFECT_TYPE_SINGLE)
+	--e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	--e4:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
+	--e4:SetRange(LOCATION_MZONE)
+	--e4:SetCondition(s.con)
+	--e4:SetValue(aux.imval1)
+	--c:RegisterEffect(e4)
+	--local e5=e4:Clone()
+	--e5:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	--e5:SetValue(aux.tgoval)
+	--c:RegisterEffect(e5)
 	--immune
 	--local e6=Effect.CreateEffect(c)
 	--e6:SetType(EFFECT_TYPE_SINGLE)
@@ -72,6 +92,19 @@ end
 s.hackclad=1
 function s.atlimit(e,c)
 	return not (_G["c"..c:GetCode()] and _G["c"..c:GetCode()].hackclad)
+end
+function s.efilter(e,te)
+	local c=e:GetHandler()
+	local ec=te:GetHandler()
+	if ec:IsHasCardTarget(c) or (te:IsHasType(EFFECT_TYPE_ACTIONS) and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(te)) or (_G["c"..c:GetCode()] and _G["c"..c:GetCode()].hackclad) then return false
+	end
+	return e:GetHandler()~=te:GetOwner()
+end
+function s.atktg(e,c)
+	return c:IsType(TYPE_MONSTER) and _G["c"..c:GetCode()] and _G["c"..c:GetCode()].hackclad
+end
+function s.atklimit(e,c)
+	return c==e:GetHandler()
 end
 function s.con(e)
 	local tp=e:GetHandlerPlayer()

@@ -41,9 +41,9 @@ function c75011050.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if Duel.Recover(p,d,REASON_EFFECT)==0 then return end
 	local ct=Duel.GetCustomActivityCount(75011050,tp,ACTIVITY_CHAIN)
-	if ct>=1 and Duel.IsExistingMatchingCard(Card.IsStatus,tp,0,LOCATION_MZONE,1,nil,STATUS_SUMMON_TURN+STATUS_SPSUMMON_TURN) and Duel.SelectYesNo(tp,aux.Stringid(75011050,0)) then
+	if ct>=1 and Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(75011050,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-		local tc=Duel.SelectMatchingCard(tp,Card.IsStatus,tp,0,LOCATION_MZONE,1,1,nil,STATUS_SUMMON_TURN+STATUS_SPSUMMON_TURN):GetFirst()
+		local tc=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
 		Duel.HintSelection(Group.FromCards(tc))
 		local fid=e:GetHandler():GetFieldID()
 		tc:RegisterFlagEffect(75011050,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,fid,aux.Stringid(75011050,3))

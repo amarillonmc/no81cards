@@ -26,15 +26,19 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
-	Duel.ConfirmCards(1-tp,e:GetHandler())
-	Duel.SendtoDeck(e:GetHandler(),tp,SEQ_DECKSHUFFLE,REASON_COST)
+	local c=e:GetHandler()
+	if chk==0 then return (c:IsLocation(LOCATION_REMOVED) and c:IsAbleToDeckAsCost()) or (c:IsLocation(LOCATION_HAND) and c:IsAbleToGraveAsCost()) end
+	Duel.ConfirmCards(1-tp,c)
+	if c:IsLocation(LOCATION_HAND) then 
+		Duel.SendtoGrave(c,REASON_COST)
+	else Duel.SendtoDeck(c,tp,SEQ_DECKSHUFFLE,REASON_COST)
+	end
 end
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanRemove(tp) and Duel.IsPlayerCanDraw(tp,2) end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(2)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
 end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

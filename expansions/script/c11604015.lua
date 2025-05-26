@@ -42,7 +42,7 @@ end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=0
-	local cont=Duel.GetTurnCount()+4
+	local cont=Duel.GetTurnCount()
 	local tc=Duel.GetFirstTarget()
 	local res={Duel.TossCoin(tp,cont)}  
 	for i=1,cont do

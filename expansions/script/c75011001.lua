@@ -30,7 +30,7 @@ function c75011001.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_LEAVE_FIELD)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetRange(LOCATION_MZONE)
+	e4:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e4:SetCountLimit(1,75011002)
 	e4:SetCondition(c75011001.spcon1)
 	e4:SetTarget(c75011001.sptg)
@@ -89,7 +89,7 @@ function c75011001.arop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=te:GetTarget()
 	if tg then tg(te,tp,eg,ep,ev,re,r,rp,1) end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	if g then
+	if #g>0 then
 		for oc in aux.Next(g) do
 			oc:CreateEffectRelation(te)
 		end
@@ -97,7 +97,7 @@ function c75011001.arop(e,tp,eg,ep,ev,re,r,rp)
 	local op=te:GetOperation()
 	if op then op(te,tp,eg,ep,ev,re,r,rp) end
 	--tc:ReleaseEffectRelation(te)
-	if g then
+	if #g>0 then
 		for oc in aux.Next(g) do
 			oc:ReleaseEffectRelation(te)
 		end
@@ -118,19 +118,20 @@ function c75011001.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return ep==1-tp and rp==tp
 end
 function c75011001.spfilter(c,e,tp)
-	return c:IsSetCard(0x75e) and not c:IsCode(75011001) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x75e) and not c:IsCode(75011001) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetMZoneCount(tp)>0
 end
 function c75011001.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMZoneCount(tp)>0
-		and Duel.IsExistingMatchingCard(c75011001.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp)
-	end
+	if chk==0 then return Duel.IsExistingMatchingCard(c75011001.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c75011001.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetMZoneCount(tp)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sc=Duel.SelectMatchingCard(tp,c75011001.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
 	if sc then
 		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
+	end
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsLocation(LOCATION_HAND) then
+		Duel.SendtoGrave(c,REASON_EFFECT+REASON_DISCARD)
 	end
 end

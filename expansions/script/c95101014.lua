@@ -29,9 +29,9 @@ function c95101014.costfilter(c,tp)
 	return aux.IsCodeListed(c,95101001) and c:IsFaceup() and Duel.GetMZoneCount(tp,c)>0 and c:IsAbleToHandAsCost()
 end
 function c95101014.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c95101014.costfilter,tp,LOCATION_MZONE,0,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c95101014.costfilter,tp,LOCATION_ONFIELD,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectMatchingCard(tp,c95101014.costfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,c95101014.costfilter,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
 	Duel.SendtoHand(g,nil,REASON_COST)
 end
 function c95101014.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -46,13 +46,20 @@ function c95101014.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c95101014.setfilter(c)
-	return aux.IsCodeListed(c,95101001) and c:IsSSetable()
+	return c:IsCode(95101000) and not c:IsForbidden()
 end
 function c95101014.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c95101014.setfilter,tp,LOCATION_DECK,0,1,nil) end
 end
 function c95101014.setop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local sc=Duel.SelectMatchingCard(tp,c95101014.setfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-	if sc then Duel.SSet(tp,sc) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local tc=Duel.SelectMatchingCard(tp,c95101014.setfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
+	if tc then
+		local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
+		if fc then
+			Duel.SendtoGrave(fc,REASON_RULE)
+			Duel.BreakEffect()
+		end
+		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+	end
 end

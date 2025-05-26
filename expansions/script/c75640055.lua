@@ -23,7 +23,7 @@ function s.initial_effect(c)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetCountLimit(1,id-70000000)
 	e2:SetCondition(s.adcon)
-	e2:SetCost(s.adcost)
+	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(s.adtg)
 	e2:SetOperation(s.adop)
 	c:RegisterEffect(e2)
@@ -85,12 +85,6 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.adcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler():IsSetCard(0x52c4)
-end
-function s.adcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToExtraAsCost() end
-	Duel.ConfirmCards(1-tp,c)
-	Duel.SendtoDeck(c,nil,SEQ_DECKTOP,REASON_COST)
 end
 function s.adtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

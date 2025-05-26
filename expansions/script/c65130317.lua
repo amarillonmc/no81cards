@@ -38,17 +38,17 @@ function c65130317.thfilter1(c)
 	return c:IsAttack(878) and c:IsDefense(1157) and c:IsAbleToHand()
 end
 function c65130317.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c65130317.thfilter1,tp,LOCATION_DECK,0,1,nil) or Duel.IsExistingMatchingCard(c65130317.thfilter2,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(c65130317.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,3,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c65130317.thfilter1,tp,LOCATION_DECK,0,1,nil) or Duel.IsExistingMatchingCard(c65130317.thfilter2,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(aux.TRUE,Duel.GetTurnPlayer(),LOCATION_MZONE,0,3,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c65130317.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.GetMatchingGroup(c65130317.thfilter1,tp,LOCATION_DECK,0,nil)
-	if Duel.IsExistingMatchingCard(c65130317.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,3,nil) then
+	if Duel.IsExistingMatchingCard(aux.TRUE,Duel.GetTurnPlayer(),LOCATION_MZONE,0,3,nil) then
 		g:Merge(Duel.GetMatchingGroup(c65130317.thfilter2,tp,LOCATION_DECK,0,nil))
 	end
 	if g:GetCount()>0 then
-		local tc =g:Select(tp,1,1,nil)
+		local tc=g:Select(tp,1,1,nil)
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
 	end

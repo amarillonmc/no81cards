@@ -22,19 +22,23 @@ function cm.rdfi0ter(c,e)
         and ((c:IsType(TYPE_MONSTER) and c:IsReleasable())
         or (c:IsType(TYPE_SPELL) and c:IsDestructable(e)))
 end
+function cm.fse2ect(g,tc)
+	return g:IsContains(tc)
+end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
-    if not e:GetHandler():IsRelateToEffect(e) then return end
+    local c=e:GetHandler()
+    if not c:IsRelateToEffect(e) then return end
 	local g2=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
 	if not g2 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g1=Duel.SelectMatchingCard(tp,cm.rdfi0ter,tp,0x0e,0,1,20,e:GetHandler(),e)
-	if not g1 then return end
-    g1:AddCard(e:GetHandler())
-	local num=g1:GetCount()*3
+	local g1=Duel.GetMatchingGroup(cm.rdfi0ter,tp,0x0e,0,nil,e)
+	if not g1 or not g1:IsContains(c) then return end
+    local sg=g1:SelectSubGroup(tp,cm.fse2ect,false,1,#g1,c)
+	local num=sg:GetCount()*3
     if num>#g2 then num=#g2 end
-	local rlg=g1:Filter(Card.IsType,nil,TYPE_MONSTER)
+	local rlg=sg:Filter(Card.IsType,nil,TYPE_MONSTER)
     Duel.Release(rlg,REASON_EFFECT)
-    local dsg=g1:Filter(Card.IsType,nil,TYPE_SPELL)
+    local dsg=sg:Filter(Card.IsType,nil,TYPE_SPELL)
     Duel.Destroy(dsg,REASON_EFFECT)
 	Duel.ConfirmDecktop(tp,num)
 	Duel.ShuffleHand(tp)

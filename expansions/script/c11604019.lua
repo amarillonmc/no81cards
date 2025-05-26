@@ -23,20 +23,11 @@ function s.copy(c,e,tp,ct)
 	c:RegisterEffect(e1)
 	if c:GetAttack()==0 then
 		Duel.SendtoHand(c,tp,REASON_EFFECT,tp)
+		Duel.Draw(tp,2,REASON_EFFECT)
 		if c:IsLocation(LOCATION_EXTRA+LOCATION_HAND) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and (c:IsLocation(LOCATION_HAND) and Duel.GetMZoneCount(tp)>0
 			or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.BreakEffect()
-			if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)>0 then
-				local e2=Effect.CreateEffect(e:GetHandler())
-				e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-				e2:SetCode(EVENT_TO_GRAVE)
-				e2:SetRange(LOCATION_MZONE)
-				e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-				e2:SetCondition(s.chcon)
-				e2:SetOperation(s.chop)
-				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-				c:RegisterEffect(e2)																	
-			end		 
+			Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)			
 		end 
 	end
 end
@@ -78,7 +69,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		if res[i]==1 then
 			ct=ct+1
 		end
-	end	 
+	end  
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		s.copy(tc,e,tp,ct)
 	end

@@ -50,7 +50,7 @@ function c65130318.spop(e,tp,eg,ep,ev,re,r,rp)
 	local oc=og:GetFirst()
 	if sc then
 		Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP)
-		if not sc:IsAttack(878) or not sc:IsDefense(1157) then
+		if not sc:IsAttack(878) then
 			-- Level 1
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
@@ -95,7 +95,7 @@ function c65130318.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 end
 function c65130318.decon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsOnField() and re:GetHandler():IsRelateToEffect(re) and re:IsActiveType(TYPE_MONSTER)	  
+	return re:GetHandler():IsOnField() and re:GetHandler():IsRelateToEffect(re) and re:IsActiveType(TYPE_MONSTER)	 
 end
 function c65130318.decost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end

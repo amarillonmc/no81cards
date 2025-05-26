@@ -58,7 +58,7 @@ function c65130331.resetop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function c65130331.spfilter(c,tp)
-	return c:IsFaceup() and c:IsControler(tp) and c:IsAttack(878) and c:IsDefense(1157)
+	return c:IsFaceup() and c:IsControler(tp) and c:IsAttack(878)
 end
 function c65130331.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c65130331.spfilter,1,nil,tp)

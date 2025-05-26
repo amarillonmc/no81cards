@@ -74,25 +74,33 @@ function cm.initial_effect(c)
 	local e52=e51:Clone()
 	e52:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
 	c:RegisterEffect(e52)
+	--immune
 	local e53=Effect.CreateEffect(c)
 	e53:SetType(EFFECT_TYPE_SINGLE)
+	e53:SetCode(EFFECT_IMMUNE_EFFECT)
 	e53:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e53:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
 	e53:SetRange(LOCATION_MZONE)
-	e53:SetCondition(c91300032.con5)
-	e53:SetValue(aux.imval1)
+	e53:SetValue(c91300032.efilter)
 	c:RegisterEffect(e53)
-	local e54=e53:Clone()
-	e54:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e54:SetValue(aux.tgoval)
+	--must attack
+	local e54=Effect.CreateEffect(c)
+	e54:SetType(EFFECT_TYPE_FIELD)
+	e54:SetCode(EFFECT_MUST_ATTACK)
+	e54:SetRange(LOCATION_MZONE)
+	e54:SetTargetRange(0,LOCATION_MZONE)
+	e54:SetTarget(c91300032.atktg)
 	c:RegisterEffect(e54)
-	local e55=Effect.CreateEffect(c)
-	e55:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e55:SetCode(EVENT_CHAIN_SOLVING)
-	e55:SetRange(LOCATION_MZONE)
-	e55:SetCondition(c91300032.discon5)
-	e55:SetOperation(c91300032.disop5)
+	local e55=e54:Clone()
+	e55:SetCode(EFFECT_MUST_ATTACK_MONSTER)
+	e55:SetValue(c91300032.atklimit)
 	c:RegisterEffect(e55)
+	local e56=Effect.CreateEffect(c)
+	e56:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e56:SetCode(EVENT_CHAIN_SOLVING)
+	e56:SetRange(LOCATION_MZONE)
+	e56:SetCondition(c91300032.discon5)
+	e56:SetOperation(c91300032.disop5)
+	c:RegisterEffect(e56)
 	--jiake
 		--weifeng
 	local e60=Effect.CreateEffect(c)
@@ -177,6 +185,19 @@ function cm.initial_effect(c)
 	
 end
 c91300032.hackclad=1
+function c91300032.efilter(e,te)
+	local c=e:GetHandler()
+	local ec=te:GetHandler()
+	if ec:IsHasCardTarget(c) or (te:IsHasType(EFFECT_TYPE_ACTIONS) and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(te)) or (_G["c"..c:GetCode()] and _G["c"..c:GetCode()].hackclad) then return false
+	end
+	return e:GetHandler()~=te:GetOwner()
+end
+function c91300032.atktg(e,c)
+	return c:IsType(TYPE_MONSTER) and _G["c"..c:GetCode()] and _G["c"..c:GetCode()].hackclad
+end
+function c91300032.atklimit(e,c)
+	return c==e:GetHandler()
+end
 function c91300032.specon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
@@ -336,7 +357,7 @@ function c91300032.discon5(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_HAND,0,1,c)
 end
 function c91300032.disop5(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT) and Duel.SelectYesNo(tp,aux.Stringid(91301025,0)) then
+	if Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil,REASON_EFFECT) and Duel.SelectYesNo(tp,aux.Stringid(91300025,0)) then
 		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_EFFECT+REASON_DISCARD)
 		local p=Duel.GetChainInfo(ev,CHAININFO_TARGET_PLAYER)
 		Duel.ChangeTargetPlayer(ev,1-p)

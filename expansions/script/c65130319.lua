@@ -53,10 +53,10 @@ function c65130319.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c65130319.cfilter,1,nil,1-tp)
 end
 function c65130319.spfilter(c,tcode,e,tp)
-	return not c:IsCode(tcode) and c:IsAttack(878) and c:IsDefense(1157) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return not c:IsCode(tcode) and c:IsDefense(1157) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c65130319.thfilter(c)
-	return c:IsAttack(878) and c:IsDefense(1157) and c:IsFaceup() and c:IsAbleToHand()
+	return c:IsAttack(878) and c:IsFaceup() and c:IsAbleToHand()
 end
 function c65130319.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -86,8 +86,8 @@ function c65130319.thop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetRange(LOCATION_MZONE)
 			e1:SetValue(1)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			sc:RegisterEffect(e1,true)		
-			if not tc:IsType(TYPE_TRAPMONSTER) then			  
+			sc:RegisterEffect(e1,true)	  
+			if not tc:IsType(TYPE_TRAPMONSTER) then		   
 				 cid=sc:CopyEffect(tcode,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,1)
 			end
 			local e3=Effect.CreateEffect(c)

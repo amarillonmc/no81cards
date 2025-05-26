@@ -156,14 +156,14 @@ function c60158212.discon(e,tp,eg,ep,ev,re,r,rp)
 	local sc=re:GetHandler()
 	local sccode=sc:GetOriginalCode()
 	return sc~=e:GetHandler() and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():GetFlagEffect(60158212)<=0 and Duel.IsPlayerCanSpecialSummonMonster(tp,sccode,0,TYPES_EFFECT_TRAP_MONSTER,1500,1500,2,RACE_MACHINE,ATTRIBUTE_WATER) 
-			and not (sc:IsLocation(LOCATION_MZONE) or sc:IsLocation(LOCATION_DECK) or sc:IsLocation(LOCATION_HAND))
+			and not (sc:IsLocation(LOCATION_MZONE) or sc:IsLocation(LOCATION_DECK) or sc:IsLocation(LOCATION_HAND)) and not (sc:IsType(TYPE_PENDULUM) and sc:IsLocation(LOCATION_PZONE))
 			
 end
 function c60158212.disop(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()
 	local sc=re:GetHandler()
 	local sccode=sc:GetOriginalCode()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,sccode,0,TYPES_EFFECT_TRAP_MONSTER,1500,1500,2,RACE_MACHINE,ATTRIBUTE_WATER) and not (sc:IsLocation(LOCATION_MZONE) or sc:IsLocation(LOCATION_DECK) or sc:IsLocation(LOCATION_HAND)) and Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(60158212,4)) then
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,sccode,0,TYPES_EFFECT_TRAP_MONSTER,1500,1500,2,RACE_MACHINE,ATTRIBUTE_WATER) and not (sc:IsLocation(LOCATION_MZONE) or sc:IsLocation(LOCATION_DECK) or sc:IsLocation(LOCATION_HAND)) and not (sc:IsType(TYPE_PENDULUM) and sc:IsLocation(LOCATION_PZONE)) and Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(60158212,4)) then
 		if sc:IsType(TYPE_SPELL) then 
 			sc:AddMonsterAttribute(TYPE_EFFECT+TYPE_SPELL,ATTRIBUTE_WATER,RACE_MACHINE,2,1500,1500) 
 		elseif sc:IsType(TYPE_TRAP) then

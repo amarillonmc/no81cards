@@ -27,7 +27,7 @@ function c75011028.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c75011028.cfilter(c)
-	return c:IsSetCard(0x75e) and (c:IsType(TYPE_XYZ) or c:IsAbleToGrave()) and c:IsFaceup()
+	return c:IsSetCard(0x75e) and (c:IsType(TYPE_XYZ) or c:IsAbleToHand()) and c:IsFaceup()
 end
 function c75011028.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c75011028.cfilter(chkc) end
@@ -52,7 +52,7 @@ function c75011028.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
 	else
-		if Duel.SendtoGrave(tc,REASON_EFFECT)==0 or not tc:IsLocation(LOCATION_GRAVE) then return end
+		if Duel.SendtoHand(tc,nil,REASON_EFFECT)==0 or not tc:IsLocation(LOCATION_HAND) then return end
 		if Duel.Damage(1-tp,600,REASON_EFFECT)==0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c75011028.thfilter,tp,LOCATION_GRAVE,0,1,1,nil,tc)

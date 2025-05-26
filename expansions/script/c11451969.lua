@@ -80,7 +80,8 @@ function cm.chcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		return true
+		if rp==tp then return Duel.IsExistingMatchingCard(cm.disfilter,tp,0,LOCATION_ONFIELD,1,nil)
+		else return Duel.IsExistingMatchingCard(cm.disfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 		--if rp==tp then return Duel.IsExistingMatchingCard(Card.IsSSetable,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanDraw(tp,2) and Duel.GetLocationCount(tp,LOCATION_SZONE)>1
 		--else return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_HAND,2,nil) and Duel.IsPlayerCanDraw(1-tp,2) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>1 end
 	end
@@ -91,7 +92,26 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeChainOperation(ev,cm.repop)
 end
 function cm.repop(e,tp,eg,ep,ev,re,r,rp)
-	local ph=Duel.GetCurrentPhase()
+	local c=e:GetHandler()
+	local ng=Duel.GetMatchingGroup(cm.disfilter,tp,0,LOCATION_ONFIELD,nil)
+	for nc in aux.Next(ng) do
+		Duel.NegateRelatedChain(nc,RESET_TURN_SET)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		nc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
+		nc:RegisterEffect(e2)
+		if nc:IsType(TYPE_TRAPMONSTER) then
+			local e3=e1:Clone()
+			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+			nc:RegisterEffect(e3)
+		end
+	end
+	--[[local ph=Duel.GetCurrentPhase()
 	if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -99,10 +119,10 @@ function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetTargetRange(0,LOCATION_ONFIELD)
 	e2:SetTarget(cm.disable)
 	e2:SetReset(RESET_PHASE+ph)
-	Duel.RegisterEffect(e2,tp)
+	Duel.RegisterEffect(e2,tp)--]]
 end
-function cm.disable(e,c)
-	return c:GetCounter(0x1972)>0 and (not c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_EFFECT) or bit.band(c:GetOriginalType(),TYPE_EFFECT)==TYPE_EFFECT))
+function cm.disfilter(c)
+	return c:GetCounter(0x1972)>0 and aux.NegateAnyFilter(c) --(not c:IsType(TYPE_MONSTER) or (c:IsType(TYPE_EFFECT) or bit.band(c:GetOriginalType(),TYPE_EFFECT)==TYPE_EFFECT))
 end
 function cm.repop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsSSetable,tp,LOCATION_HAND,0,nil)

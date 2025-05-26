@@ -50,11 +50,11 @@ function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local g=Duel.GetDecktopGroup(tp,1)
+		local g=Duel.GetDecktopGroup(tp,2)
 		local tc=g:GetFirst()
 		return tc and tc:IsAbleToRemove()
 	end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,tp,LOCATION_DECK)
 	local lab=0
 	if (re:IsHasCategory(CATEGORY_ATKCHANGE) or re:IsHasCategory(CATEGORY_DEFCHANGE)) then
 		e:SetCategory(CATEGORY_REMOVE+CATEGORY_TOGRAVE)

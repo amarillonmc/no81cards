@@ -33,14 +33,14 @@ function s.eftg(e,c)
 	return c:GetBaseAttack()==878
 end
 function s.tdfilter(c,atk)
-	return c:IsAbleToDeckAsCost() and c:IsAttack(atk) and c:IsFaceup() and c:GetOriginalType()&TYPE_MONSTER>0
+	return c:IsAbleToDeckAsCost() and c:IsAttack(atk) and c:IsFaceupEx() and c:GetOriginalType()&TYPE_MONSTER>0
 end
 function s.atcost(e,c,tp)
 	return Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil,c:GetAttack())
 end
 function s.atop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,nil,c:GetAttack())
+	local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,c,c:GetAttack())
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_ACTION)
 	local tg=Duel.GetOperatedGroup()
 	local sg=Group.CreateGroup()
