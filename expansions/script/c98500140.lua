@@ -43,7 +43,7 @@ function c98500140.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function c98500140.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end 
-	local op=Duel.SelectOption(tp,aux.Stringid(98500140,9),aux.Stringid(98500140,10))
+	local op=Duel.SelectOption(tp,aux.Stringid(98500140,7),aux.Stringid(98500140,8))
 	if op==0 then
 		Duel.ChangePosition(e:GetHandler(),POS_FACEUP_ATTACK)
 	else
@@ -117,18 +117,18 @@ function c98500140.hspop(e,tp,eg,ep,ev,re,r,rp)
 	local ts={}
 	local index=1
 	if e:GetHandler():IsSummonable(true,nil) then
-		ts[index]=aux.Stringid(98500140,7)
+		ts[index]=aux.Stringid(98500140,9)
 		index=index+1
 	end
 	if e:GetHandler():IsMSetable(true,nil) then
-	   ts[index]=aux.Stringid(98500140,8)
+	   ts[index]=aux.Stringid(98500140,10)
 	   index=index+1
 	end
 	local c=e:GetHandler()
 	local opt=Duel.SelectOption(tp,table.unpack(ts))
-	if ts[opt+1]==aux.Stringid(98500140,7) then
+	if ts[opt+1]==aux.Stringid(98500140,9) then
 		Duel.Summon(tp,c,true,nil)
-	elseif ts[opt+1]==aux.Stringid(98500140,8) then
+	elseif ts[opt+1]==aux.Stringid(98500140,10) then
 		Duel.MSet(tp,c,true,nil)
 	end
 	local tc=Duel.GetFirstTarget()

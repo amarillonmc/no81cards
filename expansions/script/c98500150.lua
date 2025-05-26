@@ -42,7 +42,7 @@ function c98500150.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function c98500150.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end 
-	local op=Duel.SelectOption(tp,aux.Stringid(98500150,9),aux.Stringid(98500150,10))
+	local op=Duel.SelectOption(tp,aux.Stringid(98500150,7),aux.Stringid(98500150,8))
 	if op==0 then
 		Duel.ChangePosition(e:GetHandler(),POS_FACEUP_ATTACK)
 	else
@@ -115,18 +115,18 @@ function c98500150.hspop(e,tp,eg,ep,ev,re,r,rp)
 	local ts={}
 	local index=1
 	if e:GetHandler():IsSummonable(true,nil) then
-		ts[index]=aux.Stringid(98500150,7)
+		ts[index]=aux.Stringid(98500150,9)
 		index=index+1
 	end
 	if e:GetHandler():IsMSetable(true,nil) then
-	   ts[index]=aux.Stringid(98500150,8)
+	   ts[index]=aux.Stringid(98500150,10)
 	   index=index+1
 	end
 	local c=e:GetHandler()
 	local opt=Duel.SelectOption(tp,table.unpack(ts))
-	if ts[opt+1]==aux.Stringid(98500150,7) then
+	if ts[opt+1]==aux.Stringid(98500150,9) then
 		Duel.Summon(tp,c,true,nil)
-	elseif ts[opt+1]==aux.Stringid(98500150,8) then
+	elseif ts[opt+1]==aux.Stringid(98500150,10) then
 		Duel.MSet(tp,c,true,nil)
 	end
 	local tc=Duel.GetFirstTarget()
@@ -153,6 +153,7 @@ function c98500150.desop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.Destroy(sg,REASON_EFFECT)~=0 then
 			Duel.BreakEffect()
 			if Duel.IsExistingTarget(c98500150.filter4,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(98500150,4)) then
+				 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
 				local g2=Duel.SelectMatchingCard(tp,c98500150.filter,tp,0,LOCATION_MZONE,1,1,nil)
 				local tc2=g2:GetFirst() 
 					Duel.GetControl(tc2,tp,PHASE_END,1)

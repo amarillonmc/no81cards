@@ -89,7 +89,7 @@ end
 
 
 function s.eqlimit(e,c)
-	return true
+	return c:IsCode(21000763)
 end
 function s.filter110(c)
 	return c:IsFaceup()
