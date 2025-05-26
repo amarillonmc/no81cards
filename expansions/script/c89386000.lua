@@ -55,7 +55,7 @@ function cm.initial_effect(c)
     end
 end
 function cm.counterfilter(c)
-    return c:IsSetCard(0xcc30)
+    return c:IsSetCard(0xce0)
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
     return re:GetHandler()==e:GetHandler()
@@ -86,7 +86,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.RegisterEffect(e2,tp)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-    return not c:IsSetCard(0xcc30)
+    return not c:IsSetCard(0xce0)
 end
 function cm.thfilter(c)
     return c:IsFaceup() and c:IsCode(m)

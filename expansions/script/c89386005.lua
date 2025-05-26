@@ -28,7 +28,7 @@ function cm.initial_effect(c)
     c:RegisterEffect(e3)
 end
 function cm.filter(c)
-    return c:IsLevelAbove(7) and c:IsSetCard(0xcc30) and c:IsAbleToHand()
+    return c:IsLevelAbove(7) and c:IsSetCard(0xce0) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:GetLocation()==LOCATION_GRAVE and chkc:GetControler()==tp and cm.filter(chkc) end
@@ -51,7 +51,7 @@ function cm.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function cm.setfilter(c)
-    return c:IsSetCard(0xcc30) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+    return c:IsSetCard(0xce0) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK,0,1,nil) end

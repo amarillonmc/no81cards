@@ -14,6 +14,12 @@ function c98941056.initial_effect(c)
 	e0:SetCondition(s.descon)
 	e0:SetCost(s.cost2)
 	c:RegisterEffect(e0)
+	local e10=e1:Clone()
+	e10:SetDescription(aux.Stringid(id,8))
+	e10:SetRange(LOCATION_DECK)
+	e10:SetCondition(s.descon2)
+	e10:SetCost(s.cost3)
+	c:RegisterEffect(e10)
 	--Fusion
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(98941056,0))
@@ -22,6 +28,7 @@ function c98941056.initial_effect(c)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1,id)
+	e2:SetCost(s.spcost)
 	e2:SetTarget(s.target)
 	e2:SetOperation(s.activate)
 	c:RegisterEffect(e2)	
@@ -42,6 +49,11 @@ function c98941056.initial_effect(c)
 	e4:SetLabelObject(e3)
 	c:RegisterEffect(e4)
 end
+function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsAbleToDeck() and Duel.GetFlagEffect(tp,id)==0 end
+	Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
+end
 function c98941056.eftg(e,c)
 	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x9d)
 end
@@ -61,7 +73,7 @@ end
 function c98941056.trueac(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.GetMatchingGroup(c98941056.extfilter,tp,0,LOCATION_MZONE,nil)
 	local g2=Duel.GetMatchingGroup(c98941056.thfilter,tp,LOCATION_DECK,0,nil)
-	if g1:GetCount()>0 and g2:GetCount()>0 and Duel.GetFlagEffect(tp,id+3)==0 and Duel.SelectYesNo(tp,aux.Stringid(98941056,7)) then
+	if e:GetHandler():IsOnField() and g1:GetCount()>0 and g2:GetCount()>0 and Duel.GetFlagEffect(tp,id+3)==0 and Duel.GetTurnPlayer()==e:GetHandlerPlayer() and Duel.SelectYesNo(tp,aux.Stringid(98941056,7)) then
 		local ct=g1:GetClassCount(Card.GetCode)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g2:SelectSubGroup(tp,aux.dncheck,false,1,ct)
@@ -75,6 +87,25 @@ end
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)<Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
 		and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)<Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)
+end
+function s.descon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
+end
+function c98941056.stfilter(c,e,tp)
+	return c:IsSetCard(0x9d) and c:IsCanBeSpecialSummoned(e,POS_FACEDOWN_DEFENSE,tp,false,false)
+end
+function s.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	local ssg=Duel.GetMatchingGroup(c98941056.stfilter,tp,LOCATION_HAND,0,nil,e,tp)
+	if chk==0 then return ft>=1 and Duel.GetLocationCount(tp,LOCATION_MZONE)>=1 and ssg:GetCount()>0 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c98941056.stfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+		Duel.ConfirmCards(1-tp,g:GetFirst())
+	end
+	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,EFFECT_FLAG_OATH,1)
 end
 function c98941056.filter0(c)
 	return c:IsFaceup() and c:IsCanBeFusionMaterial()
@@ -114,7 +145,6 @@ end
 function c98941056.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local c=e:GetHandler()
-	if c:IsFacedown() or not c:IsOnField() then return end
 	local mg1=Duel.GetFusionMaterial(tp):Filter(c98941056.filter3,nil,e)
 	local mg2=Duel.GetMatchingGroup(c98941056.filter1,tp,0,LOCATION_MZONE,nil,e)
 	mg1:Merge(mg2)

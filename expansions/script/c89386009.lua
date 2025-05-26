@@ -2,7 +2,7 @@
 local m=89386009
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-    c:EnableCounterPermit(0xcc30)
+    c:EnableCounterPermit(0xce0)
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_ACTIVATE)
     e1:SetCode(EVENT_FREE_CHAIN)
@@ -54,22 +54,22 @@ end
 function cm.effectfilter(e,ct)
     local te=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT)
     local tc=te:GetHandler()
-    return tc:IsSetCard(0xcc30) and tc:IsLevelAbove(7)
+    return tc:IsSetCard(0xce0) and tc:IsLevelAbove(7)
 end
 function cm.acop(e,tp,eg,ep,ev,re,r,rp)
     local te,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_LOCATION)
     local c=e:GetHandler()
     local tc=te:GetHandler()
-    if re:IsActiveType(TYPE_MONSTER) and tc:IsSetCard(0xcc30) and loc==LOCATION_HAND and c:GetFlagEffect(1)>0 then
-        c:AddCounter(0xcc30,1)
+    if re:IsActiveType(TYPE_MONSTER) and tc:IsSetCard(0xce0) and loc==LOCATION_HAND and c:GetFlagEffect(1)>0 then
+        c:AddCounter(0xce0,1)
     end
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0xcc30,3,REASON_COST) end
-    e:GetHandler():RemoveCounter(tp,0xcc30,3,REASON_COST)
+    if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0xce0,3,REASON_COST) end
+    e:GetHandler():RemoveCounter(tp,0xce0,3,REASON_COST)
 end
 function cm.thfilter(c)
-    return c:IsSetCard(0xcc30) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+    return c:IsSetCard(0xce0) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -85,7 +85,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function cm.skcon(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.GetTurnPlayer()==1-tp and e:GetHandler():GetCounter(0xcc30)>0
+    return Duel.GetTurnPlayer()==1-tp and e:GetHandler():GetCounter(0xce0)>0
 end
 function cm.sktg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return e:GetHandler():IsAbleToDeck() end

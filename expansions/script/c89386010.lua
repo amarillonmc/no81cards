@@ -47,7 +47,7 @@ function cm.initial_effect(c)
     c:RegisterEffect(e5)
 end
 function cm.matfilter(c)
-    return c:GetOriginalLevel()>=7 and c:IsFusionSetCard(0xcc30)
+    return c:GetOriginalLevel()>=7 and c:IsFusionSetCard(0xce0)
 end
 function cm.desfilter(c,code)
     return c:IsFaceup() and c:IsCode(code)
@@ -75,10 +75,10 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
     return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
 end
 function cm.filter(c)
-    return c:IsFaceup() and c:IsSetCard(0xcc30) and c:IsAbleToDeck() and Duel.GetMZoneCount(tp,c)>0
+    return c:IsFaceup() and c:IsSetCard(0xce0) and c:IsAbleToDeck() and Duel.GetMZoneCount(tp,c)>0
 end
 function cm.spfilter(c,e,tp)
-    return c:IsSetCard(0xcc30) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+    return c:IsSetCard(0xce0) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and cm.filter(chkc) end

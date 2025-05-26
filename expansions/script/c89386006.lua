@@ -25,7 +25,7 @@ function cm.initial_effect(c)
     c:RegisterEffect(e3)
 end
 function cm.coinfilter(c)
-    return c:IsSetCard(0xcc30) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(7) and c:IsAbleToHand()
+    return c:IsSetCard(0xce0) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(7) and c:IsAbleToHand()
 end
 function cm.cointg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(cm.coinfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -44,7 +44,7 @@ function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
 end
 function cm.drfilter(c)
-    return c:IsSetCard(0xcc30) and c:IsAbleToDeck()
+    return c:IsSetCard(0xce0) and c:IsAbleToDeck()
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsPlayerCanDraw(tp) and Duel.IsExistingMatchingCard(cm.drfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) end

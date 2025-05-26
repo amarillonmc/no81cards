@@ -20,7 +20,7 @@ function cm.initial_effect(c)
     c:RegisterEffect(e2)
 end
 function cm.filter(c)
-    return c:IsSetCard(0xcc30) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+    return c:IsSetCard(0xce0) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -35,7 +35,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
     end
 end
 function cm.repfilter(c,tp)
-    return c:IsFaceup() and c:IsSetCard(0xcc30) and c:IsLocation(LOCATION_MZONE) and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
+    return c:IsFaceup() and c:IsSetCard(0xce0) and c:IsLocation(LOCATION_MZONE) and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return e:GetHandler():IsAbleToDeck() and eg:IsExists(cm.repfilter,1,nil,tp) end

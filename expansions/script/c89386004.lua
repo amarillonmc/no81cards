@@ -58,7 +58,7 @@ function cm.initial_effect(c)
     end
 end
 function cm.counterfilter(c)
-    return c:IsSetCard(0xcc30)
+    return c:IsSetCard(0xce0)
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
     return re:GetHandler()==e:GetHandler()
@@ -89,7 +89,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
     Duel.RegisterEffect(e2,tp)
 end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-    return not c:IsSetCard(0xcc30)
+    return not c:IsSetCard(0xce0)
 end
 function cm.thfilter(c)
     return c:IsFaceup() and c:IsCode(m)
@@ -165,7 +165,7 @@ function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
     return c:IsReason(REASON_BATTLE) or (rp==1-tp and c:IsReason(REASON_EFFECT) and c:GetPreviousControler()==tp)
 end
 function cm.thfilter2(c)
-    return c:IsSetCard(0xcc30) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+    return c:IsSetCard(0xce0) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK,0,1,nil) end
