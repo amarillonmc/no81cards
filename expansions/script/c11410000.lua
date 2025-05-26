@@ -73,11 +73,12 @@ if not require and Duel.LoadScript then
 	function require(str)
 		require_list=require_list or {}
 		local name=str
-		for word in string.gmatch(str,"%w+") do
+		for word in string.gmatch(str,"[^/]+") do
 			name=word
 		end
+		if not string.find(name,"%.") then name=name..".lua" end
 		if not require_list[str] then
-			require_list[str]=Duel.LoadScript(name..".lua")
+			require_list[str]=Duel.LoadScript(name)
 		end
 		return require_list[str]
 	end
@@ -101,7 +102,7 @@ if not dofile and Duel.LoadScript then
 	function dofile(str)
 		require_list=require_list or {}
 		local name=str
-		for word in string.gmatch(str,"%w+") do
+		for word in string.gmatch(str,"[^/]+") do
 			name=word
 		end
 		if not require_list[str] then
@@ -112,7 +113,7 @@ if not dofile and Duel.LoadScript then
 	function loadfile(str)
 		require_list=require_list or {}
 		local name=str
-		for word in string.gmatch(str,"%w+") do
+		for word in string.gmatch(str,"[^/]+") do
 			name=word
 		end
 		return function()
