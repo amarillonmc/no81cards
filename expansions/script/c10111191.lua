@@ -96,12 +96,18 @@ function c10111191.valcheck(e,c)
 end
 
 -- 目标选择
+
 function c10111191.tg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then 
-        return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,nil) 
+        return (Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,nil) and e:GetLabel()==0) or (Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,nil) and e:GetLabel()==1)
     end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-    local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,1,nil)
+    local g=Group.CreateGroup()
+    if e:GetLabel()==1 then
+        g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,1,nil)
+    else
+        g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_SZONE+LOCATION_GRAVE,1,1,nil)
+    end
     if #g>0 then
         e:SetLabelObject(g:GetFirst())
         if e:GetLabel()==1 then
