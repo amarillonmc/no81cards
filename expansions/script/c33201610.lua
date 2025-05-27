@@ -42,6 +42,7 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	while tc do
 		Duel.RegisterFlagEffect(tc:GetControler(),id,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(tc:GetControler()-1,id,RESET_PHASE+PHASE_END,0,1)
 		tc=g:GetNext()
 	end
 end
