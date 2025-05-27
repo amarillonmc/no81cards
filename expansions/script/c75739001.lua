@@ -149,7 +149,7 @@ function s.activate4(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.costfilter(c)
-	return c:IsSetCard(0x23f) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xc31) and c:IsAbleToRemoveAsCost()
 end
 function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
