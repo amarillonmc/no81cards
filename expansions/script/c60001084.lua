@@ -21,7 +21,7 @@ end
 function cm.rmfilter(c,tp)
 	local loc1=c:GetLocation()
 	if bit.band(c:GetLocation(),LOCATION_ONFIELD)~=0 then loc1=LOCATION_ONFIELD end
-	return c:IsAbleToRemove(tp,POS_FACEDOWN,REASON_EFFECT) and Duel.IsExistingMatchingCard(cm.rmmefilter,tp,loc1,0,2,nil,tp,loc1)
+	return c:IsAbleToRemove(tp,POS_FACEDOWN,REASON_EFFECT) and Duel.IsExistingMatchingCard(cm.rmmefilter,tp,loc1,0,2,nil,tp,loc1,e:GetHandler())
 end
 function cm.rmmefilter(c,tp,loc1)
 	return c:IsAbleToRemove(tp,POS_FACEDOWN,REASON_EFFECT) and bit.band(c:GetLocation(),loc1)~=0
@@ -74,7 +74,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if ag:GetCount()~=0 and Duel.Remove(ag,POS_FACEDOWN,REASON_EFFECT)~=0 then
 		bg=Duel.GetOperatedGroup()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local wg=Duel.SelectMatchingCard(tp,cm.rmmefilter,tp,loc2,0,2,2,nil,tp,loc2)
+		local wg=Duel.SelectMatchingCard(tp,cm.rmmefilter,tp,loc2,0,2,2,nil,tp,loc2,e:GetHandler())
 		if wg:GetCount()~=0 and Duel.Remove(wg,POS_FACEDOWN,REASON_EFFECT)~=0 and Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_GRAVE,0,nil,TYPE_SPELL)>=3 and bg:GetCount()~=0 and bg:GetFirst():IsAbleToHand(tp) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.BreakEffect()
 			Duel.SendtoHand(bg,tp,REASON_EFFECT)
