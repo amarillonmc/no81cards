@@ -127,5 +127,5 @@ function c10150016.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 function c10150016.ffilter(c,fc,sub,mg,sg)
-	return c:IsFusionSetCard(0x19) and (not sg or not sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()))
+	return c:IsFusionSetCard(0x19) and (not sg or not sg:IsExists(Card.IsRace,1,c,c:GetRace()))
 end
