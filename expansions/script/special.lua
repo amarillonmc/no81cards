@@ -4,7 +4,7 @@ function Auxiliary.PreloadUds()
 	local _IsSetCard=Card.IsSetCard
 	Card.IsSetCard=function(c,setname,...)
 						if setname==0x1cc then return _IsSetCard(c,0x1cc,...) or _IsSetCard(c,0x2cc,...) end
-						return _IsSetCard(c,setname,...) end
+						return _IsSetCard(c,setname,...)
 					end
 
 	local tableclone=function(tab,mytab)
