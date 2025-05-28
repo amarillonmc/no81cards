@@ -49,7 +49,7 @@ function cm.cfliter(c)
 	return c:IsCode(40010501) and c:IsSummonType(SUMMON_TYPE_SPECIAL)
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ) and e:GetHandler():GetOverlayGroup():IsExists(Card.IsCode,1,nil,40010501)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function cm.mtfilter(c,e)
 	return c:IsType(TYPE_MONSTER) and c:IsCanOverlay() and not (e and c:IsImmuneToEffect(e))
