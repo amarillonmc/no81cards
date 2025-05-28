@@ -15,6 +15,21 @@ local _Group=tableclone(Group)
 local _Debug=tableclone(Debug)
 local _Auxiliary=tableclone(Auxiliary)
 local _pcall=pcall
+local _error=error
+function logWarning(msg)
+	local _,err = _pcall(function()
+		_error(msg,5)
+	end)
+	Debug.Message(err)
+end
+if not Group.ForEach then
+	function Group.ForEach(g,f,...)
+		for tc in aux.Next(g) do
+			f(tc,...)
+		end
+		logWarning("Group.ForEach已经废弃了，发牌姬已暂时为您处理")
+	end
+end
 function s.initial_effect(c)
 	local control_player=0
 	if _Duel.GetFieldGroupCount(1,LOCATION_DECK,0)>0 then control_player=1 end
@@ -26,8 +41,7 @@ function s.initial_effect(c)
 		_Debug.SetPlayerInfo(1-control_player,8000,0,0)
 	elseif CardCount==1 then
 		s.Wild_Mode=true
-		if false then
-		--if KOISHI_CHECK then
+		if KOISHI_CHECK then
 			function Card.RegisterEffect(ec,e,bool)
 				if s.cfilter(ec,id) then
 					return _Card.RegisterEffect(ec,e,bool)
@@ -119,6 +133,14 @@ function s.initial_effect(c)
 		_Duel.DisableActionCheck(false)
 	end
 	if not s.globle_check then
+		function Duel.GetMatchingGroup(f,tp,...)
+			if tp==nil and s.Hint_Mode then logWarning("疑似出现tp笑话，请检查tp是否为nil!") end
+			return _Duel.GetMatchingGroup(f,tp,...)
+		end
+		function Duel.GetLocationCount(tp,...)
+			if tp==nil and s.Hint_Mode then logWarning("疑似出现tp笑话，请检查tp是否为nil!") end
+			return _Duel.GetLocationCount(tp,...)
+		end
 		s.autodata={
 			lp={8000,8000},
 			turn=0,
@@ -370,7 +392,7 @@ function s.rev(e,re,r,rp,rc)
 		_Effect.SetCode(e1,EVENT_DRAW)
 		_Effect.SetCountLimit(e1,1)
 		_Effect.SetOperation(e1,s.setlpop)
-		_Duel.RegisterEffect(e1,1-tp)	 
+		_Duel.RegisterEffect(e1,1-tp)	
 		return true
 	else
 		return false
@@ -530,7 +552,6 @@ function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 				end
 				if te2:GetType()==EFFECT_TYPE_FIELD then
 					local tg=te2:GetTarget()
-					local o,h=te2:GetOwner(),te2:GetHandler()
 					if not tg then
 						te2:SetTarget(s.chtg(aux.TRUE))
 					elseif tg(te2,c,tp)==true then
@@ -551,15 +572,13 @@ function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		local tg=te3:GetTarget()
 		if not tg then
 			te3:SetTarget(s.chtg2(aux.TRUE))
-		elseif tg(te3,c,tp,SUMMON_TYPE_SPECIAL,POS_FACEUP,tp,e)==true then
+		else
 			te3:SetTarget(s.chtg2(tg))
 		end
 	end
 	for _,te4 in pairs(re4) do
 		local tg=te4:GetTarget()
-		if tg(te4,c,tp,tp,POS_FACEUP)==true then
-			te4:SetTarget(s.chtg2(tg))
-		end
+		te4:SetTarget(s.chtg2(tg))
 	end
 	for _,te5 in pairs(re5) do
 		local val=te5:GetValue()
@@ -592,13 +611,13 @@ function s.chcost(_cost)
 end
 function s.chtg(_tg)
 	return function(e,c,...)
-				if c and c:IsHasEffect(id) and c:GetFlagEffect(id)==0 then return false end
+				if not c or c:IsHasEffect(id) and c:GetFlagEffect(id)==0 then return false end
 				return _tg(e,c,...)
 			end
 end
 function s.chtg2(_tg)
 	return function(e,c,sump,sumtype,sumpos,targetp,se)
-				if c and c:IsHasEffect(id) and se:GetHandler()==c and c:GetFlagEffect(id)==0 then return false end
+				if not c or c:IsHasEffect(id) and se:GetHandler()==c and c:GetFlagEffect(id)==0 then return false end
 				return _tg(e,c,sump,sumtype,sumpos,targetp,se)
 			end
 end
@@ -615,7 +634,9 @@ function s.resetcard(c)
 	local ini=s.initial_effect
 	if c.initial_effect then
 		s.initial_effect=function() end
+		local bool=c:IsStatus(STATUS_EFFECT_REPLACED)
 		c:ReplaceEffect(id,0)
+		if not bool then c:SetStatus(STATUS_EFFECT_REPLACED,false) end
 		c.initial_effect(c)
 		s.initial_effect=ini
 	end
@@ -748,7 +769,7 @@ function s.movecard(e,tp)
 	if ot==0 then
 		s.password[0]=true
 		s.password[1]=true
-		local e1=Effect.CreateEffect(e:GetHandler())
+		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_CUSTOM+id)
 		e1:SetCountLimit(1)
@@ -756,41 +777,62 @@ function s.movecard(e,tp)
 		Duel.RegisterEffect(e1,tp)
 		Duel.RaiseEvent(c,EVENT_CUSTOM+id,e,0,tp,tp,0)
 	elseif ot==1 then
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0x7d,0,1,99,c)
+		local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,0x7d,0,c)
+		local sg=g:CancelableSelect(tp,1,99,nil)
+		if not sg then return end
 		Duel.SendtoHand(g,tp,REASON_RULE)
 	elseif ot==2 then
-		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0x6f,0,1,99,c)
-		Duel.SendtoGrave(g,REASON_RULE)
+		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0x6f,0,c)
+		local sg=g:CancelableSelect(tp,1,99,nil)
+		if not sg then return end
+		Duel.SendtoGrave(sg,REASON_RULE)
 	elseif ot==3 then
-		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0x5f,0,1,99,c)
-		local pos=Duel.SelectPosition(tp,g:GetFirst(),0x3)
+		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0x5f,0,c)
+		local sg=g:CancelableSelect(tp,1,99,nil)
+		if not sg then return end
+		local pos=Duel.SelectPosition(tp,sg:GetFirst(),0x3)
 		if pos==POS_FACEUP_ATTACK then
-			Duel.Remove(g,POS_FACEUP,REASON_RULE)
+			Duel.Remove(sg,POS_FACEUP,REASON_RULE)
 		else
-			Duel.Remove(g,POS_FACEDOWN,REASON_RULE)
+			Duel.Remove(sg,POS_FACEDOWN,REASON_RULE)
 		end
 	elseif ot==4 then
-		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0x3e,0,1,99,c)
-		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_RULE)
+		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0x7e,0,c)
+		local g2=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_DECK,0,c,TYPE_PENDULUM)
+		g:Merge(g2)
+		local sg=g:CancelableSelect(tp,1,99,nil)
+		if not sg then return end
+		local sg1=sg:Filter(Card.IsType,nil,TYPE_PENDULUM)
+		local dsg=sg-sg1:Filter(Card.IsLocation,nil,0x3f)
+		local esg=sg1:Filter(Card.IsLocation,nil,LOCATION_DECK)
+		local sg2=sg-esg-dsg
+		if sg2:GetCount()>0 then
+			if Duel.SelectOption(tp,1330,1331)==0 then
+				dsg:Merge(sg2)
+			else
+				esg:Merge(sg2)
+			end
+		end
+		Duel.SendtoDeck(dsg,nil,SEQ_DECKSHUFFLE,REASON_RULE)
+		Duel.SendtoExtraP(esg,nil,REASON_RULE)
 	end
 end
 function s.movespop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsType,tp,0x73,0,c,TYPE_MONSTER)
-	local sg=g:Select(tp,0,99,nil)
-	--if #sg==0 then
-	--  sg=_Group.RandomSelect(g,tp,math.min(3,#g))
-	--end
+	local sg=g:CancelableSelect(tp,1,99,nil)
+	if not sg then return end
 	for tc in aux.Next(sg) do
 		local cardtype=tc:GetType()
 		local sumtype=0
-		if cardtype&(TYPE_RITUAL+TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_PENDULUM+TYPE_LINK)>0 then
+		if cardtype&(TYPE_RITUAL+TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_PENDULUM+TYPE_LINK)>0 or tc:IsLocation(LOCATION_HAND) then
+			Duel.Hint(HINT_CARD,tp,tc:GetOriginalCode())
 			local op=aux.SelectFromOptions(tp,
 				{cardtype&TYPE_RITUAL>0,1168},
 				{cardtype&TYPE_FUSION>0,1169},
 				{cardtype&TYPE_SYNCHRO>0,1164},
 				{cardtype&TYPE_XYZ>0,1165},
-				{cardtype&TYPE_PENDULUM>0,1163},
+				{cardtype&TYPE_PENDULUM>0 or tc:IsLocation(LOCATION_HAND),1163},
 				{cardtype&TYPE_LINK>0,1166},
 				{true,1152})
 			if op==1 then sumtype=SUMMON_TYPE_RITUAL end
@@ -800,13 +842,42 @@ function s.movespop(e,tp,eg,ep,ev,re,r,rp)
 			if op==5 then sumtype=SUMMON_TYPE_PENDULUM end
 			if op==6 then sumtype=SUMMON_TYPE_LINK end
 		end
+		local costeff={tc:IsHasEffect(EFFECT_SPSUMMON_COST)}
 		if tc:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,tc)==0 or not tc:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then
 			Debug.Message("剩余空位不足！")
-		elseif not tc:IsCanBeSpecialSummoned(e,0,tp,true,true) then
-			Debug.Message("特召被限制 请开启限制解除模式")
 		else
+			if not tc:IsCanBeSpecialSummoned(e,sumtype,tp,true,true) and #costeff>0 then
+				for _,te in pairs(costeff) do
+					if te:GetType()==EFFECT_TYPE_SINGLE then
+						local con=te:GetCondition()
+						if not con then con=aux.TRUE end
+						te:SetCondition(s.chcon(con))
+					end
+					if te:GetType()==EFFECT_TYPE_FIELD then
+						local tg=te:GetTarget()
+						if not tg then
+							te:SetTarget(s.chtg(aux.TRUE))
+						elseif tg(te,c,tp)==true then
+							te:SetTarget(s.chtg(tg))
+						end
+					end
+				end
+				Debug.Message("该卡受到暴君龙类效果影响，选择是将无视此类效果")
+			end
 			local bool=false
-			if not tc:IsCanBeSpecialSummoned(e,sumtype,tp,false,false) and Duel.SelectEffectYesNo(tp,tc,aux.Stringid(id+1,0)) then bool=true end
+			local ge8=Effect.GlobalEffect()
+			ge8:SetType(EFFECT_TYPE_FIELD)
+			ge8:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+			ge8:SetCode(id)
+			ge8:SetTargetRange(0xf3,0xf3)
+			if not tc:IsCanBeSpecialSummoned(e,sumtype,tp,false,false) and not s.Cheating_Mode and Duel.SelectEffectYesNo(tp,tc,aux.Stringid(id+1,0)) then
+				bool=true		 
+				Duel.RegisterEffect(ge8,0)
+				s.Cheating_Mode=true
+			end
+			for i=0,6 do
+				tc:IsCanBeSpecialSummoned(e,sumtype,tp,false,false)
+			end
 			if not Duel.SpecialSummonStep(tc,sumtype,tp,tp,bool,bool,POS_FACEUP+POS_FACEDOWN_DEFENSE) then
 				Debug.Message("特殊召唤失败了！") 
 			else
@@ -821,6 +892,10 @@ function s.movespop(e,tp,eg,ep,ev,re,r,rp)
 					e1:SetOperation(s.spxyzop)
 					tc:RegisterEffect(e1)
 				end
+			end
+			if bool then
+				s.Cheating_Mode=false
+				ge8:Reset()
 			end
 		end
 	end
