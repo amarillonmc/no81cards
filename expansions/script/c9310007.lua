@@ -37,8 +37,8 @@ function c9310007.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function c9310007.cfilter(c,g,mc)
-	return g:CheckSubGroup(c9310007.mtfilter,1,#g,mc,c)
+function c9310007.cfilter(c,mc)
+	return c:IsSynchroSummonable(mc) --g:CheckSubGroup(c9310007.mtfilter,1,#g,mc,c)
 end
 function c9310007.mtfilter(g,mc,c)
 	local sg=g:Clone()
@@ -46,10 +46,16 @@ function c9310007.mtfilter(g,mc,c)
 	return sg:GetSum(Card.GetSynchroLevel,c)==c:GetLevel() and c:IsSynchroSummonable(nil,sg)
 end
 function c9310007.spop(e,tp,eg,ep,ev,re,r,rp)
-	local kc=e:GetHandler()
-	if  kc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(kc,0,tp,tp,false,false,POS_FACEUP)
-		local sg=Duel.GetMatchingGroup(Card.IsCanBeSynchroMaterial,tp,LOCATION_MZONE,0,kc)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		Duel.AdjustAll()
+		local g=Duel.GetMatchingGroup(c9310007.cfilter,tp,LOCATION_EXTRA,0,nil,c)
+		if g:GetCount()>0 and c:IsLocation(LOCATION_MZONE) and c:IsControler(tp) and c:IsFaceup() then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sg=g:Select(tp,1,1,nil)
+			Duel.SynchroSummon(tp,sg:GetFirst(),c)
+		end
+		--[[local sg=Duel.GetMatchingGroup(Card.IsCanBeSynchroMaterial,tp,LOCATION_MZONE,0,kc)
 		local kg=Duel.GetMatchingGroup(c9310007.cfilter,tp,LOCATION_EXTRA,0,nil,sg,kc)
 		if kg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9310007,1)) then
 			Duel.BreakEffect()
@@ -62,7 +68,7 @@ function c9310007.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.SynchroSummon(tp,sc,nil,sg1)
 			sc:CompleteProcedure()
-		end
+		end--]]
 	end
 end
 function c9310007.tnval(e,c)
