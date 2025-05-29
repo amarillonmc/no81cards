@@ -18,7 +18,7 @@ end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
-function cm.rmfilter(c,tp)
+function cm.rmfilter(c,e,tp)
 	local loc1=c:GetLocation()
 	if bit.band(c:GetLocation(),LOCATION_ONFIELD)~=0 then loc1=LOCATION_ONFIELD end
 	return c:IsAbleToRemove(tp,POS_FACEDOWN,REASON_EFFECT) and Duel.IsExistingMatchingCard(cm.rmmefilter,tp,loc1,0,2,nil,tp,loc1,e:GetHandler())
