@@ -188,7 +188,7 @@ c91300032.hackclad=1
 function c91300032.efilter(e,te)
 	local c=e:GetHandler()
 	local ec=te:GetHandler()
-	if ec:IsHasCardTarget(c) or (te:IsHasType(EFFECT_TYPE_ACTIONS) and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(te)) or (_G["c"..c:GetCode()] and _G["c"..c:GetCode()].hackclad) then return false
+	if ec:IsHasCardTarget(c) or (te:IsHasType(EFFECT_TYPE_ACTIONS) and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(te)) or (_G["c"..te:GetOwner():GetCode()] and _G["c"..te:GetOwner():GetCode()].hackclad) then return false
 	end
 	return e:GetHandler()~=te:GetOwner()
 end
