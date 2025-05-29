@@ -75,6 +75,7 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 	if #g1>0 and #g2>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local sg1=g1:SelectSubGroup(tp,cm.fselect,false,1,3)
+		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TODECK)
 		local sg2=g2:SelectSubGroup(1-tp,cm.fselect,false,1,3)
 		if Duel.SendtoDeck(sg1+sg2,nil,2,REASON_EFFECT)>0 then
 			local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)

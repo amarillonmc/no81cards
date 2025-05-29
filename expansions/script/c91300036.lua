@@ -67,6 +67,7 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.cffilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local tc=Duel.SelectMatchingCard(tp,s.cffilter,tp,LOCATION_HAND,0,1,1,e:GetHandler()):GetFirst()
+	Duel.ConfirmCards(1-tp,tc)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetDescription(aux.Stringid(91300039,1))
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -133,8 +134,8 @@ function s.mvalue(e,fp,rp,r)
 	return 1-Duel.GetFieldGroupCount(fp,LOCATION_SZONE,0)
 end
 function s.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetExtraTopGroup(tp,2)
-	if chk==0 then return g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN)==2 end
+	local g=Duel.GetExtraTopGroup(tp,1)
+	if chk==0 then return g:FilterCount(Card.IsAbleToRemoveAsCost,nil,POS_FACEDOWN)==1 end
 	Duel.Remove(g,POS_FACEDOWN,REASON_COST)
 end
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)

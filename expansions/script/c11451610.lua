@@ -72,6 +72,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	while i<=1 do
 		local g=Duel.GetMatchingGroup(cm.thfilter,p,LOCATION_DECK,0,nil,typ)
 		if #g>0 and Duel.SelectYesNo(p,aux.Stringid(m,2)) then
+			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
 			local sg=g:Select(p,1,1,nil)
 			rg:Merge(sg)
 		end
