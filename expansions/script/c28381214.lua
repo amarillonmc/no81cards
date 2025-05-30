@@ -91,5 +91,5 @@ function c28381214.confirm(tp,op)
 		g=g:Select(tp,2,2,nil)
 	end
 	Duel.ConfirmCards(1-tp,g)
-	Duel.ShuffleHand(tp)
+	--Duel.ShuffleHand(tp)
 end
