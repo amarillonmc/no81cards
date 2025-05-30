@@ -51,8 +51,7 @@ end
 function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local g=Duel.GetDecktopGroup(tp,2)
-		local tc=g:GetFirst()
-		return tc and tc:IsAbleToRemove()
+		return g:FilterCount(Card.IsAbleToRemove,nil)==2
 	end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,tp,LOCATION_DECK)
 	local lab=0
@@ -64,7 +63,7 @@ function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetDecktopGroup(tp,1)
+	local g=Duel.GetDecktopGroup(tp,2)
 	Duel.DisableShuffleCheck()
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	if e:GetLabel()==1 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then 

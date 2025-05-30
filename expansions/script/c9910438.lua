@@ -12,8 +12,11 @@ function c9910438.initial_effect(c)
 	e1:SetOperation(c9910438.activate)
 	c:RegisterEffect(e1)
 end
+function c9910438.cfilter(c,e)
+	return c:IsFaceup() and c:IsCanBeEffectTarget(e)
+end
 function c9910438.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(c9910438.cfilter,tp,LOCATION_MZONE,0,nil,e)
 	if chkc then return false end
 	if chk==0 then return g:CheckSubGroup(aux.drccheck,2) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)

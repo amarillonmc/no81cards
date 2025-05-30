@@ -11,8 +11,9 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_TOGRAVE+CATEGORY_REMOVE)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_SZONE)
 	e1:SetCountLimit(1,id)
 	e1:SetCost(s.descost)
 	e1:SetTarget(s.destg)
@@ -47,61 +48,22 @@ function s.initial_effect(c)
 end
 
 -- ①: Cost function
-function s.costfilter(c)
-	return (c:IsLocation(LOCATION_HAND) or c:IsFaceup()) and 
-		   (c:IsAbleToGrave() or c:IsAbleToRemove())
+function s.costfilter(c,types)
+	return  (c:IsAbleToGraveAsCost() or c:IsAbleToRemoveAsCost()) and  (c:GetType()&types)~=0
 end
 
 function s.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	local types={}
+	local types=0
 	for tc in aux.Next(g) do
-		local ttype=tc:GetType()&(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)
-		if ttype>0 and not types[ttype] then
-			types[ttype]=true
-		end
+		types=types|(tc:GetType()&(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP))
 	end
-	
-	-- 2. 检测手卡/场上是否有可送去墓地/除外的同类型卡
-	if chk==0 then
-		for ttype,_ in pairs(types) do
-			local sg=Duel.GetMatchingGroup(s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,e:GetHandler(),ttype)
-			if #sg>0 then return true end
-		end
-		return false
-	end
-	
-	-- 选择操作
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-	local types_list={}
-	for ttype,_ in pairs(types) do
-		table.insert(types_list,ttype)
-	end
-	table.sort(types_list)
-	
-	-- 让玩家选择要处理的卡类型
-	local ttype=nil
-	if #types_list>1 then
-		local opts={}
-		for i,v in ipairs(types_list) do
-			if v&TYPE_MONSTER>0 then
-				table.insert(opts,aux.Stringid(id,5)) -- 怪兽
-			elseif v&TYPE_SPELL>0 then
-				table.insert(opts,aux.Stringid(id,6)) -- 魔法
-			elseif v&TYPE_TRAP>0 then
-				table.insert(opts,aux.Stringid(id,7)) -- 陷阱
-			end
-		end
-		local opt=Duel.SelectOption(tp,table.unpack(opts))
-		ttype=types_list[opt+1]
-	else
-		ttype=types_list[1]
-	end
-	
+	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler(),types) end
+
 	-- 选择要送去墓地/除外的卡
-	local sg=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler(),ttype)
+	local sg=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,e:GetHandler(),types)
 	local tc=sg:GetFirst()
-	local opt=Duel.SelectOption(tp,aux.Stringid(id,3),aux.Stringid(id,4))
+	local opt=Duel.SelectOption(tp,aux.Stringid(11180016,3),aux.Stringid(11180016,4))
 	if opt==0 then
 		Duel.SendtoGrave(tc,REASON_COST)
 		e:SetLabel(tc:GetType()&(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP))
@@ -111,37 +73,30 @@ function s.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 
 end
-function s.costfilter(c,ttype)
-	return c:IsAbleToGrave() or c:IsAbleToRemove() and
-		   c:IsType(ttype) and
-		   (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
-end
+
 -- ①: Target function
 function s.desfilter(c,ty)
-	return c:IsFaceup() and c:IsType(ty) and c:IsCanBeEffectTarget()
+	return c:IsFaceup() and c:IsType(ty) 
 end
 
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ty=e:GetLabel()
-	if chkc then return chkc:IsOnField() and s.desfilter(chkc,ty) end
-	if chk==0 then return Duel.IsExistingTarget(s.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,ty) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,s.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,ty)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	if chk==0 then return true end
+	local g=Duel.GetMatchingGroup(s.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,ty)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,#g,0,0)
 end
 
 -- ①: Operation
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) then
-		Duel.Destroy(tc,REASON_EFFECT)
+	local ty=e:GetLabel()
+	local g=Duel.GetMatchingGroup(s.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,ty)
+		if #g>0 then
+		Duel.Destroy(g,REASON_EFFECT)
 	end
 end
 
 -- ②: Condition for being sent to GY
-function s.sentfilter(c)
-	return c:IsSetCard(0x146) or c:IsSetCard(0x147) -- "Dragonborn" or "Phantom Sorrow"
-end
+
 
 function s.gycon(e,tp,eg,ep,ev,re,r,rp)
 	return re and 
