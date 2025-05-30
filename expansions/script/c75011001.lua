@@ -89,7 +89,7 @@ function c75011001.arop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=te:GetTarget()
 	if tg then tg(te,tp,eg,ep,ev,re,r,rp,1) end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	if #g>0 then
+	if g and g:GetCount()>0 then
 		for oc in aux.Next(g) do
 			oc:CreateEffectRelation(te)
 		end
@@ -97,7 +97,7 @@ function c75011001.arop(e,tp,eg,ep,ev,re,r,rp)
 	local op=te:GetOperation()
 	if op then op(te,tp,eg,ep,ev,re,r,rp) end
 	--tc:ReleaseEffectRelation(te)
-	if #g>0 then
+	if g and g:GetCount()>0 then
 		for oc in aux.Next(g) do
 			oc:ReleaseEffectRelation(te)
 		end

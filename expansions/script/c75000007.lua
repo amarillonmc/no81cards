@@ -1,7 +1,6 @@
 --连结的绊炎 传承琉迩
 function c75000007.initial_effect(c)
 	aux.AddCodeList(c,75000001)
-	c:SetUniqueOnField(1,0,75000007)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCodeFunRep(c,75000001,c75000007.mfilter,1,63,true,true)
@@ -75,7 +74,7 @@ function c75000007.regop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 		e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE)
 		e2:SetRange(LOCATION_MZONE)
-		e2:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
+		e2:SetTargetRange(LOCATION_MZONE,0)
 		e2:SetTarget(c75000007.indtg)
 		e2:SetValue(aux.tgoval)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
@@ -104,7 +103,7 @@ function c75000007.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
 end
 function c75000007.spfilter(c,e,tp)
-	return aux.IsCodeListed(c,75000001) and not c:IsType(TYPE_FUSION+TYPE_LINK)  and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (not c:IsLocation(LOCATION_EXTRA) and Duel.GetMZoneCount(tp)>0 or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
+	return aux.IsCodeListed(c,75000001) and not c:IsType(TYPE_FUSION) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (not c:IsLocation(LOCATION_EXTRA) and Duel.GetMZoneCount(tp)>0 or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
 end
 function c75000007.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75000007.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end

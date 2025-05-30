@@ -26,12 +26,12 @@ function c76029021.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 c76029021.named_with_Kazimierz=true 
-function c76029021.ctfil(c)
+function c76029021.ctfil(c,tp)
 	return c.named_with_Kazimierz and c:IsReleasable() and Duel.IsExistingMatchingCard(Card.IsRace,tp,LOCATION_MZONE,0,1,c,RACE_BEASTWARRIOR+RACE_WINDBEAST)
 end
 function c76029021.incost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c76029021.ctfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
-	local g=Duel.SelectMatchingCard(tp,c76029021.ctfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c76029021.ctfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,tp) end
+	local g=Duel.SelectMatchingCard(tp,c76029021.ctfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil,tp)
 	Duel.Release(g,REASON_COST)
 end 
 function c76029021.intg(e,tp,eg,ep,ev,re,r,rp,chk)
