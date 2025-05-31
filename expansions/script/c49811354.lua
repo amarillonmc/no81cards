@@ -67,7 +67,7 @@ function s.ovfilter(c,tp)
 	return c:GetOwner()==tp and c:GetOriginalType()&TYPE_MONSTER>0
 end
 function s.msfilter(c,tp)
-	return c:GetOwner()==tp and c:GetFlagEffect(id+200)>0
+	return c:GetOwner()==tp and c:GetFlagEffect(id+200)>0 and c:IsFaceup()
 end
 function s.spcon(e,c)
 	if c==nil then return true end

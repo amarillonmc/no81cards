@@ -45,7 +45,7 @@ function c98500320.initial_effect(c)
 	e6:SetRange(LOCATION_MZONE)
 	e6:SetTargetRange(LOCATION_ONFIELD,0)
 	e6:SetTarget(aux.TargetBoolFunction(Card.IsType,TYPE_SPELL+TYPE_TRAP))
-	e6:SetValue(aux.indoval)
+	e6:SetValue(1)
 	c:RegisterEffect(e6)
 end
 function c98500320.pfilter(c,tp)
