@@ -6,7 +6,7 @@ function c10150018.initial_effect(c)
 	e1:SetCode(EFFECT_ADD_SETCODE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e1:SetValue(0x19)
+	e1:SetValue(0x1019)
 	c:RegisterEffect(e1)
 	--change effect
 	local e2=Effect.CreateEffect(c)
@@ -22,7 +22,7 @@ function c10150018.initial_effect(c)
 end
 function c10150018.chcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	return rp==tp and re:IsActiveType(TYPE_MONSTER) and rc:IsSetCard(0x19)
+	return rp==tp and re:IsActiveType(TYPE_MONSTER) and rc:IsSetCard(0x1019)
 end
 function c10150018.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(rp,LOCATION_MZONE)>=2 and Duel.IsExistingMatchingCard(c10150018.spfilter,rp,0x13,0,1,nil,e,rp,re:GetHandler()) end
@@ -50,5 +50,5 @@ function c10150018.repop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c10150018.spfilter(c,e,tp,rc)
-	return not c:IsCode(rc:GetCode()) and c:IsSetCard(0x19) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_GLADIATOR,tp,false,false)
+	return not c:IsCode(rc:GetCode()) and c:IsSetCard(0x1019) and c:IsCanBeSpecialSummoned(e,SUMMON_VALUE_GLADIATOR,tp,false,false)
 end
