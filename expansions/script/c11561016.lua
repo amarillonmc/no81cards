@@ -32,8 +32,10 @@ function c11561016.regop(e,tp,eg,ep,ev,re,r,rp)
 	if ct>Duel.GetFieldGroupCount(tp,LOCATION_DECK,0) then ct=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0) end
 	local g=Duel.GetDecktopGroup(tp,ct)
 	Duel.ConfirmCards(tp,g)
+	local cg=g:Filter(Card.IsAbleToHand,nil)
+	if cg:GetCount()==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tg=g:SelectSubGroup(tp,aux.TRUE,true,0,math.floor(#g/4))
+	local tg=cg:SelectSubGroup(tp,aux.TRUE,true,0,math.floor(#g/4))
 	if tg:GetCount()>0 then
 		g:Sub(tg)
 		Duel.DisableShuffleCheck()
