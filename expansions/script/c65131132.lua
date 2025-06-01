@@ -125,7 +125,7 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 				--equip limit
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
 				e1:SetCode(EFFECT_EQUIP_LIMIT)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				e1:SetValue(s.eqlimit)
@@ -143,7 +143,7 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 				--Duel.AdjustAll()
 			else
 				break
-			end	  
+			end   
 		end  
 	end
 	local e0=Effect.CreateEffect(c) 
