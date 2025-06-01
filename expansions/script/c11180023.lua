@@ -4,7 +4,7 @@ local s, id = GetID()
 function s.initial_effect(c)
 	-- 可以在「幻殇」怪兽上叠放超量召唤
 	c:EnableReviveLimit()   
-	aux.AddXyzProcedure(c,nil,3,6,s.ovfilter,aux.Stringid(id,0))
+	aux.AddXyzProcedure(c,nil,3,2,s.ovfilter,aux.Stringid(id,0))
 	-- ①效果：1回合1次，去素材送墓/除外并堆墓
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))

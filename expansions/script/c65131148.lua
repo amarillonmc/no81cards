@@ -5,6 +5,7 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCountLimit(1,id)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(s.target)
@@ -78,8 +79,13 @@ function s.repfilter(c,tp)
 	end
 	return c:IsControler(tp) and loc==LOCATION_REMOVED and c:IsAbleToRemove() and c:IsFaceup() and (c:IsLocation(LOCATION_MZONE) and c:IsCanTurnSet() or c:IsLocation(LOCATION_SZONE) and c:IsSSetable(true)) and not c:IsReason(REASON_REPLACE)
 end
+function s.rmfilter2(c)
+	return c:IsHasEffect(id)==0
+end
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if Duel.GetFlagEffect(tp,id)>0 or r&REASON_EFFECT==0 or r&REASON_REPLACE>0 then return end
+	if Duel.GetFlagEffect(tp,id)>0 or r&REASON_EFFECT==0 or r&REASON_REPLACE>0 then 
+		eg=eg:Filter(s.rmfilter2,nil)
+	end
 	local c=e:GetHandler()
 	if chk==0 then return r&REASON_EFFECT>0 and eg:IsExists(s.repfilter,1,nil,tp) and c:IsAbleToRemove() end
 	if Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
@@ -136,11 +142,9 @@ function s.reop(e,tp,eg,ep,ev,re,r,rp)
 				g=g:Filter(aux.TRUE,sg)
 				Duel.RaiseEvent(sg,EVENT_SSET,e,REASON_EFFECT,p,p,0)
 			else
-				Duel.RegisterFlagEffect(p,id,0,0,0)
+				Duel.RegisterFlagEffect(p,id,RESET_CHAIN,0,1)
 			end
 		end
 	end
-	Duel.ResetFlagEffect(0,id)
-	Duel.ResetFlagEffect(1,id)
 	g:Clear()
 end

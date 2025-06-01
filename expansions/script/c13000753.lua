@@ -18,8 +18,16 @@ local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetCountLimit(1,m+1000)
 	e3:SetOperation(cm.retreg)
 	c:RegisterEffect(e3)
+local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_RELEASE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCountLimit(1,m+1000)
+	e1:SetOperation(cm.retreg)
+	c:RegisterEffect(e1)
 end
 function cm.retreg(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -116,6 +124,12 @@ end
 function cm.matfilter(c)
 	return c:IsType(TYPE_RITUAL) and c:IsAbleToRemove() and c:IsType(TYPE_MONSTER)
 end
+function cm.aafilter(c)
+	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
+end
+function cm.bbfilter(c)
+	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_SPELL)
+end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_HAND,0,1,c) end
@@ -145,7 +159,7 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	if #gg>0 then
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
-		Duel.Destroy(gg,REASON_EFFECT)
+		Duel.Release(gg,REASON_EFFECT)
 	end
 end
 end

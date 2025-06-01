@@ -42,6 +42,7 @@ function c60151910.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_FZONE)
+	e5:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e5:SetTarget(c60151910.e5tg)
 	e5:SetOperation(c60151910.e5op)
 	c:RegisterEffect(e5)
@@ -50,7 +51,7 @@ function c60151910.efilter(e,te)
 	return not (te:GetHandler():IsSetCard(0xab26) or te:GetHandler():IsSetCard(0x6b26) or te:GetHandler():IsSetCard(0x9b26))
 end
 function c60151910.e4tgfilter(c)
-	return (c:IsSetCard(0xab26) or c:IsSetCard(0x6b26) or c:IsSetCard(0x9b26)) and c:IsAbleToDeck() and not c:IsPublic()
+	return (c:IsCode(60151901) or c:IsSetCard(0x6b26) or c:IsSetCard(0x9b26)) and c:IsAbleToDeck() and not c:IsPublic()
 end
 function c60151910.e4tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp)
@@ -60,12 +61,12 @@ function c60151910.e4tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60151910.e4op(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
+	local sk=Duel.GetMatchingGroupCount(c60151910.e4tgfilter,tp,LOCATION_HAND,0,nil)
 	local kz=Duel.GetFieldGroupCount(p,LOCATION_DECK,0)
-	if kz>3 then kz=3 end
+	if sk>kz then sk=kz end
 	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(p,c60151910.e4tgfilter,p,LOCATION_HAND,0,1,kz,nil)
+	local g=Duel.SelectMatchingCard(p,c60151910.e4tgfilter,p,LOCATION_HAND,0,1,sk,nil)
 	if g:GetCount()>0 then
 		Duel.ConfirmCards(1-p,g)
 		if Duel.Draw(p,g:GetCount(),REASON_EFFECT)>0 then
@@ -77,32 +78,32 @@ function c60151910.e4op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60151910.e5tgfilter(c)
-	return (c:IsSetCard(0xab26) or c:IsSetCard(0x6b26) or c:IsSetCard(0x9b26)) and c:IsAbleToDeck() and c:IsFaceup()
+	return (c:IsSetCard(0xab26) or c:IsSetCard(0x6b26) or c:IsSetCard(0x9b26)) and (c:IsAbleToDeck() or (c:IsLocation(LOCATION_EXTRA) and c:IsAbleToRemove())) and c:IsFaceup()
 end
 function c60151910.e5tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c60151910.e5tgfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,1,nil) and Duel.GetFlagEffect(tp,60151910)==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(c60151910.e5tgfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,1,nil) end
+	local g=Duel.GetMatchingGroup(c60151910.e5tgfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(1000)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
-	local g=Duel.GetMatchingGroup(c60151910.e5tgfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
-	Duel.RegisterFlagEffect(tp,60151910,RESET_CHAIN,0,1)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c60151910.e5op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,c60151910.e5tgfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		local tc=g:GetFirst()
-		if tc:IsLocation(LOCATION_EXTRA) then
-			Duel.ConfirmCards(1-tp,tc)
-		end
-		if Duel.SendtoDeck(tc,nil,2,REASON_EFFECT) then
+		if tc:IsLocation(LOCATION_EXTRA) and Duel.SendtoGrave(tc,REASON_EFFECT) and Duel.SendtoDeck(tc,nil,2,REASON_EFFECT) then
 			Duel.BreakEffect()
 			Duel.Recover(tp,1000,REASON_EFFECT)
+		elseif Duel.SendtoDeck(tc,nil,2,REASON_EFFECT) then
+			Duel.BreakEffect()
+			Duel.Recover(tp,1000,REASON_EFFECT)
+		else
+			return false
 		end
 	end
 end

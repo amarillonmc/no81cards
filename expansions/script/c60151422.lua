@@ -2,7 +2,7 @@
 function c60151422.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DRAW+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_DRAW+CATEGORY_TOHAND+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -18,7 +18,7 @@ function c60151422.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c60151422.filter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x3b28) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck() 
+	return c:IsFaceup() and c:IsSetCard(0x3b28) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() 
 		and Duel.IsExistingTarget(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil)
 end
 function c60151422.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -38,7 +38,7 @@ function c60151422.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			local tc=Duel.GetFirstTarget()
 			if tc and tc:IsRelateToEffect(e) then
-				Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
+				Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			end
 		end
 	end

@@ -71,10 +71,17 @@ function cm.xyzcheck(g)
 end
 function cm.sprcon(e,c)
 	if c==nil then return true end
-	return Duel.CheckRemoveOverlayCard(e:GetHandlerPlayer(),1,0,2,REASON_EFFECT) and Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_MZONE)>0
+    local g=Duel.GetOverlayGroup(c:GetControler(),0x04,0):Filter(Card.IsRankAbove,nil,1)
+	return g:CheckSubGroup(cm.xyzcheck,2,2)
+        and Duel.GetLocationCount(e:GetHandlerPlayer(),LOCATION_MZONE)>0
 end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-   Duel.RemoveOverlayCard(e:GetHandlerPlayer(),1,0,2,2,REASON_EFFECT)
+    local g=Duel.GetOverlayGroup(c:GetControler(),0x04,0):Filter(Card.IsRankAbove,nil,1)
+    local sg=g:SelectSubGroup(tp,cm.xyzcheck,false,2,2)
+    if #sg>0 then
+        Duel.SendtoGrave(sg,REASON_EFFECT)
+	    Duel.RaiseSingleEvent(c,EVENT_DETACH_MATERIAL,e,0,0,0,0)
+    end
 end
 function cm.tgfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ)

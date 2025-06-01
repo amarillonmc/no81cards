@@ -1,4 +1,4 @@
---怠惰的魅魔
+--怠惰的幽冥花
 function c60159911.initial_effect(c)
 	c:EnableReviveLimit()
 	--cannot special summon
@@ -9,7 +9,6 @@ function c60159911.initial_effect(c)
 	c:RegisterEffect(e1)
 	--special summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(57774843,0))
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_SPSUMMON_PROC)
 	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
@@ -53,7 +52,7 @@ end
 function c60159911.spcon(e,c)
 	if c==nil then return true end
 	return Duel.GetMZoneCount(c:GetControler())>0 
-		and Duel.IsExistingMatchingCard(c60159911.spfilter,c:GetControler(),LOCATION_MZONE,LOCATION_MZONE,2,nil)
+		and Duel.IsExistingMatchingCard(c60159911.spfilter,c:GetControler(),0,LOCATION_MZONE,2,nil)
 end
 function c60159911.sumlimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return bit.band(e:GetHandler():GetSummonType(),SUMMON_TYPE_SPECIAL)==SUMMON_TYPE_SPECIAL and e:GetHandler():GetSummonLocation()==LOCATION_HAND and e:GetHandler():IsFaceup() and c:IsLocation(LOCATION_EXTRA+LOCATION_GRAVE) 
@@ -73,5 +72,5 @@ function c60159911.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c60159911.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(c60159911.ctfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	Duel.Destroy(sg,REASON_EFFECT)
+	Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end

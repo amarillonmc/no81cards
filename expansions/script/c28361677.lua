@@ -12,13 +12,11 @@ function c28361677.initial_effect(c)
 	c:RegisterEffect(e1)
 	--illumination maho
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_QUICK_F)
-	e2:SetCode(EVENT_BECOME_TARGET)
-	e2:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
-	e2:SetCondition(c28361677.thcon)
-	e2:SetTarget(c28361677.thtg)
-	e2:SetOperation(c28361677.thop)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EFFECT_SEND_REPLACE)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetTarget(c28361677.reptg)
+	e2:SetValue(c28361677.repval)
 	c:RegisterEffect(e2)
 	--illumination SetCode
 	local e3=Effect.CreateEffect(c)
@@ -64,38 +62,10 @@ function c28361677.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_ADJUST)
-	e1:SetCondition(c28361677.adcon)
-	e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
-	e1:SetOperation(c28361677.adop2)
-	e1:SetLabel(ct)
-	e1:SetLabelObject(e:GetHandler())
+	e1:SetCode(EVENT_CHAINING)
+	e1:SetOperation(c28361677.actop)
+	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-	table.insert(c28361677.et,{e1})
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetOperation(c28361677.actop)
-	e2:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
-	Duel.RegisterEffect(e2,tp)
-end
-function c28361677.adop2(e,tp,eg,ep,ev,re,r,rp)
-	local ct=e:GetLabel()
-	local c,g= e:GetLabelObject(),Duel.GetMatchingGroup(c28361677.adf,tp,LOCATION_MZONE,0,nil,e)
-	for xc in aux.Next(g) do
-		local x
-		if xc:GetLevel()>0 then x=EFFECT_UPDATE_LEVEL
-		elseif xc:GetRank()>0 then x=EFFECT_UPDATE_RANK end
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(x)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
-		e1:SetValue(ct)
-		e1:SetCondition(c28361677.efcon)
-		e1:SetOwnerPlayer(tp)
-		xc:RegisterEffect(e1)
-		table.insert(c28361677.get(e),xc)
-	end
 end
 function c28361677.actop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetHandler():IsRace(RACE_FAIRY) and ep==tp then
@@ -105,71 +75,43 @@ end
 function c28361677.chainlm(e,rp,tp)
 	return tp==rp
 end
-function c28361677.thcon(e,tp,eg,ep,ev,re,r,rp)
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	return eg:IsContains(e:GetHandler()) and re:GetHandler():IsType(TYPE_MONSTER) and re:GetHandler():IsSetCard(0x284)
-end
-function c28361677.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,e:GetHandler():GetLocation())
-end
-function c28361677.thop(e,tp,eg,ep,ev,re,r,rp)
+function c28361677.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local b1=true
-	local b2=c:IsRelateToEffect(e)
-	local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(28361677,0)},
-		{b2,aux.Stringid(28361677,1)})
-	if op==1 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_ADJUST)
-		e1:SetCondition(c28361677.adcon)
-		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
-		e1:SetOperation(c28361677.adop)
-		e1:SetLabelObject(c)
-		Duel.RegisterEffect(e1,tp)
-		table.insert(c28361677.et,{e1})
+	if chk==0 then return bit.band(r,REASON_EFFECT)~=0 and re and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsSetCard(0x284) and eg:IsContains(c) and (c:IsAbleToHand() or (re:GetHandler():IsFaceupEx() and (re:GetHandler():IsLevelAbove(1) or re:GetHandler():IsRankAbove(1)))) end
+	if c:IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(28361677,0)) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_TO_DECK_REDIRECT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetValue(LOCATION_HAND)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e1)
+		--c:RegisterFlagEffect(28361677,RESET_EVENT+0x1de0000+RESET_PHASE+PHASE_END,0,1)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		e2:SetCode(EVENT_TO_HAND)
+		e2:SetCountLimit(1)
+		e2:SetOperation(c28361677.chkop)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOHAND+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e2)
+		return true
 	else
-		Duel.SendtoHand(c,nil,REASON_EFFECT)
-	end
-end
-function c28361677.adcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c28361677.adf,tp,LOCATION_MZONE,0,1,nil,e)
-end
-function c28361677.adop(e,tp,eg,ep,ev,re,r,rp)
-	local c,g= e:GetLabelObject(),Duel.GetMatchingGroup(c28361677.adf,tp,LOCATION_MZONE,0,nil,e)
-	for xc in aux.Next(g) do
-		local x
-		if xc:GetLevel()>0 then x=EFFECT_UPDATE_LEVEL
-		elseif xc:GetRank()>0 then x=EFFECT_UPDATE_RANK end
+		local rc=re:GetHandler()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(x)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+		e1:SetCode(EFFECT_UPDATE_LEVEL)
 		e1:SetValue(1)
-		e1:SetCondition(c28361677.efcon)
-		e1:SetOwnerPlayer(tp)
-		xc:RegisterEffect(e1)
-		table.insert(c28361677.get(e),xc)
-	end
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
+		rc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_UPDATE_RANK)
+		rc:RegisterEffect(e2)
+	return false end
 end
-function c28361677.efcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetControler()==e:GetOwnerPlayer()
+function c28361677.repval(e,c)
+	return false
 end
-c28361677.et = { }
-function c28361677.get(v)
-	for _,i in ipairs(c28361677.et) do
-		if i[1]==v then return i end
-	end
-end
-function c28361677.ck(e,c)
-	local t = c28361677.get(e)
-	for _,v in ipairs(t) do
-		if v == c then return false end
-	end
-	return true
-end
-function c28361677.adf(c,e)
-	return c:IsSetCard(0x284) and (c:GetLevel()>0 or c:GetRank()>0) and c28361677.ck(e,c)
+function c28361677.chkop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ConfirmCards(1-tp,e:GetHandler())
+	Duel.ShuffleHand(tp)
 end

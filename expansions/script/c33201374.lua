@@ -60,6 +60,6 @@ function s.rlop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.val(e,re,dam,r,rp,rc)
-	dam=dam-1500
+	dam=dam-1000
 	return dam>0 and dam or 0
 end

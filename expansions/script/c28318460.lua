@@ -36,7 +36,7 @@ function c28318460.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c28318460.thfilter(c)
-	return c:IsSetCard(0x287) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x287) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and aux.NecroValleyFilter()(c)
 end
 function c28318460.activate(e,tp,eg,ep,ev,re,r,rp,op)
 	local b1=true
@@ -46,25 +46,23 @@ function c28318460.activate(e,tp,eg,ep,ev,re,r,rp,op)
 		{b2,aux.Stringid(28318460,1)})
 	if op==1 then
 		Duel.Recover(tp,1000,REASON_EFFECT)
-		if Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(28318460,2)) then
-			Duel.Recover(tp,1000,REASON_EFFECT)
-		end
+		if Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 then Duel.Recover(tp,1000,REASON_EFFECT) end
 	elseif op==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28318460.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil):GetFirst()
+		local tc=Duel.SelectMatchingCard(tp,c28318460.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil):GetFirst()
 		if tc then
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)
 			if tc:IsPreviousLocation(LOCATION_DECK) then
 				Duel.ShuffleDeck(tp)
 			end
-			if not tc:IsLocation(LOCATION_HAND) or Duel.GetLP(tp)<1500 then return end
+			if not tc:IsLocation(LOCATION_HAND) then return end
 			local te=tc.recover_effect
 			if not te then return end
 			local tg=te:GetTarget()
-			if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) and Duel.SelectYesNo(tp,aux.Stringid(28318460,3)) then
+			if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) then
 				Duel.BreakEffect()
-				Duel.PayLPCost(tp,1500)
+				Duel.SetLP(tp,Duel.GetLP(tp)-1500)
 				local op=te:GetOperation()
 				if op then op(e,tp,eg,ep,ev,re,r,rp) end
 			end
@@ -88,7 +86,7 @@ function c28318460.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	if e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsAbleToDeck() then
-		Duel.BreakEffect()
+		--Duel.BreakEffect()
 		Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end

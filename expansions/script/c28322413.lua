@@ -26,12 +26,12 @@ function c28322413.initial_effect(c)
 	c:RegisterEffect(e1)
 	--rank up
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK)
+	--e2:SetCategory(CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
-	--e2:SetCondition(c28322413.rankcon)
-	e2:SetTarget(c28322413.rutg)
+	e2:SetCost(c28322413.rucost)
+	--e2:SetTarget(c28322413.rutg)
 	e2:SetOperation(c28322413.ruop)
 	c:RegisterEffect(e2)
 	--atk
@@ -145,85 +145,26 @@ function c28322413.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end
 function c28322413.tdfilter(c)
-	return c:IsSetCard(0x284) and c:IsAbleToDeck() and c:IsFaceupEx()
+	return c:IsSetCard(0x284) and c:IsAbleToDeckOrExtraAsCost() and c:IsFaceupEx()-- and aux.NecroValleyFilter()(c)
 end
-function c28322413.rutg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c28322413.rucost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28322413.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,c28322413.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,99,nil)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
+	e:SetLabel(#g)
 end
 function c28322413.ruop(e,tp,eg,ep,ev,re,r,rp)
-	--not target
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsRankAbove,8))
-	e1:SetValue(aux.tgoval)
-	e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
-	Duel.RegisterEffect(e1,tp)
-	--to deck
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28322413.tdfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,99,nil)
-	if g:GetCount()==0 then return end
-	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	local og=Duel.GetOperatedGroup()
-	local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-	if ct>0 then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_ADJUST)
-		e1:SetCondition(c28322413.adcon)
-		e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
-		e1:SetOperation(c28322413.adop)
-		e1:SetLabel(ct)
-		e1:SetLabelObject(e:GetHandler())
-		Duel.RegisterEffect(e1,tp)
-		table.insert(c28322413.et,{e1})
-	end
-end
-function c28322413.adcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c28322413.adf,tp,LOCATION_MZONE,0,1,nil,e)
-end
-function c28322413.adop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
-	local c,g= e:GetLabelObject(),Duel.GetMatchingGroup(c28322413.adf,tp,LOCATION_MZONE,0,nil,e)
-	for xc in aux.Next(g) do
-		local x
-		if xc:GetLevel()>0 then x=EFFECT_UPDATE_LEVEL
-		elseif xc:GetRank()>0 then x=EFFECT_UPDATE_RANK end
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(x)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
-		e1:SetValue(ct)
-		e1:SetCondition(c28322413.efcon)
-		e1:SetOwnerPlayer(tp)
-		xc:RegisterEffect(e1)
-		table.insert(c28322413.get(e),xc)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		local e0=Effect.CreateEffect(c)
+		e0:SetType(EFFECT_TYPE_SINGLE)
+		e0:SetCode(EFFECT_UPDATE_RANK)
+		e0:SetValue(ct)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+		c:RegisterEffect(e0)
 	end
-end
-function c28322413.efcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetControler()==e:GetOwnerPlayer()
-end
-c28322413.et = { }
-function c28322413.get(v)
-	for _,i in ipairs(c28322413.et) do
-		if i[1]==v then return i end
-	end
-end
-function c28322413.ck(e,c)
-	local t = c28322413.get(e)
-	for _,v in ipairs(t) do
-		if v == c then return false end
-	end
-	return true
-end
-function c28322413.adf(c,e)
-	return c:IsSetCard(0x284) and (c:GetLevel()>0 or c:GetRank()>0) and c28322413.ck(e,c)
-end
-function c28322413.immunefilter(e,te)
-	return te:IsActiveType(TYPE_MONSTER) and not te:GetHandler():IsType(TYPE_XYZ)
 end
 function c28322413.atkval(e,c)
 	return c:GetRank()*100

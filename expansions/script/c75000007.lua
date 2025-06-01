@@ -1,6 +1,7 @@
 --连结的绊炎 传承琉迩
 function c75000007.initial_effect(c)
 	aux.AddCodeList(c,75000001)
+	c:SetUniqueOnField(1,0,75000007)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCodeFunRep(c,75000001,c75000007.mfilter,1,63,true,true)

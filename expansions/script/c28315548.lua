@@ -103,11 +103,12 @@ function c28315548.lvop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e2)
 	end
 end
-function c28315548.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x284)
+function c28315548.atkfilter(c,seq)
+	return c:IsRace(RACE_FAIRY) and c:IsFaceup() and (c:GetSequence()==seq+1 or c:GetSequence()==seq-1) and c:GetSequence()<=4
 end
 function c28315548.atkcon(e)
-	return e:GetHandler():GetSequence()==2
+	local c=e:GetHandler()
+	return Duel.IsExistingMatchingCard(c28315548.atkfilter,c:GetControler(),LOCATION_MZONE,0,1,nil,c:GetSequence())
 end
 function c28315548.atkval(e,c)
 	return c:GetLevel()*100

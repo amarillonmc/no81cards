@@ -1,0 +1,71 @@
+--人理之诗 令人惊叹的伟业
+function c22023060.initial_effect(c)
+	aux.AddCodeList(c,22023050) 
+	--Damage
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(22023060,0))
+	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,22023060)
+	e1:SetCondition(c22023060.condition)
+	e1:SetOperation(c22023060.activate)
+	c:RegisterEffect(e1)
+	--cannot
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(22023060,1))
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCost(aux.bfgcost)
+	e3:SetCountLimit(1,22023061)
+	e3:SetOperation(c22023060.tgop)
+	c:RegisterEffect(e3)
+end
+function c22023060.cfilter(c)
+	return c:IsFaceup() and c:IsCode(22023050)
+end
+function c22023060.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c22023060.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
+end
+function c22023060.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.SelectOption(tp,aux.Stringid(22023060,2))
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_BATTLE_DESTROYED)
+	e1:SetReset(EVENT_PHASE+PHASE_END)
+	e1:SetCondition(c22023060.damcon)
+	e1:SetOperation(c22023060.damop)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_DESTROYED)
+	e2:SetCondition(c22023060.damcon2)
+	Duel.RegisterEffect(e2,tp)
+end
+function c22023060.damcon(e,tp,eg,ep,ev,re,r,rp)
+	local des=eg:GetFirst()
+	local rc=des:GetReasonCard()
+	return rc:IsCode(22023050) and rc:IsType(TYPE_MONSTER)
+end
+function c22023060.damcon2(e,tp,eg,ep,ev,re,r,rp)
+	return bit.band(r,0x41)==0x41 and re and re:GetHandler():IsCode(22023050)
+end
+function c22023060.damop(e,tp,eg,ep,ev,re,r,rp)
+	local dam=eg:GetCount()*500
+	Duel.Damage(1-tp,dam,REASON_EFFECT)
+end
+function c22023060.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsCode,22023050))
+	e1:SetValue(c22023060.efilter)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c22023060.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
+end

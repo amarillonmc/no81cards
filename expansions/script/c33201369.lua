@@ -26,6 +26,15 @@ function s.initial_effect(c)
 	local e3=Effect.Clone(e2)
 	e3:SetCode(EFFECT_SET_DEFENSE_FINAL)
 	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(0x200)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e4:SetCode(EVENT_RELEASE)
+	e4:SetCountLimit(1,id)
+	e4:SetTarget(s.thtg)
+	e4:SetOperation(s.thop)
+	c:RegisterEffect(e4)
 end
 s.VHisc_HYZQ=true
 s.VHisc_CNTreasure=true
@@ -54,6 +63,24 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 						Duel.Overlay(e:GetHandler(),mg)
 					end
 				end
+				Duel.Overlay(e:GetHandler(),g)
+			end
+		end
+	end
+end
+
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return VHisc_CNTdb.spck(e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+end
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then 
+		if Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,LOCATION_GRAVE,0,1,e:GetHandler()) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+			local g=Duel.SelectMatchingCard(tp,Card.IsCanOverlay,tp,LOCATION_GRAVE,0,1,1,e:GetHandler())
+			if g:GetCount()>0 then
 				Duel.Overlay(e:GetHandler(),g)
 			end
 		end

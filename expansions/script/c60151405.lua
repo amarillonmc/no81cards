@@ -37,6 +37,26 @@ function c60151405.initial_effect(c)
 	e3:SetTarget(c60151405.sptg3)
 	e3:SetOperation(c60151405.spop3)
 	c:RegisterEffect(e3)
+	
+	
+	--flag
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_CHAINING)
+	e0:SetRange(LOCATION_MZONE)
+	e0:SetOperation(c60151405.e0op)
+	c:RegisterEffect(e0)
+end
+function c60151405.e0opf(c,tp)
+	return c:IsLocation(LOCATION_ONFIELD)
+end
+function c60151405.e0op(e,tp,eg,ep,ev,re,r,rp)
+	if re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then
+		local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+		if g and g:IsExists(c60151405.e0opf,1,nil,tp) then
+			e:GetHandler():RegisterFlagEffect(60151405,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+		end
+	end
 end
 function c60151405.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,6011405)==0 end
@@ -64,13 +84,8 @@ function c60151405.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c60151405.tfilter(c,tp)
-	return c:IsLocation(LOCATION_ONFIELD)
-end
 function c60151405.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return g and g:IsExists(c60151405.tfilter,1,nil,tp)
+	return e:GetHandler():GetFlagEffect(60151405)>0
 end
 function c60151405.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp)>-1
@@ -114,7 +129,6 @@ end
 function c60151405.spop3(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,nil)
 	local g2=Duel.GetMatchingGroup(c60151405.xyzfilter,tp,LOCATION_EXTRA,0,nil)
-	if #g1==0 and #g2==0 then return end
 	if g1:GetCount()>0 and g2:GetCount()>0 then
 		local op=Duel.SelectOption(tp,aux.Stringid(60151405,3),aux.Stringid(60151405,4))
 		if op==0 then
@@ -123,6 +137,7 @@ function c60151405.spop3(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SynchroSummon(tp,sg:GetFirst(),nil)
 			local tc=Duel.GetFirstTarget()
 			if tc and tc:IsRelateToEffect(e) then
+				Duel.BreakEffect()
 				Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 			end
 		else
@@ -131,6 +146,7 @@ function c60151405.spop3(e,tp,eg,ep,ev,re,r,rp)
 			Duel.XyzSummon(tp,tg:GetFirst(),nil)
 			local tc=Duel.GetFirstTarget()
 			if tc and tc:IsRelateToEffect(e) then
+				Duel.BreakEffect()
 				Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 			end
 		end
@@ -142,6 +158,7 @@ function c60151405.spop3(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SynchroSummon(tp,sg:GetFirst(),nil)
 			local tc=Duel.GetFirstTarget()
 			if tc and tc:IsRelateToEffect(e) then
+				Duel.BreakEffect()
 				Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 			end
 		end
@@ -153,6 +170,7 @@ function c60151405.spop3(e,tp,eg,ep,ev,re,r,rp)
 			Duel.XyzSummon(tp,tg:GetFirst(),nil)
 			local tc=Duel.GetFirstTarget()
 			if tc and tc:IsRelateToEffect(e) then
+				Duel.BreakEffect()
 				Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 			end
 		end

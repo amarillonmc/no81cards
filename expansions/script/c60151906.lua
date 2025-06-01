@@ -5,6 +5,7 @@ function c60151906.initial_effect(c)
 	e1:SetCategory(CATEGORY_DAMAGE+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,60151906+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c60151906.e1con)
 	e1:SetOperation(c60151906.e1op)
 	c:RegisterEffect(e1)
@@ -12,8 +13,9 @@ function c60151906.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCondition(aux.exccon)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c60151906.e2tg)
 	e2:SetOperation(c60151906.e2op)
@@ -24,8 +26,8 @@ function c60151906.e1confilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xab26) and c:GetLeftScale()>0
 end
 function c60151906.e1con(e,tp,eg,ep,ev,re,r,rp)
-	local ph=Duel.GetCurrentPhase()
-	return Duel.GetTurnPlayer()==tp and Duel.IsExistingMatchingCard(Card.IsDestructable,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(c60151906.e1confilter,tp,LOCATION_PZONE,0,1,nil) 
+	return Duel.IsExistingMatchingCard(Card.IsDestructable,tp,0,LOCATION_MZONE,1,nil) 
+		and Duel.IsExistingMatchingCard(c60151906.e1confilter,tp,LOCATION_PZONE,0,1,nil)
 end
 function c60151906.e1opfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xab26) and c:GetLeftScale()>0
@@ -41,9 +43,9 @@ function c60151906.e1op(e,tp,eg,ep,ev,re,r,rp)
 	if lscs>rscs then lscs,rscs=rscs,lscs end
 	local kds=lscs+rscs
 	if kds<=0 then return end
-	local gw=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)
+	local gw=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,Card.IsDestructable,tp,0,LOCATION_ONFIELD,1,kds,nil)
+	local g=Duel.SelectMatchingCard(tp,Card.IsDestructable,tp,0,LOCATION_MZONE,1,kds,nil)
 	if g:GetCount()>0 then
 		Duel.HintSelection(g)
 		for i=1,g:GetCount() do
@@ -73,7 +75,7 @@ function c60151906.e1op(e,tp,eg,ep,ev,re,r,rp)
 		if rsc2 then rscs2=rsc2:GetLeftScale() end
 		if lscs2>rscs2 then lscs2,rscs2=rscs2,lscs2 end
 		local kds2=lscs2+rscs2
-		if kds2>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)==0 and Duel.SelectYesNo(tp,aux.Stringid(60151906,1)) then
+		if kds2>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)==0 and Duel.SelectYesNo(tp,aux.Stringid(60151906,1)) then
 			if lsc2 then
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)

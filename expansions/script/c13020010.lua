@@ -1,7 +1,7 @@
 --所谓伊人
 local cm, m, ofs = GetID()
 local yr = 13020010
-xpcall(function() dofile("expansions/script/c16670000.lua") end, function() dofile("script/c16670000.lua") end) --引用库
+Duel.LoadScript("c16670000.lua") --引用库
 function cm.initial_effect(c)
 	aux.AddCodeList(c, yr)
 	-- local e1 = xg.epp2(c, m, 1, nil, 3, QY_sp, cm.setcon2, cm.cost, cm.target, cm.operation, true) --使用库内函数进行便捷注册

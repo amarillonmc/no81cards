@@ -30,7 +30,9 @@ function c75000006.initial_effect(c)
 	c:RegisterEffect(e1)
 	--destroy
 end
-
+function c75000006.incon(e)
+	return e:GetHandler():IsLinkState()
+end
 function c75000006.matfilter(c)
 	return c:IsLinkSetCard(0x3751) and c:IsLinkAttribute(ATTRIBUTE_ALL&~ATTRIBUTE_WIND)
 end

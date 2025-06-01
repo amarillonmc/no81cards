@@ -27,6 +27,12 @@ function c75000051.initial_effect(c)
 	e2:SetOperation(c75000051.regop)
 	c:RegisterEffect(e2)
 ---
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
+	e5:SetValue(aux.ChangeBattleDamage(1,HALF_DAMAGE))
+	c:RegisterEffect(e5)
+---
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(75000051,0))
 	e4:SetCategory(CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
@@ -40,6 +46,11 @@ function c75000051.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 
+function c75000051.atkcon(e)
+	local tp=e:GetHandlerPlayer()
+	return Duel.GetAttackTarget()==nil and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
+end
+------3
 function c75000051.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	c:RegisterFlagEffect(75000051,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)

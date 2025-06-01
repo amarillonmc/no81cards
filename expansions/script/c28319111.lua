@@ -53,23 +53,20 @@ function c28319111.activate(e,tp,eg,ep,ev,re,r,rp,op)
 		{b2,aux.Stringid(28319111,1)})
 	if op==1 then
 		Duel.Recover(tp,1000,REASON_EFFECT)
-		if Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(28319111,2)) then
-			Duel.Recover(tp,1000,REASON_EFFECT)
-		end
+		if Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 then Duel.Recover(tp,1000,REASON_EFFECT) end
 	elseif op==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local sg=g:SelectSubGroup(tp,c28319111.fselect,false,1,3)
-		if Duel.SendtoGrave(sg,REASON_EFFECT)==0 then return end
-		Duel.BreakEffect()
-		Duel.Recover(tp,500,REASON_EFFECT)
-		if Duel.GetLP(tp)>=1500 then
+		if Duel.SendtoGrave(sg,REASON_EFFECT)==0 or sg:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)==0 then return end
+		if Duel.Recover(tp,500,REASON_EFFECT)~=0 then
 			local tc=sg:Filter(Card.IsType,nil,TYPE_MONSTER):GetFirst()
+			if not tc then return end
 			local te=tc.recover_effect
 			if not te then return end
 			local tg=te:GetTarget()
 			if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) and Duel.SelectYesNo(tp,aux.Stringid(28319111,3)) then
 				Duel.BreakEffect()
-				Duel.PayLPCost(tp,1500)
+				Duel.SetLP(tp,Duel.GetLP(tp)-1500)
 				local op=te:GetOperation()
 				if op then op(e,tp,eg,ep,ev,re,r,rp) end
 			end

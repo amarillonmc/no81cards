@@ -60,7 +60,7 @@ function c60150520.initial_effect(c)
 	local e14=Effect.CreateEffect(c)
 	e14:SetDescription(aux.Stringid(60150520,1))
 	e14:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
-	e14:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE)
+	e14:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE)
 	e14:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e14:SetCode(EVENT_LEAVE_FIELD)
 	e14:SetCountLimit(1,60150520)
@@ -113,21 +113,25 @@ end
 function c60150520.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_XYZ
 end
+function c60150520.tdtgf(c,e,tp)
+	return (c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()) or (c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_REMOVED))
+end
 function c60150520.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,PLAYER_ALL,LOCATION_REMOVED+LOCATION_GRAVE)
+	local sg=Duel.GetMatchingGroup(c60150520.tdtgf,tp,LOCATION_REMOVED+LOCATION_GRAVE+LOCATION_EXTRA,LOCATION_REMOVED+LOCATION_GRAVE+LOCATION_EXTRA,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,sg:GetCount(),0,0)
 	Duel.SetChainLimit(aux.FALSE)
 end
 function c60150520.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetFieldGroup(tp,LOCATION_REMOVED+LOCATION_GRAVE,LOCATION_REMOVED+LOCATION_GRAVE)
-	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
-	if c:IsFaceup() and c:IsRelateToEffect(e) then
+	local sg=Duel.GetMatchingGroup(c60150520.tdtgf,tp,LOCATION_REMOVED+LOCATION_GRAVE+LOCATION_EXTRA,LOCATION_REMOVED+LOCATION_GRAVE+LOCATION_EXTRA,nil)
+	if Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)>0 and c:IsFaceup() and c:IsRelateToEffect(e) then
+		local g0=Duel.GetOperatedGroup()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_SET_BASE_ATTACK)
-		e1:SetReset(RESET_EVENT+0x1ff0000)
-		e1:SetValue(g:GetCount()*300)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(g0:GetCount()*300)
 		c:RegisterEffect(e1)
 	end
 end

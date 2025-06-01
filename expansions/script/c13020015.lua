@@ -1,7 +1,7 @@
 --在水一方
 local cm, m, ofs = GetID()
 local yr = 13020010
-xpcall(function() dofile("expansions/script/c16670000.lua") end, function() dofile("script/c16670000.lua") end) --引用库
+Duel.LoadScript("c16670000.lua") --引用库
 function cm.initial_effect(c)
 	aux.AddCodeList(c, yr)
 	--aux.AddEquipSpellEffect(c, true, true, Card.IsFaceup, nil)
@@ -9,10 +9,11 @@ function cm.initial_effect(c)
 	local e1 = xg.epp2(c, m, 4, EVENT_EQUIP, EFFECT_FLAG_DAMAGE_STEP + EFFECT_FLAG_DELAY, QY_mx, nil, nil, cm.target,
 		cm.operation, true)
 	e1:SetCountLimit(1, m)
-	local e2 = Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_EQUIP)
-	e2:SetCode(EFFECT_CANNOT_DISABLE)
-	c:RegisterEffect(e2)
+	local e4 = Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_EQUIP)
+	e4:SetCode(EFFECT_IMMUNE_EFFECT)
+	e4:SetValue(cm.efilter1)
+	c:RegisterEffect(e4)
 	local e3 = Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_TRIGGER_O)
@@ -26,7 +27,12 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.desop)
 	c:RegisterEffect(e3)
 end
-
+function cm.efilter1(e, te)
+	local ec = e:GetHandler():GetEquipTarget()
+	local g = Duel.GetChainInfo(0, CHAININFO_TARGET_CARDS)
+	return te:GetOwnerPlayer() ~= e:GetHandlerPlayer() and (g ~= nil and g:IsContains(ec))
+	--return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
+end
 function cm.AddEquipSpellEffect(c, is_self, is_opponent, filter, eqlimit, pause, skip_target)
 	local value = (type(eqlimit) == "function") and eqlimit or 1
 	if pause == nil then pause = false end

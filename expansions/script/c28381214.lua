@@ -74,7 +74,7 @@ function c28381214.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Damage(1-tp,1000,REASON_EFFECT,true)
 		Duel.RDComplete()
 	elseif op==3 then
-		Duel.ShuffleHand(tp)
+		--Duel.ShuffleHand(tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=Duel.SelectMatchingCard(tp,c28381214.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 		if #sg>0 then Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP) end
@@ -91,5 +91,5 @@ function c28381214.confirm(tp,op)
 		g=g:Select(tp,2,2,nil)
 	end
 	Duel.ConfirmCards(1-tp,g)
-	--Duel.ShuffleHand(tp)
+	Duel.ShuffleHand(tp)
 end

@@ -12,7 +12,7 @@ function c60151421.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1,60151421)
-	e2:SetCost(c60151421.thcost)
+	--e2:SetCost(c60151421.thcost)
 	e2:SetTarget(c60151421.thtg)
 	e2:SetOperation(c60151421.thop)
 	c:RegisterEffect(e2)
@@ -30,6 +30,23 @@ function c60151421.initial_effect(c)
 	e3:SetTarget(c60151421.sptg2)
 	e3:SetOperation(c60151421.spop2)
 	c:RegisterEffect(e3)
+	
+	
+	--flag
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_CHAINING)
+	e0:SetRange(LOCATION_SZONE)
+	e0:SetOperation(c60151421.e0op)
+	c:RegisterEffect(e0)
+end
+function c60151421.e0op(e,tp,eg,ep,ev,re,r,rp)
+	if re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then
+		local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+		if g and g:IsContains(e:GetHandler()) then
+			e:GetHandler():RegisterFlagEffect(60151421,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+		end
+	end
 end
 function c60151421.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
@@ -52,9 +69,7 @@ function c60151421.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c60151421.spcon2(e,tp,eg,ep,ev,re,r,rp)
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return g and g:IsContains(e:GetHandler())
+	return e:GetHandler():GetFlagEffect(60151421)>0
 end
 function c60151421.spcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>-1

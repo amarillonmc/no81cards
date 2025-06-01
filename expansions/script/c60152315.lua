@@ -78,7 +78,6 @@ function c60152315.e2cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c60152315.e2tgfilter(c,e,tp,turn)
 	return c:IsSetCard(0xcb26) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and c:IsPreviousLocation(LOCATION_ONFIELD) and c:GetTurnID()==turn
 end
 function c60152315.e2tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local turn=Duel.GetTurnCount()
@@ -96,8 +95,7 @@ function c60152315.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local ct2=g:GetCount()
 	if ct<=0 then return end
 	if ct>ct2 then
-		Duel.RemoveOverlayCard(tp,1,1,1,ct2,REASON_EFFECT)
-		local a=Duel.GetOperatedGroup():GetCount()
+		local a=Duel.RemoveOverlayCard(tp,1,1,1,ct2,REASON_EFFECT)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g2=Duel.SelectMatchingCard(tp,c60152315.e2tgfilter,tp,LOCATION_GRAVE,0,a,a,nil,e,tp,turn)
 		if g2:GetCount()>0 then
@@ -129,8 +127,7 @@ function c60152315.e2op(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummonComplete()
 		end
 	else
-		Duel.RemoveOverlayCard(tp,1,1,1,ct,REASON_EFFECT)
-		local a=Duel.GetOperatedGroup():GetCount()
+		local a=Duel.RemoveOverlayCard(tp,1,1,1,ct,REASON_EFFECT)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g2=Duel.SelectMatchingCard(tp,c60152315.e2tgfilter,tp,LOCATION_GRAVE,0,a,a,nil,e,tp)
 		if g2:GetCount()>0 then

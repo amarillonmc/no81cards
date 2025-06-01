@@ -50,20 +50,17 @@ function c28319011.activate(e,tp,eg,ep,ev,re,r,rp,op)
 		{b2,aux.Stringid(28319011,1)})
 	if op==1 then
 		Duel.Recover(tp,1000,REASON_EFFECT)
-		if Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(28319011,2)) then
-			Duel.Recover(tp,1000,REASON_EFFECT)
-		end
+		if Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 then Duel.Recover(tp,1000,REASON_EFFECT) end
 	elseif op==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sc=Duel.SelectMatchingCard(tp,c28319011.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
-		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
-		if Duel.GetLP(tp)>=1500 then
+		if Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 then
 			local te=sc.recover_effect
 			if not te then return end
 			local tg=te:GetTarget()
-			if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) and Duel.SelectYesNo(tp,aux.Stringid(28319011,3)) then
+			if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) then
 				Duel.BreakEffect()
-				Duel.PayLPCost(tp,1500)
+				Duel.SetLP(tp,Duel.GetLP(tp)-1500)
 				local op=te:GetOperation()
 				if op then op(e,tp,eg,ep,ev,re,r,rp) end
 			end

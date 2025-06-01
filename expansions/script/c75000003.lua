@@ -32,6 +32,7 @@ function c75000003.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_LEAVE_FIELD)
 	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetCountLimit(1,75000003+EFFECT_COUNT_CODE_DUEL)
 	e3:SetTarget(c75000003.fstg)
 	e3:SetOperation(c75000003.fsop)
 	c:RegisterEffect(e3)
@@ -101,24 +102,6 @@ function c75000003.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local sc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c75000003.setfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil):GetFirst()
 	if not sc or Duel.SSet(tp,sc)==0 then return end
-	if sc:IsType(TYPE_QUICKPLAY) then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetDescription(aux.Stringid(75000003,6))
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		sc:RegisterEffect(e1)
-	end
-	if sc:IsType(TYPE_TRAP) then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetDescription(aux.Stringid(75000003,6))
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		sc:RegisterEffect(e1)
-	end
 end
 function c75000003.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()

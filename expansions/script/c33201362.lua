@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,VHisc_CNTdb.nck,2,true)
-	aux.AddContactFusionProcedure(c,Card.IsReleasable,LOCATION_MZONE,LOCATION_MZONE,Duel.Release,REASON_COST+REASON_MATERIAL)
+	aux.AddContactFusionProcedure(c,Card.IsAbleToGrave,LOCATION_MZONE,LOCATION_MZONE,Duel.SendtoGrave,REASON_COST+REASON_MATERIAL)
 	--tohand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))

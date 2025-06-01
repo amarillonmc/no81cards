@@ -30,7 +30,6 @@ function c13000748.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_LEAVE_GRAVE)
 	e2:SetRange(LOCATION_PZONE)
-	e2:SetCountLimit(1,m)
 	e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.sptg)
 	e2:SetOperation(cm.spop)
@@ -41,7 +40,6 @@ function c13000748.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e3:SetCode(EVENT_LEAVE_DECK)
 	e3:SetRange(LOCATION_PZONE)
-	e3:SetCountLimit(1,m)
 	e3:SetCondition(cm.spcon2)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.spop)
@@ -56,7 +54,7 @@ function cm.psetop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then 
 		Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end 
-	if not Duel.IsExistingMatchingCard(nil,tp,LOCATION_PZONE,0,1,e:GetHandler()) then
+	
 	 if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 	local b1=Duel.IsExistingMatchingCard(cm.psfilter,tp,LOCATION_EXTRA,0,1,nil)
 	local b2=true
@@ -67,7 +65,7 @@ function cm.psetop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
-end 
+
 if op==2 then
 local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -88,7 +86,7 @@ end
 end
 end
 function cm.stcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()~=e:GetLabel() and tp==Duel.GetTurnPlayer()
+	return Duel.GetTurnCount()~=e:GetLabel()
 end
 function cm.stop(e,tp,eg,ep,ev,re,r,rp)
 local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
@@ -111,16 +109,13 @@ function cm.filter(c,tp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local zone=1<<c:GetSequence()
-	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone) end
+	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	cm.flyznum=cm.flyznum+1
 	local c=e:GetHandler()
-	local zone=1<<c:GetSequence()
 	if c:IsRelateToEffect(e) then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP,zone)
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_CHANGE_LEVEL)

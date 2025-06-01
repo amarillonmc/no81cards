@@ -5,6 +5,7 @@ function c60151907.initial_effect(c)
 	e1:SetCategory(CATEGORY_DAMAGE+CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,60151907+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c60151907.e1con)
 	e1:SetOperation(c60151907.e1op)
 	c:RegisterEffect(e1)
@@ -15,6 +16,7 @@ end
 function c60151907.e1con(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	return Duel.GetTurnPlayer()==tp and Duel.IsExistingMatchingCard(c60151907.e1confilter,tp,LOCATION_PZONE,0,1,nil) 
+		and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
 end
 function c60151907.e1opfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xab26) and c:GetLeftScale()>0
@@ -64,14 +66,14 @@ function c60151907.e1op(e,tp,eg,ep,ev,re,r,rp)
 			end
 			local atk=g:GetFirst():GetAttack()
 			local def=g:GetFirst():GetDefense()
-			if g:GetFirst():IsAttackPos() and atk<=kds*800 then
+			if g:GetFirst():IsAttackPos() and atk<=kds*500 then
 				Duel.Hint(HINT_CARD,0,60151907)
 				Duel.SendtoGrave(g,REASON_RULE)
-				Duel.Damage(1-tp,(kds*800)-atk,REASON_EFFECT)
-			elseif g:GetFirst():IsDefensePos() and def<=kds*800 then
+				Duel.Damage(1-tp,(kds*500)-atk,REASON_EFFECT)
+			elseif g:GetFirst():IsDefensePos() and def<=kds*500 then
 				Duel.Hint(HINT_CARD,0,60151907)
 				Duel.SendtoGrave(g,REASON_RULE)
-				Duel.Damage(1-tp,(kds*800)-def,REASON_EFFECT)
+				Duel.Damage(1-tp,(kds*500)-def,REASON_EFFECT)
 			end
 		end
 	else
@@ -102,8 +104,7 @@ function c60151907.e1op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_CARD,0,60151907)
 		Duel.Damage(1-tp,kds*500,REASON_EFFECT)
 	end
-	Duel.SkipPhase(tp,PHASE_BATTLE,RESET_PHASE+PHASE_END,1,1)
-	Duel.SkipPhase(tp,PHASE_MAIN2,RESET_PHASE+PHASE_END,1)
+	Duel.SkipPhase(tp,Duel.GetCurrentPhase(),RESET_PHASE+PHASE_END,1)
 end
 function c60151907.skipcon(e)
 	return Duel.GetTurnCount()~=e:GetLabel()
