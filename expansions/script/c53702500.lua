@@ -2251,308 +2251,6 @@ function cm.Breakcount(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_SPECIAL_SUMMON) then c53799250.sp=true end
 	if not Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_ACTIVATE) then c53799250.ac=true end
 end
-function cm.DesertedHartrazLink(c,marker)
-	local e0=Effect.CreateEffect(c)
-	e0:SetDescription(1163)
-	e0:SetType(EFFECT_TYPE_FIELD)
-	e0:SetCode(EFFECT_SPSUMMON_PROC_G)
-	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e0:SetRange(LOCATION_EXTRA)
-	e0:SetCondition(cm.Hartrazlkcon)
-	e0:SetOperation(cm.Hartrazlkop(marker))
-	e0:SetValue(SUMMON_TYPE_LINK)
-	c:RegisterEffect(e0)
-end
-function cm.Hartrazlkfilter(c,lc,tp)
-	return c:IsFaceup() and c:IsLinkRace(RACE_PYRO) and c:IsCanBeLinkMaterial(lc)
-end
-function cm.Hartrazlvfilter(c)
-	if c:IsType(TYPE_LINK) and c:GetLink()>1 then return 1+0x10000*c:GetLink() else return 1 end
-end
-function cm.Hartrazlcheck(tp,sg,lc,minc,ct)
-	return ct>=minc and sg:CheckWithSumEqual(cm.Hartrazlvfilter,lc:GetLink(),ct,ct)
-end
-function cm.Hartrazlkcheck(c,tp,sg,mg,lc,ct,minc,maxc)
-	sg:AddCard(c)
-	ct=ct+1
-	local res=cm.Hartrazlcheck(tp,sg,lc,minc,ct) or (ct<maxc and mg:IsExists(cm.Hartrazlkcheck,1,sg,tp,sg,mg,lc,ct,minc,maxc))
-	sg:RemoveCard(c)
-	ct=ct-1
-	return res
-end
-function cm.Hartrazlkcon(e,c,og)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	local mg=Duel.GetMatchingGroup(cm.Hartrazlkfilter,tp,LOCATION_MZONE,0,nil,c,tp)
-	local sg=Group.CreateGroup()
-	for i,pe in ipairs({Duel.IsPlayerAffectedByEffect(tp,EFFECT_MUST_BE_LMATERIAL)}) do
-		local pc=pe:GetHandler()
-		if not mg:IsContains(pc) then return false end
-		sg:AddCard(pc)
-	end
-	local ct=sg:GetCount()
-	local minc=1
-	local maxc=1
-	if ct>maxc then return false end
-	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and cm.Hartrazlcheck(tp,sg,c,minc,ct) or mg:IsExists(cm.Hartrazlkcheck,1,nil,tp,sg,mg,c,ct,minc,maxc)
-end
-function cm.Hartrazlkop(marker)
-	return
-	function(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
-		local mg=Duel.GetMatchingGroup(cm.Hartrazlkfilter,tp,LOCATION_MZONE,0,nil,c,tp)
-		local sg2=Group.CreateGroup()
-		for i,pe in ipairs({Duel.IsPlayerAffectedByEffect(tp,EFFECT_MUST_BE_LMATERIAL)}) do sg2:AddCard(pe:GetHandler()) end
-		local ct=sg2:GetCount()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
-		sg2:Select(tp,ct,ct,nil)
-		local minc=1
-		local maxc=1
-		for i=ct,maxc-1 do
-			local cg=mg:Filter(cm.Hartrazlkcheck,sg2,tp,sg2,mg,c,i,minc,maxc)
-			if cg:GetCount()==0 then break end
-			local minct=1
-			if cm.Hartrazlcheck(tp,sg2,c,minc,i) then
-				if not Duel.SelectYesNo(tp,aux.Stringid(m,0)) then break end
-				minct=0
-			end
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
-			local g=cg:Select(tp,minct,1,nil)
-			if g:GetCount()==0 then break end
-			sg2:Merge(g)
-		end
-		Duel.SendtoGrave(sg2,REASON_MATERIAL+REASON_LINK)
-		sg2:KeepAlive()
-		local self=Group.FromCards(c)
-		self:KeepAlive()
-		cm[100]=sg2
-		cm[101]=e
-		cm[102]=self
-		local e3=Effect.CreateEffect(e:GetHandler())
-		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e3:SetCode(EVENT_MOVE)
-		e3:SetProperty(EFFECT_FLAG_DELAY)
-		e3:SetCondition(cm.adjustcon2)
-		e3:SetOperation(cm.adjustop2)
-		Duel.RegisterEffect(e3,tp)
-		c:SetMaterial(sg2)
-		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		e1:SetValue(TYPE_SPELL)
-		c:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetRange(LOCATION_SZONE)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e2:SetCode(EFFECT_LINK_SPELL_KOISHI)
-		e2:SetValue(marker)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
-		c:RegisterEffect(e2)
-		c:CompleteProcedure()
-		c:RegisterFlagEffect(53729000,0,0,0)
-		Duel.RaiseEvent(e:GetHandler(),EVENT_ADJUST,nil,0,PLAYER_NONE,PLAYER_NONE,0)
-	end
-end
-function cm.adjustcon2(e,tp,eg,ep,ev,re,r,rp)
-	return cm[102]:GetFirst():GetFlagEffect(53729000)>0
-end
-function cm.adjustop2(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message(#cm[100])
-	local sc=cm[102]:GetFirst()
-	Debug.Message(sc:GetCode())
-	if sc:IsCanBeSpecialSummoned(e,0,tp,false,false) then return end
-	Duel.RaiseEvent(cm[100],EVENT_BE_MATERIAL,cm[101],REASON_SYNCHRO,tp,tp,0)
-	for tc in aux.Next(cm[100]) do
-		Duel.RaiseSingleEvent(tc,EVENT_BE_MATERIAL,cm[101],REASON_SYNCHRO,tp,tp,0)
-	end
-end
-function cm.ORsideLink(c,f,min,max,gf,code)
-	c:EnableReviveLimit()
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(1166)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetRange(LOCATION_EXTRA)
-	if max==nil then max=c:GetLink() end
-	e1:SetCondition(cm.LinkCondition(f,min,max,gf,code))
-	e1:SetTarget(cm.LinkTarget(f,min,max,gf))
-	e1:SetOperation(cm.LinkOperation(f,min,max,gf))
-	e1:SetValue(SUMMON_TYPE_LINK)
-	c:RegisterEffect(e1)
-end
-function cm.LConditionFilter(c,f,lc,e)
-	return (c:IsFaceup() or not c:IsOnField() or e:IsHasProperty(EFFECT_FLAG_SET_AVAILABLE))
-		and c:IsCanBeLinkMaterial(lc) and (not f or f(c))
-end
-function cm.LExtraFilter(c,f,lc,tp)
-	if c:IsLocation(LOCATION_ONFIELD) and not c:IsFaceup() then return false end
-	if not c:IsCanBeLinkMaterial(lc) or f and not f(c) then return false end
-	local le={c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
-	for _,te in pairs(le) do
-		local tf=te:GetValue()
-		local related,valid=tf(te,lc,nil,c,tp)
-		if related then return true end
-	end
-	return false
-end
-function cm.GetLinkCount(c)
-	if c:IsType(TYPE_LINK) and c:GetLink()>1 then
-		return 1+0x10000*c:GetLink()
-	else return 1 end
-end
-function cm.GetLinkMaterials(tp,f,lc,e)
-	local mg=Duel.GetMatchingGroup(cm.LConditionFilter,tp,LOCATION_MZONE,0,nil,f,lc,e)
-	local mg2=Duel.GetMatchingGroup(cm.LExtraFilter,tp,LOCATION_HAND+LOCATION_SZONE,LOCATION_ONFIELD,nil,f,lc,tp)
-	if mg2:GetCount()>0 then mg:Merge(mg2) end
-	return mg
-end
-function cm.LCheckOtherMaterial(c,mg,lc,tp)
-	local le={c:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
-	local res1=false
-	local res2=true
-	for _,te in pairs(le) do
-		local f=te:GetValue()
-		local related,valid=f(te,lc,mg,c,tp)
-		if related then res2=false end
-		if related and valid then res1=true end
-	end
-	return res1 or res2
-end
-function cm.LUncompatibilityFilter(c,sg,lc,tp)
-	local mg=sg:Filter(aux.TRUE,c)
-	return not cm.LCheckOtherMaterial(c,mg,lc,tp)
-end
-function cm.LCheckGoal(sg,tp,lc,gf,lmat)
-	return sg:CheckWithSumEqual(cm.GetLinkCount,lc:GetLink(),#sg,#sg)
-		and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg))
-		and not sg:IsExists(cm.LUncompatibilityFilter,1,nil,sg,lc,tp)
-		and (not lmat or sg:IsContains(lmat))
-end
-function cm.LExtraMaterialCount(mg,lc,tp)
-	for tc in aux.Next(mg) do
-		local le={tc:IsHasEffect(EFFECT_EXTRA_LINK_MATERIAL,tp)}
-		for _,te in pairs(le) do
-			local sg=mg:Filter(aux.TRUE,tc)
-			local f=te:GetValue()
-			local related,valid=f(te,lc,sg,tc,tp)
-			if related and valid then
-				te:UseCountLimit(tp)
-			end
-		end
-	end
-end
-function cm.LinkCondition(f,minc,maxc,gf,code)
-	return  function(e,c,og,lmat,min,max)
-				if c==nil then return true end
-				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
-				if c:GetOriginalCode()~=code then return false end
-				local minc=minc
-				local maxc=maxc
-				if min then
-					if min>minc then minc=min end
-					if max<maxc then maxc=max end
-					if minc>maxc then return false end
-				end
-				local tp=c:GetControler()
-				local mg=nil
-				if og then
-					mg=og:Filter(aux.LConditionFilter,nil,f,c,e)
-				else
-					mg=aux.GetLinkMaterials(tp,f,c,e)
-				end
-				if lmat~=nil then
-					if not aux.LConditionFilter(lmat,f,c,e) then return false end
-					mg:AddCard(lmat)
-				end
-				local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
-				if fg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
-				Duel.SetSelectedCard(fg)
-				return mg:CheckSubGroup(aux.LCheckGoal,minc,maxc,tp,c,gf,lmat)
-			end
-end
-function cm.LinkTarget(f,minc,maxc,gf)
-	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,lmat,min,max)
-				local minc=minc
-				local maxc=maxc
-				if min then
-					if min>minc then minc=min end
-					if max<maxc then maxc=max end
-					if minc>maxc then return false end
-				end
-				local mg=nil
-				if og then
-					mg=og:Filter(cm.LConditionFilter,nil,f,c,e)
-				else
-					mg=cm.GetLinkMaterials(tp,f,c,e)
-				end
-				if lmat~=nil then
-					if not cm.LConditionFilter(lmat,f,c,e) then return false end
-					mg:AddCard(lmat)
-				end
-				local fg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_LMATERIAL)
-				Duel.SetSelectedCard(fg)
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
-				local cancel=Duel.IsSummonCancelable()
-				local sg=mg:SelectSubGroup(tp,cm.LCheckGoal,cancel,minc,maxc,tp,c,gf,lmat)
-				if sg then
-					sg:KeepAlive()
-					e:SetLabelObject(sg)
-					return true
-				else return false end
-			end
-end
-function cm.LinkOperation(f,minc,maxc,gf)
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,lmat,min,max)
-				local g=e:GetLabelObject()
-				c:SetMaterial(g)
-				cm.LExtraMaterialCount(g,c,tp)
-				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_LINK)
-				g:DeleteGroup()
-			end
-end
-function cm.EnableExtraDeckSummonCountLimit()
-	if cm.ExtraDeckSummonCountLimit~=nil then return end
-	cm.ExtraDeckSummonCountLimit={}
-	cm.ExtraDeckSummonCountLimit[0]=1
-	cm.ExtraDeckSummonCountLimit[1]=1
-	local ge1=Effect.GlobalEffect()
-	ge1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	ge1:SetCode(EVENT_PHASE_START+PHASE_DRAW)
-	ge1:SetOperation(cm.ExtraDeckSummonCountLimitReset)
-	Duel.RegisterEffect(ge1,0)
-end
-function cm.ExtraDeckSummonCountLimitReset()
-	cm.ExtraDeckSummonCountLimit[0]=1
-	cm.ExtraDeckSummonCountLimit[1]=1
-end
-function cm.HartrazCheck(c)
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_SPSUMMON_COST)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SINGLE_RANGE)
-	e0:SetRange(0xff)
-	e0:SetCost(cm.Hztfcost)
-	e0:SetOperation(cm.Hztfop)
-	--c:RegisterEffect(e0)
-end
-function cm.Hztfcost(e,c,tp,st)
-	if bit.band(st,SUMMON_TYPE_LINK)==SUMMON_TYPE_LINK then
-		e:SetLabel(1)
-		local cg=Duel.GetMatchingGroup(cm.ALCTFFilter,tp,LOCATION_MZONE,0,nil)
-		return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-	else
-		e:SetLabel(0)
-		return true
-	end
-end
-function cm.Hztfop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetLabel()==0 then return true end
-	e:SetLabel(0)
-end
 function cm.LinkMonstertoSpell(c,marker)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -2825,7 +2523,10 @@ function cm.ReplaceEffect(c,...)
 		if proeffects[ce] then proeffects[cle]=proeffects[ce] end
 		return cle
 	end
-	local rid=0
+	local temsta=Card.IsStatus
+	Card.IsStatus=function(sc,status)
+		if status==STATUS_COPYING_EFFECT then return false else return temsta(sc,status) end
+	end
 	if c:GetOriginalType()&0x1~=0 and c:GetOriginalType()&0x20==0 then
 		local le1={c:IsHasEffect(EFFECT_ADD_TYPE)}
 		rid=c:ReplaceEffect(...)
@@ -2836,6 +2537,7 @@ function cm.ReplaceEffect(c,...)
 	c:SetStatus(STATUS_EFFECT_REPLACED,false)
 	Effect.SetProperty=tempro
 	Effect.Clone=temclo
+	Card.IsStatus=temsta
 	for ke,vp in pairs(proeffects) do
 		local prop1,prop2=table.unpack(vp)
 		ke:SetProperty(prop1|EFFECT_FLAG_UNCOPYABLE,prop2)
@@ -3183,6 +2885,30 @@ function cm.RemoveElements(table1, table2)
 			end
 		end
 	end
+end
+function cm.areTablesSame(t1, t2)
+	if #t1 ~= #t2 then
+		return false -- 子表数量不同，主表肯定不同
+	end
+	for i = 1, #t1 do
+		local sub1 = t1[i]
+		local sub2 = t2[i]
+		if type(sub1) ~= 'table' or type(sub2) ~= 'table' then
+			return false -- 结构不匹配
+		end
+		if #sub1 ~= #sub2 then
+			return false -- 子表包含的值数量不同
+		end
+		if sub1[1] ~= sub2[1] then
+			return false -- 第一个值不同
+		end
+		if #sub1 == 2 then
+			if sub1[2] ~= sub2[2] then
+				return false -- 第二个值不同
+			end
+		end
+	end
+	return true
 end
 EFFECT_MULTI_SUMMONABLE=53753099
 function cm.MultiDual(c)
