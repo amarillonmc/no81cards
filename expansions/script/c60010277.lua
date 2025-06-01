@@ -6,7 +6,7 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCost(cm.cost)
+	--e1:SetCost(cm.cost)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
@@ -15,6 +15,7 @@ function cm.initial_effect(c)
 	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
+	e2:SetCost(cm.cost)
 	e2:SetCondition(cm.handcon)
 	c:RegisterEffect(e2)
 end
@@ -45,9 +46,10 @@ function cm.handcon(e)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetTurnPlayer()==tp or Duel.IsExistingMatchingCard(cm.hcfil,tp,LOCATION_HAND,0,1,nil) end
-	if Duel.GetTurnPlayer()==tp then
-		e:SetLabel(1)
-	else
+	e:SetLabel(1)
+	if Duel.GetTurnPlayer()~=tp then
+		--e:SetLabel(1)
+	--else
 		e:SetLabel(2)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 		local g=Duel.GetMatchingGroup(cm.hcfil,tp,LOCATION_HAND,0,nil):Select(tp,1,1,nil)
