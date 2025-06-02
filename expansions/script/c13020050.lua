@@ -1,6 +1,7 @@
 --白露未晞
 local s,id,o=GetID()
 function s.initial_effect(c)
+    c:SetSPSummonOnce(id)
     --spsummon condition
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
