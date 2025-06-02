@@ -89,6 +89,7 @@ function s.coinrop(e,tp,eg,ep,ev,re,r,rp)
 	for i=1,ct do
 		res[i]=1
 	end
+	Duel.TossCoin(tp,1)
 	Duel.SetCoinResult(table.unpack(res))
 end
 function s.cfilter(c)

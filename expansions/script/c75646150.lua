@@ -108,7 +108,6 @@ function s.adop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 		Duel.ChainAttack()
 	end
-	Debug.Message(Duel.GetCoinResult())
 end
 function s.cfilter(c)
 	return aux.IsCodeListed(c,75646000) and c:IsAbleToRemoveAsCost()
