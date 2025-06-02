@@ -104,6 +104,7 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
@@ -137,6 +138,7 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) or e:GetHandler():GetFlagEffect(40020183)==0 then return false end
 	return Duel.IsChainNegatable(ev) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 		and re:GetHandler()~=c and re:IsActiveType(TYPE_MONSTER)

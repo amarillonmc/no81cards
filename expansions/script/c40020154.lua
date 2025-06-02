@@ -59,16 +59,15 @@ function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
+	if tc:IsFaceup() and tc:IsRelateToEffect(e) and c:IsRelateToEffect(e) and c:IsLocation(LOCATION_HAND)  then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(1400)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
-	end
-	if c:IsRelateToEffect(e) and c:IsLocation(LOCATION_HAND) then
 		Duel.BreakEffect()
 		local op=0
 		if (ft>0 or c:GetSequence()<5) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_MZONE,0,1,nil,e,tp,c) then
@@ -86,7 +85,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return (c==Duel.GetAttacker() or c==Duel.GetAttackTarget())
 end
-function cm.thfilter(c)
+function cm.thfilter1(c)
 	return aux.IsCodeListed(c,40020183) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -98,9 +97,9 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetDecktopGroup(tp,5)
 		if g:GetCount()>0 then
 			Duel.DisableShuffleCheck()
-			if g:IsExists(cm.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
+			if g:IsExists(cm.thfilter1,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-				local sg=g:FilterSelect(tp,cm.thfilter,1,1,nil)
+				local sg=g:FilterSelect(tp,cm.thfilter1,1,1,nil)
 				Duel.SendtoHand(sg,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,sg)
 				Duel.ShuffleHand(tp)

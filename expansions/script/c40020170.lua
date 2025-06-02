@@ -80,6 +80,7 @@ function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	Duel.NegateSummon(eg)
 	Duel.Destroy(eg,REASON_EFFECT)
 	if  c:IsRelateToEffect(e) and c:IsLocation(LOCATION_HAND) then
@@ -111,7 +112,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		Duel.HintSelection(g)
 		Duel.Destroy(g,REASON_EFFECT)
-		if e:GetHandler():GetFlagEffect(40020183)==0 then 
+		if e:GetHandler():GetFlagEffect(40020183)>0 then 
 			Duel.BreakEffect()
 			Duel.SetLP(1-tp,math.ceil(Duel.GetLP(1-tp)/2))
 		end

@@ -31,6 +31,45 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.spop)
 	c:RegisterEffect(e3)
+
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_SINGLE)
+	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e4:SetCode(EFFECT_UPDATE_LEVEL)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetValue(cm.val)
+	c:RegisterEffect(e4)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
+		ge1:SetCondition(cm.checkcon)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function cm.checkfilter(c)
+	return aux.IsCodeListed(c,40020183) and c:IsType(TYPE_MONSTER) and not c:IsOriginalCodeRule(40020150)
+end
+function cm.checkcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.checkfilter,1,nil)
+end
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(cm.checkfilter,nil)
+	local tc=g:GetFirst()
+	while tc do
+		Duel.RegisterFlagEffect(tc:GetControler(),m,0,0,0) 
+		tc=g:GetNext()
+	end
+end
+function cm.val(e,c)
+	local tp=c:GetControler()
+	local ct=Duel.GetFlagEffect(tp,m)
+	if ct>4 then
+		ct=4
+	end
+	return ct
 end
 function cm.thfilter(c)
 	return aux.IsCodeListed(c,40020183) and c:IsType(TYPE_MONSTER) and not c:IsCode(m) and c:IsAbleToHand()
@@ -57,7 +96,8 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and re:IsActiveType(TYPE_MONSTER) and not e:GetHandler():IsPublic()
+	return e:GetHandler():IsReason(REASON_EFFECT) and re:IsActiveType(TYPE_MONSTER) and not e:GetHandler():IsPublic() and e:GetHandler():IsPreviousPosition(POS_FACEUP)
+		and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

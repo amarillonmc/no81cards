@@ -65,17 +65,16 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil)
 	if g:GetCount()>0 then
 		local tg=g:GetMinGroup(Card.GetAttack)
-		if tg:GetCount()>1 then
+		if tg:GetCount()>1 and c:IsRelateToEffect(e) and c:IsLocation(LOCATION_HAND)  then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local sg=tg:Select(tp,1,1,nil)
 			Duel.HintSelection(sg)
 			Duel.Destroy(sg,REASON_EFFECT)
 		else Duel.Destroy(tg,REASON_EFFECT) end
-	end
-	if c:IsRelateToEffect(e) and c:IsLocation(LOCATION_HAND) then
 		Duel.BreakEffect()
 		local op=0
 		if (ft>0 or c:GetSequence()<5) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_MZONE,0,1,nil,e,tp,c) then

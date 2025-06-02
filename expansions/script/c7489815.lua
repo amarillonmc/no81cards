@@ -140,8 +140,8 @@ function s.geop(e,tp,eg,ep,ev,re,r,rp)
 	s[0]=Duel.CreateToken(0,id)
 	s[1]=Duel.CreateToken(1,id)
 	if KOISHI_CHECK then
-		s[0]:SetCardData(CARDDATA_TYPE,TYPE_QUICKPLAY+TYPE_SPELL)
-		s[1]:SetCardData(CARDDATA_TYPE,TYPE_QUICKPLAY+TYPE_SPELL)
+		s[0]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
+		s[1]:SetCardData(CARDDATA_TYPE,TYPE_TRAP)
 	end
 	e:Reset()
 end
@@ -222,7 +222,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.GetTurnPlayer()==tp then
 		if chk==0 then return 
 		--Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil) and 
-		Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+		Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
 		e:SetCategory(CATEGORY_SEARCH+CATEGORY_TOGRAVE)
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)

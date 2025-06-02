@@ -69,6 +69,7 @@ end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)>0 and c:IsRelateToEffect(e) and c:IsLocation(LOCATION_HAND) then
 		Duel.BreakEffect()
 
