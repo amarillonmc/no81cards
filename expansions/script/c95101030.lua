@@ -42,7 +42,7 @@ end
 function c95101030.spop(e,tp,eg,ep,ev,re,r,rp)
 	local check=Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_PZONE,0,1,nil,95101031)
 	if check then
-		if not Duel.GetMZoneCount(tp)<=0 then return end
+		if Duel.GetMZoneCount(tp)<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sc=Duel.SelectMatchingCard(tp,c95101030.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
 		if sc and Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 then

@@ -1,6 +1,6 @@
 --受诅的罪人 韩赛尔
 function c95101031.initial_effect(c)
-	aux.AddCodeList(c,95101001)
+	--aux.AddCodeList(c,95101001)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,false)
 	--Activate
