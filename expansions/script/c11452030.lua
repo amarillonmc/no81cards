@@ -115,7 +115,7 @@ function cm.adcon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter,1,nil,tp)
 end
 function cm.sfilter(c)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsLevel(1)
+	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsLevel(1) --and c:IsType(TYPE_TUNER)
 end
 function cm.cfilter(c,syn,tp)
 	local g=aux.GetSynMaterials(tp,syn)
@@ -142,22 +142,26 @@ function cm.adop2(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 			tc=g:Select(tp,1,1,nil):GetFirst()
 		end
+		Duel.HintSelection(Group.FromCards(tc))
 		--destroy
 		local e5=Effect.CreateEffect(e:GetHandler())
 		e5:SetDescription(aux.Stringid(m,4))
 		e5:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
 		e5:SetCode(EVENT_LEAVE_FIELD)
+		e5:SetOwnerPlayer(tp)
 		e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
 		e5:SetOperation(cm.desop)
 		tc:RegisterEffect(e5,true)
 	end
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetOwnerPlayer()
 	local mg=Duel.GetMatchingGroup(cm.sfilter,tp,LOCATION_DECK,0,nil)
 	if #mg>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tg=mg:Select(tp,1,1,nil)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 	end
 	e:Reset()
 end
