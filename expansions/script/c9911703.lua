@@ -72,7 +72,7 @@ end
 function c9911703.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and tc and tc:IsRelateToEffect(e) then
 		local g=Group.FromCards(c,tc)
 		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
