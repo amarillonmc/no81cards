@@ -59,7 +59,7 @@ function cm.tgfilter2(c)
 	return c:IsAbleToGrave() and c:IsRace(RACE_DIVINE) and c:IsReleasable()
 end
 function cm.srfilter(c)
-	return (aux.IsCodeListed(c,10000000) or aux.IsCodeListed(c,10000010) or aux.IsCodeListed(c,10000020) or c:IsCode(98500301,5253985,7373632,32247099,79387392,269012,39913299,10000020,10000000,10000010)) and c:IsAbleToHand()
+	return (aux.IsCodeListed(c,10000000) or aux.IsCodeListed(c,10000010) or aux.IsCodeListed(c,10000020) or c:IsCode(5253985,7373632,59094601,39913299,79339613,42469671,85758066,85182315,79868386,32247099,269012,10000000,10000010,10000020)) and c:IsAbleToHand()
 	
 end
 function cm.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
