@@ -112,11 +112,11 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		sg2=sg:Select(tp,1,1,nil)
 	end
-	Duel.ConfirmCards(tp,sg2)
-	Duel.ConfirmCards(1-tp,sg2)
+	Duel.SetTargetCard(sg2)
+	Duel.ConfirmCards(tp,sg2:GetFirst())
+	Duel.ConfirmCards(1-tp,sg2:GetFirst())
 	sg2:GetFirst():RegisterFlagEffect(m+1,RESET_CHAIN,0,1)
 	if sg2:GetFirst():IsLocation(LOCATION_DECK) then Duel.ShuffleDeck(tp) end
-	Duel.SetTargetCard(sg2)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,sg2,1,tp,sg2:GetFirst():GetLocation())
 end
