@@ -40,8 +40,9 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	local code=e:GetLabel()
-	local name=e:GetLabelObject():GetOriginalCodeRule()
+	if not c:IsRelateToEffect(e) or not tc:IsRelateToEffect(e) then return end
+	local code=e:GetLabelObject():GetOriginalCodeRule()
+	if not getmetatable(tc) then code=80316585 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g1=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_DECK,0,1,1,nil,tp,c,tc)
 	if g1:GetCount()==0 then return end
@@ -51,19 +52,63 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_CHANGE_CODE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetValue(name)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(code)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
-		c:ReplaceEffect(code,RESET_EVENT+RESETS_STANDARD)
+		c:ReplaceEffect(code,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 	end
 	if tc:IsRelateToEffect(e) and tc:IsPublic() then
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_CHANGE_CODE)
 		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e2:SetValue(g1:GetFirst():GetOriginalCode())
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e2:SetValue(g1:GetFirst():GetOriginalCodeRule())
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e2)
-		tc:ReplaceEffect(g1:GetFirst():GetOriginalCode(),RESET_EVENT+RESETS_STANDARD)
+		local code2=g1:GetFirst():GetOriginalCode()
+		if not getmetatable(g1:GetFirst()) then code2=80316585 end
+		tc:ReplaceEffect(code2,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		if getmetatable(tc) then
+			s.proeffects=s.proeffects or {}
+			local _SetProperty=Effect.SetProperty
+			local _CRegisterEffect=Card.RegisterEffect
+			local _DRegisterEffect=Duel.RegisterEffect
+			local _Clone=Effect.Clone
+			Effect.SetProperty=function(pe,prop1,prop2)
+				if not prop2 then prop2=0 end
+				if prop1&EFFECT_FLAG_UNCOPYABLE~=0 then
+					s.proeffects[pe]={prop1,prop2}
+					prop1=prop1&(~EFFECT_FLAG_UNCOPYABLE)
+				else
+					s.proeffects[pe]=nil
+					prop1=prop1&(EFFECT_FLAG_UNCOPYABLE)
+				end
+				return _SetProperty(pe,prop1,prop2)
+			end
+			Card.RegisterEffect=function(c,pe,...)
+				if not pe:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and not s.proeffects[pe] and not pe:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
+				return _CRegisterEffect(c,pe,...)
+			end
+			Duel.RegisterEffect=function(pe,p,...)
+				if not pe:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and not s.proeffects[pe] then return end
+				return _DRegisterEffect(pe,p,...)
+			end
+			Effect.Clone=function(pe)
+				local ce=_Clone(pe)
+				if s.proeffects[pe] then
+					s.proeffects[ce]=s.proeffects[pe]
+				end
+				return ce
+			end
+			tc:CopyEffect(code,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			Effect.SetProperty=_SetProperty
+			Card.RegisterEffect=_CRegisterEffect
+			Duel.RegisterEffect=_DRegisterEffect
+			Effect.Clone=_Clone
+			for ke,vp in pairs(s.proeffects) do
+				local prop1,prop2=table.unpack(vp)
+				ke:SetProperty(prop1|EFFECT_FLAG_UNCOPYABLE,prop2)
+			end
+		end
 	end
 end

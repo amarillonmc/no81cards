@@ -154,8 +154,9 @@ function cm.reg2(c, ie, ob)
     local b = ob or false
     local p = ie:GetCode()
     local id, ida = ie:GetCountLimit()
-    if not aux.IsCodeListed(c, yr) and (not ie:IsActivated() or not id or not ida) or
-        bit.band(ie:GetProperty(), EFFECT_FLAG_CARD_TARGET) == 0 then
+
+    if not aux.IsCodeListed(c, yr) or not ie:IsActivated() or (not id and not ida and
+            bit.band(ie:GetProperty(), EFFECT_FLAG_CARD_TARGET) == 0) then
         return cm.reg(c, ie, b)
     end
     -- Debug.Message(id, ida)
