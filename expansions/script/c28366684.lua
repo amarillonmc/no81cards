@@ -139,8 +139,8 @@ function c28366684.slop(e,tp,eg,ep,ev,re,r,rp)
 	local b2=Duel.IsExistingMatchingCard(c28366684.alfilter,tp,LOCATION_DECK,0,1,nil)
 	if b1 or b2 then
 		local op=aux.SelectFromOptions(tp,
-			{b1,aux.Stringid(28366684,0)},
-			{b2,aux.Stringid(28366684,1)})
+			{b1,aux.Stringid(28366684,2)},
+			{b2,aux.Stringid(28366684,3)})
 		if op==1 then
 			local lp=Duel.GetLP(tp)
 			Duel.SetLP(tp,lp-1000)
