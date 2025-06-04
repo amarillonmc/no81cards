@@ -77,7 +77,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,ft+1,ft)
+		local sg=g:SelectSubGroup(tp,s.gselect,false,1,ft+1,ft)
 		if sg:GetCount()>0 and Duel.SSet(tp,sg)==#sg then
 			c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
 			for tc in aux.Next(sg) do
