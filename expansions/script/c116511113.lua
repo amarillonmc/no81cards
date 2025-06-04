@@ -1,22 +1,46 @@
 function c116511113.initial_effect(c)
 	c:SetSPSummonOnce(116511113)
 	c:EnableReviveLimit()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_BECOME_TARGET)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetCondition(c116511113.xyzcon1)
-	e1:SetOperation(c116511113.xyzop1)
-	c:RegisterEffect(e1)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_BE_BATTLE_TARGET)
-	e2:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e2:SetRange(LOCATION_EXTRA)
-	e2:SetCondition(c116511113.xyzcon2)
-	e2:SetOperation(c116511113.xyzop2)
-	c:RegisterEffect(e2)
+	--special summon rule
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e6:SetCode(EVENT_CHAINING)
+	e6:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e6:SetRange(LOCATION_EXTRA)
+	e6:SetCondition(c116511113.chcon)
+	e6:SetOperation(c116511113.chop)
+	c:RegisterEffect(e6)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e7:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e7:SetRange(LOCATION_EXTRA)
+	e7:SetCode(EVENT_BE_BATTLE_TARGET)
+	e7:SetCondition(c116511113.atcon)
+	e7:SetOperation(c116511113.atop)
+	c:RegisterEffect(e7)
+	local e8=Effect.CreateEffect(c)
+	e8:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e8:SetType(EFFECT_TYPE_FIELD)
+	e8:SetCode(EFFECT_SPSUMMON_PROC)
+	e8:SetRange(LOCATION_EXTRA)
+	e8:SetCondition(c116511113.xyzcon)
+	e8:SetOperation(c116511113.xyzop)
+	e8:SetValue(SUMMON_TYPE_XYZ)
+	c:RegisterEffect(e8)
+	--spsummon condition
+	local e9=Effect.CreateEffect(c)
+	e9:SetType(EFFECT_TYPE_SINGLE)
+	e9:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e9:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e9:SetValue(c116511113.splimit)
+	c:RegisterEffect(e9)
+	--act limit
+	local e10=Effect.CreateEffect(c)
+	e10:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e10:SetCode(EVENT_SPSUMMON)
+	e10:SetOperation(c116511113.limop)
+	c:RegisterEffect(e10)
+	--【ここまでX召喚ルール】
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -66,65 +90,130 @@ function c116511113.initial_effect(c)
 	e7:SetTarget(c116511113.sumlimit)
 	c:RegisterEffect(e7)
 end
-function c116511113.mfilter1(c,tp,xyzc)
-	return c116511113.mfilter3(c,xyzc) and c:IsFaceup() and c:IsControler(tp) and c:IsOnField() and c:IsSetCard(0x108a) and c:IsType(TYPE_MONSTER) and not c:IsType(TYPE_XYZ) and Duel.GetLocationCountFromEx(tp,tp,c,xyzc)>0
+--【召喚ルール】
+function c116511113.cfilter(c,xyzc,tp)
+	return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsSetCard(0x108a) and not c:IsType(TYPE_XYZ)
+		and c:IsCanBeXyzMaterial(xyzc) and c:IsFaceup()
 end
-function c116511113.mfilter3(c,xyzc)
-	return c:IsCanBeXyzMaterial(xyzc)
-end
-function c116511113.xyzcon1(e,tp,eg,ep,ev,re,r,rp)
+function c116511113.chcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return eg:IsExists(c116511113.mfilter1,1,nil,tp,c) and not eg:IsExists(aux.NOT(c116511113.mfilter3),1,nil,c) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.IsChainDisablable(ev)
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	return g and g:IsExists(c116511113.cfilter,1,nil,c,tp) and Duel.IsChainNegatable(ev) and re:GetHandler():IsRelateToEffect(re)
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
 end
-function c116511113.xyzop1(e,tp,eg,ep,ev,re,r,rp)
+function c116511113.xyzfilter(c,e,tp,xyzc)
+	return not c:IsType(TYPE_TOKEN) and (c:IsCanBeXyzMaterial(xyzc) or not c:IsType(TYPE_MONSTER))
+end
+function c116511113.xyzfilter2(c,e,tp)
+	return not c:IsType(TYPE_TOKEN)
+end
+function c116511113.chop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetFlagEffect(tp,116511113)==0 and Duel.SelectYesNo(tp,aux.Stringid(116511113,3)) then
-		Duel.RegisterFlagEffect(tp,116511113,RESET_CHAIN,0,1)
-		local mg=Group.CreateGroup()
-		local rc=re:GetHandler()
-		if rc:IsDisabled() then return end
-		Duel.NegateEffect(ev)
-		mg:Merge(eg)
-		if not rc:IsType(TYPE_TOKEN) then mg:AddCard(rc) end
-		local sg=Group.CreateGroup()
-		for tc in aux.Next(mg) do
-			tc:CancelToGrave()
-			sg:Merge(tc:GetOverlayGroup())
+	local rc=re:GetHandler()
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(c116511113.xyzfilter,nil,e,tp,c)
+	local g2=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(c116511113.xyzfilter2,nil,e,tp)
+	if Duel.GetFlagEffect(tp,116511113)==0 and g:GetCount()>0 and g:GetCount()==g2:GetCount() and rc:IsRelateToEffect(re)
+		and Duel.IsChainNegatable(ev) and Duel.GetLocationCountFromEx(tp,tp,g,c)>0 and Duel.SelectYesNo(tp,aux.Stringid(116511113,3)) then
+		Duel.ConfirmCards(1-tp,c)
+		Duel.RegisterFlagEffect(tp,116511113,RESET_PHASE+PHASE_END,0,1)
+		if Duel.NegateEffect(ev) then
+			rc:CancelToGrave()
+			g:AddCard(rc)
+			local tc=g:GetFirst()
+			while tc do
+				local og=tc:GetOverlayGroup()
+				if og:GetCount()>0 then
+					Duel.SendtoGrave(og,REASON_RULE)
+				end
+				tc:RegisterFlagEffect(116511113,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1)
+				tc=g:GetNext()
+			end
+			Duel.XyzSummon(tp,c,nil)
 		end
-		Duel.SendtoGrave(sg,REASON_RULE)
-		c:SetMaterial(mg)
-		Duel.Overlay(c,mg)
-		Duel.SpecialSummon(c,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
-		c:CompleteProcedure()
 	end
 end
-function c116511113.xyzcon2(e,tp,eg,ep,ev,re,r,rp)
+
+function c116511113.atcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tp=e:GetHandlerPlayer()
-	return eg:IsExists(c116511113.mfilter1,1,nil,tp,c) and not eg:IsExists(aux.NOT(c116511113.mfilter3),1,nil,c) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,true,false)
+	local tc=eg:GetFirst()
+	return tc:IsControler(tp) and tc:IsFaceup() and tc:IsSetCard(0x108a) and not tc:IsType(TYPE_TOKEN) and not tc:IsType(TYPE_XYZ)
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
 end
-function c116511113.xyzop2(e,tp,eg,ep,ev,re,r,rp)
+function c116511113.atop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,true,false) then return end
-	if Duel.GetFlagEffect(tp,116511113)==0 and Duel.SelectYesNo(tp,aux.Stringid(116511113,3)) then
-		Duel.RegisterFlagEffect(tp,116511113,RESET_CHAIN,0,1)
-		local mg=Group.CreateGroup()
-		local rc=Duel.GetAttacker()
-		Duel.NegateAttack()
-		mg:Merge(eg)
-		if rc:IsCanBeXyzMaterial(c) then mg:AddCard(rc) end
-		local sg=Group.CreateGroup()
-		for tc in aux.Next(mg) do
-			tc:CancelToGrave()
-			sg:Merge(tc:GetOverlayGroup())
+	local a=Duel.GetAttacker()
+	local d=Duel.GetAttackTarget()
+	if not (Duel.GetLocationCountFromEx(tp,tp,a,c)>0 or Duel.GetLocationCountFromEx(tp,tp,d,c)>0) then return end
+	if not a:IsRelateToEffect(e) and a:IsAttackable() and not a:IsStatus(STATUS_ATTACK_CANCELED)
+		and a:IsCanBeXyzMaterial(c) and d:IsCanBeXyzMaterial(c)
+		and not d:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(116511113,3)) then
+		Duel.ConfirmCards(1-tp,c)
+		if Duel.NegateAttack() then
+			local g=Group.FromCards(a,d)
+			local tc=g:GetFirst()
+			while tc do
+				local og=tc:GetOverlayGroup()
+				if og:GetCount()>0 then
+					Duel.SendtoGrave(og,REASON_RULE)
+				end
+				tc:RegisterFlagEffect(116511113,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1)
+				tc=g:GetNext()
+			end
+			Duel.XyzSummon(tp,c,nil)
 		end
-		Duel.SendtoGrave(sg,REASON_RULE)
-		c:SetMaterial(mg)
-		Duel.Overlay(c,mg)
-		Duel.SpecialSummon(c,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
-		c:CompleteProcedure()
 	end
 end
+
+function c116511113.mfilter(c,xyzc)
+	return c:GetFlagEffect(116511113)~=0 and (c:IsCanBeXyzMaterial(xyzc) or not c:IsType(TYPE_MONSTER))
+end
+function c116511113.xyzcon(e,c,og,min,max)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	local mg=nil
+	if og then
+		mg=og:Filter(c116511113.mfilter,nil,c)
+	else
+		mg=Duel.GetMatchingGroup(c116511113.mfilter,tp,0xff,0xff,nil,c)
+	end
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
+		and mg:GetCount()>0
+end
+function c116511113.xyzop(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+	local c=e:GetHandler()
+	local g=nil
+	local sg=Group.CreateGroup()
+	local xyzg=Group.CreateGroup()
+	if og then
+		g=og
+		local tc=og:GetFirst()
+	else
+		local mg=nil
+		if og then
+			mg=og:Filter(c116511113.mfilter,nil,c)
+		else
+			mg=Duel.GetMatchingGroup(c116511113.mfilter,tp,0xff,0xff,nil,c)
+		end
+		local ct=mg:GetCount()
+		xyzg:Merge(mg)
+	end
+	c:SetMaterial(xyzg)
+	Duel.Overlay(c,xyzg)
+end
+
+function c116511113.splimit(e,se,sp,st)
+	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or (bit.band(st,SUMMON_TYPE_XYZ)==SUMMON_TYPE_XYZ and se:GetHandler():IsCode(116511113))
+end
+
+function c116511113.limop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetCurrentChain()==0 then return end
+	Duel.SetChainLimitTillChainEnd(c116511113.chlimit)
+end
+function c116511113.chlimit(e,rp,tp)
+	return e:IsActiveType(TYPE_TRAP) and e:GetHandler():IsType(TYPE_COUNTER)
+end
+
 function c116511113.imcon(e)
 	return e:GetHandler():GetOverlayCount()>0
 end
@@ -139,8 +228,8 @@ function c116511113.sumfilter(c)
 	return c:IsSetCard(0x108a) and c:IsSummonable(true,nil)
 end
 function c116511113.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c116511113.sumfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c116511113.sumfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function c116511113.sumop(e,tp,eg,ep,ev,re,r,rp)
@@ -156,6 +245,7 @@ function c116511113.spfilter(c,e,tp)
 end
 function c116511113.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c116511113.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c116511113.spop(e,tp,eg,ep,ev,re,r,rp)

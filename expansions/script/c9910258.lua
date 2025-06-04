@@ -44,7 +44,7 @@ end
 function c9910258.operation(e,tp,eg,ep,ev,re,r,rp)
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetCode(EVENT_CHAIN_ACTIVATING)
 	e2:SetCondition(c9910258.descon)
 	e2:SetOperation(c9910258.desop)
 	e2:SetReset(RESET_CHAIN)
