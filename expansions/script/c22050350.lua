@@ -24,6 +24,7 @@ function c22050350.initial_effect(c)
 	e2:SetCost(c22050350.descost1)
 	e2:SetTarget(c22050350.target)
 	e2:SetOperation(c22050350.operation)
+	c:RegisterEffect(e2)
 	--ad
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(22050350,1))

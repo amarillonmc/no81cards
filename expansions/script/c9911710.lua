@@ -98,7 +98,7 @@ function c9911710.filter(c,i)
 	return c:IsRelateToChain() and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and aux.GetColumn(c)==i
 end
 function c9911710.tgfilter(c,col)
-	return bit.band(col,2^aux.GetColumn(c))~=0 and c:IsAbleToGrave()
+	return not c:IsLocation(LOCATION_FZONE) and bit.band(col,2^aux.GetColumn(c))~=0 and c:IsAbleToGrave()
 end
 function c9911710.tgfilter2(g)
 	for c in aux.Next(g) do
