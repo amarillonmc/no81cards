@@ -293,7 +293,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
+	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and c:IsType(TYPE_PENDULUM) end
 	Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 end
 function cm.thfilter2(c)

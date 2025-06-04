@@ -138,13 +138,13 @@ function cm.spfilter(c,loc)
 	return c:IsLocation(loc) and not c:IsPreviousLocation(loc)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) end
+	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and e:GetHandler():IsType(TYPE_PENDULUM) end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local loc=c:GetLocation()
 	if loc&LOCATION_ONFIELD>0 then loc=LOCATION_ONFIELD end
-	if c:IsRelateToEffect(e) and Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
+	if c:IsRelateToEffect(e) and c:IsType(TYPE_PENDULUM) and Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
 		--overseer+
 		local e1=Effect.CreateEffect(c)
 		local sid=0
