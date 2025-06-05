@@ -272,6 +272,9 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local sumtype=c:GetSummonType()
 	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_HAND) and sumtype&SUMMON_TYPE_ADVANCE>0 and g and #g>0 then
 		local tc=g:GetFirst()
-		if tc:IsFaceup() and tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA) and tc:IsReason(REASON_SUMMON) and tc:GetReasonCard()==c and tc:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)>0 then tc:CompleteProcedure() end
+		if tc:IsFaceup() and tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA) and tc:IsReason(REASON_SUMMON) and tc:GetReasonCard()==c and tc:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+			tc:SetMaterial(nil)
+			if Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)>0 then tc:CompleteProcedure() end
+		end
 	end
 end

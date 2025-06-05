@@ -158,5 +158,6 @@ function cm.operation2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=g:Select(tp,1,1,nil)
 	local tc=sg:GetFirst()
+	tc:SetMaterial(nil)
 	if Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)>0 then tc:CompleteProcedure() end
 end
