@@ -46,14 +46,15 @@ function c9910708.negcon(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsExistingMatchingCard(c9910708.spfilter,tp,LOCATION_HAND,0,1,nil)
 end
 function c9910708.negop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.SelectYesNo(tp,aux.Stringid(9910708,0)) then return end
-	Duel.Hint(HINT_CARD,0,9910708)
-	Duel.NegateEffect(ev)
-	Duel.RegisterFlagEffect(tp,9910708,RESET_PHASE+PHASE_END,0,1)
-	Duel.BreakEffect()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c9910708.spfilter,tp,LOCATION_HAND,0,1,1,nil)
-	if #g==0 then return end
-	local tc=g:GetFirst()
-	Duel.SpecialSummonRule(tp,tc,0)
+	if Duel.GetFlagEffect(tp,9910708)<1 and not Duel.IsChainDisabled(ev) and Duel.SelectYesNo(tp,aux.Stringid(9910708,0)) then
+		Duel.Hint(HINT_CARD,0,9910708)
+		Duel.NegateEffect(ev)
+		Duel.RegisterFlagEffect(tp,9910708,RESET_PHASE+PHASE_END,0,1)
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,c9910708.spfilter,tp,LOCATION_HAND,0,1,1,nil)
+		if #g==0 then return end
+		local tc=g:GetFirst()
+		Duel.SpecialSummonRule(tp,tc,0)
+	end
 end

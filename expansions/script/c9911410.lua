@@ -6,7 +6,7 @@ function c9911410.initial_effect(c)
 	--remove
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCode(EVENT_CHAIN_ACTIVATING)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCondition(c9911410.rmcon)
 	e1:SetOperation(c9911410.rmop)

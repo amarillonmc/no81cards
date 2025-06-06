@@ -88,19 +88,22 @@ function c9910909.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9910909.disfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsDiscardable()
+	return c:IsType(TYPE_MONSTER) and c:IsDiscardable(REASON_EFFECT)
 end
 function c9910909.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9910909.disfilter,tp,LOCATION_HAND,0,nil)
 	return rp==1-tp and Duel.IsChainDisablable(ev) and Duel.GetFlagEffect(tp,9910909)<1 and g:CheckSubGroup(aux.drccheck,2,2)
 end
 function c9910909.negop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.SelectYesNo(tp,aux.Stringid(9910909,0)) then return end
-	Duel.Hint(HINT_CARD,0,9910909)
-	local g=Duel.GetMatchingGroup(c9910909.disfilter,tp,LOCATION_HAND,0,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	local sg=g:SelectSubGroup(tp,aux.drccheck,false,2,2)
-	Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)
-	Duel.NegateEffect(ev)
-	Duel.RegisterFlagEffect(tp,9910909,RESET_PHASE+PHASE_END,0,1)
+	if Duel.GetFlagEffect(tp,9910909)<1 and not Duel.IsChainDisabled(ev) and Duel.SelectYesNo(tp,aux.Stringid(9910909,0)) then
+		Duel.Hint(HINT_CARD,0,9910909)
+		local g=Duel.GetMatchingGroup(c9910909.disfilter,tp,LOCATION_HAND,0,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+		local sg=g:SelectSubGroup(tp,aux.drccheck,false,2,2)
+		if sg and #sg>0 then
+			Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)
+			Duel.NegateEffect(ev)
+		end
+		Duel.RegisterFlagEffect(tp,9910909,RESET_PHASE+PHASE_END,0,1)
+	end
 end

@@ -77,7 +77,8 @@ function c9910427.negcon(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsChainDisablable(ev) and Duel.GetFlagEffect(tp,9910427)<1
 end
 function c9910427.negop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(9910427,0)) then
+	if Duel.GetFlagEffect(tp,9910427)<1 and not Duel.IsChainDisabled(ev)
+		and Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(9910427,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
 		local tc=Duel.SelectMatchingCard(tp,c9910427.cfilter,tp,LOCATION_MZONE,0,1,1,nil,e):GetFirst()
 		if tc and Duel.ChangePosition(tc,POS_FACEUP_ATTACK)>0 then

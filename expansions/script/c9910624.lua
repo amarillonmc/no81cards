@@ -71,16 +71,19 @@ function c9910624.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910624.discon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return rp==1-tp and Duel.IsChainDisablable(ev) and c:GetFlagEffect(9910619)>0 and c:GetFlagEffect(9910620)==0
+	return rp==1-tp and Duel.IsChainDisablable(ev) and c:GetFlagEffect(9910619)>0
+		and c:GetFlagEffect(9910620)<1 and Duel.GetFlagEffect(tp,9910620)<1
 end
 function c9910624.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.SelectEffectYesNo(tp,c,aux.Stringid(9910624,3)) then
+	if Duel.GetFlagEffect(tp,9910620)<1 and not Duel.IsChainDisabled(ev)
+		and Duel.SelectEffectYesNo(tp,c,aux.Stringid(9910624,3)) then
 		Duel.Hint(HINT_CARD,0,9910624)
 		local rc=re:GetHandler()
 		if Duel.NegateEffect(ev) and rc:IsRelateToEffect(re) then
 			Duel.Destroy(rc,REASON_EFFECT)
 		end
+		Duel.RegisterFlagEffect(tp,9910620,RESET_PHASE+PHASE_END,0,1)
 		c:RegisterFlagEffect(9910620,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910624,4))
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(9910624,0))
