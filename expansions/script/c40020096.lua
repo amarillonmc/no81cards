@@ -103,7 +103,7 @@ function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	g1:Merge(g2)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,2,0,0)
 end
-function cm.deop(e,tp,eg,ep,ev,re,r,rp)
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetMatchingGroupCount(cm.desfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,nil)<=0
 		or Duel.GetMatchingGroupCount(Card.IsFaceup,tp,0,LOCATION_ONFIELD,nil)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

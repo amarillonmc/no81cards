@@ -49,7 +49,7 @@ function xg.epp(c, id, su, ...) --XG.epp(c,id,su,...) 不推荐使用
 		end
 		for _, o in pairs(l2) do
 			if su[o] == nil or su[o] == "" then
-				su[o] = cm.TRUE
+				su[o] = aux.TRUE
 			end
 		end
 	end
@@ -314,4 +314,48 @@ function cm.sxblx(tp, kx, zzx, sxx, zzl) --宣言1个可特招的种族属性等
 	end
 	local lv = Duel.AnnounceLevel(tp, 1, 12, table.unpack(slv))
 	return zz, sx, lv
+end
+
+function cm.AddMonsterate(c, type, attribute, race, level, atk, def) --不会因盖放充值的魔陷怪兽
+	local e1_1 = Effect.CreateEffect(c)
+	e1_1:SetType(EFFECT_TYPE_SINGLE)
+	e1_1:SetCode(EFFECT_CHANGE_TYPE)
+	e1_1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_UNCOPYABLE)
+	e1_1:SetValue(type)
+	e1_1:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TEMP_REMOVE - RESET_TOFIELD - RESET_LEAVE - RESET_TURN_SET)
+	c:RegisterEffect(e1_1, true)
+	-- Debug.Message(attribute)
+	-- Debug.Message(race)
+	-- Debug.Message(level)
+	if attribute then
+		local e11 = e1_1:Clone()
+		e11:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+		e11:SetValue(attribute)
+		c:RegisterEffect(e11)
+	end
+	if race then
+		local e12 = e1_1:Clone()
+		e12:SetCode(EFFECT_CHANGE_RACE)
+		e12:SetValue(race)
+		c:RegisterEffect(e12)
+	end
+	if not level then
+		level = 1
+	end
+	local e123 = e1_1:Clone()
+	e123:SetCode(EFFECT_UPDATE_LEVEL)
+	e123:SetValue(level)
+	c:RegisterEffect(e123)
+	if atk then
+		local e1234 = e1_1:Clone()
+		e1234:SetCode(EFFECT_SET_ATTACK)
+		e1234:SetValue(atk)
+		c:RegisterEffect(e1234)
+	end
+	if def then
+		local e1 = e1_1:Clone()
+		e1:SetCode(EFFECT_SET_ATTACK)
+		e1:SetValue(def)
+		c:RegisterEffect(e1)
+	end
 end

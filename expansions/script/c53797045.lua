@@ -251,6 +251,6 @@ function s.geop(e,tp,eg,ep,ev,re,r,rp)
 		if con then te:SetCondition(s.con(con)) end
 		return f(tc,te,bool)
 	end
-	for tc in aux.Next(cg) do cm.ReplaceEffect(tc,tc:GetOriginalCode(),0) end
+	for tc in aux.Next(cg) do s.ReplaceEffect(tc,tc:GetOriginalCode(),0) end
 	Card.RegisterEffect=f
 end

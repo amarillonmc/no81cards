@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	--add
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	--e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -38,7 +38,7 @@ end
 function cm.gchk(g)
 	return g:IsExists(Card.IsType,1,nil,TYPE_PENDULUM)
 end
-function cm.xepfilter(c)
+function cm.expfilter(c)
 	return c:IsLinkType(TYPE_PENDULUM) and c:IsSetCard(0x99)
 end
 function cm.valcheck(e,c)
