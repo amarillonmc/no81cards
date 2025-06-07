@@ -81,58 +81,57 @@ function s.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.op3(e,tp,eg,ep,ev,re,r,rp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-		if ft<0 then return end
-		::cancel::
-		local mat_location=LOCATION_GRAVE+LOCATION_REMOVED
-		local summon_location=LOCATION_GRAVE+LOCATION_REMOVED
-		local greater_or_equal="Greater"
-		local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.MultiRitualToDeckFilter),tp,mat_location,0,nil,tp)
-		if ft==0 then
-			mg=mg:Filter(yume.stellar_memories.MainZoneFilter,nil,tp)
-		end
-		mg=mg:Filter(yume.stellar_memories.MultiRitualSelectToUseFilter,nil,e,tp,summon_location,Card.GetLink,greater_or_equal)
-		if mg:GetCount()==0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-		local mat=mg:Select(tp,1,1,nil)
-		local mc=mat:GetFirst()
-		local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(yume.stellar_memories.MultiRitualSelectToSummonFilter),tp,summon_location,0,mc,e,tp,mc,Card.GetLink,greater_or_equal)
-		if sg:GetCount()==0 then return end
-		if mc:IsLocation(LOCATION_MZONE) then ft=ft+1 end
-		if ct and ct<ft then ft=ct end
-		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
-		--Ritual Summon 1 monster with ritual Level
-		local b1=sg:IsExists(yume.stellar_memories.MultiRitualRitualLevelCheck,1,nil,mc,Card.GetLink,greater_or_equal)
-		--Ritual Summon 1+ monsters with Link Rating
-		local b2=sg:IsExists(yume.stellar_memories.MultiRitualLevelCheck,1,nil,mc,Card.GetLink,greater_or_equal)
-		if b1 and (not b2 or Duel.SelectYesNo(tp,aux.Stringid(71404000,4))) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local tc=sg:Filter(yume.stellar_memories.MultiRitualRitualLevelCheck,nil,mc,Card.GetLink,greater_or_equal):SelectUnselect(nil,tp,false,true,1,1)
-			if not tc then goto cancel end
+	if ft<0 then return end
+	::cancel::
+	local mat_location=LOCATION_GRAVE+LOCATION_REMOVED
+	local summon_location=LOCATION_GRAVE+LOCATION_REMOVED
+	local greater_or_equal="Greater"
+	local mg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.MultiRitualToDeckFilter),tp,mat_location,0,nil,tp)
+	if ft==0 then
+		mg=mg:Filter(yume.stellar_memories.MainZoneFilter,nil,tp)
+	end
+	mg=mg:Filter(yume.stellar_memories.MultiRitualSelectToUseFilter,nil,e,tp,summon_location,Card.GetLink,greater_or_equal)
+	if mg:GetCount()==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local mat=mg:Select(tp,1,1,nil)
+	local mc=mat:GetFirst()
+	local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(yume.stellar_memories.MultiRitualSelectToSummonFilter),tp,summon_location,0,mc,e,tp,mc,Card.GetLink,greater_or_equal)
+	if sg:GetCount()==0 then return end
+	if mc:IsLocation(LOCATION_MZONE) then ft=ft+1 end
+	if ct and ct<ft then ft=ct end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
+	--Ritual Summon 1 monster with ritual Level
+	local b1=sg:IsExists(yume.stellar_memories.MultiRitualRitualLevelCheck,1,nil,mc,Card.GetLink,greater_or_equal)
+	--Ritual Summon 1+ monsters with Link Rating
+	local b2=sg:IsExists(yume.stellar_memories.MultiRitualLevelCheck,1,nil,mc,Card.GetLink,greater_or_equal)
+	if b1 and (not b2 or Duel.SelectYesNo(tp,aux.Stringid(71404000,4))) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local tc=sg:Filter(yume.stellar_memories.MultiRitualRitualLevelCheck,nil,mc,Card.GetLink,greater_or_equal):SelectUnselect(nil,tp,false,true,1,1)
+		if not tc then goto cancel end
+		tc:SetMaterial(mat)
+		Duel.SendtoDeck(mc,nil,SEQ_DECKTOP,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
+		Duel.BreakEffect()
+		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+		tc:CompleteProcedure()
+	else
+		local lv=mc:GetLink()*2
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)aux.GCheckAdditional=yume.stellar_memories.MultiRitualCheckAdditional(lv)
+		local tg=mg:SelectSubGroup(tp,yume.stellar_memories.MultiRitualFSelect,true,1,ft,tp,lv)
+		aux.GCheckAdditional=nil
+		if not tg then goto cancel end
+		local tc=tg:GetFirst()
+		while tc do
 			tc:SetMaterial(mat)
-			Duel.SendtoDeck(mc,nil,SEQ_DECKTOP,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
-			Duel.BreakEffect()
-			Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-			tc:CompleteProcedure()
-		else
-			local lv=mc:GetLink()*2
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)aux.GCheckAdditional=yume.stellar_memories.MultiRitualCheckAdditional(lv)
-			local tg=mg:SelectSubGroup(tp,yume.stellar_memories.MultiRitualFSelect,true,1,ft,tp,lv)
-			aux.GCheckAdditional=nil
-			if not tg then goto cancel end
-			local tc=tg:GetFirst()
-			while tc do
-				tc:SetMaterial(mat)
-				tc=tg:GetNext()
-			end
-			Duel.SendtoDeck(mat,nil,SEQ_DECKTOP,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
-			Duel.BreakEffect()
-			tc=tg:GetFirst()
-			while tc do
-				Duel.SpecialSummonStep(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-				tc:CompleteProcedure()
-				tc=tg:GetNext()
-			end
-			Duel.SpecialSummonComplete()
+			tc=tg:GetNext()
 		end
+		Duel.SendtoDeck(mat,nil,SEQ_DECKTOP,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
+		Duel.BreakEffect()
+		tc=tg:GetFirst()
+		while tc do
+			Duel.SpecialSummonStep(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+			tc:CompleteProcedure()
+			tc=tg:GetNext()
+		end
+		Duel.SpecialSummonComplete()
 	end
 end

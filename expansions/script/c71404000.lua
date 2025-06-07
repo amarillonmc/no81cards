@@ -721,6 +721,7 @@ function yume.stellar_memories.BanishorSendSpell(sid,tp,msg1,msg2)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		local g=g2:Select(tp,1,1,nil)
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	end
 end
 --filters for common spell effects
 function yume.stellar_memories.SpellActivationBanishFilter(c,cid,tp)
@@ -733,16 +734,18 @@ function yume.stellar_memories.SpellActivationSendFilter(c,lid)
 	return c:IsCode(lid) and c:IsAbleToExtra()
 end
 function yume.stellar_memories.BanishedSpellCon(cid)
-	return	function(e,tp,eg,ep,ev,re,r,rp)
+	return function(e,tp,eg,ep,ev,re,r,rp)
 				return re and re:GetHandler():IsCode(cid)
+			end
 end
 --spell for low level and low link
 function yume.stellar_memories.LowSpellActivationTg(rid,lid)
-	return	function(e,tp,eg,ep,ev,re,r,rp,chk)
+	return function(e,tp,eg,ep,ev,re,r,rp,chk)
 				if chk==0 then
 					return Duel.IsExistingMatchingCard(yume.stellar_memories.SpellActivationSearchFilter,tp,LOCATION_DECK,0,1,nil,rid)
 						or Duel.IsExistingMatchingCard(yume.stellar_memories.SpellActivationBanishFilter,tp,LOCATION_EXTRA,0,1,nil,lid,tp)
 				end
+			end
 end
 function yume.stellar_memories.LowSpellActivationOp(rid,lid,msg1,msg2)
 	return	function(e,tp,eg,ep,ev,re,r,rp)
@@ -761,6 +764,7 @@ function yume.stellar_memories.LowSpellActivationOp(rid,lid,msg1,msg2)
 					local g=g2:Select(tp,1,1,nil)
 					Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 				end
+			end
 end
 function yume.stellar_memories.LinkSummonFilter(c)
 	return c:IsLinkSummonable(nil) and c:IsRace(RACE_SPELLCASTER)
