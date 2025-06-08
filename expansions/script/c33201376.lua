@@ -5,8 +5,8 @@ function s.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCategory(CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
@@ -33,7 +33,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	return true
 end
 function s.cfilter(c)
-	return c.VHisc_HYZQ and c:IsType(TYPE_SPELL) and c:CheckActivateEffect(true,true,false)~=nil and not c:IsCode(id) and c:IsAbleToHand()
+	return c.VHisc_HYZQ and c:IsType(TYPE_SPELL) and c:CheckActivateEffect(true,true,false)~=nil and not c:IsCode(id)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and s.cfilter(chkc) end
@@ -49,6 +49,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetProperty(te:GetProperty())
 	local tg=te:GetTarget()
 	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
+	Duel.HintSelection(g)
 	Duel.ClearOperationInfo(0)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -56,9 +57,6 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not te then return end
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local tg=g:Filter(Card.IsRelateToEffect,nil,e)
-	Duel.SendtoHand(tg,nil,REASON_EFFECT)
 end
 
 --Release effect
