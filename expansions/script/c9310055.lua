@@ -89,10 +89,10 @@ function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 		local off=1
 		local ops={} 
 		local opval={}
-		local b1=e:GetLabel()&(0x8-0x1)>0 and re:GetHandler():IsStatus(STATUS_CHAINING)
+		local b1=e:GetLabel()&(0x8-0x1)>0 and e:GetCode()==EVENT_CHAINING and Duel.IsChainNegatable(ev)
 		local b2=e:GetLabel()&(0x40-0x8)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
-		local b3=e:GetLabel()&(0x200-0x40)>0 and re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsAbleToRemove()
-		local b4=e:GetLabel()&(0x1000-0x200)>0
+		local b3=e:GetLabel()&(0x200-0x40)>0 and e:GetCode()==EVENT_CHAINING and re:GetHandler():IsRelateToEffect(re) and re:GetHandler():IsAbleToRemove()
+		local b4=e:GetLabel()&(0x1000-0x200)>0 and e:GetCode()==EVENT_CHAINING
 		local b5=e:GetLabel()&(0x8000-0x1000)>0 and Duel.IsPlayerCanDraw(tp,1)
 		local b6=e:GetLabel()&(0x40000-0x8000)>0 and Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 		local b7=e:GetLabel()&(0x200000-0x40000)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)
@@ -128,7 +128,7 @@ function cm.addition(e,tp,eg,ep,ev,re,r,rp)
 			off=off+1
 		end
 		if b7 then
-			ops[off]=aux.Stringid(m,1)
+			ops[off]=aux.Stringid(9310055,1)
 			opval[off-1]=7
 			off=off+1
 		end

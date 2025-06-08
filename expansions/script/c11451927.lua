@@ -184,7 +184,7 @@ function cm.LinkOperation(f,minc,maxc,gf)
 					--e1:SetCondition(function(e) Debug.Message(oc:GetCode()) return true end)
 					e1:SetCost(function(e,tp,eg,ep,ev,re,r,rp,chk)
 									local c=e:GetLabelObject()
-									if chk==0 then return eg:IsContains(c) and c:GetFlagEffectLabel(m) and c:GetFlagEffectLabel(m)==cid end
+									if chk==0 then return c and eg:IsContains(c) and c:GetFlagEffectLabel(m) and c:GetFlagEffectLabel(m)==cid end
 								end)
 					if tg then e1:SetTarget(cm.btg(tg)) end
 					if op then e1:SetOperation(op) end
