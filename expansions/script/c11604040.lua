@@ -43,7 +43,7 @@ function s.initial_effect(c)
 	e4:SetCountLimit(1)
 	e4:SetTarget(s.tg2)
 	e4:SetOperation(s.op2)
-	c:RegisterEffect(e4)
+	c:RegisterEffect(e4)	
 end
 --00
 function s.uqfilter(c)
@@ -105,19 +105,16 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --
-function s.filter(c)
-	return c:IsFaceup() and c:IsType(TYPE_SPELL+TYPE_TRAP)
-end
 function s.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and s.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and chkc:IsType(TYPE_SPELL+TYPE_TRAP) end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsType,tp,0,LOCATION_ONFIELD,1,nil,TYPE_SPELL+TYPE_TRAP) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,s.filter,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectTarget(tp,Card.IsType,tp,0,LOCATION_ONFIELD,1,1,nil,TYPE_SPELL+TYPE_TRAP)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 end
 function s.op2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsControler(1-tp) and tc:IsFaceup() then
+	if tc:IsRelateToEffect(e)  then
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
 end
