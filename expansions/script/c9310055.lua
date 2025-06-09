@@ -51,7 +51,7 @@ function cm.disfilter(c)
 	return c:IsFaceup() and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.disfilter,tp,LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return Duel.IsChainNegatable(ev) and Duel.IsExistingMatchingCard(cm.disfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_ONFIELD)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -69,7 +69,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,cm.disfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	if Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
-	   if not re:GetHandler():IsStatus(STATUS_CHAINING) then return end
 	   Duel.NegateActivation(ev)
 	end
 end
@@ -259,7 +258,7 @@ function cm.dissop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	--re:SetCategory(re:GetCategory()|CATEGORY_TODECK|CATEGORY_GRAVE_ACTION)
-	if re:GetLabel()&0x49421~=0 then re:SetLabel(re:GetLabel()+0x40000) return end
+	if re:GetLabel()&0x49249~=0 then re:SetLabel(re:GetLabel()+0x40000) return end
 	re:SetLabel(re:GetLabel()+0x40000)
 	local op=re:GetOperation()
 	local repop=function(e,tp,eg,ep,ev,re,r,rp)

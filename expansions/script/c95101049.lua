@@ -78,7 +78,7 @@ function c95101049.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local tc=Duel.SelectMatchingCard(aux.NecroValleyFilter(Card.IsCanOverlay),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(Card.IsCanOverlay),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil):GetFirst()
 	if not tc then return end
 	Duel.HintSelection(Group.FromCards(tc))
 	if not tc:IsImmuneToEffect(e) then

@@ -171,7 +171,7 @@ function cm.operation(e, tp, eg, ep, ev, re, r, rp)
     if not c:IsRelateToEffect(e) then return end
     local zz, sx, lv = e:GetLabel()
     if not Duel.IsPlayerCanSpecialSummonMonster(tp, c:GetCode(), 0, TYPE_NORMAL + TYPE_MONSTER + TYPE_TUNER, 0, 0, lv, zz, sx) then return end
-    c:AddMonsterAttribute(TYPE_NORMAL + TYPE_MONSTER, sx, zz, lv, 0, 0)
+    it.AddMonsterate(c, TYPE_NORMAL + TYPE_MONSTER, sx, zz, lv, 0, 0)
     Duel.SpecialSummonStep(c, 0, tp, tp, true, false, POS_FACEUP_DEFENSE)
     Duel.SpecialSummonComplete()
 

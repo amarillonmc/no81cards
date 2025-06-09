@@ -1,7 +1,7 @@
 --所谓伊人
 local cm, m, ofs = GetID()
 local yr = 13020010
-Duel.LoadScript("c16670000.lua") --引用库
+xpcall(function() dofile("expansions/script/c16670000.lua") end, function() dofile("script/c16670000.lua") end) --引用库
 function cm.initial_effect(c)
 	aux.AddCodeList(c, yr)
 	-- local e1 = xg.epp2(c, m, 1, nil, 3, QY_sp, cm.setcon2, cm.cost, cm.target, cm.operation, true) --使用库内函数进行便捷注册
@@ -92,7 +92,7 @@ end
 function cm.operation(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
 	local tc = Duel.GetFirstTarget()
-	if tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsCanBeDisabledByEffect(e) then
+	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
 		local oc = LOCATION_HAND + LOCATION_GRAVE + LOCATION_DECK
 		if Duel.GetTurnPlayer() ~= e:GetHandlerPlayer() then
 			oc = QY_sk
@@ -136,7 +136,7 @@ function cm.operation2(e, tp, eg, ep, ev, re, r, rp)
 			local tc = Duel.SelectMatchingCard(tp, cm.filter6, tp, LOCATION_GRAVE, 0, 1, 1, nil, e, tp):GetFirst()
 			local zz, sx, lv = it.sxblx(tp, kx, zzx, sxx, zzl)
 			if tc and Duel.IsPlayerCanSpecialSummonMonster(tp, tc:GetCode(), 0, TYPE_NORMAL + TYPE_MONSTER, 0, 0, lv, zz, sx) then
-				tc:AddMonsterAttribute(TYPE_NORMAL + TYPE_MONSTER, sx, zz, lv, 0, 0)
+				it.AddMonsterate(tc, TYPE_NORMAL + TYPE_MONSTER, sx, zz, lv, 0, 0)
 				Duel.SpecialSummonStep(tc, 0, tp, tp, true, false, POS_FACEUP_DEFENSE)
 				local e3 = Effect.CreateEffect(c)
 				e3:SetType(EFFECT_TYPE_SINGLE)

@@ -271,6 +271,7 @@ end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
+	te:GetHandler():RegisterFlagEffect(11451031,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	local tp=te:GetHandlerPlayer()
 	local loc=te:GetHandler():GetLocation()
 	if te:IsHasType(EFFECT_TYPE_ACTIVATE) and te:GetHandler():IsFaceup() and te:GetHandler():IsOnField() then loc=te:GetHandler():GetPreviousLocation() end
@@ -409,7 +410,7 @@ function cm.sptg(e,c,tp)
 	return c==e:GetHandler()
 end
 function cm.sfilter(c,tp)
-	return c:IsFaceup() or c:IsControler(tp) or c:IsStatus(STATUS_CHAINING)
+	return c:IsFaceup() or c:IsControler(tp) or c:GetFlagEffect(11451031)>0
 end
 function cm.spcop(e,tp,eg,ep,ev,re,r,rp,c)
 	local c=c or e:GetHandler()

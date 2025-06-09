@@ -28,7 +28,7 @@ function c95101043.initial_effect(c)
 	e2:SetCountLimit(1,95101043+1)
 	e2:SetCondition(c95101043.setcon)
 	e2:SetCost(c95101043.setcost)
-	e2:SetTarget(c95101043.seteg)
+	e2:SetTarget(c95101043.settg)
 	e2:SetOperation(c95101043.setop)
 	c:RegisterEffect(e2)
 end

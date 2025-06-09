@@ -37,7 +37,7 @@ function c95101068.initial_effect(c)
 	e3:SetCode(EVENT_PHASE+PHASE_END)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
-	e3:SetOperation(c95101068.damop)
+	e3:SetOperation(c95101068.ovop)
 	c:RegisterEffect(e3)
 end
 function c95101068.ovfilter(c)

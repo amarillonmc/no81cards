@@ -276,7 +276,7 @@ function cm.dissop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	--re:SetCategory(re:GetCategory()|CATEGORY_TOHAND)
-	if re:GetLabel()&0x49421~=0 then re:SetLabel(re:GetLabel()+0x8) return end
+	if re:GetLabel()&0x49249~=0 then re:SetLabel(re:GetLabel()+0x8) return end
 	re:SetLabel(re:GetLabel()+0x8)
 	local op=re:GetOperation()
 	local repop=function(e,tp,eg,ep,ev,re,r,rp)

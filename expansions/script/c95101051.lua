@@ -58,7 +58,7 @@ function c95101051.drop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c95101051.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return ep~=tp
+	return eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp)
 end
 function c95101051.spfilter(c,e,tp)
 	return aux.IsCodeListed(c,95101001) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

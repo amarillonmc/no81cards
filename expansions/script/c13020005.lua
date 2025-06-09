@@ -19,12 +19,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 
 	local e3 = Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(13000766, 1))
+	e3:SetDescription(aux.Stringid(m, 1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP + EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_LEAVE_FIELD)
-	e3:SetRange(LOCATION_GRAVE + LOCATION_REMOVED)
+	e3:SetRange(LOCATION_REMOVED)
 	e3:SetCondition(cm.descon)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.desop2)
@@ -106,7 +106,7 @@ function cm.desop(e, tp, eg, ep, ev, re, r, rp)
 end
 
 function cm.cfilter(c, tp)
-	return c:IsPreviousControler(tp)
+	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)
 		and c:GetReasonPlayer() == 1 - tp
 end
 
