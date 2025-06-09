@@ -5,7 +5,7 @@ function c260013010.initial_effect(c)
 	--special summon rule
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e6:SetCode(EVENT_CHAINING)
+	e6:SetCode(EVENT_CHAIN_SOLVING)
 	e6:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e6:SetRange(LOCATION_EXTRA)
 	e6:SetCondition(c260013010.chcon)

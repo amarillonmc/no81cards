@@ -4,7 +4,7 @@ function c116511113.initial_effect(c)
 	--special summon rule
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e6:SetCode(EVENT_CHAINING)
+	e6:SetCode(EVENT_CHAIN_SOLVING)
 	e6:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e6:SetRange(LOCATION_EXTRA)
 	e6:SetCondition(c116511113.chcon)
@@ -115,9 +115,9 @@ function c116511113.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(c116511113.xyzfilter2,nil,e,tp)
 	if Duel.GetFlagEffect(tp,116511113)==0 and g:GetCount()>0 and g:GetCount()==g2:GetCount() and rc:IsRelateToEffect(re)
 		and Duel.IsChainNegatable(ev) and Duel.GetLocationCountFromEx(tp,tp,g,c)>0 and Duel.SelectYesNo(tp,aux.Stringid(116511113,3)) then
-		Duel.ConfirmCards(1-tp,c)
-		Duel.RegisterFlagEffect(tp,116511113,RESET_PHASE+PHASE_END,0,1)
 		if Duel.NegateEffect(ev) then
+			Duel.ConfirmCards(1-tp,c)
+			Duel.RegisterFlagEffect(tp,116511113,RESET_PHASE+PHASE_END,0,1)
 			rc:CancelToGrave()
 			g:AddCard(rc)
 			local tc=g:GetFirst()
@@ -148,8 +148,9 @@ function c116511113.atop(e,tp,eg,ep,ev,re,r,rp)
 	if not a:IsRelateToEffect(e) and a:IsAttackable() and not a:IsStatus(STATUS_ATTACK_CANCELED)
 		and a:IsCanBeXyzMaterial(c) and d:IsCanBeXyzMaterial(c)
 		and not d:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(116511113,3)) then
-		Duel.ConfirmCards(1-tp,c)
 		if Duel.NegateAttack() then
+			Duel.ConfirmCards(1-tp,c)
+			Duel.RegisterFlagEffect(tp,116511113,RESET_PHASE+PHASE_END,0,1)
 			local g=Group.FromCards(a,d)
 			local tc=g:GetFirst()
 			while tc do
