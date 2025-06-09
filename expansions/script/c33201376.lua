@@ -49,7 +49,6 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetProperty(te:GetProperty())
 	local tg=te:GetTarget()
 	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
-	Duel.HintSelection(g)
 	Duel.ClearOperationInfo(0)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -57,6 +56,10 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not te then return end
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	end
 end
 
 --Release effect
