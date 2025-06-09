@@ -64,14 +64,18 @@ function c43990110.mtop(e,tp,eg,ep,ev,re,r,rp)
 		tc=tg:GetNext()
 	end
 end
-function c43990110.xyzfilter(c)
-	return c:IsXyzSummonable(nil)
+function c43990110.xyzfilter(c,mg)
+	return c:IsXyzSummonable(mg)
+end
+function c43990110.xyzfilter2(c)
+	return c:IsCanBeXyzMaterial(nil)
 end
 function c43990110.xxgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local off=3
 	local ops={}
 	local opval={}
+	local mg=Duel.GetMatchingGroup(c43990110.xyzfilter2,tp,LOCATION_MZONE,0,nil)
 	ops[1]=aux.Stringid(43990110,4)
 	opval[0]=1
 	ops[2]=aux.Stringid(43990110,5)
@@ -81,23 +85,23 @@ function c43990110.xxgop(e,tp,eg,ep,ev,re,r,rp)
 		opval[off-1]=3
 		off=off+1
 	end
-	if Duel.IsExistingMatchingCard(c43990110.xyzfilter,tp,LOCATION_EXTRA,0,1,nil) then
+	if Duel.IsExistingMatchingCard(c43990110.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,mg) then
 		ops[off]=aux.Stringid(43990110,7)
-		opval[off-1]=3
+		opval[off-1]=4
 		off=off+1
 	end
 	if off==1 then return end
 	local op=Duel.SelectOption(tp,table.unpack(ops))
 	if opval[op]==1 then
-		Duel.Damage(1-p,500,REASON_EFFECT)
+		Duel.Damage(1-tp,500,REASON_EFFECT)
 	elseif opval[op]==2 then
-		Duel.Recover(p,500,REASON_EFFECT)
+		Duel.Recover(tp,500,REASON_EFFECT)
 	elseif opval[op]==3 then
 		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 	elseif opval[op]==4 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.GetMatchingGroup(c43990110.xyzfilter,tp,LOCATION_EXTRA,0,nil,mg)Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tg=g:Select(tp,1,1,nil)
-		Duel.XyzSummon(tp,tg:GetFirst(),nil)
+		Duel.XyzSummon(tp,tg:GetFirst(),mg)
 	end
 end
 
