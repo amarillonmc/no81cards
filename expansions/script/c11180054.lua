@@ -34,16 +34,16 @@ function s.initial_effect(c)
 	e4:SetTarget(s.sptg)
 	e4:SetOperation(s.spop)
 	c:RegisterEffect(e4)
-	if not cm.Effect_Count then
-		cm.Effect_Count=true
+	if not s.Effect_Count then
+		s.Effect_Count=true
 		local e7_1=Effect.GlobalEffect()
 		e7_1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 		e7_1:SetCode(EVENT_CHAINING)
-		e7_1:SetOperation(cm.counterop)
+		e7_1:SetOperation(s.counterop)
 		Duel.RegisterEffect(e7_1,0)
 	end
 end
-function cm.counterop(e,tp,eg,ep,ev,re,r,rp)
+function s.counterop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetTurnPlayer()==e:GetHandlerPlayer() then
 		Duel.RegisterFlagEffect(e:GetHandlerPlayer(),id+1,RESET_PHASE+PHASE_END,0,2)
 	end

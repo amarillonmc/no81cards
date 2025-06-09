@@ -29,7 +29,7 @@ function c95101034.activate(e,tp,eg,ep,ev,re,r,rp)
 	if ft<=0 then return end
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		local code=c:GetCode()
+		local code=tc:GetCode()
 		local g=Duel.GetMatchingGroup(c95101034.spfilter,tp,LOCATION_DECK,0,nil,e,tp,code)
 		local ct=g:GetCount()
 		if ct==0 then return end

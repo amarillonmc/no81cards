@@ -2,7 +2,7 @@
 function c9911720.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x9957),2,false)
+	aux.AddFusionProcFunRep(c,c9911720.mfilter,2,false)
 	aux.AddContactFusionProcedure(c,aux.FilterBoolFunction(Card.IsReleasable,REASON_SPSUMMON),LOCATION_MZONE,0,Duel.Release,REASON_SPSUMMON+REASON_MATERIAL)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
@@ -33,6 +33,9 @@ function c9911720.initial_effect(c)
 	e3:SetTarget(c9911720.rmtg)
 	e3:SetOperation(c9911720.rmop)
 	c:RegisterEffect(e3)
+end
+function c9911720.mfilter(c)
+	return c:IsFusionSetCard(0x9957) and not c:IsType(TYPE_FUSION)
 end
 function c9911720.thfilter(c)
 	return c:IsSetCard(0x9957) and c:IsAbleToHand()

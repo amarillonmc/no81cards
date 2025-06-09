@@ -3,7 +3,7 @@ function c98500302.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddCodeList(c,10000000,10000010,10000020)
 	aux.AddFusionProcFunFunRep(c,aux.FilterBoolFunction(Card.IsFusionCode,10000020,10000000,10000010),c98500302.ffilter,1,2,true)
-	aux.AddContactFusionProcedure(c,c98500302.cfilter,LOCATION_HAND+LOCATION_MZONE,0,c98500302.sprop(c))
+	aux.AddContactFusionProcedure(c,c98500302.cfilter,LOCATION_HAND+LOCATION_MZONE+LOCATION_REMOVED,0,c98500302.sprop(c))
 	--CANNOT_BE_FUSION_MATERIAL
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -77,6 +77,7 @@ function c98500302.sprop(c)
 			local code=tc:GetOriginalCode()
 			c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,1)
 			tc=cg:GetNext()
+			c:RegisterFlagEffect(98500302,RESET_EVENT+0xff0000,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(98500302,3))
 		end
 	end
 end
