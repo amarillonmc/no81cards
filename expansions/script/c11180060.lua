@@ -3,9 +3,8 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,id)
 	e1:SetCost(s.discost)
 	e1:SetTarget(s.distg)
@@ -24,7 +23,6 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 
--- 共用函数：将怪兽转为永续陷阱
 function s.mon2trap(c,tp)
 	if not c or Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)

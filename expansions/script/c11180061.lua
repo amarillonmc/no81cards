@@ -3,7 +3,7 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
+	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e0:SetCondition(s.handcon)
 	c:RegisterEffect(e0)
 
@@ -45,7 +45,7 @@ function s.actcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 
--- 共用函数：将怪兽转为永续陷阱
+
 function s.mon2trap(c,tp)
 	if not c or Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return false end
 	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)

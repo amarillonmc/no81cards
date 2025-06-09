@@ -63,7 +63,7 @@ function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function s.thfilter(c)
-	return c:IsSetCard(0x6451) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x3451) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 		and (c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_REMOVED))
 end
 
@@ -120,7 +120,7 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function s.spfilter(c)
-	return c:IsSetCard(0x6451) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x3451) and c:IsType(TYPE_MONSTER)
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

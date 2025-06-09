@@ -2,7 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,nil,nil,1)
 	c:EnableReviveLimit()
 	
 	local e1=Effect.CreateEffect(c)
@@ -34,8 +34,20 @@ function s.initial_effect(c)
 	e4:SetTarget(s.sptg)
 	e4:SetOperation(s.spop)
 	c:RegisterEffect(e4)
+	if not cm.Effect_Count then
+		cm.Effect_Count=true
+		local e7_1=Effect.GlobalEffect()
+		e7_1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e7_1:SetCode(EVENT_CHAINING)
+		e7_1:SetOperation(cm.counterop)
+		Duel.RegisterEffect(e7_1,0)
+	end
 end
-
+function cm.counterop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetTurnPlayer()==e:GetHandlerPlayer() then
+		Duel.RegisterFlagEffect(e:GetHandlerPlayer(),id+1,RESET_PHASE+PHASE_END,0,2)
+	end
+end
 function s.synfilter(c)
 	return c:IsSetCard(0x3451) and c:IsType(TYPE_MONSTER)
 end
@@ -73,7 +85,6 @@ end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end
 	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
-	Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED)
 end
 
@@ -98,7 +109,7 @@ function s.regenop(e,tp,eg,ep,ev,re,r,rp)
 		if #g>0 then
 			local atk=g:GetSum(Card.GetAttack)
 			local def=g:GetSum(Card.GetDefense)
-			Duel.Recover(tp,(atk+def)*3,REASON_EFFECT)
+			Duel.Recover(tp,(atk+def),REASON_EFFECT)
 		end
 	end
 end
