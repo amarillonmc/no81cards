@@ -156,10 +156,13 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,3)
 	local g=Duel.GetDecktopGroup(tp,3)
 	local gg=g:Filter(cm.filter1,nil)
+	local aa=gg:Filter(cm.aafilter,nil)
+	local bb=gg:Filter(cm.aafilter,nil)
 	if #gg>0 then
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
-		Duel.Release(gg,REASON_EFFECT)
+		Duel.Destroy(bb,REASON_EFFECT)
+		Duel.Release(aa,REASON_EFFECT)
 	end
 end
 end

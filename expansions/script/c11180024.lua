@@ -119,7 +119,7 @@ function c11180024.tdop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c11180024.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetOwner():IsSetCard(0x3450,0x6450)
+	return re and re:GetOwner():IsSetCard(0x3450,0x6450)
 end
 function c11180024.spfilter(c,e,tp)
 	return c:IsSetCard(0x3450) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

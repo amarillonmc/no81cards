@@ -4,7 +4,7 @@ function s.initial_effect(c)
     --spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
     e1:SetCode(EVENT_FREE_CHAIN)
     e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
@@ -52,9 +52,12 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
     if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-        local val=tc:GetAttack()+tc:GetDefense()
-        if tc:IsFaceup() and tc:IsRelateToEffect(e) and val>0 then
-            Duel.Damage(tp,val,REASON_EFFECT)
+        if tc:IsFaceup() and tc:IsRelateToEffect(e) then
+            local val=tc:GetAttack()
+            if tc:GetDefense()>val then val=tc:GetDefense() end
+            if val>0 then
+                Duel.Damage(tp,val/2,REASON_EFFECT)
+            end
         end
 	end
 end

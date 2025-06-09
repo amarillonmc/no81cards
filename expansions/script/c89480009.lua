@@ -30,7 +30,6 @@ function s.initial_effect(c)
 	e4:SetCondition(s.spcon2)
 	c:RegisterEffect(e4)
 end
-s.fusion_effect=true
 function s.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end

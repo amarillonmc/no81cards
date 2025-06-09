@@ -56,6 +56,21 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		c:RegisterEffect(e1)
 		c:ReplaceEffect(code,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e3:SetCode(EVENT_CHAINING)
+		e3:SetLabelObject(tc)
+		e3:SetCondition(s.rscon)
+		e3:SetOperation(s.rsop)
+		e3:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e3,tp)
+		local e5=Effect.CreateEffect(c)
+		e5:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+		e5:SetCode(EVENT_ADJUST)
+		e5:SetCondition(function() return not c:IsLocation(LOCATION_HAND) or not c:IsPublic() end)
+		e5:SetOperation(function() if aux.GetValueType(e3)=="Effect" then e3:Reset() end end)
+		e5:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e5,tp)
 	end
 	if tc:IsRelateToEffect(e) and tc:IsPublic() then
 		local e2=Effect.CreateEffect(c)
@@ -68,6 +83,13 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		local code2=g1:GetFirst():GetOriginalCode()
 		if not getmetatable(g1:GetFirst()) then code2=80316585 end
 		tc:ReplaceEffect(code2,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		local e4=Effect.CreateEffect(c)
+		e4:SetType(EFFECT_TYPE_SINGLE)
+		e4:SetCode(EFFECT_CANNOT_TRIGGER)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e4:SetCondition(s.ctcon)
+		tc:RegisterEffect(e4,true)
+		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
 		if getmetatable(tc) then
 			s.proeffects=s.proeffects or {}
 			local _SetProperty=Effect.SetProperty
@@ -111,4 +133,26 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+end
+function s.ctcon(e)
+	return e:GetHandler():GetFlagEffect(id)>0
+end
+function s.rscon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler()==re:GetHandler()
+end
+function s.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	tc:ResetFlagEffect(id)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	e2:SetLabel(ev)
+	e2:SetLabelObject(tc)
+	e2:SetReset(RESET_CHAIN)
+	e2:SetOperation(s.resetop)
+	Duel.RegisterEffect(e2,tp)
+end
+function s.resetop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if ev==e:GetLabel() then tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3)) end
 end

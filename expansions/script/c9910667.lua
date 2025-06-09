@@ -3,30 +3,20 @@ function c9910667.initial_effect(c)
 	c:EnableReviveLimit()
 	--xyz summon
 	aux.AddXyzProcedureLevelFree(c,c9910667.mfilter,aux.TRUE,2,2)
-	--remove onfield
+	--to hand/remove
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9910667,0))
-	e1:SetCategory(CATEGORY_REMOVE)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetDescription(aux.Stringid(9910667,1))
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_REMOVE+CATEGORY_GRAVE_ACTION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCost(c9910667.rmcost)
-	e1:SetTarget(c9910667.rmtg)
-	e1:SetOperation(c9910667.rmop)
+	e1:SetCountLimit(1,9910667)
+	e1:SetCost(c9910667.thcost)
+	e1:SetTarget(c9910667.thtg)
+	e1:SetOperation(c9910667.thop)
 	c:RegisterEffect(e1)
-	--to hand/remove
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910667,1))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_REMOVE+CATEGORY_GRAVE_ACTION)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetTarget(c9910667.thtg)
-	e2:SetOperation(c9910667.thop)
-	c:RegisterEffect(e2)
 	if not c9910667.global_check then
 		c9910667.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -49,23 +39,9 @@ end
 function c9910667.mfilter(c,xyzc)
 	return c:IsXyzLevel(xyzc,5) or c:IsXyzLevel(xyzc,10)
 end
-function c9910667.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9910667.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-end
-function c9910667.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chkc:IsAbleToRemove() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
-end
-function c9910667.rmop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
-	end
 end
 function c9910667.thfilter(c,tp)
 	if not c:IsRace(RACE_MACHINE) then return false end

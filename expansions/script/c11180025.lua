@@ -3,12 +3,12 @@ function c11180025.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	--set
 	local e0=Effect.CreateEffect(c)
-	e0:SetCategory(CATEGORY_TOGRAVE)
+	e0:SetCategory(CATEGORY_TOHAND)
 	e0:SetType(EFFECT_TYPE_IGNITION)
 	e0:SetRange(LOCATION_PZONE)
 	e0:SetCountLimit(1,11180025)
-	e0:SetTarget(c11180025.settg)
-	e0:SetOperation(c11180025.setop)
+	e0:SetTarget(c11180025.ttg)
+	e0:SetOperation(c11180025.top)
 	c:RegisterEffect(e0)
 	--sp summon
 	local e1=Effect.CreateEffect(c)
@@ -45,17 +45,33 @@ function c11180025.initial_effect(c)
 	e3:SetOperation(c11180025.thop)
 	c:RegisterEffect(e3)
 end
-function c11180025.rgfilter(c)
-	return c:IsAbleToGrave()
+function c11180025.tfilter(c)
+	return c:IsSetCard(0x3450,0x6450) and c:IsFaceupEx() and c:IsAbleToHand()
 end
-function c11180025.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11180025.rgfilter,tp,LOCATION_REMOVED,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,0x20)
+function c11180025.ttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		local g=Duel.GetMatchingGroup(c11180025.tfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+		return g:GetCount()>0
+	end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
-function c11180025.setop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c11180025.rgfilter,tp,LOCATION_REMOVED,0,1,2,nil)
-	if #g>0 then Duel.SendtoGrave(g,0x40+REASON_RETURN) end
+function c11180025.top(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11180025.tfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	if #g>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
+		Duel.ConfirmCards(1-tp,g)
+		if not g:GetFirst():IsLocation(0x2) then return end
+		local sg=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,nil)
+		if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(11180025,6)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+			local tg=sg:Select(tp,1,1,nil)
+			if #tg>0 then
+				Duel.HintSelection(tg)
+				Duel.BreakEffect()
+				Duel.SendtoHand(tg,nil,REASON_EFFECT)
+			end
+		end
+	end
 end
 function c11180025.tgfilter(c)
 	return c:IsAbleToGrave() or c:IsAbleToRemove()
@@ -121,10 +137,10 @@ function c11180025.tdop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c11180025.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetOwner():IsSetCard(0x3450,0x6450)
+	return re and re:GetOwner():IsSetCard(0x3450,0x6450)
 end
 function c11180025.thfilter(c)
-	return c:IsSetCard(0x3450) and c:IsFaceupEx() and c:IsAbleToHand()
+	return c:IsSetCard(0x6450) and c:IsFaceupEx() and c:IsAbleToHand()
 end
 function c11180025.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11180025.thfilter,tp,0x30,0,1,nil) end

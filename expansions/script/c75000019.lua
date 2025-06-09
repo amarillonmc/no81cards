@@ -27,7 +27,7 @@ function c75000019.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c75000019.spfilter(c,e,tp)
-	return (c:IsCode(75000001) or aux.IsCodeListed(c,75000001) and c:IsType(TYPE_MONSTER)) and c:IsAbleToHand()
+	return (c:IsCode(75000001) or (aux.IsCodeListed(c,75000001) and c:IsType(TYPE_MONSTER))) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c75000019.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c75000019.spfilter(chkc,e,tp) end

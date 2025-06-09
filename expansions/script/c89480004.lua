@@ -32,7 +32,6 @@ function s.initial_effect(c)
 	e2:SetOperation(s.fsop)
 	c:RegisterEffect(e2)
 end
-s.fusion_effect=true
 function s.sscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)

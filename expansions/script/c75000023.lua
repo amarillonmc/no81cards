@@ -1,7 +1,5 @@
 --纹章！结合！
-local m=75000023
-local cm=_G["c"..m]
-function cm.initial_effect(c)
+function c75000023.initial_effect(c)
 	aux.AddCodeList(c,75000001)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -127,5 +125,3 @@ function c75000023.activate(e,tp,eg,ep,ev,re,r,rp)
 		tc:CompleteProcedure()
 	end
 end
-
-

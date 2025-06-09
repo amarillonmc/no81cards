@@ -34,17 +34,31 @@ end
 function cm.spfilter(c,e,tp)
 	return c:IsLevelBelow(6) and _G["c"..c:GetCode()] and _G["c"..c:GetCode()].IOtus and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+function cm.stfilter(c,tp)
+	return _G["c"..c:GetCode()] and _G["c"..c:GetCode()].IOtus and c:IsType(TYPE_FIELD) and not c:IsForbidden() and (c:CheckUniqueOnField(tp) or c:CheckUniqueOnField(1-tp))
+end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.stfilter,tp,LOCATION_DECK,0,1,nil,tp) end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local tc=Duel.SelectMatchingCard(tp,cm.stfilter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
+	if tc then
+		local p=tp
+		if not cm.stfilter(tc,tp) or Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))==1 then p=1-tp end
+		local fc=Duel.GetFieldCard(p,LOCATION_SZONE,5)
+		if fc then
+			Duel.SendtoGrave(fc,REASON_RULE)
+			Duel.BreakEffect()
+		end
+		Duel.MoveToField(tc,tp,p,LOCATION_FZONE,POS_FACEUP,true)
+		if p==1-tp and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+			if g:GetCount()>0 then
+				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+			end
+		end
 	end
 end
 function cm.rccfilter(c)

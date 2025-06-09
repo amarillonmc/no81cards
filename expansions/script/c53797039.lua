@@ -60,6 +60,8 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		local g=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_MZONE,nil,ev)
+		if #g==0 then return end
+		Duel.BreakEffect()
 		Duel.Destroy(g,REASON_EFFECT)
 	end
 end

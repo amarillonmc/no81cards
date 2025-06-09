@@ -29,7 +29,10 @@ function c75000051.initial_effect(c)
 ---
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_SINGLE)
+	e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e5:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCondition(c75000051.atkcon)
 	e5:SetValue(aux.ChangeBattleDamage(1,HALF_DAMAGE))
 	c:RegisterEffect(e5)
 ---

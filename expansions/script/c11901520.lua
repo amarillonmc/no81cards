@@ -19,12 +19,12 @@ function s.initial_effect(c)
     --Damage
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_DAMAGE)
+	e2:SetCategory(CATEGORY_RECOVER)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,id+1)
+	e2:SetCountLimit(1,id)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
     e2:SetCost(s.stcost)
 	e2:SetTarget(s.dstg)
@@ -59,9 +59,9 @@ function s.stcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(c,nil,SEQ_DECKTOP,REASON_COST)
 end
 function s.dstg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,0x0c,0x0c,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,0x30,0x30,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-    local g1=Duel.SelectTarget(tp,Card.IsFaceup,tp,0x0c,0x0c,1,2,nil)
+    local g1=Duel.SelectTarget(tp,aux.TRUE,tp,0x30,0x30,1,1,nil)
     Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
     Duel.SetChainLimit(s.chainlm)
 end
@@ -72,6 +72,12 @@ function s.dsop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
     if #g>0 then
-        Duel.Damage(1-tp,#g*100,REASON_EFFECT)
+        local tc=g:GetFirst()
+        if tc:IsFacedown() then
+            Duel.ConfirmCards(tp,tc)
+        else
+            Duel.HintSelection(g)
+        end
+        Duel.Recover(tp,100,REASON_EFFECT)
 	end
 end

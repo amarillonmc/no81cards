@@ -22,6 +22,34 @@ function c9910717.initial_effect(c)
 	e2:SetTarget(c9910717.target2)
 	e2:SetOperation(c9910717.activate2)
 	c:RegisterEffect(e2)
+	if not c9910717.global_check then
+		c9910717.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_MSET)
+		ge1:SetOperation(c9910717.checkop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_CHANGE_POS)
+		Duel.RegisterEffect(ge2,0)
+		local ge3=ge1:Clone()
+		ge3:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(ge3,0)
+		local ge4=ge1:Clone()
+		ge4:SetCode(EVENT_SSET)
+		Duel.RegisterEffect(ge4,0)
+	end
+end
+function c9910717.checkfilter(c,p)
+	return c:IsFacedown() and c:IsControler(p)
+end
+function c9910717.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local p=Duel.GetTurnPlayer()
+	if (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+		and eg:IsExists(c9910717.checkfilter,1,nil,p) and Duel.GetFlagEffect(1-p,9910717)==0 then
+		Duel.RegisterFlagEffect(1-p,9910717,0,0,1)
+		Duel.SelectYesNo(1-p,aux.Stringid(9910717,2))
+	end
 end
 function c9910717.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end

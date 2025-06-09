@@ -33,7 +33,7 @@ function c75000811.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c75000811.tgfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa751,0xa751)  and c:IsAbleToGrave()
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa751,0x375a)  and c:IsAbleToGrave()
 end
 function c75000811.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75000811.tgfilter,tp,LOCATION_DECK,0,1,nil) end
