@@ -33,6 +33,9 @@ s.Findesiecle=true
 function s.rfilter(c,tp,chk)
 	return _G["c"..c:GetCode()] and _G["c"..c:GetCode()].Findesiecle and c:IsControler(tp) and c:IsFaceup()
 end
+function s.cfilter(c)
+	return c:IsFacedown() or not c:IsRace(0x10)
+end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,s.rfilter,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
@@ -40,7 +43,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and Duel.IsChainDisablable(ev)
+	return rp==1-tp and Duel.IsChainDisablable(ev) and not Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -58,10 +61,11 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 			ec:CancelToGrave()
 			Duel.Destroy(ec,REASON_RULE)
 			if Duel.SSet(tp,ec)~=0 and ec:IsLocation(LOCATION_SZONE) then
-				Duel.RegisterFlagEffect(ec,id,RESET_EVENT+RESETS_STANDARD,0,1)
+				ec:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
 				e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 				e1:SetCode(EVENT_CHAINING)
+				e1:SetLabelObject(ec)
 				e1:SetCondition(s.negcon)
 				e1:SetOperation(s.negop)
 				Duel.RegisterEffect(e1,tp)
@@ -70,7 +74,13 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,id)~=0 and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffect(id)~=0 and re:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		return true
+	else
+		e:Reset()
+		return false
+	end
 end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,91300062)
