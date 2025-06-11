@@ -102,9 +102,9 @@ function c260013011.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(c260013011.xyzfilter2,nil,e,tp)
 	if Duel.GetFlagEffect(tp,260013011)==0 and g:GetCount()>0 and g:GetCount()==g2:GetCount() and rc:IsRelateToEffect(re)
 		and Duel.IsChainNegatable(ev) and Duel.GetLocationCountFromEx(tp,tp,g,c)>0 and Duel.SelectYesNo(tp,aux.Stringid(260013011,0)) then
-		Duel.ConfirmCards(1-tp,c)
-		Duel.RegisterFlagEffect(tp,260013011,RESET_PHASE+PHASE_END,0,1)
 		if Duel.NegateEffect(ev) then
+			Duel.ConfirmCards(1-tp,c)
+			Duel.RegisterFlagEffect(tp,260013011,RESET_PHASE+PHASE_END,0,1)
 			rc:CancelToGrave()
 			g:AddCard(rc)
 			local tc=g:GetFirst()
@@ -135,8 +135,9 @@ function c260013011.atop(e,tp,eg,ep,ev,re,r,rp)
 	if not a:IsRelateToEffect(e) and a:IsAttackable() and not a:IsStatus(STATUS_ATTACK_CANCELED)
 		and a:IsCanBeXyzMaterial(c) and d:IsCanBeXyzMaterial(c)
 		and not d:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(260013011,0)) then
-		Duel.ConfirmCards(1-tp,c)
 		if Duel.NegateAttack() then
+			Duel.ConfirmCards(1-tp,c)
+			Duel.RegisterFlagEffect(tp,260013011,RESET_PHASE+PHASE_END,0,1)
 			local g=Group.FromCards(a,d)
 			local tc=g:GetFirst()
 			while tc do

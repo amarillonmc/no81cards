@@ -11,7 +11,19 @@ function cm.initial_effect(c)
 	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
-
+	--to hand
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetCategory(CATEGORY_DRAW)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_TO_HAND)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,m+1000)
+	e2:SetCondition(cm.thcon)
+	e2:SetTarget(cm.thtg)
+	e2:SetOperation(cm.thop)
+	c:RegisterEffect(e2)
 	--spsummon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,2))
@@ -35,6 +47,22 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,sg)
 	end
+end
+function cm.cfilter(c,tp,re)
+	return c:IsPreviousControler(tp) and aux.IsCodeListed(c,40020183) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:IsReason(REASON_EFFECT) and re:IsActivated() and re:IsActiveType(TYPE_MONSTER) 
+end
+function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.cfilter,1,nil,tp,re)
+end
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
 end
 
 function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
