@@ -30,10 +30,10 @@ function c75081034.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c75081034.cfilter1,1,nil,tp) or eg:IsExists(c75081034.cfilter2,1,nil,tp)
 end
 function c75081034.cfilter1(c,tp)
-	return c:IsSetCard(0xa754) and c:IsLocation(LOCATION_HAND+LOCATION_GRAVE) and c:IsPreviousControler(tp) 
+	return c:IsSetCard(0xa754) and c:IsLocation(LOCATION_HAND+LOCATION_GRAVE) and c:IsPreviousControler(tp)  and c:IsPreviousLocation(LOCATION_MZONE)
 end
 function c75081034.cfilter2(c,tp)
-	return c:IsSetCard(0xa754) and c:IsLocation(LOCATION_DECK+LOCATION_REMOVED) and c:IsPreviousControler(tp) 
+	return c:IsSetCard(0xa754) and c:IsLocation(LOCATION_DECK+LOCATION_REMOVED) and c:IsPreviousControler(tp)  and c:IsPreviousLocation(LOCATION_MZONE)
 end
 function c75081034.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

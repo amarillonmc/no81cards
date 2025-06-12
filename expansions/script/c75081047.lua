@@ -35,14 +35,14 @@ function c75081047.initial_effect(c)
 	c:RegisterEffect(e3)  
 end
 function c75081047.sumtg(e,c)
-	return c:IsType(TYPE_MONSTER) and c~=e:GetHandler() and c:IsSetCard(0xa754)
+	return c:IsType(TYPE_MONSTER) and c~=e:GetHandler() and c:IsSetCard(0xa754) and c:IsPreviousLocation(LOCATION_MZONE)
 end
 --
 function c75081047.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c75081047.cfilter1,1,nil,tp) 
 end
 function c75081047.cfilter1(c,tp)
-	return c:IsSetCard(0xa754) and c:IsPreviousControler(tp) 
+	return c:IsSetCard(0xa754) and c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)
 end
 function c75081047.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
