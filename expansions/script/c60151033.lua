@@ -134,36 +134,34 @@ function c60151033.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=e:GetHandler():GetCounter(0x101b)
 	local val=ct*300
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	if Duel.GetLocationCountFromEx(tp)<=0 
-		or not Duel.IsExistingMatchingCard(c60151033.op2f,tp,LOCATION_EXTRA,0,1,nil,e,tp,val) 
-		or c:GetCounter(0x101b)==0 then 
+		or not Duel.IsExistingMatchingCard(c60151033.op2f,tp,LOCATION_EXTRA,0,1,nil,e,tp,val) then 
 		Duel.Destroy(c,REASON_EFFECT)
-	end
-	e:GetHandler():RemoveCounter(tp,0x101b,ct,REASON_EFFECT)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c60151033.op2f,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,val)
-	local tc=g:GetFirst()
-	if tc:IsType(TYPE_XYZ) then
-		if Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)~=0 then
-			c:CancelToGrave()
-			Duel.Overlay(tc,Group.FromCards(c))
+	elseif c:GetCounter(0x101b)>0 then
+		e:GetHandler():RemoveCounter(tp,0x101b,ct,REASON_EFFECT)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,c60151033.op2f,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,val)
+		local tc=g:GetFirst()
+		if tc:IsType(TYPE_XYZ) then
+			if Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)~=0 then
+				c:CancelToGrave()
+				Duel.Overlay(tc,Group.FromCards(c))
+			end
+		elseif tc:IsType(TYPE_LINK) then
+			Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)
 		end
-	elseif tc:IsType(TYPE_LINK) then
-		Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)
-	end
-	local g2=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
-	local tc2=g2:GetFirst()
-	while tc2 do
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-		e1:SetValue(0)
-		e1:SetReset(RESET_EVENT+0x1fe0000)
-		tc2:RegisterEffect(e1)
-		tc2=g2:GetNext()
-	end
-	if c:IsLocation(LOCATION_SZONE) then
+		local g2=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+		local tc2=g2:GetFirst()
+		while tc2 do
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+			e1:SetValue(0)
+			e1:SetReset(RESET_EVENT+0x1fe0000)
+			tc2:RegisterEffect(e1)
+			tc2=g2:GetNext()
+		end
+	else
 		Duel.Destroy(c,REASON_EFFECT)
 	end
 end

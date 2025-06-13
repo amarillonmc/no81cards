@@ -18,9 +18,10 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetRange(LOCATION_SZONE) -- 修改为魔陷区生效
+	e1:SetRange(LOCATION_SZONE)
 	e1:SetCategory(CATEGORY_DISABLE)	
 	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetCondition(s.discon)
 	e1:SetOperation(s.disop)
 	c:RegisterEffect(e1)
 end
@@ -40,11 +41,13 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	-- 卡名验证与无效处理
 	if ac~=id then
 		Duel.NegateActivation(ev)  -- 无效效果
-		Duel.Hint(HINT_SOUND,0,aux.Stringid(id,1)) -- 播放音效提示
 	end
 end
 
 --2
+function s.discon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp and Duel.IsChainDisablable(ev)
+end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(1-tp,aux.Stringid(id,0)) then
 		Duel.PayLPCost(1-tp,50) -- 支付50生命值
