@@ -18,7 +18,7 @@ function s.initial_effect(c)
 	e5:SetCategory(CATEGORY_REMOVE)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1)
+	e5:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e5:SetCondition(aux.NOT(s.qcon))
 	e5:SetCost(s.rcost)
 	e5:SetTarget(s.rtg)
@@ -41,7 +41,6 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.atlimit(e,c)
-	local tp=e:GetHandlerPlayer()
 	return c:IsLevel(0) and not c:IsImmuneToEffect(e)
 end
 function s.efilter(e,te)
@@ -70,7 +69,6 @@ function s.rtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return #g==5 and g:FilterCount(Card.IsAbleToRemove,nil)>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CARDTYPE)
 	e:SetLabel(Duel.AnnounceType(tp))
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_DECK)
 end
 function s.rop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)<5 then return end

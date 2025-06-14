@@ -52,7 +52,6 @@ function s.initial_effect(c)
 	c:RegisterEffect(e77)
 end
 function s.atlimit(e,c)
-	local tp=e:GetHandlerPlayer()
 	return c:IsSummonLocation(LOCATION_EXTRA) and not c:IsImmuneToEffect(e)
 end
 function s.efilter(e,te)
@@ -94,7 +93,7 @@ end
 function s.rtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,1-tp,LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
 end
 function s.rop2(e,tp,eg,ep,ev,re,r,rp)
 	local g0=Duel.GetFieldGroup(tp,0,LOCATION_HAND)

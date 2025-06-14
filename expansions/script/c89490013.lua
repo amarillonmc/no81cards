@@ -25,7 +25,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.spcfilter(c,tp)
-	return c:IsPreviousLocation(LOCATION_HAND+LOCATION_ONFIELD) and c:IsPreviousControler(tp) and bit.band(c:GetPreviousRaceOnField(),RACE_WYRM)~=0 and bit.band(c:GetPreviousAttributeOnField(),ATTRIBUTE_FIRE)~=0 and (se==nil or c:GetReasonEffect()~=se)
+	return c:IsPreviousLocation(LOCATION_HAND+LOCATION_ONFIELD) and c:IsPreviousControler(tp) and bit.band(c:GetPreviousRaceOnField(),RACE_WYRM)~=0 and bit.band(c:GetPreviousAttributeOnField(),ATTRIBUTE_FIRE)~=0
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local f=not eg:IsContains(e:GetHandler()) and eg:IsExists(s.spcfilter,1,nil,tp)
