@@ -17,18 +17,13 @@ function c28352012.initial_effect(c)
 	--to deck
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TODECK)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCondition(c28352012.tdcon1)
+	e2:SetCondition(c28352012.tdcon)
 	e2:SetTarget(c28352012.tdtg)
 	e2:SetOperation(c28352012.tdop)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetHintTiming(TIMING_END_PHASE)
-	e3:SetCondition(c28352012.tdcon2)
-	c:RegisterEffect(e3)
 end
 function c28352012.matfilter(c,syncard)
 	return c:IsTuner(syncard) or Duel.GetLP(c:GetControler())>8000
@@ -64,8 +59,8 @@ function c28352012.reop(e,tp,eg,ep,ev,re,r,rp)
 		e:GetHandler():RegisterEffect(e1,true)
 	end
 end
-function c28352012.tdcon1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(tp)<10000
+function c28352012.tdcon(e,tp,eg,ep,ev,re,r,rp)
+	return ep==1-tp
 end
 function c28352012.tdcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetLP(tp)>=10000

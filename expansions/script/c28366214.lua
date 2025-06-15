@@ -33,7 +33,7 @@ function c28366214.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
 end
 function c28366214.tfilter(c)
-	return c:IsRace(RACE_FAIRY) and (c:IsLevelAbove(1) or c:IsRankAbove(1)) and c:IsFaceup()
+	return c:IsRace(RACE_FAIRY) and c:IsFaceup()-- and (c:IsLevelAbove(1) or c:IsRankAbove(1))
 end
 function c28366214.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c28366214.tfilter(chkc) end
@@ -66,10 +66,11 @@ function c28366214.activate(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e2)
 	end
 end
-function c28366214.efilter(e,re)
-	local c=e:GetHandler()
-	local rc=re:GetHandler()
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and re:IsActiveType(TYPE_MONSTER) and (rc:IsRankAbove(1) and rc:GetRank()<c:GetRank() or rc:IsLevelAbove(1) and rc:GetLevel()<c:GetLevel())
+function c28366214.efilter(e,te)
+	if te:GetOwnerPlayer()==e:GetHandlerPlayer() then return false end
+	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	return not g or not g:IsContains(e:GetHandler())
 end
 function c28366214.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -27,7 +27,7 @@ function c75081038.initial_effect(c)
 	c:RegisterEffect(e3) 
 end
 function c75081038.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return  re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_TRAP+TYPE_SPELL)
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) 
 end
 function c75081038.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

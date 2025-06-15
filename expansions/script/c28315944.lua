@@ -35,7 +35,7 @@ function c28315944.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
 function c28315944.thfilter(c)
-	return c:IsSetCard(0x283) and c:IsLevel(4) and c:IsAbleToHand()
+	return c:IsSetCard(0x283) and c:IsType(TYPE_TUNER) and c:IsAbleToHand()
 end
 function c28315944.sfilter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()

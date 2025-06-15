@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE+LOCATION_HAND)
 	e2:SetCountLimit(1,m)
 	e2:SetCost(cm.cost)
-	e2:SetCondition(cm.spcon)
+	--e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.thtg)
 	e2:SetOperation(cm.thop)
 	c:RegisterEffect(e2)
@@ -31,10 +31,10 @@ end
 --Effect 1
 --Effect 2
 function cm.confilter(c)
-	return  c:IsType(TYPE_MONSTER) and c:IsFaceup() and cm.DragWizard(c)
+	return  c:IsType(TYPE_MONSTER) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and cm.DragWizard(c)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(cm.confilter,tp,LOCATION_MZONE,0,3,nil)
+	return Duel.IsExistingMatchingCard(cm.confilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,3,nil)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end

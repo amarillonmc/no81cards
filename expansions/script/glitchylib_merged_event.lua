@@ -33,8 +33,9 @@ forced							= Raises the custom event even if the final group is empty (require
 customevgop						= Allows to call a custom function when the cards involved in the local Event Groups are receiving the flag
 								(useful for effects that must keep track of certain properties the cards had in a previous location)
 raiseOnlyOneEvent				= If true, only 1 custom event will be raised, independently from how many times the input event was detected
+checkcond						= If this condition is not met, the event check does not occur
 ]]
-function Auxiliary.RegisterMergedDelayedEventGlitchy(c,code,event,f,flag,range,evgcheck,check_if_already_in_location,operation,simult_check,forced,customevgop,raiseOnlyOneEvent)
+function Auxiliary.RegisterMergedDelayedEventGlitchy(c,code,event,f,flag,range,evgcheck,check_if_already_in_location,operation,simult_check,forced,customevgop,raiseOnlyOneEvent,checkcond)
 	if type(event)~="table" then event={event} end
 	if not f then f=aux.TRUE end
 	if not flag then flag=c:GetOriginalCode() end
@@ -77,7 +78,7 @@ function Auxiliary.RegisterMergedDelayedEventGlitchy(c,code,event,f,flag,range,e
 				ge1:SetCode(ev)
 				ge1:SetLabel(code)
 				ge1:SetLabelObject(g)
-				ge1:SetOperation(Auxiliary.MergedDelayEventCheckGlitchy1(ev,flag,f,nil,evgcheck,nil,operation,simult_check,forced,customevgop,EVENT_COUNTER_ID,raiseOnlyOneEvent))
+				ge1:SetOperation(Auxiliary.MergedDelayEventCheckGlitchy1(ev,flag,f,nil,evgcheck,nil,operation,simult_check,forced,customevgop,EVENT_COUNTER_ID,raiseOnlyOneEvent,checkcond))
 				Duel.RegisterEffect(ge1,0)
 			end
 		end
@@ -114,7 +115,7 @@ function Auxiliary.RegisterMergedDelayedEventGlitchy(c,code,event,f,flag,range,e
 			--ge1:SetRange(range)
 			ge1:SetLabel(code)
 			ge1:SetLabelObject(g)
-			ge1:SetOperation(Auxiliary.MergedDelayEventCheckGlitchy1(ev,flag,f,public_range,evgcheck,se,operation,simult_check,forced,customevgop,EVENT_COUNTER_ID,raiseOnlyOneEvent))
+			ge1:SetOperation(Auxiliary.MergedDelayEventCheckGlitchy1(ev,flag,f,public_range,evgcheck,se,operation,simult_check,forced,customevgop,EVENT_COUNTER_ID,raiseOnlyOneEvent,checkcond))
 			Duel.RegisterEffect(ge1,0)
 		end
 		local ge2=ge1:Clone()
@@ -139,6 +140,11 @@ function Auxiliary.RegisterMergedDelayedEventGlitchy(c,code,event,f,flag,range,e
 	end
 	
 end
+function Auxiliary.ContTrapMergedEventCheckCond(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return not (c:IsFaceup() and c:IsLocation(LOCATION_SZONE) and c:IsHasEffect(EFFECT_CARD_HAS_RESOLVED))
+end
+
 function Auxiliary.SignalEventIDUpdate(e,tp,eg,ep,ev,re,r,rp)
 	aux.MustUpdateEventID[e:GetOwner()] = true
 end
@@ -147,8 +153,10 @@ function Auxiliary.MergedDelayEventCheckGlitchy1(event,id,f,range,evgcheck,se,op
 				local c=e:GetOwner()
 				local tp=c:GetControler()
 				
+				if checkcond and not checkcond(e,tp,eg,ep,ev,re,r,rp) then return end
+				
 				if range then
-					if not c:IsLocation(range) or eg:IsContains(c) then
+					if not c:IsLocation(range) or (eg and eg:IsContains(c)) then
 						return
 					end
 					if c:IsLocation(LOCATION_SZONE) and not c:IsHasEffect(EFFECT_CARD_HAS_RESOLVED) then
@@ -348,6 +356,16 @@ end
 
 --Location Check
 EFFECT_CARD_HAS_RESOLVED = 47987298
+
+function Card.AddCardActivationResolutionCheck(c)
+	local loc=c:IsOriginalType(TYPE_FIELD) and LOCATION_FZONE or LOCATION_SZONE
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE|EFFECT_FLAG_CANNOT_DISABLE)
+	e0:SetRange(loc)
+	e0:SetCode(EFFECT_CARD_HAS_RESOLVED)
+	c:RegisterEffect(e0)
+end
 
 function Auxiliary.AlreadyInRangeCondition(e,re,se)
 	local se=e and e:GetLabelObject():GetLabelObject() or se

@@ -49,7 +49,7 @@ function c28316345.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local sel=e:GetLabel()
 	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and sel==1 and Duel.GetMZoneCount(tp)>0 and Duel.IsExistingMatchingCard(c28316345.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(28316345,3)) then
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and true and Duel.GetMZoneCount(tp)>0 and Duel.IsExistingMatchingCard(c28316345.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(28316345,3)) then
 		Duel.BreakEffect()
 		local g=Duel.GetMatchingGroup(c28316345.spfilter,tp,LOCATION_HAND,0,nil,e,tp)
 		local sc=g:GetFirst()

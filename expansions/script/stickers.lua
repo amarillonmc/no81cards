@@ -89,9 +89,9 @@ function Card.GetStickerCount(c,sticker)
 	end
 end
 function Duel.GetStickerCountOnPlayer(p,sticker)
-	if not Duel.GetFlagEffect(STICKER_FLAG) then return 0 end
+	if not Duel.PlayerHasFlagEffect(p,STICKER_FLAG) then return 0 end
 	if not sticker then
-		return Duel.GetFlagEffect(STICKER_FLAG)
+		return Duel.GetFlagEffect(p,STICKER_FLAG)
 	else
 		local ct=0
 		for _,label in ipairs({Duel.GetFlagEffectLabel(p,STICKER_FLAG)}) do

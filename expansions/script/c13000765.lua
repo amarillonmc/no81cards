@@ -45,7 +45,8 @@ end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-	local ac=Duel.AnnounceCard(tp)
+getmetatable(e:GetHandler()).announce_filter={TYPE_SPELL,OPCODE_ISTYPE,TYPE_TRAP,OPCODE_ISTYPE,OPCODE_OR}
+	local ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(e:GetHandler()).announce_filter))
 	local e1=Effect.CreateEffect(tc)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_CHANGE_CODE)
@@ -54,6 +55,21 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(ac)
 	tc:RegisterEffect(e1)
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -38,10 +38,9 @@ function VHisc_YMSJ.fselect(g,tp,sc,smat,slv)
 	local tc=g:GetFirst()
 	while tc do
 		lv=lv+tc:GetLevel()
-		if lv>=slv then break end 
 		tc=g:GetNext()
 	end
-	return smatck  and lv>=slv and Duel.GetLocationCountFromEx(tp,tp,g,sc)>0
+	return smatck  and lv==slv and Duel.GetLocationCountFromEx(tp,tp,g,sc)>0
 end
 
 function VHisc_YMSJ.spcon(e,c,smat,mg1,min,max)
@@ -62,7 +61,7 @@ function VHisc_YMSJ.spcon(e,c,smat,mg1,min,max)
 					mg:AddCard(smat) 
 				end
 -----------------------------------------------------------------------------------
-	return Duel.GetFlagEffect(tp,id)==0 and mg:CheckSubGroup(VHisc_YMSJ.fselect,2,4,tp,c,smat,lv)
+	return Duel.GetFlagEffect(tp,id)==0 and mg:CheckSubGroup(VHisc_YMSJ.fselect,2,2,tp,c,smat,lv)
 end
 function VHisc_YMSJ.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg1,min,max)
 	local id,lv=e:GetLabel()
@@ -81,7 +80,7 @@ function VHisc_YMSJ.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg1,min,max)
 				end
 -----------------------------------------------------------------------------------
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local sg=mg:SelectSubGroup(tp,VHisc_YMSJ.fselect,false,2,4,tp,c,smat,lv)
+	local sg=mg:SelectSubGroup(tp,VHisc_YMSJ.fselect,Duel.IsSummonCancelable(),2,2,tp,c,smat,lv)
 	if sg then
 		sg:KeepAlive()
 		e:SetLabelObject(sg)

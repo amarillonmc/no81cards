@@ -23,21 +23,25 @@ function c28354358.initial_effect(c)
 	e2:SetOperation(c28354358.thop)
 	c:RegisterEffect(e2)
 end
-function c28354358.filter(c)
+function c28354358.tfilter(c)
 	return c:IsRace(RACE_FAIRY) and c:IsSummonableCard() and c:IsAbleToHand()
 end
 function c28354358.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c28354358.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c28354358.filter,tp,LOCATION_GRAVE,0,1,nil) end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c28354358.tfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c28354358.tfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	local g=GetMatchingGroup(c28354358.tfilter,tp,LOCATION_GRAVE,0,nil):Filter(Card.IsCanBeEffectTarget,nil,e)
+	for tc in aux.Next(g) do
+		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28354358,1))
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectTarget(tp,c28354358.filter,tp,LOCATION_GRAVE,0,1,2,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,#g,0,LOCATION_GRAVE)
+	local tg=Duel.SelectTarget(tp,c28354358.tfilter,tp,LOCATION_GRAVE,0,1,2,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tg,#tg,0,LOCATION_GRAVE)
 end
 function c28354358.spfilter(c,e,tp)
 	return c:IsSetCard(0x283) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c28354358.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	local g=Duel.GetTargetsRelateToChain()
 	local tg=g:Filter(Card.IsAbleToHand,nil)
 	local ct=tg:FilterCount(Card.IsPreviousLocation,nil,LOCATION_ONFIELD)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)

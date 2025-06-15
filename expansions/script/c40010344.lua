@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.drcon)
+	--e1:SetCondition(cm.drcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
@@ -49,7 +49,7 @@ function cm.pfilter(c)
 	return c:IsRace(RACE_SPELLCASTER) and not c:IsPublic()
 end
 function cm.sp1filter(c,e,tp)
-	return cm.DragWizard(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (cm.DragWizard(c) or c:IsCode(40010332)) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -88,7 +88,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.sp1filter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
 	end
 end
 

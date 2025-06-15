@@ -1,7 +1,7 @@
 --开幕定式！
----@param c Card
 yume=yume or {}
 if c71403001 then
+---@param c Card
 function c71403001.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -32,17 +32,29 @@ end
 function c71403001.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(yume.PPTPendFilter,tp,LOCATION_DECK,0,nil)
 	if chk==0 then
+		local fct=0
+		if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsLocation(LOCATION_SZONE) then fct=1 end
 		return g:GetCount()>1 and g:IsExists(aux.FilterEqualFunction(Card.IsForbidden,false),1,nil)
 		and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1))
+		and Duel.GetLocationCount(tp,LOCATION_SZONE)>1+fct
 		and Duel.IsExistingMatchingCard(c71403001.filter1lnk,tp,LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,g,1,tp,LOCATION_DECK)
 end
 function c71403001.op1(e,tp,eg,ep,ev,re,r,rp)
+	local zone=0x1f00
+	local pflag1=Duel.CheckLocation(tp,LOCATION_PZONE,0)
+	local pflag2=Duel.CheckLocation(tp,LOCATION_PZONE,1)
+	if pflag1~pflag2 then 
+		zone=0xe00
+	end
+	if Duel.GetLocationCount(tp,LOCATION_SZONE,tp,LOCATION_REASON_TOFIELD,zone)==0 then
+		return
+	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local lnk=Duel.SelectMatchingCard(tp,c71403001.filter1lnk,tp,LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil):GetFirst()
+	local lnk=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c71403001.filter1lnk),tp,LOCATION_EXTRA+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil):GetFirst()
 	if not lnk then return end
-	if Duel.MoveToField(lnk,tp,lnk:GetOwner(),LOCATION_SZONE,POS_FACEUP,true) then
+	if Duel.MoveToField(lnk,tp,lnk:GetOwner(),LOCATION_SZONE,POS_FACEUP,true,zone) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetCode(EFFECT_CHANGE_TYPE)
 		e1:SetType(EFFECT_TYPE_SINGLE)
@@ -50,7 +62,10 @@ function c71403001.op1(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 		lnk:RegisterEffect(e1)
+	else
+		return
 	end
+	if not (pflag1 or pflag2) then return end
 	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local pc=Duel.SelectMatchingCard(tp,yume.PPTPlacePendExceptFromFieldFilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()

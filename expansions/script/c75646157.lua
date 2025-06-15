@@ -24,17 +24,24 @@ function s.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
-	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(1,EFFECT_COUNT_CODE_SINGLE)
 	e3:SetCondition(s.con)
 	e3:SetTarget(s.tg)
 	e3:SetOperation(s.op)
 	c:RegisterEffect(e3)
+	s.Houkai_token_effect=e3
+	s.Houkai_PhaseMAndB_effect=e3
+	local e4=e3:Clone()
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetCondition(s.con2)
+	c:RegisterEffect(e4)
 	--search
 	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(id,3))
+	e5:SetDescription(aux.Stringid(id,2))
 	e5:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_GRAVE+LOCATION_HAND)
@@ -68,7 +75,11 @@ function s.con(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	return e:GetHandler():GetCounter(0x1b)>0 and (Duel.GetTurnPlayer()==tp and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)) or (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)
 end
-
+function s.con2(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
+	return Duel.GetTurnPlayer()==tp and Duel.GetCurrentChain()==0
+		and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE and e:GetHandler():GetCounter(0x1b)>0
+end
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,id+1,0,0x4011,0,0,1,RACE_MACHINE,ATTRIBUTE_EARTH,POS_FACEUP_DEFENSE,1-tp) end
@@ -76,24 +87,26 @@ function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsRelateToEffect(e) and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0
 		and Duel.IsPlayerCanSpecialSummonMonster(tp,id+1,0,0x4011,0,0,1,RACE_MACHINE,ATTRIBUTE_EARTH,POS_FACEUP_DEFENSE,1-tp) then
-		e:GetHandler():RemoveCounter(tp,0x1b,1,REASON_EFFECT)
-		local token=Duel.CreateToken(tp,id+1)
-		if Duel.SpecialSummonStep(token,0,tp,1-tp,false,false,POS_FACEUP_DEFENSE) then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-			e1:SetCode(EVENT_LEAVE_FIELD)
-			e1:SetOperation(s.damop)
-			token:RegisterEffect(e1,true)
-		 end		
+		if c:RemoveCounter(tp,0x1b,1,REASON_EFFECT) or c:GetFlagEffect(75646009)>0 then 
+			local token=Duel.CreateToken(tp,id+1)
+			if Duel.SpecialSummonStep(token,0,tp,1-tp,false,false,POS_FACEUP_DEFENSE) then
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+				e1:SetCode(EVENT_LEAVE_FIELD)
+				e1:SetOperation(s.damop)
+				token:RegisterEffect(e1,true)
+			end
+		end
 	end
 	Duel.SpecialSummonComplete()
 end
 function s.damop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsReason(REASON_DESTROY) then
-		Duel.Damage(c:GetPreviousControler(),1000,REASON_EFFECT)
+		Duel.Damage(c:GetPreviousControler(),800,REASON_EFFECT)
 	end
 	e:Reset()
 end

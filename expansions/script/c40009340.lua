@@ -1,9 +1,11 @@
 --机空修缮士
 function c40009340.initial_effect(c)
+	--change name
+	aux.EnableChangeCode(c,40009035,LOCATION_HAND+LOCATION_DECK+LOCATION_MZONE+LOCATION_GRAVE)
 	 --to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(40009340,0))
-	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_TODECK)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
@@ -21,14 +23,14 @@ function c40009340.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,40009340)
+	e3:SetCountLimit(1,40009340+100)
 	e3:SetCost(c40009340.spcost)
 	e3:SetTarget(c40009340.sptg)
 	e3:SetOperation(c40009340.spop)
 	c:RegisterEffect(e3)  
 end
 function c40009340.tgfilter(c,tp)
-	return c:IsType(TYPE_QUICKPLAY) and c:IsAbleToHand()
+	return c:IsType(TYPE_SPELL) and c:IsAbleToDeck()
 		and Duel.IsExistingMatchingCard(c40009340.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetCode())
 end
 function c40009340.thfilter(c,code)
@@ -39,12 +41,12 @@ function c40009340.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(c40009340.tgfilter,tp,LOCATION_GRAVE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectTarget(tp,c40009340.tgfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c40009340.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) then
+	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c40009340.thfilter,tp,LOCATION_DECK,0,1,1,nil,tc:GetCode())
 		if g:GetCount()>0 then
@@ -58,7 +60,7 @@ function c40009340.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function c40009340.spfilter(c,e,tp,mc)
-	return c:IsLinkBelow(2) and c:IsSetCard(0xf13) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false)
+	return c:IsLink(1) and c:IsSetCard(0xf13) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false)
 		and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function c40009340.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

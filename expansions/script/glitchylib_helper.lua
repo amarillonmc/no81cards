@@ -1,7 +1,10 @@
 --Glitchy Helper
-TOKEN_GLITCHY_HELPER					= 33730999
+if TOKEN_GLITCHY_HELPER then return end
+
+TOKEN_GLITCHY_HELPER					= 1232
 GLITCHY_HELPER_TURN_COUNT_FLAG			= 0x1
 GLITCHY_HELPER_STICKER_FLAG				= 0x2
+GLITCHY_HELPER_PLAYER_COUNTER_FLAG		= 0x4
 
 local STRING_EXCLUDE_AI = STRING_EXCLUDE_AI or aux.Stringid(33730999,0)
 
@@ -190,6 +193,30 @@ function Auxiliary.SpawnGlitchyHelper(flags)
 				end
 			end
 		end
+		
+		if flags&GLITCHY_HELPER_PLAYER_COUNTER_FLAG>0 and aux.GlitchyHelperFlags&GLITCHY_HELPER_PLAYER_COUNTER_FLAG==0 then
+			aux.GlitchyHelperFlags = aux.GlitchyHelperFlags|GLITCHY_HELPER_PLAYER_COUNTER_FLAG
+			for p=0,1 do
+				if aux.GlitchyHelperIgnorePlayerTable[p+1]==false then
+					-- local h1=Effect.CreateEffect(aux.GlitchyHelper)
+					-- h1:SetDescription(aux.Stringid(33730999,3))
+					-- h1:SetType(EFFECT_TYPE_CONTINUOUS|EFFECT_TYPE_FIELD)
+					-- h1:SetCode(EVENT_FREE_CHAIN)
+					-- h1:SetCountLimit(10)
+					-- h1:SetCondition(aux.GlitchyHelperShowPlayerCountersCondition)
+					-- h1:SetOperation(aux.GlitchyHelperShowPlayerCounters)
+					-- Duel.RegisterEffect(h1,p)
+					local h2=Effect.CreateEffect(aux.GlitchyHelper)
+					h2:SetDescription(aux.Stringid(33730999,3))
+					h2:SetType(EFFECT_TYPE_CONTINUOUS|EFFECT_TYPE_FIELD)
+					h2:SetCode(EVENT_FREE_CHAIN)
+					h2:SetCountLimit(10)
+					h2:SetCondition(aux.GlitchyHelperShowPlayerCountersCountCondition)
+					h2:SetOperation(aux.GlitchyHelperShowPlayerCountersCount)
+					Duel.RegisterEffect(h2,p)
+				end
+			end
+		end
 	end
 end
 
@@ -229,6 +256,23 @@ function Auxiliary.GlitchyHelperShowStickersCount(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:Select(tp,1,1,nil):GetFirst()
 	local sticker=tc:GetSticker(tp)
 	local ct=tc:GetStickerCount(sticker)
+	--Duel.Hint(HINT_CARD,tp,TOKEN_GLITCHY_HELPER)
+	Duel.AnnounceNumber(tp,ct)
+	Duel.SetChainLimit(aux.FALSE)
+	Duel.SetChainLimitTillChainEnd(aux.FALSE)
+end
+
+--
+function Auxiliary.GlitchyHelperShowPlayerCountersCountCondition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetPlayerCounterCount(0)>0 or Duel.GetPlayerCounterCount(1)>0
+end
+function Auxiliary.GlitchyHelperShowPlayerCountersCount(e,tp,eg,ep,ev,re,r,rp)
+	local b1=Duel.GetPlayerCounterCount(tp)>0
+	local b2=Duel.GetPlayerCounterCount(1-tp)>0
+	local opt=aux.Option(tp,id,4,b1,b2)
+	local p = opt==0 and tp or 1-tp
+	local counter=Duel.GetPlayerCounter(p)
+	local ct=Duel.GetPlayerCounterCount(p,counter)
 	--Duel.Hint(HINT_CARD,tp,TOKEN_GLITCHY_HELPER)
 	Duel.AnnounceNumber(tp,ct)
 	Duel.SetChainLimit(aux.FALSE)

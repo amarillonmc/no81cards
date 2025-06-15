@@ -35,7 +35,7 @@ function c9911720.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c9911720.mfilter(c)
-	return c:IsFusionSetCard(0x9957) and not c:IsType(TYPE_FUSION)
+	return c:IsLevelBelow(9) and c:IsFusionSetCard(0x9957)
 end
 function c9911720.thfilter(c)
 	return c:IsSetCard(0x9957) and c:IsAbleToHand()

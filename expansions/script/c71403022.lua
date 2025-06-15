@@ -34,7 +34,7 @@ function c71403022.initial_effect(c)
 	--sp summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71403022,5))
-	e2:SetCategory(CATEGORY_POSITION+CATEGORY_DESTROY+CATEGORY_TOGRAVE+CATEGORY_DISABLE)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)

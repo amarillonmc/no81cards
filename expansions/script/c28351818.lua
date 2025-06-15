@@ -19,15 +19,13 @@ function c28351818.initial_effect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(c28351818.thcon)
 	e2:SetTarget(c28351818.thtg)
 	e2:SetOperation(c28351818.thop)
 	c:RegisterEffect(e2)
 end
 function c28351818.matfilter(c,syncard)
 	return c:IsTuner(syncard) or Duel.GetLP(c:GetControler())>8000
-end
-function c28351818.recon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c28351818.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -54,10 +52,11 @@ function c28351818.reop(e,tp,eg,ep,ev,re,r,rp)
 		e:GetHandler():RegisterEffect(e1,true)
 	end
 end
+function c28351818.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
+end
 function c28351818.thfilter(c,e,tp)
-	return c:IsSetCard(0x287)
-		and ((c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsAbleToHand() or c:IsSSetable()))
-		or (c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or (c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetMZoneCount(tp)>0))))
+	return c:IsSetCard(0x287) and ((c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsAbleToHand() or c:IsSSetable())) or (c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or (c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetMZoneCount(tp)>0))))
 end
 function c28351818.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28351818.thfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
@@ -74,6 +73,11 @@ function c28351818.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,tc)
 		else
 			Duel.SSet(tp,tc)
+			if tc:GetType()==TYPE_TRAP and tc:CheckActivateEffect(false,true,false)~=nil and Duel.SelectYesNo(tp,aux.Stringid(28351818,1)) then
+				local te=tc:CheckActivateEffect(false,true,false)
+				local op=te:GetOperation()
+				if op then op(e,tp,eg,ep,ev,re,r,rp) end
+			end
 		end
 	else
 		if tc:IsAbleToHand() and (not (tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetMZoneCount(tp)>0) or Duel.SelectOption(tp,1190,1153)==0) then
@@ -83,12 +87,6 @@ function c28351818.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 			Duel.ConfirmCards(1-tp,tc)
 		end
-	end
-	if Duel.GetLP(tp)>=10000 and tc:GetType()==TYPE_TRAP and tc:CheckActivateEffect(false,true,false)~=nil and Duel.SelectYesNo(tp,aux.Stringid(28351818,1)) then
-		Duel.PayLPCost(tp,1000)
-		local te=tc:CheckActivateEffect(false,true,false)
-		local op=te:GetOperation()
-		if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	end
 	if e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsFaceup() then
 		local e1=Effect.CreateEffect(e:GetHandler())

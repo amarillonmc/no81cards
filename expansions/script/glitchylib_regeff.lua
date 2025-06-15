@@ -108,6 +108,25 @@ function Effect.GLGetTargetRange(e)
 	return s,o
 end
 
+--Reset
+if not Effect.GetReset then
+	local _SetReset = Effect.SetReset
+
+	global_reset_effect_table={}
+	Effect.SetReset=function(e,reset,rct)
+		rct=rct or 1
+		global_reset_effect_table[e]={reset,rct}
+		return _SetReset(e,reset,rct)
+	end
+	
+	function Effect.GetReset(e)
+		if not global_reset_effect_table[e] then return 0,1 end
+		local reset=global_reset_effect_table[e][1]
+		local rct=global_reset_effect_table[e][2]
+		return reset,rct
+	end
+end
+
 --Global Card Effect Table
 function Card.GetEffects(c)
 	local eset=global_card_effect_table[c]

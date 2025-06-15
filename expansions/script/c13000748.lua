@@ -74,10 +74,13 @@ local e3=Effect.CreateEffect(c)
 		e3:SetCondition(cm.stcon)
 		e3:SetOperation(cm.stop)
 		e3:SetLabel(Duel.GetTurnCount())
-	   if Duel.GetCurrentPhase()<=PHASE_DRAW then
-		e3:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN,2)
+	  
+	if Duel.GetCurrentPhase()==PHASE_DRAW then
+		e1:SetLabel(Duel.GetTurnCount())
+		e1:SetReset(RESET_PHASE+PHASE_DRAW,2)
 	else
-		e3:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
+		e1:SetLabel(0)
+		e1:SetReset(RESET_PHASE+PHASE_DRAW)
 	end
 	   
 Duel.RegisterEffect(e3,tp)

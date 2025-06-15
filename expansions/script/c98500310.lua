@@ -12,10 +12,6 @@ function c98500310.initial_effect(c)
 	e1:SetTarget(c98500310.target)
 	e1:SetOperation(c98500310.activate)
 	c:RegisterEffect(e1)
-	local e4=e1:Clone()
-	e4:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
-	e4:SetCondition(c98500310.condition)
-	c:RegisterEffect(e4)
 	--SpecialSummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(98500310,1))
@@ -27,10 +23,6 @@ function c98500310.initial_effect(c)
 	e2:SetTarget(c98500310.sptg)
 	e2:SetOperation(c98500310.spop)
 	c:RegisterEffect(e2)
-	local e5=e2:Clone()
-	e5:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
-	e5:SetCondition(c98500310.condition)
-	c:RegisterEffect(e5)
 	--fusion summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(98500310,2))
@@ -42,10 +34,6 @@ function c98500310.initial_effect(c)
 	e3:SetTarget(c98500310.fstg)
 	e3:SetOperation(c98500310.fsop)
 	c:RegisterEffect(e3)
-	local e6=e3:Clone()
-	e6:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CAN_FORBIDDEN)
-	e6:SetCondition(c98500310.condition)
-	c:RegisterEffect(e6)
 	Duel.AddCustomActivityCounter(98500310,ACTIVITY_SPSUMMON,c98500310.counterfilter)
 end
 function c98500310.counterfilter(c)
@@ -98,7 +86,7 @@ function c98500310.activate(e,tp,eg,ep,ev,re,r,rp)
 	local op=e:GetLabel()
 	if op==1 then
 		local g=Duel.GetMatchingGroup(c98500310.thfilter,tp,LOCATION_DECK,0,nil)
-		if g:GetCount()>0 then
+		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(98500310,7)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=g:Select(tp,1,1,nil)
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
@@ -106,7 +94,7 @@ function c98500310.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	elseif op==2 then
 		local g=Duel.GetMatchingGroup(c98500310.thfilter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
-		if g:GetCount()>0 then
+		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(98500310,8)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 			local sg=g:Select(tp,1,1,nil)
 			Duel.SendtoGrave(sg,nil,REASON_EFFECT)

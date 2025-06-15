@@ -2,6 +2,7 @@
 function c40009037.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(40009037,0))
 	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_EQUIP+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
@@ -11,6 +12,18 @@ function c40009037.initial_effect(c)
 	e1:SetTarget(c40009037.target)
 	e1:SetOperation(c40009037.operation)
 	c:RegisterEffect(e1)   
+	--Activate
+	local e7=Effect.CreateEffect(c)
+	e7:SetDescription(aux.Stringid(40009037,1))
+	e7:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e7:SetType(EFFECT_TYPE_ACTIVATE)
+	e7:SetCode(EVENT_CHAINING)
+	--e7:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e7:SetCost(c40009037.spcost)
+	e7:SetCondition(c40009037.spcon)
+	e7:SetTarget(c40009037.sptg)
+	e7:SetOperation(c40009037.spop)
+	c:RegisterEffect(e7)  
 	--atk up
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_EQUIP)
@@ -104,4 +117,31 @@ function c40009037.operation(e,tp,eg,ep,ev,re,r,rp)
 	else
 		c:CancelToGrave(false)
 	end
+end
+function c40009037.cfilter(c)
+	return c:GetSequence()>=5
+end
+function c40009037.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return not Duel.IsExistingMatchingCard(c40009037.cfilter,tp,LOCATION_MZONE,0,1,nil)
+end
+function c40009037.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+end
+function c40009037.spfilter1(c,e,tp,ec)
+	return c:IsLink(1) and c:IsSetCard(0xf13) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false)
+		 and Duel.GetLocationCountFromEx(tp,tp,rc,c)>0
+end
+function c40009037.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c40009037.spfilter1,tp,LOCATION_EXTRA,0,1,nil,e,tp,e:GetHandler()) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function c40009037.spop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c40009037.spfilter1,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,e:GetHandler())
+	local tc=g:GetFirst()
+	if not tc then return end
+	tc:SetMaterial(nil)
+	Duel.SpecialSummon(tc,SUMMON_TYPE_LINK,tp,tp,false,false,POS_FACEUP)
+	tc:CompleteProcedure()
 end

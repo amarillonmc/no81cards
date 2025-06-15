@@ -1,7 +1,7 @@
 --护花使者 阿尔弗雷德
 function c75000011.initial_effect(c)
 	aux.AddCodeList(c,75000001)
-	--to hand
+	-- 回收
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(75000011,0))
 	e1:SetCategory(CATEGORY_TOHAND)
@@ -41,6 +41,7 @@ function c75000011.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectTarget(tp,c75000011.filter1,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c75000011.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

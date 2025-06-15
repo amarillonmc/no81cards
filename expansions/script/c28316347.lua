@@ -35,7 +35,7 @@ function c28316347.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
 function c28316347.thfilter(c)
-	return c:IsSetCard(0x283) and c:IsLevel(4) and c:IsAbleToHand()
+	return c:IsSetCard(0x283) and c:IsAttribute(ATTRIBUTE_EARTH) and c:IsAbleToHand()
 end
 function c28316347.recop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Recover(tp,1000,REASON_EFFECT)==0 then return end

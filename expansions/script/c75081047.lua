@@ -48,6 +48,23 @@ function c75081047.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAbleToHand() end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+			local hg=Duel.GetMatchingGroup(Card.IsLevelAbove,tp,LOCATION_HAND,0,nil,1)
+			local tc=hg:GetFirst()
+			while tc do
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_UPDATE_LEVEL)
+				e1:SetValue(-1)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+RESET_PHASE+PHASE_END)
+				tc:RegisterEffect(e1)
+				tc=hg:GetNext()
+			end
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e2:SetCode(EVENT_TO_HAND)
+			e2:SetReset(RESET_PHASE+PHASE_END)
+			e2:SetOperation(c75081047.hlvop)
+			Duel.RegisterEffect(e2,tp)
 end
 function c75081047.sumtg(e,c)
 	return c:IsType(TYPE_MONSTER) and c~=e:GetHandler() and c:IsSetCard(0xa754)
@@ -70,23 +87,7 @@ function c75081047.spop(e,tp,eg,ep,ev,re,r,rp)
 			else
 				Duel.MSet(tp,tc,true,nil,1)
 			end
-			local hg=Duel.GetMatchingGroup(Card.IsLevelAbove,tp,LOCATION_HAND,0,nil,1)
-			local tc=hg:GetFirst()
-			while tc do
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_UPDATE_LEVEL)
-				e1:SetValue(-1)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+RESET_PHASE+PHASE_END)
-				tc:RegisterEffect(e1)
-				tc=hg:GetNext()
-			end
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e2:SetCode(EVENT_TO_HAND)
-			e2:SetReset(RESET_PHASE+PHASE_END)
-			e2:SetOperation(c75081047.hlvop)
-			Duel.RegisterEffect(e2,tp)
+
 		end  
 	end
 end

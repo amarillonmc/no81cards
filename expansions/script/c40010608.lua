@@ -34,16 +34,25 @@ end
 function cm.thfilter(c)
 	return ((aux.IsCodeListed(c,40010499) and c:IsType(TYPE_MONSTER)) or c:IsCode(40010499)) and not c:IsCode(m) and c:IsAbleToHand()
 end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,5) end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if #g>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	if Duel.IsPlayerCanDiscardDeck(tp,5) then
+		Duel.ConfirmDecktop(tp,5)
+		local g=Duel.GetDecktopGroup(tp,5)
+		if g:GetCount()>0 then
+			Duel.DisableShuffleCheck()
+			if g:IsExists(cm.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+				local sg=g:FilterSelect(tp,cm.thfilter,1,1,nil)
+				Duel.SendtoHand(sg,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,sg)
+				Duel.ShuffleHand(tp)
+				g:Sub(sg)
+			end
+			Duel.SendtoGrave(g,REASON_EFFECT+REASON_REVEAL)
+		end
 	end
 end
 function cm.spcfilter(c)

@@ -401,8 +401,11 @@ function Auxiliary.ClearTable(tab)
 end
 function Auxiliary.ClearTableRecursive(tab)
 	for k,v in pairs(tab) do
-		if type(v)=="table" then
+		local typ=aux.GetValueType(v)
+		if typ=="table" then
 			aux.ClearTableRecursive(v)
+		elseif typ=="Group" then
+			v:DeleteGroup()
 		end
 		tab[k]=nil
 	end
@@ -441,6 +444,8 @@ function Card.IsDirectlyActivatable(c,tp,ignore_loc)
 end
 
 function Card.IsCanBeAttachedTo(c,xyzc,e,p,r)
+	p = p or (e and e:GetHandlerPlayer()) or xyzc:GetControler()
+	r = r or REASON_EFFECT
 	return xyzc:IsType(TYPE_XYZ) and c:IsCanOverlay(xyzc:GetControler()) and not c:IsForbidden() --futureproofing
 end
 function Duel.Attach(c,xyz,transfer,e,r,rp)
@@ -1021,6 +1026,22 @@ end
 function Duel.GetGroupOperatedByThisEffect(e,exc)
 	return Duel.GetOperatedGroup():Filter(aux.BecauseOfThisEffect(e),exc)
 end
+function Glitchy.BecauseOfThisCost(e)
+	return	function(c)
+				return c:IsReason(REASON_COST) and not c:IsReason(REASON_REDIRECT) and c:GetReasonEffect()==e
+			end
+end
+function Duel.GetGroupOperatedByThisCost(e,exc)
+	return Duel.GetOperatedGroup():Filter(xgl.BecauseOfThisCost(e),exc)
+end
+function Glitchy.BecauseOfThisRule(e)
+	return	function(c)
+				return c:IsReason(REASON_RULE) and not c:IsReason(REASON_REDIRECT) and c:GetReasonEffect()==e
+			end
+end
+function Duel.GetGroupOperatedByThisRule(e,exc)
+	return Duel.GetOperatedGroup():Filter(xgl.BecauseOfThisRule(e),exc)
+end
 function Auxiliary.AfterShuffle(g)
 	for p=0,1 do
 		if aux.PLChk(g,p,LOCATION_DECK) then
@@ -1428,6 +1449,17 @@ end
 function Duel.GetTargetParam()
 	return Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 end
+function Effect.GetChainLink(e)
+	local max=Duel.GetCurrentChain()
+	if max==0 then return 0 end
+	for i=1,max do
+		local ce=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
+		if ce==e then
+			return i
+		end
+	end
+	return 0
+end
 
 --Cloned Effects
 function Effect.SpecialSummonEventClone(e,c,notreg)
@@ -1831,9 +1863,10 @@ function Auxiliary.ActivateException(e,chk)
 		return
 	end
 end
-function Auxiliary.ExceptThis(c)
+function Auxiliary.ExceptThis(c,e)
 	if aux.GetValueType(c)=="Effect" then c=c:GetHandler() end
-	if c:IsRelateToChain() then return c else return nil end
+	local ch=aux.GetValueType(e)=="Effect" and e:GetChainLink() or nil
+	if c:IsRelateToChain(ch) then return c else return nil end
 end
 
 --Descriptions
@@ -2600,6 +2633,7 @@ end
 --Zones
 function Duel.GetMZoneCountForMultipleSpSummon(p,exc)
 	local ft=Duel.GetMZoneCount(p,exc)
+	if ft<=0 then return ft end
 	if Duel.IsPlayerAffectedByEffect(p,CARD_BLUEEYES_SPIRIT) then ft=1 end
 	return ft
 end
@@ -2747,6 +2781,20 @@ function Duel.GetHandCount(p)
 		return Duel.GetFieldGroupCount(0,LOCATION_HAND,LOCATION_HAND)
 	else
 		return Duel.GetFieldGroupCount(p,LOCATION_HAND,0)
+	end
+end
+function Duel.GetMonsters(p)
+	if not p then
+		return Duel.GetFieldGroup(0,LOCATION_MZONE,LOCATION_MZONE)
+	else
+		return Duel.GetFieldGroup(p,LOCATION_MZONE,0)
+	end
+end
+function Duel.GetMonsterCount(p)
+	if not p then
+		return Duel.GetFieldGroupCount(0,LOCATION_MZONE,LOCATION_MZONE)
+	else
+		return Duel.GetFieldGroupCount(p,LOCATION_MZONE,0)
 	end
 end
 function Duel.GetDeck(p)
@@ -3801,6 +3849,13 @@ function Auxiliary.ContactFusionMaterialsToDeck(g,_,tp)
 		Duel.ConfirmCards(1-tp,cg)
 	end
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
+end
+function Auxiliary.ContactFusionMaterialsToHand(g,_,tp)
+	local cg=g:Filter(Card.IsFacedown,nil)
+	if cg:GetCount()>0 then
+		Duel.ConfirmCards(1-tp,cg)
+	end
+	Duel.SendtoHand(g,nil,REASON_COST)
 end
 
 --EFFECTS THAT CAN BE ACTIVATED BY AFFECTING THE CARD USED AS COST, EVEN WHEN THERE ARE NO OTHER VALID TARGETS
