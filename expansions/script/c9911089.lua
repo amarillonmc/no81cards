@@ -104,7 +104,8 @@ function c9911089.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
 		local sg=Duel.GetOperatedGroup()
 		local g2=Duel.GetMatchingGroup(c9911089.tgfilter,tp,LOCATION_DECK,0,nil)
-		if sg:IsExists(Card.IsLocation,1,nil,LOCATION_HAND) and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(9911089,1)) then
+		if sg:IsExists(Card.IsLocation,1,nil,LOCATION_HAND)
+			and e:GetLabel()==1 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(9911089,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 			local sg2=g2:Select(tp,1,1,nil)
