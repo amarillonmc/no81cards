@@ -55,7 +55,7 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
 end
 function c98941056.eftg(e,c)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x9d)
+	return c:IsFaceup() and c:IsSetCard(0x9d)
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
@@ -180,7 +180,12 @@ function c98941056.activate(e,tp,eg,ep,ev,re,r,rp)
 				hg:RemoveCard(xc)
 				xc=mat1:GetNext()
 			end
+			local ss1=Duel.GetMatchingGroupCount(Card.IsSummonLocation,tp,LOCATION_MZONE,0,nil,LOCATION_EXTRA)
+			local ss2=Duel.GetMatchingGroupCount(Card.IsSummonLocation,tp,0,LOCATION_MZONE,nil,LOCATION_EXTRA)
+			if ss1<ss2 or (ss1==ss2 and Duel.SelectYesNo(tp,aux.Stringid(98941056,9))) then 
 			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
+			else
+			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,1-tp,false,false,POS_FACEUP) end			
 		else
 			local mat2=Duel.SelectFusionMaterial(tp,tc,mg3,nil,chkf)
 			local fop=ce:GetOperation()
@@ -234,40 +239,36 @@ function c98941056.chop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsFacedown() or not c:IsOnField() then return end
 	Duel.ChangeTargetCard(ev,g)
 	Duel.ChangeChainOperation(ev,c98941056.repop)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c98941056.yyfilter,tp,LOCATION_HAND,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.BreakEffect()
-		Duel.SendtoGrave(g,REASON_EFFECT)
-	end
 end
 function c98941056.repop(e,tp,eg,ep,ev,re,r,rp)
-	local oog=Duel.GetMatchingGroup(c98941056.disfilter,tp,LOCATION_MZONE,0,nil)
-	if oog:GetCount()==0 then 
-		local g=Duel.GetMatchingGroup(s.filterx,1-tp,LOCATION_GRAVE,0,nil)
-	 	if not Duel.IsPlayerAffectedByEffect(1-tp,59822133) and g:IsExists(s.sfilter1,1,nil,e,1-tp,g) then
-			Duel.Hint(HINT_SELECTMSG,1-tp,aux.Stringid(id,4))
-			local sc=g:FilterSelect(1-tp,s.sfilter1,1,1,nil,e,1-tp,g):GetFirst()
-			Duel.Hint(HINT_SELECTMSG,lp,aux.Stringid(id,5))
-			local oc=g:FilterSelect(1-tp,s.sfilter2,1,1,sc,e,1-tp,sc):GetFirst()
-			Duel.SpecialSummonStep(sc,0,1-tp,1-tp,false,false,POS_FACEDOWN_DEFENSE)
-			Duel.ConfirmCards(tp,sc)
-			Duel.SpecialSummonStep(oc,0,1-tp,tp,false,false,POS_FACEDOWN_DEFENSE)
-		 	Duel.ConfirmCards(tp,oc)
-			Duel.SpecialSummonComplete()
-		end
-	else
-		local g=Duel.GetMatchingGroup(s.filterx,tp,LOCATION_GRAVE,0,nil)
-		if not Duel.IsPlayerAffectedByEffect(tp,59822133) and g:IsExists(s.sfilter1,1,nil,e,tp,g) then
-		   Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,4))
-		   local sc=g:FilterSelect(tp,s.sfilter1,1,1,nil,e,tp,g):GetFirst()
-		   Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,5))
-		   local oc=g:FilterSelect(tp,s.sfilter2,1,1,sc,e,tp,sc):GetFirst()
-		   Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
-			Duel.ConfirmCards(1-tp,sc)
-			Duel.SpecialSummonStep(oc,0,tp,1-tp,false,false,POS_FACEDOWN_DEFENSE)
-			Duel.ConfirmCards(1-tp,oc)
-			Duel.SpecialSummonComplete()
-		end
+	local g1=Duel.GetMatchingGroup(c98941056.ctfilterzx,tp,LOCATION_MZONE,0,nil)
+	local g2=Duel.GetMatchingGroup(c98941056.thfilterzx,tp,LOCATION_DECK,0,nil)
+	if g1:GetCount()==0 or g2:GetCount()==0 then return end
+	local ct=g1:GetClassCount(Card.GetCode)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local sg=g2:SelectSubGroup(tp,aux.dncheck,false,1,ct)
+	if sg and sg:GetCount()>0 then
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
+		Duel.ShuffleHand(tp)
+		Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
 	end
+	local g3=Duel.GetMatchingGroup(c98941056.ctfilterzx,1-tp,LOCATION_MZONE,0,nil)
+	local g4=Duel.GetMatchingGroup(c98941056.thfilterzx,1-tp,LOCATION_DECK,0,nil)
+	if g3:GetCount()==0 or g4:GetCount()==0 then return end
+	local ct1=g3:GetClassCount(Card.GetCode)
+	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
+	local sg1=g4:SelectSubGroup(1-tp,aux.dncheck,false,1,ct1)
+	if sg1 and sg:GetCount()>0 then
+		Duel.SendtoHand(sg1,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg1)
+		Duel.ShuffleHand(1-tp)
+		Duel.DiscardHand(1-tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
+	end
+end
+function c98941056.ctfilterzx(c)
+	return c:IsFaceup() and c:IsSummonLocation(LOCATION_EXTRA)
+end
+function c98941056.thfilterzx(c)
+	return c:IsType(TYPE_FLIP) and c:IsAbleToHand()
 end
