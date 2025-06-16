@@ -82,7 +82,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then
 		return
 	elseif #g>1 then
-		Duel.Hint(HINT_SELECTMSG,HINTMSG_TODECK)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 		g=g:Select(tp,1,1,nil)
 	end
 	if Duel.SendtoDeck(g,nil,2,REASON_EFFECT)>0 and Duel.GetOperatedGroup():IsExists(Card.IsLocation,1,nil,LOCATION_DECK+LOCATION_EXTRA) and c:IsRelateToEffect(e) and c:IsAbleToHand() then

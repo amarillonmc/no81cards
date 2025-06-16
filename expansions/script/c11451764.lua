@@ -88,7 +88,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then
 		return
 	elseif #g>1 then
-		Duel.Hint(HINT_SELECTMSG,HINTMSG_RTOHAND)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		g=g:Select(tp,1,1,nil)
 	end
 	if Duel.SendtoHand(g,nil,REASON_EFFECT)>0 and Duel.GetOperatedGroup():IsExists(Card.IsLocation,1,nil,LOCATION_HAND) and c:IsRelateToEffect(e) then
