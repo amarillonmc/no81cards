@@ -68,7 +68,7 @@ function c28366501.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	if #g>1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		tc=Duel.FilterSelect(tp,Card.IsCode,1,1,nil,ac):GetFirst()
+		tc=g:FilterSelect(tp,Card.IsCode,1,1,nil,ac):GetFirst()
 	end
 	if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) then
 		Duel.ConfirmCards(1-tp,tc)

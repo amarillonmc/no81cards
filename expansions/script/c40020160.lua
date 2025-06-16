@@ -77,8 +77,8 @@ end
 function s.desfilter(c) 
 	return c:IsType(TYPE_MONSTER) and not c:IsAttack(0) and c:IsFaceup()
 end
-function s.thfilter(c,e,tp,ec,ft) 
-	return (ft>0 or c:GetSequence()<5) and c:IsCode(40020183) and c:IsLevelAbove(5) and c:IsAbleToHand() and ec:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function s.thfilter(c,e,tp,ec) 
+	return  c:IsCode(40020183) and c:IsLevelAbove(5) and c:IsAbleToHand() and ec:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and s.desfilter(chkc) end
@@ -109,7 +109,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	if tg:GetCount()>0 and Duel.Destroy(tg,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) and c:IsLocation(LOCATION_HAND) then
 		Duel.BreakEffect()
 		local op=0
-		if Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_MZONE,0,1,nil,e,tp,c,ft) then
+		if (ft>0 or c:GetSequence()<5) and  Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_MZONE,0,1,nil,e,tp,c) then
 			op=Duel.SelectOption(tp,aux.Stringid(id,1),aux.Stringid(id,2))
 		end
 		if op==0 then Duel.SendtoGrave(c,REASON_DISCARD) end

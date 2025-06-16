@@ -29,7 +29,7 @@ end
 function c28354358.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c28354358.tfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c28354358.tfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	local g=GetMatchingGroup(c28354358.tfilter,tp,LOCATION_GRAVE,0,nil):Filter(Card.IsCanBeEffectTarget,nil,e)
+	local g=Duel.GetMatchingGroup(c28354358.tfilter,tp,LOCATION_GRAVE,0,nil):Filter(Card.IsCanBeEffectTarget,nil,e)
 	for tc in aux.Next(g) do
 		tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28354358,1))
 	end

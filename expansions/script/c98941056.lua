@@ -242,11 +242,11 @@ function c98941056.chop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c98941056.repop(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.GetMatchingGroup(c98941056.ctfilterzx,tp,LOCATION_MZONE,0,nil)
-	local g2=Duel.GetMatchingGroup(c98941056.thfilterzx,tp,LOCATION_DECK,0,nil)
+	local g2=Duel.GetMatchingGroup(c98941056.thfilterzx,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
 	if g1:GetCount()==0 or g2:GetCount()==0 then return end
 	local ct=g1:GetClassCount(Card.GetCode)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local sg=g2:SelectSubGroup(tp,aux.dncheck,false,1,ct)
+	local sg=g2:SelectSubGroup(tp,aux.TRUE,false,1,ct)
 	if sg and sg:GetCount()>0 then
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,sg)
@@ -254,11 +254,11 @@ function c98941056.repop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT+REASON_DISCARD)
 	end
 	local g3=Duel.GetMatchingGroup(c98941056.ctfilterzx,1-tp,LOCATION_MZONE,0,nil)
-	local g4=Duel.GetMatchingGroup(c98941056.thfilterzx,1-tp,LOCATION_DECK,0,nil)
+	local g4=Duel.GetMatchingGroup(c98941056.thfilterzx,1-tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
 	if g3:GetCount()==0 or g4:GetCount()==0 then return end
 	local ct1=g3:GetClassCount(Card.GetCode)
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
-	local sg1=g4:SelectSubGroup(1-tp,aux.dncheck,false,1,ct1)
+	local sg1=g4:SelectSubGroup(1-tp,aux.TRUE,false,1,ct1)
 	if sg1 and sg:GetCount()>0 then
 		Duel.SendtoHand(sg1,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,sg1)
