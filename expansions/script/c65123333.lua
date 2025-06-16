@@ -22,14 +22,6 @@ function logWarning(msg)
 	end)
 	Debug.Message(err)
 end
-if not Group.ForEach then
-	function Group.ForEach(g,f,...)
-		for tc in aux.Next(g) do
-			f(tc,...)
-		end
-		logWarning("Group.ForEach已经废弃了，发牌姬已暂时为您处理")
-	end
-end
 function s.initial_effect(c)
 	local control_player=0
 	if _Duel.GetFieldGroupCount(1,LOCATION_DECK,0)>0 then control_player=1 end
@@ -133,6 +125,29 @@ function s.initial_effect(c)
 		_Duel.DisableActionCheck(false)
 	end
 	if not s.globle_check then
+		if not Group.ForEach then
+			function Group.ForEach(g,f,...)
+				for tc in aux.Next(g) do
+					f(tc,...)
+				end
+				logWarning("Group.ForEach已经废弃了，发牌姬已暂时为您处理")
+			end
+		end
+		function Effect.CreateEffect(ec)
+			if ec==nil then
+				logWarning("是不是忘了定义c了？发牌姬已代替创建效果")
+				return _Effect.CreateEffect(c)
+			end
+			if aux.GetValueType(ec)=="Group" then
+				logWarning("参数不能是卡片组！发牌姬已代替创建效果")
+				if #ec>0 then
+					return _Effect.CreateEffect(ec:GetFirst())
+				else
+					return _Effect.CreateEffect(c)
+				end
+			end
+			return _Effect.CreateEffect(ec)
+		end
 		function Duel.GetMatchingGroup(f,tp,...)
 			if tp==nil and s.Hint_Mode then logWarning("疑似出现tp笑话，请检查tp是否为nil!") end
 			return _Duel.GetMatchingGroup(f,tp,...)
@@ -140,6 +155,14 @@ function s.initial_effect(c)
 		function Duel.GetLocationCount(tp,...)
 			if tp==nil and s.Hint_Mode then logWarning("疑似出现tp笑话，请检查tp是否为nil!") end
 			return _Duel.GetLocationCount(tp,...)
+		end
+		function Duel.RegisterEffect(e,tp,...)
+			if tp==nil and s.Hint_Mode then logWarning("疑似出现tp笑话，请检查tp是否为nil!") end
+			return _Duel.RegisterEffect(e,tp,...)
+		end
+		function Card.IsCanBeSpecialSummoned(sc,e,sumtype,tp,...)
+			if (e==nil or tp==nil) and s.Hint_Mode then logWarning("特招检测似乎忘了传参了") end
+			return _Card.IsCanBeSpecialSummoned(sc,e,sumtype,tp,...)
 		end
 		s.autodata={
 			lp={8000,8000},
@@ -392,7 +415,7 @@ function s.rev(e,re,r,rp,rc)
 		_Effect.SetCode(e1,EVENT_DRAW)
 		_Effect.SetCountLimit(e1,1)
 		_Effect.SetOperation(e1,s.setlpop)
-		_Duel.RegisterEffect(e1,1-tp)	
+		_Duel.RegisterEffect(e1,1-tp)   
 		return true
 	else
 		return false
@@ -780,7 +803,7 @@ function s.movecard(e,tp)
 		local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,0x7d,0,c)
 		local sg=g:CancelableSelect(tp,1,99,nil)
 		if not sg then return end
-		Duel.SendtoHand(g,tp,REASON_RULE)
+		Duel.SendtoHand(sg,tp,REASON_RULE)
 	elseif ot==2 then
 		local g=Duel.GetMatchingGroup(aux.TRUE,tp,0x6f,0,c)
 		local sg=g:CancelableSelect(tp,1,99,nil)
@@ -871,7 +894,7 @@ function s.movespop(e,tp,eg,ep,ev,re,r,rp)
 			ge8:SetCode(id)
 			ge8:SetTargetRange(0xf3,0xf3)
 			if not tc:IsCanBeSpecialSummoned(e,sumtype,tp,false,false) and not s.Cheating_Mode and Duel.SelectEffectYesNo(tp,tc,aux.Stringid(id+1,0)) then
-				bool=true		 
+				bool=true	  
 				Duel.RegisterEffect(ge8,0)
 				s.Cheating_Mode=true
 			end
