@@ -9,6 +9,7 @@ function c98920845.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,98920845)
+	e2:SetCondition(c98920845.negcon)
 	e2:SetCost(c98920845.discost)
 	e2:SetTarget(c98920845.distg)
 	e2:SetOperation(c98920845.disop)
@@ -26,6 +27,10 @@ function c98920845.initial_effect(c)
 end
 function c98920845.thcfilter(c,tp)
 	return c:IsType(TYPE_MONSTER) and (c:IsSetCard(0x69) or c:IsType(TYPE_NORMAL)) and c:IsRace(RACE_DRAGON)
+end
+function c98920845.negcon(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
+		and ep~=tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainNegatable(ev)
 end
 function c98920845.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c98920845.thcfilter,1,REASON_COST,true,e:GetHandler(),tp) end

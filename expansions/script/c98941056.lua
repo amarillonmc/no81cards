@@ -211,7 +211,7 @@ function s.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return ft>=1 end
 end
 function c98941056.yyfilter(c)
-	return c:IsSetCard(0x9d)
+	return c:IsSummonLocation(LOCATION_EXTRA)
 end
 function c98941056.disfilter(c)
 	return c:IsSetCard(0x9d) and c:IsFaceup()
@@ -229,14 +229,12 @@ function s.sfilter2(c,e,tp,oc)
 		and Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)>0
 end
 function c98941056.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(s.filterx,tp,LOCATION_GRAVE,0,nil)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98941056.yyfilter,tp,LOCATION_HAND,0,1,nil) and Duel.GetFlagEffect(tp,id)==0 and not Duel.IsPlayerAffectedByEffect(tp,59822133) and g:IsExists(s.sfilter1,1,nil,e,tp,g) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c98941056.yyfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.GetFlagEffect(tp,id)==0 and not Duel.IsPlayerAffectedByEffect(tp,59822133) end
 	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,0,1)
 end
 function c98941056.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
 	local c=e:GetHandler()
-	if c:IsFacedown() or not c:IsOnField() then return end
 	Duel.ChangeTargetCard(ev,g)
 	Duel.ChangeChainOperation(ev,c98941056.repop)
 end
@@ -259,7 +257,7 @@ function c98941056.repop(e,tp,eg,ep,ev,re,r,rp)
 	local ct1=g3:GetClassCount(Card.GetCode)
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
 	local sg1=g4:SelectSubGroup(1-tp,aux.TRUE,false,1,ct1)
-	if sg1 and sg:GetCount()>0 then
+	if sg1 and sg1:GetCount()>0 then
 		Duel.SendtoHand(sg1,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,sg1)
 		Duel.ShuffleHand(1-tp)
