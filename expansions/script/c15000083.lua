@@ -33,7 +33,6 @@ function cm.srfilter(c)
 	return c:IsSetCard(0x10b) and c:IsAbleToHand() and not c:IsCode(m)
 end
 function cm.posop1(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsFacedown() then
 		local pos1=0

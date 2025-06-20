@@ -100,26 +100,27 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 -----
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev) and ep==1-tp 
+	local c=e:GetHandler()
+	if ep==tp or c:IsStatus(STATUS_BATTLE_DESTROYED) then return false end
+	return (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainDisablable(ev)
 end
-function cm.drcfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsReleasable() and c:IsRace(RACE_INSECT) 
+function cm.drcfilter(c)
+	return c:GetOriginalRace()&RACE_INSECT>0 and c:GetOriginalType()&TYPE_MONSTER>0 and c:IsReleasable()
 end
 function cm.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.drcfilter,tp,LOCATION_MZONE,0,1,e:GetHandler(),tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.drcfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,cm.drcfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,1,1,e:GetHandler(),tp)
+	local g=Duel.SelectMatchingCard(tp,cm.drcfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
 	Duel.Release(g,REASON_COST)
 end
 function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
 	end
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
 	if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
 	end
