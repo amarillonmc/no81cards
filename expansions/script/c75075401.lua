@@ -50,7 +50,7 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(1-tp,27204311)>=1 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+	return Duel.GetFlagEffect(1-tp,27204311)>=3 and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function cm.relfilter(c)
 	return c:IsFaceup() and c:IsReleasableByEffect()
