@@ -94,7 +94,7 @@ end
 function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     local c=e:GetHandler()
     if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and s.thfilter3(chkc) end
-    if chk==0 then return Duel.IsExistingTarget(s.thfilter3,tp,LOCATION_GRAVE,0,1,nil) and c:IsAbleToHand() end
+    if chk==0 then return Duel.IsExistingTarget(s.thfilter3,tp,LOCATION_GRAVE,0,1,c) and c:IsAbleToHand() end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
     local g=Duel.SelectTarget(tp,s.thfilter3,tp,LOCATION_GRAVE,0,1,1,c)
     Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)

@@ -17,7 +17,7 @@ function c40009036.initial_effect(c)
 	e7:SetDescription(aux.Stringid(40009036,1))
 	e7:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e7:SetType(EFFECT_TYPE_ACTIVATE)
-	e7:SetCode(EVENT_CHAINING)
+	e7:SetCode(EVENT_FREE_CHAIN)
 	--e7:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e7:SetCost(c40009036.spcost)
 	e7:SetCondition(c40009036.spcon)
@@ -124,20 +124,19 @@ function c40009036.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
-function c40009036.spfilter1(c,e,tp,ec)
+function c40009036.spfilter1(c,e,tp)
 	return c:IsLink(1) and c:IsSetCard(0xf13) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false)
-		 and Duel.GetLocationCountFromEx(tp,tp,rc,c)>0
+		 and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 function c40009036.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c40009036.spfilter1,tp,LOCATION_EXTRA,0,1,nil,e,tp,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c40009036.spfilter1,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c40009036.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c40009036.spfilter1,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,e:GetHandler())
+	local g=Duel.SelectMatchingCard(tp,c40009036.spfilter1,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if not tc then return end
-	tc:SetMaterial(nil)
 	Duel.SpecialSummon(tc,SUMMON_TYPE_LINK,tp,tp,false,false,POS_FACEUP)
 	tc:CompleteProcedure()
 end
