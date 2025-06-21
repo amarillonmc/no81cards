@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.filter(c)
-	return c:IsCanHaveCounter(0x9620) and Duel.IsCanAddCounter(tp,0x9620,1,c) and c:IsAbleToHand()
+	return c:IsCanHaveCounter(0x624) and Duel.IsCanAddCounter(tp,0x624,1,c) and c:IsAbleToHand()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -28,13 +28,13 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
 		Duel.ConfirmCards(1-tp,g)
 		local ct=Duel.GetMatchingGroupCount(cm.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)
-		if ct>0 and Duel.GetMatchingGroupCount(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,nil,0x9620,1)>0
+		if ct>0 and Duel.GetMatchingGroupCount(Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,nil,0x624,1)>0
 			and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			while ct>0 do
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_COUNTER)
-				local tc=Duel.SelectMatchingCard(tp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,1,1,nil,0x9620,1):GetFirst()
+				local tc=Duel.SelectMatchingCard(tp,Card.IsCanAddCounter,tp,LOCATION_ONFIELD,0,1,1,nil,0x624,1):GetFirst()
 				if not tc then break end
-				tc:AddCounter(0x9620,1)
+				tc:AddCounter(0x624,1)
 				ct=ct-1
 			end
 		end

@@ -2,7 +2,7 @@
 local m=60002167
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x9620)
+	c:EnableCounterPermit(0x624)
 	aux.AddLinkProcedure(c,cm.matfilter,2)
 	c:EnableReviveLimit()
 	--search
@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x9620)>=1
+	return Card.GetCounter(e:GetHandler(),0x624)>=1
 end
 function cm.attackup(e,c)
 	local atkup=(Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)*200)+(Duel.GetFlagEffect(tp,60002148)*400)+(Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)*800)
@@ -37,7 +37,7 @@ function cm.attackup(e,c)
 	return atkup
 end
 function cm.matfilter(c)
-	return c:IsCanHaveCounter(0x9620) and Duel.IsCanAddCounter(tp,0x9620,1,c)
+	return c:IsCanHaveCounter(0x624) and Duel.IsCanAddCounter(tp,0x624,1,c)
 end
 function cm.thfilter(c,tp)
 	return c:IsAbleToHand()
@@ -53,8 +53,8 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		if Card.IsCanHaveCounter(tc,0x9620) and e:GetHandler():IsRelateToEffect(e) then
-			e:GetHandler():AddCounter(0x9620,1)
+		if Card.IsCanHaveCounter(tc,0x624) and e:GetHandler():IsRelateToEffect(e) then
+			e:GetHandler():AddCounter(0x624,1)
 			Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 		end
 	end

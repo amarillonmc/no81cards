@@ -2,7 +2,7 @@
 local m=60002149
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x9620)
+	c:EnableCounterPermit(0x624)
 	--Evolve
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
@@ -35,15 +35,15 @@ function cm.filter(c)
 	return c:IsCode(m+1) and c:IsAbleToHand()
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x9620)>=1
+	return Card.GetCounter(e:GetHandler(),0x624)>=1
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x9620)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x624)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x9620,1)
+		e:GetHandler():AddCounter(0x624,1)
 		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 		if Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

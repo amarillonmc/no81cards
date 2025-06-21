@@ -32,8 +32,8 @@ function cm.recop(e,tp,eg,ep,ev,re,r,rp)
 		local g2=Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_MZONE,0,nil)
 		for i=1,g2 do
 			local gm=g1:GetFirst()
-			if Card.IsCanAddCounter(gm,0x9620,1) and gm:IsFaceup() then
-				gm:AddCounter(0x9620,1)
+			if Card.IsCanAddCounter(gm,0x624,1) and gm:IsFaceup() then
+				gm:AddCounter(0x624,1)
 			end
 			g1:RemoveCard(g1:GetFirst())
 		end

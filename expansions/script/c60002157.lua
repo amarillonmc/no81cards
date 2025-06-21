@@ -2,7 +2,7 @@
 local m=60002157
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x9620)
+	c:EnableCounterPermit(0x624)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -55,7 +55,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x9620)>=1
+	return Card.GetCounter(e:GetHandler(),0x624)>=1
 end
 function cm.spcon(e,c,tp)
 	if c==nil then return true end
@@ -67,8 +67,8 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) and not c:IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x9620,2,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x9620,2,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x624,2,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x624,2,REASON_COST)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -80,7 +80,7 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
-		e:GetHandler():AddCounter(0x9620,1)
+		e:GetHandler():AddCounter(0x624,1)
 		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
 	end
 end

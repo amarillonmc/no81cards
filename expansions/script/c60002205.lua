@@ -2,7 +2,7 @@
 local m=60002205
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableCounterPermit(0x9620)
+	c:EnableCounterPermit(0x624)
 	--attackup
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -42,14 +42,14 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 function cm.incon(e)
-	return Card.GetCounter(e:GetHandler(),0x9620)>=1
+	return Card.GetCounter(e:GetHandler(),0x624)>=1
 end
 function cm.rincon(e)
-	return not Card.GetCounter(e:GetHandler(),0x9620)>=1
+	return not Card.GetCounter(e:GetHandler(),0x624)>=1
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local ct=c:GetCounter(0x9620)
+	local ct=c:GetCounter(0x624)
 	e:SetLabel(ct)
 end
 function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
@@ -65,9 +65,9 @@ end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		c:AddCounter(0x9620,1)
+		c:AddCounter(0x624,1)
 		Duel.RegisterFlagEffect(tp,60002148,RESET_PHASE+PHASE_END,0,1000)
-		if not e:GetHandler():IsCanRemoveCounter(tp,0x9620,1,REASON_COST) then
+		if not e:GetHandler():IsCanRemoveCounter(tp,0x624,1,REASON_COST) then
 			Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_RULE)
 		end
 	end
