@@ -82,7 +82,7 @@ end
 function s.filter(c)
 	local rc=c:GetReasonCard()
 	if not rc and c:GetReasonEffect() then rc=c:GetReasonEffect():GetHandler() end
-	return c:IsType(TYPE_MONSTER) and rc and rc:IsSetCard(0x23) and c:IsFaceup() and c:IsAbleToDeck()
+	return c:IsType(TYPE_MONSTER) and rc and rc:IsSetCard(0x23) and rc:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsAbleToDeck()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_REMOVED,0,1,nil) end

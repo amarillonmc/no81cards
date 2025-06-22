@@ -33,7 +33,7 @@ function s.initial_effect(c)
 	--to grave
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(id,1))
-	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e5:SetCategory(CATEGORY_TOGRAVE)
 	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_TO_HAND)
 	e5:SetCountLimit(1,id)
