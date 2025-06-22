@@ -73,6 +73,7 @@ function c9910294.teop(e,tp,eg,ep,ev,re,r,rp)
 				g:RemoveCard(tc)
 			end
 		end
+		Duel.DisableShuffleCheck()
 		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT+REASON_REVEAL)
 		if check then Duel.ShuffleDeck(tp) end
 	end
