@@ -84,7 +84,7 @@ end
 
 -- 效果①限制：只能召唤龗龘怪兽
 function s.sumlimit(e,c)
-	return not c:IsSetCard(0x5450)
+	return not c:IsSetCard(0x5450) and c:IsLocation(LOCATION_HAND)
 end
 
 -- 效果②条件：场上有龗龘䨻且被除外
