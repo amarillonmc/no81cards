@@ -1,6 +1,7 @@
 --云天士-清净·凯路姆
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,89490017)
 	c:EnableReviveLimit()
 	aux.AddFusionProcCodeFun(c,89490017,aux.FilterBoolFunction(Card.IsFusionSetCard,0xc33),1,true,true)
 	local e6=Effect.CreateEffect(c)

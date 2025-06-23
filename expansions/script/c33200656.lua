@@ -1,8 +1,8 @@
 --电子音姬 Hardcore
 function c33200656.initial_effect(c)
 	c:SetSPSummonOnce(33200656)
+	aux.AddXyzProcedureLevelFree(c,c33200656.mfilter,c33200656.xyzcheck,2,99)
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_CYBERSE),4,2,nil,nil,99)
 	--Destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(33200656,0))
@@ -27,6 +27,12 @@ function c33200656.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 
+function c33200656.mfilter(c)
+	return c:IsRace(RACE_CYBERSE)
+end
+function c33200656.xyzcheck(g)
+	return g:GetClassCount(Card.GetCode)==#g
+end
 --e1
 function c33200656.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)

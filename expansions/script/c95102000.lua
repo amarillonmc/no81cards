@@ -1,4 +1,4 @@
---馄饨剩汤的主厨
+--馄饨剩汤 主厨
 function c95102000.initial_effect(c)
 	-- 连接素材要求
 	c:EnableReviveLimit()
@@ -9,23 +9,29 @@ function c95102000.initial_effect(c)
     e1:SetCode(EFFECT_UNRELEASABLE_SUM)
     e1:SetRange(LOCATION_MZONE)
     e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetDescription(aux.Stringid(95102001,2))
     e1:SetValue(1)
     c:RegisterEffect(e1)
     local e2=e1:Clone()
     e2:SetCode(EFFECT_UNRELEASABLE_NONSUM)
+	e2:SetDescription(aux.Stringid(95102001,2))
     c:RegisterEffect(e2)
     local e3=e1:Clone()
     e3:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+	e3:SetDescription(aux.Stringid(95102001,3))
     e3:SetValue(c95102000.lim)
     c:RegisterEffect(e3)
     local e4=e1:Clone()
     e4:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+	e4:SetDescription(aux.Stringid(95102001,4))
     c:RegisterEffect(e4)
     local e5=e1:Clone()
     e5:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+	e5:SetDescription(aux.Stringid(95102001,5))
     c:RegisterEffect(e5)
     local e6=e1:Clone()
     e6:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	e6:SetDescription(aux.Stringid(95102001,6))
     c:RegisterEffect(e6)
     -- 卡组盖放
 	local e7=Effect.CreateEffect(c)
@@ -37,7 +43,7 @@ function c95102000.initial_effect(c)
 	e7:SetTarget(c95102000.tg1)
 	e7:SetOperation(c95102000.op1)
 	c:RegisterEffect(e7)
-    -- 限制攻击对象
+    --[[-- 限制攻击对象
 	local e8=Effect.CreateEffect(c)
 	e8:SetType(EFFECT_TYPE_FIELD)
 	e8:SetCode(EFFECT_CANNOT_SELECT_BATTLE_TARGET)
@@ -49,7 +55,7 @@ function c95102000.initial_effect(c)
 	local e9=e8:Clone()
 	e9:SetCode(EFFECT_CANNOT_DIRECT_ATTACK)
 	e9:SetValue(1)
-	c:RegisterEffect(e9)
+	c:RegisterEffect(e9)]]
 end
 -- 连接素材
 function c95102000.matfilter(c)
@@ -61,11 +67,15 @@ function c95102000.lim(e,c,st)
 end
 -- 1
 function c95102000.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,1000) end
-	Duel.PayLPCost(tp,1000)
+	if chk==0 then return Duel.CheckLPCost(tp,2000) end
+	Duel.PayLPCost(tp,2000)
 end
-function c95102000.filter1(c)
+function c95102000.filter11(c,code)
+	return c:IsCode(code) and (c:IsFaceup() or not c:IsOnField())
+end
+function c95102000.filter1(c,tp)
 	return c:IsSetCard(0xbbc) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and c:IsSSetable()
+	and not Duel.IsExistingMatchingCard(c95102000.filter11,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil,c:GetCode())
 end
 function c95102000.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
@@ -79,7 +89,7 @@ function c95102000.op1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SSet(tp,g:GetFirst())
 	end
 end
--- 2
+--[[-- 2
 function c95102000.filter2(c)
 	return c:IsSetCard(0xbbc) and c:IsFaceup()
 end
@@ -90,4 +100,4 @@ function c95102000.val2(e,c)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)
 	local tg=g:GetMaxGroup(Card.GetAttack)
 	return not tg:IsContains(c) or c:IsFacedown()
-end
+end]]

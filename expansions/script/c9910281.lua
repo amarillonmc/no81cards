@@ -43,30 +43,30 @@ function c9910281.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsAbleToHand() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
-	if not g:IsExists(Card.IsControler,1,nil,1-tp) then
-		e:SetCategory(CATEGORY_TOHAND+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local tc=g:GetFirst()
+	if tc:IsControler(tp) and tc:IsFaceup() and tc:IsSetCard(0x3957) then
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 		e:SetLabel(1)
 	else
 		e:SetLabel(0)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,g:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
 function c9910281.thfilter(c)
 	return c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
 end
 function c9910281.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
-		local sg=Duel.GetOperatedGroup()
-		local g2=Duel.GetMatchingGroup(c9910281.thfilter,tp,LOCATION_DECK,0,nil)
-		if sg:IsExists(Card.IsLocation,1,nil,LOCATION_HAND)
-			and e:GetLabel()==1 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(9910281,1)) then
+	local tg=Duel.GetTargetsRelateToChain()
+	if tg:GetCount()>0 and Duel.SendtoHand(tg,nil,REASON_EFFECT)>0
+		and tg:IsExists(Card.IsLocation,1,nil,LOCATION_HAND+LOCATION_EXTRA) then
+		local g=Duel.GetMatchingGroup(c9910281.thfilter,tp,LOCATION_DECK,0,nil)
+		if e:GetLabel()==1 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(9910281,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local sg2=g2:Select(tp,1,1,nil)
-			Duel.SendtoHand(sg2,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,sg2)
+			local sg=g:Select(tp,1,1,nil)
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg)
 		end
 	end
 end

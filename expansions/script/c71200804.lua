@@ -1,0 +1,30 @@
+--深渊的呼唤VIII 警戒哨台
+Duel.LoadScript("c71200802.lua")
+local cm, m = GetID()
+function cm.chk(e,tp)
+	return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+end
+function cm.ex_op(e,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+	local g = Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local tc = g:Select(tp,1,1,nil):GetFirst()
+	if not tc then return end
+	Duel.HintSelection(Group.FromCards(tc))
+	Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCode(EFFECT_DISABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	tc:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_DISABLE_EFFECT)
+	e2:SetValue(RESET_TURN_SET)
+	tc:RegisterEffect(e2)
+	if not tc:IsType(TYPE_TRAPMONSTER) then return end
+	local e3=e1:Clone()
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+	tc:RegisterEffect(e3)
+end
+Alter_DC8.Initial(CATEGORY_DISABLE,cm.chk,cm.ex_op)

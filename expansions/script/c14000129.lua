@@ -37,10 +37,11 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not re:GetHandler():IsCode(m)
 end
 function cm.matfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_LINK)
+	return c:IsFaceup() and cm.CIR(c)
 end
-function cm.filter(c,mg)
-	return c:IsRace(RACE_CYBERSE) and c:IsSpecialSummonable(SUMMON_TYPE_LINK) and c:IsLinkSummonable(mg)
+function cm.filter(c,e,tp,mg)
+	local lk=#mg
+	return cm.CIR(c) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsLinkBelow(lk)--and c:IsLinkSummonable(mg)
 end
 function cm.spfilter(c,e,tp)
 	return cm.CIR(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -48,7 +49,7 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,0,nil)
-		local b1=Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,mg)
+		local b1=Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg)
 		local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
 		return b1 or b2
 	end
@@ -60,7 +61,7 @@ function cm.chlimit(e,ep,tp)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetMatchingGroup(cm.matfilter,tp,LOCATION_MZONE,0,nil)
-	local b1=Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,mg)
+	local b1=Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg)
 	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
 	local op,bool=0,false
 	if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))
@@ -69,10 +70,11 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	else return end
 	if op==0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_EXTRA,0,1,1,nil,mg)
+		local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,mg)
 		local tc=g:GetFirst()
 		if tc then
-			Duel.SpecialSummonRule(tp,tc,SUMMON_TYPE_LINK)
+			Duel.SpecialSummon(tc,SUMMON_TYPE_LINK,tp,tp,false,false,POS_FACEUP)
+			tc:CompleteProcedure()
 		end
 	else
 		local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)

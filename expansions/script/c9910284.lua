@@ -15,6 +15,7 @@ function c9910284.initial_effect(c)
 	--set
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910284,0))
+	e2:SetCategory(CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
@@ -48,14 +49,32 @@ function c9910284.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
 end
 function c9910284.setop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and Duel.SSet(tp,tc)~=0 then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-		e1:SetValue(LOCATION_DECKBOT)
-		tc:RegisterEffect(e1)
+		local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+		if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(9910284,1)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+			local tg=g:Select(tp,1,1,nil)
+			Duel.HintSelection(tg)
+			local sc=tg:GetFirst()
+			Duel.NegateRelatedChain(sc,RESET_TURN_SET)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			sc:RegisterEffect(e1)
+			local e2=e1:Clone()
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			sc:RegisterEffect(e2)
+			if sc:IsType(TYPE_TRAPMONSTER) then
+				local e3=e1:Clone()
+				e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+				sc:RegisterEffect(e3)
+			end
+		end
 	end
 end

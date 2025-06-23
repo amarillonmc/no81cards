@@ -1,8 +1,8 @@
 --电子音姬 House
 function c33200660.initial_effect(c)
 	c:SetSPSummonOnce(33200660)
+	aux.AddXyzProcedureLevelFree(c,c33200660.mfilter,c33200660.xyzcheck,2,2)
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_CYBERSE),4,2)
 	--disable
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -28,6 +28,12 @@ function c33200660.initial_effect(c)
 	e2:SetTarget(c33200660.atktg)
 	e2:SetOperation(c33200660.atkop)
 	c:RegisterEffect(e2)
+end
+function c33200660.mfilter(c)
+	return c:IsRace(RACE_CYBERSE)
+end
+function c33200660.xyzcheck(g)
+	return g:GetClassCount(Card.GetCode)==#g
 end
 
 --e1

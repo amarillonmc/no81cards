@@ -1,8 +1,8 @@
 --电子音姬 Trance
 function c33200658.initial_effect(c)
 	c:SetSPSummonOnce(33200658)
+	aux.AddXyzProcedureLevelFree(c,c33200658.mfilter,c33200658.xyzcheck,2,2)
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_CYBERSE),4,2)
 	--Destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(33200658,0))
@@ -25,6 +25,12 @@ function c33200658.initial_effect(c)
 	e2:SetTarget(c33200658.atktg)
 	e2:SetOperation(c33200658.atkop)
 	c:RegisterEffect(e2)
+end
+function c33200658.mfilter(c)
+	return c:IsRace(RACE_CYBERSE)
+end
+function c33200658.xyzcheck(g)
+	return g:GetClassCount(Card.GetCode)==#g
 end
 
 --e1

@@ -8,7 +8,6 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCondition(s.condition)
-	e1:SetCost(s.cost)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
@@ -24,28 +23,20 @@ function s.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
-	e3:SetCountLimit(1,id+1)
+	e3:SetCountLimit(1,id)
 	e3:SetCondition(s.ovcon)
 	e3:SetTarget(s.ovtg)
 	e3:SetOperation(s.ovop)
 	c:RegisterEffect(e3)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentChain()>=1
-end
-function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(s.splimit)
-	Duel.RegisterEffect(e1,tp)
-end
-function s.splimit(e,c)
-	return c:IsLocation(LOCATION_EXTRA) and not c:IsType(TYPE_XYZ)
+	for i=1,ev do
+		local tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_PLAYER)
+		if tgp~=tp then
+			return true
+		end
+	end
+	return false
 end
 function s.spfilter(c,e,tp)
 	return c:IsSetCard(0x9a7d) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsType(TYPE_MONSTER)
@@ -58,7 +49,13 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local ct=Duel.GetCurrentChain()
+	local ct=0
+	for i=1,ev do
+		local tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_PLAYER)
+		if tgp~=tp then
+			ct=ct+1
+		end
+	end
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if ft<=0 then return end
@@ -76,16 +73,6 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 				end
 			end
 			sg:KeepAlive()
-			local ht=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
-			local mt=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
-			if ht>0 and mt>0 then 
-				if ht>mt then ht=mt end
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-				local sg2=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_MZONE,0,ht,ht,nil)
-				if #sg2>0 then
-					Duel.SendtoHand(sg2,nil,REASON_EFFECT)
-				end
-			end
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_PHASE+PHASE_END)
@@ -113,7 +100,8 @@ end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
 	local tg=g:Filter(s.rmfilter,nil,e:GetLabel())
-	Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)
+	Duel.SendtoHand(tg,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,tg)
 end
 function s.thfilter(c)
 	return c:IsSetCard(0x9a7d) and c:IsAbleToHand() and c:IsFaceup()

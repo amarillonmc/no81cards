@@ -59,33 +59,27 @@ function c75000034.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c75000034.op1(e,tp,eg,ep,ev,re,r,rp)
-    local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-    if ft<=0 then return end
-    local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-    local sg=g:Filter(Card.IsRelateToEffect,nil,e)
-    if sg:GetCount()>1 and Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
-    if sg:GetCount()>ft then
-        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-        sg=sg:Select(tp,ft,ft,nil)
-    end
-    local tc=sg:GetFirst()
-    while tc do
-        if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP_ATTACK) then
-            local e1=Effect.CreateEffect(e:GetHandler())
-            e1:SetType(EFFECT_TYPE_SINGLE)
-            e1:SetCode(EFFECT_CANNOT_TRIGGER)
-            e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-            tc:RegisterEffect(e1)
-            local e2=Effect.CreateEffect(e:GetHandler())
-            e2:SetDescription(aux.Stringid(75000034,2))
-            e2:SetType(EFFECT_TYPE_SINGLE)
-            e2:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-            e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-            tc:RegisterEffect(e2)
-        end
-        tc=sg:GetNext()
-    end
-    Duel.SpecialSummonComplete()
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(1,0)
+		e1:SetTarget(s.splimit)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ft<=0 then return end
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
+	if sg:GetCount()>1 and Duel.IsPlayerAffectedByEffect(tp,75000034) then return end
+	if sg:GetCount()>ft then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		sg=sg:Select(tp,ft,ft,nil)
+	end
+	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP_ATTACK)
+end
+function s.splimit(e,c)
+	return not c:IsSetCard(0x3751) and c:IsLocation(LOCATION_EXTRA)
 end
 -- 2
 function c75000034.filter2(c)

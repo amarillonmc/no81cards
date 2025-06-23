@@ -26,7 +26,7 @@ function c28317560.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28317560.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	return Duel.GetTurnPlayer()==tp or (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
 end
 function c28317560.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -63,7 +63,7 @@ end
 function c28317560.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Damage(p,d,REASON_EFFECT)
-	if Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c28317560.spfilter),tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(28317560,2)) then
+	if Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(c28317560.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(28317560,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28317560.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then

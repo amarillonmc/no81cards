@@ -16,8 +16,8 @@ function c28315844.initial_effect(c)
 	e2:SetDescription(aux.Stringid(28315844,1))
 	e2:SetCategory(CATEGORY_DAMAGE+CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38315844)
 	e2:SetCondition(c28315844.decon)
@@ -26,7 +26,7 @@ function c28315844.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28315844.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	return Duel.GetTurnPlayer()==tp or (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
 end
 function c28315844.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -54,12 +54,15 @@ end
 function c28315548.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetTargetsRelateToChain()
-	if Duel.GetMZoneCount(tp)<=0 or not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and g:GetCount()>0 then
+	local ct=0
+	if g:GetCount()>0 then
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		local og=Duel.GetOperatedGroup()
-		local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
-		if g:IsExists(Card.IsCode,1,nil,28335405) then ct=ct+1 end
+		ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
+		if og:IsExists(Card.IsCode,1,nil,28335405) then ct=ct+1 end
+	end
+	if not c:IsRelateToEffect(e) then return end
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and ct>0 then
 		local e0=Effect.CreateEffect(c)
 		e0:SetType(EFFECT_TYPE_SINGLE)
 		e0:SetCode(EFFECT_UPDATE_LEVEL)

@@ -1,8 +1,8 @@
 --电子音姬 Disco
 function c33200664.initial_effect(c)
 	c:SetSPSummonOnce(33200664)
+	aux.AddXyzProcedureLevelFree(c,c33200664.mfilter,c33200664.xyzcheck,2,2)
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_CYBERSE),4,2)
 	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(33200664,0))
@@ -25,6 +25,12 @@ function c33200664.initial_effect(c)
 	e2:SetTarget(c33200664.atktg)
 	e2:SetOperation(c33200664.atkop)
 	c:RegisterEffect(e2)
+end
+function c33200664.mfilter(c)
+	return c:IsRace(RACE_CYBERSE)
+end
+function c33200664.xyzcheck(g)
+	return g:GetClassCount(Card.GetCode)==#g
 end
 
 --e1

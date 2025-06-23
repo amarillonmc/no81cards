@@ -12,14 +12,14 @@ function c9910278.initial_effect(c)
 	e1:SetTarget(c9910278.indtg)
 	e1:SetValue(1)
 	c:RegisterEffect(e1)
-	--rearrange
+	--remove
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,9910278)
-	e2:SetTarget(c9910278.target)
-	e2:SetOperation(c9910278.operation)
+	e2:SetTarget(c9910278.rmtg)
+	e2:SetOperation(c9910278.rmop)
 	c:RegisterEffect(e2)
 end
 function c9910278.matfilter(c)
@@ -28,18 +28,27 @@ end
 function c9910278.indtg(e,c)
 	return e:GetHandler()==c or (c:IsType(TYPE_PENDULUM) and e:GetHandler():GetLinkedGroup():IsContains(c))
 end
-function c9910278.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function c9910278.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetDecktopGroup(1-tp,3)
-	if chk==0 then return g:GetCount()==3 and g:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)>0 end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsPlayerCanRemove(tp) and #g==3 and g:FilterCount(Card.IsAbleToHand,nil,tp)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,1-tp,LOCATION_DECK)
 end
-function c9910278.operation(e,tp,eg,ep,ev,re,r,rp)
+function c9910278.rmop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)<3 then return end
+	Duel.ConfirmDecktop(1-tp,3)
 	local g=Duel.GetDecktopGroup(1-tp,3)
-	Duel.ConfirmCards(tp,g)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local tg=g:Filter(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN)
-	if tg:GetCount()==0 then return end
-	local sg=tg:Select(tp,1,1,nil)
-	Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
-	Duel.ShuffleDeck(1-tp)
+	if g:GetCount()>0 then
+		local tg=g:Filter(Card.IsAbleToHand,nil,tp)
+		if #tg>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local sg=g:FilterSelect(tp,Card.IsAbleToHand,1,1,nil,tp)
+			Duel.DisableShuffleCheck()
+			Duel.SendtoHand(sg,tp,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg)
+			Duel.ShuffleHand(tp)
+			g:Sub(sg)
+		end
+		Duel.DisableShuffleCheck()
+		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT+REASON_REVEAL)
+	end
 end

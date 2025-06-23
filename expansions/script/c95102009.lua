@@ -1,22 +1,35 @@
 --馄饨剩汤 炖锅
 function c95102009.initial_effect(c)
-	--Activate
+	-- 场墓融合
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,95102009+EFFECT_COUNT_CODE_OATH)
+	e1:SetTarget(c95102009.tg1)
+	e1:SetOperation(c95102009.activate1)
 	c:RegisterEffect(e1)
-    -- 除外融合
+	-- 破坏共生
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(95102009,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCountLimit(1,95102009)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetTarget(c95102009.target)
-	e2:SetOperation(c95102009.activate)
+	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e2:SetOperation(c95102009.op2)
 	c:RegisterEffect(e2)
+	-- 双召限制
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetCode(EFFECT_CANNOT_SUMMON)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetTargetRange(1,0)
+	e3:SetTarget(c95102009.limit3)
+	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	c:RegisterEffect(e4)
 end
+-- 1
 function c95102009.filter0(c)
 	return c:IsOnField() and c:IsAbleToRemove()
 end
@@ -30,7 +43,7 @@ end
 function c95102009.filter3(c)
 	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove()
 end
-function c95102009.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function c95102009.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
 		local mg1=Duel.GetFusionMaterial(tp):Filter(c95102009.filter0,nil)
@@ -51,7 +64,7 @@ function c95102009.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_ONFIELD+LOCATION_GRAVE)
 end
-function c95102009.activate(e,tp,eg,ep,ev,re,r,rp)
+function c95102009.activate1(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(c95102009.filter1,nil,e)
 	local mg2=Duel.GetMatchingGroup(c95102009.filter3,tp,LOCATION_GRAVE,0,nil)
@@ -84,5 +97,17 @@ function c95102009.activate(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
+		e:GetHandler():SetCardTarget(tc)
 	end
+end
+-- 2
+function c95102009.op2(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetHandler():GetFirstCardTarget()
+	if tc and tc:IsLocation(LOCATION_MZONE) then
+		Duel.Destroy(tc,REASON_EFFECT)
+	end
+end
+-- 3
+function c95102009.limit3(e,c,sump,sumtype,sumpos,targetp)
+	return not c:IsSetCard(0xbbc)
 end

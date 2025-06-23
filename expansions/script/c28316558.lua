@@ -42,14 +42,7 @@ function c28316558.chkfilter(c)
 end
 function c28316558.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetMZoneCount(tp)<=0 or not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c28316558.chkfilter,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28316558,3)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local g=Duel.SelectMatchingCard(tp,c28316558.chkfilter,tp,LOCATION_HAND,0,1,1,nil)
-		Duel.ConfirmCards(1-tp,g)
-		Duel.ShuffleHand(tp)
-		Duel.Damage(1-tp,500,REASON_EFFECT)
-	end
+	if not c:IsRelateToEffect(e) then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
 	if Duel.GetLP(tp)>3000 then
 		Duel.Damage(tp,2000,REASON_EFFECT)
 	end
@@ -61,7 +54,7 @@ function c28316558.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp and not eg:IsContains(e:GetHandler()) and eg:IsExists(c28316558.cfilter,1,nil,tp)
 end
 function c28316558.thfilter(c)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return (c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) or c:IsCode(28335405)) and c:IsAbleToHand()
 end
 function c28316558.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

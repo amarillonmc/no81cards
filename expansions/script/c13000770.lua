@@ -33,8 +33,9 @@ function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE and aux.dscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToDeckOrExtraAsCost() end
-	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) end
@@ -48,12 +49,6 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local g=tc:GetColumnGroup()
 	if tc:IsRelateToEffect(e) then
-		local e0=Effect.CreateEffect(c)
-		e0:SetType(EFFECT_TYPE_SINGLE)
-		e0:SetCode(EFFECT_UPDATE_ATTACK)
-		e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
-		e0:SetValue(1000)
-		tc:RegisterEffect(e0)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_EXTRA_ATTACK)
@@ -72,6 +67,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		local aa=g:FilterSelect(1-tp,cm.filter,1,1,nil,1-tp)
 		Duel.SendtoGrave(aa,REASON_RULE)
 	end
+	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_EFFECT)
 end
 function cm.filter(c,tp)
 	return c:IsType(TYPE_MONSTER) and c:IsControler(tp)

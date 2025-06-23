@@ -30,7 +30,7 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-	if re and re:GetHandler():IsSetCard(0xc31) then
+	if re and re:GetHandler():IsSetCard(0xc30) then
 		Duel.SetChainLimit(s.chainlm)
 	end
 end
@@ -53,7 +53,7 @@ function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(Duel.AnnounceType(tp))
 end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND):FilterCount(Card.IsAbleToRemove,nil)<=0 then return end
+	if Duel.GetFieldGroup(tp,0,LOCATION_HAND):FilterCount(Card.IsAbleToRemove,nil)<=0 then return end
 	local tc=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,1):GetFirst()
 	Duel.ConfirmCards(tp,tc)
 	if tc:IsType(1<<e:GetLabel()) then

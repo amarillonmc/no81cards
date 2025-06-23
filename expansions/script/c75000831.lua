@@ -33,7 +33,7 @@ function c75000831.initial_effect(c)
 	c:RegisterEffect(e3)	
 end
 function c75000831.tgfilter(c)
-	return aux.IsCodeListed(c,75000812) and c:IsAbleToGrave() and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0xaa754) oraux.IsCodeListed(c,75000812) and c:IsAbleToGrave() and c:IsType(TYPE_MONSTER)
 end
 function c75000831.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
