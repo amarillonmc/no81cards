@@ -136,7 +136,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		local tc=g:GetFirst()
 		local   op=aux.SelectFromOptions(tp,
-		{aux.TRUE,aux.Stringid(id,3)},{tc:IsAbleToGrave(),aux.Stringid(id,4)},{tc:IsAbleToRemove(),aux.Stringid(id,5)},{tc:IsReleasableByEffect(),aux.Stringid(id,6)})	 
+		{aux.TRUE,aux.Stringid(id,3)},{tc:IsAbleToGrave(),aux.Stringid(id,4)},{tc:IsAbleToRemove(),aux.Stringid(id,5)},{tc:IsReleasableByEffect(),aux.Stringid(id,6)})   
 		if op==1 then
 			Duel.Destroy(tc,REASON_EFFECT)
 		elseif op==2 then
@@ -146,7 +146,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 		elseif op==4 then
 			Duel.Release(tc,REASON_EFFECT)
-		end	   
+		end	
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=Duel.SelectMatchingCard(tp,s.stfilter,tp,LOCATION_DECK,0,1,1,nil)
 			if #sg>0 then
@@ -154,7 +154,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.SendtoHand(sg,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,sg)
 			end
-		end
+
 	end
 end
 

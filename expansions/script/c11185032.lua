@@ -19,9 +19,9 @@ function s.initial_effect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_GRAVE_ACTION)
 	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
+	e2:SetCode(EVENT_DESTROYED)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCode(EVENT_REMOVE)
-	e2:SetCountLimit(1,id+100)
+	e2:SetCountLimit(1,id+1)
 	e2:SetCondition(s.setcon)
 	e2:SetTarget(s.settg)
 	e2:SetOperation(s.setop)
@@ -89,7 +89,7 @@ end
 
 -- 效果②条件：场上有龗龘䨻且被除外
 function s.cfilter(c)
-	return c:IsCode(id+1) -- 假设龗龘䨻的ID是当前ID+1
+	return c:IsCode(11185036) 
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return (re and re:GetHandler():IsSetCard(0x5450)) or rp==1-tp
