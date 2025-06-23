@@ -2,6 +2,14 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,94820406)
+	--adjust
+	local e01=Effect.CreateEffect(c)
+	e01:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e01:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e01:SetCode(EVENT_ADJUST)
+	e01:SetRange(0xff)
+	e01:SetOperation(s.adjustop)
+	c:RegisterEffect(e01)
 	--add code
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -44,6 +52,37 @@ function s.initial_effect(c)
 		e3:SetOperation(s.addcount)
 		Duel.RegisterEffect(e3,0)
 	end
+	--[[if not E-HERO_Blacklotus_global_effect then
+		E-HERO_Blacklotus_global_effect=true
+		local auxIsMaterialListCode=aux.IsMaterialListCode
+		function aux.IsMaterialListCode(c,code)
+			
+			return auxIsMaterialListCode
+		end
+		
+	s.unit=c
+		local c=s.unit
+		local code=c:GetCode()
+		local code2={c:GetCode()}
+		Debug.Message(code)
+		Debug.Message(#code2)
+		for i=1,#code2 do
+			Debug.Message(code2[i])
+		end
+	end]]
+end
+function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	--
+	if not s.globle_check then
+		s.globle_check=true
+		local g=Duel.GetMatchingGroup(Card.IsType,0,LOCATION_EXTRA,LOCATION_EXTRA,nil,TYPE_FUSION)
+		for tc in aux.Next(g) do
+			if tc.material and tc.material[58932615] then
+				tc.material[7432616]=true
+			end
+		end
+	end
+	e:Reset()
 end
 function s.resetcount(e,tp,eg,ep,ev,re,r,rp)
 	s[0]=0

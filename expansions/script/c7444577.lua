@@ -2,6 +2,14 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,94820406)
+	--adjust
+	local e01=Effect.CreateEffect(c)
+	e01:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e01:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e01:SetCode(EVENT_ADJUST)
+	e01:SetRange(0xff)
+	e01:SetOperation(s.adjustop)
+	c:RegisterEffect(e01)
 	--add code
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -32,6 +40,19 @@ function s.initial_effect(c)
 	e3:SetOperation(s.effop)
 	c:RegisterEffect(e3)
 	
+end
+function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	--
+	if not s.globle_check then
+		s.globle_check=true
+		local g=Duel.GetMatchingGroup(Card.IsType,0,LOCATION_EXTRA,LOCATION_EXTRA,nil,TYPE_FUSION)
+		for tc in aux.Next(g) do
+			if tc.material and tc.material[21844576] then
+				tc.material[7444577]=true
+			end
+		end
+	end
+	e:Reset()
 end
 function s.filter(c)
 	return c:IsSetCard(0x8) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
