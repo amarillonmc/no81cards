@@ -41,11 +41,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if Duel.GetDecktopGroup(1-tp,num):FilterCount(Card.IsAbleToRemove,nil)~=num then return end
 	local g=Duel.GetDecktopGroup(1-tp,num)
-	if Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	if Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(cm.cfil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local rg=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil):Select(tp,1,1,nil)
 		Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
 	end
+end
+function cm.cfil(c)
+	return c:IsCode(23410013) and c:IsFaceup()
 end
 function cm.cfilter(c,tp)
 	return c:IsFacedown() and c:GetControler()==1-tp

@@ -38,10 +38,15 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 	if not cm.global_check then
 		cm.global_check=true
+		local ge=Effect.GlobalEffect()
+		ge:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge:SetCode(EVENT_ADJUST)
+		ge:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) cm.check=false end)
+		Duel.RegisterEffect(ge,0)
 		cm[0]=Duel.ConfirmDecktop
 		Duel.ConfirmDecktop=function(tp,ct)
 			local g=Duel.GetDecktopGroup(tp,ct)
-			if ct<5 then
+			if ct<5 and not cm.check then
 				if g:IsExists(Card.IsHasEffect,1,nil,m) then Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1) end
 			end
 			local ch=Duel.GetCurrentChain()
@@ -62,7 +67,13 @@ function cm.initial_effect(c)
 			e2:SetOperation(cm.reset)
 			e2:SetReset(RESET_CHAIN)
 			Duel.RegisterEffect(e2,tp)
+			cm.check=false
 			return cm[0](tp,ct)
+		end
+		local f2=Duel.MoveSequence
+		Duel.MoveSequence=function(...)
+			cm.check=true
+			return f2(...)
 		end
 	end
 end

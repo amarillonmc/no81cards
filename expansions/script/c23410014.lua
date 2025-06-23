@@ -46,7 +46,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			local g=Duel.GetMatchingGroup(Card.IsFacedown,tp,0,LOCATION_REMOVED,nil):RandomSelect(tp,g:GetFirst():GetLevel())
 			Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 		end
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummon(g,SUMMON_TYPE_RITUAL,tp,tp,false,false,POS_FACEUP)
 		g:GetFirst():CompleteProcedure()
 	end
 end
