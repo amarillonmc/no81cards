@@ -42,7 +42,7 @@ end
 function s.lkcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
-function s.spfilter(c,e,tp,zone)
+function s.spfilter0(c,e,tp,zone)
 	return  ( c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 ) or c:IsAbleToDeck()
 end
 function s.fit1(c)
@@ -55,8 +55,8 @@ function s.lktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	for tc in aux.Next(lg) do
 		zone=bit.bor(zone,tc:GetLinkedZone())
 	end
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE)  and s.spfilter(chkc,e,tp,zone) end
-	if chk==0 then return  Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,0,tp,false,false) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE)  and s.spfilter0(chkc,e,tp,zone) end
+	if chk==0 then return  Duel.IsExistingMatchingCard(s.spfilter0,tp,LOCATION_GRAVE,0,1,nil,e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,PLAYER_ALL,LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 end
@@ -69,7 +69,7 @@ function s.lkop(e,tp,eg,ep,ev,re,r,rp)
 		zone=bit.bor(zone,tc:GetLinkedZone())
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,e,tp,zone)
+	local g=Duel.SelectMatchingCard(tp,s.spfilter0,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,e,tp,zone)
 	if #g>0 then
 		local tc=g:GetFirst()
 		local op=aux.SelectFromOptions(tp,
