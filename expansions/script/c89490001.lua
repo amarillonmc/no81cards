@@ -17,7 +17,7 @@ function s.initial_effect(c)
 	local custom_code=aux.RegisterMergedDelayedEvent_ToSingleCard(c,id,EVENT_TO_GRAVE)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(1193)
-	e3:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON)
+	e3:SetCategory(CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(custom_code)
 	e3:SetRange(LOCATION_MZONE)
@@ -55,12 +55,12 @@ end
 function s.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter,1,nil,tp) and not eg:IsContains(e:GetHandler())
 end
-function s.tgfilter(c,e)
-	return c:IsLocation(LOCATION_GRAVE) and c:IsCanBeEffectTarget(e) and c:IsAbleToDeck()
+function s.tgfilter(c,e,tp)
+	return c:IsLocation(LOCATION_GRAVE) and c:IsCanBeEffectTarget(e) and (c:IsAbleToDeck() or c:IsReason(REASON_RELEASE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
 end
 function s.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local mg=eg:Filter(s.cfilter,nil,tp):Filter(s.tgfilter,nil,e)
-	if chkc then return mg:IsContains(chkc) and s.tgfilter(chkc,e) end
+	local mg=eg:Filter(s.cfilter,nil,tp):Filter(s.tgfilter,nil,e,tp)
+	if chkc then return mg:IsContains(chkc) end
 	if chk==0 then return mg:GetCount()>0 end
 	local g=mg
 	if mg:GetCount()>1 then
@@ -70,8 +70,10 @@ function s.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local tc=g:GetFirst()
 	Duel.SetTargetCard(tc)
 	if tc:IsReason(REASON_RELEASE) then
+		e:SetCategory(e:GetProperty()|CATEGORY_SPECIAL_SUMMON)
 		e:SetLabel(1)
 	else
+		e:SetCategory(e:GetProperty()&~CATEGORY_SPECIAL_SUMMON)
 		e:SetLabel(0)
 		Duel.SetOperationInfo(0,CATEGORY_TODECK,tc,1,0,0)
 	end
