@@ -43,7 +43,7 @@ function s.accost(e,te)
 	local tp=tc:GetControler()
 	local seq=tc:GetSequence()
 	local loc=tc:GetLocation()
-	return loc==LOCATION_MZONE and ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)) or (seq==4 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))) or loc==LOCATION_SZONE and ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)))
+	return loc==LOCATION_MZONE and ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)) or (seq==4 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))) or loc==LOCATION_SZONE and ((seq>0 and Duel.CheckLocation(tp,LOCATION_SZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_SZONE,seq+1)))
 end
 function s.acop(e,eg,ep,ev,re,r,rp)
 	if s[0] then return end

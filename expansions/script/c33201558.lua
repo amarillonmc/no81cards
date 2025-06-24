@@ -1,6 +1,12 @@
 --猎杀虚幻的偏执狂
 local s,id,o=GetID()
 function s.initial_effect(c)
+	--activate
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_ACTIVATE)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	c:RegisterEffect(e0)
 	--set
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
