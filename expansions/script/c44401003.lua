@@ -43,7 +43,7 @@ function c44401003.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local check=c:IsSummonType(SUMMON_TYPE_NORMAL) and c:GetFlagEffect(44401003)==0
 	if chk==0 then return Duel.IsExistingMatchingCard(c44401003.cfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_DECK+LOCATION_REMOVED,0,1,nil,e,tp,check) end
-	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401003,4))
+	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401003,4))
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_REMOVED)
 end
@@ -57,12 +57,12 @@ function c44401003.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Summon(tp,tc,true,nil)
 	else
 		Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP)
-		local e1=Effect.CreateEffect(c)
+		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_DISABLE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
+		local e2=Effect.CreateEffect(e:GetHandler())
 		e2:SetType(EFFECT_TYPE_SINGLE)
 		e2:SetCode(EFFECT_DISABLE_EFFECT)
 		e2:SetValue(RESET_TURN_SET)

@@ -51,8 +51,12 @@ function c44401002.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c44401002.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(44401002,0)) then
 		Duel.BreakEffect()
 		Duel.ShuffleHand(tp)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-		local tc=Duel.SelectMatchingCard(tp,c44401002.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil):GetFirst()
+		local tg=Duel.GetMatchingGroup(c44401002.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+		local tc=tg:GetFirst()
+		if #tg>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+			tc=tg:Select(tp,1,1,nil):GetFirst()
+		end
 		if tc then
 			Duel.Summon(tp,tc,true,nil)
 		end
