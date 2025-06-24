@@ -49,8 +49,11 @@ function c60001174.setop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterFlagEffect(60001168,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	end
 end
+function c60001174.cfilter(c,tp)
+	return c:IsControler(1-tp) and c:IsPreviousLocation(LOCATION_DECK)
+end
 function c60001174.ckcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and Duel.GetCurrentPhase()~=PHASE_DRAW
+	return rp==1-tp and Duel.GetCurrentPhase()~=PHASE_DRAW and eg:IsExists(c60001174.cfilter,1,nil,tp)
 end
 function c60001174.cktg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
