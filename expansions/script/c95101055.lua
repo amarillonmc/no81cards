@@ -56,7 +56,7 @@ function c95101055.chkfilter(c,tp)
 	return c:IsType(TYPE_MONSTER) and c:IsControler(1-tp)
 end
 function c95101055.operation(e,tp,eg,ep,ev,re,r,rp)
-	if eg:IsExists(c77910045.chkfilter,1,nil,tp) then
+	if eg:IsExists(c95101055.chkfilter,1,nil,tp) then
 		Duel.Recover(tp,500,REASON_EFFECT)
 	end
 end
