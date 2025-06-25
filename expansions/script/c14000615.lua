@@ -58,7 +58,7 @@ function cm.repop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.cpcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg --and not Duel.IsPlayerAffectedByEffect(tp,14000601)
+	return eg and not eg:IsContains(e:GetHandler()) --and not Duel.IsPlayerAffectedByEffect(tp,14000601)
 end
 function cm.tgfilter(c,e,tp)
 	return (c:IsFaceup() and c:IsControler(tp) and c:IsRace(RACE_CYBERSE)) or Duel.IsPlayerAffectedByEffect(tp,14000601)

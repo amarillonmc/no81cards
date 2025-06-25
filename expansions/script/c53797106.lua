@@ -122,6 +122,7 @@ function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
 	local tc=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_MZONE,0,1,1,nil,e,tp):GetFirst()
+	Duel.HintSelection(Group.FromCards(tc))
 	if not EFFECT_REMOVE_LINK_MARKER_KOISHI and not Duel.Exile then
 		EFFECT_REMOVE_LINK_MARKER_KOISHI=id+1000
 		local _GetLink=Card.GetLink
