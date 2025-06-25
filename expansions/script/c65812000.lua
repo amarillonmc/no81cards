@@ -35,15 +35,14 @@ function s.accon(e)
 end
 function s.actarget(e,te)
 	local tc=te:GetHandler()
+	e:SetLabelObject(te)
 	return tc:IsLocation(LOCATION_ONFIELD) and not tc:IsLocation(LOCATION_FZONE)
 end
 function s.accost(e,te)
-	e:SetLabelObject(te)
 	local tc=te:GetHandler()
 	local tp=tc:GetControler()
 	local seq=tc:GetSequence()
-	local loc=tc:GetLocation()
-	return loc==LOCATION_MZONE and ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)) or (seq==4 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))) or loc==LOCATION_SZONE and ((seq>0 and Duel.CheckLocation(tp,LOCATION_SZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_SZONE,seq+1)))
+	return tc:IsLocation(LOCATION_MZONE) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)) or (seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))) or tc:IsLocation(LOCATION_SZONE) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_SZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_SZONE,seq+1)))
 end
 function s.acop(e,eg,ep,ev,re,r,rp)
 	if s[0] then return end
@@ -72,7 +71,7 @@ function s.acop(e,eg,ep,ev,re,r,rp)
 	elseif a==0x8 or a==0x800 then nseq=3
 	elseif a==0x10 or a==0x1000 then nseq=4
 	else end
-	if tc:IsLocation(LOCATION_PZONE) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,pos,false,a)
+	if tc:IsLocation(LOCATION_PZONE) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true,a)
 	else Duel.MoveSequence(tc,nseq) 
 	end
 	s[0]=true
