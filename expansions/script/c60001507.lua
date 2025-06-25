@@ -39,7 +39,14 @@ function cm.getlv(c)
 	end
 end
 function cm.gcheck(g,sg)
-	local lvsum=g:GetSum(cm.getlv)
+	local lvsum=0
+	for tc in aux.Next(g) do
+		if tc:IsLevelAbove(1) then
+			lvsum=lvsum+tc:GetLevel()
+		else
+			lvsum=lvsum+1
+		end
+	end
 	if lvsum==1 then
 		return sg:IsExists(Card.IsCode,1,nil,60001508)
 	elseif lvsum==2 then
@@ -52,7 +59,7 @@ function cm.con(e,tp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.tgcheck,tp,LOCATION_HAND,0,c)
 	local sg=Duel.GetMatchingGroup(cm.thcheck,tp,LOCATION_REMOVED,0,nil)
-	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and Duel.GetTurnPlayer()==tp and Duel.GetCurrentChain()<1 and sg:CheckSubGroup(cm.gcheck,1,#g,sg)
+	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and Duel.GetTurnPlayer()==tp and Duel.GetCurrentChain()<1 and g:CheckSubGroup(cm.gcheck,1,#g,sg)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -66,7 +73,16 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 		Duel.AdjustAll()
 		og:RemoveCard(c)
 		local ag=Group.CreateGroup()
-		local lvsum=og:GetSum(cm.getlv)
+		local lvsum=0
+		for tc in aux.Next(og) do
+			if tc:IsLevelAbove(1) then
+				lvsum=lvsum+tc:GetLevel()
+			else
+				lvsum=lvsum+1
+			end
+		end
+		Debug.Message(#og)
+		Debug.Message(lvsum)
 		if lvsum==1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			ag=sg:FilterSelect(tp,Card.IsCode,1,1,nil,60001508)

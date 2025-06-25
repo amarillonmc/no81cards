@@ -55,7 +55,6 @@ function cm.fselect(g)
 	return g:GetClassCount(Card.GetLeftScale)==#g
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil)
 	if #g==0 then return end
 	local num=g:GetClassCount(Card.GetLeftScale)

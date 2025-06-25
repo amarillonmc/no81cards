@@ -52,6 +52,7 @@ function cm.fop(e,tp,eg,ep,ev,re,r,rp)
 	g1:AddCard(c)
 	if Duel.SendtoGrave(g1,REASON_EFFECT)>2 then
 		Duel.AdjustAll()
+		local g3=Duel.GetMatchingGroup(cm.ffil2,tp,LOCATION_REMOVED,0,nil):GetFirst()
 		Duel.SendtoHand(g3,nil,REASON_EFFECT)
 	end
 end

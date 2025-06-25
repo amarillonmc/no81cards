@@ -243,7 +243,7 @@ function cm.rffilter(c)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or not c:IsLocation(LOCATION_SZONE) then return end
+	if not c:IsLocation(LOCATION_SZONE) then return end
 	local lg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	local x,y=cm.xylabel(c,tp)
 	local g=lg:Filter(cm.islinkdir,nil,x,y,tp)
