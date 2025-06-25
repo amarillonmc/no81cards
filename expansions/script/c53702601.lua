@@ -38,21 +38,21 @@ function s.LostLink(c)
 	local _IsLinkAbove=Card.IsLinkAbove
 	local _IsLinkBelow=Card.IsLinkBelow
 	Card.GetLink=function(sc)
-		if c~=sc or not sc:IsLocation(LOCATION_MZONE) then return _GetLink(sc) end
+		if not sc:IsLocation(LOCATION_MZONE) then return _GetLink(sc) end
 		return s.NumNumber(sc:GetLinkMarker(),markers)
 	end
 	Card.IsLink=function(sc,...)
-		if c~=sc or not sc:IsLocation(LOCATION_MZONE) then return _IsLink(sc,...) end
+		if not sc:IsLocation(LOCATION_MZONE) then return _IsLink(sc,...) end
 		local t={...}
 		for _,v in ipairs(t) do if s.NumNumber(sc:GetLinkMarker(),markers)==v then return true end end
 		return false
 	end
 	Card.IsLinkAbove=function(sc,link)
-		if c~=sc or not sc:IsLocation(LOCATION_MZONE) then return _IsLinkAbove(sc,link) end
+		if not sc:IsLocation(LOCATION_MZONE) then return _IsLinkAbove(sc,link) end
 		if s.NumNumber(sc:GetLinkMarker(),markers)>=link then return true else return false end
 	end
 	Card.IsLinkBelow=function(sc,link)
-		if c~=sc or not sc:IsLocation(LOCATION_MZONE) then return _IsLinkBelow(sc,link) end
+		if not sc:IsLocation(LOCATION_MZONE) then return _IsLinkBelow(sc,link) end
 		if s.NumNumber(sc:GetLinkMarker(),markers)<=link then return true else return false end
 	end
 end

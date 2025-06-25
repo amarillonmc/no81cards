@@ -51,19 +51,19 @@ function s.acop(e,eg,ep,ev,re,r,rp)
 	local tc=te:GetHandler()
 	local tp=tc:GetControler()
 	local seq=tc:GetSequence()
-	local loc=tc:GetLocation()
+	local pos=tc:GetPosition()
 	local a=nil
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-	if loc==LOCATION_MZONE and (seq==0 or seq==5) then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xfffd) end
-	if loc==LOCATION_MZONE and seq==1 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xfffa) end
-	if loc==LOCATION_MZONE and seq==2 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xfff5) end
-	if loc==LOCATION_MZONE and seq==3 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xffeb) end
-	if loc==LOCATION_MZONE and (seq==4 or seq==6) then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xfff7) end
-	if loc==LOCATION_SZONE and seq==0 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xfdff) end
-	if loc==LOCATION_SZONE and seq==1 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xfaff) end
-	if loc==LOCATION_SZONE and seq==2 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xf5ff) end
-	if loc==LOCATION_SZONE and seq==3 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xebff) end
-	if loc==LOCATION_SZONE and seq==4 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xf7ff) end
+	if tc:IsLocation(LOCATION_MZONE) and (seq==0 or seq==5) then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xfffd) end
+	if tc:IsLocation(LOCATION_MZONE) and seq==1 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xfffa) end
+	if tc:IsLocation(LOCATION_MZONE) and seq==2 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xfff5) end
+	if tc:IsLocation(LOCATION_MZONE) and seq==3 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xffeb) end
+	if tc:IsLocation(LOCATION_MZONE) and (seq==4 or seq==6) then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xfff7) end
+	if tc:IsLocation(LOCATION_SZONE) and seq==0 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xfdff) end
+	if tc:IsLocation(LOCATION_SZONE) and seq==1 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xfaff) end
+	if tc:IsLocation(LOCATION_SZONE) and seq==2 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xf5ff) end
+	if tc:IsLocation(LOCATION_SZONE) and seq==3 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xebff) end
+	if tc:IsLocation(LOCATION_SZONE) and seq==4 then a=Duel.SelectDisableField(tp,1,LOCATION_ONFIELD,0,0xf7ff) end
 	local nseq=0
 	if not a then return end
 	if a==0x1 or a==0x100 then nseq=0
@@ -72,7 +72,9 @@ function s.acop(e,eg,ep,ev,re,r,rp)
 	elseif a==0x8 or a==0x800 then nseq=3
 	elseif a==0x10 or a==0x1000 then nseq=4
 	else end
-	Duel.MoveSequence(tc,nseq)
+	if tc:IsLocation(LOCATION_PZONE) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,pos,false,a)
+	else Duel.MoveSequence(tc,nseq) 
+	end
 	s[0]=true
 end
 

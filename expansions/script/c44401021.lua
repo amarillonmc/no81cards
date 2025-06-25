@@ -42,7 +42,16 @@ function c44401021.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	--confirm
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local fc=Duel.SelectMatchingCard(tp,c44401021.spfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,e,tp):GetFirst()
-	Duel.ConfirmCards(1-tp,fc)
+	if fc:IsLocation(LOCATION_DECK) then
+		local seq=fc:GetSequence()
+		Duel.DisableShuffleCheck()
+		Duel.MoveSequence(fc,SEQ_DECKTOP)
+		Duel.ConfirmDecktop(tp,1)
+		Duel.DisableShuffleCheck()
+		Duel.MoveSequence(fc,seq)
+	else
+		Duel.ConfirmCards(1-tp,fc)
+	end
 	e:SetLabelObject(fc)
 	--target
 	local ct=math.floor(fc:GetLevel()/2)
