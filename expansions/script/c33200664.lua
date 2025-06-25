@@ -27,7 +27,7 @@ function c33200664.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c33200664.mfilter(c)
-	return c:IsRace(RACE_CYBERSE)
+	return c:IsRace(RACE_CYBERSE) and c:IsXyzLevel(4)
 end
 function c33200664.xyzcheck(g)
 	return g:GetClassCount(Card.GetCode)==#g
