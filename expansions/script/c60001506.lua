@@ -47,7 +47,14 @@ function cm.getlv(c)
 	end
 end
 function cm.gcheck(g,sg)
-	local lvsum=g:GetSum(cm.getlv)
+	local lvsum=0
+	for tc in aux.Next(g) do
+		if tc:IsLevelAbove(1) then
+			lvsum=lvsum+tc:GetLevel()
+		else
+			lvsum=lvsum+1
+		end
+	end
 	if lvsum==1 then
 		return sg:IsExists(Card.IsCode,1,nil,60001508)
 	elseif lvsum==2 then
@@ -70,11 +77,20 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	local sug=g:SelectSubGroup(tp,cm.gcheck,false,1,#g,sg)
 	sug:AddCard(c)
 	if Duel.SendtoGrave(sug,REASON_EFFECT)>0 then
-		Duel.AdjustAll()
 		local og=Duel.GetOperatedGroup()
+		Duel.AdjustAll()
 		og:RemoveCard(c)
 		local ag=Group.CreateGroup()
-		local lvsum=og:GetSum(cm.getlv)
+		local lvsum=0
+		for tc in aux.Next(og) do
+			if tc:IsLevelAbove(1) then
+				lvsum=lvsum+tc:GetLevel()
+			else
+				lvsum=lvsum+1
+			end
+		end
+		Debug.Message(#og)
+		Debug.Message(lvsum)
 		if lvsum==1 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			ag=sg:FilterSelect(tp,Card.IsCode,1,1,nil,60001508)

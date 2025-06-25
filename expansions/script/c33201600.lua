@@ -22,7 +22,7 @@ end
 
 --syn
 function VHisc_YMSJ.synfilter(c,sc)
-	return c:IsType(TYPE_MONSTER) and c:IsLevelAbove(0) and c:IsAbleToGrave() and c:IsCanBeSynchroMaterial(sc)
+	return c:IsType(TYPE_MONSTER) and c:IsFaceup() and (c:IsNotTuner(sc) or c:IsSetCard(0x5327)) and c:IsLevelAbove(0) and c:IsAbleToGrave() and c:IsCanBeSynchroMaterial(sc)
 end
 function VHisc_YMSJ.cck(c)
 	return c:IsSetCard(0x5327)
