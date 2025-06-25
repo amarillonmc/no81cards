@@ -4,13 +4,15 @@ function c44401031.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
-	e0:SetCost(c44401031.cost)
 	c:RegisterEffect(e0)
 	--act in set turn
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(44401031,2))
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
 	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCondition(c44401031.excon)
+	e1:SetCost(c44401031.excost)
 	c:RegisterEffect(e1)
 	--immune
 	local e2=Effect.CreateEffect(c)
@@ -49,17 +51,14 @@ function c44401031.initial_effect(c)
 	e5:SetOperation(c44401031.setop)
 	c:RegisterEffect(e5)
 end
-function c44401031.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if not c:IsStatus(STATUS_SET_TURN) then return true end
-	local ct=#{c:IsHasEffect(EFFECT_TRAP_ACT_IN_SET_TURN,tp)}
-	local dis=Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,nil)
-	if chk==0 then return ct>1 or dis end
-	if ct==1 or dis and Duel.SelectYesNo(tp,aux.Stringid(44401031,2)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,1,nil)
-		Duel.Remove(g,POS_FACEUP,REASON_COST)
-	end
+function c44401031.excon(e)
+	return e:GetHandler():IsStatus(STATUS_SET_TURN) and e:GetHandler():IsLocation(LOCATION_ONFIELD)
+end
+function c44401031.excost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function c44401031.immfilter(e,c)
 	return c:IsSetCard(0xa4a) and c:GetFlagEffect(44401031)==0
