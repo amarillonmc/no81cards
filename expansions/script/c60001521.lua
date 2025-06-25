@@ -36,7 +36,7 @@ function cm.incon(e)
 	return Card.GetCounter(e:GetHandler(),0x624)>=1
 end
 function cm.spfil(c,e,tp)
-	return c:IsCode(60001507) and c:IsFacedown() and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
+	return c:IsCode(60001507) and c:IsFacedown() --and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

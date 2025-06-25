@@ -43,7 +43,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,2))
+	e1:SetDescription(aux.Stringid(m,2))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -51,7 +51,7 @@ function cm.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_NO_TURN_RESET)
 	e1:SetCountLimit(1)
 	e1:SetCondition(cm.incon)
-	e1:SetTarget(cm.sptg)
+	--e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
 end
@@ -93,7 +93,7 @@ function cm.eop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spfil(c,e,tp)
-	return c:IsCode(60001506) and c:IsFacedown() and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
+	return c:IsCode(60001506) and c:IsFacedown() --and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

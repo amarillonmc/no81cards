@@ -47,5 +47,5 @@ function cm.filter(c,code)
 	return c:IsCode(code) and c:IsAbleToHand()
 end
 function cm.cfil(c)
-	return c:IsFaceup() and c:IsCanAddCounter(0x624) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsCanAddCounter(0x624,1) and c:IsType(TYPE_MONSTER)
 end

@@ -18,7 +18,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.cfil(c)
-	return c:IsFaceup() and c:IsCanAddCounter(0x624) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsCanAddCounter(0x624,1) and c:IsType(TYPE_MONSTER)
 end
 function cm.mfil(c)
 	return c:IsFaceup() and c:IsSetCard(0x5622) and c:IsLevelAbove(5)
