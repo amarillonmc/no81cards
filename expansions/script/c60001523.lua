@@ -20,6 +20,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ct=2
+	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)==1 or Duel.IsPlayerAffectedByEffect(tp,59822133) then ct=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
