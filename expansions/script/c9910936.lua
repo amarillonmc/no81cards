@@ -40,7 +40,7 @@ function c9910936.xyzop(e,tp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c9910936.cfilter,tp,LOCATION_SZONE,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
-	Duel.RegisterFlagEffect(tp,9910936,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,9910936,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c9910936.reccon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)

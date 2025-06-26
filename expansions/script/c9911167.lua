@@ -47,7 +47,7 @@ function c9911167.xyzop(e,tp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,c9911167.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST)
-	Duel.RegisterFlagEffect(tp,9911167,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,9911167,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c9911167.imcon(e)
 	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0x3958)
