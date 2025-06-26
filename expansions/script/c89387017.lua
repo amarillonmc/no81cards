@@ -52,8 +52,7 @@ function cm.initial_effect(c)
 							end
 						end
 					end)
-				end
-				if e:GetDescription()==aux.Stringid(84025439,0) then
+				elseif e:GetDescription()==aux.Stringid(84025439,0) then
 					sop(e,function(e,tp,eg,ep,ev,re,r,rp)
 						local c=e:GetHandler()
 						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
@@ -73,6 +72,8 @@ function cm.initial_effect(c)
 							end
 						end
 					end)
+				else
+					sop(e,op)
 				end
 			else
 				sop(e,op)
