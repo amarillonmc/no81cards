@@ -23,6 +23,7 @@ function s.initial_effect(c)
 	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.thcon)
 	e1:SetTarget(s.thtg)
@@ -146,7 +147,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 		elseif op==4 then
 			Duel.Release(tc,REASON_EFFECT)
-		end	
+		end 
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=Duel.SelectMatchingCard(tp,s.stfilter,tp,LOCATION_DECK,0,1,1,nil)
 			if #sg>0 then
