@@ -33,9 +33,8 @@ function c33201408.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
-	e4:SetCondition(c33201408.thcon1)
-	e4:SetTarget(c33201408.thtg1)
-	e4:SetOperation(c33201408.thop1)
+	e4:SetTarget(c33201408.settg)
+	e4:SetOperation(c33201408.setop)
 	c:RegisterEffect(e4)   
 end
 c33201408.SetCard_JDSS=true 
