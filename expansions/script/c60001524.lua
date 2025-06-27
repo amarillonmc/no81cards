@@ -90,8 +90,7 @@ function cm.spfil2(c,e,tp)
 	return c:IsSetCard(0x5622) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>1
-		and Duel.IsExistingMatchingCard(cm.spfil2,tp,LOCATION_HAND,0,1,e:GetHandler(),e,tp)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfil2,tp,LOCATION_HAND,0,1,e:GetHandler(),e,tp)
 		and not Duel.IsPlayerAffectedByEffect(tp,59822133) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
