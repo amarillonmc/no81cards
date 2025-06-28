@@ -47,7 +47,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 	--[[While this card is a Continuous Spell, it gains this effect.
 	● Each time your opponent adds a card(s) from their Deck to their hand, they can choose to reveal 1 other card in their hand and keep it revealed until the end of your next turn. If they do not, place that added card(s) to the bottom of your Deck.]]
-	aux.RegisterMaxxCEffect(c,id+100,nil,LOCATION_SZONE,EVENT_TO_HAND,s.reccon,s.recopOUT,s.recopOUT,s.flaglabel,false,false,nil,aux.AddThisCardInSZoneAlreadyCheck(c))
+	aux.RegisterMaxxCEffect(c,id+100,nil,LOCATION_SZONE,EVENT_TO_HAND,s.reccon,s.recopOUT,s.recopIN,s.flaglabel,false,false,nil,aux.AddThisCardInSZoneAlreadyCheck(c))
 	aux.RegisterTriggeringArchetypeCheck(c,ARCHE_SEPIALIFE)
 	if not s.global_check then
 		s.global_check=true
@@ -161,6 +161,43 @@ function s.flaglabel(e,tp,eg,ep,ev,re,r,rp)
 	return 0
 end
 function s.recopOUT(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,tp,id)
+	local sg=Duel.Group(s.cfilter,tp,0,LOCATION_HAND,nil,1-tp)
+	local g=Duel.Group(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,sg)
+	if #g==0 or not Duel.SelectYesNo(1-tp,aux.Stringid(id,2)) then
+		Duel.SendtoDeck(sg,tp,SEQ_DECKTOP,REASON_EFFECT)
+		local rg=Duel.GetOperatedGroup()
+		local og=rg:Filter(Card.IsLocation,nil,LOCATION_DECK)
+		local ct1=og:FilterCount(Card.IsControler,nil,tp)
+		local ct2=og:FilterCount(Card.IsControler,nil,1-tp)
+		if ct1>0 then
+			if ct1>1 then
+				Duel.SortDecktop(tp,tp,ct1)
+			end
+			for i=1,ct1 do
+				local tc=Duel.GetDecktopGroup(tp,1):GetFirst()
+				Duel.MoveSequence(tc,SEQ_DECKBOTTOM)
+			end
+		end
+		if ct2>0 then
+			if ct2>1 then
+				Duel.SortDecktop(tp,1-tp,ct2)
+			end
+			for i=1,ct2 do
+				local tc=Duel.GetDecktopGroup(1-tp,1):GetFirst()
+				Duel.MoveSequence(tc,SEQ_DECKBOTTOM)
+			end
+		end
+	else
+		local tc=g:Select(1-tp,1,1,nil):GetFirst()
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_PUBLIC)
+		e1:SetReset(RESETS_STANDARD_PHASE_END,Duel.GetNextPhaseCount(nil,tp))
+		tc:RegisterEffect(e1)
+	end
+end
+function s.recopIN(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,tp,id)
 	local fid=e:GetHandler():GetFieldID()
 	local sg=Duel.Group(Card.HasFlagEffectLabel,tp,0,LOCATION_HAND,nil,id+100,fid)

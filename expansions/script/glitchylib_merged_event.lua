@@ -496,7 +496,7 @@ function Auxiliary.ThisCardInLocationAlreadyCheckReg(setf,getf,ignore_reason)
 				--condition of continous effect will be checked before other effects
 				--Debug.Message("RE: "..tostring(re))
 				--Debug.Message("GETF: "..tostring(getf(e)))
-				if re==nil then return false end
+				if re==nil or aux.GetValueType(re)~="Effect" then return false end
 				if getf(e)~=nil then return false end
 				--Debug.Message("r: "..tostring(r))
 				if (r&REASON_EFFECT)>0 or ignore_reason then
