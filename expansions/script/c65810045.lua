@@ -43,7 +43,7 @@ function s.initial_effect(c)
 end
 
 function s.recon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentChain()==1 and (e:GetHandler():GetFlagEffect(id)>0 or (e:GetCode()~=EVENT_CHAIN_NEGATED)) and Duel.GetFlagEffect(tp,id)==0
+	return Duel.GetCurrentChain()==1 and (e:GetHandler():GetFlagEffect(id+1)>0 or (e:GetCode()~=EVENT_CHAIN_NEGATED)) and Duel.GetFlagEffect(tp,id+1)==0
 end
 function s.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

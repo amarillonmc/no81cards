@@ -201,7 +201,16 @@ function c28319225.condition(e,c)
 end
 function c28319225.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.ConfirmCards(0,c)
+	if c:IsLocation(LOCATION_DECK) then
+		local seq=c:GetSequence()
+		Duel.DisableShuffleCheck()
+		Duel.MoveSequence(c,SEQ_DECKTOP)
+		Duel.ConfirmDecktop(tp,1)
+		Duel.DisableShuffleCheck()
+		Duel.MoveSequence(c,seq)
+	else
+		Duel.ConfirmCards(1-tp,c)
+	end
 	Duel.Hint(HINT_CARD,0,28319225)
 	--activate from hand
 	local e1=Effect.CreateEffect(c)

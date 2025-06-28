@@ -6,10 +6,10 @@ function s.initial_effect(c)
 		Duel.DisableActionCheck(true)
 		local tp=0
 		if Duel.GetFieldGroupCount(0,0,LOCATION_DECK)>0 or Duel.GetFieldGroupCount(0,LOCATION_EXTRA,0)>0 then tp=1 end
-		Debug.Message(tp)
 		local ec=Debug.AddCard(id,0,0,LOCATION_EXTRA,0,POS_FACEDOWN)
 		pcall(Duel.Overlay,ec,c)
 		local _,g=pcall(Card.GetOverlayGroup,ec)
+		g:AddCard(Duel.CreateToken(1-tp,id))
 		pcall(Group.Select,g,1-tp,1,1,nil)
 		Duel.DisableActionCheck(false)
 	end

@@ -55,11 +55,11 @@ function c19209557.cfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
 end
 function c19209557.spfilter(c,e,tp)
-	return c:IsSetCard(0xb50) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx()
+	return c:IsSetCard(0xb50) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx() and (c:IsLocation(LOCATION_GRAVE) and Duel.GetMZoneCount(tp)>0 or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
 end
 function c19209557.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(1-tp) and chkc:IsAbleToRemove() end
-	if chk==0 then return Duel.IsExistingTarget(c19209557.cfilter,tp,0,LOCATION_GRAVE,1,nil) and Duel.IsExistingMatchingCard(c19209557.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)>0 end
+	if chk==0 then return Duel.IsExistingTarget(c19209557.cfilter,tp,0,LOCATION_GRAVE,1,nil) and Duel.IsExistingMatchingCard(c19209557.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectTarget(tp,c19209557.cfilter,tp,0,LOCATION_GRAVE,1,2,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,#g,1-tp,LOCATION_GRAVE)
@@ -67,7 +67,7 @@ function c19209557.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c19209557.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetTargetsRelateToChain()
-	if #g>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 and Duel.GetMZoneCount(tp)>0 then
+	if #g>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c19209557.spfilter),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
 		if sc then
