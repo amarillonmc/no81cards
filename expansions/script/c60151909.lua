@@ -60,7 +60,7 @@ function c60151909.initial_effect(c)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetCode(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCondition(c60151909.e2con)
 	e2:SetCost(aux.bfgcost)
