@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	--fusion summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DECKDES)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetCountLimit(1,m)
@@ -75,12 +75,12 @@ function cm.thfilter(c)
 	return aux.IsCodeListed(c,40020183) and c:IsType(TYPE_MONSTER) and not c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,5) end
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsPlayerCanDiscardDeck(tp,5) then
-		Duel.ConfirmDecktop(tp,5)
-		local g=Duel.GetDecktopGroup(tp,5)
+	if Duel.IsPlayerCanDiscardDeck(tp,3) then
+		Duel.ConfirmDecktop(tp,3)
+		local g=Duel.GetDecktopGroup(tp,3)
 		if g:GetCount()>0 then
 			Duel.DisableShuffleCheck()
 			if g:IsExists(cm.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
@@ -90,8 +90,10 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.ConfirmCards(1-tp,sg)
 				Duel.ShuffleHand(tp)
 				g:Sub(sg)
+				Duel.SendtoGrave(g,REASON_EFFECT+REASON_REVEAL)
+			else
+				Duel.ShuffleDeck(tp)
 			end
-			Duel.SendtoGrave(g,REASON_EFFECT+REASON_REVEAL)
 		end
 	end
 end

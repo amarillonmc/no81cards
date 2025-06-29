@@ -2,7 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x2c0),4,3)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x2c0),4,2)
 	c:EnableReviveLimit()
 	--eq
 	local e1=Effect.CreateEffect(c)
@@ -70,17 +70,10 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 		tc:AddCounter(0x1b,2)
 	end
 end
-
-function s.cfilter(c)
-	return c:IsSetCard(0x2c0) and c:IsType(TYPE_EQUIP) and c:IsAbleToGraveAsCost()
-end
 function s.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
-	Duel.SendtoGrave(g,REASON_COST)
 end
 function s.tkfilter(c,e,tp,eg,ep,ev,re,r,rp)
 	if not (c:IsSetCard(0x2c0) and c:IsType(TYPE_EQUIP) and c:IsFaceupEx()) then return false end

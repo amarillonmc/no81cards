@@ -6,7 +6,7 @@ function cm.Rebellionform(c)
 	return m and m.named_with_Rebellionform
 end
 function cm.initial_effect(c)
-	aux.AddCodeList(c,40010499)	
+	aux.AddCodeList(c,40010499) 
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -56,14 +56,18 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local check=Duel.IsExistingMatchingCard(cm.checkfilter,tp,LOCATION_MZONE,0,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,check,e,tp)
 	local tc=g:GetFirst()
-	if tc then
-		Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)
-		tc:CompleteProcedure()
+	--if tc then
+		--Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)
+		--tc:CompleteProcedure()
+	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and tc:IsCode(40010499) and c:IsLocation(LOCATION_HAND) then
+		Duel.BreakEffect()
+		Duel.SendtoGrave(c,REASON_EFFECT)
 	end
 end
 function cm.ntcon(e,c,minc)

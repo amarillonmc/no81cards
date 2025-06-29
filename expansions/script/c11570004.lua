@@ -8,8 +8,9 @@ function c11570004.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_DESTROY_REPLACE)
 	e2:SetRange(LOCATION_FZONE)
-	e2:SetTarget(c11570004.destg)
-	e2:SetValue(1)
+	e2:SetTarget(c11570004.reptg)
+	e2:SetValue(c11570004.repval)
+	e2:SetOperation(c11570004.repop)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(11570004,0))
@@ -36,17 +37,21 @@ end
 function c11570004.rfilter(c)
 	return c:IsFaceupEx() and c:IsSetCard(0x810) and c:IsAbleToRemove() and c:IsType(TYPE_MONSTER)
 end
-function c11570004.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local dc=eg:GetFirst()
-	if chk==0 then return eg:GetCount()==1 and dc~=e:GetHandler() and dc:IsFaceup() and dc:IsLocation(LOCATION_MZONE)
-		and dc:IsSetCard(0x3810) and not dc:IsReason(REASON_REPLACE)
-		and Duel.IsExistingMatchingCard(c11570004.rfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,dc) end
-	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local g=Duel.SelectMatchingCard(tp,c11570004.rfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,1,dc)
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-		return true
-	else return false end
+function c11570004.repfilter(c,tp)
+	return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE)
+		and c:IsSetCard(0x810) and c:IsFaceup() and not c:IsReason(REASON_REPLACE)
+end
+function c11570004.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c11570004.rfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) and eg:IsExists(c11570004.repfilter,1,nil,tp) end
+	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+end
+function c11570004.repval(e,c)
+	return c11570004.repfilter(c,e:GetHandlerPlayer())
+end
+function c11570004.repop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,c11570004.rfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
+	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 end
 function c11570004.filter(c)
 	return c:IsSetCard(0x810) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or c:IsAbleToGrave())

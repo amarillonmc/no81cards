@@ -12,8 +12,8 @@ function c13000751.initial_effect(c)
 	c:RegisterEffect(e2)
 local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_DESTROY)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_PHASE+PHASE_END)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_HAND)
 	e4:SetCountLimit(1,m+1000)
 	e4:SetCondition(cm.con)
@@ -48,11 +48,11 @@ function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk then return Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_HAND,0,1,c) and Duel.IsExistingMatchingCard(cm.filter6,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
 		Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
-	Duel.SetChainLimit(cm.chainlm)
+	Duel.SetChainLimit(cm.chlimit)
 end
-function cm.chainlm(e,rp,tp)
-	return tp==rp
-end
+function cm.chlimit(e,ep,tp)  
+	return tp==ep  
+end 
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)

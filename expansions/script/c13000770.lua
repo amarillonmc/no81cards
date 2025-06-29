@@ -34,21 +34,21 @@ function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	
 	
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) end
-	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_MZONE,0,1,nil) end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and chkc:IsType(TYPE_XYZ) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,nil,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SelectTarget(tp,cm.filter2,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_ATKCHANGE,nil,0,tp,0)
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	local g=tc:GetColumnGroup()
-	if tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_EXTRA_ATTACK)
@@ -63,11 +63,14 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_PHASE+PHASE_END)   
 		Duel.RegisterEffect(e2,tp)
 	end
-	if tc:IsType(TYPE_XYZ) and g:IsExists(cm.filter,1,nil,1-tp) then
+	if g:IsExists(cm.filter,1,nil,1-tp) then
 		local aa=g:FilterSelect(1-tp,cm.filter,1,1,nil,1-tp)
 		Duel.SendtoGrave(aa,REASON_RULE)
 	end
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_EFFECT)
+end
+function cm.filter2(c,tp)
+	return c:IsType(TYPE_XYZ) and c:IsControler(tp)
 end
 function cm.filter(c,tp)
 	return c:IsType(TYPE_MONSTER) and c:IsControler(tp)

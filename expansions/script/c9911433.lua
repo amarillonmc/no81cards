@@ -6,9 +6,7 @@ function c9911433.initial_effect(c)
 	--activate limit
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DRAW+CATEGORY_DESTROY)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
 	e1:SetCost(c9911433.cost)
@@ -35,6 +33,16 @@ function c9911433.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tg=g:SelectSubGroup(tp,c9911433.gselect,false,1,ft+1,ft)
 	local ct=Duel.SSet(tp,tg,tp,false)
 	if ct==0 then return end
+	for tc in aux.Next(tg) do
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(9911433,2))
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_TRIGGER)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+		e1:SetCondition(c9911433.actcon)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+	end
 	local op=aux.SelectFromOptions(1-tp,
 		{true,aux.Stringid(9911433,0)},
 		{Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>0,aux.Stringid(9911433,1)})
@@ -56,6 +64,14 @@ function c9911433.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Destroy(sg,REASON_EFFECT)
 		end
 	end
+end
+function c9911433.actfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ)
+end
+function c9911433.actcon(e)
+	local tp=e:GetHandlerPlayer()
+	return not e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED)
+		and not Duel.IsExistingMatchingCard(c9911433.actfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c9911433.drcon(e,tp,eg,ep,ev,re,r,rp)
 	local turn,ct=e:GetLabel()

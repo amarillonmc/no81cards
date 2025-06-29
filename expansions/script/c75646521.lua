@@ -1,65 +1,56 @@
 --拟似黑洞
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--Activate1
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetTarget(s.target1)
-	e1:SetOperation(s.activate1)
-	c:RegisterEffect(e1)
-	--Activate2
+	--Activate
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetTarget(s.target2)
-	e2:SetOperation(s.activate2)
+	e2:SetTarget(s.target)
+	e2:SetOperation(s.activate)
 	c:RegisterEffect(e2)
 end
 function s.filter(c)
 	return c:IsFaceup() and not c:IsSetCard(0x62c2)
 end
-function s.target1(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-end
-function s.activate1(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	local tc=g:GetFirst()
-	while tc do
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-		e1:SetValue(0)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-		local e2=e1:Clone()
-		e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
-		tc:RegisterEffect(e2)
-		local e3=Effect.CreateEffect(e:GetHandler())
-		e3:SetType(EFFECT_TYPE_SINGLE)
-		e3:SetCode(EFFECT_CANNOT_TRIGGER)
-		e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-		e3:SetRange(LOCATION_MZONE)
-		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e3)
-		tc=g:GetNext()
+	local dis=0
+	if Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(s.filter,tp,0,LOCATION_MZONE,1,nil) then
+		dis=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0xe000e0)
+	elseif Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,0,1,nil) then
+		dis=Duel.SelectField(tp,1,LOCATION_MZONE,0,0xe000e0)
+	else dis=Duel.SelectField(tp,1,0,LOCATION_MZONE,0xe000e0)
 	end
-end
-
-function s.target2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	local dis=Duel.SelectField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0xe000e0)--(0|0x60)<<16
 	e:SetLabel(dis)
 	Duel.Hint(HINT_ZONE,tp,dis)
 end
 function s.ssfilter(c)
 	return c:GetFlagEffect(id+2)==0
 end
-function s.activate2(e,tp,eg,ep,ev,re,r,rp)
+function s.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tg=Duel.GetMatchingGroup(s.filter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local tc=tg:GetFirst()
+	while tc do
+		local atk=tc:GetAttack()
+		local def=tc:GetDefense()
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+		e1:SetValue(math.ceil(atk/2))
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
+		e2:SetValue(math.ceil(def/2))
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2)
+		tc=tg:GetNext()
+	end
 	local seq1=0
 	local p=1-tp
 	if e:GetLabel()>65535 then 
@@ -68,7 +59,7 @@ function s.activate2(e,tp,eg,ep,ev,re,r,rp)
 	else 
 		seq1=math.log(e:GetLabel(),2)
 	end
-	local g=Duel.GetMatchingGroup(aux.TRUE,p,0,LOCATION_MZONE,nil)
+	local g=Duel.GetMatchingGroup(s.filter,p,0,LOCATION_MZONE,nil)
 	for i=0,#g do
 		local tc=g:GetFirst()
 		while tc do

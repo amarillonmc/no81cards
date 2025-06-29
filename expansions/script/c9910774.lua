@@ -10,7 +10,7 @@ function c9910774.initial_effect(c)
 	e1:SetTarget(c9910774.target)
 	e1:SetOperation(c9910774.activate)
 	c:RegisterEffect(e1)
-	--extra attack
+	--double attack
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
@@ -43,31 +43,31 @@ function c9910774.activate(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then g:AddCard(tc) end
 	Duel.SendtoHand(g,nil,REASON_EFFECT)
 end
-function c9910774.tdfilter(c)
+function c9910774.spellfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_SPELL) and c:IsAbleToDeck()
 end
 function c9910774.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_REMOVED) and chkc:IsControler(tp) and c9910774.tdfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9910774.tdfilter,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c9910774.tdfilter,tp,LOCATION_ONFIELD+LOCATION_REMOVED,0,1,99,nil)
+	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910774.spellfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910774.spellfilter,tp,LOCATION_ONFIELD,0,2,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910774,0))
+	local g=Duel.SelectTarget(tp,c9910774.spellfilter,tp,LOCATION_ONFIELD,0,2,2,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 end
 function c9910774.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	local ct=Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	if ct>0 then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_EXTRA_ATTACK)
-		e1:SetTargetRange(LOCATION_MZONE,0)
-		e1:SetTarget(c9910774.exatktg)
-		e1:SetValue(ct)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
+	if g:GetCount()>0 then
+		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_EXTRA_ATTACK)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(c9910774.datg)
+	e1:SetValue(1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
-function c9910774.exatktg(e,c)
+function c9910774.datg(e,c)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)
 	local tg=g:GetMaxGroup(Card.GetAttack)
 	return tg:IsContains(c)

@@ -18,11 +18,10 @@ function c9910684.initial_effect(c)
 	c:RegisterEffect(e1)
 	--remove
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_EQUIP)
+	e2:SetCategory(CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetTarget(c9910684.rmtg)
 	e2:SetOperation(c9910684.rmop)
 	c:RegisterEffect(e2)
 	--spsummon
@@ -40,62 +39,36 @@ function c9910684.sprfilter(c)
 	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToRemoveAsCost() and c:IsType(TYPE_MONSTER)
 		and c:IsSetCard(0xc954)
 end
+function c9910684.gselect(g,tp)
+	return aux.dncheck(g) and aux.mzctcheck(g,tp)
+end
 function c9910684.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(c9910684.sprfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
-	return g:CheckSubGroup(aux.mzctcheck,3,3,tp)
+	return g:CheckSubGroup(c9910684.gselect,4,4,tp)
 end
 function c9910684.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(c9910684.sprfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local sg=g:SelectSubGroup(tp,aux.mzctcheck,true,3,3,tp)
-	Duel.Remove(sg,POS_FACEUP,REASON_COST)
-end
-function c9910684.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
-end
-function c9910684.eqfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
-		and (c:IsControler(tp) or c:IsAbleToChangeControler())
+	local sg=g:SelectSubGroup(tp,c9910684.gselect,true,4,4,tp)
+	Duel.Remove(sg,POS_FACEUP,REASON_SPSUMMON)
 end
 function c9910684.rmop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	e1:SetOperation(c9910684.rmop2)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c9910684.rmop2(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,9910684)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
 	if g:GetCount()>0 then
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-		local og=Duel.GetOperatedGroup():Filter(c9910684.eqfilter,nil,tp)
-		if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and #og>0 and c:IsRelateToEffect(e)
-			and Duel.SelectYesNo(tp,aux.Stringid(9910684,0)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-			local tc=og:Select(tp,1,1,nil):GetFirst()
-			if tc then
-				if not Duel.Equip(tp,tc,c) then return end
-				local e1=Effect.CreateEffect(c)
-				e1:SetProperty(EFFECT_FLAG_COPY_INHERIT+EFFECT_FLAG_OWNER_RELATE)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_EQUIP_LIMIT)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				e1:SetValue(c9910684.eqlimit)
-				tc:RegisterEffect(e1)
-				local e2=Effect.CreateEffect(c)
-				e2:SetType(EFFECT_TYPE_EQUIP)
-				e2:SetCode(EFFECT_UPDATE_ATTACK)
-				e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-				e2:SetValue(1000)
-				tc:RegisterEffect(e2)
-				local e3=e2:Clone()
-				e3:SetCode(EFFECT_UPDATE_DEFENSE)
-				tc:RegisterEffect(e3)
-			end
-		end
 	end
-end
-function c9910684.eqlimit(e,c)
-	return e:GetOwner()==c
 end
 function c9910684.spfilter(c,e,tp)
 	return c:IsFaceup() and c:IsSetCard(0xc954) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

@@ -2,8 +2,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
- --synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsType,TYPE_PENDULUM),nil,1)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsType,TYPE_PENDULUM),aux.NonTuner(nil),1)
 	 --spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -20,10 +19,10 @@ function s.initial_effect(c)
  --Destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(35699,0))
-	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCountLimit(1,id+10000)
+	e2:SetCountLimit(1)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)

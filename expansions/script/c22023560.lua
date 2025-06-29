@@ -4,12 +4,12 @@ function c22023560.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xff1),3)
 	c:EnableReviveLimit()
-	--sum limit
+	--spsummon condition
 	local e0=Effect.CreateEffect(c)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e0:SetCondition(c22023560.sumcon)
+	e0:SetCode(EFFECT_SPSUMMON_COST)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCost(c22023560.sumcon)
 	c:RegisterEffect(e0)
 	--base atk
 	local e1=Effect.CreateEffect(c)
@@ -95,49 +95,64 @@ function c22023560.initial_effect(c)
 	e15:SetTarget(c22023560.cointg)
 	e15:SetOperation(c22023560.coinop)
 	c:RegisterEffect(e15)
+	--
+	--if not c22023560.global_flag then
+		--c22023560.global_flag=true
+		--local ge1=Effect.CreateEffect(c)
+		--ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		--ge1:SetCode(EVENT_CHAIN_SOLVED)
+		--ge1:SetOperation(c22023560.regop)
+		--Duel.RegisterEffect(ge1,0)
+	--end
 end
 c22023560.toss_coin=true
-function c22023560.sumcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)<3
+--function c22023560.regop(e,tp,eg,ep,ev,re,r,rp)
+	--local rc=re:GetHandler()
+	--if not rc:IsCode(22023340) then return end
+	--local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)
+	--Duel.RegisterFlagEffect(p,22023560,0,0,0,tc:GetCode())
+--end
+function c22023560.sumcon(e,c,tp,st)
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)>=3
 end
 function c22023560.atkcon1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)==1
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)==1
 end
 function c22023560.atkcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)==2
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)==2
 end
 function c22023560.atkcon3(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)==3
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)==3
 end
 function c22023560.atkcon4(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)==4
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)==4
 end
 function c22023560.atkcon5(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)==5
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)==5
 end
 function c22023560.atkcon6(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)==6
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)==6
 end
 function c22023560.atkcon7(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)==7
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)==7
 end
 function c22023560.atkcon8(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)==8
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)==8
 end
 function c22023560.atkcon9(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)==9
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)==9
 end
 function c22023560.atkcon10(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)==10
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)==10
 end
 function c22023560.atkcon11(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)==11
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)==11
 end
 function c22023560.atkcon12(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)==12
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)==12
 end
 function c22023560.atkcon13(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)>12
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)>12
 end
 function c22023560.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp and Duel.IsChainNegatable(ev)

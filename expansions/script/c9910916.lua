@@ -76,13 +76,5 @@ function c9910916.desop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Destroy(e:GetHandler(),REASON_EFFECT)==0 or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g1=Duel.SelectMatchingCard(tp,c9910916.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	if #g1==0 then return end
-	Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
-	local g2=Duel.GetMatchingGroup(c9910916.setfilter,tp,LOCATION_DECK,0,nil)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(9910916,2)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-		local sg=g2:Select(tp,1,1,nil)
-		Duel.MoveToField(sg:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-	end
+	if #g1>0 then Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP) end
 end

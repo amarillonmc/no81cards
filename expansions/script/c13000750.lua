@@ -23,7 +23,7 @@ local e3=Effect.CreateEffect(c)
 	e3:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
 local ct1=Duel.GetCustomActivityCount(13000750,1-tp,ACTIVITY_CHAIN)
 	local ct2=Duel.GetCustomActivityCount(13000750,tp,ACTIVITY_CHAIN)
-	return (ct1+ct2)>=4 end)
+	return (ct1+ct2)>=5 end)
 	e3:SetTarget(cm.adtg2)
 	e3:SetOperation(cm.adop2) 
 	c:RegisterEffect(e3)
@@ -61,7 +61,7 @@ end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,5,nil)
+	return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,6,nil)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -162,7 +162,7 @@ function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return false
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,5,5,nil,e)
+	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,6,6,nil,e)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	Duel.Release(g,REASON_RULE)
 end

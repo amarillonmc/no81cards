@@ -1,16 +1,16 @@
 --翼冠·结界龙·内布里姆
 function c11570002.initial_effect(c)
+	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11570002,0))
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,11570002+EFFECT_COUNT_CODE_OATH)
-	e1:SetCondition(c11570002.sprcon)
-	e1:SetTarget(c11570002.sprtg)
-	e1:SetOperation(c11570002.sprop)
+	e1:SetCondition(c11570002.sprcon) 
 	c:RegisterEffect(e1)
+	--
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(11570002,1))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -23,13 +23,14 @@ function c11570002.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
+	--
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(11570002,2))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e4:SetCode(EVENT_LEAVE_FIELD)
-	e4:SetRange(LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE)
+	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e4:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e4:SetCountLimit(1,11770002)
 	e4:SetCondition(c11570002.spcon)
 	e4:SetCost(c11570002.spcost)
@@ -38,39 +39,16 @@ function c11570002.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function c11570002.sprfilter(c)
-	return c:IsFaceupEx() and c:IsAbleToRemoveAsCost()
-		and c:IsSetCard(0x810)
-end
-function c11570002.gcheck(g,tp)
-	return Duel.GetMZoneCount(tp,g)>0
-end
+	return c:IsFaceup() and c:IsSetCard(0x3810)
+end 
 function c11570002.sprcon(e,c)
 	if c==nil then return true end
-	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c11570002.sprfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,e:GetHandler())
-	return g:CheckSubGroup(c11570002.gcheck,1,1,tp) and Duel.IsExistingMatchingCard(c11570002.cfilter,tp,LOCATION_MZONE,0,1,nil)
-end
-function c11570002.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3810)
-end
-function c11570002.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(c11570002.sprfilter,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,e:GetHandler())
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local sg=g:SelectSubGroup(tp,c11570002.gcheck,false,1,1,tp)
-	if sg then
-		sg:KeepAlive()
-		e:SetLabelObject(sg)
-		return true
-	else return false end
-end
-function c11570002.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=e:GetLabelObject()
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	g:DeleteGroup()
+	local tp=c:GetControler() 
+	return not Duel.IsExistingMatchingCard(c11570002.sprfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function c11570002.tffilter(c,tp)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x810)
-		and not c:IsForbidden() and c:CheckUniqueOnField(tp)
+		and not c:IsForbidden() and c:CheckUniqueOnField(tp) and c:CheckActivateEffect(true,true,false)~=nil
 end
 function c11570002.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
@@ -81,7 +59,8 @@ function c11570002.tfop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local tc=Duel.SelectMatchingCard(tp,c11570002.tffilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
-	if tc and tc:IsType(TYPE_FIELD) then
+	if tc==nil then return end 
+	if tc:IsType(TYPE_FIELD) then
 		local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
 		if fc then
 			Duel.SendtoGrave(fc,REASON_RULE)
@@ -90,7 +69,39 @@ function c11570002.tfop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
 	elseif tc then
 		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-	end
+	end 
+	local te=tc:GetActivateEffect()
+	local tep=tc:GetControler()
+	local condition=te:GetCondition()
+	local cost=te:GetCost()
+	local target=te:GetTarget()
+	local operation=te:GetOperation()  
+	Duel.ClearTargetCard()
+	e:SetProperty(te:GetProperty())
+	Duel.Hint(HINT_CARD,0,tc:GetOriginalCode()) 
+	if not tc:IsType(TYPE_CONTINUOUS+TYPE_FIELD) then 
+		tc:CancelToGrave(false) 
+	end  
+	tc:CreateEffectRelation(te)
+	if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
+	if target then target(te,tep,eg,ep,ev,re,r,rp,1) end
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	if g and g:GetCount()>0 then 
+		local tg=g:GetFirst()
+		while tg do
+			tg:CreateEffectRelation(te)
+			tg=g:GetNext()
+		end  
+	end 
+	if operation then operation(te,tep,eg,ep,ev,re,r,rp) end  
+	tc:ReleaseEffectRelation(te)
+	if g and g:GetCount()>0 then 
+		local tg=g:GetFirst()
+		while tg do
+			tg:ReleaseEffectRelation(te) 
+			tg=g:GetNext()
+		end  
+	end  
 end
 function c11570002.cfilter1(c,tp)
 	return c:IsPreviousControler(tp) and c:IsSetCard(0x3810) and c:GetReasonPlayer()==1-tp

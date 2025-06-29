@@ -10,6 +10,16 @@ function c11570003.initial_effect(c)
 	e1:SetTarget(c11570003.target)
 	e1:SetOperation(c11570003.activate)
 	c:RegisterEffect(e1)
+	--set
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	e2:SetCountLimit(1,11570003)
+	e2:SetCondition(c11570003.setcon)
+	e2:SetTarget(c11570003.settg)
+	e2:SetOperation(c11570003.setop)
+	c:RegisterEffect(e2)
 end
 function c11570003.cfilter(c)
 	return c:IsFaceup() and c:IsCode(11570008)
@@ -89,4 +99,17 @@ function c11570003.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	Duel.SendtoDeck(dg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+end
+function c11570003.setcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c11570003.cfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsMainPhase() and Duel.GetTurnPlayer()==tp
+end
+function c11570003.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsSSetable() end
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
+end
+function c11570003.setop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		Duel.SSet(tp,c)
+	end
 end

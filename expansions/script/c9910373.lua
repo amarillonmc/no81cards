@@ -12,18 +12,18 @@ function c9910373.initial_effect(c)
 	e1:SetTarget(c9910373.sptg)
 	e1:SetOperation(c9910373.spop)
 	c:RegisterEffect(e1)
-	--handes
+	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910373,1))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK+CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_TO_HAND)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,9910374)
-	e2:SetCondition(c9910373.hdcon)
-	e2:SetTarget(c9910373.hdtg)
-	e2:SetOperation(c9910373.hdop)
+	e2:SetCondition(c9910373.thcon)
+	e2:SetTarget(c9910373.thtg)
+	e2:SetOperation(c9910373.thop)
 	c:RegisterEffect(e2)
 end
 function c9910373.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -52,7 +52,7 @@ function c9910373.spop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=g:SelectSubGroup(tp,c9910373.fselect,false,1,2,tp,e:GetHandler())
 	if sg:GetCount()>0 then Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP) end
 end
-function c9910373.hdcon(e,tp,eg,ep,ev,re,r,rp)
+function c9910373.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()~=PHASE_DRAW and eg:IsExists(Card.IsControler,1,nil,1-tp)
 end
 function c9910373.spellfilter(c)
@@ -61,25 +61,21 @@ end
 function c9910373.thfilter(c)
 	return c:IsSetCard(0x5951) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
-function c9910373.hdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c9910373.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c9910373.spellfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c9910373.spellfilter,tp,LOCATION_ONFIELD,0,1,nil)
-		and Duel.IsExistingMatchingCard(c9910373.thfilter,tp,LOCATION_DECK,0,1,nil)
-		and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND,1,nil) end
+		and Duel.IsExistingMatchingCard(c9910373.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910373,0))
 	local g=Duel.SelectTarget(tp,c9910373.spellfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
 	g:AddCard(e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
 end
-function c9910373.hdop(e,tp,eg,ep,ev,re,r,rp)
+function c9910373.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g2=Duel.SelectMatchingCard(tp,c9910373.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if #g2==0 or Duel.SendtoHand(g2,nil,REASON_EFFECT)==0 or not g2:GetFirst():IsLocation(LOCATION_HAND) then return end
 	Duel.ConfirmCards(1-tp,g2)
-	local g3=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil):RandomSelect(tp,1)
-	if #g3==0 or Duel.Remove(g3,POS_FACEUP,REASON_EFFECT)==0 then return end
 	local g=Group.CreateGroup()
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()

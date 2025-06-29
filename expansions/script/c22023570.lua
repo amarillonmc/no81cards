@@ -4,12 +4,12 @@ function c22023570.initial_effect(c)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0xff1),1)
 	c:EnableReviveLimit()
-	--sum limit
+	--spsummon condition
 	local e0=Effect.CreateEffect(c)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e0:SetCondition(c22023570.sumcon)
+	e0:SetCode(EFFECT_SPSUMMON_COST)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCost(c22023570.sumcon)
 	c:RegisterEffect(e0)
 	--change effect
 	local e1=Effect.CreateEffect(c)
@@ -45,8 +45,8 @@ function c22023570.initial_effect(c)
 	e4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	c:RegisterEffect(e4)
 end
-function c22023570.sumcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,22023340)<1
+function c22023570.sumcon(e,c,tp,st)
+	return Duel.GetFlagEffect(e:GetHandler():GetControler(),22023340)>=1
 end
 function c22023570.chcon(e,tp,eg,ep,ev,re,r,rp)
 	return ((re:GetActiveType()==TYPE_SPELL or re:GetActiveType()==TYPE_TRAP) and re:IsHasType(EFFECT_TYPE_ACTIVATE)) and ep==1-tp

@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	--
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,3))
-	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DECKDES)
+	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SUMMON_SUCCESS)
 	e3:SetCountLimit(1,m+1)
@@ -89,23 +89,25 @@ function cm.thfilter1(c)
 	return aux.IsCodeListed(c,40020183) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,5) end
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsPlayerCanDiscardDeck(tp,5) then
-		Duel.ConfirmDecktop(tp,5)
-		local g=Duel.GetDecktopGroup(tp,5)
+	if Duel.IsPlayerCanDiscardDeck(tp,3) then
+		Duel.ConfirmDecktop(tp,3)
+		local g=Duel.GetDecktopGroup(tp,3)
 		if g:GetCount()>0 then
 			Duel.DisableShuffleCheck()
-			if g:IsExists(cm.thfilter1,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
+			if g:IsExists(cm.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-				local sg=g:FilterSelect(tp,cm.thfilter1,1,1,nil)
+				local sg=g:FilterSelect(tp,cm.thfilter,1,1,nil)
 				Duel.SendtoHand(sg,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,sg)
 				Duel.ShuffleHand(tp)
 				g:Sub(sg)
+				Duel.SendtoGrave(g,REASON_EFFECT+REASON_REVEAL)
+			else
+				Duel.ShuffleDeck(tp)
 			end
-			Duel.SendtoGrave(g,REASON_EFFECT+REASON_REVEAL)
 		end
 	end
 end

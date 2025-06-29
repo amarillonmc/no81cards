@@ -50,8 +50,10 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.ConfirmCards(1-tp,sg)
 				Duel.ShuffleHand(tp)
 				g:Sub(sg)
+				Duel.SendtoGrave(g,REASON_EFFECT+REASON_REVEAL)
+			else
+				Duel.ShuffleDeck(tp)
 			end
-			Duel.SendtoGrave(g,REASON_EFFECT+REASON_REVEAL)
 		end
 	end
 end

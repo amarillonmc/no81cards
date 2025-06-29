@@ -43,8 +43,8 @@ function c22023540.initial_effect(c)
 	e3:SetOperation(c22023540.disop)
 	c:RegisterEffect(e3)
 end
-function c22023540.matfilter1(c,syncard)
-	return c:IsTuner(syncard) or (c:IsSetCard(0xff1) and Duel.GetFlagEffect(tp,22023340)>0)
+function c22023540.matfilter1(c,syncard,tp)
+	return c:IsTuner(syncard) or (c:IsSetCard(0xff1) and Duel.GetFlagEffect(syncard:GetControler(),22023340)>0)
 end
 function c22023540.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
