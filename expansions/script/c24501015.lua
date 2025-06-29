@@ -2,44 +2,43 @@
 function c24501015.initial_effect(c)
 	--spsummon-self
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	--e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetDescription(aux.Stringid(24501015,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCondition(c24501015.spcon)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e1:SetCost(c24501015.cost)
 	e1:SetTarget(c24501015.sptg)
 	e1:SetOperation(c24501015.spop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetRange(LOCATION_DECK)
-	e2:SetCountLimit(1,24501015)
+	--synchro
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(24501015,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_HAND+LOCATION_MZONE)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e2:SetCost(c24501015.cost)
+	e2:SetTarget(c24501015.sytg)
+	e2:SetOperation(c24501015.syop)
 	c:RegisterEffect(e2)
-	--set
+	--deckdes
 	local e3=Effect.CreateEffect(c)
-	--e3:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES+CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_GRAVE_ACTION)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetTarget(c24501015.settg)
-	e3:SetOperation(c24501015.setop)
+	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
+	e3:SetCondition(c24501015.tgcon)
+	e3:SetTarget(c24501015.tgtg)
+	e3:SetOperation(c24501015.tgop)
 	c:RegisterEffect(e3)
-	--to grave
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_TO_GRAVE)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetTarget(c24501015.tgtg)
-	e4:SetOperation(c24501015.tgop)
-	c:RegisterEffect(e4)
 end
--- 1
-function c24501015.chkfilter(c)
-	return c:IsLevelAbove(8) and c:IsSetCard(0x501) and c:IsFaceup()
-end
-function c24501015.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c24501015.chkfilter,tp,LOCATION_MZONE,0,1,nil)
+function c24501015.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c24501015.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -48,49 +47,51 @@ function c24501015.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c24501015.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.GetMZoneCount(tp)>0 then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	end
-end
--- 2
-function c24501015.tffilter(c,tp)
-	return c:IsSetCard(0x501) and c:IsType(TYPE_CONTINUOUS) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
-end
-function c24501015.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(c24501015.tffilter,tp,LOCATION_DECK,0,1,nil,tp) end
-end
-function c24501015.setop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	local g=Duel.GetMatchingGroup(c24501015.tffilter,tp,LOCATION_DECK,0,nil,tp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local tg=g:SelectSubGroup(tp,aux.dncheck,false,1,math.min(ft,2))
-	if #tg==0 then return end
-	for tc in aux.Next(tg) do
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-	end
-	local c=e:GetHandler()
-	local sg=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,c)
-	if sg:GetCount()>0 and c:IsLocation(LOCATION_MZONE) and c:IsControler(tp) and c:IsFaceup() and Duel.SelectYesNo(tp,aux.Stringid(24501015,1)) then
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsPlayerCanDiscardDeck(tp,2) and Duel.SelectYesNo(tp,aux.Stringid(24501015,2)) then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sc=sg:Select(tp,1,1,nil):GetFirst()
-		Duel.SynchroSummon(tp,sc,c)
+		Duel.DiscardDeck(tp,2,REASON_EFFECT)
 	end
 end
--- 3
+function c24501015.mfilter(c)
+	return c:IsType(TYPE_MONSTER) and c:IsFaceupEx()
+end
+function c24501015.sytg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local mg=Duel.GetMatchingGroup(c24501015.mfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,nil,nil,mg) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function c24501015.syop(e,tp,eg,ep,ev,re,r,rp)
+	local mg=Duel.GetMatchingGroup(c24501015.mfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sg=Duel.SelectMatchingCard(tp,Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,1,nil,nil,mg)
+	Duel.SynchroSummon(tp,sg:GetFirst(),nil,mg)
+end
+function c24501015.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsControler,1,nil,tp) and not eg:IsContains(e:GetHandler())
+end
 function c24501015.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end
-	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,3)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,1-tp,3)
+end
+function c24501015.thfilter(c)
+	return c:IsSetCard(0x501) and c:IsAbleToHand() and aux.NecroValleyFilter()(c)
 end
 function c24501015.tgop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.DiscardDeck(tp,3,REASON_EFFECT)
-	local g=Duel.GetOperatedGroup()
-	if g:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) and Duel.IsExistingMatchingCard(c24501015.tffilter,tp,LOCATION_GRAVE,0,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(24501015,0)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-		local tc=Duel.SelectMatchingCard(tp,c24501015.tffilter,tp,LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
-		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	Duel.DiscardDeck(1-tp,3,REASON_EFFECT)--if Duel.DiscardDeck(1-tp,3,REASON_EFFECT)==0 then return end
+	local og=Duel.GetOperatedGroup()
+	local g=og:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+	--if #g==0 then return end
+	for tc in aux.Next(g) do
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_TRIGGER)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+	end
+	if Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,0)>=5 and Duel.IsExistingMatchingCard(c24501015.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(24501015,3)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local tg=Duel.SelectMatchingCard(tp,c24501015.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 	end
 end

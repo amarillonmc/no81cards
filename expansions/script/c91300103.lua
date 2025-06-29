@@ -36,7 +36,7 @@ end
 function s.desfilter(c) 
 	return c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
-function s.desfilter2(c) 
+function s.desfilter2(c,e) 
 	return c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsRelateToEffect(e)
 end
 function s.actcon(e)
