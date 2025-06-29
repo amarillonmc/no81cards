@@ -67,7 +67,8 @@ function c43990089.drop(e,tp,eg,ep,ev,re,r,rp)
 	if tc then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) end
 end
 function c43990089.fscon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsRace(RACE_ILLUSION)
+	local race=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_RACE)
+	return re:IsActiveType(TYPE_MONSTER) and race&RACE_ILLUSION>0
 end
 function c43990089.filter1(c,e)
 	return not c:IsImmuneToEffect(e)

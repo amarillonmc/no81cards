@@ -66,7 +66,8 @@ end
 -- 效果②条件：幻想魔效果发动
 function c43990105.damcon2(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and rc:IsRace(RACE_ILLUSION) and rc:IsAttackAbove(1)
+	local race=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_RACE)
+	return re:IsActiveType(TYPE_MONSTER) and race&RACE_ILLUSION>0 and rc:IsAttackAbove(1)
 end
 
 -- 效果②目标设定

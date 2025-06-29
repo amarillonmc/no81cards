@@ -29,7 +29,8 @@ function cm.initial_effect(c)
 	
 end
 function c43990091.discon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler():IsRace(RACE_ILLUSION)
+	local race=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_RACE)
+	return re:IsActiveType(TYPE_MONSTER) and race&RACE_ILLUSION>0
 end
 function c43990091.negfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and aux.NegateAnyFilter(c)
