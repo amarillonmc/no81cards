@@ -30,7 +30,7 @@ function s.initial_effect(c)
 end
 function s.counterfilter(c)
 	return	function(e,p,cid)
-				return e:GetHandler()==c
+				return e:GetHandler():GetOriginalCode()==id
 			end
 end
 
@@ -84,17 +84,17 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	if Duel.GetActivityCount(p,ACTIVITY_ATTACK)==0 and Duel.GetMZoneCount(p,nil,p)>0
-		and Duel.IsExists(false,aux.Necro(Card.IsCanBeSpecialSummoned),p,LOCATION_HAND|LOCATION_GRAVE,0,1,nil,e,0,tp,false,false) and Duel.SelectYesNo(p,aux.Stringid(id,4)) then
+		and Duel.IsExists(false,aux.Necro(Card.IsCanBeSpecialSummoned),p,LOCATION_HAND|LOCATION_GRAVE,0,1,nil,e,0,p,false,false) and Duel.SelectYesNo(p,aux.Stringid(id,4)) then
 		if brk then
 			Duel.BreakEffect()
 			brk=false
 		end
-		local tc=Duel.Select(HINTMSG_SPSUMMON,false,p,aux.Necro(Card.IsCanBeSpecialSummoned),p,LOCATION_HAND|LOCATION_GRAVE,0,1,1,nil,e,0,tp,false,false):GetFirst()
+		local tc=Duel.Select(HINTMSG_SPSUMMON,false,p,aux.Necro(Card.IsCanBeSpecialSummoned),p,LOCATION_HAND|LOCATION_GRAVE,0,1,1,nil,e,0,p,false,false):GetFirst()
 		if tc and Duel.SpecialSummon(tc,0,p,p,false,false,POS_FACEUP)>0 then
 			brk=true
 		end
 	end
-	if Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 then
+	if Duel.GetCustomActivityCount(id,p,ACTIVITY_CHAIN)==0 then
 		if brk then
 			Duel.BreakEffect()
 		end
