@@ -81,9 +81,10 @@ end
 function c9911607.spop(e,tp,eg,ep,ev,re,r,rp)
 	local count=2
 	while count>0 do
+		Duel.AdjustAll()
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-			and Duel.IsExistingMatchingCard(c9911607.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) and
-			(count==2 or Duel.SelectYesNo(tp,aux.Stringid(9911607,0))) then
+			and Duel.IsExistingMatchingCard(c9911607.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp)
+			and (count==2 or Duel.SelectYesNo(tp,aux.Stringid(9911607,0))) then
 			if count<2 then Duel.BreakEffect() end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g=Duel.SelectMatchingCard(tp,c9911607.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp)
