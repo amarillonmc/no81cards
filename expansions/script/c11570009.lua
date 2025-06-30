@@ -149,5 +149,5 @@ function c11570009.chkfilter(c)
 	return c:IsSetCard(0x3810) and c:IsFaceup()
 end
 function c11570009.descon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetMatchingGroupCount(c11570009.chkfilter,tp,LOCATION_MZONE,0,nil)==0
+	return Duel.GetMatchingGroupCount(c11570009.chkfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)==0
 end

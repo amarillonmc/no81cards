@@ -30,7 +30,7 @@ function c28330319.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local dg=Duel.GetMatchingGroup(c28330319.chkfilter,tp,LOCATION_DECK,0,nil)
 		return dg:GetClassCount(Card.GetAttribute)>=3
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c28330319.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c28330319.chkfilter,tp,LOCATION_DECK,0,nil)

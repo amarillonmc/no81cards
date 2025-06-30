@@ -50,7 +50,7 @@ function s.qcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0 end
+	if chk==0 then return c:IsReleasable() end
 	if c:IsLocation(LOCATION_HAND) then e:SetLabel(1) else e:SetLabel(0) end
 	Duel.Release(c,REASON_COST)
 end
@@ -61,7 +61,7 @@ function s.thfilter2(c,tc)
 	return c:IsAllTypes(TYPE_MONSTER+TYPE_RITUAL) and aux.IsCodeListed(tc,c:GetCode()) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
