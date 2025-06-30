@@ -37,13 +37,11 @@ function c11570006.initial_effect(c)
 	e3:SetTarget(c11570006.thtg)
 	e3:SetOperation(c11570006.thop)
 	c:RegisterEffect(e3)
-	--selfdes
+	--spsummon limit
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_SELF_DESTROY)
-	e4:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(c11570006.descon)
+	e4:SetCode(EFFECT_SPSUMMON_COST)
+	e4:SetCost(c11570006.splcost)
 	c:RegisterEffect(e4)
 end
 function c11570006.sprfilter(c)
@@ -121,9 +119,9 @@ function c11570006.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c11570006.descon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetMatchingGroupCount(c11570006.chkfilter,tp,LOCATION_MZONE,0,nil)==0
-end
 function c11570006.chkfilter(c)
 	return c:IsSetCard(0x3810) and c:IsFaceup()
+end
+function c11570006.splcost(e,c,tp,sumtype)
+	return Duel.IsExistingMatchingCard(c11570006.chkfilter,tp,LOCATION_MZONE,0,1,nil)
 end
