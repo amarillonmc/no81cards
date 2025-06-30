@@ -55,6 +55,7 @@ function c95101111.thgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,c95101111.cfilter,tp,LOCATION_DECK,0,3,3,nil)
 	if g:GetCount()==3 then
+		Duel.ConfirmCards(1-tp,g)
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
 		local tc=g:Select(1-tp,1,1,nil):GetFirst()
 		if tc:IsAbleToHand() and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 then
