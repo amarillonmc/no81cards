@@ -56,7 +56,7 @@ function cm.initial_effect(c)
 	e5:SetOperation(cm.op5)
 	c:RegisterEffect(e5)
 	if not _globetrot_ then
-		_globetrot_=true
+		_globetrot=true
 		_globetrot_limit = {1,1}
 		local ce1=Effect.CreateEffect(c)
 		ce1:SetType(EFFECT_TYPE_FIELD)
@@ -64,7 +64,7 @@ function cm.initial_effect(c)
 		ce1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 		ce1:SetTargetRange(1,0)
 		ce1:SetTarget(function(e,c,sump,sumtype,sumpos,targetp)
-			return Duel.GetFlagEffect(c:GetControler(),0x3919) >= _globetrot_limit[c:GetControler()+1] and c:IsSetCard(0x3919)
+			return Duel.GetFlagEffect(c:GetControler(),0x3909) >= _globetrot_limit[c:GetControler()+1] and c:IsSetCard(0x3909)
 		end)
 		Duel.RegisterEffect(ce1,0)
 		local ce2=Effect.CreateEffect(c)
@@ -73,15 +73,16 @@ function cm.initial_effect(c)
 		ce2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 		ce2:SetTargetRange(1,0)
 		ce2:SetTarget(function(e,c,sump,sumtype,sumpos,targetp)
-			return Duel.GetFlagEffect(c:GetControler(),0x3919) >= _globetrot_limit[c:GetControler()+1] and c:IsSetCard(0x3919)
+			return Duel.GetFlagEffect(c:GetControler(),0x3909) >= _globetrot_limit[c:GetControler()+1] and c:IsSetCard(0x3909)
 		end)
 		Duel.RegisterEffect(ce2,1)		
 		local ce3=Effect.CreateEffect(c)
 		ce3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ce3:SetCode(EVENT_PHASE+PHASE_END)
+		ce3:SetCountLimit(1)
 		ce3:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
 			_globetrot_limit[1] = _globetrot_limit[1] + 1
-			_globetrot_limit[2] = _globetrot_limit[2] + 1			
+			_globetrot_limit[2] = _globetrot_limit[2] + 1		
 		end)
 		Duel.RegisterEffect(ce3,0)
 	end
@@ -290,10 +291,10 @@ function cm.spcon(e,c)
 	return cm.A[tp+1]&c:GetLocation()>0 and (not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0 or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0)
 end
 function cm.sptg(e,c)
-	return c:IsSetCard(0x3919) and not c:IsCode(m)
+	return c:IsSetCard(0x3909) and not c:IsCode(m)
 end
 function cm.q(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx() and c:IsSetCard(0x3919) and (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0) and not c:IsCode(m)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx() and c:IsSetCard(0x3909) and (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or not c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCount(tp,4)>0) and not c:IsCode(m)
 end
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -384,5 +385,5 @@ function cm.op5(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(1)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-	Duel.RegisterFlagEffect(tp,0x3919,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,0x3909,RESET_PHASE+PHASE_END,0,1)
 end
