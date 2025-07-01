@@ -138,22 +138,22 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		local eset2={tc:IsHasEffect(EFFECT_CANNOT_BE_EFFECT_TARGET)}
 		for _,te in pairs(eset1) do
 			if te:IsHasType(EFFECT_TYPE_FIELD) then
-				local tg=te:GetTarget()
+				local tg=te:GetTarget() or aux.TRUE
 				te:SetTarget(cm.chtg(tg,e))
 				opt=1
-			elseif te:IsHasType(EFFECT_TYPE_SINGLE) then
-				local con=te:GetCondition()
+			else
+				local con=te:GetCondition() or aux.TRUE
 				te:SetCondition(cm.chcon(con,e))
 				opt=1
 			end
 		end
 		for _,te in pairs(eset2) do
 			if te:IsHasType(EFFECT_TYPE_FIELD) then
-				local tg=te:GetTarget()
+				local tg=te:GetTarget() or aux.TRUE
 				te:SetTarget(cm.chtg(tg,e))
 				opt=1
-			elseif te:IsHasType(EFFECT_TYPE_SINGLE) then
-				local con=te:GetCondition()
+			else
+				local con=te:GetCondition() or aux.TRUE
 				te:SetCondition(cm.chcon(con,e))
 				opt=1
 			end
@@ -164,12 +164,14 @@ end
 function cm.chtg(_tg,ce)
 	return function(e,c,...)
 				if c:GetColumnGroup():IsExists(cm.tkfilter,1,nil,1-c:GetControler()) and Duel.IsPlayerAffectedByEffect(c:GetControler(),m) and not c:IsImmuneToEffect(ce) then return false end
-				_tg(e,c,...)
+				return _tg(e,c,...)
 			end
 end
 function cm.chcon(_con,ce)
 	return function(e,...)
-				if e:GetHandler():GetColumnGroup():IsExists(cm.tkfilter,1,nil,1-e:GetHandlerPlayer()) and Duel.IsPlayerAffectedByEffect(e:GetHandlerPlayer(),m) and not e:GetHandler():IsImmuneToEffect(ce) then return false end
-				_con(e,...)
+				local tp=e:GetHandler():GetControler()
+				if e:IsHasType(EFFECT_TYPE_EQUIP) then tp=e:GetHandler():GetEquipTarget():GetControler() end
+				if e:GetHandler():GetColumnGroup():IsExists(cm.tkfilter,1,nil,1-tp) and Duel.IsPlayerAffectedByEffect(tp,m) and not e:GetHandler():IsImmuneToEffect(ce) then return false end
+				return _con(e,...)
 			end
 end
