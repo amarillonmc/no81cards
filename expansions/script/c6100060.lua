@@ -55,7 +55,7 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,m)~=0 then return end
 	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetDescription(aux.Stringid(m,2))
+	e1:SetDescription(aux.Stringid(m,3))
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetTargetRange(LOCATION_HAND,0)
 	e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
