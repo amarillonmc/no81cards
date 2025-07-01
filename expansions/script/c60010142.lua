@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_PHASE+PHASE_END)
 	e5:SetRange(LOCATION_SZONE)
+	e5:SetCondition(cm.condition)
 	e5:SetCountLimit(1)
 	e5:SetTarget(cm.target)
 	e5:SetOperation(cm.activate)
@@ -31,6 +32,9 @@ function cm.initial_effect(c)
 end
 function cm.accon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCustomActivityCount(m,tp,ACTIVITY_SUMMON)==0
+end
+function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
 end
 function cm.filter(c)
 	return aux.IsCodeListed(c,60010029) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
