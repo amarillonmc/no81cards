@@ -160,6 +160,7 @@ end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	if not tg then return end
 	local cg=tg:Filter(cm.imfilter,nil,e,re)
 	if c:IsRelateToEffect(e) and #cg>0 then
 		Duel.Overlay(c,cg)

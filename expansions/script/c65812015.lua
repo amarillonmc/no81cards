@@ -98,7 +98,7 @@ end
 function s.locfilter1(c)
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsLocation(LOCATION_ONFIELD)
 		and (c:GetPreviousSequence()~=c:GetSequence() or c:GetPreviousControler()~=c:GetControler() or c:GetPreviousLocation()~=c:GetLocation()) 
-		and c:GetFlagEffect(id)==0
+		and c:GetFlagEffect(id+1)==0
 end
 
 function s.descon(e,tp,eg,ep,ev,re,r,rp)

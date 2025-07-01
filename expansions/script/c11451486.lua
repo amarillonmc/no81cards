@@ -56,7 +56,7 @@ if not Duel.GetMustMaterial then
 	end
 end
 function cm.spfilter(c,sc)
-	return c:IsCanBeXyzMaterial(sc) and ((c:IsOnField() and c:IsFaceup() and (c:IsXyzLevel(sc,8) or c:IsRank(8) or (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY)))) or (c:IsLocation(LOCATION_HAND) and (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY))))
+	return c:IsCanBeXyzMaterial(sc) and ((c:IsOnField() and c:IsFaceup() and (c:IsXyzLevel(sc,8) or c:IsRank(8) or (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY)))) or (c:IsLocation(LOCATION_HAND) and (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY))) or (c:IsXyzLevel(sc,8) or c:IsRank(8)))
 end
 function cm.hand(g)
 	return g:FilterCount(Card.IsLocation,nil,LOCATION_HAND)<=1
@@ -71,6 +71,7 @@ function cm.spcon(e,c,og,min,max)
 		maxc=math.min(maxc,max)
 	end
 	if maxc<minc then return false end
+	local mg=nil
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c,c)
 	if og then
 		mg=og:Filter(cm.spfilter,c,c)
@@ -94,6 +95,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 		if max<maxc then maxc=max end
 	end
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c,c)
+	local mg=nil
 	if og then
 		mg=og:Filter(cm.spfilter,c,c)
 	else
