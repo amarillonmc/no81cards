@@ -52,7 +52,7 @@ function s.setcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.cfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 end
 function s.setfilter(c)
-	return c:IsSetCard(0x1ad) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0x1ad) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and (c:IsFaceup() or not c:IsLocation(LOCATION_REMOVED))
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
