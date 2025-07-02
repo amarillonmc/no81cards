@@ -49,7 +49,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local dg=Duel.SelectMatchingCard(tp,s.desfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
-	if #dg>0 and Duel.Destroy(dg,REASON_EFFECT)~=0 and aux.NecroValleyFilter()(tc) and tc:IsRelateToEffect(e) then
+	if #dg>0 and Duel.Destroy(dg,REASON_EFFECT)~=0 and tc and aux.NecroValleyFilter()(tc) and tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
 	end
