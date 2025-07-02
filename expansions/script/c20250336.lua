@@ -46,7 +46,7 @@ function c20250336.spcfilter(tp)
 	return Duel.GetCounter(tp,1,0,0x154a)>0
 end
 function c20250336.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c20250336.spcfilter,tp,LOCATION_MZONE,0,1,nil,tp)
+	return Duel.IsExistingMatchingCard(c20250336.spcfilter,tp,LOCATION_ONFIELD,0,1,nil,tp)
 end
 function c20250336.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

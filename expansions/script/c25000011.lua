@@ -44,9 +44,8 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.ffilter(c,fc,sub,mg,sg)
-	if not sg then return true end
-	return sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute())
-		and c:IsRace(RACE_DINOSAUR)
+	return c:IsRace(RACE_DINOSAUR) and (not sg or sg:FilterCount(aux.TRUE,c)==0
+		or sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()))
 end
 function s.splimit(e,se,sp,st)
 	return not (e:GetHandler():IsLocation(LOCATION_EXTRA) and e:GetHandler():IsFacedown())
