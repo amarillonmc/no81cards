@@ -20,9 +20,9 @@ function c10105407.initial_effect(c)
 	e2:SetCode(EVENT_TO_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,101054070)
-	e2:SetCondition(c10105407.thcon)
-	e2:SetTarget(c10105407.thtg)
-	e2:SetOperation(c10105407.thop)
+	e2:SetCondition(c10105407.thcon1)
+	e2:SetTarget(c10105407.thtg1)
+	e2:SetOperation(c10105407.thop1)
 	c:RegisterEffect(e2)
     end
 function c10105407.lcheck(g,lc)
@@ -44,17 +44,17 @@ function c10105407.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 end
-function c10105407.thcon(e,tp,eg,ep,ev,re,r,rp)
+function c10105407.thcon1(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c10105407.thfilter(c)
 	return c:IsRace(RACE_ZOMBIE) and c:IsLevel(1) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToHand()
 end
-function c10105407.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c10105407.thtg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c10105407.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function c10105407.thop(e,tp,eg,ep,ev,re,r,rp)
+function c10105407.thop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c10105407.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then

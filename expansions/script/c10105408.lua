@@ -70,6 +70,17 @@ function c10105408.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e2,tp)
 	end
 end
+function c10105408.distg(e,c)
+	local tc=e:GetLabelObject()
+	return c:IsOriginalCodeRule(tc:GetOriginalCodeRule()) and (c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0)
+end
+function c10105408.discon(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsOriginalCodeRule(tc:GetOriginalCodeRule())
+end
+function c10105408.disop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
+end
 function c10105408.atkter(c)
 	return c:IsPreviousLocation(LOCATION_MZONE)
 end

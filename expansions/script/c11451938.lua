@@ -39,7 +39,7 @@ function cm.spfilter(c,se)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local se=e:GetLabelObject():GetLabelObject()
-	return eg:IsExists(cm.spfilter,1,nil,se)
+	return eg:IsExists(cm.spfilter,1,nil,se) and not eg:IsContains(e:GetHandler())
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>0
