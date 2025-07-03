@@ -57,12 +57,11 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local sg=g:Select(tp,1,1,nil)
-		if Duel.Destroy(sg,REASON_EFFECT)~=0 then
-			Duel.Draw(tp,2,REASON_EFFECT)
-		Duel.BreakEffect()
-		Duel.Destroy(e:GetHandler(),REASON_EFFECT)
-		end
+		Duel.Destroy(sg,REASON_EFFECT)
 	end
+	Duel.Draw(tp,2,REASON_EFFECT)
+	Duel.BreakEffect()
+	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

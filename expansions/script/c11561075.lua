@@ -36,10 +36,10 @@ function cm.initial_effect(c)
 	
 end
 function c11561075.thfilter1(c)
-	return c:IsType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(c11561075.thfilter2,tp,LOCATION_DECK,0,1,nil,c)
+	return c:IsType(TYPE_MONSTER) and c:IsLevelAbove(0) and Duel.IsExistingTarget(c11561075.thfilter2,tp,0,LOCATION_GRAVE,1,nil,c)
 end
 function c11561075.thfilter2(c,tc)
-	return c:IsAttribute(tc:GetAttribute()) and not c:IsRace(tc:GetRace()) and c:IsAbleToHand()
+	return c:IsLevel(tc:GetLevel()) and not c:IsAttribute(tc:GetAttribute()) and c:IsAbleToHand()
 end
 function c11561075.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(1-tp) and c11561075.thfilter1(chkc) end
@@ -65,7 +65,10 @@ function c11561075.mfilter(c,xyzc)
 	return c:IsXyzLevel(xyzc,6)
 end
 function c11561075.xyzcheck(g)
-	return g:GetClassCount(Card.GetAttribute)==1
+	local attr=g:GetFirst():GetAttribute()
+	local tc=g:GetNext()
+	while tc do attr=attr&tc:GetAttribute() tc=g:GetNext() end
+	return attr>0
 end
 function c11561075.dtccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct1=Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)

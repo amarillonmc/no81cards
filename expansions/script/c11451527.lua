@@ -56,11 +56,11 @@ function cm.initial_effect(c)
 	e5:SetRange(0xff)
 	e5:SetValue(0x151)
 	c:RegisterEffect(e5)
-	if not cm.pendulum_link then
+	--[[if not cm.pendulum_link then
 		cm.pendulum_link=true
 		_GetLinkCount=Auxiliary.GetLinkCount
 		Auxiliary.GetLinkCount=function(tc) if tc:GetOriginalCode()==m and tc:IsLocation(LOCATION_PZONE) then return 0x20001 else return _GetLinkCount(tc) end end
-	end
+	end--]]
 end
 if not Duel.GetMustMaterial then
 	function Duel.GetMustMaterial(tp,code)
