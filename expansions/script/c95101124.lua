@@ -33,26 +33,30 @@ function c95101124.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoHand(g,nil,REASON_COST)
 end
 function c95101124.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateMonsterFilter,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
 end
 function c95101124.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-	local tc=Duel.SelectTarget(tp,aux.NegateMonsterFilter,tp,0,LOCATION_ONFIELD,1,1,nil):GetFirst()
+	local tc=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,1,nil):GetFirst()
 	if not tc then return end
 	Duel.HintSelection(Group.FromCards(tc))
 	Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetValue(RESET_TURN_SET)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e2)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetCode(EFFECT_DISABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_DISABLE_EFFECT)
+	e2:SetValue(RESET_TURN_SET)
+	tc:RegisterEffect(e2)
+	if sc:IsType(TYPE_TRAPMONSTER) then
+		local e3=e1:Clone()
+		e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+		tc:RegisterEffect(e3)
+	end
 	Duel.Damage(1-tp,1000,REASON_EFFECT)
 end
 function c95101124.chkfilter(c)
