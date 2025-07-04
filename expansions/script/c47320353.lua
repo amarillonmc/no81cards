@@ -13,7 +13,7 @@ function s.activate(c)
 	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.operation)
-	c:AddEffect(e1)
+	c:RegisterEffect(e1)
 end
 function s.rlfilter(c)
 	return aux.IsCodeListed(c,47320301) and c:IsAttack(100) and c:IsReleasable(REASON_EFFECT)
@@ -56,7 +56,7 @@ function s.atk_decrease(c)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(s.atktg)
 	e2:SetOperation(s.atkop)
-	c:AddEffect(e2)
+	c:RegisterEffect(e2)
 end
 function s.atkfilter(c)
 	return aux.IsCodeListed(c,47320301) and c:GetAttack()>0
@@ -82,7 +82,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
 			e1:SetValue(-atk)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			dc:AddEffect(e1)
+			dc:RegisterEffect(e1)
 		end
 	end
 end

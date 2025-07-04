@@ -258,8 +258,9 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 	g1=Duel.GetMatchingGroup(cm.tffilter,tp,LOCATION_REMOVED,0,nil)
 	if ct>=1 and #g1>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+		local sg=Group.CreateGroup()
 		if not chk then
-			local sg=g1:Select(tp,1,ct,nil)
+			sg=g1:Select(tp,1,ct,nil)
 		else
 			sg=g1:CancelableSelect(tp,1,ct,nil)
 		end

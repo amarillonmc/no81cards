@@ -69,7 +69,7 @@ function s.matcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local xg=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
 	if chk==0 then return c:GetOverlayCount()>0 and Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
-	local ct=c:RemoveOverlayCard(tp,1,#g,REASON_EFFECT)
+	local ct=c:RemoveOverlayCard(tp,1,#xg,REASON_EFFECT)
 	e:SetLabel(ct)
 end
 
