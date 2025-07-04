@@ -35,14 +35,9 @@ function c9910149.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
-	e1:SetCondition(c9910149.thcon)
 	e1:SetOperation(c9910149.thop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-end
-function c9910149.thcon(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD,nil)
-	return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=ct
 end
 function c9910149.tofifilter(c)
 	return c:IsSetCard(0x9958) and c:IsType(TYPE_MONSTER) and not c:IsForbidden()
@@ -64,6 +59,7 @@ end
 function c9910149.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910149)
 	local ct=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD,nil)
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<ct then return end
 	Duel.ConfirmDecktop(tp,ct)
 	local dg=Duel.GetDecktopGroup(tp,ct)
 	local g=dg:Filter(c9910149.tofifilter,nil)

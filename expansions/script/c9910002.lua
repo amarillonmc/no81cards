@@ -81,7 +81,6 @@ function c9910002.thop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetCountLimit(1)
-		e1:SetCondition(c9910002.thcon2)
 		e1:SetOperation(c9910002.thop2)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
@@ -89,9 +88,6 @@ function c9910002.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c9910002.thfilter2(c)
 	return c:IsFaceup() and c:IsType(TYPE_PENDULUM) and c:IsAbleToHand()
-end
-function c9910002.thcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c9910002.thfilter2,tp,LOCATION_EXTRA,0,1,nil)
 end
 function c9910002.thop2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SelectYesNo(tp,aux.Stringid(9910002,4)) then

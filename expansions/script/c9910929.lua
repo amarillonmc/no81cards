@@ -98,7 +98,6 @@ function c9910929.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
-	e1:SetCondition(c9910929.spcon)
 	e1:SetOperation(c9910929.spop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
@@ -107,9 +106,6 @@ function c9910929.spfilter(c,e,tp)
 	if not (c:IsSetCard(0x3954) and c:IsType(TYPE_MONSTER)) then return false end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	return c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
-end
-function c9910929.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c9910929.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp)
 end
 function c9910929.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910929)

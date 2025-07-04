@@ -114,7 +114,7 @@ function c9911383.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,9911384,RESET_PHASE+PHASE_END,0,1)
 end
 function c9911383.tdfilter2(c,fid)
-	return c:GetFlagEffectLabel(9911383)==fid and c:IsAbleToDeck()
+	return c:GetFlagEffectLabel(9911383)==fid
 end
 function c9911383.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
@@ -124,12 +124,15 @@ function c9911383.tdcon(e,tp,eg,ep,ev,re,r,rp)
 		return false
 	else return true end
 end
+function c9911383.tdfilter3(c,fid)
+	return c:GetFlagEffectLabel(9911383)==fid and c:IsAbleToDeck()
+end
 function c9911383.tdop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,9911383)
 	local g=e:GetLabelObject()
-	local sg=g:Filter(c9911383.tdfilter2,nil,e:GetLabel())
+	local sg=g:Filter(c9911383.tdfilter3,nil,e:GetLabel())
 	g:DeleteGroup()
 	if #sg>0 then
-		Duel.Hint(HINT_CARD,0,9911383)
 		Duel.SendtoDeck(sg,nil,2,REASON_EFFECT)
 	end
 end

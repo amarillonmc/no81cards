@@ -159,23 +159,26 @@ function c9911367.seop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c9911367.thfilter(c,fid)
-	return c:GetFlagEffectLabel(9911369)==fid and c:IsAbleToHand()
+function c9911367.thfilter1(c,fid)
+	return c:GetFlagEffectLabel(9911369)==fid
 end
 function c9911367.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
-	if not g:IsExists(aux.NecroValleyFilter(c9911367.thfilter),1,nil,e:GetLabel()) then
+	if not g:IsExists(c9911367.thfilter1,1,nil,e:GetLabel()) then
 		g:DeleteGroup()
 		e:Reset()
 		return false
 	else return true end
 end
+function c9911367.thfilter2(c,fid)
+	return c:GetFlagEffectLabel(9911369)==fid and c:IsAbleToHand()
+end
 function c9911367.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,9911367)
 	local g=e:GetLabelObject()
-	local sg=g:Filter(aux.NecroValleyFilter(c9911367.thfilter),nil,e:GetLabel())
+	local sg=g:Filter(aux.NecroValleyFilter(c9911367.thfilter2),nil,e:GetLabel())
 	g:DeleteGroup()
 	if #sg>0 then
-		Duel.Hint(HINT_CARD,0,9911367)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	end
 end

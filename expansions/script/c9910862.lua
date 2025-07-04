@@ -111,7 +111,6 @@ function c9910862.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetCountLimit(1)
-		e1:SetCondition(c9910862.descon)
 		e1:SetOperation(c9910862.desop)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
@@ -140,9 +139,6 @@ function c9910862.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SetFlagEffectLabel(tp,9910862,lab)
 		end
 	end
-end
-function c9910862.descon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil)
 end
 function c9910862.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910862)

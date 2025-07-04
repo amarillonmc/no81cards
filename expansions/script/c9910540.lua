@@ -156,7 +156,7 @@ function c9910540.rlop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9910540.descon(e,tp,eg,ep,ev,re,r,rp)
-	return c9910540[tp]>0 and Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+	return c9910540[tp]>0
 end
 function c9910540.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910540)

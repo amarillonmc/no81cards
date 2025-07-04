@@ -43,16 +43,12 @@ function c9910204.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
-	e1:SetCondition(c9910204.thcon)
 	e1:SetOperation(c9910204.thop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9910204.thfilter(c)
 	return c:IsRace(RACE_PSYCHO) and c:IsAbleToHand()
-end
-function c9910204.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c9910204.thfilter,tp,LOCATION_DECK,0,1,nil)
 end
 function c9910204.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910204)

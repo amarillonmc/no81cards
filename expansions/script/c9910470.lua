@@ -146,8 +146,10 @@ function c9910470.retop(e,tp,eg,ep,ev,re,r,rp)
 	if g:IsExists(Card.IsAbleToHand,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(9910470,1)) then
 		Duel.Hint(HINT_CARD,0,9910470)
 		Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:FilterSelect(tp,Card.IsAbleToHand,1,1,nil)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
 	end
 	g:DeleteGroup()
 	e:Reset()

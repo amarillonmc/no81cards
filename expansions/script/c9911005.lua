@@ -106,13 +106,9 @@ function c9911005.attop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
 	e2:SetCountLimit(1)
-	e2:SetCondition(c9911005.regcon)
 	e2:SetOperation(c9911005.regop)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
-end
-function c9911005.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil)
 end
 function c9911005.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9911005)

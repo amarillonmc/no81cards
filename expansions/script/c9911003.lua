@@ -103,16 +103,12 @@ function c9911003.attop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
 	e2:SetCountLimit(1)
-	e2:SetCondition(c9911003.thcon)
 	e2:SetOperation(c9911003.thop)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 end
 function c9911003.thfilter(c)
 	return c:IsSetCard(0x6954) and c:IsAbleToHand()
-end
-function c9911003.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c9911003.thfilter),tp,LOCATION_GRAVE,0,1,nil)
 end
 function c9911003.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9911003)

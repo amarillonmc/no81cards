@@ -83,16 +83,13 @@ end
 function c9911555.thfilter(c)
 	return c:IsFaceupEx() and c:IsSetCard(0x6952) and c:IsAbleToHand()
 end
-function c9911555.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c9911555.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
-end
 function c9911555.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,9911555)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9911555.thfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+	if #g>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function c9911555.costfilter(c)

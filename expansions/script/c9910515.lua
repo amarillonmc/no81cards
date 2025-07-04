@@ -65,16 +65,15 @@ function c9910515.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(c9910515.setop)
 	Duel.RegisterEffect(e1,tp)
 end
+function c9910515.setcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnCount()~=e:GetLabel()
+end
 function c9910515.setfilter(c,e,tp)
 	if not c:IsSetCard(0xa950) or not c:IsFaceupEx() then return false end
 	if c:IsType(TYPE_MONSTER) then
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 			and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
 	else return c:IsSSetable() end
-end
-function c9910515.setcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()~=e:GetLabel()
-		and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c9910515.setfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp)
 end
 function c9910515.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910515)

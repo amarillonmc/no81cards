@@ -68,14 +68,10 @@ function c9910561.xmop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetCountLimit(1)
-		e1:SetCondition(c9910561.thcon)
 		e1:SetOperation(c9910561.thop)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
 	end
-end
-function c9910561.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetOverlayCount(tp,1,0)>0
 end
 function c9910561.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910561)
