@@ -123,13 +123,13 @@ end
  --   local tempg=mg-sg
   -- for c in aux.Next(tempg) do
 	 --   if eg:IsContains(c) then
-   --		sg:AddCard(c)
-	--	  ct=ct+1
-	--	  if Auxiliary.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk) or (ct<maxc and Auxiliary.SynMixCheckRecursive(c,tp,sg,eg,ct,minc,maxc,syncard,sg1,smat,gc,mgchk)) then return true end
-	--	  sg:RemoveCard(c)
-   --		ct=ct-1
+   --	 sg:AddCard(c)
+	--  ct=ct+1
+	--  if Auxiliary.SynMixCheckGoal(tp,sg,minc,ct,syncard,sg1,smat,gc,mgchk) or (ct<maxc and Auxiliary.SynMixCheckRecursive(c,tp,sg,eg,ct,minc,maxc,syncard,sg1,smat,gc,mgchk)) then return true end
+	--  sg:RemoveCard(c)
+   --	 ct=ct-1
 			--eg:RemoveCard(c)
-   --		eg:Sub(eg:Filter(cm.slfilter,nil,syncard,c:GetSynchroLevel(syncard)))
+   --	 eg:Sub(eg:Filter(cm.slfilter,nil,syncard,c:GetSynchroLevel(syncard)))
 	--  end
    -- end
   --  return false
@@ -154,7 +154,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		cm.SubGroupParams={nil,Card.GetLevel,nil,false,true}
 		--local res=Group.CheckSubGroup(g,cm.symgck,1,3,e,tp)
-		local res=Group.CheckSubGroup(g,tp,cm.symgck,false,1,3,e,tp)
+		local res=Group.CheckSubGroup(g,cm.symgck,1,3,e,tp)
 		cm.SubGroupParams={}
 		return res
 	end 
@@ -162,10 +162,10 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end 
 function cm.espfil3(c,g,e,tp) 
 	cm.SubGroupParams={nil,Card.GetLevel,nil,false,true}
-	--local res=Group.CheckSubGroup(g,cm.symgck,1,3,e,tp)
-	local res=Group.SelectSubGroup(g,tp,cm.espfilr,false,1,3,e,tp,c)
+	local res=Group.CheckSubGroup(g,cm.symgck,1,3,e,tp)
+	--local res=Group.SelectSubGroup(g,tp,cm.espfilr,false,1,3,e,tp,c)
 	cm.SubGroupParams={}
-	return res
+	return res and c:IsType(TYPE_SYNCHRO)
 	--return c:IsSynchroSummonable(nil,g)  
 end 
 function cm.espfilr(mg,e,tp,c) 

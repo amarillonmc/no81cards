@@ -89,7 +89,7 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
 	if not rc:IsRelateToEffect(re) then return end
-	local proc=rc:IsCode(12866705) and c:IsCode(12866600)
+	local proc=rc:IsCode(12866705,12866890) and c:IsCode(12866600)
 	local b1=rc:IsAbleToGrave() and not rc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
 	local b2=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
 	and (rc:IsCanBeSpecialSummoned(e,0,tp,false,false)) or rc:IsCanBeSpecialSummoned(e,0,tp,proc,proc))
@@ -119,7 +119,7 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if rc:IsRelateToEffect(re) then
 		local tc=Duel.GetFirstTarget()
-		local proc=tc:IsCode(12866705) and c:IsCode(12866600)
+		local proc=tc:IsCode(12866705,12866890) and c:IsCode(12866600)
 		local b1=tc:IsAbleToGrave() and not tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
 		local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (tc:IsCanBeSpecialSummoned(e,0,tp,false,false) or tc:IsCanBeSpecialSummoned(e,0,tp,proc,proc)) and aux.NecroValleyFilter()(tc) 
 		local off=1
