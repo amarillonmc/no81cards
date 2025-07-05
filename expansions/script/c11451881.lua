@@ -38,7 +38,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
 	local sc=e:GetLabelObject()
-	local code=sc:GetOriginalCode()
+	local code=m --sc:GetOriginalCode()
 	local g=Duel.GetFieldGroup(0,LOCATION_MZONE,LOCATION_MZONE):Filter(function(c) return c:IsType(TYPE_NORMAL) and c:IsRace(RACE_DRAGON) and c:IsSummonableCard() and c:GetFlagEffect(m)==0 end,nil)
 	for tc in aux.Next(g) do
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
@@ -93,9 +93,9 @@ function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
 		if code==11451883 then 
 			e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
 		end
-		e5:SetCost(sc.spcost)
-		e5:SetTarget(sc.sptg)
-		e5:SetOperation(sc.spop)
+		e5:SetCost(cm.spcost)
+		e5:SetTarget(cm.sptg)
+		e5:SetOperation(cm.spop)
 		e5:SetReset(RESET_EVENT+RESETS_STANDARD)
 		tc:RegisterEffect(e5,true)
 		local e6=Effect.CreateEffect(sc)
