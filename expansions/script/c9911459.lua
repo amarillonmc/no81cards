@@ -75,8 +75,8 @@ function c9911459.rcop(e,tp,eg,ep,ev,re,r,rp)
 	if #tg==0 or aux.NecroValleyNegateCheck(tg) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local sg=tg:FilterSelect(tp,Card.IsAbleToHand,1,1,nil)
+	Duel.HintSelection(sg)
 	Duel.SendtoHand(sg,nil,REASON_EFFECT)
-	Duel.ConfirmCards(1-tp,sg)
 	tg:Sub(sg)
 	if #tg>0 then
 		Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)

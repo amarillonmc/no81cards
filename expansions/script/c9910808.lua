@@ -40,12 +40,12 @@ function c9910808.thfilter(c)
 	return c:IsSetCard(0x6951) and not c:IsLevel(5) and c:IsAbleToHand()
 end
 function c9910808.thcon(e,tp,eg,ep,ev,re,r,rp)
-	local ct=math.floor(Duel.GetFieldGroupCount(1-tp,0xe,0)/3)
-	return Duel.GetTurnCount()==e:GetLabel()+1 and ct>0 and Duel.IsExistingMatchingCard(c9910808.thfilter,tp,LOCATION_DECK,0,ct,nil)
+	return Duel.GetTurnCount()==e:GetLabel()+1
 end
 function c9910808.thop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910808)
 	local ct=math.floor(Duel.GetFieldGroupCount(1-tp,0xe,0)/3)
+	if ct==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c9910808.thfilter,tp,LOCATION_DECK,0,ct,ct,nil)
 	if #g>0 then
