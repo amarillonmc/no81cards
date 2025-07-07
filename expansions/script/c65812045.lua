@@ -39,7 +39,7 @@ function s.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CHAIN_SOLVING)
 	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(s.negcon)
+	e4:SetTarget(s.actarget)
 	e4:SetOperation(s.negop)
 	c:RegisterEffect(e4)
 end
@@ -125,7 +125,7 @@ function s.cfilter1(c,e)
 	if seq>4 or c:IsLocation(LOCATION_PZONE) then return false end
 	return (c:IsLocation(LOCATION_MZONE) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1))) or c:IsLocation(LOCATION_SZONE) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_SZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_SZONE,seq+1)))) and not c:IsImmuneToEffect(e)
 end
-function s.negcon(e,tp,eg,ep,ev,re,r,rp)
+function s.actarget(e,te)
 	local c=e:GetHandler()
 	local tc=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT):GetHandler()
 	local g=c:GetColumnGroup():Filter(s.cfilter1,nil,e)

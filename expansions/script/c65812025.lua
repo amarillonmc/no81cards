@@ -43,7 +43,7 @@ function s.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.tfop(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Group.CreateGroup()
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)>=0 then g1=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.tffilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then g1=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.tffilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end
 	g1:Merge(Duel.GetMatchingGroup(aux.NecroValleyFilter(s.tffilter1),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local tc=g1:Select(tp,1,1,nil):GetFirst()
