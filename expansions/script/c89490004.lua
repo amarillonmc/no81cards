@@ -64,15 +64,29 @@ end
 function s.costfilter(c)
 	return c:IsRace(RACE_WYRM) and c:IsAttribute(ATTRIBUTE_FIRE)
 end
+function s.tgfilter(c)
+	return c:IsRace(RACE_WYRM) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+end
 function s.rcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,s.costfilter,1,e:GetHandler()) end
-	local g=Duel.SelectReleaseGroup(tp,s.costfilter,1,1,e:GetHandler())
-	local tc=g:GetFirst()
-	Duel.Release(tc,REASON_COST)
-	if tc:IsSetCard(0xc30) then
-		e:SetProperty(e:GetProperty()|EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN)
+	local fe=Duel.IsPlayerAffectedByEffect(tp,89490052)
+	local b1=fe and Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil)
+	local b2=Duel.CheckReleaseGroup(tp,s.costfilter,1,e:GetHandler())
+	if chk==0 then return b1 or b2 end
+	if b1 and (not b2 or Duel.SelectYesNo(tp,fe:GetDescription())) then
+		Duel.Hint(HINT_CARD,0,89490052)
+		fe:UseCountLimit(tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+		Duel.SendtoGrave(g,REASON_COST)
 	else
-		e:SetProperty(e:GetProperty()&~(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN))
+		local g=Duel.SelectReleaseGroup(tp,s.costfilter,1,1,e:GetHandler())
+		local tc=g:GetFirst()
+		Duel.Release(tc,REASON_COST)
+		if tc:IsSetCard(0xc30) then
+			e:SetProperty(e:GetProperty()|EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN)
+		else
+			e:SetProperty(e:GetProperty()&~(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN))
+		end
 	end
 end
 function s.rtg(e,tp,eg,ep,ev,re,r,rp,chk)

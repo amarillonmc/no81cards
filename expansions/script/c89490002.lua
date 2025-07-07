@@ -48,11 +48,25 @@ function s.qcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return Duel.IsPlayerAffectedByEffect(tp,89490011)~=nil and c:IsOriginalSetCard(0xc30) and c:IsLocation(LOCATION_MZONE) and c:IsType(TYPE_MONSTER)
 end
+function s.tgfilter(c)
+	return c:IsRace(RACE_WYRM) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
+end
 function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsReleasable() end
-	if c:IsLocation(LOCATION_HAND) then e:SetLabel(1) else e:SetLabel(0) end
-	Duel.Release(c,REASON_COST)
+	local fe=Duel.IsPlayerAffectedByEffect(tp,89490052)
+	local b1=fe and Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil)
+	local b2=c:IsReleasable()
+	if chk==0 then return b1 or b2 end
+	if b1 and (not b2 or Duel.SelectYesNo(tp,fe:GetDescription())) then
+		Duel.Hint(HINT_CARD,0,89490052)
+		fe:UseCountLimit(tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+		Duel.SendtoGrave(g,REASON_COST)
+	else
+		Duel.Release(c,REASON_COST)
+		if c:IsLocation(LOCATION_HAND) then e:SetLabel(1) else e:SetLabel(0) end
+	end
 end
 function s.thfilter(c)
 	return c:IsSetCard(0xc30) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()

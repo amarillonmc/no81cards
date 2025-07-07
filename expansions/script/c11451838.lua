@@ -72,10 +72,10 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 		if g:GetCount()>0 and Duel.GetMZoneCount(tp)>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)>0 then
 			local rg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,0,nil)
-			if #rg>1 then
+			if #rg>0 then
 				--Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-				local tg=rg:Select(tp,2,2,nil)
+				local tg=rg:Select(tp,1,1,nil)
 				Duel.Remove(tg,POS_FACEUP,REASON_EFFECT)
 			end
 		end

@@ -18,7 +18,7 @@ function cm.initial_effect(c)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_TODECK)
+	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_CUSTOM+m)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -70,28 +70,22 @@ function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local bool,ceg=Duel.CheckEvent(EVENT_CUSTOM+m,true)
 	return eg:IsContains(e:GetHandler()) and bool and ceg:IsExists(cm.spfilter,1,nil) and (re==nil or not re:IsActivated())
 end
-function cm.tdfilter(c,se)
-	return c:IsFaceup() and c:IsSetCard(0x9977) and c:IsAbleToHand()
+function cm.refilter(c,code)
+	return c:IsAbleToRemove() and not c:IsCode(code) and c:IsType(TYPE_TRAP)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return eg:IsExists(cm.tdfilter,1,nil,se) and c:IsAbleToDeck() and c:GetFlagEffect(m-10)==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_DECK,0,1,nil,c:GetCode()) and c:IsAbleToDeck() and c:GetFlagEffect(m-10)==0 end
 	c:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
-	local g=eg:Filter(cm.tdfilter,nil,se)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if #g==0 then
-		return
-	elseif #g>1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		g=g:Select(tp,1,1,nil)
-	end
-	if Duel.SendtoHand(g,nil,REASON_EFFECT)>0 and Duel.GetOperatedGroup():IsExists(Card.IsLocation,1,nil,LOCATION_HAND) and c:IsRelateToEffect(e) then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	if not c:IsRelateToEffect(e) then return end
+	local g=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_DECK,0,1,1,nil,c:GetCode())
+	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 and c:IsRelateToEffect(e) then
 		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
 	end
 end

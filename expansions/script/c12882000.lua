@@ -75,7 +75,7 @@ function s.hackop(e,tp,eg,ep,ev,re,r,rp)
 						if bchk==0 then return be:GetHandler():IsLocation(LOCATION_MZONE) and 
 							tg(be,btp,beg,bep,bev,bre,br,brp,bchk) 
 						end
-						do tg(be,btp,beg,bep,bev,bre,br,brp,bchk) end					   
+						do tg(be,btp,beg,bep,bev,bre,br,brp,bchk) end					  
 					end)
 				end 
 				table.insert(s.record_tab,ke)
@@ -101,9 +101,12 @@ function s.checkcon(e,tp)
 	end
 	return false
 end
-function s.checkop(e,tp)
+function s.onfieldcheck(c,tp)
+	return c:IsOnField() and c:IsControler(tp)
+end
+function s.checkop(e,tp,eg)
 	for p=0,1 do
-		local g=Duel.GetMatchingGroup(s.faceup_check,p,LOCATION_ONFIELD,0,nil)
+		local g=eg:Filter(s.onfieldcheck,nil,p)
 		if g:GetCount()>0 then
 			for tc in aux.Next(g) do
 				local code=tc:GetCode()
@@ -124,18 +127,22 @@ function s.seqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	for i=0,6 do
 		if s.checkin(s.field_record[1][1],i) then
-			val=val|aux.SequenceToGlobal(0,LOCATION_MZONE,i)
+			if i~=5 and i~=6 then
+			end
+			val=val|aux.SequenceToGlobal(tp,LOCATION_MZONE,i)
 		end
 		if s.checkin(s.field_record[2][1],i) then
-			val=val|aux.SequenceToGlobal(1,LOCATION_MZONE,i)
+			if i~=5 and i~=6 then
+			end
+			val=val|aux.SequenceToGlobal(1-tp,LOCATION_MZONE,i)
 		end
 	end
 	for i=0,4 do
 		if s.checkin(s.field_record[1][2],i) then
-			val=val|aux.SequenceToGlobal(0,LOCATION_SZONE,i)
+			val=val|aux.SequenceToGlobal(tp,LOCATION_SZONE,i)
 		end
 		if s.checkin(s.field_record[2][2],i) then
-			val=val|aux.SequenceToGlobal(1,LOCATION_SZONE,i)
+			val=val|aux.SequenceToGlobal(1-tp,LOCATION_SZONE,i)
 		end
 	end
 	val=val|0x2000
@@ -317,16 +324,17 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:GetFirst()
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_DESTROYED)
+		e1:SetCode(EVENT_LEAVE_FIELD)
 		e1:SetReset(RESET_EVENT+RESET_TURN_SET+RESET_TOFIELD+RESET_OVERLAY)
 		e1:SetCondition(s.spcon2)
 		e1:SetOperation(s.spop2)
 		tc:RegisterEffect(e1,true)
+		tc:RegisterFlagEffect(id+o,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,0))
 	end
 end
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsFaceup()
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP)
 end
 function s.spfilter2(c,e,tp)
 	return c:IsCode(id) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

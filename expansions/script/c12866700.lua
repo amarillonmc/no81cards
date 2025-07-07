@@ -90,7 +90,7 @@ function s.recop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.Recover(tp,tc:GetBaseAttack(),REASON_EFFECT)~=0 then
 			if not (c:IsRelateToEffect(e) or c:IsLocation(LOCATION_MZONE)) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
-			Duel.Damage(1-tp,tc:GetBaseAttack(),REASON_EFFECT)
+			Duel.Damage(1-tp,1100,REASON_EFFECT)
 			end
 		end
 	end

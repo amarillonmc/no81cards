@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_TODECK)
+	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_CUSTOM+m)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -71,20 +71,20 @@ function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(e:GetHandler()) and bool and ceg:IsExists(cm.spfilter,1,nil) and (re==nil or not re:IsActivated())
 end
 function cm.refilter(c)
-	return c:IsAbleToRemove() and c:IsSetCard(0x9977)
+	return c:IsAbleToRemove() and c:IsSetCard(0x9977) and c:IsType(TYPE_MONSTER)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_EXTRA,0,1,nil) and c:IsAbleToDeck() and c:GetFlagEffect(m-10)==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.refilter,tp,LOCATION_EXTRA,0,1,nil) and c:GetFlagEffect(m-10)==0 end
 	c:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_EXTRA)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,c,1,0,0)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,cm.refilter,tp,LOCATION_EXTRA,0,1,1,nil)
 	if Duel.Remove(g,POS_FACEUP,REASON_EFFECT)>0 and c:IsRelateToEffect(e) then
-		Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
+		Duel.SendtoGrave(c,REASON_EFFECT+REASON_RETURN)
 	end
 end

@@ -83,7 +83,7 @@ function s.topop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function s.splimit(e,c)
-	return not (c:IsCode(91300100) or not c:IsType(TYPE_EFFECT))
+	return not (c:IsCode(91300100) or c:GetOriginalType()&TYPE_SPELL>0 or c:GetLocation()==0) or c:IsType(TYPE_TOKEN)
 end
 function s.reccon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>1 and re:IsActiveType(TYPE_SPELL)

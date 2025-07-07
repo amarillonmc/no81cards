@@ -127,7 +127,7 @@ function cm.xyzop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.xfilter(c,tp,g)
-	return g:IsExists(Card.IsAttribute,1,c,c:GetAttribute()) --c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsControler(tp) and
+	return g:IsExists(Card.IsAttribute,1,c,c:GetAttribute()) --and c:IsLocation(LOCATION_MZONE)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	local eeg=Group.FromCards(re:GetHandler())
@@ -135,7 +135,7 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	local xg=Duel.GetOverlayGroup(tp,1,1)
 	g:Merge(xg)
 	local tg=eeg:Filter(cm.xfilter,nil,1-tp,g)
-	return #tg>0 and rp==1-tp --and not eeg:IsContains(e:GetHandler())
+	return #tg>0 and re:IsActiveType(TYPE_MONSTER) and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE and Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER)==1-tp --and not eeg:IsContains(e:GetHandler())
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

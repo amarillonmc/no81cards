@@ -82,7 +82,7 @@ end
 function c12866610.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	local c=e:GetHandler()
-	if rc:IsRelateToEffect(re) and Duel.SendtoGrave(rc,REASON_EFFECT)~=0 and not (c:IsRelateToEffect(e) or c:IsLocation(LOCATION_MZONE)) and Duel.IsChainNegatable(ev) and Duel.SelectYesNo(tp,aux.Stringid(12866610,2)) then
+	if rc:IsRelateToEffect(re) and Duel.SendtoGrave(rc,REASON_EFFECT)~=0 and rc:IsLocation(LOCATION_GRAVE) and not (c:IsRelateToEffect(e) or c:IsLocation(LOCATION_MZONE)) and Duel.IsChainNegatable(ev) and Duel.SelectYesNo(tp,aux.Stringid(12866610,2)) then
 		Duel.NegateActivation(ev)
 	end
 end

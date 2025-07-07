@@ -21,18 +21,18 @@ function cm.initial_effect(c)
 --shan chu de xiao guo
 
 	--send to deck
---	local e1=Effect.CreateEffect(c)
---	e1:SetDescription(aux.Stringid(m,0))
---	e1:SetCategory(CATEGORY_TODECK)
---	e1:SetType(EFFECT_TYPE_QUICK_O)
---	e1:SetCode(EVENT_FREE_CHAIN)
---	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
---	e1:SetCountLimit(1,m)
---	e1:SetRange(LOCATION_MZONE)
---	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
---	e1:SetTarget(cm.tdtg)
---	e1:SetOperation(cm.tdop)
---	c:RegisterEffect(e1)
+--  local e1=Effect.CreateEffect(c)
+--  e1:SetDescription(aux.Stringid(m,0))
+--  e1:SetCategory(CATEGORY_TODECK)
+--  e1:SetType(EFFECT_TYPE_QUICK_O)
+--  e1:SetCode(EVENT_FREE_CHAIN)
+--  e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+--  e1:SetCountLimit(1,m)
+--  e1:SetRange(LOCATION_MZONE)
+--  e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+--  e1:SetTarget(cm.tdtg)
+--  e1:SetOperation(cm.tdop)
+--  c:RegisterEffect(e1)
 
 	--tohand
 	local e2=Effect.CreateEffect(c)
@@ -45,6 +45,7 @@ function cm.initial_effect(c)
 	--creat table
 	VHisc_CNTdb.creattable()
 end
+cm.VHisc_MRSH=true
 cm.VHisc_CNTreasure=true
 
 --e1
@@ -114,19 +115,19 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler()~=e:GetHandler()
 end
 function cm.cfilter(c,cg)
-	return cg:IsExists(Card.IsCode,1,nil,c:GetCode()) and c:IsAbleToHand()
+	return cg:IsExists(Card.IsCode,1,nil,c:GetCode()) and c:IsAbleToHand() and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local cg=e:GetLabelObject()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE,0,1,nil,cg) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,cg) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local cg=e:GetLabelObject()
-	if c:IsRelateToEffect(e) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE,0,1,nil,cg) then
+	if c:IsRelateToEffect(e) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,cg) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_GRAVE,0,1,1,nil,cg)
+		local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,cg)
 		if g:GetCount()>0 then
 			Duel.SendtoHand(g,tp,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)

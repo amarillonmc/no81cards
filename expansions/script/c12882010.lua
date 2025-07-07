@@ -104,6 +104,7 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
 		if c:IsPreviousLocation(LOCATION_ONFIELD) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 			local e1=Effect.CreateEffect(c)
+			e1:SetDescription(aux.Stringid(id,2))
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
 			if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_STANDBY then
@@ -122,6 +123,7 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterEffect(e1,tp)
 		else
 			local e1=Effect.CreateEffect(c)
+			e1:SetDescription(aux.Stringid(id,2))
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_CHAIN_END)
 			e1:SetReset(RESET_PHASE+PHASE_END)

@@ -1,0 +1,106 @@
+--神威骑士团火力部队（未解限）
+function c24501067.initial_effect(c)
+	--synchro summon
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsRace,RACE_MACHINE),1)
+	c:EnableReviveLimit()
+    -- 战吼特招
+	local e1=Effect.CreateEffect(c)
+    e1:SetDescription(aux.Stringid(24501067,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,24501067)
+	e1:SetTarget(c24501067.tg1)
+	e1:SetOperation(c24501067.op1)
+	c:RegisterEffect(e1)
+    -- 发动无效
+	local e2=Effect.CreateEffect(c)
+    e2:SetDescription(aux.Stringid(24501067,1))
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_NEGATE)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,24501068)
+	e2:SetCondition(c24501067.con2)
+	e2:SetTarget(c24501067.tg2)
+	e2:SetOperation(c24501067.op2)
+	c:RegisterEffect(e2)
+    -- 遗言特招
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(24501067,2))
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+    e3:SetCountLimit(1,24501069)
+	e3:SetCondition(c24501067.con3)
+	e3:SetTarget(c24501067.tg3)
+	e3:SetOperation(c24501067.op3)
+	c:RegisterEffect(e3)
+end
+-- 1
+function c24501067.filter1(c)
+    return c:IsSetCard(0x501) and c:IsType(TYPE_CONTINUOUS) and c:IsType(TYPE_SPELL) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
+end
+function c24501067.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+    if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>1
+        and Duel.IsExistingMatchingCard(c24501067.filter1,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
+end
+function c24501067.op1(e,tp,eg,ep,ev,re,r,rp)
+    local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+    if ft<=0 then return end
+    if ft>2 then ft=2 end
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+    local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c24501067.filter1),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,ft,nil,tp)
+    if #g>0 then
+        for tc in aux.Next(g) do
+            Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+        end
+    end
+end
+-- 2
+function c24501067.filter2(c)
+	return c:IsFaceup() and c:IsSetCard(0x501) and c:IsType(TYPE_SPELL+TYPE_TRAP)
+end
+function c24501067.con2(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and Duel.IsChainNegatable(ev)
+    and Duel.IsExistingMatchingCard(c24501067.filter2,tp,LOCATION_MZONE,0,2,nil)
+end
+function c24501067.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+end
+function c24501067.op2(e,tp,eg,ep,ev,re,r,rp)
+    if Duel.NegateActivation(ev) then
+    end
+end
+-- 3
+function c24501067.con3(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+end
+function c24501067.filter3(c,e,tp,lv)
+    return c:IsSetCard(0x501) and not c:IsType(TYPE_SYNCHRO)
+        and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+        and (lv==nil or c:GetLevel()~=lv)
+end
+function c24501067.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>1
+		and not Duel.IsPlayerAffectedByEffect(tp,59822133)
+		and Duel.IsExistingMatchingCard(c24501067.filter3,tp,LOCATION_GRAVE,0,2,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_GRAVE)
+end
+function c24501067.op3(e,tp,eg,ep,ev,re,r,rp)
+    if Duel.GetLocationCount(tp,LOCATION_MZONE)<2 or Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
+    local g=Duel.GetMatchingGroup(c24501067.filter3,tp,LOCATION_GRAVE,0,nil,e,tp)
+    if #g<2 then return end
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+    local sg1=g:Select(tp,1,1,nil)
+    local lv1=sg1:GetFirst():GetLevel()
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+    local sg2=g:FilterSelect(tp,c24501067.filter3,1,1,sg1:GetFirst(),e,tp,lv1)
+    sg1:Merge(sg2)
+    if #sg1==2 then
+        Duel.SpecialSummon(sg1,0,tp,tp,false,false,POS_FACEUP)
+    end
+end

@@ -72,18 +72,18 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetOperation(s.negop)
 	Duel.RegisterEffect(e3,tp)
 end
-function s.filter1(c)
+function s.filter1(c,e)
 	local tp=c:GetControler()
 	local seq=c:GetSequence()
-	if seq>4 then return false end
-	return (c:IsLocation(LOCATION_MZONE) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1))) or c:IsLocation(LOCATION_SZONE) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_SZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_SZONE,seq+1))))
+	if seq>4 or c:IsLocation(LOCATION_PZONE) then return false end
+	return (c:IsLocation(LOCATION_MZONE) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1))) or c:IsLocation(LOCATION_SZONE) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_SZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_SZONE,seq+1)))) and not c:IsImmuneToEffect(e)
 end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+	if Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,e) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		e:Reset()
 		Duel.Hint(HINT_CARD,0,id)
-		local g=Duel.SelectMatchingCard(tp,s.filter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,s.filter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,e)
 		local tc=g:GetFirst()
 		local seq=tc:GetSequence()
 		if seq>4 then return end
@@ -105,9 +105,7 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 		if p~=tp then s=s>>16 end
 		if tc:IsLocation(LOCATION_SZONE) then s=s>>8 end
 		local nseq=math.log(s,2)
-		if tc:IsLocation(LOCATION_PZONE) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true,a)
-		else Duel.MoveSequence(tc,nseq) 
-		end
+		Duel.MoveSequence(tc,nseq)
 	end
 end
 

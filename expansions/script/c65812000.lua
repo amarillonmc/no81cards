@@ -36,7 +36,7 @@ end
 function s.actarget(e,te)
 	local tc=te:GetHandler()
 	e:SetLabelObject(te)
-	return tc:IsLocation(LOCATION_ONFIELD) and not tc:IsLocation(LOCATION_FZONE)
+	return tc:IsLocation(LOCATION_ONFIELD) and not (tc:IsLocation(LOCATION_FZONE) or tc:IsLocation(LOCATION_PZONE))
 end
 function s.accost(e,te)
 	local tc=te:GetHandler()
@@ -71,9 +71,7 @@ function s.acop(e,eg,ep,ev,re,r,rp)
 	elseif a==0x8 or a==0x800 then nseq=3
 	elseif a==0x10 or a==0x1000 then nseq=4
 	else end
-	if tc:IsLocation(LOCATION_PZONE) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true,a)
-	else Duel.MoveSequence(tc,nseq) 
-	end
+	Duel.MoveSequence(tc,nseq)
 	s[0]=true
 end
 

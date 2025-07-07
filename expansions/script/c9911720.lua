@@ -16,8 +16,7 @@ function c9911720.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetTarget(c9911720.thtg)
-	e2:SetOperation(c9911720.thop)
+	e2:SetOperation(c9911720.regop)
 	c:RegisterEffect(e2)
 	--destroy
 	local e3=Effect.CreateEffect(c)
@@ -37,14 +36,20 @@ end
 function c9911720.mfilter(c)
 	return c:IsLevelBelow(9) and c:IsFusionSetCard(0x9957)
 end
+function c9911720.regop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	e1:SetOperation(c9911720.thop)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
 function c9911720.thfilter(c)
 	return c:IsSetCard(0x9957) and c:IsAbleToHand()
 end
-function c9911720.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9911720.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
 function c9911720.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,9911720)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c9911720.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if #g>0 then
@@ -56,8 +61,9 @@ function c9911720.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
 function c9911720.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tg=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil,e)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,aux.TRUE,1,nil) end
-	local rg=Duel.SelectReleaseGroup(tp,aux.TRUE,1,7,nil)
+	local rg=Duel.SelectReleaseGroup(tp,aux.TRUE,2,#tg,nil)
 	e:SetLabel(rg:GetCount())
 	Duel.Release(rg,REASON_COST)
 end
@@ -73,9 +79,9 @@ function c9911720.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ct=e:GetLabel()
 	local tg=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil,e)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=tg:SelectSubGroup(tp,c9911720.fselect,false,2,ct*2,tp)
+	local g=tg:SelectSubGroup(tp,c9911720.fselect,false,ct,ct,tp)
 	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,ct*2-1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,ct-1,0,0)
 end
 function c9911720.rmfilter2(c,tp)
 	return c:IsRelateToChain() and c:IsControler(tp)

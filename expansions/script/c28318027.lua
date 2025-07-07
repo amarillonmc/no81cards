@@ -34,17 +34,6 @@ function c28318027.initial_effect(c)
 	e2:SetTarget(c28318027.rctg)
 	e2:SetOperation(c28318027.rcop)
 	c:RegisterEffect(e2)
-	--atk
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetValue(c28318027.atkval)
-	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e4)
 end
 --xyz↓
 function Auxiliary.XyzLevelFreeGoal(g,tp,xyzc,gf)
@@ -57,7 +46,8 @@ function c28318027.xyzcheck(g,xyzc)
 	return false
 end
 function c28318027.Operation(f,gf,minct,maxct)
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+	return function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+				local ct=0
 				if og and not min then
 					local sg=Group.CreateGroup()
 					local tc=og:GetFirst()
@@ -68,8 +58,19 @@ function c28318027.Operation(f,gf,minct,maxct)
 					end
 					Duel.SendtoGrave(sg,REASON_RULE)
 					c:SetMaterial(og)
-					c:RegisterFlagEffect(28318027,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,og:GetFirst():GetLevel())
+					if og:GetClassCount(Card.GetLevel)==1 then ct=og:GetFirst():GetLevel() end
 					Duel.Overlay(c,og)
+					if ct~=0 then
+						local e1=Effect.CreateEffect(c)
+						e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+						e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+						e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+						e1:SetCondition(c28318027.rscon)
+						e1:SetOperation(c28318027.rsop)
+						e1:SetLabelObject(c)
+						e1:SetLabel(ct)
+						Duel.RegisterEffect(e1,tp)
+					end
 				else
 					local mg=e:GetLabelObject()
 					if e:GetLabel()==1 then
@@ -88,42 +89,48 @@ function c28318027.Operation(f,gf,minct,maxct)
 						Duel.SendtoGrave(sg,REASON_RULE)
 					end
 					c:SetMaterial(mg)
-					c:RegisterFlagEffect(28318027,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,mg:GetFirst():GetLevel())
-					local check=mg:GetClassCount(Card.GetLevel)==1
+					if mg:GetClassCount(Card.GetLevel)==1 then ct=mg:GetFirst():GetLevel() end
 					Duel.Overlay(c,mg)
-					if check then
+					if ct~=0 then
 						local e1=Effect.CreateEffect(c)
 						e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 						e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 						e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 						e1:SetCondition(c28318027.rscon)
 						e1:SetOperation(c28318027.rsop)
+						e1:SetLabelObject(c)
+						e1:SetLabel(ct)
 						Duel.RegisterEffect(e1,tp)
-						c28318027.tab = {}
-						table.insert(c28318027.tab,c)
 					end
 					mg:DeleteGroup()
 				end
 			end
 end
 function c28318027.rscon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsContains(c28318027.tab[1])
+	return eg:IsContains(e:GetLabelObject())
 end
 function c28318027.rsop(e,tp,eg,ep,ev,re,r,rp)
-	for c in aux.Next(eg) do
-		if c==c28318027.tab[1] then
-			local xlv=c:GetFlagEffectLabel(28318027)
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CHANGE_RANK)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetValue(xlv)
-			c:RegisterEffect(e1)
-			c28318027.tab = nil
-			e:Reset()
-		end
-	end
+	local tc=e:GetLabelObject()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_CHANGE_RANK)
+	--e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetValue(e:GetLabel())
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+	tc:RegisterEffect(e1)
+	--atk
+	local e3=Effect.CreateEffect(e:GetHandler())
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_UPDATE_ATTACK)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetValue(c28318027.atkval)
+	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EFFECT_UPDATE_DEFENSE)
+	tc:RegisterEffect(e4)
+	e:Reset()
 end
 --xyz↑
 function c28318027.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -143,6 +150,7 @@ end
 function c28318027.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local tc=Duel.SelectMatchingCard(tp,c28318027.thfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst()
+	if not tc then return end
 	if tc:IsType(TYPE_SPELL+TYPE_TRAP) then
 		if tc:IsAbleToHand() and (not tc:IsSSetable() or Duel.SelectOption(tp,1190,1153)==0) then
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
@@ -159,7 +167,9 @@ function c28318027.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,tc)
 		end
 	end
-	if e:GetHandler():IsRankAbove(8) and Duel.IsExistingMatchingCard(c28318027.tgfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28318027,2)) then
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsRankAbove(8) and Duel.IsExistingMatchingCard(c28318027.tgfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28318027,2)) then
+		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local gg=Duel.SelectMatchingCard(tp,c28318027.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 		Duel.SendtoGrave(gg,REASON_EFFECT)

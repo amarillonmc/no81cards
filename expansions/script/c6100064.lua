@@ -1,6 +1,7 @@
 --希德小队静听聆音
 local cm,m,o=GetID()
 function cm.initial_effect(c)
+	c:SetUniqueOnField(1,0,m)
 	c:EnableCounterPermit(0x61e)
 	--Activate
 	local e1=Effect.CreateEffect(c)

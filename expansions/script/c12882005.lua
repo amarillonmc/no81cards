@@ -9,10 +9,10 @@ function s.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetTarget(s.settg)
-	e1:SetCondition(s.setcon)
 	e1:SetOperation(s.setop)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
+	e2:SetCondition(s.setcon)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
 	--
@@ -58,7 +58,7 @@ function s.setfilter(c,p)
 		and c:IsFaceupEx()
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonLocation(LOCATION_HAND)
+	return e:GetHandler():IsSummonLocation(LOCATION_HAND+LOCATION_DECK)
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end

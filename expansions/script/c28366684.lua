@@ -24,17 +24,6 @@ function c28366684.initial_effect(c)
 	e1:SetTarget(c28366684.sltg)
 	e1:SetOperation(c28366684.slop)
 	c:RegisterEffect(e1)
-	--atk
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetValue(c28366684.atkval)
-	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EFFECT_UPDATE_DEFENSE)
-	c:RegisterEffect(e4)
 end
 --xyz↓
 function Auxiliary.XyzLevelFreeGoal(g,tp,xyzc,gf)
@@ -47,7 +36,8 @@ function c28366684.xyzcheck(g,xyzc)
 	return false
 end
 function c28366684.Operation(f,gf,minct,maxct)
-	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+	return function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+				local ct=0
 				if og and not min then
 					local sg=Group.CreateGroup()
 					local tc=og:GetFirst()
@@ -58,8 +48,19 @@ function c28366684.Operation(f,gf,minct,maxct)
 					end
 					Duel.SendtoGrave(sg,REASON_RULE)
 					c:SetMaterial(og)
-					c:RegisterFlagEffect(28366684,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,og:GetFirst():GetLevel())
+					if og:GetClassCount(Card.GetLevel)==1 then ct=og:GetFirst():GetLevel() end
 					Duel.Overlay(c,og)
+					if ct~=0 then
+						local e1=Effect.CreateEffect(c)
+						e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+						e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+						e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+						e1:SetCondition(c28366684.rscon)
+						e1:SetOperation(c28366684.rsop)
+						e1:SetLabelObject(c)
+						e1:SetLabel(ct)
+						Duel.RegisterEffect(e1,tp)
+					end
 				else
 					local mg=e:GetLabelObject()
 					if e:GetLabel()==1 then
@@ -78,42 +79,48 @@ function c28366684.Operation(f,gf,minct,maxct)
 						Duel.SendtoGrave(sg,REASON_RULE)
 					end
 					c:SetMaterial(mg)
-					c:RegisterFlagEffect(28366684,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,mg:GetFirst():GetLevel())
-					local check=mg:GetClassCount(Card.GetLevel)==1
+					if mg:GetClassCount(Card.GetLevel)==1 then ct=mg:GetFirst():GetLevel() end
 					Duel.Overlay(c,mg)
-					if check then
+					if ct~=0 then
 						local e1=Effect.CreateEffect(c)
 						e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 						e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 						e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 						e1:SetCondition(c28366684.rscon)
 						e1:SetOperation(c28366684.rsop)
+						e1:SetLabelObject(c)
+						e1:SetLabel(ct)
 						Duel.RegisterEffect(e1,tp)
-						c28366684.tab = {}
-						table.insert(c28366684.tab,c)
 					end
 					mg:DeleteGroup()
 				end
 			end
 end
 function c28366684.rscon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsContains(c28366684.tab[1])
+	return eg:IsContains(e:GetLabelObject())
 end
 function c28366684.rsop(e,tp,eg,ep,ev,re,r,rp)
-	for c in aux.Next(eg) do
-		if c==c28366684.tab[1] then
-			local xlv=c:GetFlagEffectLabel(28366684)
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CHANGE_RANK)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetValue(xlv)
-			c:RegisterEffect(e1)
-			c28366684.tab = nil
-			e:Reset()
-		end
-	end
+	local tc=e:GetLabelObject()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_CHANGE_RANK)
+	--e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetValue(e:GetLabel())
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+	tc:RegisterEffect(e1)
+	--atk
+	local e3=Effect.CreateEffect(e:GetHandler())
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(EFFECT_UPDATE_ATTACK)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetValue(c28366684.atkval)
+	e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+	tc:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EFFECT_UPDATE_DEFENSE)
+	tc:RegisterEffect(e4)
+	e:Reset()
 end
 --xyz↑
 function c28366684.slcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -160,7 +167,7 @@ function c28366684.slop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	if e:GetHandler():IsRankAbove(8) and Duel.IsExistingMatchingCard(c28366684.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28366684,1)) then
+	if e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsRankAbove(8) and Duel.IsExistingMatchingCard(c28366684.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28366684,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 		local tg=Duel.SelectMatchingCard(tp,c28366684.setfilter,tp,LOCATION_DECK,0,1,1,nil)
 		Duel.SSet(tp,tg)

@@ -100,18 +100,32 @@ function cm.adop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,1))
 			sg=sg:Filter(cm.spfilter1,nil,e,tp,sg,ft1,ft2)
 			if #sg-ft2>0 then
-				tg=sg:Select(tp,1,math.min(#sg,ft1),nil)
+				tg=sg:Select(tp,math.max(1,#sg-ft2),math.min(#sg,ft1),nil)
 			else
 				tg=sg:CancelableSelect(tp,1,math.min(#sg,ft1),nil)
 			end
 			if not tg then tg=Group.CreateGroup() end
 			sg:Sub(tg)
 		end
+		for sc in aux.Next(sg) do
+			Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP)
+		end
 		for tc in aux.Next(tg) do
 			Duel.SpecialSummonStep(tc,0,tp,1-tp,false,false,POS_FACEUP)
 		end
-		for sc in aux.Next(sg) do
-			Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP)
+		for tc in aux.Next(tg+sg) do
+			local c=e:GetHandler()
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			if tc:IsType(TYPE_TRAPMONSTER) then
+				local e2=e1:Clone()
+				e2:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+				tc:RegisterEffect(e2)
+			end
 		end
 		Duel.SpecialSummonComplete()
 		--[[local g1=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,nil)

@@ -205,7 +205,7 @@ function cm.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
-	e1:SetCategory(CATEGORY_COIN+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_COIN+CATEGORY_TODECK) --+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -278,15 +278,39 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToDeck() end
+	if chk==0 then return e:GetHandler():IsAbleToDeck() end --and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
+	--Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.fdfilter(c)
 	return cm[c:GetCode()] and c:IsFacedown()
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	--[[local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetOperation(cm.drop)
+	Duel.RegisterEffect(e1,tp)
+	if Duel.Draw(tp,1,REASON_EFFECT)>0 then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetCode(EFFECT_SKIP_DP)
+		e1:SetTargetRange(1,0)
+		if Duel.GetTurnPlayer()==tp then
+			e1:SetLabel(Duel.GetTurnCount())
+			e1:SetCondition(function(e) return Duel.GetTurnCount()~=e:GetLabel() end)
+			e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,2)
+		else
+			e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,1)
+		end
+		Duel.RegisterEffect(e1,tp)
+	end--]]
 	local tg=Duel.GetMatchingGroup(cm.fdfilter,tp,LOCATION_DECK,0,nil)
 	if #tg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		local g1=tg
@@ -316,6 +340,10 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			if res==1 then c:ReverseInDeck() end
 		end
 	end
+end
+function cm.drop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
+	Duel.Draw(tp,1,REASON_EFFECT)
 end
 function cm.topfilter(c)
 	return c:GetFlagEffect(11451851)>0
@@ -412,7 +440,7 @@ function cm.tgfilter(c,e)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
+	if tp~=rp or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)
 	if #g>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(11451858,8)) then
 		local tc=g:GetFirst()

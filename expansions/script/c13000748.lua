@@ -58,36 +58,13 @@ function cm.psetop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 	
 	 if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-	local b1=Duel.IsExistingMatchingCard(cm.psfilter,tp,LOCATION_EXTRA,0,1,nil)
-	local b2=true
-	local op=aux.SelectFromOptions(tp,{b1,aux.Stringid(m,2)},{b2,aux.Stringid(m,3)})
-	if op==1 then
+	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 	local g=Duel.SelectMatchingCard(tp,cm.psfilter,tp,LOCATION_EXTRA,0,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	end
 
-if op==2 then
-local e3=Effect.CreateEffect(c)
-		e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e3:SetCode(EVENT_PHASE+PHASE_DRAW)
-		e3:SetCountLimit(1)
-		e3:SetCondition(cm.stcon)
-		e3:SetOperation(cm.stop)
-		e3:SetLabel(Duel.GetTurnCount())
-	  
-	if Duel.GetCurrentPhase()==PHASE_DRAW then
-		e1:SetLabel(Duel.GetTurnCount())
-		e1:SetReset(RESET_PHASE+PHASE_DRAW,2)
-	else
-		e1:SetLabel(0)
-		e1:SetReset(RESET_PHASE+PHASE_DRAW)
-	end
-	   
-Duel.RegisterEffect(e3,tp)
-end
-end
 end
 end
 function cm.stcon(e,tp,eg,ep,ev,re,r,rp)

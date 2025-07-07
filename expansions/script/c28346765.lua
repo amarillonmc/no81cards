@@ -31,22 +31,16 @@ function c28346765.matfilter(c)
 	return c:GetOriginalRace()&RACE_FAIRY~=0
 end
 --function c28346765.setcon(e,tp,eg,ep,ev,re,r,rp)
---	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+--  return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 --end
 function c28346765.cfilter(c)
-	return c:IsSetCard(0x283) and not c:IsPublic()
+	return c:IsSetCard(0x283) and c:IsAbleToDeckAsCost()
 end
 function c28346765.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28346765.cfilter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(28346765,0))
-	local pc=Duel.SelectMatchingCard(tp,c28346765.cfilter,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
-	Duel.ConfirmCards(1-tp,pc)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_PUBLIC)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-	pc:RegisterEffect(e1)
-	pc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28346765,1))
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,c28346765.cfilter,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c28346765.setfilter(c)
 	return c:IsCode(28381214,28323723) and c:IsSSetable()

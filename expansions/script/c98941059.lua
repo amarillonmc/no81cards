@@ -113,6 +113,7 @@ function c98941059.con1(e,c,smat)
 	local tp=c:GetControler()
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if ft<=0 then return false end
+	if Duel.GetFlagEffect(tp,98941059)~=0 then return false end
 	local g=Duel.GetMatchingGroup(c98941059.synfilter1,c:GetControler(),LOCATION_DECK+LOCATION_MZONE,0,nil)
 	aux.GCheckAdditional=c98941059.hspgcheck
 	local res=g:CheckSubGroup(c98941059.hspcheck,2,#g)

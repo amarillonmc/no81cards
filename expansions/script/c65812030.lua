@@ -58,24 +58,22 @@ function s.shfilter(c)
 	return c:GetFlagEffect(65812010)>0
 end
 function s.tffilter(c,e,tp)
-	return (aux.IsCodeListed(c,65812000) or c:IsCode(65812000)) and c:IsFaceupEx() and (c:IsLocation(LOCATION_HAND+LOCATION_ONFIELD) or c:IsLocation(LOCATION_DECK) and Duel.IsExistingMatchingCard(s.shfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,e,tp) and Duel.GetFlagEffect(tp,id)==0)
+	return c:IsFaceupEx() and (c:IsLocation(LOCATION_HAND+LOCATION_ONFIELD) or c:IsLocation(LOCATION_DECK) and Duel.IsExistingMatchingCard(s.shfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,e,tp) and Duel.GetFlagEffect(tp,id)==0) and (aux.IsCodeListed(c,65812000) or c:IsCode(65812000)) and Duel.GetMZoneCount(tp,c)>0
 end
 function s.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	local c=e:GetHandler()
+	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and Duel.IsExistingMatchingCard(s.tffilter,tp,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_DECK,0,1,c,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function s.tfop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 and Duel.IsExistingMatchingCard(s.tffilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_DECK,0,1,c,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then 
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local tc=Duel.SelectMatchingCard(tp,s.tffilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_DECK,0,1,1,c,e,tp):GetFirst()
-		if tc then
-			if tc:IsLocation(LOCATION_DECK) then Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1) end
-			Duel.Destroy(tc,REASON_EFFECT)
-		end
+	if not Duel.IsExistingMatchingCard(s.tffilter,tp,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_DECK,0,1,c,tp) then return end
+	local tc=Duel.SelectMatchingCard(tp,s.tffilter,tp,LOCATION_ONFIELD+LOCATION_HAND+LOCATION_DECK,0,1,1,c,tp):GetFirst()
+	if tc:IsLocation(LOCATION_DECK) then Duel.RegisterFlagEffect(tp,id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) end
+	if Duel.Destroy(tc,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 
