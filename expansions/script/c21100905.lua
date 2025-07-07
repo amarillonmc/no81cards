@@ -56,7 +56,7 @@ function cm.initial_effect(c)
 	e5:SetOperation(cm.op5)
 	c:RegisterEffect(e5)
 	if not _globetrot_ then
-		_globetrot=true
+		_globetrot_=true
 		_globetrot_limit = {1,1}
 		local ce1=Effect.CreateEffect(c)
 		ce1:SetType(EFFECT_TYPE_FIELD)
