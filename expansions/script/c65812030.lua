@@ -58,7 +58,7 @@ function s.shfilter(c)
 	return c:GetFlagEffect(65812010)>0
 end
 function s.tffilter(c,e,tp)
-	return c:IsFaceupEx() and (c:IsLocation(LOCATION_HAND+LOCATION_ONFIELD) or c:IsLocation(LOCATION_DECK) and Duel.IsExistingMatchingCard(s.shfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,e,tp) and Duel.GetFlagEffect(tp,id)==0) and (aux.IsCodeListed(c,65812000) or c:IsCode(65812000)) and Duel.GetMZoneCount(tp,c)>0
+	return c:IsFaceupEx() and (c:IsLocation(LOCATION_HAND+LOCATION_ONFIELD) or (c:IsLocation(LOCATION_DECK) and Duel.IsExistingMatchingCard(s.shfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,e,tp) and (aux.IsCodeListed(c,65812000) or c:IsCode(65812000)) and Duel.GetFlagEffect(tp,id)==0)) and Duel.GetMZoneCount(tp,c)>0
 end
 function s.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
