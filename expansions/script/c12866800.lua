@@ -45,12 +45,15 @@ function s.filter2(c,e,tp,m,f,chkf)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function s.filter3(c,e)
-	return c:IsOnField() and not c:IsImmuneToEffect(e)
+	return c:IsAbleToRemove() and c:IsOnField() and not c:IsImmuneToEffect(e)
+end
+function s.filter5(c)
+	return c:IsAbleToRemove() and c:IsOnField()
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
-		local mg1=Duel.GetFusionMaterial(tp):Filter(Card.IsOnField,nil)
+		local mg1=Duel.GetFusionMaterial(tp):Filter(s.filter5,nil)
 		local mg2=Duel.GetMatchingGroup(s.filter0,tp,0,LOCATION_MZONE,nil)
 		local mg4=Duel.GetMatchingGroup(s.filter4,tp,LOCATION_GRAVE,0,nil)
 		mg1:Merge(mg2,mg4)
