@@ -23,9 +23,9 @@ function s.cfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsLocation(LOCATION_HAND)
 end
 function s.reccost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() and Duel.CheckReleaseGroupEx(tp,s.cfilter,1,REASON_COST,true,nil) end
+	if chk==0 then return e:GetHandler():IsReleasable() and Duel.CheckReleaseGroupEx(tp,s.cfilter,1,REASON_COST,true,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroupEx(tp,s.cfilter,1,1,REASON_COST,true,nil)
+	local g=Duel.SelectReleaseGroupEx(tp,s.cfilter,1,1,REASON_COST,true,e:GetHandler())
 	g:AddCard(e:GetHandler())
 	Duel.Release(g,REASON_COST)
 end
