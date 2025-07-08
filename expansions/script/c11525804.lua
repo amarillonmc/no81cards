@@ -58,12 +58,12 @@ function c11525804.activate(e,tp,eg,ep,ev,re,r,rp,op)
 		end
 	end
 	if op&2>0 and Duel.Damage(tp,500,REASON_EFFECT)>0 then
-		if Duel.IsCanRemoveCounter(tp,1,0,0x6a,1,REASON_EFFECT) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave(),tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then
+		if Duel.IsCanRemoveCounter(tp,1,0,0x6a,1,REASON_EFFECT) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then
 			local ct=Duel.GetCounter(tp,LOCATION_ONFIELD,0,0x6a)
 			local gc=3
 			if ct>0 and ct<3 then gc=ct end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave(),tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,gc,nil)
+			local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,gc,nil)
 			local tgc=tg:GetCount()
 			Duel.RemoveCounter(tp,1,0,0x6a,tgc,REASON_EFFECT)
 			Duel.HintSelection(tg)
