@@ -62,10 +62,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,check,e,tp)
 	local tc=g:GetFirst()
-	--if tc then
-		--Duel.SpecialSummon(tc,0,tp,tp,true,true,POS_FACEUP)
-		--tc:CompleteProcedure()
-	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and tc:IsCode(40010499) and c:IsLocation(LOCATION_HAND) then
+	if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 and not tc:IsCode(40010499) and c:IsRelateToEffect(e) then
 		Duel.BreakEffect()
 		Duel.SendtoGrave(c,REASON_EFFECT)
 	end
