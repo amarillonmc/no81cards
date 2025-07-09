@@ -60,8 +60,10 @@ function s.stcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_MZONE,1,nil)
 end
 function s.stop(e,tp,eg,ep,ev,re,r,rp)
-local tc=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,2,nil)
-Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	if Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		local tc=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,2,nil)
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	end
 end
 
 
