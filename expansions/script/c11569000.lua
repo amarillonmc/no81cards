@@ -43,22 +43,19 @@ function s.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x1b4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x1b4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK,1-tp)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=Duel.GetLocationCountFromEx(1-tp,tp,nil,nil)
-	if chk==0 then return ct>0 and Duel.GetMZoneCount(1-tp)>0 end
+	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetMZoneCount(1-tp)<=0 then return end
-	local zg=Duel.GetFieldGroup(tp,LOCATION_DECK+LOCATION_GRAVE,0)
-	if zg:IsExists(s.spfilter,1,nil,e,tp) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
-		if g:GetCount()>0 then
-			Duel.SpecialSummon(g,0,tp,1-tp,false,false,POS_FACEUP_ATTACK)
-		end
+	if Duel.GetLocationCount(1-tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,1-tp,false,false,POS_FACEUP_ATTACK)
 	end
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
