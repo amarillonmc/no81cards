@@ -92,8 +92,8 @@ function cm.condition(e)
 end
 function cm.eftg(e,c)
 	local attchk=0
-	local a0=Duel.IsExistingMatchingCard(function(c) return c:GetSequence()==5 and c:IsCode(33900648) and not c:IsDisabled() end,1,LOCATION_FZONE,0,1,nil) and not Duel.IsPlayerAffectedByEffect(0,97811903)
-	local a1=Duel.IsExistingMatchingCard(function(c) return c:GetSequence()==5 and c:IsCode(33900648) and not c:IsDisabled() end,0,LOCATION_FZONE,0,1,nil) and not Duel.IsPlayerAffectedByEffect(1,97811903)
+	local a0=Duel.IsExistingMatchingCard(function(c) return c:GetSequence()==5 and c:IsCode(33900648) and not c:IsDisabled() end,1,LOCATION_SZONE,0,1,nil) and not Duel.IsPlayerAffectedByEffect(0,97811903)
+	local a1=Duel.IsExistingMatchingCard(function(c) return c:GetSequence()==5 and c:IsCode(33900648) and not c:IsDisabled() end,0,LOCATION_SZONE,0,1,nil) and not Duel.IsPlayerAffectedByEffect(1,97811903)
 	local b0=a1 and Duel.IsPlayerAffectedByEffect(0,6089145)
 	local b1=a1 and Duel.IsPlayerAffectedByEffect(1,6089145)
 	if a0 or a1 then
@@ -144,7 +144,21 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		if #tg>0 then
 			local tc=tg:GetFirst()
 			local code=g:GetFirst():GetOriginalCode()
+			local cregister=Card.RegisterEffect
+			Card.RegisterEffect=function(card,effect,flag)
+				local eff=effect --:Clone()
+				if eff:GetDescription()==0 then eff:SetDescription(aux.Stringid(m,2)) end
+				if eff:GetRange()&(LOCATION_SZONE+LOCATION_PZONE+LOCATION_FZONE)>0 then
+					eff:SetRange(LOCATION_MZONE)
+				end
+				if eff:IsHasType(EFFECT_TYPE_ACTIVATE) then
+					eff:SetType(EFFECT_TYPE_QUICK_O)
+					if not eff:GetOperation() then return end
+				end
+				return cregister(card,eff,flag)
+			end
 			local cid=tc:CopyEffect(code,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,1)
+			Card.RegisterEffect=cregister
 			local e2=Effect.CreateEffect(c)
 			e2:SetDescription(aux.Stringid(m,1))
 			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

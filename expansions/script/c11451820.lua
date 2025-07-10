@@ -134,7 +134,7 @@ function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		Card.RegisterEffect=function(card,effect,flag)
 			if effect:IsActivated() and effect:GetRange()&(LOCATION_ONFIELD+LOCATION_HAND+LOCATION_PZONE+LOCATION_FZONE)==effect:GetRange() and not ((effect:GetCode()==EVENT_TO_GRAVE or effect:GetCode()==EVENT_LEAVE_FIELD) and effect:IsHasType(EFFECT_TYPE_SINGLE)) then
 				--if cm.cloneeffects[effect] then return end
-				local eff=effect:Clone()
+				local eff=effect --:Clone()
 				if eff:IsHasType(EFFECT_TYPE_QUICK_O) and eff:GetCode()==EVENT_FREE_CHAIN then
 					if eff:GetRange()&LOCATION_MZONE>0 and card:GetOriginalCode()~=20248755 and card:GetOriginalCode()~=99953655 and card:GetOriginalCode()~=15000111 then eff:SetDescription(aux.Stringid(m,8)) end
 					if eff:GetRange()&LOCATION_SZONE>0 and card:GetOriginalCode()~=17016131 then eff:SetDescription(aux.Stringid(m,1)) end
