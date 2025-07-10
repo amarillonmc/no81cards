@@ -120,6 +120,9 @@ function cm.initial_effect(c)
 			end
 			--Duel.HintSelection(g)
 			Duel.HintSelection(sg)
+			for sc in aux.Next(sg) do
+				if sc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then Duel.ConfirmCards(tp,sc) end
+			end
 			return sg
 		end
 		_SendtoDeck=Duel.SendtoDeck
@@ -386,23 +389,23 @@ function cm.initial_effect(c)
 		--  local id=Duel.GetChainInfo(0,CHAININFO_CHAIN_ID)
 		--  local ag=Party_time_table[7439100+id]
 		--  if id~=0 and Duel.GetFlagEffect(0,7439100+id)~=0 then
-		--	sg:AddCard(c)
-		--	local sg2=sg:Clone()
-		--	local pg=sg:Filter(Party_time_rfilter,nil,7439100+id)
-		--	sg2:Sub(pg)
-		--	if aux.GCheckAdditional and (c:GetFlagEffectLabel(7439100)~=id and not aux.GCheckAdditional(sg2,c,g,f,min,max,ext_params) ) then
-		--		sg:RemoveCard(c)
-		--		return false
-		--	end
-		--	local res=#sg>=min and #sg<=max and f(sg2,table.unpack(ext_params))
-		--	if res then
-		--		aux.SubGroupCaptured:Clear()
-		--		aux.SubGroupCaptured:Merge(sg)
-		--	else
-		--		res=#sg<max and g:IsExists(aux.		CheckGroupRecursiveCapture,1,sg2,sg,g,f,min,max,ext_params)
-		--	end
-		--	sg:RemoveCard(c)
-		--	return res
+		--  sg:AddCard(c)
+		--  local sg2=sg:Clone()
+		--  local pg=sg:Filter(Party_time_rfilter,nil,7439100+id)
+		--  sg2:Sub(pg)
+		--  if aux.GCheckAdditional and (c:GetFlagEffectLabel(7439100)~=id and not aux.GCheckAdditional(sg2,c,g,f,min,max,ext_params) ) then
+		--	  sg:RemoveCard(c)
+		--	  return false
+		--  end
+		--  local res=#sg>=min and #sg<=max and f(sg2,table.unpack(ext_params))
+		--  if res then
+		--	  aux.SubGroupCaptured:Clear()
+		--	  aux.SubGroupCaptured:Merge(sg)
+		--  else
+		--	  res=#sg<max and g:IsExists(aux.	 CheckGroupRecursiveCapture,1,sg2,sg,g,f,min,max,ext_params)
+		--  end
+		--  sg:RemoveCard(c)
+		--  return res
 		--  end
 		--  end
 		--  return _CheckGroupRecursiveCapture(c,sg,g,f,min,max,ext_params)
