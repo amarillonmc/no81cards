@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	e5:SetRange(LOCATION_SZONE)
 	e5:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e5:SetTargetRange(1,0)
-	e4:SetCondition(cm.actconb)
+	e5:SetCondition(cm.actconb)
 	e5:SetValue(cm.actlimit)
 	c:RegisterEffect(e5)
 	
@@ -87,7 +87,7 @@ function cm.actlimit(e,re,tp)
 		rclv=rc:GetLevel()
 		while tc do
 			local lv=tc:GetLevel()
-			if lv>0 and min>tc:GetLevel() then min=tc:GetLevel() end
+			if lv>0 and tc:GetLevel()<min then min=tc:GetLevel() end
 			tc=g:GetNext()
 		end
 	end
@@ -97,7 +97,7 @@ function cm.actlimit(e,re,tp)
 		rclv=rc:GetRank()
 		while tc do
 			local lv=tc:GetRank()
-			if lv>0 and min>tc:GetRank() then min=tc:GetRank() end
+			if lv>0 and tc:GetRank()<min then min=tc:GetRank() end
 			tc=g:GetNext()
 		end
 	end
@@ -107,7 +107,7 @@ function cm.actlimit(e,re,tp)
 		rclv=rc:GetLink()
 		while tc do
 			local lv=tc:GetLink()
-			if lv>0 and min>tc:GetLink() then min=tc:GetLink() end
+			if lv>0 and tc:GetLink()<min then min=tc:GetLink() end
 			tc=g:GetNext()
 		end
 	end
