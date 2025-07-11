@@ -6,7 +6,6 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(2,m)
 	e1:SetTarget(cm.settg)
 	e1:SetOperation(cm.setop)
 	c:RegisterEffect(e1)
@@ -19,7 +18,6 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(2,m)
 	e3:SetCondition(cm.thcon)
 	e3:SetTarget(cm.thtg)
 	e3:SetOperation(cm.thop)
@@ -40,7 +38,8 @@ function cm.filter(c)
 	return c:IsSetCard(0x97b) and c:IsType(TYPE_SPELL) and c:IsSSetable()
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,m)<2+e:GetHandler():GetFlagEffect(11451926) end
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local op=0
 	if Duel.IsPlayerAffectedByEffect(tp,11451481) then
 		op=Duel.SelectOption(tp,aux.Stringid(11451483,2),aux.Stringid(11451483,3))
@@ -70,7 +69,8 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsRace(RACE_FAIRY)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetFlagEffect(tp,m)<2+e:GetHandler():GetFlagEffect(11451926) end
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local op=0
 	if Duel.IsPlayerAffectedByEffect(tp,11451481) then
 		op=Duel.SelectOption(tp,aux.Stringid(11451483,2),aux.Stringid(11451483,3))

@@ -7,7 +7,6 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(2,m)
 	e1:SetCost(cm.recost)
 	e1:SetTarget(cm.retg)
 	e1:SetOperation(cm.reop)
@@ -19,7 +18,6 @@ function cm.initial_effect(c)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(2,m)
 	e3:SetCondition(cm.thcon)
 	e3:SetCost(aux.bfgcost)
 	e3:SetTarget(cm.thtg)
@@ -59,7 +57,8 @@ function cm.recost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 end
 function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil) and Duel.GetFlagEffect(tp,m)<2+e:GetHandler():GetFlagEffect(11451926) end
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_ONFIELD)
 end
 function cm.cfilter(c)
@@ -91,7 +90,8 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
-	if chk==0 then return Duel.IsPlayerCanRelease(1-tp) and g:IsExists(Card.IsReleasable,1,nil,1-tp) and #g>2 end --or (Duel.IsPlayerAffectedByEffect(tp,11451482) and #g>2)) end
+	if chk==0 then return Duel.IsPlayerCanRelease(1-tp) and g:IsExists(Card.IsReleasable,1,nil,1-tp) and #g>2 and Duel.GetFlagEffect(tp,m)<2+e:GetHandler():GetFlagEffect(11451926) end
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1) --or (Duel.IsPlayerAffectedByEffect(tp,11451482) and #g>2)) end
 	local op=0
 	if Duel.IsPlayerAffectedByEffect(tp,11451482) then
 		op=Duel.SelectOption(tp,aux.Stringid(11451483,2),aux.Stringid(11451483,3))

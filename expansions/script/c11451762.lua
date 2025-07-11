@@ -105,7 +105,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return rc:IsSetCard(0x9977)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return cm.chain_with_stridgon>=3 end
+	if chk==0 then return cm.chain_with_stridgon>=3 and Duel.IsPlayerCanDraw(tp,3) end
 	Duel.RegisterFlagEffect(0,11451760,RESET_CHAIN,0,1)
 	Duel.SetTargetPlayer(tp)
 	Duel.SetTargetParam(3)

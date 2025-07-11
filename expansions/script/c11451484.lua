@@ -60,7 +60,7 @@ function cm.filter2(c,e,tp,att)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local act=e:IsHasType(EFFECT_TYPE_ACTIVATE)
-	if chk==0 then return not act or cm[0]<2 end
+	if chk==0 then return not act or cm[0]<2+e:GetHandler():GetFlagEffect(11451926) end
 	if act then
 		--[[local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
@@ -75,6 +75,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		e4:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 		e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 		e4:SetTargetRange(1,1)
+		e4:SetLabel(2+e:GetHandler():GetFlagEffect(11451926))
 		e4:SetCondition(cm.econ)
 		e4:SetTarget(cm.elimit)
 		e4:SetReset(RESET_PHASE+PHASE_END)
@@ -82,7 +83,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.econ(e)
-	return cm[0]>=2
+	return cm[0]>=e:GetLabel()
 end
 function cm.elimit(e,c)
 	return c:IsLocation(LOCATION_DECK)
