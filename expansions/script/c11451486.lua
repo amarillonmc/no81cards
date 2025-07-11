@@ -56,7 +56,7 @@ if not Duel.GetMustMaterial then
 	end
 end
 function cm.spfilter(c,sc)
-	return c:IsCanBeXyzMaterial(sc) and ((c:IsOnField() and c:IsFaceup() and (c:IsXyzLevel(sc,8) or c:IsRank(8) or (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY)))) or (c:IsLocation(LOCATION_HAND) and (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY))) or (c:IsXyzLevel(sc,8) or c:IsRank(8)))
+	return c:IsCanBeXyzMaterial(sc) and ((c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and (c:IsXyzLevel(sc,8) or c:IsRank(8) or (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY)))) or (c:IsLocation(LOCATION_HAND) and (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY))) or (not c:IsLocation(LOCATION_MZONE+LOCATION_HAND) and c:IsXyzLevel(sc,8) or c:IsRank(8)))
 end
 function cm.hand(g)
 	return g:FilterCount(Card.IsLocation,nil,LOCATION_HAND)<=1
@@ -73,8 +73,10 @@ function cm.spcon(e,c,og,min,max)
 	if maxc<minc then return false end
 	local mg=nil
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c,c)
+	local exchk=cm.hand
 	if og then
-		mg=og:Filter(cm.spfilter,c,c)
+		mg=og:Filter(cm.spfilter2,c,c)
+		exchk=aux.TRUE
 	else
 		mg=g
 	end
@@ -82,7 +84,7 @@ function cm.spcon(e,c,og,min,max)
 	if sg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
 	Duel.SetSelectedCard(sg)
 	aux.GCheckAdditional=aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
-	local res=mg:CheckSubGroup(aux.XyzLevelFreeGoal,minc,maxc,tp,c,cm.hand)
+	local res=mg:CheckSubGroup(aux.XyzLevelFreeGoal,minc,maxc,tp,c,exchk)
 	aux.GCheckAdditional=nil
 	return res
 end
@@ -95,9 +97,11 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 		if max<maxc then maxc=max end
 	end
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c,c)
+	local exchk=cm.hand
 	local mg=nil
 	if og then
 		mg=og:Filter(cm.spfilter,c,c)
+		exchk=aux.TRUE
 	else
 		mg=g
 	end
@@ -106,7 +110,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local cancel=Duel.IsSummonCancelable()
 	aux.GCheckAdditional=aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
-	local g=mg:SelectSubGroup(tp,aux.XyzLevelFreeGoal,cancel,minc,maxc,tp,c,cm.hand)
+	local g=mg:SelectSubGroup(tp,aux.XyzLevelFreeGoal,cancel,minc,maxc,tp,c,exchk)
 	aux.GCheckAdditional=nil
 	if g and #g>0 then
 		g:KeepAlive()
