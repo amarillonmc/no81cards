@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 cm.named_with_Yulian=1
 function cm.Qingyu(c)
 	local m=_G["c"..c:GetCode()]
-	return m and m.named_with_Qingyu
+	return (m and m.named_with_Qingyu) or c:IsCode(7419700)
 end
 function cm.Yulian(c)
 	local m=_G["c"..c:GetCode()]
