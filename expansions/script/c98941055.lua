@@ -26,6 +26,84 @@ function c98941055.initial_effect(c)
 	e3:SetCondition(s.regcon)
 	e3:SetOperation(s.regop)
 	c:RegisterEffect(e3)
+	--Destroy
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(98941055,2))
+	e5:SetCategory(CATEGORY_DESTROY)
+	e5:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_TRIGGER_O)
+	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e5:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e5:SetCountLimit(1,42822433)
+	e5:SetCondition(c98941055.mcon1)
+	e5:SetTarget(c98941055.destg)
+	e5:SetOperation(c98941055.desop)
+	c:RegisterEffect(e5)
+	--Destroy
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(98941055,4))
+	e6:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e6:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_TRIGGER_O)
+	e6:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e6:SetProperty(EFFECT_FLAG_DELAY)
+	e6:SetCountLimit(1,79210532)
+	e6:SetCondition(c98941055.mcon2)
+	e6:SetTarget(c98941055.thtg)
+	e6:SetOperation(c98941055.thop)
+	c:RegisterEffect(e6)
+	--Search Spell/Trap
+	local e7=Effect.CreateEffect(c)
+	e7:SetDescription(aux.Stringid(98941055,5))
+	e7:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e7:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_IGNITION)
+	e7:SetRange(LOCATION_MZONE)
+	e7:SetCountLimit(1,82913021)
+	e7:SetCondition(c98941055.mcon3)
+	e7:SetTarget(c98941055.srtg)
+	e7:SetOperation(c98941055.srop)
+	c:RegisterEffect(e7)
+end
+function c98941055.mcon1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsSetCard(0x53,0x9c) and c:IsType(TYPE_XYZ) and c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,42822433)
+end
+function c98941055.mcon2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsSetCard(0x53,0x9c) and c:IsType(TYPE_XYZ) and c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,79210531)
+end
+function c98941055.mcon3(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsSetCard(0x53,0x9c) and c:IsType(TYPE_XYZ) and c:GetOverlayGroup():IsExists(Card.IsCode,1,nil,82913020)
+end
+function c98941055.ckfilter(c)
+	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK) and c:IsType(TYPE_XYZ)
+end
+function c98941055.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local ct=Duel.GetMatchingGroupCount(c98941055.ckfilter,tp,LOCATION_MZONE,0,nil)
+	if chkc then return chkc:IsOnField() end
+	if chk==0 then return ct>0 and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,#g,0,0)
+end
+function c98941055.desop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetTargetsRelateToChain()
+	if #g==0 then return end
+	Duel.Destroy(g,REASON_EFFECT)
+end
+function c98941055.srfilter(c)
+	return c:IsSetCard(0x53) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+end
+function c98941055.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c98941055.srfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c98941055.srop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c98941055.srfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
 end
 function c98941055.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
@@ -131,13 +209,13 @@ function c98941055.eftg1(e,c)
 	return c:IsType(TYPE_XYZ) and c:IsSetCard(0x9c,0x53) and c:IsRank(4)
 end
 function s.copyfilter(c)
-	return c:IsSetCard(0x9c,0x53) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x9c,0x53) and c:IsType(TYPE_MONSTER) and not c:IsCode(42822433,79210531,82913020)
 end
 function s.copycon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=c:GetOverlayGroup():Filter(s.copyfilter,nil)
 	return g:GetCount()>0 and c:IsSetCard(0x9c,0x53)
-end
+end 
 function s.copyop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=e:GetHandler():GetOverlayGroup():Filter(s.copyfilter,nil)
@@ -183,4 +261,18 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	 	end
 	 	tc=cg:GetNext()
 	end
+end
+function c98941055.thfilter(c)
+	return c:IsSetCard(0x9c) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+end
+function c98941055.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c98941055.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c98941055.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c98941055.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if #g==0 then return end
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,g)
 end
