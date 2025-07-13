@@ -109,7 +109,8 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then return end
 	local tg=g:Select(tp,1,1,nil)
 	Duel.HintSelection(tg)
-	if #tg>0 and Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and tg:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) and Duel.IsPlayerCanDiscardDeck(tp,2) then
+	if #tg>0 and Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and tg:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) 
+	and Duel.IsPlayerCanDiscardDeck(tp,1) then
 		Duel.BreakEffect()
 		Duel.DisableShuffleCheck()
 		Duel.DiscardDeck(tp,2,REASON_EFFECT)
