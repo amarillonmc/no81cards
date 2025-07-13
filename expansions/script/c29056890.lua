@@ -3,7 +3,7 @@ local cm,m,o=GetID()
 cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x10ae)
-	aux.AddCodeList(c,29065500,29065501)
+	aux.AddCodeList(c,29065500,29056009)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

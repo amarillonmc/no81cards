@@ -1,5 +1,6 @@
 --方舟骑士团－Mon3tr
 function c29059050.initial_effect(c)
+	aux.AddCodeList(c,29056009,29065578)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 	--spsummon
