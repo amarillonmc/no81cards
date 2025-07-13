@@ -57,9 +57,9 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToGraveAsCost() and Duel.IsCanRemoveCounter(tp,1,0,0x61e,2,REASON_COST) end
+	if chk==0 then return c:IsAbleToGraveAsCost() and Duel.IsCanRemoveCounter(tp,1,0,0x561c,2,REASON_COST) end
 	Duel.SendtoGrave(c,REASON_COST)
-	Duel.RemoveCounter(tp,1,0,0x61e,2,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x561c,2,REASON_COST)
 end
 function cm.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>2 end
@@ -88,7 +88,7 @@ function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.actop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if  rc:IsSetCard(0x61e) and ep==tp then
+	if  rc:IsSetCard(0x561c) and ep==tp then
 		Duel.SetChainLimit(cm.chainlm)
 	end
 end
@@ -96,7 +96,7 @@ function cm.chainlm(e,rp,tp)
 	return tp==rp
 end
 function cm.effcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSpecialSummonSetCard(0x61e)
+	return e:GetHandler():IsSpecialSummonSetCard(0x561c)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)

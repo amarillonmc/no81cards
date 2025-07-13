@@ -25,10 +25,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x61f) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or c:IsAbleToGrave())
+	return c:IsSetCard(0x661c) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or c:IsAbleToGrave())
 end
 function cm.thfilter1(c)
-	return c:IsSetCard(0x61f) and c:IsAbleToGrave()
+	return c:IsSetCard(0x661c) and c:IsAbleToGrave()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -59,7 +59,7 @@ function cm.filter1(c,e)
 	return c:IsOnField() and c:IsAbleToRemove() and not c:IsImmuneToEffect(e)
 end
 function cm.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x61f) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x661c) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function cm.filter3(c)

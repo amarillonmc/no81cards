@@ -26,13 +26,12 @@ function c24501054.initial_effect(c)
 	e2:SetTarget(c24501054.tg2)
 	e2:SetOperation(c24501054.op2)
 	c:RegisterEffect(e2)
-    -- 遗言检索
+    -- 3
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(24501054,2))
-	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_BE_MATERIAL)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetDescription(aux.Stringid(24501054,0))
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCountLimit(1,24501056)
 	e3:SetCondition(c24501054.con3)
 	e3:SetTarget(c24501054.tg3)
@@ -81,20 +80,39 @@ function c24501054.op2(e,tp,eg,ep,ev,re,r,rp)
 end
 -- 3
 function c24501054.con3(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsLocation(LOCATION_GRAVE) and r==REASON_SYNCHRO and Duel.GetTurnPlayer()==tp
+	return Duel.IsExistingMatchingCard(c24501054.filter3,tp,LOCATION_MZONE,0,1,nil)
 end
 function c24501054.filter3(c)
-	return c:IsSetCard(0x501) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsFaceup() and c:IsSetCard(0x501) and c:IsLevelAbove(8)
 end
 function c24501054.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c24501054.filter3,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c24501054.op3(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c24501054.filter3),tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	local c=e:GetHandler()
+	local g=Duel.SelectMatchingCard(tp,c24501054.filter3,tp,LOCATION_MZONE,0,1,1,nil)
+	if #g>0 then
+		local tc=g:GetFirst()
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetValue(-1000)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_UPDATE_DEFENSE)
+		tc:RegisterEffect(e2)
+		if c:IsRelateToEffect(e) then
+			if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
+				local e3=Effect.CreateEffect(c)
+				e3:SetType(EFFECT_TYPE_SINGLE)
+				e3:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+				e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e3:SetReset(RESET_EVENT+RESETS_REDIRECT)
+			e3:SetValue(LOCATION_DECKBOT)
+			c:RegisterEffect(e3)
+			end
+		end
 	end
 end

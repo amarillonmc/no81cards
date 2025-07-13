@@ -21,15 +21,17 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--cannot be target
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetTargetRange(LOCATION_MZONE,0)
 	e3:SetCondition(c11561068.imcon)
-	e3:SetTarget(c11561068.imval)
 	e3:SetValue(aux.tgoval)
 	c:RegisterEffect(e3)
+	local e31=e3:Clone()
+	e31:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
+	e31:SetValue(aux.imval1)
+	c:RegisterEffect(e31)
 	--special summon
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(11561068,1))
@@ -40,37 +42,51 @@ function cm.initial_effect(c)
 	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1,11561068)
+	e4:SetCost(c11561068.spcost)
 	e4:SetTarget(c11561068.sptg)
 	e4:SetOperation(c11561068.spop)
 	c:RegisterEffect(e4)
 	
 end
-function c11561068.cfilter(c,e,tp)
-	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsAbleToExtra() and Duel.IsExistingMatchingCard(c11561068.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c:GetLevel(),c:GetAttribute(),e:GetHandler())
+function c11561068.cfilter(c,e,tp,ec)
+	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsAbleToExtra() and c:IsLevel(ec:GetLevel()) and c:IsAttribute(ec:GetAttribute()) and Duel.GetLocationCountFromEx(tp,tp,c,ec)>0
 end
-function c11561068.spfilter(c,e,tp,lv,att,ec)
-	return c:IsLevel(lv) and c:IsAttribute(att) and c:IsType(TYPE_SYNCHRO) and Duel.GetLocationCountFromEx(tp,tp,ec,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c11561068.spfilter(c,e,tp)
+	return not c:IsPublic() and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c11561068.cfilter,tp,LOCATION_MZONE,0,1,e:GetHandler(),e,tp,c)
+end
+function c11561068.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	e:SetLabel(100)
+	return true
 end
 function c11561068.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c11561068.cfilter(chkc,e,tp) and chkc~=c end
-	if chk==0 then return Duel.IsExistingTarget(c11561068.cfilter,tp,LOCATION_MZONE,0,1,c,e,tp) end
+	if chkc then return chkc:IsControler(tp) and chkc~=c and chkc:IsLocation(LOCATION_MZONE) and c11561068.cfilter(chkc,e,tp,e:SetLabelObject()) end
+	if chkc then return false end
+	if chk==0 then
+		if e:GetLabel()~=100 then return false end
+		e:SetLabel(0)
+		return Duel.IsExistingMatchingCard(c11561068.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp)
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local cc=Duel.SelectMatchingCard(tp,c11561068.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp):GetFirst()
+	Duel.ConfirmCards(1-tp,cc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c11561068.cfilter,tp,LOCATION_MZONE,0,1,1,c,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,e:GetHandler(),1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	local tg=Duel.SelectTarget(tp,c11561068.cfilter,tp,LOCATION_MZONE,0,1,1,c,e,tp,cc)
+	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,tg,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,cc,1,tp,LOCATION_EXTRA)
+	e:SetLabelObject(cc)
+	cc:RegisterFlagEffect(11561068,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1,0)
 end
 function c11561068.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	local tc1=Duel.GetFirstTarget()
+	local tc2=e:GetLabelObject()
+	if tc1:IsRelateToEffect(e) then
+		Duel.SendtoDeck(tc1,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sc=Duel.SelectMatchingCard(tp,c11561068.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc:GetLevel(),tc:GetAttribute(),nil):GetFirst()
-		if sc then
-			Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
-		end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc2:GetFlagEffect(11561068)>0 then
+		Duel.SpecialSummon(tc2,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 function c11561068.sprfilter(c)
 	return c:IsFaceup() and c:IsLevelAbove(8) and c:IsAbleToGraveAsCost()
@@ -111,8 +127,5 @@ function c11561068.imtgfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO)
 end
 function c11561068.imcon(e)
-	return Duel.IsExistingMatchingCard(c11561068.tgfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,e:GetHandler())
-end
-function c11561068.imval(e,c)
-	return c~=e:GetHandler() and c:IsRace(RACE_DRAGON) and c:IsType(TYPE_SYNCHRO)
+	return Duel.IsExistingMatchingCard(c11561068.imtgfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,e:GetHandler())
 end

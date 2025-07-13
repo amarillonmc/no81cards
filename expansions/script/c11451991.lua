@@ -45,7 +45,7 @@ function cm.fselect(g,e,tp)
 	if not code2 then code2=code end
 	local code3,code4=g:GetNext():GetCode()
 	if not code4 then code4=code3 end
-	return g:IsExists(cm.spfilter,1,nil,e,tp) and (not tab[code] or (not tab[code][code3] and not tab[code][code4])) and (not tab[code2] or (not tab[code2][code3] and not tab[code2][code4]))
+	return g:IsExists(cm.spfilter,1,nil,e,tp) and (tab[code] or tab[code2]) and (tab[code3] or tab[code4]) and (not tab[code] or (not tab[code][code3] and not tab[code][code4])) and (not tab[code2] or (not tab[code2][code3] and not tab[code2][code4]))
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local g=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_GRAVE,0,nil,e)

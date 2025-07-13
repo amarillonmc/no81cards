@@ -79,10 +79,8 @@ function c9911707.costfilter(c,tp)
 end
 function c9911707.hdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9911707.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c9911707.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
-		and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
 	if chk==0 then
-		if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)==0 then return false end
+		if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)<2 then return false end
 		if e:GetLabel()==1 then
 			e:SetLabel(0)
 			return Duel.CheckReleaseGroup(tp,c9911707.costfilter,1,nil,tp)
@@ -102,7 +100,8 @@ function c9911707.hdfilter(c,atk)
 	return c:IsType(TYPE_MONSTER) and c:GetAttack()<atk
 end
 function c9911707.hdop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)<2 then return end
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND):RandomSelect(tp,2)
 	if g:GetCount()>0 then
 		Duel.ConfirmCards(tp,g)
 		local tc=Duel.GetFirstTarget()

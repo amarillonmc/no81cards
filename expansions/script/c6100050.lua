@@ -52,13 +52,13 @@ function cm.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.effop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,6100056,0x61d,TYPES_TOKEN_MONSTER,1500,1500,4,RACE_WARRIOR,ATTRIBUTE_LIGHT) then
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,6100056,0x361c,TYPES_TOKEN_MONSTER,1500,1500,4,RACE_WARRIOR,ATTRIBUTE_LIGHT) then
 		local token=Duel.CreateToken(tp,6100056)
 		Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x61d) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x361c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.efftg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) 
@@ -77,7 +77,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x61d) and c:IsAbleToHand()
+	return c:IsSetCard(0x361c) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end

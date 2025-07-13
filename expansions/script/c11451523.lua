@@ -27,9 +27,8 @@ function cm.initial_effect(c)
 	--only
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_DESTROY)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e3:SetRange(LOCATION_MZONE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCondition(cm.spcon)
 	e3:SetTarget(cm.sptg)
@@ -214,7 +213,7 @@ function cm.pspop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return eg:GetCount()==1 and eg:GetFirst()==c and c:IsSummonType(SUMMON_TYPE_PENDULUM)
+	return c:IsSummonType(SUMMON_TYPE_PENDULUM)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end

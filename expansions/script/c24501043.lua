@@ -48,10 +48,10 @@ function c24501043.op1(e,tp,eg,ep,ev,re,r,rp)
 end
 -- 2
 function c24501043.con2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsLocation(LOCATION_GRAVE) and r==REASON_SYNCHRO
+	return e:GetHandler():IsLocation(LOCATION_GRAVE) and r==REASON_SYNCHRO and c:GetReasonCard():IsRace(RACE_MACHINE)
 end
 function c24501043.filter2(c)
-	return c:IsSetCard(0x501) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+	return c:IsSetCard(0x501) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c24501043.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c24501043.filter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end

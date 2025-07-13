@@ -5,14 +5,16 @@ function c29065513.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
 	aux.AddFusionProcCode2(c,29065500,29065508,true,true)
+	--attack
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(29065513,1))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,29065513+EFFECT_COUNT_CODE_DUEL)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e1:SetTarget(c29065513.xxtg)
-	e1:SetOperation(c29065513.xxop)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetTarget(c29065513.bttg)
+	e1:SetOperation(c29065513.btop)
 	c:RegisterEffect(e1)
 	--boost
 	local e2=Effect.CreateEffect(c)
@@ -53,4 +55,30 @@ function c29065513.xxop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c29065513.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
+end
+function c29065513.atkcheck(c,atk)
+	return c:IsAttackBelow(atk-1)
+end
+function c29065513.bttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local atk=c:GetAttack()
+	if chk==0 then return Duel.IsExistingMatchingCard(c29065513.atkcheck,tp,0,LOCATION_MZONE,1,nil,atk) end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_MZONE)
+end
+function c29065513.btop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		local atk=c:GetAttack()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local dg=Duel.SelectMatchingCard(tp,c29065513.atkcheck,tp,0,LOCATION_MZONE,1,1,nil,atk)
+		if dg:GetCount()>0 then
+			Duel.HintSelection(dg)
+			local tc=dg:GetFirst()
+			local minatk=tc:GetAttack()
+			local dam=atk-minatk
+			if Duel.Destroy(dg,REASON_EFFECT)>0 then
+				Duel.Damage(1-tp,dam,REASON_EFFECT)
+			end
+		end
+	end
 end

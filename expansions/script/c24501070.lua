@@ -10,7 +10,7 @@ function c24501070.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e0:SetValue(aux.synlimit)
 	c:RegisterEffect(e0)
-    -- 战吼抗性（非发动式）
+    -- 战吼抗性
     local e1=Effect.CreateEffect(c)
     e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
     e1:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -25,19 +25,19 @@ function c24501070.initial_effect(c)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,24501070)
+	e2:SetCountLimit(1)
 	e2:SetCondition(c24501070.con2)
 	e2:SetTarget(c24501070.tg2)
 	e2:SetOperation(c24501070.op2)
 	c:RegisterEffect(e2)
-    -- 遗言炸场
+    -- 遗言特招
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(24501070,2))
-	e3:SetCategory(CATEGORY_DESTROY)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_TO_GRAVE)
     e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(1,24501071)
+	e3:SetCountLimit(1,24501070)
 	e3:SetCondition(c24501070.con3)
 	e3:SetTarget(c24501070.tg3)
 	e3:SetOperation(c24501070.op3)
@@ -91,12 +91,31 @@ function c24501070.con3(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return rp==1-tp and c:IsPreviousControler(tp)
 end
+function c24501070.filter3(c,e,tp)
+	return c:IsSetCard(0x501) and c:IsType(TYPE_MONSTER)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+		and Duel.IsExistingMatchingCard(c24501070.filter33,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,c,e,tp,c:GetLevel())
+end
+function c24501070.filter33(c,e,tp,lv)
+	return c:IsSetCard(0x501) and c:IsType(TYPE_MONSTER) and not c:IsLevel(lv) and c:IsLevelAbove(1)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+end
 function c24501070.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil) end
-	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:GetCount(),0,0)
+	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133)
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>1
+		and Duel.IsExistingMatchingCard(c24501070.filter3,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function c24501070.op3(e,tp,eg,ep,ev,re,r,rp)
-	local sg=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-	Duel.Destroy(sg,REASON_EFFECT)
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<2 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g1=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c24501070.filter3),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	if g1:GetCount()>0 then
+		local tc=g1:GetFirst()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g2=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c24501070.filter33),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,tc,e,tp,tc:GetLevel())
+		g1:Merge(g2)
+		Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
+	end
 end

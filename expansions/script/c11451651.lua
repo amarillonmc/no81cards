@@ -97,7 +97,7 @@ function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 		return #g>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,#g*2)
 	end
 	local g=Group.CreateGroup()
-	for i=1,Duel.GetCurrentChain()-1 do
+	for i=1,Duel.GetCurrentChain() do
 		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
 		local tc=te:GetHandler()
 		if tc:IsRelateToEffect(te) and (tc:IsReleasableByEffect() or (tc:IsLocation(LOCATION_HAND) and tc:IsType(TYPE_SPELL+TYPE_TRAP) and not tc:IsHasEffect(EFFECT_UNRELEASABLE_EFFECT) and not tc:IsHasEffect(EFFECT_UNRELEASABLE_NONSUM) and not Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE))) then g:AddCard(tc) end
@@ -111,7 +111,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	while type(cm[i])=="table" do
 		local te,tf,cid=table.unpack(cm[i])
 		local tc=te:GetHandler()
-		if ((i<Duel.GetCurrentChain() and tc:IsRelateToEffect(te)) or (i>Duel.GetCurrentChain() and tf and tc:GetFlagEffect(m+2)>0)) and (tc:IsReleasableByEffect() or (tc:IsLocation(LOCATION_HAND) and tc:IsType(TYPE_SPELL+TYPE_TRAP) and not tc:IsHasEffect(EFFECT_UNRELEASABLE_EFFECT) and not tc:IsHasEffect(EFFECT_UNRELEASABLE_NONSUM) and not Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE))) then g:AddCard(tc) end
+		if ((i<=Duel.GetCurrentChain() and tc:IsRelateToEffect(te)) or (i>Duel.GetCurrentChain() and tf and tc:GetFlagEffect(m+2)>0)) and (tc:IsReleasableByEffect() or (tc:IsLocation(LOCATION_HAND) and tc:IsType(TYPE_SPELL+TYPE_TRAP) and not tc:IsHasEffect(EFFECT_UNRELEASABLE_EFFECT) and not tc:IsHasEffect(EFFECT_UNRELEASABLE_NONSUM) and not Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE))) then g:AddCard(tc) end
 		i=i+1
 	end
 	local hg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil,#g*2)

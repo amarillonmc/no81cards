@@ -63,7 +63,7 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.actop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	if re:IsActiveType(TYPE_MONSTER) and rc:IsSetCard(0x61f) and ep==tp then
+	if re:IsActiveType(TYPE_MONSTER) and rc:IsSetCard(0x661c) and ep==tp then
 		Duel.SetChainLimit(cm.chainlm)
 	end
 end

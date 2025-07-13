@@ -40,15 +40,15 @@ function c11525804.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c11525804.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function c11525804.rmfilter(c)
-	return c:IsAbleToRemove() and c:IsSetCard(0x1a3) and c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return c:IsAbleToRemove() and c:IsSetCard(0x1a3) 
 end
 function c11525804.activate(e,tp,eg,ep,ev,re,r,rp,op)
 	if op==nil and not c11525804.condition(e,tp) then return end
 	local c=e:GetHandler()
 	if op==nil then
 		op=aux.SelectFromOptions(tp,
-			{true,aux.Stringid(11525803,0)},
-			{true,aux.Stringid(11525803,1)})
+			{true,aux.Stringid(11525804,0)},
+			{true,aux.Stringid(11525804,1)})
 	end
 	if op&1>0 and Duel.Recover(tp,500,REASON_EFFECT)>0 then
 		if Duel.IsExistingMatchingCard(c11525804.rmfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11525804,2) ) then
@@ -58,7 +58,7 @@ function c11525804.activate(e,tp,eg,ep,ev,re,r,rp,op)
 		end
 	end
 	if op&2>0 and Duel.Damage(tp,500,REASON_EFFECT)>0 then
-		if Duel.IsCanRemoveCounter(tp,1,0,0x6a,1,REASON_EFFECT) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) then
+		if Duel.IsCanRemoveCounter(tp,1,0,0x6a,1,REASON_EFFECT) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11525804,3)) then
 			local ct=Duel.GetCounter(tp,LOCATION_ONFIELD,0,0x6a)
 			local gc=3
 			if ct>0 and ct<3 then gc=ct end

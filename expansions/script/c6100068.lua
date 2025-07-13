@@ -85,11 +85,11 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.rmcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.IsCanRemoveCounter(tp,1,0,0x61e,4,REASON_COST) end
+	if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.IsCanRemoveCounter(tp,1,0,0x561c,4,REASON_COST) end
 	local rt=Duel.GetMatchingGroupCount(cm.rmfilter,tp,LOCATION_SZONE,LOCATION_SZONE,nil)
 	local ct=c:RemoveOverlayCard(tp,1,rt,REASON_COST)
 	e:SetLabel(ct)  
-	Duel.RemoveCounter(tp,1,0,0x61e,4,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x561c,4,REASON_COST)
 end
 function cm.rmop1(e,tp,eg,ep,ev,re,r,rp)
 	local rg=e:GetLabel()
@@ -155,14 +155,14 @@ function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousLocation(LOCATION_MZONE)
 end
 function cm.setfilter(c)
-	return c:IsSetCard(0x61e) and c:IsType(TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0x561c) and c:IsType(TYPE_TRAP) and c:IsSSetable()
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
 	end
 end
 function cm.cfilter(c)
-	return c:GetCounter(0x61e)>0
+	return c:GetCounter(0x561c)>0
 end
 function cm.thfilter(c)
 	return c:IsSetCard(0x61c) and (c:IsAbleToHand() or c:IsAbleToExtra())

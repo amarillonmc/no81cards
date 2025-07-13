@@ -62,12 +62,12 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>0
 end
 function cm.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.IsCanRemoveCounter(tp,1,0,0x61e,1,REASON_COST) end
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.IsCanRemoveCounter(tp,1,0,0x561c,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-	Duel.RemoveCounter(tp,1,0,0x61e,1,REASON_COST)
+	Duel.RemoveCounter(tp,1,0,0x561c,1,REASON_COST)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x61e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x561c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -85,11 +85,11 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 end
 function cm.bkcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x61e,3,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x61e,3,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x561c,3,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x561c,3,REASON_COST)
 end
 function cm.cfilter(c)
-	return c:GetCounter(0x61e)>5
+	return c:GetCounter(0x561c)>5
 end
 function cm.bkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>0 and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil)

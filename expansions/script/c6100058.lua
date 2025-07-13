@@ -37,8 +37,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x61e,3,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0x61e,3,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x561c,3,REASON_COST) end
+	Duel.RemoveCounter(tp,1,0,0x561c,3,REASON_COST)
 end
 function cm.drfilter(c)
 	return c:IsSetCard(0x61c) and c:IsAbleToGraveAsCost()
@@ -61,10 +61,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSpecialSummonSetCard(0x61e)
+	return e:GetHandler():IsSpecialSummonSetCard(0x561c)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x61e) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x561c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

@@ -2,7 +2,7 @@
 local cm,m,o=GetID()
 function cm.initial_effect(c)
 	c:SetUniqueOnField(1,0,m)
-	c:EnableCounterPermit(0x61e)
+	c:EnableCounterPermit(0x561c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -50,7 +50,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x61e) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() 
+	return c:IsSetCard(0x561c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() 
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil)
@@ -60,7 +60,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)
 			Duel.BreakEffect()
-			e:GetHandler():AddCounter(0x61e,3)
+			e:GetHandler():AddCounter(0x561c,3)
 	end
 end
 function cm.cfilter(c)
@@ -78,11 +78,11 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.counter(e,tp,eg,ep,ev,re,r,rp)
 	if rp==tp and re:GetHandler():IsSetCard(0x61c) then
-		e:GetHandler():AddCounter(0x61e,1)
+		e:GetHandler():AddCounter(0x561c,1)
 	end
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=e:GetHandler():GetCounter(0x61e)
+	local ct=e:GetHandler():GetCounter(0x561c)
 	e:SetLabel(ct)
 end
 function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)

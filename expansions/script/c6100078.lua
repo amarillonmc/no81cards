@@ -63,7 +63,7 @@ function cm.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0x61f) and c:IsAbleToGrave()
+	return c:IsSetCard(0x661c) and c:IsAbleToGrave()
 end
 function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end

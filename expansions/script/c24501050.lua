@@ -19,6 +19,7 @@ function c24501050.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetCountLimit(1,24501051)
+	e2:SetCost(c24501050.cost3)
 	e2:SetTarget(c24501050.tg2)
 	e2:SetOperation(c24501050.op2)
 	c:RegisterEffect(e2)
@@ -57,8 +58,12 @@ function c24501050.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 -- 2
+function c24501050.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+end
 function c24501050.filter2(c)
-	return c:IsSetCard(0x501) and c:IsAbleToHand()
+	return c:IsSetCard(0x501) and c:IsAbleToHand() and not c:IsCode(24501050)
 end
 function c24501050.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c24501050.filter2,tp,LOCATION_DECK,0,1,nil) end
@@ -81,7 +86,7 @@ function c24501050.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c24501050.splimit(e,c)
-	return c:IsLocation(LOCATION_EXTRA) and not c:IsRace(RACE_MACHINE)
+	return not c:IsRace(RACE_MACHINE)
 end
 -- 3
 function c24501050.filter3(c)

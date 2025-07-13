@@ -51,7 +51,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function cm.thfilter(c,tp)
-	return c:IsSummonPlayer(tp) and c:IsAttackPos()
+	return c:IsControler(tp) and c:IsPosition(POS_FACEUP_ATTACK)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.thfilter,1,nil,tp)
@@ -62,7 +62,7 @@ function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x61f) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0x661c) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) end
