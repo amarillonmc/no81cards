@@ -62,7 +62,7 @@ function c1171244.val0(e,c,rc)
 end
 -- 1
 function c1171244.filter1(e,te)
-	return te:GetOwner()~=e:GetOwner() and not (te:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL) and te:GetHandler():IsLocation(LOCATION_GRAVE))
+	return te:GetOwner()~=e:GetOwner() and c:IsType(TYPE_MONSTER) and not (te:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL) and te:GetHandler():IsLocation(LOCATION_GRAVE))
 end
 -- 2
 function c1171244.filter2(c)

@@ -89,7 +89,8 @@ function c24501040.op1(e,tp,eg,ep,ev,re,r,rp)
 end]]
 -- 2
 function c24501040.con2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsLocation(LOCATION_GRAVE) and r==REASON_SYNCHRO and c:GetReasonCard():IsRace(RACE_MACHINE)
+	local c=e:GetHandler()
+	return c:IsLocation(LOCATION_GRAVE) and r==REASON_SYNCHRO and c:GetReasonCard():IsRace(RACE_MACHINE)
 end
 function c24501040.filter2(c)
 	return c:IsSetCard(0x501) and c:IsAbleToHand() and not c:IsCode(24501040)
