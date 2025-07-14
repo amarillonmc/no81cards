@@ -20,6 +20,7 @@ function c24501067.initial_effect(c)
     e2:SetDescription(aux.Stringid(24501067,1))
 	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_NEGATE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,24501068)
@@ -76,8 +77,7 @@ function c24501067.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 end
 function c24501067.op2(e,tp,eg,ep,ev,re,r,rp)
-    if Duel.NegateActivation(ev) then
-    end
+	Duel.NegateActivation(ev)
 end
 -- 3
 --[[function c24501067.con3(e,tp,eg,ep,ev,re,r,rp)
