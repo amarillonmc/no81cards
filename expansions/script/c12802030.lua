@@ -27,7 +27,7 @@ function s.poscon1(e,tp,eg,ep,ev,re,r,rp)
 	if eg:GetCount()>1 then return false end
 	local c=e:GetHandler()
 	local tc=eg:GetFirst()
-	return tc:IsControler(1-tp) and tc:IsPosition(POS_FACEUP) and c:IsCanChangePosition()
+	return tc:IsControler(1-tp) and tc:IsPosition(POS_FACEUP) and c:IsCanChangePosition() and not tc:IsType(TYPE_LINK)
 end
 function s.poscost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
