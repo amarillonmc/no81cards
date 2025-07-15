@@ -233,7 +233,7 @@ function UnofficialProc.statsChanged()
 		end
 		local lvg=Duel.GetMatchingGroup(lvcfilter,tp,0x7f,0x7f,nil)
 		if #lvg>0 then
-			for lvc in lvaux.Next(g) do
+			for lvc in aux.Next(g) do
 				local prevlv=lvc:GetFlagEffectLabel(585)
 				lvc:ResetFlagEffect(584)
 				lvc:ResetFlagEffect(585)

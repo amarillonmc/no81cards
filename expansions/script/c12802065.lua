@@ -112,7 +112,7 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.atkfilter(c)
-	return cc:IsRace(RACE_INSECT) and c:IsAttribute(ATTRIBUTE_LIGHT)
+	return c:IsRace(RACE_INSECT) and c:IsAttribute(ATTRIBUTE_LIGHT)
 end
 function s.atkval(e,c)
 	local ct=Duel.GetMatchingGroupCount(s.atkfilter,tp,LOCATION_GRAVE,0,nil)
