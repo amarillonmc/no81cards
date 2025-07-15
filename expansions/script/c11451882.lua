@@ -20,13 +20,6 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		local tc=g:GetFirst()
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-	end
 	local e7=Effect.CreateEffect(c)
 	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e7:SetCode(EVENT_ADJUST)
@@ -38,6 +31,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e8:SetCode(EVENT_MOVE)
 	Duel.RegisterEffect(e8,tp)
 	Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,2)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		local tc=g:GetFirst()
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 function cm.regop2(e,tp,eg,ep,ev,re,r,rp)
 	local sc=e:GetLabelObject()
