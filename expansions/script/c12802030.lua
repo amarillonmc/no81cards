@@ -30,6 +30,7 @@ function s.poscon1(e,tp,eg,ep,ev,re,r,rp)
 	return tc:IsControler(1-tp) and tc:IsPosition(POS_FACEUP) and c:IsCanChangePosition()
 end
 function s.poscost1(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return c:IsAttackPos() end
 	Duel.ChangePosition(e:GetHandler(),POS_FACEUP_DEFENSE)
 end

@@ -93,12 +93,12 @@ function c11579814.ovgck(g)
 	return g:IsExists(function(c) return c:IsLevel(2) or c:IsRank(2) or c:IsLink(2) end,1,nil) 
 end 
 function c11579814.ovtg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local g=Duel.GetMatchingGroup(c11579814.ovfil,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,e:GetHandler())
+	local g=Duel.GetMatchingGroup(c11579814.ovfil,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,e:GetHandler())
 	if chk==0 then return g:CheckSubGroup(c11579814.ovgck,2,2) end  
 end 
 function c11579814.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
-	local g=Duel.GetMatchingGroup(c11579814.ovfil,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,e:GetHandler())
+	local g=Duel.GetMatchingGroup(c11579814.ovfil,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,e:GetHandler())
 	if c:IsRelateToEffect(e) and g:CheckSubGroup(c11579814.ovgck,2,2) then 
 		local og=g:SelectSubGroup(tp,c11579814.ovgck,false,2,2)
 		local oog=og:GetFirst():GetOverlayGroup()

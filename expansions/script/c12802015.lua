@@ -42,6 +42,7 @@ function s.cfilter(c,tp)
 end
 function s.spcon(e,c)
 	if c==nil then return true end
+	local tp=c:GetControler()
 	return Duel.CheckReleaseGroupEx(tp,s.cfilter,1,REASON_SPSUMMON,true,c,tp)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
