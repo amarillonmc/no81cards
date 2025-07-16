@@ -61,7 +61,7 @@ function c1171244.val0(e,c,rc)
 	else return lv end
 end
 -- 1
-function c1171244.filter1(e,te)
+function c1171244.filter1(e,c,te)
 	return te:GetOwner()~=e:GetOwner() and c:IsType(TYPE_MONSTER) and not (te:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL) and te:GetHandler():IsLocation(LOCATION_GRAVE))
 end
 -- 2
