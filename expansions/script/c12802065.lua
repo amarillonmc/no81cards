@@ -115,6 +115,6 @@ function s.atkfilter(c)
 	return c:IsRace(RACE_INSECT) and c:IsAttribute(ATTRIBUTE_LIGHT)
 end
 function s.atkval(e,c)
-	local ct=Duel.GetMatchingGroupCount(s.atkfilter,tp,LOCATION_GRAVE,0,nil)
+	local ct=Duel.GetMatchingGroupCount(s.atkfilter,c:GetControler(),LOCATION_GRAVE,0,nil)
 	return ct*200
 end
