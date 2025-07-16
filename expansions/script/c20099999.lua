@@ -124,9 +124,9 @@ fucs.cod = {
 	RE  = EVENT_REMOVE  ,
 	MO  = EVENT_MOVE		,
 	--召唤
-	PS  = EVENT_SUMMON  ,   --召唤之际（怪兽还没上场、神宣等时点）
-	PSP = EVENT_SPSUMMON			,   --特殊召唤之际
-	PFS = EVENT_FLIP_SUMMON   ,   --翻转召唤之际
+	PS  = EVENT_SUMMON	,   --召唤之际（怪兽还没上场、神宣等时点）
+	PSP = EVENT_SPSUMMON	,   --特殊召唤之际
+	PFS = EVENT_FLIP_SUMMON ,   --翻转召唤之际
 	S   = EVENT_SUMMON_SUCCESS  ,   --通常召唤成功时
 	SP  = EVENT_SPSUMMON_SUCCESS	,   --特殊召唤成功时
 	FS  = EVENT_FLIP_SUMMON_SUCCESS ,   --翻转召唤成功时
@@ -150,30 +150,30 @@ fucs.cod = {
 	NEGS	= EVENT_SUMMON_NEGATED  ,   --召唤被无效时
 	NEGFS   = EVENT_FLIP_SUMMON_NEGATED ,   --反转召唤被无效时
 	NEGSP   = EVENT_SPSUMMON_NEGATED	,   --特殊召唤被无效时
+	NEGATK  = EVENT_ATTACK_DISABLED	,   --攻击无效时（翻倍机会）
 	--连锁
 	CH  = EVENT_CHAINING		,   --效果发动时
 	CHED= EVENT_CHAIN_SOLVED	,   --连锁处理结束时
-	----组合时点
-	PHS  = EVENT_PHASE_START   ,
+	--攻击
+	ATK = EVENT_ATTACK_ANNOUNCE	,   --攻击宣言时
+	BATK= EVENT_BE_BATTLE_TARGET   ,   --被选为攻击对象时
+	--需组合 阶段时点
+	PH  = EVENT_PHASE   ,		--阶段结束时
+	PHS  = EVENT_PHASE_START   ,	--阶段开始时
 --[[
 EVENT_CHAIN_SOLVING =1020   --连锁处理开始时（EVENT_CHAIN_ACTIVATING之後）
 EVENT_CHAIN_ACTIVATING  =1021   --连锁处理准备中
 EVENT_CHAIN_ACTIVATED   =1023   --N/A
-EVENT_CHAIN_NEGATED =1024   --连锁发动无效时（EVENT_CHAIN_ACTIVATING之後）
-EVENT_CHAIN_DISABLED			=1025   --连锁效果无效时
 EVENT_CHAIN_END  =1026   --连锁串结束时
 EVENT_BECOME_TARGET =1028   --成为效果对象时
 EVENT_BREAK_EFFECT  =1050   --Duel.BreakEffect()被调用时
 EVENT_MSET  =1106   --放置怪兽时
 EVENT_SSET  =1107   --放置魔陷时
-EVENT_DRAW  =1110   --抽卡时
 EVENT_DAMAGE					=1111   --造成战斗/效果伤害时
 EVENT_RECOVER   =1112   --回复生命值时
 EVENT_PREDRAW   =1113   --抽卡阶段通常抽卡前
 EVENT_CONTROL_CHANGED   =1120   --控制权变更
 EVENT_EQUIP   =1121   --装备卡装备时
-EVENT_ATTACK_ANNOUNCE   =1130   --攻击宣言时
-EVENT_BE_BATTLE_TARGET  =1131   --被选为攻击对象时
 EVENT_BATTLE_START  =1132   --伤害步骤开始时（反转前）
 EVENT_BATTLE_CONFIRM			=1133   --伤害计算前（反转後）
 EVENT_PRE_DAMAGE_CALCULATE  =1134   --伤害计算时（羽斬）
@@ -184,7 +184,6 @@ EVENT_BATTLED   =1138   --伤害计算后（异女、同反转效果时点）
 EVENT_BATTLE_DESTROYING   =1139   --以战斗破坏怪兽送去墓地时（BF-苍炎之修罗）
 EVENT_BATTLE_DESTROYED  =1140   --被战斗破坏送去墓地时（杀人番茄等）
 EVENT_DAMAGE_STEP_END   =1141   --伤害步骤结束时
-EVENT_ATTACK_DISABLED   =1142   --攻击无效时（翻倍机会）
 EVENT_BATTLE_DAMAGE =1143   --造成战斗伤害时
 EVENT_TOSS_DICE  =1150   --掷骰子的结果产生后
 EVENT_TOSS_COIN  =1151   --抛硬币的结果产生后
@@ -194,8 +193,6 @@ EVENT_LEVEL_UP  =1200   --等级上升时
 EVENT_PAY_LPCOST				=1201   --支付生命值时
 EVENT_RETURN_TO_GRAVE   =1203   --回到墓地时
 EVENT_TURN_END  =1210   --回合结束时
-EVENT_PHASE   =0x1000 --阶段结束时
-EVENT_PHASE_START   =0x2000 --阶段开始时
 EVENT_ADD_COUNTER   =0x10000 --增加指示物时
 EVENT_REMOVE_COUNTER			=0x20000	--去除指示物时(A指示物)，Card.RemoveCounter()必須手動觸發此事件
 --]]
@@ -219,7 +216,7 @@ fucs.pro = {
 	CAL = EFFECT_FLAG_DAMAGE_CAL		,   --可以在伤害计算时发动
 	OP  = EFFECT_FLAG_EVENT_PLAYER  ,   --发动/处理效果的玩家为触发事件的玩家而不是卡片的持有者，如仪式魔人，万魔殿
 	NR  = EFFECT_FLAG_NO_TURN_RESET  ,   --发条等“这张卡在场上只能发动一次”的效果
-	OE  = 0x40400		  ,   --EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE(out effect)
+	OE  = 0x40400   ,   --EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE(out effect)
 }
 --Location Variable
 fucs.ran = {
@@ -237,13 +234,19 @@ fucs.ran = {
 	["P"] = LOCATION_PZONE  ,
 	["A"] = 0xff 
 }
+--Countlimit Variable
+fucs.ctl = {
+	O = EFFECT_COUNT_CODE_OATH,
+	D = EFFECT_COUNT_CODE_DUEL,
+	C = EFFECT_COUNT_CODE_CHAIN,
+}
 --Phase Variable
 fucs.pha = {
 	DP  = PHASE_DRAW		,   --抽卡阶段
 	SP  = PHASE_STANDBY  ,   --准备阶段
 	M1  = PHASE_MAIN1   ,   --主要阶段1
 	BPS = PHASE_BATTLE_START,   --战斗阶段开始
-	BP  = PHASE_BATTLE_STEP ,   --战斗步驟
+	BS  = PHASE_BATTLE_STEP ,   --战斗步驟
 	DS  = PHASE_DAMAGE  ,   --伤害步驟
 	DC  = PHASE_DAMAGE_CAL  ,   --伤害计算时
 	BPE = PHASE_BATTLE  ,   --战斗阶段結束
@@ -396,5 +399,21 @@ fucs.val = {
 	LI  = SUMMON_TYPE_LINK  ,
 	--Summon Value --特定的召唤方式
 	SELF = SUMMON_VALUE_SELF	,
-	SYM  = SUMMON_VALUE_SYNCHRO_MATERIAL 
+	SYM  = SUMMON_VALUE_SYNCHRO_MATERIAL ,
+	--location Value --离场重定向
+	H = LOCATION_HAND   ,
+	D = LOCATION_DECK   ,
+	G = LOCATION_GRAVE  ,
+	R = LOCATION_REMOVED,
+	E = LOCATION_EXTRA  ,
 }
+--Value Variable
+fucs.act = {
+	S   = ACTIVITY_SUMMON   ,   --召唤（不包括通常召唤的set）
+	NS  = ACTIVITY_NORMALSUMMON ,   --通常召唤（包括通常召唤的set）
+	SP  = ACTIVITY_SPSUMMON ,   --特殊召唤
+	FS  = ACTIVITY_FLIPSUMMON   ,   --反转召唤
+	ATK = ACTIVITY_ATTACK   ,   --攻击
+	CH  = ACTIVITY_CHAIN	,   --发动效果
+}
+

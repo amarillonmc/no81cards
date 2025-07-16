@@ -160,6 +160,10 @@ function s.fspop(e,tp,eg,ep,ev,re,r,rp)
 		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or ce and not Duel.SelectYesNo(tp,ce:GetDescription())) then
 			local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
 			if #mat1==0 then goto cancel end
+			if mat1:IsExists(Card.IsFacedown,1,nil) then
+				Duel.ConfirmCards(1-tp,mat1)
+			end
+			Duel.HintSelection(mat1)
 			tc:SetMaterial(mat1)
 			Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			Duel.BreakEffect()
@@ -167,6 +171,10 @@ function s.fspop(e,tp,eg,ep,ev,re,r,rp)
 		elseif ce~=nil then
 			local mat2=Duel.SelectFusionMaterial(tp,tc,mg2,nil,chkf)
 			if #mat2==0 then goto cancel end
+			if mat2:IsExists(Card.IsFacedown,1,nil) then
+				Duel.ConfirmCards(1-tp,mat2)
+			end
+			Duel.HintSelection(mat2)
 			local fop=ce:GetOperation()
 			fop(ce,e,tp,tc,mat2)
 		end

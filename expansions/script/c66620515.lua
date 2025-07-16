@@ -90,11 +90,21 @@ function c66620515.activate(e,tp,eg,ep,ev,re,r,rp)
 		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
 			local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
 			tc:SetMaterial(mat1)
+			if mat1:IsExists(Card.IsFacedown, 1, nil) then
+				local g=mat1:Filter(Card.IsFacedown, nil)
+				Duel.ConfirmCards(1-tp, g)
+			end
+			Duel.HintSelection(mat1)
 			Duel.Remove(mat1,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			Duel.BreakEffect()
 			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
 		else
 			local mat2=Duel.SelectFusionMaterial(tp,tc,mg3,nil,chkf)
+			if mat2:IsExists(Card.IsFacedown, 1, nil) then
+				local g=mat2:Filter(Card.IsFacedown, nil)
+				Duel.ConfirmCards(1-tp, g)
+			end
+			Duel.HintSelection(mat2)
 			local fop=ce:GetOperation()
 			fop(ce,e,tp,tc,mat2)
 		end
