@@ -68,7 +68,7 @@ function c95101045.discon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainDisablable(ev)
 end
 function c95101045.costfilter(c,rtype)
-	return c:IsFaceup() and c:IsType(rtype) and c:IsAbleToHandAsCost()
+	return aux.IsCodeListed(c,95101001) and c:IsFaceup() and c:IsType(rtype) and c:IsAbleToHandAsCost()
 end
 function c95101045.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rt=bit.band(re:GetActiveType(),0x7)
