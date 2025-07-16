@@ -50,7 +50,8 @@ end
 function c1171242.regop(e,tp,eg,ep,ev,re,r,rp)
     for tc in aux.Next(eg) do
         if tc:IsPreviousLocation(LOCATION_GRAVE) then
-            Duel.RegisterFlagEffect(tp,1171242,RESET_PHASE+PHASE_END,0,1)
+            Duel.RegisterFlagEffect(rp,1171242,RESET_PHASE+PHASE_END,0,1)
+            Duel.RegisterFlagEffect(1-rp,1171242,RESET_PHASE+PHASE_END,0,1)
         end
     end
 end
@@ -83,7 +84,7 @@ function c1171242.chainfilter(re,tp,cid)
     return re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_GRAVE
 end
 function c1171242.con2(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.GetFlagEffect(tp,1171242)>0
+    return Duel.GetFlagEffect(0,1171242)>0
         and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function c1171242.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
