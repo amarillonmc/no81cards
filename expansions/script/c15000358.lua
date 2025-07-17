@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function cm.spcfilter(c)
-	return c:IsRace(RACE_INSECT) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsRace(RACE_INSECT) and c:IsAbleToDeckOrExtraAsCost() and c:IsFaceup()
 end
 function cm.spcon(e,c)
 	if c==nil then return true end

@@ -89,19 +89,20 @@ function c1171244.op2(e,tp,eg,ep,ev,re,r,rp)
 end
 -- 3
 function c1171244.con3(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER)
+	return re:IsActiveType(TYPE_MONSTER) and Duel.IsChainDisablable(ev)
 end
 function c1171244.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	local ct=Duel.GetOperatedGroup():GetFirst()
+	e:SetLabelObject(ct)
 end
 function c1171244.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end
 function c1171244.op3(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetHandler():IsRelateToEffect(re) then
-		Duel.NegateEffect(ev)
+	if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
 		if re:GetHandler():IsRace(RACE_ZOMBIE) then
 			Duel.Destroy(eg,REASON_EFFECT)
 		end

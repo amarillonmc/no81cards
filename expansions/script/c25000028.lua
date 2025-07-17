@@ -29,7 +29,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.cfilter1(c,tp)
-	return aux.IsCodeListed(c,id)
+	return aux.IsCodeListed(c,id) and c:IsType(TYPE_MONSTER)
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,s.cfilter1,1,nil,tp) end
