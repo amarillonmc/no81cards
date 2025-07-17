@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_BE_MATERIAL)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e2:SetCountLimit(1,m+1)
 	e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.sptg)
@@ -64,7 +64,7 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return r==REASON_LINK and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+	return r==REASON_LINK and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) and e:GetHandler():IsLocation(LOCATION_GRAVE)
 end
 function cm.spfilter(c,e,tp)
 	return c:IsRace(RACE_INSECT) and c:IsLevelBelow(2)

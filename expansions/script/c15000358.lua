@@ -35,7 +35,6 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,cm.spcfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,2,c)
-	Duel.ConfirmCards(1-tp,g)
-	Duel.ConfirmCards(tp,g)
+	Duel.HintSelection(g)
 	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
