@@ -58,7 +58,7 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
 end
 function s.addcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler()==re:GetHandler() and e:GetHandler():GetColumnGroupCount()>=2 and e:GetHandler():GetFlagEffect(id)<=0
+	return e:GetHandler()==re:GetHandler() and e:GetHandler():GetColumnGroupCount()>=2 and Duel.GetFlagEffect(tp,id)<=0
 end
 function s.addfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
@@ -81,5 +81,5 @@ function s.addop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end

@@ -56,7 +56,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.addcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler()==re:GetHandler() and e:GetHandler():GetColumnGroupCount()>=2 and e:GetHandler():GetFlagEffect(id)<=0
+	return e:GetHandler()==re:GetHandler() and e:GetHandler():GetColumnGroupCount()>=2 and Duel.GetFlagEffect(tp,id)<=0
 end
 function s.addop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
@@ -66,5 +66,5 @@ function s.addop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	end
-	e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end

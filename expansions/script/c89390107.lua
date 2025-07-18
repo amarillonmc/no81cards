@@ -36,7 +36,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
 function s.addcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler()==re:GetHandler() and e:GetHandler():GetColumnGroupCount()>=2 and e:GetHandler():GetFlagEffect(id)<=0
+	return e:GetHandler()==re:GetHandler() and e:GetHandler():GetColumnGroupCount()>=2 and Duel.GetFlagEffect(tp,id)<=0
 end
 function s.filter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()
@@ -49,5 +49,5 @@ function s.addop(e,tp,eg,ep,ev,re,r,rp)
 		local sc=g:Select(tp,1,1,nil):GetFirst()
 		Duel.ChangePosition(sc,POS_FACEDOWN_DEFENSE)
 	end
-	e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
