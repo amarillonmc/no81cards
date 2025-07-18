@@ -92,15 +92,15 @@ end
 --②效果：召唤/特召成功时 → 用场上的怪兽进行XYZ召唤
 function cm.xytg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
-		return Duel.IsExistingMatchingCard(aux.XyzSummonableMonsterFilter(nil,nil),tp,LOCATION_EXTRA,0,1,nil,nil,tp)
+		return Duel.IsExistingMatchingCard(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,1,nil,nil)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 
 function cm.xyop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.GetMatchingGroup(aux.XyzSummonableMonsterFilter(nil,nil),tp,LOCATION_EXTRA,0,nil,nil,tp)
+	local g=Duel.GetMatchingGroup(Card.IsXyzSummonable,tp,LOCATION_EXTRA,0,nil,nil)
 	if #g==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local xyz=g:Select(tp,1,1,nil):GetFirst()
 	if xyz then
 		Duel.XyzSummon(tp,xyz,nil)
