@@ -13,8 +13,8 @@ function c9911268.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9911268,1))
 	e2:SetCategory(CATEGORY_RECOVER)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CUSTOM+9911268)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_MOVE)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCondition(c9911268.mvcon)
@@ -22,31 +22,6 @@ function c9911268.initial_effect(c)
 	e2:SetTarget(c9911268.mvtg)
 	e2:SetOperation(c9911268.mvop)
 	c:RegisterEffect(e2)
-	if not c9911268.global_check then
-		c9911268.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_MOVE)
-		ge1:SetCondition(c9911268.regcon)
-		ge1:SetOperation(c9911268.regop)
-		Duel.RegisterEffect(ge1,0)
-	end
-end
-function c9911268.cfilter(c,tp)
-	return c:IsLocation(LOCATION_MZONE) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsControler(tp)
-		and (c:GetPreviousSequence()~=c:GetSequence() or c:GetPreviousControler()~=tp)
-end
-function c9911268.regcon(e,tp,eg,ep,ev,re,r,rp)
-	local v=0
-	if eg:IsExists(c9911268.cfilter,1,nil,0) then v=v+1 end
-	if eg:IsExists(c9911268.cfilter,1,nil,1) then v=v+2 end
-	if v==0 then return false end
-	e:SetLabel(({0,1,PLAYER_ALL})[v])
-	return true
-end
-function c9911268.regop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,9911268)
-	Duel.RaiseEvent(g,EVENT_CUSTOM+9911268,re,r,rp,ep,e:GetLabel())
 end
 function c9911268.thfilter(c)
 	return c:IsSetCard(0x9956) and c:IsAbleToHand()
@@ -151,8 +126,12 @@ function c9911268.clearop(e,tp,eg,ep,ev,re,r,rp)
 	if g then g:DeleteGroup() end
 	e:Reset()
 end
+function c9911268.cfilter(c)
+	return c:IsLocation(LOCATION_MZONE) and c:IsPreviousLocation(LOCATION_MZONE)
+		and (c:GetPreviousSequence()~=c:GetSequence() or c:GetPreviousControler()~=c:GetControler())
+end
 function c9911268.mvcon(e,tp,eg,ep,ev,re,r,rp)
-	return (ev==tp or ev==PLAYER_ALL) and eg:IsContains(e:GetHandler())
+	return eg:IsExists(c9911268.cfilter,1,nil)
 end
 function c9911268.mvtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
