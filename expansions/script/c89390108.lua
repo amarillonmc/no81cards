@@ -146,7 +146,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local sg=dg:Select(tp,1,1,nil)
 		sg:AddCard(c)
-		if Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)==2 then
+		if Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)>0 then
 			local tc=Duel.GetFirstMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,nil,e,tp)
 			if tc and Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)>0 then
 				tc:CompleteProcedure()

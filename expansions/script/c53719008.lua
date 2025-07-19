@@ -24,7 +24,8 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.chfilter(c)
-	return c:IsRace(RACE_INSECT) and c:IsFaceup() and c:IsLevelAbove(1) and not (c:IsLevel(2) and c:IsType(TYPE_TUNER))
+	if c:IsLevel(2) or c:IsType(TYPE_TUNER) then return false end
+	return c:IsRace(RACE_INSECT) and c:IsFaceup() and c:IsLevelAbove(1)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
