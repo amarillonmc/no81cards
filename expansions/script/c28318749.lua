@@ -55,7 +55,7 @@ function c28318749.Operation(f,gf,minct,maxct)
 					end
 					Duel.SendtoGrave(sg,REASON_RULE)
 					c:SetMaterial(og)
-					if og:GetClassCount(Card.GetLevel)==1 then ct=og:GetFirst():GetLevel() end
+					if og:GetClassCount(Card.GetRank)==1 then ct=og:GetFirst():GetRank() end
 					Duel.Overlay(c,og)
 					if ct~=0 then
 						local e1=Effect.CreateEffect(c)
@@ -86,7 +86,7 @@ function c28318749.Operation(f,gf,minct,maxct)
 						Duel.SendtoGrave(sg,REASON_RULE)
 					end
 					c:SetMaterial(mg)
-					if mg:GetClassCount(Card.GetLevel)==1 then ct=mg:GetFirst():GetLevel() end
+					if mg:GetClassCount(Card.GetRank)==1 then ct=mg:GetFirst():GetRank() end
 					Duel.Overlay(c,mg)
 					if ct~=0 then
 						local e1=Effect.CreateEffect(c)
