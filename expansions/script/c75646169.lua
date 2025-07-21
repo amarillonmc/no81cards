@@ -72,9 +72,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Equip(tp,e:GetHandler(),tc)
 	end
 end
-function s.efilter(e,te)
-	return te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and not te:GetOwnerPlayer()==e:GetHandlerPlayer()
-end
+return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET)
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetHandler():GetEquipTarget()
 	return (Duel.GetAttacker()==tc or Duel.GetAttackTarget()==tc)
