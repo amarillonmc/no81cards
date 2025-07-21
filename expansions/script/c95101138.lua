@@ -28,7 +28,7 @@ function c95101138.filter1(c,e)
 	return c:IsFaceupEx() and c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck() and not c:IsImmuneToEffect(e)
 end
 function c95101138.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and c:IsSetCard(0xbbd) and (not f or f(c))
+	return c:IsType(TYPE_FUSION) and c:IsSetCard(0xbbe) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c95101138.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -88,7 +88,7 @@ function c95101138.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c95101138.thfilter(c)
-	return c:IsSetCard(0xbbd) and c:IsType(TYPE_FUSION) and c:IsFaceupEx() and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xbbe) and c:IsType(TYPE_FUSION) and c:IsFaceupEx() and c:IsAbleToRemoveAsCost()
 end
 function c95101138.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c95101138.thfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end

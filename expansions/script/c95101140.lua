@@ -13,7 +13,7 @@ function c95101140.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c95101140.filter(c)
-	return c:IsSetCard(0xbbd) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xbbe) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and c:IsAbleToRemoveAsCost()
 end
 function c95101140.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c95101140.filter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) end

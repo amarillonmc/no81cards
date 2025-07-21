@@ -54,9 +54,8 @@ function s.repfilter(c,tp)
 	return c:IsFaceup() and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsSetCard(0xc33) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=eg:FilterCount(s.repfilter,nil,tp)
 	local g=Duel.GetDecktopGroup(tp,1)
-	if chk==0 then return g:IsExists(Card.IsAbleToRemove,1,nil) end
+	if chk==0 then return eg:FilterCount(s.repfilter,nil,tp)>0 and g:IsExists(Card.IsAbleToRemove,1,nil) end
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
 		Duel.DisableShuffleCheck()
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)

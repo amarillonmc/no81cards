@@ -15,7 +15,7 @@ end
 function c95101139.ffilter(c,tc,tp)
 	return c:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(c95101139.cfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil,tc,c)
 end
-function c6498706.cfilter(c,tc,fc)
+function c95101139.cfilter(c,tc,fc)
 	return aux.IsMaterialListCode(fc,c:GetCode()) and not c:IsCode(tc:GetFusionCode())
 end
 function c95101139.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
