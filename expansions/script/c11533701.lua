@@ -83,6 +83,7 @@ end
 function c11533701.rrttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11533701.srfil,tp,LOCATION_DECK,0,1,nil) end 
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK) 
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_HAND)
 end 
 function c11533701.rrtop(e,tp,eg,ep,ev,re,r,rp)  
 	local c=e:GetHandler() 
@@ -91,7 +92,7 @@ function c11533701.rrtop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:Select(tp,1,1,nil) 
 		Duel.SendtoHand(sg,tp,REASON_EFFECT) 
 		Duel.ConfirmCards(1-tp,sg) 
-		if Duel.IsExistingMatchingCard(c11533701.rrfil,tp,LOCATION_HAND,0,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(11533701,0)) then 
+		if Duel.IsExistingMatchingCard(c11533701.rrfil,tp,LOCATION_HAND,0,1,nil,tp) then --and Duel.SelectYesNo(tp,aux.Stringid(11533701,0)) then 
 		Duel.BreakEffect() 
 		local tc=Duel.SelectMatchingCard(tp,c11533701.rrfil,tp,LOCATION_HAND,0,1,1,nil,tp):GetFirst()  
 		Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RELEASE) 

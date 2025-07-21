@@ -7,7 +7,7 @@ local e5=Effect.CreateEffect(c)
 	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetCode(EVENT_CHAINING)
-	
+	e5:SetCountLimit(1,m)
 	e5:SetRange(LOCATION_HAND+LOCATION_REMOVED)
 	e5:SetCondition(cm.negcon)
 	e5:SetTarget(cm.negtg)
@@ -18,14 +18,14 @@ local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	
+	e3:SetCountLimit(1,m+1000)
 	e3:SetOperation(cm.retreg)
 	c:RegisterEffect(e3)
 local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_RELEASE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	
+	e1:SetCountLimit(1,m+1000)
 	e1:SetOperation(cm.retreg)
 	c:RegisterEffect(e1)
 end
@@ -35,6 +35,7 @@ function cm.retreg(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e1:SetCountLimit(1)
 	e1:SetReset(RESET_EVENT+0x1ee0000-RESET_TOGRAVE-RESET_LEAVE+RESET_PHASE+PHASE_END)--减去送墓重置即可
 	e1:SetCondition(aux.SpiritReturnConditionForced)
@@ -51,7 +52,7 @@ function cm.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
 		if e:IsHasType(EFFECT_TYPE_TRIGGER_F) then
 			return true
 		else
-			return Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(cm.filter00,tp,LOCATION_GRAVE,0,1,nil)
+			return Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_GRAVE,0,1,nil)
 		end
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
@@ -59,8 +60,7 @@ function cm.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local bb=Duel.SelectMatchingCard(tp,cm.filter00,tp,LOCATION_GRAVE+LOCATION_MZONE,0,1,1,nil)
-	if Duel.SendtoHand(bb,nil,REASON_EFFECT)~=0
+	if Duel.SendtoHand(c,nil,REASON_EFFECT)~=0
 		and Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,3))
 		then
 		 ::cancel::
@@ -104,9 +104,6 @@ end
 end
 function cm.filter1(c)
 	return c:IsType(TYPE_RITUAL)
-end
-function cm.filter00(c)
-	return c:IsCode(13000753)
 end
 function cm.filter2(c)
 	return c:IsPublic() and Card.IsAbleToRemoveAsCost(c,POS_FACEUP)
@@ -159,10 +156,12 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,3)
 	local g=Duel.GetDecktopGroup(tp,3)
 	local gg=g:Filter(cm.filter1,nil)
+	local aa=gg:Filter(cm.aafilter,nil)
+	local bb=gg:Filter(cm.aafilter,nil)
 	if #gg>0 then
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Destroy(eg,REASON_EFFECT)
-		Duel.SendtoGrave(gg,REASON_RELEASE)
+		
 	end
 end
 end

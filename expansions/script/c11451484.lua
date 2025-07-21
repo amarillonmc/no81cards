@@ -60,7 +60,7 @@ function cm.filter2(c,e,tp,att)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local act=e:IsHasType(EFFECT_TYPE_ACTIVATE)
-	if chk==0 then return not act or cm[0]<2+e:GetHandler():GetFlagEffect(11451926) end
+	if chk==0 then return not act or cm[0]<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
 	if act then
 		--[[local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
@@ -70,12 +70,26 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		e1:SetValue(2-sp)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)--]]
+		local op=2
+		if Duel.GetFlagEffect(tp,11451926)>0 then
+			op=aux.SelectFromOptions(tp,{cm[0]<1,aux.Stringid(11451926,1)},{cm[0]<2,aux.Stringid(11451926,2)},{cm[0]<3,aux.Stringid(11451926,3)})
+			if op~=2 then
+				local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
+				local g=Group.CreateGroup()
+				for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
+				if #g>1 then
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+					g=g:Select(tp,1,1,nil)
+				end
+				Duel.RaiseSingleEvent(g:GetFirst(),EVENT_CUSTOM+11451926,e,0,tp,tp,0)
+			end
+		end
 		local e4=Effect.CreateEffect(e:GetHandler())
 		e4:SetType(EFFECT_TYPE_FIELD)
 		e4:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 		e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 		e4:SetTargetRange(1,1)
-		e4:SetLabel(2+e:GetHandler():GetFlagEffect(11451926))
+		e4:SetLabel(op)
 		e4:SetCondition(cm.econ)
 		e4:SetTarget(cm.elimit)
 		e4:SetReset(RESET_PHASE+PHASE_END)

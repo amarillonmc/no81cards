@@ -45,7 +45,7 @@ function c11533718.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)  
 	e2:SetProperty(EFFECT_FLAG_DELAY) 
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(2,31533718) 
+	e2:SetCountLimit(1,31533718) 
 	e2:SetCondition(c11533718.spcon)
 	e2:SetTarget(c11533718.sptg)
 	e2:SetOperation(c11533718.spop)
@@ -140,7 +140,7 @@ function c11533718.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 --function c11533718.negcfilter(c)
---	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0xb4) and c:IsReleasable()
+--  return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0xb4) and c:IsReleasable()
 --end
 function c11533718.rrfil(c,tp)
 	local re=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
@@ -151,19 +151,16 @@ function c11533718.rrfil(c,tp)
 	return (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and c:IsSetCard(0xb4) and (c:IsReleasable() or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_HAND) and (val==nil or val(re,c)~=true)))
 end 
 function c11533718.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11533718.rrfil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler()) end
-	local g=Duel.GetMatchingGroup(c11533718.rrfil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler())
+	if chk==0 then return Duel.IsExistingMatchingCard(c11533718.rrfil,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
+	local g=Duel.GetMatchingGroup(c11533718.rrfil,tp,LOCATION_ONFIELD,0,1,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
-	end
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,1,0,0)
 end
 function c11533718.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,c11533718.rrfil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,e:GetHandler())
-	if #g>0 and Duel.SendtoGrave(g,REASON_EFFECT+REASON_RELEASE) ~=0 and Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.Destroy(eg,REASON_EFFECT) 
+	local g=Duel.SelectMatchingCard(tp,c11533718.rrfil,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
+	if #g>0 and Duel.SendtoGrave(g,REASON_EFFECT+REASON_RELEASE)~=0 then
+		Duel.NegateActivation(ev)
 	end
 end
 function c11533718.spcon(e,tp,eg,ep,ev,re,r,rp)

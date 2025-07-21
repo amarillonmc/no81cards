@@ -23,7 +23,7 @@ function c11533702.initial_effect(c)
 	--th
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(13035077,0))
-	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_RELEASE)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_FZONE)
 	e5:SetCountLimit(1,11533702)
@@ -99,12 +99,21 @@ function c11533702.initial_effect(c)
 
 
 end
+function c11533702.rrfil(c,tp)
+	local re=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
+	local val=nil
+	if re then
+		val=re:GetValue()
+	end
+	return c:IsReleasable() or (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(LOCATION_HAND) and (val==nil or val(re,c)~=true))
+end
 function c11533702.filter(c)
 	return c:IsSetCard(0xb4) and c:IsAbleToHand()
 end
 function c11533702.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11533702.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_HAND)
 end
 function c11533702.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -112,6 +121,11 @@ function c11533702.activate(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
+		if Duel.IsExistingMatchingCard(c11533702.rrfil,tp,LOCATION_HAND,0,1,nil,tp) then
+		Duel.BreakEffect() 
+		local tc=Duel.SelectMatchingCard(tp,c11533702.rrfil,tp,LOCATION_HAND,0,1,1,nil,tp):GetFirst()  
+		Duel.SendtoGrave(tc,REASON_EFFECT+REASON_RELEASE) 
+		end 
 	end
 end
 

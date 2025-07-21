@@ -43,22 +43,24 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function cm.con1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(e:GetHandlerPlayer(),11451481)<1+e:GetHandler():GetFlagEffect(11451926)
+	local tp=e:GetHandlerPlayer()
+	return Duel.GetFlagEffect(tp,11451481)<1+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0)
 end
 function cm.con2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(e:GetHandlerPlayer(),11451482)<1+e:GetHandler():GetFlagEffect(11451926)
+	local tp=e:GetHandlerPlayer()
+	return Duel.GetFlagEffect(tp,11451482)<1+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0)
 end
 function cm.chkcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler():IsSetCard(0x97b)
 end
 function cm.chkop(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if Duel.GetFlagEffect(e:GetHandlerPlayer(),11451481)<1+e:GetHandler():GetFlagEffect(11451926) then
+	if Duel.GetFlagEffect(e:GetHandlerPlayer(),11451481)<1 then
 		if c:GetFlagEffect(11451481)==0 then c:RegisterFlagEffect(11451481,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4)) end
 	else
 		c:ResetFlagEffect(11451481)
 	end
-	if Duel.GetFlagEffect(e:GetHandlerPlayer(),11451482)<1+e:GetHandler():GetFlagEffect(11451926) then
+	if Duel.GetFlagEffect(e:GetHandlerPlayer(),11451482)<1 then
 		if c:GetFlagEffect(11451482)==0 then c:RegisterFlagEffect(11451482,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,5)) end
 	else
 		c:ResetFlagEffect(11451482)

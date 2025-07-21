@@ -149,24 +149,26 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil)
 end
 function cm.tf(c)
-	return c:IsAbleToHand() and c:IsCode(m+1)
+	return c:IsFaceupEx() and c:IsAbleToHand() and c:IsCode(m+1)
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local loc=LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED 
 	local c=e:GetHandler()
 	local b1=c:IsAbleToExtra()
-	local b2=Duel.IsExistingMatchingCard(cm.tf,tp,LOCATION_DECK,0,1,nil)
+	local b2=Duel.IsExistingMatchingCard(cm.tf,tp,loc,0,1,nil)
 	if chk==0 then return b1 and b2 end
 	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,c,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,loc)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
+	local loc=LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED 
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) 
 		and Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 
 		and c:IsLocation(LOCATION_EXTRA) then
 		Duel.DisableShuffleCheck()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,cm.tf,tp,LOCATION_DECK,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.tf),tp,loc,0,1,1,nil)
 		if #g>0 then
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)

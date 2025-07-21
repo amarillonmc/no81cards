@@ -26,7 +26,7 @@ function cm.initial_effect(c)
 	e3:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCondition(c11561068.imcon)
-	e3:SetValue(aux.tgoval)
+	e3:SetValue(1)
 	c:RegisterEffect(e3)
 	local e31=e3:Clone()
 	e31:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
@@ -52,7 +52,7 @@ function c11561068.cfilter(c,e,tp,ec)
 	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsAbleToExtra() and c:IsLevel(ec:GetLevel()) and c:IsAttribute(ec:GetAttribute()) and Duel.GetLocationCountFromEx(tp,tp,c,ec)>0
 end
 function c11561068.spfilter(c,e,tp)
-	return not c:IsPublic() and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c11561068.cfilter,tp,LOCATION_MZONE,0,1,e:GetHandler(),e,tp,c)
+	return not c:IsPublic() and c:IsRace(RACE_DRAGON) and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c11561068.cfilter,tp,LOCATION_MZONE,0,1,e:GetHandler(),e,tp,c)
 end
 function c11561068.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)

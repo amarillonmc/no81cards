@@ -9,12 +9,6 @@ function s.initial_effect(c)
     Act_limit:SetRange(0xff)
 	Act_limit:SetOperation(s.chainop)
 	c:RegisterEffect(Act_limit)
-    --CannotSpSum
-	local e0=Effect.CreateEffect(c)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	c:RegisterEffect(e0)
     --change  
 	local e1=Effect.CreateEffect(c) 
     e1:SetDescription(aux.Stringid(id,0))

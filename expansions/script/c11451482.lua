@@ -83,7 +83,8 @@ function cm.ngcon(e,tp,eg,ep,ev,re,r,rp)
 	return ((a>=1 and Duel.IsPlayerAffectedByEffect(tp,11451482)) or a>=2) and b>0
 end
 function cm.ngtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsDestructable() and e:GetHandler():GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m)<2+e:GetHandler():GetFlagEffect(11451926) end
+	if chk==0 then return e:GetHandler():IsDestructable() and e:GetHandler():GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
+	local op=0
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	local a,b=0,0
@@ -103,9 +104,20 @@ function cm.ngtg(e,tp,eg,ep,ev,re,r,rp,chk)
 				Duel.ResetFlagEffect(tp,11451481)
 			end
 		else
+			op=1
 			Duel.RegisterFlagEffect(tp,11451482,0,0,1)
 			Duel.ResetFlagEffect(tp,11451481)
 		end
+	end
+	if Duel.GetFlagEffect(tp,m)>2 or (op==1 and Duel.GetFlagEffect(tp,11451482)>1) then
+		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
+		local g=Group.CreateGroup()
+		for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
+		if #g>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			g=g:Select(tp,1,1,nil)
+		end
+		Duel.RaiseSingleEvent(g:GetFirst(),EVENT_CUSTOM+11451926,e,0,tp,tp,0)
 	end
 	if b==1 then Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,2,0,0) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,nil,1,0,0)
@@ -138,21 +150,33 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local num=e:GetLabel()
-	if chk==0 then return (num>=2 or (Duel.IsPlayerAffectedByEffect(tp,11451482) and num>=1)) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and c:GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m)<2+c:GetFlagEffect(11451926) end
+	if chk==0 then return (num>=2 or (Duel.IsPlayerAffectedByEffect(tp,11451482) and num>=1)) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and c:GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
+	local op=0
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1) --and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
 	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	if Duel.IsPlayerAffectedByEffect(tp,11451482) then
 		if num>=2 then
-			local op=Duel.SelectOption(tp,aux.Stringid(11451483,2),aux.Stringid(11451483,3))
+			op=Duel.SelectOption(tp,aux.Stringid(11451483,2),aux.Stringid(11451483,3))
 			Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(11451483,op+2))
 			if op==1 then
 				Duel.RegisterFlagEffect(tp,11451482,0,0,1)
 				Duel.ResetFlagEffect(tp,11451481)
 			end
 		else
+			op=1
 			Duel.RegisterFlagEffect(tp,11451482,0,0,1)
 			Duel.ResetFlagEffect(tp,11451481)
 		end
+	end
+	if Duel.GetFlagEffect(tp,m)>2 or (op==1 and Duel.GetFlagEffect(tp,11451482)>1) then
+		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
+		local g=Group.CreateGroup()
+		for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
+		if #g>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			g=g:Select(tp,1,1,nil)
+		end
+		Duel.RaiseSingleEvent(g:GetFirst(),EVENT_CUSTOM+11451926,e,0,tp,tp,0)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),2,PLAYER_ALL,LOCATION_ONFIELD+c:GetLocation())
 	--Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_HAND+LOCATION_GRAVE)

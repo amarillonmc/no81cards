@@ -38,7 +38,7 @@ function cm.filter(c)
 	return c:IsSetCard(0x97b) and c:IsType(TYPE_SPELL) and c:IsSSetable()
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,m)<2+e:GetHandler():GetFlagEffect(11451926) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) and Duel.GetFlagEffect(tp,m)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local op=0
 	if Duel.IsPlayerAffectedByEffect(tp,11451481) then
@@ -48,6 +48,16 @@ function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.RegisterFlagEffect(tp,11451481,0,0,1)
 			Duel.ResetFlagEffect(tp,11451482)
 		end
+	end
+	if Duel.GetFlagEffect(tp,m)>2 or (op==1 and Duel.GetFlagEffect(tp,11451481)>1) then
+		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
+		local g=Group.CreateGroup()
+		for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
+		if #g>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			g=g:Select(tp,1,1,nil)
+		end
+		Duel.RaiseSingleEvent(g:GetFirst(),EVENT_CUSTOM+11451926,e,0,tp,tp,0)
 	end
 	e:SetLabel(op)
 end
@@ -69,7 +79,7 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsReason(REASON_COST) and re:IsActivated() and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsRace(RACE_FAIRY)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,m)<2+e:GetHandler():GetFlagEffect(11451926) end
+	if chk==0 then return Duel.GetFlagEffect(tp,m)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local op=0
 	if Duel.IsPlayerAffectedByEffect(tp,11451481) then
@@ -79,6 +89,16 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.RegisterFlagEffect(tp,11451481,0,0,1)
 			Duel.ResetFlagEffect(tp,11451482)
 		end
+	end
+	if Duel.GetFlagEffect(tp,m)>2 or (op==1 and Duel.GetFlagEffect(tp,11451481)>1) then
+		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
+		local g=Group.CreateGroup()
+		for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
+		if #g>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			g=g:Select(tp,1,1,nil)
+		end
+		Duel.RaiseSingleEvent(g:GetFirst(),EVENT_CUSTOM+11451926,e,0,tp,tp,0)
 	end
 	e:SetLabel(op)
 end

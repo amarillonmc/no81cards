@@ -12,8 +12,8 @@ function c13000751.initial_effect(c)
 	c:RegisterEffect(e2)
 local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_DESTROY)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_PHASE+PHASE_END)
 	e4:SetRange(LOCATION_HAND)
 	e4:SetCountLimit(1,m+1000)
 	e4:SetCondition(cm.con)
@@ -45,16 +45,36 @@ function cm.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk then return Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_HAND,0,1,c) and Duel.IsExistingMatchingCard(cm.filter6,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_HAND,0,1,c) and Duel.IsExistingMatchingCard(cm.filter6,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
+	Duel.SetChainLimit(aux.FALSE)
 end
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
-	Duel.SetChainLimit(cm.chlimit)
+function cm.retcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetLabelObject():GetFlagEffect(id)~=0
 end
-function cm.chlimit(e,ep,tp)  
-	return tp==ep  
-end 
+function cm.retop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.ReturnToField(e:GetLabelObject())
+end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+    local dmg=Duel.GetMatchingGroup(Card.IsAbleToRemove,1-tp,0x04,0,nil)
+    if #dmg>0 and Duel.SelectYesNo(1-tp,aux.Stringid(m,4)) then
+        Duel.Hint(3,1-tp,503)
+        local tc=dmg:Select(1-tp,1,1,nil):GetFirst()
+        if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)>0 and tc:IsLocation(0x20) then
+            tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+            local e1=Effect.CreateEffect(c)
+            e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+            e1:SetCode(EVENT_PHASE+PHASE_END)
+            e1:SetLabelObject(tc) 
+            e1:SetCountLimit(1)
+            e1:SetCondition(cm.retcon)
+            e1:SetOperation(cm.retop)
+            e1:SetReset(RESET_PHASE+PHASE_END) 
+            Duel.RegisterEffect(e1,tp)
+        end
+    end
+    if not Duel.IsExistingMatchingCard(cm.filter6,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local sel=nil
 	local g1=Duel.SelectMatchingCard(tp,cm.filter1,tp,LOCATION_HAND,0,1,99,nil)
@@ -145,5 +165,3 @@ local bb=#g-#aa
 		end
 	end
 end
-
-

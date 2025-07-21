@@ -66,7 +66,7 @@ end
 function cm.spcon(e,c,og,min,max)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local minc=2
+	local minc=Duel.GetFlagEffect(tp,11451926)>0 and 1 or 2
 	local maxc=2
 	if min then
 		minc=math.max(minc,min)
@@ -92,7 +92,7 @@ function cm.spcon(e,c,og,min,max)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 	if og and not min then return true end
-	local minc=2
+	local minc=Duel.GetFlagEffect(tp,11451926)>0 and 1 or 2
 	local maxc=2
 	if min then
 		if min>minc then minc=min end
@@ -130,6 +130,16 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 		Duel.SendtoGrave(sg,REASON_RULE)
 		c:SetMaterial(og)
 		Duel.Overlay(c,og)
+		if #og==1 and Duel.GetFlagEffect(tp,11451926)>0 then
+			local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
+			local g=Group.CreateGroup()
+			for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
+			if #g>1 then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+				g=g:Select(tp,1,1,nil)
+			end
+			Duel.RaiseSingleEvent(g:GetFirst(),EVENT_CUSTOM+11451926,e,0,tp,tp,0)
+		end
 	else
 		local g=e:GetLabelObject()
 		local sg=Group.CreateGroup()
@@ -140,6 +150,16 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 		Duel.SendtoGrave(sg,REASON_RULE)
 		c:SetMaterial(g)
 		Duel.Overlay(c,g)
+		if #g==1 and Duel.GetFlagEffect(tp,11451926)>0 then
+			local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
+			local g=Group.CreateGroup()
+			for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
+			if #g>1 then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+				g=g:Select(tp,1,1,nil)
+			end
+			Duel.RaiseSingleEvent(g:GetFirst(),EVENT_CUSTOM+11451926,e,0,tp,tp,0)
+		end
 		if g:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_HAND) then Duel.ShuffleHand(tp) end
 		g:DeleteGroup()
 	end
@@ -164,6 +184,16 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.RegisterFlagEffect(tp,11451481,0,0,1)
 			Duel.ResetFlagEffect(tp,11451482)
 		end
+	end
+	if (op==1 and Duel.GetFlagEffect(tp,11451481)>1) then
+		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
+		local g=Group.CreateGroup()
+		for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
+		if #g>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			g=g:Select(tp,1,1,nil)
+		end
+		Duel.RaiseSingleEvent(g:GetFirst(),EVENT_CUSTOM+11451926,e,0,tp,tp,0)
 	end
 	e:SetLabel(op)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
@@ -208,6 +238,16 @@ function cm.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.RegisterFlagEffect(tp,11451481,0,0,1)
 			Duel.ResetFlagEffect(tp,11451482)
 		end
+	end
+	if (op==1 and Duel.GetFlagEffect(tp,11451481)>1) then
+		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
+		local g=Group.CreateGroup()
+		for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
+		if #g>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			g=g:Select(tp,1,1,nil)
+		end
+		Duel.RaiseSingleEvent(g:GetFirst(),EVENT_CUSTOM+11451926,e,0,tp,tp,0)
 	end
 	c:RemoveOverlayCard(tp,2-op,2-op,REASON_COST)
 end
