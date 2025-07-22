@@ -47,7 +47,7 @@ function cm.spfilter(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGraveAsCost()
 end
 function cm.thfilter(c)
-	return c:IsRace(RACE_INSECT) and c:GetOriginalType()&0x1>0
+	return c:GetOriginalType()&TYPE_MONSTER>0 and ((c:IsLocation(LOCATION_MZONE) and c:IsRace(RACE_INSECT)) or (not c:IsLocation(LOCATION_MZONE) and c:GetOriginalRace()&RACE_INSECT>0)
 end
 function cm.spcon(e,c)
 	if c==nil then return true end

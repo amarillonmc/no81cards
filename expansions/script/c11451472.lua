@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.filter(c)
-	return c:GetOriginalType()&0x21==0x21 and c:IsRace(RACE_INSECT) and c:IsFaceup()
+	return c:GetOriginalType()&TYPE_MONSTER>0 and ((c:IsLocation(LOCATION_MZONE) and c:IsRace(RACE_INSECT) and c:IsType(TYPE_EFFECT)) or (not c:IsLocation(LOCATION_MZONE) and c:GetOriginalRace()&RACE_INSECT>0 and c:GetOriginalType()&TYPE_EFFECT>0)) and c:IsFaceup()
 end
 function cm.filter2(c)
 	return c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsAttackAbove(1000) and not c:IsHasEffect(EFFECT_REVERSE_UPDATE)
