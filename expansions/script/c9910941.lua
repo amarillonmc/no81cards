@@ -41,7 +41,13 @@ end
 function c9910941.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c9910941.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+	g:KeepAlive()
+	e:SetLabelObject(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+end
+function c9910941.hintfilter(c,tp)
+	return c:IsControler(tp) and c:IsLocation(LOCATION_HAND)
 end
 function c9910941.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -66,11 +72,15 @@ function c9910941.spop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e3,tp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	local g=e:GetLabelObject():Filter(c9910941.hintfilter,nil,tp)
+	if #g>0 then Duel.HintSelection(g) end
+	e:GetLabelObject():DeleteGroup()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c9910941.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	local sg=Duel.SelectMatchingCard(tp,c9910941.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	if sg:GetCount()>0 then
+		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
+	Duel.ShuffleHand(tp)
 end
 function c9910941.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3954)
