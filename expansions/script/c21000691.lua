@@ -78,7 +78,7 @@ end
 
 function s.cfilter(c,tp,rp)
 	local ph=Duel.GetCurrentPhase()
-	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousSetCard(0x605) and ((c:IsReason(REASON_BATTLE)) or (rp==1-tp and c:IsReason(REASON_EFFECT))) and c:IsPreviousControler(tp)
+	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousSetCard(0x605) and ((c:IsReason(REASON_BATTLE) and c:GetReasonCard():IsControler(1-tp)) or (rp==1-tp and c:IsReason(REASON_EFFECT))) and c:IsPreviousControler(tp)
 end
 function s.con2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter,1,nil,tp,rp) and not eg:IsContains(e:GetHandler())
