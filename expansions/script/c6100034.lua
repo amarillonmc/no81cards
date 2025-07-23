@@ -90,11 +90,11 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
-		if Duel.GetMatchingGroupCount(nil,1-tp,LOCATION_GRAVE,0,nil)>=5
+		if Duel.GetMatchingGroupCount(nil,1-tp,LOCATION_GRAVE,0,nil)>=5 
 			and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-			local tc=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,nil)
+			local tc=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
 			local f=Duel.GetMatchingGroupCount(nil,1-tp,LOCATION_GRAVE,0,nil)
-			if tc:IsPosition(POS_FACEUP) then
+			if tc:IsFaceup() then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_UPDATE_ATTACK)
@@ -102,6 +102,6 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1)
 			end
-		end	 
+		end  
 	end
 end
