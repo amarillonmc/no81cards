@@ -30,16 +30,16 @@ function c95101128.initial_effect(c)
 	e3:SetOperation(c95101128.operation)
 	c:RegisterEffect(e3)
 end
-function c95101128.thfilter(c,chk)
+function c95101128.pfilter(c,chk)
 	return aux.IsCodeListed(c,95101001) and c:IsType(TYPE_PENDULUM) and c:IsFaceup() and c:IsAbleToHand() and (chk==0 or aux.NecroValleyFilter()(c))
 end
 function c95101128.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c95101128.thfilter,tp,LOCATION_EXTRA,0,2,nil,0) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c95101128.pfilter,tp,LOCATION_EXTRA,0,2,nil,0) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_EXTRA)
 end
 function c95101128.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tg=Duel.SelectMatchingCard(tp,c95101128.thfilter,tp,LOCATION_EXTRA,0,2,2,nil,1)--:GetFirst()
+	local tg=Duel.SelectMatchingCard(tp,c95101128.pfilter,tp,LOCATION_EXTRA,0,2,2,nil,1)--:GetFirst()
 	if #tg==2 then
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tg)
