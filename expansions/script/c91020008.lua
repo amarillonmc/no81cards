@@ -16,7 +16,7 @@ function c91020008.initial_effect(c)
 	e2:SetCondition(cm.spcon)
 	e2:SetTarget(cm.tg2)
 	e2:SetOperation(cm.op2)
-
+	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)

@@ -63,7 +63,7 @@ function c67201405.spfilter(c,e,tp)
 	return c:IsSetCard(0x3675) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c67201405.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c67201405.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(c67201405.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_GRAVE)
 end
 function c67201405.spop1(e,tp,eg,ep,ev,re,r,rp)
