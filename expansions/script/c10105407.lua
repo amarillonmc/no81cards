@@ -1,6 +1,6 @@
 function c10105407.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,nil,2,99,c10105407.lcheck)
+	aux.AddLinkProcedure(c,nil,2,2,c10105407.lcheck)
 	c:EnableReviveLimit()
     	 --tohand
 	local e1=Effect.CreateEffect(c)
