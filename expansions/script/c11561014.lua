@@ -49,36 +49,38 @@ function c11561014.addop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		c:AddCounter(0x1,x)
 	end
-end 
-function c11561014.tkfil(c,e,tp) 
-	local zone=e:GetHandler():GetLinkedZone()
-	return c:IsType(TYPE_MONSTER) Duel.IsPlayerCanSpecialSummonMonster(tp,11561015,0,TYPES_TOKEN_MONSTER,c:GetAttack(),2500,8,c:GetRace(),c:GetAttribute())   
-end 
+end
 function c11561014.ctcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x1,3,REASON_COST) end
 	Duel.RemoveCounter(tp,1,0,0x1,3,REASON_COST)  
 end 
 function c11561014.tkcost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	local g=Duel.GetMatchingGroup(function(c) return c:IsFaceup() and c:IsCode(11561015) end,tp,LOCATION_MZONE,0,nil) 
-	if chk==0 then return (g:GetCount()==0 or not g:IsExists(function(c) return not c:IsReleasable() end,1,nil)) and c11561014.ctcost(e,tp,eg,ep,ev,re,r,rp,0) end 
-	if g:GetCount()>0 then 
+	if chk==0 then return (g:GetCount()==0 or not g:IsExists(function(c) return not c:IsReleasable() end,1,nil)) and c11561014.ctcost(e,tp,eg,ep,ev,re,r,rp,0) end
+	if g:GetCount()>0 then
 		Duel.Release(g,REASON_COST)
-	end 
-	c11561014.ctcost(e,tp,eg,ep,ev,re,r,rp,1) 
-end 
-function c11561014.tktg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local zone=e:GetHandler():GetLinkedZone()  
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)>0 and Duel.IsExistingTarget(c11561014.tkfil,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,nil,e,tp) end 
+	end
+	c11561014.ctcost(e,tp,eg,ep,ev,re,r,rp,1)
+end
+function c11561014.tkfil(c,e,tp) 
+	local zone=bit.band(e:GetHandler():GetLinkedZone(tp),0x1f)
+	return c:IsType(TYPE_MONSTER) and Duel.IsPlayerCanSpecialSummonMonster(tp,11561015,0,TYPES_TOKEN_MONSTER,c:GetAttack(),2500,8,c:GetRace(),c:GetAttribute(),POS_FACEUP,tp,0,zone)
+end
+function c11561014.tktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local zone=bit.band(c:GetLinkedZone(tp),0x1f)
+	if chk==0 then return zone~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)>0
+		and Duel.IsExistingTarget(c11561014.tkfil,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,nil,e,tp) end 
 	local g=Duel.SelectTarget(tp,c11561014.tkfil,tp,LOCATION_MZONE+LOCATION_GRAVE,LOCATION_MZONE+LOCATION_GRAVE,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)  
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
-function c11561014.tkop(e,tp,eg,ep,ev,re,r,rp) 
-	local c=e:GetHandler() 
-		local zone=e:GetHandler():GetLinkedZone()
-		local ec=Duel.GetFirstTarget()
-		if not ec:IsRelateToEffect(e) or ec:IsFacedown() then return end
-		if Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,11561015,0,TYPES_TOKEN_MONSTER,ec:GetAttack(),2500,8,ec:GetRace(),ec:GetAttribute()) then return end
+function c11561014.tkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local zone=bit.band(c:GetLinkedZone(tp),0x1f)
+	local ec=Duel.GetFirstTarget()
+	if not ec:IsRelateToEffect(e) or ec:IsFacedown() then return end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)<=0 or not Duel.IsPlayerCanSpecialSummonMonster(tp,11561015,0,TYPES_TOKEN_MONSTER,ec:GetAttack(),2500,8,ec:GetRace(),ec:GetAttribute(),POS_FACEUP,tp,0,zone) then return end
 		ec:RegisterFlagEffect(11561014,RESET_EVENT+0x17a0000,0,0)
 		local token=Duel.CreateToken(tp,11561015)
 		local e1=Effect.CreateEffect(e:GetHandler())

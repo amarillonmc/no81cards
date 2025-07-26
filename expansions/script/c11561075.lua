@@ -33,13 +33,12 @@ function cm.initial_effect(c)
 	e3:SetTarget(c11561075.thtg)
 	e3:SetOperation(c11561075.thop)
 	c:RegisterEffect(e3)
-	
 end
 function c11561075.thfilter1(c)
-	return c:IsType(TYPE_MONSTER) and c:IsLevelAbove(0) and Duel.IsExistingTarget(c11561075.thfilter2,tp,0,LOCATION_GRAVE,1,nil,c)
+	return c:IsType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(c11561075.thfilter2,tp,LOCATION_DECK,0,1,nil,c)
 end
 function c11561075.thfilter2(c,tc)
-	return c:IsLevel(tc:GetLevel()) and not c:IsAttribute(tc:GetAttribute()) and c:IsAbleToHand()
+	return c:IsAttribute(tc:GetAttribute()) and not c:IsRace(tc:GetRace()) and c:IsAbleToHand()
 end
 function c11561075.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(1-tp) and c11561075.thfilter1(chkc) end
@@ -50,13 +49,13 @@ function c11561075.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c11561075.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c11561075.thfilter2,tp,LOCATION_DECK,0,1,1,nil,tc)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
-
 end
 function c11561075.atkval(e,c)
 	return Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,LOCATION_GRAVE)*e:GetHandler():GetCounter(0x1)*100
