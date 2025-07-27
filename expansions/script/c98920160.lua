@@ -32,9 +32,9 @@ function c98920160.cfilter(c,e,tp)
 		and Duel.GetMZoneCount(tp,c)>0 and Duel.IsExistingMatchingCard(c98920160.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c:GetCode())
 end
 function c98920160.cost(e,tp,eg,ep,ev,re,r,rp,chk)   
-	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c98920160.cfilter,1,nil,e,tp) end
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c98920160.cfilter,1,REASON_COST,true,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroupEx(tp,c98920160.cfilter,1,1,nil,e,tp)
+	local g=Duel.SelectReleaseGroupEx(tp,c98920160.cfilter,1,1,REASON_COST,true,nil,e,tp)
 	e:SetLabel(g:GetFirst():GetCode())
 	Duel.Release(g,REASON_COST)
 end

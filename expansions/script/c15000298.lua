@@ -37,7 +37,9 @@ end
 function cm.valcheck(e,c)
 	local mg=c:GetMaterial()
 	local tc=mg:Filter(Card.IsFusionCode,nil,89943723):GetFirst()
-	mg:RemoveCard(tc)
+	if tc then
+	    mg:RemoveCard(tc)
+	end
 	if mg:IsExists(Card.IsFusionSetCard,1,nil,0x9) then
 		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1)
 	end
@@ -55,7 +57,9 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local mg=c:GetMaterial()
 	local tc=mg:Filter(Card.IsFusionCode,nil,89943723):GetFirst()
-	mg:RemoveCard(tc)
+	if tc then
+	    mg:RemoveCard(tc)
+	end
 	if mg:IsExists(Card.IsFusionSetCard,1,nil,0x9) or c:GetFlagEffect(0)~=0 then
 		--activate limit - xinyu
 		local e1=Effect.CreateEffect(c)

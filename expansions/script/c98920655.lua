@@ -43,14 +43,14 @@ end
 function c98920655.fselect(g,e,tp)
 	return aux.drccheck(g) and g:IsExists(Card.IsAbleToHand,2,nil) and g:IsExists(Card.IsCanBeSpecialSummoned,1,nil,e,0,tp,false,false)
 end
-function c98920655.spfilter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c98920655.atfilter(c,e,tp)
+	return c:IsAbleToHand()
 end
 function c98920655.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	if tg:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=tg:FilterSelect(tp,c98920655.spfilter,1,1,nil,e,tp)
+		local sg=tg:FilterSelect(tp,c98920655.atfilter,1,1,nil,e,tp)
 		if sg:GetCount()>0 then
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 			tg:Sub(sg)
