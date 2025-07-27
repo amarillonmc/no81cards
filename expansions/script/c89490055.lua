@@ -73,9 +73,8 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		if op==1 then
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)
-		else
+		elseif op==2 then
 			local xg=Duel.SelectMatchingCard(tp,s.xfilter,tp,LOCATION_MZONE,0,1,1,nil)
-			if #xg<=0 then return end
 			Duel.Overlay(xg:GetFirst(),tc)
 		end
 	end

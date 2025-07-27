@@ -17,16 +17,18 @@ function c9910386.initial_effect(c)
 	e2:SetTargetRange(1,0)
 	e2:SetTarget(c9910386.sumlimit)
 	c:RegisterEffect(e2)
-	--draw
+	--spsummon
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
+	e3:SetDescription(aux.Stringid(9910386,1))
+	e3:SetCategory(CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_TO_DECK)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetRange(LOCATION_FZONE)
-	e3:SetCode(EVENT_PHASE+PHASE_END)
-	e3:SetCountLimit(1)
-	e3:SetCondition(c9910386.drcon)
-	e3:SetTarget(c9910386.drtg)
-	e3:SetOperation(c9910386.drop)
+	e3:SetCountLimit(1,9910386)
+	e3:SetCondition(c9910386.spcon)
+	e3:SetTarget(c9910386.sptg)
+	e3:SetOperation(c9910386.spop)
 	c:RegisterEffect(e3)
 end
 function c9910386.thfilter(c)
@@ -45,28 +47,26 @@ end
 function c9910386.sumlimit(e,c,sump,sumtype,sumpos,targetp)
 	return c:IsLocation(LOCATION_EXTRA)
 end
-function c9910386.drcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+function c9910386.cfilter(c,tp)
+	return c:IsPreviousControler(tp) and c:IsSetCard(0x5951) and c:IsPreviousSetCard(0x5951)
+		and c:IsType(TYPE_MONSTER) and c:IsLocation(LOCATION_DECK) and c:IsPreviousLocation(LOCATION_MZONE)
+		and c:IsPreviousPosition(POS_FACEUP)
 end
-function c9910386.drfilter(c)
-	return c:IsSetCard(0x5951) and c:IsAbleToDeck()
+function c9910386.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c9910386.cfilter,1,nil,tp)
 end
-function c9910386.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp)
-		and Duel.IsExistingMatchingCard(c9910386.drfilter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND)
+function c9910386.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=1 end
 end
-function c9910386.drop(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(p,c9910386.drfilter,p,LOCATION_HAND,0,1,63,nil)
-	if g:GetCount()>0 then
-		Duel.ConfirmCards(1-p,g)
-		local ct=Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
-		Duel.ShuffleDeck(p)
-		Duel.BreakEffect()
-		Duel.Draw(p,ct,REASON_EFFECT)
+function c9910386.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<1 then return false end
+	Duel.ConfirmDecktop(tp,1)
+	local g=Duel.GetDecktopGroup(tp,1)
+	local tc=g:GetFirst()
+	Duel.DisableShuffleCheck()
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) then
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	else
+		Duel.MoveSequence(tc,SEQ_DECKBOTTOM)
 	end
 end

@@ -96,7 +96,7 @@ function c95101145.accost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,c95101145.disfilter,1,1,REASON_COST+REASON_DISCARD,nil,tp)
 end
 function c95101145.acfilter(c,tp,chk)
-	return c:IsSetCard(0xbbf) and c:IsType(TYPE_FIELD)
+	return c:IsSetCard(0xbbf) and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
 		and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true)
 		and (chk==0 or aux.NecroValleyFilter()(c))
 end

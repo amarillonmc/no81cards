@@ -25,6 +25,14 @@ function c9910937.initial_effect(c)
 	e2:SetTarget(c9910937.thtg)
 	e2:SetOperation(c9910937.thop)
 	c:RegisterEffect(e2)
+	--leave
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_TO_HAND)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetCondition(c9910937.flagcon)
+	e3:SetOperation(c9910937.flagop)
+	c:RegisterEffect(e3)
 	Duel.AddCustomActivityCounter(9910937,ACTIVITY_CHAIN,c9910937.chainfilter)
 end
 function c9910937.chainfilter(re,tp,cid)
@@ -99,4 +107,11 @@ function c9910937.thop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+end
+function c9910937.flagcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+		and e:GetHandler():IsPreviousPosition(POS_FACEUP)
+end
+function c9910937.flagop(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910937,3))
 end

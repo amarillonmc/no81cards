@@ -115,7 +115,7 @@ function cm.adcon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter,1,nil,tp)
 end
 function cm.sfilter(c)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsLevel(1) --and c:IsType(TYPE_TUNER)
+	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsLevel(1) and c:IsType(TYPE_TUNER)
 end
 function cm.cfilter(c,syn,tp)
 	local g=aux.GetSynMaterials(tp,syn)

@@ -23,7 +23,7 @@ function s.chaincon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>2 or Duel.GetFlagEffect(tp,id)==0
 end
 function s.filter(c,mg)
-	return c:IsFacedown() and c:IsLevel(9) and mg:IsExists(s.gcheck,1,nil,c)
+	return c:IsFacedown() and c:IsCode(89390101,89390103,89390107,89390109) and mg:IsExists(s.gcheck,1,nil,c)
 end
 function s.gcheck(c,tc)
 	return c:IsType(TYPE_MONSTER) and c:IsRace(tc:GetRace()) and c:IsAttribute(tc:GetAttribute()) and c:IsLevel(3) and c:IsAbleToRemove()

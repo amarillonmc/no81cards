@@ -34,8 +34,8 @@ function s.discon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAttackPos() end
-	Duel.ChangePosition(e:GetHandler(),POS_FACEUP_DEFENSE)
+	if chk==0 then return c:IsAttackPos() and not c:IsHasEffect(EFFECT_SET_POSITION) end
+	Duel.ChangePosition(c,POS_FACEUP_DEFENSE)
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,2) end
