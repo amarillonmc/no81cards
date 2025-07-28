@@ -89,11 +89,13 @@ end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local g=Group.CreateGroup()
+		local c=e:GetHandler()
 		for i=1,Duel.GetCurrentChain() do
 			local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
 			local tc=te:GetHandler()
 			if tc:IsRelateToEffect(te) and (tc:IsReleasableByEffect() or (tc:IsLocation(LOCATION_HAND) and tc:IsType(TYPE_SPELL+TYPE_TRAP) and not tc:IsHasEffect(EFFECT_UNRELEASABLE_EFFECT) and not tc:IsHasEffect(EFFECT_UNRELEASABLE_NONSUM) and not Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE))) then g:AddCard(tc) end
 		end
+		if e:IsHasType(EFFECT_TYPE_ACTIVATE) or c:IsReleasableByEffect() then g:AddCard(c) end
 		return #g>0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,#g*2)
 	end
 	local g=Group.CreateGroup()
