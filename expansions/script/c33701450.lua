@@ -199,7 +199,7 @@ function cm.rlcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.PayLPCost(tp,1000)
 end
 function cm.rtg(c,tp)
-	return Duel.IsPlayerCanSendtoGrave(1-tp,c) 
+	return true --Duel.IsPlayerCanSendtoGrave(1-tp,c) 
 end
 function cm.rltg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=e:GetLabel()
