@@ -94,7 +94,7 @@ function c22348313.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c22348313.desfilter(c)
-	return aux.NegateMonsterFilter(c) and c:IsPosition(POS_FACEUP_ATTACK) and not c:IsAttack(c:GetBaseAttack())
+	return aux.NegateMonsterFilter(c) and c:IsPosition(POS_FACEUP) and not c:IsAttack(c:GetBaseAttack())
 end
 function c22348313.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c22348313.desfilter(chkc) end
