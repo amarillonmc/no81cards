@@ -30,7 +30,7 @@ function c95101155.initial_effect(c)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1,95101155)
-	e4:SetCondition(Duel.IsMainPhase)
+	e4:SetCondition(c95101155.condition)
 	e4:SetCost(c95101155.cost)
 	e4:SetTarget(c95101155.thtg)
 	e4:SetOperation(c95101155.thop)
@@ -48,6 +48,10 @@ end
 function c95101155.mfilter(c,xyzc)
 	return c:IsXyzType(TYPE_PENDULUM) and c:IsAttribute(ATTRIBUTE_WATER)
 end
+function c95101155.condition(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
+	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2--Duel.IsMainPhase()
+end
 function c95101155.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=e:GetLabel()
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,ct,REASON_COST) end
@@ -59,14 +63,14 @@ function c95101155.thfilter(c,chk)
 end
 function c95101155.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c95101155.thfilter,tp,LOCATION_DECK,0,1,nil,0) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c95101155.ofilter(c,e)
 	return c:IsSetCard(0xbbf) and c:IsType(TYPE_MONSTER) and c:IsCanOverlay() and (not e or not c:IsImmuneToEffect(e)) and aux.NecroValleyFilter()(c)
 end
 function c95101155.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,c95101155.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,1):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c95101155.thfilter,tp,LOCATION_DECK,0,1,1,nil,1):GetFirst()
 	if tc then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		if not tc:IsLocation(LOCATION_HAND) then return end

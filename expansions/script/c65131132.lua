@@ -54,11 +54,27 @@ function s.initial_effect(c)
 			card1:SetCardData(CARDDATA_TYPE,TYPE_EQUIP+TYPE_SPELL)
 			local count=_Equip(p,card1,card2,bool,...)
 			card1:SetCardData(CARDDATA_TYPE,ctype)
+			local init=s.initial_effect
+			s.initial_effect=function() end
+			local cid=card1:ReplaceEffect(id,RESET_EVENT+RESETS_STANDARD)
+			card1:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1,cid)
+			s.initial_effect=init
+			return count
+		elseif bool==false and card2:GetOriginalCode()==id then
+			local count=_Equip(p,card1,card2,bool,...)
+			local init=s.initial_effect
+			s.initial_effect=function() end
+			local cid=card1:ReplaceEffect(id,RESET_EVENT+RESETS_STANDARD)
+			card1:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1,cid)
+			s.initial_effect=init
 			return count
 		else
-			return _Equip(p,card1,card2,bool,...)
-		end
-		
+			--local cid=card1:GetFlagEffectLabel(id)
+			--if cid then card1:ResetEffect(cid,RESET_COPY) end
+			--card1:ResetFlagEffect(id)
+			local count=_Equip(p,card1,card2,bool,...)
+			return count
+		end		
 	end
 end
 
@@ -120,8 +136,7 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 					return
 				end
 				
-				if not Duel.Equip(tp,tc,c,false) then return end
-				
+				if not Duel.Equip(tp,tc,c,false) then return end				
 				--equip limit
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
