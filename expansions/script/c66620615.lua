@@ -1,10 +1,10 @@
 --绮奏斥律·梦骸返跃
 function c66620615.initial_effect(c)
 
-    -- 可以从自己的手卡·场上·墓地把1只「绮奏」怪兽除外，从以下效果选择1个发动
-    
-    -- 自己场上的「绮奏」怪兽为对象的效果由对方发动时才能发动，那个效果无效并破坏
-    local e1=Effect.CreateEffect(c)
+	-- 可以从自己的手卡·场上·墓地把1只「绮奏」怪兽除外，从以下效果选择1个发动
+	
+	-- 自己场上的「绮奏」怪兽为对象的效果由对方发动时才能发动，那个效果无效并破坏
+	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(66620615,0))
 	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -15,8 +15,8 @@ function c66620615.initial_effect(c)
 	e1:SetTarget(c66620615.distg)
 	e1:SetOperation(c66620615.disop)
 	c:RegisterEffect(e1)
-    
-    -- 对方把怪兽召唤·反转召唤·特殊召唤之际才能发动，那个无效，那些怪兽回到手卡
+	
+	-- 对方把怪兽召唤·反转召唤·特殊召唤之际才能发动，那个无效，那些怪兽回到手卡
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(66620615,1))
 	e2:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_DESTROY)
@@ -77,7 +77,7 @@ end
 
 -- 自己场上的「绮奏」怪兽为对象的效果由对方发动时才能发动，那个效果无效并破坏
 function c66620615.discfilter(c,tp)
-	return c:IsControler(tp) and c:IsSetCard(0x666a) and c:IsType(TYPE_MONSTER)
+	return c:IsControler(tp) and c:IsSetCard(0x666a) and c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsLocation(LOCATION_MZONE)
 end
 
 function c66620615.discon(e,tp,eg,ep,ev,re,r,rp)
