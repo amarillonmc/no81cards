@@ -50,8 +50,12 @@ end
 function c44401003.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local check=c:IsRelateToEffect(e) and c:IsSummonType(SUMMON_TYPE_NORMAL) and c:GetFlagEffect(44401003)==0
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-	local tc=Duel.SelectMatchingCard(tp,c44401003.cfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil,e,tp,check):GetFirst()
+	local tg=Duel.GetMatchingGroup(c44401003.cfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_DECK+LOCATION_REMOVED,0,nil,e,tp,check)
+	local tc=tg:GetFirst()
+	if #tg>1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+		tc=tg:Select(tp,1,1,nil):GetFirst()
+	end
 	if not tc then return end
 	if tc:IsLocation(LOCATION_HAND+LOCATION_MZONE) then
 		Duel.Summon(tp,tc,true,nil)
