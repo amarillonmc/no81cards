@@ -41,7 +41,8 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.atlimit(e,c)
-	return c:GetSpecialSummonInfo(SUMMON_INFO_REASON_EFFECT)~=nil and not c:IsImmuneToEffect(e)
+	local se=c:GetSpecialSummonInfo(SUMMON_INFO_REASON_EFFECT)
+	return se and se:IsHasType(EFFECT_TYPE_ACTIONS) and not c:IsImmuneToEffect(e)
 end
 function s.efilter(e,te)
 	return te:GetOwner():GetSpecialSummonInfo(SUMMON_INFO_REASON_EFFECT)~=nil
@@ -50,13 +51,23 @@ function s.qcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return Duel.IsPlayerAffectedByEffect(tp,89490011)~=nil and c:IsOriginalSetCard(0xc30) and c:IsLocation(LOCATION_MZONE) and c:IsType(TYPE_MONSTER)
 end
-function s.costfilter(c)
-	return c:IsRace(RACE_WYRM) and c:IsAttribute(ATTRIBUTE_FIRE)
+function s.costfilter(c,tp)
+	return c:IsReleasable() and (c:IsControler(tp) and c:IsRace(RACE_WYRM) and c:IsAttribute(ATTRIBUTE_FIRE) or c:IsControler(1-tp) and c:IsFaceup())
+end
+function s.fselect(g,tp,fe)
+	local ct=fe and 1 or 0
+	return g:FilterCount(Card.IsControler,nil,1-tp)<=ct
 end
 function s.rcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,s.costfilter,1,e:GetHandler()) end
+	local rlg=Duel.GetMatchingGroup(s.costfilter,tp,LOCATION_MZONE,LOCATION_MZONE,e:GetHandler(),tp)
+	local fe=Duel.IsPlayerAffectedByEffect(tp,89490080)
+	if chk==0 then return rlg:CheckSubGroup(s.fselect,1,#rlg,tp,fe) end
 	local ct=Duel.GetFieldGroup(tp,0,LOCATION_HAND):FilterCount(Card.IsAbleToRemove,nil)
-	local g=Duel.SelectReleaseGroup(tp,s.costfilter,1,ct,e:GetHandler())
+	local g=rlg:SelectSubGroup(tp,s.fselect,false,1,ct,tp,fe)
+	if g:IsExists(Card.IsControler,1,nil,1-tp) then
+		Duel.Hint(HINT_CARD,0,89490080)
+		fe:UseCountLimit(tp)
+	end
 	Duel.Release(g,REASON_COST)
 	e:SetLabel(#g)
 	if g:IsExists(Card.IsSetCard,1,nil,0xc30) then
