@@ -109,10 +109,12 @@ function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 		local password_second={}
 		while SB_password>1 do
 			password_second[1+#password_second]=math.floor(SB_password%8+1)
+			--Debug.Message(tostring(SB_password))
 			SB_password=math.floor(SB_password/8)
 		end
 		if #password_second<=0 then return end
 		for _,option in pairs(password_second) do
+			--Debug.Message(tostring(option))
 			for j=1,8 do
 				local num=j+option+1
 				num=num%8+1
@@ -125,6 +127,7 @@ function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 				if j==7 then password_new[j]=math.floor(password[num]*2/3+1) end
 				if j==8 then password_new[j]=math.floor(password[num]*(-1)+1) end
 			end
+			password={table.unpack(password_new)}
 		end
 		--password=password_new
 		password={table.unpack(password_new)}
@@ -132,9 +135,8 @@ function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 		for j=1,8 do
 			password_final=password_final+((j+1)*(password[j]^j))
 		end
-		--Debug.Message(tostring(password_final))
 		if --password_final<(-(10^33)) and math.ceil(password_final/(10^20))==-78158280878458 
-		password_final==824557903
+		password_final==8921781640159393
 		then e:SetLabel(100) end
 	end
 end
