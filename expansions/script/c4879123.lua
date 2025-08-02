@@ -94,7 +94,7 @@ function cm.thop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.filter1,tp,LOCATION_GRAVE,0,1,1,nil)
 	if #g>0 then
-	  Duel.SendtoGrave(tc,0,tp,tp,false,false,POS_FACEUP)
+	  Duel.SendtoGrave(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 end

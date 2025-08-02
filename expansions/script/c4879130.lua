@@ -61,10 +61,10 @@ function cm.nbfilter(c)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	  if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and aux.NegateAnyFilter(chkc) end
-    if chk==0 then return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-    local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,1,nil)
-    Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
+	if chk==0 then return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -96,7 +96,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return rp==tp and re:GetHandler():IsSetCard(0xae51) and not re:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+	return rp==tp and re:GetHandler():IsSetCard(0xae51) and not re:GetHandler():IsPreviousLocation(LOCATION_ONFIELD) and not re:GetHandler():IsLocation(LOCATION_ONFIELD)
 end
 function cm.cfilter(c)
 	return c:IsSetCard(0xae51) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
