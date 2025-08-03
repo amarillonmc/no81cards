@@ -64,7 +64,7 @@ function s.filter1(c)
 	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and not c:IsForbidden()
 end
 function s.filter1a(c)
-	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER) and c:GetOriginalType()&(TYPE_RITUAL+TYPE_MONSTER)~=0
+	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER) and c:GetOriginalType()&(TYPE_RITUAL+TYPE_MONSTER)==TYPE_RITUAL+TYPE_MONSTER
 end
 function s.getcolumns(g)
 	local cols={}

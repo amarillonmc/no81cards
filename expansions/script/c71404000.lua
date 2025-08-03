@@ -78,10 +78,10 @@ function c71404000.op1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c71404000.filter2a(c)
-	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER) and c:GetOriginalType()&(TYPE_RITUAL+TYPE_MONSTER)~=0
+	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER) and c:GetOriginalType()&(TYPE_RITUAL+TYPE_MONSTER)==TYPE_RITUAL+TYPE_MONSTER
 end
 function c71404000.filter2b(c)
-	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER) and c:GetOriginalType()&(TYPE_LINK+TYPE_MONSTER)~=0
+	return c:IsFaceup() and c:IsRace(RACE_SPELLCASTER) and c:GetOriginalType()&(TYPE_LINK+TYPE_MONSTER)==TYPE_LINK+TYPE_MONSTER
 end
 function c71404000.con2(e)
 	return Duel.IsExistingMatchingCard(c71404000.filter2a,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
@@ -622,7 +622,7 @@ function yume.stellar_memories.MultiRitualOperation(greater_or_equal,summon_loca
 				else
 					local lv=mc:GetLink()*2
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)aux.GCheckAdditional=yume.stellar_memories.MultiRitualCheckAdditional(lv)
-					local tg=mg:SelectSubGroup(tp,yume.stellar_memories.MultiRitualFSelect,true,1,ft,tp,lv)
+					local tg=sg:SelectSubGroup(tp,yume.stellar_memories.MultiRitualFSelect,true,1,ft,tp,lv)
 					aux.GCheckAdditional=nil
 					if not tg then goto cancel end
 					local tc=tg:GetFirst()
