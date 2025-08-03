@@ -150,7 +150,8 @@ function s.cfilter(c,p)
 	return c:IsPreviousLocation(LOCATION_DECK) and c:IsPreviousControler(p) and c:IsControler(p)
 end
 function s.reccon(e,tp,eg,ep,ev,re,r,rp)
-	return not eg:IsContains(e:GetHandler()) and eg:IsExists(aux.AlreadyInRangeFilter(e,s.cfilter),1,nil,1-tp)
+	local c=e:GetHandler()
+	return c:IsType(TYPE_CONTINUOUS) and not eg:IsContains(c) and eg:IsExists(aux.AlreadyInRangeFilter(e,s.cfilter),1,nil,1-tp)
 end
 function s.flaglabel(e,tp,eg,ep,ev,re,r,rp)
 	local fid=e:GetHandler():GetFieldID()
