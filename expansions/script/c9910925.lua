@@ -55,7 +55,7 @@ function c9910925.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(c9910925.spfilter,tp,LOCATION_ONFIELD,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local sg=g:SelectSubGroup(tp,aux.mzctcheck,false,2,2,tp)
-	Duel.SendtoGrave(sg,REASON_COST)
+	Duel.SendtoGrave(sg,REASON_SPSUMMON)
 end
 function c9910925.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(9910925)==0

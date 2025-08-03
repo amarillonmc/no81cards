@@ -54,7 +54,7 @@ function c9911514.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g1=Duel.SelectMatchingCard(tp,c9911514.costfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local g2=Duel.GetDecktopGroup(1-tp,1)
 	g1:Merge(g2)
-	Duel.SendtoGrave(g1,REASON_COST)
+	Duel.SendtoGrave(g1,REASON_SPSUMMON)
 	local og=Duel.GetOperatedGroup():Filter(Card.IsControler,nil,1-tp)
 	local tc1=og:GetFirst()
 	if tc1 then Duel.RaiseSingleEvent(c,EVENT_CUSTOM+9911514,e,0,0,tp,tc1:GetOriginalCodeRule()) end

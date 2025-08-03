@@ -6,7 +6,6 @@ function c29098630.initial_effect(c)
 	aux.EnableChangeCode(c,22702055,LOCATION_SZONE+LOCATION_GRAVE)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)

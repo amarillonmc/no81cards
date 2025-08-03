@@ -76,7 +76,7 @@ function c9911501.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(c9911501.costfilter,tp,LOCATION_HAND+LOCATION_DECK,0,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local sg=g:SelectSubGroup(tp,c9911501.fselect,false,2,2)
-	Duel.SendtoGrave(sg,REASON_COST)
+	Duel.SendtoGrave(sg,REASON_SPSUMMON)
 end
 function c9911501.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(9911501)>0

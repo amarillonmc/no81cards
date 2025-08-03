@@ -53,7 +53,7 @@ function c9911504.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g2=Duel.SelectMatchingCard(tp,c9911504.costfilter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,g1,tp,res)
 	g1:Merge(g2)
-	Duel.SendtoGrave(g1,REASON_COST)
+	Duel.SendtoGrave(g1,REASON_SPSUMMON)
 end
 function c9911504.thcon1(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
