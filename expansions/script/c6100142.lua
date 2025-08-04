@@ -47,7 +47,7 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)	
 		end
 		local cg=e:GetHandler():GetColumnGroup():Filter(Card.IsControler,nil,1-tp)
-		if #cg and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+		if #cg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.Destroy(cg,REASON_EFFECT)
 		end
 end

@@ -135,6 +135,7 @@ function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.chkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
+	if rp~=0 and rp~=1 then return end
 	while tc do
 		if tc:IsLocation(LOCATION_MZONE) and tc:IsPreviousLocation(LOCATION_MZONE) and (tc:GetPreviousSequence()~=tc:GetSequence() or tc:GetPreviousControler()~=tc:GetControler()) then
 			tc:RegisterFlagEffect(m+rp,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
@@ -147,6 +148,7 @@ function cm.chkop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.chkop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
+	if rp~=0 and rp~=1 then return end
 	while tc do
 		tc:RegisterFlagEffect(m+rp,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
 		cm[rp][tc:GetCode()]=true
@@ -202,7 +204,7 @@ function cm.desop11(e,tp,eg,ep,ev,re,r,rp)
 	local hg=eg:Filter(Card.IsPreviousLocation,nil,LOCATION_HAND)
 	local left=#hg>0 --==#eg
 	if #g>0 then
-		for p=0,1 do
+		for p in aux.TurnPlayers() do
 			for loc=LOCATION_SZONE,LOCATION_MZONE,LOCATION_MZONE-LOCATION_SZONE do
 				if left then
 					for seq=0,4 do

@@ -41,10 +41,11 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.atlimit(e,c)
-	return c:IsLevel(0) and not c:IsImmuneToEffect(e)
+	return c:IsType(TYPE_MONSTER) and c:IsLevel(0) and not c:IsImmuneToEffect(e)
 end
 function s.efilter(e,te)
-	return te:GetOwner():IsLevel(0)
+	local tc=te:GetOwner()
+	return tc:IsType(TYPE_MONSTER) and tc:IsLevel(0)
 end
 function s.qcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

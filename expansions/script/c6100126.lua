@@ -164,9 +164,5 @@ function s.scop(e,tp,eg,ep,ev,re,r,rp)
 	e0:SetTarget(s.mttg2)
 	e0:SetOperation(s.mtop2)
 	c:RegisterEffect(e0)
-	   if b and Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id, 3)) then
-		local rc=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
-		Duel.SendtoHand(rc,nil,REASON_EFFECT)
-		end
 	end
 end

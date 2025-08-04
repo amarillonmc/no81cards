@@ -53,11 +53,12 @@ end
 function s.rttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and s.rtfilter(chkc) end
 	 if chk==0 then return Duel.IsExistingTarget(s.rtfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
-		and ((Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(s.tgfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)>0)
+		and ((Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(s.tgfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)
 		or Duel.IsExistingMatchingCard(s.nbfilter,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(s.tgfilter2,tp,LOCATION_DECK,0,1,nil))
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,s.rtfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,3,nil)
+	Duel.HintSelection(g)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,3,0,0)
 end
 

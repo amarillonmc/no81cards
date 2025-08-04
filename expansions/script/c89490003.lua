@@ -1,7 +1,6 @@
 --炯眼之吽
 local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,89490004)
 	local e1=aux.AddRitualProcGreater2Code(c,89490004,LOCATION_HAND,nil,nil,true,s.extraop)
 	e1:SetCategory(e1:GetCategory()|CATEGORY_DRAW)
 	c:RegisterEffect(e1)
@@ -14,8 +13,11 @@ function s.initial_effect(c)
 	e2:SetOperation(s.repop)
 	c:RegisterEffect(e2)
 end
+function s.filter(c)
+	return c:IsSetCard(0xc30) and c:IsReason(REASON_RELEASE)
+end
 function s.extraop(e,tp,eg,ep,ev,re,r,rp,tc,mat)
-	if mat:IsExists(Card.IsSetCard,1,nil,0xc30) then
+	if mat:IsExists(s.filter,1,nil) then
 		Duel.BreakEffect()
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
