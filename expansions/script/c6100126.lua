@@ -115,13 +115,9 @@ function s.mtop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function s.pbfilter(c)
-	return c:IsSetCard(0x611) and not c:IsPublic()
-end
-
 -- 效果②：赋予场发效果
 function s.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.pbfilter,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 end
 

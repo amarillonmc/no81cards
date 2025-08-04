@@ -28,7 +28,6 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
-	e2:SetCondition(s.setcon)
 	e2:SetTarget(s.settg)
 	e2:SetOperation(s.setop)
 	c:RegisterEffect(e2)
@@ -82,14 +81,6 @@ function s.distg(e,c)
 end
 
 
-function s.cfilter1(c,se)
-	if not (se==nil or c:GetReasonEffect()~=se) then return false end
-	local code1,code2=c:GetPreviousCodeOnField()
-	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP) and (code1==65812000 or code2==65812000)
-end
-function s.setcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(s.cfilter1,1,nil,se) and not eg:IsContains(e:GetHandler())
-end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeck() and Duel.GetFlagEffect(tp,id+1)==0 end
 	local ph=Duel.GetCurrentPhase()
