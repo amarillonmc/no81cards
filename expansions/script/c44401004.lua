@@ -45,9 +45,8 @@ function c44401004.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local check=c:IsRelateToEffect(e) and c:IsSummonType(SUMMON_TYPE_NORMAL) and c:GetFlagEffect(44401004)==0
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,1,nil)
-	if g:GetCount()~=1 then return end
-	if Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and check
-		and Duel.IsExistingMatchingCard(c44401004.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil)
+	if g:GetCount()~=0 then Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT) end
+	if check and Duel.IsExistingMatchingCard(c44401004.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(44401004,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tg=Duel.SelectMatchingCard(tp,c44401004.thfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,1,nil)
