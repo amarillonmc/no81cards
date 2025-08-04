@@ -13,17 +13,17 @@ function s.initial_effect(c)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.mtcon)
 	e1:SetTarget(s.mttg)
-	e1:SetOperation(s.matop)
+	e1:SetOperation(s.mtop)
 	c:RegisterEffect(e1)
 	--Equip
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_EQUIP+CATEGORY_COUNTER)
+	e2:SetCategory(CATEGORY_ATKCHANGE)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetRange(LOCATION_MZONE) 
 	e2:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e2:SetTarget(s.tg)
-	e2:SetOperation(s.op)
+	e2:SetCost(s.atkcost)
+	e2:SetOperation(s.atkop)
 	c:RegisterEffect(e2)
 	--act limit
 	local e4=Effect.CreateEffect(c)
@@ -39,7 +39,7 @@ function s.mtcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetSummonType()==SUMMON_TYPE_XYZ
 end
 function s.mtfilter(c)
-	return c:IsSetCard(0x2c0) and c:IsCanOverlay() and c:IsType(TYPE_EQUIP)
+	return (c:IsSetCard(0xa2c1) or (c:IsSetCard(0x2c0) and c:IsType(TYPE_EQUIP))) and c:IsCanOverlay()
 end
 function s.mttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ)
@@ -49,34 +49,25 @@ function s.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectMatchingCard(tp,s.mtfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,3,nil)
+	local g=Duel.SelectMatchingCard(tp,s.mtfilter,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,2,nil)
 	if g:GetCount()>0 then
 		Duel.Overlay(c,g)
 	end
 end
-function s.filter(c,ec)
-	return c:IsSetCard(0x2c0) and c:IsType(TYPE_EQUIP) and c:CheckEquipTarget(ec)
+function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local g=c:GetOverlayGroup()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and g:IsExists(s.eqfilter,1,nil,c) end
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_OVERLAY)
-end
-function s.op(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-	local c=e:GetHandler()
-	local og=c:GetOverlayGroup()
-	if c:IsFacedown() or not c:IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g=og:FilterSelect(tp,s.eqfilter,1,1,nil,c)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.Equip(tp,tc,c,true)
-		if tc:IsCanAddCounter(0x1b,2) then
-			tc:AddCounter(0x1b,2)
-		end
-	end
+function s.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_UPDATE_ATTACK)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa2c1))
+	e1:SetValue(500)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
 function s.chaincon(e)
 	local ph=Duel.GetCurrentPhase()

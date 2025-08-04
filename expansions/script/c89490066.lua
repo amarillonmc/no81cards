@@ -56,17 +56,35 @@ end
 function s.tgfilter(c)
 	return c:IsRace(RACE_WYRM) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsType(TYPE_MONSTER) and c:IsAbleToGraveAsCost()
 end
+function s.rlfilter(c)
+	return c:IsFaceup() and c:IsReleasable()
+end
 function s.rcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local fe=Duel.IsPlayerAffectedByEffect(tp,89490052)
-	local b1=fe and Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil)
-	local b2=Duel.CheckReleaseGroup(tp,s.costfilter,1,e:GetHandler())
-	if chk==0 then return b1 or b2 end
-	if b1 and (not b2 or Duel.SelectYesNo(tp,fe:GetDescription())) then
+	local fe1=Duel.IsPlayerAffectedByEffect(tp,89490052)
+	local b1=fe1 and Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil)
+	local fe2=Duel.IsPlayerAffectedByEffect(tp,89490080)
+	local b2=fe2 and Duel.IsExistingMatchingCard(s.rlfilter,tp,0,LOCATION_MZONE,1,nil)
+	local b3=Duel.CheckReleaseGroup(tp,s.costfilter,1,e:GetHandler())
+	if chk==0 then return b1 or b2 or b3 end
+	local op=aux.SelectFromOptions(tp,{b1,fe1 and fe1:GetDescription() or nil},{b2,fe2 and fe2:GetDescription() or nil},{b3,1150})
+	if op==1 then
 		Duel.Hint(HINT_CARD,0,89490052)
-		fe:UseCountLimit(tp)
+		fe1:UseCountLimit(tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 		local g=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 		Duel.SendtoGrave(g,REASON_COST)
+	elseif op==2 then
+		Duel.Hint(HINT_CARD,0,89490080)
+		fe2:UseCountLimit(tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		local g=Duel.SelectMatchingCard(tp,s.rlfilter,tp,0,LOCATION_MZONE,1,1,nil)
+		local tc=g:GetFirst()
+		Duel.Release(tc,REASON_COST)
+		if tc:IsSetCard(0xc30) then
+			e:SetProperty(e:GetProperty()|EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN)
+		else
+			e:SetProperty(e:GetProperty()&~(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN))
+		end
 	else
 		local g=Duel.SelectReleaseGroup(tp,s.costfilter,1,1,e:GetHandler())
 		local tc=g:GetFirst()

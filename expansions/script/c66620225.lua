@@ -9,8 +9,8 @@ function s.initial_effect(c)
 	-- 「绮奏」怪兽＋机械族怪兽
 	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x666a),aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),true)
 	
-	-- 把自己手卡·场上的上记卡送去墓地的场合才能从额外卡组特殊召唤
-	aux.AddContactFusionProcedure(c,s.cfilter0,LOCATION_HAND+LOCATION_ONFIELD,0,Duel.SendtoGrave,REASON_COST)
+	-- 把自己的场上的上记的卡解放的场合才能从额外卡组特殊召唤
+	aux.AddContactFusionProcedure(c,aux.FilterBoolFunction(Card.IsReleasable,REASON_SPSUMMON),LOCATION_MZONE,0,Duel.Release,REASON_SPSUMMON+REASON_MATERIAL)
 	
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -44,13 +44,10 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
--- 把自己手卡·场上的上记卡送去墓地的场合才能从额外卡组特殊召唤
-function s.cfilter0(c)
-	return c:IsAbleToGraveAsCost() and c:IsType(TYPE_MONSTER)
-end
-
+-- 把自己的场上的上记的卡解放的场合才能从额外卡组特殊召唤
 function s.splimit(e,se,sp,st)
-	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
+	local c=e:GetHandler()
+	return not c:IsLocation(LOCATION_EXTRA) or c:IsFaceup()
 end
 
 -- 这张卡特殊召唤的场合才能发动，从自己的卡组·墓地选1张「绮奏」卡加入手卡，那之后，选1张手卡丢弃
@@ -99,8 +96,8 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
 		local mg1=Duel.GetMatchingGroup(s.filter0,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,e)
-        local mg2=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.filter1),tp,LOCATION_REMOVED,0,nil,e)
-        mg1:Merge(mg2)
+		local mg2=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.filter1),tp,LOCATION_REMOVED,0,nil,e)
+		mg1:Merge(mg2)
 		local res=Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)

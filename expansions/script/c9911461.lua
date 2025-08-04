@@ -1,12 +1,14 @@
 --闪蝶幻乐手 桐谷透子
 function c9911461.initial_effect(c)
-	--destroy
+	--spsummon or destroy
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,9911461)
-	e1:SetOperation(c9911461.desop)
+	e1:SetTarget(c9911461.stg)
+	e1:SetOperation(c9911461.sop)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -47,52 +49,61 @@ function c9911461.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_DELAY)
 	end
 end
-function c9911461.desop(e,tp,eg,ep,ev,re,r,rp)
-	local e0=Effect.CreateEffect(e:GetHandler())
-	e0:SetDescription(aux.Stringid(9911461,0))
-	e0:SetType(EFFECT_TYPE_FIELD)
-	e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
-	e0:SetTargetRange(1,0)
-	e0:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e0,tp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_ADJUST)
-	e1:SetCondition(c9911461.descon2)
-	e1:SetOperation(c9911461.desop2)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_SOLVING)
-	e2:SetCountLimit(1)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	e2:SetCondition(c9911461.discon)
-	e2:SetOperation(c9911461.disop)
-	Duel.RegisterEffect(e2,tp)
+function c9911461.spfilter(c,e,tp)
+	return c:IsSetCard(0x3952) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c9911461.cfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x3952) and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE)
+function c9911461.cfilter(c)
+	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)
+		and (c:IsType(TYPE_SPELL+TYPE_TRAP) or c:GetColumnGroup():IsExists(Card.IsType,1,nil,TYPE_SPELL+TYPE_TRAP))
 end
-function c9911461.desfilter2(c,tp)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:GetColumnGroup():IsExists(c9911461.cfilter,1,nil,tp)
-end
-function c9911461.descon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c9911461.desfilter2,tp,0,LOCATION_ONFIELD,1,nil,tp)
-end
-function c9911461.desop2(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c9911461.desfilter2,tp,0,LOCATION_ONFIELD,nil,tp)
-	if #g>0 then
-		Duel.Destroy(g,REASON_EFFECT)
+function c9911461.stg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+			and Duel.IsExistingMatchingCard(c9911461.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
+		local b2=Duel.IsExistingMatchingCard(c9911461.cfilter,tp,LOCATION_MZONE,0,1,nil)
+		return b1 or b2
 	end
 end
-function c9911461.discon(e,tp,eg,ep,ev,re,r,rp)
-	local attr=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_ATTRIBUTE)
-	return re:IsActiveType(TYPE_MONSTER) and attr&ATTRIBUTE_LIGHT==0 and attr&ATTRIBUTE_DARK==0
+function c9911461.filter(c,i)
+	return aux.GetColumn(c)==i
 end
-function c9911461.disop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,9911461)
-	Duel.NegateEffect(ev,true)
+function c9911461.desfilter(c,col)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsLocation(LOCATION_FZONE) and bit.band(col,2^aux.GetColumn(c))~=0
+end
+function c9911461.desfilter2(g)
+	for c in aux.Next(g) do
+		local cg=Group.__band(c:GetColumnGroup(),g)
+		if cg:GetCount()>0 then return false end
+	end
+	return true
+end
+function c9911461.sop(e,tp,eg,ep,ev,re,r,rp)
+	local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c9911461.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
+	local b2=Duel.IsExistingMatchingCard(c9911461.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	if not (b1 or b2) then return end
+	local op=aux.SelectFromOptions(tp,{b1,aux.Stringid(9911461,0)},{b2,aux.Stringid(9911461,2)})
+	if op==1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g1=Duel.SelectMatchingCard(tp,c9911461.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+		Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
+	elseif op==2 then
+		local ct=0
+		local col=0
+		local g2=Duel.GetMatchingGroup(c9911461.cfilter,tp,LOCATION_MZONE,0,nil)
+		for i=0,4 do
+			if g2:IsExists(c9911461.filter,1,nil,i) then
+				ct=ct+1
+				col=col+2^i
+			end
+		end
+		local tg=Duel.GetMatchingGroup(c9911461.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,col)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local sg=tg:SelectSubGroup(tp,c9911461.desfilter2,false,ct,ct)
+		if not sg or #sg~=ct then return end
+		Duel.HintSelection(sg)
+		Duel.Destroy(sg,REASON_EFFECT)
+	end
 end
 function c9911461.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

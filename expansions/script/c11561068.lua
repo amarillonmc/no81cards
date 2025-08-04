@@ -49,7 +49,8 @@ function cm.initial_effect(c)
 	
 end
 function c11561068.cfilter(c,e,tp,ec)
-	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsAbleToExtra() and c:IsLevel(ec:GetLevel()) and c:IsAttribute(ec:GetAttribute()) and Duel.GetLocationCountFromEx(tp,tp,c,ec)>0
+	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsAbleToExtra() and c:IsAttribute(ec:GetAttribute()) and Duel.GetLocationCountFromEx(tp,tp,c,ec)>0
+-- and c:IsLevel(ec:GetLevel()) 
 end
 function c11561068.spfilter(c,e,tp)
 	return not c:IsPublic() and c:IsRace(RACE_DRAGON) and c:IsType(TYPE_SYNCHRO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(c11561068.cfilter,tp,LOCATION_MZONE,0,1,e:GetHandler(),e,tp,c)

@@ -8,7 +8,7 @@ function c29098386.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e3:SetRange(LOCATION_HAND)
 	e3:SetCountLimit(1,29098386)
 	e3:SetCost(c29098386.cost)
 	e3:SetCondition(c29098386.con)
@@ -109,15 +109,6 @@ function c29098386.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-			if c:IsSummonLocation(LOCATION_GRAVE) then
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-				e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-				e1:SetValue(LOCATION_REMOVED)
-				e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-				c:RegisterEffect(e1,true)
-			end
 			local g=Duel.GetMatchingGroup(c29098386.hodfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
 			if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(29098386,2)) then
 				Duel.BreakEffect()

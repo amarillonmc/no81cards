@@ -1,0 +1,60 @@
+--叮当天使·莉亚
+local cm,m,o=GetID()
+function cm.initial_effect(c)
+	c:EnableCounterPermit(0x624)
+	byd.EnableDualAttribute(c)
+	--eup
+	local ee1=Effect.CreateEffect(c)
+	ee1:SetType(EFFECT_TYPE_SINGLE)
+	ee1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	ee1:SetRange(LOCATION_MZONE)
+	ee1:SetCode(EFFECT_UPDATE_ATTACK)
+	--ee1:SetCondition(cm.incon)
+	ee1:SetValue(800)
+	c:RegisterEffect(ee1)
+	local ee2=ee1:Clone()
+	ee2:SetCode(EFFECT_UPDATE_DEFENSE)
+	c:RegisterEffect(ee2)
+	--search
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_LEAVE_FIELD_P)
+	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e5:SetOperation(cm.regop)
+	c:RegisterEffect(e5)
+	local e7=Effect.CreateEffect(c)
+	e7:SetDescription(aux.Stringid(28929131,2))
+	e7:SetCategory(CATEGORY_DRAW)
+	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e7:SetProperty(EFFECT_FLAG_DELAY)
+	e7:SetCode(EVENT_TO_GRAVE)
+	e7:SetCountLimit(1)
+	e7:SetCondition(cm.drcon)
+	e7:SetTarget(cm.drtg)
+	e7:SetOperation(cm.drop)
+	e7:SetLabelObject(e5)
+	c:RegisterEffect(e7)
+end
+function cm.incon(e)
+	return Card.GetCounter(e:GetHandler(),0x624)>=1
+end
+function cm.regop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ct=c:GetCounter(0x624)
+	e:SetLabel(ct)
+end
+function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local ct=e:GetLabelObject():GetLabel()
+	return ct>0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
+end
+function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function cm.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
+end

@@ -1,8 +1,9 @@
---新长空崩崩学园 德莉莎
+--新长空学园教师 乌静妃
 local s,id,o=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,s.matfilter,2)
+	--link summon
+	aux.AddLinkProcedure(c,nil,2,2,s.lcheck)
 	--apply effect
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -27,21 +28,12 @@ function s.initial_effect(c)
 	e2:SetTarget(s.eqtg)
 	e2:SetOperation(s.eqop)
 	c:RegisterEffect(e2)
-	--act limit
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e4:SetCode(EVENT_CHAINING)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(s.chaincon)
-	e4:SetOperation(s.chainop)
-	c:RegisterEffect(e4)
 end
-function s.matfilter(c)
-	return c:IsLinkSetCard(0x2c0,0xa2c1)
+function s.lcheck(g)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0xa2c1)
 end
 function s.efffilter(c,e,tp,eg,ep,ev,re,r,rp)
-	if not (c:IsSetCard(0x2c0) and c:IsType(TYPE_XYZ) and c:IsFaceup()) then return false end
+	if not (c:IsSetCard(0x2c0,0xa2c1) and c:IsType(TYPE_XYZ) and c:IsFaceup()) then return false end
 	local m=_G["c"..c:GetCode()]
 	if not m then return false end
 	local te=m.xyz_effect
@@ -103,21 +95,4 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RaiseEvent(e:GetHandler(),EVENT_REMOVE_COUNTER+0x1b,e,REASON_EFFECT,tp,tp,1)
 		end 
 	end
-end
-function s.chaincon(e)
-	local ph=Duel.GetCurrentPhase()
-	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
-end
-function s.chainop(e,tp,eg,ep,ev,re,r,rp)
-	local es=re:GetHandler()
-	if es:IsSetCard(0x2c0) and es:IsType(TYPE_EQUIP)  and es:GetEquipTarget()==e:GetHandler() and re:IsActiveType(TYPE_SPELL) and ep==tp then
-		if Duel.IsPlayerAffectedByEffect(e:GetHandler():GetControler(),75646210) then
-			Duel.SetChainLimit(s.chainlm)
-		else
-			Duel.SetChainLimit(aux.FALSE)
-		end  
-	end
-end
-function s.chainlm(e,rp,tp)
-	return tp==rp
 end

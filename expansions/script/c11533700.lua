@@ -10,7 +10,7 @@ function c11533700.initial_effect(c)
 	c:RegisterEffect(e0) 
 	--rl rm td 
 	local e1=Effect.CreateEffect(c) 
-	e1:SetCategory(CATEGORY_RELEASE+CATEGORY_REMOVE+CATEGORY_TODECK+CATEGORY_DRAW) 
+	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_TODECK) 
 	e1:SetType(EFFECT_TYPE_QUICK_O) 
 	e1:SetCode(EVENT_FREE_CHAIN) 
 	e1:SetRange(LOCATION_HAND) 
@@ -75,24 +75,24 @@ function c11533700.rrfil2(c)
 	return c:IsSetCard(0xb4) and c:IsAbleToRemove()
 end 
 function c11533700.rrttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,e:GetHandler(),tp) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) and Duel.IsPlayerCanDraw(tp,1)
+	--local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,e:GetHandler(),tp) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) and Duel.IsPlayerCanDraw(tp,1)
 
 	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,LOCATION_GRAVE,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,nil)
-	if chk==0 then return b1 or b2 end 
+	if chk==0 then return b2 end 
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,LOCATION_GRAVE+LOCATION_REMOVED) 
 end 
 function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
-	local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,c,tp) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) and Duel.IsPlayerCanDraw(tp,1)
+	--local b1=Duel.IsExistingMatchingCard(c11533700.rrfil1,tp,LOCATION_HAND,0,1,c,tp) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) and Duel.IsPlayerCanDraw(tp,1)
 	local b2=Duel.IsExistingMatchingCard(c11533700.rrfil2,tp,LOCATION_GRAVE,0,1,c) and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,nil)
-	local op=0
-			if b1 and b2 then  
-			op=Duel.SelectOption(tp,aux.Stringid(11533700,2),aux.Stringid(11533700,3))elseif b2 then 
-			op=1
-			end  
+	--local op=0
+			--if b1 and b2 then  
+			--op=Duel.SelectOption(tp,aux.Stringid(11533700,2),aux.Stringid(-11533700,3))elseif b2 then 
+			--op=1
+			--end  
 
 
-			if op==0 then 
+		  --[[if op==0 then 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g1=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11533700.rrfil1),tp,LOCATION_HAND,0,1,1,c,tp)
 	if g1:GetCount()>0 and Duel.SendtoGrave(g1,REASON_EFFECT+REASON_RELEASE)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,5,nil) then
@@ -104,18 +104,18 @@ function c11533700.rrtop(e,tp,eg,ep,ev,re,r,rp)
 		local ct=rrg:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 		if ct>0 then Duel.Draw(tp,1,REASON_EFFECT) end 
 	end
-	end
-			elseif op==1 then 
+	end]] 
+	if b2 then 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g3=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11533700.rrfil2),tp,LOCATION_GRAVE,0,1,1,c)
-	if g3:GetCount()>0 and Duel.Remove(g3,POS_FACEUP,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,nil) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local rrg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,3,nil)
-	if rrg:GetCount()>0 then
-		Duel.SendtoDeck(rrg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		Duel.ShuffleDeck(tp) 
-	end
-	end
+	  if g3:GetCount()>0 and Duel.Remove(g3,POS_FACEUP,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,nil) then
+		  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		  local rrg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,3,3,nil)
+		  if rrg:GetCount()>0 then
+			  Duel.SendtoDeck(rrg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			  Duel.ShuffleDeck(tp) 
+		  end
+		end
 	end
 end  
 function c11533700.rlfil(c,tp)

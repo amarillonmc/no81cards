@@ -27,7 +27,7 @@ function c29072102.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_NEGATE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
-	e3:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e3:SetRange(LOCATION_HAND)
 	e3:SetCountLimit(1,29072102)
 	e3:SetCost(c29072102.cost)
 	e3:SetCondition(c29072102.con)
@@ -75,15 +75,6 @@ function c29072102.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-			if c:IsSummonLocation(LOCATION_GRAVE) then
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-				e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-				e1:SetValue(LOCATION_REMOVED)
-				e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-				c:RegisterEffect(e1,true)
-			end
 			if Duel.SelectYesNo(tp,aux.Stringid(29072102,2)) then
 				Duel.NegateEffect(ev)
 			end

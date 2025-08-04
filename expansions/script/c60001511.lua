@@ -276,8 +276,25 @@ function byd.counterop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-
-
+function byd.EnableDualAttribute(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_DUAL_SUMMONABLE)
+	c:RegisterEffect(e1)
+	--attribute
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetCode(EFFECT_CHANGE_TYPE)
+	e1:SetRange(LOCATION_DECK+LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE)
+	e1:SetCondition(byd.EnableDualAttributecon)
+	e1:SetValue(TYPE_MONSTER+TYPE_DUAL+TYPE_NORMAL)
+	c:RegisterEffect(e1)
+end
+function byd.EnableDualAttributecon(e)
+	local c=e:GetHandler()
+	return c:GetCounter(0x624)==0 and not c:IsDualState()
+end
 
 
 

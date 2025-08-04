@@ -32,7 +32,7 @@ function cm.initial_effect(c)
 	
 end
 function c22348463.syncfilter(c)
-	return c:IsSetCard(0x703) and c:IsSynchroSummonable(nil)
+	return c:IsRace(RACE_ZOMBIE) and c:IsSynchroSummonable(nil)
 end
 function c22348463.sctarg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348463.syncfilter,tp,LOCATION_EXTRA,0,1,nil) end
@@ -46,13 +46,13 @@ function c22348463.scop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SynchroSummon(tp,sg:GetFirst(),nil)
 	end
 end
-function c22348463.csfilter(c)
+function c22348463.csfilter(c,tp)
 	return c:IsAbleToGraveAsCost() and Duel.GetMZoneCount(tp,c)>0 and Duel.IsExistingMatchingCard(c22348463.cfilter,tp,LOCATION_MZONE,0,1,c)
 end
 function c22348463.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c22348463.csfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c22348463.csfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,e:GetHandler(),tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c22348463.csfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,e:GetHandler())
+	local g=Duel.SelectMatchingCard(tp,c22348463.csfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,e:GetHandler(),tp)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c22348463.cfilter(c)

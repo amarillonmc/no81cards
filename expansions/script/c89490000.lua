@@ -48,11 +48,26 @@ end
 function s.rfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsRace(RACE_WYRM) and c:IsAttribute(ATTRIBUTE_FIRE)
 end
+function s.rlfilter(c)
+	return c:IsFaceup() and c:IsReleasable()
+end
 function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroup(tp,s.rfilter,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectReleaseGroup(tp,s.rfilter,1,1,nil)
-	Duel.Release(g,REASON_COST)
+	local fe2=Duel.IsPlayerAffectedByEffect(tp,89490080)
+	local b2=fe2 and Duel.IsExistingMatchingCard(s.rlfilter,tp,0,LOCATION_MZONE,1,nil)
+	local b3=Duel.CheckReleaseGroup(tp,s.rfilter,1,nil)
+	if chk==0 then return b2 or b3 end
+	local op=aux.SelectFromOptions(tp,{b2,fe2 and fe2:GetDescription() or nil},{b3,1150})
+	if op==1 then
+		Duel.Hint(HINT_CARD,0,89490080)
+		fe2:UseCountLimit(tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		local g=Duel.SelectMatchingCard(tp,s.rlfilter,tp,0,LOCATION_MZONE,1,1,nil)
+		Duel.Release(g,REASON_COST)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		local g=Duel.SelectReleaseGroup(tp,s.rfilter,1,1,nil)
+		Duel.Release(g,REASON_COST)
+	end
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

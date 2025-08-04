@@ -42,20 +42,35 @@ end
 function s.ctfilter(c)
 	return c:IsFaceup() and c:IsAbleToChangeControler()
 end
+function s.rlfilter(c,tp)
+	return c:IsFaceup() and c:IsReleasable() and Duel.GetMZoneCount(tp,c,tp,LOCATION_REASON_CONTROL)>0 and Duel.IsExistingTarget(s.ctfilter,tp,0,LOCATION_MZONE,1,nil)
+end
 function s.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and s.ctfilter(chkc) end
+	local fe2=Duel.IsPlayerAffectedByEffect(tp,89490080)
+	local b2=fe2 and Duel.IsExistingMatchingCard(s.rlfilter,tp,0,LOCATION_MZONE,1,nil,tp)
+	local b3=Duel.CheckReleaseGroup(tp,s.rfilter,1,nil,tp)
 	if chk==0 then
 		if e:GetLabel()==1 then
 			e:SetLabel(0)
-			return Duel.CheckReleaseGroup(tp,s.rfilter,1,nil,tp)
+			return b2 or b3
 		else
 			return Duel.IsExistingTarget(s.ctfilter,tp,0,LOCATION_MZONE,1,nil)
 		end
 	end
 	if e:GetLabel()==1 then
 		e:SetLabel(0)
-		local sg=Duel.SelectReleaseGroup(tp,s.rfilter,1,1,nil,tp)
-		Duel.Release(sg,REASON_COST)
+		local op=aux.SelectFromOptions(tp,{b2,fe2 and fe2:GetDescription() or nil},{b3,1150})
+		if op==1 then
+			Duel.Hint(HINT_CARD,0,89490080)
+			fe2:UseCountLimit(tp)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+			local g=Duel.SelectMatchingCard(tp,s.rlfilter,tp,0,LOCATION_MZONE,1,1,nil,tp)
+			Duel.Release(g,REASON_COST)
+		else
+			local sg=Duel.SelectReleaseGroup(tp,s.rfilter,1,1,nil,tp)
+			Duel.Release(sg,REASON_COST)
+		end
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
 	local g=Duel.SelectTarget(tp,s.ctfilter,tp,0,LOCATION_MZONE,1,1,nil)

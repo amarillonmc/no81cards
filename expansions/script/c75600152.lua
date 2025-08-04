@@ -3,22 +3,19 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	--same effect send this card to grave and spsummon another card check
 	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
-	--search
+	--Control
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DECKDES)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_HAND)
+	e1:SetDescription(aux.Stringid(id,1))
+	e1:SetCategory(CATEGORY_CONTROL)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,id)
-	e1:SetCost(s.thcost)
-	e1:SetTarget(s.thtg)
-	e1:SetOperation(s.thop)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(s.cccon)
+	e1:SetCost(s.cccost)
+	e1:SetTarget(s.cctg)
+	e1:SetOperation(s.ccop)
 	c:RegisterEffect(e1)
-	local e5=e1:Clone()
-	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_FREE_CHAIN)
-	e5:SetCondition(s.thcon)
-	c:RegisterEffect(e5)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
@@ -34,47 +31,39 @@ function s.initial_effect(c)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
 	--act limit
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e4:SetCode(EVENT_CHAINING)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(s.chaincon)
-	e4:SetOperation(s.chainop)
-	c:RegisterEffect(e4)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCondition(s.chaincon)
+	e3:SetOperation(s.chainop)
+	c:RegisterEffect(e3)
 end
-function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsDiscardable() end
-	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
-end
-function s.thcon(e,tp,eg,ep,ev,re,r,rp)
+function s.cccon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	return Duel.GetTurnPlayer()==tp and Duel.GetCurrentChain()==0
-		and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+	return (Duel.GetTurnPlayer()==tp and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)) or (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)
 end
-function s.thfilter(c)
-	return c:IsSetCard(0x2c0,0xa2c1) and c:IsAbleToHand()
+function s.ccfilter(c)
+	return c:IsSetCard(0x2c0) and c:IsType(TYPE_EQUIP) and c:IsAbleToGraveAsCost()
 end
-function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,2,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+function s.cccost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.ccfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,s.ccfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
 end
-function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	local sp=1-tp
-	local ph=Duel.GetCurrentPhase()
-	if  ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE then sp=tp end
-	local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
-	if g:GetCount()>=2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=g:Select(tp,2,2,nil)
-		Duel.ConfirmCards(1-tp,sg)
-		Duel.Hint(HINT_SELECTMSG,sp,HINTMSG_ATOHAND)
-		local tc=sg:Select(sp,1,1,nil):GetFirst()
-		tc:SetStatus(STATUS_TO_HAND_WITHOUT_CONFIRM,true)
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		sg:RemoveCard(tc)
-		Duel.SendtoGrave(sg,REASON_EFFECT)
+function s.cctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and chkc:IsControlerCanBeChanged() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
+	local g=Duel.SelectTarget(tp,Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_CONTROL,g,1,0,0)
+end
+function s.ccop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		Duel.GetControl(tc,tp,PHASE_END,1)
 	end
 end
 function s.cfilter(c,tp,se)
@@ -121,7 +110,7 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SetChainLimit(s.chainlm)
 		else
 			Duel.SetChainLimit(aux.FALSE)
-		end	 
+		end  
 	end
 end
 function s.chainlm(e,rp,tp)

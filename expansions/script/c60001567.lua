@@ -1,0 +1,26 @@
+--圣盾祭司
+local cm,m,o=GetID()
+function cm.initial_effect(c)
+	c:EnableCounterPermit(0x624)
+	byd.EnableDualAttribute(c)
+	--eup
+	local ee1=Effect.CreateEffect(c)
+	ee1:SetType(EFFECT_TYPE_SINGLE)
+	ee1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	ee1:SetRange(LOCATION_MZONE)
+	ee1:SetCode(EFFECT_UPDATE_ATTACK)
+	ee1:SetValue(800)
+	c:RegisterEffect(ee1)
+	local ee2=ee1:Clone()
+	ee2:SetCode(EFFECT_UPDATE_DEFENSE)
+	c:RegisterEffect(ee2)
+	--indestructable
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(LOCATION_MZONE,0)
+	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetValue(1)
+	c:RegisterEffect(e2)
+end

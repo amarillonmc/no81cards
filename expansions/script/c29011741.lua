@@ -23,7 +23,7 @@ function c29011741.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,29011742)
 	e2:SetCost(c29011741.cost)
 	e2:SetCondition(c29011741.spcon)
@@ -53,15 +53,6 @@ function c29011741.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-			if c:IsSummonLocation(LOCATION_GRAVE) then
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-				e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-				e1:SetValue(LOCATION_REMOVED)
-				e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-				c:RegisterEffect(e1,true)
-			end
 			local g=Duel.GetMatchingGroup(c29011741.defilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 			if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(29011741,2)) then
 				Duel.BreakEffect()
@@ -78,7 +69,7 @@ function c29011741.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c29011741.thfilter(c)
-	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsRace(RACE_FISH) and c:IsAbleToHand() 
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsRace(RACE_FISH) and c:IsAbleToHand() and not c:IsCode(29011741)
 end
 function c29011741.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29011741.thfilter,tp,LOCATION_DECK,0,1,nil) end

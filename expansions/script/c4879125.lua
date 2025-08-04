@@ -24,9 +24,15 @@ function cm.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1,m+1)
+	e3:SetCondition(cm.spcon)
 	e3:SetTarget(cm.smtg)
 	e3:SetOperation(cm.smop)
 	c:RegisterEffect(e3)
+end
+function cm.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return  Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil)
 end
 function cm.repfilter(c,tp)
 	return c:IsFaceup() and c:IsSetCard(0xae51) and c:IsType(TYPE_MONSTER)
@@ -93,7 +99,7 @@ Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(1,0)
 	e1:SetValue(cm.actlimit)
-	e1:SetReset(RESET_PHASE+PHASE_END,2)
+	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 	end
 

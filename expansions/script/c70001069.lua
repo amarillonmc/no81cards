@@ -1,78 +1,39 @@
---冰帝王 美比乌斯
-local m=70001069
+--封印结界
+local m=70001102
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	--set s/t
+	--Activate
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e1)
+	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
-	e2:SetCategory(CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
-	e2:SetCountLimit(1,m)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetTarget(cm.settg)
-	e2:SetOperation(cm.setop)
+	e2:SetTarget(cm.target)
+	e2:SetOperation(cm.operation)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e3)
-	--spsummon
-	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetCategory(CATEGORY_SUMMON)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_CHAINING)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCountLimit(1,m+1)
-	e4:SetCondition(cm.con)
-	e4:SetTarget(cm.tg)
-	e4:SetOperation(cm.op)
-	c:RegisterEffect(e4)
 end
-	function cm.filter(c)
-	return c:IsCode(99940363) and c:IsAbleToHand()
+	function cm.filter(c,val)
+	return c:IsAttack(1000) and c:IsDefense(1000) and c:IsLevel(4) and c:IsAbleToHand()
 end
-	function cm.filter2(c)
-	return c:IsPosition(POS_FACEDOWN)
+	function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local tc=eg:GetFirst()
+	if chk==0 then return tc:IsAttack(1000) and tc:IsDefense(1000) and tc:IsLevel(4) and tc:IsControler(tp)
+		and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
+	tc:CreateEffectRelation(e)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
-	function cm.filter3(c)
-	return c:IsCode(26822796) and c:IsAbleToHand()
-end
-	function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
-end
-	function cm.setop(e,tp,eg,ep,ev,re,r,rp)
+	function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) or not tc:IsRelateToEffect(e) or tc:IsFacedown() then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil):GetFirst()
-	if tc then 
-	Duel.SendtoHand(tc,tp,REASON_EFFECT)
-	Duel.ConfirmCards(1-tp,tc)
-	if Duel.GetMatchingGroupCount(cm.filter2,tp,0,LOCATION_ONFIELD,nil)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc2=Duel.SelectMatchingCard(tp,cm.filter3,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil):GetFirst()
-	if tc2 then 
-	Duel.SendtoHand(tc2,tp,REASON_EFFECT)
-	Duel.ConfirmCards(1-tp,tc2)
-			end
-		end
-	end
-end
-	function cm.con(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0 and rp==1-tp
-end
-	function cm.sfilter(c,e,tp)
-	return c:IsAttackAbove(2400) and c:IsDefense(1000) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsSummonable(true,nil)
-end
-	function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(cm.sfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_HAND)
-end
-	function cm.op(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-	local sg=Duel.SelectMatchingCard(tp,cm.sfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil)
-	if sg:GetCount()>0 then
-	Duel.Summon(tp,sg:GetFirst(),true,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end

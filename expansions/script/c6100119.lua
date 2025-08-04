@@ -17,6 +17,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetTarget(s.rmtg)
 	e1:SetCountLimit(1)
 	e1:SetOperation(s.rmop)
 	c:RegisterEffect(e1)
@@ -52,20 +53,29 @@ function s.initial_effect(c)
 	local e4 = Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id, 3))
 	e4:SetCategory(CATEGORY_DESTROY)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1)
-	e4:SetCondition(s.descon)
 	e4:SetCost(s.descost)
 	e4:SetTarget(s.destg)
 	e4:SetOperation(s.desop)
 	c:RegisterEffect(e4)
+	local e5=e4:Clone()
+	e5:SetType(EFFECT_TYPE_QUICK_O)
+	e5:SetCode(EVENT_FREE_CHAIN)
+	e5:SetCondition(s.descon)
+	c:RegisterEffect(e5)
 end
 
 -- 连接素材条件：效果怪兽3只以上
 function s.matfilter(c,lc,sumtype,tp)
 	return c:IsType(TYPE_EFFECT)
+end
+
+-- 效果②：条件检查 - 没有装备
+function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
+	if chk==0 then return #c:GetEquipGroup()>0 end
 end
 
 -- 效果①：除外装备
@@ -85,7 +95,7 @@ end
 
 -- 效果②：目标设置
 function s.eqfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsFaceup()
+	return c:IsRace(RACE_MACHINE) and c:IsFaceup() 
 end
 
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -108,13 +118,14 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(s.eqlimit)
 		tc:RegisterEffect(e1)
-		-- 装备怪兽不受其他卡效果影响
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_EQUIP)
-		e1:SetCode(EFFECT_IMMUNE_EFFECT)
-		e1:SetValue(s.efilter)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
+		--immune
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetCode(EFFECT_IMMUNE_EFFECT)
+	e2:SetValue(s.efilter)
+	tc:RegisterEffect(e2)
 	end
 end
 
@@ -133,7 +144,7 @@ function s.discon(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.tdfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsFaceup() and (c:IsAbleToDeck() or c:IsAbleToExtra())
+	return c:IsRace(RACE_MACHINE) and c:IsFaceup() and c:IsAbleToDeck() 
 end
 
 -- 效果③-1：cost - 将除外的机械族返回卡组
@@ -164,7 +175,8 @@ end
 -- 效果③-2：条件检查 - 主要阶段或战斗阶段且有装备
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	return (ph==PHASE_MAIN1 or ph==PHASE_MAIN2 or ph==PHASE_BATTLE)
+	return Duel.GetTurnPlayer()==tp and Duel.GetCurrentChain()==0
+		and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 		and #e:GetHandler():GetEquipGroup()>0
 end
 
