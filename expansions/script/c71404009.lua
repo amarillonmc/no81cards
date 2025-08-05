@@ -43,6 +43,7 @@ function s.initial_effect(c)
 	e3a:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e3a:SetCode(EVENT_REMOVE)
 	e3a:SetOperation(s.regop3)
+	c:RegisterEffect(e3a)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -167,5 +168,5 @@ function s.regop3(e,tp,eg,ep,ev,re,r,rp)
 	c:RegisterFlagEffect(id+100000,RESET_PHASE+PHASE_END,0,1)
 end
 function s.con3(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp and e:GetHandler():GetFlagEffect(id)>0
+	return Duel.GetTurnPlayer()~=tp and e:GetHandler():GetFlagEffect(id+100000)>0
 end

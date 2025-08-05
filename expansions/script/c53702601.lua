@@ -460,24 +460,26 @@ function s.zero_seal_geop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(g) do
 		tc:RegisterFlagEffect(tid,RESET_EVENT+RESETS_STANDARD,0,1)
 		local te=tc.zero_seal_effect
-		local e1=te:Clone()
-		e1:SetDescription(aux.Stringid(tid,1))
-		e1:SetCategory(e:GetCategory()|mt.category)
-		e1:SetRange(LOCATION_DECK)
-		local tg=te:GetTarget() or aux.TRUE
-		local op=te:GetOperation()
-		e1:SetTarget(s.zero_seal_extg(tg,mt.extg))
-		e1:SetOperation(s.zero_seal_exop(op,mt.exop))
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1,true)
-		local e2=s.Act(tc,e1)
-		e2:SetRange(LOCATION_DECK)
-		e2:SetLabel(tid)
-		e2:SetCost(s.zero_seal_costchk)
-		e2:SetOperation(s.zero_seal_costop)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e2,true)
-		s.zero_seal_effects[tc]={e1,e2}
+		if te then
+			local e1=te:Clone()
+			e1:SetDescription(aux.Stringid(tid,1))
+			e1:SetCategory(e:GetCategory()|mt.category)
+			e1:SetRange(LOCATION_DECK)
+			local tg=te:GetTarget() or aux.TRUE
+			local op=te:GetOperation()
+			e1:SetTarget(s.zero_seal_extg(tg,mt.extg))
+			e1:SetOperation(s.zero_seal_exop(op,mt.exop))
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1,true)
+			local e2=s.Act(tc,e1)
+			e2:SetRange(LOCATION_DECK)
+			e2:SetLabel(tid)
+			e2:SetCost(s.zero_seal_costchk)
+			e2:SetOperation(s.zero_seal_costop)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2,true)
+			s.zero_seal_effects[tc]={e1,e2}
+		end
 	end
 end
 function s.zero_seal_extg(tg,extg)
@@ -522,4 +524,682 @@ function s.zero_seal_costop(e,tp,eg,ep,ev,re,r,rp)
 	ce:UseCountLimit(tp)
 	ce:GetHandler():ResetFlagEffect(53797144)
 	ce:GetHandler():RegisterFlagEffect(53797144,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,-1,aux.Stringid(53797145,15))
+end
+--written by purplenightfall
+function s.SelectSubGroup(g,tp,f,cancelable,min,max,...)
+	local classif,sortf,passf,goalstop,check,params1,params2,params3=table.unpack(s.SubGroupParams)
+	min=min or 1
+	max=max or #g
+	local sg=Group.CreateGroup()
+	local fg=Duel.GrabSelectedCard()
+	if #fg>max or min>max or #(g+fg)<min then return nil end
+	if not check then
+		for tc in aux.Next(fg) do
+			fg:SelectUnselect(sg,tp,false,false,min,max)
+		end
+	end
+	sg:Merge(fg)
+	local mg,iisg,tmp,stop,iter,ctab,rtab,gtab
+	--main check
+	local params1=params1 or {}
+	local params2=params2 or {}
+	local params3=params3 or {}
+	local finish=(#sg>=min and #sg<=max and f(sg,...))
+	while #sg<max do
+		mg=g-sg
+		iisg=sg:Clone()
+		if passf then
+			aux.SubGroupCaptured=mg:Filter(passf,nil,table.unpack(params3))
+		else
+			aux.SubGroupCaptured=Group.CreateGroup()
+		end
+		ctab,rtab,gtab={},{},{1}
+		for tc in aux.Next(mg) do
+			ctab[#ctab+1]=tc
+		end
+		--high to low
+		if sortf then
+			for i=1,#ctab-1 do
+				for j=1,#ctab-1-i do
+					if sortf(ctab[j],table.unpack(params2))<sortf(ctab[j+1],table.unpack(params2)) then
+						tmp=ctab[j]
+						ctab[j]=ctab[j+1]
+						ctab[j+1]=tmp
+					end
+				end
+			end
+		end
+		--classify
+		if classif then
+			--make similar cards adjacent
+			for i=1,#ctab-2 do
+				for j=i+2,#ctab do
+					if classif(ctab[i],ctab[j],table.unpack(params1)) then
+						tmp=ctab[j]
+						ctab[j]=ctab[i+1]
+						ctab[i+1]=tmp
+					end
+				end
+			end
+			--rtab[i]: what category does the i-th card belong to
+			--gtab[i]: What is the first card's number in the i-th category
+			for i=1,#ctab-1 do
+				rtab[i]=#gtab
+				if not classif(ctab[i],ctab[i+1],table.unpack(params1)) then
+					gtab[#gtab+1]=i+1
+				end
+			end
+			rtab[#ctab]=#gtab
+--Debug.Message("Classification resulted in " .. #gtab .. " groups.")
+			--iter record all cards' number in sg
+			iter={1}
+			sg:AddCard(ctab[1])
+			while #sg>#iisg and #aux.SubGroupCaptured<#mg do
+				stop=#sg>=max
+				--prune if too much cards
+				if (aux.GCheckAdditional and not aux.GCheckAdditional(sg,c,g,f,min,max,...)) then
+					stop=true
+				--skip check if no new cards
+				elseif #(sg-iisg-aux.SubGroupCaptured)>0 and #sg>=min and #sg<=max and f(sg,...) then
+					for sc in aux.Next(sg-iisg) do
+						if check then return true end
+						aux.SubGroupCaptured:Merge(mg:Filter(classif,nil,sc,table.unpack(params1)))
+					end
+					stop=goalstop
+				end
+				local code=iter[#iter]
+				--last card isn't in the last category
+				if code and code<gtab[#gtab] then
+					if stop then
+						--backtrack and add 1 card from next category
+						iter[#iter]=gtab[rtab[code]+1]
+						sg:RemoveCard(ctab[code])
+						sg:AddCard(ctab[(iter[#iter])])
+					else
+						--continue searching forward
+						iter[#iter+1]=code+1
+						sg:AddCard(ctab[code+1])
+					end
+				--last card is in the last category
+				elseif code then
+					if stop or code>=#ctab then
+						--clear all cards in the last category
+						while #iter>0 and iter[#iter]>=gtab[#gtab] do
+							sg:RemoveCard(ctab[(iter[#iter])])
+							iter[#iter]=nil
+						end
+						--backtrack and add 1 card from next category
+						local code2=iter[#iter]
+						if code2 then
+							iter[#iter]=gtab[rtab[code2]+1]
+							sg:RemoveCard(ctab[code2])
+							sg:AddCard(ctab[(iter[#iter])])
+						end
+					else
+						--continue searching forward
+						iter[#iter+1]=code+1
+						sg:AddCard(ctab[code+1])
+					end
+				end
+			end
+		--classification is essential for efficiency, and this part is only for backup
+		else
+			iter={1}
+			sg:AddCard(ctab[1])
+			while #sg>#iisg and #aux.SubGroupCaptured<#mg do
+				stop=#sg>=max
+				if (aux.GCheckAdditional and not aux.GCheckAdditional(sg,c,g,f,min,max,...)) then
+					stop=true
+				elseif #(sg-iisg-aux.SubGroupCaptured)>0 and #sg>=min and #sg<=max and f(sg,...) then
+					for sc in aux.Next(sg-iisg) do
+						if check then return true end
+						aux.SubGroupCaptured:AddCard(sc) --Merge(mg:Filter(class,nil,sc))
+					end
+					stop=goalstop
+				end
+				if #sg>=max then stop=true end
+				local code=iter[#iter]
+				if code<#ctab then
+					if stop then
+						iter[#iter]=nil
+						sg:RemoveCard(ctab[code])
+					end
+					iter[#iter+1]=code+1
+					sg:AddCard(ctab[code+1])
+				else
+					local code2=iter[#iter-1]
+					iter[#iter]=nil
+					sg:RemoveCard(ctab[code])
+					if code2 and code2>0 then
+						iter[#iter]=code2+1
+						sg:RemoveCard(ctab[code2])
+						sg:AddCard(ctab[code2+1])
+					end
+				end
+			end
+		end
+		--finish searching
+		sg=iisg
+		local cg=aux.SubGroupCaptured:Clone()
+		aux.SubGroupCaptured:Clear()
+		cg:Sub(sg)
+		finish=(#sg>=min and #sg<=max and f(sg,...))
+		if #cg==0 then break end
+		local cancel=not finish and cancelable
+		local tc=cg:SelectUnselect(sg,tp,finish,cancel,min,max)
+		if not tc then break end
+		if not fg:IsContains(tc) then
+			if not sg:IsContains(tc) then
+				sg:AddCard(tc)
+				if #sg==max then finish=true end
+			else
+				sg:RemoveCard(tc)
+			end
+		elseif cancelable then
+			return nil
+		end
+	end
+	if finish then
+		return sg
+	else
+		return nil
+	end
+end
+function s.Aespire(c,loc)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetCode(c:GetOriginalCode())
+	e1:SetRange(loc)
+	c:RegisterEffect(e1)
+	if s.Aespire_Check then return end
+	s.Aespire_Check=true
+	local ge0=Effect.GlobalEffect()
+	ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	ge0:SetCode(EVENT_ADJUST)
+	ge0:SetOperation(s.Aespire_geop)
+	Duel.RegisterEffect(ge0,0)
+	local g1=Group.CreateGroup()
+	g1:KeepAlive()
+	local ge1=Effect.GlobalEffect()
+	ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	ge1:SetLabelObject(g1)
+	ge1:SetOperation(s.Aespire_Chat_MergedDelayEventCheck1)
+	Duel.RegisterEffect(ge1,0)
+	local ge2=ge1:Clone()
+	ge2:SetCode(EVENT_CHAIN_END)
+	ge2:SetOperation(s.Aespire_Chat_MergedDelayEventCheck2)
+	Duel.RegisterEffect(ge2,0)
+end
+function s.Aespire_Chat_M_cfilter(c)
+	local re=c:GetSpecialSummonInfo(SUMMON_INFO_REASON_EFFECT)
+	return re and re:GetHandler() and re:GetHandler():IsOriginalEffectProperty(s.Aesp_efffilter2(re))
+end
+function s.Aespire_Chat_MergedDelayEventCheck1(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+--Debug.Message(type(s.Aespire_Chat_M_cfilter))
+	g:Merge(eg:Filter(s.Aespire_Chat_M_cfilter,nil))
+	if #g>0 and Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_END) then
+		local _eg=g:Clone()
+		Duel.RaiseEvent(_eg,EVENT_CUSTOM+53780004,re,r,rp,ep,ev)
+		g:Clear()
+	end
+end
+function s.Aespire_Chat_MergedDelayEventCheck2(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	if #g>0 then
+		local _eg=g:Clone()
+		Duel.RaiseEvent(_eg,EVENT_CUSTOM+53780004,re,r,rp,ep,ev)
+		g:Clear()
+	end
+end
+function s.Aespire_geop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(function(c)return c:GetFlagEffect(53780000)<=0 end,0,0xff,0xff,nil)
+	g:ForEach(Card.RegisterFlagEffect,53780000,0,0,0)
+	for tc in aux.Next(g) do
+		tc:RegisterFlagEffect(53780000,0,0,0)
+		local e1_1=Effect.CreateEffect(tc)
+		e1_1:SetDescription(aux.Stringid(53780001,0))
+		e1_1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+		e1_1:SetType(EFFECT_TYPE_IGNITION)
+		e1_1:SetRange(LOCATION_MZONE)
+		e1_1:SetCondition(s.Aesp_Dpsk_con(CATEGORY_SPECIAL_SUMMON))
+		e1_1:SetTarget(s.Aesp_Dpsk_tg)
+		e1_1:SetOperation(s.Aesp_Dpsk_op)
+		tc:RegisterEffect(e1_1,true)
+		local e1_2=Effect.GlobalEffect()
+		e1_2:SetType(EFFECT_TYPE_FIELD)
+		e1_2:SetCode(EFFECT_ACTIVATE_COST)
+		e1_2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1_2:SetTargetRange(1,1)
+		e1_2:SetLabelObject(e1_1)
+		e1_2:SetTarget(s.Aesp_costtg)
+		e1_2:SetCost(s.Aesp_Dpsk_costchk)
+		e1_2:SetOperation(s.Aesp_Dpsk_costop)
+		Duel.RegisterEffect(e1_2,0)
+		local e2_1=Effect.CreateEffect(tc)
+		e2_1:SetDescription(aux.Stringid(53780002,0))
+		e2_1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+		e2_1:SetType(EFFECT_TYPE_IGNITION)
+		e2_1:SetRange(LOCATION_HAND)
+		e2_1:SetCondition(s.Aesp_Dpsk_con(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_DRAW))
+		e2_1:SetTarget(s.Aesp_Gmn_tg)
+		e2_1:SetOperation(s.Aesp_Gmn_op)
+		tc:RegisterEffect(e2_1,true)
+		local e2_2=e1_2:Clone()
+		e2_2:SetLabelObject(e2_1)
+		e2_2:SetCost(s.Aesp_Gmn_costchk)
+		e2_2:SetOperation(s.Aesp_Gmn_costop)
+		Duel.RegisterEffect(e2_2,0)
+		local e3_1=Effect.CreateEffect(tc)
+		e3_1:SetDescription(aux.Stringid(53780003,0))
+		e3_1:SetCategory(CATEGORY_TOGRAVE)
+		e3_1:SetType(EFFECT_TYPE_IGNITION)
+		e3_1:SetRange(LOCATION_GRAVE)
+		e3_1:SetCondition(s.Aesp_Dpsk_con(CATEGORY_TOGRAVE+CATEGORY_DECKDES))
+		e3_1:SetTarget(s.Aesp_Grk_tg)
+		e3_1:SetOperation(s.Aesp_Grk_op)
+		tc:RegisterEffect(e3_1,true)
+		local e3_2=e1_2:Clone()
+		e3_2:SetLabelObject(e3_1)
+		e3_2:SetCost(s.Aesp_Grk_costchk)
+		e3_2:SetOperation(s.Aesp_Grk_costop)
+		Duel.RegisterEffect(e3_2,0)
+		local e4_1=Effect.CreateEffect(tc)
+		e4_1:SetDescription(aux.Stringid(53780004,0))
+		e4_1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+		e4_1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+		e4_1:SetCode(EVENT_CUSTOM+53780004)
+		e4_1:SetProperty(EFFECT_FLAG_DELAY)
+		e4_1:SetRange(LOCATION_MZONE)
+		--e4_1:SetCondition(s.Aesp_Chat_con)
+		e4_1:SetTarget(s.Aesp_Chat_tg)
+		e4_1:SetOperation(s.Aesp_Chat_op)
+		tc:RegisterEffect(e4_1,true)
+		local e4_2=e1_2:Clone()
+		e4_2:SetLabelObject(e4_1)
+		e4_2:SetCost(s.Aesp_Chat_costchk)
+		e4_2:SetOperation(s.Aesp_Chat_costop)
+		Duel.RegisterEffect(e4_2,0)
+		local e5_1=Effect.CreateEffect(tc)
+		e5_1:SetDescription(aux.Stringid(53780005,0))
+		e5_1:SetCategory(CATEGORY_TOHAND)
+		e5_1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+		e5_1:SetCode(EVENT_TO_HAND)
+		e5_1:SetProperty(EFFECT_FLAG_DELAY)
+		e5_1:SetRange(LOCATION_HAND)
+		e5_1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+		e5_1:SetCondition(s.Aesp_Qwen_con)
+		e5_1:SetTarget(s.Aesp_Qwen_tg)
+		e5_1:SetOperation(s.Aesp_Qwen_op)
+		tc:RegisterEffect(e5_1,true)
+		local e5_2=e1_2:Clone()
+		e5_2:SetLabelObject(e5_1)
+		e5_2:SetCost(s.Aesp_Qwen_costchk)
+		e5_2:SetOperation(s.Aesp_Qwen_costop)
+		Duel.RegisterEffect(e5_2,0)
+		local e6_1=Effect.CreateEffect(tc)
+		e6_1:SetDescription(aux.Stringid(53780006,0))
+		e6_1:SetCategory(CATEGORY_DECKDES)
+		e6_1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+		e6_1:SetCode(EVENT_TO_GRAVE)
+		e6_1:SetProperty(EFFECT_FLAG_DELAY)
+		e6_1:SetRange(LOCATION_GRAVE)
+		e6_1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+		e6_1:SetCondition(s.Aesp_Cld_con)
+		e6_1:SetTarget(s.Aesp_Cld_tg)
+		e6_1:SetOperation(s.Aesp_Cld_op)
+		tc:RegisterEffect(e6_1,true)
+		local e6_2=e1_2:Clone()
+		e6_2:SetLabelObject(e6_1)
+		e6_2:SetCost(s.Aesp_Cld_costchk)
+		e6_2:SetOperation(s.Aesp_Cld_costop)
+		Duel.RegisterEffect(e6_2,0)
+	end
+end
+function s.Aesp_costtg(e,te,tp)
+	return te==e:GetLabelObject() and te:GetHandler()==e:GetLabelObject():GetHandler()
+end
+function s.Aesp_costchk(e,te,tp)
+	return e:GetLabelObject():GetHandler():IsRace(RACE_CYBERSE) and e:GetLabelObject():GetHandler():IsType(TYPE_EFFECT)
+end
+function s.Aesp_Dpsk_acfilter(c,e,tp)
+	return c:IsHasEffect(53780001) and c:IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(s.Aesp_Dpsk_spfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,c,e,tp)
+end
+function s.Aesp_Dpsk_costchk(e,te,tp)
+	return s.Aesp_costchk(e,te,tp) and Duel.IsExistingMatchingCard(s.Aesp_Dpsk_acfilter,tp,LOCATION_GRAVE,0,1,e:GetLabelObject():GetHandler(),e:GetLabelObject(),tp)
+end
+function s.Aesp_Dpsk_costop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,s.Aesp_Dpsk_acfilter,tp,LOCATION_GRAVE,0,1,1,e:GetLabelObject():GetHandler(),e:GetLabelObject(),tp)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function s.Aesp_Dpsk_spfilter(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsRace(RACE_CYBERSE) and c:IsFaceupEx()
+end
+function s.Aesp_efffilter(ctg)
+	return function(e) return e:GetCategory()&ctg>0 and e:IsActivated() end
+end
+function s.Aesp_Dpsk_cfilter(c,ctg)
+	return c:IsOriginalEffectProperty(s.Aesp_efffilter(ctg)) and c:IsFaceupEx()
+end
+function s.Aesp_Dpsk_con(ctg)
+	return  function(e,tp,eg,ep,ev,re,r,rp)
+				return Duel.IsExistingMatchingCard(s.Aesp_Dpsk_cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil,ctg)
+			end
+end
+function s.Aesp_Dpsk_tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_HAND)
+end
+function s.Aesp_Dpsk_op(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.Aesp_Dpsk_spfilter),tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+function s.Aesp_Gmn_thfilter(c)
+	return c:IsSetCard(0x5537) and c:IsAbleToHand() and not c:IsAttribute(ATTRIBUTE_FIRE)
+end
+function s.Aesp_Gmn_acfilter(c)
+	return c:IsHasEffect(53780002) and c:IsAbleToRemoveAsCost()
+end
+function s.Aesp_Gmn_costchk(e,te,tp)
+	return s.Aesp_costchk(e,te,tp) and Duel.IsExistingMatchingCard(s.Aesp_Gmn_acfilter,tp,LOCATION_MZONE,0,1,e:GetLabelObject():GetHandler())
+end
+function s.Aesp_Gmn_costop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,s.Aesp_Gmn_acfilter,tp,LOCATION_MZONE,0,1,1,e:GetLabelObject():GetHandler())
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function s.Aesp_Gmn_tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.Aesp_Gmn_thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function s.Aesp_Gmn_op(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,s.Aesp_Gmn_thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
+end
+function s.Aesp_Grk_acfilter(c)
+	return c:IsHasEffect(53780003) and c:IsAbleToRemoveAsCost()
+end
+function s.Aesp_Grk_costchk(e,te,tp)
+	return s.Aesp_costchk(e,te,tp) and Duel.IsExistingMatchingCard(s.Aesp_Grk_acfilter,tp,LOCATION_HAND,0,1,e:GetLabelObject():GetHandler())
+end
+function s.Aesp_Grk_costop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,s.Aesp_Grk_acfilter,tp,LOCATION_HAND,0,1,1,e:GetLabelObject():GetHandler())
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function s.Aesp_Grk_tgfilter(c)
+	return c:IsSetCard(0x5537) and c:IsAbleToGrave()
+end
+function s.Aesp_Grk_tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.Aesp_Grk_tgfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+end
+function s.Aesp_Grk_op(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,s.Aesp_Grk_tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoGrave(g,REASON_EFFECT)
+	end
+end
+function s.Aesp_Chat_costchk(e,te,tp)
+	return s.Aesp_costchk(e,te,tp) and Duel.IsExistingMatchingCard(s.Aesp_Chat_acfilter,tp,LOCATION_HAND,0,1,e:GetLabelObject():GetHandler())
+end
+function s.Aesp_Chat_costop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,s.Aesp_Chat_acfilter,tp,LOCATION_HAND,0,1,1,e:GetLabelObject():GetHandler())
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function s.Aesp_efffilter2(re)
+	return function(e) return e==re end
+end
+--[[function s.Aesp_Chat_cfilter(c)
+	local re=c:GetSpecialSummonInfo(SUMMON_INFO_REASON_EFFECT)
+	return re and re:GetHandler() and re:GetHandler():IsOriginalEffectProperty(s.Aesp_efffilter2(re))
+end
+function s.Aesp_Chat_con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(s.Aesp_Chat_cfilter,1,nil)
+end]]--
+function s.Aesp_Chat_acfilter(c)
+	return c:IsHasEffect(53780004) and c:IsAbleToRemoveAsCost()
+end
+function s.Aesp_Chat_spfilter(c,e,tp,check)
+	return c:IsSetCard(0x5537) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (check or Duel.IsExistingMatchingCard(s.Aesp_Chat_acfilter,tp,LOCATION_HAND,0,1,c))
+end
+function s.Aesp_Chat_tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local loc=0
+	for tc in aux.Next(eg) do loc=loc|tc:GetSummonLocation() end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.Aesp_Chat_spfilter,tp,loc,0,1,nil,e,tp) end
+	e:SetLabel(loc)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,loc)
+end
+function s.Aesp_Chat_op(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.Aesp_Chat_spfilter),tp,e:GetLabel(),0,1,1,nil,e,tp,true)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+function s.Aesp_Qwen_cfilter(c,re)
+	return re and re:GetHandler() and re:GetHandler():IsOriginalEffectProperty(s.Aesp_efffilter2(re)) and c:IsReason(REASON_EFFECT)
+end
+function s.Aesp_Qwen_con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(s.Aesp_Qwen_cfilter,1,nil,re)
+end
+function s.Aesp_Qwen_thfilter(c)
+	return c:IsFaceupEx() and (c:IsSetCard(0x5537) or c:IsRace(RACE_CYBERSE)) and c:IsAbleToHand()
+end
+function s.Aesp_Qwen_tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.Aesp_Qwen_thfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
+end
+function s.Aesp_Qwen_op(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.Aesp_Qwen_thfilter),tp,LOCATION_GRAVE,0,1,1,nil)
+	if #g>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
+	end
+end
+function s.Aesp_Qwen_acfilter(c,tp)
+	return c:IsHasEffect(53780005) and c:IsAbleToRemoveAsCost() and Duel.IsExistingMatchingCard(s.Aesp_Qwen_thfilter,tp,LOCATION_GRAVE,0,1,c)
+end
+function s.Aesp_Qwen_costchk(e,c,tp)
+--Debug.Message(Duel.IsExistingMatchingCard(s.Aesp_Qwen_acfilter,tp,LOCATION_GRAVE,0,1,e:GetLabelObject():GetHandler(),tp))
+	return s.Aesp_costchk(e,te,tp) and Duel.IsExistingMatchingCard(s.Aesp_Qwen_acfilter,tp,LOCATION_GRAVE,0,1,e:GetLabelObject():GetHandler(),tp)
+end
+function s.Aesp_Qwen_costop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,s.Aesp_Qwen_acfilter,tp,LOCATION_GRAVE,0,1,1,e:GetLabelObject():GetHandler(),tp)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function s.Aesp_Cld_cfilter(c,re)
+	return re and re:GetHandler() and re:GetHandler():IsOriginalEffectProperty(s.Aesp_efffilter2(re)) and c:IsReason(REASON_EFFECT+REASON_COST) and re:IsActivated()
+end
+function s.Aesp_Cld_con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(s.Aesp_Cld_cfilter,1,nil,re)
+end
+function s.Aesp_Cld_tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,3)
+end
+function s.Aesp_Cld_op(e,tp,eg,ep,ev,re,r,rp)
+	Duel.DiscardDeck(tp,3,REASON_EFFECT)
+end
+--[[function s.Aesp_Cld_tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetDecktopGroup(tp,3)
+	if chk==0 then
+		if not g or #g<3 then return false end
+		for tc in aux.Next(g) do if not (tc:IsAbleToGrave() or tc:IsAbleToRemove()) then return false end end
+		return true
+	end
+end
+function s.Aesp_Cld_op(e,tp,eg,ep,ev,re,r,rp)
+	local ct=3
+	while Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0 or ct>0 do
+		Duel.ConfirmDecktop(tp,1)
+		local tc=Duel.GetDecktopGroup(tp,1):GetFirst()
+		if tc:IsAbleToGrave() and (not tc:IsAbleToRemove() or Duel.SelectOption(tp,1191,1192)==0) then
+			Duel.SendtoGrave(tc,REASON_EFFECT)
+		else
+			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		end
+		ct=ct-1
+	end
+end]]--
+function s.Aesp_Cld_acfilter(c)
+	return c:IsHasEffect(53780006) and c:IsAbleToRemoveAsCost()
+end
+function s.Aesp_Cld_costchk(e,te,tp)
+	return s.Aesp_costchk(e,te,tp) and Duel.IsExistingMatchingCard(s.Aesp_Cld_acfilter,tp,LOCATION_MZONE,0,1,e:GetLabelObject():GetHandler())
+end
+function s.Aesp_Cld_costop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,s.Aesp_Cld_acfilter,tp,LOCATION_MZONE,0,1,1,e:GetLabelObject():GetHandler())
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function s.Checkmate_Fairy(c)
+	if not Checkmate_Fairy_check then
+		Checkmate_Fairy_check=true
+		local ge0=Effect.CreateEffect(c)
+		ge0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge0:SetCode(EVENT_ADJUST)
+		ge0:SetOperation(s.Checkmate_geop)
+		Duel.RegisterEffect(ge0,0)
+		Checkmate_GetFirstTarget=Duel.GetFirstTarget
+		Checkmate_GetChainInfo=Duel.GetChainInfo
+		Checkmate_GetTargetsRelateToChain=Duel.GetTargetsRelateToChain
+	end
+end
+function s.Checkmate_geop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(0,0xff,0xff)
+	for tc in aux.Next(g) do
+		local le={tc:GetCardRegistered(nil)}
+		for _,v in pairs(le) do
+			if v:IsActivated() then
+				local tg=v:GetTarget() or aux.TRUE
+				v:SetTarget(s.Checkmate_chtg(tg))
+			end
+		end
+	end
+	local f1=Card.RegisterEffect
+	Card.RegisterEffect=function(sc,se,bool)
+		if se:IsActivated() then
+			local tg=se:GetTarget() or aux.TRUE
+			se:SetTarget(s.Checkmate_chtg(tg))
+		end
+		return f1(sc,se,bool)
+	end
+	e:Reset()
+end
+function s.Checkmate_chtg(_tg)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+				if chkc then return _tg(e,tp,eg,ep,ev,re,r,rp,0,chkc) end
+				if chk==0 then return _tg(e,tp,eg,ep,ev,re,r,rp,0) end
+				local tg=Group.CreateGroup()
+				local f=Duel.SetTargetCard
+				Duel.SetTargetCard=function(targets)
+					tg=Group.__add(tg,targets)
+					return f(targets)
+				end
+				_tg(e,tp,eg,ep,ev,re,r,rp,1)
+				Duel.SetTargetCard=f
+				local g=Duel.GetFieldGroup(tp,0,LOCATION_MZONE)
+				local sg=g:Filter(Card.IsCanBeEffectTarget,nil,e)
+				if not e:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and Duel.GetFlagEffect(1-tp,53798004)>0 and #g>0 and #g==#sg then
+					local pro1,pro2=e:GetProperty()
+					e:SetProperty(pro1|EFFECT_FLAG_CARD_TARGET,pro2)
+					Duel.ClearTargetCard()
+					Duel.SetTargetCard(g)
+					if #tg>0 then
+						local ev0=Duel.GetCurrentChain()
+						tg:KeepAlive()
+						tg:ForEach(Card.RegisterFlagEffect,53798004,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
+						local e1=Effect.CreateEffect(e:GetHandler())
+						e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+						e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+						e1:SetCode(EVENT_CHAIN_SOLVING)
+						e1:SetCountLimit(1)
+						e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return ev==ev0 end)
+						e1:SetLabelObject(tg)
+						e1:SetOperation(s.Checkmate_cheaton)
+						e1:SetReset(RESET_CHAIN)
+						Duel.RegisterEffect(e1,tp)
+					end
+					local e2=Effect.CreateEffect(e:GetHandler())
+					e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+					e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+					e2:SetCode(EVENT_CHAIN_END)
+					e2:SetCountLimit(1)
+					e2:SetLabelObject(e)
+					e2:SetOperation(s.Checkmate_tgoff)
+					Duel.RegisterEffect(e2,tp)
+				end
+			end
+end
+function s.Checkmate_tgoff(e,tp,eg,ep,ev,re,r,rp)
+	local pro1,pro2=e:GetLabelObject():GetProperty()
+	e:GetLabelObject():SetProperty(pro1&(~EFFECT_FLAG_CARD_TARGET),pro2)
+end
+function s.Checkmate_cheaton(e,tp,eg,ep,ev,re,r,rp)
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then
+		local pro1,pro2=re:GetProperty()
+		re:SetProperty(pro1|EFFECT_FLAG_CARD_TARGET,pro2)
+	end
+	local op=re:GetOperation()
+	re:SetOperation(s.Checkmate_chop(op,e:GetLabelObject()))
+	local ev0=Duel.GetCurrentChain()
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)return ev==ev0 end)
+	e1:SetOperation(s.Checkmate_cheatoff(op))
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+end
+function s.Checkmate_cheatoff(_op)
+	return  function(e,tp,eg,ep,ev,re,r,rp)
+				Duel.GetFirstTargetCheck=mate_GetFirstTarget
+				Duel.GetChainInfo=Checkmate_GetChainInfo
+				Duel.GetTargetsRelateToChain=Checkmate_GetTargetsRelateToChain
+				re:SetOperation(_op)
+				local pro1,pro2=re:GetProperty()
+				re:SetProperty(pro1&(~EFFECT_FLAG_CARD_TARGET),pro2)
+			end
+end
+function s.Checkmate_chop(_op,_g)
+	return  function(e,tp,eg,ep,ev,re,r,rp)
+				Duel.GetTargetsRelateToChain=function()
+					return _g:Filter(function(c)return c:GetFlagEffect(53798004)>0 end,nil)
+				end
+				Duel.GetFirstTarget=function()
+					local gt={}
+					for tc in aux.Next(Duel.GetTargetsRelateToChain()) do table.insert(gt,tc) end
+					return table.unpack(gt)
+				end
+				Duel.GetChainInfo=function(chainc,...)
+					if chainc==0 then
+						local infos,kotas={...},{}
+						for _,info in pairs(infos) do
+							if info==CHAININFO_TARGET_CARDS then table.insert(kotas,_g)
+							else table.insert(kotas,Checkmate_GetChainInfo(0,info)) end
+						end
+						return table.unpack(kotas)
+					else return Checkmate_GetChainInfo(chainc,...) end
+				end
+				_op(e,tp,eg,ep,ev,re,r,rp)
+			end
 end
