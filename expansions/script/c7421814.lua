@@ -31,7 +31,7 @@ function s.costchk(e,te_or_c,tp)
 	return true
 end
 function s.tgfilter(c)
-	return aux.IsCodeListed(c,32274490) and c:IsAbleToGraveAsCost()
+	return aux.IsCodeListed(c,32274490) and c:IsAbleToGraveAsCost() and c:IsType(TYPE_MONSTER)
 end
 function s.costop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
