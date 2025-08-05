@@ -413,7 +413,7 @@ function cm.GetCardsInZone(tp,fd)
 	return Duel.GetFieldCard(p,loc,math.floor(seq+0.5))
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	if tp~=rp or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)
 	if #g>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(11451858,4)) then
 		local fd=0

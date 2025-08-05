@@ -397,7 +397,7 @@ function cm.distance2(ac,bc,tp)
 	return ((by-ay)*(by-ay)+(ax-bx)*(ax-bx))*1000
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	if tp~=rp or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)
 	local ng=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if #g>0 and #ng>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(11451858,5)) then

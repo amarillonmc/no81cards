@@ -418,7 +418,7 @@ function cm.tgfilter(c,e)
 	return c:IsRelateToEffect(e) and (c:IsLocation(LOCATION_GRAVE) or c:GetFlagEffect(11451854)>0) and c:IsAbleToRemove()
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
-	if tp~=rp or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or not Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS):Filter(cm.tgfilter,nil,re)
 	if #g>0 and Duel.SelectEffectYesNo(tp,re:GetHandler(),aux.Stringid(11451858,7)) then
 		local tg=g

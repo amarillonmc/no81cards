@@ -45,7 +45,8 @@ function s.atlimit(e,c)
 	return se and se:IsHasType(EFFECT_TYPE_ACTIONS) and not c:IsImmuneToEffect(e)
 end
 function s.efilter(e,te)
-	return te:GetOwner():GetSpecialSummonInfo(SUMMON_INFO_REASON_EFFECT)~=nil
+	local se=te:GetOwner():GetSpecialSummonInfo(SUMMON_INFO_REASON_EFFECT)
+	return se and se:IsHasType(EFFECT_TYPE_ACTIONS)
 end
 function s.qcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
