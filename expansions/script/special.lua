@@ -1,11 +1,11 @@
 function Auxiliary.PreloadUds()
 	PreloadUds_Done=true
 	
-	local _IsSetCard=Card.IsSetCard
+	--[[local _IsSetCard=Card.IsSetCard
 	Card.IsSetCard=function(c,setname,...)
 						if setname==0x1cc then return _IsSetCard(c,0x1cc,...) or _IsSetCard(c,0x2cc,...) end
 						return _IsSetCard(c,setname,...)
-					end
+					end--]]
 
 	local tableclone=function(tab,mytab)
 		local res=mytab or {}
@@ -288,6 +288,8 @@ function Auxiliary.PreloadUds()
 	local _SendtoDeck=Duel.SendtoDeck
 	function Duel.SendtoDeck(g,top,...)
 		local cg=nil
+		local ext_params={...}
+		local cp=nil
 		if aux.GetValueType(g)=="Card" then
 			cg=Group.FromCards(g)
 		elseif aux.GetValueType(g)=="Group" then
@@ -299,8 +301,13 @@ function Auxiliary.PreloadUds()
 				Duel.ConfirmCards(0,ag)
 				Duel.ConfirmCards(1,ag)
 			end
+		elseif cg and #ext_params>=2 and ext_params[2]&REASON_COST>0 then
+			local re=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT)
+			if re and cg:IsContains(re:GetHandler()) then cp=true end
 		end
-		return _SendtoDeck(g,top,...)
+		local res=_SendtoDeck(g,top,...)
+		if cp then Duel.ConfirmCards(1-Duel.GetChainInfo(0,CHAININFO_TRIGGERING_PLAYER),Duel.GetChainInfo(0,CHAININFO_TRIGGERING_EFFECT):GetHandler()) end
+		return res
 	end
 	local _SendtoHand=Duel.SendtoHand
 	function Duel.SendtoHand(g,top,...)
