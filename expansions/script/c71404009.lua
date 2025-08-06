@@ -87,7 +87,7 @@ function s.filter1(c)
 	return c:IsType(TYPE_LINK) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and not c:IsForbidden()
 end
 function s.filter1sp(c,e,tp)
-	return c:GetOriginalType()&(TYPE_LINK+TYPE_MONSTER)~=0 and Duel.IsPlayerCanDraw(c:GetLink()//4+1) and c:IsFaceup() and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp)
+	return c:GetOriginalType()&(TYPE_LINK+TYPE_MONSTER)==TYPE_LINK+TYPE_MONSTER and Duel.IsPlayerCanDraw(c:GetLink()//4+1) and c:IsFaceup() and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp)
 end
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
@@ -107,7 +107,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 		if ft>2 then ft=2 end
 		local g1=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.filter1),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,ft,nil)
 		local op_flag=false
-		for tc in aux.Next(g) do
+		for tc in aux.Next(g1) do
 			if Duel.Equip(tp,tc,c) then
 				local e1=Effect.CreateEffect(c)
 				e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
@@ -122,7 +122,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 		if op_flag and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local g2=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.filter1sp),tp,LOCATION_SZONE,0,1,1,nil,e,tp)
+			local g2=Duel.SelectMatchingCard(tp,s.filter1sp,tp,LOCATION_SZONE,0,1,1,nil,e,tp)
 			local spc=g2:GetFirst()
 			if Duel.SpecialSummon(spc,0,tp,tp,false,false,POS_FACEUP)>0 then
 				local ct=spc:GetLink()//4+1
