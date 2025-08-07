@@ -47,7 +47,7 @@ function c98920369.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c98920369.cfilter1(c,tp)
-	return c:IsRace(RACE_REPTILE) and Duel.GetMZoneCount(tp,c)>0
+	return c:IsRace(RACE_REPTILE) and Duel.GetMZoneCount(tp,c)>=1
 end
 function c98920369.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c98920369.cfilter1,1,nil,REASON_COST,true,tp) end
