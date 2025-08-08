@@ -28,7 +28,7 @@ function fuef.FG(owner, obj, target, force)
 		owner, obj, target, force = nil, owner, obj, target
 	end
 
-	return fuef.New(log, "F+G", nil, owner, target, force):OBJ(obj)
+	return fuef.New(log, "F+G", nil, owner, target, force):Obj(obj)
 end
 
 --- 建立剩余需要 cod 的 fuef
@@ -308,7 +308,7 @@ function fuef:Clone(cod, target, force)
 
 	log:Info("check self.typ is F+G")
 	if E.typ == EFFECT_TYPE_FIELD + EFFECT_TYPE_GRANT then
-		E:OBJ(cod)
+		E:Obj(cod)
 	else
 		E.cod = fusf.ParseConstantKey("cod", cod)
 		log:Info("set self.cod : "..E.cod)
@@ -878,9 +878,9 @@ function fuef:Obj(val)
 	if self:InitCheck(log, "obj", val) then return self end
 
 	if typ == "string" then
-		local e = fusf.Getcm(self).elist[val]
+		local e = fusf.Getcm(self).e_list[val]
 		if not e or not e.e then
-			error("Obj: elist entry for '" .. val .. "' is missing or invalid", 2)
+			error("Obj: e_list entry for '" .. val .. "' is missing or invalid", 2)
 		end
 		val = fusf.CheckType(e.e, "Effect")
 	end
