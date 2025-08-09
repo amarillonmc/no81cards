@@ -56,21 +56,21 @@ end
 function c44401007.datg(e,c)
 	return c:IsLevelBelow(4) and c:IsRace(RACE_PSYCHO)
 end
-function c44401007.cfilter(c,e)
-	return c:IsSetCard(0xa4a) and c:IsFaceup() and c:IsCanBeEffectTarget(e)
+function c44401007.cfilter(c)
+	return c:IsSetCard(0xa4a) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup()
 end
 function c44401007.gcheck(sg)
-	return Duel.IsExistingTarget(nil,0,LOCATION_ONFIELD,LOCATION_ONFIELD,#sg,sg)
+	return sg:FilterCount(c44401007.cfilter,nil)>=(#sg/2)
 end
 function c44401007.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	local g=Duel.GetMatchingGroup(c44401007.cfilter,tp,LOCATION_MZONE,0,nil,e)
-	if chk==0 then return g:CheckSubGroup(c44401007.gcheck) end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil):Filter(Card.IsCanBeEffectTarget,nil,e)
+	if chk==0 then return g:CheckSubGroup(c44401007.gcheck,2,2) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local sg=g:SelectSubGroup(tp,c44401007.gcheck,false,1,#g)
+	local sg=g:SelectSubGroup(tp,c44401007.gcheck,false,2,#g)
 	Duel.SetTargetCard(sg)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,#sg,#sg,sg)
+	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	--Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,#sg,#sg,sg)
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401007,0))
 end
 function c44401007.operation(e,tp,eg,ep,ev,re,r,rp)

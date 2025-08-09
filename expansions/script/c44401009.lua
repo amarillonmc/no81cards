@@ -45,18 +45,18 @@ function c44401009.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN,1)
 	e:GetHandler():RegisterEffect(e1)
 end
-function c44401009.cfilter(c,e)
-	return c:IsSetCard(0xa4a) and c:IsFaceup() and c:IsCanBeEffectTarget(e) and c:IsAbleToRemove()
+function c44401009.cfilter(c)
+	return c:IsSetCard(0xa4a) and c:IsFaceup() and c:IsAbleToRemove()
 end
-function c44401009.gcheck(sg,e)
-	return sg:FilterCount(c44401009.cfilter,nil,e)>=math.floor(#sg/2)
+function c44401009.gcheck(sg)
+	return sg:FilterCount(c44401009.cfilter,nil)>=(#sg/2)
 end
 function c44401009.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,nil):Filter(Card.IsCanBeEffectTarget,nil,e)
-	if chk==0 then return g:CheckSubGroup(c44401009.gcheck,2,2,e) end
+	if chk==0 then return g:CheckSubGroup(c44401009.gcheck,2,2) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local sg=g:SelectSubGroup(tp,c44401009.gcheck,false,2,#g,e)
+	local sg=g:SelectSubGroup(tp,c44401009.gcheck,false,2,#g)
 	Duel.SetTargetCard(sg)
 	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	--Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,#sg,#sg,sg)
