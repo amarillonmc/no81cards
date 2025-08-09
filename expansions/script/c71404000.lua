@@ -401,7 +401,9 @@ function yume.stellar_memories.LimitCost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function yume.stellar_memories.RitualUltimateFilter(c,e,tp,m1,m2,level_function,greater_or_equal)
 	if not(c:GetOriginalType()&0x81==0x81 and yume.stellar_memories.RitualMonsterFilter(c,e,tp) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)) then return false end
-	local mg=m1:Filter(Card.IsCanBeRitualMaterial,c,c)
+	local mg=m1
+	--Discard this filter because it only accepts monsters, not monster cards.
+	--local mg=m1:Filter(Card.IsCanBeRitualMaterial,c,c)
 	if m2 then
 		mg:Merge(m2)
 	end
