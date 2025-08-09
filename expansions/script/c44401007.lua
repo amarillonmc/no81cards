@@ -64,7 +64,7 @@ function c44401007.gcheck(sg)
 end
 function c44401007.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil):Filter(Card.IsCanBeEffectTarget,nil,e)
+	local g=Duel.GetMatchingGroup(Card.IsCanBeEffectTarget,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,e)
 	if chk==0 then return g:CheckSubGroup(c44401007.gcheck,2,2) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local sg=g:SelectSubGroup(tp,c44401007.gcheck,false,2,#g)

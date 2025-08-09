@@ -45,17 +45,16 @@ function c44401005.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN,1)
 	e:GetHandler():RegisterEffect(e1)
 end
-function c44401005.cfilter(c)
-	return c:IsSetCard(0xa4a) and c:IsFaceup() and
-	Duel.IsExistingTarget(Card.IsFaceup,0,LOCATION_MZONE,LOCATION_MZONE,1,c)
+function c44401005.gcheck(sg)
+	return sg:IsExists(Card.IsSetCard,1,nil,0xa4a)
 end
 function c44401005.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(c44401005.cfilter,tp,LOCATION_MZONE,0,1,nil) end
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil):Filter(Card.IsCanBeEffectTarget,nil,e)
+	if chk==0 then return g:CheckSubGroup(c44401005.gcheck,2,2) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c44401005.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,g)
+	local sg=g:SelectSubGroup(tp,c44401005.gcheck,false,2,2)
+	Duel.SetTargetCard(sg)
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401005,0))
 end
 function c44401005.thfilter(c)
