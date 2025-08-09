@@ -48,18 +48,18 @@ end
 function c44401009.cfilter(c,e)
 	return c:IsSetCard(0xa4a) and c:IsFaceup() and c:IsCanBeEffectTarget(e) and c:IsAbleToRemove()
 end
-function c44401009.gcheck(sg)
-	return Duel.IsExistingTarget(Card.IsAbleToRemove,0,LOCATION_MZONE,LOCATION_MZONE,#sg,sg)
+function c44401009.gcheck(sg,e)
+	return sg:FilterCount(c44401009.cfilter,nil,e)>=math.floor(#sg/2)
 end
 function c44401009.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
-	local g=Duel.GetMatchingGroup(c44401009.cfilter,tp,LOCATION_MZONE,0,nil,e)
-	if chk==0 then return g:CheckSubGroup(c44401009.gcheck) end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,nil):Filter(Card.IsCanBeEffectTarget,nil,e)
+	if chk==0 then return g:CheckSubGroup(c44401009.gcheck,2,2,e) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local sg=g:SelectSubGroup(tp,c44401009.gcheck,false,1,#g)
+	local sg=g:SelectSubGroup(tp,c44401009.gcheck,false,2,#g,e)
 	Duel.SetTargetCard(sg)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,#sg,#sg,sg)
+	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	--Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,#sg,#sg,sg)
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(44401009,0))
 end
 function c44401009.operation(e,tp,eg,ep,ev,re,r,rp)
