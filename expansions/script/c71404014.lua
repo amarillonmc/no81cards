@@ -66,7 +66,7 @@ function s.MultiRitualToDeckFilter(c)
 end
 function s.MultiRitualTargetCheck(e,tp,greater_or_equal,summon_location,mat_location)
 	local mg=Duel.GetMatchingGroup(s.MultiRitualToDeckFilter,tp,mat_location,0,nil,tp)
-	local res=Duel.IsExistingMatchingCard(yume.stellar_memories.RitualMonsterFilter,tp,summon_location,0,1,nil,e,tp,mg,Card.GetLink,greater_or_equal)
+	local res=Duel.IsExistingMatchingCard(yume.stellar_memories.MultiRitualMonsterFilter,tp,summon_location,0,1,nil,e,tp,mg,Card.GetLink,greater_or_equal)
 	return res
 end
 function s.tg3(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -495,7 +495,6 @@ function yume.stellar_memories.RitualUltimateOperation(greater_or_equal,summon_l
 				local tc=tg:GetFirst()
 				local mat=nil
 				if tc then
-					mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
 					if tc.mat_filter then
 						mg=mg:Filter(tc.mat_filter,tc,tp)
 					else
@@ -527,7 +526,7 @@ function yume.stellar_memories.MultiRitualBanishFilter(c,tp)
 end
 function yume.stellar_memories.MultiRitualMonsterFilter(c,e,tp,m1,level_function,greater_or_equal)
 	if not (c:GetOriginalType()&0x81==0x81 and yume.stellar_memories.RitualMonsterFilter(c,e,tp) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)) then return false end
-	local mg=m1:Filter(Card.IsCanBeRitualMaterial,c,c)
+	local mg=m1
 	return mg:IsExists(yume.stellar_memories.MultiRitualCheck,1,nil,c,tp,level_function,greater_or_equal)
 end
 function yume.stellar_memories.MultiRitualCheck(mc,c,tp,level_function,greater_or_equal)
@@ -542,7 +541,7 @@ function yume.stellar_memories.MultiRitualCheck(mc,c,tp,level_function,greater_o
 end
 function yume.stellar_memories.MultiRitualTargetCheck(e,tp,greater_or_equal,summon_location,mat_location)
 	local mg=Duel.GetMatchingGroup(yume.stellar_memories.MultiRitualBanishFilter,tp,mat_location,0,nil,tp)
-	local res=Duel.IsExistingMatchingCard(yume.stellar_memories.RitualMonsterFilter,tp,summon_location,0,1,nil,e,tp,mg,Card.GetLink,greater_or_equal)
+	local res=Duel.IsExistingMatchingCard(yume.stellar_memories.MultiRitualMonsterFilter,tp,summon_location,0,1,nil,e,tp,mg,Card.GetLink,greater_or_equal)
 	return res
 end
 function yume.stellar_memories.MultiRitualTarget(greater_or_equal,summon_location,mat_location,extra_target)
@@ -566,7 +565,6 @@ end
 function yume.stellar_memories.MultiRitualSelectToSummonFilter(c,e,tp,mc,level_function,greater_or_equal)
 	return c:GetOriginalType()&0x81==0x81 and yume.stellar_memories.RitualMonsterFilter(c,e,tp)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)
-		and mc:IsCanBeRitualMaterial(c)
 		and yume.stellar_memories.MultiRitualCheck(mc,c,tp,level_function,greater_or_equal)
 end
 function yume.stellar_memories.MultiRitualRitualLevelCheck(c,mc,level_function,greater_or_equal)
