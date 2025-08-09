@@ -61,7 +61,7 @@ function c11561044.ctop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,11561044) 
 	local g=mg:Filter(c11561044.ctfilter,1,nil,e) 
 	local lk=g:GetSum(Card.GetLink)
-	if c:IsRelateToEffect(e) then 
+	if c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD) then 
 		c:AddCounter(0x1,lk)
 	end
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil) 

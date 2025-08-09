@@ -81,7 +81,7 @@ function s.tfop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(s.tffilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c,e,tp) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local tc=Duel.SelectMatchingCard(tp,s.tffilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,e,tp):GetFirst()
-	if and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA) and c:IsRelateToEffect(e) then
+	if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA) and c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
