@@ -12,6 +12,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCondition(s.condition)
+	e2:SetCost(s.cost)
 	e2:SetTarget(s.target)
 	e2:SetOperation(s.activate)
 	c:RegisterEffect(e2)
@@ -27,7 +28,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_DRAW and e:GetHandler():IsReason(REASON_RULE)
+	return Duel.GetFlagEffect(tp,id)==0 and Duel.GetCurrentPhase()==PHASE_DRAW and e:GetHandler():IsReason(REASON_RULE)
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -42,6 +43,9 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 and not Duel.CheckPhaseActivity()
+end
+function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():GetFlagEffect(id)~=0 end
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
