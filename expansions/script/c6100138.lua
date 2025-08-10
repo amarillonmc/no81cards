@@ -55,7 +55,7 @@ function s.rsop(e,tp,eg,ep,ev,re,r,rp)
 		if tc then
 			-- 特殊召唤
 			Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-			
+			tc:CompleteProcedure()
 			-- 赋予不成为效果对象的抗性
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)

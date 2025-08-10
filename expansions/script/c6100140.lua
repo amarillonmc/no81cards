@@ -53,6 +53,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 					local tc=g2:GetFirst()
 					-- 当作仪式召唤特殊召唤
 					Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+					tc:CompleteProcedure()
 				end
 			end
 		end

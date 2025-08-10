@@ -72,9 +72,8 @@ function c82228010.disop(e,tp,eg,ep,ev,re,r,rp)
 end  
  
 function c82228010.dacon(e,tp,eg,ep,ev,re,r,rp)  
-	return tp~=Duel.GetTurnPlayer()
+	return Duel.GetAttacker():GetControler()~=tp
 end  
-
 function c82228010.daop(e,tp,eg,ep,ev,re,r,rp)  
 	Duel.NegateAttack()  
 end  
