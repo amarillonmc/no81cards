@@ -7,7 +7,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1)
+	e1:SetCountLimit(1,m)
 	c:RegisterEffect(e1)
 	--extra summon
 	local e2=Effect.CreateEffect(c)
@@ -45,13 +45,13 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function cm.thfilter(c)
-	return c:IsSetCard(0x632) and c:IsAbleToHand()
+	return c:IsSetCard(0x610) and c:IsAbleToHand()
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,4)
 	local g=Duel.GetDecktopGroup(tp,4)
 	if g:GetCount()>0 then
-		if g:IsExists(Card.IsSetCard,1,nil,0x632) then
+		if g:IsExists(Card.IsSetCard,1,nil,0x610) then
 			if g:IsExists(cm.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 				Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
 				local sg=g:FilterSelect(tp,cm.thfilter,1,1,nil)

@@ -39,10 +39,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.inta(e,c)
-	return c:IsPosition(POS_FACEUP) and c:IsSetCard(0x632)
+	return c:IsPosition(POS_FACEUP) and c:IsSetCard(0x610)
 end
 function cm.intg(e,c)
-	return c~=e:GetHandler() and c:IsSetCard(0x632) and c:IsType(TYPE_MONSTER)
+	return c~=e:GetHandler() and c:IsSetCard(0x610) and c:IsType(TYPE_MONSTER)
 end
 function cm.tdfilter(c)
 	return c:IsRace(RACE_MACHINE) and c:IsAbleToDeck()
@@ -55,7 +55,7 @@ function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 end
 function cm.thfilter(c,e,tp)
-	return c:IsSetCard(0x631) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa610) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)

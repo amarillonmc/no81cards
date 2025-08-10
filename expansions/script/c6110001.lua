@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 end
 
 function cm.stfilter(c)
-	return c:IsSetCard(0x632) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0x610) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 
 function cm.desfilter(c)
@@ -56,7 +56,7 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.tgfilter(c,tp)
-	return c:IsSetCard(0x631) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0x610) and c:IsType(TYPE_MONSTER)
 		and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,c:GetCode()) and c:IsAbleToHand()
 end
 

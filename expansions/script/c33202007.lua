@@ -1,108 +1,100 @@
---重量级的女帝 盾甲虫
+--新炼装勇士·钴铬钼先驱
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--spsummon rule
+	--fusion material
+	c:EnableReviveLimit()
+	aux.AddFusionProcFunFun(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0xe1),aux.FilterBoolFunction(Card.IsRace,RACE_PSYCHO),2,true)
+	--disable
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCondition(s.sprcon)
-	e1:SetTarget(s.sprtg)
-	e1:SetOperation(s.sprop)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(s.discon)
+	e1:SetOperation(s.disop)
 	c:RegisterEffect(e1)
-	--target
+	--effect gain
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_SET_AVAILABLE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetTarget(s.tglimit)
-	e2:SetValue(aux.tgoval)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetCondition(s.regcon)
+	e2:SetOperation(s.regop)
 	c:RegisterEffect(e2)
-	--Equip
-	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_EQUIP)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_FREE_CHAIN)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetHintTiming(0,TIMING_END_PHASE+TIMING_EQUIP)
-	e4:SetCountLimit(1)
-	e4:SetCondition(s.ndcon)
-	e4:SetTarget(s.eqtg)
-	e4:SetOperation(s.eqop)
-	c:RegisterEffect(e4)
 end
 
---e1
-function s.cfilter(c,tp,f)
-	return f(c) and Duel.GetMZoneCount(tp,c)>0
+function s.discon(e,tp,eg,ep,ev,re,r,rp)
+	local cod=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CODE)
+	return re:IsActiveType(TYPE_TRAP+TYPE_SPELL) and Duel.IsExistingMatchingCard(Card.IsCode,tp,nil,LOCATION_GRAVE,1,nil,cod)
 end
-function s.sprcon(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,c,tp,Card.IsAbleToGraveAsCost)
-end
-function s.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,c,tp,Card.IsAbleToGraveAsCost)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
-	if tc then
-		e:SetLabelObject(tc)
-		return true
-	else return false end
-end
-function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
-	local g=e:GetLabelObject()
-	Duel.SendtoGrave(g,REASON_SPSUMMON)
+function s.disop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
 end
 
---e2
-function s.tglimit(e,c)
-	return c~=e:GetHandler()
+function s.filter0(c)
+	return c:IsSetCard(0xe1)
 end
-
---e4
-function s.ndcon(e)
-	return e:GetHandler():GetEquipCount()==0
+function s.regcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
-function s.eqfilter(c,tp)
-	return c:IsRace(RACE_INSECT) and c:IsLevelBelow(3) and c:CheckUniqueOnField(tp) and not c:IsForbidden()
-end
-function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(s.eqfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
-end
-function s.eqop(e,tp,eg,ep,ev,re,r,rp)
+function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-	if c:IsRelateToEffect(e) and c:IsFaceup() then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local g=Duel.SelectMatchingCard(tp,s.eqfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,tp)
-		local tc=g:GetFirst()
-		if not Duel.Equip(tp,tc,c) then return end
-		--equip limit
+	local mt=c:GetMaterial():Filter(s.filter0,nil):GetCount()
+	if mt>=1 then
 		local e1=Effect.CreateEffect(c)
+		e1:SetDescription(aux.Stringid(id,0))
 		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
-		e1:SetCode(EFFECT_EQUIP_LIMIT)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetValue(mt*300)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetLabelObject(c)
-		e1:SetValue(s.eqlimit)
-		tc:RegisterEffect(e1)
-		--atk up
+		c:RegisterEffect(e1)
+	end
+	if mt>=2 then
 		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_EQUIP)
-		e2:SetCode(EFFECT_UPDATE_ATTACK)
-		e2:SetValue(800)
+		e2:SetDescription(aux.Stringid(id,1))
+		e2:SetCategory(CATEGORY_DESTROY)
+		e2:SetType(EFFECT_TYPE_QUICK_O)
+		e2:SetRange(LOCATION_MZONE)
+		e2:SetCountLimit(1)
+		e2:SetCode(EVENT_FREE_CHAIN)
+		e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+		e2:SetTarget(s.dtg)
+		e2:SetOperation(s.dop)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e2)
+		c:RegisterEffect(e2)
+		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
+	end
+	if mt>=3 then
+		--double damage
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_FIELD)
+		e3:SetCode(EFFECT_CHANGE_BATTLE_DAMAGE)
+		e3:SetRange(LOCATION_MZONE)
+		e3:SetTargetRange(LOCATION_MZONE,0)
+		e3:SetTarget(s.damtg)
+		e3:SetValue(aux.ChangeBattleDamage(1,DOUBLE_DAMAGE))
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		c:RegisterEffect(e3)
+		c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,4))
 	end
 end
-function s.eqlimit(e,c)
-	return c==e:GetLabelObject()
+
+function s.dtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler())
+	end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,nil,LOCATION_ONFIELD)
+end
+function s.dop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		sg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
+		Duel.HintSelection(sg)
+		Duel.Destroy(sg,REASON_EFFECT)
+	end
+end
+
+function s.damtg(e,c)
+	return c:IsType(TYPE_NORMAL)
 end

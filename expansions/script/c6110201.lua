@@ -32,10 +32,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.mfilter1(c)  
-	return c:IsFusionSetCard(0x632)  
+	return c:IsFusionSetCard(0x610)  
 end  
 function cm.tgfilter(c)
-	return c:IsSetCard(0x632) and (c:IsAbleToGrave() or c:IsAbleToHand())
+	return c:IsSetCard(0x610) and (c:IsAbleToGrave() or c:IsAbleToHand())
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil)
@@ -83,7 +83,7 @@ local c=e:GetHandler()
 	end
 end
 function cm.costfilter(c)  
-	return c:IsSetCard(0x632) and Duel.IsExistingMatchingCard(nil,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c)  
+	return c:IsSetCard(0x610) and Duel.IsExistingMatchingCard(nil,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c)  
 end  
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)  
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end  
@@ -114,5 +114,5 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.efilter(e,te)
-	return te:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not te:GetOwner():IsSetCard(0x632)
+	return te:IsActiveType(TYPE_SPELL+TYPE_TRAP) and not te:GetOwner():IsSetCard(0x610)
 end

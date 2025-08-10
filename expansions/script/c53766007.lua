@@ -81,18 +81,22 @@ function s.sdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
-function s.filter(c)
-	return c:IsSetCard(0x5534) and c:IsType(TYPE_MONSTER+TYPE_TRAP) and c:IsAbleToHand()
+function s.filter(c,code)
+	return c:IsSetCard(0x5534) and c:IsType(TYPE_TRAP) and c:IsAbleToHand() and not c:IsCode(code)
 end
 function s.sdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g1=Duel.SelectMatchingCard(tp,function(c)return c:IsFaceupEx() and c:IsAbleToDeck()end,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,3,nil)
-	if #g1>0 and Duel.SendtoDeck(g1,nil,2,REASON_EFFECT) and g1:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g2=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK,0,1,1,nil)
-		if #g2>0 then
-			Duel.SendtoHand(g2,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g2)
+	local tc=Duel.SelectMatchingCard(tp,function(c)return c:IsFaceupEx() and c:IsAbleToDeck()end,tp,LOCATION_HAND+LOCATION_REMOVED,0,1,1,nil):GetFirst()
+	if tc then
+		local code=tc:GetCode()
+		if not tc:IsFaceup() then Duel.ConfirmCards(1-tp,tc) end
+		if Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK,0,1,1,nil,code)
+			if #g>0 then
+				Duel.SendtoHand(g,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,g)
+			end
 		end
 	end
 	if e:GetHandler():IsRelateToEffect(e) then Duel.Destroy(e:GetHandler(),REASON_EFFECT) end

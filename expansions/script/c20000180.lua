@@ -18,21 +18,22 @@ function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	g = fugf.Select(tp, g)
 	Duel.HintSelection(g)
 	fuef.S(e, EFFECT_UPDATE_RANK, g):Pro("SR"):Ran("M"):Val(1):Res("STD+DIS")
-	g = fugf.Filter(g:GetFirst():GetOverlayGroup(), "IsSet+CanSp", "5fd1,%1", nil, e)
+	g = fugf.Filter(g:GetFirst():GetOverlayGroup(), "IsSet+CanSp", "5fd1,%1", nil, {e, 0, tp, "FUD"})
 	if #g == 0 or not Duel.SelectYesNo(tp, 1152) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	g = fugf.Select(tp, g)
 	Duel.BreakEffect()
-	Duel.SpecialSummon(g, 0, tp, tp, false, false, POS_FACEUP)
+	Duel.SpecialSummon(g, 0, tp, tp, false, false, POS_FACEUP_DEFENSE)
 end
 --e3
 cm.e3 = fuef.FTF("PH+BPE"):Ctl(1):Ran("F"):Func("op3")
 function cm.op3(e,tp,eg,ep,ev,re,r,rp)
 	local ct = fusf.GetCounter(175, tp, "CH") - cm.chk[tp + 1]
 	local g = fugf.GetFilter(tp, "G", "IsSet+IsTyp+IsSSetable+GChk", "5fd1,T")
-	if #g == 0 or ct == 0 then return end
+	ct = math.min(Duel.GetLocationCount(tp, LOCATION_SZONE), ct, #g)
+	if ct == 0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	g = g:Select(tp,1,ct,nil)
+	g = g:Select(tp, 1, ct, nil)
 	Duel.SSet(tp, g)
 end
 --ge1

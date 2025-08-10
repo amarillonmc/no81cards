@@ -883,22 +883,22 @@ function fusf.Equip(e, tp, eg, c)
 	eg = fusf.ToGroup(eg)
 	if Duel.GetLocationCount(tp, LOCATION_SZONE) < #eg then return false end
 
-	local _, c = fusf.CheckArgType("Equip", 4, c or e:GetHandler(), "Card")
+	c = fusf.CheckArgType("Equip", 4, c or e:GetHandler(), "Card")
 	if c:IsFacedown() then return false end
 
 	local limit = function(e, c) return c == e:GetLabelObject() end
 	if typ == "Card" then
 		local ec = eg:GetFirst()
 		if not Duel.Equip(tp, ec, c) then return false end
-		if fucf.IsOTyp(ec, "M") then
-			fuef.S(e, EFFECT_EQUIP_LIMIT, ec):Pro("CD"):Val(limit):Obj(c):Res("STD")
+		if ec:IsType(TYPE_MONSTER) then
+			fuef.S(e, EFFECT_EQUIP_LIMIT, ec):PRO("CD"):VAL(limit):OBJ(c):RES("STD")
 		end
 		return true
 	end
 	for ec in aux.Next(eg) do
 		Duel.Equip(tp, ec, c, true, true)
-		if fucf.IsOTyp(ec, "M") then
-			fuef.S(e, EFFECT_EQUIP_LIMIT, ec):Pro("CD"):Val(limit):Obj(c):Res("STD")
+		if ec:IsType(TYPE_MONSTER) then
+			fuef.S(e, EFFECT_EQUIP_LIMIT, ec):PRO("CD"):VAL(limit):OBJ(c):RES("STD")
 		end
 	end
 	Duel.EquipComplete()

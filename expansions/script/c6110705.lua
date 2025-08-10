@@ -41,13 +41,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.inta(e,c)
-	return c:IsPosition(POS_FACEUP) and c:IsSetCard(0x632)
+	return c:IsPosition(POS_FACEUP) and c:IsSetCard(0x610)
 end
 function cm.intg(e,c)
-	return c~=e:GetHandler() and c:IsSetCard(0x632) and c:IsType(TYPE_MONSTER)
+	return c~=e:GetHandler() and c:IsSetCard(0x610) and c:IsType(TYPE_MONSTER)
 end
 function cm.cfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x632) and c:IsControler(tp)
+	return c:IsFaceup() and c:IsSetCard(0x610) and c:IsControler(tp)
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler()) and eg:IsExists(cm.cfilter,1,nil,tp)

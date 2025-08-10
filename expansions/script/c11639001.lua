@@ -97,7 +97,7 @@ function cm.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return  e:GetHandler():IsCanAddCounter(0x1164,3) end
 end
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsCanAddCounter(0x1164,3) e then return end
+	if not e:GetHandler():IsCanAddCounter(0x1164,3) then return end
 	e:GetHandler():AddCounter(0x1164,3)
 end
 function cm.shcon(e,tp,eg,ep,ev,re,r,rp)

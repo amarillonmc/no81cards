@@ -27,13 +27,13 @@ function c95101135.initial_effect(c)
 	Duel.AddCustomActivityCounter(95101135,ACTIVITY_SPSUMMON,c95101135.counterfilter)
 end
 function c95101135.costfilter(c)
-	return (c:IsSetCard(0xbbe) and c:IsAttribute(ATTRIBUTE_DARK) or c:IsCode(95101001)) and c:IsAbleToGraveAsCost()
+	return (c:IsSetCard(0xbbe) and c:IsAttribute(ATTRIBUTE_DARK) or c:IsCode(95101001)) and c:IsAbleToRemoveAsCost()
 end
 function c95101135.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c95101135.costfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil) and c95101135.cost(e,tp,eg,ep,ev,re,r,rp,0) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c95101135.costfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil)
-	Duel.SendtoGrave(g,REASON_COST)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	c95101135.cost(e,tp,eg,ep,ev,re,r,rp,1)
 end
 function c95101135.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

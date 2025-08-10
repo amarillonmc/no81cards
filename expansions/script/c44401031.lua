@@ -14,18 +14,18 @@ function c44401031.initial_effect(c)
 	e1:SetCondition(c44401031.excon)
 	e1:SetCost(c44401031.excost)
 	c:RegisterEffect(e1)
-	--immune
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_IMMUNE_EFFECT)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetTarget(c44401031.immfilter)
-	e2:SetValue(c44401031.efilter)
-	c:RegisterEffect(e2)
+	--indes
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
+	e1:SetRange(LOCATION_SZONE)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xa4a))
+	e1:SetValue(c44401031.indct)
+	c:RegisterEffect(e1)
 	--destroy
 	local e3=Effect.CreateEffect(c)
-	e3:SetHintTiming(0,TIMING_SUMMON+TIMING_SPSUMMON)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
@@ -59,6 +59,11 @@ function c44401031.excost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
+end
+function c44401031.indct(e,re,r,rp)
+	if bit.band(r,REASON_EFFECT)~=0 then
+		return 1
+	else return 0 end
 end
 function c44401031.immfilter(e,c)
 	return c:IsSetCard(0xa4a) and c:GetFlagEffect(44401031)==0

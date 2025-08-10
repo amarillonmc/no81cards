@@ -46,7 +46,7 @@ function c71404002.lcheck(g)
 	return g:IsExists(Card.IsLinkType,1,nil,TYPE_RITUAL)
 end
 function c71404002.filter1(c)
-	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and not c:IsForbidden()
+	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_SPELLCASTER) and c:IsFaceupEx() and not c:IsForbidden()
 end
 function c71404002.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0

@@ -44,13 +44,13 @@ function cm.initial_effect(c)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-			and Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x632,TYPES_EFFECT_TRAP_MONSTER,1800,0,4,RACE_MACHINE,ATTRIBUTE_DARK,POS_FACEUP) end
+			and Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x610,TYPES_EFFECT_TRAP_MONSTER,1800,0,4,RACE_MACHINE,ATTRIBUTE_DARK,POS_FACEUP) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x632,TYPES_EFFECT_TRAP_MONSTER,1800,0,4,RACE_MACHINE,ATTRIBUTE_DARK,POS_FACEUP)  then
+	if c:IsRelateToEffect(e) and Duel.IsPlayerCanSpecialSummonMonster(tp,m,0x610,TYPES_EFFECT_TRAP_MONSTER,1800,0,4,RACE_MACHINE,ATTRIBUTE_DARK,POS_FACEUP)  then
 		c:AddMonsterAttribute(TYPE_NORMAL)
 		Duel.SpecialSummon(c,SUMMON_VALUE_SELF,tp,tp,true,false,POS_FACEUP)
 	end
@@ -62,7 +62,7 @@ function cm.splimit(e,c)
 	return not c:IsRace(RACE_MACHINE) and c:IsLocation(LOCATION_EXTRA)
 end 
 function cm.thfilter(c,e,tp)  
-	return c:IsSetCard(0x632) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0x610) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end

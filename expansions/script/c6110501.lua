@@ -33,15 +33,15 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.lcheck(g)  
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x632) 
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x610) 
 end 
 function cm.cfilter(c)
-	return c:IsSetCard(0x632)
+	return c:IsSetCard(0x610) and (c:IsAbleToDeckAsCost() or c:IsAbleToExtraAsCost())
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_REMOVED,0,4,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,4,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_REMOVED,0,4,4,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,4,4,nil)
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function cm.spfilter(c,e,tp)
@@ -68,7 +68,7 @@ function cm.filter1(c)
 	return c:IsDiscardable(REASON_EFFECT)  
 end  
 function cm.filter(c,e,sp)
-	return c:IsSetCard(0x633) and c:IsCanBeSpecialSummoned(e,0,sp,true,false) and not c:IsCode(m)
+	return c:IsSetCard(0x5610) and c:IsCanBeSpecialSummoned(e,0,sp,true,false) and not c:IsCode(m)
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter1,tp,LOCATION_HAND,0,1,e:GetHandler()) and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_EXTRA,0,1,nil,e,tp)

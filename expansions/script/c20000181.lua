@@ -13,14 +13,14 @@ cm.e2 = fuef.ProcXyz("FALSE", nil, 1, 1, "exop", "excf"):Ctl(m)
 function cm.exop(e, xyzc, tp, chk)
 	if chk==0 then return fusf.GetCounter(m, tp, "CH", 1) or (cm.chk[tp + 1] > 0) end
 end
-cm.excf = fucf.MakeCardFilter("IsTyp+IsLoc", "T,G")
+cm.excf = fucf.MakeCardFilter("IsTyp+IsSet+IsLoc", "T,5fd1,G")
 --e3
 cm.e3 = fuef.I():Ran("M"):Func("cos3,tg3,op3")
 function cm.cos3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-local e3g1 = fugf.MakeFilter("DR","IsCode+IsSSetable","175")
+local e3g1 = fugf.MakeFilter("D","IsCode+IsSSetable","175")
 function cm.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return #e3g1(tp) > 0 end
 end

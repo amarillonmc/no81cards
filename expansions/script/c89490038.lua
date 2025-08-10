@@ -47,8 +47,17 @@ function s.discon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
+	local fe=Duel.IsPlayerAffectedByEffect(tp,89490087)
+	local b2=Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil)
+	if chk==0 then return fe or b2 end
+	local op=aux.SelectFromOptions(tp,{fe,fe and fe:GetDescription() or nil},{b2,1150})
+	if op==1 then
+		Duel.Hint(HINT_CARD,0,89490087)
+		fe:UseCountLimit(tp)
+		Duel.Remove(fe:GetHandler(),POS_FACEUP,REASON_COST)
+	else
+		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD,nil)
+	end
 end
 function s.filter(c)
 	return c:IsSetCard(0xc34) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

@@ -89,15 +89,26 @@ function s.ctop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterFlagEffect(1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
 	end
 end
-function s.repfilter(c,e)
-	return c:IsDestructable(e) and not c:IsStatus(STATUS_DESTROY_CONFIRMED)
+function s.repfilter(c)
+	return c:IsAbleToDeck() and not c:IsStatus(STATUS_DESTROY_CONFIRMED)
 end
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE) and Duel.IsExistingMatchingCard(s.repfilter,tp,LOCATION_HAND,0,1,c,e) end
+	if chk==0 then return c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+		and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,nil) end
+	if Duel.SelectEffectYesNo(tp,c,aux.Stringid(id,1)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
+		Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT+REASON_REPLACE)
+		return true
+	else return false end
+end
+--[[function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE) and Duel.IsExistingMatchingCard(s.repfilter,tp,LOCATION_HAND,0,1,c) end
 	if Duel.SelectEffectYesNo(tp,c,aux.Stringid(id,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESREPLACE)
-		local g=Duel.SelectMatchingCard(tp,s.repfilter,tp,LOCATION_HAND,0,1,1,c,e)
+		local g=Duel.SelectMatchingCard(tp,s.repfilter,tp,LOCATION_HAND,0,1,1,c)
 		Duel.SetTargetCard(g)
 		g:GetFirst():SetStatus(STATUS_DESTROY_CONFIRMED,true)
 		return true
@@ -106,8 +117,8 @@ end
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	g:GetFirst():SetStatus(STATUS_DESTROY_CONFIRMED,false)
-	Duel.Destroy(g,REASON_EFFECT+REASON_REPLACE)
-end
+	Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT+REASON_REPLACE)
+end]]--
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetHandler():GetBattleTarget()
 	if tc and tc:IsRelateToBattle() then

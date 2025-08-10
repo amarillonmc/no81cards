@@ -58,7 +58,7 @@ function s.con1(e,tp,eg,ep,ev,re,r,rp)
 		or Duel.GetCustomActivityCount(id,1-tp,ACTIVITY_CHAIN)>0
 end
 function s.filter1(c)
-	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and not c:IsForbidden()
+	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_SPELLCASTER) and c:IsFaceupEx() and not c:IsForbidden()
 end
 function s.filter1a(c)
 	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_SPELLCASTER) and c:IsAbleToHand()

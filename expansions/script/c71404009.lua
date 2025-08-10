@@ -84,7 +84,7 @@ function s.con1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(0,id)>0
 end
 function s.filter1(c)
-	return c:IsType(TYPE_LINK) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and not c:IsForbidden()
+	return c:IsType(TYPE_LINK) and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_SPELLCASTER) and c:IsFaceupEx() and not c:IsForbidden()
 end
 function s.filter1sp(c,e,tp)
 	return c:GetOriginalType()&(TYPE_LINK+TYPE_MONSTER)==TYPE_LINK+TYPE_MONSTER and Duel.IsPlayerCanDraw(c:GetLink()//4+1) and c:IsFaceup() and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp)

@@ -140,8 +140,7 @@ function cm.costcon(e)
 	return Duel.IsExistingMatchingCard(cm.cfilter,e:GetLabel(),LOCATION_ONFIELD,0,1,nil)
 end
 function cm.costchk(e,te_or_c,tp)
-	local ct=Duel.GetFlagEffect(tp,11639006)
-	return Duel.CheckLPCost(tp,ct*200)
+	return Duel.CheckLPCost(tp,200)
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.PayLPCost(tp,200)

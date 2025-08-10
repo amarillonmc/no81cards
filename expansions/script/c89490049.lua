@@ -1,7 +1,6 @@
 --角龙降临
 local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,89490050)
 	aux.AddRitualProcGreaterCode(c,89490050)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_IGNITION)

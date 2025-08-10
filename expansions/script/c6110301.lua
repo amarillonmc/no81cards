@@ -55,7 +55,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.costfilter(c,tp)
-	return c:IsSetCard(0x632) and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
+	return c:IsSetCard(0x610) and (c:IsLocation(LOCATION_HAND) or c:IsFaceup())
 		and c:IsAbleToGraveAsCost()
 		and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c)
 end
@@ -68,8 +68,8 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function cm.spfilter(c,e,tp)
-	return c:IsSetCard(0x632) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x610) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(m)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

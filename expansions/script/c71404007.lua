@@ -47,7 +47,7 @@ function s.chainfilter(c)
 	return not c:IsRace(RACE_SPELLCASTER)
 end
 function s.filter1(c)
-	return c:IsType(TYPE_LINK) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and not c:IsForbidden()
+	return c:IsType(TYPE_LINK) and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_SPELLCASTER) and c:IsFaceupEx() and not c:IsForbidden()
 end
 function s.con1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCustomActivityCount(id,tp,ACTIVITY_SPSUMMON)>0

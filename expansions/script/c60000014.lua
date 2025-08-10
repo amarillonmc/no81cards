@@ -3,7 +3,7 @@ function c60000014.initial_effect(c)
 	--draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(60000014,0))
-	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_TOHAND+CATEGORY_DECKDES+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
@@ -26,23 +26,29 @@ function c60000014.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c60000014.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CARDTYPE)
-	e:SetLabel(Duel.AnnounceType(tp))
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
+	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,1) end
+	Duel.SetOperationInfo(0,CATEGORY_DECKDES,0,0,tp,1)
 end
 function c60000014.drop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)==0 then return end
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.ConfirmDecktop(1-tp,1)
-	local g=Duel.GetDecktopGroup(1-tp,1)
-	local tc=g:GetFirst()
-	local opt=e:GetLabel()
-	if (opt==0 and tc:IsType(TYPE_MONSTER)) or (opt==1 and tc:IsType(TYPE_SPELL)) or (opt==2 and tc:IsType(TYPE_TRAP)) then
-		Duel.Draw(p,d,REASON_EFFECT)
+	local c=e:GetHandler()
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return end
+	local tc=Duel.GetDecktopGroup(tp,1)
+	if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) and tc:IsSetCard(0xee) then
+		if Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)~=0 and Duel.SelectYesNo(tp,aux.Stringid(60000014,1)) then
+			Duel.ConfirmCards(tp,Duel.GetDecktopGroup(1-tp,1))
+		end
+		if Duel.GetFlagEffect(tp,60000014)==0 and Duel.IsExistingMatchingCard(c60000014.filter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(60000014,2)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local g=Duel.SelectMatchingCard(tp,c60000014.filter,tp,LOCATION_DECK,0,1,1,nil)
+			if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
+				Duel.RegisterFlagEffect(tp,60000014,RESET_PHASE+PHASE_END,0,1)
+				Duel.ConfirmCards(1-tp,g)
+			end
+		end
 	end
+end
+function c60000014.filter(c)
+	return c:IsSetCard(0xee) and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and not c:IsSetCard(0x10ee) and c:IsAbleToHand()
 end
 function c60000014.cfilter(c)
 	return c:IsFaceup() and c:IsCode(41091257)

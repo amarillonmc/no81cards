@@ -70,7 +70,7 @@ function c95101035.spocost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardDeck(1-tp,3,REASON_COST)
 end
 function c95101035.spfilter(c,e,tp)
-	return (aux.IsCodeListed(c,95101001) or c:IsSetCard(0xbbb)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsSetCard(0xbbb)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c95101035.spotg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp)>0

@@ -12,14 +12,14 @@ function c44401004.initial_effect(c)
 	c:RegisterEffect(e1)
 	--run!
 	local e0=Effect.CreateEffect(c)
-	e0:SetCategory(CATEGORY_REMOVE)
+	--e0:SetCategory(CATEGORY_REMOVE)
 	e0:SetType(EFFECT_TYPE_QUICK_F)
 	e0:SetCode(EVENT_BECOME_TARGET)
 	e0:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e0:SetRange(LOCATION_MZONE)
 	e0:SetCondition(c44401004.runcon)
 	e0:SetCost(c44401004.run)
-	e0:SetTarget(c44401004.runtg)
+	--e0:SetTarget(c44401004.runtg)
 	e0:SetOperation(c44401004.runop)
 	c:RegisterEffect(e0)
 	--sign
@@ -92,12 +92,19 @@ function c44401004.runtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,PLAYER_ALL,LOCATION_DECK)
 end
 function c44401004.runop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 or Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)==0 then return end
-	local g1=Duel.GetDecktopGroup(tp,1)
-	local g2=Duel.GetDecktopGroup(1-tp,1)
-	g1:Merge(g2)
-	Duel.DisableShuffleCheck()
-	Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)
+	local g=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0)
+	if g:GetCount()==0 then return end
+	local tc=g:RandomSelect(1-tp,1):GetFirst()
+	if tc then
+		Duel.ConfirmCards(1-tp,tc)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(44401004,5))
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_PUBLIC)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+	end
 end
 function c44401004.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

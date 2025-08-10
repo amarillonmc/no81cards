@@ -39,10 +39,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.inta(e,c)
-	return c:IsPosition(POS_FACEUP) and c:IsSetCard(0x632)
+	return c:IsPosition(POS_FACEUP) and c:IsSetCard(0x610)
 end
 function cm.intg(e,c)
-	return c~=e:GetHandler() and c:IsSetCard(0x632) and c:IsType(TYPE_MONSTER)
+	return c~=e:GetHandler() and c:IsSetCard(0xa610) and c:IsType(TYPE_MONSTER)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -52,7 +52,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,6119000,0x632,TYPES_TOKEN_MONSTER,1800,1800,4,RACE_MACHINE,ATTRIBUTE_DARK) then
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,6119000,0x610,TYPES_TOKEN_MONSTER,1800,1800,4,RACE_MACHINE,ATTRIBUTE_DARK) then
 		local token=Duel.CreateToken(tp,6119000)
 		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP)
 		local e1=Effect.CreateEffect(e:GetHandler())

@@ -13,7 +13,10 @@ dofile("expansions/script/c20099998.lua")
 function fugf.MakeGroupFilter(f, v)
 	return function(g, n, ...)
 		fusf.CheckArgType("MakeGroupFilter", 1, g, "Group")
-		fusf.CheckArgType("MakeGroupFilter", 2, n, "nil/number")
+		local ok, res = pcall(fusf.CheckArgType,"MakeGroupFilter", 2, n, "nil/number")
+if not ok then
+	error(res, 2)
+end
 		g = g:Filter(fucf.MakeCardFilter(f, v, ...), nil)
 		if not n then return g end
 		return n > 0 and #g >= n or #g <= -n
@@ -160,7 +163,7 @@ function fucf.MakeCardFilter(func, args, ...)
 				}
 				local temp = Cal[func]
 				if temp == nil then
-					error(string.format("invalid operators : '%s'", func))
+					error("invalid operators : " .. func)
 				end
 				stack[#stack + 1] = temp
 			else
@@ -171,7 +174,7 @@ function fucf.MakeCardFilter(func, args, ...)
 				local arg = arg_table[arg_ind]
 				arg_ind = arg_ind + 1
 				if type(arg) ~= "table" then arg = { arg, n = 1 } end
-				stack[#stack + 1] = func(c, table.unpack(arg, 1, arg.n)) or false
+				stack[#stack + 1] = func(c, table.unpack(arg, 1, arg.n))
 			end
 		end
 		return table.remove(stack)
@@ -365,7 +368,7 @@ function fucf.CanBeEq(c, tp, ec, chk_loc)
 	elseif c:IsType(TYPE_EQUIP) then
 		return c:CheckEquipTarget(ec)
 	end
-	return false
+	error("CanBeEq : mismatch card type", 2)
 end
 --- 检查卡片 c 的种类为 cod 的标识效果的数量比较 n 的结果
 -- @param c Card 要检查的卡片

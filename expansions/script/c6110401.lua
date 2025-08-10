@@ -54,25 +54,28 @@ function cm.filter(c)
 end
 function cm.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 		local g=Duel.SelectMatchingCard(tp,cm.ofilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,2,2,nil,e)
 		local dg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
 		if g:GetCount()>0 and Duel.Overlay(c,g)~=0 and dg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-		local sg=dg:Select(tp,1,1,e:GetHandler())
-		Duel.HintSelection(sg)
-		Duel.Overlay(c,sg)
+		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
+		local tc=g:GetFirst()
+		if tc then
+			local og=tc:GetOverlayGroup()
+			if og:GetCount()>0 then
+				Duel.SendtoGrave(og,REASON_RULE)
+			end
+			Duel.Overlay(c,tc)
+		end
 	end
-  end
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
 end
 function cm.tgfilter(c)
-	return c:IsSetCard(0x632) and (c:IsAbleToGrave() or c:IsAbleToRemove())
+	return c:IsSetCard(0x610) and (c:IsAbleToGrave() or c:IsAbleToRemove())
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil)

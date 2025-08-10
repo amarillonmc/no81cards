@@ -12,7 +12,7 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc = fusf.GetTarget(e, nil, true)
-	fuef.S(e,EFFECT_IMMUNE_EFFECT,tc):Pro("SET"):Val("op1val1"):Res("STD+ED"):Pl(tp)
+	fuef.S(e,EFFECT_IMMUNE_EFFECT,tc):Des(0):Pro("HINT+SET"):Val("op1val1"):Res("STD+ED"):Pl(tp)
 end
 function cm.op1val1(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()

@@ -72,10 +72,7 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 				eq=g:GetNext()
 			end
 			Duel.EquipComplete()
-			if check==#g and count>0 and tc:IsCanAddCounter(0x1164,count) then
-				Duel.BreakEffect()
-				tc:AddCounter(0x1164,count)
-			end
+			tc:AddCounter(0x1164,3)
 		end
 	end
 	e:Reset()

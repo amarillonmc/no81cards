@@ -69,12 +69,19 @@ function s.valcheck(e,c)
 	end
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,2,nil)
-	local b2=e:GetHandler():GetFlagEffect(id)>0
-	if chk==0 then return b1 or b2 end
-	if b1 then
-		if b2 and not Duel.SelectYesNo(tp,aux.Stringid(id,0)) then return end
-		Duel.DiscardHand(tp,Card.IsDiscardable,2,2,REASON_COST+REASON_DISCARD)
+	local b0=e:GetHandler():GetFlagEffect(id)>0
+	local fe=Duel.IsPlayerAffectedByEffect(tp,89490087)
+	local b1=fe and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil)
+	local b2=Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,2,nil)
+	if chk==0 then return b0 or b1 or b2 end
+	local op=aux.SelectFromOptions(tp,{b0,aux.Stringid(id,0)},{b1,fe and fe:GetDescription() or nil},{b2,1150})
+	if op==2 then
+		Duel.Hint(HINT_CARD,0,89490087)
+		fe:UseCountLimit(tp)
+		Duel.Remove(fe:GetHandler(),POS_FACEUP,REASON_COST)
+		Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD,nil)
+	elseif op==3 then
+		Duel.DiscardHand(tp,Card.IsDiscardable,2,2,REASON_COST+REASON_DISCARD,nil)
 	end
 end
 function s.lvop(e,tp,eg,ep,ev,re,r,rp)

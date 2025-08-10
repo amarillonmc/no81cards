@@ -13,22 +13,23 @@ end
 function fu_HC.MInitial(_glo, lv)
 	local cm, m = fu_HC.Initial(_glo)
 	fusf.ReviveLimit()
-	cm.pe1 = fuef.F(m):Pro("PTG"):Ran("M"):Tran("1+0")
+	cm.pe1 = fuef.F(m):Pro("PTG"):Ran("M"):Tran(1, 0)
 	cm.pe2 = fuef.FC("CH"):Ran("M"):Func("M_pcon2,M_pop2")
 	if not lv then return cm, m end
 	cm.pe3 = fuef.ProcXyzLv(lv)
 	cm.pe4 = fuef.ProcXyzAlter("MProc_cf", nil, 1):Ctl(m + 100)
-	cm.MProc_cf = fucf.MakeCardFilter("IsRk-IsCode", {"+"..tostring(lv), m})
+	cm.MProc_cf = fucf.MakeCardFilter("IsSet+IsRk-IsCode", {"5fd1,+"..tostring(lv), m})
 	return cm, m
 end
 -------------------
 function fu_HC.M_pcon2(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_TRAP)
+	return ep == tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_TRAP)
+		and fucf.Filter(re:GetHandler(), "IsCode/IsSet", "175,5fd1")
 end
 function fu_HC.M_pop2(e,tp,eg,ep,ev,re,r,rp)
-	fuef.S(e, EFFECT_UPDATE_RANK):Pro("SR"):Ran("M"):Val(1):Res("STD+DIS")
 	Duel.Hint(HINT_CARD,tp,e:GetHandler():GetCode())
-	Duel.Damage(1 - tp, e:GetHandler():GetRank() * 100, REASON_EFFECT)
+	if Duel.Damage(1 - tp, e:GetHandler():GetRank() * 100, REASON_EFFECT) == 0 then return end
+	fuef.S(e, EFFECT_UPDATE_RANK):Pro("SR"):Ran("M"):Val(1):Res("STD+DIS")
 end
 if self_code ~= 20000175 then return end
 --------------------------------------------------------
@@ -48,7 +49,7 @@ end
 function cm.cos1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g = Group.FromCards(Duel.GetAttacker())
 	local at = Duel.GetAttackTarget()
-	if Duel.IsPlayerAffectedByEffect(tp,20000183) and at and at:IsControler(1-tp) then
+	if Duel.IsPlayerAffectedByEffect(tp,20000183) and at and at:IsControler(1 - tp) then
 		g = g + Duel.GetAttackTarget()
 	end
 	g = fugf.Filter(g, "AbleTo", "*R")

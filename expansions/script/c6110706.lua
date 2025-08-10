@@ -42,13 +42,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.inta(e,c)
-	return c:IsPosition(POS_FACEUP) and c:IsSetCard(0x632)
+	return c:IsPosition(POS_FACEUP) and c:IsSetCard(0x610)
 end
 function cm.intg(e,c)
-	return c~=e:GetHandler() and c:IsSetCard(0x632) and c:IsType(TYPE_MONSTER)
+	return c~=e:GetHandler() and c:IsSetCard(0x610) and c:IsType(TYPE_MONSTER)
 end
 function cm.dscon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsSetCard(0x632) and rp==tp and re:GetHandler()~=e:GetHandler()
+	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsSetCard(0x610) and rp==tp and re:GetHandler()~=e:GetHandler()
 end
 function cm.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end 

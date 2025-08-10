@@ -12,7 +12,7 @@ function c9911520.initial_effect(c)
 	e2:SetCode(9911520)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetTargetRange(1,0)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,9911520)
 	c:RegisterEffect(e2)
 	--effect gain
 	local e3=Effect.CreateEffect(c)
