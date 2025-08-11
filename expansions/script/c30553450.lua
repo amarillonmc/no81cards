@@ -5,8 +5,8 @@ function c30553450.initial_effect(c)
 	c:EnableReviveLimit()
 end
 function s.sfilter(c)
-	return c:IsRace(RACE_WARRIOR) and not c:IsFusionType(TYPE_EFFECT)
+	return not c:IsFusionType(TYPE_EFFECT)
 end
 function s.sfilter2(c)
-	return not c:IsFusionType(TYPE_EFFECT)
+	return c:IsRace(RACE_WARRIOR) and not c:IsFusionType(TYPE_EFFECT)
 end

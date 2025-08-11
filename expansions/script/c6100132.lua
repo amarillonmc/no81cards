@@ -74,8 +74,8 @@ function s.rtop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ShuffleDeck(tp)
 	Duel.BreakEffect()
 	local op=0
-	local b1=Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp)
-	local b2=Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_ONFIELD,1,nil)
+	local b1=Duel.IsExistingMatchingCard(s.tgfilter1,tp,LOCATION_DECK,0,1,nil,e,tp)
+	local b2=Duel.IsExistingMatchingCard(s.tgfilter2,tp,LOCATION_DECK,0,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,0)
 	if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(id,2),aux.Stringid(id,3))
 	elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(id,2))
@@ -86,7 +86,6 @@ function s.rtop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(tg,REASON_EFFECT)
 		local sc=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,e,tp)
 			Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
-	
 	else
 		local tg1=Duel.SelectMatchingCard(tp,s.tgfilter2,tp,LOCATION_DECK,0,1,1,nil)
 		Duel.SendtoGrave(tg1,REASON_EFFECT)

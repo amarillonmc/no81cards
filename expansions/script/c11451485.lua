@@ -77,7 +77,7 @@ function cm.spcon(e,c,og,min,max)
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c,c)
 	local exchk=cm.hand
 	if og then
-		mg=og:Filter(cm.spfilter2,c,c)
+		mg=og:Filter(cm.spfilter,c,c)
 		exchk=aux.TRUE
 	else
 		mg=g

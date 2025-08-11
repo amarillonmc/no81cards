@@ -83,9 +83,9 @@ function cm.ngcon(e,tp,eg,ep,ev,re,r,rp)
 	return ((a>=1 and Duel.IsPlayerAffectedByEffect(tp,11451482)) or a>=2) and b>0
 end
 function cm.ngtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsDestructable() and e:GetHandler():GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
+	if chk==0 then return e:GetHandler():IsDestructable() and e:GetHandler():GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m+0xffffff)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
 	local op=0
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,m+0xffffff,RESET_PHASE+PHASE_END,0,1)
 	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	local a,b=0,0
 	for i=1,ev do
@@ -150,9 +150,9 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local num=e:GetLabel()
-	if chk==0 then return (num>=2 or (Duel.IsPlayerAffectedByEffect(tp,11451482) and num>=1)) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and c:GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
+	if chk==0 then return (num>=2 or (Duel.IsPlayerAffectedByEffect(tp,11451482) and num>=1)) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and c:GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m+0xffffff)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
 	local op=0
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1) --and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	Duel.RegisterFlagEffect(tp,m+0xffffff,RESET_PHASE+PHASE_END,0,1) --and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
 	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	if Duel.IsPlayerAffectedByEffect(tp,11451482) then
 		if num>=2 then

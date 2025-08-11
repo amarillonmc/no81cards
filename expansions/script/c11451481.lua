@@ -161,8 +161,8 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local num=#eg --eg:FilterCount(Card.IsType,nil,TYPE_MONSTER)
 	local tg=eg:Filter(cm.tgfilter,nil)
 	local spg=tg:Filter(cm.spfilter,nil,e,tp)
-	if chk==0 then return (num>=2 or (Duel.IsPlayerAffectedByEffect(tp,11451481) and num>=1)) and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and #spg>0 and c:GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+	if chk==0 then return (num>=2 or (Duel.IsPlayerAffectedByEffect(tp,11451481) and num>=1)) and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and #spg>0 and c:GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m+0xffffff)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
+	Duel.RegisterFlagEffect(tp,m+0xffffff,RESET_PHASE+PHASE_END,0,1)
 	local op=0
 	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	if Duel.IsPlayerAffectedByEffect(tp,11451481) then
@@ -211,8 +211,8 @@ function cm.thfilter(c)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return (#eg>=2 or Duel.IsPlayerAffectedByEffect(tp,11451481)) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) and c:GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+	if chk==0 then return (#eg>=2 or Duel.IsPlayerAffectedByEffect(tp,11451481)) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil) and c:GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m+0xffffff)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
+	Duel.RegisterFlagEffect(tp,m+0xffffff,RESET_PHASE+PHASE_END,0,1)
 	local op=0
 	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	if Duel.IsPlayerAffectedByEffect(tp,11451481) then
