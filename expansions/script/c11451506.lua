@@ -38,7 +38,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.filter(c)
-	return c:GetType()&0x100004==0x100004 and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:CheckActivateEffect(false,true,false)~=nil --and not c:IsCode(m)
+	return c:GetType()&0x100004==0x100004 and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:CheckActivateEffect(false,true,false)~=nil and c:CheckActivateEffect(false,true,false):GetCode()==EVENT_CHAINING
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then
