@@ -60,7 +60,7 @@ function c44401007.cfilter(c)
 	return c:IsSetCard(0xa4a) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup()
 end
 function c44401007.gcheck(sg)
-	return sg:FilterCount(c44401007.cfilter,nil)>=(#sg/2)
+	return sg:FilterCount(c44401007.cfilter,nil)>=(#sg/2) and #sg%2==0
 end
 function c44401007.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end

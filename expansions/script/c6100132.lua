@@ -75,11 +75,13 @@ function s.rtop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.BreakEffect()
 	local op=0
 	local b1=Duel.IsExistingMatchingCard(s.tgfilter1,tp,LOCATION_DECK,0,1,nil,e,tp)
+	local b3=Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)
 	local b2=Duel.IsExistingMatchingCard(s.tgfilter2,tp,LOCATION_DECK,0,1,nil)
+	local b4=Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,0)
-	if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(id,2),aux.Stringid(id,3))
-	elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(id,2))
-	elseif b2 then Duel.SelectOption(tp,aux.Stringid(id,3)) op=1
+	if b1 and b2 and b3 and b4 then op=Duel.SelectOption(tp,aux.Stringid(id,2),aux.Stringid(id,3))
+	elseif b1 and b3 then op=Duel.SelectOption(tp,aux.Stringid(id,2))
+	elseif b2 and b4 then Duel.SelectOption(tp,aux.Stringid(id,3)) op=1
 	else return end
 	if op==0 then
 		local tg=Duel.SelectMatchingCard(tp,s.tgfilter1,tp,LOCATION_DECK,0,1,1,nil)
