@@ -116,7 +116,7 @@ function s.op3(e,tp,eg,ep,ev,re,r,rp)
 	else
 		local lv=mc:GetLink()*2
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)aux.GCheckAdditional=yume.stellar_memories.MultiRitualCheckAdditional(lv)
-		local tg=mg:SelectSubGroup(tp,yume.stellar_memories.MultiRitualFSelect,true,1,ft,tp,lv)
+		local tg=sg:SelectSubGroup(tp,yume.stellar_memories.MultiRitualFSelect,true,1,ft,tp,lv)
 		aux.GCheckAdditional=nil
 		if not tg then goto cancel end
 		local tc=tg:GetFirst()
