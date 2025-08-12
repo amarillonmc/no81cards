@@ -86,7 +86,13 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ShuffleDeck(tp)
 		e:SetLabelObject(te:GetLabelObject())
 		local op=te:GetOperation()
-		if op then op(e,tp,eg,ep,ev,re,r,rp) end
+		if op then
+			if e:GetCode()==EVENT_CHAINING then
+				op(e,tp,eg,ep,ev,re,r,rp)
+			else
+				op(e,tp,Group.FromCards(te:GetHandler()),PLAYER_NONE,ev,te,r,PLAYER_NONE)
+			end
+		end
 	end
 end
 function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
