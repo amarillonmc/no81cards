@@ -32,10 +32,11 @@ function cm.initial_effect(c)
 	e3:SetRange(LOCATION_FZONE+LOCATION_GRAVE)
 	e3:SetTarget(cm.mattg)
 	e3:SetOperation(cm.matop)
-	--c:RegisterEffect(e3)	
+	--c:RegisterEffect(e3)  
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_GRAVE,0,nil)
 	return not c:IsLocation(LOCATION_GRAVE) or (g:IsContains(c) and #g>=3)
 end

@@ -6,7 +6,7 @@ function c75005123.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_HAND)
-	--e1:SetCondition(c75005123.ttcon)
+	e1:SetCondition(c75005123.ttcon)
 	e1:SetCost(c75005123.ttcost)
 	e1:SetOperation(c75005123.ttop)
 	c:RegisterEffect(e1)
@@ -29,15 +29,16 @@ function c75005123.ttop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function c75005123.tgfilter(c,type)
-	return bit.band(c:GetType(),type)~=0 and c:IsAbleToGrave()
+function c75005123.tgfilter(c,typ)
+	return bit.band(c:GetType(),typ)~=0 and c:IsFaceupEx() and c:IsAbleToGrave()
 end
 function c75005123.operation(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,75005123)
-	local type=e:GetLabel()
-	if Duel.IsExistingMatchingCard(c75005123.tgfilter,tp,0,LOCATION_HAND+LOCATION_ONFIELD,1,nil,type) and Duel.SelectYesNo(tp,aux.Stringid(75005123,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,c75005123.tgfilter,tp,0,LOCATION_HAND+LOCATION_ONFIELD,1,1,nil,type)
+	local typ=e:GetLabel()
+	local p=1-tp
+	if Duel.IsExistingMatchingCard(c75005123.tgfilter,p,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,typ) and Duel.SelectYesNo(p,aux.Stringid(75005123,0)) then
+		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(p,c75005123.tgfilter,p,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,typ)
 		if #g>0 then
 			Duel.SendtoGrave(g,REASON_EFFECT)
 		end

@@ -56,16 +56,22 @@ if not Duel.GetMustMaterial then
 	end
 end
 function cm.spfilter(c,sc)
-	return c:IsCanBeXyzMaterial(sc) and ((c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and (c:IsXyzLevel(sc,8) or c:IsRank(8) or (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY)))) or (c:IsLocation(LOCATION_HAND) and (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY))) or (not c:IsLocation(LOCATION_MZONE+LOCATION_HAND) and c:IsXyzLevel(sc,8) or c:IsRank(8)))
+	return c:IsCanBeXyzMaterial(sc) and ((c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and (c:IsXyzLevel(sc,8) or c:IsRank(8) or (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY)))) or (c:IsLocation(LOCATION_HAND) and (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY))))
+end
+function cm.spfilter2(c,sc)
+	return c:IsCanBeXyzMaterial(sc) and (c:IsXyzLevel(sc,8) or c:IsRank(8) or (c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY) and c:IsLocation(LOCATION_MZONE+LOCATION_HAND)))
 end
 function cm.hand(g)
 	return g:FilterCount(Card.IsLocation,nil,LOCATION_HAND)<=1
+end
+function cm.hand2(g)
+	return g:FilterCount(function(c) return c:IsAttribute(ATTRIBUTE_WATER) and c:IsRace(RACE_FAIRY) and c:IsLocation(LOCATION_HAND) and not c:IsXyzLevel(sc,8) and not c:IsRank(8) end,nil)<=1
 end
 function cm.spcon(e,c,og,min,max)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local minc=Duel.GetFlagEffect(tp,11451926)>0 and 1 or 2
-	local maxc=2
+	local maxc=Duel.GetFlagEffect(tp,11451926)>0 and 3 or 2
 	if min then
 		minc=math.max(minc,min)
 		maxc=math.min(maxc,max)
@@ -75,8 +81,8 @@ function cm.spcon(e,c,og,min,max)
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c,c)
 	local exchk=cm.hand
 	if og then
-		mg=og:Filter(cm.spfilter,c,c)
-		exchk=aux.TRUE
+		mg=og:Filter(cm.spfilter2,c,c)
+		exchk=cm.hand2
 	else
 		mg=g
 	end
@@ -91,7 +97,7 @@ end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 	if og and not min then return true end
 	local minc=Duel.GetFlagEffect(tp,11451926)>0 and 1 or 2
-	local maxc=2
+	local maxc=Duel.GetFlagEffect(tp,11451926)>0 and 3 or 2
 	if min then
 		if min>minc then minc=min end
 		if max<maxc then maxc=max end
@@ -100,8 +106,8 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 	local exchk=cm.hand
 	local mg=nil
 	if og then
-		mg=og:Filter(cm.spfilter,c,c)
-		exchk=aux.TRUE
+		mg=og:Filter(cm.spfilter2,c,c)
+		exchk=cm.hand2
 	else
 		mg=g
 	end
@@ -128,7 +134,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 		Duel.SendtoGrave(sg,REASON_RULE)
 		c:SetMaterial(og)
 		Duel.Overlay(c,og)
-		if #og==1 and Duel.GetFlagEffect(tp,11451926)>0 then
+		if #og~=2 and Duel.GetFlagEffect(tp,11451926)>0 then
 			local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
 			local g=Group.CreateGroup()
 			for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end

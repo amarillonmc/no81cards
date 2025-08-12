@@ -27,7 +27,7 @@ function c28326245.atkfilter(c,atk)
 	return c:IsFaceup() and c:IsAttackBelow(atk-1)
 end
 function c28326245.atkval(e,c)
-	return Duel.GetMatchingGroup(c28326245.atkfilter,c:GetControler(),0,LOCATION_MZONE,nil,c:GetBaseAttack())*1000
+	return Duel.GetMatchingGroupCount(c28326245.atkfilter,c:GetControler(),0,LOCATION_MZONE,nil,c:GetBaseAttack())*1000
 end
 function c28326245.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(e:GetHandler())
