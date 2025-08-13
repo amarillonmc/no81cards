@@ -48,24 +48,26 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	end
 	if chk==0 then return e:IsCostChecked() and Duel.IsExistingTarget(cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,e:GetHandler()) end
 	e:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	local _GetCurrentChain=Duel.GetCurrentChain
-	Duel.GetCurrentChain=function() return _GetCurrentChain()-1 end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,e:GetHandler())
-	if not g or #g==0 then Duel.GetCurrentChain=_GetCurrentChain e:SetLabelObject(nil) return end
-	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true) --g:GetFirst():GetActivateEffect(),eg,ep,ev,re,r,rp --
-	--Debug.Message(te==g:GetFirst():GetActivateEffect())
-	--if g:GetFirst():IsOriginalSetCard(0x97d) then te=g:GetFirst():GetActivateEffect() end
-	Duel.GetCurrentChain=_GetCurrentChain
-	Duel.ClearTargetCard()
-	g:GetFirst():CreateEffectRelation(e)
-	local tg=te:GetTarget()
-	e:SetProperty(te:GetProperty())
-	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
-	te:SetLabelObject(e:GetLabelObject())
-	e:SetLabelObject(te)
-	Duel.ClearOperationInfo(0)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
+	if e:GetCode()==EVENT_CHAINING then
+		local _GetCurrentChain=Duel.GetCurrentChain
+		Duel.GetCurrentChain=function() return _GetCurrentChain()-1 end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+		local g=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,e:GetHandler())
+		if not g or #g==0 then Duel.GetCurrentChain=_GetCurrentChain e:SetLabelObject(nil) return end
+		local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(false,true,true) --g:GetFirst():GetActivateEffect(),eg,ep,ev,re,r,rp --
+		--Debug.Message(te==g:GetFirst():GetActivateEffect())
+		--if g:GetFirst():IsOriginalSetCard(0x97d) then te=g:GetFirst():GetActivateEffect() end
+		Duel.GetCurrentChain=_GetCurrentChain
+		Duel.ClearTargetCard()
+		g:GetFirst():CreateEffectRelation(e)
+		local tg=te:GetTarget()
+		e:SetProperty(te:GetProperty())
+		if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
+		te:SetLabelObject(e:GetLabelObject())
+		e:SetLabelObject(te)
+		Duel.ClearOperationInfo(0)
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
+	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
@@ -87,11 +89,12 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e:SetLabelObject(te:GetLabelObject())
 		local op=te:GetOperation()
 		if op then
-			if e:GetCode()==EVENT_CHAINING then
+			op(e,tp,eg,ep,ev,re,r,rp)
+			--[[if e:GetCode()==EVENT_CHAINING then
 				op(e,tp,eg,ep,ev,re,r,rp)
 			else
 				op(e,tp,Group.FromCards(te:GetHandler()),PLAYER_NONE,ev,te,r,PLAYER_NONE)
-			end
+			end--]]
 		end
 	end
 end
@@ -285,14 +288,21 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetLabel()&0x49249~=0 then re:SetLabel(re:GetLabel()+0x8) return end
 	re:SetLabel(re:GetLabel()+0x8)
 	local op=re:GetOperation()
-	local repop=function(e,tp,eg,ep,ev,re,r,rp)
-		op(e,tp,eg,ep,ev,re,r,rp)
-		cm.addition(e,tp,eg,ep,ev,re,r,rp)
-	end
-	if re:GetHandler():GetOriginalCode()==11451510 or (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
+	if re:GetHandler():GetOriginalCode()==11451510 then
 		repop=function(e,tp,eg,ep,ev,re,r,rp)
 			cm.addition(e,tp,eg,ep,ev,re,r,rp)
 			op(e,tp,eg,ep,ev,re,r,rp)
+		end
+	elseif (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
+		local op=re:GetLabelObject():GetOperation()
+		repop=function(e,tp,eg,ep,ev,re,r,rp)
+			cm.addition(e,tp,eg,ep,ev,re,r,rp)
+			op(e,tp,eg,ep,ev,re,r,rp)
+		end
+	else
+		repop=function(e,tp,eg,ep,ev,re,r,rp)
+			op(e,tp,eg,ep,ev,re,r,rp)
+			cm.addition(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	re:SetOperation(repop)
