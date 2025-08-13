@@ -67,7 +67,7 @@ function cm.hand(g)
 	return g:FilterCount(Card.IsLocation,nil,LOCATION_HAND)<=1
 end
 function cm.hand2(g)
-	return g:FilterCount(function(c) return c:IsAttribute(ATTRIBUTE_FIRE) and c:IsRace(RACE_FAIRY) and c:IsLocation(LOCATION_HAND) and not c:IsXyzLevel(sc,8) and not c:IsRank(8) end,nil)<=1
+	return g:FilterCount(function(c) return c:IsAttribute(ATTRIBUTE_FIRE) and c:IsRace(RACE_FAIRY) and c:IsLocation(LOCATION_HAND) and not c:IsLevel(8) and not c:IsRank(8) end,nil)<=1
 end
 function cm.spcon(e,c,og,min,max)
 	if c==nil then return true end
@@ -84,7 +84,7 @@ function cm.spcon(e,c,og,min,max)
 	local exchk=cm.hand
 	if og then
 		mg=og:Filter(cm.spfilter2,c,c)
-		exchk=cm.hand2
+		exchk=aux.TRUE --cm.hand2
 	else
 		mg=g
 	end
@@ -105,7 +105,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 		if max<maxc then maxc=max end
 	end
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,c,c)
-	local exchk=cm.hand
+	local exchk=aux.TRUE --cm.hand
 	local mg=nil
 	if og then
 		mg=og:Filter(cm.spfilter2,c,c)
