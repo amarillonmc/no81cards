@@ -58,17 +58,43 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
+	local e4=Effect.CreateEffect(e:GetHandler())
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e4:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+	e4:SetTarget(function(e,tc) 
+					if tc:GetOriginalType()&(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK)==0 then
+						tc:RegisterFlagEffect(m,RESET_EVENT+0x15e0000+RESET_PHASE+PHASE_END,0,1)
+					else
+						tc:RegisterFlagEffect(m,RESET_EVENT+0x13e0000+RESET_PHASE+PHASE_END,0,1)
+					end
+					return true
+				end)
+	e4:SetTargetRange(LOCATION_ONFIELD,0)
+	e4:SetValue(LOCATION_HAND)
+	Duel.RegisterEffect(e4,tp)
 	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e1:SetCode(EVENT_TO_HAND)
+	e1:SetCountLimit(1)
+	e1:SetCondition(cm.thcon)
+	e1:SetOperation(cm.thop)
+	e1:SetLabelObject(e4)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_TO_DECK)
+	Duel.RegisterEffect(e2,tp)
+	--[[local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetCode(EFFECT_SEND_REPLACE)
 	e1:SetTarget(cm.reptg)
 	e1:SetValue(function(e,c) e:SetLabel(100) return false end)
-	--e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)--]]
 end
 function cm.filter(c,tp)
-	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) and (c:IsAbleToHand() or c:IsStatus(STATUS_LEAVE_CONFIRMED)) and c:GetDestination()==LOCATION_GRAVE and c:IsReason(REASON_RELEASE) --and c:GetLeaveFieldDest()==0 and not c:IsType(TYPE_TOKEN)
+	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) and (c:IsAbleToHand() or c:IsStatus(STATUS_LEAVE_CONFIRMED)) and c:GetDestination()==LOCATION_GRAVE --and c:IsReason(REASON_RELEASE) --and c:GetLeaveFieldDest()==0 and not c:IsType(TYPE_TOKEN)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -97,15 +123,19 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	else return false end
 end
 function cm.thfilter(c)
-	return c:GetFlagEffect(m)~=0
+	return c:IsReason(REASON_REDIRECT) and c:GetFlagEffect(m)~=0 and c:IsLocation(LOCATION_HAND+LOCATION_EXTRA)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.thfilter,1,nil)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(cm.thfilter,nil)
-	Duel.ConfirmCards(1-tp,g)
-	Duel.ShuffleHand(tp)
+	local g=eg:Filter(cm.thfilter,nil):Filter(Card.IsLocation,nil,LOCATION_HAND)
+	if #g>0 then
+		Duel.ConfirmCards(1-tp,g)
+		Duel.ShuffleHand(tp)
+	end
+	if aux.GetValueType(e:GetLabelObject())=="Effect" then e:GetLabelObject():Reset() end
+	e:Reset()
 end
 function cm.rscon(e,tp,eg,ep,ev,re,r,rp)
 	return ev==e:GetLabel()
@@ -296,15 +326,17 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetLabel()&0x49249~=0 then re:SetLabel(re:GetLabel()+0x1000) return end
 	re:SetLabel(re:GetLabel()+0x1000)
 	local op=re:GetOperation()
-	local repop=function(e,tp,eg,ep,ev,re,r,rp)
-		op(e,tp,eg,ep,ev,re,r,rp)
-		cm.addition(e,tp,eg,ep,ev,re,r,rp)
-	end
-	if re:GetHandler():GetOriginalCode()==11451510 or (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
+	if re:GetHandler():GetOriginalCode()==11451510 then
 		repop=function(e,tp,eg,ep,ev,re,r,rp)
 			cm.addition(e,tp,eg,ep,ev,re,r,rp)
 			op(e,tp,eg,ep,ev,re,r,rp)
 		end
+		re:SetOperation(repop)
+	elseif not (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
+		repop=function(e,tp,eg,ep,ev,re,r,rp)
+			op(e,tp,eg,ep,ev,re,r,rp)
+			cm.addition(e,tp,eg,ep,ev,re,r,rp)
+		end
+		re:SetOperation(repop)
 	end
-	re:SetOperation(repop)
 end

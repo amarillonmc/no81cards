@@ -193,7 +193,7 @@ function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			e1:SetValue(LOCATION_HAND)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e1)
-			if tc:GetOriginalType()&(TYPE_FIELD+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK)==0 then
+			if tc:GetOriginalType()&(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK)==0 then
 				tc:RegisterFlagEffect(m,RESET_EVENT+0x15e0000+RESET_PHASE+PHASE_END,0,1)
 			else
 				tc:RegisterFlagEffect(m,RESET_EVENT+0x13e0000+RESET_PHASE+PHASE_END,0,1)
