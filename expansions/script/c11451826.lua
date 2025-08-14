@@ -163,7 +163,13 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	if not tg then return end
 	local cg=tg:Filter(cm.imfilter,nil,e,re)
 	if c:IsRelateToEffect(e) and #cg>0 then
+		local tc=cg:GetFirst()
+		local og=tc:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
 		Duel.Overlay(c,cg)
+		
 	end
 end
 function cm.spfilter(c,e,tp)
