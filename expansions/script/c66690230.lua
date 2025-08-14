@@ -23,12 +23,11 @@ function s.initial_effect(c)
 	e2:SetValue(aux.indoval)
 	c:RegisterEffect(e2)
 	
-	-- 把这张卡1个超量素材取除，以自己的场上·墓地1只怪兽和对方的场上·墓地1张卡为对象才能发动（这张卡超量召唤的回合，这个效果在对方回合也能发动），那些卡回到手卡
+	-- 把这张卡1个超量素材取除，以自己的场上·墓地1只念动力族怪兽和对方的场上·墓地1张卡为对象才能发动（这张卡超量召唤的回合，这个效果在对方回合也能发动），那些卡回到手卡
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,0))
 	e3:SetCategory(CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_IGNITION)
-	e3:SetRange(LOCATION_HAND)
 	e3:SetCountLimit(1,id)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_MZONE)
@@ -54,7 +53,7 @@ function s.valcon(e)
 	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsType,1,nil,TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK)
 end
 
--- 把这张卡1个超量素材取除，以自己的场上·墓地1只怪兽和对方的场上·墓地1张卡为对象才能发动（这张卡超量召唤的回合，这个效果在对方回合也能发动），那些卡回到手卡
+-- 把这张卡1个超量素材取除，以自己的场上·墓地1只念动力族怪兽和对方的场上·墓地1张卡为对象才能发动（这张卡超量召唤的回合，这个效果在对方回合也能发动），那些卡回到手卡
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
@@ -66,7 +65,7 @@ function s.thcon(e,tp)
 end
 
 function s.cfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsRace(RACE_PSYCHO) and c:IsFaceupEx() and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -83,7 +82,8 @@ end
 
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if tg:GetCount()>0 then
+	tg=tg:Filter(aux.NecroValleyFilter(),nil)
+	if #tg>0 then
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 	end
 end
