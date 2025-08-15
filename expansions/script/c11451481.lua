@@ -179,7 +179,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.ResetFlagEffect(tp,11451482)
 		end
 	end
-	if Duel.GetFlagEffect(tp,m)>2 or (op==1 and Duel.GetFlagEffect(tp,11451481)>1) then
+	if Duel.GetFlagEffect(tp,m+0xffffff)>2 or (op==1 and Duel.GetFlagEffect(tp,11451481)>1) then
 		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
 		local g=Group.CreateGroup()
 		for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
@@ -229,7 +229,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 			Duel.ResetFlagEffect(tp,11451482)
 		end
 	end
-	if Duel.GetFlagEffect(tp,m)>2 or (op==1 and Duel.GetFlagEffect(tp,11451481)>1) then
+	if Duel.GetFlagEffect(tp,m+0xffffff)>2 or (op==1 and Duel.GetFlagEffect(tp,11451481)>1) then
 		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
 		local g=Group.CreateGroup()
 		for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
