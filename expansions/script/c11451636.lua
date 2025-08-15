@@ -19,7 +19,6 @@ function cm.initial_effect(c)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	local e3=e1:Clone()
-	e3:SetDescription(aux.Stringid(m,0))
 	e3:SetRange(LOCATION_DECK)
 	e3:SetCondition(cm.condition)
 	e3:SetCost(cm.cost)
@@ -34,7 +33,6 @@ function cm.initial_effect(c)
 	e4:SetOperation(cm.costop)
 	c:RegisterEffect(e4)
 	local e5=e1:Clone()
-	e5:SetDescription(aux.Stringid(m,0))
 	e5:SetRange(LOCATION_GRAVE)
 	e5:SetCost(cm.cost2)
 	c:RegisterEffect(e5)
@@ -61,13 +59,13 @@ function cm.initial_effect(c)
 		local _GetActivateSequence=Effect.GetActivateSequence
 		local _NegateActivation=Duel.NegateActivation
 		function Effect.GetActivateLocation(e)
-			if e:GetDescription()==aux.Stringid(m,0) then
+			if e:GetDescription()==aux.Stringid(11451631,5) then
 				return _GetActivateLocation(e)
 			end
 			return _GetActivateLocation(e)
 		end
 		function Effect.GetActivateSequence(e)
-			if e:GetDescription()==aux.Stringid(m,0) then
+			if e:GetDescription()==aux.Stringid(11451631,5) then
 				return cm.activate_sequence[e]
 			end
 			return _GetActivateSequence(e)

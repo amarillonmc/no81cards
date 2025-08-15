@@ -127,9 +127,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.filter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,3,nil)
 	if g:GetCount()>0 then
 	Duel.HintSelection(g)
-		if Duel.IsPlayerCanDraw(tp,1)
-			and Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)==3
-			and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+		if Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)==3 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
 			Duel.ShuffleDeck(tp)
 			Duel.Draw(tp,1,REASON_EFFECT)

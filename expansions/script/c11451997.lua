@@ -90,32 +90,39 @@ function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local lastc=(#cm.chainout[1-Duel.GetTurnPlayer()]==0 and cm.chainout[c:GetControler()][(#cm.chainout[c:GetControler()])]==c) or (c:GetControler()==1-Duel.GetTurnPlayer() and cm.chainout[c:GetControler()][(#cm.chainout[c:GetControler()])]==c)
 	if not c:IsHasEffect(m) or e:GetCode()~=EVENT_CHAIN_SOLVING then
-		--if e:GetCode()~=EVENT_CHAIN_SOLVING then Debug.Message(c:GetSequence()) end
-		if Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)~=0 and c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT) then --and c:GetOriginalCode()==m then
-			if Duel.GetCurrentPhase()==PHASE_STANDBY then
-				local tid=Duel.GetTurnCount()
-				local e1=Effect.CreateEffect(e:GetHandler())
-				e1:SetDescription(aux.Stringid(m,1))
-				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-				e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
-				e1:SetReset(RESET_PHASE+PHASE_STANDBY,2)
-				e1:SetLabelObject(c)
-				e1:SetCountLimit(1)
-				e1:SetCondition(function() return Duel.GetTurnCount()~=tid end)
-				e1:SetOperation(cm.retop)
-				Duel.RegisterEffect(e1,tp)
-			else
-				local e1=Effect.CreateEffect(e:GetHandler())
-				e1:SetDescription(aux.Stringid(m,1))
-				e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-				e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
-				e1:SetReset(RESET_PHASE+PHASE_STANDBY)
-				e1:SetLabelObject(c)
-				e1:SetCountLimit(1)
-				e1:SetOperation(cm.retop)
-				Duel.RegisterEffect(e1,tp)
-			end
-		end
+		local e6=Effect.CreateEffect(c)
+		e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e6:SetCode(EVENT_CUSTOM+m+0xffffff+c:GetFieldID())
+		e6:SetRange(LOCATION_MZONE)
+		e6:SetOperation(function()
+							if Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)~=0 and c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT) then
+								if Duel.GetCurrentPhase()==PHASE_STANDBY then
+									local tid=Duel.GetTurnCount()
+									local e1=Effect.CreateEffect(e:GetHandler())
+									e1:SetDescription(aux.Stringid(m,1))
+									e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+									e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+									e1:SetReset(RESET_PHASE+PHASE_STANDBY,2)
+									e1:SetLabelObject(c)
+									e1:SetCountLimit(1)
+									e1:SetCondition(function() return Duel.GetTurnCount()~=tid end)
+									e1:SetOperation(cm.retop)
+									Duel.RegisterEffect(e1,tp)
+								else
+									local e1=Effect.CreateEffect(e:GetHandler())
+									e1:SetDescription(aux.Stringid(m,1))
+									e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+									e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+									e1:SetReset(RESET_PHASE+PHASE_STANDBY)
+									e1:SetLabelObject(c)
+									e1:SetCountLimit(1)
+									e1:SetOperation(cm.retop)
+									Duel.RegisterEffect(e1,tp)
+								end
+							end
+						end)
+		c:RegisterEffect(e6)
+		Duel.RaiseEvent(c,EVENT_CUSTOM+m+0xffffff+c:GetFieldID(),re,r,rp,ep,ev)
 	end
 	if lastc and e:GetCode()==EVENT_CHAIN_SOLVING then --c~=e:GetLabelObject() and  --and (c:IsControler(1-Duel.GetTurnPlayer()) or not Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsType(TYPE_EFFECT) and not c:IsDisabled() end,Duel.GetTurnPlayer(),0,LOCATION_MZONE,1,nil)) then
 		--cm.disop(c[c],tp,eg,ep,ev,re,r,rp)
