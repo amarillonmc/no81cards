@@ -116,11 +116,15 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=rg:GetFirst()
 	if Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)>0 then
 		tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451911,4))
+		local ph=Duel.GetCurrentPhase()
+		local code=EVENT_ADJUST
+		if ph==PHASE_END then code=EVENT_PREDRAW end
+		if ph==PHASE_DRAW then code=EVENT_PHASE_START+PHASE_STANDBY end
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(m,3))
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_ADJUST)
-		e1:SetLabel(Duel.GetCurrentPhase())
+		e1:SetCode(code)
+		e1:SetLabel(ph)
 		e1:SetLabelObject(tc)
 		e1:SetCondition(cm.retcon)
 		e1:SetOperation(cm.retop)

@@ -55,10 +55,14 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
+	local code=EVENT_ADJUST
+	if ph==PHASE_END then code=EVENT_PREDRAW end
+	if ph==PHASE_DRAW then code=EVENT_PHASE_START+PHASE_STANDBY end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_ADJUST)
-	e1:SetLabel(Duel.GetCurrentPhase())
+	e1:SetCode(code)
+	e1:SetLabel(ph)
 	e1:SetCondition(function() return not pnfl_adjusting end)
 	e1:SetOperation(cm.adjustop)
 	Duel.RegisterEffect(e1,tp)
