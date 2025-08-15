@@ -1144,11 +1144,13 @@ function s.Checkmate_chtg(_tg)
 					e2:SetCountLimit(1)
 					e2:SetLabelObject(e)
 					e2:SetOperation(s.Checkmate_tgoff)
+					e2:SetReset(RESET_PHASE+PHASE_END)
 					Duel.RegisterEffect(e2,tp)
 				end
 			end
 end
 function s.Checkmate_tgoff(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetLabelObject() then return end
 	local pro1,pro2=e:GetLabelObject():GetProperty()
 	e:GetLabelObject():SetProperty(pro1&(~EFFECT_FLAG_CARD_TARGET),pro2)
 end

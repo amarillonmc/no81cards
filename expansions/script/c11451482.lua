@@ -86,7 +86,6 @@ function cm.ngtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDestructable() and e:GetHandler():GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m+0xffffff)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
 	local op=0
 	Duel.RegisterFlagEffect(tp,m+0xffffff,RESET_PHASE+PHASE_END,0,1)
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	local a,b=0,0
 	for i=1,ev do
 		local te,tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
@@ -110,6 +109,7 @@ function cm.ngtg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 	end
 	if Duel.GetFlagEffect(tp,m+0xffffff)>2 or (op==1 and Duel.GetFlagEffect(tp,11451482)>1) then
+		e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451926,4))
 		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
 		local g=Group.CreateGroup()
 		for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
@@ -118,6 +118,8 @@ function cm.ngtg(e,tp,eg,ep,ev,re,r,rp,chk)
 			g=g:Select(tp,1,1,nil)
 		end
 		Duel.RaiseSingleEvent(g:GetFirst(),EVENT_CUSTOM+11451926,e,0,tp,tp,0)
+	else
+		e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	end
 	if b==1 then Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,2,0,0) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,nil,1,0,0)
@@ -153,7 +155,6 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return (num>=2 or (Duel.IsPlayerAffectedByEffect(tp,11451482) and num>=1)) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and c:GetFlagEffect(m)==0 and Duel.GetFlagEffect(tp,m+0xffffff)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
 	local op=0
 	Duel.RegisterFlagEffect(tp,m+0xffffff,RESET_PHASE+PHASE_END,0,1) --and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
-	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	if Duel.IsPlayerAffectedByEffect(tp,11451482) then
 		if num>=2 then
 			op=Duel.SelectOption(tp,aux.Stringid(11451483,2),aux.Stringid(11451483,3))
@@ -169,6 +170,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 	end
 	if Duel.GetFlagEffect(tp,m+0xffffff)>2 or (op==1 and Duel.GetFlagEffect(tp,11451482)>1) then
+		e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451926,4))
 		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
 		local g=Group.CreateGroup()
 		for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
@@ -177,6 +179,8 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 			g=g:Select(tp,1,1,nil)
 		end
 		Duel.RaiseSingleEvent(g:GetFirst(),EVENT_CUSTOM+11451926,e,0,tp,tp,0)
+	else
+		e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),2,PLAYER_ALL,LOCATION_ONFIELD+c:GetLocation())
 	--Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_HAND+LOCATION_GRAVE)

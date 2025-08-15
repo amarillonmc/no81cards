@@ -106,7 +106,7 @@ function s.valcheck(e,c)
 		e2:SetCondition(s.thcon)
 		e2:SetOperation(s.thop)
 		e2:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e2,tp)
+		Duel.RegisterEffect(e2,0)
 	end
 end
 function s.thfilter(c)
