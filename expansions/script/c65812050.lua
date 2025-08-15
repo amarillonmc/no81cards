@@ -32,14 +32,6 @@ function s.initial_effect(c)
 	e2:SetTarget(s.settg)
 	e2:SetOperation(s.setop)
 	c:RegisterEffect(e2)
-	if not PNFL_LOCATION_CHECK then
-		PNFL_LOCATION_CHECK=true
-		local ge6=Effect.CreateEffect(c)
-		ge6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge6:SetCode(EVENT_MOVE)
-		ge6:SetOperation(s.checkop6)
-		Duel.RegisterEffect(ge6,true)
-	end
 	if not PNFL_LOCATION_CHECK1 then
 		PNFL_LOCATION_CHECK1=true
 		local ge7=Effect.CreateEffect(c)
@@ -113,22 +105,6 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 
-function s.checkop6(e,tp,eg,ep,ev,re,r,rp)
-	for p=0,1 do
-		local tc=eg:GetFirst()
-		while tc do
-			if s.locfilter(tc,p) then
-				tc:RegisterFlagEffect(65812010,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(65812010,3))
-			end
-			tc=eg:GetNext()
-		end
-	end
-end
-function s.locfilter(c)
-	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsLocation(LOCATION_ONFIELD)
-		and (c:GetPreviousSequence()~=c:GetSequence() or c:GetPreviousControler()~=c:GetControler() or c:GetPreviousLocation()~=c:GetLocation()) 
-		and c:GetFlagEffect(65812010)==0
-end
 
 function s.checkop7(e,tp,eg,ep,ev,re,r,rp)
 	for p=0,1 do
