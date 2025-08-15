@@ -324,7 +324,7 @@ if not global_duel_effect_table_global_check then
 	global_duel_effect_table={}
 	Duel.register_global_duel_effect_table = Duel.RegisterEffect
 	Duel.RegisterEffect = function(e,tp)
-							if tp~=0 and tp~=1 then return end
+							if not tp then tp=0 end
 							if not global_duel_effect_table[tp] then global_duel_effect_table[tp]={} end
 							table.insert(global_duel_effect_table[tp],e)
 							
