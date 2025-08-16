@@ -251,7 +251,7 @@ function Auxiliary.PreloadUds()
 	local _GetHandler=Effect.GetHandler
 	function Effect.GetHandler(e,...)
 		--warning!!!
-		if _Effect.IsHasType(e,EFFECT_TYPE_XMATERIAL) and not effect_registered[e] then return effect_handler[e] end
+		if _Effect.IsHasType(e,EFFECT_TYPE_XMATERIAL) and not effect_registered[e] and Duel.Exile then return effect_handler[e] end
 		local c=_GetHandler(e,...)
 		if not c then return effect_handler[e] end
 		return c
