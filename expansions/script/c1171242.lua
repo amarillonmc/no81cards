@@ -14,9 +14,12 @@ function c1171242.initial_effect(c)
     local e2=Effect.CreateEffect(c)
     e2:SetDescription(aux.Stringid(1171242,1))
     e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-    e2:SetType(EFFECT_TYPE_QUICK_O)
+    e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+    --[[e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
-    e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+    e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)]]
     e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
     e2:SetCountLimit(1,1171243)
     e2:SetCondition(c1171242.con2)
@@ -27,8 +30,9 @@ function c1171242.initial_effect(c)
     local e3=Effect.CreateEffect(c)
     e3:SetDescription(aux.Stringid(1171242,2))
     e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-    e3:SetType(EFFECT_TYPE_QUICK_O)
-    e3:SetCode(EVENT_FREE_CHAIN)
+    --[[e3:SetType(EFFECT_TYPE_QUICK_O)
+    e3:SetCode(EVENT_FREE_CHAIN)]]
+    e3:SetType(EFFECT_TYPE_IGNITION)
     e3:SetRange(LOCATION_MZONE)
     e3:SetCountLimit(1,1171247)
     e3:SetCost(c1171242.cost3)
@@ -37,7 +41,8 @@ function c1171242.initial_effect(c)
     c:RegisterEffect(e3)
 	Duel.AddCustomActivityCounter(1171242,ACTIVITY_SUMMON,c1171242.counterfilter)
 	Duel.AddCustomActivityCounter(1171242,ACTIVITY_SPSUMMON,c1171242.counterfilter)
-    Duel.AddCustomActivityCounter(1171242,ACTIVITY_CHAIN,c1171242.chainfilter)
+end
+    --[[Duel.AddCustomActivityCounter(1171242,ACTIVITY_CHAIN,c1171242.chainfilter)
     if not c1171242.global_check then
         c1171242.global_check=true
         local ge1=Effect.CreateEffect(c)
@@ -54,7 +59,7 @@ function c1171242.regop(e,tp,eg,ep,ev,re,r,rp)
             Duel.RegisterFlagEffect(1-rp,1171242,RESET_PHASE+PHASE_END,0,1)
         end
     end
-end
+end]]
 -- 自肃
 function c1171242.counterfilter(c)
 	return c:IsRace(RACE_ZOMBIE)
@@ -78,14 +83,16 @@ function c1171242.op1(e,tp,eg,ep,ev,re,r,rp)
         c:RegisterEffect(e2)
     end
 end]]
--- 2
 function c1171242.chainfilter(re,tp,cid)
     local loc=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)
     return re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_GRAVE
 end
+-- 2
+function c1171242.filter2(c)
+	return c:IsFaceup() and c:IsRace(RACE_ZOMBIE)
+end
 function c1171242.con2(e,tp,eg,ep,ev,re,r,rp)
-    return Duel.GetFlagEffect(0,1171242)>0
-        and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+	return eg:IsExists(c1171242.filter2,1,nil) and Duel.GetTurnPlayer()==e:GetHandlerPlayer()
 end
 function c1171242.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

@@ -14,7 +14,7 @@ function c1171244.initial_effect(c)
 	e0:SetValue(c1171244.val0)
 	c:RegisterEffect(e0)
     -- 抗性效果
-	local e1=Effect.CreateEffect(c)
+	--[[local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e1:SetRange(LOCATION_MZONE)
@@ -25,7 +25,7 @@ function c1171244.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_IMMUNE_EFFECT)
 	e2:SetValue(c1171244.filter1)
-	c:RegisterEffect(e2)
+	c:RegisterEffect(e2)]]
     -- 战吼检索
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(1171244,0))
@@ -61,9 +61,9 @@ function c1171244.val0(e,c,rc)
 	else return lv end
 end
 -- 1
-function c1171244.filter1(e,c,te)
+--[[function c1171244.filter1(e,c,te)
 	return te:GetOwner()~=e:GetOwner() and c:IsType(TYPE_MONSTER) and not (te:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL) and te:GetHandler():IsLocation(LOCATION_GRAVE))
-end
+end]]
 -- 2
 function c1171244.filter2(c)
 	return c:IsSetCard(0x8e) and c:IsAbleToHand()
