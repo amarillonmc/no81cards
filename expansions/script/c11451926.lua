@@ -5,7 +5,17 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	--e1:SetCost(cm.cost)
 	c:RegisterEffect(e1)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_ACTIVATE_COST)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetLabelObject(e1)
+	e3:SetTargetRange(1,1)
+	e3:SetTarget(cm.actarget)
+	e3:SetOperation(cm.costop)
+	--Duel.RegisterEffect(e3,0)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_FLAG_EFFECT+m)
@@ -34,11 +44,30 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.matop)
 	--c:RegisterEffect(e3)  
 end
+function cm.actarget(e,te,tp)
+	return te:GetHandler()==e:GetHandler() and te==e:GetLabelObject()
+end
+function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(tp,m+0xffffff)>=2 then
+		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
+		local g=Group.CreateGroup()
+		for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
+		if #g>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			g=g:Select(tp,1,1,nil)
+		end
+		Duel.RaiseSingleEvent(g:GetFirst(),EVENT_CUSTOM+11451926,e,0,tp,tp,0)
+	end
+end
+function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,m+0xffffff)<2+(Duel.GetFlagEffect(tp,11451926)>0 and 1 or 0) end
+	Duel.RegisterFlagEffect(tp,m+0xffffff,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(cm.tgfilter,tp,LOCATION_GRAVE,0,nil)
-	return not c:IsLocation(LOCATION_GRAVE) or (g:IsContains(c) and #g>=3)
+	return not c:IsLocation(LOCATION_GRAVE) or (g:IsContains(c) and g:GetClassCount(Card.GetCode)>=3)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
