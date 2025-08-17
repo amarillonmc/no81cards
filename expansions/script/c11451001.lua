@@ -309,7 +309,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 					GetID=function()
 						return _G["c"..int],int,int<100000000 and 1 or 100
 					end
-					if pcall(function() dofile("expansions/script/c"..int..".lua") end) or pcall(function() dofile("script/c"..int..".lua") end) then
+					if pcall(function() Duel.LoadScript("c"..int..".lua") end) then
 						_G["c"..int]=nil
 						local bool,token=pcall(Duel.CreateToken,tp,int)
 						if bool and not token:IsType(TYPE_TOKEN) then
@@ -387,7 +387,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 					GetID=function()
 						return _G["c"..int],int,int<100000000 and 1 or 100
 					end
-					if pcall(function() dofile("expansions/script/c"..int..".lua") end) or pcall(function() dofile("script/c"..int..".lua") end) then
+					if pcall(function() Duel.LoadScript("c"..int..".lua") end) then
 						_G["c"..int]=nil
 						local bool,token=pcall(Duel.CreateToken,1-tp,int)
 						if bool and not token:IsType(TYPE_TOKEN) then
