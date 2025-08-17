@@ -13,7 +13,7 @@ function s.initial_effect(c)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetTarget(s.protg)
-	e1:SetValue(1)
+	e1:SetValue(aux.indoval)
 	c:RegisterEffect(e1)
 	
 	-- Effect 2: Search

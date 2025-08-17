@@ -14,8 +14,8 @@ function cm.initial_effect(c)
 	e10:SetCode(EFFECT_SPSUMMON_PROC)
 	e10:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e10:SetRange(LOCATION_EXTRA)
-	e10:SetCondition(aux.XyzLevelFreeCondition(cm.mfilter,cm.lvcheck,2,99))
-	e10:SetTarget(aux.XyzLevelFreeTarget(cm.mfilter,cm.lvcheck,2,99))
+	e10:SetCondition(cm.XyzLevelFreeCondition(cm.mfilter,cm.lvcheck,2,99))
+	e10:SetTarget(cm.XyzLevelFreeTarget(cm.mfilter,cm.lvcheck,2,99))
 	e10:SetOperation(aux.XyzLevelFreeOperation(cm.mfilter,cm.lvcheck,2,99))
 	e10:SetValue(SUMMON_TYPE_XYZ)
 	c:RegisterEffect(e10)
@@ -110,7 +110,15 @@ function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(e:GetHandler()) and bool and ceg:IsExists(cm.spfilter,1,nil) and (re==nil or not re:IsActivated())
 end
 function cm.XyzLevelFreeGoal(g,tp,xyzc,gf)
-	return (not gf or gf(g)) and Duel.GetLocationCountFromEx(tp,tp,g,TYPE_XYZ)>0
+	if Duel.GetLocationCountFromEx(tp,tp,g,TYPE_XYZ)<=0 then return false end
+	if gf and not gf(g) then return false end
+	local lg=g:Filter(Card.IsHasEffect,nil,EFFECT_XYZ_MIN_COUNT)
+	for c in Auxiliary.Next(lg) do
+		local le=c:IsHasEffect(EFFECT_XYZ_MIN_COUNT)
+		local ct=le:GetValue()
+		if #g<ct then return false end
+	end
+	return true
 end
 function cm.lvcheck(g)
 	return g:FilterCount(Card.IsRank,nil,0)<=1
@@ -140,6 +148,38 @@ function cm.XyzLevelFreeCondition(f,gf,minct,maxct)
 				local res=mg:CheckSubGroup(cm.XyzLevelFreeGoal,minc,maxc,tp,c,gf)
 				aux.GCheckAdditional=nil
 				return res
+			end
+end
+function cm.XyzLevelFreeTarget(f,gf,minct,maxct)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
+				if og and not min then
+					return true
+				end
+				local minc=minct
+				local maxc=maxct
+				if min then
+					if min>minc then minc=min end
+					if max<maxc then maxc=max end
+				end
+				local mg=nil
+				if og then
+					mg=og:Filter(aux.XyzLevelFreeFilter,nil,c,f)
+				else
+					local loc=LOCATION_MZONE
+					mg=Duel.GetMatchingGroup(aux.XyzLevelFreeFilter,tp,loc,0,nil,c,f)
+				end
+				local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
+				Duel.SetSelectedCard(sg)
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+				local cancel=Duel.IsSummonCancelable()
+				aux.GCheckAdditional=aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
+				local g=mg:SelectSubGroup(tp,cm.XyzLevelFreeGoal,cancel,minc,maxc,tp,c,gf)
+				aux.GCheckAdditional=nil
+				if g and g:GetCount()>0 then
+					g:KeepAlive()
+					e:SetLabelObject(g)
+					return true
+				else return false end
 			end
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -116,6 +116,8 @@ function c22023500.ctop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22023500.drcon1(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tp=c:GetControler()
 	return eg:IsExists(Card.IsControler,1,nil,tp) and Duel.IsPlayerAffectedByEffect(tp,22020980)
 end
 function c22023500.erecost(e,tp,eg,ep,ev,re,r,rp,chk)

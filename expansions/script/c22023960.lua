@@ -24,6 +24,8 @@ function c22023960.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c22023960.condition(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tp=c:GetControler()
 	return ep==1-tp and re:GetActivateLocation()==LOCATION_MZONE and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
 end
 function c22023960.target(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -69,6 +69,7 @@ function cm.tdfilter(c,se)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
+	if e:GetCode()==EVENT_MOVE then _,eg=Duel.CheckEvent(EVENT_CUSTOM+m,true) end
 	if chk==0 then return eg:IsExists(cm.tdfilter,1,nil,se) and c:GetFlagEffect(m-10)==0 end
 	c:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	local g=eg:Filter(cm.tdfilter,nil,se)

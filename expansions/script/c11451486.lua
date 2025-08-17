@@ -154,7 +154,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 		Duel.SendtoGrave(sg,REASON_RULE)
 		c:SetMaterial(g)
 		Duel.Overlay(c,g)
-		if #g==1 and Duel.GetFlagEffect(tp,11451926)>0 then
+		if #g~=2 and Duel.GetFlagEffect(tp,11451926)>0 then
 			local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+11451926)}
 			local g=Group.CreateGroup()
 			for _,te in pairs(eset) do g:AddCard(te:GetHandler()) end
