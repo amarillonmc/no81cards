@@ -144,7 +144,7 @@ function cm.rop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:GetCounter(0x1442)==0 then return end
 	local sg=e:GetLabelObject()
-	if #sg==0 then
+	if sg==nil then
 		local sg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil):AddCard(c)
 		sg:KeepAlive()
 		e:SetLabelObject(sg)
