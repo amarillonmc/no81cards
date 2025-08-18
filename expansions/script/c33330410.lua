@@ -5,21 +5,33 @@ function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--aux.AddLinkProcedure(c,cm.lfilter,2)
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_FIEND),2,2,cm.lcheck)
+	--local e1=Effect.CreateEffect(c)
+	--e1:SetDescription(aux.Stringid(m,2))
+	--e1:SetCategory(CATEGORY_LEAVE_GRAVE)
+	--e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	--e1:SetCode(EVENT_TO_GRAVE)
+	--e1:SetProperty(EFFECT_FLAG_DELAY)
+	--e1:SetRange(LOCATION_MZONE)
+	--e1:SetCountLimit(1,m)
+	--e1:SetCondition(cm.con)
+	--e1:SetTarget(cm.tg)
+	--e1:SetOperation(cm.op)
+	--c:RegisterEffect(e1)
+	--search
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,2))
-	e1:SetCategory(CATEGORY_LEAVE_GRAVE)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_TO_GRAVE)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_TOGRAVE)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetRange(LOCATION_MZONE)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,m)
-	e1:SetCondition(cm.con)
-	e1:SetTarget(cm.tg)
-	e1:SetOperation(cm.op)
+	e1:SetCondition(cm.spcon)
+	e1:SetTarget(cm.sptg)
+	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,2))
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_POSITION)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_POSITION)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -103,6 +115,25 @@ end
 function cm.cfilter(c)
 	return ((c:IsFacedown() or c:IsPosition(POS_FACEUP_ATTACK)) and c:IsCanChangePosition())  or (c:IsPosition(POS_FACEUP_DEFENSE) and c:IsCanTurnSet())
 end
+
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+end
+function cm.spfilter(c)
+	return c:IsSetCard(0x6552) and c:IsAbleToGrave()
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoGrave(g,REASON_EFFECT)
+	end
+end
+
 function cm.thfilter(c)
 	return c:IsAbleToHand() and c:IsSetCard(0x6552)
 end
@@ -131,11 +162,11 @@ function cm.thop(e,tp)
 	end
 	local pos=tc:GetPosition()
 	if pos~=prepos then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if #tg>0 then
-			Duel.SendtoHand(tg,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tg)
-		end 
+	  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	  local tg=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	  if #tg>0 then
+		  Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		  Duel.ConfirmCards(1-tp,tg)
+	  end 
 	end
 end

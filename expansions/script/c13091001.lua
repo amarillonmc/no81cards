@@ -13,7 +13,6 @@ function cm.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
-	e3:SetCost(cm.rhcost)
 	e3:SetTarget(cm.rhtg)
 	e3:SetOperation(cm.rhop)
 	c:RegisterEffect(e3)
@@ -87,10 +86,7 @@ end
 function cm.rhop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=eg:FilterSelect(tp,cm.sprfilter,1,1,nil,1-tp)
-	if Duel.SendtoHand(g,nil,REASON_EFFECT)>0 and Duel.IsPlayerCanDraw(1-tp,1) and Duel.SelectYesNo(1-tp,aux.Stringid(m,3)) then
-		Duel.BreakEffect()
-		Duel.Draw(1-tp,1,REASON_EFFECT)
-	end
+	Duel.SendtoHand(g,nil,REASON_EFFECT)
 end
 
 

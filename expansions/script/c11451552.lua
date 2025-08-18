@@ -31,7 +31,7 @@ function cm.eqfilter(c)
 	return c:GetFlagEffect(m)~=0
 end
 function cm.eqlimit(e,c)
-	return e:GetOwner()==c
+	return e:GetLabelObject()==c
 end
 function cm.equipfd(c,tp,tc)
 	if tc:IsPosition(POS_FACEUP) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
@@ -98,7 +98,8 @@ function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,11451556)
 end
 function cm.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=3 end
+	local qg=Duel.GetMatchingGroup(function(c) return c:IsFaceup() and c:IsType(TYPE_EFFECT) end,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=3 and #qg>0 end
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_DECK)
 end
 function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
@@ -111,19 +112,24 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetValue(2)
 	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
-	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<3 or Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or not c:IsRelateToEffect(e) then return end
+	local qg=Duel.GetMatchingGroup(function(c) return c:IsFaceup() and c:IsType(TYPE_EFFECT) end,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<3 or Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or #qg==0 then return end
 	local g=Duel.GetDecktopGroup(tp,3)
 	--Duel.ConfirmCards(tp,g)
 	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_EQUIP)
 	local tc=g:Select(tp,1,1,nil):GetFirst()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	local tg=qg:Select(tp,1,1,nil)
+	Duel.HintSelection(tg)
 	if tc:IsForbidden() then
 		Duel.SendtoGrave(tc,REASON_RULE)
-	elseif cm.equipfd2(c,tp,tc) then
+	elseif cm.equipfd2(tg:GetFirst(),tp,tc) then
 		Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetCode(EFFECT_EQUIP_LIMIT)
+		e1:SetLabelObject(tg:GetFirst())
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(cm.eqlimit)
 		tc:RegisterEffect(e1)

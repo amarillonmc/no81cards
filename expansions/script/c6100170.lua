@@ -48,7 +48,8 @@ function s.trapfilter(c)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SpecialSummon(c,0,tp,tp,false,true,POS_FACEUP) then
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SpecialSummon(c,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP) then
+		c:CompleteProcedure()
 		local g=Duel.GetMatchingGroup(s.trapfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil)
 		if #g>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 			and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then

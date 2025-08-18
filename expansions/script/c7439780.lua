@@ -40,7 +40,7 @@ end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and s.setfilter(chkc,tp,e:GetHandler()) end
 	if chk==0 then return Duel.IsExistingTarget(s.setfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,3))
 	local tc=Duel.SelectTarget(tp,s.setfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,tp,e:GetHandler()):GetFirst()
 	e:SetLabel(tc:GetControler())
 end
@@ -48,8 +48,13 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsCanTurnSet() then
 		if tc:IsStatus(STATUS_LEAVE_CONFIRMED) then tc:CancelToGrave() end
-		Duel.ChangePosition(tc,POS_FACEDOWN) 
-		if tc:IsType(TYPE_SPELL+TYPE_TRAP) then Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0) end
+		--Duel.ChangePosition(tc,POS_FACEDOWN) 
+		if tc:IsType(TYPE_SPELL+TYPE_TRAP) then 
+			Duel.ChangePosition(tc,POS_FACEDOWN) 
+			Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,0) 
+		else
+			Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE) 
+		end
 		if e:GetLabel()==1-tp and tc:IsControler(1-tp) and e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_EFFECT) then
 			Duel.BreakEffect()
 			e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_EFFECT)

@@ -58,17 +58,17 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local e4=Effect.CreateEffect(e:GetHandler())
+	--[[local e4=Effect.CreateEffect(e:GetHandler())
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
 	e4:SetCode(EFFECT_TO_GRAVE_REDIRECT)
-	e4:SetTarget(function(e,tc) 
-					if tc:GetOriginalType()&(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK)==0 then
+	e4:SetTarget(function(e,tc)
+					if tc:IsReason(REASON_RELEASE) and tc:GetOriginalType()&(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK)==0 then
 						tc:RegisterFlagEffect(m,RESET_EVENT+0x15e0000+RESET_PHASE+PHASE_END,0,1)
-					else
+					elseif tc:IsReason(REASON_RELEASE) then
 						tc:RegisterFlagEffect(m,RESET_EVENT+0x13e0000+RESET_PHASE+PHASE_END,0,1)
 					end
-					return true
+					return tc:IsReason(REASON_RELEASE)
 				end)
 	e4:SetTargetRange(LOCATION_ONFIELD,0)
 	e4:SetValue(LOCATION_HAND)
@@ -83,18 +83,17 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_TO_DECK)
-	Duel.RegisterEffect(e2,tp)
-	--[[local e1=Effect.CreateEffect(e:GetHandler())
+	Duel.RegisterEffect(e2,tp)--]]
+	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetCode(EFFECT_SEND_REPLACE)
 	e1:SetTarget(cm.reptg)
 	e1:SetValue(function(e,c) e:SetLabel(100) return false end)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)--]]
+	Duel.RegisterEffect(e1,tp)
 end
 function cm.filter(c,tp)
-	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) and (c:IsAbleToHand() or c:IsStatus(STATUS_LEAVE_CONFIRMED)) and c:GetDestination()==LOCATION_GRAVE --and c:IsReason(REASON_RELEASE) --and c:GetLeaveFieldDest()==0 and not c:IsType(TYPE_TOKEN)
+	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) and (c:IsAbleToHand() or c:IsStatus(STATUS_LEAVE_CONFIRMED)) and c:GetDestination()==LOCATION_GRAVE and c:IsReason(REASON_RELEASE) --and c:GetLeaveFieldDest()==0 and not c:IsType(TYPE_TOKEN)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

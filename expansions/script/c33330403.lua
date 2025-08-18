@@ -74,7 +74,7 @@ function cm.thop(e,tp)
 	end
 end
 function cm.con(e,tp)
-	return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
+	return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 --and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
 end 
 function cm.op(e,tp)
 	if Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)==0 then return end
@@ -87,7 +87,7 @@ function cm.op(e,tp)
 		Duel.ConfirmCards(tp,hg)
 		if hg:IsExists(cm.rmfilter,1,nil,opt) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local rg=hg:FilterSelect(tp,cm.rmfilter,1,1,nil,opt)
+			local rg=hg:FilterSelect(tp,cm.rmfilter,1,2,nil,opt)
 			Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 		end
 	end

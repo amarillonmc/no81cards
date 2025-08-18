@@ -62,7 +62,6 @@ function s.mtop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CLIENT_HINT)
 			e1:SetRange(LOCATION_MZONE)
 			e1:SetCode(EFFECT_IMMUNE_EFFECT)
-			e1:SetLabel(ep)
 			e1:SetValue(s.efilter)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			rc:RegisterEffect(e1,true)
@@ -72,5 +71,5 @@ function s.mtop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.efilter(e,re)
-	return e:GetLabel()~=re:GetOwnerPlayer() and re:IsActivated()
+	return e:GetHandlerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
 end

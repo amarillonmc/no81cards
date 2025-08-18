@@ -257,6 +257,7 @@ end
 function cm.eftg(e,c)
 	if not c:IsSetCard(0x3977) then return false end
 	local tp=c:GetControler()
+	if Duel.GetFlagEffect(tp,m)>0 then return false end
 	local te=c:GetActivateEffect()
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(Card.IsLocation,nil,LOCATION_HAND)
@@ -321,6 +322,7 @@ function cm.efcost(e,tp,eg,ep,ev,re,r,rp,chk)
 				end
 			end
 	te:SetOperation(op2)
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
@@ -341,7 +343,7 @@ function cm.costcon(e)
 end
 function cm.actarget2(e,te,tp)
 	e:SetLabelObject(te)
-	return te:GetHandler():IsSetCard(0x3977) and te:IsHasType(EFFECT_TYPE_ACTIVATE) and te:GetHandler():IsFacedown() and te:GetHandler():IsOnField() and te:GetHandler():IsStatus(STATUS_SET_TURN) and not te:GetHandler():IsType(TYPE_QUICKPLAY) and not te:GetHandler():IsType(TYPE_TRAP)
+	return Duel.GetFlagEffect(tp,m)==0 and te:GetHandler():IsSetCard(0x3977) and te:IsHasType(EFFECT_TYPE_ACTIVATE) and te:GetHandler():IsFacedown() and te:GetHandler():IsOnField() and te:GetHandler():IsStatus(STATUS_SET_TURN) and not te:GetHandler():IsType(TYPE_QUICKPLAY) and not te:GetHandler():IsType(TYPE_TRAP)
 end
 function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -407,6 +409,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 					end
 				end
 		te:SetOperation(op2)
+		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)

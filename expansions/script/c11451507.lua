@@ -298,15 +298,17 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetLabel()&0x49249~=0 then re:SetLabel(re:GetLabel()+0x40) return end
 	re:SetLabel(re:GetLabel()+0x40)
 	local op=re:GetOperation()
-	local repop=function(e,tp,eg,ep,ev,re,r,rp)
-		op(e,tp,eg,ep,ev,re,r,rp)
-		cm.addition(e,tp,eg,ep,ev,re,r,rp)
-	end
-	if re:GetHandler():GetOriginalCode()==11451510 or (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
+	if re:GetHandler():GetOriginalCode()==11451510 then
 		repop=function(e,tp,eg,ep,ev,re,r,rp)
 			cm.addition(e,tp,eg,ep,ev,re,r,rp)
 			op(e,tp,eg,ep,ev,re,r,rp)
 		end
+		re:SetOperation(repop)
+	elseif not (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
+		repop=function(e,tp,eg,ep,ev,re,r,rp)
+			op(e,tp,eg,ep,ev,re,r,rp)
+			cm.addition(e,tp,eg,ep,ev,re,r,rp)
+		end
+		re:SetOperation(repop)
 	end
-	re:SetOperation(repop)
 end

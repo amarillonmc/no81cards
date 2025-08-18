@@ -60,9 +60,11 @@ function cm.etg(e,c)
 	return c:GetFlagEffect(m-4)>0 --c:GetOriginalCode()==m and c:IsFaceup() and c:IsStatus(STATUS_CHAINING)
 end
 function cm.efilter(e,te,c)
+	if not KOISHI_CHECK and c==te:GetHandler() then return false end
 	return not te:IsActiveType(c:GetType()&0x7)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
+	if not KOISHI_CHECK then return e:GetHandler():GetFlagEffect(m)==0 or e:GetHandler():IsHasEffect(EFFECT_FLAG_EFFECT+m):GetDescription()~=aux.Stringid(m,1) end
 	return e:GetHandler():IsType(TYPE_SPELL)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -113,21 +115,22 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rg=Duel.GetMatchingGroup(cm.tfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,aux.ExceptThisCard(e))
-	if #rg==0 or Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)*2+#g<#rg then return end
-	local t={}
-	for ac=math.max(0,math.ceil((#rg-#g)/2)),math.min(#rg,Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)),1 do
-		table.insert(t,ac)
-	end
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
-	ac=Duel.AnnounceNumber(tp,table.unpack(t))
-	if Duel.DiscardDeck(tp,ac,REASON_EFFECT) then
-		local g=Duel.GetOperatedGroup()
-		local ct=#rg-ac --g:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
-		if ct>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-			local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,#rg-ac,#rg-ac,aux.ExceptThisCard(e))
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_GRAVE,LOCATION_ONFIELD,aux.ExceptThisCard(e))
+	if #rg>0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)*2+#g>=#rg then
+		local t={}
+		for ac=math.max(0,math.ceil((#rg-#g)/2)),math.min(#rg,Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)),1 do
+			table.insert(t,ac)
+		end
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,3))
+		ac=Duel.AnnounceNumber(tp,table.unpack(t))
+		if Duel.DiscardDeck(tp,ac,REASON_EFFECT) then
+			local g=Duel.GetOperatedGroup()
+			local ct=#rg-ac --g:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)
+			if ct>0 then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+				local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_GRAVE,LOCATION_ONFIELD,#rg-ac,#rg-ac,aux.ExceptThisCard(e))
+				Duel.SendtoHand(g,nil,REASON_EFFECT)
+			end
 		end
 	end
 	--[[local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
@@ -165,7 +168,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 			e1:SetValue(TYPE_TRAP+TYPE_COUNTER)
-			c:RegisterEffect(e1)
+			--c:RegisterEffect(e1,true)
 			c:SetStatus(STATUS_SET_TURN,true)
 		else
 			c:SetCardData(CARDDATA_TYPE,TYPE_TRAP+TYPE_COUNTER)
@@ -184,6 +187,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
+	if not KOISHI_CHECK then return e:GetHandler():GetFlagEffect(m)>0 and e:GetHandler():IsHasEffect(EFFECT_FLAG_EFFECT+m):GetDescription()==aux.Stringid(m,1) and rp==tp end
 	return e:GetHandler():IsType(TYPE_TRAP) and rp==tp
 end
 function cm.filter2(c)
@@ -191,6 +195,19 @@ function cm.filter2(c)
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
+	if not KOISHI_CHECK then
+		local c=e:GetHandler()
+		local e1=Effect.CreateEffect(c)
+		e1:SetCode(EFFECT_CHANGE_TYPE)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN)
+		e1:SetValue(TYPE_TRAP+TYPE_COUNTER)
+		c:RegisterEffect(e1,true)
+		if e:GetHandler():IsType(TYPE_COUNTER) then
+			Duel.SetChainLimit(function(e) return e:GetHandler():IsType(TYPE_COUNTER) and e:IsHasType(EFFECT_TYPE_ACTIVATE) end)
+		end
+	end
 	e:GetHandler():RegisterFlagEffect(m-4,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_OATH,1)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -260,7 +277,7 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
 			e1:SetValue(TYPE_SPELL)
-			c:RegisterEffect(e1)
+			--c:RegisterEffect(e1,true)
 		else
 			c:SetCardData(CARDDATA_TYPE,TYPE_SPELL)
 		end

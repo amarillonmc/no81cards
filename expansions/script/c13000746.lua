@@ -30,7 +30,7 @@ local e3=Effect.CreateEffect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,m)
+	
 	e3:SetCondition(cm.spcon)
 	e3:SetTarget(cm.sptg)
 	e3:SetOperation(cm.spop)
@@ -81,7 +81,7 @@ function cm.synop(e,tp,eg,ep,ev,re,r,rp,c,smat,mg,min,max)
 	g:DeleteGroup()
 end
 function cm.cfilter(c)
-	return c:IsType(TYPE_LINK) or c:IsType(TYPE_FUSION) or c:IsType(TYPE_SYNCHRO)
+	return c:IsSummonLocation(LOCATION_EXTRA)
 end
 function cm.filter2(c,e,tp)
 	return c:IsType(TYPE_PENDULUM) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsFaceup() or c:IsLocation(LOCATION_HAND))
@@ -89,7 +89,7 @@ end
 function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_EXTRA,0,nil)
-	return eg:IsExists(cm.cfilter,1,nil) and g:GetClassCount(Card.GetCode)>=6 and not eg:IsContains(e:GetHandler())
+	return eg:IsExists(cm.cfilter,1,nil) and g:GetClassCount(Card.GetCode)>=5 and not eg:IsContains(e:GetHandler())
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -150,7 +150,7 @@ end
 function cm.con(e,tp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_EXTRA,0,nil)
-		return g:GetClassCount(Card.GetCode)>=4
+		return g:GetClassCount(Card.GetCode)>=3
 end
 function cm.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_PENDULUM)

@@ -2,7 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	
-	-- 从额外卡组特殊召唤的念动力族怪兽3只
+	-- 从额外卡组特殊召唤的「蒸汽朋克」怪兽3只
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,s.matfilter,3)
 	
@@ -37,9 +37,9 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
--- 从额外卡组特殊召唤的念动力族怪兽3只
+-- 从额外卡组特殊召唤的「蒸汽朋克」怪兽3只
 function s.matfilter(c)
-	return c:IsSummonLocation(LOCATION_EXTRA) and c:IsRace(RACE_PSYCHO)
+	return c:IsSummonLocation(LOCATION_EXTRA) and c:IsSetCard(0x666b) and c:IsFaceupEx() and c:IsType(TYPE_MONSTER)
 end
 
 -- 1回合1次，让自己的墓地·除外状态的1张「蒸汽朋克」卡回到卡组·额外卡组才能发动，对方场上1张卡回到卡组

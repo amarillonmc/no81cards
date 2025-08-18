@@ -53,7 +53,8 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 then
+	if Duel.SpecialSummon(c,SUMMON_TYPE_RITUAL,tp,tp,true,false,POS_FACEUP)~=0 then
+		c:CompleteProcedure()
 		local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK+LOCATION_HAND,0,nil)
 		if #g>0 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 			and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then

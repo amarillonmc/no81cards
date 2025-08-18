@@ -3,7 +3,7 @@ local s,id,o=GetID()
 function c13000773.initial_effect(c)
 c:SetSPSummonOnce(13000773)
 c:EnableReviveLimit()
- aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK),3,3)
+ aux.AddLinkProcedure(c,s.matfilter,3,3)
  local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(65741786,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -25,7 +25,9 @@ c:EnableReviveLimit()
 	e2:SetOperation(s.indop)
 	c:RegisterEffect(e2)
 end
-
+function s.matfilter(c)
+	return c:IsSummonLocation(LOCATION_EXTRA)
+end
 function s.lkcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 		and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)

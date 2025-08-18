@@ -86,9 +86,10 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
 	if te and aux.GetValueType(te)=="Effect" and te:GetHandler():IsRelateToEffect(e) and Duel.SendtoDeck(te:GetHandler(),nil,2,REASON_EFFECT)>0 and te:GetHandler():IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
 		Duel.ShuffleDeck(tp)
-		e:SetLabelObject(te:GetLabelObject())
 		local op=te:GetOperation()
+		e:SetLabelObject(te:GetLabelObject())
 		if op then
+			if te:GetHandler():GetOriginalCode()==11451510 and e:GetLabel()~=0 then cm.addition(e,tp,eg,ep,ev,re,r,rp) end
 			op(e,tp,eg,ep,ev,re,r,rp)
 			--[[if e:GetCode()==EVENT_CHAINING then
 				op(e,tp,eg,ep,ev,re,r,rp)
@@ -293,17 +294,12 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 			cm.addition(e,tp,eg,ep,ev,re,r,rp)
 			op(e,tp,eg,ep,ev,re,r,rp)
 		end
-	elseif (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
-		local op=re:GetLabelObject():GetOperation()
-		repop=function(e,tp,eg,ep,ev,re,r,rp)
-			cm.addition(e,tp,eg,ep,ev,re,r,rp)
-			op(e,tp,eg,ep,ev,re,r,rp)
-		end
-	else
+		re:SetOperation(repop)
+	elseif not (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
 		repop=function(e,tp,eg,ep,ev,re,r,rp)
 			op(e,tp,eg,ep,ev,re,r,rp)
 			cm.addition(e,tp,eg,ep,ev,re,r,rp)
 		end
+		re:SetOperation(repop)
 	end
-	re:SetOperation(repop)
 end

@@ -14,9 +14,9 @@ function cm.initial_effect(c)
 	e10:SetCode(EFFECT_SPSUMMON_PROC)
 	e10:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e10:SetRange(LOCATION_EXTRA)
-	e10:SetCondition(aux.XyzLevelFreeCondition(cm.mfilter,cm.xyzcheck,3,99))
-	e10:SetTarget(aux.XyzLevelFreeTarget(cm.mfilter,cm.xyzcheck,3,99))
-	e10:SetOperation(aux.XyzLevelFreeOperation(cm.mfilter,cm.xyzcheck,3,99))
+	e10:SetCondition(cm.XyzLevelFreeCondition(cm.mfilter,cm.xyzcheck,3,99))
+	e10:SetTarget(cm.XyzLevelFreeTarget(cm.mfilter,cm.xyzcheck,3,99))
+	e10:SetOperation(cm.XyzLevelFreeOperation(cm.mfilter,cm.xyzcheck,3,99))
 	e10:SetValue(SUMMON_TYPE_XYZ)
 	c:RegisterEffect(e10)
 	cm[c]=e10
@@ -109,7 +109,15 @@ function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(e:GetHandler()) and bool and ceg:IsExists(cm.spfilter,1,nil) and (re==nil or not re:IsActivated())
 end
 function cm.XyzLevelFreeGoal(g,tp,xyzc,gf)
-	return (not gf or gf(g)) and Duel.GetLocationCountFromEx(tp,tp,g,TYPE_XYZ)>0
+	if Duel.GetLocationCountFromEx(tp,tp,g,TYPE_XYZ)<=0 then return false end
+	if gf and not gf(g) then return false end
+	local lg=g:Filter(Card.IsHasEffect,nil,EFFECT_XYZ_MIN_COUNT)
+	for c in aux.Next(lg) do
+		local le=c:IsHasEffect(EFFECT_XYZ_MIN_COUNT)
+		local ct=le:GetValue()
+		if #g<ct then return false end
+	end
+	return true
 end
 function cm.XyzLevelFreeCondition(f,gf,minct,maxct)
 	return  function(e,c,og,min,max)
@@ -127,21 +135,97 @@ function cm.XyzLevelFreeCondition(f,gf,minct,maxct)
 				if og then
 					mg=og:Filter(aux.XyzLevelFreeFilter,nil,c,f)
 				else
-					mg=Duel.GetMatchingGroup(aux.XyzLevelFreeFilter,tp,LOCATION_MZONE,0,nil,c,f)
+					local loc=c:GetFlagEffect(m)>0 and LOCATION_REMOVED+LOCATION_MZONE or LOCATION_MZONE
+					mg=Duel.GetMatchingGroup(aux.XyzLevelFreeFilter,tp,loc,0,nil,c,f)
 				end
 				local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 				if sg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
 				Duel.SetSelectedCard(sg)
-				aux.GCheckAdditional=aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
-				local res=mg:CheckSubGroup(cm.XyzLevelFreeGoal,minc,maxc,tp,c,gf)
+				aux.GCheckAdditional=function(g,...) return aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)(g,...) and (c:GetFlagEffect(m)==0 or g:FilterCount(Card.IsLocation,nil,LOCATION_REMOVED)<=1) end
+				local gfc=function(g,...) return gf(g,...) and (c:GetFlagEffect(m)==0 or g:FilterCount(Card.IsLocation,nil,LOCATION_REMOVED)<=1) end
+				local res=mg:CheckSubGroup(cm.XyzLevelFreeGoal,minc,maxc,tp,c,gfc)
 				aux.GCheckAdditional=nil
 				return res
+			end
+end
+function cm.XyzLevelFreeTarget(f,gf,minct,maxct)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
+				if og and not min then
+					return true
+				end
+				local minc=minct
+				local maxc=maxct
+				if min then
+					if min>minc then minc=min end
+					if max<maxc then maxc=max end
+				end
+				local mg=nil
+				if og then
+					mg=og:Filter(aux.XyzLevelFreeFilter,nil,c,f)
+				else
+					local loc=c:GetFlagEffect(m)>0 and LOCATION_REMOVED+LOCATION_MZONE or LOCATION_MZONE
+					mg=Duel.GetMatchingGroup(aux.XyzLevelFreeFilter,tp,loc,0,nil,c,f)
+				end
+				local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
+				Duel.SetSelectedCard(sg)
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+				local cancel=Duel.IsSummonCancelable()
+				aux.GCheckAdditional=function(g,...) return aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)(g,...) and (c:GetFlagEffect(m)==0 or g:FilterCount(Card.IsLocation,nil,LOCATION_REMOVED)<=1) end
+				local gfc=function(g,...) return gf(g,...) and (c:GetFlagEffect(m)==0 or g:FilterCount(Card.IsLocation,nil,LOCATION_REMOVED)<=1) end
+				local g=mg:SelectSubGroup(tp,cm.XyzLevelFreeGoal,cancel,minc,maxc,tp,c,gfc)
+				aux.GCheckAdditional=nil
+				if g and g:GetCount()>0 then
+					g:KeepAlive()
+					e:SetLabelObject(g)
+					return true
+				else return false end
+			end
+end
+function cm.XyzLevelFreeOperation(f,gf,minct,maxct)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+				if og and not min then
+					local sg=Group.CreateGroup()
+					local tc=og:GetFirst()
+					while tc do
+						local sg1=tc:GetOverlayGroup()
+						sg:Merge(sg1)
+						tc=og:GetNext()
+					end
+					Duel.SendtoGrave(sg,REASON_RULE)
+					c:SetMaterial(og)
+					Duel.Overlay(c,og)
+				else
+					local mg=e:GetLabelObject()
+					if e:GetLabel()==1 then
+						local mg2=mg:GetFirst():GetOverlayGroup()
+						if mg2:GetCount()~=0 then
+							Duel.Overlay(c,mg2)
+						end
+					else
+						local sg=Group.CreateGroup()
+						local tc=mg:GetFirst()
+						while tc do
+							local sg1=tc:GetOverlayGroup()
+							sg:Merge(sg1)
+							tc=mg:GetNext()
+						end
+						Duel.SendtoGrave(sg,REASON_RULE)
+					end
+					c:SetMaterial(mg)
+					Duel.Overlay(c,mg)
+					mg:DeleteGroup()
+				end
 			end
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local te=c[c]
-	if chk==0 then return c:IsCanBeSpecialSummoned(te,SUMMON_TYPE_XYZ,tp,true,true) and cm.XyzLevelFreeCondition(cm.mfilter,cm.xyzcheck,3,99)(te,c,nil,3,99) and c:IsAbleToDeck() and c:GetFlagEffect(m-10)==0 end
+	if chk==0 then
+		c:RegisterFlagEffect(m,0,0,1)
+		local res=(c:IsCanBeSpecialSummoned(te,SUMMON_TYPE_XYZ,tp,true,true) and cm.XyzLevelFreeCondition(cm.mfilter,cm.xyzcheck,3,99)(te,c,nil,3,99) and c:IsAbleToDeck() and c:GetFlagEffect(m-10)==0)
+		c:ResetFlagEffect(m)
+		return res
+	end
 	c:RegisterFlagEffect(m-10,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,tp,LOCATION_EXTRA)
@@ -149,6 +233,21 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,2,REASON_EFFECT)>0 and c:IsLocation(LOCATION_EXTRA) and c:IsControler(tp) then
-		Duel.XyzSummon(tp,c,nil)
+		c:RegisterFlagEffect(m,0,0,1)
+		if c:IsXyzSummonable(nil) then
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_SPSUMMON_COST)
+			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e2:SetOperation(cm.resetop)
+			c:RegisterEffect(e2)
+			Duel.XyzSummon(tp,c,nil)
+		else
+			c:ResetFlagEffect(m)
+		end
 	end
+end
+function cm.resetop(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():ResetFlagEffect(m)
+	e:Reset()
 end

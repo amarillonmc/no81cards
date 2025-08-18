@@ -166,7 +166,9 @@ function cm.LinkOperation(f,minc,maxc,gf)
 				c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,cid)
 				for oc in aux.Next(g1) do
 					local te,te2=oc:GetActivateEffect()
-					if oc:GetOriginalCode()==11451827 and te2 and oc:IsType(TYPE_TRAP) then te=te2 end
+					if oc:GetOriginalCode()==11451827 and te2 then
+						if (not KOISHI_CHECK and oc:GetFlagEffect(11451827)>0 and oc:IsHasEffect(EFFECT_FLAG_EFFECT+11451827):GetDescription()==aux.Stringid(11451827,1)) or oc:IsType(TYPE_TRAP) then te=te2 end
+					end
 					local con=te:GetCondition()
 					local tg=te:GetTarget()
 					local op=te:GetOperation()

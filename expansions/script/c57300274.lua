@@ -77,15 +77,17 @@ function s.activate2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.costfilter3(c,tp)
-	return c:IsType(TYPE_RITUAL) and c:IsDiscardable()
+	return c:IsType(TYPE_RITUAL) and not c:IsPublic()
 		and Duel.IsExistingMatchingCard(s.thfilter3,tp,LOCATION_DECK,0,1,nil,c:GetCode())
 end
 function s.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter3,tp,LOCATION_HAND,0,1,e:GetHandler()) end
-	Duel.DiscardHand(tp,s.costfilter3,1,1,REASON_COST+REASON_DISCARD,nil,tp)
-	local tc=Duel.GetOperatedGroup():GetFirst()
-	e:SetLabel(tc:GetCode())
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g=Duel.SelectMatchingCard(tp,s.costfilter3,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.ConfirmCards(1-tp,g)
+	Duel.ShuffleHand(tp)
+	e:SetLabel(g:GetFirst():GetCode())
 end
 function s.thfilter3(c,code)
 	return aux.IsCodeListed(c,code) and c:IsAbleToHand()

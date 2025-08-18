@@ -2,19 +2,18 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 
-    -- 自己的场上有念动力族怪兽存在的场合，对方把场上的怪兽的效果发动时，支付300基本分，以对方场上1只效果怪兽为对象才能发动，墓地·除外状态的这张卡特殊召唤，作为对象的怪兽的效果直到回合结束时无效
+    -- 自己的场上有念动力族怪兽存在的场合，对方把墓地的怪兽的效果发动时，把墓地的这张卡除外，支付300基本分才能发动，那个效果无效
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DISABLE)
+	e1:SetCategory(CATEGORY_DISABLE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	e1:SetRange(LOCATION_GRAVE)
 	e1:SetCountLimit(1,id)
-	e1:SetCondition(s.spcon)
-	e1:SetCost(s.spcost)
-	e1:SetTarget(s.sptg)
-	e1:SetOperation(s.spop)
+	e1:SetCode(EVENT_CHAINING)
+	e1:SetCondition(s.negcon)
+	e1:SetCost(s.negcost)
+	e1:SetTarget(s.negtg)
+	e1:SetOperation(s.negop)
 	c:RegisterEffect(e1)
 	
 	-- 把自己场上的这张卡作为同调素材的场合，可以把这张卡当作调整以外的怪兽使用
@@ -27,53 +26,30 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 
--- 自己的场上有念动力族怪兽存在的场合，对方把场上的怪兽的效果发动时，支付300基本分，以对方场上1只效果怪兽为对象才能发动，墓地·除外状态的这张卡特殊召唤，作为对象的怪兽的效果直到回合结束时无效
-function s.spfilter(c)
-	return c:IsRace(RACE_PSYCHO) and c:IsFaceupEx() and c:IsType(TYPE_MONSTER)
+-- 自己的场上有念动力族怪兽存在的场合，对方把墓地的怪兽的效果发动时，把墓地的这张卡除外，支付300基本分才能发动，那个效果无效
+function s.checkfilter(c)
+	return c:IsRace(RACE_PSYCHO) and c:IsFaceup()
 end
 
-function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and re and re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_MZONE
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_MZONE,0,1,nil)
+function s.negcon(e,tp,eg,ep,ev,re,r,rp)
+	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	return Duel.IsExistingMatchingCard(s.checkfilter,tp,LOCATION_MZONE,0,1,nil) and ep~=tp and (LOCATION_GRAVE)&loc~=0
+		and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainDisablable(ev)
 end
 
-function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,300) end
+function s.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() and Duel.CheckLPCost(tp,300) end
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 	Duel.PayLPCost(tp,300)
 end
 
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and aux.NegateEffectMonsterFilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(aux.NegateEffectMonsterFilter,tp,0,LOCATION_MZONE,1,nil)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-	local g=Duel.SelectTarget(tp,aux.NegateEffectMonsterFilter,tp,0,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end
 
-function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		if tc:IsFaceup() and tc:IsRelateToEffect(e) and tc:IsCanBeDisabledByEffect(e) then
-			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			e2:SetValue(RESET_TURN_SET)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e2)
-		end
-	end
+function s.negop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
 end
 
 -- 把自己场上的这张卡作为同调素材的场合，可以把这张卡当作调整以外的怪兽使用

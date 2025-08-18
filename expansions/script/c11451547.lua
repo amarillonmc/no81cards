@@ -101,7 +101,7 @@ end
 function cm.filter(c,event)
 	if not (c:IsCanOverlay(tp) and c:GetType()&0x100004==0x100004) then return false end
 	local _IsCostChecked=Effect.IsCostChecked
-	Effect.IsCostChecked=function(e) return true end
+	Effect.IsCostChecked=function(e) Effect.IsCostChecked=_IsCostChecked return true end
 	local te=c:CheckActivateEffect(false,true,false)
 	Effect.IsCostChecked=_IsCostChecked
 	return te --and te:GetCode()==event

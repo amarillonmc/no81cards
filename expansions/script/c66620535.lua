@@ -1,7 +1,7 @@
 --绮奏终律·落英散歌
 function c66620535.initial_effect(c)
 
-	-- 把手卡1只怪兽给对方观看才能发动，和那只怪兽属性不同的1只「绮奏」怪兽从卡组守备表示特殊召唤
+	-- 把手卡1只怪兽给对方观看才能发动，和那只怪兽属性不同的1只「绮奏」怪兽从卡组守备表示特殊召唤，这个回合，自己不是融合怪兽不能从额外卡组特殊召唤
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(66620535,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -13,50 +13,26 @@ function c66620535.initial_effect(c)
 	e1:SetOperation(c66620535.activate)
 	c:RegisterEffect(e1)
 	
-	-- 以自己场上1只机械族怪兽为对象才能发动，和那只怪兽属性不同的1只「绮奏」怪兽从卡组守备表示特殊召唤，作为对象的怪兽回到手卡
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(66620535,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_ACTIVATE)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1,66620535)
-	e2:SetTarget(c66620535.target2)
-	e2:SetOperation(c66620535.activate2)
-	c:RegisterEffect(e2)
-	
 	-- 自己场上的表侧表示的融合怪兽因对方的效果从场上离开的场合或者被战斗破坏的场合，把墓地的这张卡除外才能发动，选场上1张卡破坏
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(66620535,3))
-	e3:SetCategory(CATEGORY_DESTROY)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_LEAVE_FIELD)
-	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCountLimit(1,66620536)
-	e3:SetCost(aux.bfgcost)
-	e3:SetCondition(c66620535.descon)
-	e3:SetTarget(c66620535.destg)
-	e3:SetOperation(c66620535.desop)
-	c:RegisterEffect(e3)
-	
-	-- 这些效果发动的回合，自己不是融合怪兽不能从额外卡组特殊召唤
-	Duel.AddCustomActivityCounter(66620535,ACTIVITY_SPSUMMON,c66620535.counterfilter)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(66620535,3))
+	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL+EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,66620536)
+	e2:SetCost(aux.bfgcost)
+	e2:SetCondition(c66620535.descon)
+	e2:SetTarget(c66620535.destg)
+	e2:SetOperation(c66620535.desop)
+	c:RegisterEffect(e2)
 	
 	-- 自己是这次决斗中有把「绮奏」速攻魔法卡5次以上发动过的场合，可以把对方场上的卡全部破坏
 	Duel.AddCustomActivityCounter(66620536, ACTIVITY_CHAIN,c66620535.chainfilter)	
 end
 
--- 这些效果发动的回合，自己不是融合怪兽不能从额外卡组特殊召唤
-function c66620535.counterfilter(c)
-	return not c:IsSummonLocation(LOCATION_EXTRA) or c:IsType(TYPE_FUSION)
-end
-
-function c66620535.splimit(e,c,sump,sumtype,sumpos,targetp,se)
-	return not c:IsType(TYPE_FUSION) and c:IsLocation(LOCATION_EXTRA)
-end
-
--- 把手卡1只怪兽给对方观看才能发动，和那只怪兽属性不同的1只「绮奏」怪兽从卡组守备表示特殊召唤
+-- 把手卡1只怪兽给对方观看才能发动，和那只怪兽属性不同的1只「绮奏」怪兽从卡组守备表示特殊召唤，这个回合，自己不是融合怪兽不能从额外卡组特殊召唤
 function c66620535.filter(c,e,tp)
 	return not c:IsPublic() and c:IsType(TYPE_MONSTER)
 		and Duel.IsExistingMatchingCard(c66620535.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c)
@@ -100,46 +76,8 @@ function c66620535.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
--- 以自己场上1只机械族怪兽为对象才能发动，和那只怪兽属性不同的1只「绮奏」怪兽从卡组守备表示特殊召唤，作为对象的怪兽回到手卡
-function c66620535.filter2(c,e,tp)
-	return c:IsFaceup() and c:IsRace(RACE_MACHINE)
-		and Duel.IsExistingMatchingCard(c66620535.spfilter2,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetAttribute())
-end
-
-function c66620535.spfilter2(c,e,tp,attr)
-	return not c:IsAttribute(attr) and c:IsSetCard(0x666a)
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
-end
-
-function c66620535.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c66620535.filter2(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c66620535.filter2,tp,LOCATION_MZONE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c66620535.filter2,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
-end
-
-function c66620535.activate2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-		local attr=tc:GetAttribute()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c66620535.spfilter2,tp,LOCATION_DECK,0,1,1,nil,e,tp,attr)
-		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP_DEFENSE)>0 and tc:IsRelateToEffect(e) then
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		end
-	end
-	if not e:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c66620535.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+function c66620535.splimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return not c:IsType(TYPE_FUSION) and c:IsLocation(LOCATION_EXTRA)
 end
 
 -- 自己场上的表侧表示的融合怪兽因对方的效果从场上离开的场合或者被战斗破坏的场合，把墓地的这张卡除外才能发动，选场上1张卡破坏，自己是这次决斗中有把「绮奏」速攻魔法卡5次以上发动过的场合，可以把对方场上的卡全部破坏
@@ -183,13 +121,4 @@ function c66620535.desop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Destroy(dg,REASON_EFFECT)
 		end
 	end
-	local c=e:GetHandler()
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c66620535.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 end

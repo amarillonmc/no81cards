@@ -1,7 +1,7 @@
 --绮奏降律·断序圣仪
 function c66620610.initial_effect(c)
 
-    -- 作为这张卡的发动时的效果处理，可以从自己的手卡·墓地选1只7星以下的机械族怪兽特殊召唤，这个回合，自己不是机械族怪兽不能特殊召唤
+    -- 作为这张卡的发动时的效果处理，可以从自己的手卡·墓地选1只7星以下的机械族怪兽特殊召唤，那个场合，这个回合，自己不是融合怪兽不能从额外卡组特殊召唤
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON+CATEGORY_LEAVE_GRAVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -11,33 +11,33 @@ function c66620610.initial_effect(c)
 	c:RegisterEffect(e1)
 	
 	-- 每次自己把「绮奏」速攻魔法卡的效果发动，对方场上的全部怪兽的攻击力·守备力下降600
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e4:SetRange(LOCATION_SZONE)
-	e4:SetCode(EVENT_CHAINING)
-	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e4:SetOperation(c66620610.regop)
-	c:RegisterEffect(e4)
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e5:SetRange(LOCATION_SZONE)
-	e5:SetCode(EVENT_CHAIN_SOLVED)
-	e5:SetCondition(c66620610.atkcon)
-	e5:SetOperation(c66620610.atkop)
-	c:RegisterEffect(e5)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetOperation(c66620610.regop)
+	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetCode(EVENT_CHAIN_SOLVED)
+	e3:SetCondition(c66620610.atkcon)
+	e3:SetOperation(c66620610.atkop)
+	c:RegisterEffect(e3)
 	
 	-- 只要这张卡在魔法与陷阱区域存在，对方不能把攻击力0的怪兽的效果发动
-	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_FIELD)
-	e6:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e6:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e6:SetRange(LOCATION_SZONE)
-	e6:SetTargetRange(0,1)
-	e6:SetValue(c66620610.aclimit)
-	c:RegisterEffect(e6)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e4:SetRange(LOCATION_SZONE)
+	e4:SetTargetRange(0,1)
+	e4:SetValue(c66620610.aclimit)
+	c:RegisterEffect(e4)
 end
 
--- 作为这张卡的发动时的效果处理，可以从自己的手卡·墓地选1只7星以下的机械族怪兽特殊召唤，这个回合，自己不是机械族怪兽不能特殊召唤
+-- 作为这张卡的发动时的效果处理，可以从自己的手卡·墓地选1只7星以下的机械族怪兽特殊召唤，那个场合，这个回合，自己不是融合怪兽不能从额外卡组特殊召唤
 function c66620610.setcardfilter(c,e,tp)
 	return c:IsLevelBelow(7) and c:IsRace(RACE_MACHINE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
@@ -50,20 +50,21 @@ function c66620610.activate(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.SelectYesNo(tp,aux.Stringid(66620610,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local sg=cg:Select(tp,1,1,nil)
-		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		if Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP) > 0 then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+			e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+			e1:SetTargetRange(1,0)
+			e1:SetTarget(c66620610.splimit2)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+		end
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c66620610.splimit2)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
 end
 
 function c66620610.splimit2(e,c)
-	return not c:IsRace(RACE_MACHINE)
+	return not c:IsType(TYPE_FUSION) and c:IsLocation(LOCATION_EXTRA)
 end
 
 -- 每次自己把「绮奏」速攻魔法卡的效果发动，对方场上的全部怪兽的攻击力·守备力下降600

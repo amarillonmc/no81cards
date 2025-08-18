@@ -37,7 +37,7 @@ end
 function cm.cfilter(c,code)
 	return c:IsFaceup() and c:IsCode(code)
 end
-function cm.filter(c,act)
+function cm.filter(c,tp,act)
 	return c:IsSetCard(0x97d) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode()) and not (act and c:IsCode(m)) and not c:IsForbidden() and c:IsHasEffect(EFFECT_REMAIN_FIELD)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
@@ -52,7 +52,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=0
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
 	local act=e:IsHasType(EFFECT_TYPE_ACTIVATE)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,act) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,tp,act) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
@@ -68,7 +68,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil)
+	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_DECK,0,nil,tp)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
@@ -264,15 +264,17 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetLabel()&0x49249~=0 then re:SetLabel(re:GetLabel()+0x1) return end
 	re:SetLabel(re:GetLabel()+0x1)
 	local op=re:GetOperation()
-	local repop=function(e,tp,eg,ep,ev,re,r,rp)
-		op(e,tp,eg,ep,ev,re,r,rp)
-		cm.addition(e,tp,eg,ep,ev,re,r,rp)
-	end
-	if re:GetHandler():GetOriginalCode()==11451510 or (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
+	if re:GetHandler():GetOriginalCode()==11451510 then
 		repop=function(e,tp,eg,ep,ev,re,r,rp)
 			cm.addition(e,tp,eg,ep,ev,re,r,rp)
 			op(e,tp,eg,ep,ev,re,r,rp)
 		end
+		re:SetOperation(repop)
+	elseif not (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
+		repop=function(e,tp,eg,ep,ev,re,r,rp)
+			op(e,tp,eg,ep,ev,re,r,rp)
+			cm.addition(e,tp,eg,ep,ev,re,r,rp)
+		end
+		re:SetOperation(repop)
 	end
-	re:SetOperation(repop)
 end

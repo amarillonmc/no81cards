@@ -49,7 +49,7 @@ end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=0
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_GRAVE,0,1,nil) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
@@ -66,7 +66,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.setfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.setfilter),tp,LOCATION_GRAVE,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc and Duel.SSet(tp,tc)~=0 then
 		local e1=Effect.CreateEffect(e:GetHandler())
@@ -265,15 +265,17 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetLabel()&0x49249~=0 then re:SetLabel(re:GetLabel()+0x200) return end
 	re:SetLabel(re:GetLabel()+0x200)
 	local op=re:GetOperation()
-	local repop=function(e,tp,eg,ep,ev,re,r,rp)
-		op(e,tp,eg,ep,ev,re,r,rp)
-		cm.addition(e,tp,eg,ep,ev,re,r,rp)
-	end
-	if re:GetHandler():GetOriginalCode()==11451510 or (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
+	if re:GetHandler():GetOriginalCode()==11451510 then
 		repop=function(e,tp,eg,ep,ev,re,r,rp)
 			cm.addition(e,tp,eg,ep,ev,re,r,rp)
 			op(e,tp,eg,ep,ev,re,r,rp)
 		end
+		re:SetOperation(repop)
+	elseif not (aux.GetValueType(re:GetLabelObject())=="Effect" and re:GetLabelObject():GetHandler():GetOriginalCode()==11451510) then
+		repop=function(e,tp,eg,ep,ev,re,r,rp)
+			op(e,tp,eg,ep,ev,re,r,rp)
+			cm.addition(e,tp,eg,ep,ev,re,r,rp)
+		end
+		re:SetOperation(repop)
 	end
-	re:SetOperation(repop)
 end
