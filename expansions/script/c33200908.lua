@@ -31,6 +31,7 @@ function c33200908.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE+LOCATION_HAND)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetHintTiming(0,TIMING_END_PHASE)
 	e2:SetTarget(c33200908.cttg)
 	e2:SetOperation(c33200908.ctop)
@@ -62,10 +63,11 @@ function c33200908.ctfilter(c)
 end
 function c33200908.cttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c33200908.ctfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c33200908.ctfilter,tp,0,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(c33200908.ctfilter,tp,0,LOCATION_MZONE,1,nil) and e:GetHandler():GetFlagEffect(33200908)==0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,c33200908.ctfilter,tp,0,LOCATION_MZONE,1,1,nil)
 	local tc=g:GetFirst()
+	e:GetHandler():RegisterFlagEffect(33200908,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,nil,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_COUNTER,tc,nil,0,0x132a)
 	if e:GetHandler():IsLocation(LOCATION_HAND) then 

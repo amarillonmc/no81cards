@@ -87,7 +87,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,2))
 	local lv=Duel.AnnounceNumber(tp,table.unpack(lvt))
 	local g=Duel.GetDecktopGroup(tp,lv)
-	if Duel.Destroy(g,nil,REASON_EFFECT)<3 then return end
+	if Duel.Destroy(g,REASON_EFFECT)<3 then return end
 	if Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 		Duel.BreakEffect()

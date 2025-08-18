@@ -58,7 +58,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local g2=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,g1)
 		local c2=g2:SelectUnselect(g1,tp,false,true,1,1)
-		if not c2 then goto SelectStart end
+		if not c2 or g1:IsContains(c2) then goto SelectStart end
 		--g1:Merge(g2)
 		g1:AddCard(c2)
 		Duel.HintSelection(g1)

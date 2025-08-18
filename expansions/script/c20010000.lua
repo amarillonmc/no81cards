@@ -166,7 +166,7 @@ local function GetUseableMzoneXY()
 	for p = 0, 1 do
 		local isp = p == ORDER
 		local _, zone = Duel.GetLocationCount(p, LOCATION_MZONE, PLAYER_NONE, 0)
-		y = (p + 1) * 2
+		local y = isp and 2 or 4
 
 		for i = 0, 4 do
 			if (zone & (1 << i)) == 0 then

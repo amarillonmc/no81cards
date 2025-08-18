@@ -42,7 +42,7 @@ local function GetUseableMzoneXY()
 	for p = 0, 1 do
 		local isp = p == ORDER
 		local _, zone = Duel.GetLocationCount(p, LOCATION_MZONE, PLAYER_NONE, 0)
-		y = (p + 1) * 2
+		local y = isp and 2 or 4
 
 		for i = 0, 4 do
 			if (zone & (1 << i)) == 0 then
@@ -77,12 +77,11 @@ local function CreatPart(code, x, y)
 		[false] = { [2] = 6, [4] = 5 },
 	}
 	if ct > 0 then
-		_x, _y = table.unpack(xys[math.random(1, ct)])
+		_x, _y = table.unpack(xys[1])
 	else
-		local g = Duel.GetFieldGroup(0, LOCATION_MZONE, LOCATION_MZONE)
-		g = g:Filter(Card.IsCode, nil, m + 1, m + 4, m + 5, m + 6, m + 7, m + 8)
-		local _part = g:RandomSelect(0, 1):GetFirst()
-		_x, _y = GetXY(c)
+		local f = function(c) return c:GetSequence() == x - 1 end
+		local _part = Duel.GetMatchingGroup(f, ORDER, LOCATION_MZONE, 0, nil):GetFirst()
+		_x, _y = x, 2
 		_code = _part:GetCode()
 		_ismine = _part:GetFlagEffect(MINE) > 0
 		Duel.Destroy(_part, REASON_RULE)
