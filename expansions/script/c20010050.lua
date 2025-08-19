@@ -2,14 +2,14 @@
 local cm, m = GetID()
 local MULTI, ORDER, PL, MODE, DECK, PRESTAY
 local NORMAL	= 16 * m + 0
-local SKILL	 = 16 * m + 1
+local SKILL  = 16 * m + 1
 local NIGHTMARE = 16 * m + 2
-local HIT	   = 16 * m + 3
-local STAY	  = 16 * m + 4
+local HIT	  = 16 * m + 3
+local STAY	= 16 * m + 4
 local USESKILL  = 16 * m + 5
-local WIN	   = 16 * m + 6
-local DRAW	  = 16 * m + 7
-local LOSE	  = 16 * m + 8
+local WIN	  = 16 * m + 6
+local DRAW	= 16 * m + 7
+local LOSE	= 16 * m + 8
 local SKILLS = { "Up", "Two", "Three", "Four", "Five", "Six", "Seven", "Remove", "Return", "Exchange",
 	"Trump", "Shield", "Destroy", "Perfect", "Go_17", "Go_24", "Go_27", "Love", "Assault", "Happiness",
 	"Desire", "Mind", "Conjure", "Curse", "Black", "Twenty", "Oblivion", "Dead", "Desperation" }
@@ -383,10 +383,12 @@ function cm.DrawNightmareTrump(p, ct)
 	local g = Duel.GetFieldGroup(p, LOCATION_SZONE, 0)
 	local lv = 5 - (Duel.GetLP(p) - 1) // 10000
 	if lv == 1 then
+		local hasshield = g:IsExists(Card.IsCode, 1, nil, m + 23)
 		if cm.RiskLevel(p) == 3 then
+			if hasshield then return 0 end
 			cm.SetCard(p, m + 23, LOCATION_SZONE, POS_FACEDOWN_ATTACK)
 			return 1
-		elseif g:IsExists(Card.IsCode, 1, nil, m + 23) then
+		elseif hasshield then
 			cm.SetCard(p, m + 30, LOCATION_SZONE, POS_FACEDOWN_ATTACK)
 			return 1
 		elseif ct > 1 then
@@ -414,14 +416,13 @@ function cm.DrawNightmareTrump(p, ct)
 
 	if g:IsExists(Card.IsCode, 1, nil, m + 38, m + 39, m + 40) then return 0 end
 
-	local risk = cm.RiskLevel(p)
-	if risk == 3 then
+	if Duel.GetLP(p) == 1000 then
 		cm.SetCard(p, m + 40, LOCATION_SZONE, POS_FACEDOWN_ATTACK)
 		return 1
 	end
 
 	local code = m + 39
-	if math.random(1, 9 - 3 * risk) == 1 then
+	if math.random(1, 9 - 2 * cm.RiskLevel(p)) == 1 then
 		code = code - 1
 	end
 
@@ -692,9 +693,9 @@ function cm.NewRound()
 		cm.DrawTrump(1, 1)
 	elseif MODE == NIGHTMARE then
 		cm.DrawTrump(ORDER, 1)
-		local ct = 2 - cm.DrawNightmareTrump(1 - ORDER, 2)
-		if ct > 0 then
-			cm.DrawTrump(1 - ORDER, ct)
+		local ct = cm.DrawNightmareTrump(1 - ORDER, 2)
+		if 2 - ct > 0 then
+			cm.DrawTrump(1 - ORDER, 2 - ct)
 		end
 	end
 end
