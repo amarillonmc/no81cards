@@ -42,7 +42,7 @@ function c95101057.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c95101057.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToChain() and aux.NegateAnyFilter(c) then
+	if tc:IsRelateToChain() and aux.NegateAnyFilter(tc) then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_DISABLE)

@@ -68,20 +68,12 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
     Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
+-- 效果②处理函数
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     local tc=Duel.GetFirstTarget()
     if tc and tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 
         and tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) and c:IsRelateToEffect(e) then
-        if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_DEFENSE)~=0 then
-            -- 离场时除外
-            local e1=Effect.CreateEffect(c)
-            e1:SetType(EFFECT_TYPE_SINGLE)
-            e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-            e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-            e1:SetValue(LOCATION_REMOVED)
-            e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-            c:RegisterEffect(e1,true)
-        end
+        Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
     end
 end

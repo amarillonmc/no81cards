@@ -1228,7 +1228,7 @@ function cm.ActivatedAsSpellorTrapCheck(c)
 		end
 		Effect.IsHasType=function(re,type)
 			local res=ADIMI_IsHasType(re,type)
-			local rc=re:GetHandler()
+			local rc=ADIMI_GetHandler(re)
 			local xe={}
 			if rc then xe={rc:IsHasEffect(53765099)} end
 			local b=false

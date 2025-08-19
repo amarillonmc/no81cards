@@ -58,43 +58,56 @@ function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
     e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 
--- 效果①
-function s.filter(c,e,tp)
-    return c:IsSetCard(0x893) and c:IsDefense(200) and 
-        c:IsAbleToHand() and (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
+-- 效果①：取除素材检索/特殊召唤
+function s.filter(c)
+    return c:IsSetCard(0x893) and c:IsDefense(200)
 end
 
 function s.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
-    local check=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil,e,tp,check) end
-end
-
--- 
-function s.xyzop(e,tp,eg,ep,ev,re,r,rp)
-    -- 
-    local check=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp,check)
-	local tc=g:GetFirst()
-	if tc then
-		if tc:IsAbleToHand() and (not (check and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)) or Duel.SelectOption(tp,1190,1152)==0) then
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tc)
-		else
-			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
-		end
-        -- 
-        local e1=Effect.CreateEffect(e:GetHandler())
-        e1:SetType(EFFECT_TYPE_FIELD)
-        e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
-        e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-        e1:SetTargetRange(1,0)
-        e1:SetTarget(s.splimit)
-        e1:SetReset(RESET_PHASE+PHASE_END)
-        Duel.RegisterEffect(e1,tp)
+    if chk==0 then
+        return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil)
     end
+    Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+    Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 
+function s.xyzop(e,tp,eg,ep,ev,re,r,rp)
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+    local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK,0,1,1,nil)
+    local tc=g:GetFirst()
+    if not tc then return end
+    
+    local b1=tc:IsAbleToHand()
+    local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+    
+    local op
+    if b1 and b2 then
+        op=Duel.SelectOption(tp,1190,1152)
+    elseif b1 then
+        op=0
+    elseif b2 then
+        op=1
+    else
+        return
+    end
+    
+    if op==0 then
+        Duel.SendtoHand(tc,nil,REASON_EFFECT)
+        Duel.ConfirmCards(1-tp,tc)
+    else
+        Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+    end
+    
+    -- 自肃效果
+    local e1=Effect.CreateEffect(e:GetHandler())
+    e1:SetType(EFFECT_TYPE_FIELD)
+    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
+    e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+    e1:SetTargetRange(1,0)
+    e1:SetTarget(s.splimit)
+    e1:SetReset(RESET_PHASE+PHASE_END)
+    Duel.RegisterEffect(e1,tp)
+end
 -- 自肃限制函数：只能特殊召唤超量怪兽
 function s.splimit(e,c)
     return c:IsLocation(LOCATION_EXTRA) and not c:IsType(TYPE_XYZ)
