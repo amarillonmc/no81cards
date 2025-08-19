@@ -50,7 +50,7 @@ function c22348225.tdfilter(c)
 	return not c:IsCode(22348225) and c:IsSetCard(0x708) and c:IsAbleToHand()
 end
 function c22348225.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c22348225.tdfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c22348225.tdop(e,tp,eg,ep,ev,re,r,rp)
