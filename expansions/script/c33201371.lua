@@ -23,22 +23,21 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectMatchingCard(tp,VHisc_HYZQ.rlft,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
 	local ct=Duel.SendtoGrave(g,REASON_RELEASE)
 	VHisc_HYZQ.mop(e,tp,m)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.ft,tp,LOCATION_DECK,0,1,e:GetHandler()) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.ft,tp,LOCATION_DECK,0,1,e:GetHandler(),tp) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=Duel.SelectMatchingCard(tp,s.ft,tp,LOCATION_DECK,0,1,1,nil)
+		local sg=Duel.SelectMatchingCard(tp,s.ft,tp,LOCATION_DECK,0,1,1,nil,tp)
 		local sc=sg:GetFirst()
 		sc:AddMonsterAttribute(TYPE_NORMAL)
 		Duel.SpecialSummon(sc,SUMMON_TYPE_RITUAL,tp,tp,true,false,POS_FACEUP)
 	end
 end
-function s.ft(c)
-	return c.VHisc_HYZQ and c:IsType(TYPE_RITUAL+TYPE_SPELL) and not c:IsCode(33201371) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),nil,TYPES_NORMAL_TRAP_MONSTER,1500,1500,4,RACE_ROCK,ATTRIBUTE_EARTH)
+function s.ft(c,tp)
+	return c.VHisc_HYZQ and not c:IsCode(33201371) and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),nil,TYPES_NORMAL_TRAP_MONSTER,1500,1500,4,RACE_ROCK,ATTRIBUTE_EARTH)
 end
 
 --Release effect
