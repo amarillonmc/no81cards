@@ -1,4 +1,6 @@
 --挥毫墨影印山河
+local s,id,o=GetID()
+Duel.LoadScript("c33201381.lua")
 function c33201390.initial_effect(c)
 	--act in hand
 	local e0=Effect.CreateEffect(c)
@@ -11,7 +13,7 @@ function c33201390.initial_effect(c)
 	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_DISABLE+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetTarget(c25311006.target)
+	e1:SetTarget(s.target)
 	e1:SetOperation(c33201390.activate)
 	c:RegisterEffect(e1)
 	--
@@ -23,13 +25,13 @@ function c33201390.initial_effect(c)
 	e2:SetCode(EVENT_DESTROYED)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(2,33201390)
-	e2:SetCondition(c33201390.drcon)
-	e2:SetTarget(c33201390.drtg)
-	e2:SetOperation(c33201390.drop)
+	e2:SetCondition(c33201390.thcon)
+	e2:SetTarget(c33201390.thtg)
+	e2:SetOperation(c33201390.thop)
 	c:RegisterEffect(e2)	 
 end
 --c33201390.VHisc_CNTreasure=true
-c32201390.VHisc_MRSH=true
+s.VHisc_MRSH=true
 --
 function c33201390.handcon(e)
 	local tp=e:GetHandler():GetControler()
