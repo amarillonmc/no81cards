@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTarget(aux.TargetEqualFunction(Card.GetType,0x4))
 	e1:SetTargetRange(LOCATION_HAND,LOCATION_HAND)
-	c:RegisterEffect(e1)
+	--c:RegisterEffect(e1)
 	--summon proc
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,0))
@@ -129,8 +129,20 @@ function cm.initial_effect(c)
 			return _IsSpecialSummonable(c,sumtype,...)
 		end
 		function Duel.IsExistingMatchingCard(f,p,s,o,ct,nc,...)
-			local g=Duel.GetMatchingGroup(f,p,s,o,nc,...)
-			return #g>=ct
+			local s1=s&LOCATION_EXTRA>0 and LOCATION_GRAVE or 0
+			local o1=o&LOCATION_EXTRA>0 and LOCATION_GRAVE or 0
+			cm[0]=false
+			if cm[0] then
+				local g=_GetMatchingGroup(f,p,s1,o1,nc,...):Filter(function(c) return c:GetOriginalCode()==m end,nil)
+				if #g>0 then
+					cm[0]=false
+					local sg=_GetMatchingGroup(f,p,s,o,nc,...)
+					return #(sg+g)>ct
+				end
+			end
+			cm[0]=false
+			return _IsExistingMatchingCard(f,p,s,o,ct,nc,...)
+			--return #Duel.GetMatchingGroup(f,p,s,o,nc,...)>=ct
 		end
 		function Duel.SelectMatchingCard(sp,f,p,s,o,min,max,nc,...)
 			local g=Duel.GetMatchingGroup(f,p,s,o,nc,...)

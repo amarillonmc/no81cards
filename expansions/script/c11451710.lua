@@ -57,6 +57,10 @@ function cm.initial_effect(c)
 						Duel.Hint(HINT_CARD,0,m)
 						Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 						Duel.ConfirmCards(1-tp,c)
+						if e:GetDescription()==0 then
+							e:SetDescription(aux.Stringid(11451531,3))
+							e:SetProperty(e:GetProperty()|EFFECT_FLAG_CLIENT_HINT)
+						end
 						local eid=_RegisterEffect(tc,e,bool)
 						Duel.Draw(tp,1,REASON_EFFECT)
 						return eid
