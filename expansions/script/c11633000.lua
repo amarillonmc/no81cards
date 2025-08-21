@@ -1,4 +1,8 @@
 --暗海
+function Dark_Sea_counterfilter(c)
+	return c:IsAttribute(ATTRIBUTE_WATER)
+end
+Duel.AddCustomActivityCounter(11633000,ACTIVITY_SPSUMMON,Dark_Sea_counterfilter)
 function Dark_Sea_Effect(c,id)
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
@@ -47,7 +51,7 @@ function Dark_Sea_splimit(e,c,sump,sumtype,sumpos,targetp,se)
 end
 function Dark_Sea_spfilter(c,e,tp,mg)
 	if bit.band(c:GetType(),0x81)~=0x81
-		or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) or  not _G["c"..c:GetCode()].Is_Dark_Sea then return false end
+		or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) or  not c:IsSetCard(0xa220) then return false end
 	local mg2=mg:Clone()
 	mg2:RemoveCard(c)
 	if c.mat_filter then
@@ -56,11 +60,11 @@ function Dark_Sea_spfilter(c,e,tp,mg)
 	return mg2:CheckWithSumGreater(Card.GetRitualLevel,c:GetLevel(),c)
 end
 function Dark_Sea_matfilter(c)
-	return c:IsLevelAbove(1) and c:IsAbleToGrave() and _G["c"..c:GetCode()].Is_Dark_Sea
+	return c:IsLevelAbove(1) and c:IsAbleToGrave() and c:IsSetCard(0xa220)
 end
 function Dark_Sea_spcon(e,tp,eg,ep,ev,re,r,rp)
 
-	return e:GetHandler():IsPreviousPosition(POS_FACEUP) and (e:GetHandler():IsReason(REASON_EFFECT) and (e:GetHandler():GetReasonPlayer()==1-tp or e:GetHandler().Is_Dark_Sea))
+	return e:GetHandler():IsPreviousPosition(POS_FACEUP) and (e:GetHandler():IsReason(REASON_EFFECT) and (e:GetHandler():GetReasonPlayer()==1-tp or e:GetHandler():IsSetCard(0xa220)))
 end
 function Dark_Sea_sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
