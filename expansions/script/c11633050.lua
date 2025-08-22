@@ -55,8 +55,8 @@ function s.seop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+	Duel.AdjustAll()
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_CHAIN_END)
@@ -64,7 +64,6 @@ function s.seop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetOperation(s.tgop)
 		e2:SetCountLimit(1)
 		Duel.RegisterEffect(e2,tp)
-	end
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -85,14 +84,13 @@ end
 function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ag=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
-	if ag:GetCount()<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectMatchingCard(tp,s.atkfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	if g:GetCount()>0 then
+	if ag:GetCount()<=0 and g:GetCount()>0 then
 		local tc=g:GetFirst()
 		local atk=tc:GetBaseAttack()  
 		local dg=Group.CreateGroup()
-		local sc=ag:GetFirst()		
+		local sc=ag:GetFirst()  
 		while sc do
 			local preatk=sc:GetAttack()
 			local e1=Effect.CreateEffect(c)
@@ -106,7 +104,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.Destroy(dg,REASON_EFFECT)
 	end
-	if c:IsRelateToEffect(e) then
+	Duel.AdjustAll()
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_CHAIN_END)
@@ -114,7 +112,6 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetOperation(s.tgop)
 		e2:SetCountLimit(1)
 		Duel.RegisterEffect(e2,tp)
-	end
 end
 --
 function s.spfilter(c,e,tp)
@@ -143,8 +140,8 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		else
 			g=tg
 		end
-		if g:GetCount()>0 then		   
-			Duel.SpecialSummon(ng,0,tp,tp,false,false,POS_FACEUP)
+		if g:GetCount()>0 then   
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
 end
