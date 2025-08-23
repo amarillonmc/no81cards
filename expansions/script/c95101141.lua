@@ -17,7 +17,7 @@ function c95101141.initial_effect(c)
 	e1:SetOperation(c95101141.activate)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
-	e2:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
 end
 function c95101141.handcon(e)
