@@ -1,4 +1,4 @@
---～微型个人宇宙～
+--步入高塔 ～我已在此～
 local cm,m,o=GetID()
 function cm.initial_effect(c)
 	c:EnableCounterPermit(0x1442)
@@ -35,7 +35,8 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetRange(LOCATION_SZONE)
-	e1:SetCode(EVENT_ADJUST)
+	e1:SetCode(EVENT_MOVE)
+	e1:SetCondition(cm.rcon)
 	e1:SetOperation(cm.rop)
 	c:RegisterEffect(e1)
 
@@ -140,37 +141,34 @@ function cm.selop3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmCards(1-tp,g1)
 	return Duel.SendtoGrave(g1,REASON_EFFECT+REASON_DISCARD)~=0
 end
+function cm.checkf(c)
+	return c:IsFaceup() and c:IsOnField()
+end
+function cm.rcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(cm.checkf,1,e:GetHandler())
+end
 function cm.rop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local sg=eg:Filter(cm.checkf,c)
 	if c:GetCounter(0x1442)==0 then return end
-	local sg=e:GetLabelObject()
-	if sg==nil then
-		local sg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil):AddCard(c)
-		sg:KeepAlive()
-		e:SetLabelObject(sg)
-	else
-		local ug=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil):AddCard(c)
-		local dg=ug:Sub(sg)
-		Duel.Hint(HINT_CARD,0,m)
-		for tc in aux.Next(dg) do
-			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_SINGLE)
-			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			e2:SetValue(RESET_TURN_SET)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2)
-		end
-		c:RemoveCounter(tp,0x1442,1,REASON_EFFECT)
-		ug:KeepAlive()
-		e:SetLabelObject(ug)
-		if c:GetCounter(0x1442)==0 then Duel.Destroy(c,REASON_EFFECT) end
+	if sg:GetCount()==0 then return end
+	c:RemoveCounter(tp,0x1442,1,REASON_EFFECT)
+	for tc in aux.Next(sg) do
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2)
 	end
+	Duel.AdjustInstantly()
+	if c:GetCounter(0x1442)==0 then Duel.Destroy(c,REASON_EFFECT) end
 end
 
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
