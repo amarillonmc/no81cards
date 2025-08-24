@@ -23,12 +23,6 @@ function c98374846.initial_effect(c)
 	e2:SetCondition(c98374846.actcon)
 	e2:SetValue(c98374846.aclimit)
 	c:RegisterEffect(e2)
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e0:SetCode(EVENT_SSET)
-	e0:SetRange(LOCATION_PZONE)
-	e0:SetOperation(c98374846.aclimset)
-	c:RegisterEffect(e0)
 	--cannot set
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
@@ -87,12 +81,6 @@ function c98374846.aclimit(e,re,tp)
 	if not re:IsHasType(EFFECT_TYPE_ACTIVATE) or not re:IsActiveType(TYPE_SPELL+TYPE_TRAP) then return false end
 	local c=re:GetHandler()
 	return not c:IsLocation(LOCATION_SZONE) or c:GetFlagEffect(98374846)>0
-end
-function c98374846.aclimset(e,tp,eg,ep,ev,re,r,rp)
-	for tc in aux.Next(eg) do
-		local reset=tc:IsControler(tp) and RESET_OPPO_TURN or RESET_SELF_TURN
-		tc:RegisterFlagEffect(98374846,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+reset,0,1)
-	end
 end
 function c98374846.slcon(e)
 	local tp=e:GetHandlerPlayer()

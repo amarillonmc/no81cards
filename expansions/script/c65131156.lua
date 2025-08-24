@@ -58,7 +58,8 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 				token:RegisterEffect(e3,true)
 			end
 			token:RegisterFlagEffect(1082946,RESET_PHASE+PHASE_END,0,1)
-			s[token]=e1
+			local cs=getmetatable(token)
+			cs[token]=e1
 			Duel.SpecialSummonComplete()
 		end
 	end
@@ -142,7 +143,8 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 					token:RegisterEffect(e3,true)
 				end
 				token:RegisterFlagEffect(1082946,RESET_PHASE+PHASE_END,0,1)
-				s[token]=e1
+				local cs=getmetatable(token)
+				cs[token]=e1
 				Duel.SpecialSummonComplete()
 			end
 		end
