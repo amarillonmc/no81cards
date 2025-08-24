@@ -79,7 +79,7 @@ function c75081051.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 end
 --
 function c75081051.cfilter1(c)
-	return c:IsFaceup() and c:IsAbleToGraveAsCost()
+	return c:IsFaceup() and c:IsAbleToGraveAsCost() and c:IsSetCard(0xa754)
 end
 function c75081051.thcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75081051.cfilter1,tp,LOCATION_MZONE,0,1,nil) end
@@ -88,7 +88,7 @@ function c75081051.thcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c75081051.cfilter2(c)
-	return c:IsFaceup() and c:IsAbleToRemoveAsCost()
+	return c:IsFaceup() and c:IsAbleToRemoveAsCost() and c:IsSetCard(0xa754)
 end
 function c75081051.thcost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75081051.cfilter2,tp,LOCATION_MZONE,0,1,nil) end

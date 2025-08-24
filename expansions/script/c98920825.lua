@@ -27,7 +27,7 @@ function c98920825.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
-function c98920825.spfilter(c)
+function c98920825.setfilter(c)
 	return c:IsSetCard(0xb3) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c98920825.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
