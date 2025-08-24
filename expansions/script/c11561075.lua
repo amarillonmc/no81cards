@@ -30,9 +30,13 @@ function cm.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetCountLimit(1,11561075)
+	e3:SetCondition(c11561075.thcon)
 	e3:SetTarget(c11561075.thtg)
 	e3:SetOperation(c11561075.thop)
 	c:RegisterEffect(e3)
+end
+function c11561075.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c11561075.thfilter1(c)
 	return c:IsType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(c11561075.thfilter2,tp,LOCATION_DECK,0,1,nil,c)
@@ -58,7 +62,7 @@ function c11561075.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c11561075.atkval(e,c)
-	return Duel.GetFieldGroupCount(tp,LOCATION_GRAVE,LOCATION_GRAVE)*e:GetHandler():GetCounter(0x1)*100
+	return Duel.GetFieldGroupCount(tp,0,LOCATION_GRAVE)*e:GetHandler():GetCounter(0x1)*100
 end
 function c11561075.mfilter(c,xyzc)
 	return c:IsXyzLevel(xyzc,6)

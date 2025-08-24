@@ -11,18 +11,19 @@ function s.initial_effect(c)
 	e1:SetTarget(c98346623.acttg)
 	e1:SetOperation(c98346623.activate)
 	c:RegisterEffect(e1)
-	--indes
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,id)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
-	e2:SetTarget(c98346623.idtg)
-	e2:SetOperation(c98346623.idop)
-	c:RegisterEffect(e2)
+	--draw
+	local e8=Effect.CreateEffect(c)
+	e8:SetDescription(aux.Stringid(id,0))
+	e8:SetCategory(CATEGORY_DRAW)
+	e8:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
+	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e8:SetProperty(EFFECT_FLAG_DELAY)
+	e8:SetCode(EVENT_TO_GRAVE)
+	e8:SetCountLimit(1,id)
+	e8:SetCondition(c98346623.drcon)
+	e8:SetTarget(c98346623.drtg)
+	e8:SetOperation(c98346623.drop)
+	c:RegisterEffect(e8)
 end
 function c98346623.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:IsCostChecked()
@@ -67,25 +68,17 @@ function c98346623.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c98346623.idfilter(c,r,a)
-	return c:IsFaceup()
+function c98346623.drcon(e,tp,eg,ep,ev,re,r,rp)
+	local loc=e:GetHandler():GetPreviousLocation()
+	return loc&(LOCATION_HAND|LOCATION_DECK)==0
 end
-function c98346623.idtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsOnField() and c98346623.idfilter(chkc) and not chkc==e:GetHandler() end
-	if chk==0 then return Duel.IsExistingTarget(c98346623.idfilter,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c98346623.idfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler())
+function c98346623.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
-function c98346623.idop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetDescription(aux.Stringid(98346623,2))
-		e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
-		e1:SetValue(1)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-	end
+function c98346623.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
 end

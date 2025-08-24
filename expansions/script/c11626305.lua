@@ -96,22 +96,36 @@ end
 function c11626305.htdfil(c) 
 	return c:IsAbleToDeck() and c:IsSetCard(0x3220) and c:IsType(TYPE_MONSTER) 
 end 
+function c11626305.lkfilter(c)
+	return c:IsLinkSummonable(nil) and c:IsSetCard(0x3220)
+end
 function c11626305.htdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mg=Duel.GetFieldGroup(tp,0,LOCATION_DECK)  
-	if chk==0 then return e:GetHandler():IsAbleToDeck() and mg:GetCount()>2  end 
+	if chk==0 then return e:GetHandler():IsAbleToDeck() and mg:GetCount()>2 and Duel.IsExistingMatchingCard(c11626305.lkfilter,tp,LOCATION_EXTRA,0,1,nil) end 
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,tp,LOCATION_HAND)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,LOCATION_EXTRA)
 end 
 function c11626305.hsrfil(c) 
 	return c:IsSetCard(0x3220) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck() 
 end 
+function c11626305.lkfilter(c)
+	return c:IsSetCard(0x3220) and c:IsLinkSummonable(nil)
+end
 function c11626305.htdop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
 	if (not c:IsRelateToEffect(e)) or (not c:IsLocation(LOCATION_HAND)) then return end  
 	Duel.SendtoDeck(c,1-tp,1,REASON_EFFECT)  
 	if not c:IsLocation(LOCATION_DECK) then return end 
-	Duel.ShuffleDeck(1-tp) 
+	Duel.ShuffleDeck(1-tp)
 	c:ReverseInDeck()
-	Duel.SortDecktop(tp,1-tp,3)
+	
+	if not (Duel.IsExistingMatchingCard(c11626305.lkfilter,tp,LOCATION_EXTRA,0,1,nil)) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c11626305.lkfilter,tp,LOCATION_EXTRA,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.LinkSummon(tp,tc,nil)
+	end
 end  
 function c11626305.hxthecon(e,tp,eg,ep,ev,re,r,rp) 
 	return eg:IsExists(Card.IsControler,1,nil,tp) and e:GetHandler():IsFaceup()

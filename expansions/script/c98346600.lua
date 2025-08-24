@@ -3,7 +3,21 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunFun(c,c98346600.f1filter,c98346600.f2filter,1,true)
-	aux.AddContactFusionProcedure(c,c98346600.cfilter,LOCATION_MZONE,0,aux.tdcfop(c))
+	aux.AddContactFusionProcedure(c,c98346600.cfilter,LOCATION_MZONE,0,Duel.Release,REASON_SPSUMMON+REASON_MATERIAL)
+	--spsummon condition
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(c98346600.splimit)
+	c:RegisterEffect(e0)
+	--
+	local e01=Effect.CreateEffect(c)
+	e01:SetType(EFFECT_TYPE_SINGLE)
+	e01:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e01:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+	e01:SetValue(1)
+	c:RegisterEffect(e01)
 	--tograve
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(98346600,0))
@@ -46,11 +60,14 @@ function s.initial_effect(c)
 	e3:SetOperation(c98346600.spop)
 	c:RegisterEffect(e3)
 end
+function c98346600.splimit(e,se,sp,st)
+	return e:GetHandler():GetLocation()~=LOCATION_EXTRA
+end
 function c98346600.f1filter(c)
 	return c:IsType(TYPE_TUNER) and c:IsSetCard(0xaf7) and c:IsLevelBelow(4)
 end
 function c98346600.f2filter(c)
-	return c:IsSetCard(0xaf7) and c:GetBaseAttack()>=2500
+	return c:IsSummonLocation(LOCATION_EXTRA) and c:IsLocation(LOCATION_MZONE) and c:IsSetCard(0xaf7)
 end
 function c98346600.cfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToDeckOrExtraAsCost()

@@ -16,6 +16,7 @@ function s.initial_effect(c)
 	e2:SetDescription(aux.Stringid(98346617,1))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,id+o)
@@ -54,9 +55,17 @@ function c98346617.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsSSetable() end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
 end
+function c98346617.desfilter1(c,g)
+	return g:IsContains(c)
+end
 function c98346617.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SSet(tp,c)~=0 then
+		local cg=c:GetColumnGroup()
+		local g=Duel.GetMatchingGroup(c98346617.desfilter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,cg)
+		if g:GetCount()>0 then
+			Duel.Destroy(g,REASON_EFFECT)
+		end
 		e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)

@@ -24,6 +24,7 @@ function c11513081.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1)  
+	e2:SetCost(c11513081.spcost)
 	e2:SetTarget(c11513081.sptg)
 	e2:SetOperation(c11513081.spop)
 	local e3=Effect.CreateEffect(c)
@@ -83,6 +84,10 @@ function c11513081.negop(e,tp,eg,ep,ev,re,r,rp)
 		end 
 	end
 end
+function c11513081.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,800) end
+	Duel.PayLPCost(tp,800)
+end
 function c11513081.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
@@ -104,13 +109,13 @@ function c11513081.stfil(c)
 	return c:IsSetCard(0x1a2) and c:IsType(TYPE_MONSTER) and not c:IsForbidden() 
 end
 function c11513081.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11513081.stfil,tp,LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(c11513081.stfil,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
 end
 function c11513081.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,c11513081.stfil,tp,LOCATION_DECK,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,c11513081.stfil,tp,LOCATION_DECK+LOCATION_HAND,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)

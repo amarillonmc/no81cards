@@ -39,14 +39,14 @@ function c29056009.tgfilter(c,e)
 	return c:IsLocation(LOCATION_ONFIELD) and c:GetControler()==e:GetHandler():GetControler()
 end
 function c29056009.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c29056009.tgfilter,1,nil,e)
+	return eg:IsExists(c29056009.tgfilter,1,nil,e) and rp==1-tp
 end
 function c29056009.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return (Duel.GetAttacker()==c or Duel.GetAttackTarget()==c)
 end
 function c29056009.spfilter(c,e,tp)
-	return c:IsCode(29065578) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(29065578) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 end
 function c29056009.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c29056009.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end
@@ -56,7 +56,7 @@ function c29056009.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c29056009.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
 end
 --search
 function c29056009.thfilter(c)

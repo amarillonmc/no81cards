@@ -1080,28 +1080,74 @@ function s.Checkmate_Fairy(c)
 		Checkmate_GetFirstTarget=Duel.GetFirstTarget
 		Checkmate_GetChainInfo=Duel.GetChainInfo
 		Checkmate_GetTargetsRelateToChain=Duel.GetTargetsRelateToChain
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_TO_GRAVE)
+		ge1:SetOperation(s.Checkmate_regop)
+		Duel.RegisterEffect(ge1,0)
 	end
 end
 function s.Checkmate_geop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(0,0xff,0xff)
-	for tc in aux.Next(g) do
+	if not Checkmate_Fairy_check_Target then
+		Checkmate_Fairy_check_Target=true
+		local fg=Duel.GetFieldGroup(0,0xff,0xff)
+		for tc in aux.Next(fg) do
+			local le={tc:GetCardRegistered(nil)}
+			for _,v in pairs(le) do
+				if v:IsActivated() then
+					local tg=v:GetTarget() or aux.TRUE
+					v:SetTarget(s.Checkmate_chtg(tg))
+				end
+			end
+		end
+		local f1=Card.RegisterEffect
+		Card.RegisterEffect=function(sc,se,bool)
+			if se:IsActivated() then
+				local tg=se:GetTarget() or aux.TRUE
+				se:SetTarget(s.Checkmate_chtg(tg))
+			end
+			return f1(sc,se,bool)
+		end
+	end
+	local sg=Group.__add(Duel.GetFieldGroup(0,0xff,0xff),Duel.GetOverlayGroup(0,1,1)):Filter(function(c)return c:GetOriginalCode()==94585852 end,nil)
+	if #sg==0 then return end
+	for tc in aux.Next(sg) do
 		local le={tc:GetCardRegistered(nil)}
 		for _,v in pairs(le) do
-			if v:IsActivated() then
-				local tg=v:GetTarget() or aux.TRUE
-				v:SetTarget(s.Checkmate_chtg(tg))
+			if v:GetCode()==EVENT_CUSTOM+94585852 then
+				tc:SetStatus(STATUS_INITIALIZING,true)
+				v:SetCode(EVENT_CUSTOM+53798004)
+				tc:SetStatus(STATUS_INITIALIZING,false)
 			end
 		end
 	end
-	local f1=Card.RegisterEffect
-	Card.RegisterEffect=function(sc,se,bool)
-		if se:IsActivated() then
-			local tg=se:GetTarget() or aux.TRUE
-			se:SetTarget(s.Checkmate_chtg(tg))
+end
+function s.Checkmate_regop(e,tp,eg,ep,ev,re,r,rp)
+	local lv1=0
+	local lv2=0
+	local g1=Group.CreateGroup()
+	local g2=Group.CreateGroup()
+	local tc=eg:GetFirst()
+	while tc do
+		if tc:IsReason(REASON_DESTROY) and not tc:IsReason(REASON_BATTLE) and tc:IsSetCard(0x45) then
+			local tlv=0
+			if tc:IsPreviousLocation(LOCATION_MZONE) then
+				if tc:GetPreviousTypeOnField()&TYPE_MONSTER~=0 and tc:GetPreviousLevelOnField()>0 then tlv=tc:GetPreviousLevelOnField() end
+			else tlv=tc:GetLevel() end
+			if tlv>0 then
+				if tc:IsControler(0) then
+					if tlv>lv1 then lv1=tlv end
+					g1:AddCard(tc)
+				else
+					if tlv>lv2 then lv2=tlv end
+					g2:AddCard(tc)
+				end
+			end
 		end
-		return f1(sc,se,bool)
+		tc=eg:GetNext()
 	end
-	e:Reset()
+	if g1:GetCount()>0 then Duel.RaiseEvent(g1,EVENT_CUSTOM+53798004,re,r,rp,0,lv1) end
+	if g2:GetCount()>0 then Duel.RaiseEvent(g2,EVENT_CUSTOM+53798004,re,r,rp,1,lv2) end
 end
 function s.Checkmate_chtg(_tg)
 	return  function(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -1117,7 +1163,7 @@ function s.Checkmate_chtg(_tg)
 				Duel.SetTargetCard=f
 				local g=Duel.GetFieldGroup(tp,0,LOCATION_MZONE)
 				local sg=g:Filter(Card.IsCanBeEffectTarget,nil,e)
-				if not e:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and Duel.GetFlagEffect(1-tp,53798004)>0 and #g>0 and #g==#sg then
+				if not e:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and Duel.IsPlayerAffectedByEffect(1-tp,53798004) and #g>0 and #g==#sg then
 					local pro1,pro2=e:GetProperty()
 					e:SetProperty(pro1|EFFECT_FLAG_CARD_TARGET,pro2)
 					Duel.ClearTargetCard()

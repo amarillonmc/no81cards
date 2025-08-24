@@ -85,6 +85,7 @@ function c98346608.posop(e,tp,eg,ep,ev,re,r,rp)
 		if tc:IsRelateToEffect(e) and Duel.ChangePosition(tc,POS_FACEUP_DEFENSE,POS_FACEDOWN_DEFENSE,POS_FACEUP_ATTACK,POS_FACEUP_ATTACK)~=0 
 			and (tc:IsControler(tp) or Duel.IsPlayerCanDraw(tp,1))
 			and not tc:IsAttack(tc:GetBaseAttack()) then
+			Duel.BreakEffect()
 			if Duel.SelectYesNo(tp,aux.Stringid(98346608,2)) then
 				if tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 and tc:IsControler(1-tp) and Duel.IsPlayerCanDraw(tp,1) then
 					Duel.Draw(tp,1,REASON_EFFECT)

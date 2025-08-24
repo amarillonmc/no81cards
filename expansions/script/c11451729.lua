@@ -43,7 +43,7 @@ function cm.initial_effect(c)
 	e5:SetTargetRange(LOCATION_MZONE,0)
 	e5:SetCondition(cm.indcon2)
 	e5:SetTarget(aux.TargetBoolFunction(Card.IsFaceup))
-	e5:SetValue(3000)
+	e5:SetValue(2000)
 	c:RegisterEffect(e5)
 	--immune
 	local e6=Effect.CreateEffect(c)

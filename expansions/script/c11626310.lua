@@ -33,22 +33,21 @@ function c11626310.posfilter(c)
 	return not c:IsPublic() and c:IsAbleToDeck() and not c:IsSetCard(0x3220) 
 end
 function c11626310.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11626310.filter2,tp,LOCATION_DECK,0,1,nil) and Duel.IsPlayerCanDraw(1-tp,2) end
-	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_DECK)
-	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(2)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,1-tp,2)
+	if chk==0 then return Duel.IsExistingMatchingCard(c11626310.filter2,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,2,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c11626310.activate(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler() 
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local dc=Duel.SelectMatchingCard(tp,c11626310.filter2,tp,LOCATION_DECK,0,1,1,nil):GetFirst() 
-	Duel.SendtoDeck(dc,1-tp,2,REASON_EFFECT)
-	if not dc:IsLocation(LOCATION_DECK) then return end
-	Duel.ShuffleDeck(1-tp) 
-	dc:ReverseInDeck()
-	Duel.Draw(p,d,REASON_EFFECT)
+	local dg=Duel.SelectMatchingCard(tp,c11626310.filter2,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,2,2,nil)
+	local dc=dg:GetFirst()
+	while dc do
+		Duel.SendtoDeck(dc,1-tp,2,REASON_EFFECT)
+		if not dc:IsLocation(LOCATION_DECK) then return end
+		Duel.ShuffleDeck(1-tp) 
+		dc:ReverseInDeck()
+		dc=dg:GetNext()
+	end
 end
 ---
 function c11626310.target2(e,tp,eg,ep,ev,re,r,rp,chk)

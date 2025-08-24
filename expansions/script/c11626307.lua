@@ -31,11 +31,11 @@ function c11626307.initial_effect(c)
 	Duel.AddCustomActivityCounter(11626307,ACTIVITY_SPSUMMON,c11626307.counterfilter)
 end  
 function c11626307.counterfilter(c)
-	return c:IsSetCard(0x3220)
+	return c:IsRace(RACE_INSECT)
 end
 function c11626307.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler() 
-	if rc:IsType(TYPE_MONSTER) and not rc:IsSetCard(0x3220) then 
+	if rc:IsType(TYPE_MONSTER) and not rc:IsRace(RACE_INSECT) then 
 		Duel.RegisterFlagEffect(rp,11626307,RESET_PHASE+PHASE_END,0,1) 
 	end
 end
@@ -51,7 +51,7 @@ function c11626307.accost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e2,tp) 
 end
 function c11626307.splimit(e,c)
-	return not c:IsSetCard(0x3220)  
+	return not c:IsRace(RACE_INSECT)
 end
 function c11626307.dpbfil(c) 
 	return c:IsAbleToDeck() and c:IsSetCard(0x3220) and c:IsType(TYPE_MONSTER)

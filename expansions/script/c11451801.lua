@@ -76,7 +76,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Draw(tp,1,REASON_EFFECT)==0 then return end
 	local dg=Duel.GetOperatedGroup()
 	local dc=dg:GetFirst()
-	if dc:IsRace(RACE_MACHINE) and dc:IsLevel(10) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	if dc:IsLevel(10) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(m,2))
 		e1:SetType(EFFECT_TYPE_SINGLE)

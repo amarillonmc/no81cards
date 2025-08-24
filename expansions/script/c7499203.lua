@@ -44,14 +44,17 @@ function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function s.tfilter(c)
-	return c:IsSummonLocation(LOCATION_EXTRA) and s.ArtlienWorm(c) and c:IsFaceup() and (c:IsAbleToDeck() or c:IsAbleToGrave())
+	return --c:IsSummonLocation(LOCATION_EXTRA) and 
+	  c:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ) and
+	  s.ArtlienWorm(c) and c:IsFaceup() and (c:IsAbleToDeck() or c:IsAbleToGrave())
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and s.tfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(s.tfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsChainDisablable(ev) end
+	--if chkc then return false end
+	if chk==0 then return Duel.IsExistingTarget(s.tfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.IsChainDisablable(ev) end
 	--Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,s.tfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,s.tfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 	--Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 end

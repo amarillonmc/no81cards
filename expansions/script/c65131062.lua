@@ -21,19 +21,16 @@ function s.initial_effect(c)
 	e2:SetTargetRange(0xff,0)
 	e2:SetLabelObject(e1)
 	c:RegisterEffect(e2)
-	--spsummon
+	--replace
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,id+o)
-	e3:SetCondition(s.spcon)
-	e3:SetCost(s.spcost)
-	e3:SetTarget(s.sptg)
-	e3:SetOperation(s.spop)
+	e3:SetCondition(s.condition)
+	e3:SetTarget(s.target)
+	e3:SetOperation(s.operation)
 	c:RegisterEffect(e3)
 end
 function s.mfilter(c)
@@ -43,7 +40,7 @@ function s.cpcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local con=re:GetCondition()
 	if not con then con=aux.TRUE end
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)	
+	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)   
 	if Duel.GetFlagEffect(tp,id)>0 or re:GetCode()==EVENT_SUMMON or re:GetCode()==EVENT_SPSUMMON or re:GetCode()==EVENT_FLIP_SUMMON then return false end
 	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,0,1)
 	local res=re:GetHandler()==c and c:IsLocation(loc) and ep==tp and con(e,tp,eg,ep,ev,re,r,rp)
@@ -74,33 +71,41 @@ function s.cpop(e,tp,eg,ep,ev,re,r,rp)
 	if not op then op=aux.TRUE end
 	op(e,tp,eg,ep,ev,re,r,rp)
 end
-function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==1-tp
+function s.condition(e,tp,eg,ep,ev,re,r,rp)
+	if not re:IsHasType(EFFECT_TYPE_ACTIVATE) or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or rp~=tp then return false end
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	if not g or g:GetCount()~=1 then return false end
+	local tc=g:GetFirst()
+	e:SetLabelObject(tc)
+	return tc:IsOnField()
 end
-function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local g=c:GetMaterial()
-	if chk==0 then return c:IsReleasable() end
-	g:KeepAlive()
-	e:SetLabelObject(g)
-	Duel.Release(c,REASON_COST)
+function s.filter(c,ct)
+	return Duel.CheckChainTarget(ct,c)
 end
-function s.spfilter(c,e,tp,sync)
-	return c:IsLocation(LOCATION_GRAVE) and c:GetReason()&0x80008==0x80008 and c:GetReasonCard()==sync and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local ct=ev
+	if chkc then return chkc:IsOnField() and s.filter(chkc,ct) end
+	if chk==0 then return re:GetHandler():CheckActivateEffect(true,true,false)~=nil and Duel.IsExistingTarget(s.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetLabelObject(),ct) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local tc=Duel.SelectTarget(tp,s.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetLabelObject(),ct)
+	local te,ceg,cep,cev,cre,cr,crp=re:GetHandler():CheckActivateEffect(true,true,true)
+	e:SetProperty(te:GetProperty())
+	local tg=te:GetTarget()
+	local _SelectTarget=Duel.SelectTarget
+	function Duel.SelectTarget()
+		return tc
+	end
+	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
+	Duel.SelectTarget=_SelectTarget
+	te:SetLabelObject(e:GetLabelObject())
+	e:SetLabelObject(te)
+	Duel.ClearOperationInfo(0)
 end
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	local g=c:GetMaterial()
-	local ct=g:GetCount()
-	if chk==0 then return c:IsSummonType(SUMMON_TYPE_SYNCHRO) and ct>0 and Duel.GetMZoneCount(tp,c)>=ct and g:FilterCount(s.spfilter,nil,e,tp,c)==ct and (ct==1 or not Duel.IsPlayerAffectedByEffect(tp,59822133)) end
-	g=e:GetLabelObject()
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,g:GetCount(),0,0)
-end
-function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=e:GetLabelObject()
-	local ct=g:GetCount()
-	if c:IsSummonType(SUMMON_TYPE_SYNCHRO) and ct>0 and ct<=Duel.GetLocationCount(tp,LOCATION_MZONE) and (ct==1 or not Duel.IsPlayerAffectedByEffect(tp,59822133)) and g:FilterCount(aux.NecroValleyFilter(s.spfilter),nil,e,tp,c)==ct then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+function s.operation(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	if te then
+		e:SetLabelObject(te:GetLabelObject())
+		local op=te:GetOperation()
+		if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	end
 end

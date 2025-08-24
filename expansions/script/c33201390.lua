@@ -24,7 +24,7 @@ function c33201390.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_DESTROYED)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(2,33201390)
+	e2:SetCountLimit(1,33201390)
 	e2:SetCondition(c33201390.thcon)
 	e2:SetTarget(c33201390.thtg)
 	e2:SetOperation(c33201390.thop)
@@ -46,7 +46,7 @@ function c33201390.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
 end
 function c33201390.activate(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(tp,33201390,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,33201390,RESET_PHASE+PHASE_END,0,2)
 	local c=e:GetHandler()
 	local ct=Duel.GetFlagEffect(tp,33201390) 
 	if ct>0 then

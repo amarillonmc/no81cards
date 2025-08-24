@@ -50,7 +50,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmDecktop(tp,num)
 		local g=Duel.GetDecktopGroup(tp,num)
 		local mg=g:Filter(s.spfilter,nil,c)
-		if mg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+		if c:IsRelateToChain(0) and c:IsFaceup() and c:IsControler(tp) and mg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
 			local mc=mg:Select(tp,1,1,nil):GetFirst()
 			local mg=Group.FromCards(c,mc)
