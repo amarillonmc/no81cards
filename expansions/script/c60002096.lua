@@ -86,7 +86,7 @@ function cm.thfilter2(c)
 	return (c:IsSetCard(0x6a2) or c:IsSetCard(0x6a3) or c:IsSetCard(0x6a4) or c:IsSetCard(0x5621)) and c:IsAbleToHand()
 end
 function cm.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c7808cm0961.thfilter2,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.thfilter2,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function cm.thop2(e,tp,eg,ep,ev,re,r,rp)

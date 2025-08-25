@@ -91,7 +91,7 @@ end
 if not cm then return end
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_DRAW+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_DRAW+CATEGORY_DESTROY+CATEGORY_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)

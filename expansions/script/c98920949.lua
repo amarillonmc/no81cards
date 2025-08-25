@@ -15,10 +15,34 @@ function s.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetCondition(s.regcon)
 	e2:SetOperation(s.regop)
-	e2:SetLabelObject(e1)
 	c:RegisterEffect(e2)
-
-	
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_MATERIAL_CHECK)
+	e1:SetValue(s.matcheck)
+	e1:SetLabelObject(e2)
+	c:RegisterEffect(e1)	
+	--attribute
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e6:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+	e6:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x4b))
+	e6:SetValue(ATTRIBUTE_DIVINE)
+	e6:SetCondition(s.atcon)
+	c:RegisterEffect(e6)
+	--immune
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD)
+	e7:SetCode(EFFECT_IMMUNE_EFFECT)
+	e7:SetRange(LOCATION_MZONE)
+	e7:SetTargetRange(LOCATION_MZONE,0)
+	e7:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x4b))
+	e7:SetValue(c98920949.efilter)
+	e7:SetCondition(s.atcon)
+	e7:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e7)	
 	-- Effect 2: Add "极星" monsters to hand
 	local e3 = Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TODECK + CATEGORY_TOHAND + CATEGORY_SEARCH)
@@ -29,12 +53,6 @@ function s.initial_effect(c)
 	e3:SetTarget(s.thtg)
 	e3:SetOperation(s.thop)
 	c:RegisterEffect(e3)
-	--mat check
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_MATERIAL_CHECK)
-	e1:SetValue(s.matcheck)
-	c:RegisterEffect(e1)	
 	-- Effect 3: Special Summon when destroyed
 	local e4 = Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -54,43 +72,23 @@ end
 function s.matcheck(e,c)
 	local c=e:GetHandler()
 	local g=c:GetMaterial()
-	local check=0
-	if g:IsExists(s.filter,1,nil) then
-		check=1
+	if g:IsExists(Card.IsSetCard,1,nil,0x4b) then
+		e:GetLabelObject():SetLabel(1)
+	else
+		e:GetLabelObject():SetLabel(0)
 	end
-	e:SetLabel(check)
 end
 function s.filter(c)
 	return  c:IsSetCard(0x4b)
 end
 function s.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) and e:GetLabel()==1
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local check=e:GetLabelObject():GetLabel()
-	if check>0 then
-	--attribute
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e2:SetCode(EFFECT_CHANGE_ATTRIBUTE)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x4b))
-	e2:SetValue(ATTRIBUTE_DIVINE)
-	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e2)
-	--immune
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_IMMUNE_EFFECT)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x4b))
-	e2:SetValue(c98920949.efilter)
-	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e2)
-	end
+	e:GetHandler():RegisterFlagEffect(98920949,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(98920949,4))
+end
+function s.atcon(e)
+	return e:GetHandler():GetFlagEffect(98920949)>0
 end
 -- Condition for Effect 1: Check if synchro material included "极神" monster
 function c98920949.efilter(e,re)
