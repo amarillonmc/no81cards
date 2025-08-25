@@ -1,8 +1,10 @@
 --命定的骰子
 local cm,m,o=GetID()
 function cm.initial_effect(c)
+	cm.toss_dice=true
 	--summon
 	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_DICE)
 	e4:SetDescription(aux.Stringid(m,0))
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetRange(LOCATION_HAND)
