@@ -41,7 +41,7 @@ function s.sstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsCanBeEffectTarget(e) and Duel.IsExistingTarget(s.ssfilter,tp,LOCATION_GRAVE,0,2,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,s.ssfilter,tp,LOCATION_GRAVE,0,2,2,c)
+	local g=Duel.SelectMatchingCard(tp,s.ssfilter,tp,LOCATION_GRAVE,0,2,2,c)
 	g:AddCard(c)
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
