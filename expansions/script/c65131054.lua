@@ -32,7 +32,7 @@ function s.synfilter(c,mg)
 end
 function s.spfilter(c,ec)
 	local mg=Group.FromCards(c,ec)
-	return c:IsType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(s.synfilter,tp,LOCATION_EXTRA,0,1,nil,mg)
+	return c:IsType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(s.synfilter,c:GetControler(),LOCATION_EXTRA,0,1,nil,mg)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return e:GetHandler():IsLevelAbove(1) end

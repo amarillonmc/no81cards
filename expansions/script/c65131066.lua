@@ -1,6 +1,9 @@
 --救世之章 强能
 local s,id,o=GetID()
 function s.initial_effect(c)
+	--synchro summon
+	aux.AddSynchroMixProcedure(c,s.mfilter,nil,nil,aux.FilterBoolFunction(Card.IsType,TYPE_MONSTER),1,99)
+	c:EnableReviveLimit()
 	--destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(60461804,0))

@@ -383,7 +383,7 @@ function cm.sptg(e,te,tp)
 	return te:GetHandler()==e:GetHandler()
 end
 function cm.sfilter(c,tp)
-	return c:IsFaceup() or c:IsControler(tp) or c:GetFlagEffect(11451031)>0
+	return c:IsFaceup() or (c:IsControler(tp) and (c:IsPublic() or not c:IsLocation(LOCATION_DECK))) or c:GetFlagEffect(11451031)>0
 end
 function cm.spcop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

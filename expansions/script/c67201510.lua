@@ -49,10 +49,10 @@ end
 function c67201510.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local mg=Duel.GetRitualMaterial(tp):Filter(c67201510.matfilter,nil)
-		local mg2=Duel.GetMatchingGroup(c67201510.mfilter,tp,LOCATION_SZONE+LOCATION_FZONE,0,nil)
+		local mg2=Duel.GetMatchingGroup(c67201510.mfilter,tp,LOCATION_SZONE+LOCATION_FZONE,0,nil,e)
 		aux.RCheckAdditional=c67201510.rcheck
 		aux.RGCheckAdditional=c67201510.rgcheck
-		local res=Duel.IsExistingMatchingCard(c67201510.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,nil,c67201510.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
+		local res=Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,nil,c67201510.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
 		aux.RCheckAdditional=nil
 		aux.RGCheckAdditional=nil
 		return res

@@ -31,7 +31,18 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTarget(cm.distg)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetOperation(cm.disop)
+	Duel.RegisterEffect(e2,tp)
 end
 function cm.distg(e,c)
 	return c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0
+end
+function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+	local tl=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	if bit.band(tl,LOCATION_MZONE)~=0 and re:IsActiveType(TYPE_MONSTER) then
+		Duel.NegateEffect(ev)
+	end
 end

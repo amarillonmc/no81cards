@@ -47,7 +47,7 @@ function c67201509.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local mg2=Duel.GetMatchingGroup(c67201509.mfilter,tp,LOCATION_SZONE+LOCATION_FZONE,0,nil)
 		aux.RCheckAdditional=c67201509.rcheck
 		aux.RGCheckAdditional=c67201509.rgcheck
-		local res=Duel.IsExistingMatchingCard(c67201509.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,nil,c67201509.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
+		local res=Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_EXTRA,0,1,nil,c67201509.filter,e,tp,mg,mg2,Card.GetLevel,"Greater")
 		aux.RCheckAdditional=nil
 		aux.RGCheckAdditional=nil
 		return res
