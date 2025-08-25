@@ -18,6 +18,7 @@ function c22021340.initial_effect(c)
 	e2:SetCondition(c22021340.handcon)
 	c:RegisterEffect(e2)
 end
+c22021340.effect_with_altria=true
 function c22021340.condition(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
 end

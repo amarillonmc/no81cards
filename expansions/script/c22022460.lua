@@ -4,7 +4,7 @@ function c22022460.initial_effect(c)
 	c:EnableReviveLimit()
 	--material
 	aux.AddMaterialCodeList(c,22020850)
-	aux.AddFusionProcFunRep(c,c22022440.ffilter,9,true)
+	aux.AddFusionProcFunRep(c,c22022460.ffilter,9,true)
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -70,6 +70,9 @@ function c22022460.initial_effect(c)
 	e6:SetTarget(c22022460.distg)
 	e6:SetOperation(c22022460.disop)
 	c:RegisterEffect(e6)
+end
+function c22022460.ffilter(c)
+	return c:IsCode(22020850) or aux.IsCodeListed(c,22020850)
 end
 function c22022460.spfilter(c,e,tp)
 	return (c:IsCode(22020850) or aux.IsCodeListed(c,22020850)) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

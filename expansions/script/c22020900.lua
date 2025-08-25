@@ -33,7 +33,7 @@ function c22020900.atkcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,22020910)
 end
 function c22020900.filter(c,e,tp,zone)
-	return c:IsLevelBelow(4) and c:IsSetCard(0x2ff1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
+	return c:IsLevelBelow(4) and c:IsSetCard(0x6ff1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
 end
 function c22020900.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

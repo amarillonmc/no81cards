@@ -8,10 +8,18 @@ function c22023380.initial_effect(c)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,22023380)
+	e1:SetCondition(c22023380.descon)
 	e1:SetCost(c22023380.cost)
 	e1:SetTarget(c22023380.target)
 	e1:SetOperation(c22023380.operation)
 	c:RegisterEffect(e1)
+end
+
+function c22023380.descfilter(c)
+	return  c:IsSetCard(0xff1)
+end
+function c22023380.descon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c22023380.descfilter,tp,LOCATION_HAND,0,1,e:GetHandler())
 end
 function c22023380.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
