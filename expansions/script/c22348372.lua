@@ -3,7 +3,7 @@ local m=22348372
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOGRAVE)
+	e1:SetCategory(EVENT_TOSS_DICE+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMING_END_PHASE,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
@@ -43,6 +43,7 @@ end
 function c22348372.dicecon(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetLabel()
 	local res={Duel.GetDiceResult()}
+	if ep~=tp then return false end
 	for i=1,ev do
 		if res[i]==p then
 			return true
