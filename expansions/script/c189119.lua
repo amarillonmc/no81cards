@@ -61,7 +61,12 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetLabelObject(e2)
 	e3:SetReset(RESET_PHASE+PHASE_BATTLE)
 	Duel.RegisterEffect(e3,tp)
-	Duel.SpecialSummonRule(tp,c,SUMMON_TYPE_SPECIAL)
+	if Duel.GetCurrentChain()==0 then
+		Duel.SpecialSummonRule(tp,c,SUMMON_TYPE_SPECIAL)
+	else
+		Duel.SpecialSummon(c,SUMMON_TYPE_SPECIAL,tp,tp,true,true,POS_FACEUP)
+		c:CompleteProcedure()
+	end
 end
 function cm.hspcon(e,c)
 	if c==nil then return true end

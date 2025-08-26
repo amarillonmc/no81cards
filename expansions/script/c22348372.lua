@@ -3,7 +3,7 @@ local m=22348372
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(EVENT_TOSS_DICE+CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_DICE+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMING_END_PHASE,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
