@@ -2,6 +2,7 @@
 --23.09.08
 local m=11410000
 local cm=_G["c"..m]
+if not cm then cm={} end
 function cm.initial_effect(c)
 	local e0=Effect.CreateEffect(c) 
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

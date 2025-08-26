@@ -230,9 +230,6 @@ function c91300033.speop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c91300033.efilter(e,te,ev)
-	return te:IsActiveType(TYPE_MONSTER) and (Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_MZONE or  Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_GRAVE or Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_REMOVED)
-end
 function c91300033.flfcopfilter(c,tp)
 	return c:IsPreviousLocation(LOCATION_HAND) and c:IsPreviousControler(1-tp)
 end

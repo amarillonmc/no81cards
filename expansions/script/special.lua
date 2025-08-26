@@ -27,7 +27,7 @@ function Auxiliary.PreloadUds()
 	effect_registered=effect_registered or {}
 	require_list=require_list or {}
 	
-	if not loadfile and Card.CopyEffect then
+	--[[if not loadfile and Card.CopyEffect then
 		function loadfile(str)
 			require_list=require_list or {}
 			local name=nil
@@ -51,7 +51,7 @@ function Auxiliary.PreloadUds()
 			local f=loadfile(str)
 			if f then f() end
 		end
-	end
+	end--]]
 	if not require and loadfile then
 		function require(str)
 			require_list=require_list or {}
