@@ -26,12 +26,14 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectMatchingCard(tp,VHisc_HYZQ.rlft,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
 	local ct=Duel.SendtoGrave(g,REASON_RELEASE)
-	VHisc_HYZQ.mop(e,tp,m)
-	if Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-		Duel.BreakEffect()
-		local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,1,nil)
-		Duel.HintSelection(sg)
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+	if ct>0 and e:GetHandler():IsRelateToEffect(e) then 
+		VHisc_HYZQ.mop(e,tp,m)
+		if Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+			Duel.BreakEffect()
+			local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,1,nil)
+			Duel.HintSelection(sg)
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		end
 	end
 end
 

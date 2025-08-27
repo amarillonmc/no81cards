@@ -54,9 +54,10 @@ end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ag=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_MZONE,0,c,TYPE_MONSTER):Select(tp,1,1,nil)
-	if Duel.SendtoGrave(ag,REASON_EFFECT)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-		local race=ag:GetFirst():GetRace()
-		local attr=ag:GetFirst():GetAttribute()
+	local res=Duel.SendtoGrave(ag,REASON_EFFECT)
+	if Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		local race=res and ag:GetFirst():GetRace() or 0
+		local attr=res and ag:GetFirst():GetAttribute() or 0
 		local gg=Duel.GetMatchingGroup(cm.fil,tp,LOCATION_DECK,0,nil,race,attr):Select(tp,1,1,nil)
 		Duel.SendtoGrave(gg,REASON_EFFECT)
 	end

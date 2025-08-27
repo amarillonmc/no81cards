@@ -119,7 +119,7 @@ function c71404000.cost4(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,1,e:GetHandler())
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	Duel.RegisterFlagEffect(tp,71404000,RESET_CHAIN,0,1)
-	yume.stellar_memories.RegStellarCostLimit(e,tp)
+	yume.stellar_memories.RegCostLimit(e,tp)
 end
 function c71404000.tg4(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

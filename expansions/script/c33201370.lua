@@ -60,14 +60,13 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_HAND+LOCATION_MZONE)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(p,VHisc_HYZQ.rlft,p,LOCATION_HAND+LOCATION_MZONE,0,1,2,nil)
+	local g=Duel.SelectMatchingCard(p,VHisc_HYZQ.rlft,p,LOCATION_HAND+LOCATION_MZONE,0,1,63,nil)
 	local ct=Duel.SendtoGrave(g,REASON_RELEASE)
 	Duel.Draw(p,ct,REASON_EFFECT)
 	Duel.BreakEffect()
-	VHisc_HYZQ.mop(e,tp,m)
+	if ct>0 and e:GetHandler():IsRelateToEffect(e) then VHisc_HYZQ.mop(e,tp,m) end
 end
 
 --Release effect

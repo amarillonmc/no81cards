@@ -26,14 +26,16 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectMatchingCard(tp,VHisc_HYZQ.rlft,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
 	local ct=Duel.SendtoGrave(g,REASON_RELEASE)
-	VHisc_HYZQ.mop(e,tp,m)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.ft,tp,LOCATION_DECK,0,1,e:GetHandler(),tp) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=Duel.SelectMatchingCard(tp,s.ft,tp,LOCATION_DECK,0,1,1,nil,tp)
-		local sc=sg:GetFirst()
-		sc:AddMonsterAttribute(TYPE_NORMAL)
-		Duel.SpecialSummon(sc,SUMMON_TYPE_RITUAL,tp,tp,true,false,POS_FACEUP)
+	if ct>0 and e:GetHandler():IsRelateToEffect(e) then
+		VHisc_HYZQ.mop(e,tp,m)
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.ft,tp,LOCATION_DECK,0,1,e:GetHandler(),tp) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sg=Duel.SelectMatchingCard(tp,s.ft,tp,LOCATION_DECK,0,1,1,nil,tp)
+			local sc=sg:GetFirst()
+			sc:AddMonsterAttribute(TYPE_NORMAL)
+			Duel.SpecialSummon(sc,SUMMON_TYPE_RITUAL,tp,tp,true,false,POS_FACEUP)
+		end
 	end
 end
 function s.ft(c,tp)
