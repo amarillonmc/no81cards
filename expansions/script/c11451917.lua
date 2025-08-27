@@ -36,7 +36,7 @@ function cm.efilter(e)
 	return e:GetCode()==EVENT_SUMMON_SUCCESS and e:IsActivated() and not e:IsHasType(EFFECT_TYPE_SINGLE)
 end
 function cm.efilter2(e)
-	return (e:IsHasCategory(CATEGORY_TOHAND) or e:IsHasCategory(CATEGORY_DRAW)) and e:IsActivated()
+	return ((e:IsHasCategory(CATEGORY_TOHAND) or e:IsHasCategory(CATEGORY_DRAW)) and e:IsActivated()) or (e:GetHandler():IsType(TYPE_SPIRIT) and e:GetType()&0x801==0x801 and (e:GetCode()==EVENT_SUMMON_SUCCESS or e:GetCode()==EVENT_FLIP) and e:IsHasProperty(EFFECT_FLAG_CANNOT_DISABLE))
 end
 function cm.spfilter(c)
 	return c:IsOriginalEffectProperty(cm.efilter) and c:IsAbleToHand()

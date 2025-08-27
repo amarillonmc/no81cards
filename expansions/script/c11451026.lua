@@ -176,7 +176,7 @@ function cm.operation4(e,tp,eg,ep,ev,re,r,rp)
 				Duel.CreateToken(tp,tc:GetOriginalCode())
 				Card.RegisterEffect=_CRegisterEffect
 				if e1 then
-					Debug.Message(e1:GetCode())
+					--Debug.Message(e1:GetCode())
 					e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 					e1:SetCode(EVENT_CUSTOM+m)
 					e1:SetRange(LOCATION_MZONE)

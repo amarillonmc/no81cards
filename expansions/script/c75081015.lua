@@ -67,7 +67,7 @@ function c75081015.retcon1(e,tp,eg,ep,ev,re,r,rp)
 end
 function c75081015.retop1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsCanBeSpecialSummoned(e,0,tp,tp,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(75081015,2))~=0 then
+	if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsCanBeSpecialSummoned(e,0,tp,tp,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(75081015,2)) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

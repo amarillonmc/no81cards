@@ -32,8 +32,9 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetChainLimit(aux.FALSE)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if not cm.actcon then return end
-	local WIN_REASON_CREATORGOD=0x47
-	local p=e:GetHandler():GetControler()
-	Duel.Win(p,WIN_REASON_CREATORGOD)
+	if Duel.IsExistingMatchingCard(cm.Gehfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(cm.Sealfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(cm.Shunorosfilter,tp,LOCATION_ONFIELD,0,1,nil) then
+		local WIN_REASON_CREATORGOD=0x47
+		local p=e:GetHandler():GetControler()
+		Duel.Win(p,WIN_REASON_CREATORGOD)
+	end
 end
