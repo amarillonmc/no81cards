@@ -19,6 +19,18 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.thtg)
 	e4:SetOperation(cm.thop)
 	c:RegisterEffect(e4)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_SPSUMMON_PROC_G)
+	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e3:SetRange(LOCATION_HAND+LOCATION_SZONE)
+	e3:SetOperation(cm.debug)
+	c:RegisterEffect(e3)
+end
+function cm.debug(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
+	local g=Duel.GetMatchingGroup(function(c) return c:GetTurnID()==Duel.GetTurnCount() and c:IsPreviousLocation(LOCATION_DECK) end,tp,LOCATION_GRAVE,0,nil)
+	Debug.Message("这个回合从卡组送去自己墓地的卡："..#g.."张")
+	for tc in aux.Next(g) do tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3)) end
 end
 function cm.tdfilter(c,tid)
 	return c:GetTurnID()==tid and not c:IsReason(REASON_RETURN) and c:GetPreviousLocation()==LOCATION_DECK and c:IsAbleToDeck()

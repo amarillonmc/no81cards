@@ -98,7 +98,7 @@ function s.tkop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP,zone) then sp=true else break end
 	end
 	Duel.SpecialSummonComplete()
-	local dg=Duel.GetMatchingGroup(s.filter,tp,LOCATION_SZONE,LOCATION_SZONE,nil)
+	local dg=Duel.GetMatchingGroup(s.filter,tp,LOCATION_SZONE,0,nil)
 	if #dg>0 and sp then
 		Duel.BreakEffect()
 		Duel.Destroy(dg,REASON_EFFECT)

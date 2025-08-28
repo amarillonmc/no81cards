@@ -61,6 +61,10 @@ function c75081023.ovop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) and g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 		local sg=g:Select(tp,1,1,nil)
+		local og=sg:GetOverlayGroup()
+		if og:GetCount()>0 then
+			Duel.SendtoGrave(og,REASON_RULE)
+		end
 		Duel.Overlay(tc,sg)
 	end
 	if e:GetLabel()==100 then

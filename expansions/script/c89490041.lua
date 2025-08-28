@@ -111,7 +111,7 @@ function s.filter(c,e,tp,tc)
 	return c:IsSetCard(0xc34) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingTarget(s.filter2,tp,LOCATION_GRAVE,0,1,Group.FromCards(tc,c),c)
 end
 function s.filter2(c,tc)
-	return not c:IsCode(tc:GetCode()) and c:IsSetCard(0xc34) and c:IsAbleToHand()
+	return not c:IsCode(tc:GetCode()) and c:IsSetCard(0xc34) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()

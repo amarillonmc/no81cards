@@ -73,6 +73,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,tc)
 		if tc:IsType(TYPE_MONSTER) and tc:IsSetCard(0x3f44) then
 			Duel.Damage(1-tp,800,REASON_EFFECT)
+			local ph=Duel.GetCurrentPhase()
 			if ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 				Duel.BreakEffect()
 				Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)

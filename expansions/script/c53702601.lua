@@ -1109,18 +1109,17 @@ function s.Checkmate_geop(e,tp,eg,ep,ev,re,r,rp)
 			return f1(sc,se,bool)
 		end
 	end
-	local sg=Group.__add(Duel.GetFieldGroup(0,0xff,0xff),Duel.GetOverlayGroup(0,1,1)):Filter(function(c)return c:GetOriginalCode()==94585852 end,nil)
-	if #sg==0 then return end
-	for tc in aux.Next(sg) do
-		local le={tc:GetCardRegistered(nil)}
-		for _,v in pairs(le) do
-			if v:GetCode()==EVENT_CUSTOM+94585852 then
-				tc:SetStatus(STATUS_INITIALIZING,true)
-				v:SetCode(EVENT_CUSTOM+53798004)
-				tc:SetStatus(STATUS_INITIALIZING,false)
+		local sg=Group.__add(Duel.GetFieldGroup(0,0xff,0xff),Duel.GetOverlayGroup(0,1,1)):Filter(function(c)return c:GetOriginalCode()==94585852 end,nil)
+		for tc in aux.Next(sg) do
+			local le={tc:GetCardRegistered(nil)}
+			for _,v in pairs(le) do
+				if v:GetCode()==EVENT_CUSTOM+94585852 then
+					tc:SetStatus(STATUS_INITIALIZING,true)
+					v:SetCode(EVENT_CUSTOM+53798004)
+					tc:SetStatus(STATUS_INITIALIZING,false)
+				end
 			end
 		end
-	end
 end
 function s.Checkmate_regop(e,tp,eg,ep,ev,re,r,rp)
 	local lv1=0
@@ -1163,13 +1162,19 @@ function s.Checkmate_chtg(_tg)
 				Duel.SetTargetCard=f
 				local g=Duel.GetFieldGroup(tp,0,LOCATION_MZONE)
 				local sg=g:Filter(Card.IsCanBeEffectTarget,nil,e)
-				if not e:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and Duel.IsPlayerAffectedByEffect(1-tp,53798004) and #g>0 and #g==#sg then
+				local ev0=Duel.GetCurrentChain()
+				local chainc=false
+				if ev0>1 then
+					for i=ev0-1,1,-1 do
+						if Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)==e then chainc=true break end
+					end
+				end
+				if (not e:IsHasProperty(EFFECT_FLAG_CARD_TARGET) or chainc) and Duel.IsPlayerAffectedByEffect(1-tp,53798004) and #g>0 and #g==#sg then
 					local pro1,pro2=e:GetProperty()
 					e:SetProperty(pro1|EFFECT_FLAG_CARD_TARGET,pro2)
 					Duel.ClearTargetCard()
 					Duel.SetTargetCard(g)
 					if #tg>0 then
-						local ev0=Duel.GetCurrentChain()
 						tg:KeepAlive()
 						tg:ForEach(Card.RegisterFlagEffect,53798004,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 						local e1=Effect.CreateEffect(e:GetHandler())

@@ -82,7 +82,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return eg:IsContains(chkc) and cm.spcfilter(chkc,tp,rp,e) end
-	if chk==0 then return not Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and eg:IsExists(cm.spcfilter,1,nil,tp,rp,e) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=eg:FilterSelect(tp,cm.spcfilter,1,1,nil,tp,rp,e)

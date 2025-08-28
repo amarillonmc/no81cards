@@ -49,13 +49,13 @@ function cm.con2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(e:GetHandler())
 end
 function cm.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g = Duel.GetMatchingGroup(Card.IsFaceup, tp, LOCATION_ONFIELD, LOCATION_ONFIELD, nil)
+	local g = Duel.GetMatchingGroup(Card.IsFaceup, tp, LOCATION_ONFIELD, 0, nil)
 	if chk==0 then return #g > 0 end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,LOCATION_ONFIELD)
 end
 function cm.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g = Duel.SelectMatchingCard(tp, Card.IsFaceup, tp, LOCATION_ONFIELD, LOCATION_ONFIELD, 1, 1, nil)
+	local g = Duel.SelectMatchingCard(tp, Card.IsFaceup, tp, LOCATION_ONFIELD, 0, 1, 1, nil)
 	if #g == 0 then return end
 	Duel.HintSelection(g)
 	Duel.SendtoHand(g, nil, REASON_EFFECT)

@@ -34,7 +34,7 @@ end
 function cm.con1(chk)
 	return function(e,tp,eg,ep,ev,re,r,rp)
 		local g = Duel.GetFieldGroup(tp, LOCATION_MZONE, 0)
-		local b = #g <= #Duel.GetFieldGroup(tp, 0, LOCATION_MZONE)
+		local b = #g > #Duel.GetFieldGroup(tp, 0, LOCATION_MZONE)
 		if chk then b = not b end
 		return b and (#g == 0 or g:IsExists(Card.IsRace, 1, nil, RACE_WINDBEAST))
 	end
@@ -64,7 +64,7 @@ end
 -- e3
 function cm.tg3(e,oc)
 	if (oc:IsType(TYPE_MONSTER) and (not oc:IsType(TYPE_EFFECT) or oc:GetOriginalType() & TYPE_EFFECT == 0))
-		or oc:IsLocation(LOCATION_FZONE) or oc:IsSetCard(0xc754,0x3755) and oc:IsFaceup() then return false end
+		or oc:IsLocation(LOCATION_FZONE) or oc:IsSetCard(0xc754) and oc:IsFaceup() then return false end
 	local cseq = e:GetHandler():GetSequence()
 	local seq = oc:GetSequence()
 	local isp = oc:IsControler(e:GetHandlerPlayer())
