@@ -36,7 +36,7 @@ function s.checkop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
 		local tp=tc:GetPreviousControler()
-		if   tc:GetPreviousPosition()&POS_FACEUP~=0 and tc:IsType(TYPE_MONSTER) and tc:IsRace(RACE_FIEND) and Duel.GetFlagEffect(tp,id)==0 then	  
+		if   tc:GetPreviousPosition()&POS_FACEUP~=0 and tc:IsType(TYPE_MONSTER) and tc:IsRace(RACE_FIEND) and Duel.GetFlagEffect(tp,id)==0 then   
 			Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
 			Duel.RegisterFlagEffect(1-tp,id,RESET_PHASE+PHASE_END,0,1)
 		end
@@ -60,11 +60,8 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.efilter(e,re)
-	local tp=e:GetHandler()
-	local rp=re:GetHandler()
-	return rp==1-tp and ((re:GetActivateLocation()~=LOCATION_MZONE and re:GetActivateLocation()~=LOCATION_SZONE) and not re:IsHasType(EFFECT_TYPE_ACTIVATE)) 
+	return re:GetOwnerPlayer()~=e:GetHandlerPlayer() and ((re:GetActivateLocation()~=LOCATION_MZONE and re:GetActivateLocation()~=LOCATION_SZONE) and not re:IsHasType(EFFECT_TYPE_ACTIVATE))
 end
-
 function s.recon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,id)>0
 end
