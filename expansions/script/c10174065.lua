@@ -1,5 +1,5 @@
 --祝祷女祭司
-if not pcall(function() require("expansions/script/c10199990") end) then require("script/c10199990") end
+Duel.LoadScript("c10199990.lua")
 local m,cm=rscf.DefineCard(10174065)
 function cm.initial_effect(c)
 	local e1=rsef.STO(c,EVENT_SUMMON_SUCCESS,{m,0},{1,m},"se,th","de,dsp",nil,nil,rsop.target(cm.thfilter,"th",LOCATION_DECK),cm.thop)

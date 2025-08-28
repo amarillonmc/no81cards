@@ -13,6 +13,7 @@ function c95101141.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetCountLimit(1,95101141+EFFECT_COUNT_CODE_OATH)
+	e1:SetCondition(c95101141.condition)
 	e1:SetTarget(c95101141.target)
 	e1:SetOperation(c95101141.activate)
 	c:RegisterEffect(e1)
@@ -22,6 +23,9 @@ function c95101141.initial_effect(c)
 end
 function c95101141.handcon(e)
 	return Duel.IsExistingMatchingCard(Card.IsSummonLocation,e:GetHandlerPlayer(),0,LOCATION_MZONE,1,nil,LOCATION_EXTRA)
+end
+function c95101141.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp)
 end
 function c95101141.thfilter(c,chk)
 	return c:IsSetCard(0xbbe) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and (chk==0 or aux.NecroValleyFilter()(c))
