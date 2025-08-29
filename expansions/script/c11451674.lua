@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	e10:SetOperation(function(e,tp,...) 
 		local ph=Duel.GetCurrentPhase()
 		if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
-		Duel.RegisterFlagEffect(tp,11451631,RESET_PHASE+ph,0,1)	
+		Duel.RegisterFlagEffect(tp,11451631,RESET_PHASE+ph,0,1) 
 		op(e,tp,...)
 	end)
 	--spsummon condition
@@ -24,7 +24,7 @@ function cm.initial_effect(c)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e0:SetValue(cm.splimit)
-	c:RegisterEffect(e0)
+	--c:RegisterEffect(e0)
 	--tohand
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
