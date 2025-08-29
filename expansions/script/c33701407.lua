@@ -35,7 +35,7 @@ function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 			local m={}
 			local n={}
 			local ct=1
-			m[ct]=aux.Stringid(m,1) n[ct]=1 ct=ct+1 end
+			m[ct]=aux.Stringid(m,1) n[ct]=1 ct=ct+1
 			if t2 then m[ct]=aux.Stringid(m,2) n[ct]=2 ct=ct+1 end
 			if t3 then m[ct]=aux.Stringid(m,3) n[ct]=3 ct=ct+1 end
 			local sp=Duel.SelectOption(sp,table.unpack(m))
