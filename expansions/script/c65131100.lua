@@ -110,6 +110,7 @@ function s.ChangeCard(card1,card2,seq)
 		Duel.DisableShuffleCheck()
 		card1:ReplaceEffect(code2,0,0)
 		card1:SetEntityCode(code2)
+		s.addremain(card1,card2)
 		Duel.RaiseEvent(card1,EVENT_CUSTOM+65131100,Effect.GlobalEffect(),0,0,0,0)
 		Duel.RaiseSingleEvent(card1,EVENT_CUSTOM+65131100,Effect.GlobalEffect(),0,0,0,0)
 	end   
@@ -121,9 +122,30 @@ function s.ChangeCard(card1,card2,seq)
 		Duel.DisableShuffleCheck()
 		card2:ReplaceEffect(code1,0,0)
 		card2:SetEntityCode(code1)
+		s.addremain(card2,card1)
 		Duel.RaiseEvent(card2,EVENT_CUSTOM+65131100,Effect.GlobalEffect(),0,0,0,0)
 		Duel.RaiseSingleEvent(card2,EVENT_CUSTOM+65131100,Effect.GlobalEffect(),0,0,0,0)
 	end  
+end
+function s.addremain(c,cc)
+	local fe=cc:GetCardRegistered(s.fefilter,GETEFFECT_INITIAL)
+	if not fe then return end
+	local code=cc:GetOriginalCode()
+	local fe2=fe:Clone()
+	fe:SetCondition(function (code)
+		return function(e,tp,eg,ep,ev,re,r,rp)
+			if e:GetHandler():GetOriginalCode()==code then
+				return true
+			else
+				e:Reset()
+				return false
+			end
+		end
+	end)
+	c:RegisterEffect(fe2)
+end
+function s.fefilter(e)
+	return e:GetCode()==EFFECT_REMAIN_FIELD
 end
 function s.lostfilter(c)
 	if c:GetOriginalCode()~=id then return false end
