@@ -132,13 +132,13 @@ end
 function cm.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()--限制为怪兽区
-	return Duel.IsExistingMatchingCard(cm.fusfilter1,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(cm.fusfilter2,tp,LOCATION_MZONE,0,1,nil) 
+	return Duel.IsExistingMatchingCard(cm.fusfilter1,tp,LOCATION_MZONE,0,1,nil,tp) --and Duel.IsExistingMatchingCard(cm.fusfilter2,tp,LOCATION_MZONE,0,1,nil) 
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local ga=Duel.SelectMatchingCard(tp,cm.fusfilter1,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
-	local gb=Duel.SelectMatchingCard(tp,cm.fusfilter2,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
+	local ga=Duel.SelectMatchingCard(tp,cm.fusfilter1,tp,LOCATION_MZONE,0,1,1,nil,tp):GetFirst()
+	local gb=Duel.SelectMatchingCard(tp,cm.fusfilter2,tp,LOCATION_MZONE,0,1,1,ga):GetFirst()
 			Duel.MoveToField(ga,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			local e1=Effect.CreateEffect(c)
 			e1:SetCode(EFFECT_CHANGE_TYPE)
@@ -156,8 +156,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 			e2:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
 			gb:RegisterEffect(e2)
 end
-function cm.fusfilter1(c)
-	return c:IsLevel(1) or c:IsLink(1)
+function cm.fusfilter1(c,tp)
+	return c:IsLevel(1) or c:IsLink(1) and Duel.IsExistingMatchingCard(cm.fusfilter2,tp,LOCATION_MZONE,0,1,c) 
 end
 function cm.fusfilter2(c)
 	return c:IsLevel(12) or c:IsType(TYPE_NORMAL)

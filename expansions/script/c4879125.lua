@@ -29,9 +29,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.smop)
 	c:RegisterEffect(e3)
 end
-function cm.spcon(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return  Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil)
 end
 function cm.repfilter(c,tp)
