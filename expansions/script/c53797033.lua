@@ -42,11 +42,11 @@ function s.sumop(e,tp,eg,ep,ev,re,r,rp)
 		if v:GetRange()&0x10a~=0 then
 			local e1=v:Clone()
 			e1:SetRange(LOCATION_REMOVED)
-			e1:SetReset(RESET_PHASE+PHASE_END)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e1,true)
 			local e2=SNNM.Act(tc,e1)
 			e2:SetRange(LOCATION_REMOVED)
-			e2:SetReset(RESET_PHASE+PHASE_END)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e2,true)
 		end
 	end
