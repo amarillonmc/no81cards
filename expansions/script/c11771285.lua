@@ -56,8 +56,8 @@ function c11771285.op2(e,tp,eg,ep,ev,re,r,rp)
     local ch=Duel.GetCurrentChain()
     if ch>1 then
         local p,code,te=Duel.GetChainInfo(ch-1,CHAININFO_TRIGGERING_PLAYER,CHAININFO_TRIGGERING_CODE,CHAININFO_TRIGGERING_EFFECT)
-        if p==1-tp and te and te:IsActiveType(TYPE_MONSTER) then
-            Duel.NegateEffect(ev)
+        if te and te:IsActiveType(TYPE_MONSTER) then
+            Duel.NegateEffect(te)
         end
     end
     local d=Duel.TossDice(tp,1)

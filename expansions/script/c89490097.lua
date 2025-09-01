@@ -122,4 +122,5 @@ function s.rop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Damage(1-tp,rct*1000,REASON_EFFECT)
 		end
 	end
+	Duel.ShuffleHand(1-tp)
 end
