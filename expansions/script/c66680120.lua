@@ -68,7 +68,7 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
 	local g=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc then
@@ -91,6 +91,10 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,tg)
 		end
 	end
+end
+
+function s.matfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ)
 end
 
 function s.thfilter(c)
