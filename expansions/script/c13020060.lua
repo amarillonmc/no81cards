@@ -1,234 +1,216 @@
---白露未已
-local cm, m, o = GetID()
-local yr = 13020010
-xpcall(function() dofile("expansions/script/c16670000.lua") end, function() dofile("script/c16670000.lua") end)
+--灾变的预兆
+local cm, m = GetID() -- 移除未使用的o变量
+
 function cm.initial_effect(c)
-    c:EnableReviveLimit()
+    -- 基本装备效果
+    aux.AddEquipSpellEffect(c, true, true, Card.IsFaceup, nil)
+
+    -- 效果1：破坏装备怪兽才能发动（修改为非取对象效果）从额外卡组把1只怪兽送去墓地或者除外，根据那只怪兽的类型把以下效果适用
     local e1 = Effect.CreateEffect(c)
-    e1:SetType(EFFECT_TYPE_SINGLE)
-    e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_UNCOPYABLE + EFFECT_FLAG_IGNORE_IMMUNE)
-    e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-    e1:SetValue(aux.FALSE)
+    e1:SetDescription(aux.Stringid(m, 0))
+    e1:SetCategory(CATEGORY_REMOVE + CATEGORY_TOGRAVE)
+    e1:SetType(EFFECT_TYPE_IGNITION)
+    e1:SetRange(LOCATION_SZONE)
+    e1:SetCost(cm.cost)
+    e1:SetTarget(cm.target)
+    e1:SetOperation(cm.activate)
     c:RegisterEffect(e1)
-
-    local e2 = Effect.CreateEffect(c)
-    e2:SetType(EFFECT_TYPE_FIELD)
-    e2:SetCode(EFFECT_SPSUMMON_PROC)
-    e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_UNCOPYABLE)
-    e2:SetRange(LOCATION_EXTRA)
-    e2:SetCountLimit(1, m)
-    e2:SetCondition(cm.condition)
-    e2:SetOperation(cm.operation)
-    c:RegisterEffect(e2)
-
-    local e11 = Effect.CreateEffect(c)
-    -- e11:SetDescription(aux.Stringid(m, 0))
-    e11:SetCategory(CATEGORY_TOHAND + CATEGORY_SEARCH)
-    e11:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O)
-    e11:SetProperty(EFFECT_FLAG_DELAY)
-    e11:SetCode(EVENT_SPSUMMON_SUCCESS)
-    e11:SetCost(cm.cost)
-    e11:SetTarget(cm.drtg)
-    e11:SetOperation(cm.drop)
-    c:RegisterEffect(e11)
-
-    if not cm.global_check then
-        cm.global_check = true
-        local e4 = Effect.CreateEffect(c)
-        e4:SetType(EFFECT_TYPE_CONTINUOUS + EFFECT_TYPE_FIELD)
-        e4:SetCode(EVENT_ADJUST)
-        e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_IGNORE_IMMUNE)
-        e4:SetOperation(cm.adop)
-        Duel.RegisterEffect(e4, tp)
-    end
 end
 
-function cm.cfilter(c, e, tp, sc)
-    return c:IsAbleToDeckAsCost() and aux.IsCodeListed(c, yr) and (c:IsLocation(QY_sk) or
-        Duel.GetLocationCountFromEx(tp, tp, c, sc) > 0)
+-- 装备限制
+function cm.EquipLimit(e, c)
+    return c:IsFaceup()
 end
 
-function cm.cfilter2(c, e, tp, sc)
-    return c:IsAbleToExtraAsCost() and Duel.GetLocationCountFromEx(tp, tp, c, sc) > 0
-end
-
-function cm.condition(e, tp, eg, ep, ev, re, r, rp)
-    local c = e:GetHandler()
-    local g = Duel.GetMatchingGroup(cm.cfilter, tp, LOCATION_HAND + LOCATION_ONFIELD, 0, nil, e, tp, c)
-    local g2 = Duel.GetMatchingGroup(cm.cfilter2, tp, LOCATION_ONFIELD, 0, nil, e, tp, c)
-    return #g > 0 and #g2 > 0
-end
-
-function cm.operation(e, tp, eg, ep, ev, re, r, rp)
-    local c = e:GetHandler()
-    Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SELECT)
-    local g1 = Duel.SelectMatchingCard(tp, cm.cfilter, tp, LOCATION_HAND + LOCATION_ONFIELD, 0, 1, 1, nil, e, tp, c)
-    local g2 = Duel.SelectMatchingCard(tp, cm.cfilter2, tp, LOCATION_ONFIELD, 0, 1, 1, g1, e, tp, c)
-    g2:Merge(g1)
-    c:SetMaterial(g2)
-    Duel.SendtoDeck(g2, tp, SEQ_DECKSHUFFLE, REASON_COST + REASON_MATERIAL)
-end
-
-function cm.cfilter3(c, e, tp, sc)
-    return (c:IsAbleToRemove() or c:IsAbleToGrave()) and aux.IsCodeListed(c, yr)
-end
-
+-- 破坏装备怪兽的代价
 function cm.cost(e, tp, eg, ep, ev, re, r, rp, chk)
-    local g = Duel.GetMatchingGroup(cm.cfilter3, tp, QY_kz, 0, nil)
-    if chk == 0 then return #g > 0 end
+    local c = e:GetHandler()
+    local c2 = c:GetEquipTarget()
+    if chk == 0 then return c2 and c2:IsFaceup() end
+    -- 记录被破坏的怪兽信息
+    e:SetLabelObject(c2)
+    -- 破坏装备怪兽
+    Duel.Destroy(c2, REASON_COST)
+    return true
+end
+
+-- 发动效果（修改为非取对象逻辑）
+function cm.activate(e, tp, eg, ep, ev, re, r, rp)
+    local c = e:GetHandler()
+    -- 获取在cost阶段被破坏的怪兽
+    local destroyedMonster = e:GetLabelObject()
+
+    -- 从额外卡组选择1只怪兽
+    local mg = Duel.GetMatchingGroup(cm.spfilter1, tp, LOCATION_EXTRA, 0, nil)
+    if #mg == 0 then return end
+
     Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SELECT)
-    if #g == 0 then return end
-    local sg = g:Select(tp, 1, 1, nil):GetFirst()
-    local off = 1
-    local ops = {}
-    local opval = {}
-    if sg:IsAbleToRemove() then
-        ops[off] = aux.Stringid(m, 0)
-        opval[off - 1] = 1
-        off = off + 1
-    end
-    if sg:IsAbleToGrave() then
-        ops[off] = aux.Stringid(m, 1)
-        opval[off - 1] = 2
-        off = off + 1
-    end
-    local op = Duel.SelectOption(tp, table.unpack(ops))
-    if opval[op] == 1 then
-        Duel.SendtoGrave(sg, REASON_EFFECT)
-    elseif opval[op] == 2 then
-        Duel.Remove(sg, POS_FACEUP, REASON_EFFECT)
-    end
-    e:SetLabel(sg:GetCode())
-end
+    local tc2 = mg:Select(tp, 1, 1, nil):GetFirst()
+    local opt = tc2:IsAbleToGrave() and Duel.SelectYesNo(tp, aux.Stringid(m, 1))
 
-function cm.cfilter4(c, code)
-    return c:IsAbleToHand() and aux.IsCodeListed(c, yr) and not c:IsCode(code)
-end
+    local isDisaster = cm.IsDisasterMonster(tc2)
 
-function cm.drtg(e, tp, eg, ep, ev, re, r, rp, chk)
-    local c = e:GetHandler()
-    local code = e:GetLabel()
-    local g = Duel.GetMatchingGroup(cm.cfilter4, tp, QY_kz + QY_md + QY_cw, 0, nil, code)
-    if chk == 0 then return #g > 0 end
-    Duel.SetOperationInfo(0, CATEGORY_TOHAND, nil, 1, tp, QY_kz + QY_md + QY_cw)
-end
-
-function cm.drop(e, tp, eg, ep, ev, re, r, rp)
-    local c = e:GetHandler()
-    local code = e:GetLabel()
-    Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SELECT)
-    local g = Duel.GetMatchingGroup(cm.cfilter4, tp, QY_kz + QY_md + QY_cw, 0, nil, code)
-    local sg = g:Select(tp, 1, 1, nil)
-    Duel.SendtoHand(sg, tp, REASON_EFFECT)
-    if Duel.SelectYesNo(tp, aux.Stringid(m, 2)) then
-        local g = Duel.GetFieldGroup(tp, LOCATION_HAND, 0):Select(tp, 1, 1, nil)
-        if g:GetCount() > 0 then
-            Duel.BreakEffect()
-            if Duel.SendtoDeck(g, nil, SEQ_DECKSHUFFLE, REASON_EFFECT) ~= 0 then
-                Duel.RegisterFlagEffect(tp, m, RESET_PHASE + PHASE_END, 0, 2)
-            end
-        end
+    -- 送去墓地或除外
+    if opt then
+        Duel.SendtoGrave(tc2, REASON_EFFECT)
+    else
+        Duel.Remove(tc2, POS_FACEUP, REASON_EFFECT)
     end
-end
 
-function cm.adop(e, tp, eg, ep, ev, re, r, rp)
-    local c = e:GetHandler()
-    local ng = Duel.GetMatchingGroup(cm.filsn, tp, LOCATION_HAND + LOCATION_ONFIELD + LOCATION_GRAVE + QY_kz, 0, nil)
-    local nc = ng:GetFirst()
-    while nc do
-        if not cm.reg then
-            cm.reg = Card.RegisterEffect
-            Card.RegisterEffect = cm.reg2
-        end
-        nc:RegisterFlagEffect(m, 0, 0, 1)
-        nc:ReplaceEffect(nc:GetOriginalCodeRule(), 0)
-        nc = ng:GetNext()
-    end
-end
-
-function cm.filsn(c)
-    return aux.IsCodeListed(c, yr) and c:GetFlagEffect(m) == 0
-end
-
-function cm.reg2(c, ie, ob)
-    local b = ob or false
-    local p = ie:GetCode()
-    local id, ida = ie:GetCountLimit()
-
-    if not aux.IsCodeListed(c, yr) or not ie:IsActivated() or (not id and not ida and
-            bit.band(ie:GetProperty(), EFFECT_FLAG_CARD_TARGET) == 0) then
-        return cm.reg(c, ie, b)
-    end
-    -- Debug.Message(id, ida)
-    local co = ie:GetCondition()
-    local ie2 = ie:Clone()
-    if id or ida then
-        ie2:SetCountLimit(id + 1, ida)
-    end
-    ie2:SetCondition(function(e, tp, eg, ep, ev, re, r, rp)
-        local code = Duel.GetFlagEffect(tp, m)
-        return (not co or co(e, tp, eg, ep, ev, re, r, rp)) and code > 0
-    end)
-    if bit.band(ie2:GetProperty(), EFFECT_FLAG_CARD_TARGET) ~= 0 then
-        local tn = ie:GetTarget()
-        ie2:SetProperty(ie2:GetProperty() - EFFECT_FLAG_CARD_TARGET)
-        ie2:SetTarget(function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
-            local exis = Duel.IsExistingTarget
-            local exis2 = Duel.SelectTarget
-            local operat = Duel.SetOperationInfo
-            Duel.IsExistingTarget = function(fun, tp2, s1, o1, num, cg, ...)
-                -- cm[ie2] = { tp, fun, tp2, s1, o1, num, cg, ... }
-                return Duel.IsExistingMatchingCard(fun, tp2, s1, o1, num, cg, ...)
-            end
-            Duel.SelectTarget = function(tp1, fun, tp2, s1, o1, min, max, cg, ...)
-                local t = { ... }
-                for _, va in ipairs(t) do
-                    if aux.GetValueType(va) == "Group" then
-                        Group.KeepAlive(va)
+    -- 记录处理的怪兽和操作
+    if isDisaster and Duel.GetFlagEffect(tp, m) == 0 then
+        Duel.RegisterFlagEffect(tp, m, RESET_PHASE + PHASE_END, 0, 1)
+        -- 效果3：大灾变怪兽的效果，连锁2以上对方发动的效果处理时
+        local e3 = Effect.CreateEffect(c)
+        e3:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS) -- 改为永续效果
+        e3:SetCode(EVENT_CHAIN_SOLVING)
+        -- 移除永续效果不需要的CountLimit
+        e3:SetCondition(cm.spcon)
+        e3:SetOperation(function(e, tp, eg, ep, ev, re, r, rp)
+            -- 检查是否有可用的特殊召唤位置
+            local plague = Duel.GetFirstMatchingCard(
+                function(c) return c:IsCode(13000762) and c:IsCanBeSpecialSummoned(e, 0, tp, false, false) end, tp,
+                LOCATION_DECK, 0, nil)
+            if Duel.GetLocationCount(tp, LOCATION_MZONE) > 0 and plague and Duel.SelectYesNo(tp, aux.Stringid(m, 2)) then
+                if plague and Duel.SpecialSummon(plague, 0, tp, tp, false, false, POS_FACEUP) ~= 0 then
+                    local extraMonsters = Duel.GetMatchingGroup(function(c)
+                        return c:IsSpecialSummonable(0) and c:IsSetCard(0xe09)
+                    end, tp, LOCATION_EXTRA, 0, nil, 0)
+                    if #extraMonsters > 0 and Duel.SelectYesNo(tp, aux.Stringid(m, 3)) then
+                        Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
+                        local extraMon = extraMonsters:Select(tp, 1, 1, nil):GetFirst()
+                        if extraMon then
+                            Duel.SpecialSummonRule(tp, extraMon, 0)
+                        end
+                    else
+                        local graveG = Duel.GetMatchingGroup(function(c) return c:IsCode(m) and c:IsAbleToHand() end, tp,
+                            LOCATION_GRAVE + LOCATION_REMOVED, 0, nil)
+                        if #graveG > 0 then
+                            Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_ATOHAND)
+                            local tc = graveG:Select(tp, 1, 1, nil):GetFirst()
+                            if tc then
+                                Duel.SendtoHand(tc, nil, REASON_EFFECT)
+                                Duel.ConfirmCards(1 - tp, tc)
+                            end
+                        end
                     end
                 end
-                cm[ie2] = { tp1, fun, tp2, s1, o1, min, max, cg, { ... } }
-                -- Duel.ConfirmCards(tp, table.unpack({ ... }))
-                return Group.CreateGroup()
+                e:Reset()
             end
-            Duel.SetOperationInfo = function(chainc, category, targets, count, target_player, target_param)
-                return operat(chainc, category, nil, count, target_player, target_param)
-            end
-            local jg = tn(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
-            Duel.IsExistingTarget = exis
-            Duel.SelectTarget = exis2
-            Duel.SetOperationInfo = operat
+        end)
+        Duel.RegisterEffect(e3, tp)
+    elseif not isDisaster and Duel.GetFlagEffect(tp, m + 1) == 0 then
+        Duel.RegisterFlagEffect(tp, m + 1, RESET_PHASE + PHASE_END, 0, 1)
+        -- 记录被破坏的怪兽
+        if destroyedMonster then
+            -- 效果2：非大灾变怪兽的效果
+            local e2 = Effect.CreateEffect(c)
+            e2:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
+            e2:SetCode(EVENT_PHASE + PHASE_END)
+            e2:SetReset(EVENT_PHASE + PHASE_END)
+            e2:SetCountLimit(1)
+            e2:SetOperation(function(e, tp, eg, ep, ev, re, r, rp)
+                local c = e:GetHandler()
 
-            return jg
-        end)
-        local op = ie:GetOperation()
-        ie2:SetOperation(function(e, tp, eg, ep, ev, re, r, rp)
-            local ma = cm[ie2]
-            -- Debug.Message(ma[0])
-            -- Debug.Message(ma[1])
-            -- Debug.Message(ma[2])
-            -- Debug.Message(ma[3])
-            -- Debug.Message(ma[4])
-            -- Debug.Message(ma[5])
-            -- Debug.Message(ma[6])
-            -- Debug.Message(table.unpack(ma[8]))
-            -- Duel.ConfirmCards(tp, table.unpack(ma[9]))
-            local g = Duel.SelectMatchingCard(ma[1], ma[2], ma[3], ma[4], ma[5], ma[6], ma[7], ma[8],
-                table.unpack(ma[9]))
-            --ma[0], ma[1], ma[2], ma[3], ma[4], 1, ma[5],ma[6], table.unpack(ma[7])
-            -- local g = Group.CreateGroup()
-            local xta = Duel.GetFirstTarget
-            Duel.GetFirstTarget = function() return g:GetFirst(), g:GetNext(), g:GetNext(), g:GetNext() end
-            for tc in aux.Next(g) do
-                tc:CreateEffectRelation(e)
-            end
-            op(e, tp, eg, ep, ev, re, r, rp)
-            Duel.GetFirstTarget = xta
-        end)
+                -- 破坏自己场上所有怪兽
+                local g = Duel.GetFieldGroup(tp, LOCATION_MZONE, 0)
+                if #g > 0 then
+                    Duel.Destroy(g, REASON_EFFECT)
+                end
+
+                -- 特殊召唤被这张卡装备过的怪兽
+                local tc = destroyedMonster
+                if tc and tc:IsLocation(LOCATION_GRAVE) and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0 then
+                    Duel.SpecialSummon(tc, 0, tp, tp, false, false, POS_FACEUP)
+                end
+            end)
+            Duel.RegisterEffect(e2, tp)
+        end
     end
-    ie:SetCondition(function(e, tp, eg, ep, ev, re, r, rp)
-        local code = Duel.GetFlagEffect(tp, m)
-        return (not co or co(e, tp, eg, ep, ev, re, r, rp)) and code == 0
-    end)
-    return cm.reg(c, ie, b), cm.reg(c, ie2, b)
+end
+
+-- 判断是否为大灾变怪兽
+function cm.IsDisasterMonster(c)
+    return c:IsSetCard(0xe09)
+end
+
+-- 非大灾变怪兽效果的条件
+function cm.descon(e, tp, eg, ep, ev, re, r, rp)
+    return e:GetHandler():GetFlagEffect(m + 1) > 0
+end
+
+-- 非大灾变怪兽效果的操作
+function cm.desop(e, tp, eg, ep, ev, re, r, rp)
+    local c = e:GetHandler()
+
+    -- 破坏自己场上所有怪兽
+    local g = Duel.GetFieldGroup(tp, LOCATION_MZONE, 0)
+    if #g > 0 then
+        Duel.Destroy(g, REASON_EFFECT)
+    end
+
+    -- 特殊召唤被这张卡装备过的怪兽
+    local tc = e:GetLabelObject()
+    if tc and tc:IsLocation(LOCATION_GRAVE) and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0 then
+        Duel.SpecialSummon(tc, 0, tp, tp, false, false, POS_FACEUP)
+    end
+end
+
+-- 大灾变怪兽效果的条件
+function cm.spcon(e, tp, eg, ep, ev, re, r, rp)
+    return rp == 1 - tp and Duel.GetCurrentChain() >= 2
+end
+
+-- 大灾变怪兽效果的代价
+function cm.spcost(e, tp, eg, ep, ev, re, r, rp, chk)
+    if chk == 0 then return true end
+    e:GetHandler():ResetFlagEffect(m)
+end
+
+-- 大灾变怪兽效果的目标
+function cm.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
+    if chk == 0 then return Duel.IsExistingMatchingCard(cm.spfilter, tp, LOCATION_DECK, 0, 1, nil, tp) end
+    Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, nil, 1, tp, LOCATION_DECK)
+end
+
+-- 大灾变怪兽效果的操作
+function cm.spop(e, tp, eg, ep, ev, re, r, rp)
+    -- 从卡组特殊召唤大瘟疫
+    Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
+    local g = Duel.SelectMatchingCard(tp, cm.spfilter, tp, LOCATION_DECK, 0, 1, 1, nil, tp)
+    if #g > 0 and Duel.SpecialSummon(g, 0, tp, tp, false, false, POS_FACEUP) > 0 then
+        -- 选择后续操作
+        local opt = Duel.SelectOption(tp, aux.Stringid(m, 2), aux.Stringid(m, 3))
+
+        if opt == 0 then
+            -- 从额外卡组让大灾变怪兽进行自身的手续
+            -- 这里需要根据具体大灾变怪兽的召唤手续来实现
+            Debug.Message("从额外卡组让大灾变怪兽进行自身的手续")
+        else
+            -- 让墓地或除外状态的这张卡回到手卡
+            local c = e:GetHandler()
+            if c:IsRelateToEffect(e) and c:IsAbleToHand() then
+                Duel.SendtoHand(c, nil, REASON_EFFECT)
+                Duel.ConfirmCards(1 - tp, c)
+            end
+        end
+    end
+end
+
+-- 大瘟疫的筛选器
+function cm.spfilter(c, tp)
+    -- 这里需要根据实际的大瘟疫怪兽定义来设置条件
+    return c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(nil, 0, tp, false, false)
+end
+
+function cm.spfilter1(c, tp)
+    -- 这里需要根据实际的大瘟疫怪兽定义来设置条件
+    return c:IsAbleToRemove(tp, POS_FACEUP, REASON_EFFECT) or c:IsAbleToGrave()
+end
+
+-- 效果1的目标设置
+function cm.target(e, tp, eg, ep, ev, re, r, rp, chk)
+    if chk == 0 then return Duel.GetMatchingGroupCount(cm.spfilter1, tp, LOCATION_EXTRA, 0, nil) > 0 end
+    Duel.SetOperationInfo(0, CATEGORY_REMOVE, nil, 1, tp, LOCATION_EXTRA)
+    Duel.SetOperationInfo(0, CATEGORY_TOGRAVE, nil, 1, tp, LOCATION_EXTRA)
 end

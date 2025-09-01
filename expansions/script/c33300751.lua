@@ -27,9 +27,17 @@ function c33300751.initial_effect(c)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
 end
+function s.costfil(c)
+	return c:IsSetCard(0xc569) and c:IsType(TYPE_MONSTER) and c:IsReleasable()
+end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0xc569,1,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0xc569,1,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0xc569,1,REASON_COST) or Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
+	if Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+		local g=Duel.SelectReleaseGroup(tp,s.costfil,1,1,nil)
+		Duel.Release(g,REASON_COST)
+	else
+		Duel.RemoveCounter(tp,1,0,0xc569,1,REASON_COST)
+	end
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

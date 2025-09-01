@@ -3,6 +3,7 @@ if not pcall(function() require("expansions/script/c53702500") end) then require
 local m=53765009
 local cm=_G["c"..m]
 cm.name="枷狱最高检察官 审判"
+cm.Snnm_Ef_Rst=true
 cm.AD_Ht=true
 function cm.initial_effect(c)
 	SNNM.AllEffectReset(c)
@@ -31,7 +32,7 @@ function cm.initial_effect(c)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local ct=c:GetFlagEffect(m+50)
+	local ct=c:GetFlagEffectLabel(m+50) or 0
 	if ct==0 or ct>10 then return end
 	local eset={c:IsHasEffect(m)}
 	local res=true

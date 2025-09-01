@@ -37,14 +37,11 @@ function c33300761.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,id)
-	e3:SetCost(s.discost)
+	e3:SetCountLimit(1)
+	e3:SetCost(s.rehcost)
 	e3:SetTarget(s.rthtg)
 	e3:SetOperation(s.rthop)
 	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCost(s.rehcost)
-	c:RegisterEffect(e4)
 
 	--leave
 	local e4=Effect.CreateEffect(c)
@@ -69,18 +66,17 @@ function s.incon(e)
 	return e:GetHandler():IsLinkState()
 end
 
+function s.costfil(c)
+	return c:IsSetCard(0xc569) and c:IsType(TYPE_MONSTER) and c:IsReleasable()
+end
 function s.rehcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0xc569,1,REASON_COST) end
-	Duel.RemoveCounter(tp,1,0,0xc569,1,REASON_COST)
-end
-function s.relfilter(c,g)
-	return g:IsContains(c) and c:IsReleasable() 
-end
-function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local lg=e:GetHandler():GetLinkedGroup()
-	if chk==0 then return Duel.IsExistingMatchingCard(s.relfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,lg) end
-	local g=Duel.SelectMatchingCard(tp,s.relfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,lg)
-	Duel.Release(g,REASON_COST)
+	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0xc569,1,REASON_COST) or Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
+	if Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+		local g=Duel.SelectReleaseGroup(tp,s.costfil,1,1,nil)
+		Duel.Release(g,REASON_COST)
+	else
+		Duel.RemoveCounter(tp,1,0,0xc569,1,REASON_COST)
+	end
 end
 function s.rthtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
@@ -103,12 +99,12 @@ function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.leaveop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-		e1:SetValue(c:GetAttack()*2)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
-		c:RegisterEffect(e1)
+		--local e1=Effect.CreateEffect(c)
+		--e1:SetType(EFFECT_TYPE_SINGLE)
+		--e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+		--e1:SetValue(c:GetAttack()*2)
+		--e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+		--c:RegisterEffect(e1)
 		local e5=Effect.CreateEffect(c)
 		e5:SetType(EFFECT_TYPE_SINGLE)
 		e5:SetProperty(EFFECT_FLAG_SINGLE_RANGE)

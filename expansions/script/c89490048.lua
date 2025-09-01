@@ -1,7 +1,7 @@
 --大兽水术师-三藏通
 local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0xc34),1)
 	c:EnableReviveLimit()
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)

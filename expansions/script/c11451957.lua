@@ -34,7 +34,7 @@ function cm.chainop(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	if g and g:IsContains(e:GetHandler()) then
-		Duel.SetChainLimit(function(e,lp,tp) return e:GetHandler()==c end)
+		Duel.SetChainLimit(aux.FALSE) --function(e,lp,tp) return e:GetHandler()==c end)
 	end
 end
 function cm.tgfilter(c,tp)

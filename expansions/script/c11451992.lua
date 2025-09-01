@@ -54,11 +54,11 @@ function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local lv=c:GetLevel()|c:GetRank()|c:GetLink()
 	local fg=c:GetColumnGroup()
-	local dg=Duel.GetDecktopGroup(tp,lv)
-	if chk==0 then return #dg==lv or #fg>0 end
+	local dg=Duel.GetDecktopGroup(0,lv)+Duel.GetDecktopGroup(1,lv)
+	if chk==0 then return #dg==lv*2 or #fg>0 end
 	local lv=c:GetPreviousLevelOnField()|c:GetPreviousRankOnField()|c:GetLink()
 	local fg=Duel.GetMatchingGroup(function(c) return aux.GetColumn(c,tp)==aux.MZoneSequence(c:GetPreviousSequence()) end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	local dg=Duel.GetDecktopGroup(tp,lv)
+	local dg=Duel.GetDecktopGroup(0,lv)+Duel.GetDecktopGroup(1,lv)
 	e:SetLabel(lv,aux.MZoneSequence(c:GetPreviousSequence()))
 	Duel.Hint(HINT_OPSELECTED,tp,e:GetDescription())
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
@@ -67,6 +67,6 @@ end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local lv,seq=e:GetLabel()
 	local fg=Duel.GetMatchingGroup(function(c) return aux.GetColumn(c,tp)==seq end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	local dg=Duel.GetDecktopGroup(tp,lv)
+	local dg=Duel.GetDecktopGroup(0,lv)+Duel.GetDecktopGroup(1,lv)
 	Duel.Destroy(fg+dg,REASON_EFFECT)
 end

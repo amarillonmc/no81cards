@@ -142,11 +142,27 @@ function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c,tp)
-	return c:IsCode(11451631) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or (Duel.IsPlayerAffectedByEffect(tp,11451676) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0)) and c:GetActivateEffect():IsActivatable(tp,true,true)
+	return c:IsCode(11451631) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0 or Duel.IsPlayerAffectedByEffect(tp,11451676)) and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,tp) end
 	Duel.RaiseEvent(e:GetHandler(),11451675,e,m,tp,tp,Duel.GetCurrentChain())
+end
+function cm.GetCardsInZone(tp,fd)
+	if fd==0x400020 then return Duel.GetFieldCard(tp,LOCATION_MZONE,5) or Duel.GetFieldCard(1-tp,LOCATION_MZONE,6) end
+	if fd==0x200040 then return Duel.GetFieldCard(tp,LOCATION_MZONE,6) or Duel.GetFieldCard(1-tp,LOCATION_MZONE,5) end
+	local seq=math.log(fd,2)
+	local p=tp
+	if seq>=16 then
+		p=1-tp
+		seq=seq-16
+	end
+	local loc=LOCATION_MZONE
+	if seq>=8 then
+		loc=LOCATION_SZONE
+		seq=seq-8
+	end
+	return Duel.GetFieldCard(p,loc,math.floor(seq+0.5))
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
@@ -167,8 +183,12 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			if tc:IsType(TYPE_FIELD) then
 				local fc=Duel.GetFieldCard(sp,LOCATION_FZONE,0)
 				if fc then
-					Duel.SendtoGrave(fc,REASON_RULE)
-					Duel.BreakEffect()
+					if Duel.IsPlayerAffectedByEffect(tp,11451676) then
+						Duel.Destroy(fc,REASON_RULE)
+					else
+						Duel.SendtoGrave(fc,REASON_RULE)
+						Duel.BreakEffect()
+					end
 				end
 				Duel.MoveToField(tc,tp,sp,LOCATION_FZONE,POS_FACEUP,true)
 				local te=tc:GetActivateEffect()
@@ -180,7 +200,20 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				end
 				Duel.RaiseEvent(tc,4179255,te,0,tp,tp,Duel.GetCurrentChain())
 			else
-				Duel.MoveToField(tc,tp,sp,LOCATION_SZONE,POS_FACEUP,true)
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451675,0))
+				local fd=0xff
+				if Duel.IsPlayerAffectedByEffect(tp,11451676) then
+					if sp==tp then
+						fd=Duel.SelectField(tp,1,LOCATION_SZONE,0,0x20002000)
+					else
+						fd=Duel.SelectField(tp,1,0,LOCATION_SZONE,0x20002000)
+					end
+					local fc=cm.GetCardsInZone(tp,fd)
+					if fc then Duel.Destroy(fc,REASON_RULE) end
+					fd=fd>>8
+					if sp~=tp then fd=fd>>16 end
+				end
+				Duel.MoveToField(tc,tp,sp,LOCATION_SZONE,POS_FACEUP,true,fd)
 				local te=tc:GetActivateEffect()
 				local tep=tc:GetControler()
 				local cost=te:GetCost()
@@ -189,13 +222,28 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		else
 			if tc:IsType(TYPE_FIELD) then
 				local fc=Duel.GetFieldCard(sp,LOCATION_FZONE,0)
-				if fc then
-					Duel.SendtoGrave(fc,REASON_RULE)
-					Duel.BreakEffect()
+				if fc and Duel.IsPlayerAffectedByEffect(tp,11451676) then
+					Duel.Destroy(fc,REASON_RULE)
 				end
 				Duel.SSet(tp,tc,sp)
 			else
-				Duel.SSet(tp,tc,sp)
+				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451675,0))
+				local fd=0xff
+				if Duel.IsPlayerAffectedByEffect(tp,11451676) then
+					if sp==tp then
+						fd=Duel.SelectField(tp,1,LOCATION_SZONE,0,0x20002000)
+					else
+						fd=Duel.SelectField(tp,1,0,LOCATION_SZONE,0x20002000)
+					end
+					local fc=cm.GetCardsInZone(tp,fd)
+					if fc then Duel.Destroy(fc,REASON_RULE) end
+					fd=fd>>8
+					if sp~=tp then fd=fd>>16 end
+				end
+				Duel.MoveToField(tc,tp,sp,LOCATION_SZONE,POS_FACEDOWN,false,fd)
+				Duel.ConfirmCards(1-sp,tc)
+				tc:SetStatus(STATUS_SET_TURN,true)
+				Duel.RaiseEvent(tc,EVENT_SSET,e,REASON_EFFECT,tp,tp,ev)
 			end
 		end
 	end

@@ -135,14 +135,14 @@ function cm.XyzLevelFreeCondition(f,gf,minct,maxct)
 				if og then
 					mg=og:Filter(aux.XyzLevelFreeFilter,nil,c,f)
 				else
-					local loc=c:GetFlagEffect(m)>0 and LOCATION_REMOVED+LOCATION_MZONE or LOCATION_MZONE
+					local loc=c:GetFlagEffect(m)>0 and LOCATION_GRAVE+LOCATION_MZONE or LOCATION_MZONE
 					mg=Duel.GetMatchingGroup(aux.XyzLevelFreeFilter,tp,loc,0,nil,c,f)
 				end
 				local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 				if sg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
 				Duel.SetSelectedCard(sg)
-				aux.GCheckAdditional=function(g,...) return aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)(g,...) and (c:GetFlagEffect(m)==0 or g:FilterCount(Card.IsLocation,nil,LOCATION_REMOVED)<=1) end
-				local gfc=function(g,...) return gf(g,...) and (c:GetFlagEffect(m)==0 or g:FilterCount(Card.IsLocation,nil,LOCATION_REMOVED)<=1) end
+				aux.GCheckAdditional=function(g,...) return aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)(g,...) and (c:GetFlagEffect(m)==0 or g:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)<=1) end
+				local gfc=function(g,...) return gf(g,...) and (c:GetFlagEffect(m)==0 or g:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)<=1) end
 				local res=mg:CheckSubGroup(cm.XyzLevelFreeGoal,minc,maxc,tp,c,gfc)
 				aux.GCheckAdditional=nil
 				return res
@@ -163,15 +163,15 @@ function cm.XyzLevelFreeTarget(f,gf,minct,maxct)
 				if og then
 					mg=og:Filter(aux.XyzLevelFreeFilter,nil,c,f)
 				else
-					local loc=c:GetFlagEffect(m)>0 and LOCATION_REMOVED+LOCATION_MZONE or LOCATION_MZONE
+					local loc=c:GetFlagEffect(m)>0 and LOCATION_GRAVE+LOCATION_MZONE or LOCATION_MZONE
 					mg=Duel.GetMatchingGroup(aux.XyzLevelFreeFilter,tp,loc,0,nil,c,f)
 				end
 				local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
 				Duel.SetSelectedCard(sg)
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 				local cancel=Duel.IsSummonCancelable()
-				aux.GCheckAdditional=function(g,...) return aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)(g,...) and (c:GetFlagEffect(m)==0 or g:FilterCount(Card.IsLocation,nil,LOCATION_REMOVED)<=1) end
-				local gfc=function(g,...) return gf(g,...) and (c:GetFlagEffect(m)==0 or g:FilterCount(Card.IsLocation,nil,LOCATION_REMOVED)<=1) end
+				aux.GCheckAdditional=function(g,...) return aux.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)(g,...) and (c:GetFlagEffect(m)==0 or g:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)<=1) end
+				local gfc=function(g,...) return gf(g,...) and (c:GetFlagEffect(m)==0 or g:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)<=1) end
 				local g=mg:SelectSubGroup(tp,cm.XyzLevelFreeGoal,cancel,minc,maxc,tp,c,gfc)
 				aux.GCheckAdditional=nil
 				if g and g:GetCount()>0 then

@@ -32,7 +32,7 @@ function c33300762.initial_effect(c)
 	c:RegisterEffect(e3)
 	--to grave
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(5206415,1))
+	e4:SetDescription(aux.Stringid(id,0))
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_PHASE+PHASE_END)
 	e4:SetRange(LOCATION_MZONE)
@@ -114,13 +114,18 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 end
+function s.movefil(c)
+	return c:IsFaceup() and c:IsSetCard(0xc569)
+end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) or c:IsImmuneToEffect(e) or not c:IsControler(tp) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	local g=Duel.SelectMatchingCard(tp,s.movefil,tp,LOCATION_MZONE,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc:IsImmuneToEffect(e) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
 	local fd=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
 	Duel.Hint(HINT_ZONE,tp,fd)
 	local seq=math.log(fd,2)
-	local pseq=c:GetSequence()
-	Duel.MoveSequence(c,seq)
+	local pseq=tc:GetSequence()
+	Duel.MoveSequence(tc,seq)
 end

@@ -58,7 +58,15 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.SendtoDeck(g,nil,SEQ_DECKTOP,REASON_EFFECT)==0 then return end
 	local ct=Duel.GetOperatedGroup():FilterCount(Card.IsLocation,nil,LOCATION_DECK)
 	if ct>0 then
-		Duel.SortDecktop(tp,tp,ct)
+		if ct<=16 then
+			Duel.SortDecktop(tp,tp,ct)
+		else
+			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451463,2))
+			local tc=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_DECK):Select(tp,1,1,nil):GetFirst()
+			if not tc then return end
+			Duel.ShuffleDeck(tp)
+			Duel.MoveSequence(tc,0)
+		end
 		local dt=Duel.GetDrawCount(tp)
 		if tid==1 then
 			dt=1

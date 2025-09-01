@@ -3,6 +3,7 @@ if not pcall(function() require("expansions/script/c53702500") end) then require
 local m=53765008
 local cm=_G["c"..m]
 cm.name="枷狱首席执行官 路西法"
+cm.Snnm_Ef_Rst=true
 cm.AD_Ht=true
 function cm.initial_effect(c)
 	SNNM.AllEffectReset(c)

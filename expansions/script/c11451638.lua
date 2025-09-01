@@ -225,7 +225,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			local le={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_SPECIAL_SUMMON)}
 			local lex={Duel.IsPlayerAffectedByEffect(tp,EFFECT_LIMIT_SPECIAL_SUMMON_POSITION)}
-			for _,v in pairs(lex) do table.insert(le,v) end
+			--for _,v in pairs(lex) do table.insert(le,v) end
 			local ret1,ret2={},{}
 			for _,v in pairs(le) do
 				local tg=v:GetTarget()

@@ -59,20 +59,20 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c)
-	return c:IsCode(m) and c:IsFaceupEx() and c:IsAbleToHand()
+	return c:IsCode(m) and c:IsAbleToHand()
 end
 function cm.fselect(g,ct)
 	return g:FilterCount(aux.NOT(Card.IsLocation),nil,LOCATION_DECK)<=ct
 end
 function cm.srtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ct=e:GetHandler():GetFlagEffectLabel(m+50) or 0
-	local g=Group.__add(Duel.GetMatchingGroup(cm.filter,tp,0xff,0,nil),Duel.GetOverlayGroup(tp,1,0))
+	local g=Group.__add(Duel.GetMatchingGroup(Card.IsFaceupEx,tp,0xff,0,nil),Duel.GetOverlayGroup(tp,1,0)):Filter(cm.filter,nil)
 	if chk==0 then return g:CheckSubGroup(cm.fselect,1,2,ct) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,0xff)
 end
 function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetHandler():GetFlagEffectLabel(m+50) or 0
-	local g=Group.__add(Duel.GetMatchingGroup(cm.filter,tp,0xff,0,nil),Duel.GetOverlayGroup(tp,1,0))
+	local g=Group.__add(Duel.GetMatchingGroup(Card.IsFaceupEx,tp,0xff,0,nil),Duel.GetOverlayGroup(tp,1,0)):Filter(cm.filter,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local sg=g:SelectSubGroup(tp,cm.fselect,false,1,2,ct)
 	if sg then

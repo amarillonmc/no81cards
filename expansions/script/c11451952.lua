@@ -38,13 +38,13 @@ function cm.efilter(e,te)
 	if te:GetHandler():IsHasEffect(m) and te:IsHasType(EFFECT_TYPE_GRANT) then return false end
 	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	return not g or (g:IsContains(e:GetHandler()) and #g==1)
+	return not g or not g:IsContains(e:GetHandler()) --(g:IsContains(e:GetHandler()) and #g==1)
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsAbleToHand() and not chkc:IsLocation(LOCATION_FZONE) end
-	if chk==0 then return Duel.IsExistingTarget(function(c) return c:IsAbleToHand() and not c:IsLocation(LOCATION_FZONE) end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(function(c) return c:IsAbleToHand() and not c:IsLocation(LOCATION_FZONE) end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local tg=Duel.SelectTarget(tp,function(c) return c:IsAbleToHand() and not c:IsLocation(LOCATION_FZONE) end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local tg=Duel.SelectTarget(tp,function(c) return c:IsAbleToHand() and not c:IsLocation(LOCATION_FZONE) end,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
 	local tc=tg:GetFirst()
 	local g=tc:GetColumnGroup()
 	g:AddCard(tc)

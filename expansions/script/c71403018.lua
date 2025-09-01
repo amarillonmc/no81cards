@@ -112,7 +112,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 			if ct>0 and fg:GetCount()>0 then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-				local sg3=fg:Select(tp,1,1,nil)
+				local sg3=fg:Select(tp,1,1,aux.ExceptThisCard(e))
 				Duel.Destroy(sg3,REASON_EFFECT)
 			end
 		end
