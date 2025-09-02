@@ -18,6 +18,15 @@ function s.initial_effect(c)
 	e2:SetCost(s.accost)
 	e2:SetOperation(s.acop)
 	c:RegisterEffect(e2)
+	--act limit
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetRange(LOCATION_FZONE)
+	e0:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_IGNORE_IMMUNE)
+	e0:SetTargetRange(1,1)
+	e0:SetValue(s.aclimit)
+	c:RegisterEffect(e0)
 	--spsummon limit
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
@@ -27,6 +36,14 @@ function s.initial_effect(c)
 	e3:SetTargetRange(1,0)
 	e3:SetTarget(s.sumlimit)
 	c:RegisterEffect(e3)
+end
+
+
+function s.aclimit(e,re,tp)
+	local tc=re:GetHandler()
+	local tp=tc:GetControler()
+	local seq=tc:GetSequence()
+	return tc and tp and seq and ((seq==5 and not Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and not Duel.CheckLocation(tp,LOCATION_MZONE,3)))
 end
 
 function s.accon(e)
@@ -42,7 +59,7 @@ function s.accost(e,te)
 	local tc=te:GetHandler()
 	local tp=tc:GetControler()
 	local seq=tc:GetSequence()
-	return tc:IsLocation(LOCATION_MZONE) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)) or (seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))) or tc:IsLocation(LOCATION_SZONE) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_SZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_SZONE,seq+1)))
+	return (tc:IsLocation(LOCATION_MZONE) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)) or (seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3)))) or (tc:IsLocation(LOCATION_SZONE) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_SZONE,seq-1)) or (seq<4 and Duel.CheckLocation(tp,LOCATION_SZONE,seq+1))))
 end
 function s.acop(e,eg,ep,ev,re,r,rp)
 	if s[0] then return end

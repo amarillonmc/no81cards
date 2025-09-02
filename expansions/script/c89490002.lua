@@ -78,8 +78,8 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.Release(g,REASON_COST)
 		e:SetLabel(0)
 	else
-		Duel.Release(c,REASON_COST)
 		if c:IsLocation(LOCATION_HAND) then e:SetLabel(1) else e:SetLabel(0) end
+		Duel.Release(c,REASON_COST)
 	end
 end
 function s.thfilter(c)

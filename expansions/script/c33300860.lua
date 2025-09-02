@@ -4,9 +4,10 @@ function s.initial_effect(c)
 	-- 特殊召唤限制：融合召唤或解放召唤
 	local e0 = Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_UNCOPYABLE)
+	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(s.splimit)
+	e0:SetRange(LOCATION_EXTRA)
+	e0:SetValue(aux.fuslimit)--(s.splimit)
 	c:RegisterEffect(e0)
 	-- 融合召唤
 	aux.AddFusionProcMix(c, true, true,s.matfilter1, s.matfilter2)
