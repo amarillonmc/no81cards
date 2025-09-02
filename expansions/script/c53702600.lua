@@ -2007,6 +2007,7 @@ function cm.SpellorTrapSPable(c)
 	end
 end
 function cm.HelltakerActivate(c,code)
+	cm.AozoraDisZoneGet(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
@@ -2259,7 +2260,7 @@ function cm.HTAfcostop(_op,zone)
 end
 function cm.HTAmvfilter(c,e,tp,zone)
 	local seq=c:GetSequence()
-	return c:IsHasEffect(53765000) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_SZONE,seq-1)) or c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,1<<seq)) and (1<<seq)&zone~=0
+	return c:IsHasEffect(53765000) and ((seq>0 and Duel.CheckLocation(tp,LOCATION_SZONE,seq-1)) or c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,1<<seq)) and (1<<seq)&zone~=0 and cm.RinnaZone(tp,Group.FromCards(c),true)>0
 end
 function cm.HTAmvcostop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()

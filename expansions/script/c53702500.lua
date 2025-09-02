@@ -2690,10 +2690,11 @@ function cm.btreset(code)
 	class[0]=nil
 	end
 end
-function cm.RinnaZone(tp,cg)
+function cm.RinnaZone(tp,cg,szone)
 	local fdzone=0
 	for cc in aux.Next(cg) do
 		local cs=cc:GetSequence()
+		if szone then cs=cs+8 end
 		local cz=1<<cs
 		fdzone=fdzone|cz
 		local bcz=1<<(cs+16)
