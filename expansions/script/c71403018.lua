@@ -72,11 +72,11 @@ function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_ONFIELD)
 end
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
-	local zone=0x1f00
+	local zone=0x1f
 	local pflag1=Duel.CheckLocation(tp,LOCATION_PZONE,0)
 	local pflag2=Duel.CheckLocation(tp,LOCATION_PZONE,1)
 	if pflag1~=pflag2 then 
-		zone=0xe00
+		zone=0xe
 	end
 	if Duel.GetLocationCount(tp,LOCATION_SZONE,tp,LOCATION_REASON_TOFIELD,zone)==0 then
 		return

@@ -130,6 +130,7 @@ function s.sumop(e,tp,eg,ep,ev,re,r,rp)
 		local tg=Duel.SelectMatchingCard(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,2,2,nil)
 		if tg:GetCount()<1 then return end
 		Duel.BreakEffect()
+		Duel.HintSelection(tg)
 		for tc in aux.Next(tg) do
 			if tc:IsCanBeDisabledByEffect(e,false) then
 				Duel.NegateRelatedChain(tc,RESET_TURN_SET)

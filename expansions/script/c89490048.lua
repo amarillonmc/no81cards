@@ -50,7 +50,7 @@ function s.atkfilter(c)
 	return c:IsType(TYPE_TUNER) and c:IsFaceupEx()
 end
 function s.atkval(e,c)
-	return Duel.GetMatchingGroupCount(s.atkfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil)*500
+	return Duel.GetMatchingGroup(s.atkfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil):GetClassCount(Card.GetCode)*500
 end
 function s.matcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) and e:GetLabel()==1

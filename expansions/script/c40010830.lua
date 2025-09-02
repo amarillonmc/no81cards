@@ -40,6 +40,13 @@ end
 function cm.spfilter(c,e,tp)
 	return cm.BlueDeathster(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+function cm.spfilter(c,e,tp)
+	return cm.BlueDeathster(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function cm.thfilter(c)
+	return   c:IsAbleToHand()
+		and not c:IsLocation(LOCATION_FZONE)
+end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
@@ -50,10 +57,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g1=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 		if g1:GetCount()>0 then
-			if Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_SZONE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+			if Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_SZONE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local g2=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_SZONE,0,1,1,nil)
+			local g2=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_SZONE,0,1,1,nil)
 			Duel.SendtoHand(g2,nil,REASON_EFFECT)
 			end
 		end
