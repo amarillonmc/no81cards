@@ -168,7 +168,7 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return ev==1-tp or ev==PLAYER_ALL
 end
 function cm.tgfilter(c,e)
-	return c:IsAbleToDeck() and c:IsCanBeEffectTarget(e)
+	return c:IsAbleToDeck() and c:IsCanBeEffectTarget(e) and c:IsType(TYPE_MONSTER)
 end
 function cm.xyzfilter1(c,g,tp)
 	local all=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,0,nil)-g
