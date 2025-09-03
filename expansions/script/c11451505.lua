@@ -37,8 +37,8 @@ end
 function cm.cfilter(c,code)
 	return c:IsFaceup() and c:IsCode(code)
 end
-function cm.filter(c,tp,act)
-	return c:IsSetCard(0x97d) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode()) and not (act and c:IsCode(m)) and not c:IsForbidden() and c:IsHasEffect(EFFECT_REMAIN_FIELD)
+function cm.filter(c,tp,act,code)
+	return c:IsSetCard(0x97d) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode()) and not (act and c:IsCode(code)) and not c:IsForbidden() and c:IsHasEffect(EFFECT_REMAIN_FIELD)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) then return false end
@@ -52,7 +52,7 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=0
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsLocation(LOCATION_SZONE) then ft=1 end
 	local act=e:IsHasType(EFFECT_TYPE_ACTIVATE)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,tp,act) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil,tp,act,e:GetHandler():GetCode()) and (Duel.GetLocationCount(tp,LOCATION_SZONE)>ft or e:IsHasType(EFFECT_TYPE_QUICK_O)) end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
