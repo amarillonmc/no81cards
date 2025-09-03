@@ -62,7 +62,7 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(p,VHisc_HYZQ.rlft,p,LOCATION_HAND+LOCATION_MZONE,0,1,63,nil)
+	local g=Duel.SelectMatchingCard(p,VHisc_HYZQ.rlft,p,LOCATION_HAND+LOCATION_MZONE,0,1,2,nil)
 	local ct=Duel.SendtoGrave(g,REASON_RELEASE)
 	Duel.Draw(p,ct,REASON_EFFECT)
 	Duel.BreakEffect()
