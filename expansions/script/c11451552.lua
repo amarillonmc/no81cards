@@ -31,6 +31,9 @@ function cm.eqfilter(c)
 	return c:GetFlagEffect(m)~=0
 end
 function cm.eqlimit(e,c)
+	return e:GetOwner()==c
+end
+function cm.eqlimit2(e,c)
 	return e:GetLabelObject()==c
 end
 function cm.equipfd(c,tp,tc)
@@ -50,14 +53,6 @@ end
 function cm.equipfd2(c,tp,tc)
 	if tc:IsPosition(POS_FACEUP) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,false) end
 	if not Duel.Equip(tp,tc,c,false) then return false end
-	--Add Equip limit
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
-	e1:SetCode(EFFECT_EQUIP_LIMIT)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	e1:SetValue(cm.eqlimit)
-	tc:RegisterEffect(e1)
 	return true
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
@@ -131,7 +126,7 @@ function cm.eqop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EFFECT_EQUIP_LIMIT)
 		e1:SetLabelObject(tg:GetFirst())
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(cm.eqlimit)
+		e1:SetValue(cm.eqlimit2)
 		tc:RegisterEffect(e1)
 	end
 	Duel.ShuffleDeck(tp)
