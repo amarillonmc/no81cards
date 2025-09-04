@@ -23,7 +23,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.costfilter(c)
-	return c:IsCode(m,72880377) and c:IsAbleToGraveAsCost()
+	return c:IsCode(m,53129443,72880377) and c:IsAbleToGraveAsCost()
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) end
