@@ -24,14 +24,14 @@ function c11561032.initial_effect(c)
 	e2:SetOperation(c11561032.tkop)
 	c:RegisterEffect(e2) 
 	--attack all
----	local e3=Effect.CreateEffect(c)
---	e3:SetType(EFFECT_TYPE_SINGLE)
---	e3:SetCode(EFFECT_ATTACK_ALL)
---	e3:SetValue(1) 
---	e3:SetCondition(function(e)  
---	local tp=e:GetHandlerPlayer()
---	return Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsCode(11561033) end,tp,0,LOCATION_MZONE,1,nil) end)
---	c:RegisterEffect(e3)
+--- local e3=Effect.CreateEffect(c)
+--  e3:SetType(EFFECT_TYPE_SINGLE)
+--  e3:SetCode(EFFECT_ATTACK_ALL)
+--  e3:SetValue(1) 
+--  e3:SetCondition(function(e)  
+--  local tp=e:GetHandlerPlayer()
+--  return Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsCode(11561033) end,tp,0,LOCATION_MZONE,1,nil) end)
+--  c:RegisterEffect(e3)
 
 	--double attack
 	local e3=Effect.CreateEffect(c)
@@ -52,7 +52,7 @@ end
 function c11561032.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:GetFlagEffect(11561032)==0 and c:CheckRemoveOverlayCard(tp,1,REASON_COST) end 
-	e:SetLabel(c:RemoveOverlayCard(tp,1,99,REASON_EFFECT))  
+	e:SetLabel(c:RemoveOverlayCard(tp,1,99,REASON_COST))  
 	c:RegisterFlagEffect(11561032,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL,0,1)  
 end
 function c11561032.atkop(e,tp,eg,ep,ev,re,r,rp)
