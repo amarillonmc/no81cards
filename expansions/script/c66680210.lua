@@ -2,9 +2,9 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 
-    -- 幻想魔族6星怪兽×2只以上
+    -- 天使族6星怪兽×2只以上
     c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_ILLUSION),6,2,nil,nil,99)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),6,2,nil,nil,99)
 
     -- 只要持有超量素材的这张卡在怪兽区域存在，对方若不支付600基本分，则不能把卡的效果发动
 	local e1=Effect.CreateEffect(c)

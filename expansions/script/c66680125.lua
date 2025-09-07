@@ -2,41 +2,38 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 
-	-- 这张卡被送去墓地的场合才能发动，「堕福的静谣·归音巫」以外的自己的墓地·除外状态的1张「堕福」卡加入手卡
+	-- 这张卡被送去墓地的自己·对方回合才能发动，「堕福的静谣·归音巫」以外的自己的墓地·除外状态的1张「堕福」卡加入手卡
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_TO_GRAVE)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetRange(LOCATION_GRAVE)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.thcon)
 	e1:SetTarget(s.thtg)
 	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
 	
-	-- 这张卡和怪兽进行战斗的场合，那2只不会被那次战斗破坏
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-	e2:SetTarget(s.indtg)
-	e2:SetValue(1)
-	c:RegisterEffect(e2)
-	
 	-- 这张卡被除外的场合，以自己场上1只「堕福」超量怪兽为对象才能发动，把这张卡作为那只怪兽的超量素材
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(id,1))
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_REMOVE)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(1,id+1)
-	e3:SetTarget(s.xyztg)
-	e3:SetOperation(s.xyzop)
-	c:RegisterEffect(e3)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_REMOVE)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,id+1)
+	e2:SetTarget(s.xyztg)
+	e2:SetOperation(s.xyzop)
+	c:RegisterEffect(e2)
 end
 
--- 这张卡被送去墓地的场合才能发动，「堕福的静谣·归音巫」以外的自己的墓地·除外状态的1张「堕福」卡加入手卡
+-- 这张卡被送去墓地的自己·对方回合才能发动，「堕福的静谣·归音巫」以外的自己的墓地·除外状态的1张「堕福」卡加入手卡
+function s.thcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetTurnID()==Duel.GetTurnCount() and not e:GetHandler():IsReason(REASON_RETURN)
+end
+
 function s.filter(c)
 	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsSetCard(0x666c) and not c:IsCode(id) and c:IsAbleToHand()
 end
@@ -53,12 +50,6 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
-end
-
--- 这张卡和怪兽进行战斗的场合，那2只不会被那次战斗破坏
-function s.indtg(e,c)
-	local tc=e:GetHandler()
-	return c==tc or c==tc:GetBattleTarget()
 end
 
 -- 这张卡被除外的场合，以自己场上1只「堕福」超量怪兽为对象才能发动，把这张卡作为那只怪兽的超量素材

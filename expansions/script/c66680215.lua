@@ -2,9 +2,9 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 
-    -- 幻想魔族6星怪兽×2只以上
+    -- 天使族6星怪兽×2只以上
     c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_ILLUSION),6,2,nil,nil,99)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),6,2,nil,nil,99)
 	
 	-- 这张卡的攻击力·守备力上升这张卡作为超量素材中的「堕福」怪兽的各自数值
 	local e1=Effect.CreateEffect(c)

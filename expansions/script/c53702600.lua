@@ -2268,7 +2268,16 @@ function cm.HTAmvcostop(e,tp,eg,ep,ev,re,r,rp)
 	local typ=c:GetType()
 	if te:IsActiveType(TYPE_PENDULUM) then typ=TYPE_PENDULUM+TYPE_SPELL end
 	local xe1=cm.AASTregi(c,te)
-	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	if typ==TYPE_PENDULUM+TYPE_SPELL then
+		Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,false)
+		local e0=Effect.CreateEffect(e:GetHandler())
+		e0:SetCode(EFFECT_CHANGE_TYPE)
+		e0:SetType(EFFECT_TYPE_SINGLE)
+		e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e0:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET)
+		e0:SetValue(typ)
+		c:RegisterEffect(e0,true)
+	else Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false) end
 	xe1:SetLabel(c:GetSequence()+1,typ)
 	c:CreateEffectRelation(te)
 	local ev0=Duel.GetCurrentChain()+1
