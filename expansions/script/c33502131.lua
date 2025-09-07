@@ -32,14 +32,18 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(g,REASON_COST)
 	e:SetLabel(1)
 end
+function c33502131.tgfilter(c)
+	return c:IsSetCard(0x2a80) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-   if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_DECK,0,1,nil) end
-	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
+	local g=Duel.GetMatchingGroup(c33502131,tp,LOCATION_DECK,0,nil)
+	if chk==0 then return #g>0 end
+	if #g==0 then return end
 	local ag=Group.CreateGroup()
 	local codes={}
 	for c in aux.Next(g) do
 		local code=c:GetCode()
-		if c:IsSetCard(0x2a80) and not ag:IsExists(Card.IsCode,1,nil,code) then
+		if c:IsSetCard(0x2a80) and c:IsType(TYPE_MONSTER) and not ag:IsExists(Card.IsCode,1,nil,code) then
 			ag:AddCard(c)
 			table.insert(codes,code)
 		end
