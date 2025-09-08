@@ -59,7 +59,6 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 				e2:SetCategory(CATEGORY_TODECK)
 				e2:SetType(EFFECT_TYPE_IGNITION)
 				e2:SetRange(LOCATION_SZONE)
-				e2:SetCountLimit(1,id)
 				if tc:IsOriginalSetCard(0x6224) then
 					e2:SetCondition(aux.NOT(s.effcon))
 				end
