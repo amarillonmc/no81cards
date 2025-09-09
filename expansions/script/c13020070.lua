@@ -68,15 +68,16 @@ function cm.initial_effect(c)
 	qe:SetRange(LOCATION_HAND)
 	local con = e0:GetCondition()
 	qe:SetCondition(function(e, tp, eg, ep, ev, re, r, rp)
-		return Duel.IsExistingMatchingCard(nil, tp, LOCATION_MZONE, 0, 1, nil) and
+		return not Duel.IsExistingMatchingCard(nil, tp, LOCATION_MZONE, 0, 1, nil) and
 			(not con or con(e, tp, eg, ep, ev, re, r, rp))
 	end)
 	-- 修复未定义的tc变量
 	cm.global_jc[c] = cm.global_jc[c] or {}
 	cm.global_jc[c][#cm.global_jc[c] + 1] = qe
 	c:RegisterEffect(qe)
+
 	e0:SetCondition(function(e, tp, eg, ep, ev, re, r, rp)
-		return not Duel.IsExistingMatchingCard(nil, tp, LOCATION_MZONE, 0, 1, nil) and
+		return Duel.IsExistingMatchingCard(nil, tp, LOCATION_MZONE, 0, 1, nil) and
 			(not con or con(e, tp, eg, ep, ev, re, r, rp))
 	end)
 
@@ -122,7 +123,7 @@ function cm.triggertg(e, tp, eg, ep, ev, re, r, rp, chk)
 	-- 仅在装备怪兽攻击力为0时才会触发后续操作，所以这里添加条件判断
 	local c = e:GetHandler()
 	local ec = c:GetEquipTarget()
-	if ec and (ec:GetAttack() - 748) == 0 then
+	if ec and (ec:GetAttack() - 444) == 0 then
 		Duel.SetOperationInfo(0, CATEGORY_TOHAND, nil, 1, tp, LOCATION_DECK)
 		Duel.SetOperationInfo(0, CATEGORY_RELEASE, ec, 1, tp, LOCATION_MZONE)
 		Duel.SetOperationInfo(0, CATEGORY_DESTROY, c, 1, 0, 0)
@@ -159,9 +160,9 @@ function cm.triggerop(e, tp, eg, ep, ev, re, r, rp)
 			
 				Duel.Destroy(c, REASON_EFFECT)
 			end
-	   
+	end
 end
-end
+
 function cm.filter(c)
 	return c:IsType(TYPE_EQUIP) and not c:IsCode(m) and c:IsAbleToHand()
 end

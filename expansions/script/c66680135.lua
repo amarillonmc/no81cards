@@ -30,9 +30,10 @@ end
 
 -- 自己·对方回合，让这张卡从手卡·墓地回到卡组才能发动，从手卡·卡组选「堕福的选灯 命途照」以外的1张「堕福」卡送去墓地或在自己的超量怪兽下面重叠作为超量素材
 function s.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToDeckAsCost() end
-	Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
+    local c=e:GetHandler()
+    if chk==0 then return c:IsAbleToDeckAsCost() end
+    Duel.ConfirmCards(1-tp,c)
+    Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 
 function s.tgfilter(c,e,tp)

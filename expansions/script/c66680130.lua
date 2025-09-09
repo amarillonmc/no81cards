@@ -27,9 +27,10 @@ end
 
 -- 让这张卡从手卡·墓地回到卡组才能发动，自己的卡组·墓地·除外状态的1张「堕福」永续魔法·永续陷阱卡在自己场上盖放
 function s.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToDeckAsCost() end
-	Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
+    local c=e:GetHandler()
+    if chk==0 then return c:IsAbleToDeckAsCost() end
+    Duel.ConfirmCards(1-tp,c)
+    Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 
 function s.pfilter(c,tp)
