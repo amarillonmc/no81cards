@@ -76,11 +76,14 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
 	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	g:KeepAlive()
+	local fid=c:GetFieldID()
+	for tc in aux.Next(g) do tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid) end
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
+	e1:SetLabel(fid)
 	e1:SetLabelObject(g)
 	e1:SetOperation(cm.tdop)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
@@ -108,7 +111,7 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetLabelObject()
+	local g=e:GetLabelObject():Filter(function(c) return c:GetFlagEffectLabel(m) and c:GetFlagEffectLabel(m)==e:GetLabel() and c:IsLocation(LOCATION_REMOVED) end,nil)
 	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 end
 function cm.distg(e,c)

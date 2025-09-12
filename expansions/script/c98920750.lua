@@ -85,7 +85,7 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(s.xfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-		local g=Duel.SelectMatchingCard(p,aux.NecroValleyFilter(s.xfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,3,nil)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.xfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,3,nil)
 		if g:GetCount()==0 then return end
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)   
 		local ct=g:GetCount()

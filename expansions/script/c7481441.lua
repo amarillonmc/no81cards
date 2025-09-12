@@ -94,6 +94,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	Duel.ResetFlagEffect(0,id)
+	--Debug.Message("3")
 	local mg=tg:Filter(Card.IsType,nil,TYPE_MONSTER)
 	if #mg>0 then
 		local tc=mg:GetFirst()
@@ -101,9 +102,11 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 		local cregister=Card.RegisterEffect
 		Card.RegisterEffect=function(card,effect,flag)
-			if effect and (effect:IsHasType(EFFECT_TYPE_IGNITION) or effect:IsHasType(EFFECT_TYPE_TRIGGER_F) or effect:IsHasType(EFFECT_TYPE_TRIGGER_O) or effect:IsHasType(EFFECT_TYPE_QUICK_F) or effect:IsHasType(EFFECT_TYPE_QUICK_O)) and bit.band(effect:GetCode(),EVENT_FLIP)==0 then
+	--Debug.Message("2")
+			if effect and (effect:IsHasType(EFFECT_TYPE_IGNITION) or effect:IsHasType(EFFECT_TYPE_TRIGGER_F) or effect:IsHasType(EFFECT_TYPE_TRIGGER_O) or effect:IsHasType(EFFECT_TYPE_QUICK_F) or effect:IsHasType(EFFECT_TYPE_QUICK_O)) then
+	--Debug.Message("22")
 				local type=effect:GetType()
-				local prop=effect:GetProperty()
+				local prop={effect:GetProperty()}
 				if effect:IsHasType(EFFECT_TYPE_TRIGGER_O) then
 					effect:SetType(EFFECT_TYPE_QUICK_O)
 					effect:SetRange(LOCATION_MZONE)
@@ -126,9 +129,10 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 				end
 				--
 				--prop=prop&(~EFFECT_FLAG_DELAY)
-				if bit.band(prop,EFFECT_FLAG_DELAY)==EFFECT_FLAG_DELAY then
-					prop=bit.bxor(prop,EFFECT_FLAG_DELAY)
+				if bit.band(prop[1],EFFECT_FLAG_DELAY)==EFFECT_FLAG_DELAY then
+					prop[1]=bit.bxor(prop[1],EFFECT_FLAG_DELAY)
 					if Duel.GetFlagEffect(0,id)==0 then
+	--Debug.Message("0")
 						Duel.RegisterFlagEffect(0,id,0,0,1)
 						--raise event
 						local e3=Effect.CreateEffect(card)
@@ -140,10 +144,12 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 					end
 				end
 				--prop=prop|EFFECT_FLAG_SET_AVAILABLE 
-				if bit.band(prop,EFFECT_FLAG_SET_AVAILABLE)==0 then
-					prop=prop+EFFECT_FLAG_SET_AVAILABLE 
+				if bit.band(prop[1],EFFECT_FLAG_SET_AVAILABLE)==0 then
+					prop[1]=prop[1]+EFFECT_FLAG_SET_AVAILABLE 
 				end
-				effect:SetProperty(prop)
+				if prop[2] then effect:SetProperty(prop[1],prop[2]) 
+				else effect:SetProperty(prop[1]) 
+				end
 				--Debug.Message(effect:GetType())
 				--Debug.Message(effect:GetProperty())
 				--Debug.Message("--------")
@@ -331,9 +337,10 @@ function s.rstop(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
-	--Debug.Message("0")
+	--Debug.Message("1")
 	local c=e:GetLabelObject()
 	Duel.RaiseEvent(c,EVENT_SPSUMMON_SUCCESS,e,REASON_EFFECT,e:GetHandlerPlayer(),0,0)
+	--Duel.RaiseSingleEvent(c,EVENT_SPSUMMON_SUCCESS,e,REASON_EFFECT,e:GetHandlerPlayer(),0,0)
 	--[[
 	--reset&RaiseSingleEvent
 	local e2=Effect.CreateEffect(c)
@@ -357,7 +364,7 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function s.rstop2(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message("1")
+	--Debug.Message("1")
 	if e:GetLabel()~=1 then e:SetLabel(1) return end
 	e:GetLabelObject():Reset()
 	e:Reset()
@@ -380,7 +387,7 @@ function s.costop2(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetOperation(s.costop3)
 	Duel.RegisterEffect(e2,c:GetControler())
 	--
-	Debug.Message("2")
+	--Debug.Message("2")
 	e:GetLabelObject():Reset()
 	e:Reset()
 end
