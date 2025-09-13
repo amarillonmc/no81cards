@@ -54,6 +54,7 @@ end
 
 function cm.condition(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
+	local tp = c:GetControler()
 	local g = Duel.GetMatchingGroup(cm.cfilter, tp, LOCATION_HAND + LOCATION_ONFIELD, 0, nil, e, tp, c)
 	local g2 = Duel.GetMatchingGroup(cm.cfilter2, tp, LOCATION_ONFIELD, 0, nil, e, tp, c)
 	return #g > 0 and #g2 > 0
@@ -61,6 +62,7 @@ end
 
 function cm.operation(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
+	local tp = c:GetControler()
 	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SELECT)
 	local g1 = Duel.SelectMatchingCard(tp, cm.cfilter, tp, LOCATION_HAND + LOCATION_ONFIELD, 0, 1, 1, nil, e, tp, c)
 	local g2 = Duel.SelectMatchingCard(tp, cm.cfilter2, tp, LOCATION_ONFIELD, 0, 1, 1, g1, e, tp, c)
