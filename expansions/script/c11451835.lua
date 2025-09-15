@@ -46,7 +46,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function cm.retg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemove() end
+	if chk==0 then return e:GetHandler():IsAbleToRemove() and e:GetHandler():GetFlagEffect(m)==0 end
 	local t={}
 	local i=1
 	for i=1,7 do t[i]=i+2 end
@@ -70,7 +70,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e2)
 		e:UseCountLimit(tp,1)
-		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2))
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END-RESET_TEMP_REMOVE,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2))
 		c:RegisterFlagEffect(11451717,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,ct,aux.Stringid(11451717,ct-3))
 		c:RegisterFlagEffect(11451718,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,9-ct,aux.Stringid(11451718,9-ct))
 		local e1=Effect.CreateEffect(c)
@@ -257,7 +257,7 @@ end
 function cm.eftg(e,c)
 	if not c:IsSetCard(0x3977) then return false end
 	local tp=c:GetControler()
-	if Duel.GetFlagEffect(tp,m)>0 then return false end
+	--if Duel.GetFlagEffect(tp,m)>0 then return false end
 	local te=c:GetActivateEffect()
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(Card.IsLocation,nil,LOCATION_HAND)
@@ -322,7 +322,7 @@ function cm.efcost(e,tp,eg,ep,ev,re,r,rp,chk)
 				end
 			end
 	te:SetOperation(op2)
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+	--Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
@@ -343,7 +343,7 @@ function cm.costcon(e)
 end
 function cm.actarget2(e,te,tp)
 	e:SetLabelObject(te)
-	return Duel.GetFlagEffect(tp,m)==0 and te:GetHandler():IsSetCard(0x3977) and te:IsHasType(EFFECT_TYPE_ACTIVATE) and te:GetHandler():IsFacedown() and te:GetHandler():IsOnField() and te:GetHandler():IsStatus(STATUS_SET_TURN) and not te:GetHandler():IsType(TYPE_QUICKPLAY) and not te:GetHandler():IsType(TYPE_TRAP)
+	return te:GetHandler():IsSetCard(0x3977) and te:IsHasType(EFFECT_TYPE_ACTIVATE) and te:GetHandler():IsFacedown() and te:GetHandler():IsOnField() and te:GetHandler():IsStatus(STATUS_SET_TURN) and not te:GetHandler():IsType(TYPE_QUICKPLAY) and not te:GetHandler():IsType(TYPE_TRAP) --and Duel.GetFlagEffect(tp,m)==0
 end
 function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -409,7 +409,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 					end
 				end
 		te:SetOperation(op2)
-		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+		--Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)

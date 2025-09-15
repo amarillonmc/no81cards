@@ -2,9 +2,9 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	
-	-- 包含念动力族怪兽的怪兽3只
+	-- 包含「蒸汽朋克」怪兽的念动力族怪兽3只
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,nil,3,3,s.lcheck)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_PSYCHO),3,3,s.lcheck)
 	
 	-- 这张卡是已用融合·同调·超量·连接怪兽的其中任意种为素材作连接召唤的场合，这张卡不会被战斗·效果破坏
 	local e1=Effect.CreateEffect(c)
@@ -43,9 +43,9 @@ function s.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 
--- 包含念动力族怪兽的怪兽3只
+-- 包含「蒸汽朋克」怪兽的念动力族怪兽3只
 function s.lcheck(g,lc)
-	return g:IsExists(Card.IsLinkRace,1,nil,RACE_PSYCHO)
+	return g:IsExists(Card.IsLinkSetCard,1,nil,0x666b)
 end
 
 -- 这张卡是已用融合·同调·超量·连接怪兽的其中任意种为素材作连接召唤的场合，这张卡不会被战斗·效果破坏

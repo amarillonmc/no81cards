@@ -6,24 +6,20 @@ function s.initial_effect(c)
     c:EnableReviveLimit()
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_FAIRY),6,2,nil,nil,99)
 
-    -- 只要持有超量素材的这张卡在怪兽区域存在，对方若不支付600基本分，则不能把卡的效果发动
+    -- 只要持有超量素材的这张卡在怪兽区域存在，每次对方把怪兽的效果发动，给与对方600伤害
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_ACTIVATE_COST)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(0,1)
-	e1:SetCondition(s.costcon)
-	e1:SetCost(s.costchk)
-	e1:SetOperation(s.costop)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e1:SetOperation(s.regop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_FLAG_EFFECT+id)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_SOLVED)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetCondition(s.costcon)
-	e2:SetTargetRange(0,1)
+	e2:SetCondition(s.damcon)
+	e2:SetOperation(s.damop)
 	c:RegisterEffect(e2)
 	
 	-- 场上的这张卡被战斗·效果破坏的场合，可以作为代替把这张卡1个超量素材取除
@@ -54,18 +50,21 @@ function s.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 
--- 只要持有超量素材的这张卡在怪兽区域存在，对方若不支付600基本分，则不能把卡的效果发动
-function s.costcon(e)
-	return e:GetHandler():GetOverlayCount()>0
+-- 只要持有超量素材的这张卡在怪兽区域存在，每次对方把怪兽的效果发动，给与对方600伤害
+function s.regop(e,tp,eg,ep,ev,re,r,rp)
+	if rp==1-tp and re:IsActiveType(TYPE_MONSTER) then
+		e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
+	end
 end
 
-function s.costchk(e,te_or_c,tp)
-	local ct=Duel.GetFlagEffect(tp,id)
-	return Duel.CheckLPCost(tp,ct*600)
+function s.damcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:GetOverlayCount()>0 and ep~=tp and Duel.GetLP(1-tp)>0 and c:GetFlagEffect(id)~=0 and re:IsActiveType(TYPE_MONSTER)
 end
 
-function s.costop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.PayLPCost(tp,600)
+function s.damop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,id)
+	Duel.Damage(1-tp,600,REASON_EFFECT)
 end
 
 -- 场上的这张卡被战斗·效果破坏的场合，可以作为代替把这张卡1个超量素材取除

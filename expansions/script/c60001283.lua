@@ -24,7 +24,6 @@ end
 function cm.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return not c:IsPublic() end
-	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
 end
 function cm.sumop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -255,7 +254,7 @@ function cm.cost6(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
-function cm.operation6(e,tp,eg,ep,ev,re,r,rp)
+function cm.op6(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)

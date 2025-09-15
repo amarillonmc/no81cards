@@ -33,19 +33,19 @@ function s.initial_effect(c)
 	e3:SetOperation(s.drop)
 	c:RegisterEffect(e3)
 	
-	-- ●暗：对方手卡随机1张送去墓地
+	-- ●暗：对方的额外卡组的里侧的卡随机1张除外
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id,3))
-	e4:SetCategory(CATEGORY_HANDES)
+	e4:SetCategory(CATEGORY_REMOVE)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_CHAINING)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetCountLimit(1,id+1)
-	e4:SetCondition(s.thcon)
-	e4:SetCost(s.thcost)
-	e4:SetTarget(s.thtg)
-	e4:SetOperation(s.thop)
+	e4:SetCondition(s.rmcon)
+	e4:SetCost(s.rmcost)
+	e4:SetTarget(s.rmtg)
+	e4:SetOperation(s.rmop)
 	c:RegisterEffect(e4)
 	
 	-- 这些效果发动的回合，自己不能把场上的怪兽的效果发动
@@ -136,15 +136,15 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
 
--- ●暗：对方手卡随机1张送去墓地
-function s.thcfilter(c)
+-- ●暗：对方的额外卡组的里侧的卡随机1张除外
+function s.rmcfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToRemoveAsCost()
 end
 
-function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 and Duel.IsExistingMatchingCard(s.thcfilter,tp,LOCATION_GRAVE,0,1,nil) end
+function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
+    if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 and Duel.IsExistingMatchingCard(s.rmcfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,s.thcfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.rmcfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -156,18 +156,23 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 
-function s.thcon(e,tp,eg,ep,ev,re,r,rp)
+function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp
 end
 
-function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,0,0,1-tp,1)
+function s.rmfilter(c)
+	return c:IsFacedown() and c:IsAbleToRemove()
 end
 
-function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(ep,LOCATION_HAND,0)
-	local sg=g:RandomSelect(ep,1)
-	Duel.SendtoGrave(sg,REASON_EFFECT)
+function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.rmfilter,tp,0,LOCATION_EXTRA,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_EXTRA)
+end
+
+function s.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(s.rmfilter,tp,0,LOCATION_EXTRA,nil)
+	if g:GetCount()>0 then
+		local sg=g:RandomSelect(tp,1)
+		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+	end
 end

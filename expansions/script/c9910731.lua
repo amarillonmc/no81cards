@@ -17,9 +17,9 @@ function c9910731.initial_effect(c)
 	e2:SetDescription(aux.Stringid(9910731,0))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SSET)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
-	e2:SetCondition(c9910731.concon)
 	e2:SetTarget(c9910731.contg)
 	e2:SetOperation(c9910731.conop)
 	c:RegisterEffect(e2)
@@ -29,12 +29,13 @@ function c9910731.damval(e,damp)
 		return Duel.GetMatchingGroupCount(Card.IsFacedown,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)*600
 	else return -1 end
 end
-function c9910731.concon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsControler,1,nil,tp)
-end
 function c9910731.contg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)>0 end
+	if chk==0 then return Duel.GetFlagEffect(tp,9910731)==0
+		and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)>0 end
+	local ph=Duel.GetCurrentPhase()
+	if ph>PHASE_MAIN1 and ph<PHASE_MAIN2 then ph=PHASE_BATTLE end
+	Duel.RegisterFlagEffect(tp,9910731,RESET_PHASE+ph,0,1)
 end
 function c9910731.conop(e,tp,eg,ep,ev,re,r,rp)
 	local g1=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)

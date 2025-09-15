@@ -41,6 +41,7 @@ function s.initial_effect(c)
 	end
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 	for tc in aux.Next(g) do
 		local e1=Effect.CreateEffect(e:GetHandler())
@@ -109,8 +110,7 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then return end
 	local tg=g:Select(tp,1,1,nil)
 	Duel.HintSelection(tg)
-	if #tg>0 and Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and tg:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) 
-	and Duel.IsPlayerCanDiscardDeck(tp,1) then
+	if #tg>0 and Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and tg:GetFirst():IsLocation(LOCATION_DECK+LOCATION_EXTRA) and Duel.IsPlayerCanDiscardDeck(tp,2) then
 		Duel.BreakEffect()
 		Duel.DisableShuffleCheck()
 		Duel.DiscardDeck(tp,2,REASON_EFFECT)
@@ -119,10 +119,11 @@ end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE and (rc:GetFlagEffect(id)>0 or rc:GetFlagEffect(id+o)>0)
+	return re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE and (rc:GetFlagEffect(id)>0 or rc:GetFlagEffect(id+o)>0) and rc:GetControler()==1-tp
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
+	if not rc:GetControler()==1-tp then return end
 	Duel.NegateEffect(ev)
 	if rc:GetFlagEffect(id+o)>0 then
 		rc:ResetFlagEffect(id+o)

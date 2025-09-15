@@ -3,7 +3,7 @@
 local cm,m=GetID()
 function cm.initial_effect(c)
 	aux.AddCodeList(c,22702055)
-	c:SetUniqueOnField(1,1,11451419)
+	c:SetUniqueOnField(1,1,11451629)
 	c:EnableReviveLimit()
 	--spsummon condition
 	local e1=Effect.CreateEffect(c)

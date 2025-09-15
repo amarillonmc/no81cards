@@ -2,15 +2,13 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 
-	-- 自己·对方回合，让这张卡从手卡·墓地回到卡组才能发动，从手卡·卡组选「堕福的选灯 命途照」以外的1张「堕福」卡送去墓地或在自己的超量怪兽下面重叠作为超量素材
+	-- 把这张卡从手卡丢弃才能发动，从手卡·卡组选1只「堕福」怪兽送去墓地或在自己的超量怪兽下面重叠作为超量素材
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_TOGRAVE)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,id)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCost(s.tgcost)
 	e1:SetTarget(s.tgtg)
 	e1:SetOperation(s.tgop)
@@ -28,16 +26,15 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 
--- 自己·对方回合，让这张卡从手卡·墓地回到卡组才能发动，从手卡·卡组选「堕福的选灯 命途照」以外的1张「堕福」卡送去墓地或在自己的超量怪兽下面重叠作为超量素材
+-- 把这张卡从手卡丢弃才能发动，从手卡·卡组选1只「堕福」怪兽送去墓地或在自己的超量怪兽下面重叠作为超量素材
 function s.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    local c=e:GetHandler()
-    if chk==0 then return c:IsAbleToDeckAsCost() end
-    Duel.ConfirmCards(1-tp,c)
-    Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsDiscardable() end
+	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
 
 function s.tgfilter(c,e,tp)
-	return c:IsSetCard(0x666c) and not c:IsCode(id) and (c:IsAbleToGrave() or (Duel.IsExistingMatchingCard(s.matfilter,tp,LOCATION_MZONE,0,1,nil) and c:IsCanOverlay()))
+	return c:IsSetCard(0x666c) and c:IsType(TYPE_MONSTER) and (c:IsAbleToGrave() or (Duel.IsExistingMatchingCard(s.matfilter,tp,LOCATION_MZONE,0,1,nil) and c:IsCanOverlay()))
 end
 
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)

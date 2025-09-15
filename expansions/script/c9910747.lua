@@ -6,19 +6,25 @@ function c9910747.initial_effect(c)
 	c:EnableReviveLimit()
 	--flag
 	QutryYgzw.AddTgFlag(c)
-	--to hand or to grave
+	--position
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCategory(CATEGORY_POSITION)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCountLimit(1,9910747)
-	e1:SetCondition(c9910747.thcon)
-	e1:SetTarget(c9910747.thtg)
-	e1:SetOperation(c9910747.thop)
+	e1:SetCondition(c9910747.poscon1)
+	e1:SetCost(c9910747.poscost)
+	e1:SetTarget(c9910747.postg)
+	e1:SetOperation(c9910747.posop)
 	c:RegisterEffect(e1)
+	local e3=e1:Clone()
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetHintTiming(TIMING_END_PHASE,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCondition(c9910747.poscon2)
+	c:RegisterEffect(e3)
 	--set
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -29,29 +35,53 @@ function c9910747.initial_effect(c)
 	e2:SetTarget(c9910747.settg)
 	e2:SetOperation(c9910747.setop)
 	c:RegisterEffect(e2)
+	if not c9910747.global_check then
+		c9910747.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_MSET)
+		ge1:SetOperation(c9910747.checkop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_CHANGE_POS)
+		Duel.RegisterEffect(ge2,0)
+		local ge3=ge1:Clone()
+		ge3:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(ge3,0)
+		local ge4=ge1:Clone()
+		ge4:SetCode(EVENT_SSET)
+		Duel.RegisterEffect(ge4,0)
+	end
 end
-function c9910747.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
+function c9910747.checkop(e,tp,eg,ep,ev,re,r,rp)
+	if eg:IsExists(Card.IsFacedown,1,nil) and Duel.GetFlagEffect(0,9910747)==0 then
+		Duel.RegisterFlagEffect(0,9910747,RESET_PHASE+PHASE_END,0,1)
+	end
 end
-function c9910747.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and chkc:IsAbleToHand() end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+function c9910747.poscon1(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(0,9910747)==0
 end
-function c9910747.spfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSpecialSummonable(0)
+function c9910747.poscon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(0,9910747)>0
 end
-function c9910747.thop(e,tp,eg,ep,ev,re,r,rp)
+function c9910747.poscost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+end
+function c9910747.posfilter(c)
+	return c:IsFaceup() and c:IsCanTurnSet()
+end
+function c9910747.postg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c9910747.posfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c9910747.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler()) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+	local g=Duel.SelectTarget(tp,c9910747.posfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,1,0,0)
+end
+function c9910747.posop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND)
-		and Duel.IsExistingMatchingCard(c9910747.spfilter,tp,LOCATION_HAND,0,1,nil)
-		and Duel.SelectYesNo(tp,aux.Stringid(9910747,0)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c9910747.spfilter,tp,LOCATION_HAND,0,1,1,nil)
-		Duel.SpecialSummonRule(tp,g:GetFirst(),0)
+	if tc:IsFaceup() and tc:IsRelateToEffect(e) then
+		Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
 	end
 end
 function c9910747.setcon(e,tp,eg,ep,ev,re,r,rp)

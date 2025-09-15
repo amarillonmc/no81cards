@@ -89,7 +89,7 @@ end
 function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_EXTRA,0,nil)
-	return eg:IsExists(cm.cfilter,1,nil) and g:GetClassCount(Card.GetCode)>=5 and not eg:IsContains(e:GetHandler())
+	return eg:IsExists(cm.cfilter,1,nil) and g:GetClassCount(Card.GetCode)>=4 and not eg:IsContains(e:GetHandler())
 end
 function cm.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -109,9 +109,7 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_ONFIELD,nil,cg)
 		if #sg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local aa=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
-			Duel.SendtoDeck(aa,nil,2,REASON_EFFECT)
+			
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local hg=sg:Select(tp,1,1,nil)
 			if #hg>0 then
@@ -150,7 +148,7 @@ end
 function cm.con(e,tp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_EXTRA,0,nil)
-		return g:GetClassCount(Card.GetCode)>=3
+		return g:GetClassCount(Card.GetCode)>=2
 end
 function cm.filter(c)
 	return c:IsFaceup() and c:IsType(TYPE_PENDULUM)

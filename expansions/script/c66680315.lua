@@ -34,19 +34,19 @@ function s.initial_effect(c)
 	e3:SetOperation(s.rthop)
 	c:RegisterEffect(e3)
 	
-	-- ●暗：对方场上1只表侧表示怪兽变成里侧守备表示
+	-- ●暗：对方场上1张卡送去墓地
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id,3))
-	e4:SetCategory(CATEGORY_POSITION)
+	e4:SetCategory(CATEGORY_TOGRAVE)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_CHAINING)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetCountLimit(1,id+1)
-	e4:SetCondition(s.fpcon)
-	e4:SetCost(s.fpcost)
-	e4:SetTarget(s.fptg)
-	e4:SetOperation(s.fpop)
+	e4:SetCondition(s.tgcon)
+	e4:SetCost(s.tgcost)
+	e4:SetTarget(s.tgtg)
+	e4:SetOperation(s.tgop)
 	c:RegisterEffect(e4)
 	
 	-- 这些效果发动的回合，自己不能把场上的怪兽的效果发动
@@ -156,15 +156,15 @@ function s.rthop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
--- ●暗：对方场上1只表侧表示怪兽变成里侧守备表示
-function s.fpcfilter(c)
+-- ●暗：对方场上1张卡送去墓地
+function s.tgcfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToRemoveAsCost()
 end
 
-function s.fpcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 and Duel.IsExistingMatchingCard(s.fpcfilter,tp,LOCATION_GRAVE,0,1,nil) end
+function s.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
+    if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 and Duel.IsExistingMatchingCard(s.tgcfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,s.fpcfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.tgcfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -176,23 +176,22 @@ function s.fpcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 
-function s.fpcon(e,tp,eg,ep,ev,re,r,rp)
+function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp
 end
 
-function s.fptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then 
-		return Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,0,LOCATION_MZONE,1,nil) 
-	end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,nil,1,1-tp,LOCATION_MZONE)
+function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
+	if chk==0 then return #g>0 end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 end
 
-function s.fpop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsCanTurnSet,tp,0,LOCATION_MZONE,1,1,nil)
+function s.tgop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
 	if #g>0 then
-		Duel.HintSelection(g)
-		Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.HintSelection(sg)
+		Duel.SendtoGrave(sg,REASON_EFFECT)
 	end
 end
