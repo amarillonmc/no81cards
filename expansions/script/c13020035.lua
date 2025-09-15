@@ -39,6 +39,7 @@ function cm.initial_effect(c)
 	e1:SetCountLimit(1, m)
 	local e2 = e1:Clone()
 	e2:SetRange(QY_md)
+	
 	c:RegisterEffect(e2)
 
 	if not cm.global_check then
@@ -208,7 +209,8 @@ end
 
 function cm.adop(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
-	local ng = Duel.GetMatchingGroup(cm.filsn, tp, LOCATION_HAND + LOCATION_ONFIELD + LOCATION_GRAVE + QY_kz, 0, c)
+	local ng = Duel.GetMatchingGroup(cm.filsn, tp, LOCATION_HAND + LOCATION_ONFIELD + LOCATION_GRAVE + QY_kz,
+		LOCATION_HAND + LOCATION_ONFIELD + LOCATION_GRAVE + QY_kz, c)
 	local nc = ng:GetFirst()
 	while nc do
 		if not cm.reg then
