@@ -115,8 +115,11 @@ function cm.descon(e, tp, eg, ep, ev, re, r, rp)
 end
 
 function cm.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
-	if chk == 0 then return Duel.GetLocationCount(tp, LOCATION_MZONE) > 0 end
 	local c = e:GetHandler()
+	if chk == 0 then
+		return Duel.GetLocationCount(tp, LOCATION_MZONE) > 0 and
+			c:IsCanBeSpecialSummoned(e, 0, tp, false, false)
+	end
 	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, c, 1, 0, 0)
 end
 

@@ -43,26 +43,25 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.srcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return  Duel.IsExistingMatchingCard(cm.fit1,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return  Duel.IsExistingMatchingCard(cm.fit1,tp,LOCATION_HAND,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,cm.fit1,tp,LOCATION_HAND,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.fit1,tp,LOCATION_HAND,0,1,1,nil,tp)
 	Duel.ConfirmCards(1-tp,g)
 	Duel.ShuffleHand(tp)
 	e:SetLabel(g:GetFirst():GetAttribute())
 end
 function cm.fit1(c,tp)
-	return not c:IsPublic()  and Duel.IsExistingMatchingCard(cm.fit2,tp,LOCATION_DECK,0,1,nil,c:GetAttribute())
+	return not c:IsPublic() and c:IsType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(cm.fit2,tp,LOCATION_DECK,0,1,nil,c:GetAttribute())
 end
 function cm.fit2(c,attr)
-	return c:IsAttribute() and c:IsAbleToHand() and c:IsSetCard(0xa450)
+	return c:IsType(TYPE_MONSTER) and c:IsAttribute(attr) and c:IsAbleToHand() and c:IsSetCard(0xa450)
 end
 function cm.srfilter(c,att)
 	return c:IsSetCard(0xa450) and c:IsAttribute(att) and c:IsAbleToHand()
 end
 function cm.srtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local attr=e:GetLabel()
 	if chk==0 then
-		return Duel.IsExistingMatchingCard(cm.fit2,tp,LOCATION_DECK,0,1,nil,attr)
+		return true
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
@@ -70,7 +69,7 @@ function cm.fit(c)
 	return  (c:IsAbleToGrave() or c:IsAbleToRemove())
 end
 function cm.srop(e,tp,eg,ep,ev,re,r,rp)
-	local att=e:GetLabel()
+	local attr=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local sg=Duel.SelectMatchingCard(tp,cm.srfilter,tp,LOCATION_DECK,0,1,1,nil,attr)
 	if #sg>0 and Duel.SendtoHand(sg,nil,REASON_EFFECT)>0 then
@@ -79,7 +78,7 @@ function cm.srop(e,tp,eg,ep,ev,re,r,rp)
 		if #dg>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 			local tg=dg:Select(tp,1,1,nil)
-			local tc=g:GetFirst()
+			local tc=tg:GetFirst()
 			if tc and tc:IsAbleToGrave() and (not tc:IsAbleToRemove() or Duel.SelectOption(tp,1191,1192)==0) then
 				Duel.SendtoGrave(tc,REASON_EFFECT)
 			else
