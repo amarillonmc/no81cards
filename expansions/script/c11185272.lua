@@ -79,10 +79,10 @@ function cm.spcop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SendtoDeck(g,nil,3,REASON_COST)
 end
 function cm.matfilter1(c)
-	return c:IsSetCard(0xa450) and c:IsType(TYPE_TUNER) and c:IsType(TYPE_MONSTER)
+	return c:IsSetCard(0xa450)  and c:IsType(TYPE_MONSTER)
 end
 function cm.matfilter2(c)
-	return c:IsNotTuner() and c:IsSetCard(0xa450) and c:IsType(TYPE_MONSTER)
+	return  c:IsType(TYPE_MONSTER)
 end
 function cm.statop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -112,8 +112,7 @@ function cm.lvop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.syncon1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsAttackAbove(1000) and c:IsAttackBelow(1999)
-		and (Duel.GetTurnPlayer()==tp or Duel.GetTurnPlayer()==1-tp)
+	return c:IsAttackAbove(1000) 
 end
 function cm.syntg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,1,nil,e:GetHandler()) end

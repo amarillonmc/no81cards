@@ -14,14 +14,12 @@ function cm.initial_effect(c)
 	--negate
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetRange(LOCATION_SZONE)
+	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_TODECK)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_SOLVING)
+	e2:SetRange(LOCATION_FZONE)
 	e2:SetCountLimit(1,m+1)
 	e2:SetCondition(cm.negcon)
-	e2:SetCost(cm.negcost)
-	e2:SetTarget(cm.negtg)
 	e2:SetOperation(cm.negop)
 	c:RegisterEffect(e2)
 	--atk/def
@@ -30,8 +28,8 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetRange(LOCATION_SZONE)
-	e3:SetCountLimit(1,m+2)
+	e3:SetRange(LOCATION_FZONE)
+	e3:SetCountLimit(1,m+50)
 	e3:SetTarget(cm.atktg)
 	e3:SetOperation(cm.atkop)
 	c:RegisterEffect(e3)
@@ -52,45 +50,44 @@ function cm.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
 function cm.actop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp)
-	if #g>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 then
-		local tc=g:GetFirst()
-		tc:CreateEffectRelation(e)
-		local te=tc.discard_effect
-		local tg=te:GetTarget()
-		if tg then tg(e,tp,eg,ep,ev,re,r,rp,1)
-		local op=te:GetOperation()
-		if op then op(e,tp,eg,ep,ev,re,r,rp) end
-		Duel.BreakEffect()
-		end
-		if Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_REMOVED,0,1,nil)
-			and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local sg=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_REMOVED,0,1,1,nil)
-			Duel.SendtoGrave(sg,REASON_RETURN)
+	if Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_DECK,0,1,nil,e,tp,eg,ep,ev,re,r,rp) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local g=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp)
+		if #g>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 then
+			local tc=g:GetFirst()
+			tc:CreateEffectRelation(e)
+			local te=tc.discard_effect
+			local tg=te:GetTarget()
+			if tg then tg(e,tp,eg,ep,ev,re,r,rp,1)
+			local op=te:GetOperation()
+			if op then op(e,tp,eg,ep,ev,re,r,rp) end
+			Duel.BreakEffect()
+			end
+			if Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_REMOVED,0,1,nil)
+				and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+				local sg=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_REMOVED,0,1,1,nil)
+				Duel.SendtoGrave(sg,REASON_RETURN)
+			end
 		end
 	end
 end
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsChainNegatable(ev)
+	return rp==1-tp and (re:IsHasType(EFFECT_TYPE_ACTIVATE) or re:IsActiveType(TYPE_MONSTER)) and Duel.IsChainDisablable(ev) and Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,nil) and  e:GetHandler():GetFlagEffect(m)<=0
 end
 function cm.cfilter(c)
-	return c:IsSetCard(0xa450) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
+	return c:IsSetCard(0xa450) and c:IsAbleToDeck() and c:IsFaceup()
 end
-function cm.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.cfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,5,nil)
-	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
-end
-function cm.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-end
+
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) then
-		Duel.SendtoGrave(eg,REASON_EFFECT)
+	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(m,3)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DEATTACHFROM)
+		local tg=Duel.SelectMatchingCard(tp,cm.cfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,5,nil)
+		if #tg>0 and Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT) then
+			Duel.Hint(HINT_CARD,0,m)
+			Duel.NegateEffect(ev)
+			e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
+		end
 	end
 end
 function cm.atkfilter(c)

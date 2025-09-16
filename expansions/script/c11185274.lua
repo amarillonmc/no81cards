@@ -125,7 +125,7 @@ function cm.lvop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.thcon1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsAttackAbove(1000) and c:IsAttackBelow(1999) and Duel.GetTurnPlayer()==tp
+	return c:IsAttackAbove(1000)  and Duel.GetTurnPlayer()==tp
 end
 function cm.thfilter1(c)
 	return c:IsSetCard(0xa450) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
@@ -144,7 +144,7 @@ function cm.thop1(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.thcon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsAttackAbove(2000) and c:IsAttackBelow(2999) and Duel.GetTurnPlayer()==1-tp
+	return c:IsAttackAbove(2000)  and Duel.GetTurnPlayer()==1-tp
 end
 function cm.thfilter2(c)
 	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToHand()

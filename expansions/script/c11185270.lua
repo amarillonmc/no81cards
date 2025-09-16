@@ -2,7 +2,7 @@
 local cm,m=GetID()
 function cm.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,cm.xyzfilter,1,99)
+	aux.AddXyzProcedure(c,cm.xyzfilter,1,1,nil,nil,99)
 	c:EnableReviveLimit()
 	--stats change
 	local e1=Effect.CreateEffect(c)
@@ -117,12 +117,12 @@ function cm.lvop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.negcon1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsAttackAbove(1000) and c:IsAttackBelow(1999) and re:IsActiveType(TYPE_TRAP)
+	return c:IsAttackAbove(1000)  and re:IsActiveType(TYPE_TRAP)
 		and Duel.IsChainNegatable(ev)
 end
 function cm.negcon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsAttackAbove(2000) and c:IsAttackBelow(2999) and re:IsActiveType(TYPE_SPELL)
+	return c:IsAttackAbove(2000)  and re:IsActiveType(TYPE_SPELL)
 		and Duel.IsChainNegatable(ev)
 end
 function cm.negcon3(e,tp,eg,ep,ev,re,r,rp)

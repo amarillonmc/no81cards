@@ -19,27 +19,6 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.lvop)
 	c:RegisterEffect(e2)
 	--effects by atk
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetCode(EFFECT_UPDATE_ATTACK)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(cm.atkcon1)
-	e3:SetValue(1000)
-	c:RegisterEffect(e3)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE)
-	e4:SetCode(EFFECT_UPDATE_ATTACK)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetCondition(cm.atkcon2)
-	e4:SetValue(2000)
-	c:RegisterEffect(e4)
-	local e5=Effect.CreateEffect(c)
-	e5:SetType(EFFECT_TYPE_SINGLE)
-	e5:SetCode(EFFECT_UPDATE_ATTACK)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCondition(cm.atkcon3)
-	e5:SetValue(3000)
-	c:RegisterEffect(e5)
 	--direct attack
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(m,0))
@@ -59,7 +38,62 @@ function cm.initial_effect(c)
 	e10:SetCost(cm.spcost)
 	e10:SetOperation(cm.spcop)
 	c:RegisterEffect(e10)
+	--effects by atk
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e1:SetCondition(cm.indcon)
+	e1:SetValue(1)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_ATTACK_ALL)
+	e2:SetCondition(cm.indcon)
+	e2:SetValue(1)
+	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,0))
+	e3:SetCategory(CATEGORY_ATKCHANGE)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
+	e3:SetCountLimit(1,m+100)
+	e3:SetCondition(cm.atkcon)
+	e3:SetOperation(cm.atkop)
+	c:RegisterEffect(e3)
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetTargetRange(0,1)
+	e4:SetCondition(cm.lockcon)
+	e4:SetValue(1)
+	c:RegisterEffect(e4)
 end
+function cm.indcon(e)
+	return e:GetHandler():IsAttackAbove(1000)
+end
+function cm.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsAttackAbove(2000) and c:IsRelateToBattle() and Duel.GetAttackTarget()~=nil
+end
+function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local bc=c:GetBattleTarget()
+	if c:IsRelateToBattle() and c:IsFaceup() and bc:IsRelateToBattle() and bc:IsFaceup() then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL)
+		e1:SetValue(bc:GetAttack())
+		c:RegisterEffect(e1)
+	end
+end
+function cm.lockcon(e)
+	return e:GetHandler():IsAttackAbove(3000) and Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE
+end
+
+
 function cm.fit(c)
 	return c:IsType(TYPE_MONSTER)and c:IsSetCard(0xa450)
 end
@@ -94,24 +128,7 @@ function cm.statop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.lvop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsPreviousLocation(LOCATION_ONFIELD) then
-		Duel.Remove(c,POS_FACEDOWN,REASON_EFFECT)
-	end
-end
-function cm.atkcon1(e)
-	local c=e:GetHandler()
-	return c:IsAttackAbove(1000) and c:IsAttackBelow(1999)
-end
-function cm.atkcon2(e)
-	local c=e:GetHandler()
-	return c:IsAttackAbove(2000) and c:IsAttackBelow(2999)
-end
-function cm.atkcon3(e)
-	local c=e:GetHandler()
-	return c:IsAttackAbove(3000)
-end
+
 function cm.dacost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)

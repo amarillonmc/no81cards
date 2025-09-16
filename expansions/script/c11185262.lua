@@ -5,10 +5,10 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_HAND)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,m)
-	e1:SetCost(cm.spcost)
+
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
@@ -27,10 +27,7 @@ end
 function cm.spfilter(c)
 	return c:IsSetCard(0xa450) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
 end
-function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsDiscardable() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
-end
+
 function cm.spfilter2(c,e,tp)
 	return c:IsSetCard(0xa450) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
@@ -63,7 +60,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsDefenseBelow,tp,LOCATION_MZONE,0,nil,1)
+	local g=Duel.GetMatchingGroup(Card.IsDefense,tp,LOCATION_MZONE,0,nil,0)
 	if #g>0 then
 		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
 	end
