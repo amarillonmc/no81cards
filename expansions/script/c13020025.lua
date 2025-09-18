@@ -1,7 +1,23 @@
 --在水之湄
 local cm, m, ofs = GetID()
 local yr = 13020010
-xpcall(function() dofile("expansions/script/c16670000.lua") end, function() dofile("script/c16670000.lua") end) --引用库
+-- xpcall(function() dofile("expansions/script/c16670000.lua") end, function() dofile("script/c16670000.lua") end) --引用库
+if not Duel.LoadScript and loadfile then
+    function Duel.LoadScript(str)
+        require_list = require_list or {}
+        str = "expansions/script/" .. str
+        if not require_list[str] then
+            if string.find(str, "%.") then
+                require_list[str] = loadfile(str)
+            else
+                require_list[str] = loadfile(str .. ".lua")
+            end
+            pcall(require_list[str])
+        end
+        return require_list[str]
+    end
+end
+Duel.LoadScript("c16670000.lua")
 function cm.initial_effect(c)
     aux.AddCodeList(c, yr)
     aux.AddEquipSpellEffect(c, true, true, Card.IsFaceup, nil)

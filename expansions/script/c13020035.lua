@@ -1,7 +1,24 @@
 --在水中央
 local cm, m, ofs = GetID()
 local yr = 13020010
-xpcall(function() dofile("expansions/script/c16670000.lua") end, function() dofile("script/c16670000.lua") end) --引用库
+-- xpcall(function() dofile("expansions/script/c16670000.lua") end, function() dofile("script/c16670000.lua") end) --引用库
+if not Duel.LoadScript and loadfile then
+    function Duel.LoadScript(str)
+        require_list = require_list or {}
+        str = "expansions/script/" .. str
+        if not require_list[str] then
+            if string.find(str, "%.") then
+                require_list[str] = loadfile(str)
+            else
+                require_list[str] = loadfile(str .. ".lua")
+            end
+            pcall(require_list[str])
+        end
+        return require_list[str]
+    end
+end
+Duel.LoadScript("c16670000.lua")
+
 function cm.initial_effect(c)
     aux.AddCodeList(c, yr)
     aux.AddEquipSpellEffect(c, true, true, Card.IsFaceup, nil)
@@ -183,7 +200,11 @@ function cm.operation(e, tp, eg, ep, ev, re, r, rp)
                     if te then
                         for _, ie in ipairs(te) do
                             Duel.BreakEffect()
+                            -- Debug.Message(te)
+                            -- Debug.Message(aux.GetValueType(te))
                             local tg = ie:GetTarget()
+                            -- Debug.Message(tg)
+                            -- Debug.Message(aux.GetValueType(tg))
                             if tg and tg(ie, tp, eg, ep, ev, re, r, rp, 0) then
                                 local op = ie:GetOperation()
                                 if op then
