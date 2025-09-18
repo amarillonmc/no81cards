@@ -29,7 +29,7 @@ s.VHisc_MRSH=true
 s.VHisc_CNTreasure=true
 
 function s.filter(c)
-	return c.VHisc_CNTreasure and not c:IsCode(id) and not c:IsCode(33201356,33201390)
+	return c.VHisc_MRSH and not c:IsCode(id) and not c:IsCode(33201356)
 end
 function s.etg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
