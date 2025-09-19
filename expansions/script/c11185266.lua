@@ -50,31 +50,33 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabel(rc:GetOriginalCodeRule())
 		e1:SetReset(RESET_PHASE+PHASE_END,2)
 		Duel.RegisterEffect(e1,tp)
-		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
-		for tc in aux.Next(g) do
 			local e2=Effect.CreateEffect(e:GetHandler())
-			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetType(EFFECT_TYPE_FIELD)
 			e2:SetCode(EFFECT_UPDATE_ATTACK)
+			e2:SetTargetRange(0,LOCATION_MZONE)
 			e2:SetValue(3000)
-			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e2)
+			e2:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e2,tp)
 			local e3=Effect.CreateEffect(e:GetHandler())
-			e3:SetType(EFFECT_TYPE_SINGLE)
-			e3:SetCode(EFFECT_SET_DEFENSE)
+			e3:SetType(EFFECT_TYPE_FIELD)
+			e3:SetCode(EFFECT_SET_DEFENSE_FINAL)
+			e3:SetTargetRange(0,LOCATION_MZONE)
 			e3:SetValue(0)
-			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e3)
-		end
+			e3:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e3,tp)
 	end
 end
 function cm.actlimit(e,re,tp)
 	return re:GetHandler():GetOriginalCodeRule()==e:GetLabel()
 end
+function cm.fit1(c)
+	return c:IsSetCard(0xa450) and c:IsAbleToRemoveAsCost()
+end
 function cm.protcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemove()
-		and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,e:GetHandler(),0xa450) end
+	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost()
+		and Duel.IsExistingMatchingCard(cm.fit1,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,e:GetHandler(),0xa450)
+	local g=Duel.SelectMatchingCard(tp,cm.fit1,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,e:GetHandler())
 	g:AddCard(e:GetHandler())
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end

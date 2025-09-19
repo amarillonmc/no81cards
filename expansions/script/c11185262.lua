@@ -66,10 +66,10 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.stgfilter(c)
-	return c:IsSetCard(0xa450) and c:IsAbleToRemove()
+	return c:IsSetCard(0xa450) and c:IsAbleToRemoveAsCost()
 end
 function cm.stgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToRemove() 
+	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() 
 		and Duel.IsExistingMatchingCard(cm.stgfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,cm.stgfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,e:GetHandler())
@@ -77,7 +77,7 @@ function cm.stgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function cm.stgfilter2(c)
-	return c:IsSetCard(0xa450) and c:IsType(TYPE_EXTRA) and (c:IsAbleToGrave() or c:IsAbleToRemove())
+	return c:IsSetCard(0xa450)  and (c:IsAbleToGrave() or c:IsAbleToRemove())
 end
 function cm.stgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.stgfilter2,tp,LOCATION_EXTRA,0,1,nil) end

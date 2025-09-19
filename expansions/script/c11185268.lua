@@ -27,7 +27,6 @@ function cm.initial_effect(c)
 	e6:SetRange(LOCATION_GRAVE)
 	e6:SetCountLimit(1,m)
 	e6:SetCost(cm.dacost)
-	e6:SetTarget(cm.datg)
 	e6:SetOperation(cm.daop)
 	c:RegisterEffect(e6)
 	local e10=Effect.CreateEffect(c)
@@ -56,7 +55,7 @@ function cm.initial_effect(c)
 	e3:SetCategory(CATEGORY_ATKCHANGE)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_PRE_DAMAGE_CALCULATE)
-	e3:SetCountLimit(1,m+100)
+	e3:SetCountLimit(1,m+1)
 	e3:SetCondition(cm.atkcon)
 	e3:SetOperation(cm.atkop)
 	c:RegisterEffect(e3)
@@ -133,17 +132,17 @@ function cm.dacost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
-function cm.datg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_MZONE,0,1,nil,0xa450) end
+function cm.datg(e,c)
+	 c:IsSetCard(0xa450)
 end
 function cm.daop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_MZONE,0,nil,0xa450)
-	for tc in aux.Next(g) do
+
 		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DIRECT_ATTACK)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-	end
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_DIRECT_ATTACK)	
+		e1:SetTarget(cm.datg)
+		e1:SetTargetRange(LOCATION_MZONE,0)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
 end
 
