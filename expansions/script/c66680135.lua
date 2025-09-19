@@ -28,9 +28,8 @@ end
 
 -- 把这张卡从手卡丢弃才能发动，从手卡·卡组选1只「堕福」怪兽送去墓地或在自己的超量怪兽下面重叠作为超量素材
 function s.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsDiscardable() end
-	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
+	if chk==0 then return e:GetHandler():IsDiscardable() end
+	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 
 function s.tgfilter(c,e,tp)
@@ -38,7 +37,8 @@ function s.tgfilter(c,e,tp)
 end
 
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) end
+    local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,c,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
 
