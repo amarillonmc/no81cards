@@ -163,7 +163,7 @@ function s.flaglabel(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.recopOUT(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,tp,id)
-	local sg=Duel.Group(s.cfilter,tp,0,LOCATION_HAND,nil,1-tp)
+	local sg=eg:Filter(Card.IsLocation,nil,LOCATION_HAND):Filter(s.cfilter,nil,1-tp)
 	local g=Duel.Group(aux.NOT(Card.IsPublic),tp,0,LOCATION_HAND,sg)
 	if #g==0 or not Duel.SelectYesNo(1-tp,aux.Stringid(id,2)) then
 		Duel.SendtoDeck(sg,tp,SEQ_DECKTOP,REASON_EFFECT)
