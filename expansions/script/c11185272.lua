@@ -31,7 +31,7 @@ function cm.initial_effect(c)
 	e3:SetOperation(cm.synop)
 	c:RegisterEffect(e3)
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(m,1))
+	e4:SetDescription(aux.Stringid(m,2))
 	e4:SetCategory(CATEGORY_DESTROY)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
@@ -48,6 +48,8 @@ function cm.initial_effect(c)
 	e5:SetTargetRange(LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0)
 	e5:SetTarget(cm.qtg)
 	e5:SetCondition(cm.qcon)
+	e5:SetTarget(cm.target)
+	e5:SetOperation(cm.operation)
 	c:RegisterEffect(e5)
 	--search
 	local e6=Effect.CreateEffect(c)
@@ -148,10 +150,53 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.qcon(e)
 	local c=e:GetHandler()
-	return c:IsAttackAbove(3000)
+	return c:IsAttackAbove(3000) and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) 
 end
-function cm.qtg(e,c)
-	return c:IsSetCard(0xa450) and (c:IsType(TYPE_MONSTER) or c:IsType(TYPE_SPELL))
+
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,e:GetHandler()) end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,1-tp,LOCATION_ONFIELD)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+end
+function cm.synfilter(c)
+	return c:IsSetCard(0xa450) and c:IsType(TYPE_SYNCHRO) and c:IsSynchroSummonable(nil)
+end
+function cm.rmfilter(c)
+	return c:IsSetCard(0xa450) and c:IsAbleToRemove()
+end
+function cm.operation(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+	local g=Duel.SelectMatchingCard(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,1,e:GetHandler())
+	if g:GetCount()>0 then
+		local tc=g:GetFirst()
+		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_DISABLE_EFFECT)
+		e2:SetValue(RESET_TURN_SET)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e2)
+		
+		if Duel.IsExistingMatchingCard(cm.synfilter,tp,LOCATION_EXTRA,0,1,nil)
+			and Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil)
+			and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+			local rg=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil)
+			if rg:GetCount()>0 and Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)~=0 then
+				Duel.BreakEffect()
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+				local sg=Duel.SelectMatchingCard(tp,cm.synfilter,tp,LOCATION_EXTRA,0,1,1,nil)
+				if sg:GetCount()>0 then
+					Duel.SynchroSummon(tp,sg:GetFirst(),nil)
+				end
+			end
+		end
+	end
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
