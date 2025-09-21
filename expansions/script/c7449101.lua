@@ -18,6 +18,17 @@ function s.initial_effect(c)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetValue(s.efilter)
 	c:RegisterEffect(e1)
+	--damage
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,0))
+	e2:SetCategory(CATEGORY_DAMAGE)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetCountLimit(1)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetTarget(s.damtg2)
+	e2:SetOperation(s.damop2)
+	c:RegisterEffect(e2)
 	--adjust
 	--[[local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -80,6 +91,16 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetChainLimit(aux.FALSE)
 	end
 	e:GetHandler():SetTurnCounter(0)
+end
+function s.damtg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetTargetPlayer(1-tp)
+	Duel.SetTargetParam(200)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,200)
+end
+function s.damop2(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Damage(p,d,REASON_EFFECT)
 end
 function s.ctcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp and ev==200 and bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0

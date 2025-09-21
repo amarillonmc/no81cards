@@ -93,13 +93,16 @@ function s.tfop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+function s.seqfilter(c,dis)
+	return 1<<c:GetSequence()==dis
+end
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) 
 		and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
 end
 function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rc=re:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0 and rc:CheckUniqueOnField(1-tp,LOCATION_SZONE) end
+	if chk==0 then return rc:CheckUniqueOnField(1-tp,LOCATION_SZONE) end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if rc:IsRelateToEffect(re) and rc:IsLocation(LOCATION_GRAVE) then
 		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,rc,1,0,0)
@@ -108,37 +111,46 @@ end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(1-tp,LOCATION_SZONE)<1 then return end
 	local rc=re:GetHandler()
-	if Duel.NegateActivation(ev) and rc and not rc:IsImmuneToEffect(e) and rc:CheckUniqueOnField(1-tp,LOCATION_SZONE) and Duel.MoveToField(rc,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true) then
-		local c=e:GetHandler()
-		--Treated as a Continuous Spell
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetCode(EFFECT_CHANGE_TYPE)
-		e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
-		e1:SetReset(RESET_EVENT|RESETS_STANDARD&~RESET_TURN_SET)
-		rc:RegisterEffect(e1)   
-		--Add this card to the deck
-		local e2=Effect.CreateEffect(c)
-		e2:SetDescription(aux.Stringid(id,2))
-		e2:SetCategory(CATEGORY_TODECK)
-		e2:SetType(EFFECT_TYPE_IGNITION)
-		e2:SetRange(LOCATION_SZONE)
-		if rc:IsOriginalSetCard(0x6224) then
-			e2:SetCondition(aux.NOT(s.effcon))
+	if Duel.NegateActivation(ev) and rc and not rc:IsImmuneToEffect(e) and rc:IsRelateToEffect(re) and rc:CheckUniqueOnField(1-tp,LOCATION_SZONE) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+		local dis=Duel.SelectField(tp,1,0,LOCATION_SZONE,0x20002000)
+		dis=((dis&0xffff)<<24)|((dis>>24)&0xffff)
+		local dg=Duel.GetMatchingGroup(s.seqfilter,tp,0,LOCATION_SZONE,nil,dis)
+		if #dg>0 then
+			Duel.Destroy(dg,REASON_RULE)
+		end	 
+		if Duel.MoveToField(rc,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true,dis) then
+			local c=e:GetHandler()
+			--Treated as a Continuous Spell
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetCode(EFFECT_CHANGE_TYPE)
+			e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+			e1:SetReset(RESET_EVENT|RESETS_STANDARD&~RESET_TURN_SET)
+			rc:RegisterEffect(e1)   
+			--Add this card to the deck
+			local e2=Effect.CreateEffect(c)
+			e2:SetDescription(aux.Stringid(id,2))
+			e2:SetCategory(CATEGORY_TODECK)
+			e2:SetType(EFFECT_TYPE_IGNITION)
+			e2:SetRange(LOCATION_SZONE)
+			if rc:IsOriginalSetCard(0x6224) then
+				e2:SetCondition(aux.NOT(s.effcon))
+			end
+			e2:SetCost(s.tdcost)
+			e2:SetTarget(s.tdtg)
+			e2:SetOperation(s.tdop)
+			e2:SetReset(RESET_EVENT|RESETS_STANDARD&~RESET_TURN_SET)
+			rc:RegisterEffect(e2)
+			if rc:IsOriginalSetCard(0x6224) then
+				local e3=e2:Clone()
+				e3:SetType(EFFECT_TYPE_QUICK_O)
+				e3:SetCode(EVENT_FREE_CHAIN)
+				e3:SetCondition(s.effcon)
+				rc:RegisterEffect(e3)
+			end 
 		end
-		e2:SetCost(s.tdcost)
-		e2:SetTarget(s.tdtg)
-		e2:SetOperation(s.tdop)
-		e2:SetReset(RESET_EVENT|RESETS_STANDARD&~RESET_TURN_SET)
-		rc:RegisterEffect(e2)
-		if rc:IsOriginalSetCard(0x6224) then
-			local e3=e2:Clone()
-			e3:SetType(EFFECT_TYPE_QUICK_O)
-			e3:SetCode(EVENT_FREE_CHAIN)
-			e3:SetCondition(s.effcon)
-			rc:RegisterEffect(e3)
-		end 
 	end
 end
 function s.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)

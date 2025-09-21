@@ -21,13 +21,20 @@ function s.initial_effect(c)
 	e2:SetOperation(s.tdop2)
 	c:RegisterEffect(e2)
 end
-function s.spfilter(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x6224) and c:GetOriginalType()&TYPE_MONSTER==TYPE_MONSTER and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function s.spfilter(c,e,tp,ft)
+	if not (c:IsFaceupEx() and c:IsSetCard(0x6224) and c:GetOriginalType()&TYPE_MONSTER==TYPE_MONSTER) then return false end
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and not c:IsLocation(LOCATION_MZONE) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) then
+		return true
+	end
+	if ft>0 and not c:IsLocation(LOCATION_SZONE) and c:CheckUniqueOnField(tp,LOCATION_SZONE) and (c:IsLocation(LOCATION_MZONE) or not c:IsForbidden()) then
+		return true
+	end
+	return false
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE|LOCATION_SZONE,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE|LOCATION_SZONE)
+	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	if e:GetHandler():IsLocation(LOCATION_HAND) then ft=ft-1 end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND|LOCATION_GRAVE|LOCATION_ONFIELD,0,1,nil,e,tp,ft) end
 end
 function s.filter(c)
 	return c:IsFaceup() and c:IsCode(11603019)
@@ -39,13 +46,34 @@ function s.seqfilter(c,dis)
 	return 1<<c:GetSequence()==dis
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_GRAVE|LOCATION_SZONE,0,1,1,nil,e,tp):GetFirst()
+	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	if e:GetHandler():IsLocation(LOCATION_HAND) then ft=ft-1 end
+	local sp=false
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local sc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_HAND|LOCATION_GRAVE|LOCATION_ONFIELD,0,1,1,nil,e,tp,ft):GetFirst()
 	if sc then
 		Duel.HintSelection(Group.FromCards(sc))
-		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
+		local b1=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and not sc:IsLocation(LOCATION_MZONE)
+		local b2=ft>0 and not sc:IsLocation(LOCATION_SZONE)
+		local op=0
+		op=aux.SelectFromOptions(tp,{b1,aux.Stringid(id,3)},{b2,aux.Stringid(id,4)})
+		if op==1 and Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 then
+			sp=true
+		elseif op==2 then
+			if Duel.MoveToField(sc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
+				--Treated as a Continuous Spell
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetCode(EFFECT_CHANGE_TYPE)
+				e1:SetValue(TYPE_SPELL+TYPE_CONTINUOUS)
+				e1:SetReset(RESET_EVENT|RESETS_STANDARD&~RESET_TURN_SET)
+				sc:RegisterEffect(e1)   
+				sp=true
+			end
+		end
 	end
-	if not sc:IsLocation(LOCATION_MZONE) then return end
+	if not sp then return end
 	if Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(s.plfilter,tp,0,LOCATION_MZONE,1,nil,1-tp) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)

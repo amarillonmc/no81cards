@@ -16,7 +16,7 @@ function s.initial_effect(c)
 	e1:SetOperation(s.rmop)
 	c:RegisterEffect(e1)
 	
-	-- 这张卡在墓地存在的场合，从自己墓地把1只「堕福」怪兽除外才能发动，这张卡加入手卡
+	-- 自己主要阶段有这张卡在墓地存在的场合，从自己墓地把1只「堕福」怪兽除外才能发动，这张卡加入手卡
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_TOHAND)
@@ -73,7 +73,7 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
--- 这张卡在墓地存在的场合，从自己墓地把1只「堕福」怪兽除外才能发动，这张卡加入手卡
+-- 自己主要阶段有这张卡在墓地存在的场合，从自己墓地把1只「堕福」怪兽除外才能发动，这张卡加入手卡
 function s.thfilter(c)
 	return c:IsSetCard(0x666c) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end

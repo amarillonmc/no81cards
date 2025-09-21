@@ -86,7 +86,7 @@ end
 function cm.desop(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_EQUIP)
-	local g = Duel.SelectMatchingCard(tp, cm.filter, tp, LOCATION_GRAVE + LOCATION_DECK, 0, 1, 1, nil, c)
+	local g = Duel.SelectMatchingCard(tp, cm.filter, tp, LOCATION_GRAVE + LOCATION_DECK+LOCATION_REMOVED, 0, 1, 1, nil, c)
 	if g:GetCount() > 0 then
 		g = g:GetFirst()
 		local mg = Group.CreateGroup()
@@ -94,7 +94,7 @@ function cm.desop(e, tp, eg, ep, ev, re, r, rp)
 		local g2 = Duel.GetMatchingGroup(aux.TRUE, tp, 0, LOCATION_MZONE, nil)
 		mg:Merge(g2)
 		local tc = c
-		if g:IsLocation(LOCATION_GRAVE) and #mg > 1 then
+		if (g:IsLocation(LOCATION_GRAVE) or g:IsLocation(LOCATION_REMOVED))and #mg > 1 then
 			tc = mg:Select(tp, 1, 1, nil):GetFirst()
 			Duel.Equip(tp, g, tc, true)
 		else

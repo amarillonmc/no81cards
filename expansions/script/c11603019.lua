@@ -18,7 +18,6 @@ function s.initial_effect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,id+1)
 	e2:SetTarget(s.pltg)
@@ -56,22 +55,28 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function s.plfilter(c,p)
-	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and Duel.GetLocationCount(p,LOCATION_SZONE)>0
-		and c:CheckUniqueOnField(p,LOCATION_SZONE)
-		and not c:IsForbidden()
+function s.plfilter(c,p,e)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:CheckUniqueOnField(p,LOCATION_SZONE)
+		and not c:IsForbidden() and not c:IsImmuneToEffect(e)
 end
-function s.pltg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and s.plfilter(chkc,1-tp) end
-	if chk==0 then return Duel.IsExistingTarget(s.plfilter,tp,0,LOCATION_MZONE,1,nil,1-tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,s.plfilter,tp,0,LOCATION_MZONE,1,1,nil)
+function s.pltg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.plfilter,tp,0,LOCATION_MZONE,1,nil,1-tp,e) end
+end
+function s.seqfilter(c,dis)
+	return 1<<c:GetSequence()==dis
 end
 function s.plop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if not tc or not tc:IsRelateToEffect(e) or tc:IsImmuneToEffect(e) then return end
-	if tc and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) and Duel.GetLocationCount(1-tp,LOCATION_SZONE)>0 then
-		if Duel.MoveToField(tc,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true) then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local tc=Duel.SelectMatchingCard(tp,s.plfilter,tp,0,LOCATION_MZONE,1,1,nil,1-tp,e):GetFirst()
+	if tc then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+		local dis=Duel.SelectField(tp,1,0,LOCATION_SZONE,0x20002000)
+		dis=((dis&0xffff)<<24)|((dis>>24)&0xffff)
+		local dg=Duel.GetMatchingGroup(s.seqfilter,tp,0,LOCATION_SZONE,nil,dis)
+		if #dg>0 then
+			Duel.Destroy(dg,REASON_RULE)
+		end
+		if Duel.MoveToField(tc,tp,1-tp,LOCATION_SZONE,POS_FACEUP,true,dis) then
 			local c=e:GetHandler()
 			--Treated as a Continuous Spell
 			local e1=Effect.CreateEffect(c)

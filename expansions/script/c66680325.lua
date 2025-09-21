@@ -7,7 +7,7 @@ function s.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)
 	
-	-- 对方把效果发动时才能发动，从额外卡组把1只「堕福」超量怪兽在额外怪兽区域特殊召唤，那之后，可以从卡组把1只「堕福」怪兽作为自己场上1只超量怪兽的超量素材
+	-- 对方把效果发动时才能发动，从额外卡组把1只「堕福」超量怪兽特殊召唤，那之后，可以从卡组把1只「堕福」怪兽作为自己场上1只超量怪兽的超量素材
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -21,9 +21,9 @@ function s.initial_effect(c)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
 	
-	-- ●光·光：场上最多2张卡破坏
+	-- ●光·光：场上1张卡破坏
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(id,2))
+	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCategory(CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
@@ -37,7 +37,7 @@ function s.initial_effect(c)
 	
 	-- ●光·暗：自己场上2个超量素材取除，自己抽2张
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(id,3))
+	e4:SetDescription(aux.Stringid(id,2))
 	e4:SetCategory(CATEGORY_DRAW)
 	e4:SetType(EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
@@ -49,18 +49,18 @@ function s.initial_effect(c)
 	e4:SetOperation(s.drop)
 	c:RegisterEffect(e4)
 	
-	-- ●暗·暗：得到对方场上1只表侧表示怪兽的控制权
+	-- ●暗·暗：选场上1张表侧表示的卡，那个效果直到回合结束时无效
 	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(id,4))
-	e5:SetCategory(CATEGORY_CONTROL)
+	e5:SetDescription(aux.Stringid(id,3))
+	e5:SetCategory(CATEGORY_DISABLE)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_SZONE)
 	e5:SetCountLimit(1,id+1)
 	e5:SetHintTiming(0,TIMING_END_PHASE)
-	e5:SetCost(s.ctcost)
-	e5:SetTarget(s.cttg)
-	e5:SetOperation(s.ctop)
+	e5:SetCost(s.discost)
+	e5:SetTarget(s.distg)
+	e5:SetOperation(s.disop)
 	c:RegisterEffect(e5)
 	
 	-- 这些效果发动的回合，自己不能把场上的怪兽的效果发动
@@ -79,7 +79,7 @@ function s.aclimit(e,re,tp)
 	return re:IsActiveType(TYPE_MONSTER) and rc:IsLocation(LOCATION_MZONE)
 end
 
--- 对方把效果发动时才能发动，从额外卡组把1只「堕福」超量怪兽在额外怪兽区域特殊召唤，那之后，可以从卡组把1只「堕福」怪兽作为自己场上1只超量怪兽的超量素材
+-- 对方把效果发动时才能发动，从额外卡组把1只「堕福」超量怪兽特殊召唤，那之后，可以从卡组把1只「堕福」怪兽作为自己场上1只超量怪兽的超量素材
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp
 end
@@ -96,24 +96,23 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 
-function s.spfilter1(c,e,tp,ec)
-	return c:IsSetCard(0x666c) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.GetLocationCountFromEx(tp,tp,ec,c,0x60)>0
+function s.spfilter(c,e,tp)
+	return c:IsSetCard(0x666c) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter1,tp,LOCATION_EXTRA,0,1,nil,e,tp,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,s.spfilter1,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
 	if #g>0 then
-		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP,0x60) > 0
+		if Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP) > 0
 			and Duel.IsExistingMatchingCard(s.xyzfilter,tp,LOCATION_MZONE,0,1,nil,e,tp)
-			and Duel.SelectYesNo(tp,aux.Stringid(id,5)) then
+			and Duel.SelectYesNo(tp,aux.Stringid(id,4)) then
 			Duel.BreakEffect()
 			local g2=Duel.SelectMatchingCard(tp,s.xyzfilter,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
 			local xc=g2:GetFirst()
@@ -136,7 +135,7 @@ function s.mtfilter(c,e)
 		and c:IsCanOverlay() and not (e and c:IsImmuneToEffect(e))
 end
 
--- ●光·光：场上最多2张卡破坏
+-- ●光·光：场上1张卡破坏
 function s.dscfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToRemoveAsCost()
 end
@@ -157,15 +156,14 @@ function s.dscost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 	
 function s.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
+	if chk==0 then return #g>0 end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 
 function s.dsop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
+	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD):Select(tp,1,1,nil)
 	if #g>0 then
 		Duel.HintSelection(g)
 		Duel.Destroy(g,REASON_EFFECT)
@@ -211,15 +209,15 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(tp,2,REASON_EFFECT)
 end
 
--- ●暗·暗：得到对方场上1只表侧表示怪兽的控制权
-function s.ctcfilter(c)
+-- ●暗·暗：选场上1张表侧表示的卡，那个效果直到回合结束时无效
+function s.discfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToRemoveAsCost()
 end
 
-function s.ctcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 and Duel.IsExistingMatchingCard(s.ctcfilter,tp,LOCATION_GRAVE,0,2,nil) end
+function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
+    if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 and Duel.IsExistingMatchingCard(s.discfilter,tp,LOCATION_GRAVE,0,2,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,s.ctcfilter,tp,LOCATION_GRAVE,0,2,2,nil)
+	local g=Duel.SelectMatchingCard(tp,s.discfilter,tp,LOCATION_GRAVE,0,2,2,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -231,29 +229,30 @@ function s.ctcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 
-function s.ctfilter(c,check)
-	return c:IsControlerCanBeChanged(check) and c:IsFaceup()
+function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	local tg=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,tg,1,0,0)
 end
 
-function s.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local check=e:GetLabel()==100
-		e:SetLabel(0)
-		return Duel.IsExistingMatchingCard(s.ctfilter,tp,0,LOCATION_MZONE,1,nil,check)
-	end
-	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-	Duel.SetOperationInfo(0,CATEGORY_CONTROL,nil,1,0,0)
-end
-
-function s.ctfilter2(c)
-	return c:IsControlerCanBeChanged() and c:IsFaceup()
-end
-
-function s.ctop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
-	local g=Duel.SelectMatchingCard(tp,s.ctfilter2,tp,0,LOCATION_MZONE,1,1,nil)
+function s.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+	local g=Duel.SelectMatchingCard(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	if #g==0 then return end
+	Duel.HintSelection(g)
 	local tc=g:GetFirst()
-	if tc then
-		Duel.GetControl(tc,tp)
-	end
+	Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_DISABLE)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	tc:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_DISABLE_EFFECT)
+	e2:SetValue(RESET_TURN_SET)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+	tc:RegisterEffect(e2)
 end
