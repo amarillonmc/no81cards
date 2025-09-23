@@ -66,6 +66,8 @@ function c22050210.rettg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
 end
 function c22050210.retop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tp=c:GetControler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 	local ct=Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	if ct>0 then
