@@ -1,6 +1,8 @@
 --看护院院长弗洛伦斯
 function c95101168.initial_effect(c)
 	aux.AddCodeList(c,95101001)
+	--pendulum
+	aux.EnablePendulumAttribute(c)
 	--set
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND)

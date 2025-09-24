@@ -61,13 +61,13 @@ end
 function c95101176.spfilter(c,e,tp,chk)
 	return c:IsSetCard(0xbbe) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (chk==0 or aux.NecroValleyFilter()(c))
 end
-function c95101176.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c95101176.spotg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp)>0
 		and Duel.IsExistingMatchingCard(c95101176.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,0)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
-function c95101176.spop(e,tp,eg,ep,ev,re,r,rp)
+function c95101176.spoop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetMZoneCount(tp)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sc=Duel.SelectMatchingCard(tp,c95101176.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,1):GetFirst()

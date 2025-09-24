@@ -47,7 +47,7 @@ function c95101189.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardDeck(1-tp,3,REASON_COST)
 end
 function c95101189.thfilter(c)
-	return c:IsSetCard(0xbbb) and not c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsSetCard(0xbbb) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c95101189.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c95101189.thfilter,tp,LOCATION_DECK,0,1,nil) end

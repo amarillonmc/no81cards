@@ -1,6 +1,8 @@
 --幽灵猎人卡纳奇
 function c95101170.initial_effect(c)
 	aux.AddCodeList(c,95101001)
+	--pendulum
+	aux.EnablePendulumAttribute(c)
 	--set
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND)
@@ -20,7 +22,7 @@ function c95101170.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e2:SetCountLimit(1,95101170+1)
-	e2:SetCost(c95101170.spcost)
+	--e2:SetCost(c95101170.spcost)
 	e2:SetTarget(c95101170.sptg)
 	e2:SetOperation(c95101170.spop)
 	c:RegisterEffect(e2)

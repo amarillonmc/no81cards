@@ -51,7 +51,7 @@ function c95101180.skipop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EFFECT_SKIP_TURN)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetTargetRange(1,0)
-	e1:SetReset(RESET_PHASE+PHASE_END,2)
+	e1:SetReset(RESET_PHASE+PHASE_END,3)
 	Duel.RegisterEffect(e1,p)
 end
 function c95101180.spfilter(c,e,tp)
@@ -80,7 +80,7 @@ function c95101180.spscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c95101180.spscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsReleasable,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if chk==0 then return #g==12 and Duel.GetMZoneCount(tp,g>0 end
+	if chk==0 then return #g==12 and Duel.GetMZoneCount(tp,g)>0 end
 	Duel.Release(g,REASON_COST)
 end
 function c95101180.spstg(e,tp,eg,ep,ev,re,r,rp,chk)

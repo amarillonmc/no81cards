@@ -1,6 +1,8 @@
 --雪之少女格尔达
 function c95101172.initial_effect(c)
 	aux.AddCodeList(c,95101001)
+	--pendulum
+	aux.EnablePendulumAttribute(c)
 	--set
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND)
@@ -27,7 +29,7 @@ function c95101172.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
 function c95101172.penfilter(c)
-	return aux.IsCodeListed(c,95101001) and not c:IsCode(95101172) and c:IsAttribute(ATTRIBUTE_FIRE) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return aux.IsCodeListed(c,95101001) and not c:IsCode(95101172) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c95101172.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and Duel.IsExistingMatchingCard(c95101172.penfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -57,9 +59,9 @@ function c95101172.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c95101172.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_MZONE,1,nil,0x6) and Duel.SelectYesNo(tp,aux.Stringid(95101172,2)) then
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_ONFIELD,1,nil,0x6) and Duel.SelectYesNo(tp,aux.Stringid(95101172,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(Card.IsType,nil,tp,0,LOCATION_MZONE,1,1,nil,0x6)
+		local g=Duel.SelectMatchingCard(tp,Card.IsType,tp,0,LOCATION_ONFIELD,1,1,nil,0x6)
 		if g:GetCount()>0 then
 			Duel.BreakEffect()
 			Duel.HintSelection(g)

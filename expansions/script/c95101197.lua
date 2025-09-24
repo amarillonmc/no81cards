@@ -38,6 +38,10 @@ function c95101197.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,95101197)
 	Duel.Draw(tp,1,REASON_EFFECT)
 end
+function c95101197.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
+	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2--Duel.IsMainPhase()
+end
 function c95101197.spcfilter(c,tp)
 	return aux.IsCodeListed(c,95101001) and c:IsFaceup() and c:IsAbleToHandAsCost() and Duel.GetMZoneCount(tp,c)>0
 end
