@@ -11,7 +11,7 @@ function c28324124.initial_effect(c)
 end
 function c28324124.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local exc=e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetHandler() or nil
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,0,1,exc) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) end
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
 		Duel.SetChainLimit(aux.FALSE)
 	end

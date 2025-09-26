@@ -26,7 +26,7 @@ function cm.fd(c)
 		and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
 end
 function cm.fd3(c,e,tp,code)
-	if not c:IsCode(code) then return false end
+	if not c:IsCode(code) or not c:IsType(TYPE_MONSTER) then return false end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	return c:IsAbleToGrave() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
 end
