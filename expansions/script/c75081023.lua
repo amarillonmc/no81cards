@@ -2,9 +2,10 @@
 function c75081023.initial_effect(c)
 	--revive
 	local e0=Effect.CreateEffect(c)
-	e0:SetCategory(CATEGORY_REMOVE)
+	--e0:SetCategory(CATEGORY_REMOVE)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e0:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e0:SetCountLimit(1,75081023)
 	e0:SetTarget(c75081023.ovtg)
