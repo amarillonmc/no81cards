@@ -36,7 +36,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsPreviousLocation(LOCATION_HAND) and not e:GetHandler():IsLocation(LOCATION_HAND)
+	return not e:GetHandler():IsLocation(LOCATION_HAND)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil) end

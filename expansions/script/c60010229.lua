@@ -7,13 +7,14 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCondition(cm.condition)
+	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetCondition(cm.hcon)
-	e2:SetTarget(cm.htg)
-	e2:SetOperation(cm.hop)
-	c:RegisterEffect(e2)
+	local e4=e1:Clone()
+	e4:SetCondition(cm.hcon)
+	e4:SetTarget(cm.htg)
+	e4:SetOperation(cm.hop)
+	c:RegisterEffect(e4)
 	--change effect type
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
@@ -35,10 +36,10 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsPreviousLocation(LOCATION_HAND) and not e:GetHandler():IsLocation(LOCATION_HAND)
+	return not e:GetHandler():IsLocation(LOCATION_HAND)
 end
-function cm.desfilter(c)
-	return not c:IsLocation(LOCATION_SZONE) or c:GetSequence()<5
+function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

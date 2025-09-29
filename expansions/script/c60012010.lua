@@ -6,11 +6,13 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCondition(cm.condition)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
+	e2:SetProperty(0)
 	e2:SetCondition(cm.hcon)
 	e2:SetTarget(cm.htg)
 	e2:SetOperation(cm.hop)
@@ -37,7 +39,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsPreviousLocation(LOCATION_HAND) and not e:GetHandler():IsLocation(LOCATION_HAND)
+	return not e:GetHandler():IsLocation(LOCATION_HAND)
 end
 function cm.sfilter(c,e)
 	return c:IsType(TYPE_SPELL) 
@@ -139,7 +141,7 @@ function cm.acon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousLocation(LOCATION_SZONE)
 end
 function cm.afil(c)
-	return c:IsLevelBelow(5) and c:GetTextAttack()>0
+	return c:IsCanHaveCounter(0x62a) and Duel.IsCanAddCounter(tp,0x62a,1,c) and c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:GetTextAttack()>0
 end
 function cm.acost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.afil,1,nil) end

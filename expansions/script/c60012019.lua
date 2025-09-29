@@ -92,8 +92,11 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(sg) do
 		if tc:GetCounter(0x62a)~=0 then num=num+tc:GetCounter(0x62a) end
 	end
-	if sg:GetCount()==0 and Duel.Release(sg,REASON_EFFECT)~=0 then
-		e:GetHandler():AddCounter(0x62a,num)
+	if Duel.Release(sg,REASON_EFFECT) then
+		Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
+		if sg:GetCount()==0 and Duel.Release(sg,REASON_EFFECT)~=0 then
+			e:GetHandler():AddCounter(0x62a,num)
+		end
 	end
 end
 

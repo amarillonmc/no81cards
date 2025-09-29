@@ -36,10 +36,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsPreviousLocation(LOCATION_HAND) and not e:GetHandler():IsLocation(LOCATION_HAND)
+	return not e:GetHandler():IsLocation(LOCATION_HAND)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,0,1,nil) end
+	local num=Duel.GetMatchingGroupCount(cm.filter,tp,LOCATION_MZONE,0,nil)
+	if chk==0 then return num>0 and Duel.IsPlayerCanDraw(tp,num) end
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

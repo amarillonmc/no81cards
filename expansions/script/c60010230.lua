@@ -50,18 +50,18 @@ function cm.spcost(e,c,tp,st)
 	return Duel.GetFlagEffect(tp,m)~=0 or Duel.IsPlayerAffectedByEffect(tp,60010230)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local tp=e:GetHandlerPlayer()
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(1,m,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1)
 end
 function cm.fil(c)
 	return c:IsCanHaveCounter(0x62a) and Duel.IsCanAddCounter(tp,0x62a,1,c) and c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:GetCounter(0x62a)<14
 end
 function cm.tg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.fil,tp,LOCATION_MZONE,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.fil,tp,LOCATION_MZONE,0,1,e:GetHandler()) end
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(cm.fil,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(cm.fil,tp,LOCATION_MZONE,0,e:GetHandler())
 	for tc in aux.Next(g) do
 		tc:AddCounter(0x62a,8)
 	end

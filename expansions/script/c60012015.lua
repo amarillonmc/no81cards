@@ -90,6 +90,8 @@ function cm.dtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_ONFIELD)
 end
 function cm.dop(e,tp,eg,ep,ev,re,r,rp)
+	local loc=0
+	if Duel.IsPlayerAffectedByEffect(tp,m) then loc=LOCATION_ONFIELD end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,loc,1,1,nil)
 	if g:GetCount()>0 then

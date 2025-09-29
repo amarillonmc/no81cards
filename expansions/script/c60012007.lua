@@ -96,6 +96,6 @@ end
 function cm.rop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
-		Duel.Destroy(tc,REASON_EFFECT)
+		Duel.Remove(tc,nil,REASON_EFFECT)
 	end
 end

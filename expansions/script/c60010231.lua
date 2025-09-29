@@ -3,7 +3,7 @@ local cm,m,o=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_RECOVER+CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCondition(cm.condition)
@@ -35,12 +35,12 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsPreviousLocation(LOCATION_HAND) and not e:GetHandler():IsLocation(LOCATION_HAND)
+	return not e:GetHandler():IsLocation(LOCATION_HAND)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Recover(tp,1000,REASON_EFFECT)
-	Duel.RegisterFlagEffect(tp,m,0,0,1)
+	Duel.RegisterFlagEffect(tp,m+40000000,0,0,1)
 
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -57,17 +57,26 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e2,tp)
 end
 function cm.kop(e,tp,eg,ep,ev,re,r,rp)
-	local num=Duel.GetFlagEffect(tp,m)
-	if Duel.GetLP(tp)==0 and num~=0 then
+	local num=Duel.GetFlagEffect(tp,m+40000000)
+		--Debug.Message(Duel.GetLP(tp)==0)
+		
+		--Debug.Message(num~=0)
+	if Duel.GetLP(tp)<=0 and num~=0 then
+		--Debug.Message("1")
 		Duel.SetLP(tp,8000)
-		Duel.ResetFlagEffect(tp,m)
-		for i=1,num-1 do
-			Duel.RegisterFlagEffect(tp,m,0,0,1)
+		if num~=1 then
+			Duel.ResetFlagEffect(tp,m+40000000)
+		
+			for i=1,num-1 do
+				Duel.RegisterFlagEffect(tp,m+40000000,0,0,1)
+			end
+		else
+			Duel.ResetFlagEffect(tp,m+40000000)
 		end
 	end
 end
 function cm.nlosecon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,m)~=0
+	return Duel.GetFlagEffect(e:GetHandler(),m+40000000)~=0
 end
 
 function cm.hcon(e,tp,eg,ep,ev,re,r,rp)
