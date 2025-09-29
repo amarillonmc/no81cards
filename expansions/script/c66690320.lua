@@ -2,24 +2,25 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 
--- 以自己墓地的「蒸汽朋克」怪兽和对方墓地的卡各相同数量为对象才能发动，那些卡除外
-local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_REMOVE)
+-- 以对方场上1张卡为对象才能发动，那张卡破坏，那之后，选自己1张手卡破坏
+    local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1,id)
-	e1:SetTarget(s.target)
-	e1:SetOperation(s.activate)
+	e1:SetTarget(s.destg)
+	e1:SetOperation(s.desop)
 	c:RegisterEffect(e1)
 	
 	-- 这个回合没有送去墓地的这张卡在墓地存在的场合，支付300基本分才能发动，这张卡加入手卡
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
 	e2:SetCategory(CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1,id+1)
 	e2:SetCondition(aux.exccon)
 	e2:SetCost(s.cost)
@@ -28,31 +29,28 @@ local e1=Effect.CreateEffect(c)
 	c:RegisterEffect(e2)
 end
 
--- 以自己墓地的「蒸汽朋克」怪兽和对方墓地的卡各相同数量为对象才能发动，那些卡除外
-function s.filter(c,e)
-	return c:IsSetCard(0x666b) and c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsCanBeEffectTarget(e)
+-- 以对方场上1张卡为对象才能发动，那张卡破坏，那之后，选自己1张手卡破坏
+function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() end
+	if chk==0 then 
+		return Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) 
+			and Duel.IsExistingMatchingCard(Card.IsDestructable,tp,LOCATION_HAND,0,1,nil)
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_HAND)
 end
 
-function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_GRAVE,1,nil)
-		and Duel.IsExistingTarget(s.filter,tp,LOCATION_GRAVE,0,1,nil,e) end
-	local ct1=Duel.GetMatchingGroupCount(s.filter,tp,LOCATION_GRAVE,0,nil,e)
-	local ct2=Duel.GetMatchingGroupCount(Card.IsCanBeEffectTarget,tp,0,LOCATION_GRAVE,nil,e)
-	local mc=math.min(ct1,ct2)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g1=Duel.SelectTarget(tp,s.filter,tp,LOCATION_GRAVE,0,1,mc,nil,e)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g2=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_GRAVE,#g1,#g1,nil)
-	g1:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g1,#g1,0,0)
-end
-
-function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
-	if #sg>0 then
-		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+function s.desop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc and tc:IsRelateToEffect(e) and Duel.Destroy(tc,REASON_EFFECT)~=0 then
+		Duel.ConfirmCards(1-tp,tc)
+		Duel.BreakEffect()
+		Duel.ShuffleHand(tp)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND,0,1,1,nil)
+		Duel.Destroy(dg,REASON_EFFECT)
 	end
 end
 

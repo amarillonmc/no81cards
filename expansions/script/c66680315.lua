@@ -2,12 +2,12 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 
-    local e1=Effect.CreateEffect(c)
+	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)
 	
-    -- 自己主要阶段才能发动，从额外卡组把1只「堕福」超量怪兽特殊召唤，那之后，可以从卡组把1只「堕福」怪兽作为自己场上1只超量怪兽的超量素材
+	-- 自己主要阶段才能发动，从额外卡组把1只「堕福」超量怪兽特殊召唤，那之后，可以从卡组把1只「堕福」怪兽作为自己场上1只超量怪兽的超量素材
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -49,20 +49,20 @@ function s.initial_effect(c)
 	e4:SetOperation(s.tgop)
 	c:RegisterEffect(e4)
 	
-	-- 这些效果发动的回合，自己不能把场上的怪兽的效果发动
+	-- 这些效果发动的回合，自己不能把特殊召唤的场上的怪兽的效果发动
 	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,s.chainfilter)
 end
 
--- 这些效果发动的回合，自己不能把场上的怪兽的效果发动
+-- 这些效果发动的回合，自己不能把特殊召唤的场上的怪兽的效果发动
 function s.chainfilter(re,tp,cid)
 	local rc=re:GetHandler()
 	local loc=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)
-	return not (re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE)
+	return not (re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE and rc:IsSummonType(SUMMON_TYPE_SPECIAL))
 end
 
 function s.aclimit(e,re,tp)
 	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and rc:IsLocation(LOCATION_MZONE)
+	return re:IsActiveType(TYPE_MONSTER) and rc:IsSummonType(SUMMON_TYPE_SPECIAL) and rc:IsLocation(LOCATION_MZONE)
 end
 
 -- 自己主要阶段才能发动，从额外卡组把1只「堕福」超量怪兽特殊召唤，那之后，可以从卡组把1只「堕福」怪兽作为自己场上1只超量怪兽的超量素材
@@ -123,7 +123,7 @@ function s.rthcfilter(c)
 end
 
 function s.rthcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 and Duel.IsExistingMatchingCard(s.rthcfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 and Duel.IsExistingMatchingCard(s.rthcfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,s.rthcfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
@@ -162,7 +162,7 @@ function s.tgcfilter(c)
 end
 
 function s.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 and Duel.IsExistingMatchingCard(s.tgcfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 and Duel.IsExistingMatchingCard(s.tgcfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,s.tgcfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)

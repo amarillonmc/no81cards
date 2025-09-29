@@ -28,20 +28,20 @@ function s.initial_effect(c)
 	e2:SetOperation(s.thop)
 	c:RegisterEffect(e2)
 	
-	-- 这些效果发动的回合，自己不能把场上的怪兽的效果发动
+	-- 这些效果发动的回合，自己不能把特殊召唤的场上的怪兽的效果发动
 	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,s.chainfilter)
 end
 
--- 这些效果发动的回合，自己不能把场上的怪兽的效果发动
+-- 这些效果发动的回合，自己不能把特殊召唤的场上的怪兽的效果发动
 function s.chainfilter(re,tp,cid)
 	local rc=re:GetHandler()
 	local loc=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)
-	return not (re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE)
+	return not (re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE and rc:IsSummonType(SUMMON_TYPE_SPECIAL))
 end
 
 function s.aclimit(e,re,tp)
 	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and rc:IsLocation(LOCATION_MZONE)
+	return re:IsActiveType(TYPE_MONSTER) and rc:IsSummonType(SUMMON_TYPE_SPECIAL) and rc:IsLocation(LOCATION_MZONE)
 end
 
 -- 自己场上有「堕福」超量怪兽存在，怪兽的效果·魔法·陷阱卡发动时才能发动，那个发动无效并除外

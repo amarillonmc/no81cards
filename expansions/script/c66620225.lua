@@ -6,11 +6,11 @@ function s.initial_effect(c)
 	-- 自己对「绮奏·映仪裁契 雾霞律织姬」1回合只能有1次特殊召唤
 	c:SetSPSummonOnce(id)
 	
-	-- 「绮奏」怪兽＋机械族怪兽
-	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x666a),aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),true)
+	-- 「绮奏」怪兽＋场上的机械族怪兽
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x666a),s.ffilter2,true)
 	
-	-- 把自己的场上的上记的卡解放的场合才能从额外卡组特殊召唤
-	aux.AddContactFusionProcedure(c,aux.FilterBoolFunction(Card.IsReleasable,REASON_SPSUMMON),LOCATION_MZONE,0,Duel.Release,REASON_SPSUMMON+REASON_MATERIAL)
+	-- 把自己手卡·场上的上记卡送去墓地的场合才能从额外卡组特殊召唤
+	aux.AddContactFusionProcedure(c,s.cfilter0,LOCATION_HAND+LOCATION_ONFIELD,0,Duel.SendtoGrave,REASON_COST)
 	
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -19,7 +19,7 @@ function s.initial_effect(c)
 	e1:SetValue(s.splimit)
 	c:RegisterEffect(e1)
 	
-	-- 这张卡特殊召唤的场合才能发动，从自己的卡组·墓地选1张「绮奏」卡加入手卡，那之后，选1张手卡丢弃
+	-- 这张卡特殊召唤的场合才能发动，从自己的卡组·墓地把1张「绮奏」卡加入手卡，那之后，选1张手卡丢弃
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
 	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_HANDES)
@@ -44,13 +44,21 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
--- 把自己的场上的上记的卡解放的场合才能从额外卡组特殊召唤
-function s.splimit(e,se,sp,st)
-	local c=e:GetHandler()
-	return not c:IsLocation(LOCATION_EXTRA) or c:IsFaceup()
+-- 「绮奏」怪兽＋场上的机械族怪兽
+function s.ffilter2(c)
+	return c:IsLocation(LOCATION_MZONE) and c:IsRace(RACE_MACHINE)
 end
 
--- 这张卡特殊召唤的场合才能发动，从自己的卡组·墓地选1张「绮奏」卡加入手卡，那之后，选1张手卡丢弃
+-- 把自己手卡·场上的上记卡送去墓地的场合才能从额外卡组特殊召唤
+function s.cfilter0(c)
+	return c:IsAbleToGraveAsCost() and c:IsType(TYPE_MONSTER)
+end
+
+function s.splimit(e,se,sp,st)
+	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
+end
+
+-- 这张卡特殊召唤的场合才能发动，从自己的卡组·墓地把1张「绮奏」卡加入手卡，那之后，选1张手卡丢弃
 function s.thfilter(c)
 	return c:IsSetCard(0x666a) and c:IsAbleToHand()
 end

@@ -66,12 +66,12 @@ function s.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.tgfilter,1,nil)
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message("0")
+	--Debug.Message("0")
 	e:GetHandler():RegisterFlagEffect(id,0,0,1)
 	--Duel.RegisterFlagEffect(tp,id,RESET_EVENT+EVENT_CHAIN_END,0,1)
 end
 function s.regop2(e,tp,eg,ep,ev,re,r,rp)
-	Debug.Message("1")
+	--Debug.Message("1")
 	e:GetHandler():ResetFlagEffect(id)
 end
 function s.handconfilter(c)
@@ -138,7 +138,7 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 			c:SetCardTarget(tc)
 		end]]
 	else
-	Debug.Message("2")
+	--Debug.Message("2")
 		local tg=c:GetCardTarget()
 		if not tg then return false end
 		local g=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_SZONE,0,nil,tg)

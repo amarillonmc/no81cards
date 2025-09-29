@@ -2,8 +2,8 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 
-    -- ●丢弃1张手卡才能发动，从卡组把2只「堕福」怪兽加入手卡（同名卡最多1张）
-    -- ●从手卡丢弃1张「堕福」卡才能发动，从卡组把「堕福的圣曲・风花梦」以外的2张「堕福」卡加入手卡（同名卡最多1张）
+	-- ●丢弃1张手卡才能发动，从卡组把2只「堕福」怪兽加入手卡（同名卡最多1张）
+	-- ●从手卡丢弃1张「堕福」卡才能发动，从卡组把「堕福的圣曲・风花梦」以外的2张「堕福」卡加入手卡（同名卡最多1张）
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
@@ -26,20 +26,20 @@ function s.initial_effect(c)
 	e2:SetValue(s.repval)
 	c:RegisterEffect(e2)
 	
-	-- 这些效果发动的回合，自己不能把场上的怪兽的效果发动
+	-- 这些效果发动的回合，自己不能把特殊召唤的场上的怪兽的效果发动
 	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,s.chainfilter)
 end
 
--- 这些效果发动的回合，自己不能把场上的怪兽的效果发动
+-- 这些效果发动的回合，自己不能把特殊召唤的场上的怪兽的效果发动
 function s.chainfilter(re,tp,cid)
 	local rc=re:GetHandler()
 	local loc=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)
-	return not (re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE)
+	return not (re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE and rc:IsSummonType(SUMMON_TYPE_SPECIAL))
 end
 
 function s.aclimit(e,re,tp)
 	local rc=re:GetHandler()
-	return re:IsActiveType(TYPE_MONSTER) and rc:IsLocation(LOCATION_MZONE)
+	return re:IsActiveType(TYPE_MONSTER) and rc:IsSummonType(SUMMON_TYPE_SPECIAL) and rc:IsLocation(LOCATION_MZONE)
 end
 
 -- ●丢弃1张手卡才能发动，从卡组把2只「堕福」怪兽加入手卡（同名卡最多1张）

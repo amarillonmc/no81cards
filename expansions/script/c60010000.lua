@@ -23,6 +23,26 @@ if not SpaceCheck then
 	end
 end
 -------------------------------------------------------------------------------------------------------------------------------------
+MTC._set_code=Effect.SetCode
+Effect.SetCode=function (e,code,...)
+	if (code==EFFECT_INDESTRUCTABLE or code==EFFECT_INDESTRUCTABLE_BATTLE or code==EFFECT_INDESTRUCTABLE_EFFECT or code==EFFECT_INDESTRUCTABLE_COUNT or code==EFFECT_CANNOT_BE_BATTLE_TARGET or code==EFFECT_CANNOT_BE_EFFECT_TARGET or code==EFFECT_IGNORE_BATTLE_TARGET or code==EFFECT_IMMUNE_EFFECT or code==EFFECT_CANNOT_SELECT_BATTLE_TARGET or code==EFFECT_CANNOT_SELECT_EFFECT_TARGET) and Duel.GetFlagEffect(tp,60010248)~=0 then
+		MTC._set_code(e,nil,...)
+	elseif (code==EFFECT_CANNOT_DISABLE or code==EFFECT_CANNOT_DISEFFECT or code==EFFECT_CANNOT_INACTIVATE or code==EFFECT_CANNOT_DISABLE_SUMMON or code==EFFECT_CANNOT_DISABLE_SPSUMMON or code==EFFECT_CANNOT_DISABLE_FLIP_SUMMON) and Duel.GetFlagEffect(tp,60010250)~=0 then
+		MTC._set_code(e,nil,...)
+	else
+		MTC._set_code(e,code,...)
+	end
+end
+
+MTC._set_chain_limit=Duel.SetChainLimit
+Duel.SetChainLimit=function(fil)
+	if Duel.GetFlagEffect(tp,60010250)~=0 then
+		return MTC._set_chain_limit(true)
+	else
+		return MTC._set_chain_limit(fil)
+	end
+end
+-------------------------------------------------------------------------------------------------------------------------------------
 --系列「传说天」相关函数
 --「传说天」次数检定初始化函数
 function MTC.LHini(c)
@@ -456,17 +476,39 @@ function getrand()
 	end
 	math.randomseed(result)
 end
+
+function MTC.SOSZS(e,tp,eg,ep,ev,re,r,rp,chk)
+	local code=e:GetHandler():GetCode()
+	if chk==0 then return Duel.GetCustomActivityCount(code,tp,ACTIVITY_CHAIN)==0 end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e1:SetTargetRange(1,0)
+	e1:SetValue(MTC.SOSac1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function MTC.SOSac1(e,re,tp)
+	return not re:GetHandler():IsSetCard(0x6623)
+end
+
 --创建化身效果
 Avatar={}
+
 function MTC.AvatarCreate(c,code,loc)
-	Avatar[c:GetCode()]=code
+	
+	local tp=c:GetControler()
+
+	c:EnableCounterPermit(0x62a,LOCATION_ONFIELD)
+	c:SetCounterLimit(0x62a,14)
+
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetRange(loc)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetLabel(code)
-	e1:SetCondition(MTC.Avatarcon1)
-	e1:SetOperation(MTC.Avatarop1)
+	e1:SetOperation(MTC.Avatarop)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
@@ -478,34 +520,33 @@ function MTC.AvatarCreate(c,code,loc)
 	e3:SetCode(EVENT_ATTACK_ANNOUNCE)
 	c:RegisterEffect(e3)
 end
-function MTC.Avatarcon1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local code=e:GetLabel()
-	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(MTC.Avatarfil1,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,code)
-	Duel.RegisterFlagEffect(tp,code+60010000,0,0,1)
-	local d=math.random(1,20)
-	local seq=c:GetSequence()+1
-	local tm=Duel.GetFlagEffect(tp,code+60010000)
-	if c:IsLocation(LOCATION_MZONE) then
-		if d<=tm then
-			Debug.Message(seq.."号位的怪兽化身为" ..d .."/" ..tm.."可触发化身")
-		else
-			Debug.Message(seq.."号位的怪兽化身为" ..d .."/" ..tm.."不可触发化身")
-		end
-	end
-	if d<=tm and #g>0 then return true else return false end
-end
-function MTC.Avatarfil1(c,code)
+function MTC.Avatarfil(c,code)
 	return c:IsCode(code) and c:CheckActivateEffect(false,false,false)~=nil
 end
-function MTC.Avatarop1(e,tp,eg,ep,ev,re,r,rp)
+function MTC.Avatarop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local code=e:GetLabel()
-	Duel.Hint(HINT_CARD,0,e:GetHandler():GetCode()) 
-	Duel.ResetFlagEffect(tp,code+60010000)
-	local tc=Duel.GetMatchingGroup(MTC.Avatarfil1,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,code):RandomSelect(tp,1):GetFirst()
-	MTC.ActivateCard(tc,tp,e)
-	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+60010225,nil,0,tp,tp,0)
+	local max=15-c:GetCounter(0x62a)
+	local r=math.random(1,max)
+	if r==1 and Duel.IsExistingMatchingCard(MTC.Avatarfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,code) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+		Duel.Hint(HINT_CARD,0,c:GetCode()) 
+		local tc=Group.CreateGroup()
+		if Duel.IsExistingMatchingCard(MTC.Avatarfil,tp,LOCATION_DECK,0,1,nil,code) then 
+			tc=Duel.GetMatchingGroup(MTC.Avatarfil,tp,LOCATION_DECK,0,nil,code):RandomSelect(tp,1):GetFirst()
+		else
+			tc=Duel.GetMatchingGroup(MTC.Avatarfil,tp,LOCATION_GRAVE,0,nil,code):RandomSelect(tp,1):GetFirst()
+		end
+		
+		c:RemoveCounter(tp,0x62a,c:GetCounter(0x62a),REASON_EFFECT)
+		
+		MTC.ActivateCard(tc,tp,e)
+		
+		Duel.RaiseEvent(c,EVENT_CUSTOM+60010225,nil,0,tp,tp,0)
+	else
+		if c:IsLocation(LOCATION_ONFIELD) then
+			c:AddCounter(0x62a,1)
+		end
+	end
 end
 
 
