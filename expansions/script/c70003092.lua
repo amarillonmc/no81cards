@@ -6,6 +6,13 @@ function cm.initial_effect(c)
 	aux.AddFusionProcFunRep(c,cm.matfilter,3,true)
 	c:EnableReviveLimit()
 	aux.AddContactFusionProcedure(c,cm.cfilter,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_HAND,0,aux.tdcfop(c)):SetValue(SUMMON_VALUE_SELF)
+	--
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e0:SetValue(cm.splimit11)
+	c:RegisterEffect(e0)
 	--battle indestructable
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -44,6 +51,9 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.destg)
 	e4:SetOperation(cm.desop)
 	c:RegisterEffect(e4)
+end
+function cm.splimit11(e,se,sp,st)
+	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 	function cm.matfilter(c)
 	return c:IsFusionSetCard(0x11a) and c:IsFusionType(TYPE_MONSTER)

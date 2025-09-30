@@ -86,15 +86,17 @@ end
 function c20579535.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and c20579535.count>0 then
-		e:SetLabel(0)
-		while e:GetLabel()<c20579535.count do
-			e:SetLabel(e:GetLabel()+1)
-			Duel.Hint(HINT_CARD,0,c20579535[e:GetLabel()]:GetHandler():GetOriginalCode())
-			local te=c20579535[e:GetLabel()]:Clone()
+		local i=0
+		while i<c20579535.count do
+			i=i+1
+			Duel.Hint(HINT_CARD,0,c20579535[i]:GetHandler():GetOriginalCode())
+			local te=c20579535[i]:Clone()
 			local tg=te:GetTarget()
-			if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
 			local op=te:GetOperation()
-			if op then op(e,tp,eg,ep,ev,re,r,rp) end
+			if not tg or tg(effect,tp,eg,ep,ev,re,r,rp,0) then
+				if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
+				if op then op(e,tp,eg,ep,ev,re,r,rp) end
+			end
 		end
 	end
 end
