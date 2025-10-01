@@ -47,7 +47,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.chainop(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetHandler():IsRace(RACE_MACHINE) and re:GetHandler():IsLocation(LOCATION_MZONE) and re:IsActiveType(TYPE_MONSTER) and ep==tp then
+	if re:GetHandler():IsRace(RACE_MACHINE) and re:GetActivateLocation()&LOCATION_MZONE>0 and re:IsActiveType(TYPE_MONSTER) and ep==tp then
 		Duel.SetChainLimit(s.chainlm)
 	end
 end
