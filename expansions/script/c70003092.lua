@@ -25,9 +25,9 @@ function cm.initial_effect(c)
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e2:SetCode(EVENT_BATTLE_START)
-	e2:SetCondition(cm.descon)
-	e2:SetTarget(cm.destg)
-	e2:SetOperation(cm.desop)
+	e2:SetCondition(cm.descon2)
+	e2:SetTarget(cm.destg2)
+	e2:SetOperation(cm.desop2)
 	c:RegisterEffect(e2)
 	--destroy
 	local e3=Effect.CreateEffect(c)
@@ -39,17 +39,17 @@ function cm.initial_effect(c)
 	e3:SetCountLimit(1)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetCost(cm.descost)
-	e3:SetTarget(cm.destg)
-	e3:SetOperation(cm.desop)
+	e3:SetTarget(cm.destg3)
+	e3:SetOperation(cm.desop3)
 	c:RegisterEffect(e3)
 	--destroy
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_DESTROY)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e4:SetCode(EVENT_DESTROYED)
-	e4:SetCondition(cm.descon)
-	e4:SetTarget(cm.destg)
-	e4:SetOperation(cm.desop)
+	e4:SetCondition(cm.con)
+	e4:SetTarget(cm.tg)
+	e4:SetOperation(cm.op)
 	c:RegisterEffect(e4)
 end
 function cm.splimit11(e,se,sp,st)
@@ -61,16 +61,16 @@ end
 	function cm.cfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToDeckOrExtraAsCost()
 end
-	function cm.descon(e,tp,eg,ep,ev,re,r,rp)
+	function cm.descon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local bc=c:GetBattleTarget()
 	return bc and bc:IsAttackBelow(3000)
 end
-	function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	function cm.destg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler():GetBattleTarget(),1,0,0)
 end
-	function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	local bc=e:GetHandler():GetBattleTarget()
 	if bc:IsRelateToBattle() then
 		Duel.Destroy(bc,REASON_EFFECT)
@@ -86,7 +86,7 @@ end
 	function cm.costfilter(c,ec,tp)
 	return c:IsSetCard(0x11a) and Duel.IsExistingTarget(cm.desfilter,tp,0,LOCATION_ONFIELD,1,c,c,ec)
 end
-	function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	function cm.destg3(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) end
 	if chk==0 then
@@ -106,7 +106,7 @@ end
 	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
-	function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		Duel.Destroy(tc,REASON_EFFECT)
