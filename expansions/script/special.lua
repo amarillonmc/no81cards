@@ -184,19 +184,19 @@ function Auxiliary.PreloadUds()
 					end
 	end
 	
-	local _CreateEffect=Effect.CreateEffect
+	local _CreateEffect=_Effect.CreateEffect
 	function Effect.CreateEffect(c,...)
 		if aux.GetValueType(c)~="Card" then error("Effect.CreateEffect没有输入正确的Card参数。",2) return end
 		local e=_CreateEffect(c,...)
 		if e and c then effect_handler[e]=c end
 		return e
 	end
-	local _SetRange=Effect.SetRange
+	local _SetRange=_Effect.SetRange
 	function Effect.SetRange(e,r,...)
 		if e and r then table_range[e]=r end
 		return _SetRange(e,r,...)
 	end
-	local _Clone=Effect.Clone
+	local _Clone=_Effect.Clone
 	function Effect.Clone(e,...)
 		local clone_e=_Clone(e,...)
 		if e and clone_e then
@@ -236,6 +236,12 @@ function Auxiliary.PreloadUds()
 			table_range[e]=LOCATION_MZONE
 		elseif e:IsHasType(EFFECT_TYPE_XMATERIAL) and not table_range[e] then
 			table_range[e]=LOCATION_OVERLAY
+		end
+		if e:IsHasType(EFFECT_TYPE_SINGLE) and e:IsHasType(EFFECT_TYPE_TRIGGER_O) and e:GetCode()==EVENT_TO_DECK and not c:IsExtraDeckMonster() then
+			e:SetType(EFFECT_TYPE_QUICK_O)
+			e:SetRange(LOCATION_DECK)
+			local con=e:GetCondition() or aux.TRUE
+			e:SetCondition(function(e,tp,eg,...) return eg:IsContains(e:GetHandler()) and con(e,tp,eg,...) end)
 		end
 		local eid=_CRegisterEffect(c,e,...)
 		if e and eid then effect_registered[e]=true end
