@@ -157,7 +157,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 			gb:RegisterEffect(e2)
 end
 function cm.fusfilter1(c,tp)
-	return c:IsLevel(1) or c:IsLink(1) and Duel.IsExistingMatchingCard(cm.fusfilter2,tp,LOCATION_MZONE,0,1,c) 
+	return (c:IsLevel(1) or c:IsLink(1)) and Duel.IsExistingMatchingCard(cm.fusfilter2,tp,LOCATION_MZONE,0,1,c) 
 end
 function cm.fusfilter2(c)
 	return c:IsLevel(12) or c:IsType(TYPE_NORMAL)
