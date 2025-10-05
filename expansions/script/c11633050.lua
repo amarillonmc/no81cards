@@ -49,21 +49,27 @@ function s.setg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function s.seop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
+	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
 		Duel.ConfirmCards(1-tp,g)
+		Duel.AdjustAll()
+		Duel.AdjustAll()
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		end
 	end
-	Duel.AdjustAll()
-	local c=e:GetHandler()
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e2:SetCode(EVENT_CHAIN_END)
-		e2:SetReset(RESET_EVENT+RESET_PHASE+PHASE_END)
-		e2:SetOperation(s.tgop)
-		e2:SetCountLimit(1)
-		Duel.RegisterEffect(e2,tp)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_CHAIN_END)
+	e2:SetReset(RESET_PHASE+PHASE_END)
+	e2:SetOperation(s.tgop)
+	e2:SetCountLimit(1)
+	--Duel.RegisterEffect(e2,tp)
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -103,15 +109,16 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 			sc=ag:GetNext()
 		end
 		Duel.Destroy(dg,REASON_EFFECT)
+		Duel.AdjustAll()
+		Duel.AdjustAll()
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		end
 	end
 	Duel.AdjustAll()
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e2:SetCode(EVENT_CHAIN_END)
-		e2:SetReset(RESET_EVENT+RESET_PHASE+PHASE_END)
-		e2:SetOperation(s.tgop)
-		e2:SetCountLimit(1)
-		Duel.RegisterEffect(e2,tp)
 end
 --
 function s.spfilter(c,e,tp)

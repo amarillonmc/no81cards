@@ -22,8 +22,13 @@ function cm.initial_effect(c)
 end
 --e1
 function cm.e1f1(c, e, tp)
-	return c:GetType() & 0x81 == 0x81 and c:IsCanBeSpecialSummoned(e, SUMMON_TYPE_RITUAL, tp, false, true)
-		and (c:IsLocation(LOCATION_DECK) and c:IsCode(33300900) or c:IsRace(RACE_SPELLCASTER))
+	if c:GetType() & 0x81 ~= 0x81 or not c:IsCanBeSpecialSummoned(e, SUMMON_TYPE_RITUAL, tp, false, true) then
+		return false
+	end
+	if c:IsLocation(LOCATION_DECK) then
+		return c:IsCode(33300900)
+	end
+	return c:IsRace(RACE_SPELLCASTER)
 end
 function cm.e1f2(c, tp, mg)
 	local g = mg:Filter(Card.IsCanBeRitualMaterial, c, c):Filter((c.mat_filter or aux.TRUE), nil, tp)

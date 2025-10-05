@@ -9,7 +9,7 @@ function s.initial_effect(c)
 	e1:SetCategory(CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,id)
+	--e1:SetCountLimit(1,id)
 	e1:SetCost(s.cost)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
@@ -38,8 +38,8 @@ end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(1-tp)
-	Duel.SetTargetParam(1000)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
+	Duel.SetTargetParam(800)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,800)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
@@ -70,7 +70,7 @@ function s.damcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnCount()>e:GetLabel()
 end
 function s.damop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Damage(1-tp,1000,REASON_EFFECT)
+	Duel.Damage(1-tp,800,REASON_EFFECT)
 end
 --SearchCard
 function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
