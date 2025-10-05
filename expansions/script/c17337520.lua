@@ -12,6 +12,8 @@ function s.initial_effect(c)
 	e0:SetCondition(s.xyzcon)
 	e0:SetValue(1)
 	c:RegisterEffect(e0)
+	--change name
+	aux.EnableChangeCode(c,17337470,LOCATION_MZONE+LOCATION_GRAVE)
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1191)
@@ -39,7 +41,7 @@ function s.xyzcon(e)
 	return c:IsStatus(STATUS_SPSUMMON_TURN) and c:IsSummonType(SUMMON_TYPE_XYZ)
 end
 function s.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x6f50)
+	return c:IsFaceup() and c:IsCode(17337470)
 end
 function s.cfilter(c)
 	return c:IsSetCard(0x3f50) and c:IsDiscardable()

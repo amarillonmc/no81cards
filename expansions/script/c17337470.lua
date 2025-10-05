@@ -1,6 +1,7 @@
 --艾米莉亚
 local s,id=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,17337510,17337500)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
@@ -19,13 +20,17 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.spfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x5f50,0x9f50) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x5f50) and c:IsType(TYPE_MONSTER)
+end
+function s.spfilter2(c)
+	return c:IsFaceup() and c:IsCode(17337500)
 end
 function s.spcon1(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and
-		Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
+		(Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil) or 
+		Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil))
 end
 function s.protop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())

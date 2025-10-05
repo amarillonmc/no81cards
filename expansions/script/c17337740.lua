@@ -80,10 +80,12 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 	local count=e:GetLabel()
 	local d=math.floor(count/3000)
 	for i=1,d do
+		local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,0,nil)
 		if b1 then Duel.Draw(tp,1,REASON_EFFECT) end
-		if b2 then 
-			local sg=g:RandomSelect(tp,1)
+		if #g2>0 then 
+			local sg=g2:RandomSelect(tp,1)
 			Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+			g2:Sub(sg)
 		end
 	end	
 end

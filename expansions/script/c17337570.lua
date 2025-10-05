@@ -1,6 +1,7 @@
 --拉姆
 local s,id=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,17337540)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
@@ -25,7 +26,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.spfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3f51) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsCode(17337530) and c:IsType(TYPE_MONSTER)
 end
 function s.spfilter2(c)
 	return c:IsFaceup() and c:IsCode(17337540)
@@ -60,7 +61,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g1:GetFirst()
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
-		if tc:IsLocation(LOCATION_HAND) and (tc:IsSetCard(0x3f51) or tc:IsCode(17337540)) then
+		if tc:IsLocation(LOCATION_HAND) and (tc:IsCode(17337530) or tc:IsCode(17337540)) then
 			local g2=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_GRAVE,0,nil)
 			if #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 				Duel.BreakEffect()

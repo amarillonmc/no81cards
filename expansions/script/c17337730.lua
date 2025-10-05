@@ -63,7 +63,7 @@ function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 	local flag_catch=false
 	local temp=Duel.IsPlayerCanSummon
 	function Duel.IsPlayerCanSummon(tep,stp,stc)
-		if stc:IsAbleToExtraAsCost() then
+		if stc and stc:IsAbleToExtraAsCost() then
 			return false
 		else
 			return temp(tep,stp,stc)

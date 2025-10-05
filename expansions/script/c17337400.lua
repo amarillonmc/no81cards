@@ -1,7 +1,8 @@
 --菜月昴
 local s,id=GetID()
 function s.initial_effect(c)
-	-- ①：破坏自己，墓地EMT怪兽特招
+	aux.AddCodeList(c,17337630)
+	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1101)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)

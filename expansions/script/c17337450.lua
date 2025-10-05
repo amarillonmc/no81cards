@@ -11,6 +11,8 @@ function s.initial_effect(c)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(s.splimit)
 	c:RegisterEffect(e1)
+	--change name
+	aux.EnableChangeCode(c,17337560,LOCATION_MZONE+LOCATION_GRAVE)
 	--lock zones
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))

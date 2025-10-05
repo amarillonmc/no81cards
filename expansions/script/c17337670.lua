@@ -1,6 +1,7 @@
 --芙兰黛莉卡
 local s,id=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,17337540)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
@@ -30,7 +31,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.spfilter(c)
-	return c:IsSetCard(0x6f51) and c:IsFaceup()
+	return c:IsFaceup() and c:IsCode(17337480)
 end
 function s.spfilter2(c)
 	return c:IsCode(17337540) and c:IsFaceup()

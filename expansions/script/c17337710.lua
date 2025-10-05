@@ -3,7 +3,7 @@ local s,id=GetID()
 function s.initial_effect(c)
 	--fusion
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,17337500,aux.FilterBoolFunction(Card.IsFusionSetCard,0x6f50),2,true,true)
+	aux.AddFusionProcCodeFun(c,17337500,aux.FilterBoolFunction(Card.IsFusionCode,17337470),2,true,true)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_ONFIELD+LOCATION_GRAVE,0,Duel.Remove,POS_FACEUP,REASON_COST)
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
@@ -12,6 +12,8 @@ function s.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e0:SetValue(s.splimit)
 	c:RegisterEffect(e0)
+	--change name
+	aux.EnableChangeCode(c,17337500,LOCATION_MZONE+LOCATION_GRAVE)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1113)
 	e1:SetCategory(CATEGORY_ATKCHANGE)
@@ -68,7 +70,7 @@ function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousControler(tp) and c:GetReasonPlayer()==1-tp
 end
 function s.spfilter(c)
-	return c:IsSetCard(0x9f50) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return c:IsCode(17337500) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end

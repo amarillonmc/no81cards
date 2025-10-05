@@ -38,10 +38,10 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
 	local tc=g:GetFirst()
-	if tc:IsType(TYPE_SYNCHRO) and tc:IsSetCard(0x3f51) then
+	if tc:IsType(TYPE_SYNCHRO) and tc:IsCode(17337530) then
 		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
 		Duel.Hint(HINT_OPSELECTED,1-tp,1113)
-	elseif tc:IsType(TYPE_XYZ) and tc:IsSetCard(0x5f51) then 
+	elseif tc:IsType(TYPE_XYZ) and tc:IsCode(17337570) then 
 		Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
 		Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(id,1))
 	end
@@ -49,7 +49,7 @@ end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToEffect(e) or not tc:IsFaceup() then return end
-	if tc:IsType(TYPE_SYNCHRO) and tc:IsSetCard(0x3f51) then
+	if tc:IsType(TYPE_SYNCHRO) and tc:IsCode(17337530) then
 		local atk=tc:GetBaseAttack()
 		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
 		local dg=Group.CreateGroup()
@@ -67,7 +67,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.Destroy(dg,REASON_EFFECT)
 		end
-	elseif tc:IsType(TYPE_XYZ) and tc:IsSetCard(0x5f51) then
+	elseif tc:IsType(TYPE_XYZ) and tc:IsCode(17337570) then
 		local tg=Group.CreateGroup()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 		local g1=Duel.SelectMatchingCard(tp,s.ovfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
@@ -92,10 +92,10 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x5f51) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(17337570) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.attachfilter(c)
-	return c:IsSetCard(0x3f51) and c:IsType(TYPE_MONSTER) and c:IsCanOverlay()
+	return c:IsCode(17337530) and c:IsType(TYPE_MONSTER) and c:IsCanOverlay()
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end

@@ -15,6 +15,8 @@ function s.initial_effect(c)
 	e1:SetOperation(s.spop)
 	e1:SetCountLimit(1,id)
 	c:RegisterEffect(e1)
+	--change name
+	aux.EnableChangeCode(c,17337530,LOCATION_MZONE+LOCATION_GRAVE)
 	--
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)

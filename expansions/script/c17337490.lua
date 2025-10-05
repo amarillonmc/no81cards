@@ -13,6 +13,8 @@ function s.initial_effect(c)
 	e1:SetCondition(s.accon)
 	e1:SetValue(s.aclimit)
 	c:RegisterEffect(e1)
+	--change name
+	aux.EnableChangeCode(c,17337480,LOCATION_MZONE+LOCATION_GRAVE)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
 	e2:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE+CATEGORY_DESTROY)

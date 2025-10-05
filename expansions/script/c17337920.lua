@@ -163,8 +163,7 @@ function s.sprcon(e,c)
 	local ct2=Duel.GetFlagEffect(tp,17337900)
 	if ct2>0 then 
 		if ct2>3 then ct2=3 end
-		local ct3=0
-		ct3=ct-ct2*3
+		local ct3=ct-ct2*3
 	end
 	local mg1=Duel.GetMatchingGroup(s.spcfilter,tp,0,LOCATION_ONFIELD,nil)
 	local mg2=Duel.GetMatchingGroup(s.spcfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,c)
@@ -176,7 +175,7 @@ function s.sprcon(e,c)
 	if d>9 then d=9 end
 	if d > #mg1 then d = #mg1 end
 	if d + #mg2 < ct then return false end
-	return mg2:CheckSubGroup(s.fselect0,ct,ct,tp,d)
+	return mg2:CheckSubGroup(s.fselect0,ct3,ct3,tp,d)
 end
 function s.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local ct0=10

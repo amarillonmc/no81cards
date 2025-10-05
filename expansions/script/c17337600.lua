@@ -1,6 +1,7 @@
 --拉姆·鬼化
 local s,id=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,17337530)
 	-- 超量召唤
 	c:EnableReviveLimit()
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3f50),5,2,nil,nil,99)
@@ -14,6 +15,8 @@ function s.initial_effect(c)
 	e1:SetTarget(s.settg)
 	e1:SetOperation(s.setop)
 	c:RegisterEffect(e1)
+	--change name
+	aux.EnableChangeCode(c,17337570,LOCATION_MZONE+LOCATION_GRAVE)
 	--
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,2))

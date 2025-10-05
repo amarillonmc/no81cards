@@ -36,7 +36,7 @@ function s.initial_effect(c)
 end
 function s.actcon(e)
 	local tp=e:GetHandlerPlayer()
-	return Duel.IsExistingMatchingCard(function(c) return c:IsSetCard(0x9f51) and c:IsFaceup() end,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(function(c) return c:IsCode(17337560) and c:IsFaceup() end,tp,LOCATION_MZONE,0,1,nil)
 	and Duel.IsExistingMatchingCard(function(c) return c:IsSetCard(0x5f50) and c:IsFaceup() end,tp,LOCATION_MZONE,0,1,nil)
 end
 function s.actlimit(e,re,tp)

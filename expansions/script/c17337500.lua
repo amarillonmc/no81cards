@@ -32,7 +32,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.spfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x6f50) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsCode(17337470) and c:IsType(TYPE_MONSTER)
 end
 function s.spcon(e,c)
 	if c==nil then return true end

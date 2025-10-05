@@ -25,8 +25,8 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsSetCard(0x6f50) end,tp,LOCATION_MZONE,0,1,nil)
-	   and Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsSetCard(0x9f50) end,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsCode(17337470) end,tp,LOCATION_MZONE,0,1,nil)
+	   and Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsCode(17337500) end,tp,LOCATION_MZONE,0,1,nil)
 end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
@@ -45,7 +45,7 @@ function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsExistingMatchingCard(s.negfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function s.negfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x9f50,0x6f50)
+	return c:IsFaceup() and c:IsCode(17337470,17337500)
 end
 function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
