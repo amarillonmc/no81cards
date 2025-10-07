@@ -43,7 +43,9 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end   
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return true  end
+	local c=e:GetHandler()
+	local cg=c:GetColumnGroup()
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,cg) end
 	 Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,1-tp,LOCATION_ONFIELD)
 end
 function cm.tgfilter(c,g)
@@ -52,7 +54,7 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local cg=c:GetColumnGroup()
-	cg:AddCard(c)
+	--cg:AddCard(c)
 	if Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,cg) then
 	   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,cg)
@@ -60,7 +62,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if e:GetLabel()==1 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then 
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,cg)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,aux.ExceptThisCard(e))
 	Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end
