@@ -1,5 +1,5 @@
 --存在之间
---V1.0.0.1
+--V1.0.1.2
 local m = 16670000
 it = it or {}
 it.diyai = { "AI_Nf.ydk", "AI_TheDreamLand.ydk", "AI_best-friend.ydk", "AI_stars.ydk", "AI_Tianjuelong.ydk",
