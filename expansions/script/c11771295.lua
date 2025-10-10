@@ -43,7 +43,7 @@ function c11771295.filter00(c)
 end
 -- 1
 function c11771295.chainop(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetHandler():IsSetCard(0x7) then
+	if re:GetHandler():IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_DICE)) then
 		Duel.SetChainLimit(c11771295.chainlm)
 	end
 end

@@ -44,7 +44,7 @@ function c11771300.op1(e,tp,eg,ep,ev,re,r,rp)
     local ft=Duel.GetLocationCountFromEx(tp)
     if ft<=0 then return end
     if d==1 then
-        mg1=Duel.GetMatchingGroup(c11771300.exmatfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,e)
+        local mg1=Duel.GetMatchingGroup(c11771300.exmatfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,e)
         local ce=Duel.GetChainMaterial(tp)
         local sg1=Duel.GetMatchingGroup(c11771300.fusfilter,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
         local sg2=nil
@@ -76,7 +76,7 @@ function c11771300.op1(e,tp,eg,ep,ev,re,r,rp)
             return
         end
     elseif d>=2 and d<=5 then
-        mg1=Duel.GetFusionMaterial(tp):Filter(c11771300.hmmatfilter,nil,e)
+        local mg1=Duel.GetFusionMaterial(tp):Filter(c11771300.hmmatfilter,nil,e)
         local ce=Duel.GetChainMaterial(tp)
         local sg1=Duel.GetMatchingGroup(c11771300.fusfilter,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
         local sg2=nil
@@ -109,7 +109,7 @@ function c11771300.op1(e,tp,eg,ep,ev,re,r,rp)
         end
     elseif d==6 then
         if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return end
-        mg1=Duel.GetMatchingGroup(c11771300.matfilter,tp,LOCATION_DECK,0,nil)
+        local mg1=Duel.GetMatchingGroup(c11771300.matfilter,tp,LOCATION_DECK,0,nil)
         local ce=Duel.GetChainMaterial(tp)
         local sg1=Duel.GetMatchingGroup(c11771300.fusfilter,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
         local sg2=nil
