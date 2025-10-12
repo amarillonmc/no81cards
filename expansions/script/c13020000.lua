@@ -38,7 +38,7 @@ function cm.initial_effect(c)
     e3:SetRange(QY_mx)
     e3:SetCountLimit(1, m + 1)
     e3:SetCondition(cm.spcon2)
-    e3:SetCost(cm.spcost2)
+    -- e3:SetCost(cm.spcost2)
     e3:SetTarget(cm.sptg2)
     e3:SetOperation(cm.spop2)
     c:RegisterEffect(e3)
@@ -143,7 +143,7 @@ function cm.spop2(e, tp, eg, ep, ev, re, r, rp)
                 off = off + 1
             end
             if cl then
-                ops[off] = aux.Stringid(m, 1)
+                ops[off] = aux.Stringid(m, 4)
                 opval[off - 1] = 2
                 off = off + 1
             end
