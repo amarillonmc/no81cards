@@ -17,7 +17,7 @@ function s.initial_effect(c)
 	-- 双方回合1次，从自己的手卡·场上·墓地把1只机械族怪兽除外，以场上1张表侧表示卡为对象才能发动。作为对象的卡的效果无效并破坏，直到下个回合的结束时，那张卡存在过的区域不能使用，这次决斗中自己不能为让「绮奏·缄星绝唱 赫罗绯尔忒」的效果发动而把相同属性的怪兽除外
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_DESTROY+CATEGORY_REMOVE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_FREE_CHAIN)
