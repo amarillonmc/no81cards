@@ -22,7 +22,7 @@ Duel.LoadScript("c16670000.lua")
 function cm.initial_effect(c)
 	aux.AddCodeList(c, yr)
 	aux.AddEquipSpellEffect(c, true, true, Card.IsFaceup, nil)
-local e6=Effect.CreateEffect(c)
+	local e6 = Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_EQUIP)
 	e6:SetCode(EFFECT_PIERCE)
 	c:RegisterEffect(e6)
@@ -211,11 +211,20 @@ function cm.operation(e, tp, eg, ep, ev, re, r, rp)
 							local tg = ie:GetTarget()
 							-- Debug.Message(tg)
 							-- Debug.Message(aux.GetValueType(tg))
-							if tg and tg(ie, tp, eg, ep, ev, re, r, rp, 0) then
-								local op = ie:GetOperation()
-								if op then
-									tg(ie, tp, eg, ep, ev, re, r, rp, 1)
-									op(ie, tp, eg, ep, ev, re, r, rp)
+							if ie and tg and type(tg) == "function" then
+								local c1, c2 = pcall(function()
+									tg(ie, tp, eg, ep, ev, re, r, rp, 0)
+								end)
+								if c1 and c2 then
+									local op = ie:GetOperation()
+									if op then
+										pcall(function()
+											tg(ie, tp, eg, ep, ev, re, r, rp, 1)
+										end)
+										if c2 then
+											op(ie, tp, eg, ep, ev, re, r, rp)
+										end
+									end
 								end
 							end
 						end

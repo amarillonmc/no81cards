@@ -6,13 +6,11 @@ function cm.initial_effect(c)
 	e1:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCondition(cm.condition)
 	e1:SetTarget(cm.target)
 	e1:SetOperation(cm.activate)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
-	e2:SetProperty(0)
 	e2:SetCondition(cm.hcon)
 	e2:SetTarget(cm.htg)
 	e2:SetOperation(cm.hop)
@@ -91,12 +89,19 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g2=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_GRAVE,0,nil,e)
 	if chkc then return false end
 	if chk==0 then return g1:GetCount()>0 and g2:GetCount()>0 end
-	local tg=cm.SelectSub(g1,g2,tp)
-	Duel.SetTargetCard(tg)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,tg,#tg,0,0)
+	--local tg=cm.SelectSub(g1,g2,tp)
+	--Duel.SetTargetCard(tg)
+	--Duel.SetOperationInfo(0,CATEGORY_TODECK,tg,#tg,0,0)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	local sg=Duel.GetTargetsRelateToChain()
+	--local sg=Duel.GetTargetsRelateToChain()
+	local c=e:GetHandler()
+	
+	local g1=Duel.GetMatchingGroup(cm.sfilter,tp,LOCATION_GRAVE,0,nil,e)
+	local g2=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_GRAVE,0,nil,e)
+	
+	local sg=cm.SelectSub(g1,g2,tp)
+
 	if #sg==0 then return end
 	if sg:GetCount()>0 and Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
 		local g=Duel.GetOperatedGroup()

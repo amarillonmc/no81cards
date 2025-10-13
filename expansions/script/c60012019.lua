@@ -49,12 +49,14 @@ function cm.immcon(e)
 	return Duel.GetFieldGroupCount(tp,LOCATION_SZONE,0)~=0
 end
 function cm.immdtg(e,c)
-	return c:IsFaceup() and c:GetCounter(0x62a)~=0
+	return c:IsFaceup() and c:GetCounter(0x62a)>=10
 end
 function cm.efilter(e,te)
 	return e:GetHandlerPlayer()~=te:GetOwnerPlayer() and te:IsActivated()
 end
-
+function cm.tfil(c)
+	return c:IsFaceup() and c:GetCounter(0x62a)>=10
+end
 function cm.immval(e,te_or_c)
 	local res=aux.GetValueType(te_or_c)~="Effect" or (te_or_c:IsActivated() and te_or_c:GetOwner()~=e:GetHandler())
 	if res then
@@ -70,7 +72,12 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ResetFlagEffect(tp,m+40000000)
 		Duel.Hint(HINT_CARD,0,m) 
 		local g=Duel.GetFieldGroup(tp,LOCATION_SZONE,0)
-		Duel.Destroy(g,REASON_EFFECT)
+		if Duel.Destroy(g,REASON_EFFECT)~=0 then
+			local tg=Duel.GetMatchingGroup(cm.tfil,tp,LOCATION_MZONE,0,nil)
+			for tc in aux.Next(tg) do
+				tc:RemoveCounter(tp,0x62a,10,REASON_EFFECT)
+			end
+		end
 	end
 end
 
@@ -92,11 +99,8 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(sg) do
 		if tc:GetCounter(0x62a)~=0 then num=num+tc:GetCounter(0x62a) end
 	end
-	if Duel.Release(sg,REASON_EFFECT) then
-		Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
-		if sg:GetCount()==0 and Duel.Release(sg,REASON_EFFECT)~=0 then
-			e:GetHandler():AddCounter(0x62a,num)
-		end
+	if sg:GetCount()==0 and Duel.Release(sg,REASON_EFFECT)~=0 then
+		e:GetHandler():AddCounter(0x62a,num)
 	end
 end
 

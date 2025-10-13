@@ -35,6 +35,9 @@ function cm.initial_effect(c)
 	e2:SetOperation(cm.aop)
 	c:RegisterEffect(e2)
 end
+function cm.fil(c)
+	return c:IsCanHaveCounter(0x62a) and Duel.IsCanAddCounter(tp,0x62a,1,c) and c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:GetCounter(0x62a)<14
+end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsLocation(LOCATION_HAND)
 end
@@ -45,7 +48,15 @@ end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local num=Duel.GetMatchingGroupCount(cm.filter,tp,LOCATION_MZONE,0,nil)
-	if num~=0 then Duel.Draw(tp,num,REASON_EFFECT) end
+	if num>2 then
+		Duel.Draw(tp,2,REASON_EFFECT)
+		local g=Duel.GetMatchingGroup(cm.fil,tp,LOCATION_MZONE,0,e:GetHandler())
+		for tc in aux.Next(g) do
+			tc:AddCounter(0x62a,num-2)
+		end
+	elseif num>0 then
+		Duel.Draw(tp,num,REASON_EFFECT)
+	end
 end
 function cm.filter(c)
 	return (c:IsLevelAbove(6) or not c:IsLevelAbove(1)) and c:IsFaceup() 

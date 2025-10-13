@@ -81,6 +81,6 @@ function cm.atg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.aop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT,nil) then Duel.Draw(tp,2,REASON_EFFECT) end
+	if Duel.DiscardHand(tp,aux.TRUE,1,1,REASON_EFFECT,nil) then Duel.Draw(tp,1,REASON_EFFECT) end
 end
 

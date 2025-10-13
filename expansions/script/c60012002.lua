@@ -89,8 +89,11 @@ function cm.atg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.aop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(tp,m+30000000)>3 then return end
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+	if Duel.Draw(p,d,REASON_EFFECT)~=0 then
+		Duel.RegisterFlagEffect(tp,m+30000000,RESET_PHASE+PHASE_END,0,1)
+	end
 end
 
 

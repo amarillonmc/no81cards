@@ -67,7 +67,7 @@ function cm.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if Duel.IsPlayerAffectedByEffect(tp,60010225) then loc=LOCATION_HAND+LOCATION_ONFIELD end
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.drfilter,tp,loc,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,cm.drfilter,tp,loc,0,1,99,nil)
+	local g=Duel.SelectMatchingCard(tp,cm.drfilter,tp,loc,0,1,2,nil)
 	e:SetLabel(Duel.SendtoGrave(g,REASON_COST))
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
