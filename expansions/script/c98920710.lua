@@ -43,7 +43,7 @@ function c98920710.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0xff,0xff,nil)
 	local tc=g:GetFirst()
 	while tc do
-		if tc:IsCode(3381441) or tc:IsCode(17393207) or tc:IsCode(21663205) or tc:IsCode(22134079) or tc:IsCode(23927567) or tc:IsCode(24140059) or tc:IsCode(25262697) or tc:IsCode(30450531) or tc:IsCode(46955770) or tc:IsCode(56773577) or tc:IsCode(58139128) or tc:IsCode(58657303) or tc:IsCode(62473983) or tc:IsCode(70000776) or tc:IsCode(72405967) or tc:IsCode(79206925) or tc:IsCode(90434657) or tc:IsCode(99523325) or tc:IsCode(7481441) or tc:IsCode(98920383) or tc:IsCode(62101010) then
+		if tc:IsCode(3381441) or tc:IsCode(17393207) or tc:IsCode(21663205) or tc:IsCode(22134079) or tc:IsCode(23927567) or tc:IsCode(24140059) or tc:IsCode(25262697) or tc:IsCode(30450531) or tc:IsCode(46955770) or tc:IsCode(56773577) or tc:IsCode(58139128) or tc:IsCode(58657303) or tc:IsCode(62473983) or tc:IsCode(7481467) or tc:IsCode(70000776) or tc:IsCode(72405967) or tc:IsCode(79206925) or tc:IsCode(90434657) or tc:IsCode(99523325) or tc:IsCode(7481441) or tc:IsCode(98920383) or tc:IsCode(62101010) then
 			aux.AddCodeList(tc,47355498)
 		end
 		tc=g:GetNext()

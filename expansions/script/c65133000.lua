@@ -127,7 +127,7 @@ function s.lsop(e,tp,eg,ep,ev,re,r,rp)
 	local mg=c:GetMaterial()
 	if mg then
 		Duel.Hint(HINT_CARD,0,id)
-		local lmc=tonumber(Duel.GetRegistryValue("Kro_Link_Marker_Count"))+#mg+8
+		local lmc=tonumber(Duel.GetRegistryValue("Kro_Link_Marker_Count"))+#mg
 		Duel.SetRegistryValue("Kro_Link_Marker_Count",lmc)
 		local g=Duel.GetFieldGroup(0,0x7f,0x7f)
 		local xg=Duel.GetOverlayGroup(0,0x7f,0x7f)
