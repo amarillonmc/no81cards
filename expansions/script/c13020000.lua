@@ -162,7 +162,7 @@ function cm.spop2(e, tp, eg, ep, ev, re, r, rp)
             if opval[op] == 1 then
                 local tc = td:Select(tp, 1, 1, nil):GetFirst()
                 if tc then
-                    Duel.LinkSummon(tp, tc, nil)
+                    Duel.SynchroSummon(tp, tc, nil)
                 end
             elseif opval[op] == 2 then
                 local tc = cl:Select(tp, 1, 1, nil):GetFirst()
