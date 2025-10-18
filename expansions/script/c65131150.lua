@@ -53,6 +53,15 @@ function s.initial_effect(c)
 	e7:SetCondition(s.leavecon)
 	e7:SetOperation(s.leaveop)
 	c:RegisterEffect(e7)
+	--Remove
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetRange(LOCATION_SZONE)
+	e2:SetCode(EFFECT_SEND_REPLACE)
+	e2:SetCondition(s.leavecon)
+	e2:SetTarget(s.reptg)
+	e2:SetValue(aux.TRUE)
+	--c:RegisterEffect(e2)
 end
 function s.actcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsFacedown()
@@ -122,15 +131,30 @@ end
 function s.stg(e,c)
 	return c:GetOriginalType()&(TYPE_SPELL+TYPE_TRAP)>0 and not c:IsLocation(LOCATION_OVERLAY) and not c:IsType(TYPE_MONSTER)
 end
-function s.sfilter(c)
-	return c:GetOriginalType()&(TYPE_SPELL+TYPE_TRAP)>0 and not c:IsLocation(LOCATION_OVERLAY) and not c:IsType(TYPE_MONSTER)
+function s.sfilter(c,tp)
+	return c:GetOriginalType()&(TYPE_SPELL+TYPE_TRAP)>0 and c:IsControler(tp) and not c:IsLocation(LOCATION_OVERLAY) and not c:IsType(TYPE_MONSTER) and c:GetReason()&REASON_REDIRECT==0 and c:GetFlagEffect(id)==0
 end
 function s.leavecon(e,tp,eg,ep,ev,re,r,rp)
-	return r&REASON_REDIRECT==0 and eg:FilterCount(s.sfilter,nil)>0
+	return r&REASON_REDIRECT==0 and eg:FilterCount(s.sfilter,nil,tp)>0
 end
 function s.leaveop(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(s.sfilter,nil)
+	local g=eg:Filter(s.sfilter,nil,tp)
 	if g:GetCount()>0 then
-		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT+REASON_REDIRECT)
+		for tc in aux.Next(g) do
+			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
+		end
+		r=r|REASON_EFFECT+REASON_REDIRECT
+		Duel.Remove(g,POS_FACEDOWN,r)
 	end
+end
+function s.repfilter(c,tp)
+	return c:IsOnField() and (c:IsFaceup() or c:GetDestination()==LOCATION_GRAVE) and c:IsControler(tp) and c:IsAbleToRemove() and c:GetOriginalType()&(TYPE_SPELL+TYPE_TRAP)>0 and not c:IsLocation(LOCATION_OVERLAY) and not c:IsType(TYPE_MONSTER)
+end
+function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local g=eg:Filter(s.repfilter,nil,tp)
+	if chk==0 then return g:GetCount()>0 end
+	if Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT+REASON_REDIRECT)>0 then
+		return true
+	else return false end
 end

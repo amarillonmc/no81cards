@@ -111,14 +111,20 @@ function xg.epp2(c, id, cf, co, ta, qy, h1, h2, h3, h4, zc) --XG.epp2(c,m,2,nil,
 	elseif ta ~= nil then
 		c3 = c3|ta
 	end
+	e1:SetProperty(c3)
 	if qy ~= nil then
 		e1:SetRange(qy)
 	end
 	e1:SetType(c1)
 	e1:SetCode(c2)
-	e1:SetProperty(c3)
-	if zc == true then
-		c:RegisterEffect(e1)
+	if id ~= nil then
+		if aux.GetValueType(id) == "number" and id < 99 then
+			e1:SetCountLimit(id)
+		elseif aux.GetValueType(id) == "number" and id >= 99 then
+			e1:SetCountLimit(1, id)
+		elseif aux.GetValueType(id) == "table" then
+			e1:SetCountLimit(id[1], id[2])
+		end
 	end
 	if h1 ~= nil then
 		e1:SetCondition(h1)
@@ -131,6 +137,9 @@ function xg.epp2(c, id, cf, co, ta, qy, h1, h2, h3, h4, zc) --XG.epp2(c,m,2,nil,
 	end
 	if h4 ~= nil then
 		e1:SetOperation(h4)
+	end
+	if zc == true then
+		c:RegisterEffect(e1)
 	end
 	return e1
 end
@@ -205,7 +214,7 @@ end
 --魂精
 hj = hj or {}
 
---泛用
+--泛用便利函数
 function it.GetEffectValue(e, ...) --检测e的val是否函数，是的场合执行函数内容
 	local v = e:GetValue()
 	if aux.GetValueType(v) == "function" then
@@ -253,41 +262,41 @@ function it.num(num, tp) --检测无尽贪婪已减少多少张卡的使用
 	return num
 end
 
-function it.sxbl()            --所谓伊人相关检测全种族全属性全等级可特招
-	local zzjc = { RACE_WARRIOR, --战士
-		RACE_SPELLCASTER,     --魔法师
-		RACE_FAIRY,           --天使
-		RACE_FIEND,           --恶魔
-		RACE_ZOMBIE,          --不死
-		RACE_MACHINE,         --机械
-		RACE_AQUA,            --水
-		RACE_PYRO,            --炎
-		RACE_ROCK,            --岩石
-		RACE_WINDBEAST,       --鸟兽
-		RACE_PLANT,           --植物
-		RACE_INSECT,          --昆虫
-		RACE_THUNDER,         --雷
-		RACE_DRAGON,          --龙
-		RACE_BEAST,           --兽
-		RACE_BEASTWARRIOR,    --兽战士
-		RACE_DINOSAUR,        --恐龙
-		RACE_FISH,            --鱼
-		RACE_SEASERPENT,      --海龙
-		RACE_REPTILE,         --爬虫类
-		RACE_PSYCHO,          --念动力
-		RACE_DIVINE,          --幻神兽
-		RACE_CREATORGOD,      --创造神
-		RACE_WYRM,            --幻龙
-		RACE_CYBERSE,         --电子界
-		RACE_ILLUSION         --幻想魔
+function it.sxbl()                                         --所谓伊人相关检测全种族全属性全等级可特招
+	local zzjc = { RACE_WARRIOR,                           --战士
+		RACE_SPELLCASTER,                                  --魔法师
+		RACE_FAIRY,                                        --天使
+		RACE_FIEND,                                        --恶魔
+		RACE_ZOMBIE,                                       --不死
+		RACE_MACHINE,                                      --机械
+		RACE_AQUA,                                         --水
+		RACE_PYRO,                                         --炎
+		RACE_ROCK,                                         --岩石
+		RACE_WINDBEAST,                                    --鸟兽
+		RACE_PLANT,                                        --植物
+		RACE_INSECT,                                       --昆虫
+		RACE_THUNDER,                                      --雷
+		RACE_DRAGON,                                       --龙
+		RACE_BEAST,                                        --兽
+		RACE_BEASTWARRIOR,                                 --兽战士
+		RACE_DINOSAUR,                                     --恐龙
+		RACE_FISH,                                         --鱼
+		RACE_SEASERPENT,                                   --海龙
+		RACE_REPTILE,                                      --爬虫类
+		RACE_PSYCHO,                                       --念动力
+		RACE_DIVINE,                                       --幻神兽
+		RACE_CREATORGOD,                                   --创造神
+		RACE_WYRM,                                         --幻龙
+		RACE_CYBERSE,                                      --电子界
+		RACE_ILLUSION                                      --幻想魔
 	}
-	local sxjc = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40 }
-	local zzl = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }
-	local zzx = 0 --可选种族
+	local sxjc = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40 } --可选属性
+	local zzl = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }  --可选等级
+	local zzx = 0                                          --可选种族数
 	for _, z in ipairs(zzjc) do
 		zzx = zzx + z
 	end
-	local sxx = 0 --可选属性
+	local sxx = 0 --可选属性数
 	for _, z in ipairs(sxjc) do
 		sxx = sxx + z
 	end
@@ -338,6 +347,40 @@ function it.sxblx(tp, kx, zzx, sxx, zzl) --宣言1个可特招的种族属性等
 	end
 	local lv = Duel.AnnounceLevel(tp, 1, 12, table.unpack(slv))
 	return zz, sx, lv
+end
+
+function it.FZSzone(c, co, fun1, fun2, lx) --快捷注册一个不入连锁把从额外卡放置在魔陷区的效果,co为条件，fun1为放置前执行部分，fun2为放置后执行部分,lx为变成的类型
+	local e2 = Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_UNCOPYABLE)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_EXTRA)
+	e2:SetCondition(function(e, tp, eg, ep, ev, re, r, rp)
+		local tp = e:GetHandlerPlayer()
+		local c = e:GetHandler()
+		return Duel.GetTurnPlayer() == tp and (not co or co(e, tp, eg, ep, ev, re, r, rp)) and
+			(Duel.GetCurrentPhase() == PHASE_MAIN1 or Duel.GetCurrentPhase() == PHASE_MAIN2)
+	end)
+	e2:SetOperation(function(e, tp, eg, ep, ev, re, r, rp)
+		local c = e:GetHandler()
+		if fun1 then
+			fun1(e, tp, eg, ep, ev, re, r, rp)
+		end
+		if Duel.MoveToField(c, tp, tp, LOCATION_SZONE, POS_FACEUP, true) then
+			local e1 = Effect.CreateEffect(c)
+			e1:SetCode(EFFECT_CHANGE_TYPE)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetReset(RESET_EVENT + RESETS_STANDARD - RESET_TURN_SET)
+			e1:SetValue(lx)
+			c:RegisterEffect(e1)
+			if fun2 then
+				fun2(e, tp, eg, ep, ev, re, r, rp)
+			end
+		end
+	end)
+	c:RegisterEffect(e2)
+	return e2
 end
 
 --为效果e添加模拟魔法发动，如自由时点效果变魔法发动,具体表现为发动前先移到场上，但并未修改实际发动位置，后续可能会有问题
@@ -667,7 +710,7 @@ function it.CopyEquip(tp, c1, c2, up)
 	Duel.RaiseEvent(eg, EVENT_EQUIP, nil, 0, tp, tp, 0)
 end
 
---读取库时的初始化设置
+--读取库时的对局初始化设置
 local tableclone = function(tab, mytab)
 	local res = mytab or {}
 	for i, v in pairs(tab) do res[i] = v end
@@ -676,6 +719,7 @@ end
 local _Card = tableclone(Card)
 local _Duel = tableclone(Duel)
 local _Group = tableclone(Group)
+local _Effect = tableclone(Effect)
 
 --记录所有被写入到卡上的效果
 Card.RegisterEffect = function(c, e, ...)
@@ -686,6 +730,18 @@ Card.RegisterEffect = function(c, e, ...)
 	ab[c] = ab[c] or {}
 	ab[c][#ab[c] + 1] = e
 	return _Card.RegisterEffect(c, e, ...)
+end
+
+--记录所有效果的id
+Effect.SetCountLimit = function(e, ...)
+	if not it.coube then
+		it.coube = {}
+	end
+	if aux.GetValueType(e) ~= "Effect" then return _Effect.SetCountLimit(e, ...) end
+	local ab = it.coube
+	ab[e] = ab[e] or {}
+	ab[e][#ab[e] + 1] = { ... }
+	return _Effect.SetCountLimit(e, ...)
 end
 
 --尝试使用非k端时的代替函数 （失败了）
