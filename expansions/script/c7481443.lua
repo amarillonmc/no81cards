@@ -58,6 +58,7 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
 	end
 	local g=eg:Filter(s.tgfilter,nil,tp)
+	if #g<=0 then return false end
 	--if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0 then
 	--  Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
 	--end

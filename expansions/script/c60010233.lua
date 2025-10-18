@@ -91,7 +91,7 @@ function cm.aop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,0,1,1,c)
 	local sg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,c)
 	g:Merge(g2)
-	if #g==2 then Duel.Destroy(g,REASON_EFFECT) end
+	if #g~=0 then Duel.Destroy(g,REASON_EFFECT) end
 end
 
 
