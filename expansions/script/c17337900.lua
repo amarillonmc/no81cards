@@ -1,7 +1,7 @@
 --·欧德·拉格纳·
 local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,17337760)	
+	aux.AddCodeList(c,17337760,17337920)	
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1190)
