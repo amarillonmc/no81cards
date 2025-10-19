@@ -21,7 +21,7 @@ function c11771300.initial_effect(c)
 end
 -- 1
 function c11771300.fusfilter(c,e,tp,m,f,chkf)
-    return c:IsType(TYPE_FUSION) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
+    return c:IsType(TYPE_FUSION) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf) and c:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_DICE))
 end
 function c11771300.matfilter(c)
     return c:IsCanBeFusionMaterial() and c:IsType(TYPE_MONSTER)
