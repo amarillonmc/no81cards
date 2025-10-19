@@ -1,0 +1,20 @@
+--神座解放
+local s,id,o=GetID()
+function s.initial_effect(c)
+	local e1=aux.AddRitualProcGreater2Code(c,17338360,LOCATION_HAND+LOCATION_DECK,nil,s.mfilter,true)
+	e1:SetDescription(1168)
+	e1:SetType(EFFECT_TYPE_ACTIVATE)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,id)
+	c:RegisterEffect(e1)
+	local e2=aux.AddRitualProcGreater2Code(c,17338370,LOCATION_HAND+LOCATION_GRAVE,nil,s.mfilter,true)
+	e2:SetDescription(1168)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,id+o)
+	e2:SetCost(aux.bfgcost)
+	c:RegisterEffect(e2)
+end
+function s.mfilter(c)
+	return not c:IsLocation(LOCATION_HAND)
+end

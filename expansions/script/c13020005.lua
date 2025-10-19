@@ -8,7 +8,7 @@ function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--aux.AddFusionProcCodeFunRep(c, 13020000, aux.FilterBoolFunction(Card.IsType, TYPE_EFFECT), 1, 127, true, true)
 	aux.AddFusionProcFun2(c, cm.filter66, aux.FilterBoolFunction(Card.IsType, TYPE_EFFECT), true)
-	local e1 = cm.AddContactFusionProcedure(c, cm.ffilter, LOCATION_ONFIELD + LOCATION_HAND, 0, Duel.Remove, POS_FACEUP,
+	local e1 = cm.AddContactFusionProcedure(c, cm.ffilter, LOCATION_ONFIELD + LOCATION_HAND, 0, Duel.SendtoGrave, 
 		REASON_COST + REASON_MATERIAL):SetValue(SUMMON_VALUE_SELF)
 
 	local e2 = Effect.CreateEffect(c)
@@ -36,7 +36,7 @@ function cm.filter66(c)
 end
 
 function cm.ffilter(c, fc, sub, mg, sg)
-	return c:IsAbleToRemoveAsCost() and (c:GetOriginalType() & TYPE_UNION ~= 0 or c:GetOriginalType() & TYPE_EQUIP ~= 0)
+	return c:IsType(TYPE_EQUIP) and c:IsAbleToGraveAsCost()
 end
 
 function cm.filter(c, c2)
@@ -94,7 +94,7 @@ function cm.desop(e, tp, eg, ep, ev, re, r, rp)
 		local g2 = Duel.GetMatchingGroup(aux.TRUE, tp, 0, LOCATION_MZONE, nil)
 		mg:Merge(g2)
 		local tc = c
-		if (g:IsLocation(LOCATION_GRAVE) or g:IsLocation(LOCATION_REMOVED))and #mg > 1 then
+		if (g:IsLocation(LOCATION_GRAVE) or g:IsLocation(LOCATION_REMOVED)) and #mg > 1 then
 			tc = mg:Select(tp, 1, 1, nil):GetFirst()
 			Duel.Equip(tp, g, tc, true)
 		else
@@ -115,11 +115,8 @@ function cm.descon(e, tp, eg, ep, ev, re, r, rp)
 end
 
 function cm.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
+	if chk == 0 then return Duel.GetLocationCount(tp, LOCATION_MZONE) > 0 end
 	local c = e:GetHandler()
-	if chk == 0 then
-		return Duel.GetLocationCount(tp, LOCATION_MZONE) > 0 and
-			c:IsCanBeSpecialSummoned(e, 0, tp, false, false)
-	end
 	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, c, 1, 0, 0)
 end
 

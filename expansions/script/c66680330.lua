@@ -2,10 +2,10 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	
-	-- 自己场上有「堕福」超量怪兽存在，怪兽的效果·魔法·陷阱卡发动时才能发动，那个发动无效并除外
+	-- 自己场上有「堕福」超量怪兽存在，怪兽的效果·魔法·陷阱卡发动时才能发动，那个效果无效并除外
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCountLimit(1,id)
@@ -44,7 +44,7 @@ function s.aclimit(e,re,tp)
 	return re:IsActiveType(TYPE_MONSTER) and rc:IsSummonType(SUMMON_TYPE_SPECIAL) and rc:IsLocation(LOCATION_MZONE)
 end
 
--- 自己场上有「堕福」超量怪兽存在，怪兽的效果·魔法·陷阱卡发动时才能发动，那个发动无效并除外
+-- 自己场上有「堕福」超量怪兽存在，怪兽的效果·魔法·陷阱卡发动时才能发动，那个效果无效并除外
 function s.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x666c) and c:IsType(TYPE_XYZ)
 end
@@ -67,7 +67,7 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+	if Duel.NegateEffect(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
 	end
 end

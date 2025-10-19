@@ -84,11 +84,11 @@ function s.setfilter(c,tp)
 	return c:IsSetCard(0x91) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsSSetable() or (((c:IsType(TYPE_CONTINUOUS) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or c:IsType(TYPE_FIELD)) and not c:IsForbidden() and c:CheckUniqueOnField(tp)))
 end
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,tp)
+	local g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_DECK,0,nil,tp)
 	local i=0
 	while g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) do
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-		local tc=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
+		local tc=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
 		if not tc then return false end
 		local selpos=0
 		if tc:IsSSetable() then
@@ -115,7 +115,16 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SSet(tp,tc)
 		end
 		e:GetHandler():SetCardTarget(tc)
-		g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,nil,tp)
+		g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_DECK,0,nil,tp)
+	end
+	local c=e:GetHandler()
+	local tg=c:GetCardTarget()
+	if not tg then return false end
+	local g=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_SZONE,0,nil,tg)
+	if #g>0 then Duel.HintSelection(Group.FromCards(c)) end
+	Duel.Remove(g,0,REASON_EFFECT+REASON_TEMPORARY)
+	for tc in aux.Next(g) do
+		c:SetCardTarget(tc)
 	end
 end
 function s.rmfilter(c,tg)
@@ -165,13 +174,14 @@ function s.rtop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then 
 		Duel.HintSelection(Group.FromCards(c))
 		local tc=g:GetFirst()
+		local pos=tc:GetPosition()
 		if tc:IsType(TYPE_FIELD) then
 			local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
 			if fc then
 				Duel.SendtoGrave(fc,REASON_RULE)
 				Duel.BreakEffect()
 			end
-			Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+			Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,pos,true)
 		else
 			Duel.ReturnToField(tc)
 		end

@@ -15,7 +15,7 @@ function s.initial_effect(c)
 	local e0s=e0:Clone()
 	e0s:SetCode(EFFECT_SET_PROC)
 	c:RegisterEffect(e0s)
-    --这张卡的等级·攻击力·守备力上升为这张卡的上级召唤而解放的怪兽的各自数值的合计
+	--这张卡的等级·攻击力·守备力上升为这张卡的上级召唤而解放的怪兽的各自数值的合计
 	--「暴君海王星」「天魔神 因维希尔」「加速同调士」
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -29,10 +29,10 @@ function s.initial_effect(c)
 	e2:SetLabelObject(e1)
 	c:RegisterEffect(e2)
 	--自己主要阶段才能发动。这张卡等级每2星最多1张的卡尽可能从对方额外卡组随机送去墓地。那之后，可以进行1只「绝海滋养」怪兽的召唤。
-    --「枪刺处刑刃」「No.1 感染蝇王 巴力·西卜」「龙骑兵团骑士-三叉龙骑士」
-    local e3=Effect.CreateEffect(c)
+	--「枪刺处刑刃」「No.1 感染蝇王 巴力·西卜」「龙骑兵团骑士-三叉龙骑士」
+	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
-	e3:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SUMMON)
+	e3:SetCategory(CATEGORY_SUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,id)
@@ -62,12 +62,12 @@ end
 function s.ttcon(e,c,minc)
 	if c==nil then return true end
 	local minr=minc
-    if minc==0 then minr=1 end
+	if minc==0 then minr=1 end
 	return Duel.CheckTribute(c,minr)
 end
 function s.ttop(e,tp,eg,ep,ev,re,r,rp,c,minc)
 	local minr=minc
-    if minc==0 then minr=1 end
+	if minc==0 then minr=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 	local g=Duel.SelectTribute(tp,c,minr,149)
 	c:SetMaterial(g)
@@ -123,27 +123,34 @@ function s.qcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return aux.IsCanBeQuickEffect(c,tp,11606068)
 end
+function s.lvfilter(c,e)
+	return c:IsLevelAbove(1) and c:IsFaceup() and not c:IsImmuneToEffect(e)
+end
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_EXTRA,nil)
-	local ct=e:GetHandler():GetLevel()//2
-	if chk==0 then return #g>0 and ct>0 end
+	local g=Duel.GetMatchingGroup(s.lvfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,e)
+	local ct=e:GetHandler():GetLevel()
+	if chk==0 then return e:GetHandler():IsLevelAbove(1) end
 	ct=math.min(#g,ct)
-    Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,ct,0,0) --「灵魂游荡的墓场」「黯黑世界-暗影敌托邦-」「拓扑篡改感染龙」
+	--Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,ct,0,0) --「灵魂游荡的墓场」「黯黑世界-暗影敌托邦-」「拓扑篡改感染龙」
 end
 function s.sumfilter(c)
 	return c:IsSummonable(true,nil) and c:IsSetCard(0x5225)
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local ct=c:GetLevel()//2
+	local lv=c:GetLevel()
 	if not (c:IsFaceup() and c:IsRelateToEffect(e)) then return end --「抒情歌鸲-独立夜莺」
-	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_EXTRA,nil)
-	ct=math.min(#g,ct)
-	if ct==0 then return end
-	local rg=g:RandomSelect(tp,ct)
-	if Duel.SendtoGrave(rg,REASON_EFFECT)~=0 then --「刚鬼死斗」
-		Duel.ShuffleExtra(1-tp)
-		if Duel.GetOperatedGroup():IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) then
+	local g=Duel.GetMatchingGroup(s.lvfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,e)
+	if #g==0 then return end
+	for tc in aux.Next(g) do
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_LEVEL)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(lv)
+		tc:RegisterEffect(e1)
+	end
 			if Duel.IsExistingMatchingCard(s.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)
 				and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 				Duel.BreakEffect()
@@ -153,8 +160,6 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 					Duel.Summon(tp,sg:GetFirst(),true,nil)
 				end
 			end
-		end
-	end
 end
 function s.thfilter(c)
 	return c:IsSetCard(0x5225) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
