@@ -57,5 +57,5 @@ function c95101214.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(g,REASON_EFFECT)
 end
 function c95101214.bpcon(e)
-	return e:GetEquipTarget()
+	return e:GetHandler():GetEquipTarget()
 end

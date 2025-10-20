@@ -48,7 +48,7 @@ end
 function c95101213.chkfilter(c)
 	return c:IsSetCard(0x5bb0) and not c:IsPublic()
 end
-function c95101213.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c95101213.eqcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c95101213.chkfilter,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,c95101213.chkfilter,tp,LOCATION_HAND,0,1,1,nil)
