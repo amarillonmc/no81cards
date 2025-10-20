@@ -122,27 +122,27 @@ function c71500106.zdisop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetLabelObject(e1)
 	e2:SetOperation(c71500106.clrop)  
 	Duel.RegisterEffect(e2,tp)
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_SOLVING)
-	e2:SetLabel(seq) 
-	e2:SetValue(chk)
-	e2:SetCondition(c71500106.discon)
-	e2:SetOperation(c71500106.disop) 
-	Duel.RegisterEffect(e2,tp)
-	local e3=Effect.CreateEffect(c) 
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
-	e3:SetCode(EVENT_CHAIN_END)  
-	e3:SetLabelObject(e2)
-	e3:SetOperation(c71500106.clrop)  
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAIN_SOLVING)
+	e3:SetLabel(seq) 
+	e3:SetValue(chk)
+	e3:SetCondition(c71500106.discon)
+	e3:SetOperation(c71500106.disop) 
 	Duel.RegisterEffect(e3,tp)
+	local e4=Effect.CreateEffect(c) 
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
+	e4:SetCode(EVENT_CHAIN_END)  
+	e4:SetLabelObject(e3)
+	e4:SetOperation(c71500106.clrop)  
+	Duel.RegisterEffect(e4,tp)
 end 
 function c71500106.distg(e,c)
 	local chk=e:GetValue()
 	local seq=e:GetLabel() 
 	local tp=e:GetHandlerPlayer() 
 	if not ((c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0) or not c:IsType(TYPE_MONSTER)) then return end 
-	if chk==1 then	 
+	if chk==1 then   
 		return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:GetSequence()==seq 
 	end  
 	if chk==2 then  
@@ -167,7 +167,7 @@ function c71500106.discon(e,tp,eg,ep,ev,re,r,rp)
 	local c=re:GetHandler()
 	local chk=e:GetValue()
 	local seq=e:GetLabel()  
-	if chk==1 then	 
+	if chk==1 then   
 		return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:GetSequence()==seq 
 	end  
 	if chk==2 then 
