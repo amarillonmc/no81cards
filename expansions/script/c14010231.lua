@@ -85,13 +85,14 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	Duel.SendtoDeck(dg,nil,2,REASON_EFFECT)
+	Duel.Destroy(dg,REASON_EFFECT)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e1:SetTargetRange(0,1)
 	e1:SetValue(cm.aclimit)
+	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.aclimit(e,re,tp)

@@ -196,7 +196,6 @@ function cm.operation(e, tp, eg, ep, ev, re, r, rp)
 	it.AddMonsterate(c, TYPE_NORMAL + TYPE_MONSTER, sx, zz, lv, 0, 0)
 	Duel.SpecialSummonStep(c, 0, tp, tp, true, false, POS_FACEUP_DEFENSE)
 	Duel.SpecialSummonComplete()
-
 	local g1 = eg:Filter(cm.repfilter2, nil, tp, c)
 	if #g1 > 0 then
 		for tc in aux.Next(g1) do
@@ -211,19 +210,19 @@ function cm.operation(e, tp, eg, ep, ev, re, r, rp)
 							local tg = ie:GetTarget()
 							-- Debug.Message(tg)
 							-- Debug.Message(aux.GetValueType(tg))
-							if ie and tg and type(tg) == "function" then
+							if ie and tg and aux.GetValueType(tg) == "function" then
 								local c1, c2 = pcall(function()
 									tg(ie, tp, eg, ep, ev, re, r, rp, 0)
 								end)
-								if c1 and c2 then
+								if c2 == true then
 									local op = ie:GetOperation()
 									if op then
 										pcall(function()
 											tg(ie, tp, eg, ep, ev, re, r, rp, 1)
 										end)
-										if c2 then
+										pcall(function()
 											op(ie, tp, eg, ep, ev, re, r, rp)
-										end
+										end)
 									end
 								end
 							end
