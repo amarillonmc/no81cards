@@ -44,7 +44,7 @@ function c98920756.gvcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
 function c98920756.gvfilter(c,ft)
-	return c:IsFaceup() and c:IsReleasableByEffect()
+	return c:IsReleasableByEffect()
 end
 function c98920756.spfilter(c,e,tp)
 	return c:IsSetCard(0x1a5) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
