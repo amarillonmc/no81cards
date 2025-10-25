@@ -53,7 +53,7 @@ function s.qcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,89490011)~=nil and c:IsOriginalSetCard(0xc30) and c:IsLocation(LOCATION_MZONE) and c:IsType(TYPE_MONSTER)
 end
 function s.costfilter(c,tp)
-	return c:IsReleasable() and (c:IsControler(tp) and c:IsRace(RACE_WYRM) and c:IsAttribute(ATTRIBUTE_FIRE) or c:IsControler(1-tp) and c:IsFaceup())
+	return c:IsReleasable() and (c:IsControler(tp) and c:GetOriginalRace()==RACE_WYRM and c:GetOriginalAttribute()==ATTRIBUTE_FIRE or c:IsControler(1-tp) and c:IsFaceup())
 end
 function s.fselect(g,tp,fe)
 	local ct=fe and 1 or 0
