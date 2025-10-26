@@ -47,7 +47,7 @@ function c88800019.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c88800019.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
+	if not c:IsRelateToEffect(e) or Duel.GetLocationCount(tp,LOCATION_MZONE)<=0
 		or not Duel.IsPlayerCanSpecialSummonMonster(tp,88800019,0,TYPES_NORMAL_TRAP_MONSTER,1200,2400,6,RACE_WARRIOR,ATTRIBUTE_WATER) then return end
 	c:AddMonsterAttribute(TYPE_NORMAL+TYPE_TRAP)
 	if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0

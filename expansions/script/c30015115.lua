@@ -1,4 +1,4 @@
--归墟仲裁 天卫
+--归墟仲裁 天卫
 local m=30015115
 local cm=_G["c"..m]
 if not overuins then dofile("expansions/script/c30015500.lua") end

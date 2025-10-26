@@ -28,15 +28,15 @@ function s.initial_effect(c)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,TYPES_NORMAL_TRAP_MONSTER,1400,1800,4,RACE_WARRIOR,ATTRIBUTE_LIGHT) end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,TYPES_NORMAL_TRAP_MONSTER,1400,1800,4,RACE_WARRIOR,ATTRIBUTE_LIGHT,POS_FACEUP_DEFENSE) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,TYPES_NORMAL_TRAP_MONSTER,1400,1800,4,RACE_WARRIOR,ATTRIBUTE_LIGHT) then
+	if c:IsRelateToEffect(e) and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,TYPES_NORMAL_TRAP_MONSTER,1400,1800,4,RACE_WARRIOR,ATTRIBUTE_LIGHT,POS_FACEUP_DEFENSE) then
 		c:AddMonsterAttribute(TYPE_NORMAL+TYPE_TUNER)
-		Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
+		Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP_DEFENSE)
 	end
 end
 

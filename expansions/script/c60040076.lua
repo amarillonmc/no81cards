@@ -30,6 +30,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		for c in aux.Next(g2) do
 			g1:RemoveCard(c)
 		end
+		Duel.DisableShuffleCheck()
 		Duel.SendtoHand(g1,nil,REASON_EFFECT)
 	end
 end
