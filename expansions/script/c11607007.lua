@@ -13,7 +13,6 @@ function c11607007.initial_effect(c)
 	-- 遗言盖放
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(11607007,1))
-	e2:SetCategory(CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_DESTROYED)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)

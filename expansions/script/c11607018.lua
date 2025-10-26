@@ -2,7 +2,7 @@
 function c11607018.initial_effect(c)
 	--fusion procedure
 	c:EnableReviveLimit()
-	aux.AddFusionProcMixRep(c,true,true,c11607018.filter,1,1,11607003,11607005,11607007,11607009,11607011,11607013)
+	aux.AddFusionProcMixRep(c,true,true,11607001,1,1,11607003,11607005,11607007,11607009,11607011,11607013)
 	--special summon rule
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -47,10 +47,6 @@ function c11607018.initial_effect(c)
     e4:SetTarget(c11607018.dkdestg)
     e4:SetOperation(c11607018.dkdesop)
     c:RegisterEffect(e4)
-end
---fusion material
-function c11607018.filter(c)
-	return c:IsFusionCode(11607001)
 end
 --special summon rule functions
 function c11607018.spfilter1(c,fc,tp)
