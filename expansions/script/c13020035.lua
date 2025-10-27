@@ -212,7 +212,7 @@ function cm.operation(e, tp, eg, ep, ev, re, r, rp)
 							-- Debug.Message(aux.GetValueType(tg))
 							if ie and tg and aux.GetValueType(tg) == "function" then
 								local c1, c2 = pcall(function()
-									tg(ie, tp, eg, ep, ev, re, r, rp, 0)
+									return tg(ie, tp, eg, ep, ev, re, r, rp, 0)
 								end)
 								if c2 == true then
 									local op = ie:GetOperation()

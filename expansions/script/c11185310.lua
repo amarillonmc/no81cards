@@ -1,5 +1,6 @@
 --虹龍的敕令
 function c11185310.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11185310,0))

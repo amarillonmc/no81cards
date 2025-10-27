@@ -1,5 +1,6 @@
 --虹龍·月龙
 function c11185290.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,8,10,c11185290.ovfilter,aux.Stringid(11185290,0),10,c11185290.xyzop)
 	c:EnableReviveLimit()

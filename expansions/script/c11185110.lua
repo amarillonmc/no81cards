@@ -1,5 +1,6 @@
 --星绘颂章
 function c11185110.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	c:EnableCounterPermit(0x452)
 	--Activate
 	local e0=Effect.CreateEffect(c)

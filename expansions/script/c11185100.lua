@@ -1,5 +1,6 @@
 --星绘·星谛
 function c11185100.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	c:EnableCounterPermit(0x452)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
@@ -41,7 +42,7 @@ function c11185100.initial_effect(c)
 	Duel.AddCustomActivityCounter(11185100,ACTIVITY_SPSUMMON,c11185100.counterfilter)
 end
 function c11185100.counterfilter(c)
-	return c:IsSetCard(0x452) or c:IsType(TYPE_TUNER)
+	return c:IsRace(RACE_FAIRY) or aux.IsCodeListed(c,0x452)
 end
 function c11185100.tgcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsMainPhase()
@@ -62,7 +63,7 @@ function c11185100.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e2,tp)
 end
 function c11185100.splimit(e,c)
-	return not (c:IsSetCard(0x452) or c:IsType(TYPE_TUNER))
+	return not (c:IsRace(RACE_FAIRY) or aux.IsCodeListed(c,0x452))
 end
 function c11185100.tgfilter(c)
 	return c:IsSetCard(0x452) and c:IsType(0x1) and (c:IsAbleToGrave() or c:IsAbleToRemove())

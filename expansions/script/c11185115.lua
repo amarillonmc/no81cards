@@ -1,5 +1,6 @@
 --星绘·颂曲
 function c11185115.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
@@ -24,7 +25,7 @@ function c11185115.initial_effect(c)
 	Duel.AddCustomActivityCounter(11185115,ACTIVITY_SPSUMMON,c11185115.counterfilter)
 end
 function c11185115.counterfilter(c)
-	return c:IsSetCard(0x452) or c:IsType(TYPE_TUNER)
+	return c:IsRace(RACE_FAIRY) or aux.IsCodeListed(c,0x452)
 end
 function c11185115.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(11185115,tp,ACTIVITY_SUMMON)==0
@@ -42,7 +43,7 @@ function c11185115.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e2,tp)
 end
 function c11185115.splimit(e,c)
-	return not (c:IsSetCard(0x452) or c:IsType(TYPE_TUNER))
+	return not (c:IsRace(RACE_FAIRY) or aux.IsCodeListed(c,0x452))
 end
 function c11185115.thfilter(c,e,tp)
 	if not (c:IsSetCard(0x452) and c:IsType(TYPE_MONSTER)) then return false end

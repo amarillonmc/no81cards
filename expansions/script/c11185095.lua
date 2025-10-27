@@ -1,5 +1,6 @@
 --星绘·鄢暨
 function c11185095.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	c:EnableCounterPermit(0x452)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)

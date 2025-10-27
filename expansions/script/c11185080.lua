@@ -1,5 +1,6 @@
 --星绘·汐澜
 function c11185080.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 	--Activate
@@ -40,7 +41,7 @@ function c11185080.initial_effect(c)
 	Duel.AddCustomActivityCounter(11185080,ACTIVITY_SPSUMMON,c11185080.counterfilter)
 end
 function c11185080.counterfilter(c)
-	return c:IsSetCard(0x452) or c:IsType(TYPE_TUNER)
+	return c:IsRace(RACE_FAIRY) or aux.IsCodeListed(c,0x452)
 end
 function c11185080.filter(c)
 	return c:IsFaceup() and c:IsCanAddCounter(0x452,1) and c:IsSetCard(0x452)
@@ -97,7 +98,7 @@ function c11185080.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e2,tp)
 end
 function c11185080.splimit(e,c)
-	return not (c:IsSetCard(0x452) or c:IsType(TYPE_TUNER))
+	return not (c:IsRace(RACE_FAIRY) or aux.IsCodeListed(c,0x452))
 end
 function c11185080.thfilter(c)
 	return c:IsSetCard(0x452) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()

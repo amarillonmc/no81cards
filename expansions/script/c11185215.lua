@@ -1,5 +1,6 @@
 --虹龍·擺
 function c11185215.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	c:EnableCounterPermit(0x452)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
@@ -67,7 +68,7 @@ function c11185215.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c11185215.splimit(e,c)
-	return not (c:IsRace(RACE_WYRM) or c:IsType(TYPE_TUNER))
+	return not (c:IsRace(RACE_WYRM) or aux.IsCodeListed(c,0x452))
 end
 function c11185215.spfilter(c,e,tp)
 	return c:IsSetCard(0x453) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx()

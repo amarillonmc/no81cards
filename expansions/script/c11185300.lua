@@ -1,5 +1,6 @@
---虹龍·鳞龙
+--虹龍·胡龙
 function c11185300.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	c:EnableCounterPermit(0x452)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c,false)

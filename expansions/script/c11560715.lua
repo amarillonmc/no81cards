@@ -8,7 +8,6 @@ function c11560715.initial_effect(c)
 	e1:SetDescription(aux.Stringid(11560715,1))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING) 
- --   e1:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,11560715)
 	e1:SetCondition(c11560715.ovcon) 
@@ -66,21 +65,26 @@ end
 
 
 function c11560715.ovcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp-- and e:GetHandler():GetFlagEffect(11560715)==0
+	return rp==1-tp
 end 
 function c11560715.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,nil) and e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_EFFECT) end
 end
 function c11560715.loccheck(g)
 	return g:GetClassCount(Card.GetLocation)==1
 end
 function c11560715.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local ct=0
 	if not c:IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsCanOverlay),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,nil)
+	if Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsCanOverlay),tp,0,LOCATION_GRAVE,1,nil) then ct=ct+1 end
+	if Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,1,nil) then ct=ct+1 end
+	if Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_REMOVED,1,nil) then ct=ct+1 end
 	if g:GetCount()>0 then
+		ctt=c:RemoveOverlayCard(tp,1,ct,REASON_EFFECT)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-		local og=g:SelectSubGroup(tp,c11560715.loccheck,false,1,3)
+		local og=g:SelectSubGroup(tp,c11560715.loccheck,false,ctt,ctt)
 		Duel.HintSelection(og)
 		for tc in aux.Next(og) do
 			if tc:IsImmuneToEffect(e) then
@@ -111,26 +115,7 @@ function c11560715.xxop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=og:Select(tp,1,1,nil):GetFirst() 
 		Duel.SendtoGrave(tc,REASON_EFFECT) 
 		if tc:IsType(TYPE_MONSTER) then 
-		local code=tc:GetOriginalCodeRule()
-		local cid=0
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetCode(EFFECT_CHANGE_CODE)
-		e1:SetValue(code)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		c:RegisterEffect(e1)
-		if not tc:IsType(TYPE_TRAPMONSTER) then
-			cid=c:CopyEffect(code,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,1)
-		end 
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE) 
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetRange(LOCATION_MZONE)
-		e1:SetValue(tc:GetBaseAttack()/2)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE+RESET_PHASE+PHASE_END)
-		c:RegisterEffect(e1)
-				if Duel.IsExistingMatchingCard(c11560715.mxfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and c:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(11560715,0)) then 
+				if Duel.SendtoHand(tc,tp,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(c11560715.mxfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and c:IsRelateToEffect(e) and Duel.SelectYesNo(tp,aux.Stringid(11560715,0)) then 
 						Duel.BreakEffect()
 					local oc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11560715.mxfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,c):GetFirst()  
 					if oc and not oc:IsImmuneToEffect(e) then

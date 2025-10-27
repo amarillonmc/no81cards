@@ -27,7 +27,7 @@ function s.thfilter(c)
 end
 
 function s.mfilter(c)
-	return c:IsType(TYPE_MONSTER)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x666d)
 end
 
 function s.condition(e,tp,eg,ep,ev,re,r,rp)

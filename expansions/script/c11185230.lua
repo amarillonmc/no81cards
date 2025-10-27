@@ -1,5 +1,6 @@
 --虹龍·源龙
 function c11185230.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	c:EnableCounterPermit(0x452)
 	c:SetUniqueOnField(1,0,50223345)
 	--link summon

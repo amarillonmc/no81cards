@@ -1,5 +1,6 @@
 --星绘·澪
 function c11185105.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	aux.AddMaterialCodeList(c,11185070,11185080)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsCode,11185070),aux.FilterBoolFunction(Card.IsCode,11185080),1,1)

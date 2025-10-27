@@ -22,25 +22,18 @@ function s.initial_effect(c)
 	e2:SetTarget(s.target)
 	e2:SetOperation(s.activate)
 	c:RegisterEffect(e2)
-	 --spsummon
+	--to hand
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(id,0))
-	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetCategory(CATEGORY_TODECK)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCountLimit(1,id+2)
-	e3:SetTarget(s.ovtg)
-	e3:SetOperation(s.ovop)
+	e3:SetCountLimit(1,11569002)
+	e3:SetCondition(c11569000.ovcon)
+	e3:SetTarget(c11569000.ovtg)
+	e3:SetOperation(c11569000.ovop)
 	c:RegisterEffect(e3)
-	--SpecialSummon
-	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(id,1))
-	e5:SetCategory(CATEGORY_TODECK)
-	e5:SetType(EFFECT_TYPE_IGNITION)
-	e5:SetRange(LOCATION_GRAVE)
-	e5:SetCountLimit(1,id+2)
-	e5:SetTarget(s.tdtg)
-	e5:SetOperation(s.tdop)
-	c:RegisterEffect(e5)
 end
 function s.spfilter(c,e,tp)
 	return c:IsSetCard(0x1b4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK,1-tp)
@@ -60,8 +53,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsReason(REASON_COST) and re:IsActivated() and re:IsActiveType(TYPE_XYZ)
-		and c:IsPreviousLocation(LOCATION_OVERLAY)
+	return c:IsPreviousLocation(LOCATION_OVERLAY)
 end
 function s.filter1(c,e,tp)
 	local rk=c:GetRank()
@@ -101,36 +93,37 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		sc:CompleteProcedure()
 	end
 end
-function s.ovfilter(c)
-	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_XYZ)
+function c11569000.ovfilter(c,tp)
+	return c:IsFaceup() and c:IsSetCard(0x107b) and c:IsControler(tp)
 end
-function s.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingTarget(s.ovfilter,tp,LOCATION_MZONE,0,1,nil)
-		and e:GetHandler():IsCanOverlay() end
+function c11569000.ovcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c11569000.ovfilter,1,nil,tp)
+end
+function c11569000.ovfilter(c)
+	return c:IsFaceup() and c:IsType(TYPE_XYZ)
+end
+function c11569000.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c11569000.ovfilter,tp,LOCATION_MZONE,0,1,nil) and e:GetHandler():IsCanOverlay() end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,s.ovfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SelectTarget(tp,c11569000.ovfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
 end
-function s.ovop(e,tp,eg,ep,ev,re,r,rp)
+function c11569000.tdfilter(c)
+	return c:IsSetCard(0x1b4) or c:IsAttribute(ATTRIBUTE_LIGHT)
+end
+function c11569000.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and tc:IsRelateToEffect(e) and not c:IsImmuneToEffect(e) and not tc:IsImmuneToEffect(e) then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELF)
+	local tc=Duel.SelectMatchingCard(tp,c11569000.ovfilter,tp,LOCATION_MZONE,0,1,1,nil,e,tp):GetFirst()
+	if c:IsRelateToEffect(e) and not c:IsImmuneToEffect(e) and not tc:IsImmuneToEffect(e) then
 		Duel.Overlay(tc,Group.FromCards(c))
 	end
-end
-function s.tdfilter(c)
-	return (c:IsSetCard(0x1b4) or c:IsSetCard(0x307b) or c:IsAttribute(ATTRIBUTE_LIGHT)) and c:IsAbleToDeck()
-end
-function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingTarget(s.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,s.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,5,5,nil)
-	g:AddCard(c)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
-end
-function s.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if g:GetCount()>0 then
-		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	if Duel.IsExistingMatchingCard(c11569000.tdfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11569000,2)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11569000.tdfilter),tp,LOCATION_GRAVE,0,1,3,nil)
+		if #g>0 then
+			Duel.HintSelection(g)
+			Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		end
 	end
 end

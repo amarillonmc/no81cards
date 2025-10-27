@@ -1,5 +1,6 @@
 --虹龍·朔月
 function c11185305.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	c:EnableCounterPermit(0x452)
 	--link summon
 	c:EnableReviveLimit()

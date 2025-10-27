@@ -27,9 +27,9 @@ function s.initial_effect(c)
 	e2:SetOperation(s.sumop)
 	c:RegisterEffect(e2)
 	
-	local e3=e1:Clone()
+	local e3=e2:Clone()
 	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCondition(s.sumcon)
+	e3:SetCondition(s.sumcon)
 	c:RegisterEffect(e3)
 end
 

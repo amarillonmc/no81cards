@@ -1,5 +1,6 @@
 --虹龍·神龙
 function c11185315.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	c:EnableCounterPermit(0x452)
 	--fusion material
 	c:EnableReviveLimit()

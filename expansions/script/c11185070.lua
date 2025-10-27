@@ -1,5 +1,6 @@
 --星绘·启明
 function c11185070.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 	--spsummon
@@ -38,7 +39,7 @@ function c11185070.initial_effect(c)
 	Duel.AddCustomActivityCounter(11185070,ACTIVITY_SPSUMMON,c11185070.counterfilter)
 end
 function c11185070.counterfilter(c)
-	return c:IsSetCard(0x452) or c:IsType(TYPE_TUNER)
+	return c:IsRace(RACE_FAIRY) or aux.IsCodeListed(c,0x452)
 end
 function c11185070.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -82,7 +83,7 @@ function c11185070.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e2,tp)
 end
 function c11185070.splimit(e,c)
-	return not (c:IsSetCard(0x452) or c:IsType(TYPE_TUNER))
+	return not (c:IsRace(RACE_FAIRY) or aux.IsCodeListed(c,0x452))
 end
 function c11185070.thfilter(c,e,tp,ck)
 	return c:IsSetCard(0x452) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand()

@@ -7,11 +7,12 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	e1:SetHintTiming(TIMING_DRAW_PHASE)
+	e1:SetCountLimit(1,m)
 	e1:SetCost(cm.spcost)
-	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
@@ -54,9 +55,6 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	e:SetLabelObject(tc)
 	tc:CreateEffectRelation(e)
-end
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(function(c) return c:GetSequence()<5 and c:IsFacedown() end,tp,LOCATION_MZONE,0,1,nil)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) end
@@ -111,8 +109,8 @@ function cm.fpop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return tg and tg:IsContains(e:GetHandler()) and e:GetHandler():IsFacedown()
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	return g and g:IsExists(Card.IsFacedown,1,nil) and e:GetHandler():IsFacedown() and Duel.IsChainNegatable(ev)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

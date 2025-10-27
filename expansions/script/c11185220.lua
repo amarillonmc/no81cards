@@ -1,5 +1,6 @@
 --虹龍·鋼
 function c11185220.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	c:EnableCounterPermit(0x452)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
@@ -68,7 +69,7 @@ function c11185220.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c11185220.splimit(e,c)
-	return not (c:IsRace(RACE_WYRM) or c:IsType(TYPE_TUNER))
+	return not (c:IsRace(RACE_WYRM) or aux.IsCodeListed(c,0x452))
 end
 function c11185220.thfilter(c)
 	return c:IsSetCard(0x453) and c:IsAbleToHand() and c:IsFaceupEx()
@@ -77,7 +78,7 @@ function c11185220.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11185220.thfilter,tp,0x20,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0x20)
 end
-function c11185220.spop2(e,tp,eg,ep,ev,re,r,rp)
+function c11185220.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c11185220.thfilter,tp,0x20,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then

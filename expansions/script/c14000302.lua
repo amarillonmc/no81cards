@@ -7,11 +7,12 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,m+EFFECT_COUNT_CODE_OATH)
+	e1:SetHintTiming(TIMING_DRAW_PHASE)
+	e1:SetCountLimit(1,m)
 	e1:SetCost(cm.spcost)
-	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
@@ -43,7 +44,7 @@ function cm.ND(c)
 	return m and m.named_with_NextDraw
 end
 function cm.costfilter(c)
-	return cm.ND(c) and not c:IsPublic()
+	return cm.ND(c) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_HAND,0,1,e:GetHandler()) end
@@ -51,12 +52,10 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_HAND,0,1,1,e:GetHandler())
 	local tc=g:GetFirst()
 	Duel.ConfirmCards(1-tp,tc)
-	e:SetLabelObject(tc)
-	tc:CreateEffectRelation(e)
 	Duel.ShuffleHand(tp)
 end
-function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(function(c) return c:GetSequence()<5 and c:IsFaceup() end,tp,LOCATION_MZONE,0,1,nil)
+function cm.spfilter(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -66,14 +65,22 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=e:GetLabelObject()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not c:IsRelateToEffect(e) then return end
 	local ct=Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 	Duel.ConfirmCards(1-tp,c)
-	if ct~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsRelateToEffect(e) and tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+	if ct~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and not Duel.IsPlayerAffectedByEffect(tp,EFFECT_DIVINE_LIGHT) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.BreakEffect()
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
-		Duel.ConfirmCards(1-tp,tc)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local g=Duel.SelectMatchingCard(tp,cm.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+		Duel.ShuffleHand(tp)
+		if g:GetCount()>0 then
+			local sc=g:GetFirst()
+			local hint=sc:IsPublic()
+			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+			if hint then
+				Duel.ConfirmCards(1-tp,g)
+			end
+		end
 	end
 end
 function cm.filter(c)
@@ -98,8 +105,8 @@ function cm.fpop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	local tg=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	return tg and tg:IsContains(e:GetHandler()) and e:GetHandler():IsFacedown()
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	return g and g:IsExists(Card.IsFacedown,1,nil) and e:GetHandler():IsFacedown() and Duel.IsChainNegatable(ev)
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

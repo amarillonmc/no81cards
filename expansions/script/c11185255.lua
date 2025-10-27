@@ -1,5 +1,6 @@
 --虹龍圣域
 function c11185255.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	c:EnableCounterPermit(0x452)
 	--Activate
 	local e0=Effect.CreateEffect(c)

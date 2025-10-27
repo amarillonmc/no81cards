@@ -1,5 +1,6 @@
 --虹龍·墨龙
 function c11185275.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSynchroType,TYPE_SYNCHRO),aux.TargetBoolFunction(Card.IsSetCard,0x453),1)
 	c:EnableReviveLimit()

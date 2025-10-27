@@ -1,5 +1,6 @@
 --虹龍·双头龙
 function c11185245.initial_effect(c)
+	aux.AddCodeList(c,0x452)
 	c:EnableCounterPermit(0x452)
 	--link summon
 	c:EnableReviveLimit()
