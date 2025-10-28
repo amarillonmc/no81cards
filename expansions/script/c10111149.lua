@@ -24,7 +24,7 @@ function c10111149.initial_effect(c)
 end
 c10111149.has_text_type=TYPE_UNION
 function c10111149.ffilter(c,fc,sub,mg,sg)
-	return c:IsFusionType(TYPE_NORMAL) and c:IsLevelAbove(4)
+	return c:IsFusionType(TYPE_NORMAL) and c:IsLevelBelow(4)
 end
 function c10111149.tgcon(e)
 	return e:GetHandler():IsDefensePos()

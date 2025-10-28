@@ -33,8 +33,7 @@ function c71500100.initial_effect(c)
 	--xx
 	local e3=Effect.CreateEffect(c)  
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F) 
-	e3:SetCode(EVENT_LEAVE_FIELD) 
-	e3:SetCountLimit(1,21500100)
+	e3:SetCode(EVENT_LEAVE_FIELD)  
 	e3:SetCost(c71500100.cost)
 	e3:SetTarget(c71500100.xxtg)
 	e3:SetOperation(c71500100.xxop)
@@ -148,32 +147,60 @@ function c71500100.xxtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c71500100.xxop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local te=e:GetLabelObject() 
+	if te then te:Reset() end 
 	local e1=Effect.CreateEffect(c) 
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
-	e1:SetCode(EVENT_TOSS_COIN_NEGATE) 
+	e1:SetCode(EVENT_TOSS_DICE_NEGATE) 
+	e1:SetProperty(EFFECT_FLAG_NO_TURN_RESET) 
+	e1:SetCountLimit(1) 
+	e1:SetLabel(0)
 	e1:SetCondition(c71500100.coincon)
-	e1:SetOperation(c71500100.coinop) 
-	e1:SetReset(RESET_PHASE+PHASE_END,2)  
+	e1:SetOperation(c71500100.coinop)  
+	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e1,tp)  
+	e:SetLabelObject(e1)
+	Duel.RegisterFlagEffect(tp,71500100,RESET_PHASE+PHASE_END,0,2)
 end 
-function c71500100.coincon(e,tp,eg,ep,ev,re,r,rp)
-	return ep==tp and Duel.GetFlagEffectLabel(tp,71500100)<3 
+function c71500100.coincon(e,tp,eg,ep,ev,re,r,rp) 
+	local x=e:GetLabel()
+	return ep==tp and x<3 and Duel.GetFlagEffect(tp,71500100)~=0 
 end
 function c71500100.coinop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffectLabel(tp,71500100)>=3 then return end 
-	if Duel.SelectYesNo(tp,aux.Stringid(71500100,0)) then
-		Duel.Hint(HINT_CARD,0,71500100) 
-		local flag=Duel.GetFlagEffectLabel(tp,71500100)
-		if flag==nil then 
-			Duel.RegisterFlagEffect(tp,71500100,RESET_PHASE+PHASE_END,0,1,1) 
-		else 
-			Duel.SetFlagEffectLabel(tp,71500100,flag+1)
-		end  
-		Duel.TossCoin(tp,ev)
-	end
+	local x=e:GetLabel()
+	if x>=3 then return end 
+	while x<3 and Duel.SelectYesNo(tp,aux.Stringid(71500100,0)) do  
+		Duel.Hint(HINT_CARD,0,71500100)   
+		x=x+1 
+		e:SetLabel(x)
+		Duel.TossDice(tp,ev)
+	end 
+	if x<3 then 
+		Debug.Message(x)
+		local e1=Effect.CreateEffect(e:GetHandler()) 
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
+		e1:SetCode(EVENT_TOSS_DICE)  
+		e1:SetProperty(EFFECT_FLAG_NO_TURN_RESET) 
+		e1:SetCountLimit(1)  
+		e1:SetLabel(x)
+		e1:SetOperation(c71500100.xcoinop)   
+		Duel.RegisterEffect(e1,tp) 
+	end 
 end
-
-
+function c71500100.xcoinop(e,tp,eg,ep,ev,re,r,rp)  
+	local c=e:GetHandler()
+	local x=e:GetLabel()  
+	local e1=Effect.CreateEffect(c) 
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
+	e1:SetCode(EVENT_TOSS_DICE_NEGATE)  
+	e1:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
+	e1:SetCountLimit(1)
+	e1:SetLabel(x)
+	e1:SetCondition(c71500100.coincon)
+	e1:SetOperation(c71500100.coinop)  
+	e1:SetReset(RESET_PHASE+PHASE_END,2)
+	Duel.RegisterEffect(e1,tp)   
+end 
 
 
 

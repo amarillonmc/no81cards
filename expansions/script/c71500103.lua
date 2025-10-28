@@ -88,9 +88,9 @@ function c71500103.chop(e,tp,eg,ep,ev,re,r,rp)
 	end 
 end
 function c71500103.repop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=Duel.SelectMatchingCard(1-tp,Card.IsAbleToHand,tp,0,LOCATION_DECK,1,1,nil)  
-	local dg=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,0) 
-	if sg:GetCount()>0 and Duel.SendtoHand(sg,1-tp,REASON_EFFECT)~=0 and dg:GetCount()>0 then  
+	local sg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_DECK,0,1,1,nil)  
+	local dg=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD) 
+	if sg:GetCount()>0 and Duel.SendtoHand(sg,tp,REASON_EFFECT)~=0 and dg:GetCount()>0 then  
 		Duel.Destroy(dg,REASON_EFFECT) 
 	end 
 end
