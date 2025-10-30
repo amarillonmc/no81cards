@@ -92,6 +92,7 @@ end
 function s.spsop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=e:GetLabelObject()
 	if g then
+	    Duel.HintSelection(g)
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_SPSUMMON)
 	    g:DeleteGroup()
     end
