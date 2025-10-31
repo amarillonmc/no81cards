@@ -41,6 +41,38 @@ function s.initial_effect(c)
 	e3:SetTarget(s.sptg)
 	e3:SetOperation(s.spop)
 	c:RegisterEffect(e3)
+	--replace
+	local e5=Effect.CreateEffect(c)
+	e5:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_PHASE_START+PHASE_DRAW)
+	e5:SetCountLimit(1,id+EFFECT_COUNT_CODE_DUEL)
+	e5:SetRange(LOCATION_HAND+LOCATION_DECK)
+	e5:SetOperation(s.rep)
+	c:RegisterEffect(e5)
+end
+function s.rep(e,tp,eg,ep,ev,re,r,rp)
+	local table={26118970}
+	for i,code in ipairs(table) do
+		local g=Duel.GetMatchingGroup(aux.FilterEqualFunction(Card.GetOriginalCode,code),0,0xff,0xff,nil)
+		local cn=_G["c"..code]
+		if type(cn)=="table" then
+			for tc in aux.Next(g) do
+				--special summon
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetDescription(aux.Stringid(26118970,0))
+				e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+				e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+				e1:SetCode(EVENT_BE_MATERIAL)
+				e1:SetProperty(EFFECT_FLAG_DELAY)
+				e1:SetCountLimit(1,26118970)
+				e1:SetCondition(cn.spcon)
+				e1:SetTarget(cn.sptg)
+				e1:SetOperation(cn.spop)
+				tc:RegisterEffect(e1)
+			end
+		end
+	end
 end
 function s.drdiseff(c,e,tp,eg,ep,ev,re,r,rp)
 	if c.Dragon_Ruler_handes_effect then return c.Dragon_Ruler_handes_effect end

@@ -326,16 +326,16 @@ function c4058.adop(e,tp,eg,ep,ev,re,r,rp)
 			local code=tc:GetOriginalCode()
 			local ae=tc:GetActivateEffect()
 			--deck activate
-			local e1=Effect.CreateEffect(tc)
-			e1:SetType(EFFECT_TYPE_ACTIVATE)
-			e1:SetCode(ae:GetCode())
-			e1:SetCategory(ae:GetCategory())
-			e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+ae:GetProperty())
+			local e1=ae:Clone() --Effect.CreateEffect(tc)
+			--e1:SetType(EFFECT_TYPE_ACTIVATE)
+			--e1:SetCode(ae:GetCode())
+			--e1:SetCategory(ae:GetCategory())
+			--e1:SetProperty(EFFECT_FLAG_UNCOPYABLE+ae:GetProperty())
 			e1:SetRange(LOCATION_DECK)
-			e1:SetCountLimit(1,code+EFFECT_COUNT_CODE_OATH)
-			e1:SetCondition(c4058.sfcon)
-			e1:SetTarget(c4058.sftg)
-			e1:SetOperation(c4058.sfop)
+			--e1:SetCountLimit(1,code+EFFECT_COUNT_CODE_OATH)
+			--e1:SetCondition(c4058.sfcon)
+			--e1:SetTarget(c4058.sftg)
+			--e1:SetOperation(c4058.sfop)
 			e1:SetReset(RESET_EVENT+0x1fe0000)
 			tc:RegisterEffect(e1)
 			--activate cost
@@ -390,10 +390,13 @@ end
 function c4058.costchk(e,te_or_c,tp)
 	local tp=e:GetHandler():GetControler()
 	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsPlayerAffectedByEffect(tp,4058) and Duel.GetFlagEffect(tp,e:GetHandler():GetOriginalCode())==0
+		and e:GetHandler():IsCode(16067089,93217231,80678380,1683982)
 end
 function c4058.costop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
 	local c=e:GetHandler()
+	Duel.RegisterFlagEffect(tp,e:GetHandler():GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
 	Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,false)
 	c:CreateEffectRelation(te)
 	local ev0=Duel.GetCurrentChain()+1
@@ -432,7 +435,7 @@ function c4058.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-local re=Card.RegisterEffect
+--[[local re=Card.RegisterEffect
 Card.RegisterEffect=function(c,e)
 	if c:IsType(TYPE_TRAP) and c:IsCode(16067089,93217231,80678380,1683982) and c:IsType(TYPE_CONTINUOUS+TYPE_EQUIP+TYPE_FIELD) and not e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetLabel()~=4058 then
 		local tg=e:GetTarget()
@@ -440,4 +443,4 @@ Card.RegisterEffect=function(c,e)
 		e:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk) if chk==0 then return tg(e,tp,eg,ep,ev,re,r,rp,0) and not c:IsStatus(STATUS_CHAINING) end tg(e,tp,eg,ep,ev,re,r,rp,1) end)
 	end
 	re(c,e)
-end
+end--]]
