@@ -146,8 +146,8 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local tp=e:GetHandlerPlayer()
-	return  e:GetHandler():IsPreviousControler(tp) and rp~=tp
+	local c=e:GetHandler()
+	return rp==1-tp and c:IsPreviousControler(tp)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,true,true) end
@@ -166,7 +166,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 				if tc:IsControler(1-tp) then sg:AddCard(tc) end
 				tc=g:GetNext()
 				end	   
-			Duel.SendtoGrave(sg,REASON_EFFECT) 
+			Duel.SendtoGrave(sg,REASON_RULE) 
 			end
 		end
 	end	
