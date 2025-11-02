@@ -74,8 +74,8 @@ end
 
 -- ② When sent to GY target
 function s.thfilter(c)
-	return (c:IsSetCard(0x3450) and c:IsType(TYPE_MONSTER)) or 
-		   (c:IsSetCard(0x6450) and c:IsType(TYPE_SPELL+TYPE_TRAP))
+	return (c:IsSetCard(0x3450) and c:IsType(TYPE_MONSTER) and c:IsLocation(LOCATION_DECK)) or 
+		   (c:IsSetCard(0x6450) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsLocation(0x30) and c:IsFaceupEx())
 end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

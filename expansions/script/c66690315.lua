@@ -2,10 +2,9 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 
-	-- 作为这张卡的发动时的效果处理，可以从手卡把1只「蒸汽朋克」怪兽特殊召唤
+	-- 作为这张卡的发动时的效果处理，可以从卡组把「蒸汽朋克回响机关阵」以外的1张「蒸汽朋克」魔法·陷阱卡在自己场上盖放
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
@@ -39,18 +38,17 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
--- 作为这张卡的发动时的效果处理，可以从手卡把1只「蒸汽朋克」怪兽特殊召唤
-function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x666b) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+-- 作为这张卡的发动时的效果处理，可以从卡组把「蒸汽朋克回响机关阵」以外的1张「蒸汽朋克」魔法·陷阱卡在自己场上盖放
+function s.ssfilter(c,tp)
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x666b) and not c:IsCode(id) and not c:IsForbidden() and c:IsSSetable()
 end
 
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	local cg=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_HAND,0,nil,e,tp)
-	if #cg>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=cg:Select(tp,1,1,nil)
-		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	local g=Duel.GetMatchingGroup(s.ssfilter,tp,LOCATION_DECK,0,nil,tp)
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SSet(tp,sg:GetFirst())
 	end
 end
 

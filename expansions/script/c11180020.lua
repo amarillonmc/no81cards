@@ -37,7 +37,8 @@ function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP) and Duel.IsChainNegatable(ev)
 end
 function s.cfilter(c,type)
-	return c:IsType(type) and (c:IsAbleToGraveAsCost() or c:IsAbleToRemoveAsCost())
+	return c:IsType(type) and c:IsSetCard(0x3450,0x6450)
+		and (c:IsAbleToGraveAsCost() or c:IsAbleToRemoveAsCost())
 end
 -- ①: Cost function
 function s.negcost(e,tp,eg,ep,ev,re,r,rp,chk)

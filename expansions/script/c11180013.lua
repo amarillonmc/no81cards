@@ -1,135 +1,92 @@
 -- 幻殇龙裔（新效果）
-local s, id = GetID()
-
-function s.initial_effect(c)
-	-- 1回合1次
-	aux.EnablePendulumAttribute(c)
+function c11180013.initial_effect(c)
+	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE+CATEGORY_REMOVE+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
-	e1:SetCountLimit(1,id)
-	e1:SetCost(s.spcost)
-	e1:SetTarget(s.sptg)
-	e1:SetOperation(s.spop)
+	e1:SetCountLimit(1,11180013)
+	e1:SetCost(c11180013.spcost)
+	e1:SetTarget(c11180013.sptg)
+	e1:SetOperation(c11180013.spop)
 	c:RegisterEffect(e1)
-Duel.AddCustomActivityCounter(id,ACTIVITY_SPSUMMON,s.counterfilter)
-	if not s.global_check then
-		s.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
-		ge1:SetOperation(s.checkop)
-		Duel.RegisterEffect(ge1,0)
-	end 
-	Duel.AddCustomActivityCounter(id,ACTIVITY_SPSUMMON,s.counterfilter)
+	Duel.AddCustomActivityCounter(11180013,ACTIVITY_SPSUMMON,c11180013.counterfilter)
 end
-function s.fit1(c)
-	return c:IsLevelBelow(2) or c:IsLinkBelow(2) or c:IsRankBelow(2)
-end
-function s.checkop(e,tp,eg,ep,ev,re,r,rp) 
-	if eg:IsExists(s.fit1,1,nil) then 
-		Duel.RegisterFlagEffect(rp,id,0,0,0)  
-	end  
-end
-function s.counterfilter(c)
+function c11180013.counterfilter(c)
 	return c:IsLevelAbove(3) or c:IsLinkAbove(3) or c:IsRankAbove(3)
 end
-function s.splimit(e,c)
+function c11180013.splimit(e,c)
 	return not (c:IsLevelAbove(3) or c:IsLinkAbove(3) or c:IsRankAbove(3))
 end
-
-function s.costfilter(c,tp)
-	return c:IsAbleToGraveAsCost() or c:IsAbleToRemoveAsCost()
+function c11180013.costfilter(c,tp)
+	return (c:IsAbleToGraveAsCost() or c:IsAbleToRemoveAsCost()) and Duel.GetMZoneCount(tp,c)>0
 end
-
-function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c11180013.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,c) and Duel.GetFlagEffect(tp,id)<1 end
-	local e1=Effect.CreateEffect(e:GetHandler())
+	if chk==0 then return Duel.IsExistingMatchingCard(c11180013.costfilter,tp,0xe,0,1,c,tp)
+		and Duel.GetFlagEffect(tp,11180013)==0 end
+	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e1:SetTargetRange(1,0)
-	e1:SetTarget(s.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetTarget(c11180013.splimit)
 	Duel.RegisterEffect(e1,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,c)
+	local g=Duel.SelectMatchingCard(tp,c11180013.costfilter,tp,0xe,0,1,1,c,tp)
 	local tc=g:GetFirst()
-	if tc:IsAbleToGraveAsCost() and (not tc:IsAbleToRemoveAsCost() or Duel.SelectOption(tp,aux.Stringid(id,1),aux.Stringid(id,2))==0) then
+	if tc:IsAbleToGraveAsCost() and (not tc:IsAbleToRemoveAsCost() or Duel.SelectOption(tp,1191,1192)==0) then
 		Duel.SendtoGrave(tc,REASON_COST)
 	else
 		Duel.Remove(tc,POS_FACEUP,REASON_COST)
 	end
-		e:SetLabelObject(tc)
+	e:SetLabel(tc:GetType())
 end
-
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-			and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
-	end
-	if not Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil) then
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,PLAYER_ALL,LOCATION_ONFIELD)  
-	e:SetLabel(0)
-	else
-		if bit.band(e:GetLabelObject():GetType(),0x7)==TYPE_MONSTER then
-			Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
-			e:SetCategory(CATEGORY_GRAVE_SPSUMMON)
-		else
-			Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_REMOVED)
-		end
-	e:SetLabel(1)   
-	end
+function c11180013.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-
-function s.spop(e,tp,eg,ep,ev,re,r,rp)
+function c11180013.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local num=e:GetLabel()  
-		local ty=bit.band(e:GetLabelObject():GetType(),0x7)
-		-- 如果主要怪兽区原本没有怪兽
-		if num==0 then
-			local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-			if #g>0 and  Duel.SelectYesNo(tp,aux.Stringid(id,3))  then
+	local type=e:GetLabel()
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+		e1:SetValue(LOCATION_REMOVED)
+		c:RegisterEffect(e1,true)
+		local ct=Duel.GetMatchingGroupCount(c11180013.mmzmfilter,tp,LOCATION_MZONE,0,nil)
+		local b1=Duel.IsExistingMatchingCard(c11180013.tdfilter,tp,0xc,0xc,1,nil,type) and (ct==1)
+		local b2=Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c11180013.thfilter),tp,0x10,0,1,nil,type) and (ct>1)
+		if (b1 or b2) and Duel.SelectYesNo(tp,aux.Stringid(11180013,0)) then
+			Duel.BreakEffect()
+			if b1 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-				local sg=g:FilterSelect(tp,function(c,ty) return not c:IsType(ty) end,1,1,nil,ty)
-				Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-			end
-		else
-			-- 主要怪兽区有怪兽时的效果
-			if ty&TYPE_MONSTER~=0 then
-				-- 如果是怪兽，从墓地或手卡特召1只「幻殇」怪兽
-				local g=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,nil,e,tp)
-				if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-					local sg=g:Select(tp,1,1,nil)
-					Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+				local g=Duel.SelectMatchingCard(tp,c11180013.tdfilter,tp,0xc,0xc,1,1,nil,type)
+				if g:GetCount()>0 then
+					Duel.HintSelection(g)
+					Duel.SendtoDeck(g,nil,2,0x40)
 				end
-			elseif ty&TYPE_SPELL~=0 then
-				-- 如果是魔法卡，从除外区特召1只「幻殇」怪兽
-				local g=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_REMOVED,0,nil,e,tp)
-				if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,4)) then
-					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-					local sg=g:Select(tp,1,1,nil)
-					Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+			elseif b2 then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+				local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11180013.thfilter),tp,0x10,0,1,1,nil,type)
+				if g:GetCount()>0 then
+					Duel.HintSelection(g)
+					Duel.SendtoHand(g,nil,0x40)
 				end
 			end
 		end
-		-- 离场返回卡组
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
-		e1:SetValue(LOCATION_DECKSHF)
-		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-		c:RegisterEffect(e1)
 	end
 end
-
-function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x3450) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c11180013.mmzmfilter(c)
+	return c:GetSequence()<5
+end
+function c11180013.tdfilter(c,type)
+	return c:IsFaceup() and not c:IsType(type) and c:IsAbleToDeck()
+end
+function c11180013.thfilter(c,type)
+	return c:IsSetCard(0x3450,0x6450) and not c:IsType(type) and c:IsAbleToHand()
 end

@@ -1,54 +1,66 @@
--- 龙裔幻殇速攻魔法
+--净玉之鸣
 local s, id = GetID()
-
 function s.initial_effect(c)
-	-- Quick-Play Spell type   
-	-- ①: Choose 1 of 2 effects
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,id+100)
+	e1:SetCountLimit(1,id)
 	e1:SetTarget(s.efftg)
 	e1:SetOperation(s.effop)
 	c:RegisterEffect(e1)
 end
-
--- Effect selection target
-function s.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e,tp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EFFECT)
-	if #g<1 or Duel.SelectOption(tp,aux.Stringid(id,1),aux.Stringid(id,2))==0 then
-	e:SetLabel(0)
-	else 
-	e:SetLabel(1)
-	end
+function s.pubfilter(c,tp)
+	return c:IsSetCard(0x3450,0x6450) and not c:IsPublic()
+		and Duel.IsExistingMatchingCard(s.nbfilter,tp,0xc,0xc,1,nil,c:GetType())
 end
-
--- Effect operation
+function s.nbfilter(c,type)
+	return c:IsFaceup() and aux.NegateAnyFilter(c) and c:IsAbleToRemove() and c:IsType(type)
+		and c~=cc
+end
+function s.spfilter(c,e,tp)
+	return c:IsSetCard(0x3450) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+end
+function s.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local b1=Duel.IsExistingMatchingCard(s.pubfilter,tp,LOCATION_HAND,0,1,c,tp)
+	local b2=Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp)
+	if chk==0 then return b1 or b2 end
+	local op=aux.SelectFromOptions(tp,{b1,aux.Stringid(id,1)},{b2,aux.Stringid(id,2)})
+	e:SetLabel(op)
+end
 function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local op=e:GetLabel()
-	
-	-- Effect 1: Declare card name and make effects cannot be negated
-	if op==0 then
-		-- Get list of valid cards to declare
-	getmetatable(c).announce_filter={0x3450,OPCODE_ISSETCARD,0x6450,OPCODE_ISSETCARD,OPCODE_OR}
-	local ac=Duel.AnnounceCard(tp,table.unpack(getmetatable(c).announce_filter))
-		
-		
-		-- Create effect that prevents negation
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_CANNOT_DISEFFECT)
-		e1:SetValue(s.efilter)
-		e1:SetLabel(ac)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-		
-	-- Effect 2: Special Summon from GY or banish
-	else
+	if op==1 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+		local g=Duel.SelectMatchingCard(tp,s.pubfilter,tp,LOCATION_HAND,0,1,1,nil)
+		if #g<1 then return end
+		local pc=g:GetFirst()
+		local type=pc:GetType()
+		local tc=Duel.SelectMatchingCard(tp,s.nbfilter,tp,0xc,0xc,1,1,aux.ExceptThisCard(e),type):GetFirst()
+		if tc and tc:IsCanBeDisabledByEffect(e) then
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+			if tc:IsType(TYPE_TRAPMONSTER) then
+				local e3=Effect.CreateEffect(c)
+				e3:SetType(EFFECT_TYPE_SINGLE)
+				e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+				e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e3)
+			end
+			Duel.AdjustInstantly()
+			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		end
+	elseif op==2 then
 		local g=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e,tp)
 		if #g>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
@@ -58,16 +70,4 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-end
-
--- Filter for Effect 1
-function s.efilter(e,ct)
-	local p=e:GetHandlerPlayer()
-	local te,tp=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return p==tp and te:GetHandler():IsCode(e:GetLabel())
-end
-
--- Filter for Effect 2
-function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x3450) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
