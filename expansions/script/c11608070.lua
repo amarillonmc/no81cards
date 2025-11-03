@@ -148,18 +148,7 @@ end
 
 function s.athcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsPosition(POS_FACEUP_ATTACK) or c:IsPosition(POS_FACEUP_DEFENSE) then
-		local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
-		local faceup_cards=Group.CreateGroup()
-		for tc in aux.Next(g) do
-			if tc:GetFlagEffect(id+1000)>0 then
-				faceup_cards:AddCard(tc)
-			end
-		end
-		if faceup_cards:GetCount()>0 then
-			Duel.ConfirmCards(tp,faceup_cards)
-			Duel.ConfirmCards(1-tp,faceup_cards)
-		end
+	if c:IsPosition(POS_FACEUP_ATTACK) or c:IsPosition(POS_FACEUP_DEFENSE) then	
 		return true
 	end
 	return false
