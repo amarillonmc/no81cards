@@ -26,16 +26,13 @@ function s.initial_effect(c)
 	e2:SetTarget(s.sptg)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
-	
-	-- 保留全局效果
-	if not s.global_check then
-		s.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_CHAIN_END)
-		ge1:SetOperation(s.regop)
-		Duel.RegisterEffect(ge1,0)
-	end
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_SPSUMMON_PROC_G)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetRange(LOCATION_DECK)
+	e3:SetCondition(s.spcon)
+	c:RegisterEffect(e3)
 end
 
 function s.regop(e,tp,eg,ep,ev,re,r,rp)

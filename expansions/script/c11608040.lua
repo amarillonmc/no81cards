@@ -4,7 +4,7 @@ function s.initial_effect(c)
 	Duel.EnableGlobalFlag(GLOBALFLAG_DECK_REVERSE_CHECK)
 	--xyz summon
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,nil,7,3,nil,nil,99)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x9225),7,3,nil,nil,99)
 	
 	--return 1 card to deck
 	local e1=Effect.CreateEffect(c)
@@ -39,28 +39,7 @@ function s.initial_effect(c)
 	e3:SetTarget(s.chtg)
 	e3:SetOperation(s.chop)
 	c:RegisterEffect(e3)
-	
-	-- 添加全局效果处理表侧卡
-	if not s.global_check then
-		s.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_CHAIN_END)
-		ge1:SetOperation(s.regop)
-		Duel.RegisterEffect(ge1,0)
-	end
 end
-
-function s.regop(e,tp,eg,ep,ev,re,r,rp)
-	for p=0,1 do
-		local g=Duel.GetMatchingGroup(Card.IsPosition,p,LOCATION_DECK,0,nil,POS_FACEUP_DEFENSE)
-		local g2=Duel.GetFieldGroup(p,LOCATION_EXTRA,0)
-		if #g2>0 then
-			Duel.ConfirmCards(p,g+g2,true)
-		end
-	end
-end
-
 function s.rtcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)

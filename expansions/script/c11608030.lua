@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	
 	--xyz summon
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,nil,7,2,nil,nil,99)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_WINDBEAST),7,2)
 	
 	--material effect
 	local e1=Effect.CreateEffect(c)
@@ -47,28 +47,7 @@ function s.initial_effect(c)
 	e3:SetTarget(s.rttg)
 	e3:SetOperation(s.rtop)
 	c:RegisterEffect(e3)
-	
-	-- 保留全局效果
-	if not s.global_check then
-		s.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_CHAIN_END)
-		ge1:SetOperation(s.regop)
-		Duel.RegisterEffect(ge1,0)
-	end
 end
-
-function s.regop(e,tp,eg,ep,ev,re,r,rp)
-	for p=0,1 do
-		local g=Duel.GetMatchingGroup(Card.IsPosition,p,LOCATION_DECK,0,nil,POS_FACEUP_DEFENSE)
-		local g2=Duel.GetFieldGroup(p,LOCATION_EXTRA,0)
-		if #g2>0 then
-			Duel.ConfirmCards(p,g+g2,true)
-		end
-	end
-end
-
 function s.mark_as_faceup(c)
 	if c:GetLocation()==LOCATION_DECK then
 		c:ReverseInDeck()
