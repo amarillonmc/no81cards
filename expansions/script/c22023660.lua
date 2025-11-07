@@ -22,6 +22,9 @@ function c22023660.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.RegisterFlagEffect(tp,22023340,0,0,0)
 		Duel.Hint(HINT_CARD,0,22023340)
 	end
+end
+function c22023660.activate(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) and not Duel.GetFlagEffect(tp,22023340)>2 then return end
 	Duel.SelectOption(tp,aux.Stringid(22023660,0))
 	Duel.SelectOption(tp,aux.Stringid(22023660,1))
 	Duel.Damage(1-tp,500,REASON_EFFECT)
@@ -38,11 +41,6 @@ function c22023660.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Damage(1-tp,500,REASON_EFFECT)
 	Duel.SelectOption(tp,aux.Stringid(22023660,2))
 	Duel.Damage(1-tp,1500,REASON_EFFECT)
-end
-function c22023660.activate(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) and not Duel.GetFlagEffect(tp,22023340)>2 then return end
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Damage(p,d,REASON_EFFECT)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)

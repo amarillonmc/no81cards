@@ -51,8 +51,8 @@ function cm.xyzop(e,tp,chk)
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(1,m,RESET_PHASE+PHASE_END,0,1)
-	Duel.RegisterFlagEffect(0,m,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(1,m+10000000,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(0,m+10000000,RESET_PHASE+PHASE_END,0,1)
 end
 
 function cm.spcon1(e,tp,eg,ep,ev,re,r,rp)
