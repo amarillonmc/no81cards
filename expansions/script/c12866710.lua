@@ -79,31 +79,34 @@ function s.eftg(e,c)
 	return c:IsCode(12866600)
 end
 function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp and re:IsActiveType(TYPE_MONSTER) and ((re:GetHandler():IsAttribute(ATTRIBUTE_DARK) and Duel.GetFlagEffect(tp,id)==0)
-		or (re:GetHandler():IsAttribute(ATTRIBUTE_EARTH) and Duel.GetFlagEffect(tp,id+o)==0)
-		or (re:GetHandler():IsAttribute(ATTRIBUTE_WATER) and Duel.GetFlagEffect(tp,id+o*2)==0) 
-		or (re:GetHandler():IsAttribute(ATTRIBUTE_FIRE) and Duel.GetFlagEffect(tp,id+o*3)==0) 
-		or (re:GetHandler():IsAttribute(ATTRIBUTE_WIND) and Duel.GetFlagEffect(tp,id+o*4)==0))
+	local p=e:GetHandlerPlayer()
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-p and re:IsActiveType(TYPE_MONSTER) and
+		((re:GetHandler():IsAttribute(ATTRIBUTE_DARK) and Duel.GetFlagEffect(p,id)==0)
+		or (re:GetHandler():IsAttribute(ATTRIBUTE_EARTH) and Duel.GetFlagEffect(p,id+o)==0)
+		or (re:GetHandler():IsAttribute(ATTRIBUTE_WATER) and Duel.GetFlagEffect(p,id+o*2)==0) 
+		or (re:GetHandler():IsAttribute(ATTRIBUTE_FIRE) and Duel.GetFlagEffect(p,id+o*3)==0) 
+		or (re:GetHandler():IsAttribute(ATTRIBUTE_WIND) and Duel.GetFlagEffect(p,id+o*4)==0))
 end
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
+	local p=e:GetHandlerPlayer()
 	if not rc:IsRelateToEffect(re) then return end
 	local proc=rc:IsCode(12866705,12866890) and c:IsCode(12866600)
 	local b1=rc:IsAbleToGrave() and not rc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
-	local b2=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-	and (rc:IsCanBeSpecialSummoned(e,0,tp,false,false)) or rc:IsCanBeSpecialSummoned(e,0,tp,proc,proc))
+	local b2=(Duel.GetLocationCount(p,LOCATION_MZONE)>0 
+	and (rc:IsCanBeSpecialSummoned(e,0,tp,false,false)) or rc:IsCanBeSpecialSummoned(e,0,p,proc,proc))
 	if chk==0 then return b1 or b2 end
 	if re:GetHandler():IsAttribute(ATTRIBUTE_DARK) then
-		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+		Duel.RegisterFlagEffect(p,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	elseif re:GetHandler():IsAttribute(ATTRIBUTE_EARTH) then
-		Duel.RegisterFlagEffect(tp,id+o,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+		Duel.RegisterFlagEffect(p,id+o,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	elseif re:GetHandler():IsAttribute(ATTRIBUTE_WATER) then
-		Duel.RegisterFlagEffect(tp,id+o*2,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+		Duel.RegisterFlagEffect(p,id+o*2,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	elseif re:GetHandler():IsAttribute(ATTRIBUTE_FIRE) then
-		Duel.RegisterFlagEffect(tp,id+o*3,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+		Duel.RegisterFlagEffect(p,id+o*3,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	elseif re:GetHandler():IsAttribute(ATTRIBUTE_WIND) then
-		Duel.RegisterFlagEffect(tp,id+o*4,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+		Duel.RegisterFlagEffect(p,id+o*4,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 	end
 	Duel.SetTargetCard(rc)
 	if rc:IsLocation(LOCATION_GRAVE) then
@@ -115,13 +118,14 @@ function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local p=e:GetHandlerPlayer()
+	Duel.Hint(HINT_SELECTMSG,p,HINTMSG_OPERATECARD)
 	local rc=re:GetHandler()
 	if rc:IsRelateToEffect(re) then
 		local tc=Duel.GetFirstTarget()
 		local proc=tc:IsCode(12866705,12866890) and c:IsCode(12866600)
 		local b1=tc:IsAbleToGrave() and not tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
-		local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (tc:IsCanBeSpecialSummoned(e,0,tp,false,false) or tc:IsCanBeSpecialSummoned(e,0,tp,proc,proc)) and aux.NecroValleyFilter()(tc) 
+		local b2=Duel.GetLocationCount(p,LOCATION_MZONE)>0 and (tc:IsCanBeSpecialSummoned(e,0,p,false,false) or tc:IsCanBeSpecialSummoned(e,0,p,proc,proc)) and aux.NecroValleyFilter()(tc) 
 		local off=1
 		local ops={}
 		local opval={}
@@ -135,12 +139,12 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 			opval[off]=1
 			off=off+1
 		end
-		local op=Duel.SelectOption(tp,table.unpack(ops))+1
+		local op=Duel.SelectOption(p,table.unpack(ops))+1
 		local sel=opval[op]
 		if sel==0 then
 			Duel.SendtoGrave(tc,REASON_EFFECT)
 		elseif sel==1 then
-			Duel.SpecialSummon(tc,0,tp,tp,proc,proc,POS_FACEUP)
+			Duel.SpecialSummon(tc,0,p,p,proc,proc,POS_FACEUP)
 			if proc then tc:CompleteProcedure() end
 		end
 	end
