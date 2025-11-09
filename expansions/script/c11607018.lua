@@ -50,28 +50,28 @@ function c11607018.initial_effect(c)
 end
 --special summon rule functions
 function c11607018.spfilter1(c,fc,tp)
-	return c:IsCode(11607001) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsCode(11607001) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost() and c:IsFaceup()
 end
 function c11607018.spfilter2(c,fc,tp)
-	return c:IsCode(11607003) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsCode(11607003) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost() and c:IsFaceup()
 end
 function c11607018.spfilter3(c,fc,tp)
-	return c:IsCode(11607005) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsCode(11607005) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost() and c:IsFaceup()
 end
 function c11607018.spfilter4(c,fc,tp)
-	return c:IsCode(11607007) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsCode(11607007) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost() and c:IsFaceup()
 end
 function c11607018.spfilter5(c,fc,tp)
-	return c:IsCode(11607009) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsCode(11607009) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost() and c:IsFaceup()
 end
 function c11607018.spfilter6(c,fc,tp)
-	return c:IsCode(11607011) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsCode(11607011) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost() and c:IsFaceup()
 end
 function c11607018.spfilter7(c,fc,tp)
-	return c:IsCode(11607013) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsCode(11607013) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost() and c:IsFaceup()
 end
 function c11607018.spfilter_all(c,fc,tp)
-	return c:IsCode(11607001,11607003,11607005,11607007,11607009,11607011,11607013) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsCode(11607001,11607003,11607005,11607007,11607009,11607011,11607013) and c:IsCanBeFusionMaterial(fc) and c:IsAbleToDeckOrExtraAsCost() and c:IsFaceup()
 end
 function c11607018.fselect(g)
 	return g:GetClassCount(Card.GetCode)==g:GetCount()

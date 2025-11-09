@@ -33,7 +33,7 @@ function c11607017.matfilter(c)
 end
 -- 1
 function c11607017.thfilter(c)
-	return c:IsRace(RACE_ROCK) and (c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_REMOVED))
+	return c:IsRace(RACE_ROCK) and (c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_REMOVED)) and c:IsFaceup()
 end
 function c11607017.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11607017.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end

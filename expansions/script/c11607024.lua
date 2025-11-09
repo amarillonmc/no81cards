@@ -45,6 +45,9 @@ function c11607024.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 -- 2
+function c11607024.tdfilter(c)
+	return c:IsSetCard(0x6225) and c:IsAbleToDeck() and c:IsFaceup()
+end
 function c11607024.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
 	Duel.SendtoDeck(e:GetHandler(),nil,0,REASON_COST)
@@ -52,20 +55,16 @@ function c11607024.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c11607024.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local g1=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_GRAVE,0,e:GetHandler(),0x6225)
-	local g2=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_REMOVED,0,nil,0x6225)
-	g1:Merge(g2)
-	if #g1>0 then
-		Duel.SetOperationInfo(0,CATEGORY_TODECK,g1,1,0,0)
+	local g=Duel.GetMatchingGroup(c11607024.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,e:GetHandler())
+	if #g>0 then
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 	end
 end
 function c11607024.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_GRAVE,0,nil,0x6225)
-	local g2=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_REMOVED,0,nil,0x6225)
-	g1:Merge(g2)
-	if #g1==0 then return end
+	local g=Duel.GetMatchingGroup(c11607024.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,e:GetHandler())
+	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=g1:Select(tp,1,4,nil)
+	local sg=g:Select(tp,1,4,nil)
 	if sg:GetCount()>0 then
 		Duel.SendtoDeck(sg,nil,0,REASON_EFFECT)
 		Duel.ShuffleDeck(tp)
