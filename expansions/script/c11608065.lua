@@ -141,7 +141,7 @@ end
 
 function s.athtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToHand() end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES,e:GetHandler(),1,0,0)
 end
 
 function s.athop(e,tp,eg,ep,ev,re,r,rp)
