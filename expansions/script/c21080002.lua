@@ -16,6 +16,7 @@ function cm.initial_effect(c)
 	e01:SetProperty(EFFECT_FLAG_EVENT_PLAYER+EFFECT_FLAG_CANNOT_DISABLE)
 	e01:SetLabelObject(e0)
 	e01:SetCondition(cm.hsyncon)
+	e01:SetOperation(cm.hsynreg)
 	c:RegisterEffect(e01)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -40,6 +41,9 @@ end
 function cm.hsyncon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return r==REASON_SYNCHRO and cm.matval(nil,c:GetReasonCard()) and c:IsPreviousLocation(LOCATION_HAND)
+end
+function cm.hsynreg(e,tp,eg,ep,ev,re,r,rp)
+	e:GetLabelObject():UseCountLimit(tp)
 end
 function cm.mfilter(c)
 	return true
