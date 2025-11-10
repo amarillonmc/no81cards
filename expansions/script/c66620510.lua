@@ -2,7 +2,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 
-	-- 自己的场上或墓地有机械族怪兽存在的场合，以场上1张表侧表示卡为对象才能发动，那张卡的效果直到回合结束时无效，自己场上有机械族融合怪兽存在的场合，可以再把那张卡破坏
+	-- 自己的场上或墓地有机械族怪兽存在的场合，以对方场上1张表侧表示卡为对象才能发动，那张卡的效果直到回合结束时无效，自己场上有机械族融合怪兽存在的场合，可以再把那张卡破坏
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -30,7 +30,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 
--- 自己的场上或墓地有机械族怪兽存在的场合，以场上1张表侧表示卡为对象才能发动，那张卡的效果直到回合结束时无效，自己场上有机械族融合怪兽存在的场合，可以再把那张卡破坏
+-- 自己的场上或墓地有机械族怪兽存在的场合，以对方场上1张表侧表示卡为对象才能发动，那张卡的效果直到回合结束时无效，自己场上有机械族融合怪兽存在的场合，可以再把那张卡破坏
 function s.mecha_filter(c)
 	return c:IsFaceup() and c:IsRace(RACE_MACHINE)
 end
@@ -40,10 +40,10 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and aux.NegateAnyFilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and aux.NegateAnyFilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
 

@@ -14,7 +14,7 @@ function s.initial_effect(c)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
 	
-	-- 这张卡召唤·特殊召唤的场合才能发动，从卡组把1张「绮奏」卡送去墓地
+	-- 这张卡召唤·特殊召唤的场合才能发动，自己场上存在的属性以外的1只「绮奏」怪兽从自己的卡组·墓地加入手卡
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_TOGRAVE)
@@ -22,29 +22,26 @@ function s.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetCountLimit(1,id+1)
-	e2:SetTarget(s.tgtg)
-	e2:SetOperation(s.tgop)
+	e2:SetTarget(s.thtg)
+	e2:SetOperation(s.thop)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
 	
-	-- 对方把怪兽召唤·特殊召唤的场合才能发动，自己的手卡·场上的怪兽作为融合素材，把1只「绮奏」融合怪兽融合召唤
+	-- 自己·对方的主要阶段才能发动，自己的手卡·场上的怪兽作为融合素材，把1只「绮奏」融合怪兽融合召唤
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id,2))
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetProperty(EFFECT_FLAG_DELAY)
-	e4:SetCode(EVENT_SUMMON_SUCCESS)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_MZONE)
+	e4:SetHintTiming(0,TIMING_MAIN_END)
 	e4:SetCountLimit(1,id+2)
-	e4:SetCondition(s.fscon)
+	e4:SetCondition(s.fspcon)
 	e4:SetTarget(s.fsptg)
 	e4:SetOperation(s.fspop)
 	c:RegisterEffect(e4)
-	local e5=e4:Clone()
-	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e5)
 end
 
 -- 自己场上有「绮奏」卡存在的场合才能发动，这张卡从手卡特殊召唤，这个回合，自己不是融合怪兽不能从额外卡组特殊召唤
@@ -82,31 +79,41 @@ function s.splimit(e,c)
 	return not c:IsType(TYPE_FUSION) and c:IsLocation(LOCATION_EXTRA)
 end
 
--- 这张卡召唤·特殊召唤的场合才能发动，从卡组把1张「绮奏」卡送去墓地
-function s.tgfilter(c)
-	return c:IsSetCard(0x666a) and c:IsAbleToGrave()
+-- 这张卡召唤·特殊召唤的场合才能发动，自己场上存在的属性以外的1只「绮奏」怪兽从自己的卡组·墓地加入手卡
+function s.filter(c,att)
+	return c:IsFaceup() and c:IsAttribute(att)
 end
 
-function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+function s.thfilter(c,tp)
+	return c:IsSetCard(0x666a) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+		and not Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,0,1,nil,c:GetAttribute())
 end
 
-function s.tgop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoGrave(g,REASON_EFFECT)
-	end
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+    if chk==0 then 
+        return Duel.IsExistingMatchingCard(
+            function(c) return s.thfilter(c,tp) end,
+            tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil
+        )
+    end
+    Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 
--- 对方把怪兽召唤·特殊召唤的场合才能发动，自己的手卡·场上的怪兽作为融合素材，把1只「绮奏」融合怪兽融合召唤
-function s.fsfilter(c,sp)
-	return c:IsSummonPlayer(sp)
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
+    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+    local g=Duel.SelectMatchingCard(
+        tp,aux.NecroValleyFilter(function(c) return s.thfilter(c,tp) end),
+        tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil
+    )
+    if #g>0 then
+        Duel.SendtoHand(g,nil,REASON_EFFECT)
+        Duel.ConfirmCards(1-tp,g)
+    end
 end
 
-function s.fscon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(s.fsfilter,1,nil,1-tp)
+-- 自己·对方的主要阶段才能发动，自己的手卡·场上的怪兽作为融合素材，把1只「绮奏」融合怪兽融合召唤
+function s.fspcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsMainPhase()
 end
 
 function s.filter1(c,e)
@@ -120,8 +127,9 @@ end
 
 function s.fsptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
+		local c=e:GetHandler()
 		local chkf=tp
-		local mg1=Duel.GetFusionMaterial(tp)
+		local mg1=Duel.GetFusionMaterial(tp):Filter(s.filter1,nil,e)
 		local res=Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
@@ -156,13 +164,13 @@ function s.fspop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tg=sg:Select(tp,1,1,nil)
 		local tc=tg:GetFirst()
-		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
+		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or ce and not Duel.SelectYesNo(tp,ce:GetDescription())) then
 			local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
 			tc:SetMaterial(mat1)
 			Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 			Duel.BreakEffect()
 			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
-		else
+		elseif ce then
 			local mat2=Duel.SelectFusionMaterial(tp,tc,mg2,nil,chkf)
 			local fop=ce:GetOperation()
 			fop(ce,e,tp,tc,mat2)

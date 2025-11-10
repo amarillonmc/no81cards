@@ -5,7 +5,7 @@ function c66620220.initial_effect(c)
 	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionSetCard,0x666a),aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),true)
 	c:EnableReviveLimit()
 	
-	-- 只要这张卡在怪兽区域存在，和这张卡相同纵列的卡的效果无效化
+	-- 只要这张卡在怪兽区域存在，和这张卡相同纵列的对方的卡的效果无效化
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_DISABLE)
@@ -28,10 +28,11 @@ function c66620220.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 
--- 只要这张卡在怪兽区域存在，和这张卡相同纵列的卡的效果无效化
+-- 只要这张卡在怪兽区域存在，和这张卡相同纵列的对方的卡的效果无效化
 function c66620220.coltg(e,c)
-	local cg=e:GetHandler():GetColumnGroup()
-	return c~=e:GetHandler() and cg:IsContains(c)
+    local tp=e:GetHandlerPlayer()
+    local cg=e:GetHandler():GetColumnGroup()
+    return c~=e:GetHandler() and cg:IsContains(c) and c:IsControler(1-tp)
 end
 
 -- 融合召唤的这张卡因对方从场上离开的场合，以「绮奏·幽垂圣乐 芙洛缇安涅」以外的自己的墓地·除外状态的1张「绮奏」卡为对象才能发动，那张卡加入手卡

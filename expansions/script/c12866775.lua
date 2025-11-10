@@ -109,7 +109,7 @@ function s.eqlimit(e,c)
 	return e:GetOwner()==c
 end
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp~=tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
+	return ep~=tp and Duel.IsChainDisablable(ev)
 end
 function s.negfilter(c,g)
 	return c:IsFaceup() and g:IsContains(c)
@@ -129,7 +129,7 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and g:GetCount()>0 then
 		Duel.HintSelection(g)
 		if Duel.Destroy(g,REASON_EFFECT)~=0 then
-			Duel.NegateActivation(ev) 
+			Duel.NegateEffect(ev)
 		end
 	end
 end

@@ -31,7 +31,8 @@ s.darkmoon_setcode = 0x696c
 
 -- 效果①：目标设定
 function s.excfilter(c)
-	return c:IsSetCard(s.darkmoon_setcode) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()
+	return c:IsSetCard(s.darkmoon_setcode) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemove() and c:IsLevelBelow(4) 
+		and not c:IsCode(id)
 end
 
 function s.exctg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -72,6 +73,13 @@ function s.tgfilter(c)
 	return c:IsSetCard(s.darkmoon_setcode) and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 
+function s.rifilter(c)
+	return c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
+end
+function s.ritualcheck(tp)
+	return not Duel.IsExistingMatchingCard(s.rifilter ,tp,LOCATION_GRAVE+LOCATION_ONFIELD,0,1,nil)
+end
+
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil)
@@ -89,15 +97,16 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SendtoHand(g1,nil,REASON_EFFECT)~=0 then
 			Duel.ConfirmCards(1-tp,g1)
 			
-			-- 可以从卡组把1只「暗月」仪式怪兽送去墓地
-			local g2=Duel.GetMatchingGroup(s.tgfilter,tp,LOCATION_DECK,0,nil)
-			if #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-				local sg=g2:Select(tp,1,1,nil)
-				if #sg>0 then
-					Duel.SendtoGrave(sg,REASON_EFFECT)
+			if s.ritualcheck(tp) then
+				local g2=Duel.GetMatchingGroup(s.tgfilter,tp,LOCATION_DECK,0,nil)
+				if #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+					local sg=g2:Select(tp,1,1,nil)
+					if #sg>0 then
+						Duel.SendtoGrave(sg,REASON_EFFECT)
+					end
 				end
 			end
-		end
+		 end
 	end
 end
