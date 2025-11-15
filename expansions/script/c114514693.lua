@@ -22,7 +22,7 @@ function cm.initial_effect(c)
     c:RegisterEffect(e2)
 end
 function cm.tfilter(c)
-    return c:IsFaceup() and c:IsLevelAbove(1)
+    return c:IsFaceup() and c:IsLevelAbove(1) and c:IsRace(RACE_WINDBEAST)
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
     local c=e:GetHandler()

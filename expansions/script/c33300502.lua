@@ -25,11 +25,8 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<3 then return false end
-		local g=Duel.GetDecktopGroup(tp,3)
-		return g:Filter(Card.IsSetCard,nil,0x569):FilterCount(Card.IsAbleToHand,nil)>0
-	end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=3 end
+	Duel.SetTargetPlayer(tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
@@ -78,7 +75,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	if not Duel.SelectYesNo(tp,aux.Stringid(id,8)) then return end
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c60461804.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
