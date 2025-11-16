@@ -11,7 +11,7 @@ function s.initial_effect(c)
 	--negate and draw
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_DISABLE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_SZONE)
@@ -24,7 +24,7 @@ function s.initial_effect(c)
 	--return to deck during end phase
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_TODECK)
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
 	e2:SetRange(LOCATION_SZONE)
@@ -67,13 +67,7 @@ function s.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 		local og=tc:GetOverlayGroup()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVEXYZ)
 		local sg=og:Select(tp,1,1,nil)
-		local rc=sg:GetFirst()
-		Duel.SendtoGrave(rc,REASON_COST)
-		if rc:IsSetCard(0x9225) then
-			e:SetLabel(1)
-		else
-			e:SetLabel(0)
-		end
+		Duel.SendtoGrave(sg,REASON_COST)
 	end
 end
 
@@ -83,9 +77,6 @@ function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
-	if e:GetLabel()==1 then
-		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	end
 end
 
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
@@ -110,13 +101,6 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 			e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			tc:RegisterEffect(e3)
 		end
-		-- 添加选择是否抽卡的判断
-		if e:GetLabel()==1 and Duel.IsPlayerCanDraw(tp,1) then
-			Duel.BreakEffect()
-			if Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-				Duel.Draw(tp,1,REASON_EFFECT)
-			end
-		end
 	end
 end
 
@@ -129,6 +113,7 @@ function s.rtdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(s.rtdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 	local ct=math.min(5,g:GetCount())
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,ct,tp,LOCATION_GRAVE+LOCATION_REMOVED)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 
 function s.rtdop(e,tp,eg,ep,ev,re,r,rp)
@@ -137,11 +122,19 @@ function s.rtdop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=math.min(5,g:GetCount())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local sg=g:Select(tp,1,ct,nil)
-	if sg:GetCount()>0 then
+	local return_count = sg:GetCount()
+	if return_count > 0 then
 		Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		Duel.ShuffleDeck(tp)
 		for tc in aux.Next(sg) do
 			s.mark_as_faceup(tc)
+		end
+		-- 如果返回3张以上，可以抽1张卡
+		if return_count >= 3 and Duel.IsPlayerCanDraw(tp,1) then
+			Duel.BreakEffect()
+			if Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+				Duel.Draw(tp,1,REASON_EFFECT)
+			end
 		end
 	end
 end

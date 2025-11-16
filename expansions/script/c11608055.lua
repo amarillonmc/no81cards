@@ -42,11 +42,11 @@ function s.mark_as_faceup(c)
 end
 
 function s.filter1(c)
-	return c:IsFaceup() and c:IsSetCard(0x9225) and c:IsAbleToDeck()
+	return c:IsFaceup() and c:IsSetCard(0x9225) and c:IsAbleToHand()
 end
 
 function s.filter2(c)
-	return c:IsAbleToDeck()
+	return c:IsAbleToHand()
 end
 
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -55,36 +55,19 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		return Duel.IsExistingTarget(s.filter1,tp,LOCATION_MZONE,0,1,nil) and
 			Duel.IsExistingTarget(s.filter2,tp,0,LOCATION_ONFIELD,1,nil)
 	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g1=Duel.SelectTarget(tp,s.filter1,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g2=Duel.SelectTarget(tp,s.filter2,tp,0,LOCATION_ONFIELD,1,2,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g2=Duel.SelectTarget(tp,s.filter2,tp,0,LOCATION_ONFIELD,1,1,nil)
 	g1:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g1,g1:GetCount(),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,g1:GetCount(),0,0)
 end
 
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
 	if sg:GetCount()>0 then
-		local tc=sg:GetFirst()
-		while tc do
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetValue(LOCATION_DECKSHF)
-			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-			tc:RegisterEffect(e1)
-			tc=sg:GetNext()
-		end
-		Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		Duel.ShuffleDeck(tp)
-		local tc=sg:GetFirst()
-		while tc do
-			s.mark_as_faceup(tc)
-			tc=sg:GetNext()
-		end
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	end
 end
 

@@ -74,9 +74,22 @@ function s.hop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,5)
 	local revealed = Duel.GetDecktopGroup(tp, 5)
 	
-	revealed:AddCard(c)
+	-- 修改：让玩家选择是否将手卡中的卡（包括这张卡）表面向上加入卡组
+	local hand_group = Group.CreateGroup()
+	local all_hand = Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 	
-	local return_count = revealed:GetCount()
+	if #all_hand > 0 then
+		-- 询问玩家是否要将手卡中的卡表面向上加入卡组
+		if Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+			local selected = Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,0,1,all_hand)
+			if #selected > 0 then
+				hand_group:Merge(selected)
+			end
+		end
+	end
+	
+	local return_count = revealed:GetCount() + hand_group:GetCount()
 	if return_count > 0 then
 		-- 确保卡片表面向上放回卡组
 		for tc in aux.Next(revealed) do
@@ -88,9 +101,22 @@ function s.hop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
 			tc:RegisterEffect(e1)
 		end
+		for tc in aux.Next(hand_group) do
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetValue(LOCATION_DECKSHF)
+			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+			tc:RegisterEffect(e1)
+		end
 		Duel.SendtoDeck(revealed,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		Duel.SendtoDeck(hand_group,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		Duel.ShuffleDeck(tp)
 		for tc in aux.Next(revealed) do
+			s.mark_as_faceup(tc)
+		end
+		for tc in aux.Next(hand_group) do
 			s.mark_as_faceup(tc)
 		end
 	end

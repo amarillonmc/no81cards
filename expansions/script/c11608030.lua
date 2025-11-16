@@ -20,10 +20,10 @@ function s.initial_effect(c)
 	e1:SetOperation(s.matop)
 	c:RegisterEffect(e1)
 	
-	--draw and attach
+	--search or attach
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_CHAINING)
@@ -80,16 +80,7 @@ function s.matop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,5)
 	local revealed = Duel.GetDecktopGroup(tp, 5)
 	
-	local attach_count = math.min(2, revealed:GetCount())
-	if attach_count > 0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-		local attach_group = revealed:Select(tp,1,attach_count,nil)
-		if attach_group:GetCount() > 0 then
-			Duel.Overlay(c,attach_group)
-			revealed:Sub(attach_group)
-		end
-	end
-	
+	-- 修改：所有卡都表面向上加入卡组洗切，不再作为超量素材
 	local return_count = revealed:GetCount()
 	if return_count > 0 then
 		-- 确保卡片表面向上放回卡组
@@ -115,74 +106,97 @@ function s.drcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:GetHandler():IsSetCard(0x9225) and re:GetHandler():GetLocation()==LOCATION_DECK
 end
 
+function s.thfilter(c)
+	return c:IsSetCard(0x9225) and (c:IsAbleToHand() or c:IsCanOverlay())
+end
+
 function s.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		-- 同一连锁上不能发动
 		if Duel.GetFlagEffect(tp,id)~=0 then return false end
-		return Duel.IsPlayerCanDraw(tp,2) 
+		return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
 	end
 	-- 注册连锁标志
 	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,0,1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 
 function s.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.Draw(tp,2,REASON_EFFECT)==2 and c:IsRelateToEffect(e) and c:IsFaceup() then
-		Duel.BreakEffect()
-		local g=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,LOCATION_HAND+LOCATION_ONFIELD,0,c)
-		if #g>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-			local sg=g:Select(tp,1,1,nil)
-			if #sg>0 then
-				local tc=sg:GetFirst()
-				-- 如果是超量怪兽且有超量素材，先将其超量素材送去墓地
-				if tc:IsType(TYPE_XYZ) and tc:GetOverlayCount()>0 then
-					local og=tc:GetOverlayGroup()
-					if og:GetCount()>0 then
-						Duel.SendtoGrave(og,REASON_RULE)
-					end
-				end
-				Duel.Overlay(c,sg)
+	if not c:IsRelateToEffect(e) or not c:IsFaceup() then return end
+	
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+	if g:GetCount()>0 then
+		local tc=g:GetFirst()
+		local b1=tc:IsAbleToHand()
+		local b2=tc:IsCanOverlay() and c:IsType(TYPE_XYZ)
+		
+		if b1 and b2 then
+			local op=Duel.SelectOption(tp,aux.Stringid(id,3),aux.Stringid(id,4))
+			if op==0 then
+				Duel.SendtoHand(tc,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,tc)
+			else
+				Duel.Overlay(c,tc)
 			end
+		elseif b1 then
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
+		elseif b2 then
+			Duel.Overlay(c,tc)
 		end
 	end
 end
 
--- ③效果 - 完全重写以避免协程错误
+-- ③效果 - 重写为新的效果
 function s.rtcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 
-function s.rttg(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.rttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() end
 	if chk==0 then
 		-- 同一连锁上不能发动
 		if Duel.GetFlagEffect(tp,id)~=0 then return false end
-		-- 检查场上是否有可以返回卡组的卡
-		return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+		-- 检查场上有怪兽
+		return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 	end
 	-- 注册连锁标志
 	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,0,1)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,0,0)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,0,0)
 end
 
 function s.rtop(e,tp,eg,ep,ev,re,r,rp)
-	-- 选择场上1张卡返回卡组
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-	if g:GetCount()>0 then
-		local tc=g:GetFirst()
-		-- 确保卡片表面向上放回卡组
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetValue(LOCATION_DECKSHF)
-		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-		tc:RegisterEffect(e1)
-		Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-		Duel.ShuffleDeck(tp)
-		s.mark_as_faceup(tc)
+	local tc=Duel.GetFirstTarget()
+	if tc and tc:IsRelateToEffect(e) and tc:IsFaceup() then
+		-- 检查是否是乱流舞者怪兽
+		if tc:IsSetCard(0x9225) then
+			-- 让玩家选择处理方式
+			local op=Duel.SelectOption(tp,aux.Stringid(id,5),aux.Stringid(id,6))
+			if op==0 then
+				-- 变成里侧守备表示
+				Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
+			else
+				-- 表面向上加入卡组切洗
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetValue(LOCATION_DECKSHF)
+				e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+				tc:RegisterEffect(e1)
+				Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+				Duel.ShuffleDeck(tp)
+				s.mark_as_faceup(tc)
+			end
+		else
+			-- 不是乱流舞者怪兽，只能变成里侧守备表示
+			Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
+		end
 	end
 end
