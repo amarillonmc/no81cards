@@ -35,7 +35,7 @@ function c127541563.initial_effect(c)
 	e3:SetLabelObject(e5)
 	--spsummon
 	local e6=Effect.CreateEffect(c)
-	e6:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
+	e6:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e6:SetCode(EVENT_LEAVE_FIELD)
 	e6:SetCondition(c127541563.spcon)
