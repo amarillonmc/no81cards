@@ -51,7 +51,7 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.gcheck(g,tp,rc)
-	return g:IsContains(rc) and Duel.GetLocationCountFromEx(tp,tp,g)>0
+	return g:IsContains(rc) and Duel.GetLocationCountFromEx(tp,tp,g,TYPE_FUSION)>0
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

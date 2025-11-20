@@ -48,7 +48,7 @@ end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdcheck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,cm.tdcheck,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.SelectMatchingCard(tp,cm.tdcheck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	local tc=g:GetFirst()
 	e:SetLabelObject(tc)
