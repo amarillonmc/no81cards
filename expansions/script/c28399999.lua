@@ -10,7 +10,7 @@ function c28399999.initial_effect(c)
 	c:RegisterEffect(e0)
 	--destroy
 	local e1=Effect.CreateEffect(c)
-	e1:SetHintTiming(0,TIMING_MAIN_END)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetDescription(aux.Stringid(28399999,0))
 	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
@@ -19,15 +19,15 @@ function c28399999.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,28399999+EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(c28399999.descon)
+	e1:SetCost(c28399999.descost)
 	e1:SetTarget(c28399999.destg)
 	e1:SetOperation(c28399999.desop)
 	c:RegisterEffect(e1)
 	--remove
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_REMOVE)
-	e3:SetType(EFFECT_TYPE_ACTIVATE)
-	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetCost(c28399999.rmcost)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetCost(aux.bfgcost)
 	e3:SetTarget(c28399999.rmtg)
 	e3:SetOperation(c28399999.rmop)
 	c:RegisterEffect(e3)
@@ -36,7 +36,7 @@ function c28399999.initial_effect(c)
 	e4:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e4:SetCost(c28399999.tgcost)
 	e4:SetTarget(c28399999.tgtg)
 	e4:SetOperation(c28399999.tgop)
@@ -46,7 +46,7 @@ function c28399999.initial_effect(c)
 	e6:SetCategory(CATEGORY_TODECK)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e6:SetCode(EVENT_TO_GRAVE)
-	e6:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e6:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e6:SetTarget(c28399999.tdtg)
 	e6:SetOperation(c28399999.tdop)
 	c:RegisterEffect(e6)
@@ -54,7 +54,7 @@ function c28399999.initial_effect(c)
 	local e9=Effect.CreateEffect(c)
 	e9:SetCategory(CATEGORY_DRAW)
 	e9:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e9:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e9:SetCode(EVENT_SUMMON_SUCCESS)
 	e9:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_PLAYER_TARGET)
 	e9:SetCountLimit(1,28399999)
 	e9:SetTarget(c28399999.drtg)
@@ -68,6 +68,34 @@ function c28399999.initial_effect(c)
 	e10:SetTarget(c28399999.thtg)
 	e10:SetOperation(c28399999.thop)
 	c:RegisterEffect(e10)
+	--attack up-self
+	local e14=Effect.CreateEffect(c)
+	e14:SetType(EFFECT_TYPE_SINGLE)
+	e14:SetCode(EFFECT_UPDATE_ATTACK)
+	e14:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e14:SetRange(LOCATION_MZONE)
+	e14:SetValue(500)
+	c:RegisterEffect(e14)
+	--attack up-other
+	local e14=Effect.CreateEffect(c)
+	e14:SetType(EFFECT_TYPE_FIELD)
+	e14:SetCode(EFFECT_UPDATE_ATTACK)
+	e14:SetRange(LOCATION_MZONE)
+	e14:SetTargetRange(LOCATION_MZONE,0)
+	e14:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_FAIRY))
+	e14:SetValue(500)
+	c:RegisterEffect(e14)
+	--attack up-activated
+	local e14=Effect.CreateEffect(c)
+	e14:SetCategory(CATEGORY_ATKCHANGE)
+	e14:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e14:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e14:SetProperty(EFFECT_FLAG_DELAY)
+	e14:SetRange(LOCATION_MZONE)
+	e14:SetCondition(c28399999.atkcon)
+	e14:SetTarget(c28399999.atktg)
+	e14:SetOperation(c28399999.atkop)
+	c:RegisterEffect(e14)
 	--spsummon-self
 	local e19=Effect.CreateEffect(c)
 	e19:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -78,11 +106,11 @@ function c28399999.initial_effect(c)
 	c:RegisterEffect(e19)
 	--spsummon-other
 	local e19=Effect.CreateEffect(c)
-	e19:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e19:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON+CATEGORY_GRAVE_ACTION)
 	e19:SetType(EFFECT_TYPE_ACTIVATE)
 	e19:SetCode(EVENT_FREE_CHAIN)
-	e19:SetTarget(c28399999.target)
-	e19:SetOperation(c28399999.activate)
+	e19:SetTarget(c28399999.sptg)
+	e19:SetOperation(c28399999.spop)
 	c:RegisterEffect(e19)
 	--damage
 	local e23=Effect.CreateEffect(c)
@@ -117,7 +145,11 @@ end
 --destroy
 function c28399999.descon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	return Duel.IsMainPhase()--ph==PHASE_MAIN1 or ph==PHASE_MAIN2
+	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2--Duel.IsMainPhase()
+end
+function c28399999.descost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c28399999.desfilter(c)
 	return c:IsFaceup()
@@ -136,10 +168,6 @@ function c28399999.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --remove
-function c28399999.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
-end
 function c28399999.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_MZONE,1,nil) end
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_MZONE,nil)
@@ -201,19 +229,42 @@ function c28399999.drop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
 --search
-function c28399999.thfilter(c)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+function c28399999.thfilter(c,chk)
+	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and (chk==0 or aux.NecroValleyFilter()(c))
 end
 function c28399999.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28399999.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c28399999.thfilter,tp,LOCATION_DECK,0,1,nil,0) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c28399999.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,c28399999.thfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c28399999.thfilter,tp,LOCATION_DECK,0,1,1,nil,1):GetFirst()
 	if tc then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
+	end
+end
+--attack up-activated
+function c28399999.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(Card.IsSummonPlayer,1,nil,tp) and not eg:IsContains(e:GetHandler())
+end
+function c28399999.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil) end
+end
+function c28399999.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
+	for tc in aux.Next(g) do
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_ATTACK)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+		e1:SetValue(500)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_UPDATE_ATTACK)
+		tc:RegisterEffect(e2)
 	end
 end
 --spsummon-self
@@ -229,19 +280,19 @@ function c28399999.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 --spsummon-other
-function c28399999.spfilter(c,e,tp)
-	return c:IsSetCard(0x283) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c28399999.spfilter(c,e,tp,chk)
+	return c:IsSetCard(0x283) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (chk==0 or aux.NecroValleyFilter()(c))-- and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 end
-function c28399999.target(e,tp,eg,ep,ev,re,r,rp,chk)
+function c28399999.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp)>0
-		and Duel.IsExistingMatchingCard(c28399999.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp)
+		and Duel.IsExistingMatchingCard(c28399999.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,0)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
-function c28399999.activate(e,tp,eg,ep,ev,re,r,rp)
+function c28399999.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetMZoneCount(tp)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local sc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28399999.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
+	local sc=Duel.SelectMatchingCard(tp,c28399999.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp,1):GetFirst()
 	if sc then
 		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
 	end
@@ -249,6 +300,7 @@ end
 --damage
 function c28399999.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(500)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,500)

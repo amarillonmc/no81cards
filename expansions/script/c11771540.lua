@@ -96,6 +96,7 @@ function s.thop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local tg=Duel.SelectMatchingCard(tp,s.rtgfilter1,tp,LOCATION_DECK,0,1,1,nil)
 		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tg)
 	end
 	end
 end

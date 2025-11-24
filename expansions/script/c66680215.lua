@@ -41,17 +41,20 @@ function s.initial_effect(c)
 	e5:SetValue(s.atklimit)
 	c:RegisterEffect(e5)
 	
-	-- ●暗：场上的这张卡不会被战斗·效果破坏
+	-- ●暗：每次对方把魔法·陷阱卡的效果发动，给与对方600伤害
 	local e6=Effect.CreateEffect(c)
-	e6:SetType(EFFECT_TYPE_SINGLE)
-	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e6:SetCode(EVENT_CHAINING)
 	e6:SetRange(LOCATION_MZONE)
-	e6:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-	e6:SetCondition(s.xyzcon2)
-	e6:SetValue(1)
+	e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e6:SetOperation(s.regop)
 	c:RegisterEffect(e6)
-	local e7=e6:Clone()
-	e7:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e7:SetCode(EVENT_CHAIN_SOLVED)
+	e7:SetRange(LOCATION_MZONE)
+	e7:SetCondition(s.damcon)
+	e7:SetOperation(s.damop)
 	c:RegisterEffect(e7)
 end
 
@@ -90,4 +93,22 @@ end
 
 function s.atklimit(e,c)
 	return c==e:GetHandler()
+end
+
+-- ●暗：每次对方把魔法·陷阱卡的效果发动，给与对方600伤害
+function s.regop(e,tp,eg,ep,ev,re,r,rp)
+	if rp==1-tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) then
+		e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
+	end
+end
+
+function s.damcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return s.xyzcon2(e) and ep~=tp and Duel.GetLP(1-tp)>0 
+		and c:GetFlagEffect(id)~=0 and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
+end
+
+function s.damop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,id)
+	Duel.Damage(1-tp,600,REASON_EFFECT)
 end
