@@ -54,13 +54,16 @@ function s.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 end
 function s.chop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Group.FromCards(re:GetHandler())
+	local g=Group.CreateGroup()
+	Duel.ChangeTargetCard(ev,g)
+	local op=re:GetOperation()
+	if not op then re:SetOperation(function() end) end
 	Duel.ChangeChainOperation(ev,s.repop)
 end
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		c:CancelToGrave()		
+		c:CancelToGrave()	   
 		if Duel.SendtoHand(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_HAND) then
 			Duel.Draw(tp,1,REASON_EFFECT)
 		end

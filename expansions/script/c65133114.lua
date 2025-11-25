@@ -1,7 +1,9 @@
 --幻叙探索者 Neko
 local s,id,o=GetID()
+local KOISHI_CHECK=false
+if Card.SetCardData then KOISHI_CHECK=true end
 function s.initial_effect(c)
-	if c:IsOriginalCodeRule(id) then		
+	if c:IsOriginalCodeRule(id) and KOISHI_CHECK then		
 		local tp=0 
 		if Duel.GetFieldGroupCount(0,0,LOCATION_DECK)>0 or Duel.GetFieldGroupCount(0,LOCATION_EXTRA,0)>0 then tp=1 end
 		local pname=s.getplayername(tp)
@@ -125,19 +127,33 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
-	local pname=s.getplayername(tp)
-	local lv=Duel.GetRegistryValue("pname")
-	if lv then
-		lv=lv+1
-		Duel.SetRegistryValue("pname",lv)	  
+	if KOISHI_CHECK then
+		local pname=s.getplayername(tp)
+		local lv=Duel.GetRegistryValue("pname")
+		if lv then
+			lv=lv+1
+			Duel.SetRegistryValue("pname",lv)	 
+		else
+			Duel.SetRegistryValue("pname",1)
+		end
+		local g=Duel.GetFieldGroup(0,0x7f,0x7f)
+		local xg=Duel.GetOverlayGroup(0,0x7f,0x7f)
+		g:Merge(xg)
+		g=g:Filter(s.cfilter,nil,tp)
+		for tc in aux.Next(g) do
+			s.setlv(c,lv)
+		end
 	else
-		Duel.SetRegistryValue("pname",1)
-	end
-	local g=Duel.GetFieldGroup(0,0x7f,0x7f)
-	local xg=Duel.GetOverlayGroup(0,0x7f,0x7f)
-	g:Merge(xg)
-	g=g:Filter(s.cfilter,nil,tp)
-	for tc in aux.Next(g) do
-		s.setlv(c,lv)
+		local g=Duel.GetFieldGroup(0,0x7f,0x7f)
+		local xg=Duel.GetOverlayGroup(0,0x7f,0x7f)
+		g:Merge(xg)
+		g=g:Filter(s.cfilter,nil,tp)
+		for tc in aux.Next(g) do
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_UPDATE_LEVEL)
+			e1:SetValue(1)
+			tc:RegisterEffect(e1)
+		end
 	end
 end

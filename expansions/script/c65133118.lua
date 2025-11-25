@@ -69,7 +69,7 @@ function s.acop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.effcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x1,3,REASON_COST) end
+	if chk==0 then return e:GetHandler():IsCanRemoveCounter(tp,0x838,3,REASON_COST) end
 	e:GetHandler():RemoveCounter(tp,0x838,3,REASON_COST)
 end
 function s.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -91,7 +91,7 @@ function s.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local op=e:GetLabel()	
+	local op=e:GetLabel()   
 	if op==1 then
 		if c:IsRelateToEffect(e) and c:IsFaceup() then
 			local e1=Effect.CreateEffect(c)
