@@ -8,6 +8,7 @@ function s.initial_effect(c)
 	--Special Summon
 	local e1 = Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
 	e1:SetCondition(aux.IsDualState)
