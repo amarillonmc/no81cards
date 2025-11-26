@@ -50,7 +50,7 @@ end
 function cm.ddcon(e,tp,eg,ep,ev,re,r,rp)
 	 local c=e:GetHandler()
 	local bc=c:GetBattleTarget()
-	return c:IsRelateToBattle() and bc and bc:IsFaceup() and bc:IsRelateToBattle()
+	return c:IsRelateToBattle() and bc and bc:IsFaceup() and bc:IsRelateToBattle() and bc:IsSummonLocation(LOCATION_EXTRA)
 end
 function cm.ddtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
