@@ -50,7 +50,9 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if Duel.NegateEffect(ev) and e:GetLabel()==1 and rc:IsRelateToEffect(re) and rc:IsAbleToDeck() and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 		Duel.BreakEffect()
-		Duel.SendtoDeck(rc,nil,2,REASON_EFFECT)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local sg=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp)
+		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)

@@ -67,26 +67,24 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 					local sg2=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_HAND,0,1,ct2,nil)
 					Duel.SSet(tp,sg2)
-					if Duel.GetTurnPlayer()~=tp then
-						for tc in aux.Next(sg2) do
-							if tc:IsType(TYPE_QUICKPLAY) then
-								local e1=Effect.CreateEffect(c)
-								e1:SetDescription(aux.Stringid(id,2))
-								e1:SetType(EFFECT_TYPE_SINGLE)
-								e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-								e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
-								e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-								tc:RegisterEffect(e1)
-							end
-							if tc:IsType(TYPE_TRAP) then
-								local e1=Effect.CreateEffect(c)
-								e1:SetDescription(aux.Stringid(id,2))
-								e1:SetType(EFFECT_TYPE_SINGLE)
-								e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-								e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-								e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-								tc:RegisterEffect(e1)
-							end
+					for tc in aux.Next(sg2) do
+						if tc:IsType(TYPE_QUICKPLAY) then
+							local e1=Effect.CreateEffect(c)
+							e1:SetDescription(aux.Stringid(id,2))
+							e1:SetType(EFFECT_TYPE_SINGLE)
+							e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+							e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+							e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+							tc:RegisterEffect(e1)
+						end
+						if tc:IsType(TYPE_TRAP) then
+							local e1=Effect.CreateEffect(c)
+							e1:SetDescription(aux.Stringid(id,2))
+							e1:SetType(EFFECT_TYPE_SINGLE)
+							e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+							e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+							e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+							tc:RegisterEffect(e1)
 						end
 					end
 				end

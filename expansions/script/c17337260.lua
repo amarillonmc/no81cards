@@ -65,13 +65,13 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		local e4=Effect.CreateEffect(c)
 		e4:SetType(EFFECT_TYPE_FIELD)
 		e4:SetCode(EFFECT_MUST_ATTACK)
+		e4:SetRange(LOCATION_SZONE)
 		e4:SetTargetRange(0,LOCATION_MZONE)
-		e4:SetReset(RESET_PHASE+PHASE_END)
 		e4:SetCondition(s.atkcon)
 		Duel.RegisterEffect(e4,tp)
-		local e5=e4:Clone()
-		e5:SetCode(EFFECT_MUST_ATTACK_MONSTER)
-		e5:SetValue(s.atklimit)
+		local e4=e3:Clone()
+		e4:SetCode(EFFECT_MUST_ATTACK_MONSTER)
+		e4:SetValue(s.atklimit)
 		Duel.RegisterEffect(e5,tp)
 	end
 	local e6=Effect.CreateEffect(e:GetHandler())
@@ -85,18 +85,15 @@ end
 function s.atkfilter(e,c)
 	return c:IsSetCard(0x6f52) and c:IsFaceup()
 end
-function s.atkfilter2(c)
-	return c:IsSetCard(0x6f52) and c:IsFaceup()
-end
 function s.atkval(e,c)
 	local ct=Duel.GetMatchingGroupCount(aux.TRUE,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
-	return ct*200
+	return ct*300
 end
 function s.aclimit(e,re,tp)
 	return not re:GetHandler():IsSetCard(0x6f52)
 end
 function s.atkcon(e)
-	return Duel.IsExistingMatchingCard(s.atkfilter2,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(s.atkfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
 function s.atklimit(e,c)
 	return c:IsFaceup() and c:IsSetCard(0x6f52)

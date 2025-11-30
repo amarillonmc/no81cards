@@ -5,7 +5,8 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1104)
 	e1:SetCategory(CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,id)
@@ -46,16 +47,11 @@ function s.indtg(e,c)
 	local tc=e:GetHandler()
 	return c==tc or c==tc:GetBattleTarget()
 end
-function s.filter1(c)
-	return c:IsSetCard(0x6f52) and c:IsType(TYPE_MONSTER)
-end
 function s.excon1(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.filter1,tp,LOCATION_GRAVE,0,nil)
-	return Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0 and #g>0
+	return Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0 and Duel.IsExistingMatchingCard(function(c) return c:IsSetCard(0x6f52) and c:IsType(TYPE_MONSTER) end,tp,LOCATION_GRAVE,0,1,nil)
 end
 function s.excon2(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.filter1,tp,LOCATION_GRAVE,0,nil)
-	return Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0 and #g<=0
+	return Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)==0 and not Duel.IsExistingMatchingCard(function(c) return c:IsSetCard(0x6f52) and c:IsType(TYPE_MONSTER) end,tp,LOCATION_GRAVE,0,1,nil)
 end
 function s.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end

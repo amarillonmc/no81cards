@@ -2,7 +2,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,nil,7,3,s.ovfilter,aux.Stringid(id,3),3,s.xyzop)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3f50),7,2,nil,nil,99)
 	--
 	--can not be xyz material
 	local e0=Effect.CreateEffect(c)

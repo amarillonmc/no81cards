@@ -99,6 +99,6 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,s.ctfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then
-		tc:AddCounter(0x9f50,1)
+		tc:AddCounter(0x9f50,3)
 	end
 end

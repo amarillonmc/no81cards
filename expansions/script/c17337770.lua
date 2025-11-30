@@ -100,7 +100,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.rhtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToHand() and Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and Duel.GetFieldGroupCount(1-tp,LOCATION_HAND,0)>0 end
+	if chk==0 then return e:GetHandler():IsAbleToHand() end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
 	Duel.SetChainLimit(s.chainlm)
 end
@@ -108,18 +108,12 @@ function s.rhop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or Duel.SendtoHand(c,nil,REASON_EFFECT)==0 then return end
 	Duel.BreakEffect()
-	local g1=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
-	local g2=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0)
-	if #g1==0 or #g2==0 then return end
-	Duel.BreakEffect()
-	local sg=Group.CreateGroup()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	local sg1=g1:Select(tp,1,1,nil)
-	sg:Merge(sg1)
-	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_DISCARD)
-	local sg2=g2:Select(1-tp,1,1,nil)
-	sg:Merge(sg2)
-	if #sg>0 then
-		Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)
+	local g=Duel.GetFieldGroup(1-tp,LOCATION_HAND,0)
+	if #g>0 then
+		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_DISCARD)
+		local sg=g:Select(1-tp,2,2,nil)
+		if #sg>0 then
+			Duel.SendtoGrave(sg,REASON_EFFECT+REASON_DISCARD)
+		end
 	end
 end

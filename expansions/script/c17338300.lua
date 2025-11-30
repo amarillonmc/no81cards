@@ -76,26 +76,29 @@ function s.attrcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.attrcostfilter,tp,LOCATION_HAND,0,2,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
 	local g=Duel.SelectMatchingCard(tp,s.attrcostfilter,tp,LOCATION_HAND,0,2,2,nil)
-	e:SetLabelObject(g)
-	g:KeepAlive()
+	if g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_WIND) and g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_WATER) then 
+		e:SetLabel(1)
+	elseif g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_EARTH) and g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_WATER) then
+		e:SetLabel(2)
+	elseif g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_FIRE) and g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_WIND) then
+		e:SetLabel(3)
+	elseif g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_EARTH) and g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_LIGHT) then
+		e:SetLabel(4)
+	elseif g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_FIRE) and g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_LIGHT) then
+		e:SetLabel(5)
+	end
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
 function s.filter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3f50)
 end
 function s.attrop(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetLabelObject()
-	local b1=g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_WIND) and g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_WATER) 
-	and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil)
-	local b2=g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_EARTH) and g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_WATER) 
-	and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,nil)
-	local b3=g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_FIRE) and g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_WIND) 
-	and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil)
-	local b4=g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_EARTH) and g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_LIGHT) 
-	and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,0,1,nil)
-	local b5=g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_FIRE) and g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_LIGHT) 
-	and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,0,1,nil)
-	if g:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_DARK) and not (b1 or b2 or b3 or b4 or b5) then return false end
+	local et=e:GetLabel()
+	local b1= et==1 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil)
+	local b2= et==2 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,nil)
+	local b3= et==3 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil)
+	local b4= et==4 and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,0,1,nil)
+	local b5= et==5 and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_MZONE,0,1,nil)
 	if b1 then
 		local g1=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,nil)
 		Duel.SendtoHand(g1,nil,REASON_EFFECT)
@@ -137,7 +140,6 @@ function s.attrop(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,0))
 		end
 	end
-	g:DeleteGroup()
 end
 function s.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()

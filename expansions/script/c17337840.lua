@@ -35,7 +35,7 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
 	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local sg=g:Select(tp,1,2,nil)
+	local sg=g:Select(tp,1,5,nil)
 	if #sg>0 then
 		Duel.HintSelection(sg)
 		Duel.SendtoGrave(sg,REASON_EFFECT)

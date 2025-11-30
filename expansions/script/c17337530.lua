@@ -1,7 +1,7 @@
 --雷姆
 local s,id=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,17337570)
+	aux.AddCodeList(c,17337570,17337400)  
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
@@ -40,7 +40,7 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
 function s.thfilter(c)
-	return c:IsSetCard(0x5f50) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+	return (c:IsSetCard(0x5f50) or aux.IsCodeListed(c,17337400)) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end

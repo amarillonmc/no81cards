@@ -57,7 +57,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.remmon(c) 
-	return c:IsSetCard(0x3f51) and c:IsFaceup() and c:IsFaceup()
+	return c:IsCode(17337530) and c:IsFaceup() and c:IsFaceup()
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.remmon,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
