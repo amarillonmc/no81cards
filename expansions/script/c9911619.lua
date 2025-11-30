@@ -1,5 +1,6 @@
 --『忠诚的陵墓守望者』滕王虫
 function c9911619.initial_effect(c)
+	aux.AddCodeList(c,9911614)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	c:EnableReviveLimit()

@@ -1,5 +1,6 @@
 --死溢之毒瘴
 function c9911627.initial_effect(c)
+	aux.AddCodeList(c,9911614)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_POSITION+CATEGORY_DRAW)

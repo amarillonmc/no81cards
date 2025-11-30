@@ -1,5 +1,6 @@
 --地狱边境猎兵
 function c9911620.initial_effect(c)
+	aux.AddCodeList(c,9911614)
 	--disable spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DISABLE_SUMMON+CATEGORY_REMOVE)

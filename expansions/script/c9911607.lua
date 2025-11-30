@@ -1,6 +1,6 @@
 --被驱逐的王者 莫尔卡
 function c9911607.initial_effect(c)
-	aux.AddCodeList(c,9910871)
+	aux.AddCodeList(c,9910871,9911614)
 	--spsummon rule
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
