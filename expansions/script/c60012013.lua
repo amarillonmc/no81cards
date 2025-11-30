@@ -119,7 +119,7 @@ function cm.SynMixTarget(f1,f2,f3,f4,minc,maxc,gc)
 					mg2=mg2:Filter(f4,g,c)
 					local cg=mg2:Filter(cm.SynMixCheckRecursive,g4,tp,g4,mg2,i,minc,maxc,c,g,smat,gc,mgchk)
 					--if cg:GetCount()==0 then break end
-					local minct=1
+					local minct=2
 					if g4:GetCount()~=0 then minct=0 end
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
 					local tg=cg:Select(tp,minct,99,nil)

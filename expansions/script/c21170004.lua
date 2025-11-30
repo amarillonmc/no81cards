@@ -26,10 +26,10 @@ function c21170004.initial_effect(c)
 end
 function c21170004.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,500)
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,0)
 end
 function c21170004.op(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Damage(1-tp,550,REASON_EFFECT)
+	Duel.Damage(1-tp,0,REASON_EFFECT)
 end
 function c21170004.con2(e)
 	return e:GetHandler():IsSetCard(0x6917)
