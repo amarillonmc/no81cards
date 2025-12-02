@@ -64,7 +64,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 function s.spfilter(c)
-	return c:IsFaceup() and c:IsAbleToGraveAsCost()
+	return c:IsFaceup() and c:IsReleasable()
 end
 function s.gcheck(g)
 	return g:FilterCount(Card.IsSetCard,nil,0x838)>0
@@ -77,7 +77,7 @@ function s.spcon(e,c)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(s.spfilter,tp,LOCATION_MZONE,0,nil)
-	local sg=g:SelectSubGroup(tp,s.gcheck,false,3,3)
+	local sg=g:SelectSubGroup(tp,s.gcheck,true,3,3)
 	if sg then
 		sg:KeepAlive()
 		e:SetLabelObject(sg)
@@ -88,7 +88,7 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sg=e:GetLabelObject()
 	if not sg then return end
-	Duel.SendtoGrave(sg,REASON_COST)
+	Duel.Release(sg,REASON_COST)
 	sg:DeleteGroup()
 end
 function s.atktg(e,c)

@@ -131,20 +131,23 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 			e1:SetCode(EFFECT_DIRECT_ATTACK)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			c:RegisterEffect(e1)
-			local e2=Effect.CreateEffect(c)
-			e2:SetType(EFFECT_TYPE_FIELD)
-			e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e2:SetCode(EVENT_CHAINING)
+			e2:SetOperation(s.actop)
 			e2:SetRange(LOCATION_MZONE)
-			e2:SetTargetRange(0,1)
-			e2:SetValue(s.aclimit)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 			c:RegisterEffect(e2)
 		end
 	end
 end
-function s.aclimit(e,re,tp)
-	return re:GetHandler()==e:GetHandler()
+function s.actop(e,tp,eg,ep,ev,re,r,rp)
+	if re:GetHandler()==e:GetHandler() then
+		Duel.SetChainLimit(s.chainlm)
+	end
+end
+function s.chainlm(e,rp,tp)
+	return tp==rp
 end
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) or not Duel.IsChainNegatable(ev) then return false end

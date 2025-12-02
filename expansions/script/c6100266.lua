@@ -67,7 +67,7 @@ end
 function s.gyop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if rc:IsRelateToEffect(re) then
-		Duel.SendtoDeck(rc,nil,REASON_EFFECT)
+		Duel.SendtoDeck(rc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end
 

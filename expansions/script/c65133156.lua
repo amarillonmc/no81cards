@@ -82,7 +82,7 @@ function s.sprcon(e,c)
 end
 function s.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(s.cmatfilter,tp,LOCATION_MZONE,0,nil)
-	local sg=g:Select(tp,2,2,nil)
+	local sg=g:CancelableSelect(tp,2,2,nil)
 	if sg then
 		sg:KeepAlive()
 		e:SetLabelObject(sg)
