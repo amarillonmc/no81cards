@@ -32,7 +32,6 @@ function c22348459.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		return e:IsHasType(EFFECT_TYPE_ACTIVATE) and #jg>0
 	end
 	e:SetLabel(0)
-Debug.Message(11)
 	local g=jg:Select(tp,1,1,nil)
 	Duel.Release(g,REASON_COST)
 	Duel.SetTargetCard(g:GetFirst())
@@ -42,7 +41,6 @@ function c22348459.operation(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-Debug.Message(11)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,c22348459.spfilter,tp,LOCATION_DECK,0,1,1,nil,tc,e,tp)
 	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)~=0 and g:GetFirst():GetAttack()>0 and  g:GetFirst():IsAttribute(ATTRIBUTE_DARK) then
