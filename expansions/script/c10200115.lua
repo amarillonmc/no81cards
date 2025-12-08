@@ -1,7 +1,6 @@
 --幻叙·消逝的梦
 function c10200115.initial_effect(c)
 	-- 不能通召
-	c:EnableReviveLimit()
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)

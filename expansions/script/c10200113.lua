@@ -51,18 +51,18 @@ end
 function c10200113.filter1111(c)
 	return c:IsFaceup() and c:IsSetCard(0x838) and c:IsType(TYPE_MONSTER)
 end
-function c10200113.con1(tp)
-	return Duel.IsExistingMatchingCard(c10200113.filter1111,tp,LOCATION_MZONE,0,1,nil)
+function c10200113.con1(tp,handler)
+	return Duel.IsExistingMatchingCard(c10200113.filter1111,tp,LOCATION_MZONE,0,1,handler)
 end
 function c10200113.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c10200113.filter11,tp,LOCATION_DECK,0,1,nil)
-		or (c10200113.con1(tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		or (c10200113.con1(tp,e:GetHandler()) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c10200113.filter111,tp,LOCATION_DECK,0,1,nil,e,tp)) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c10200113.op1(e,tp,eg,ep,ev,re,r,rp)
 	local b1=Duel.IsExistingMatchingCard(c10200113.filter11,tp,LOCATION_DECK,0,1,nil)
-	local b2=c10200113.con1(tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+	local b2=c10200113.con1(tp,e:GetHandler()) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and Duel.IsExistingMatchingCard(c10200113.filter111,tp,LOCATION_DECK,0,1,nil,e,tp)
 	if not b1 and not b2 then return end
 	local op=0
