@@ -27,7 +27,7 @@ function cm.initial_effect(c)
 end
 
 function c22348020.scfilter(c)
-	return c:IsSetCard(0x613) and c:IsDiscardable()
+	return c:IsSetCard(0xa70b) and c:IsDiscardable()
 end
 function c22348020.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable()
@@ -38,7 +38,7 @@ function c22348020.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_DISCARD+REASON_COST)
 end
 function c22348020.thfilter(c)
-	return c:IsSetCard(0x613) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+	return c:IsSetCard(0xa70b) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
 function c22348020.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348020.thfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -57,7 +57,7 @@ function c22348020.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetBattleTarget()~=nil
 end
 function c22348020.tgfilter(c)
-	return c:IsSetCard(0x613) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGrave()
+	return c:IsSetCard(0xa70b) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGrave()
 end
 function c22348020.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():GetFlagEffect(22348020)==0

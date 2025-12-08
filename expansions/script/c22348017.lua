@@ -37,7 +37,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end 
 function c22348017.spcon(e,tp,eg,ep,ev,re,r,rp)  
-	return re and re:GetHandler():IsSetCard(0x613)  
+	return re and re:GetHandler():IsSetCard(0xa70b)  
 end  
 function c22348017.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) end

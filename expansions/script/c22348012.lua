@@ -23,7 +23,7 @@ end
 
 
 function c22348012.filter(c)
-	return c:IsSetCard(0x613) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(4) and c:IsAbleToHand()
+	return c:IsSetCard(0xa70b) and c:IsType(TYPE_MONSTER) and c:IsLevelAbove(4) and c:IsAbleToHand()
 end
 function c22348012.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348012.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -40,7 +40,7 @@ end
 
 
 function c22348012.repfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x613)
+	return c:IsFaceup() and c:IsSetCard(0xa70b)
 		and c:IsLocation(LOCATION_MZONE) and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
 function c22348012.reptg(e,tp,eg,ep,ev,re,r,rp,chk)

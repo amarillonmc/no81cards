@@ -104,7 +104,7 @@ function c22348023.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,c22348023.filter,1,1,REASON_COST+REASON_DISCARD)
 end
 function c22348023.spfilter(c,e,tp)
-	return c:IsSetCard(0x613) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa70b) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348023.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0  and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c22348023.spfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end

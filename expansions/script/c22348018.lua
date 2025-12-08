@@ -29,10 +29,10 @@ function cm.initial_effect(c)
 end
 
 function c22348018.spfilter(c,e,tp)
-	return c:IsSetCard(0x613) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa70b) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348018.spcon(e,tp,eg,ep,ev,re,r,rp)  
-	return re and re:GetHandler():IsSetCard(0x613)  
+	return re and re:GetHandler():IsSetCard(0xa70b)  
 end  
 function c22348018.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -49,7 +49,7 @@ function c22348018.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348018.tdfilter(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0x613) and not c:IsCode(22348018) and c:IsAbleToDeck()
+	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0xa70b) and not c:IsCode(22348018) and c:IsAbleToDeck()
 end
 function c22348018.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and c22348018.tdfilter(chkc) end

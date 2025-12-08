@@ -47,7 +47,7 @@ function c22348015.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348015.ctfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x613)
+	return c:IsFaceup() and c:IsSetCard(0xa70b)
 end
 function c22348015.ctop(e,tp,eg,ep,ev,re,r,rp)
 	if eg:IsExists(c22348015.ctfilter,1,nil) then
@@ -60,7 +60,7 @@ function c22348015.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RemoveCounter(tp,1,0,0x1613,3,REASON_COST)
 end
 function c22348015.filter2(c)
-	return c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSetCard(0x613) and c:IsAbleToHand()
+	return c:IsType(TYPE_TRAP+TYPE_SPELL) and c:IsSetCard(0xa70b) and c:IsAbleToHand()
 end
 function c22348015.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
   if chk==0 then return Duel.IsExistingMatchingCard(c22348015.filter2,tp,LOCATION_DECK,0,1,nil) end

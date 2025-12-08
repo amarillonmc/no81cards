@@ -43,7 +43,7 @@ function c22348014.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(tc,REASON_COST+REASON_DISCARD)
 end
 function c22348014.spfilter(c,e,tp)
-	return c:IsSetCard(0x613) and not c:IsCode(22348014) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0xa70b) and not c:IsCode(22348014) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c22348014.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp,e:GetHandler())>0
@@ -70,7 +70,7 @@ function c22348014.thcon(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c22348014.thfilter(c)
-	return c:IsSetCard(0x613) and c:IsAbleToGrave()
+	return c:IsSetCard(0xa70b) and c:IsAbleToGrave()
 end
 function c22348014.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348014.thfilter,tp,LOCATION_DECK,0,1,nil) end

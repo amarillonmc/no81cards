@@ -39,7 +39,7 @@ function cm.initial_effect(c)
 end
 
 function c22348010.spcon(e,tp,eg,ep,ev,re,r,rp)  
-	return re and re:GetHandler():IsSetCard(0x613)  
+	return re and re:GetHandler():IsSetCard(0xa70b)  
 end  
 function c22348010.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanAddCounter(0x1613,2) end
@@ -81,7 +81,7 @@ function c22348010.cxtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
 function c22348010.atkfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x613)
+	return c:IsFaceup() and c:IsSetCard(0xa70b)
 end
 function c22348010.cxop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

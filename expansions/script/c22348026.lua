@@ -51,13 +51,13 @@ function c22348026.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.RemoveCounter(tp,1,0,0x1613,2,REASON_COST)
 end
 function c22348026.con(e,tp,eg,ep,ev,re,r,rp)  
-	return re and re:GetHandler():IsSetCard(0x613)
+	return re and re:GetHandler():IsSetCard(0xa70b)
 end  
 function c22348026.filter1(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function c22348026.filter2(c)
-	return c:IsSetCard(0x613) and c:IsAbleToGrave() and c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return c:IsSetCard(0xa70b) and c:IsAbleToGrave() and c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 
 function c22348026.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -85,7 +85,7 @@ function c22348026.stcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
 function c22348026.stfilter(c,tp)
-	return c:IsSetCard(0x613) and c:CheckActivateEffect(false,true,false)~=nil and (c:GetType()==0x20002 or c:GetType()==0x20004 or c:GetType()==0x80002)
+	return c:IsSetCard(0xa70b) and c:CheckActivateEffect(false,true,false)~=nil and (c:GetType()==0x20002 or c:GetType()==0x20004 or c:GetType()==0x80002)
 end
 function c22348026.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c22348026.stfilter),tp,LOCATION_GRAVE,0,1,nil,tp) end

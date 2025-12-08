@@ -51,7 +51,7 @@ function c22348024.handcon(e)
 	return Duel.IsCanRemoveCounter(e:GetHandlerPlayer(),1,0,0x1613,1,REASON_COST)
 end
 function c22348024.filter(c)
-	return c:IsSetCard(0x613) and c:IsDiscardable()
+	return c:IsSetCard(0xa70b) and c:IsDiscardable()
 end
 function c22348024.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348024.filter,tp,LOCATION_HAND,0,1,nil) end
@@ -86,10 +86,10 @@ end
 function c22348024.cfilter(c,e,tp)
 	local lv=c:GetOriginalLevel()
 	return bit.band(c:GetOriginalType(),TYPE_MONSTER)~=0 and lv>0 and c:IsFaceup() and c:IsReleasable()
-		and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c22348024.spfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,lv,e,tp) and c:IsSetCard(0x613)
+		and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c22348024.spfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,lv,e,tp) and c:IsSetCard(0xa70b)
 end
 function c22348024.spfilter(c,lv,e,tp)
-	return c:IsLevelAbove(lv+1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x613)
+	return c:IsLevelAbove(lv+1) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0xa70b)
 end
 function c22348024.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

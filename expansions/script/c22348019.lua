@@ -38,7 +38,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c22348019.con(e,tp,eg,ep,ev,re,r,rp)  
-	return re and re:GetHandler():IsSetCard(0x613)  
+	return re and re:GetHandler():IsSetCard(0xa70b)  
 end  
 function c22348019.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -83,7 +83,7 @@ function c22348019.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 
 end
 function c22348019.spfilter(c,e,tp)
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and c:IsSetCard(0x613)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP) and c:IsSetCard(0xa70b)
 end
 function c22348019.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -98,7 +98,7 @@ function c22348019.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348019.thfilter(c)
-	return c:IsSetCard(0x613) and c:IsAbleToHand() and not c:IsCode(22348019)
+	return c:IsSetCard(0xa70b) and c:IsAbleToHand() and not c:IsCode(22348019)
 end
 function c22348019.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c22348019.thfilter(chkc) end

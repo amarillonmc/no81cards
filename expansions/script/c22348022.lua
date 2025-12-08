@@ -30,7 +30,7 @@ function cm.initial_effect(c)
 	
 end
 function c22348022.thfilter(c)
-	return c:IsSetCard(0x613) and c:IsType(TYPE_MONSTER) and c:IsLevelBelow(4) and c:IsAbleToHand()
+	return c:IsSetCard(0xa70b) and c:IsType(TYPE_MONSTER) and c:IsLevelBelow(4) and c:IsAbleToHand()
 end
 function c22348022.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c22348022.thfilter,tp,LOCATION_DECK,0,nil)
@@ -46,7 +46,7 @@ function c22348022.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22348022.ctfilter(c)
-	return c:IsSetCard(0x613)
+	return c:IsSetCard(0xa70b)
 end
 function c22348022.counter(e,tp,eg,ep,ev,re,r,rp)
 	if eg:IsExists(c22348022.ctfilter,1,nil) then

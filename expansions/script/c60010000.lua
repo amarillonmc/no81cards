@@ -526,9 +526,9 @@ end
 function MTC.Avatarop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local code=e:GetLabel()
-	local max=15-c:GetCounter(0x62a)
-	local r=math.random(1,max)
-	if r==1 and Duel.IsExistingMatchingCard(MTC.Avatarfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,code) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+	local cnum=c:GetCounter(0x62a)
+	local r=math.random(1,15)
+	if r+cnum>=15 and c:GetFlagEffect(60010225)==0 and Duel.IsExistingMatchingCard(MTC.Avatarfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,code) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
 		Duel.Hint(HINT_CARD,0,c:GetCode()) 
 		local tc=Group.CreateGroup()
 		if Duel.IsExistingMatchingCard(MTC.Avatarfil,tp,LOCATION_DECK,0,1,nil,code) then 
@@ -541,6 +541,8 @@ function MTC.Avatarop(e,tp,eg,ep,ev,re,r,rp)
 		
 		MTC.ActivateCard(tc,tp,e)
 		
+		c:RegisterFlagEffect(60010225,RESET_PHASE+PHASE_END+RESET_EVENT+RESETS_REDIRECT,0,1)
+		
 		Duel.RaiseEvent(c,EVENT_CUSTOM+60010225,nil,0,tp,tp,0)
 	else
 		if c:IsLocation(LOCATION_ONFIELD) then
@@ -549,12 +551,119 @@ function MTC.Avatarop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
+--翁法罗斯：揭示真名
+function MTC.realname(tp,code1,code2)
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,1,0,nil)
+	for tc in aux.Next(g) do
+		if tc:GetOriginalCodeRule()==code1 then
+			tc:SetEntityCode(code2,true)
+			tc:ReplaceEffect(code2,0,0)
+		end
+	end
+end
 
 
-
-
-
-
-
+function MTC.StrinovaPUS(c)
+	c:EnableReviveLimit()
+	--cannot special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(aux.FALSE)
+	c:RegisterEffect(e1)
+	--special summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_SPSUMMON_PROC)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetRange(LOCATION_HAND)
+	e2:SetCondition(MTC.StrinovaPUScon)
+	e2:SetTarget(MTC.StrinovaPUStg)
+	e2:SetOperation(MTC.StrinovaPUSop)
+	c:RegisterEffect(e2)
+	--return
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetOperation(MTC.StrinovaPUSreg)
+	c:RegisterEffect(e3)
+end
+function MTC.StrinovaChangeZone(c,czop)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_ADJUST)
+	e0:SetRange(0xff)
+	e0:SetCost(MTC.StrinovaChangeZonecost)
+	e0:SetCondition(MTC.StrinovaChangeZonecon)
+	e0:SetOperation(czop)
+	c:RegisterEffect(e0)
+end
+function MTC.StrinovaPUScon(e,c)
+	if c==nil then return true end
+	return Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_HAND,0,1,c,TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+end
+function MTC.StrinovaPUStg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local c=e:GetHandler()
+	local rg=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND,0,c,TYPE_MONSTER)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local sg=rg:Select(tp,1,1,nil)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function MTC.StrinovaPUSop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	if Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)~=0 and g:GetFirst():IsSetCard(0x9623) then
+		Duel.Draw(tp,1,REASON_SPSUMMON)
+	end
+	g:DeleteGroup()
+end
+function MTC.StrinovaPUSreg(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e1:SetDescription(1104)
+	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1)
+	e1:SetReset(RESET_EVENT+0x1ee0000+RESET_PHASE+PHASE_END)
+	e1:SetOperation(MTC.StrinovaPUSretop)
+	c:RegisterEffect(e1)
+end
+function MTC.StrinovaPUSretop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+		Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+	else
+		Duel.Draw(tp,1,REASON_EFFECT)
+	end
+end
+function MTC.StrinovaChangeZonecost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return true end
+	if not (c:IsPublic() or c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) then Duel.ConfirmCards(1-tp,c) end
+end
+function MTC.StrinovaChangeZonecon(e,tp,eg,ep,ev,re,r,rp)
+	local tf=false
+	local c=e:GetHandler()
+	local loc=0
+	if c:IsLocation(LOCATION_MZONE) then 
+		loc=1 
+	elseif c:IsLocation(LOCATION_SZONE) then 
+		loc=2
+	end
+	if e:GetLabel()==0 or loc==0 then
+		tf=false
+	elseif e:GetLabel()~=loc then
+		tf=true
+	end
+	e:SetLabel(loc)
+	return tf
+end
 
 

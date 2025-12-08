@@ -95,7 +95,7 @@ function s.atktg(e,c)
 	return c~=e:GetHandler()
 end
 function s.setfilter(c,id)
-	return aux.IsCodeListed(c,65133150) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return aux.IsCodeListed(c,65133150) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable() and c:IsFaceupEx()
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
@@ -107,6 +107,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	if ct<=0 then return end
 	local g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,id)
 	if #g==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,3)
 	if sg then
 		Duel.SSet(tp,sg)
