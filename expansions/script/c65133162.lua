@@ -1,15 +1,6 @@
 --幻叙渲染师 - 纳诺
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--synchro custom
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_SYNCHRO_MATERIAL_CUSTOM)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetTarget(s.syntg)
-	e1:SetValue(1)
-	e1:SetOperation(s.synop)
-	c:RegisterEffect(e1)
 	-- Special Summon both
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -32,96 +23,54 @@ function s.initial_effect(c)
 	e2:SetTarget(s.attrtg)
 	e2:SetOperation(s.attrop)
 	c:RegisterEffect(e2)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_EXTRA_SYNCHRO_MATERIAL)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetOwnerPlayer(tp)
+	e0:SetValue(s.matval)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTargetRange(0,LOCATION_MZONE)
+	e3:SetTarget(s.eftg)
+	e3:SetLabelObject(e0)
+	c:RegisterEffect(e3)
 end
-function s.synfilter(c,syncard,tuner,f)
-	return c:IsFaceupEx() and c:IsCanBeSynchroMaterial(syncard,tuner) and (f==nil or f(c,syncard))
+function s.matval(e,c)
+	return c:IsControler(e:GetOwnerPlayer())
 end
-function s.syncheck(c,g,mg,tp,lv,syncard,minc,maxc)
-	g:AddCard(c)
-	local ct=g:GetCount()
-	local res=s.syngoal(g,tp,lv,syncard,minc,ct)
-		or (ct<maxc and mg:IsExists(s.syncheck,1,g,g,mg,tp,lv,syncard,minc,maxc))
-	g:RemoveCard(c)
-	return res
+function s.eftg(e,c)
+	return c:GetAttribute()&e:GetHandler():GetAttribute()>0
 end
-function s.syngoal(g,tp,lv,syncard,minc,ct)
-	return ct>=minc
-		and g:CheckWithSumEqual(Card.GetSynchroLevel,lv,ct,ct,syncard)
-		and Duel.GetLocationCountFromEx(tp,tp,g,syncard)>0
-		and g:FilterCount(Card.IsControler,nil,1-tp)<=1
-		and aux.MustMaterialCheck(g,tp,EFFECT_MUST_BE_SMATERIAL)
-end
-function s.attfilter(c,att)
-	return c:GetAttribute()&att>0
-end
-function s.syntg(e,syncard,f,min,max)
-	local minc=min+1
-	local maxc=max+1
-	local c=e:GetHandler()
-	local tp=syncard:GetControler()
-	local lv=syncard:GetLevel()
-	if lv<=c:GetLevel() then return false end
-	local g=Group.FromCards(c)
-	local mg=Duel.GetSynchroMaterial(tp):Filter(s.synfilter,c,syncard,c,f)
-	local ag=Duel.GetMatchingGroup(s.attfilter,tp,0,LOCATION_MZONE,c,c:GetAttribute())
-	local exg=ag:Filter(s.synfilter,c,syncard,c,f)
-	mg:Merge(exg)
-	return mg:IsExists(s.syncheck,1,g,g,mg,tp,lv,syncard,minc,maxc)
-end
-function s.synop(e,tp,eg,ep,ev,re,r,rp,syncard,f,min,max)
-	local minc=min+1
-	local maxc=max+1
-	local c=e:GetHandler()
-	local lv=syncard:GetLevel()
-	local g=Group.FromCards(c)
-	local mg=Duel.GetSynchroMaterial(tp):Filter(s.synfilter,c,syncard,c,f)
-	local ag=Duel.GetMatchingGroup(s.attfilter,tp,0,LOCATION_MZONE,c,c:GetAttribute())
-	local exg=ag:Filter(s.synfilter,c,syncard,c,f)
-	mg:Merge(exg)
-	for i=1,maxc do
-		local cg=mg:Filter(s.syncheck,g,g,mg,tp,lv,syncard,minc,maxc)
-		if cg:GetCount()==0 then break end
-		local minct=1
-		if s.syngoal(g,tp,lv,syncard,minc,i) then
-			minct=0
-		end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
-		local sg=cg:Select(tp,minct,1,nil)
-		if sg:GetCount()==0 then break end
-		g:Merge(sg)
-	end
-	Duel.SetSynchroMaterial(g)
-end
-function s.cfilter(c)
-	return c:IsSetCard(0x838) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
+function s.cfilter(c,e,tp)
+	return c:IsSetCard(0x838) and c:IsType(TYPE_MONSTER) and not c:IsPublic() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return not c:IsPublic() and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_HAND,0,1,c) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_HAND,0,1,c,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_HAND,0,1,1,c)
-	g:AddCard(c)
-	Duel.ConfirmCards(1-tp,g)
+	local sc=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_HAND,0,1,1,c,e,tp):GetFirst()
+	Duel.ConfirmCards(1-tp,sc)
 	Duel.ShuffleHand(tp)
-	-- Keep track of the other card for the operation
-	e:SetLabelObject(g:GetFirst())
+	sc:CreateEffectRelation(e)
+	e:SetLabelObject(sc)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>1 
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_HAND)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tc=e:GetLabelObject() -- The other revealed card
+	local tc=e:GetLabelObject()
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<2 then return end
 	local g=Group.FromCards(c,tc)
-	-- Check if both are still in hand and summonable
-	if g:FilterCount(function(sc) return sc:IsLocation(LOCATION_HAND) and sc:IsCanBeSpecialSummoned(e,0,tp,false,false) end, nil)==2 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-	end
+	local fg=g:Filter(Card.IsRelateToChain,nil)
+	if not c:IsCanBeSpecialSummoned(e,0,tp,false,false) or not tc:IsCanBeSpecialSummoned(e,0,tp,false,false) then return end
+	if fg:GetCount()~=2 then return end
+	Duel.SpecialSummon(fg,0,tp,tp,false,false,POS_FACEUP)
 end
-
 function s.attrfilter(c,e)
 	return c:IsSetCard(0x838) and c:IsType(TYPE_MONSTER) and c:IsCanBeEffectTarget(e)
 end
@@ -154,6 +103,6 @@ function s.attrop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				c:RegisterEffect(e1)
 			end
-		end		
+		end  
 	end
 end

@@ -42,13 +42,14 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	for tc in aux.Next(g) do
 		att=att|tc:GetAttribute()
 	end
-	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,att) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp,att) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
 end
 function s.actfilter(c,tp)
 	return c:IsSetCard(0x838) and c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then return end
 	local att=0
 	local g=eg:Filter(Card.IsFaceup,nil)
 	for tc in aux.Next(g) do
@@ -96,6 +97,7 @@ end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=e:GetLabelObject()
+	local fid=tc:GetFieldID()
 	if tc then
 		local code=tc:GetOriginalCode()
 		local e1=Effect.CreateEffect(c)
@@ -107,31 +109,25 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabel(code)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
+		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,0,1,fid)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_PHASE+PHASE_STANDBY)
 		e2:SetCountLimit(1)
-		e2:SetLabel(Duel.GetTurnCount())
+		e2:SetLabel(fid)
 		e2:SetLabelObject(tc)
-		e2:SetCondition(s.thcon)
 		e2:SetOperation(s.thop)
-		if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_STANDBY then
-			e2:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2)
-		else
-			e2:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)
-		end
+		e2:SetReset(RESET_PHASE+PHASE_STANDBY)
 		Duel.RegisterEffect(e2,tp)
 	end
 end
 function s.aclimit(e,re,tp)
 	return re:GetHandler():IsOriginalCodeRule(e:GetLabel())
 end
-function s.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnCount()>e:GetLabel()
-end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
-	if tc and tc:IsLocation(LOCATION_GRAVE) then
+	local fid=e:GetLabel()
+	if tc and tc:IsLocation(LOCATION_GRAVE) and tc:GetFlagEffectLabel(id)==fid then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
 	end

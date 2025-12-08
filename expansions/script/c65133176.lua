@@ -100,7 +100,7 @@ function s.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsSummonable(true,nil) 
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,id+o,0x838,TYPES_TOKEN+TYPE_MONSTER,1500,1500,4,RACE_MACHINE,ATTRIBUTE_EARTH) end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,id+o,0x838,TYPE_TOKEN+TYPE_MONSTER,1500,1500,4,RACE_MACHINE,ATTRIBUTE_EARTH) end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0)
@@ -110,7 +110,7 @@ function s.sumop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToChain() then
 		if Duel.Summon(tp,c,true,nil)~=0 then
 			if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 
-				or not Duel.IsPlayerCanSpecialSummonMonster(tp,12345678,0x838,TYPES_TOKEN+TYPE_MONSTER,1500,1500,4,RACE_MACHINE,ATTRIBUTE_EARTH) then return end
+				or not Duel.IsPlayerCanSpecialSummonMonster(tp,12345678,0x838,TYPE_TOKEN+TYPE_MONSTER,1500,1500,4,RACE_MACHINE,ATTRIBUTE_EARTH) then return end
 			Duel.BreakEffect()
 			local token=Duel.CreateToken(tp,12345678)
 			Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)

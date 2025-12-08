@@ -2,7 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroMixProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x838),nil,nil,aux.Tuner(nil),1,99)
+	aux.AddSynchroMixProcedure(c,s.tfilter,nil,nil,nil,1,99)
 	c:EnableReviveLimit()
 	--material check
 	local e1=Effect.CreateEffect(c)
@@ -34,6 +34,9 @@ function s.initial_effect(c)
 	e3:SetTarget(s.thtg)
 	e3:SetOperation(s.thop)
 	c:RegisterEffect(e3)
+end
+function s.tfilter(c)
+	return c:IsType(TYPE_TUNER) and c:IsSetCard(0x838)
 end
 function s.matcheck(e,c)
 	local g=c:GetMaterial()
