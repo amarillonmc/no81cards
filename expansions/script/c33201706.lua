@@ -3,7 +3,7 @@ local cm, m, o = GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--Xyz Summon
-	aux.AddXyzProcedureLevelFree(c, aux.FilterBoolFunction(Card.IsRace, RACE_MACHINE), nil, 2, 2)
+	aux.AddXyzProcedure(c,cm.mfilter,4,2)
 
 	--① effect
 	local e1 = Effect.CreateEffect(c)
@@ -32,6 +32,9 @@ function cm.initial_effect(c)
 end
 
 --① effect functions
+function cm.mfilter(c)
+	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_LIGHT)
+end
 function cm.xyzcon(e, tp, eg, ep, ev, re, r, rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end

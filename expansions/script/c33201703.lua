@@ -33,14 +33,6 @@ function cm.initial_effect(c)
     e2:SetTarget(cm.target)
     e2:SetOperation(cm.operation)
     c:RegisterEffect(e2)
-
-    -- 装备效果：代替破坏
-    local e3 = Effect.CreateEffect(c)
-    e3:SetType(EFFECT_TYPE_EQUIP)
-    e3:SetCode(EFFECT_DESTROY_SUBSTITUTE)
-    e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-    e3:SetValue(cm.subval)
-    c:RegisterEffect(e3)
 end
 
 -- ①效果：掷骰子特召并装备
@@ -76,7 +68,7 @@ function cm.spop(e, tp, eg, ep, ev, re, r, rp)
         -- 如果有怪兽，询问是否装备
         if tc then
             if Duel.SelectYesNo(tp, aux.Stringid(m, 3)) then
-                if Duel.Equip(tp, tc, c) then
+                if Duel.Equip(tp, tc, c, false) then
                     -- 设置装备限制
                     local e1 = Effect.CreateEffect(c)
                     e1:SetType(EFFECT_TYPE_SINGLE)
@@ -132,7 +124,7 @@ function cm.target(e, tp, eg, ep, ev, re, r, rp, chk)
 
     if e:GetLabel() == 0 then
         Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_EQUIP)
-        local g = Duel.SelectMatchingCard(tp, nil, tp, LOCATION_MZONE, 0, 1, 1, c)
+        local g = Duel.SelectMatchingCard(tp, Card.IsFaceup, tp, LOCATION_MZONE, 0, 1, 1, c)
         Duel.SetTargetCard(g)
         Duel.SetOperationInfo(0, CATEGORY_EQUIP, g, 1, 0, 0)
     else
@@ -151,9 +143,18 @@ function cm.operation(e, tp, eg, ep, ev, re, r, rp)
         -- 作为装备卡装备
         if c:IsRelateToEffect(e) and c:IsLocation(LOCATION_MZONE) then
             local tc = Duel.GetFirstTarget()
-            if tc and tc:IsRelateToEffect(e) and tc:IsLocation(LOCATION_MZONE) and tc:IsControler(tp) then
-                if not Duel.Equip(tp, c, tc) then return end
+            if tc and tc:IsRelateToEffect(e) and tc:IsLocation(LOCATION_MZONE) and tc:IsControler(tp) and tc:IsFaceup() then
+                if not Duel.Equip(tp, c, tc, false) then return end
                 Auxiliary.SetUnionState(c)
+
+                -- 装备效果：代替破坏
+                local e3 = Effect.CreateEffect(c)
+                e3:SetType(EFFECT_TYPE_EQUIP)
+                e3:SetCode(EFFECT_DESTROY_SUBSTITUTE)
+                e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+                e3:SetReset(RESET_EVENT + RESETS_STANDARD)
+                e3:SetValue(cm.subval)
+                c:RegisterEffect(e3)
             end
         end
     else
