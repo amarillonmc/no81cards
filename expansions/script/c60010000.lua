@@ -525,10 +525,11 @@ function MTC.Avatarfil(c,code)
 end
 function MTC.Avatarop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local tp=e:GetHandlerPlayer()
 	local code=e:GetLabel()
 	local cnum=c:GetCounter(0x62a)
 	local r=math.random(1,15)
-	if r+cnum>=15 and c:GetFlagEffect(60010225)==0 and Duel.IsExistingMatchingCard(MTC.Avatarfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,code) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+	if r+cnum>=15 and Duel.GetFlagEffect(tp,60010225+code)==0 and Duel.IsExistingMatchingCard(MTC.Avatarfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,code) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
 		Duel.Hint(HINT_CARD,0,c:GetCode()) 
 		local tc=Group.CreateGroup()
 		if Duel.IsExistingMatchingCard(MTC.Avatarfil,tp,LOCATION_DECK,0,1,nil,code) then 
@@ -541,7 +542,7 @@ function MTC.Avatarop(e,tp,eg,ep,ev,re,r,rp)
 		
 		MTC.ActivateCard(tc,tp,e)
 		
-		c:RegisterFlagEffect(60010225,RESET_PHASE+PHASE_END+RESET_EVENT+RESETS_REDIRECT,0,1)
+		Duel.RegisterFlagEffect(tp,60010225+code,RESET_PHASE+PHASE_END,0,1)
 		
 		Duel.RaiseEvent(c,EVENT_CUSTOM+60010225,nil,0,tp,tp,0)
 	else
