@@ -87,8 +87,7 @@ end
 
 -- 效果③
 function s.resfilter(c,tp)
-	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsSetCard(0x613)
-		and c:GetReasonPlayer()==1-tp
+	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:GetReasonPlayer()==1-tp
 end
 
 function s.rescon(e,tp,eg,ep,ev,re,r,rp)
