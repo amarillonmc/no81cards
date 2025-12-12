@@ -16,7 +16,7 @@ function c95101257.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c95101257.poscon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp)
+	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 and eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp)
 end
 function c95101257.poscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
