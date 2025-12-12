@@ -54,7 +54,7 @@ function s.sdop(e,tp,eg,ep,ev,re,r,rp)
 		if not c:IsRelateToEffect(e) then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 		Duel.PreserveSelectDeckSequence(true)
-		local sg=g:FilterSelect(tp,s.ovfilter,1,1,nil,tp)
+		local sg=g:FilterSelect(tp,Card.IsCanOverlay,1,1,nil,tp)
 		Duel.PreserveSelectDeckSequence(false)
 		if #sg>0 then
 			Duel.DisableShuffleCheck(true)
@@ -76,7 +76,7 @@ function s.mttg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.mtop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local ol=e:GetLabel)
+	local ol=e:GetLabel()
 	if not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local g=Duel.SelectMatchingCard(tp,s.mtfilter,tp,0,LOCATION_ONFIELD,ol,ol,nil,e)

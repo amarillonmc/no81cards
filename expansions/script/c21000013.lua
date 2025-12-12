@@ -2,7 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	
-	aux.AddSynchroMixProcedure(c,s.matfilter1,nil,nil,s.matfilter2,1,99)
+	aux.AddSynchroMixProcedure(c,aux.Tuner(nil),nil,nil,nil,1,99)
 	c:EnableReviveLimit()
 	
 	local e0=Effect.CreateEffect(c)
@@ -59,12 +59,6 @@ function s.initial_effect(c)
 end
 function s.descon(e)
 	return not Duel.IsExistingMatchingCard(aux.TRUE,0,LOCATION_MZONE,LOCATION_MZONE,1,e:GetHandler())
-end
-function s.matfilter1(c)
-	return c:IsType(TYPE_MONSTER)
-end
-function s.matfilter2(c,syncard)
-	return c:IsNotTuner(syncard)
 end
 function s.val(e,re,val,r,rp,rc)
 	local lp=Duel.GetLP(1-e:GetHandlerPlayer())
