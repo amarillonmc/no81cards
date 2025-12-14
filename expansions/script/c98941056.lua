@@ -8,16 +8,9 @@ function c98941056.initial_effect(c)
 	e1:SetHintTiming(TIMING_DRAW_PHASE,TIMING_DRAW_PHASE+TIMING_END_PHASE)
 	e1:SetOperation(s.trueac)
 	c:RegisterEffect(e1)
-	local e0=e1:Clone()
-	e0:SetDescription(aux.Stringid(id,6))
-	e0:SetRange(LOCATION_DECK)
-	e0:SetCondition(s.descon)
-	e0:SetCost(s.cost2)
-	c:RegisterEffect(e0)
 	local e10=e1:Clone()
 	e10:SetDescription(aux.Stringid(id,8))
 	e10:SetRange(LOCATION_DECK)
-	e10:SetCondition(s.descon2)
 	e10:SetCost(s.cost3)
 	c:RegisterEffect(e10)
 	--Fusion
@@ -180,12 +173,30 @@ function c98941056.activate(e,tp,eg,ep,ev,re,r,rp)
 				hg:RemoveCard(xc)
 				xc=mat1:GetNext()
 			end
-			local ss1=Duel.GetMatchingGroupCount(Card.IsSummonLocation,tp,LOCATION_MZONE,0,nil,LOCATION_EXTRA)
-			local ss2=Duel.GetMatchingGroupCount(Card.IsSummonLocation,tp,0,LOCATION_MZONE,nil,LOCATION_EXTRA)
-			if ss1<ss2 or (ss1==ss2 and Duel.SelectYesNo(tp,aux.Stringid(98941056,9))) then 
-			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
+			local ss1=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)
+			local ss2=Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)
+			local k=1-tp
+			if ss1<=ss2 and Duel.SelectYesNo(tp,aux.Stringid(98941056,9)) then 
+				k=tp
 			else
-			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,1-tp,false,false,POS_FACEUP) end			
+				k=1-tp 
+			end
+			if tc and Duel.SpecialSummonStep(tc,SUMMON_TYPE_FUSION,tp,k,false,false,POS_FACEUP) and Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)>Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD) then
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_DISABLE)
+					e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc:RegisterEffect(e1)
+					local e2=Effect.CreateEffect(c)
+					e2:SetType(EFFECT_TYPE_SINGLE)
+					e2:SetCode(EFFECT_DISABLE_EFFECT)
+					e2:SetValue(RESET_TURN_SET)
+					e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+					e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc:RegisterEffect(e2)
+			 end
+			 Duel.SpecialSummonComplete()
 		else
 			local mat2=Duel.SelectFusionMaterial(tp,tc,mg3,nil,chkf)
 			local fop=ce:GetOperation()
