@@ -33,7 +33,7 @@ function s.cfilter(c,tp)
 	return c:IsRace(RACE_FIEND) and not c:IsPublic() and c:IsAbleToGrave() and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,attr)
 end
 function s.thfilter(c,attr)
-	return not c:IsSummonableCard() and c:IsRace(RACE_FIEND) and c:IsAttribute(attr)
+	return not c:IsSummonableCard() and c:IsRace(RACE_FIEND) and c:IsAttribute(attr) and c:IsAbleToHand()
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_EXTRA,0,1,nil,tp) end

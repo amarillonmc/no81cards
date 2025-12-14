@@ -38,7 +38,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local tg=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,2,2,nil)
 	tg:Merge(cg)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tg,4,0,0)
-	if not Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,e:GetHandler(),1,nil) and e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+	if not Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,0,1,e:GetHandler()) and e:IsHasType(EFFECT_TYPE_ACTIVATE) then
 		Duel.SetChainLimit(s.chainlm)
 	end
 end
