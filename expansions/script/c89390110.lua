@@ -2,6 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(1192)
 	e1:SetCategory(CATEGORY_REMOVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -11,6 +12,12 @@ function s.initial_effect(c)
 	e1:SetTarget(s.settg)
 	e1:SetOperation(s.setop)
 	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetDescription(1153)
+	e2:SetCategory(0)
+	e2:SetTarget(s.settg2)
+	e2:SetOperation(s.setop2)
+	c:RegisterEffect(e2)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
@@ -61,6 +68,31 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 			local nseq=math.log(s,2)
 			Duel.MoveSequence(mg:GetFirst(),nseq-16)
 		end
+	end
+end
+function s.setfilter(c)
+	return c:IsSetCard(0xcd1) and c:IsAllTypes(TYPE_CONTINUOUS+TYPE_TRAP) and c:IsFaceup() and not c:IsSSetable()
+end
+function s.settg2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_REMOVED,0,1,nil) end
+	if Duel.GetCurrentChain()<4 then Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1) end
+end
+function s.setop2(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_REMOVED,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc and Duel.SSet(tp,tc)>0 and Duel.IsExistingMatchingCard(s.movefilter,tp,0,LOCATION_MZONE,1,nil,1-tp) then
+		local mg=Duel.SelectMatchingCard(tp,s.movefilter,tp,0,LOCATION_MZONE,1,1,nil,1-tp)
+		local seq=mg:GetFirst():GetSequence()
+		local flag=0
+		if seq>0 and Duel.CheckLocation(1-tp,LOCATION_MZONE,seq-1) then flag=flag|(1<<(seq-1)) end
+		if seq<4 and Duel.CheckLocation(1-tp,LOCATION_MZONE,seq+1) then flag=flag|(1<<(seq+1)) end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
+		local s=Duel.SelectDisableField(tp,1,0,LOCATION_MZONE,~flag<<16)
+		local nseq=math.log(s,2)
+		Duel.MoveSequence(mg:GetFirst(),nseq-16)
 	end
 end
 function s.cfilter(c)

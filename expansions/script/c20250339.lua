@@ -6,23 +6,20 @@ function c20250339.initial_effect(c)
 	--
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(20250339,0))
-	e1:SetCategory(CATEGORY_COUNTER+CATEGORY_SEARCH+CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,20250339)
 	e1:SetCondition(c20250339.addcc)
 	e1:SetTarget(c20250339.addct)
 	e1:SetOperation(c20250339.addc)
 	c:RegisterEffect(e1)
-	--to hand
+	--
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(20250339,1))
 	e2:SetCategory(CATEGORY_COUNTER)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetTarget(c20250339.tctg)
 	e2:SetOperation(c20250339.tcop)
 	c:RegisterEffect(e2)
@@ -38,7 +35,8 @@ function c20250339.initial_effect(c)
 	e4:SetCondition(c20250339.dckcon) 
 	e4:SetOperation(c20250339.dckop)
 	c:RegisterEffect(e4)
-	local e5=Effect.CreateEffect(c) 
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(20250339,1)) 
 	e5:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_COUNTER+CATEGORY_GRAVE_SPSUMMON+CATEGORY_DECKDES)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_CUSTOM+20250339) 
@@ -49,27 +47,33 @@ function c20250339.initial_effect(c)
 	e5:SetTarget(c20250339.target)
 	e5:SetOperation(c20250339.activate)
 	c:RegisterEffect(e5)
+	--immune
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e6:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e6:SetProperty(EFFECT_FLAG_DELAY)
+	e6:SetOperation(c20250339.imop)
+	c:RegisterEffect(e6)
+end
+function c20250339.imop(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():AddCounter(0x154a,2)
 end
 function c20250339.addcc(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
-function c20250339.addct(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x154a)
-end
-function c20250339.thfilter(c)
+function c20250339.adfilter(c)
 	return c:IsSetCard(0x54a) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
+function c20250339.addct(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c20250339.adfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
 function c20250339.addc(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x154a,2)
-	if Duel.IsExistingMatchingCard(c20250339.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(20250339,2)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local g=Duel.SelectMatchingCard(tp,c20250339.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
-		end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c20250339.adfilter),tp,LOCATION_DECK,0,1,1,nil)
+	if #g>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function c20250339.tctg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -77,7 +81,9 @@ function c20250339.tctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	and Duel.IsCanRemoveCounter(tp,1,0,0x154a,1,REASON_EFFECT) end
 end
 function c20250339.tcop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RemoveCounter(tp,1,0,0x154a,1,REASON_EFFECT)
+	 if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(20250339,2)) then
+		Duel.RemoveCounter(tp,1,0,0x154a,1,REASON_EFFECT)
+	end
 end
 function c20250339.dckcon(e,tp,eg,ep,ev,re,r,rp)
 	local x=e:GetHandler():GetFlagEffect(20250339)

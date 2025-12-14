@@ -65,7 +65,7 @@ function cm.spop(e, tp, eg, ep, ev, re, r, rp)
 		local tc = Duel.GetFieldCard(p, LOCATION_MZONE, seq)
 
 		-- 如果有怪兽，询问是否装备
-		if tc then
+		if tc and (tc:IsControler(tp) or dice==1 or dice==2) then
 			if Duel.SelectYesNo(tp, aux.Stringid(m, 3)) then
 				if Duel.Equip(tp, tc, c, false) then
 					local e1 = Effect.CreateEffect(c)

@@ -97,10 +97,8 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc:IsRelateToChain() then return end
 	local g=Group.FromCards(tc)
-	--front/behind (column)
 	local col_g=tc:GetColumnGroup()
 	if #col_g>0 then g:Merge(col_g) end
-	--adjacent (left/right)
 	local seq=tc:GetSequence()
 	local loc=tc:GetLocation()
 	if (loc==LOCATION_MZONE or loc==LOCATION_SZONE) and seq<5 then

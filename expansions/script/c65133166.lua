@@ -11,16 +11,25 @@ function s.initial_effect(c)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
+	--act in set turn
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetDescription(aux.Stringid(id,2))
+	e2:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetCost(s.cost2)
+	c:RegisterEffect(e2)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
-	if #g==0 then
-		e:SetLabel(0)
-		return
-	end
+	local c=e:GetHandler()
+	if chk==0 then return c:GetFlagEffect(id)>0 or Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
 	local g=Duel.GetMatchingGroup(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil)
-	local sg=g:CancelableSelect(tp,1,63,nil)
+	local sg=nil
+	if c:GetFlagEffect(id)>0 then
+		sg=g:Select(tp,1,63,nil)
+	else
+		sg=g:CancelableSelect(tp,1,63,nil)
+	end
 	if sg then
 		local att=0xff
 		for tc in aux.Next(sg) do
@@ -29,6 +38,10 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		e:SetLabel(sg:GetCount(),att)
 		Duel.SendtoGrave(sg,REASON_COST+REASON_DISCARD)
 	end
+end
+function s.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end

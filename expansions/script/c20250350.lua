@@ -2,7 +2,6 @@
 function c20250350.initial_effect(c)
 	--spsummon rule
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(20250350,0))
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)

@@ -2,12 +2,11 @@
 local m=11513085
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	c:EnableReviveLimit()
 	--special summon
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)
 	e0:SetCode(EFFECT_SPSUMMON_PROC)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e0:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e0:SetCondition(c11513085.pspcon)
 	e0:SetOperation(c11513085.pspop)

@@ -4,18 +4,7 @@ function s.initial_effect(c)
 	c:EnableReviveLimit()
 	c:SetUniqueOnField(1,0,id)
 	c:EnableCounterPermit(0x838)
-	Auxiliary.AddXyzProcedure(c,nil,9,2,nil,nil,99)
-	-- Alternative Xyz Summon
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_SPSUMMON_PROC)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCondition(s.xyzcon)
-	e1:SetTarget(s.xyztg)
-	e1:SetOperation(s.xyzop)
-	c:RegisterEffect(e1)
+	Auxiliary.AddXyzProcedure(c,nil,9,2,s.xyzfilter,aux.Stringid(id,0),99,s.xyzop)
 	-- Send to GY
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
@@ -83,17 +72,16 @@ function s.xyztg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	end
 	return false
 end
-function s.xyzop(e,tp,eg,ep,ev,re,r,rp,c)
-	local mg=e:GetLabelObject()
-	c:SetMaterial(mg)
-	Duel.Overlay(c,mg)
-	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
+function s.xyzop(e,tp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end
+	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function s.matcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetOverlayGroup():IsExists(Card.IsSetCard,1,nil,0x838)
 end
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	local filter=0
@@ -126,6 +114,7 @@ function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) end
 	local ct=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if chk==0 then return ct>0 and Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	Duel.SelectTarget(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,ct,nil)
 end

@@ -40,7 +40,7 @@ function c20250330.spcfilter(e,tp)
 	return Duel.GetCounter(tp,1,0,0x154a)>=1
 end
 function c20250330.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(c20250330.spcfilter,tp,LOCATION_ONFIELD,0,1,nil)
+	return not Duel.IsExistingMatchingCard(c20250330.spcfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 function c20250330.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -76,7 +76,7 @@ function c20250330.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToChain() or c:IsFacedown() then return end
 	local down=c:IsLevelAbove(2)
-	local lv=aux.SelectFromOptions(tp,{true,aux.Stringid(20250330,2)},{down,aux.Stringid(20250330,3),-1})
+	local lv=aux.SelectFromOptions(tp,{true,aux.Stringid(20250330,3)},{down,aux.Stringid(20250330,4),-1})
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_LEVEL)

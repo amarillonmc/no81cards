@@ -138,7 +138,7 @@ function cm.operation(e, tp, eg, ep, ev, re, r, rp)
 				-- e1:SetCode(EFFECT_EQUIP_LIMIT)
 				-- e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 				-- e1:SetValue(function(e, c)
-				--	 return e:GetOwner() == c
+				--   return e:GetOwner() == c
 				-- end)
 				-- e1:SetReset(RESET_EVENT + RESETS_STANDARD)
 				-- c:RegisterEffect(e1)
@@ -171,7 +171,7 @@ function cm.operation(e, tp, eg, ep, ev, re, r, rp)
 end
 
 function cm.spfilter(c)
-	return c:IsSetCard(0x6327) and c:IsAbleToHand()
+	return c:IsSetCard(0x6327) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 
 -- 装备时的代替破坏效果

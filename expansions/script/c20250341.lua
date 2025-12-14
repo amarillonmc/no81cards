@@ -7,7 +7,7 @@ function c20250341.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(20250341,0))
 	e1:SetCategory(CATEGORY_COUNTER+CATEGORY_SEARCH+CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,20250341)
 	e1:SetCondition(c20250341.addcc)
@@ -16,13 +16,10 @@ function c20250341.initial_effect(c)
 	c:RegisterEffect(e1)
 	--handes
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(20250341,1))
 	e3:SetCategory(CATEGORY_COUNTER)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_TO_HAND)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e3:SetCondition(c20250341.hdcon)
 	e3:SetTarget(c20250341.hdtg)
 	e3:SetOperation(c20250341.hdop)
@@ -46,27 +43,33 @@ function c20250341.initial_effect(c)
 	e5:SetTarget(c20250341.target)
 	e5:SetOperation(c20250341.activate)
 	c:RegisterEffect(e5)
+	--immune
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e6:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e6:SetProperty(EFFECT_FLAG_DELAY)
+	e6:SetOperation(c20250341.imop)
+	c:RegisterEffect(e6)
+end
+function c20250341.imop(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():AddCounter(0x154a,2)
 end
 function c20250341.addcc(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
-function c20250341.addct(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,2,0,0x154a)
-end
-function c20250341.thfilter(c)
+function c20250341.adfilter(c)
 	return c:IsSetCard(0x54a) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
+function c20250341.addct(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c20250341.adfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
 function c20250341.addc(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetHandler():IsRelateToEffect(e) then
-		e:GetHandler():AddCounter(0x154a,2)
-	if Duel.IsExistingMatchingCard(c20250341.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(20250341,2)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local g=Duel.SelectMatchingCard(tp,c20250341.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
-		end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c20250341.adfilter),tp,LOCATION_DECK,0,1,1,nil)
+	if #g>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function c20250341.cfilter(c,tp)
@@ -79,7 +82,9 @@ function c20250341.hdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x154a,1,REASON_EFFECT) end
 end
 function c20250341.hdop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RemoveCounter(tp,1,0,0x154a,1,REASON_EFFECT)
+	 if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(20250339,2)) then
+		Duel.RemoveCounter(tp,1,0,0x154a,1,REASON_EFFECT)
+	end
 end
 function c20250341.dckcon(e,tp,eg,ep,ev,re,r,rp)
 	local x=e:GetHandler():GetFlagEffect(20250341)
