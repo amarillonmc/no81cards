@@ -62,11 +62,11 @@ end
 function c11513090.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local g=Duel.GetMatchingGroup(c11513090.sprfilter,tp,LOCATION_MZONE+LOCATION_HAND+LOCATION_REMOVED,0,nil)
+	local g=Duel.GetMatchingGroup(c11513090.sprfilter,tp,LOCATION_GRAVE+LOCATION_HAND+LOCATION_REMOVED,0,nil)
 	return g:CheckSubGroup(c11513090.fselect,2,2,tp,c)
 end
 function c11513090.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(c11513090.sprfilter,tp,LOCATION_MZONE+LOCATION_HAND+LOCATION_REMOVED,0,nil)
+	local g=Duel.GetMatchingGroup(c11513090.sprfilter,tp,LOCATION_GRAVE+LOCATION_HAND+LOCATION_REMOVED,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local sg=g:SelectSubGroup(tp,c11513090.fselect,true,2,2,tp,c)
 	if sg then

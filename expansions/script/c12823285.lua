@@ -65,7 +65,7 @@ function s.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(s.ovfilter2,tp,LOCATION_DECK,0,nil)
 	if #g>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.Overlay(c,sg)
 	end

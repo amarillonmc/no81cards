@@ -41,7 +41,7 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 		if cl==6 and #g>0 and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil) 
 		and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 			local sg1=g:SelectSubGroup(tp,aux.dncheck,false,1,3)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 			local sg2=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_MZONE,0,1,1,nil)

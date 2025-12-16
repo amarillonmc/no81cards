@@ -14,7 +14,6 @@ function c11771560.initial_effect(c)
     e2:SetRange(LOCATION_SZONE)
     e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
     e2:SetCountLimit(1,11771560)
-    e2:SetCondition(c11771560.con1)
     e2:SetTarget(c11771560.tg1)
     e2:SetOperation(c11771560.op1)
     c:RegisterEffect(e2)
@@ -64,10 +63,6 @@ function c11771560.initial_effect(c)
     c:RegisterEffect(e6)
 end
 -- 1
-function c11771560.con1(e,tp,eg,ep,ev,re,r,rp)
-    local ph=Duel.GetCurrentPhase()
-    return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
-end
 function c11771560.filter1(c,tp,mg)
     return c:IsAttribute(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK) and c:IsSynchroSummonable(nil,mg)
 end

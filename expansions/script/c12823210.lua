@@ -59,6 +59,7 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 		local tg=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
 		if cl==3 and tg:GetClassCount(Card.GetCode)>=2 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=tg:SelectSubGroup(tp,aux.dncheck,false,2,2)
 			if sg then
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)

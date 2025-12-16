@@ -41,6 +41,7 @@ end
 function cm.rfilter(c,tp)
 	return Duel.GetMZoneCount(tp,c)>0 and aux.IsCodeListed(c,40020225)
 end
+
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,cm.rfilter,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
@@ -48,23 +49,31 @@ function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(g:GetFirst():GetType())
 	Duel.Release(g,REASON_COST)
 end
+
 function cm.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
+
 function cm.spfilter1(c,e,tp)
 	return aux.IsCodeListed(c,40020225) and not c:IsCode(m) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+
 function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
-		local g=Duel.GetMatchingGroup(cm.spfilter1,tp,LOCATION_DECK,0,nil,e,tp)
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-		if bit.band(e:GetLabel(),TYPE_SYNCHRO)~=0 and g2:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg=g:Select(tp,1,1,nil)
-			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) > 0 then
+			if bit.band(e:GetLabel(),TYPE_SYNCHRO)~=0 then
+				local g=Duel.GetMatchingGroup(cm.spfilter1,tp,LOCATION_DECK,0,nil,e,tp)
+				if g:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
+					and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
+					Duel.BreakEffect()
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+					local sg=g:Select(tp,1,1,nil)
+					Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+				end
+			end
 		end
 	end
 end

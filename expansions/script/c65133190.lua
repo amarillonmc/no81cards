@@ -90,7 +90,7 @@ function s.sprcon(e,c)
 	local tp=c:GetControler()
 	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_MZONE,0,nil)
 	local tg=g:Filter(Card.IsAbleToGraveAsCost,nil)
-	return #tg>0 and #tg==#g
+	return Duel.GetTurnCount()>=20 and #tg>0 and #tg==#g
 end
 function s.sprtg(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_MZONE,0,nil)

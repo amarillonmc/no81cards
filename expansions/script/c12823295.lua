@@ -129,17 +129,17 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g3=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_REMOVED,0,nil)
 	local sg=Group.CreateGroup()
 	if g1:GetCount()>0 and ((g2:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(id,3))) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg1=g1:Select(tp,1,1,nil)
 		sg:Merge(sg1)
 	end
 	if g2:GetCount()>0 and ((sg:GetCount()==0 and g3:GetCount()==0) or Duel.SelectYesNo(tp,aux.Stringid(id,4))) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg2=g2:Select(tp,1,1,nil)
 		sg:Merge(sg2)
 	end
 	if g3:GetCount()>0 and (sg:GetCount()==0 or Duel.SelectYesNo(tp,aux.Stringid(id,5))) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg3=g3:Select(tp,1,1,nil)
 		sg:Merge(sg3)
 	end

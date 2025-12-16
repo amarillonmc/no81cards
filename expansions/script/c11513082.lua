@@ -78,10 +78,13 @@ function c11513082.thop(e,tp,eg,ep,ev,re,r,rp)
 	local pc=Duel.GetFirstTarget()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tc=Duel.SelectMatchingCard(tp,c11513082.thfil,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-	if tc and pc:IsRelateToEffect(e)  then
-		Duel.SendtoHand(tc,tp,REASON_EFFECT) 
-		Duel.ConfirmCards(1-tp,tc)  
-			Duel.SendtoDeck(pc,nil,2,REASON_EFFECT) 
+	if tc then
+		if Duel.SendtoHand(tc,tp,REASON_EFFECT)~=0 then
+			Duel.ConfirmCards(1-tp,tc)  
+			if pc:IsRelateToEffect(e) then
+				Duel.SendtoDeck(pc,nil,2,REASON_EFFECT) 
+			end
+		end
 	end
 end 
 function c11513082.damcon(e,tp,eg,ep,ev,re,r,rp) 

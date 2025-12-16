@@ -40,7 +40,7 @@ function s.op(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.thfilter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 		if cl==5 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg1=g:SelectSubGroup(tp,aux.dncheck,false,1,3)
 			if sg1 then
 			Duel.SendtoHand(sg1,nil,REASON_EFFECT)
