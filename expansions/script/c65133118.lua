@@ -82,8 +82,8 @@ function s.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local op=aux.SelectFromOptions(tp,
 			{b1,aux.Stringid(id,2)},
 			{b2,aux.Stringid(id,3)},
-			{b3,aux.Stringid(id,4)})	
-	e:SetLabel(op)
+			{b3,aux.Stringid(id,4)})
+	Duel.SetTargetParam(op)
 	Duel.RegisterFlagEffect(tp,id+op,RESET_PHASE+PHASE_END,0,1)
 	if op==2 then
 		Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_ONFIELD)
@@ -91,7 +91,7 @@ function s.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local op=e:GetLabel()   
+	local op=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
 	if op==1 then
 		if c:IsRelateToEffect(e) and c:IsFaceup() then
 			local e1=Effect.CreateEffect(c)

@@ -17,9 +17,9 @@ function s.initial_effect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O) 
-	e1:SetCode(EVENT_SPSUMMON)	 
+	e1:SetCode(EVENT_SPSUMMON)   
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,id)	
+	e1:SetCountLimit(1,id)  
 	e1:SetCondition(s.spcon_summon)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
@@ -60,7 +60,7 @@ function s.spcon_move(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.omefilter,1,nil,tp)
 end
 function s.desfilter(c)
-	return c:IsFaceup() and c:IsControler(1-tp) and c:GetAttack()>=0
+	return c:IsFaceup()  and c:GetAttack()>=0
 end
 function s.gcheck(g)
 	return g:GetSum(Card.GetAttack)<=2100

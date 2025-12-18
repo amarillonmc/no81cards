@@ -79,18 +79,18 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetCode(id)
 	e2:SetTargetRange(1,1)
-	e2:Reset(RESET_PHASE+PHASE_END)
+	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e3:SetCode(EVENT_ADJUST)
 	e3:SetCondition(s.discon)
 	e3:SetOperation(s.disop)
-	e3:Reset(RESET_PHASE+PHASE_END)
+	e3:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e3,tp)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id,0))
@@ -117,26 +117,31 @@ function s.checkintab(tab,v)
 	end
 	return false
 end
-function s.discon(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_TO_HAND) then
-		local effect_record={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_TO_HAND)}
-		for _,ke in ipairs(effect_record) do
-			if not s.checkintab(record_tab2,ke) then
-				return true
+function s.discon(e)
+	for tp=0,1 do
+		if Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_TO_HAND) then
+			local effect_record={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_TO_HAND)}
+			for _,ke in ipairs(effect_record) do
+				if not s.checkintab(record_tab2,ke) then
+					return true
+				end
 			end
 		end
 	end
 	return false
 end
-function s.disop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_TO_HAND) then
-		local effect_record={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_TO_HAND)}
-		for _,ke in ipairs(effect_record) do
-			if not s.checkintab(record_tab2,ke) then
-				ke:SetCondition(function(ce,ctp,...)
-								   return not Duel.IsPlayerAffectedByEffect(ctp,id) and ke:GetCondition()(...)
-								end)
-				table.insert(record_tab2,ke)
+function s.disop(e)
+	for tp=0,1 do
+		if Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_TO_HAND) then
+			local effect_record={Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_TO_HAND)}
+			for _,ke in ipairs(effect_record) do
+				if not s.checkintab(record_tab2,ke) then
+					local condition=ke:GetCondition() or aux.TRUE
+					ke:SetCondition(function(...)
+									   return not Duel.IsPlayerAffectedByEffect(0,id) and condition(...)
+									end)
+					table.insert(record_tab2,ke)
+				end
 			end
 		end
 	end
