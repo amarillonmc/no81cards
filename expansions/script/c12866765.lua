@@ -56,11 +56,11 @@ function s.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or aux.fuslimit(e,se,sp,st)
 end
 function s.eqfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:CheckUniqueOnField(tp) and c:GetBaseAttack()<=1500
+	return c:IsType(TYPE_MONSTER) and c:CheckUniqueOnField(tp) and c:GetBaseAttack()<=1500 and c:IsFaceup()
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc~=c end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc~=c and s.eqfilter(chkc,tp) end
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and Duel.IsExistingTarget(s.eqfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,c,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
