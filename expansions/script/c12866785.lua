@@ -30,6 +30,7 @@ function s.initial_effect(c)
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
+	e2:SetCondition(s.descon1)
 	e2:SetCost(s.descost)
 	e2:SetTarget(s.destg)
 	e2:SetOperation(s.desop)
@@ -38,7 +39,7 @@ function s.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
 	e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e5:SetCondition(s.descon)
+	e5:SetCondition(s.descon2)
 	c:RegisterEffect(e5)
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
@@ -133,7 +134,10 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(g,REASON_EFFECT)
 	end
 end
-function s.descon(e,tp,eg,ep,ev,re,r,rp)
+function s.descon1(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetLabel()==1
+end
+function s.descon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetLabel()==1
 end
 function s.valcheck(e,c)

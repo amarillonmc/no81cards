@@ -53,30 +53,27 @@ end
 function s.matfilter2(c)
 	return c:IsAttribute(ATTRIBUTE_LIGHT) or c:IsAttribute(ATTRIBUTE_DARK)
 end
-function s.eqfilter1(c,tp)
+function s.eqfilter1(c,e,tp)
 	return (c:IsRace(RACE_WARRIOR) or c:IsRace(RACE_FIEND)) and 
-	c:CheckUniqueOnField(tp) and not c:IsForbidden()
+	c:CheckUniqueOnField(tp) and not c:IsForbidden() and c:IsCanBeEffectTarget(e)
 end
-function s.eqfilter2(c,tp)
-	return aux.IsCodeListed(c,12866755) and c:IsType(TYPE_FUSION) and
-	c:CheckUniqueOnField(tp) and (c:IsRace(RACE_WARRIOR) or c:IsRace(RACE_FIEND)) and not c:IsForbidden()
+function s.eqfilter2(c)
+	return aux.IsCodeListed(c,12866755) and c:IsType(TYPE_FUSION)
+end
+function s.check(g)
+	return g:IsExists(s.eqfilter2,1,nil)
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and s.eqfilter2(chkc,tp) and 
-	chkc:IsControler(tp) end
+	local g=Duel.GetMatchingGroup(s.eqfilter1,tp,LOCATION_GRAVE,0,nil,e,tp)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and s.eqfilter1(chkc,e,tp) and chkc:IsControler(tp) end
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if chk==0 then return ft>0
-	and Duel.IsExistingTarget(s.eqfilter2,tp,LOCATION_GRAVE,0,1,nil,tp) end
+	if chk==0 then return ft>0 and #g>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 	local ct=math.min(ft,2)
-	local g1=Duel.SelectTarget(tp,s.eqfilter2,tp,LOCATION_GRAVE,0,1,1,nil,tp)
-	if ct>1 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-		local g2=Duel.SelectTarget(tp,s.eqfilter1,tp,LOCATION_GRAVE,0,1,1,g1,tp)
-		g1:Merge(g2)
-	end
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g1,g1:GetCount(),0,0)
+	local sg=g:SelectSubGroup(tp,s.check,false,1,ct)
+	Duel.SetTargetCard(sg)
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,sg,#sg,0,0)
 end
 function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
