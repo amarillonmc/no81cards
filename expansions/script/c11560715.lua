@@ -60,31 +60,32 @@ end
 function c11560715.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
 end
-
-
-
-
 function c11560715.ovcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp
 end 
 function c11560715.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,nil) and e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_EFFECT) end
+	local c=e:GetHandler()
+	local ct=0
+	local g=Duel.GetMatchingGroup(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,nil) and e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	if Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_GRAVE,1,nil) then ct=ct+1 end
+	if Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,1,nil) then ct=ct+1 end
+	if Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_REMOVED,1,nil) then ct=ct+1 end
+	local ct=e:GetHandler():RemoveOverlayCard(tp,1,ct,REASON_COST)
+	e:SetLabel(ct)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,ct,0,0)
 end
 function c11560715.loccheck(g)
 	return g:GetClassCount(Card.GetLocation)==1
 end
 function c11560715.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local ct=0
+	local ct=e:GetLabel()
 	if not c:IsRelateToEffect(e) then return end
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsCanOverlay),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,nil)
-	if Duel.IsExistingMatchingCard(aux.NecroValleyFilter(Card.IsCanOverlay),tp,0,LOCATION_GRAVE,1,nil) then ct=ct+1 end
-	if Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,1,nil) then ct=ct+1 end
-	if Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_REMOVED,1,nil) then ct=ct+1 end
 	if g:GetCount()>0 then
-		ctt=c:RemoveOverlayCard(tp,1,ct,REASON_EFFECT)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-		local og=g:SelectSubGroup(tp,c11560715.loccheck,false,ctt,ctt)
+		local og=g:SelectSubGroup(tp,c11560715.loccheck,false,ct,ct)
 		Duel.HintSelection(og)
 		for tc in aux.Next(og) do
 			if tc:IsImmuneToEffect(e) then

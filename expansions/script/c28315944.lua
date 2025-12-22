@@ -12,7 +12,7 @@ function c28315944.initial_effect(c)
 	c:RegisterEffect(e1)
 	--recover
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_POSITION)
+	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_POSITION)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,28315944)
@@ -39,39 +39,41 @@ function c28315944.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
-function c28315944.thfilter(c)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_TUNER) and c:IsAbleToHand()
-end
 function c28315944.sfilter(c)
-	return c:IsFaceup() and c:IsCanTurnSet()
+	return c:IsAttackPos() and c:IsCanTurnSet()
 end
 function c28315944.recop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Recover(tp,1000,REASON_EFFECT)==0 then return end
-	local b1=Duel.IsExistingMatchingCard(c28315944.thfilter,tp,LOCATION_DECK,0,1,nil)
-	local b2=Duel.GetLP(tp)>=10000 and Duel.IsExistingMatchingCard(c28315944.sfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
-	local b3=true
-	if not (b1 or b2) then return end
-	local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(28315944,0)},
-		{b2,aux.Stringid(28315944,1)},
-		{b3,aux.Stringid(28315944,2)})
-	if op~=3 then Duel.BreakEffect() end
-	if op==1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c28315944.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-		local c=e:GetHandler()
-		if c:IsRelateToEffect(e) and c:IsSummonType(SUMMON_TYPE_NORMAL) and c:IsFaceup() and c:IsAttackPos() and Duel.SelectOption(tp,aux.Stringid(28315944,3),aux.Stringid(28315944,4))==0 then
-			Duel.ChangePosition(c,POS_FACEUP_DEFENSE)
-		else
-			local lp=Duel.GetLP(tp)
-			Duel.SetLP(tp,lp-2000)
-		end
-	elseif op==2 then
+	if Duel.Recover(tp,1000,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(c28315944.sfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28315944,0)) then
+		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
 		local g=Duel.SelectMatchingCard(tp,c28315944.sfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,2,nil)
 		Duel.HintSelection(g)
 		Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
+		local c=e:GetHandler()
+		if not c:IsRelateToChain() or c:IsFacedown() then return end
+		local code=c:GetCode()
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_ATTACK_ANNOUNCE)
+		--e1:SetProperty(EFFECT_FLAG_DELAY)
+		e1:SetCondition(c28315944.regcon)
+		e1:SetOperation(c28315944.regop)
+		e1:SetLabel(code)
+		Duel.RegisterEffect(e1,tp)
 	end
+end
+function c28315944.regcon(e,tp,eg,ep,ev,re,r,rp)
+	local at=Duel.GetAttacker()
+	return at and at:IsAttackPos() and at:IsRelateToBattle()
+end
+function c28315944.gnfilter(c,code)--Good Nignt
+	return c:IsCode(code) and c:IsFaceup() and c:IsCanTurnSet()
+end
+function c28315944.regop(e,tp,eg,ep,ev,re,r,rp)
+	local code=e:GetLabel()
+	local g=Duel.GetMatchingGroup(c28315944.gnfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,code)
+	if #g==0 then return end
+	Duel.Hint(HINT_CARD,0,28315944)
+	Duel.HintSelection(g)
+	Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
 end

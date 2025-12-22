@@ -104,12 +104,12 @@ function c11513083.setfil(c,e,tp)
 	end 
 end 
 function c11513083.swtg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11513083.setfil,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,11513083)==0 end
+	if chk==0 then return Duel.IsExistingMatchingCard(c11513083.setfil,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetFlagEffect(tp,11513083)==0 end
 	Duel.RegisterFlagEffect(tp,11513083,RESET_CHAIN,0,1)
 end
 function c11513083.swop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
-	local tc=Duel.SelectMatchingCard(tp,c11513083.setfil,tp,LOCATION_DECK,0,1,1,nil,e,tp):GetFirst() 
+	local tc=Duel.SelectMatchingCard(tp,c11513083.setfil,tp,aux.NecroValleyFilter(LOCATION_DECK+LOCATION_GRAVE),0,1,1,nil,e,tp):GetFirst() 
 	if tc then 
 		if tc:IsType(TYPE_MONSTER) then 
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)

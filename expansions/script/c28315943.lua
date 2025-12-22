@@ -13,7 +13,7 @@ function c28315943.initial_effect(c)
 	c:RegisterEffect(e1)
 	--recover
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_DRAW+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,28315943)
@@ -44,29 +44,40 @@ function c28315943.thfilter(c)
 	return (c:IsSetCard(0x283) and c:IsLevel(4) or c:IsCode(28335405)) and c:IsAbleToHand()
 end
 function c28315943.recop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Recover(tp,1000,REASON_EFFECT)==0 then return end
-	local b1=Duel.IsExistingMatchingCard(c28315943.thfilter,tp,LOCATION_DECK,0,1,nil)
-	local b2=Duel.GetLP(tp)>=10000 and Duel.IsPlayerCanDraw(tp,1)
-	local b3=true
-	if not (b1 or b2) then return end
-	local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(28315943,0)},
-		{b2,aux.Stringid(28315943,1)},
-		{b3,aux.Stringid(28315943,2)})
-	if op~=3 then Duel.BreakEffect() end
-	if op==1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c28315943.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+	if Duel.Recover(tp,1000,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(c28315943.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28315943,0)) then
 		local c=e:GetHandler()
-		if c:IsRelateToEffect(e) and c:IsSummonType(SUMMON_TYPE_NORMAL) and c:IsFaceup() and c:IsAttackPos() and Duel.SelectOption(tp,aux.Stringid(28315943,4),aux.Stringid(28315943,5))==0 then
-			Duel.ChangePosition(c,POS_FACEUP_DEFENSE)
-		else
-			local lp=Duel.GetLP(tp)
-			Duel.SetLP(tp,lp-2000)
-		end
-	elseif op==2 then
-		Duel.Draw(tp,1,REASON_EFFECT)
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local tc=Duel.SelectMatchingCard(tp,c28315943.thfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
+		local tcode,acode=tc:GetCode(),c:GetCode()--Tenka & Amana
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
+		if not c:IsRelateToChain() or c:IsFacedown() then return end
+		--c:SetHint(CHINT_CARD,tcode)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_LEAVE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_DELAY)
+		e1:SetCondition(c28315943.regcon)
+		e1:SetOperation(c28315943.regop)
+		e1:SetLabel(tcode,acode)
+		Duel.RegisterEffect(e1,tp)
 	end
+end
+function c28315943.chkfilter(c,code)
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:GetPreviousCodeOnField()==code
+end
+function c28315943.regcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c28315943.chkfilter,1,nil,e:GetLabel())
+end
+function c28315943.rlfilter(c,code)
+	return c:IsCode(code) and c:IsFaceup() and c:IsReleasableByEffect()
+end
+function c28315943.regop(e,tp,eg,ep,ev,re,r,rp)
+	local _,code=e:GetLabel()
+	local g=Duel.GetMatchingGroup(c28315943.rlfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,code)
+	if #g==0 then return end
+	Duel.Hint(HINT_CARD,0,28315943)
+	Duel.HintSelection(g)
+	Duel.Release(g,REASON_EFFECT)
 end

@@ -21,17 +21,17 @@ function c28355662.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
+	e2:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCondition(c28355662.dscon)
+	e2:SetCondition(c28355662.descon)
 	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(c28355662.dstg)
-	e2:SetOperation(c28355662.dsop)
+	e2:SetTarget(c28355662.destg)
+	e2:SetOperation(c28355662.desop)
 	c:RegisterEffect(e2)
 end
 function c28355662.excondition(e)
 	local tp=e:GetHandlerPlayer()
-	return Duel.GetTurnPlayer()==tp and (Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,2000) or Duel.GetLP(tp)>3000 and Duel.CheckLPCost(tp,4000))
+	return (Duel.GetLP(tp)<=3000 and Duel.CheckLPCost(tp,2000) or Duel.GetLP(tp)>3000 and Duel.CheckLPCost(tp,4000))-- and Duel.GetTurnPlayer()==tp
 end
 function c28355662.excost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -45,8 +45,8 @@ function c28355662.spfilter(c,e,tp)
 	return c:IsSetCard(0x285) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK)
 end
 function c28355662.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28355662.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28355662.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end-- and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
@@ -56,7 +56,7 @@ function c28355662.activate(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.SelectMatchingCard(tp,c28355662.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if #sg>0 and Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP_ATTACK)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,sg)
+		local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_MZONE,0,1,1,nil)
 		Duel.HintSelection(dg)
 		Duel.Destroy(dg,REASON_EFFECT)
 	end
@@ -71,15 +71,16 @@ function c28355662.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(dg,REASON_EFFECT)
 	end
 end
-function c28355662.dscon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(tp)<=3000
+function c28355662.descon(e,tp,eg,ep,ev,re,r,rp)
+	local at=Duel.GetAttacker()
+	return at and at:IsAttackAbove(Duel.GetLP(tp)) and at:IsRelateToBattle()
 end
-function c28355662.dstg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c28355662.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
-function c28355662.dsop(e,tp,eg,ep,ev,re,r,rp)
+function c28355662.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.HintSelection(dg)

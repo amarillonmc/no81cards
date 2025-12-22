@@ -55,8 +55,8 @@ end
 function c11513084.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	local x=e:GetLabel() 
-	if x>=1 and Duel.Damage(1-tp,400,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(c11513084.thfil,tp,LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11513084,1)) then 
-		local tc=Duel.SelectMatchingCard(tp,c11513084.thfil,tp,LOCATION_GRAVE,0,1,1,nil):GetFirst() 
+	if x>=1 and Duel.Damage(1-tp,400,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c11513084.thfil),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11513084,1)) then 
+		local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11513084.thfil),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil):GetFirst() 
 		if tc:IsType(TYPE_MONSTER) and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(11513084,2)) then 
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) 
 		else 

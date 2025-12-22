@@ -163,7 +163,7 @@ function c28399999.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c28399999.desop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
+	if tc:IsRelateToChain() then
 		Duel.Destroy(tc,REASON_EFFECT)
 	end
 end
@@ -226,7 +226,7 @@ function c28399999.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28399999.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Draw(p,d,REASON_EFFECT)
+	Duel.Draw(p,d,REASON_EFFECT)--Duel.Draw(tp,1,REASON_EFFECT)
 end
 --search
 function c28399999.thfilter(c,chk)
@@ -263,7 +263,7 @@ function c28399999.atkop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
 		local e2=e1:Clone()
-		e2:SetCode(EFFECT_UPDATE_ATTACK)
+		e2:SetCode(EFFECT_UPDATE_DEFENSE)
 		tc:RegisterEffect(e2)
 	end
 end
@@ -275,7 +275,7 @@ function c28399999.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28399999.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	if c:IsRelateToChain() then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

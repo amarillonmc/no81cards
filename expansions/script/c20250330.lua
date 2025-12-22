@@ -36,11 +36,8 @@ function c20250330.initial_effect(c)
 	e4:SetOperation(c20250330.lvop)
 	c:RegisterEffect(e4)
 end
-function c20250330.spcfilter(e,tp)
-	return Duel.GetCounter(tp,1,0,0x154a)>=1
-end
 function c20250330.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return not Duel.IsExistingMatchingCard(c20250330.spcfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.GetCounter(tp,1,0,0x154a)<1
 end
 function c20250330.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

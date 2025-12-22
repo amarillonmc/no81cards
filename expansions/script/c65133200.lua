@@ -2,6 +2,7 @@
 local s,id,o=GetID()
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
+local MATCH_MODE=KOISHI_CHECK and Duel.GetRegistryValue("duel_mode")=="match"
 function s.initial_effect(c)
 	--activate
 	aux.EnablePendulumAttribute(c)
@@ -16,13 +17,14 @@ function s.initial_effect(c)
 		s.IsOriginalSetCard=Card.IsOriginalSetCard
 		s.RegisterEffect=Card.RegisterEffect
 		KRO_COPY={}
+		KRO_COPYCARD={}
+		KRO_COPING={}
 		KRO_COPIED={}
 		for p=0,1 do
 			KRO_COPY[p]={}
-			local pname=s.getplayername(p)
-			local str=Duel.GetRegistryValue(pname)
-			if str then
-				KRO_COPIED[p]=s.stringToTable(str)
+			KRO_COPING[p]={}
+			if MATCH_MODE and Duel.GetRegistryValue(s.getplayername(p))then
+				KRO_COPIED[p]=s.stringToTable(Duel.GetRegistryValue(s.getplayername(p)))
 			else
 				KRO_COPIED[p]={}
 				--KRO_COPIED[p]={{code=55144522,id={1}}}
@@ -44,7 +46,8 @@ function s.initial_effect(c)
 		e2:SetOperation(s.cpop)
 		Duel.RegisterEffect(e2,0)
 	end
-	for _,cdata in pairs(KRO_COPIED[1-tp]) do
+	
+	for _,cdata in pairs(KRO_COPIED[tp]) do
 		s.geteffect(cdata,c)
 	end
 end
@@ -57,7 +60,7 @@ function s.getplayername(tp)
 	end
 	local pname="Kro_Effect_"
 	if tp==0 then
-	--if tonumber(Duel.GetRegistryValue("player_type_0"))==tp then			
+	--if tonumber(Duel.GetRegistryValue("player_type_0"))==tp then  
 		pname=pname..p0
 	else
 		pname=pname..p1
@@ -78,53 +81,126 @@ function s.costop(e,tp,eg,ep,ev,re,r,rp)
 	local tp=te:GetHandlerPlayer()
 	if s[0] or te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then return end
 	s[0]=true
-	local effects={tc:GetCardRegistered(nil,GETEFFECT_INITIAL)}
 	local bool=false
-	for _,ce in ipairs(effects) do
-		if s.issameeffect(te,ce) then
-			bool=true
-			break
+	if KOISHI_CHECK then
+		local effects={tc:GetCardRegistered(nil,GETEFFECT_INITIAL)} 
+		for _,ce in ipairs(effects) do
+			if s.issameeffect(te,ce) then
+				bool=true
+				break
+			end
 		end
+	else
+		bool=true
 	end
 	if bool and not KRO_COPY[tp][te] then
 		table.insert(KRO_COPY[tp],te)
 	end
 end
 function s.cfilter(c,cid,tp)
-	return c:GetOriginalCode()==cid and c:IsControler(1-tp)
+	return c:GetOriginalCode()==cid and (not tp or c:GetOwner()==tp)
 end
 function s.cpop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	for p=0,1 do
-		if #KRO_COPY[p]>0 then
-			local key=Duel.GetRandomNumber(1,#KRO_COPY[p])
-			local te=KRO_COPY[p][key]
-			local cdata=s.findeffect(te)
-			s.addData(KRO_COPIED[p],cdata)
-
-			local code=te:GetHandler():GetCode()
-			Duel.Hint(HINT_CARD,0,id)
-			Duel.Hint(HINT_CODE,0,code)
-			Duel.Hint(HINT_CODE,1,code)
-			local desc=s.getdesc(te)
-			Duel.Hint(HINT_OPSELECTED,0,desc)
-			Duel.Hint(HINT_OPSELECTED,1,desc)
-			local str=s.tableToString(KRO_COPIED[p])
-			Duel.SetRegistryValue(s.getplayername(p),str)
-
-			local str=Duel.GetRegistryValue(s.getplayername(p))
-			if str then
-				KRO_COPIED[p]=s.stringToTable(str)
+		local g=Duel.GetFieldGroup(0,0x7f,0x7f)
+		local xg=Duel.GetOverlayGroup(0,0x7f,0x7f)
+		g:Merge(xg)
+		g=g:Filter(s.cfilter,nil,id,p)
+		if #KRO_COPY[1-p]>0 and #g>0 then
+			local bool=false
+			if KRO_COPYCARD[p]==nil then
+				bool=Duel.SelectYesNo(p,aux.Stringid(id,4))
+			else
+				bool=Duel.SelectEffectYesNo(p,KRO_COPYCARD[p],aux.Stringid(id,3))
 			end
+			if bool then
+				for _,te in ipairs(KRO_COPING[p]) do
+					te:Reset()
+				end
+				KRO_COPING[p]={}
+				local ht={}
+				local codes={}
+				for _,te in ipairs(KRO_COPY[1-p]) do
+					local code=te:GetHandler():GetOriginalCode()
+					if ht[code]==nil then
+						ht[code]=true
+						table.insert(codes,code)
+					end
+				end
+				table.sort(codes)
+				local afilter={codes[1],OPCODE_ISCODE}
+				if #codes>1 then
+					--or ... or c:IsCode(codes[i])
+					for i=2,#codes do
+						table.insert(afilter,codes[i])
+						table.insert(afilter,OPCODE_ISCODE)
+						table.insert(afilter,OPCODE_OR)
+					end
+				end
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+				local ac=Duel.AnnounceCard(p,table.unpack(afilter))
+				local g=Duel.GetFieldGroup(0,0x7f,0x7f)
+				local xg=Duel.GetOverlayGroup(0,0x7f,0x7f)
+				g:Merge(xg)
+				KRO_COPYCARD[p]=g:Filter(s.cfilter,nil,ac):GetFirst()
+				local ht2={}
+				local effects={}
+				local numbers={}
+				for _,te in ipairs(KRO_COPY[1-p]) do
+					local code=te:GetHandler():GetOriginalCode()
+					if ac==code then
+						ht[code]=true
+						local cdata=s.findeffect(te)
+						local id=cdata.id[1]
+						if not ht2[id] then
+							ht2[id]=true
+							table.insert(effects,cdata)
+							table.insert(numbers,id)
+						end
+					end
+				end
+				local cdata=effects[1]
+				if #effects>1 then
+					local t={}
+					for i=1,max do
+						t[i]=i
+					end
+					Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,0))
+					local an=Duel.AnnounceNumber(p,t)
+					cdata=effects[an]
+				end
+				--local cdata=s.findeffect(te)
+				s.addData(KRO_COPIED[p],cdata)
+				if MATCH_MODE then
+					--local code=te:GetHandler():GetCode()
+					--Duel.Hint(HINT_CARD,0,id)
+					--Duel.Hint(HINT_CODE,0,code)
+					--Duel.Hint(HINT_CODE,1,code)
+					--local desc=s.getdesc(te)
+					--Duel.Hint(HINT_OPSELECTED,0,desc)
+					--Duel.Hint(HINT_OPSELECTED,1,desc)
+					local str=s.tableToString(KRO_COPIED[p])
+					Duel.SetRegistryValue(s.getplayername(p),str)
 
-			local g=Duel.GetFieldGroup(0,0x7f,0x7f)
-			local xg=Duel.GetOverlayGroup(0,0x7f,0x7f)
-			g:Merge(xg)
-			g=g:Filter(s.cfilter,nil,id,p)
-			for tc in aux.Next(g) do
-				s.geteffect(cdata,tc)
+					local str=Duel.GetRegistryValue(s.getplayername(p))
+					if str then
+						KRO_COPIED[p]=s.stringToTable(str)
+					end
+				end
+
+				local g=Duel.GetFieldGroup(0,0x7f,0x7f)
+				local xg=Duel.GetOverlayGroup(0,0x7f,0x7f)
+				g:Merge(xg)
+				g=g:Filter(s.cfilter,nil,id,p)
+				for tc in aux.Next(g) do
+					local copyeffect=s.geteffect(cdata,tc)
+					for i=1,#copyeffect do
+						table.insert(KRO_COPING[p],copyeffect[i])
+					end
+				end
+				KRO_COPY[1-p]={}
 			end
-			KRO_COPY[p]={}
 		end
 	end
 end
@@ -133,27 +209,36 @@ function s.issameeffect(e1,e2)
 	local op=e1:GetOperation()
 	local code1=e1:GetCode()
 	local code2=e2:GetCode()
-	return tg==e2:GetTarget() and (op==nil or op==e2:GetOperation()) and (code1==code2 or code and code2 and code1*code2==EVENT_SPSUMMON_SUCCESS*EVENT_SUMMON_SUCCESS)
+	local res1=tg==e2:GetTarget()
+	local res2=op==nil or op==e2:GetOperation()
+	local res3=code1==code2 or code1 and code2 and code1*code2==EVENT_SPSUMMON_SUCCESS*EVENT_SUMMON_SUCCESS
+	return res1 and res2 and res3
 end
 function s.addData(ctable,cdata)
 	local code=cdata.code
-	local found=false
-	for _,item in ipairs(ctable) do
-		if item.code==code then
-			found=true
-			local id=cdata.id
-			for i in pairs(id) do
-				table.insert(item.id,i)
-			end
-			break
-		end
-	end
-	if not found then
-		table.insert(ctable,cdata)
+	--local found=false
+	--for _,item in ipairs(ctable) do
+	--  if item.code==code then
+	--  found=true
+	--  local id=cdata.id
+	--  for i in pairs(id) do
+	--	table.insert(item.id,i)
+	--  end
+	--  break
+	--  end
+	--end
+	--if not found then
+	--  table.insert(ctable,cdata)
+	--end
+	if MATCH_MODE then
+		local match=tonumber(Duel.GetRegistryValue("duel_count"))
+		ctable[match+1]=cdata
+	else
+		ctable[1]=cdata
 	end
 end
 function s.geteffect(cdata,c)
-	effects={}
+	local effects={}
 	function Card.RegisterEffect(cc,ce,...)
 		table.insert(effects,ce) 
 	end
@@ -161,14 +246,15 @@ function s.geteffect(cdata,c)
 	local token=Duel.CreateToken(0,cdata.code)
 	Duel.DisableActionCheck(false)
 	Card.RegisterEffect=s.RegisterEffect
-
+	local copyeffect={}
 	for i,effect in ipairs(effects) do
 		for _,cid in ipairs(cdata.id) do
 			if i==cid then
-				s.setcheffect(c,effect,cdata.code)
+				table.insert(copyeffect,s.setcheffect(c,effect,cdata.code))
 			end
 		end
 	end
+	return copyeffect
 end
 function s.findeffect(e)
 	local c=e:GetHandler()
@@ -182,14 +268,10 @@ function s.findeffect(e)
 	local token=Duel.CreateToken(0,ccode)
 	Card.RegisterEffect=s.RegisterEffect
 
-	local cdata={}
+	local cdata={code=ccode,id={}}
 	for i,effect in ipairs(effects) do
 		if s.issameeffect(e,effect) then
-			if #cdata==0 then
-				cdata={code=ccode,id={i}}
-			else
-				table.insert(cdata.id,i)
-			end
+			table.insert(cdata.id,i)
 		end
 	end
 	return cdata
@@ -337,7 +419,6 @@ function s.chcost(ce,code)
 			Duel.Hint(HINT_CARD,0,code)
 			cost(e,tp,eg,ep,ev,re,r,rp,chk)
 			s.unchfunction()
-			e:Reset()
 		end
 	end
 end
@@ -346,13 +427,13 @@ function s.chtg(ce,code)
 	if not tg then tg=aux.TRUE end
 	return function (e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		s.chfunction(code)
-		if chk==0 then		  
+		if chk==0 then  
 			local res=tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 			s.unchfunction()
 			return res
 		else
-			Duel.Hint(HINT_OPSELECTED,0,desc)
-			Duel.Hint(HINT_OPSELECTED,1,desc)
+			--Duel.Hint(HINT_OPSELECTED,0,e:GetDescription())
+			--Duel.Hint(HINT_OPSELECTED,1,e:GetDescription())
 			tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 			s.unchfunction()
 		end
@@ -371,8 +452,8 @@ function s.getdesc(ce)
 	local desc=ce:GetDescription()
 	local cate=ce:GetCategory()
 	if desc~=0 then
-		Duel.Hint(HINT_OPSELECTED,0,desc)
-		Duel.Hint(HINT_OPSELECTED,1,desc)
+		--Duel.Hint(HINT_OPSELECTED,0,desc)
+		--Duel.Hint(HINT_OPSELECTED,1,desc)
 	end
 	if cate&CATEGORY_DAMAGE>0 then desc=1122
 	elseif cate&CATEGORY_RECOVER>0 then desc=1123
@@ -388,7 +469,7 @@ function s.getdesc(ce)
 	end
 	return desc
 end
-function s.setcheffect(c,te,code)
+function s.setcheffect(c,te,code,desc)
 	local ce=te:Clone()
 	local desc=s.getdesc(ce)
 	ce:SetDescription(desc)
@@ -401,4 +482,5 @@ function s.setcheffect(c,te,code)
 	ce:SetTarget(s.chtg(te,code))
 	ce:SetOperation(s.chop(te,code))
 	c:RegisterEffect(ce,true)
+	return ce
 end

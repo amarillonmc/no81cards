@@ -30,6 +30,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 	--Activate
 	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_MZONE)
@@ -83,21 +84,26 @@ end
 function c11513090.setfilter(c)
 	return c:IsSetCard(0x1c0) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
+function c11513090.tthfilter2(c)
+	return c:IsSetCard(0x1c0) and c:IsAbleToHand()
+end
 function c11513090.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(c11513090.setfilter,tp,LOCATION_DECK,0,nil)
-	if chk==0 then return Duel.CheckLocation(tp,LOCATION_PZONE,0) and Duel.CheckLocation(tp,LOCATION_PZONE,1) and #g>0 and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() end
+	if chk==0 then return (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) and #g>0 and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and Duel.IsExistingMatchingCard(c11513090.tthfilter2,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c11513090.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not Duel.CheckLocation(tp,LOCATION_PZONE,0) or not Duel.CheckLocation(tp,LOCATION_PZONE,1) or not c:IsRelateToEffect(e) then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local tc=Duel.SelectMatchingCard(tp,c11513090.setfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-	if Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,false) then
-		if Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,false) then
-			c:SetStatus(STATUS_EFFECT_ENABLED,true)
-		end
-		tc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	if (not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1)) or not c:IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c11513090.tthfilter2,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)~=0 then
+		Duel.ConfirmCards(1-tp,g)
+			if (not Duel.CheckLocation(tp,LOCATION_PZONE,0) and not Duel.CheckLocation(tp,LOCATION_PZONE,1)) or not c:IsRelateToEffect(e) then return end
+			if Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,false) then
+				c:SetStatus(STATUS_EFFECT_ENABLED,true)
+			end
 	end
 end
 function c11513090.thfilter(c)
@@ -111,7 +117,7 @@ function c11513090.tthfilter(c)
 end
 function c11513090.optg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11513090.tthfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c11513090.opop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

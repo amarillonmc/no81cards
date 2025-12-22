@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1, m)
+	e2:SetCondition(cm.e2con)
 	-- e2:SetCost(cm.e2cost)
 	e2:SetTarget(cm.e2tg)
 	e2:SetOperation(cm.e2op)
@@ -68,7 +69,9 @@ function cm.e2cost(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable, tp, LOCATION_HAND, 0, 1, nil) end
 	Duel.DiscardHand(tp, Card.IsDiscardable, 1, 1, REASON_COST + REASON_DISCARD)
 end
-
+function cm.e2con(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(m)==0
+end
 function cm.e2tg(e, tp, eg, ep, ev, re, r, rp, chk)
 	local g = Duel.GetMatchingGroup(nil, tp, 0, LOCATION_ONFIELD, nil)
 	if chk == 0 then return #g > 0 end
@@ -81,6 +84,10 @@ function cm.e2op(e, tp, eg, ep, ev, re, r, rp)
 	local sg = g:FilterSelect(tp, aux.TRUE, 1, 3, nil)
 	if sg then
 		Duel.SendtoGrave(sg, REASON_EFFECT)
+	end
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) then
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,2)
 	end
 end
 

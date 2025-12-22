@@ -5,11 +5,11 @@ function c28319011.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e0:SetCondition(c28319011.condition)
-	e0:SetDescription(aux.Stringid(28319011,4))
+	e0:SetDescription(aux.Stringid(28319011,0))
 	c:RegisterEffect(e0)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_RECOVER+CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(c28319011.target)
@@ -17,7 +17,7 @@ function c28319011.initial_effect(c)
 	c:RegisterEffect(e1)
 	--grave copy
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_LEAVE_GRAVE)
+	--e2:SetCategory(CATEGORY_TODECK+CATEGORY_LEAVE_GRAVE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_GRAVE)
@@ -40,31 +40,20 @@ function c28319011.cfilter(c,oc)
 end
 function c28319011.spfilter(c,e,tp)
 	return c:IsSetCard(0x287) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and not Duel.IsExistingMatchingCard(c28319011.cfilter,tp,LOCATION_ONFIELD,0,1,nil,c)
+	and not Duel.IsExistingMatchingCard(c28319011.cfilter,tp,LOCATION_ONFIELD,0,1,nil,c)
 end
 function c28319011.activate(e,tp,eg,ep,ev,re,r,rp,op)
-	local b1=true
-	local b2=Duel.IsExistingMatchingCard(c28319011.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)>0
-	local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(28319011,0)},
-		{b2,aux.Stringid(28319011,1)})
-	if op==1 then
-		Duel.Recover(tp,1000,REASON_EFFECT)
-		if Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 then Duel.Recover(tp,1000,REASON_EFFECT) end
-	elseif op==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sc=Duel.SelectMatchingCard(tp,c28319011.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
-		if Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 then
-			local te=sc.recover_effect
-			if not te then return end
-			local tg=te:GetTarget()
-			if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) then
-				Duel.BreakEffect()
-				Duel.SetLP(tp,Duel.GetLP(tp)-1500)
-				local op=te:GetOperation()
-				if op then op(e,tp,eg,ep,ev,re,r,rp) end
-			end
-		end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sc=Duel.SelectMatchingCard(tp,c28319011.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst()
+	if Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 then
+		local te=sc.recover_effect
+		if not te then return end
+		local tg=te:GetTarget()
+		if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) then
+		Duel.BreakEffect()
+		Duel.SetLP(tp,Duel.GetLP(tp)-1500)
+		local op=te:GetOperation()
+		if op then op(e,tp,eg,ep,ev,re,r,rp) end
 	end
 end
 function c28319011.tdcon(e,tp,eg,ep,ev,re,r,rp)
@@ -72,19 +61,16 @@ function c28319011.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION),LOCATION_ONFIELD)~=0 and rp==tp and rc and rc:IsSetCard(0x287)
 end
 function c28319011.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,1500) end
-	Duel.PayLPCost(tp,1500)
+	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
+	Duel.HintSelection(Group.FromCards(e:GetHandler()))
+	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c28319011.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToDeck() end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,tp,LOCATION_GRAVE)
+	if chk==0 then return e:GetHandler():CheckActivateEffect(false,true,false) end
 end
 function c28319011.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local te=e:GetHandler():CheckActivateEffect(false,true,false)
+	Duel.SetLP(tp,Duel.GetLP(tp)-1500)
+	local te,ceg,cep,cev,cre,cr,crp=e:GetHandler():CheckActivateEffect(false,true,true)
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
-	if e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsAbleToDeck() then
-		Duel.BreakEffect()
-		Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	end
 end

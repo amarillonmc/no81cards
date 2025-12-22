@@ -43,7 +43,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		if tc:IsRace(RACE_SPELLCASTER) and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.tdfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
 			and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,3))
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 			local sg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.tdfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 			local sc=sg:GetFirst()
 			if sc:IsLocation(LOCATION_DECK) then

@@ -12,7 +12,7 @@ function c28316347.initial_effect(c)
 	c:RegisterEffect(e1)
 	--recover
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_RELEASE)
+	e2:SetCategory(CATEGORY_RECOVER+CATEGORY_DRAW+CATEGORY_RELEASE)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,28316347)
@@ -39,33 +39,19 @@ function c28316347.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 end
-function c28316347.thfilter(c)
-	return c:IsSetCard(0x283) and c:IsAttribute(ATTRIBUTE_EARTH) and c:IsAbleToHand()
-end
 function c28316347.recop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.Recover(tp,1000,REASON_EFFECT)==0 then return end
-	local b1=Duel.IsExistingMatchingCard(c28316347.thfilter,tp,LOCATION_DECK,0,1,nil)
-	local b2=Duel.GetLP(tp)>=10000 and Duel.IsExistingMatchingCard(Card.IsReleasableByEffect,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
-	local b3=true
-	if not (b1 or b2) then return end
+	local b1=true
+	local b2=Duel.GetLP(tp)>=10000 and 
+	local b3=Duel.IsExistingMatchingCard(Card.IsReleasableByEffect,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 	local op=aux.SelectFromOptions(tp,
 		{b1,aux.Stringid(28316347,0)},
 		{b2,aux.Stringid(28316347,1)},
 		{b3,aux.Stringid(28316347,2)})
-	if op~=3 then Duel.BreakEffect() end
 	if op==1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c28316347.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-		local c=e:GetHandler()
-		if c:IsRelateToEffect(e) and c:IsSummonType(SUMMON_TYPE_NORMAL) and c:IsFaceup() and c:IsAttackPos() and Duel.SelectOption(tp,aux.Stringid(28316347,3),aux.Stringid(28316347,4))==0 then
-			Duel.ChangePosition(c,POS_FACEUP_DEFENSE)
-		else
-			local lp=Duel.GetLP(tp)
-			Duel.SetLP(tp,lp-2000)
-		end
+		Duel.Recover(tp,1000,REASON_EFFECT)
 	elseif op==2 then
+		Duel.Draw(tp,1,REASON_EFFECT)
+	elseif op==3 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 		local g=Duel.SelectMatchingCard(tp,Card.IsReleasableByEffect,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 		Duel.HintSelection(g)

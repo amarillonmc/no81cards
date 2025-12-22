@@ -2,6 +2,8 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,70095154)
+	--change name
+	aux.EnableChangeCode(c,70095154,LOCATION_HAND+LOCATION_DECK+LOCATION_MZONE+LOCATION_GRAVE)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))

@@ -14,15 +14,15 @@ function c28315844.initial_effect(c)
 	--destroy
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28315844,1))
-	e2:SetCategory(CATEGORY_DAMAGE+CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38315844)
-	e2:SetCondition(c28315844.decon)
-	e2:SetTarget(c28315844.detg)
-	e2:SetOperation(c28315844.deop)
+	e2:SetCondition(c28315844.descon)
+	--e2:SetTarget(c28315844.destg)
+	e2:SetOperation(c28315844.desop)
 	c:RegisterEffect(e2)
 end
 function c28315844.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -38,34 +38,51 @@ function c28315844.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28315844.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.GetMZoneCount(tp)>0 then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	end
-	if Duel.GetLP(tp)>3000 then
-		Duel.Damage(tp,2000,REASON_EFFECT)
-	end
+	if c:IsRelateToEffect(e) then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
+	if Duel.GetLP(tp)>3000 then Duel.Damage(tp,2000,REASON_EFFECT) end
 end
-function c28315844.cfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x283) and c:IsControler(tp)
+function c28315844.descon(e,tp,eg,ep,ev,re,r,rp)
+	local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)
+	return re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_MZONE and p==tp--re:GetActivateLocation()
 end
-function c28315844.decon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp and not eg:IsContains(e:GetHandler()) and eg:IsExists(c28315844.cfilter,1,nil,tp)
-end
-function c28315844.detg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c28315844.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(500)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,500)
 end
-function c28315844.deop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Damage(p,d,REASON_EFFECT)
-	if Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28315844,2)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.HintSelection(g)
-			Duel.Destroy(g,REASON_EFFECT)
-		end
+function c28315844.gcheck(g)
+	return g:FilterCount(Card.IsControler,nil,0)<=1 and g:FilterCount(Card.IsControler,nil,1)<=1
+end
+function c28315844.desop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToChain() and c:IsFaceup() then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(28315844,1))
+		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_LEAVE_FIELD)
+		e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
+		e1:SetOperation(c28315844.regop)
+		c:RegisterEffect(e1)
 	end
+	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
+	if Duel.GetLP(tp)<=3000 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(28315844,2)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local sg=g:SelectSubGroup(tp,c28315844.gcheck,false,1,2)
+		Duel.HintSelection(sg)
+		Duel.Destroy(sg,REASON_EFFECT)
+	end
+end
+function c28315844.regop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local p=c:GetPreviousControler()
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,p,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	if c:IsReason(REASON_DESTROY) and #g>0 then-- and Duel.SelectYesNo(p,aux.Stringid(28315844,2))
+		Duel.Hint(HINT_CARD,0,28315844)
+		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_DESTROY)
+		local sg=g:SelectSubGroup(p,c28315844.gcheck,false,1,2)
+		Duel.HintSelection(sg)
+		Duel.Destroy(sg,REASON_EFFECT)
+	end
+	e:Reset()
 end

@@ -2,7 +2,7 @@
 function c28368431.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_RECOVER+CATEGORY_SEARCH)
+	e1:SetCategory(CATEGORY_RECOVER)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCost(c28368431.cost)
@@ -16,30 +16,15 @@ function c28368431.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCondition(c28368431.thcon)
+	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c28368431.thtg)
 	e2:SetOperation(c28368431.thop)
 	c:RegisterEffect(e2)
-	if not c28368431.global_check then
-		c28368431.global_check=true
-		local ge1=Effect.CreateEffect(c)
-		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
-		ge1:SetCondition(c28368431.checkcon)
-		ge1:SetOperation(c28368431.checkop)
-		Duel.RegisterEffect(ge1,0)
-	end
+	--
+	Duel.AddCustomActivityCounter(28368431,ACTIVITY_SPSUMMON,c28368431.counterfilter)
 end
-function c28368431.ctfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x285)
-end
-function c28368431.checkcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c28368431.ctfilter,1,nil)
-end
-function c28368431.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=eg:Filter(c28368431.ctfilter,nil)
-	for tc in aux.Next(sg) do
-		Duel.RegisterFlagEffect(tc:GetSummonPlayer(),28368431,RESET_PHASE+PHASE_END,0,1)
-	end
+function c28368431.counterfilter(c)
+	return not c:IsSetCard(0x285)
 end
 function c28368431.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLP(tp)<=3000 or Duel.CheckLPCost(tp,2000) end
@@ -47,81 +32,65 @@ function c28368431.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28368431.activate(e,tp,eg,ep,ev,re,r,rp)
 	--recover
-	local e3=Effect.CreateEffect(e:GetHandler())
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_PHASE+PHASE_END)
-	e3:SetCountLimit(1)
-	e3:SetReset(RESET_PHASE+PHASE_END)
-	e3:SetCondition(c28368431.rccon)
-	e3:SetOperation(c28368431.rcop)
-	Duel.RegisterEffect(e3,tp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	--e1:SetCondition(c28368431.regcon)
+	e1:SetOperation(c28368431.regop)
+	Duel.RegisterEffect(e1,tp)
 end
-function c28368431.costchange(e,re,rp,val)
-	if re and re:GetHandler():IsSetCard(0x285) and Duel.GetLP(rp)<=3000 then
-		return 0
-	else
-		return val
+function c28316149.setfilter(c,e,p)
+	return c:IsSetCard(0x285) and (c:IsSSetable() or Duel.GetMZoneCount(p)>0 and c:IsCanBeSpecialSummoned(e,0,p,false,false,POS_FACEDOWN_DEFENSE))
+end
+function c28368431.gcheck(g,tp)
+	local mt=Duel.IsPlayerAffectedByEffect(tp,59822133) and 1 or Duel.GetMZoneCount(tp)
+	local st=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	return g:FilterCount(Card.IsType,nil,TYPE_MONSTER)<=mt and g:FilterCount(Card.IsType,nil,TYPE_FIELD)<=1 and g:FilterCount(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP)-g:FilterCount(Card.IsType,nil,TYPE_FIELD)<=st
+end
+function c28368431.regop(e,tp,eg,ep,ev,re,r,rp)
+	local val=Duel.Recover(tp,Duel.GetCustomActivityCount(28368431,tp,ACTIVITY_SPSUMMON)*500,REASON_EFFECT)
+	local ct=math.floor(val/1500)
+	local g=Duel.GetMatchingGroup(c28368431.setfilter,tp,LOCATION_DECK,0,nil,e,tp)
+	if ct>0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(28368431,1)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+		local sg=g:SelectSubGroup(tp,c28368431.gcheck,false,1,ct,tp)
+		local mg=sg:Filter(Card.IsType,nil,TYPE_MONSTER)
+		if #mg>0 then
+			sg:Sub(mg)
+			Duel.SpecialSummon(mg,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
+			Duel.ConfirmCards(1-tp,mg)
+		end
+		Duel.SSet(tp,sg)
 	end
 end
-function c28368431.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(e:GetHandlerPlayer())<=3000
-end
-function c28368431.rccon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,28368431)>0
-end
-function c28368431.thfilter(c)
-	return c:IsSetCard(0x285) and c:IsAbleToHand()
-end
-function c28368431.rcop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=Duel.GetFlagEffect(tp,28368431)
-	local val=Duel.Recover(tp,ct*500,REASON_EFFECT)
-	local tct=math.floor(val/1500)
-	local g=Duel.GetMatchingGroup(c28368431.thfilter,tp,LOCATION_DECK,0,nil)
-	if tct>0 and Duel.IsExistingMatchingCard(c28368431.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28368431,1)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tg=g:SelectSubGroup(tp,aux.dncheck,false,1,tct)
-		Duel.SendtoHand(tg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tg)
-	end
-end
-function c28368431.confilter(c,tp)
-	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)
-		and c:GetReasonPlayer()==1-tp and not c:IsReason(REASON_RULE)
+function c28368431.cfilter(c)
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:IsReason(REASON_BATTLE+REASON_EFFECT)
 end
 function c28368431.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetLP(tp)<=3000 and eg:IsExists(c28368431.confilter,1,nil,tp)
+	return eg:Filter(c28368431.cfilter,nil):GetSum(Card.GetPreviousAttackOnField)+eg:Filter(c28368431.cfilter,nil):GetSum(Card.GetPreviousDefenseOnField)>=Duel.GetLP(tp) and not eg:IsContains(e:GetHandler())
+end
+function c28368431.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
+	Duel.HintSelection(Group.FromCards(e:GetHandler()))
+	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c28368431.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToHand() end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+	local g=eg:Filter(c28368431.cfilter,nil)
+	if chk==0 then return g:IsExists(Card.IsAbleToHand,1,nil) end
+	Duel.SetTargetCard(g)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,nil)
 end
 function c28368431.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SendtoHand(c,nil,REASON_EFFECT)
+	local g=eg:Filter(c28328484.cfilter,nil):Filter(aux.NecroValleyFilter(Card.IsRelateToChain),nil)
+	if #g>0 then
+		local tc=g:GetFirst()
+		if #g>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			tc=g:Select(tp,1,1,nil):GetFirst()
+		end
+		Duel.HintSelection(Group.FromCards(tc))
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CHANGE_DAMAGE)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	--e1:SetCondition(c28368431.damcon)
-	e1:SetValue(c28368431.damval)
-	e1:SetReset(RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
-	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone()
-	e2:SetCode(EFFECT_NO_EFFECT_DAMAGE)
-	e2:SetValue(1)
-	Duel.RegisterEffect(e2,tp)
-end
-function c28368431.damcon(e)
-	local tp=e:GetHandlerPlayer()
-	return Duel.GetFlagEffect(tp,28368431)==0
-end
-function c28368431.damval(e,re,val,r,rp,rc)
-	if bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 then
-		e:Reset()
-		return 0
-	end
-	return val
 end

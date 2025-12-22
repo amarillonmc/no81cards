@@ -26,7 +26,7 @@ function s.initial_effect(c)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_SZONE,LOCATION_SZONE,nil)
-	if chk==0 then #g>0 and 
+	if chk==0 then return #g>0 end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
 end
 function s.rmfilter(c)
@@ -54,15 +54,16 @@ function s.addcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler()==re:GetHandler() and e:GetHandler():GetColumnGroupCount()>=2 and Duel.GetFlagEffect(tp,id)<=0
 end
 function s.addfilter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsLevel(3) and c:IsAbleToHand()
+	return c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsAbleToHand()
 end
 function s.addop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	local g=Duel.GetMatchingGroup(s.addfilter,tp,LOCATION_REMOVED,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
-		local sc=g:Select(tp,1,1,nil):GetFirst()
-		Duel.SendtoHand(sc,nil,REASON_EFFECT)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
 	end
 	Duel.RegisterFlagEffect(tp,id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end

@@ -31,6 +31,14 @@ function s.initial_effect(c)
 	e3:SetCondition(s.negcon)
 	e3:SetOperation(s.negop)
 	c:RegisterEffect(e3)
+	local e32=Effect.CreateEffect(c)
+	e32:SetDescription(aux.Stringid(id,0))
+	e32:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e32:SetCode(EVENT_CHAINING)
+	e32:SetRange(LOCATION_MZONE)
+	e32:SetCondition(s.fcon)
+	e32:SetOperation(s.fop)
+	c:RegisterEffect(e32)
 	--Column Wipe
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id,1))
@@ -74,15 +82,7 @@ end
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not s.exmcon(e) or c:GetFlagEffect(id)>2 then return false end
-	local chain_related=false
-	for i=1,ev do
-		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
-		if te:GetHandler()==c then
-			chain_related=true
-			break
-		end
-	end
-	return chain_related and rp==1-tp and Duel.IsChainDisablable(ev)
+	return c:GetFlagEffect(id+1)>0 and rp==1-tp and Duel.IsChainDisablable(ev)
 end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -92,6 +92,13 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 		c:AddCounter(0x838,1)
 		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	end
+end
+function s.fcon(e,tp,eg,ep,ev,re,r,rp)
+	return re:GetHandler()==e:GetHandler()
+end
+function s.fop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	c:RegisterFlagEffect(id+1,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,0,1)
 end
 function s.columnfilter(i,tp)
 	local g=Group.CreateGroup()
@@ -109,7 +116,7 @@ function s.wipetg(e,tp,eg,ep,ev,re,r,rp,chk)
 		end
 	end
 	if chk==0 then return filter~=0x7f and e:GetHandler():IsCanAddCounter(0x838,1) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)	
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET) 
 	local sel_zone=Duel.SelectField(tp,1,LOCATION_MZONE,0,filter)
 	Duel.SetTargetParam(sel_zone)
 	Duel.Hint(HINT_ZONE,tp,sel_zone)

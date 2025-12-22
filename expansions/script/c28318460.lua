@@ -5,7 +5,7 @@ function c28318460.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e0:SetCondition(c28318460.condition)
-	e0:SetDescription(aux.Stringid(28318460,4))
+	e0:SetDescription(aux.Stringid(28318460,0))
 	c:RegisterEffect(e0)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -17,7 +17,7 @@ function c28318460.initial_effect(c)
 	c:RegisterEffect(e1)
 	--grave copy
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_LEAVE_GRAVE)
+	--e2:SetCategory(CATEGORY_TODECK+CATEGORY_LEAVE_GRAVE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_GRAVE)
@@ -31,41 +31,30 @@ function c28318460.condition(e)
 	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
 end
 function c28318460.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28318460.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,0) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
-function c28318460.thfilter(c)
-	return c:IsSetCard(0x287) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and aux.NecroValleyFilter()(c)
+function c28318460.thfilter(c,chk)
+	return c:IsSetCard(0x287) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and (chk==0 or aux.NecroValleyFilter()(c))
 end
 function c28318460.activate(e,tp,eg,ep,ev,re,r,rp,op)
-	local b1=true
-	local b2=Duel.IsExistingMatchingCard(c28318460.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
-	local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(28318460,0)},
-		{b2,aux.Stringid(28318460,1)})
-	if op==1 then
-		Duel.Recover(tp,1000,REASON_EFFECT)
-		if Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 then Duel.Recover(tp,1000,REASON_EFFECT) end
-	elseif op==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tc=Duel.SelectMatchingCard(tp,c28318460.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil):GetFirst()
-		if tc then
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tc)
-			if tc:IsPreviousLocation(LOCATION_DECK) then
-				Duel.ShuffleDeck(tp)
-			end
-			if not tc:IsLocation(LOCATION_HAND) then return end
-			local te=tc.recover_effect
-			if not te then return end
-			local tg=te:GetTarget()
-			if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) then
-				Duel.BreakEffect()
-				Duel.SetLP(tp,Duel.GetLP(tp)-1500)
-				local op=te:GetOperation()
-				if op then op(e,tp,eg,ep,ev,re,r,rp) end
-			end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local tc=Duel.SelectMatchingCard(tp,c28318460.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,1):GetFirst()
+	if tc then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
+		if tc:IsPreviousLocation(LOCATION_DECK) then
+			Duel.ShuffleDeck(tp)
+		end
+		if not tc:IsLocation(LOCATION_HAND) then return end
+		local te=tc.recover_effect
+		if not te then return end
+		local tg=te:GetTarget()
+		if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) then
+			Duel.BreakEffect()
+			Duel.SetLP(tp,Duel.GetLP(tp)-1500)
+			local op=te:GetOperation()
+			if op then op(e,tp,eg,ep,ev,re,r,rp) end
 		end
 	end
 end
@@ -74,19 +63,16 @@ function c28318460.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION),LOCATION_ONFIELD)~=0 and rp==tp and rc and rc:IsSetCard(0x287)
 end
 function c28318460.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,1500) end
-	Duel.PayLPCost(tp,1500)
+	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
+	Duel.HintSelection(Group.FromCards(e:GetHandler()))
+	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c28318460.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToDeck() end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,tp,LOCATION_GRAVE)
+	if chk==0 then return e:GetHandler():CheckActivateEffect(false,true,false) end
 end
 function c28318460.tdop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.SetLP(tp,Duel.GetLP(tp)-1500)
 	local te,ceg,cep,cev,cre,cr,crp=e:GetHandler():CheckActivateEffect(false,true,true)
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
-	if e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsAbleToDeck() then
-		--Duel.BreakEffect()
-		Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	end
 end
