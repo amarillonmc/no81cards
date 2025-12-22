@@ -60,11 +60,11 @@ function c28317560.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToChain() and c:IsFaceup() then
 		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetDescription(aux.Stringid(28316149,1))
+		e1:SetDescription(aux.Stringid(28317560,1))
 		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_LEAVE_FIELD)
 		e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
-		e1:SetOperation(c28316149.regop)
+		e1:SetOperation(c28317560.regop)
 		c:RegisterEffect(e1)
 	end
 	if Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(c28317560.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)>0 and Duel.SelectYesNo(tp,aux.Stringid(28317560,2)) then
@@ -75,12 +75,12 @@ function c28317560.spop2(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c28316149.regop(e,tp,eg,ep,ev,re,r,rp)
+function c28317560.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local p=c:GetPreviousControler()
-	local g=Duel.GetMatchingGroup(c28316149.spfilter,p,LOCATION_HAND,0,nil,e,p)
+	local g=Duel.GetMatchingGroup(c28317560.spfilter,p,LOCATION_HAND,0,nil,e,p)
 	if c:IsReason(REASON_DESTROY) and #g>0 and Duel.GetMZoneCount(p)>0 then
-		Duel.Hint(HINT_CARD,0,28316149)
+		Duel.Hint(HINT_CARD,0,28317560)
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
 		local tc=g:Select(p,1,1,nil):GetFirst()
 		Duel.SpecialSummon(tc,0,p,p,false,false,POS_FACEUP)

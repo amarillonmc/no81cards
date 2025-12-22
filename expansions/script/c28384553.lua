@@ -2,16 +2,6 @@
 function c28384553.initial_effect(c)
 	aux.AddFusionProcFunRep2(c,c28384553.mfilter,2,99,true)
 	c:EnableReviveLimit()
-   --spsummon
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_FIELD)
-	e0:SetCode(EFFECT_SPSUMMON_PROC)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetRange(LOCATION_EXTRA)
-	e0:SetValue(SUMMON_TYPE_FUSION)
-	e0:SetCondition(c28384553.hspcon)
-	e0:SetOperation(c28384553.hspop)
-	c:RegisterEffect(e0)
 	--spsummon
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_FIELD)

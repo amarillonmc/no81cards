@@ -41,7 +41,7 @@ function c28368431.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(c28368431.regop)
 	Duel.RegisterEffect(e1,tp)
 end
-function c28316149.setfilter(c,e,p)
+function c28368431.setfilter(c,e,p)
 	return c:IsSetCard(0x285) and (c:IsSSetable() or Duel.GetMZoneCount(p)>0 and c:IsCanBeSpecialSummoned(e,0,p,false,false,POS_FACEDOWN_DEFENSE))
 end
 function c28368431.gcheck(g,tp)
