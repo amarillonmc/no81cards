@@ -3,7 +3,7 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	--Fusion Material
 	c:EnableReviveLimit()
-	aux.AddFusionProcMixRep(c,true,true,s.mfilter,5,5)
+	aux.AddFusionProcFunRep(c,s.ffilter,5,true)
 	--Special Summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -38,8 +38,8 @@ function s.initial_effect(c)
 	e3:SetOperation(s.negop)
 	c:RegisterEffect(e3)
 end
-function s.mfilter(c,fc,sub,mg,sg)
-	return c:IsSetCard(0x838)
+function s.ffilter(c,fc,sub,mg,sg)
+	return c:IsFusionSetCard(0x838) and (not sg or not sg:IsExists(Card.IsFusionCode,1,c,c:GetFusionCode()))
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)

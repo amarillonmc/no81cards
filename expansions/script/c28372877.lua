@@ -39,7 +39,7 @@ function c28372877.tdfilter(c,ct)
 end
 function c28372877.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c28372877.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,0)
-	if chk==0 then return aux.gfcheck(c28372877.tdfilter,1,2) end
+	if chk==0 then return aux.gfcheck(g,c28372877.tdfilter,1,2) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c28372877.gcheck(g)

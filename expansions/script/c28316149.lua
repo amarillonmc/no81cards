@@ -87,8 +87,8 @@ function c28316149.regop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_CARD,0,28316149)
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SET)
 		local tc=g:Select(p,1,1,nil):GetFirst()
-		if tc:IsAbleToHand() and (not (tc:IsCanBeSpecialSummoned(e,0,p,false,false,POS_FACEDOWN_DEFENSE) and Duel.GetMZoneCount(p)>0) or Duel.SelectOption(p,1190,1153)==0) then
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		if tc:IsSSetable() then
+			Duel.SSet(tp,tc)
 		else
 			Duel.SpecialSummon(tc,0,p,p,false,false,POS_FACEDOWN_DEFENSE)
 		end

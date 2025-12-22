@@ -52,14 +52,18 @@ function c28366277.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28366277.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil):GetFirst()
 	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+		if tc:IsLocation(LOCATION_GRAVE) then Duel.HintSelection(Group.FromCards(tc)) end
+		if Duel.SendtoHand(tc,nil,REASON_EFFECT)==0 then return end
+		if tc:IsPreviousLocation(LOCATION_DECK) then Duel.ConfirmCards(1-tp,tc) end
+		if not tc:IsLocation(LOCATION_HAND) then return end
 		if Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(c28366277.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28366277,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28366277.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+			if g:GetFirst():IsLocation(LOCATION_GRAVE) then Duel.HintSelection(g) end
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
+			if not g:GetFirst():IsLocation(LOCATION_HAND) then return end
+			if g:GetFirst():IsPreviousLocation(LOCATION_DECK) then Duel.ConfirmCards(1-tp,g) end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local dg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(e))
 			if dg:GetFirst():IsLocation(LOCATION_ONFIELD) then

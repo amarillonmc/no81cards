@@ -163,7 +163,7 @@ function s.cpop(e,tp,eg,ep,ev,re,r,rp)
 				local cdata=effects[1]
 				if #effects>1 then
 					local t={}
-					for i=1,max do
+					for i=1,#effects do
 						t[i]=i
 					end
 					Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,0))
@@ -222,7 +222,7 @@ function s.addData(ctable,cdata)
 	--  found=true
 	--  local id=cdata.id
 	--  for i in pairs(id) do
-	--	table.insert(item.id,i)
+	--  table.insert(item.id,i)
 	--  end
 	--  break
 	--  end
@@ -242,9 +242,9 @@ function s.geteffect(cdata,c)
 	function Card.RegisterEffect(cc,ce,...)
 		table.insert(effects,ce) 
 	end
-	Duel.DisableActionCheck(true)
+	if KOISHI_CHECK then Duel.DisableActionCheck(true) end
 	local token=Duel.CreateToken(0,cdata.code)
-	Duel.DisableActionCheck(false)
+	if KOISHI_CHECK then Duel.DisableActionCheck(false) end
 	Card.RegisterEffect=s.RegisterEffect
 	local copyeffect={}
 	for i,effect in ipairs(effects) do
