@@ -83,7 +83,7 @@ function c28368431.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,tp,nil)
 end
 function c28368431.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(c28328484.cfilter,nil):Filter(aux.NecroValleyFilter(Card.IsRelateToChain),nil)
+	local g=eg:Filter(c28368431.cfilter,nil):Filter(aux.NecroValleyFilter(Card.IsRelateToChain),nil)
 	if #g>0 then
 		local tc=g:GetFirst()
 		if #g>1 then

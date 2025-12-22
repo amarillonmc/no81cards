@@ -33,7 +33,7 @@ function c28366277.initial_effect(c)
 	e4:SetCode(EVENT_CHANGE_POS)
 	e4:SetCondition(c28366277.spcon)
 	c:RegisterEffect(e4)
-	local e5=e2:Clone()
+	local e5=e4:Clone()
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e5)
 end
