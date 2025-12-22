@@ -25,7 +25,7 @@ function c28372877.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.GetMatchingGroup(c28372877.thfilter,tp,LOCATION_DECK,0,nil)
 	if #g1>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(28372877,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local dg=g1:Select(tp,1,1,nil)
+		local dg=g1:Select(tp,#g1,#g1,nil)
 		Duel.HintSelection(dg)
 		Duel.Destroy(dg,REASON_EFFECT)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

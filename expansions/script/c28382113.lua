@@ -52,7 +52,7 @@ function c28382113.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local mg=Duel.GetMatchingGroup(c28382113.matfilter,tp,LOCATION_MZONE,0,nil)
 	local ct=Duel.GetFlagEffect(tp,28382113)+2
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local sg=mg:SelectSubGroup(tp,c28382113.selectcheck,true,ct,99,tp,c)
+	local sg=mg:SelectSubGroup(tp,c28382113.gcheck,true,ct,99,tp,c)
 	if sg then
 		sg:KeepAlive()
 		e:SetLabelObject(sg)

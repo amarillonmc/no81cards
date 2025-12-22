@@ -33,10 +33,10 @@ function c28384553.initial_effect(c)
 	c:RegisterEffect(ce1)
 end
 function c28384553.mfilter(c)
-	return c:IsFusionType(TYPE_FUSION) and c:IsRace(RACE_FIEND)
+	return c:IsFusionType(TYPE_FUSION) and c:IsRace(RACE_FAIRY)
 end
 function c28384553.matfilter(c)
-	return c:IsAbleToExtraAsCost() and c:IsRace(RACE_FIEND) and c:IsCanBeFusionMaterial()
+	return c:IsAbleToExtraAsCost() and c:IsRace(RACE_FAIRY) and c:IsCanBeFusionMaterial()
 end
 function c28384553.gcheck(mg,tp,fc)
 	return Duel.GetLocationCountFromEx(tp,tp,mg,fc)>0

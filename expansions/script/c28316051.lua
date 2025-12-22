@@ -100,6 +100,7 @@ function c28316051.regop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 		end
 		Duel.MoveToField(tc,p,p,LOCATION_FZONE,POS_FACEUP,true)
+		local te=tc:GetActivateEffect()
 		te:UseCountLimit(p,1,true)
 		local tep=tc:GetControler()
 		local cost=te:GetCost()
