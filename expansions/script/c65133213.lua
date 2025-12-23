@@ -3,7 +3,7 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	--Synchro Summon
 	c:EnableReviveLimit()
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)	
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)  
 	--Immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -35,28 +35,32 @@ function s.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id,1))
 	e4:SetCategory(CATEGORY_DISABLE+CATEGORY_ATKCHANGE)
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e4:SetRange(LOCATION_MZONE)
-	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
+	e4:SetRange(LOCATION_MZONE)	
 	e4:SetCountLimit(1)
 	e4:SetCondition(s.discon)
 	e4:SetTarget(s.distg)
 	e4:SetOperation(s.disop)
 	c:RegisterEffect(e4)
-	--Banish FD
-	local e5=Effect.CreateEffect(c)
-	e5:SetDescription(aux.Stringid(id,2))
-	e5:SetCategory(CATEGORY_REMOVE)
+	local e5=e4:Clone()
+	e5:SetCondition(s.discon2)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
-	e5:SetCode(EVENT_CHAINING)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCountLimit(1)
-	e5:SetCondition(s.rmcon)
-	e5:SetTarget(s.rmtg)
-	e5:SetOperation(s.rmop)
+	e5:SetCode(EVENT_FREE_CHAIN)
+	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
 	c:RegisterEffect(e5)
+	--Banish FD
+	local e6=Effect.CreateEffect(c)
+	e6:SetDescription(aux.Stringid(id,2))
+	e6:SetCategory(CATEGORY_REMOVE)
+	e6:SetType(EFFECT_TYPE_QUICK_O)
+	e6:SetCode(EVENT_CHAINING)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCountLimit(1)
+	e6:SetCondition(s.rmcon)
+	e6:SetTarget(s.rmtg)
+	e6:SetOperation(s.rmop)
+	c:RegisterEffect(e6)
 	--Global Check
 	if not s.global_check then
 		s.global_check=true
@@ -103,10 +107,13 @@ function s.statcon(e)
 	return Duel.GetFlagEffect(0,id)>0
 end
 function s.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x838) and c:GetCode()~=id
+	return c:IsFaceup() and c:IsSetCard(0x838)
 end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp or Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return not Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,e:GetHandler())
+end
+function s.discon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,e:GetHandler())
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsLocation(LOCATION_MZONE) and aux.NegateAnyFilter(chkc) end

@@ -101,15 +101,23 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.actcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not  bit.band(r,REASON_EFFECT)~=0 then return false end
+
+	if bit.band(r,REASON_EFFECT)==0 then return false end
+	
 	if not re then return false end
 	local rc=re:GetHandler()
 	return rc and s.CelestialBeing(rc)
 end
 
+function s.thfilter(c)
+	return s.CelestialBeing(c) and c:IsAbleToHand()
+end
+
+
 function s.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 end
+
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 
@@ -117,7 +125,10 @@ function s.actop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+	
+
 	if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
+
 		local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
 		if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 			 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -125,8 +136,8 @@ function s.actop(e,tp,eg,ep,ev,re,r,rp)
 			 Duel.SendtoHand(sg,nil,REASON_EFFECT)
 			 Duel.ConfirmCards(1-tp,sg)
 		end
+
 		local owner=c:GetOwner()
 		Duel.RegisterFlagEffect(owner,ArmedIntervention,0,0,0)
 	end
 end
-

@@ -2,7 +2,7 @@
 local s,id=GetID()
 s.ui_hint_effect = s.ui_hint_effect or {}
 local CORE_ID = 40020353 
-local ArmedIntervention = CORE_ID	 
+local ArmedIntervention = CORE_ID	
 local ArmedIntervention_UI = CORE_ID + 10000
 --CB
 s.named_with_CelestialBeing=1
@@ -40,7 +40,7 @@ function s.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_FZONE)
-	e3:SetCountLimit(1,id)
+	e3:SetCountLimit(1,id+200)
 	e3:SetTarget(s.sptg)
 	e3:SetOperation(s.spop)
 	c:RegisterEffect(e3)
@@ -183,5 +183,7 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-
+function s.eqlimit(e,c)
+	return c==e:GetLabelObject()
+end
 

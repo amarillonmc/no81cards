@@ -5,17 +5,31 @@ function s.initial_effect(c)
 	--Fusion materials
 	c:EnableReviveLimit()
 	aux.AddFusionProcMixRep(c,true,true,s.matfilter,3,3)
+	--splimit
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e0:SetCondition(s.condition)
+	e0:SetOperation(s.regop)
+	c:RegisterEffect(e0)
 	--Special Summon condition
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetRange(LOCATION_EXTRA)
-	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.sprcon)
 	e1:SetTarget(s.sprtg)
 	e1:SetOperation(s.sprop)
 	c:RegisterEffect(e1)
+	--spsummon condition
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e2:SetValue(s.splimit)
+	c:RegisterEffect(e2)
 	--Cannot be Tributed
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -64,6 +78,16 @@ function s.initial_effect(c)
 	e10:SetOperation(s.negop)
 	c:RegisterEffect(e10)
 end
+function s.condition(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return c:IsSummonType(SUMMON_TYPE_FUSION) or c:GetFlagEffect(id)>0
+end
+function s.regop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
+end
+function s.splimit(e,se,sp,st)
+	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION and Duel.GetFlagEffect(sp,id)==0
+end
 function s.matfilter(c)
 	return c:IsRace(RACE_MACHINE) and c:IsLevelAbove(5)
 end
@@ -93,6 +117,7 @@ end
 function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sg=e:GetLabelObject()
 	if not sg then return end
+	e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD+RESET_PHASE+PHASE_END,0,1)
 	Duel.Release(sg,REASON_COST)
 	sg:DeleteGroup()
 end
