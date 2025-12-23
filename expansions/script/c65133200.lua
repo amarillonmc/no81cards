@@ -167,7 +167,7 @@ function s.cpop(e,tp,eg,ep,ev,re,r,rp)
 						t[i]=i
 					end
 					Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,0))
-					local an=Duel.AnnounceNumber(p,t)
+					local an=Duel.AnnounceNumber(p,table.unpack(t))
 					cdata=effects[an]
 				end
 				--local cdata=s.findeffect(te)

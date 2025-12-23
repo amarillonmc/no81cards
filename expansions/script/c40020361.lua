@@ -2,7 +2,7 @@
 local s,id=GetID()
 s.ui_hint_effect = s.ui_hint_effect or {}
 local CORE_ID = 40020353 
-local ArmedIntervention = CORE_ID	
+local ArmedIntervention = CORE_ID   
 local ArmedIntervention_UI = CORE_ID + 10000
 local GLOBAL_END_PHASE_CHECK = id + 900
 --CB
@@ -50,25 +50,29 @@ function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.GetFlagEffect(owner,ArmedIntervention)>=9
 end
 
-function s.costfilter(c, use_extended)
-	if not (c:IsFaceup() and c:IsReleasable()) then return false end
-	if use_extended and s.Exia(c) then return true end
-	if not c:IsType(TYPE_MONSTER) then return false end
-	return s.Exia(c) or s.QanT(c) or s.ELS(c)
+function s.costfilter(c,tp,loc)
+	return s.Exia(c) and c:IsControler(tp) and c:IsFaceup() and c:IsReleasable()
 end
 
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local use_extended = aux.IsCanBeQuickEffect(c,tp,40020377)
 	local loc = LOCATION_MZONE
-	if use_extended then loc = LOCATION_ONFIELD end
+	
+	local has_special_card = Duel.IsExistingMatchingCard(function(tc) 
+		return tc:IsFaceup() and tc:IsCode(40020377) 
+	end, tp, LOCATION_ONFIELD, 0, 1, nil)
+	
+	if has_special_card then
+		loc = LOCATION_ONFIELD
+	end
 	
 	if chk==0 then
-		return Duel.IsExistingMatchingCard(s.costfilter,tp,loc,0,1,nil,use_extended)
+		return Duel.IsExistingMatchingCard(s.costfilter,tp,loc,0,1,nil,tp,loc)
 	end
+	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,loc,0,1,1,nil,use_extended)
-	Duel.Release(g,REASON_COST)
+	local rg=Duel.SelectMatchingCard(tp,s.costfilter,tp,loc,0,1,1,nil,tp,loc)
+	Duel.Release(rg,REASON_COST)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

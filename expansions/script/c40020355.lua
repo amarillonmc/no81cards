@@ -2,7 +2,7 @@
 local s,id=GetID()
 s.ui_hint_effect = s.ui_hint_effect or {}
 local CORE_ID = 40020353 
-local ArmedIntervention = CORE_ID	   
+local ArmedIntervention = CORE_ID	  
 local ArmedIntervention_UI = CORE_ID + 10000
 --CB
 s.named_with_CelestialBeing=1
@@ -41,9 +41,10 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e2:SetType(EFFECT_TYPE_TRIGGER_O)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
+
 	e2:SetCountLimit(1,id+100)
 	e2:SetTarget(s.thtg)
 	e2:SetOperation(s.thop)
@@ -72,9 +73,14 @@ end
 
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	local loc = LOCATION_MZONE  
-	if aux.IsCanBeQuickEffect(c,tp,40020377) then
-		loc = LOCATION_ONFIELD  
+	local loc = LOCATION_MZONE
+	
+	local has_special_card = Duel.IsExistingMatchingCard(function(tc) 
+		return tc:IsFaceup() and tc:IsCode(40020377) 
+	end, tp, LOCATION_ONFIELD, 0, 1, nil)
+	
+	if has_special_card then
+		loc = LOCATION_ONFIELD
 	end
 	
 	if chk==0 then
