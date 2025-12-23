@@ -60,15 +60,19 @@ end
 function s.eqfilter2(c)
 	return aux.IsCodeListed(c,12866755) and c:IsType(TYPE_FUSION)
 end
+function s.eqfilter3(c,tp)
+	return (c:IsRace(RACE_WARRIOR) or c:IsRace(RACE_FIEND)) and 
+	c:CheckUniqueOnField(tp) and not c:IsForbidden() and aux.IsCodeListed(c,12866755) and c:IsType(TYPE_FUSION)
+end
 function s.check(g)
 	return g:IsExists(s.eqfilter2,1,nil)
 end
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(s.eqfilter1,tp,LOCATION_GRAVE,0,nil,e,tp)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and s.eqfilter1(chkc,e,tp) and chkc:IsControler(tp) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and s.eqfilter3(chkc,e,tp) and chkc:IsControler(tp) end
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
-	if chk==0 then return ft>0 and #g>0 end
+	if chk==0 then return ft>0 and Duel.IsExistingTarget(s.eqfilter3,tp,LOCATION_GRAVE,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 	local ct=math.min(ft,2)
 	local sg=g:SelectSubGroup(tp,s.check,false,1,ct)

@@ -27,7 +27,9 @@ function s.Exia(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Exia
 end
+
 function s.initial_effect(c)
+
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -41,7 +43,31 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
+
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_DRAW)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_DELAY)
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetCondition(s.drawcon)
+	e2:SetTarget(s.drawtg)
+	e2:SetOperation(s.drawop)
+	c:RegisterEffect(e2)
+
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(id,2))
+	e3:SetCategory(CATEGORY_ATKCHANGE)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e3:SetCondition(s.copycon) -- 增加条件检查标记
+	e3:SetTarget(s.copytg)
+	e3:SetOperation(s.copyop)
+	c:RegisterEffect(e3)
 end
+
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local owner=c:GetOwner()
@@ -74,6 +100,7 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local rg=Duel.SelectMatchingCard(tp,s.costfilter,tp,loc,0,1,1,nil,tp,loc)
 	Duel.Release(rg,REASON_COST)
 end
+
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -85,32 +112,14 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetDescription(aux.Stringid(id,1))
-		e1:SetCategory(CATEGORY_DRAW)
-		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-		e1:SetProperty(EFFECT_FLAG_DELAY)
-		e1:SetTarget(s.drawtg)
-		e1:SetOperation(s.drawop)
-		e1:SetReset(RESET_EVENT+0x1fe0000)
-		c:RegisterEffect(e1)
-
-		local e2=Effect.CreateEffect(c)
-		e2:SetDescription(aux.Stringid(id,2))
-		e2:SetCategory(CATEGORY_ATKCHANGE)
-		e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-		e2:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
-		e2:SetRange(LOCATION_MZONE)
-		e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-		e2:SetCondition(s.copycon)
-		e2:SetTarget(s.copytg)
-		e2:SetOperation(s.copyop)
-		e2:SetReset(RESET_EVENT+0x1fe0000)
-		c:RegisterEffect(e2)
+		c:RegisterFlagEffect(id, RESET_EVENT+0x1fe0000, 0, 1)
 	end
 end
+
+function s.drawcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(id)>0
+end
+
 function s.drawtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		local c1=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
@@ -119,6 +128,7 @@ function s.drawtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,PLAYER_ALL,0)
 end
+
 function s.drawop(e,tp,eg,ep,ev,re,r,rp)
 	local c1=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
 	local c2=Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)
@@ -132,8 +142,9 @@ function s.drawop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SkipPhase(turn_p, PHASE_MAIN2, RESET_PHASE+PHASE_END, 1)
 	end
 end
+
 function s.copycon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	return Duel.GetTurnPlayer()==tp and e:GetHandler():GetFlagEffect(id)>0
 end
 
 function s.copyfilter(c)

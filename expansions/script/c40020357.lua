@@ -2,7 +2,7 @@
 local s,id=GetID()
 s.ui_hint_effect = s.ui_hint_effect or {}
 local CORE_ID = 40020353 
-local ArmedIntervention = CORE_ID	 
+local ArmedIntervention = CORE_ID	
 local ArmedIntervention_UI = CORE_ID + 10000
 --CB
 s.named_with_CelestialBeing=1
@@ -27,6 +27,7 @@ function s.Exia(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_Exia
 end
+
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -123,7 +124,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.tdfilter(c)
-	return (c:IsType(TYPE_MONSTER) and c:IsLevelAbove(5))or c:IsCode(40020383) and c:IsAbleToDeck()
+	return ((c:IsType(TYPE_MONSTER) and c:IsLevelAbove(5)) or c:IsCode(40020383)) and c:IsAbleToDeck()
 end
 
 function s.lvtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -133,12 +134,11 @@ function s.lvtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function s.descheck(g, lv_limit)
-	local sum = g:GetSum(function(c) 
-		local val = 0
-		if c:GetLevel()>0 then val = val + c:GetLevel() end
-		if c:GetRank()>0 then val = val + c:GetRank() end
-		return val
-	end)
+	local sum = 0
+	for c in aux.Next(g) do
+		if c:GetLevel()>0 then sum = sum + c:GetLevel() end
+		if c:GetRank()>0 then sum = sum + c:GetRank() end
+	end
 	return sum <= lv_limit
 end
 
@@ -157,9 +157,13 @@ function s.lvop(e,tp,eg,ep,ev,re,r,rp)
 				 e1:SetValue(3)
 				 e1:SetReset(RESET_EVENT+RESETS_STANDARD_DISABLE)
 				 c:RegisterEffect(e1)
+				 
 				 local current_lv = c:GetLevel()
 				 local dg = Duel.GetMatchingGroup(aux.TRUE, tp, 0, LOCATION_MZONE, nil)
-				 if #dg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+				 
+				 if #dg>0 and dg:CheckSubGroup(s.descheck, 1, #dg, current_lv) 
+					and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+					 
 					 Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_DESTROY)
 					 local sg = dg:SelectSubGroup(tp, s.descheck, false, 1, #dg, current_lv)
 					 if sg and #sg>0 then

@@ -2,7 +2,7 @@
 local s,id=GetID()
 s.ui_hint_effect = s.ui_hint_effect or {}
 local CORE_ID = 40020353 
-local ArmedIntervention = CORE_ID	
+local ArmedIntervention = CORE_ID   
 local ArmedIntervention_UI = CORE_ID + 10000
 --CB
 s.named_with_CelestialBeing=1
@@ -28,12 +28,12 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,0))
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
 	e2:SetTarget(s.estg)
-	e2:SetValue(1)
 	c:RegisterEffect(e2)
 	
 	local e3=Effect.CreateEffect(c)
@@ -69,7 +69,7 @@ function s.lvtg(e,c)
 end
 
 function s.estg(e,c)
-	return s.CelestialBeing(c) and c:IsAttribute(ATTRIBUTE_WATER)
+	return s.CelestialBeing(c)
 end
 function s.spfilter(c,e,tp)
 	return s.CelestialBeing(c) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsLevelBelow(5) 

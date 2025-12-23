@@ -49,7 +49,7 @@ function s.matcheck(e,c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_ADD_ATTRIBUTE)
 	e1:SetValue(att)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 	c:RegisterEffect(e1)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
