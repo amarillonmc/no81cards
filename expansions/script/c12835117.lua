@@ -103,7 +103,7 @@ function cm.con6(e,tp,eg,ep,ev,re,r,rp)
 	local tg=tc:GetColumnGroup()
 	tg:AddCard(tc)
 	local tp=tc:GetControler()
-	return #tg>0 and tg:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN,REASON_EFFECT)>0 and c:IsAbleToGrave() and Duel.GetFlagEffect(tp,m)==0
+	return #tg>0 and tg:FilterCount(Card.IsAbleToRemove,nil,tp,POS_FACEDOWN,REASON_EFFECT)>0 and re:GetHandler()==tc and c:IsAbleToGrave() and Duel.GetFlagEffect(tp,m)==0
 end
 function cm.op6(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

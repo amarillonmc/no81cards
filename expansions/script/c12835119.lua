@@ -67,9 +67,14 @@ function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(rp,id,RESET_PHASE+PHASE_END,0,1)
 end
 function cm.indescon(e,tp,eg,ep,ev,re,r,rp)
-	local a,d=Duel.GetBattleMonster(tp)
-	e:SetLabelObject(a)
-	return a and d and a:IsFaceup() and a:IsSetCard(0x3a70)
+	local a=Duel.GetAttacker()
+	local d=Duel.GetAttackTarget()
+	if not a:IsControler(tp) then a,d=d,a end
+	if a and a:IsControler(tp) and a:IsFaceup() and a:IsSetCard(0x3a70) then
+		e:SetLabelObject(a)
+		return true
+	end
+	return false
 end
 function cm.indescost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

@@ -25,7 +25,7 @@ function c28372877.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.GetMatchingGroup(c28372877.thfilter,tp,LOCATION_DECK,0,nil)
 	if #g1>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(28372877,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local dg=g1:Select(tp,#g1,#g1,nil)
+		local dg=g1:Select(tp,1,#g1,nil)
 		Duel.HintSelection(dg)
 		Duel.Destroy(dg,REASON_EFFECT)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -39,7 +39,7 @@ function c28372877.tdfilter(c,ct)
 end
 function c28372877.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c28372877.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,0)
-	if chk==0 then return aux.gfcheck(g,c28372877.tdfilter,1,2) end
+	if chk==0 then return g:CheckSubGroup(aux.gfcheck,2,2,c28372877.tdfilter,1,2) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c28372877.gcheck(g)

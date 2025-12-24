@@ -71,7 +71,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.setfilter(c)
-	return c:IsSetCard(0xcd1) and c:IsAllTypes(TYPE_CONTINUOUS+TYPE_TRAP) and c:IsFaceup() and not c:IsSSetable()
+	return c:IsSetCard(0xcd1) and c:IsAllTypes(TYPE_CONTINUOUS+TYPE_TRAP) and c:IsFaceup() and c:IsSSetable()
 end
 function s.settg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

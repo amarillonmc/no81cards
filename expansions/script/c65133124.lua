@@ -99,6 +99,7 @@ function s.chcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function s.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.FromCards(re:GetHandler())

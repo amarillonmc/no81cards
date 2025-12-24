@@ -46,7 +46,7 @@ end
 function s.addop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	if Duel.IsPlayerCanDraw(tp,1) then
-		Duel.Draw(p,d,REASON_EFFECT)
+		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 	Duel.RegisterFlagEffect(tp,id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end

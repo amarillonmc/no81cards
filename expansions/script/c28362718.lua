@@ -54,20 +54,21 @@ function c28362718.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLP(tp)<=3000 or Duel.CheckLPCost(tp,2000) end
 	if Duel.GetLP(tp)>3000 then Duel.PayLPCost(tp,2000) end
 end
-function c28362718.cfilter(c,code)
-	return c:IsCode(code) and c:IsFaceup()
+function c28362718.cfilter(c,code1,code2)
+	return c:IsCode(code1,code2) and c:IsFaceup()
 end
-function c28362718.thfilter(c,tp)
+function c28362718.thfilter(c,tp,code)
 	return c:IsSetCard(0x285) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
-		and not Duel.IsExistingMatchingCard(c28362718.cfilter,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode())
+		and not Duel.IsExistingMatchingCard(c28362718.cfilter,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode(),code)
 end
 function c28362718.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28362718.thfilter,tp,LOCATION_DECK,0,1,nil,tp) and (Duel.GetLP(tp)>3000 or Duel.IsPlayerCanDraw(tp,1)) end
+	local code=e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetHandler():GetCode() or 0
+	if chk==0 then return Duel.IsExistingMatchingCard(c28362718.thfilter,tp,LOCATION_DECK,0,1,nil,tp,code) and (Duel.GetLP(tp)>3000 or Duel.IsPlayerCanDraw(tp,1)) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c28362718.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,c28362718.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,c28362718.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp,0):GetFirst()
 	if tc then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
@@ -83,7 +84,7 @@ function c28362718.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28362718.fscon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsType,1,nil,TYPE_MONSTER)
+	return eg:IsExists(Card.IsType,1,nil,TYPE_MONSTER) and not eg:IsContains(e:GetHandler())
 end
 function c28362718.filter1(c,e)
 	return c:IsFusionAttribute(ATTRIBUTE_DARK) and c:IsDestructable(e) and not c:IsImmuneToEffect(e)
@@ -93,7 +94,7 @@ function c28362718.filter2(c,e,tp,m,f,chkf)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function c28362718.fcheck(tp,sg,fc)
-	return sg:GetSum(Card.GetAttack)>=Duel.GetLP(tp)
+	return true--sg:GetSum(Card.GetAttack)>=Duel.GetLP(tp)
 end
 function c28362718.fstg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then

@@ -10,9 +10,10 @@ function c28368431.initial_effect(c)
 	c:RegisterEffect(e1)
 	--to hand
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(1190)
 	e2:SetCategory(CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetCode(EVENT_DESTROYED)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCondition(c28368431.thcon)
@@ -21,10 +22,22 @@ function c28368431.initial_effect(c)
 	e2:SetOperation(c28368431.thop)
 	c:RegisterEffect(e2)
 	--
-	Duel.AddCustomActivityCounter(28368431,ACTIVITY_SPSUMMON,c28368431.counterfilter)
+	if not c28368431.global_check then
+		c28368431.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
+		ge1:SetCondition(c28368431.checkcon)
+		ge1:SetOperation(c28368431.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
-function c28368431.counterfilter(c)
-	return not c:IsSetCard(0x285)
+function c28368431.ctfilter(c,p)
+	return c:IsSetCard(0x285) and c:IsSummonPlayer(p) and c:IsFaceup()
+end
+function c28368431.checkop(e,tp,eg,ep,ev,re,r,rp)
+	if eg:IsExists(c28368431.ctfilter,1,nil,0) then Duel.RegisterFlagEffect(0,28368431,RESET_PHASE+PHASE_END,0,1) end
+	if eg:IsExists(c28368431.ctfilter,1,nil,1) then Duel.RegisterFlagEffect(1,28368431,RESET_PHASE+PHASE_END,0,1) end
 end
 function c28368431.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLP(tp)<=3000 or Duel.CheckLPCost(tp,2000) end
@@ -37,7 +50,6 @@ function c28368431.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
 	e1:SetReset(RESET_PHASE+PHASE_END)
-	--e1:SetCondition(c28368431.regcon)
 	e1:SetOperation(c28368431.regop)
 	Duel.RegisterEffect(e1,tp)
 end
@@ -50,7 +62,7 @@ function c28368431.gcheck(g,tp)
 	return g:FilterCount(Card.IsType,nil,TYPE_MONSTER)<=mt and g:FilterCount(Card.IsType,nil,TYPE_FIELD)<=1 and g:FilterCount(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP)-g:FilterCount(Card.IsType,nil,TYPE_FIELD)<=st
 end
 function c28368431.regop(e,tp,eg,ep,ev,re,r,rp)
-	local val=Duel.Recover(tp,Duel.GetCustomActivityCount(28368431,tp,ACTIVITY_SPSUMMON)*500,REASON_EFFECT)
+	local val=Duel.Recover(tp,Duel.GetFlagEffect(tp,28368431)*500,REASON_EFFECT)
 	local ct=math.floor(val/1500)
 	local g=Duel.GetMatchingGroup(c28368431.setfilter,tp,LOCATION_DECK,0,nil,e,tp)
 	if ct>0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(28368431,1)) then

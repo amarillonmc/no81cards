@@ -92,6 +92,7 @@ function s.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
