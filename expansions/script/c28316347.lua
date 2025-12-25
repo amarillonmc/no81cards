@@ -41,7 +41,7 @@ function c28316347.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28316347.recop(e,tp,eg,ep,ev,re,r,rp)
 	local b1=true
-	local b2=Duel.GetLP(tp)>=10000 and 
+	local b2=Duel.IsPlayerCanDraw(tp,1)
 	local b3=Duel.IsExistingMatchingCard(Card.IsReleasableByEffect,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 	local op=aux.SelectFromOptions(tp,
 		{b1,aux.Stringid(28316347,0)},

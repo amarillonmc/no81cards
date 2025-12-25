@@ -27,7 +27,7 @@ function c28368431.initial_effect(c)
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
-		ge1:SetCondition(c28368431.checkcon)
+		--ge1:SetCondition(c28368431.checkcon)
 		ge1:SetOperation(c28368431.checkop)
 		Duel.RegisterEffect(ge1,0)
 	end
