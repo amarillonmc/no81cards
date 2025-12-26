@@ -76,24 +76,25 @@ function c11634014.tghop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END) 
 	Duel.RegisterEffect(e1,tp)
 end
-function c11634014.tehckfil(c) 
+function c11634014.tehckfil(c,tp) 
 	local rc=nil
-	if c:IsReason(REASON_BATTLE) then 
-		rc=c:GetReasonCard() 
-	elseif c:IsReason(REASON_EFFECT) then 
+	if not (c:IsSetCard(0x145) and c:IsPreviousPosition(POS_FACEUP) and c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)) then return false end
+	if c:IsReason(REASON_BATTLE) then
+		rc=c:GetReasonCard()
+	elseif c:IsReason(REASON_EFFECT) then
 		rc=c:GetReasonEffect():GetHandler()
-	end  
-	if not (rc and rc:IsSummonLocation(LOCATION_EXTRA)) then return false end 
-	if c:IsReason(REASON_BATTLE) then 
+	end
+	if not (rc and rc:IsSummonLocation(LOCATION_EXTRA)) then return false end
+	if c:IsReason(REASON_BATTLE) then
 		local bc=Duel.GetAttacker()
-		return bc and bc==rc  
-	elseif c:IsReason(REASON_EFFECT) then 
-		return true  
-	end  
-end 
-function c11634014.tehcon(e,tp,eg,ep,ev,re,r,rp) 
-	return eg:IsExists(c11634014.tehckfil,1,nil) 
-end 
+		return bc and bc==rc
+	elseif c:IsReason(REASON_EFFECT) then
+		return true
+	end
+end
+function c11634014.tehcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c11634014.tehckfil,1,nil,tp) 
+end
 function c11634014.tehcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
 	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)

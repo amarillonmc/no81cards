@@ -6,16 +6,20 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e1)
-	--cannot attack
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_CANNOT_ATTACK_ANNOUNCE)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetTargetRange(0,LOCATION_MZONE)
-	e2:SetTarget(s.target)
+	e2:SetTargetRange(0,1)
+	e2:SetValue(s.aclimit)
 	c:RegisterEffect(e2)
-	local e3=e2:Clone()
-	e3:SetCode(EFFECT_CANNOT_TRIGGER)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_CANNOT_ATTACK)
+	e3:SetTargetRange(0,LOCATION_MZONE)
+	e3:SetRange(LOCATION_SZONE)
+	e3:SetTarget(s.atktarget)
 	c:RegisterEffect(e3)
 	--
 	local e4=Effect.CreateEffect(c)
@@ -72,12 +76,18 @@ end
 function s.actcon(e)
 	return e:GetHandler():GetFlagEffect(id)>0 or Duel.IsExistingMatchingCard(s.actfilter,0,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 end
-function s.target(e,c)
-	local ct=Duel.GetFieldGroupCount(e:GetHandlerPlayer(),LOCATION_EXTRA,0)
+function s.aclimit(e,re,tp)
+	local ct=Duel.GetFieldGroupCount(e:GetHandlerPlayer(),0,LOCATION_EXTRA)
+	local c=re:GetHandler()
+	return re:IsActiveType(TYPE_MONSTER) and c:IsLevelAbove(1) and c:IsLevelAbove(ct)
+end
+function s.atktarget(e,c)
+	local ct=Duel.GetFieldGroupCount(e:GetHandlerPlayer(),0,LOCATION_EXTRA)
 	return c:IsLevelAbove(1) and c:IsLevelAbove(ct)
 end
+
 function s.cfilter(c,tp)
-	return (c:IsFaceup() or c:IsControler(tp)) and c:IsSetCard(0x145) 
+	return c:IsFaceup() and c:IsControler(tp) and c:IsSetCard(0x145) 
 		and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetCode())
 end
 function s.thfilter(c,code)
@@ -85,7 +95,7 @@ function s.thfilter(c,code)
 end
 function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,s.cfilter,1,nil,tp) end
-	local rg=Duel.SelectReleaseGroup(tp,s.cfilter,1,1,false,nil,nil,tp)
+	local rg=Duel.SelectReleaseGroup(tp,s.cfilter,1,1,nil,tp)
 	e:SetLabel(rg:GetFirst():GetCode())
 	Duel.Release(rg,REASON_COST)
 end
@@ -106,7 +116,7 @@ function s.rfilter(c,e,tp)
 		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,c:GetCode(),c:GetAttack(),c:GetDefense())
 end
 function s.spfilter(c,e,tp,code,atk,def)
-	return c:IsSetCard(0x145) and c:IsAttack(atk) and c:IsDefense(def) and not c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsAttack(atk) and c:IsDefense(def) and not c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckReleaseGroup(tp,s.rfilter,1,nil,e,tp) end
