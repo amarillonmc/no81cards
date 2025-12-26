@@ -79,7 +79,7 @@ end
 function c28381783.desop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetHandler():IsRelateToChain() and e:GetLabel() or 0
 	if ct>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,ct,nil,0x285)
 		Duel.Destroy(g,REASON_EFFECT)
 	end
