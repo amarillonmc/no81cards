@@ -47,7 +47,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetCondition(cm.discon)
 	e1:SetOperation(cm.disop)
-	if Duel.GetTurnPlayer()==tp then e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2) else e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN) end
+	e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN)--if Duel.GetTurnPlayer()==tp then e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN,2) else e1:SetReset(RESET_PHASE+PHASE_STANDBY+RESET_SELF_TURN) end
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.discon(e,tp,eg,ep,ev,re,r,rp)
