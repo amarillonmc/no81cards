@@ -63,7 +63,7 @@ function s.desfilter(c)
 	return c:IsFaceup()  and c:GetAttack()>=0
 end
 function s.gcheck(g)
-	return g:GetSum(Card.GetAttack)<=2100
+	return g:GetSum(Card.GetAttack)>=2100
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

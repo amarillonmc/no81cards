@@ -129,12 +129,12 @@ function s.actop(e,tp,eg,ep,ev,re,r,rp)
 
 	if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 
-		local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
-		if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
-			 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			 local sg=g:Select(tp,1,1,nil)
-			 Duel.SendtoHand(sg,nil,REASON_EFFECT)
-			 Duel.ConfirmCards(1-tp,sg)
+		local g=Duel.GetMatchingGroup(s.spcfilter,tp,LOCATION_DECK,0,nil)
+		if g:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
+	   and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sg=g:Select(tp,1,1,nil)
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 		end
 
 		local owner=c:GetOwner()
