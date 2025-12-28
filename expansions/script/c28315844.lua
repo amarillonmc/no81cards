@@ -65,7 +65,7 @@ function c28315844.desop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOperation(c28315844.regop)
 		c:RegisterEffect(e1)
 	end
-	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,p,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if Duel.GetLP(tp)<=3000 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(28315844,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local sg=g:SelectSubGroup(tp,c28315844.gcheck,false,1,2)
@@ -76,7 +76,7 @@ end
 function c28315844.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local p=c:GetPreviousControler()
-	local g=Duel.GetMatchingGroup(Card.IsFaceup,p,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
 	if c:IsReason(REASON_DESTROY) and #g>0 then-- and Duel.SelectYesNo(p,aux.Stringid(28315844,2))
 		Duel.Hint(HINT_CARD,0,28315844)
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_DESTROY)
