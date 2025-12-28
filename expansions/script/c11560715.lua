@@ -76,7 +76,7 @@ function c11560715.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,ct,0,0)
 end
 function c11560715.loccheck(g)
-	return g:GetClassCount(Card.GetLocation)==1
+	return g:GetClassCount(Card.GetLocation)==g:GetCount()
 end
 function c11560715.ovop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
