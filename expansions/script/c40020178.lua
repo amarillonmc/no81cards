@@ -1,8 +1,13 @@
 --升华全能踢
 local m=40020178
 local cm=_G["c"..m]
+cm.named_with_Kuuga=1
+function cm.Kuuga(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Kuuga
+end
 function cm.initial_effect(c)
-	aux.AddCodeList(c,40020183)
+
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -27,7 +32,7 @@ function cm.initial_effect(c)
 	--c:RegisterEffect(e2)
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsRace(RACE_WARRIOR) and c:IsCode(40020183)
+	return c:IsFaceup() and c:IsRace(RACE_WARRIOR) and cm.Kuuga(c)
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,0,1,nil) and (re:IsActiveType(TYPE_MONSTER)

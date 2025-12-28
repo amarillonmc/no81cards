@@ -32,8 +32,11 @@ function c71500109.aihcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,1,0x78f1,2,REASON_COST) end
 	Duel.RemoveCounter(tp,1,1,0x78f1,2,REASON_COST) 
 end
-function c71500109.spfilter(c,e,tp)
-	return c:IsCode(71500100) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
+function c71500109.spfilter(c,e,tp) 
+	local b1=c:IsCode(71500100) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
+	local b2=c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) 
+	  and (((Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and Duel.GetTurnPlayer()==tp) or (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)) 
+	return b1 or b2 
 end
 function c71500109.costfilter(c,e,tp)
 	return c:IsReleasable() and Duel.GetMZoneCount(tp,c)>0 and Duel.IsExistingMatchingCard(c71500109.spfilter,tp,LOCATION_HAND,0,1,c,e,tp)
@@ -52,8 +55,12 @@ function c71500109.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sc=Duel.SelectMatchingCard(tp,c71500109.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp):GetFirst()
-	if sc then
-		Duel.SpecialSummon(sc,0,tp,tp,true,true,POS_FACEUP)
+	if sc then 
+		if sc:IsCode(71500100) then 
+			Duel.SpecialSummon(sc,0,tp,tp,true,true,POS_FACEUP) 
+		else 
+			Duel.SpecialSummon(sc,0,tp,tp,true,false,POS_FACEUP) 
+		end 
 	end 
 	local e1=Effect.CreateEffect(c) 
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
@@ -61,13 +68,13 @@ function c71500109.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetLabel(0)
 	e1:SetOperation(c71500109.xtdop1)  
 	Duel.RegisterEffect(e1,tp)
-	local e1=Effect.CreateEffect(c) 
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
-	e1:SetCode(EVENT_PHASE+PHASE_END) 
-	e1:SetCountLimit(1)  
-	e1:SetOperation(c71500109.xtdop2) 
-	e1:SetReset(RESET_PHASE+PHASE_END) 
-	Duel.RegisterEffect(e1,tp)
+	--local e1=Effect.CreateEffect(c) 
+	--e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
+	--e1:SetCode(EVENT_PHASE+PHASE_END) 
+	--e1:SetCountLimit(1)  
+	--e1:SetOperation(c71500109.xtdop2) 
+	--e1:SetReset(RESET_PHASE+PHASE_END) 
+	--Duel.RegisterEffect(e1,tp)
 end
 function c71500109.xtdop1(e,tp,eg,ep,ev,re,r,rp) 
 	if e:GetLabel()==0 then 

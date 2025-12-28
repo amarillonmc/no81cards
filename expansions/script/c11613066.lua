@@ -27,7 +27,7 @@ function s.ffilter(c)
 	return (c:GetOriginalType()&TYPE_SPELL)~=0 and (c:GetOriginalType()&TYPE_MONSTER)~=0
 end
 function s.sprfilter(c)
-	return c:IsSetCard(0x3226) and c:GetOriginalType()==TYPE_SPELL and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x3226) and c:GetOriginalType()==TYPE_SPELL and c:IsAbleToRemoveAsCost()
 end
 function s.sprcon(e,c)
 	if c==nil then return true end
@@ -37,7 +37,7 @@ end
 function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,s.sprfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,2,2,nil)
-	Duel.SendtoGrave(g,REASON_COST)
+	Duel.Remove(g,POS_FACEUP,REASON_COST)
 end
 function s.spfilter(c,e,tp)
 	return c:IsFaceup() and c:IsType(TYPE_SPELL+TYPE_TRAP) 

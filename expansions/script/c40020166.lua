@@ -1,10 +1,14 @@
 --假面骑士 空我/升华全能
 local m=40020166
 local cm=_G["c"..m]
+cm.named_with_Kuuga=1
+function cm.Kuuga(c)
+	local m=_G["c"..c:GetCode()]
+	return m and cm.named_with_Kuuga
+end
+
 function cm.initial_effect(c)
-	aux.AddCodeList(c,40020183)
-	--change name
-	aux.EnableChangeCode(c,40020183,LOCATION_MZONE)
+
 	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -26,7 +30,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.cfilter(c,tp,re)
-	return c:IsPreviousControler(tp) and aux.IsCodeListed(c,40020183) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:IsReason(REASON_EFFECT) and re:IsActivated() and re:IsActiveType(TYPE_MONSTER) 
+	return c:IsPreviousControler(tp) and cm.Kuuga(c) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:IsReason(REASON_EFFECT) and re:IsActivated() and re:IsActiveType(TYPE_MONSTER) 
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.cfilter,1,nil,tp,re)

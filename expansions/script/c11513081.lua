@@ -6,7 +6,7 @@ function c11513081.initial_effect(c)
 	--negate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11513081,0))
-	e1:SetCategory(CATEGORY_DISABLE)
+	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_RECOVER)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER) 
@@ -18,7 +18,7 @@ function c11513081.initial_effect(c)
 	c:RegisterEffect(e1) 
 	--effect gain
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(16849715,2))
+	e2:SetDescription(aux.Stringid(11513081,2))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -37,6 +37,7 @@ function c11513081.initial_effect(c)
 	c:RegisterEffect(e3) 
 	--set
 	local e4=Effect.CreateEffect(c) 
+	e4:SetDescription(aux.Stringid(11513081,1))
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_PHASE+PHASE_END)
 	e4:SetRange(LOCATION_MZONE)
@@ -56,6 +57,7 @@ function c11513081.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local x=Duel.SendtoDeck(sg,nil,2,REASON_COST)
 	e:SetLabel(x)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,sg:GetCount(),PLAYER_ALL,LOCATION_ONFIELD) 
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,x*800)
 end
 function c11513081.negop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -83,6 +85,7 @@ function c11513081.negop(e,tp,eg,ep,ev,re,r,rp)
 		tc=ng:GetNext() 
 		end 
 	end
+	Duel.Recover(tp,x*800,REASON_EFFECT)
 end
 function c11513081.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckLPCost(tp,800) end

@@ -1,107 +1,145 @@
 --假面骑士 空我/惊异全能
-local m=40020168
-local cm=_G["c"..m]
-function cm.initial_effect(c)
-	aux.AddCodeList(c,40020183)
-	--change name
-	aux.EnableChangeCode(c,40020183,LOCATION_MZONE)
-	--destroy
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
+local s,id=GetID()
 
-	e1:SetType(EFFECT_TYPE_IGNITION)
+
+s.named_with_Kuuga=1
+function s.Kuuga(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Kuuga
+end
+
+function s.initial_effect(c)
+
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_HANDES)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1,m)
-	e1:SetCost(cm.descost)
-	e1:SetTarget(cm.destg)
-	e1:SetOperation(cm.desop)
+	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.descon)
+	e1:SetTarget(s.destg)
+	e1:SetOperation(s.desop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetCondition(cm.descon)
+
+
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_TOHAND)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e2:SetCountLimit(1,id+1)
+	e2:SetTarget(s.thtg)
+	e2:SetOperation(s.thop)
 	c:RegisterEffect(e2)
-	--
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(m,3))
-	e3:SetCategory(CATEGORY_TOHAND)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_SUMMON_SUCCESS)
-	e3:SetCountLimit(1,m+1)
-	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
-	e3:SetTarget(cm.thtg)
-	e3:SetOperation(cm.thop)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
-	local e4=e3:Clone()
-	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
-	c:RegisterEffect(e4)
-	local e5=e3:Clone()
-	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e5:SetCode(EVENT_ATTACK_ANNOUNCE)
-	e5:SetRange(LOCATION_MZONE)
-	e5:SetCondition(cm.thcon)
-	c:RegisterEffect(e5)
 end
-function cm.costfilter(c,tp)
-	return aux.IsCodeListed(c,40020183) and c:IsAbleToRemoveAsCost()
+
+
+function s.descon(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
+	local tp_turn=Duel.GetTurnPlayer()==tp 
+	
+	local is_my_main = tp_turn and (ph==PHASE_MAIN1 or ph==PHASE_MAIN2)
+	
+	local is_battle = (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)
+	
+	return is_my_main or is_battle
 end
-function cm.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.costfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,e:GetHandler(),tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,cm.costfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,e:GetHandler(),tp)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+
+
+function s.desfilter(c)
+	return c:IsFaceup() and c:IsAttackBelow(2000)
 end
-function cm.desfilter(c) 
-	return c:IsFaceup() and c:IsAttackBelow(2700)
+
+
+function s.hand_kuuga_filter(c)
+	return s.Kuuga(c) and c:IsDiscardable(REASON_EFFECT)
 end
-function cm.thfilter(c,e,tp,ec) 
-	return c:IsCode(40020183) and c:IsLevelAbove(7) and c:IsAbleToHand() and ec:IsCanBeSpecialSummoned(e,0,tp,false,false)
+
+
+function s.field_kuuga_lv7_filter(c,tp)
+	return s.Kuuga(c) and c:IsFaceup() and c:IsLevelAbove(7) and c:IsAbleToHand() 
+		and Duel.GetMZoneCount(tp,c)>0 
 end
-function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-	Duel.SetChainLimit(aux.FALSE)
-end
-function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+
+function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_MZONE,nil)
 	local c=e:GetHandler()
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local g=Duel.GetMatchingGroup(cm.desfilter,tp,0,LOCATION_MZONE,nil)
-	if Duel.Destroy(g,REASON_EFFECT)~=0 and c:IsRelateToEffect(e) and c:IsLocation(LOCATION_HAND) then
-		Duel.BreakEffect()
+	
+	local b1=c:IsDiscardable(REASON_EFFECT) 
+		and Duel.IsExistingMatchingCard(s.hand_kuuga_filter,tp,LOCATION_HAND,0,1,c)
+	local b2=c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
+		and Duel.IsExistingMatchingCard(s.field_kuuga_lv7_filter,tp,LOCATION_MZONE,0,1,nil,tp)
+		
+	if chk==0 then return #g>0 and (b1 or b2) end
+	
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,#g,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,2,tp,1)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_MZONE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+
+end
+
+function s.desop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_MZONE,nil)
+	
+	if #g>0 and Duel.Destroy(g,REASON_EFFECT)>0 then
+		
+		if not c:IsRelateToEffect(e) or not c:IsLocation(LOCATION_HAND) then return end
+		
+		local b1=c:IsDiscardable(REASON_EFFECT) 
+			and Duel.IsExistingMatchingCard(s.hand_kuuga_filter,tp,LOCATION_HAND,0,1,c)
+		local b2=c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
+			and Duel.IsExistingMatchingCard(s.field_kuuga_lv7_filter,tp,LOCATION_MZONE,0,1,nil,tp)
+			
 		local op=0
-		if (ft>0 or c:GetSequence()<5) and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_MZONE,0,1,nil,e,tp,c) then
-			op=Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))
-		end
-		if op==0 then Duel.SendtoGrave(c,REASON_DISCARD) end
-		if op==1 then 
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)	
-			local thc=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_MZONE,0,1,1,e:GetHandler(),e,tp,c):GetFirst()
-			if thc and Duel.SendtoHand(thc,nil,REASON_EFFECT)~=0 then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end   
+		if b1 and b2 then
+			op=Duel.SelectOption(tp,aux.Stringid(id,2),aux.Stringid(id,3))
+		elseif b1 then op=0
+		elseif b2 then op=1
+		else return end
+		
+		if op==0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+			local dg=Duel.SelectMatchingCard(tp,s.hand_kuuga_filter,tp,LOCATION_HAND,0,1,1,c)
+			if #dg>0 then
+				dg:AddCard(c)
+				Duel.BreakEffect()
+				Duel.SendtoGrave(dg,REASON_EFFECT+REASON_DISCARD)
+			end
+		else
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+			local bg=Duel.SelectMatchingCard(tp,s.field_kuuga_lv7_filter,tp,LOCATION_MZONE,0,1,1,nil,tp)
+			if #bg>0 then
+				Duel.BreakEffect()
+				if Duel.SendtoHand(bg,nil,REASON_EFFECT)>0 then
+					Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+				end
+			end
 		end
 	end
 end
-function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and ep~=tp
+
+function s.thfilter(c)
+	return s.Kuuga(c) and c:IsAbleToHand() and c:GetCode()~=id
 end
-function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return (c==Duel.GetAttacker() or c==Duel.GetAttackTarget())
-end
-function cm.thfilter1(c)
-	return c:IsFaceupEx() and aux.IsCodeListed(c,40020183) and c:IsAbleToHand() and not c:IsCode(m)
-end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and cm.thfilter1(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(cm.thfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.thfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(s.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectTarget(tp,cm.thfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,s.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
+	if tc and tc:IsRelateToEffect(e) then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 end

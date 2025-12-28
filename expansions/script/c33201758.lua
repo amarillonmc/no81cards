@@ -33,9 +33,9 @@ function s.matfilter(c, lc, sumtype, tp)
 	return c:IsRace(RACE_CYBERSE) and c:IsLevel(5)
 end
 
--- 过滤卡组中的“界域编织者”灵摆怪兽
+-- 过滤卡组中的“界域编织者”
 function s.pcfilter(c)
-	return c:IsSetCard(SET_REALM_WEAVER) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
+	return c:IsCode(33201759) and not c:IsForbidden()
 end
 
 -- 检查是否有可移动的空位 (Main Monster Zone 0-4)
@@ -54,11 +54,9 @@ function s.mvtg(e, tp, eg, ep, ev, re, r, rp, chk)
 	local c = e:GetHandler()
 	if chk == 0 then
 		return s.check_move_zone(c, tp) -- 1. 能移动
-			and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) -- 2. 有灵摆格子
+			and Duel.GetSZoneCount(tp,c)>0 -- 2. 有格子
 			and Duel.IsExistingMatchingCard(s.pcfilter, tp, LOCATION_DECK, 0, 1, nil) -- 3. 卡组有货
 	end
-	-- 破坏是后续可选，且不取对象，所以Category里写DESTROY
-	Duel.SetOperationInfo(0, CATEGORY_DESTROY, nil, 0, 1-tp, 1)
 end
 
 function s.mvop(e, tp, eg, ep, ev, re, r, rp)
@@ -83,25 +81,12 @@ function s.mvop(e, tp, eg, ep, ev, re, r, rp)
 	-- 执行移动
 	Duel.MoveSequence(c, n_seq)
 	
-	-- --- 步骤2：放置灵摆 ---
-	-- 移动后，再次检查灵摆区域状况（防止移动过程中触发了什么东西把P区填满了，虽然很少见）
-	if Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1) then
+	-- --- 步骤2：放置 ---
+	if Duel.GetSZoneCount(tp,c)>0 then
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TOFIELD)
 		local g = Duel.SelectMatchingCard(tp, s.pcfilter, tp, LOCATION_DECK, 0, 1, 1, nil)
 		if #g > 0 then
-			Duel.MoveToField(g:GetFirst(), tp, tp, LOCATION_PZONE, POS_FACEUP, true)
-			
-			-- --- 步骤3：条件破坏 ---
-			-- 检查由于“那之后”的性质，移动和放置P卡后，是否处于连接状态
-			-- 注意：IsLinkState 是动态判断的，位置变了，状态可能就变了
-			local dg = Duel.GetMatchingGroup(nil, tp, 0, LOCATION_ONFIELD, nil)
-			if c:IsLinkState() and #dg > 0 and Duel.SelectYesNo(tp, aux.Stringid(id, 1)) then
-				Duel.BreakEffect()
-				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_DESTROY)
-				local sg = dg:Select(tp, 1, 1, nil)
-				Duel.HintSelection(sg)
-				Duel.Destroy(sg, REASON_EFFECT)
-			end
+			Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 		end
 	end
 end

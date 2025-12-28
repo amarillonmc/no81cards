@@ -1,5 +1,6 @@
 --界域编织者
 local s, id = GetID()
+local SET_REALM_WEAVER = 0xa328
 
 function s.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
@@ -15,37 +16,20 @@ function s.initial_effect(c)
 	-- ===================
 	-- 灵摆效果
 	-- ===================
-	
-	-- ①：抗性与攻击力提升
-	-- 不会被取对象
-	local e1 = Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e1:SetRange(LOCATION_PZONE)
-	e1:SetTargetRange(LOCATION_MZONE, 0) -- 仅限自己场上
-	e1:SetTarget(s.indtg)
-	e1:SetValue(aux.tgoval)
-	c:RegisterEffect(e1)
-	
-	-- 攻击力上升
-	local e2 = Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_UPDATE_ATTACK)
-	e2:SetRange(LOCATION_PZONE)
-	e2:SetTargetRange(LOCATION_MZONE, 0)
-	e2:SetTarget(s.indtg) -- 使用同样的对象过滤条件
-	e2:SetValue(s.atkval)
-	c:RegisterEffect(e2)
 
-	--to hand
-	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-	e5:SetType(EFFECT_TYPE_IGNITION)
-	e5:SetRange(LOCATION_PZONE)
-	e5:SetCountLimit(1,id)
-	e5:SetTarget(s.thtg)
-	e5:SetOperation(s.thop)
-	c:RegisterEffect(e5)
+-- ①：连接端有怪兽特召时检索
+	local e1 = Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id, 0))
+	e1:SetCategory(CATEGORY_TOHAND + CATEGORY_SEARCH)
+	e1:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_TRIGGER_O) -- 诱发效果
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)				 -- 特殊召唤成功时
+	e1:SetProperty(EFFECT_FLAG_DELAY)				   -- 即使在连锁2以后特召也能发动
+	e1:SetRange(LOCATION_PZONE)
+	e1:SetCountLimit(1, id)						   -- 卡名1回合1次
+	e1:SetCondition(s.srcon)
+	e1:SetTarget(s.srtg)
+	e1:SetOperation(s.srop)
+	c:RegisterEffect(e1)
 
 	-- ①：连锁对方怪兽效果发动，一时除外
 	local e3 = Effect.CreateEffect(c)
@@ -59,6 +43,7 @@ function s.initial_effect(c)
 	e3:SetOperation(s.rmop)
 	c:RegisterEffect(e3)
 
+
 end
 
 -- ===================
@@ -66,31 +51,35 @@ end
 -- ===================
 
 
-function s.thfilter(c)
-	return c:IsSetCard(0xa328) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
+-- 判断特召的怪兽是否出现在这张卡的连接区
+function s.cfilter(c, lc)
+	-- 获取该连接怪兽当前指向的所有格子中的怪兽
+	return lc:GetLinkedGroup():IsContains(c)
 end
-function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+
+function s.srcon(e, tp, eg, ep, ev, re, r, rp)
+	local c = e:GetHandler()
+	-- 必须在场上表侧表示存在，且特召的怪兽组(eg)中存在于连接端的怪兽
+	return c:IsFaceup() and eg:IsExists(s.cfilter, 1, nil, c)
 end
-function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
+
+-- 过滤卡组中的“界域编织者”怪兽
+function s.srfilter(c)
+	return c:IsSetCard(SET_REALM_WEAVER) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
+
+function s.srtg(e, tp, eg, ep, ev, re, r, rp, chk)
+	if chk == 0 then return Duel.IsExistingMatchingCard(s.srfilter, tp, LOCATION_DECK, 0, 1, nil) end
+	Duel.SetOperationInfo(0, CATEGORY_TOHAND, nil, 1, tp, LOCATION_DECK)
+end
+
+function s.srop(e, tp, eg, ep, ev, re, r, rp)
+	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_ATOHAND)
+	local g = Duel.SelectMatchingCard(tp, s.srfilter, tp, LOCATION_DECK, 0, 1, 1, nil)
+	if #g > 0 then
+		Duel.SendtoHand(g, nil, REASON_EFFECT)
+		Duel.ConfirmCards(1-tp, g)
 	end
-end
-
--- 判断是否为“连接状态”的怪兽
-function s.indtg(e, c)
-	return c:IsLinkState()
-end
-
--- 计算攻击力提升数值
-function s.atkval(e, c)
-	-- 统计全场（双方）连接状态的怪兽数量
-	return Duel.GetMatchingGroupCount(Card.IsLinkState, 0, LOCATION_MZONE, LOCATION_MZONE, nil) * 300
 end
 
 

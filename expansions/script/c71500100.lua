@@ -122,14 +122,14 @@ function c71500100.thop(e,tp,eg,ep,ev,re,r,rp)
 			tc:AddCounter(0x78f1,9)   
 		end 
 	end 
-	local e1=Effect.CreateEffect(c) 
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
-	e1:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
-	e1:SetCountLimit(1) 
-	e1:SetCondition(c71500100.xtdcon) 
-	e1:SetOperation(c71500100.xtdop) 
-	e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,2)  
-	Duel.RegisterEffect(e1,tp)
+	--local e1=Effect.CreateEffect(c) 
+	--e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
+	--e1:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
+	--e1:SetCountLimit(1) 
+	--e1:SetCondition(c71500100.xtdcon) 
+	--e1:SetOperation(c71500100.xtdop) 
+	--e1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,2)  
+	--Duel.RegisterEffect(e1,tp)
 end
 function c71500100.xtdcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp  
@@ -175,8 +175,7 @@ function c71500100.coinop(e,tp,eg,ep,ev,re,r,rp)
 		e:SetLabel(x)
 		Duel.TossDice(tp,ev)
 	end 
-	if x<3 then 
-		Debug.Message(x)
+	if x<3 then  
 		local e1=Effect.CreateEffect(e:GetHandler()) 
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
 		e1:SetCode(EVENT_TOSS_DICE)  

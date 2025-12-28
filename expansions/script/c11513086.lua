@@ -24,8 +24,9 @@ function c11513086.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetCode(11513086)
-	e3:SetRange(LOCATION_MZONE)
+	e3:SetRange(LOCATION_SZONE)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCondition(c11513086.efcon)
 	e3:SetTargetRange(1,0)
 	c:RegisterEffect(e3)
 	--synchro custom  
@@ -106,7 +107,7 @@ function c11513086.SelectGroup(tp,desc,g,f,cg,min,max,...)
 	local sg=Group.CreateGroup()
 	if cg then sg:Merge(cg) end
 	local ct=sg:GetCount()
-	while ct<max and not (ct>=min and f(sg,...) and not (g:IsExists(c11513086.CheckGroupRecursive,1,sg,sg,g,f,min,max,ext_params) and Duel.SelectYesNo(tp,m))) do
+	while ct<max and not (ct>=min and f(sg,...) and not (g:IsExists(c11513086.CheckGroupRecursive,1,sg,sg,g,f,min,max,ext_params) and Duel.SelectYesNo(tp,11513086))) do
 		Duel.Hint(HINT_SELECTMSG,tp,desc)
 		local tg=g:FilterSelect(tp,c11513086.CheckGroupRecursive,1,1,sg,sg,g,f,min,max,ext_params)
 		if tg:GetCount()==0 then error("Incorrect Group Filter",2) end
@@ -138,8 +139,9 @@ function c11513086.goal(g,tp,lv,syncard,tuc)
 end
 function c11513086.syncon(e,c,tuner,mg)
 	if c==nil then return true end
-	if c:IsFaceup() and not Duel.IsPlayerAffectedByEffect(tp,11513086) then return false end
+	if c:IsFaceup() then return false end
 	local tp=c:GetControler()
+	if not Duel.IsPlayerAffectedByEffect(tp,11513086) then return false end
 	local minc=2
 	local maxc=c:GetLevel()
 	local g1=nil
@@ -219,7 +221,7 @@ function c11513086.mnfilter2(c,mc)
 	return math.abs(c:GetLevel()-mc:GetLevel())==4
 end
 function c11513086.fselect(g,tp,sc)
-	return g:GetCount()==2 and g:IsExists(Card.IsSetCard,1,nil,0x1a2) and g:IsExists(c11513086.mnfilter,1,nil,g)
+	return g:GetCount()==2 and g:IsExists(Card.IsSetCard,1,nil,0x1a2) and g:IsExists(c11513086.mnfilter,1,nil,g) and g:GetClassCount(Card.GetLocation)==2
 end
 function c11513086.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c11513086.tgrfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)
