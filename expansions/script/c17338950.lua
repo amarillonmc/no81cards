@@ -58,7 +58,6 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.ConfirmCards(1-tp,c)
 	
-	-- 特殊召唤部分
 	if Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		local e1=Effect.CreateEffect(c)
@@ -71,7 +70,6 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterFlagEffect(tp,id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	end
 	
-	-- 检索部分（修改为1张卡）
 	local g=Duel.GetMatchingGroup(s.opfilter,tp,LOCATION_DECK,0,nil)
 	if #g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)

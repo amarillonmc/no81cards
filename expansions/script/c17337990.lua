@@ -114,7 +114,7 @@ function s.ctop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
 end
-function s.ctfilter(c)
+function s.ctfilter(c,e,tp)
 	return c:GetOriginalType()&TYPE_MONSTER>0 and c:GetType()&TYPE_CONTINUOUS+TYPE_TRAP==TYPE_CONTINUOUS+TYPE_TRAP
 		and c:IsFaceup() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

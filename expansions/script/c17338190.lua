@@ -95,7 +95,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if tc then
-		Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
