@@ -45,8 +45,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)	
 end
 function s.spcfilter(c,e,tp)
-	return s.CelestialBeing(c) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_UNION)
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return s.CelestialBeing(c) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_UNION) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
 
@@ -129,7 +128,7 @@ function s.actop(e,tp,eg,ep,ev,re,r,rp)
 
 	if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
 
-		local g=Duel.GetMatchingGroup(s.spcfilter,tp,LOCATION_DECK,0,nil)
+		local g=Duel.GetMatchingGroup(s.spcfilter,tp,LOCATION_DECK,0,nil,e,tp)
 		if g:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
 	   and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)

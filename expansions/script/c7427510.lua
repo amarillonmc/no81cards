@@ -36,7 +36,7 @@ function s.initial_effect(c)
 	end
 end
 function s.costfilter(c,e,tp)
-	return c:IsSetCard(0xdce) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
+	return c:IsSetCard(0xdce) and not c:IsPublic()
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

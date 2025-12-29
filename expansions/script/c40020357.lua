@@ -2,7 +2,7 @@
 local s,id=GetID()
 s.ui_hint_effect = s.ui_hint_effect or {}
 local CORE_ID = 40020353 
-local ArmedIntervention = CORE_ID	
+local ArmedIntervention = CORE_ID   
 local ArmedIntervention_UI = CORE_ID + 10000
 --CB
 s.named_with_CelestialBeing=1
@@ -155,7 +155,7 @@ function s.lvop(e,tp,eg,ep,ev,re,r,rp)
 				 e1:SetType(EFFECT_TYPE_SINGLE)
 				 e1:SetCode(EFFECT_UPDATE_LEVEL)
 				 e1:SetValue(3)
-				 e1:SetReset(RESET_EVENT+RESETS_STANDARD_DISABLE)
+				 e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 				 c:RegisterEffect(e1)
 				 
 				 local current_lv = c:GetLevel()

@@ -58,7 +58,7 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function s.thfilter(c)
-	return s.Kyrios(c) and c:IsType(TYPE_MONSTER) and not c:GetCode(id)  and c:IsAbleToHand()
+	return s.Kyrios(c) and c:IsType(TYPE_MONSTER) and not c:IsCode(id)  and c:IsAbleToHand()
 end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

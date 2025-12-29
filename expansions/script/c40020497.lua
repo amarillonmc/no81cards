@@ -7,13 +7,12 @@ function s.CelestialBeing(c)
 	return m and m.named_with_CelestialBeing
 end
 function s.initial_effect(c)
-	e1:SetDescription(aux.Stringid(id,0))
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
-	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
 
@@ -28,15 +27,11 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 
-function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=3 end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_DECKDES,nil,0,tp,3)
-end
+
 
 function s.thfilter(c)
 
-	return s.CelestialBeing(c) and not c:GetCode(id) and c:IsAbleToHand()
+	return s.CelestialBeing(c) and not c:IsCode(id) and c:IsAbleToHand()
 end
 
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -45,14 +40,15 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	
 	Duel.ConfirmDecktop(tp,3)
 	local g=Duel.GetDecktopGroup(tp,3)
-	if #g>0 then
+	if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 		Duel.DisableShuffleCheck()
 
-		if g:IsExists(s.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+		if g:IsExists(s.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,1))  then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sg=g:FilterSelect(tp,s.thfilter,1,1,nil)
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,sg)
+			Duel.ShuffleHand(tp)
 			g:Sub(sg)
 		end
 
@@ -60,7 +56,6 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
--- ②
 function s.imtg(e,c)
 
 	return s.CelestialBeing(c) and c:IsRace(RACE_MACHINE) and bit.band(c:GetType(),TYPE_RITUAL)~=0
