@@ -152,11 +152,12 @@ function s.cpop(e,tp,eg,ep,ev,re,r,rp)
 					if ac==code then
 						ht[code]=true
 						local cdata=s.findeffect(te)
-						local id=cdata.id[1]
-						if not ht2[id] then
-							ht2[id]=true
+						local cid=cdata.id[1]
+						if not cid then Debug.Message("!") end
+						if cid and not ht2[cid] then
+							ht2[cid]=true
 							table.insert(effects,cdata)
-							table.insert(numbers,id)
+							table.insert(numbers,cid)
 						end
 					end
 				end
