@@ -85,8 +85,8 @@ function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return #b2>0 end
 	Duel.SetChainLimit(s.chainlm)
 end
-function s.chainlm(e,ep,tp)
-	return tp==rp or not re:GetHandler():IsType(TYPE_MONSTER)
+function s.chainlm(re,rp,tp)
+	return not re:GetHandler():IsType(TYPE_MONSTER) or rp==tp
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

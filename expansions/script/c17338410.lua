@@ -78,6 +78,7 @@ function s.indfilter(e,c)
 	return c:IsFaceup()
 end
 function s.indcon(e,tp,eg,ep,ev,re,r,rp)
+	local tp=e:GetHandlerPlayer()
 	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function s.indct(e,re,r,rp)
