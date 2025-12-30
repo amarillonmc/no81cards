@@ -159,7 +159,7 @@ function s.seqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	e:SetLabel(seq)
 	Duel.Hint(HINT_ZONE,tp,flag)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
+	--Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
 end
 function s.checkin(tab,val)
 	for _,v in ipairs(tab) do

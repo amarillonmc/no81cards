@@ -121,9 +121,10 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 		if #sg>0 and Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)>0 then 
 			local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.tdfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
 			local ct=g:GetClassCount(Card.GetCode)
-			local sg=g:SelectSubGroup(tp,aux.dncheck,1,ct)
-			if #sg>0 then
-				Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			local sg2=g:SelectSubGroup(tp,aux.dncheck,1,ct)
+			if #sg2>0 then
+				Duel.HintSelection(sg2)
+				Duel.SendtoDeck(sg2,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 			end
 		end
 	end

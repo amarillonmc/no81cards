@@ -1,6 +1,10 @@
 --创界神 奥梅提奥托
 local s,id=GetID()
-
+s.named_with_Grandwalker=1
+function s.Grandwalker(c)
+	local m=_G["c"..c:GetCode()]
+	return m and m.named_with_Grandwalker
+end
 
 function s.initial_effect(c)
 
