@@ -71,7 +71,7 @@ function c79029558.dspfil(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x3b)  
 end 
 function c79029558.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingTarget(c79029558.dspfil,tp,LOCATION_GRAVE,0,1,nil,e,tp) end 
+	if chk==0 then return Duel.IsExistingTarget(c79029558.dspfil,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 end 
 	local g=Duel.SelectTarget(tp,c79029558.dspfil,tp,LOCATION_GRAVE,0,1,1,nil,e,tp) 
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,g:GetCount(),0,0) 
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
@@ -79,7 +79,7 @@ end
 function c79029558.disop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
 	local tc=Duel.GetFirstTarget()
-	if Duel.NegateEffect(ev) and tc:IsRelateToEffect(e) then 
+	if Duel.NegateEffect(ev) and tc:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then 
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end 
 end

@@ -12,7 +12,6 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DISABLE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.target)
@@ -77,7 +76,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetCode(EFFECT_DISABLE_EFFECT)
 		e2:SetValue(RESET_TURN_SET)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e2)	
+		tc:RegisterEffect(e2)   
 	end
 end
 
@@ -115,14 +114,10 @@ end
 function cm.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not c:IsSetCard(0x5a71)
 end
-
-function cm.isset(c)
-	return c:IsSetCard(0x5a71,0x6a71) 
-end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	local chain=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT)
-	return Duel.GetCurrentChain()>1 and  cm.isset(chain:GetHandler())
-	and (Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_ONFIELD or Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)==LOCATION_GRAVE)
+	local qe,loc=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_LOCATION)
+	return Duel.GetCurrentChain()>1 and rp==1-tp and bit.band(loc,LOCATION_ONFIELD+LOCATION_GRAVE)~=0 and qe:GetHandler():IsSetCard(0x5a71,0x6a71)
+	and qe:GetHandler():IsControler(tp)
 end
 function cm.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsChainNegatable(ev) end
