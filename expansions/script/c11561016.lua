@@ -48,7 +48,7 @@ function c11561016.regop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoDeck(sg,nil,SEQ_DECKTOP,REASON_EFFECT)
 			g:Merge(sg)
 			Duel.SortDecktop(tp,tp,ct)
-			if #sg>=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0) and Duel.IsPlayerCanDraw(tp,1) then
+			if #sg>=math.ceil(Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)/2) and Duel.IsPlayerCanDraw(tp,1) then
 				Duel.ShuffleHand(tp)
 				Duel.BreakEffect()
 				Duel.Draw(tp,1,REASON_EFFECT)
@@ -56,3 +56,4 @@ function c11561016.regop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+RACE_PLANT

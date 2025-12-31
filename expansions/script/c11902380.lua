@@ -15,7 +15,7 @@ function s.initial_effect(c)
     --TdOrSum(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCode(EVENT_TO_HAND)
@@ -66,7 +66,9 @@ function s.toscon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.tostg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToDeck() or c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return c:IsAbleToDeck()
+        or (c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+            and Duel.GetLocationCount(tp,0x04)>0) end
     if c:IsAbleToDeck() then
         Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,0,0)
     end
@@ -82,6 +84,7 @@ function s.tosop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
         local b1=c:IsAbleToDeck()
         local b2=c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+            and Duel.GetLocationCount(tp,0x04)>0
         local op=0
         if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(id,2),aux.Stringid(id,3))
         elseif b1 then op=0
@@ -89,7 +92,7 @@ function s.tosop(e,tp,eg,ep,ev,re,r,rp)
         else return end
         if op==0 then
             local g=Duel.GetMatchingGroup(s.spfi2ter,tp,0x02,0,nil,e,tp)
-            if Duel.SendtoDeck(c,nil,1,0x40)>0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,4)) then
+            if Duel.SendtoDeck(c,nil,1,0x40)>0 and #g>0 and Duel.GetLocationCount(tp,0x04)>0 and Duel.SelectYesNo(tp,aux.Stringid(id,4)) then
                 Duel.Hint(3,tp,509)
                 local tc=g:Select(tp,1,1,nil)
                 if tc then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP) end

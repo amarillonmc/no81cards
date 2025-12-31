@@ -60,15 +60,23 @@ end
 function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local loc=c:GetFlagEffectLabel(id)
-	if chk==0 then return (bit.band(loc,LOCATION_HAND)==0 or Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_HAND,1,nil))
+	if chk==0 then return loc and (bit.band(loc,LOCATION_HAND)==0 or Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_HAND,1,nil))
 		and (bit.band(loc,LOCATION_MZONE)==0 or Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil))
 		and (bit.band(loc,LOCATION_GRAVE)==0 or Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_GRAVE,1,nil))
 		and (bit.band(loc,LOCATION_REMOVED)==0 or Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_REMOVED,1,nil)) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,0,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_HAND+LOCATION_REMOVED)
+	local td_loc=0
+	if bit.band(loc,LOCATION_HAND)==0 then td_loc=td_loc+LOCATION_HAND end
+	if bit.band(loc,LOCATION_MZONE)==0 then td_loc=td_loc+LOCATION_ONFIELD end
+	if bit.band(loc,LOCATION_GRAVE)==0 then td_loc=td_loc+LOCATION_GRAVE end
+	if bit.band(loc,LOCATION_REMOVED)==0 then td_loc=td_loc+REMOVED end
+	e:SetLabel(td_loc)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,0,td_loc)
 end
 function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local loc=c:GetFlagEffectLabel(id)
+	local loc=c:GetLabel()
+	if not loc then return end
+	if loc==0 then return end
 	local g1=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_HAND,nil)
 	local g2=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,nil)
 	local g3=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_GRAVE,nil)
