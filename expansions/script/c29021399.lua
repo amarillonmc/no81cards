@@ -7,9 +7,9 @@ function c29021399.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,5,2)
 	c:EnableReviveLimit()
-	--spsummon
+	--TOGRAVE
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_TOGRAVE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)

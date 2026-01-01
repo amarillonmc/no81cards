@@ -36,6 +36,7 @@ function cm.initial_effect(c)
 	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
+	e5:SetCondition(cm.descon)
 	e5:SetTarget(cm.target)
 	e5:SetOperation(cm.operation)
 	c:RegisterEffect(e5)
@@ -67,32 +68,36 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterFlagEffect(0,RESET_EVENT+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,0))
 	end
 end
-
 function cm.dfilter(c)
 	return c:IsFaceup() and c:IsCode(40010230)
 end
-
+function cm.descon(e,tp,eg,ep,ev,re,r,rp)
+	--if Duel.GetFlagEffect(tp,m)>0 then return e:GetHandler():GetFlagEffect(m+1)<2
+	--else return e:GetHandler():GetFlagEffect(m+1)<1 end
+	return Duel.GetFlagEffect(tp,40009560)>0 or Duel.IsExistingMatchingCard(cm.dfilter,tp,LOCATION_MZONE,0,1,nil)
+end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local c=e:GetHandler()
 	if chkc then return chkc:IsControler(1-tp) and chkc:IsOnField() and aux.NegateAnyFilter(chkc) end
 	if chk==0 then
-		local count = Duel.GetFlagEffect(tp, m+1)
-		if count >= 2 then return false end
-
-		if Duel.GetFlagEffect(tp, 40009560) <= 0 or Duel.IsExistingMatchingCard(cm.dfilter, tp, LOCATION_MZONE, 0, 1, nil) then return false end
-
-		if count == 1 and Duel.GetFlagEffect(tp, m) <= 0 then return false end
-
-		return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil)
+		local b
+		if Duel.GetFlagEffect(tp,m)>0 then
+			b=c:GetFlagEffect(m+1)<2
+		else
+			b=c:GetFlagEffect(m+1)<1
+		end
+		return b and Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil)
 	end
-	
+	c:RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+
+
+
+	--if chk==0 then return Duel.IsExistingTarget(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
 	local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
-
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(tp, m+1, RESET_PHASE+PHASE_END, 0, 1)
-
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if ((tc:IsFaceup() and not tc:IsDisabled()) or tc:IsType(TYPE_TRAPMONSTER)) and tc:IsRelateToEffect(e) then
@@ -119,4 +124,8 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e3)
 		end
 	end
+	e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
+
+
+
