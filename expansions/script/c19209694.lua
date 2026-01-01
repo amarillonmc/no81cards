@@ -43,7 +43,8 @@ function c19209694.atkop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	tc:RegisterEffect(e1)
 	if tc:IsHasEffect(EFFECT_REVERSE_UPDATE) then return end
-	if tc:IsAttackBelow(1000) then
+	local x,y,z=tc:IsAttackBelow(1000),tc:IsAttackBelow(500),tc:IsAttackBelow(0)
+	if x then
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
@@ -53,7 +54,7 @@ function c19209694.atkop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e1,tp)
 	end
 	local res=0
-	if tc:IsAttackBelow(500) then
+	if y then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 		if g:GetCount()>0 then
@@ -62,7 +63,7 @@ function c19209694.atkop(e,tp,eg,ep,ev,re,r,rp)
 			res=Duel.SendtoHand(g,nil,REASON_EFFECT)
 		end
 	end
-	if tc:IsAttackBelow(0) then
+	if z then
 		if res~=0 then Duel.BreakEffect() end
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end

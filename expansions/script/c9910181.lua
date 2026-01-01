@@ -62,9 +62,8 @@ function c9910181.operation(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Draw(1-tp,1,REASON_EFFECT)
 		end
 	end
-	if b2 and c:IsRelateToEffect(e) and (res or Duel.SelectYesNo(tp,aux.Stringid(9910181,1)))
-		and Duel.Destroy(c,REASON_EFFECT)~=0 then
-		Duel.Draw(tp,ct,REASON_EFFECT)
+	if b2 and c:IsRelateToEffect(e) and (res or Duel.SelectYesNo(tp,aux.Stringid(9910181,1))) then
+		if c:IsRelateToChain() and Duel.Destroy(c,REASON_EFFECT)~=0 then Duel.Draw(tp,ct,REASON_EFFECT) end
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_DISABLE)
