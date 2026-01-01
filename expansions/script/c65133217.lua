@@ -1,6 +1,7 @@
 --幻叙新生
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,65133214,65133216)
 	--Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)

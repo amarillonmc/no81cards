@@ -12,6 +12,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e1)
 	--remove
 	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(m,2))
 	e0:SetType(EFFECT_TYPE_IGNITION+EFFECT_TYPE_CONTINUOUS)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	e0:SetCountLimit(1,m)
@@ -91,7 +92,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToEffect(e) then return end
 	local g=Duel.GetDecktopGroup(tp,1)
 	if not g or #g==0 then return end
-	g:GetFirst():SetStatus(STATUS_TO_HAND_WITHOUT_CONFIRM)
+	g:GetFirst():SetStatus(STATUS_TO_HAND_WITHOUT_CONFIRM,true)
 	g:AddCard(c)
 	if Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
