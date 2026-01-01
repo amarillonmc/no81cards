@@ -56,4 +56,3 @@ function c11561016.regop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-RACE_PLANT

@@ -1,7 +1,7 @@
 --花之装 梣
 function c11561030.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,nil,2,2,c11561030.lcheck)
+	aux.AddLinkProcedure(c,nil,2,2)
 	c:EnableReviveLimit() 
 	--immuse 
 	local e1=Effect.CreateEffect(c) 

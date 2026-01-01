@@ -109,7 +109,7 @@ function c11513083.swtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c11513083.swop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
-	local tc=Duel.SelectMatchingCard(tp,c11513083.setfil,tp,aux.NecroValleyFilter(LOCATION_DECK+LOCATION_GRAVE),0,1,1,nil,e,tp):GetFirst() 
+	local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c11513083.setfil),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp):GetFirst() 
 	if tc then 
 		if tc:IsType(TYPE_MONSTER) then 
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)

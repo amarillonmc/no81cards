@@ -23,15 +23,16 @@ function c75081061.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x75c)
 end
 function c75081061.drepcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c75081061.cfilter,1,nil)
+	return eg:IsExists(c75081061.cfilter,1,nil) and e:GetHandler():GetFlagEffect(75081061)==0
 end  
 function c75081061.dreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemove() end
+	c:RegisterFlagEffect(75081061,RESET_CHAIN,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetHandler(),1,0,0)
 end
 function c75081061.drepop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToRemove() end
+	if not c:IsRelateToEffect(e) then return end
 	if Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)~=0 and c:GetOriginalCode()==75081061 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -58,6 +59,7 @@ end
 --
 function c75081061.drepop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
 	Duel.Remove(c,POS_FACEUP,REASON_EFFECT)
 	local fid=c:GetFieldID()
 	local e1=Effect.CreateEffect(c)
