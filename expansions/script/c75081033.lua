@@ -65,7 +65,7 @@ function c75081033.thop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c75081033.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(75081033,2)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c75081033.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c75081033.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
 			if g:GetCount()>0 then
 				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 			end

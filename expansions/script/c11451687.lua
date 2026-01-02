@@ -61,11 +61,24 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		if ct<=16 then
 			Duel.SortDecktop(tp,tp,ct)
 		else
-			Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451463,2))
-			local tc=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_DECK):Select(tp,1,1,nil):GetFirst()
-			if not tc then return end
-			Duel.ShuffleDeck(tp)
-			Duel.MoveSequence(tc,0)
+			local cg=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_DECK)
+			local sg=Group.CreateGroup()
+			local stack={}
+			while #sg<ct do
+				local tc=cg:SelectUnselect(sg,tp,false,true,ct,ct)
+				if not sg:IsContains(tc) then
+					sg:AddCard(tc)
+					cg:RemoveCard(tc)
+					stack[#stack+1]=tc
+				else
+					sg:RemoveCard(tc)
+					cg:AddCard(tc)
+					for i=#stack,1,-1 do
+						if stack[i]==tc then table.remove(stack,i) break end
+					end
+				end
+			end
+			for i=#stack,1,-1 do Duel.MoveSequence(stack[i],0) end
 		end
 		local dt=Duel.GetDrawCount(tp)
 		if tid==1 then
