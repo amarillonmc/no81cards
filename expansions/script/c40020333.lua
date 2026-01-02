@@ -89,7 +89,7 @@ end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsPreviousLocation(LOCATION_ONFIELD)
-		and bit.band(c:GetPreviousSummonType(),SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
+		and bit.band(c:GetSummonType(),SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
 end
 function s.desfilter(c)
 	return c:IsFaceup() and c:IsCode(OME_ID) and c:IsDestructable()

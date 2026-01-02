@@ -59,16 +59,24 @@ end
 function s.spcon_move(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.omefilter,1,nil,tp)
 end
+
 function s.desfilter(c)
-	return c:IsFaceup()  and c:GetAttack()>=0
+	return c:IsFaceup() and c:GetAttack()>=0
 end
+
 function s.gcheck(g)
-	return g:GetSum(Card.GetAttack)>=2100
+	local sum=g:GetSum(Card.GetAttack)
+
+	if sum<2100 then return false end
+
+	return not g:IsExists(function(c) return sum-c:GetAttack()>=2100 end, 1, nil)
 end
+
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_MZONE,nil)
 	if chk==0 then
+
 		return g:GetCount()>0 and g:CheckSubGroup(s.gcheck,1,#g)
 			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 			and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -76,11 +84,14 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_MZONE)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
+
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_MZONE,nil)
+
 	if g:GetCount()>0 and g:CheckSubGroup(s.gcheck,1,#g) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+
 		local dg=g:SelectSubGroup(tp,s.gcheck,false,1,#g)
 		if dg and dg:GetCount()>0 then
 			Duel.HintSelection(dg)

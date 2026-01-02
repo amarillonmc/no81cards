@@ -37,6 +37,7 @@ function c29002020.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetTargetRange(LOCATION_MZONE,0)
 	e3:SetValue(c29002020.efilter)
 	c:RegisterEffect(e3)
@@ -125,9 +126,14 @@ function c29002020.ioperation(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetTargetRange(1,0)
 	Duel.RegisterEffect(e3,tp)
 end
-function c29002020.efilter(e,te)
-	if te:GetOwnerPlayer()==e:GetHandlerPlayer() then return false end
-	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
+--function c29002020.efilter(e,te)
+	--if te:GetOwnerPlayer()==e:GetHandlerPlayer() then return false end
+	--if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
+	--local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+	--return not g or not g:IsContains(e:GetHandler())
+--end
+function c29002020.efilter(e,re,rp,c)
+	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	return not g or not g:IsContains(e:GetHandler())
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and not g or not g:IsContains(c)
 end

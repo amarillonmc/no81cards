@@ -72,7 +72,7 @@ function s.fishfilter(c)
 	return c:IsRace(RACE_FISH) and ((c:IsLocation(LOCATION_MZONE) and c:IsFaceup()) or c:IsLocation(LOCATION_GRAVE))
 end
 function s.desfilter(c,atk)
-	return c:IsAttackBelow(atk)
+	return c:IsAttackBelow(atk) and c:IsFaceup()
 end
 function s.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local chkf=tp

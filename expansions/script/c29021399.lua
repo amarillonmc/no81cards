@@ -2,8 +2,7 @@
 c29021399.named_with_Arknight=1
 function c29021399.initial_effect(c)
 	aux.AddCodeList(c,29065500)
-	--change name
-	aux.EnableChangeCode(c,29065500,LOCATION_MZONE)
+	aux.EnableChangeCode(c,29065500)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,5,2)
 	c:EnableReviveLimit()
