@@ -68,6 +68,14 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCondition(cm.descon)
 	e2:SetOperation(cm.desop)
 	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	e3:SetLabelObject(sg)
+	e3:SetCondition(cm.descon3)
+	e3:SetOperation(cm.desop3)
+	Duel.RegisterEffect(e3,tp)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
@@ -76,7 +84,8 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Destroy(dg,REASON_EFFECT)
 end
 function cm.desfilter(c,fid)
-	return c:GetFlagEffectLabel(m)==fid
+	if c:GetFlagEffect(m)==0 then return false end
+	return c:GetFlagEffectLabel(m)==fid or c:IsHasEffect(EFFECT_FLAG_EFFECT):GetDescription()==aux.Stringid(m,4)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
@@ -86,8 +95,18 @@ function cm.descon(e,tp,eg,ep,ev,re,r,rp)
 		return false
 	else return true end
 end
+function cm.descon3(e,tp,eg,ep,ev,re,r,rp)
+	local g=e:GetLabelObject()
+	local rc=re:GetHandler()
+	local te=rc:GetReasonEffect()
+	return g and g:IsContains(rc) and rc:GetFlagEffect(m)==0 and rc:IsPreviousLocation(LOCATION_ONFIELD) and te and te:IsActivated() and te==re
+end
+function cm.desop3(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	rc:RegisterFlagEffect(m,RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,4))
+end
 function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
-	if re:GetHandler():IsImmuneToEffect(e) then return end
+	--if re:GetHandler():IsImmuneToEffect(e) then return end
 	local op=re:GetOperation() or aux.TRUE
 	local op2=function(e,...) e:SetOperation(op) op(e,...) Duel.BreakEffect() op(e,...) end
 	re:SetOperation(op2)
