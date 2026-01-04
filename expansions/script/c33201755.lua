@@ -22,10 +22,10 @@ function s.initial_effect(c)
 	e1:SetDescription(aux.Stringid(id, 0))
 	e1:SetCategory(CATEGORY_TOHAND + CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_TRIGGER_O) -- 诱发效果
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)				 -- 特殊召唤成功时
-	e1:SetProperty(EFFECT_FLAG_DELAY)				   -- 即使在连锁2以后特召也能发动
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)			   -- 特殊召唤成功时
+	e1:SetProperty(EFFECT_FLAG_DELAY)				  -- 即使在连锁2以后特召也能发动
 	e1:SetRange(LOCATION_PZONE)
-	e1:SetCountLimit(1, id)						   -- 卡名1回合1次
+	e1:SetCountLimit(1, id)						-- 卡名1回合1次
 	e1:SetCondition(s.srcon)
 	e1:SetTarget(s.srtg)
 	e1:SetOperation(s.srop)
@@ -54,7 +54,7 @@ end
 -- 判断特召的怪兽是否出现在这张卡的连接区
 function s.cfilter(c, lc)
 	-- 获取该连接怪兽当前指向的所有格子中的怪兽
-	return lc:GetLinkedGroup():IsContains(c)
+	return lc:GetLinkedGroup():IsContains(c) and c:GetSequence()<5
 end
 
 function s.srcon(e, tp, eg, ep, ev, re, r, rp)

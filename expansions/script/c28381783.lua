@@ -19,7 +19,7 @@ function c28381783.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	--e1:SetProperty(EFFECT_FLAG_DELAY)
-	--e1:SetCondition(c28381783.tgcon)
+	--e1:SetCondition(c28381783.descon)
 	e1:SetTarget(c28381783.destg)
 	e1:SetOperation(c28381783.desop)
 	c:RegisterEffect(e1)
@@ -28,7 +28,6 @@ function c28381783.initial_effect(c)
 	ce1:SetType(EFFECT_TYPE_SINGLE)
 	ce1:SetCode(EFFECT_MATERIAL_CHECK)
 	ce1:SetValue(c28381783.valcheck)
-	ce1:SetLabelObject(e1)
 	c:RegisterEffect(ce1)
 end
 function c28381783.ffilter(c)
@@ -65,19 +64,20 @@ function c28381783.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	mg:DeleteGroup()
 	Duel.RegisterFlagEffect(tp,28381783,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
-function c28381783.tgcon(e,tp,eg,ep,ev,re,r,rp)
+function c28381783.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
 function c28381783.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=e:GetLabel()
-	if chk==0 then return ct>0 and Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK,0,1,nil,0x285) end
+	local ct=e:GetHandler():GetFlagEffectLabel(28381783)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK,0,1,nil,0x285) and ct and ct>0 end
+	e:SetLabel(ct)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_DECK)
 end
 function c28381783.thfilter(c)
 	return c:IsSetCard(0x285) and c:IsAbleToHand() and c:IsFaceupEx() and aux.NecroValleyFilter()(c)
 end
 function c28381783.desop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=e:GetHandler():IsRelateToChain() and e:GetLabel() or 0
+	local ct=e:GetLabel()
 	if ct>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,ct,nil,0x285)
@@ -91,5 +91,5 @@ function c28381783.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28381783.valcheck(e,c)
-	e:GetLabelObject():SetLabel(c:GetMaterialCount())
+	c:RegisterFlagEffect(28381783,RESET_EVENT+0xff0000,0,1,c:GetMaterialCount())
 end

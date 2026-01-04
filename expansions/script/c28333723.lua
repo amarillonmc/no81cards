@@ -63,10 +63,13 @@ function c28333723.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c28333723.thfilter,p,LOCATION_GRAVE,0,nil,e:GetLabel())
 	if c:IsReason(REASON_DESTROY) and #g>0 then
 		Duel.Hint(HINT_CARD,0,28333723)
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
-		local sg=g:Select(p,1,1,nil)
-		Duel.HintSelection(sg)
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		local tc=g:GetFirst()
+		if #g>=2 then
+			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_ATOHAND)
+			tc=g:Select(p,1,1,nil):GetFirst()
+		end
+		Duel.HintSelection(Group.FromCards(tc))
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 	e:Reset()
 end

@@ -29,7 +29,6 @@ function c28382113.initial_effect(c)
 	ce1:SetType(EFFECT_TYPE_SINGLE)
 	ce1:SetCode(EFFECT_MATERIAL_CHECK)
 	ce1:SetValue(c28382113.valcheck)
-	ce1:SetLabelObject(e1)
 	c:RegisterEffect(ce1)
 end
 function c28382113.ffilter(c)
@@ -70,17 +69,18 @@ function c28382113.descon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp
 end
 function c28382113.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=e:GetHandler():GetMaterialCount()
+	local ct=e:GetHandler():GetFlagEffectLabel(28382113)
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,nil)
-	if chk==0 then return ct>0 and #g>0 end
+	if chk==0 then return ct and ct>0 and #g>0 end
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28382113,1))
+	e:SetLabel(ct)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c28382113.gcheck(sg,tp)
 	return sg:IsExists(Card.IsControler,1,nil,tp)
 end
 function c28382113.desop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=e:GetHandler():IsRelateToChain() and e:GetHandler():GetMaterialCount() or 0
+	local ct=e:GetLabel()
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if ct>0 and #g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
@@ -93,5 +93,5 @@ function c28382113.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28382113.valcheck(e,c)
-	e:GetLabelObject():SetLabel(c:GetMaterialCount())
+	c:RegisterFlagEffect(28382113,RESET_EVENT+0xff0000,0,1,c:GetMaterialCount())
 end

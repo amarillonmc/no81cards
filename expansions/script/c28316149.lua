@@ -85,14 +85,17 @@ function c28316149.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c28316149.setfilter,p,LOCATION_DECK,0,nil,e,p,c:GetPreviousCodeOnField())
 	if c:IsReason(REASON_DESTROY) and #g>0 then
 		Duel.Hint(HINT_CARD,0,28316149)
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SET)
-		local tc=g:Select(p,1,1,nil):GetFirst()
-		if tc:IsSSetable() then
-			Duel.SSet(tp,tc)
-		else
-			Duel.SpecialSummon(tc,0,p,p,false,false,POS_FACEDOWN_DEFENSE)
+		local tc=g:GetFirst()
+		if #g>=2 then
+			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SET)
+			tc=g:Select(p,1,1,nil):GetFirst()
 		end
-		Duel.ConfirmCards(1-p,tc)
+		if Duel.GetMZoneCount(p)>0 and tc:IsCanBeSpecialSummoned(e,0,p,false,false,POS_FACEDOWN_DEFENSE) and (not tc:IsSSetable() or Duel.SelectOption(tp,1152,1153)==0) then
+			Duel.SpecialSummon(tc,0,p,p,false,false,POS_FACEDOWN_DEFENSE)
+			Duel.ConfirmCards(1-p,tc)
+		else
+			Duel.SSet(tp,tc)
+		end
 	end
 	e:Reset()
 end
