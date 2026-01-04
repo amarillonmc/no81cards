@@ -69,16 +69,14 @@ function c28316051.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local g=Duel.GetMatchingGroup(c28316051.cfilter,tp,LOCATION_DECK+LOCATION_ONFIELD,0,nil)
 	if Duel.GetLP(tp)<=3000 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(28316051,2)) then
-		if g:FilterCount(Card.IsAbleToRemove,nil)<2 or Duel.SelectOption(tp,aux.Stringid(28316051,3),1192)==0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local tg=g:Select(tp,1,2,nil)
-			Duel.HintSelection(tg)
-			Duel.Destroy(tg,REASON_EFFECT)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+		local sg=g:Select(tp,1,2,nil)
+		if sg:FilterCount(Card.IsAbleToRemove,nil)<#sg or Duel.SelectOption(tp,aux.Stringid(28316051,3),1192)==0 then
+			Duel.HintSelection(sg)
+			Duel.Destroy(sg,REASON_EFFECT)
 		else
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local rg=g:FilterSelect(tp,Card.IsAbleToRemove,1,2,nil)
-			Duel.HintSelection(rg)
-			Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
+			Duel.HintSelection(sg)
+			Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 		end
 	end
 end
