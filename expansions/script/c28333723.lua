@@ -79,7 +79,7 @@ function c28333723.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c28333723.tdfilter(c)
-	return Duel.GetTurnCount()~=c:GetTurnID() or c:IsReason(REASON_DESTROY+REASON_RETURN)
+	return Duel.GetTurnCount()~=c:GetTurnID() or c:IsReason(REASON_DESTROY+REASON_RETURN) and c:IsType(TYPE_MONSTER)
 end
 function c28333723.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28333723.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end

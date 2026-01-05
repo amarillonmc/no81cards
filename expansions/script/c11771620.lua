@@ -61,10 +61,10 @@ function s.splimit(e,c)
 	return c:IsLocation(LOCATION_EXTRA) and not (c:IsRace(RACE_MACHINE) and c:IsType(TYPE_FUSION))
 end
 function s.filter1(c,e)
-	return c:IsRace(RACE_MACHINE) and not c:IsImmuneToEffect(e)
+	return not c:IsImmuneToEffect(e)
 end
 function s.filter2(c,e,tp,m,f,chkf)
-	return c:IsType(TYPE_FUSION) and (not f or f(c))
+	return c:IsRace(RACE_MACHINE) and c:IsType(TYPE_FUSION) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 function s.fusop(e,tp,eg,ep,ev,re,r,rp)
