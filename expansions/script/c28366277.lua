@@ -14,7 +14,7 @@ function c28366277.initial_effect(c)
 	c:RegisterEffect(e1)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(28366277,2))
+	e2:SetDescription(aux.Stringid(28366277,1))
 	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_MSET)
@@ -57,7 +57,7 @@ function c28366277.activate(e,tp,eg,ep,ev,re,r,rp)
 	ct=tg:FilterCount(Card.IsLocation,nil,LOCATION_HAND)
 	if ct==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,ct,ct,aux.ExceptThisCard(e))
+	local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_MZONE,0,ct,ct,nil)
 	Duel.HintSelection(dg)
 	Duel.Destroy(dg,REASON_EFFECT)
 end

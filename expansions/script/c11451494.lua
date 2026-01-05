@@ -1,7 +1,6 @@
 --破碎溯时者
 --21.04.10
-local m=11451494
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--effect
 	local e1=Effect.CreateEffect(c)
@@ -32,7 +31,7 @@ function cm.redop(e,tp,eg,ep,ev,re,r,rp)
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetDescription(aux.Stringid(m,0))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_SOLVED)
+	e2:SetCode(EVENT_CHAIN_SOLVING)
 	e2:SetLabelObject(e1)
 	e2:SetCondition(cm.descon)
 	e2:SetOperation(cm.desop)

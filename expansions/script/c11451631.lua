@@ -200,7 +200,7 @@ function cm.operation3(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_CHAINING)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetCountLimit(1)
 	e1:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e1:SetCondition(cm.negcon)
@@ -212,7 +212,13 @@ function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep==1-tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
 function cm.negop(e,tp,eg,ep,ev,re,r,rp)
-	local bool=Duel.IsChainNegatable(ev)
+	Duel.Hint(HINT_CARD,0,m)
+	local rc=re:GetHandler()
+	if Duel.NegateEffect(ev,true) and rc:IsRelateToEffect(re) then
+		Duel.Destroy(rc,REASON_EFFECT)
+	end
+	e:Reset()
+	--[[local bool=Duel.IsChainNegatable(ev)
 	if not bool then e:Reset() return end
 	Duel.Hint(HINT_CARD,0,m)
 	Duel.NegateActivation(ev)
@@ -223,8 +229,7 @@ function cm.negop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EVENT_CHAIN_END)
 	e1:SetOperation(cm.resop)
 	Duel.RegisterEffect(e1,tp)
-	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())
-	e:Reset()
+	Duel.RaiseEvent(e:GetHandler(),11451676,e,0,tp,tp,Duel.GetCurrentChain())--]]
 end
 local _IsChainNegatable=Duel.IsChainNegatable
 function cm.resop(e,tp,eg,ep,ev,re,r,rp)

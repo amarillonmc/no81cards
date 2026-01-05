@@ -26,14 +26,14 @@ function c28368431.initial_effect(c)
 		c28368431.global_check=true
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
+		ge1:SetCode(EVENT_DESTROYED)
 		--ge1:SetCondition(c28368431.checkcon)
 		ge1:SetOperation(c28368431.checkop)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
 function c28368431.ctfilter(c,p)
-	return c:IsSetCard(0x285) and c:IsSummonPlayer(p) and c:IsFaceup()
+	return c:GetReasonPlayer()==p and (c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and (c:GetPreviousAttributeOnField()&ATTRIBUTE_DARK)==ATTRIBUTE_DARK or not c:IsPreviousLocation(LOCATION_MZONE) and c:IsAttribute(ATTRIBUTE_DARK))
 end
 function c28368431.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if eg:IsExists(c28368431.ctfilter,1,nil,0) then Duel.RegisterFlagEffect(0,28368431,RESET_PHASE+PHASE_END,0,1) end

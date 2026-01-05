@@ -76,7 +76,7 @@ function c28362718.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLP(tp)<=3000 and Duel.Draw(tp,1,REASON_EFFECT)~=0 then
 		--Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,aux.ExceptThisCard(e))
+		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,aux.ExceptThisCard(e))
 		if #g>0 then
 			Duel.HintSelection(g)
 			Duel.Destroy(g,REASON_EFFECT)

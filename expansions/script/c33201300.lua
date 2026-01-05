@@ -61,6 +61,14 @@ function VHisc_BeastHell.posop(e,tp,eg,ep,ev,re,r,rp)
 			c:RegisterFlagEffect(33201300,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(33201300,3))
 		end
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(VHisc_BeastHell.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
 function VHisc_BeastHell.effcon(e)
 	return e:GetHandler():IsFacedown()
@@ -68,7 +76,9 @@ end
 function VHisc_BeastHell.efilter(e,te)
 	return VHisc_Bh.ck(te:GetHandler())
 end
-
+function VHisc_BeastHell.splimit(e,c,tp,sumtp,sumpos)
+	return bit.band(sumtp,SUMMON_TYPE_LINK)==SUMMON_TYPE_LINK
+end
 
 function VHisc_BeastHell.hand(ce,cid)
 	--position
@@ -121,16 +131,15 @@ function cm.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
-	--lock zones
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_FLIP)
+-- ①：特召手卡·墓地里侧守备
+	local e1 = Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id, 0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION) -- 主要阶段发动
 	e1:SetRange(LOCATION_FZONE)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,m)
-	e1:SetTarget(cm.lztg)
-	e1:SetOperation(cm.lzop)
+	e1:SetCountLimit(1, id)		  -- 卡名硬限制
+	e1:SetTarget(cm.sptg)
+	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
 	--flip
 	local e2=Effect.CreateEffect(c)
@@ -157,27 +166,39 @@ function cm.initial_effect(c)
 end
 
 --e1
-function cm.lztg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)>0 end
-	local dis=Duel.SelectDisableField(tp,1,0,LOCATION_MZONE,0xe000e0)
-	Duel.SetTargetParam(dis)
-	Duel.Hint(HINT_ZONE,tp,dis)
+function cm.spfilter(c, e, tp)
+	return c.VHisc_BeastHell
+		and c:IsCanBeSpecialSummoned(e, 0, tp, false, false, POS_FACEDOWN_DEFENSE)
 end
-function cm.lzop(e,tp,eg,ep,ev,re,r,rp)
-	local zone=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)
-	if tp==1 then
-		zone=((zone&0xffff)<<16)|((zone>>16)&0xffff)
+
+function cm.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
+	-- 检查怪兽区是否有空位
+	if chk == 0 then return Duel.GetLocationCount(tp, LOCATION_MZONE) > 0
+		and Duel.IsExistingMatchingCard(cm.spfilter, tp, LOCATION_HAND + LOCATION_GRAVE, 0, 1, nil, e, tp) end
+	
+	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, nil, 1, tp, LOCATION_HAND + LOCATION_GRAVE)
+end
+
+function cm.spop(e, tp, eg, ep, ev, re, r, rp)
+	-- 场地魔法如果离场，通常效果不处理（依据裁定，除非是离场也能发动的效果）
+	if not e:GetHandler():IsRelateToEffect(e) then return end
+	
+	if Duel.GetLocationCount(tp, LOCATION_MZONE) <= 0 then return end
+	
+	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
+	local g = Duel.SelectMatchingCard(tp, cm.spfilter, tp, LOCATION_HAND + LOCATION_GRAVE, 0, 1, 1, nil, e, tp)
+	
+	if #g > 0 then
+		local tc = g:GetFirst()
+		-- 里侧守备表示特殊召唤
+		if Duel.SpecialSummon(tc, 0, tp, tp, false, false, POS_FACEDOWN_DEFENSE) > 0 then
+			-- 如果从手卡特召里侧，通常游戏逻辑会自动处理给对方确认的步骤（ConfirmCards），
+			-- 但 Duel.SpecialSummon 能够妥善处理这一切。
+			if tc:IsLocation(LOCATION_MZONE) then
+				Duel.ConfirmCards(1-tp, tc) -- 显式的确认（部分脚本习惯）
+			end
+		end
 	end
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetRange(LOCATION_FZONE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e1:SetCode(EFFECT_DISABLE_FIELD)
-	e1:SetValue(zone)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	c:RegisterEffect(e1)
 end
 
 --e2
@@ -204,10 +225,19 @@ function cm.ffop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 --e3
+function cm.setfilter(c)
+	return c:IsCanTurnSet() and c:IsType(TYPE_FLIP)
+end
 function cm.sftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_MZONE,0,nil)>1 end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.setfilter,tp,LOCATION_MZONE,0,1,nil) end
+	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,0,nil)
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
 end
 function cm.sfop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(cm.setfilter,tp,LOCATION_MZONE,0,nil)
+	if g:GetCount()>0 then
+		Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
+	end
 	local sfg=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_MZONE,0,nil)
 	if sfg:GetCount()>0 then 
 		Duel.ShuffleSetCard(sfg)

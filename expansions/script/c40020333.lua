@@ -27,16 +27,17 @@ function s.initial_effect(c)
 	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
 
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,id+100)
-	e2:SetCondition(s.spcon)
-	e2:SetTarget(s.sptg)
-	e2:SetOperation(s.spop)
+	local e2 = Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id, 1))
+	e2:SetCategory(CATEGORY_DESTROY + CATEGORY_SPECIAL_SUMMON + CATEGORY_FUSION_SUMMON + CATEGORY_TODECK)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetHintTiming(0, TIMINGS_CHECK_MONSTER + TIMING_MAIN_END)
+	e2:SetCountLimit(1, id+100) 
+	e2:SetCondition(s.e2con)
+	e2:SetTarget(s.e2tg)
+	e2:SetOperation(s.e2op)
 	c:RegisterEffect(e2)
 end
 
@@ -86,31 +87,67 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,sg)
 	end
 end
-function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	return c:IsPreviousLocation(LOCATION_ONFIELD)
-		and bit.band(c:GetSummonType(),SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
+function s.e2con(e, tp, eg, ep, ev, re, r, rp)
+	return Duel.GetCurrentPhase() == PHASE_MAIN1 or Duel.GetCurrentPhase() == PHASE_MAIN2
 end
+
 function s.desfilter(c)
-	return c:IsFaceup() and c:IsCode(OME_ID) and c:IsDestructable()
+	return c:IsCode(40020321)
 end
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then
-		return Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_PZONE,0,1,nil)
-			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-			and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+
+function s.matfilter(c)
+	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()
+end
+
+function s.ffilter(c, e, tp, m, gc, chkf)
+	return c:IsType(TYPE_FUSION) and s.LavaAstral(c)
+		and c:IsCanBeSpecialSummoned(e, SUMMON_TYPE_FUSION, tp, false, false)
+		and c:CheckFusionMaterial(m, gc, chkf)
+end
+
+function s.e2tg(e, tp, eg, ep, ev, re, r, rp, chk)
+	local c = e:GetHandler()
+	if chk == 0 then
+
+		if not Duel.IsExistingMatchingCard(s.desfilter, tp, LOCATION_PZONE, 0, 1, nil) then return false end
+
+		local mg = Duel.GetMatchingGroup(s.matfilter, tp, LOCATION_GRAVE + LOCATION_REMOVED, 0, nil)
+		local chkf = tp
+		return Duel.IsExistingMatchingCard(s.ffilter, tp, LOCATION_EXTRA, 0, 1, nil, e, tp, mg, c, chkf)
 	end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_PZONE)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	
+	local g = Duel.GetMatchingGroup(s.desfilter, tp, LOCATION_PZONE, 0, nil)
+	Duel.SetOperationInfo(0, CATEGORY_DESTROY, g, 1, 0, 0)
+	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, nil, 1, tp, LOCATION_EXTRA)
+	Duel.SetOperationInfo(0, CATEGORY_TODECK, nil, 1, tp, LOCATION_GRAVE + LOCATION_REMOVED)
 end
-function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,s.desfilter,tp,LOCATION_PZONE,0,1,1,nil)
-	if g:GetCount()>0 and Duel.Destroy(g,REASON_EFFECT)~=0 then
-		if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-			Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+
+function s.e2op(e, tp, eg, ep, ev, re, r, rp)
+	local c = e:GetHandler()
+
+	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_DESTROY)
+	local dg = Duel.SelectMatchingCard(tp, s.desfilter, tp, LOCATION_PZONE, 0, 1, 1, nil)
+	if dg:GetCount() > 0 and Duel.Destroy(dg, REASON_EFFECT) > 0 then
+
+		if not c:IsRelateToEffect(e) or not s.matfilter(c) then return end
+		
+		local mg = Duel.GetMatchingGroup(s.matfilter, tp, LOCATION_GRAVE + LOCATION_REMOVED, 0, nil)
+		local chkf = tp
+		
+		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
+		local sg = Duel.SelectMatchingCard(tp, s.ffilter, tp, LOCATION_EXTRA, 0, 1, 1, nil, e, tp, mg, c, chkf)
+		local tc = sg:GetFirst()
+		
+		if tc then
+
+			local mat = Duel.SelectFusionMaterial(tp, tc, mg, c, chkf)
+			tc:SetMaterial(mat)
+
+			if Duel.SendtoDeck(mat, nil, SEQ_DECKSHUFFLE, REASON_EFFECT + REASON_MATERIAL + REASON_FUSION) > 0 then
+				Duel.BreakEffect()
+				Duel.SpecialSummon(tc, SUMMON_TYPE_FUSION, tp, tp, false, false, POS_FACEUP)
+				tc:CompleteProcedure()
+			end
 		end
 	end
 end

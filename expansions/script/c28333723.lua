@@ -11,12 +11,12 @@ function c28333723.initial_effect(c)
 	c:RegisterEffect(e1)
 	--destory
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCost(c28333723.descost)
-	e2:SetTarget(c28333723.destg)
-	e2:SetOperation(c28333723.desop)
+	e2:SetCost(c28333723.tdcost)
+	e2:SetTarget(c28333723.tdtg)
+	e2:SetOperation(c28333723.tdop)
 	c:RegisterEffect(e2)
 end
 function c28333723.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -73,21 +73,23 @@ function c28333723.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	e:Reset()
 end
-function c28333723.descost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReason(REASON_DESTROY) and aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,0) end
-	aux.bfgcost(e,tp,eg,ep,ev,re,r,rp,1)
+function c28333723.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
+	Duel.HintSelection(Group.FromCards(e:GetHandler()))
+	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
-function c28333723.desfilter(c)
-	return c:IsSetCard(0x285) and c:IsType(TYPE_SPELL)
+function c28333723.tdfilter(c)
+	return Duel.GetTurnCount()~=c:GetTurnID() or c:IsReason(REASON_DESTROY+REASON_RETURN)
 end
-function c28333723.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28333723.desfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_DECK)
+function c28333723.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28333723.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
 end
-function c28333723.desop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,c28333723.desfilter,tp,LOCATION_DECK,0,1,1,nil)
+function c28333723.tdop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,c28333723.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	if #g~=0 then
-		Duel.Destroy(g,REASON_EFFECT)
+		Duel.HintSelection(g)
+		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end

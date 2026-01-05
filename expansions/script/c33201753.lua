@@ -16,29 +16,26 @@ function s.initial_effect(c)
 	local e1 = Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id, 0))
 	e1:SetCategory(CATEGORY_TOHAND + CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_QUICK_O)	  -- 诱发即时效果
+	e1:SetType(EFFECT_TYPE_QUICK_O)   -- 诱发即时效果
 	e1:SetCode(EVENT_FREE_CHAIN)		 -- 自由时点
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetHintTiming(0, TIMINGS_CHECK_MONSTER + TIMING_MAIN_END) -- 提示时点优化
-	e1:SetCountLimit(1, id)			  
+	e1:SetCountLimit(1, id)		   
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-	--effect gain
+	-- ①：连接端有怪兽特召时检索
 	local e2 = Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id, 3))
-	e2:SetType(EFFECT_TYPE_IGNITION) -- 启动效果，主要阶段发动
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)  -- 软限制：1回合1次
-	e2:SetTarget(s.settg)
-	e2:SetOperation(s.setop)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-	e3:SetRange(LOCATION_SZONE)
-	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetTarget(s.eftg)
-	e3:SetLabelObject(e2)
-	c:RegisterEffect(e3)
+	e2:SetDescription(aux.Stringid(id, 0))
+	e2:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_TRIGGER_O) -- 诱发效果
+	e2:SetCode(EVENT_SPSUMMON_SUCCESS)			 -- 特殊召唤成功时
+	e2:SetProperty(EFFECT_FLAG_DELAY)				 -- 即使在连锁2以后特召也能发动
+	e2:SetRange(LOCATION_PZONE)
+	e2:SetCountLimit(1, id+10000)					 -- 卡名1回合1次
+	e2:SetCondition(s.srcon)
+	e2:SetTarget(s.srtg)
+	e2:SetOperation(s.srop)
+	c:RegisterEffect(e2)
 end
 -- 过滤额外卡组表侧的“界域编织者”
 function s.spfilter(c, e, tp)
@@ -85,20 +82,31 @@ function s.eftg(e,c)
 	return e:GetHandler():GetLinkedGroup():IsContains(c) and c:IsSetCard(SET_REALM_WEAVER)
 end
 
+-- 判断特召的怪兽是否出现在这张卡的连接区
+function s.cfilter(c, lc)
+	-- 获取该连接怪兽当前指向的所有格子中的怪兽
+	return lc:GetLinkedGroup():IsContains(c) and c:GetSequence()<5
+end
+
+function s.srcon(e, tp, eg, ep, ev, re, r, rp)
+	local c = e:GetHandler()
+	-- 必须在场上表侧表示存在，且特召的怪兽组(eg)中存在于连接端的怪兽
+	return c:IsFaceup() and eg:IsExists(s.cfilter, 1, nil, c)
 -- 过滤条件：是“应答解析”或者“界域编织者”字段，且是魔法/陷阱卡，且能盖放
+end
 function s.setfilter(c)
 	return c:IsSetCard(SET_REALM_WEAVER)
 		and c:IsType(TYPE_SPELL + TYPE_TRAP)
 		and c:IsSSetable()
 end
 
-function s.settg(e, tp, eg, ep, ev, re, r, rp, chk)
+function s.srtg(e, tp, eg, ep, ev, re, r, rp, chk)
 	-- 检查后场是否有空位 (Location Count > 0) 且卡组有符合条件的卡
 	if chk == 0 then return Duel.GetLocationCount(tp, LOCATION_SZONE) > 0
 		and Duel.IsExistingMatchingCard(s.setfilter, tp, LOCATION_DECK+LOCATION_GRAVE, 0, 1, nil) end
 end
 
-function s.setop(e, tp, eg, ep, ev, re, r, rp)
+function s.srop(e, tp, eg, ep, ev, re, r, rp)
 	-- 处理时再次检查格子数量
 	if Duel.GetLocationCount(tp, LOCATION_SZONE) <= 0 then return end
 	

@@ -65,4 +65,5 @@ function s.matop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetValue(1)
 	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e2)
+	rc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
 end

@@ -26,7 +26,7 @@ function s.initial_effect(c)
 	e2:SetCategory(CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_TO_HAND)
-	e2:SetRange(LOCATION_SZONE)
+	e2:SetRange(LOCATION_FZONE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCondition(s.thcon2)
 	e2:SetTarget(s.thtg2)
@@ -37,7 +37,7 @@ function s.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_CHAINING)
-	e3:SetRange(LOCATION_SZONE)
+	e3:SetRange(LOCATION_FZONE)
 	e3:SetOperation(s.chainop)
 	c:RegisterEffect(e3)
 end
@@ -85,7 +85,6 @@ function s.thtg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_DECK)
 end
--- 把单卡 tc 当作灵摆卡使用加入额外
 function s.SendToExtraAsPendulum(tc,tp,reason,e)
 	if not tc then return end
 	local handler = e and e:GetHandler() or nil
@@ -105,7 +104,7 @@ function s.thop2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetDecktopGroup(tp,1)
 	local tc=g:GetFirst()
 	if not tc then return end
-	local ok = tc:IsCode(CODE_MITRA) or s.AwakenedDragon(tc)
+	local ok = tc:IsType(TYPE_PENDULUM)
 	if ok then
 		Duel.DisableShuffleCheck()
 		s.SendToExtraAsPendulum(tc,tp,REASON_EFFECT,e)

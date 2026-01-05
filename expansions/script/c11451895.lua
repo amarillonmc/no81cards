@@ -26,6 +26,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)--]]
 	--remove
 	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(m,2))
 	e0:SetType(EFFECT_TYPE_IGNITION+EFFECT_TYPE_CONTINUOUS)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	e0:SetCountLimit(1,m)

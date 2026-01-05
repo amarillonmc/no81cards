@@ -184,7 +184,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
 	local b3=(seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))
 	local b4=(seq==1 and Duel.CheckLocation(tp,LOCATION_MZONE,5)) or (seq==3 and Duel.CheckLocation(tp,LOCATION_MZONE,6))
-	local q2=bool and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0
+	local q2=bool and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)+Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)>0
 	local q1=Duel.IsExistingMatchingCard(cm.nfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 	if not q1 and not q2 then return end
 	local opt=aux.SelectFromOptions(tp,{q1,aux.Stringid(m,1)},{q2,aux.Stringid(m,2)})
@@ -235,7 +235,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 		local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
 		local b3=(seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))
 		local b4=(seq==1 and Duel.CheckLocation(tp,LOCATION_MZONE,5)) or (seq==3 and Duel.CheckLocation(tp,LOCATION_MZONE,6))
-		local q2=bool and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0
+		local q2=bool and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)+Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)>0
 		if q2 then
 			Duel.BreakEffect()
 			local flag=0
@@ -244,9 +244,36 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 			if b3 then if seq==5 then flag=flag|0x2 else flag=flag|0x8 end end
 			if b4 then if seq==1 then flag=flag|0x20 else flag=flag|0x40 end end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-			local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
+			local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0)
 			local nseq=math.log(s&0xff,2)
-			Duel.MoveSequence(c,nseq)
+			if s<0xffff then
+				Duel.MoveSequence(c,nseq)
+			else
+				Duel.GetControl(c,1-tp,0,0,s>>16)
+				c:RegisterFlagEffect(m,RESET_CHAIN+RESET_EVENT+RESETS_STANDARD,0,1)
+				local e6=Effect.CreateEffect(c)
+				e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+				e6:SetCode(EVENT_CHAIN_SOLVED)
+				e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e6:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+									if c:GetFlagEffect(m)~=0 then
+										return Duel.GetCurrentChain()==1
+									else
+										e:Reset()
+										return false
+									end
+								end)
+				e6:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+									if c:GetFlagEffect(m)~=0 and c:IsLocation(LOCATION_MZONE) then
+										Duel.Destroy(c,REASON_EFFECT)
+									end
+								end)
+				e6:SetReset(RESET_CHAIN)
+				Duel.RegisterEffect(e6,tp)
+				local e7=e6:Clone()
+				e7:SetCode(EVENT_CHAIN_NEGATED)
+				Duel.RegisterEffect(e7,tp)
+			end
 		end
 	elseif opt==2 then
 		local flag=0
@@ -255,9 +282,36 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 		if b3 then if seq==5 then flag=flag|0x2 else flag=flag|0x8 end end
 		if b4 then if seq==1 then flag=flag|0x20 else flag=flag|0x40 end end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,0,0)
+		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0)
 		local nseq=math.log(s&0xff,2)
-		Duel.MoveSequence(c,nseq)
+		if s<0xffff then
+			Duel.MoveSequence(c,nseq)
+		else
+			Duel.GetControl(c,1-tp,0,0,s>>16)
+			c:RegisterFlagEffect(m,RESET_CHAIN+RESET_EVENT+RESETS_STANDARD,0,1)
+			local e6=Effect.CreateEffect(c)
+			e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e6:SetCode(EVENT_CHAIN_SOLVED)
+			e6:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e6:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
+								if c:GetFlagEffect(m)~=0 then
+									return Duel.GetCurrentChain()==1
+								else
+									e:Reset()
+									return false
+								end
+							end)
+			e6:SetOperation(function(e,tp,eg,ep,ev,re,r,rp)
+								if c:GetFlagEffect(m)~=0 and c:IsLocation(LOCATION_MZONE) then
+									Duel.Destroy(c,REASON_EFFECT)
+								end
+							end)
+			e6:SetReset(RESET_CHAIN)
+			Duel.RegisterEffect(e6,tp)
+			local e7=e6:Clone()
+			e7:SetCode(EVENT_CHAIN_NEGATED)
+			Duel.RegisterEffect(e7,tp)
+		end
 		local q1=Duel.IsExistingMatchingCard(aux.NecroValleyFilter(cm.nfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		if q1 then
 			local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.nfilter),tp,LOCATION_GRAVE+LOCATION_DECK,0,nil)

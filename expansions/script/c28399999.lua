@@ -202,7 +202,7 @@ function c28399999.tgop(e,tp,eg,ep,ev,re,r,rp)
 end
 --to deck
 function c28399999.tdfilter(c)
-	return c:IsSetCard(0x283) and c:IsAbleToDeck()
+	return c:IsSetCard(0x283) and c:IsFaceupEx() and c:IsAbleToDeck()
 end
 function c28399999.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c28399999.tdfilter(chkc) end
@@ -318,7 +318,7 @@ function c28399999.rectg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28399999.recop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Recover(p,d,REASON_EFFECT)
+	Duel.Recover(p,d,REASON_EFFECT)--Duel.Recover(tp,1000,REASON_EFFECT)
 end
 --disable
 function c28399999.discon(e,tp,eg,ep,ev,re,r,rp)

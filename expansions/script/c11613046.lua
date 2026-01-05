@@ -2,7 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--Xyz Procedure
-	aux.AddXyzProcedure(c,nil,1,2)
+	aux.AddXyzProcedureLevelFree(c,s.mfilter,s.ffilter,2,2)
 	c:EnableReviveLimit()
 	--Search
 	local e1=Effect.CreateEffect(c)
@@ -36,6 +36,12 @@ function s.initial_effect(c)
 	e3:SetTarget(s.destg)
 	e3:SetOperation(s.desop)
 	c:RegisterEffect(e3)
+end
+function s.mfilter(c,xyzc)
+	return c:IsXyzLevel(xyzc,1)
+end
+function s.ffilter(g)
+	return g:IsExists(Card.IsSetCard,1,nil,0x3226)
 end
 function s.thfilter(c)
 	return c:IsSetCard(0x3226) and c:IsType(TYPE_SPELL) and c:IsSSetable()

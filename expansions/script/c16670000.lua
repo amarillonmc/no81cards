@@ -1,15 +1,51 @@
 --存在之间
---V1.0.1.2
+--V1.0.1.4
+--新增书页补充
 local m = 16670000
+local cm = nil
 it = it or {}
+if it.to == true then return end
+it.to = true
+
+--调用库的方法
+--[[
+if not require and loadfile then
+	function require(str)
+		require_list = require_list or {}
+		if not require_list[str] then
+			if string.find(str, "%.") then
+				require_list[str] = loadfile(str)
+			else
+				require_list[str] = loadfile(str .. ".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
+if not pcall(function() require("expansions/script/c16670000") end) then require("script/c16670000") end
+]] --
+
 it.diyai = { "AI_Nf.ydk", "AI_TheDreamLand.ydk", "AI_best-friend.ydk", "AI_stars.ydk", "AI_Tianjuelong.ydk",
 	"AI_RecurringNightmare.ydk" }
 
 it.book = { 16670007, 16670009, 16670012, 16670013, 16670025, 16670030, 16670035, 16670040, 16670045, 16670055, 16670070
-, 16670085 }
-local cm = nil
-if it.to == true then return end
-it.to = true
+, 16670085, 16670090 }
+--交换有bug，修好后再上
+
+pcall(function()
+	if not it.booksupplement and Duel.ReadCard then
+		it.booksupplement = true
+		for i = 16670501, 16670906, 5 do
+			local c = Duel.ReadCard(i, CARDDATA_TYPE)
+			if c then
+				it.book[#it.book + 1] = i
+			end
+		end
+	end
+end)
+
 --简易区域
 QY_kz = LOCATION_DECK
 QY_sp = LOCATION_HAND
@@ -25,9 +61,8 @@ QY_cs = LOCATION_ONFIELD
 CZ_lcjs = RESET_EVENT + RESETS_STANDARD + RESET_OVERLAY + RESET_MSCHANGE + RESET_PHASE + PHASE_END --离场+结束阶段
 CZ_lc = RESET_EVENT + RESETS_STANDARD + RESET_OVERLAY + RESET_MSCHANGE                             --离场重置
 CZ_js = RESET_PHASE + PHASE_END                                                                    --结束阶段重置
---增加卡片组库函数
--- Group.gf=Group.GetFirst
---简易设置效果
+
+--简易设置效果（已弃用）
 xg = xg or {}
 function xg.epp(c, id, su, ...) --XG.epp(c,id,su,...) 不推荐使用
 	local e1 = Effect.CreateEffect(c)
@@ -74,6 +109,7 @@ function xg.epp(c, id, su, ...) --XG.epp(c,id,su,...) 不推荐使用
 	return e1
 end
 
+--简易创建效果（已弃用）
 function xg.epp2(c, id, cf, co, ta, qy, h1, h2, h3, h4, zc) --XG.epp2(c,m,2,nil,3,QY_sp)
 	--卡,卡号,效果类型,效果内容或时点,特殊性质,生效区域,检测,cost,对象,内容,是否直接注册
 	local c1, c2, c3, c4 = 0, 0, 0, 0
@@ -154,18 +190,15 @@ function xg.epp3(c) --简易创建开局生效
 	return e1
 end
 
-function xg.ky(tp, id, zh) --简易选择是否
-	return Duel.SelectYesNo(tp, aux.Stringid(id, zh))
-end
-
 --失落之魂
 sl = sl or {}
 function sl.fuslimit(e, c, sumtype)
 	return sumtype == SUMMON_TYPE_FUSION
 end
 
+--为c添加额外特招素材限制，不能作为融合同调超量连接素材
 function sl.sc(c)
-	local e1 = Effect.CreateEffect(c) --额外特招素材限制
+	local e1 = Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE + EFFECT_FLAG_UNCOPYABLE + EFFECT_FLAG_CANNOT_DISABLE)
 	e1:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
@@ -187,7 +220,7 @@ end
 
 --噩梦再临
 ez = ez or {}
-function ez.zs(c, tp) --非对方回合不能特招和盖放自诉
+function ez.zs(c, tp) --为tp注册来自c的直到下回合结束生效的非对方回合不能特招和盖放自诉
 	local e1 = Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
@@ -232,28 +265,8 @@ function it.GetEffect(e, ...) --检查e是否函数
 	end
 end
 
---
-function it.replace_function(of) --执行函数of，在那个场合，先/后执行一段其他命令
-	return function(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
-		local f = Duel.IsPlayerAffectedByEffect
-		Duel.IsPlayerAffectedByEffect = it.replace_play(f)
-
-		local res = (not of or of(e, tp, eg, ep, ev, re, r, rp, chk, chkc))
-
-		Duel.IsPlayerAffectedByEffect = f
-		return res
-	end
-end
-
-function it.replace_play(f) --检测玩家是否受到某种类效果影响时可更换tp
-	return function(tp, code)
-		local p = tp
-		return f(p, code)
-	end
-end
-
---
-function it.num(num, tp) --检测无尽贪婪已减少多少张卡的使用
+--检测无尽贪婪已减少多少张卡的使用
+function it.num(num, tp)
 	if Duel.GetFlagEffect(tp, 16602091) > 0 then
 		local num2 = Duel.GetFlagEffect(tp, 16602091) * 5
 		num = num - num2
@@ -262,7 +275,8 @@ function it.num(num, tp) --检测无尽贪婪已减少多少张卡的使用
 	return num
 end
 
-function it.sxbl()                                         --所谓伊人相关检测全种族全属性全等级可特招
+--所谓伊人相关检测全种族全属性全等级可特招
+function it.sxbl()
 	local zzjc = { RACE_WARRIOR,                           --战士
 		RACE_SPELLCASTER,                                  --魔法师
 		RACE_FAIRY,                                        --天使
@@ -322,10 +336,11 @@ function it.sxbl()                                         --所谓伊人相关�
 			end
 		end
 	end
-	return kx, zzx, sxx, zzjc, sxjc, zzl --kx为组，zzx大于0代表有可以特招的种族怪兽
+	return kx, zzx, sxx, zzjc, sxjc, zzl --kx为组，zzx为不可选的种族，zzx大于0代表有可以特招的类型
 end
 
-function it.sxblx(tp, kx, zzx, sxx, zzl) --宣言1个可特招的种族属性等级 通常配合 it.sxbl() 用
+--宣言1个可特招的种族属性等级 通常配合 it.sxbl() 用
+function it.sxblx(tp, kx, zzx, sxx, zzl, bo1, bo2, bo3) --tp为玩家，kx为不可选的组，zzx为不可选的种族，sxx为不可选属性
 	local zz = Duel.AnnounceRace(tp, 1, zzx)
 	for sz, _ in pairs(kx) do
 		if sz == zz then
@@ -548,6 +563,72 @@ function it.AddMonsterate(c, type, attribute, race, level, atk, def) --不会因
 	end
 end
 
+--简便检查fu1的怪兽里，是否有自己的区域s里可以特殊召唤的仪式怪兽，仪式怪兽的条件为fit(c, e, tp),hc为必须仪式的怪兽，没有可不填,gr为等级判断，默认大于等于等级
+function it.RitualSummoningDetection(e, tp, fu1, s, fit, hc, gr)
+	local c = e:GetHandler()
+	if not gr then
+		gr = "Greater" --默认大于等于等级
+	else
+		gr = "Equal" --默认等于等级
+	end
+	local mg1 = fu1
+	local mgn = Duel.GetRitualMaterial(tp)
+	local mg2 = mg1:Filter(function(c) return not mgn:IsContains(c) end, nil)
+	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
+	local g = nil
+	if not hc then
+		g = Duel.GetMatchingGroup(aux.RitualUltimateFilter, tp, s, 0, nil, fit, e, tp, mg1,
+			mg2, Card.GetLevel, gr)
+		g = #g > 0
+	else
+		g = aux.RitualUltimateFilter(hc, fit, e, tp, mg1, mg2, Card.GetLevel, gr)
+	end
+	return g
+end
+
+-- 用fu1的怪兽把自己的区域s里可满足条件为fit(c, e, tp)的仪式怪兽仪式召唤,gr为等级判断，默认大于等于等级，返回值为选择的仪式的素材
+function it.RitualSummoning(e, tp, fu1, s, fit, hc, gr)
+	if not gr then
+		gr = "Greater" --默认大于等于等级
+	else
+		gr = "Equal" --默认等于等级
+	end
+	::cancel::
+	local mg1 = fu1
+	local mgn = Duel.GetRitualMaterial(tp)
+	local mg2 = mg1:Filter(function(c) return not mgn:IsContains(c) end, nil)
+	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
+	local g = nil
+	local tc = nil
+	if not hc then
+		g = Duel.SelectMatchingCard(tp, aux.RitualUltimateFilter, tp, s, 0, 1, 1, nil, fit, e, tp, mg1,
+			mg2, Card.GetLevel, gr)
+		tc = g:GetFirst()
+	else
+		tc = aux.RitualUltimateFilter(hc, fit, e, tp, mg1, mg2, Card.GetLevel, gr)
+	end
+	if tc then
+		local mg = mg1:Filter(Card.IsCanBeRitualMaterial, tc, tc)
+		mg:Merge(mg2)
+		if tc.mat_filter then
+			mg = mg:Filter(tc.mat_filter, tc, tp)
+		else
+			mg:RemoveCard(tc)
+		end
+		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_RELEASE)
+		aux.GCheckAdditional = aux.RitualCheckAdditional(tc, tc:GetLevel(), gr)
+		local mat = mg:SelectSubGroup(tp, aux.RitualCheck, true, 1, tc:GetLevel(), tp, tc, tc:GetLevel(), gr)
+		aux.GCheckAdditional = nil
+		if not mat then goto cancel end
+		-- mat:KeepAlive()
+		return tc, mat
+	end
+	return nil
+end
+
+it.ys = it.RitualSummoning
+it.ysjc = it.RitualSummoningDetection
+
 --模拟装备，让tp为c1建立与c2的模拟装备关系，当c2离场时，c1自毁
 function it.CopyEquip(tp, c1, c2, up)
 	if not it.mnzb then
@@ -710,6 +791,92 @@ function it.CopyEquip(tp, c1, c2, up)
 	Duel.RaiseEvent(eg, EVENT_EQUIP, nil, 0, tp, tp, 0)
 end
 
+--快速注册通天塔效果 到玩家受到 m+4 影响后开始二速
+--(fun2:function(e, tp, eg, ep, ev, re, r, rp) 二速发动的满足条件)
+function it.TTT(cm, m, c, fun2)
+	if not cm.TTT_global_check then
+		cm.TTT_global_check = true
+		local m = m + 4
+		local e4 = Effect.CreateEffect(c)
+		e4:SetType(EFFECT_TYPE_CONTINUOUS + EFFECT_TYPE_FIELD)
+		e4:SetCode(EVENT_ADJUST)
+		e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE + EFFECT_FLAG_IGNORE_IMMUNE)
+		e4:SetOperation(function(e, tp, eg, ep, ev, re, r, rp)
+			local c = e:GetHandler()
+			local ng = Duel.GetMatchingGroup(function(c)
+				return c:GetFlagEffect(m) == 0
+			end, tp, 0xfff, 0xfff, nil)
+			local nc = ng:GetFirst()
+			while nc do
+				nc:RegisterFlagEffect(m, 0, 0, 1)
+				cm.reg = Card.RegisterEffect
+
+				Card.RegisterEffect = function() return 0 end
+				nc:ReplaceEffect(nc:GetOriginalCode(), 0)
+				local mt = _G["c" .. nc:GetOriginalCode()]
+				Card.RegisterEffect = function(c, ie, ob)
+					local b = ob or false
+					if not (ie:IsHasType(EFFECT_TYPE_IGNITION)) then
+						return
+					end
+					ie:SetType(EFFECT_TYPE_QUICK_O)
+					ie:SetCode(EVENT_FREE_CHAIN)
+					ie:SetHintTiming(0, TIMING_MAIN_END + TIMING_END_PHASE)
+					if ie:GetCondition() then
+						local con = ie:GetCondition()
+						ie:SetCondition(function(e, tp, eg, ep, ev, re, r, rp)
+							local tp = e:GetHandlerPlayer()
+							return Duel.IsPlayerAffectedByEffect(tp, m)
+								and con(e, tp, eg, ep, ev, re, r, rp)
+								and (not fun2 or fun2(e, tp, eg, ep, ev, re, r, rp))
+						end)
+					else
+						ie:SetCondition(function(e, tp, eg, ep, ev, re, r, rp)
+							local tp = e:GetHandlerPlayer()
+							return Duel.IsPlayerAffectedByEffect(tp, m) and
+								(not fun2 or fun2(e, tp, eg, ep, ev, re, r, rp))
+						end)
+					end
+					return cm.reg(c, ie, b)
+				end
+				if mt.initial_effect then
+					mt.initial_effect(nc)
+				end
+				--
+				Card.RegisterEffect = function(c, ie, ob)
+					local b = ob or false
+					if not (ie:IsHasType(EFFECT_TYPE_IGNITION)) then
+						return cm.reg(c, ie, b)
+					end
+					if ie:GetCondition() then
+						local con = ie:GetCondition()
+						ie:SetCondition(function(e, tp, eg, ep, ev, re, r, rp)
+							local tp = e:GetHandlerPlayer()
+							return (not Duel.IsPlayerAffectedByEffect(tp, m) or
+									(fun2 ~= nil and not fun2(e, tp, eg, ep, ev, re, r, rp))) and
+								con(e, tp, eg, ep, ev, re, r, rp)
+						end)
+					else
+						ie:SetCondition(function(e, tp, eg, ep, ev, re, r, rp)
+							local tp = e:GetHandlerPlayer()
+							return (not Duel.IsPlayerAffectedByEffect(tp, m) or
+								(fun2 ~= nil and not fun2(e, tp, eg, ep, ev, re, r, rp)))
+						end)
+					end
+					return cm.reg(c, ie, b)
+				end
+				if mt.initial_effect then
+					mt.initial_effect(nc)
+				end
+
+				Card.RegisterEffect = cm.reg
+				nc = ng:GetNext()
+			end
+		end)
+		Duel.RegisterEffect(e4, 0)
+	end
+end
+
 --读取库时的对局初始化设置
 local tableclone = function(tab, mytab)
 	local res = mytab or {}
@@ -721,11 +888,44 @@ local _Duel = tableclone(Duel)
 local _Group = tableclone(Group)
 local _Effect = tableclone(Effect)
 
---记录所有被写入到卡上的效果
-Card.RegisterEffect = function(c, e, ...)
-	if not it.Etabe then
-		it.Etabe = {}
+--创建一个在对战开始时获取所有注册卡效果的效果,fn为true时改为立刻执行
+function it.REFF(fn)
+	local fun = function(e)
+		local g = Duel.GetFieldGroup(0, 0xfff, 0xfff)
+		local xg = Duel.GetOverlayGroup(0, 0xfff, 0xfff)
+		g:Merge(xg)
+		it.Etabe = {} --重置已储存的效果
+		for tc in aux.Next(g) do
+			local cm = _G["c" .. tc:GetOriginalCode()]
+			local _CReg = Card.RegisterEffect
+			Card.RegisterEffect = function(card, effect, ...)
+				local ab = it.Etabe
+				ab[card] = ab[card] or {}
+				ab[card][#ab[card] + 1] = effect
+			end
+			if cm.initial_effect then cm.initial_effect(tc) end
+			Card.RegisterEffect = _CReg
+		end
 	end
+	if fn ~= true then
+		local draw_phase_effect = Effect.GlobalEffect()
+		draw_phase_effect:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
+		draw_phase_effect:SetCode(EVENT_ADJUST)
+		draw_phase_effect:SetProperty(EFFECT_FLAG_UNCOPYABLE + EFFECT_FLAG_IGNORE_IMMUNE)
+		draw_phase_effect:SetOperation(function(e, tp, eg, ep, ev, re, r, rp)
+			fun()
+			e:Reset()
+		end)
+		-- 注册给双方玩家
+		Duel.RegisterEffect(draw_phase_effect, 0)
+	else
+		fun()
+	end
+end
+
+--记录所有被写入到卡上的效果 只对对战开始后的卡稳定获取，开始前注册效果的卡无法获取
+Card.RegisterEffect = function(c, e, ...)
+	if not it.Etabe then it.Etabe = {} end
 	local ab = it.Etabe
 	ab[c] = ab[c] or {}
 	ab[c][#ab[c] + 1] = e

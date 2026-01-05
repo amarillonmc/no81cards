@@ -34,11 +34,11 @@ function cm.filter(c)
 	return c:IsType(TYPE_MONSTER) and c.VHisc_BeastHell and c:IsAbleToHand()
 end
 function cm.fltg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.filter),tp,LOCATION_GRAVE,0,nil):GetCount()>1 end
+	if chk==0 then return Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil):GetCount()>1 end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,0,0)
 end
 function cm.flop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.filter),tp,LOCATION_GRAVE,0,nil)
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(cm.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
 	if g:GetCount()>1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tg=g:Select(tp,1,2,nil)

@@ -8,6 +8,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetRange(LOCATION_MZONE)
 	e1:SetCondition(cm.drcon1)
 	e1:SetOperation(cm.drop1)
 	c:RegisterEffect(e1)
@@ -15,12 +16,14 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetRange(LOCATION_MZONE)
 	e2:SetCondition(cm.regcon)
 	e2:SetOperation(cm.regop)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 	e3:SetCode(EVENT_CHAIN_SOLVED)
+	e3:SetRange(LOCATION_MZONE)
 	e3:SetCondition(cm.drcon2)
 	e3:SetOperation(cm.drop2)
 	c:RegisterEffect(e3)
@@ -71,7 +74,7 @@ function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetMatchingGroup(cm.setfilter,tp,LOCATION_DECK,0,xg)
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 			local sg=g:Select(tp,1,1,nil)
 			Duel.SendtoGrave(sg,REASON_EFFECT)
 		end
@@ -81,34 +84,40 @@ function cm.filter(c,sp)
 	return c:IsSummonPlayer(sp)
 end
 function cm.drcon1(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.filter,1,nil,1-tp) and e:GetHandler():IsLinkState()
-		and (not re:IsHasType(EFFECT_TYPE_ACTIONS) or re:IsHasType(EFFECT_TYPE_CONTINUOUS))
+	local p=e:GetHandlerPlayer()
+	return eg:IsExists(cm.filter,1,nil,1-p) and e:GetHandler():IsLinkState()
+		and not Duel.IsChainSolving()
 end
 function cm.drop1(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,m)<3 then
-		Duel.Draw(tp,1,REASON_EFFECT)
-		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+	local p=e:GetHandlerPlayer()
+	if Duel.GetFlagEffect(p,m)<3 then
+		Duel.Draw(p,1,REASON_EFFECT)
+		Duel.RegisterFlagEffect(p,m,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 function cm.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(cm.filter,1,nil,1-tp) and e:GetHandler():IsLinkState()
-		and re:IsHasType(EFFECT_TYPE_ACTIONS) and not re:IsHasType(EFFECT_TYPE_CONTINUOUS)
+	local p=e:GetHandlerPlayer()
+	return eg:IsExists(cm.filter,1,nil,1-p) and e:GetHandler():IsLinkState()
+		and Duel.IsChainSolving()
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(tp,m+10000000,RESET_CHAIN,0,1)
+	local p=e:GetHandlerPlayer()
+	Duel.RegisterFlagEffect(p,m+10000000,RESET_CHAIN,0,1)
 end
 function cm.drcon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,m+10000000)>0
+	local p=e:GetHandlerPlayer()
+	return Duel.GetFlagEffect(p,m+10000000)>0
 end
 function cm.drop2(e,tp,eg,ep,ev,re,r,rp)
-	local n=Duel.GetFlagEffect(tp,m+10000000)
-	local abled=3-Duel.GetFlagEffect(tp,m)
+	local p=e:GetHandlerPlayer()
+	local n=Duel.GetFlagEffect(p,m+10000000)
+	local abled=3-Duel.GetFlagEffect(p,m)
 	if abled>0 then
 		local tn=math.min(n,abled)
-		Duel.ResetFlagEffect(tp,m+10000000)
-		Duel.Draw(tp,tn,REASON_EFFECT)
+		Duel.ResetFlagEffect(p,m+10000000)
+		Duel.Draw(p,tn,REASON_EFFECT)
 		for i=1,tn do
-			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+			Duel.RegisterFlagEffect(p,m,RESET_PHASE+PHASE_END,0,1)
 		end
 	end
 end

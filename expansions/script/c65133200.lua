@@ -138,6 +138,7 @@ function s.cpop(e,tp,eg,ep,ev,re,r,rp)
 						table.insert(afilter,OPCODE_OR)
 					end
 				end
+				::cancel::
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 				local ac=Duel.AnnounceCard(p,table.unpack(afilter))
 				local g=Duel.GetFieldGroup(0,0x7f,0x7f)
@@ -150,16 +151,20 @@ function s.cpop(e,tp,eg,ep,ev,re,r,rp)
 				for _,te in ipairs(KRO_COPY[1-p]) do
 					local code=te:GetHandler():GetOriginalCode()
 					if ac==code then
-						ht[code]=true
 						local cdata=s.findeffect(te)
 						local cid=cdata.id[1]
-						if not cid then Debug.Message("!") end
+						if not cid then
+							Debug.Message("!")
+						end
 						if cid and not ht2[cid] then
 							ht2[cid]=true
 							table.insert(effects,cdata)
 							table.insert(numbers,cid)
 						end
 					end
+				end
+				if #effects==0 and Duel.SelectYesNo(tp,aux.Stringid(id,5)) then
+					 goto cancel
 				end
 				local cdata=effects[1]
 				if #effects>1 then
@@ -205,14 +210,55 @@ function s.cpop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function s.issameeffect(e1,e2)
+local function GetFunctionSignature(func)
+	-- 1. 尝试 Dump
+	local ok, bytecode = pcall(string.dump, func)
+	if not ok then return nil, "无法Dump (可能是C函数)" end
+
+	-- 2. 将二进制转换为 Hex 字符串
+	local t = {}
+	for i = 1, #bytecode do
+		local b = string.byte(bytecode, i)
+		-- %02X 把数字转为两位的大写16进制，例如 10 -> 0A
+		table.insert(t, string.format("%02X", b))
+	end
+	
+	-- 3. 返回完整的指纹
+	return table.concat(t)
+end
+function s.issamefunc(f1,f2,bool)
+	if aux.GetValueType(f1)~="function" or aux.GetValueType(f2)~= "function" then
+		return false 
+	end
+	if f1==f2 then
+		return true
+	else
+		local d1=string.dump(f1)
+		local d2=string.dump(f2)
+		if d1==d2 then
+			--Debug.Message(f1)
+			--Debug.Message(f2)		 
+			return true
+		elseif bool then
+			f1(e,tp,eg,ep,ev,re,r,rp,1)
+			s.CompareStrict(f1,f2)
+			--Debug.Message(GetFunctionSignature(s.addData))
+			--Debug.Message(GetFunctionSignature(f1))
+			--Debug.Message(GetFunctionSignature(f2))
+			return false
+		end
+	end
+end
+function s.issameeffect(e1,e2)  
 	local tg=e1:GetTarget()
 	local op=e1:GetOperation()
 	local code1=e1:GetCode()
 	local code2=e2:GetCode()
-	local res1=tg==e2:GetTarget()
-	local res2=op==nil or op==e2:GetOperation()
+	local res1=s.issamefunc(tg,e2:GetTarget())
+	local res2=op==nil or s.issamefunc(op,e2:GetOperation())
 	local res3=code1==code2 or code1 and code2 and code1*code2==EVENT_SPSUMMON_SUCCESS*EVENT_SUMMON_SUCCESS
+	--if Duel.GetTurnCount()==2 then tg(e1,tp,eg,ep,ev,re,r,rp,1) end
+	--if Duel.GetTurnCount()==2 then Debug.Message(res1) end
 	return res1 and res2 and res3
 end
 function s.addData(ctable,cdata)
@@ -268,7 +314,6 @@ function s.findeffect(e)
 	end
 	local token=Duel.CreateToken(0,ccode)
 	Card.RegisterEffect=s.RegisterEffect
-
 	local cdata={code=ccode,id={}}
 	for i,effect in ipairs(effects) do
 		if s.issameeffect(e,effect) then

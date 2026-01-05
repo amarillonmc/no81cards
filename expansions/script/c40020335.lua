@@ -37,12 +37,12 @@ function s.pencon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.omefilter(c)
 	return c:IsCode(OME_ID) and not c:IsForbidden()
-		and (c:IsLocation(LOCATION_HAND) or c:IsLocation(LOCATION_GRAVE))
+	   
 end
 function s.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local pzone_avail = Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)
-		local has_target = Duel.IsExistingMatchingCard(s.omefilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil)
+		local has_target = Duel.IsExistingMatchingCard(s.omefilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil)
 		local mzone_avail = Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		local can_sp = e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
 		return pzone_avail and has_target and mzone_avail and can_sp
@@ -53,7 +53,7 @@ function s.penop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-	local g=Duel.SelectMatchingCard(tp,s.omefilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.omefilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then
 		local tc=g:GetFirst()
 		if Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then

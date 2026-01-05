@@ -2,7 +2,7 @@
 function c9910345.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_NEGATE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -13,69 +13,60 @@ function c9910345.initial_effect(c)
 	--special summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,9910345)
-	e2:SetCondition(c9910345.spcon)
+	e2:SetCountLimit(1,9910345+EFFECT_COUNT_CODE_DUEL)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c9910345.sptg)
 	e2:SetOperation(c9910345.spop)
 	c:RegisterEffect(e2)
 end
-function c9910345.filter(c)
+function c9910345.cfilter(c)
 	return c:IsFaceup() and c:IsRace(RACE_PLANT) and c:IsType(TYPE_SYNCHRO)
 end
 function c9910345.condition(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(c9910345.filter,tp,LOCATION_MZONE,0,1,nil) then return false end
-	if not Duel.IsChainNegatable(ev) then return false end
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return ep~=tp and re:IsActiveType(TYPE_MONSTER) and bit.band(loc,LOCATION_HAND+LOCATION_MZONE)~=0
+	return Duel.IsExistingMatchingCard(c9910345.cfilter,tp,LOCATION_MZONE,0,1,nil)
+		and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)) and Duel.IsChainNegatable(ev)
 end
 function c9910345.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if bit.band(loc,LOCATION_HAND)~=0 then loc=LOCATION_HAND end
-	if bit.band(loc,LOCATION_MZONE)~=0 then loc=LOCATION_MZONE end
-	e:SetLabel(loc)
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,loc,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c9910345.activate(e,tp,eg,ep,ev,re,r,rp)
-	local loc=e:GetLabel()
-	if not Duel.NegateActivation(ev) or not loc or bit.band(loc,LOCATION_HAND+LOCATION_MZONE)==0 then return end
-	if loc==LOCATION_HAND then
-		local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local sg=g:RandomSelect(tp,1)
-		Duel.Destroy(sg,REASON_EFFECT)
-	else
-		local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.HintSelection(sg)
-		Duel.Destroy(sg,REASON_EFFECT)
-	end
-end
-function c9910345.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	Duel.NegateActivation(ev)
 end
 function c9910345.spfilter(c,e,tp)
-	return c:IsSetCard(0x3956) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+	return c:IsSetCard(0x3956,0x5956) and c:IsCanBeEffectTarget(e)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_DEFENSE)
+end
+function c9910345.fselect(g)
+	if #g==1 then return true end
+	return aux.gfcheck(g,Card.IsSetCard,0x3956,0x5956)
 end
 function c9910345.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and c9910345.spfilter(chkc,e,tp) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingTarget(c9910345.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	local g=Duel.GetMatchingGroup(c9910345.spfilter,tp,LOCATION_GRAVE,0,nil,e,tp)
+	if chk==0 then return ft>0 and #g>0 end
+	ft=math.min(ft,2)
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectTarget(tp,c9910345.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+	local sg=g:SelectSubGroup(tp,c9910345.fselect,false,1,2)
+	Duel.SetTargetCard(sg)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,sg,#sg,0,0)
 end
 function c9910345.spop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if ft<=0 then return end
+	local sg=Duel.GetTargetsRelateToChain()
+	if #sg==0 then return end
+	if #sg>1 and Duel.IsPlayerAffectedByEffect(tp,59822133) then return end
+	if #sg>ft then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		sg=sg:Select(tp,ft,ft,nil)
 	end
+	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
 end

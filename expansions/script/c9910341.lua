@@ -23,28 +23,26 @@ function c9910341.initial_effect(c)
 	e2:SetOperation(c9910341.spop)
 	c:RegisterEffect(e2)
 end
-function c9910341.thfilter(c,ft)
-	local b1=ft>0
-	local b2=c:IsLocation(LOCATION_MZONE) and c:IsControler(tp) and c:GetSequence()<5
-	return c:IsAbleToHandAsCost() and (b1 or b2)
+function c9910341.thfilter(c,tp)
+	return c:IsAbleToHandAsCost() and Duel.GetMZoneCount(tp,c)>0
 end
 function c9910341.sspcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local b1=ft>0
-	local b2=ft>-1 and Duel.IsEnvironment(9910307,PLAYER_ALL,LOCATION_FZONE)
-		and Duel.IsExistingMatchingCard(c9910341.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,ft)
-	return Duel.GetFieldGroupCount(tp,LOCATION_ONFIELD,0)<Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD) and (b1 or b2)
+	local b1=Duel.GetMZoneCount(tp)>0 and Duel.CheckLPCost(tp,2050)
+	local b2=Duel.IsEnvironment(9910307,PLAYER_ALL,LOCATION_FZONE)
+		and Duel.IsExistingMatchingCard(c9910341.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp)
+	return b1 or b2
 end
 function c9910341.sspop(e,tp,eg,ep,ev,re,r,rp,c)
-	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	local b1=ft>0
-	local b2=ft>-1 and Duel.IsEnvironment(9910307,PLAYER_ALL,LOCATION_FZONE)
-		and Duel.IsExistingMatchingCard(c9910341.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,ft)
-	if b2 and (not b1 or Duel.SelectYesNo(tp,aux.Stringid(9910341,0))) then
+	local b1=Duel.GetMZoneCount(tp)>0 and Duel.CheckLPCost(tp,2050)
+	local b2=Duel.IsEnvironment(9910307,PLAYER_ALL,LOCATION_FZONE)
+		and Duel.IsExistingMatchingCard(c9910341.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp)
+	if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(9910341,0),aux.Stringid(9910341,1))==0) then
+		Duel.PayLPCost(tp,2050)
+	elseif b2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local g=Duel.SelectMatchingCard(tp,c9910341.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,ft)
+		local g=Duel.SelectMatchingCard(tp,c9910341.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,tp)
 		Duel.SendtoHand(g,nil,REASON_COST)
 	end
 end

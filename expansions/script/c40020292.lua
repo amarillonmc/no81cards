@@ -8,22 +8,22 @@ end
 function s.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
-	--splimit
+
 	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCategory(CATEGORY_TOEXTRA+CATEGORY_DRAW)
+	e0:SetType(EFFECT_TYPE_IGNITION)
 	e0:SetRange(LOCATION_PZONE)
-	e0:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
-	e0:SetTargetRange(1,0)
-	e0:SetTarget(s.splimit)
+	e0:SetCountLimit(1,id+100)
+	e0:SetTarget(s.tdtg)
+	e0:SetOperation(s.tdop)
 	c:RegisterEffect(e0)
 
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_TO_DECK)	  
+	e1:SetCode(EVENT_TO_DECK)	 
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCountLimit(1,id)	 
+	e1:SetCountLimit(1,id)   
 	e1:SetCondition(s.excon)
 	e1:SetTarget(s.extg)
 	e1:SetOperation(s.exop)
@@ -39,8 +39,32 @@ function s.initial_effect(c)
 	e2:SetCondition(s.spcon)
 	c:RegisterEffect(e2)
 end
-function s.splimit(e,c,tp,sumtp,sumpos)
-	return not s.AwakenedDragon(c) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+function s.tdfilter(c)
+	local is_valid_ad = s.AwakenedDragon(c) and not c:IsCode(id)
+	return (c:IsCode(40020256) or is_valid_ad) and c:IsAbleToExtra()
+end
+
+function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,1,tp,1)
+end
+
+function s.tdop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,1))
+	local g=Duel.SelectMatchingCard(tp,s.tdfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		local from_hand = tc:IsLocation(LOCATION_HAND)
+		if Duel.SendtoExtraP(tc,nil,REASON_EFFECT)>0 then
+			if from_hand and tc:IsLocation(LOCATION_EXTRA) 
+				and Duel.IsPlayerCanDraw(tp,1) 
+				and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then 
+				Duel.BreakEffect()
+				Duel.Draw(tp,1,REASON_EFFECT)
+			end
+		end
+	end
 end
 function s.sfilter(c)
 	return c:IsFaceup() and s.AwakenedDragon(c) and not c:IsCode(id)and c:IsType(TYPE_PENDULUM)

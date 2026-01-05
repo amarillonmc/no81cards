@@ -138,16 +138,23 @@ function c11771570.op2(e,tp,eg,ep,ev,re,r,rp)
 	local lg=Duel.GetMatchingGroup(c11771570.filter2,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil,ATTRIBUTE_LIGHT)
 	local dg=Duel.GetMatchingGroup(c11771570.filter2,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil,ATTRIBUTE_DARK)
 	if lg:GetCount()==0 or dg:GetCount()==0 then return end
+	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rg1=lg:Select(tp,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rg2=dg:Select(tp,1,1,nil)
 	rg1:Merge(rg2)
+	
 	if Duel.Remove(rg1,POS_FACEUP,REASON_EFFECT)==2 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,c11771570.filter3,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-		if g:GetCount()>0 then
-			Duel.SpecialSummon(g,0,tp,tp,true,false,POS_FACEUP)
+		local tc=g:GetFirst()
+		if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_CANNOT_TRIGGER)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e1)
 		end
 	end
 end

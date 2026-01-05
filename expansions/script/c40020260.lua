@@ -91,7 +91,7 @@ function s.excost(e,tp,eg,ep,ev,re,r,rp,chk)
 	c:RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function s.exfilter(c)
-	return (c:IsCode(40020256) or s.AwakenedDragon(c))
+	return (c:IsCode(40020256) or s.AwakenedDragon(c)) and c:IsType(TYPE_PENDULUM)
 		and not c:IsForbidden()
 end
 function s.exfilter2(c,code)

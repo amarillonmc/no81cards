@@ -88,23 +88,18 @@ function c28315548.lvop(e,tp,eg,ep,ev,re,r,rp)
 		tc=g:Select(tp,1,1,nil):GetFirst()
 	end
 	Duel.HintSelection(Group.FromCards(tc))
+	local op=aux.SelectFromOptions(tp,
+		{true,aux.Stringid(28315548,2)},
+		{true,aux.Stringid(28315548,3)})
+	local lv=op==1 and tc:GetLevel() or tc:GetLevel()1
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_CHANGE_LEVEL)
-	e0:SetValue(tc:GetLevel())
-	e0:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+	e0:SetValue(lv)
+	e0:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e0)
-	if Duel.SelectYesNo(tp,aux.Stringid(28315548,2)) then
-		Duel.BreakEffect()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_LEVEL)
-		e1:SetValue(1)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e1)
-		local e2=e1:Clone()
-		tc:RegisterEffect(e2)
-	end
+	local e1=e0:Clone()
+	tc:RegisterEffect(e1)
 end
 function c28315548.atkfilter(c,seq)
 	return c:IsRace(RACE_FAIRY) and c:IsFaceup() and (c:GetSequence()==seq+1 or c:GetSequence()==seq-1) and c:GetSequence()<=4

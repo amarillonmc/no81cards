@@ -11,13 +11,14 @@ local OME_ID=40020321
 
 function s.initial_effect(c)
 
+	--special summon
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetCode(EFFECT_CHANGE_LEVEL)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCondition(s.lvcon)
-	e1:SetValue(4)
+	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
+	e1:SetCondition(s.sprcon)
 	c:RegisterEffect(e1)
 
 	local e2=Effect.CreateEffect(c)
@@ -35,13 +36,15 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
-function s.omepzfilter(c)
-	return c:IsFaceup() and c:IsCode(OME_ID)
+function s.sprfilter(c)
+	return c:IsFaceup() and c:IsCode(40020321)
 end
-function s.lvcon(e)
-	local tp=e:GetHandlerPlayer()
-	return Duel.IsExistingMatchingCard(s.omepzfilter,tp,LOCATION_PZONE,0,1,nil)
+function s.sprcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(s.sprfilter,tp,LOCATION_PZONE,0,1,nil)
 end
+
 function s.spfilter1(c,e,tp)
 	return s.LavaAstral(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

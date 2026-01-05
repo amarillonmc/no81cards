@@ -86,7 +86,7 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
             c:RegisterFlagEffect(id,RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
         end
         return Duel.GetLocationCount(tp,0x04)>0 and Duel.GetFlagEffect(tp,id)==0
-		    and Duel.IsExistingMatchingCard(s.spfi1ter,tp,0x02,0,1,e:GetHandler(),e,tp)
+		    and Duel.IsExistingMatchingCard(s.spfi1ter,tp,0x02,0,1,nil,e,tp)
     end
     Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,EFFECT_FLAG_OATH,1)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0x02)

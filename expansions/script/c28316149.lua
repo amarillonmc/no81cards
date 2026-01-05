@@ -47,14 +47,14 @@ end
 function c28316149.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c28316149.cfilter,1,nil,tp)
 end
-function c28316149.thfilter(c)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
-end
 function c28316149.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(1-tp)
 	Duel.SetTargetParam(500)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,500)
+end
+function c28316149.setfilter(c)
+	return c:IsSetCard(0x283) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function c28316149.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -67,22 +67,19 @@ function c28316149.thop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOperation(c28316149.regop)
 		c:RegisterEffect(e1)
 	end
-	if Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(c28316149.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28316149,2)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,c28316149.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
-		end
+	if Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(c28316149.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28316149,2)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+		local g=Duel.SelectMatchingCard(tp,c28316149.setfilter,tp,LOCATION_DECK,0,1,1,nil)
+		Duel.SSet(tp,g)
 	end
 end
-function c28316149.setfilter(c,e,p,code)
+function c28316149.mmmfilter(c,e,p,code)
 	return c:IsCode(code) and (c:IsSSetable() or Duel.GetMZoneCount(p)>0 and c:IsCanBeSpecialSummoned(e,0,p,false,false,POS_FACEDOWN_DEFENSE))
 end
 function c28316149.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local p=c:GetPreviousControler()
-	local g=Duel.GetMatchingGroup(c28316149.setfilter,p,LOCATION_DECK,0,nil,e,p,c:GetPreviousCodeOnField())
+	local g=Duel.GetMatchingGroup(c28316149.mmmfilter,p,LOCATION_DECK,0,nil,e,p,c:GetPreviousCodeOnField())
 	if c:IsReason(REASON_DESTROY) and #g>0 then
 		Duel.Hint(HINT_CARD,0,28316149)
 		local tc=g:GetFirst()

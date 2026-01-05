@@ -27,6 +27,11 @@ function s.initial_effect(c)
 	e2:SetTargetRange(1,0)
 	e2:SetValue(LOCATION_HAND)
 	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetCode(id)
+	e3:SetRange(LOCATION_MZONE)
+	c:RegisterEffect(e3)
 	--Search Opp Deck
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(id,2))
@@ -72,16 +77,19 @@ function s.effcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 	local tc=Duel.GetOperatedGroup():GetFirst()
+	if tc:IsControler(1-tp) and e:GetHandler():IsHasEffect(id) then Duel.SendtoHand(tc,tp,REASON_EFFECT) end
 	e:SetLabelObject(tc)
 end
 function s.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>0 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_DECK,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,1-tp,LOCATION_DECK)
 end
 function s.effop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetDecktopGroup(1-tp,1)
-	if #g>0 then
-		Duel.SendtoHand(g,tp,REASON_EFFECT)
+	local tc=Duel.GetDecktopGroup(1-tp,1):GetFirst()
+	if tc then
+		Duel.DisableShuffleCheck()
+		tc:SetStatus(STATUS_TO_HAND_WITHOUT_CONFIRM,true)
+		Duel.SendtoHand(tc,tp,REASON_EFFECT)
 	end
 	local tc=e:GetLabelObject()
 	if tc and tc:GetType()==TYPE_SPELL and tc:IsSetCard(0x3226) then

@@ -40,6 +40,9 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	g=g:SelectSubGroup(tp,s.fcheck,false,1,3,nil)
 	if #g>0 then
+		if g:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then
+			Duel.DisableShuffleCheck()
+		end
 		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
 		local bg=Duel.GetMatchingGroup(s.banfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,nil)
 		if #bg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then

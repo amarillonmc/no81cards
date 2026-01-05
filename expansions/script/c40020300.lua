@@ -11,12 +11,13 @@ function s.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	--splimit
 	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetDescription(aux.Stringid(id,0))
+	e0:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
+	e0:SetType(EFFECT_TYPE_IGNITION)
 	e0:SetRange(LOCATION_PZONE)
-	e0:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e0:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CANNOT_DISABLE)
-	e0:SetTargetRange(1,0)
-	e0:SetTarget(s.splimit)
+	e0:SetCountLimit(1,id+100)
+	e0:SetTarget(s.pentg)
+	e0:SetOperation(s.penop)
 	c:RegisterEffect(e0)
 
 	local e1=Effect.CreateEffect(c)
@@ -45,11 +46,59 @@ function s.initial_effect(c)
 	e3:SetRange(LOCATION_MZONE)
 	c:RegisterEffect(e3)
 end
-function s.splimit(e,c,tp,sumtp,sumpos)
-	return not s.AwakenedDragon(c) and bit.band(sumtp,SUMMON_TYPE_PENDULUM)==SUMMON_TYPE_PENDULUM
+function s.pfilter(c,e,tp)
+	if not (c:IsFaceup() and c:IsType(TYPE_PENDULUM) and s.AwakenedDragon(c) and not c:IsCode(id)) then return false end
+	local b1=c:IsAbleToHand()
+	local b2=Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return b1 or b2
 end
 
--- 把单卡 c 当作灵摆卡使用加入额外
+function s.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.pfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+
+end
+
+function s.penop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()   
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local g=Duel.SelectMatchingCard(tp,s.pfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp)
+	if #g>0 then
+		local tc=g:GetFirst()
+		local b1=tc:IsAbleToHand()
+		local b2=Duel.GetLocationCountFromEx(tp,tp,nil,tc)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		
+		local op=0
+		if b1 and b2 then 
+			op=Duel.SelectOption(tp,aux.Stringid(id,0),aux.Stringid(id,2))
+		elseif b1 then 
+			op=0 
+		else 
+			op=1 
+		end
+		
+		local success=false
+		if op==0 then
+			if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 then
+				Duel.ConfirmCards(1-tp,tc)
+				success=true
+			end
+		else
+			if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 then
+				success=true
+			end
+		end
+		
+		-- 那之后，这张卡破坏
+		if success and c:IsRelateToEffect(e) then
+			Duel.BreakEffect()
+			Duel.Destroy(c,REASON_EFFECT)
+		end
+	end
+end
+
 function s.SendToExtraAsPendulum(c,tp,reason,e)
 	if not c then return end
 	local handler = e and e:GetHandler() or nil

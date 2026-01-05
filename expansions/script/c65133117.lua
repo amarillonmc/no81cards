@@ -16,7 +16,7 @@ function s.initial_effect(c)
 	e2:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e2:SetCost(s.cost)
-	--c:RegisterEffect(e2)
+	c:RegisterEffect(e2)
 end
 function s.cfilter(c)
 	return c:IsSetCard(0x838) and c:IsDiscardable()
