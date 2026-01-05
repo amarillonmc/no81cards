@@ -1,7 +1,7 @@
 --艾米莉亚
 local s,id=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,17337510,17337500)
+	aux.AddCodeList(c,17337510,17337500,17337400)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
@@ -20,7 +20,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.spfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x5f50) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsSetCard(0x5f50) or aux.IsCodeListed(c,17337400) and c:IsType(TYPE_MONSTER)
 end
 function s.spfilter2(c)
 	return c:IsFaceup() and c:IsCode(17337500)

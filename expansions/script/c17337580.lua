@@ -1,6 +1,7 @@
 --帕特拉修
 local s,id=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,17337400)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_SPSUMMON_PROC)
@@ -31,7 +32,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.spfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x5f50)
+	return c:IsFaceup() and c:IsSetCard(0x5f50) or aux.IsCodeListed(c,17337400)
 end
 function s.spcon(e,c)
 	if c==nil then return true end

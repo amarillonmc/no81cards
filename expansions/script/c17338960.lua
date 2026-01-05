@@ -1,4 +1,4 @@
---新卡16：权能解放 阿尔迪巴兰
+--权能解放 阿尔迪巴兰
 local s,id,o=GetID()
 function s.initial_effect(c)
 	c:SetUniqueOnField(1,1,id)
@@ -47,7 +47,7 @@ function s.initial_effect(c)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e4:SetCountLimit(1,id+o)
+	e4:SetCountLimit(1)
 	e4:SetCost(s.bancost)
 	e4:SetTarget(s.bantg)
 	e4:SetOperation(s.banop)
@@ -63,7 +63,7 @@ function s.spreg(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.aclimit(e,re,tp)
 	local rc=re:GetHandler()
-	return not rc:IsSetCard(0x5f52) -- 世界意志字段
+	return not rc:IsSetCard(0x5f52) 
 end
 function s.cfilter(c,tp)
 	return c:IsSetCard(0x5f52) and c:IsAbleToRemoveAsCost()
@@ -71,21 +71,18 @@ end
 function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then 
-		-- 必须包含这张卡
 		if not c:IsAbleToRemoveAsCost() then return false end
-		local loc=LOCATION_HAND+LOCATION_DECK+LOCATION_MZONE+LOCATION_GRAVE
-		local g=Duel.GetMatchingGroup(s.cfilter,tp,loc,0,nil)
+		local loc=LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD+LOCATION_GRAVE
+		local g=Duel.GetMatchingGroup(s.cfilter,tp,loc,0,nil,tp,e)
 		return g:GetCount()>0 and g:IsContains(c)
 	end
-	local loc=LOCATION_HAND+LOCATION_DECK+LOCATION_MZONE+LOCATION_GRAVE
-	local g=Duel.GetMatchingGroup(s.cfilter,tp,loc,0,nil)
-	-- 确保包含这张卡
+	local loc=LOCATION_HAND+LOCATION_DECK+LOCATION_ONFIELD+LOCATION_GRAVE
+	local g=Duel.GetMatchingGroup(s.cfilter,tp,loc,0,nil,tp,e)
 	if not g:IsContains(c) then return false end
+	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,5)
-	-- 再次确保包含这张卡
 	if not sg:IsContains(c) then
-		-- 如果不包含，强制添加
 		sg:AddCard(c)
 	end
 	e:SetLabel(sg:GetCount())
@@ -99,7 +96,6 @@ end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
 	if Duel.Damage(1-tp,1000,REASON_EFFECT)>0 and ct>0 then
-		-- 添加"那之后，可以"的选择
 		if Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			local g=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
 			if #g>0 then

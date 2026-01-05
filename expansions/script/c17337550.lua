@@ -1,6 +1,7 @@
 --奥托
 local s,id=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,17337400)  
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1190)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
@@ -10,6 +11,11 @@ function s.initial_effect(c)
 	e1:SetTarget(s.thtg1)
 	e1:SetOperation(s.thop1)
 	c:RegisterEffect(e1)
+
+	local e1a=e1:Clone()
+	e1a:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e1a)
+	
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(1153)
 	e2:SetType(EFFECT_TYPE_IGNITION)
@@ -42,7 +48,9 @@ function s.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function s.setfilter(c)
-	return c:IsSetCard(0x3f50) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return (c:IsSetCard(0x3f50) or aux.IsCodeListed(c,17337400)) 
+		and c:IsType(TYPE_SPELL+TYPE_TRAP) 
+		and c:IsSSetable()
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK,0,1,nil) end

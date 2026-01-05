@@ -1,6 +1,7 @@
 --罗兹瓦尔
 local s,id=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,17337400)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1118)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_HANDES)
@@ -121,9 +122,9 @@ function s.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter,1,e:GetHandler(),tp)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(function(c) return c:IsSetCard(0x5f50) and c:IsFaceupEx() and c:IsType(TYPE_MONSTER) end,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) then
+	if Duel.IsExistingMatchingCard(function(c) return c:IsSetCard(0x5f50) or aux.IsCodeListed(c,17337400) and c:IsFaceupEx() and c:IsType(TYPE_MONSTER) end,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) then
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,function(c) return c:IsSetCard(0x5f50) and c:IsFaceupEx() and c:IsType(TYPE_MONSTER) end,
+	local g=Duel.SelectMatchingCard(tp,function(c) return c:IsSetCard(0x5f50) or aux.IsCodeListed(c,17337400) and c:IsFaceupEx() and c:IsType(TYPE_MONSTER) end,
 		tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
 		if Duel.Destroy(g,REASON_EFFECT)==0 then
 			Duel.BreakEffect()
