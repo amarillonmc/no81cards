@@ -27,7 +27,7 @@ function s.initial_effect(c)
 				KRO_COPIED[p]=s.stringToTable(Duel.GetRegistryValue(s.getplayername(p)))
 			else
 				KRO_COPIED[p]={}
-				--KRO_COPIED[p]={{code=55144522,id={1}}}
+				--KRO_COPIED[p]={{code=54631665,id={3}}}
 			end
 		end
 		local e1=Effect.CreateEffect(c)
@@ -82,17 +82,17 @@ function s.costop(e,tp,eg,ep,ev,re,r,rp)
 	if s[0] or te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) then return end
 	s[0]=true
 	local bool=false
-	if KOISHI_CHECK then
-		local effects={tc:GetCardRegistered(nil,GETEFFECT_INITIAL)} 
-		for _,ce in ipairs(effects) do
-			if s.issameeffect(te,ce) then
-				bool=true
-				break
-			end
-		end
-	else
+	--if KOISHI_CHECK then
+	--	local effects={tc:GetCardRegistered(nil,GETEFFECT_INITIAL)} 
+	--	for _,ce in ipairs(effects) do
+	--		if s.issameeffect(te,ce) then
+	--			bool=true
+	--			break
+	--		end
+	--	end
+	--else
 		bool=true
-	end
+	--end
 	if bool and not KRO_COPY[tp][te] then
 		table.insert(KRO_COPY[tp],te)
 	end
@@ -138,6 +138,7 @@ function s.cpop(e,tp,eg,ep,ev,re,r,rp)
 						table.insert(afilter,OPCODE_OR)
 					end
 				end
+				Duel.Hint(HINT_CODE,1-p,id)
 				::cancel::
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 				local ac=Duel.AnnounceCard(p,table.unpack(afilter))
@@ -237,7 +238,7 @@ function s.issamefunc(f1,f2,bool)
 		local d2=string.dump(f2)
 		if d1==d2 then
 			--Debug.Message(f1)
-			--Debug.Message(f2)		 
+			--Debug.Message(f2)	  
 			return true
 		elseif bool then
 			f1(e,tp,eg,ep,ev,re,r,rp,1)
@@ -520,8 +521,11 @@ function s.setcheffect(c,te,code,desc)
 	local desc=s.getdesc(ce)
 	ce:SetDescription(desc)
 	local ctype=ce:GetType()
-	if ctype&EFFECT_TYPE_TRIGGER_F>0 then ce:SetType(ctype-EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_TRIGGER_O) end
-	if ctype&EFFECT_TYPE_QUICK_F>0 then ce:SetType(ctype-EFFECT_TYPE_QUICK_F+EFFECT_TYPE_QUICK_O) end
+	--if ctype&EFFECT_TYPE_TRIGGER_F>0 then ce:SetType(ctype-EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_TRIGGER_O) end
+	--if ctype&EFFECT_TYPE_QUICK_F>0 then ce:SetType(ctype-EFFECT_TYPE_QUICK_F+EFFECT_TYPE_QUICK_O) end
+	if ce:IsHasRange(LOCATION_FZONE) and not ce:IsHasRange(LOCATION_MZONE) then
+		ce:SetRange(LOCATION_SZONE)
+	end
 	ce:SetProperty(ce:GetProperty()|EFFECT_FLAG_UNCOPYABLE)
 	ce:SetCondition(s.chcon(te,code))
 	ce:SetCost(s.chcost(te,code))

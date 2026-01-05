@@ -116,36 +116,48 @@ function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_PZONE)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
 end
-function s.desop(e,tp,eg,ep,ev,re,r,rp) 
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g_ome=Duel.SelectMatchingCard(tp,s.omepzfilter,tp,LOCATION_PZONE,0,1,1,nil)
-	if g_ome:GetCount()>0 and Duel.Destroy(g_ome,REASON_EFFECT)~=0 then
-		local c=e:GetHandler()
-		local ct=1
+function s.desop(e, tp, eg, ep, ev, re, r, rp)
+	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_DESTROY)
+	local g_ome = Duel.SelectMatchingCard(tp, s.omepzfilter, tp, LOCATION_PZONE, 0, 1, 1, nil)
+	if g_ome:GetCount() > 0 and Duel.Destroy(g_ome, REASON_EFFECT) ~= 0 then
+		local c = e:GetHandler()
+		local ct = 1
 		if c:IsRelateToEffect(e) then
-			ct=ct+c:GetMaterialCount()
+			ct = ct + c:GetMaterialCount()
 		end
-		local g_opp=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_ONFIELD,nil)
-		if g_opp:GetCount()>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local sg=g_opp:Select(tp,1,ct,nil)
-			if sg:GetCount()>0 then
+		
+		local g_opp = Duel.GetMatchingGroup(aux.TRUE, tp, 0, LOCATION_ONFIELD, nil)
+		if g_opp:GetCount() > 0 then
+			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_DESTROY)
+			local sg = g_opp:Select(tp, 1, ct, nil)
+			if sg:GetCount() > 0 then
 				Duel.HintSelection(sg)
-				local tc=sg:GetFirst()
-				while tc do
-					local e1=Effect.CreateEffect(c)
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetCode(EFFECT_CANNOT_TRIGGER)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-					tc:RegisterEffect(e1)
-					local e2=Effect.CreateEffect(c)
-					e2:SetType(EFFECT_TYPE_SINGLE)
-					e2:SetCode(EFFECT_DISABLE)
-					e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-					tc:RegisterEffect(e2)
-					tc=sg:GetNext()
+				if Duel.Destroy(sg, REASON_EFFECT) > 0 then
+					local og = Duel.GetOperatedGroup()
+					local tc = og:GetFirst()
+					while tc do
+						if tc:IsLocation(LOCATION_GRAVE + LOCATION_REMOVED) then
+							local e1 = Effect.CreateEffect(c)
+							e1:SetType(EFFECT_TYPE_SINGLE)
+							e1:SetCode(EFFECT_DISABLE)
+							e1:SetReset(RESET_EVENT + RESETS_STANDARD) 
+							tc:RegisterEffect(e1)
+							local e2 = Effect.CreateEffect(c)
+							e2:SetType(EFFECT_TYPE_SINGLE)
+							e2:SetCode(EFFECT_DISABLE_EFFECT)
+							e2:SetReset(RESET_EVENT + RESETS_STANDARD) 
+							tc:RegisterEffect(e2)
+							if tc:IsType(TYPE_TRAPMONSTER) then
+								local e3 = Effect.CreateEffect(c)
+								e3:SetType(EFFECT_TYPE_SINGLE)
+								e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+								e3:SetReset(RESET_EVENT + RESETS_STANDARD)
+								tc:RegisterEffect(e3)
+							end
+						end
+						tc = og:GetNext()
+					end
 				end
-				Duel.Destroy(sg,REASON_EFFECT)
 			end
 		end
 	end

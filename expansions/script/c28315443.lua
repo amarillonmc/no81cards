@@ -87,10 +87,8 @@ function c28315443.lvop(e,tp,eg,ep,ev,re,r,rp)
 		tc=g:Select(tp,1,1,nil):GetFirst()
 	end
 	Duel.HintSelection(Group.FromCards(tc))
-	local op=aux.SelectFromOptions(tp,
-		{true,aux.Stringid(28315443,2)},
-		{true,aux.Stringid(28315443,3)})
-	local lv=op==1 and tc:GetLevel() or tc:GetLevel()1
+	local op=Duel.SelectOption(tp,aux.Stringid(28315443,2),aux.Stringid(28315443,3))
+	local lv=op==0 and tc:GetLevel() or tc:GetLevel()+1
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_CHANGE_LEVEL)

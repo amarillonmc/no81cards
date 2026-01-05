@@ -67,7 +67,7 @@ function s.chcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(sg,REASON_COST)
 end
 function s.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,rp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 end
 function s.chop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
