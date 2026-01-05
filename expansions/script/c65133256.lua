@@ -44,10 +44,9 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	b[1]=Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and Duel.IsPlayerCanSpecialSummonMonster(tp,65133153,0x838,TYPES_TOKEN,2500,500,6,RACE_MACHINE,ATTRIBUTE_LIGHT)
 	b[2]=Duel.IsExistingMatchingCard(s.thfilter1,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil)
 	b[3]=true
-	b[4]=Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
+	b[4]=Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 	b[5]=true 
-	if chk==0 then return true end
-	
+	if chk==0 then return true end	
 	local ct=1
 	if Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_MZONE,0,1,nil) then
 		ct=3
@@ -73,20 +72,20 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 				Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 			end
 		end
-		if not (b[1] or b[2] or b[3] or b[4] or b[5]) or not Duel.SelectYesNo(tp,aux.Stringid(id,7)) or num==ct then
+		if not (b[1] or b[2] or b[3] or b[4] or b[5]) or num==ct or not Duel.SelectYesNo(tp,aux.Stringid(id,7)) then
 			break
 		end
 	end
 	e:SetLabel(optable)
 end
 function s.thfilter1(c)
-	return c:IsCode(65133150) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(s.thfilter2,c:GetControler(),LOCATION_DECK+LOCATION_REMOVED,0,1,c)
+	return c:IsCode(65133150) and c:IsAbleToHand() and Duel.IsExistingMatchingCard(s.thfilter2,c:GetControler(),LOCATION_DECK+LOCATION_REMOVED,0,1,c) and c:IsFaceupEx()
 end
 function s.thfilter2(c)
-	return c:IsSetCard(0x838) and c:IsAbleToHand()
+	return c:IsSetCard(0x838) and c:IsAbleToHand() and c:IsFaceupEx()
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x838) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return c:IsSetCard(0x838) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local optable=e:GetLabel()

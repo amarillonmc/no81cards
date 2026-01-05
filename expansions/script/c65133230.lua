@@ -86,7 +86,7 @@ function s.pop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToChain() and Duel.SendtoExtraP(c,nil,REASON_EFFECT)>0 then
 		local flag_idx=e:GetLabel()
 		if flag_idx==-1 then return end
-		Duel.RegisterFlagEffect(tp,id+flag_idx,RESET_PHASE+PHASE_END,0,1)		
+		Duel.RegisterFlagEffect(tp,id+flag_idx,RESET_PHASE+PHASE_END,0,1)	   
 		Duel.BreakEffect()
 		if flag_idx==0 then
 			if rc:IsRelateToEffect(re) then
@@ -157,7 +157,7 @@ end
 function s.m2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local b1=Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)
-	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	local b2=Duel.GetLocationCountFromEx(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 	if chk==0 then return b1 or b2 end
 	local op=aux.SelectFromOptions(tp,
 		{b1,aux.Stringid(id,3)},
