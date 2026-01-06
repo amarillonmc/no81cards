@@ -61,7 +61,7 @@ function s.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	c:RemoveOverlayCard(tp,ct,ct,REASON_COST)
 end
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x5a7d) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(id)
+	return c:IsSetCard(0x5a7d) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 		and (c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 		or c:IsLocation(LOCATION_GRAVE) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)
 end

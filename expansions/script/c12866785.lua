@@ -135,7 +135,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.descon1(e,tp,eg,ep,ev,re,r,rp)
-	return not e:GetLabel()==1
+	return e:GetLabel()==0
 end
 function s.descon2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetLabel()==1

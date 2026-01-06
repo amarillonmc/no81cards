@@ -38,21 +38,21 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.dice(e,tp,eg,ep,d,re,r,rp)
 	--Debug.Message(CURSE_TRIGGER_DIVE)
+	if CURSE_TRIGGER_FIN>0 then return end
 	if CURSE_TRIGGER_DIVE>3 and CURSE_TRIGGER_FIN==0 then
 		CURSE_TRIGGER_FIN=1
 		Debug.Message("recursive event trigger detected.")
 		Debug.Message("[string \"./script/c11451984.lua\"]:47: attempt to index a nil value (local 'e')")
 	end
-	if CURSE_TRIGGER_FIN>0 then return end
 	local c=e:GetHandler()
-	if d==1 then
+	if CURSE_TRIGGER_FIN==0 and d==1 then
 		local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 		local t={}
 		if #g>0 then t[#t+1]=2 end
 		t[#t+1]=3
 		if Duel.IsPlayerCanDraw(tp,1) then t[#t+1]=4 end
 		t[#t+1]=5
-		if c:IsRelateToEffect(e) and c:IsCanTurnSet() then t[#t+1]=6 end
+		if c:IsRelateToEffect(e) and c:IsCanTurnSet() and c:IsFaceup() then t[#t+1]=6 end
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,CURSE_TRIGGER_DIVE))
 		local d1=Duel.AnnounceNumber(tp,table.unpack(t))
 		Duel.Hint(HINT_NUMBER,1-tp,d1)
@@ -71,7 +71,7 @@ function cm.dice(e,tp,eg,ep,d,re,r,rp)
 	elseif d==3 then
 		local d1=Duel.TossDice(tp,1)
 		local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
-		if not (d1==2 and #g==0) and not (d1==4 and not Duel.IsPlayerCanDraw(tp,1)) and not (d1==6 and not (c:IsRelateToEffect(e) and c:IsCanTurnSet())) and Duel.SelectYesNo(tp,aux.Stringid(m,4+CURSE_TRIGGER_DIVE)) then
+		if not (d1==2 and #g==0) and not (d1==4 and not Duel.IsPlayerCanDraw(tp,1)) and not (d1==6 and not (c:IsRelateToEffect(e) and c:IsCanTurnSet() and c:IsFaceup())) and CURSE_TRIGGER_FIN==0 and Duel.SelectYesNo(tp,aux.Stringid(m,4+CURSE_TRIGGER_DIVE)) then
 			CURSE_TRIGGER_DIVE=CURSE_TRIGGER_DIVE+1
 			cm.dice(e,tp,eg,ep,d1,re,r,rp)
 			--Duel.RaiseEvent(c,e:GetValue(),re,r,rp,ep,d1)
