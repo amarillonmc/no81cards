@@ -56,7 +56,7 @@ end
 function s.thfilter(c)
 
 	return (c:IsCode(40020509) or (s.HighEvo(c) and not c:IsCode(id))) 
-		and c:IsAbleToHand()
+		and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

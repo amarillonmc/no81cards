@@ -83,10 +83,10 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	
-	local mg=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+	local mg=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if mg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPPO)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 		local smg=mg:Select(tp,1,1,nil)
 		local tc=smg:GetFirst()
 		if tc then
