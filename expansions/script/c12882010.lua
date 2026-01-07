@@ -101,7 +101,7 @@ end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
+	if tc:IsRelateToEffect(e) and Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
 		if c:IsPreviousLocation(LOCATION_ONFIELD) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetDescription(aux.Stringid(id,2))

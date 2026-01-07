@@ -58,8 +58,7 @@ function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
-	if c:IsFacedown() or not c:IsRelateToChain() then return end
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 or c:IsFacedown() or not c:IsRelateToChain() then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 	local g=Duel.SelectMatchingCard(tp,s.fusfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
@@ -97,7 +96,7 @@ function s.eqfilter_gy(c)
 	return s.fusfilter(c) and c:IsFaceupEx()
 end
 function s.cfilter(c)
-	return c:IsFaceup() and c:GetEquipTarget()~=nil and c:IsAbleToGraveAsCost()
+	return c:IsFaceup() and c:GetEquipTarget()~=nil and c:IsAbleToGrave()
 end
 function s.optg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then
@@ -123,14 +122,7 @@ function s.optg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		Duel.SetOperationInfo(0,CATEGORY_EQUIP,g,1,0,0)
 	else
 		e:SetCategory(CATEGORY_DISABLE+CATEGORY_DESTROY)
-		e:SetProperty(EFFECT_FLAG_CARD_TARGET)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local cg=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_SZONE,0,1,1,nil)
-		Duel.SendtoGrave(cg,REASON_COST)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-		local g=Duel.SelectTarget(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
-		Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,LOCATION_ONFIELD)
 	end
 end
 function s.opop(e,tp,eg,ep,ev,re,r,rp)
@@ -158,24 +150,27 @@ function s.opop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	else
-		local tc=Duel.GetFirstTarget()
-		if tc:IsRelateToChain() and tc:IsFaceup() and not tc:IsDisabled() then
-			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-			local e2=e1:Clone()
-			e2:SetCode(EFFECT_DISABLE_EFFECT)
-			e2:SetValue(RESET_TURN_SET)
-			tc:RegisterEffect(e2)
-			if tc:IsType(TYPE_TRAPMONSTER) then
-				local e3=e1:Clone()
-				e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
-				tc:RegisterEffect(e3)
-			end
-			if tc:IsDisabled() then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local cg=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_SZONE,0,1,1,nil)
+		if Duel.SendtoGrave(cg,REASON_EFFECT)>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
+			local tc=Duel.SelectMatchingCard(tp,aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil):GetFirst()
+			if tc then
+				Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_DISABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1)
+				local e2=e1:Clone()
+				e2:SetCode(EFFECT_DISABLE_EFFECT)
+				e2:SetValue(RESET_TURN_SET)
+				tc:RegisterEffect(e2)
+				if tc:IsType(TYPE_TRAPMONSTER) then
+					local e3=e1:Clone()
+					e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+					tc:RegisterEffect(e3)
+				end
 				Duel.Destroy(tc,REASON_EFFECT)
 			end
 		end

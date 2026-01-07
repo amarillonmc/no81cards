@@ -52,12 +52,15 @@ function c28366277.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetLP(tp)>3000 and 1 or 2
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28366277.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,ct,nil)
-	if #tg==0 or Duel.SendtoHand(tg,nil,REASON_EFFECT)==0 then return end
+	if #tg==0 then return end
+	local hg=tg:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+	if #hg~=0 then Duel.HintSelection(hg) end
+	if Duel.SendtoHand(tg,nil,REASON_EFFECT)==0 then return end
+	tg=tg:Filter(Card.IsLocation,nil,LOCATION_HAND)
+	if #tg==0 then return end
 	Duel.ConfirmCards(1-tp,tg)
-	ct=tg:FilterCount(Card.IsLocation,nil,LOCATION_HAND)
-	if ct==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_MZONE,0,ct,ct,nil)
+	local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_MZONE,0,#tg,#tg,nil)
 	Duel.HintSelection(dg)
 	Duel.Destroy(dg,REASON_EFFECT)
 end
