@@ -164,7 +164,7 @@ function c11561078.cfilter(c)
 	return c:IsCode(93717133,18963306,88177324) and Duel.IsExistingMatchingCard(c11561078.thfilter,tp,LOCATION_DECK,0,3,nil,c:GetCode()) and Duel.GetMatchingGroup(c11561078.thfilter,tp,LOCATION_DECK,0,nil,c:GetCode()):GetClassCount(Card.GetCode)>2
 end
 function c11561078.thfilter(c,code)
-	return (code==93717133 and c:IsSetCard(0x55,0x7b)) or (code==18963306 and c:IsSetCard(0x95,0xe5)) or (code==88177324 and c:IsSetCard(0x1b4,0x175))
+	return ((code==93717133 and c:IsSetCard(0x55,0x7b)) or (code==18963306 and c:IsSetCard(0x95,0xe5)) or (code==88177324 and c:IsSetCard(0x1b4,0x175))) and c:IsAbleToHand()
 end
 function c11561078.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11561078.cfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,e:GetHandler()) end

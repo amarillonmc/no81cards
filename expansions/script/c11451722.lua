@@ -300,7 +300,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 			if b3 then if seq==5 then flag=flag|0x2 else flag=flag|0x8 end end
 			if b4 then if seq==1 then flag=flag|0x20 else flag=flag|0x40 end end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-			local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0)
+			local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0x600060)
 			local nseq=math.log(s&0xff,2)
 			if s<0xffff then
 				Duel.MoveSequence(c,nseq)
@@ -338,7 +338,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 		if b3 then if seq==5 then flag=flag|0x2 else flag=flag|0x8 end end
 		if b4 then if seq==1 then flag=flag|0x20 else flag=flag|0x40 end end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0)
+		local s=Duel.SelectDisableField(tp,1,LOCATION_MZONE,LOCATION_MZONE,0x600060)
 		local nseq=math.log(s&0xff,2)
 		if s<0xffff then
 			Duel.MoveSequence(c,nseq)

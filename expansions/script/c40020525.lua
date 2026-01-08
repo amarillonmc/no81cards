@@ -27,6 +27,12 @@ function s.pfilter(c)
 	return c:IsCode(40020509) and (c:IsFaceup() or c:IsLocation(LOCATION_HAND)) and not c:IsForbidden()
 end
 
+function s.fusfilter(c,e,tp,m)
+	return c:IsType(TYPE_FUSION) and s.HighEvo(c) 
+		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) 
+		and c:CheckFusionMaterial(m,nil,tp)
+end
+
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0

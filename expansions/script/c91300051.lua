@@ -2,12 +2,6 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	c:SetUniqueOnField(1,0,id)
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
-	e1:SetValue(s.linklimit)
-	--c:RegisterEffect(e1)
 	--hand link
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -20,7 +14,7 @@ function s.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e3:SetCode(EVENT_BE_MATERIAL)
 	e3:SetCost(s.thcost)
 	e3:SetCondition(s.thcon)
@@ -38,10 +32,6 @@ function s.splimit(e,c)
 end
 function s.mfilter(c)
 	return c:IsLocation(LOCATION_MZONE)
-end
-function s.linklimit(e,c)
-	if not c then return false end
-	return not c:IsLinkAbove(3)
 end
 function s.matval(e,lc,mg,c,tp)
 	if not lc:IsRace(RACE_ZOMBIE) then return false,nil end

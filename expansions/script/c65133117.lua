@@ -60,7 +60,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local labs={e:GetLabel()}
 	local count=#labs   
-	if count and count>0 then		
+	if count and count>0 then	   
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
@@ -76,7 +76,7 @@ function s.spfilter(c,e,tp,code)
 	return c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetLabelObject()
+	--local c=e:GetLabelObject()
 	local labs={e:GetLabel()}
 	local ct=labs[1]
 	local codes={}
@@ -85,7 +85,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	ct=ct-1
 	e:SetLabel(ct,table.unpack(labs))
-	c:SetTurnCounter(ct)
+	--c:SetTurnCounter(ct)
 	if ct==0 then
 		Duel.Hint(HINT_CARD,0,id)
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE) 

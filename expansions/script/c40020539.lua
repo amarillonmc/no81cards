@@ -45,10 +45,9 @@ end
 
 
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp==tp and (
-		re:IsActiveType(TYPE_TRAP) or 
-		(re:GetHandler():IsCode(40020509) and re:IsActiveType(TYPE_SPELL)) or (re:GetHandler():IsCode(40020539) and re:GetHandler():IsLocation(LOCATION_MZONE))
-	)
+	return rp==tp and 
+		re:IsActiveType(TYPE_TRAP)  
+	
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
