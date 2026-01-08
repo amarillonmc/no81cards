@@ -37,7 +37,7 @@ function c29002020.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
-	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	--e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e3:SetTargetRange(LOCATION_MZONE,0)
 	e3:SetValue(c29002020.efilter)
 	c:RegisterEffect(e3)
@@ -104,36 +104,15 @@ function c29002020.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function c29002020.itarget(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return true end
-end
-function c29002020.ioperation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local e2=Effect.CreateEffect(c) 
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_IMMUNE_EFFECT)
-	e2:SetValue(c29002020.efilter)
-	e2:SetTargetRange(LOCATION_MZONE,0)
-	e2:SetReset(RESET_PHASE+PHASE_END) 
-	e2:SetOwnerPlayer(tp) 
-	Duel.RegisterEffect(e2,tp)
-	local e3=Effect.CreateEffect(c) 
-	e3:SetDescription(aux.Stringid(29002020,2))
-	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(29002020)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-	e3:SetTargetRange(1,0)
-	Duel.RegisterEffect(e3,tp)
-end
 --function c29002020.efilter(e,te)
 	--if te:GetOwnerPlayer()==e:GetHandlerPlayer() then return false end
 	--if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
 	--local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
 	--return not g or not g:IsContains(e:GetHandler())
 --end
-function c29002020.efilter(e,re,rp,c)
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
+function c29002020.efilter(e,te)
+	if te:GetOwnerPlayer()==e:GetHandlerPlayer() then return false end
+	if not te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return true end
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and not g or not g:IsContains(c)
+	return not g or not g:IsContains(e:GetHandler())
 end

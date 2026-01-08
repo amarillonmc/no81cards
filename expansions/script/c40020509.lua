@@ -24,6 +24,15 @@ function s.initial_effect(c)
 	e1:SetOperation(s.actop)
 	c:RegisterEffect(e1)
 
+	local e2 = Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id, 1))
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetRange(LOCATION_PZONE)
+	e2:SetTargetRange(LOCATION_SZONE, 0)
+	e2:SetTarget(s.acttarget)
+	c:RegisterEffect(e2)
 
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
@@ -35,6 +44,11 @@ function s.initial_effect(c)
 	e3:SetOperation(s.pzop)
 	c:RegisterEffect(e3)
 end
+function s.acttarget(e, c)
+	return c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) 
+	   and s.HighEvo(c)
+end
+
 function s.filter(c)
 	return c:IsFacedown() and s.HighEvo(c) and c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS)
 end
