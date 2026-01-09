@@ -88,5 +88,9 @@ end
 
 function s.indtg(e,c)
 
-	return (c:IsCode(40020509) and c:IsLocation(LOCATION_PZONE)) or c:IsFacedown()
+	local b1 = c:IsCode(40020509) and (c:IsLocation(LOCATION_PZONE) or c:GetSequence()==0 or c:GetSequence()==4) 
+
+	local b2 = c:IsFacedown()
+	
+	return b1 or b2
 end
