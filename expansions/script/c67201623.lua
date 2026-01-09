@@ -91,6 +91,7 @@ function c67201623.activate(e,tp,eg,ep,ev,re,r,rp)
 			if spct>0 and c:IsRelateToEffect(e) and c:IsCanOverlay() and tc:IsCanOverlay() and Duel.IsExistingMatchingCard(c67201623.matfilter,tp,LOCATION_MZONE,0,1,tc) and Duel.SelectYesNo(tp,aux.Stringid(67201623,2)) then
 				Duel.BreakEffect()
 				c:CancelToGrave()
+				tc:CancelToGrave()
 				local ttc=Duel.SelectMatchingCard(tp,c67201623.matfilter,tp,LOCATION_MZONE,0,1,1,tc):GetFirst()
 				if c:IsRelateToEffect(e) and not ttc:IsImmuneToEffect(e) then
 					local og=tc:GetOverlayGroup()

@@ -1,7 +1,12 @@
 --气泡方块的星舰舰长 T
-if not c71403001 then dofile("expansions/script/c71403001.lua") end
 ---@param c Card
 function c71403011.initial_effect(c)
+	if not (yume and yume.PPT_loaded) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71403001,0)
+		yume.import_flag=false
+	end
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsXyzType,TYPE_PENDULUM),4,2,nil,nil,99)
 	c:EnableReviveLimit()

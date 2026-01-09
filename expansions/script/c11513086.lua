@@ -221,7 +221,7 @@ function c11513086.mnfilter2(c,mc)
 	return math.abs(c:GetLevel()-mc:GetLevel())==4
 end
 function c11513086.fselect(g,tp,sc)
-	return g:GetCount()==2 and g:IsExists(Card.IsSetCard,1,nil,0x1a2) and g:IsExists(c11513086.mnfilter,1,nil,g) and g:GetClassCount(Card.GetLocation)==2
+	return g:GetCount()==2 and g:IsExists(Card.IsSetCard,1,nil,0x1a2) and g:IsExists(c11513086.mnfilter,1,nil,g) 
 end
 function c11513086.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c11513086.tgrfilter,tp,LOCATION_MZONE+LOCATION_HAND,0,nil)

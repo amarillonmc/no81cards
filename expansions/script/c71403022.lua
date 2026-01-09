@@ -1,7 +1,12 @@
 --气泡方块的见习法师与搭档 亚鲁鲁·娜嘉&卡邦可
-if not c71403001 then dofile("expansions/script/c71403001.lua") end
 ---@param c Card
 function c71403022.initial_effect(c)
+	if not (yume and yume.PPT_loaded) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71403001,0)
+		yume.import_flag=false
+	end
 	--syn summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSynchroType,TYPE_PENDULUM),aux.NonTuner(aux.FilterBoolFunction(Card.IsSynchroType,TYPE_PENDULUM)),1,1)
 	c:EnableReviveLimit()

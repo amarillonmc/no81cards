@@ -1,8 +1,13 @@
 --魔法气泡连锁！
 local s,id,o=GetID()
-if not c71403001 then dofile("expansions/script/c71403001.lua") end
 ---@param c Card
 function s.initial_effect(c)
+	if not (yume and yume.PPT_loaded) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71403001,0)
+		yume.import_flag=false
+	end
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))

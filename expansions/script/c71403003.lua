@@ -1,8 +1,12 @@
 --气泡方块使 I
-if not c71403001 then dofile("expansions/script/c71403001.lua") end
 ---@param c Card
 function c71403003.initial_effect(c)
-	--pendulum summon
+	if not (yume and yume.PPT_loaded) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71403001,0)
+		yume.import_flag=false
+	end	--pendulum summon
 	aux.EnablePendulumAttribute(c,true)
 	--scale
 	local ep1=Effect.CreateEffect(c)

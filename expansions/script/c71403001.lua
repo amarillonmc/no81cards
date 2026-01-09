@@ -3,6 +3,7 @@ yume=yume or {}
 if c71403001 then
 ---@param c Card
 function c71403001.initial_effect(c)
+	if yume.import_flag then return	end
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71403001,0))

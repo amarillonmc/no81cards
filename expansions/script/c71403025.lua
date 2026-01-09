@@ -1,7 +1,12 @@
 --正弦！余弦！正切！
 local s,id,o=GetID()
-if not c71403001 then dofile("expansions/script/c71403001.lua") end
 function s.initial_effect(c)
+	if not (yume and yume.PPT_loaded) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71403001,0)
+		yume.import_flag=false
+	end
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -20,10 +25,10 @@ function s.filter1tg(c)
 	return c:IsFaceup() and aux.NegateAnyFilter(c)
 end
 function s.filter1(c,e,tp)
-	return c:IsSetCard(0x715) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return c:IsSetCard(0x715) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)
 end
 function s.filter1a(c)
-	return c:IsSetCard(0x715) and c:IsFaceup()
+	return c:IsSetCard(0x715)
 end
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -42,7 +47,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,s.filter1,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-	if #g>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)>0 and 
+	if #g>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)>0 and 
 		tc:IsRelateToChain() and tc:IsFaceup() and tc:IsCanBeDisabledByEffect(e) then
 		local c=e:GetHandler()
 		local e1=Effect.CreateEffect(c)
@@ -71,6 +76,8 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 				local sg=dg:Select(tp,1,1,nil)
+				local cg=sg:Filter(Card.IsFacedown,nil)
+				Duel.ConfirmCards(1-tp,cg)
 				Duel.Destroy(sg,REASON_EFFECT)
 			end
 		end

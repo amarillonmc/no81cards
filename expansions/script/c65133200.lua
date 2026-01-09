@@ -83,13 +83,13 @@ function s.costop(e,tp,eg,ep,ev,re,r,rp)
 	s[0]=true
 	local bool=false
 	--if KOISHI_CHECK then
-	--	local effects={tc:GetCardRegistered(nil,GETEFFECT_INITIAL)} 
-	--	for _,ce in ipairs(effects) do
-	--		if s.issameeffect(te,ce) then
-	--			bool=true
-	--			break
-	--		end
-	--	end
+	--  local effects={tc:GetCardRegistered(nil,GETEFFECT_INITIAL)} 
+	--  for _,ce in ipairs(effects) do
+	--	  if s.issameeffect(te,ce) then
+	--		  bool=true
+	--		  break
+	--	  end
+	--  end
 	--else
 		bool=true
 	--end
@@ -228,6 +228,7 @@ local function GetFunctionSignature(func)
 	return table.concat(t)
 end
 function s.issamefunc(f1,f2,bool)
+	if f1==nil and f2==nil then return true end
 	if aux.GetValueType(f1)~="function" or aux.GetValueType(f2)~= "function" then
 		return false 
 	end
@@ -238,7 +239,7 @@ function s.issamefunc(f1,f2,bool)
 		local d2=string.dump(f2)
 		if d1==d2 then
 			--Debug.Message(f1)
-			--Debug.Message(f2)	  
+			--Debug.Message(f2)   
 			return true
 		elseif bool then
 			f1(e,tp,eg,ep,ev,re,r,rp,1)
@@ -256,10 +257,9 @@ function s.issameeffect(e1,e2)
 	local code1=e1:GetCode()
 	local code2=e2:GetCode()
 	local res1=s.issamefunc(tg,e2:GetTarget())
-	local res2=op==nil or s.issamefunc(op,e2:GetOperation())
+	local res2=s.issamefunc(op,e2:GetOperation())
 	local res3=code1==code2 or code1 and code2 and code1*code2==EVENT_SPSUMMON_SUCCESS*EVENT_SUMMON_SUCCESS
 	--if Duel.GetTurnCount()==2 then tg(e1,tp,eg,ep,ev,re,r,rp,1) end
-	--if Duel.GetTurnCount()==2 then Debug.Message(res1) end
 	return res1 and res2 and res3
 end
 function s.addData(ctable,cdata)

@@ -1,8 +1,13 @@
 --气泡方块的女中学生 安藤林檎
 local s,id,o=GetID()
-if not c71403001 then dofile("expansions/script/c71403001.lua") end
 ---@param c Card
 function s.initial_effect(c)
+	if not (yume and yume.PPT_loaded) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71403001,0)
+		yume.import_flag=false
+	end
 	--syn summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSynchroType,TYPE_PENDULUM),aux.NonTuner(aux.FilterBoolFunction(Card.IsSynchroType,TYPE_PENDULUM)),1)
 	c:EnableReviveLimit()
