@@ -35,7 +35,7 @@ function s.thfilter(c,code)
 	return c:IsSetCard(0x5a7d) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(code)
 end
 function s.desfilter(c,tp)
-	return c:IsSetCard(0x5a7d) and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetCode())
+	return c:IsSetCard(0x5a7d) and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetCode()) and c:IsFaceupEx()
 end
 function s.e1tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,e:GetHandler(),tp) end
