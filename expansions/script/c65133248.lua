@@ -1,4 +1,6 @@
 --幻叙幻现武装-“镇虎”空气压缩炮
+CATEGORY_MSET=0x100000000	--包含盖放怪兽效果
+CATEGORY_SSET=0x200000000	--包含盖放魔陷效果
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,id)
@@ -22,7 +24,7 @@ function s.initial_effect(c)
 	--Place Token
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_TOKEN)
+	e2:SetCategory(CATEGORY_TOKEN+CATEGORY_MSET)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1,id)

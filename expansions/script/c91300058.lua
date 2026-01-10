@@ -76,7 +76,7 @@ function s.confilter(c)
 end
 function s.con1(e)
 	local tp=e:GetHandlerPlayer()
-	return e:GetHandler():IsExtraLinkState() and Duel.IsExistingMatchingCard(s,confilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
+	return e:GetHandler():IsExtraLinkState() and Duel.IsExistingMatchingCard(s.confilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
 end
 function s.con2(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()

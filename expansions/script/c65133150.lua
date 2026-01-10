@@ -1,4 +1,6 @@
 --幻叙的大总理 将军
+CATEGORY_MSET=0x100000000	--包含盖放怪兽效果
+CATEGORY_SSET=0x200000000	--包含盖放魔陷效果
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,65133150)
@@ -56,7 +58,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e6)
 	--Set S/T cards
 	local e7=Effect.CreateEffect(c)
-	e7:SetCategory(CATEGORY_LEAVE_GRAVE)
+	e7:SetCategory(CATEGORY_SSET)
 	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e7:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e7:SetTarget(s.settg)
@@ -105,7 +107,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=3
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<3 then ct=Duel.GetLocationCount(tp,LOCATION_SZONE) end
 	if ct<=0 then return end
-	local g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,id)
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.setfilter),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,id)
 	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,3)

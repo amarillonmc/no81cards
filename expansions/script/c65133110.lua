@@ -1,4 +1,6 @@
 --幻叙 深度幻梦
+CATEGORY_MSET=0x100000000	--包含盖放怪兽效果
+CATEGORY_SSET=0x200000000	--包含盖放魔陷效果
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--Activate
@@ -13,7 +15,7 @@ function s.initial_effect(c)
 	--sset
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
