@@ -44,6 +44,7 @@ function s.initial_effect(c)
 	--Cannot be Material
 	local e4=e2:Clone()
 	e4:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+	e4:SetValue(s.fuslimit)
 	c:RegisterEffect(e4)
 	local e5=e4:Clone()
 	e5:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
@@ -77,6 +78,9 @@ function s.initial_effect(c)
 	e10:SetTarget(s.negtg)
 	e10:SetOperation(s.negop)
 	c:RegisterEffect(e10)
+end
+function s.fuslimit(e,c,sumtype)
+	return sumtype==SUMMON_TYPE_FUSION
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

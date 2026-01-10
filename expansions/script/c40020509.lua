@@ -45,16 +45,16 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.acttarget(e, c)
-	return c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) 
+	return c:IsType(TYPE_TRAP) 
 	   and s.HighEvo(c)
 end
 
 function s.filter(c)
-	return c:IsFacedown() and s.HighEvo(c) and c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS)
+	return c:IsFacedown() and s.HighEvo(c) and c:IsType(TYPE_TRAP) 
 end
 
 function s.setfilter(c)
-	return c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and c:IsSSetable()
+	return c:IsType(TYPE_TRAP)  and c:IsSSetable()
 end
 
 function s.acttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
