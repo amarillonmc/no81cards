@@ -31,6 +31,14 @@ function c28384553.initial_effect(c)
 	ce1:SetValue(c28384553.valcheck)
 	ce1:SetLabelObject(e1)
 	c:RegisterEffect(ce1)
+	if not ANTICA_EFFECT_HINT then
+		ANTICA_EFFECT_HINT = true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_PREDRAW)
+		ge1:SetOperation(c28384553.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
 function c28384553.mfilter(c)
 	return c:IsFusionType(TYPE_FUSION) and c:IsRace(RACE_FAIRY)
@@ -109,7 +117,38 @@ function c28384553.desop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(val)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_OPPO_TURN)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
 		c:RegisterEffect(e1)
+	end
+end
+function c28384553.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local member_list={28316149,28316051,28316558,28315844,28317560}
+	for p=0,1 do
+		local g=Duel.GetMatchingGroup(Card.IsCode,p,0xff,0,nil,table.unpack(member_list))
+		if g:GetClassCount(Card.GetCode)==#member_list then
+			local ge1=Effect.CreateEffect(e:GetHandler())
+			ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			ge1:SetCode(EVENT_CUSTOM+28384553)
+			ge1:SetOperation(c28384553.hintop)
+			Duel.RegisterEffect(ge1,p)
+		end
+	end
+	e:Reset()
+end
+function c28384553.hintop(e,tp,eg,ep,ev,re,r,rp)
+	--if rp~=tp then return end
+	local member_list={28316149,28316051,28316558,28315844,28317560}
+	local code_ascver={28315844,28316051,28316149,28316558,28317560}--ascending order
+	for _,te in pairs({Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+28384553)}) do te:Reset() end
+	for i,code in pairs(member_list) do
+		local ct=Duel.GetFlagEffectLabel(tp,code) or 0
+		local te=Effect.CreateEffect(e:GetHandler())
+		te:SetDescription(aux.Stringid(code_ascver[i],ct+5))
+		te:SetType(EFFECT_TYPE_FIELD)
+		te:SetCode(EFFECT_FLAG_EFFECT+28384553)
+		te:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		te:SetTargetRange(1,0)
+		te:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(te,p)
 	end
 end

@@ -24,9 +24,10 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCode(EVENT_TO_GRAVE)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e2:SetCode(EVENT_BE_MATERIAL)
 	e2:SetCountLimit(1,id+1)
+	e2:SetCondition(s.regcon)
 	e2:SetOperation(s.regop)
 	c:RegisterEffect(e2)
 end
@@ -37,7 +38,7 @@ function s.tgfilter(c,tp)
 	-- 获取该卡的基础类型（怪兽/魔法/陷阱）
 	local ty = c:GetType() & (TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)
 	-- 检查卡组里是否有非此类型的「朦雨」卡
-	return ty~=0 and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,ty)
+	return ty~=0 and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,ty)
 end
 
 function s.thfilter(c,exclude_type)
@@ -61,7 +62,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local ty = tc:GetType() & (TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)
 	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil,ty)
+	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,ty)
 	if #g>0 then
 		if Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
 			Duel.ConfirmCards(1-tp,g)
@@ -70,7 +71,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 			-- 那之后，可以宣言1～12的任意等级，这张卡的等级变成宣言的等级
 			if c:IsRelateToEffect(e) and c:IsFaceup() and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 				Duel.BreakEffect()
-				local lv=Duel.AnnounceLevel(tp,1,12,e:GetHandler():GetLevel())
+				local lv=Duel.AnnounceLevel(tp,1,9,e:GetHandler():GetLevel())
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_CHANGE_LEVEL)
@@ -83,6 +84,12 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 -- === 效果② ===
+function s.regcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local rc=c:GetReasonCard()
+	return c:IsLocation(LOCATION_GRAVE) and rc:IsAttribute(ATTRIBUTE_WATER) and r&REASON_SYNCHRO+REASON_LINK~=0
+end
+
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	-- 注册一个在结束阶段触发的效果
 	local e1=Effect.CreateEffect(e:GetHandler())

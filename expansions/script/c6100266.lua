@@ -2,7 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--同调召唤
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0x613),1)
+	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsAttribute,ATTRIBUTE_WATER),1)
 	c:EnableReviveLimit()
 	
 	--①：自己回合双方不能除外
@@ -49,25 +49,25 @@ end
 
 -- === 效果② ===
 function s.lkfilter(c)
-	return c:IsType(TYPE_LINK) and c:IsLinkAbove(3) and c:IsFaceup()
+	return c:IsType(TYPE_LINK) and c:IsAttribute(ATTRIBUTE_WATER) and c:IsFaceup()
 end
 
 function s.gycon(e,tp,eg,ep,ev,re,r,rp)
 	local loc=re:GetActivateLocation()
 	return rp==1-tp and re:IsActiveType(TYPE_MONSTER) 
 		and (loc==LOCATION_HAND or loc==LOCATION_MZONE)
-		and Duel.IsExistingMatchingCard(s.lkfilter,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.IsExistingMatchingCard(s.lkfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
 end
 
 function s.gytg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return re:GetHandler():IsRelateToEffect(re) end
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,re:GetHandler(),1,0,0)
 end
 
 function s.gyop(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	if rc:IsRelateToEffect(re) then
-		Duel.SendtoDeck(rc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.SendtoDeck(re:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end
 

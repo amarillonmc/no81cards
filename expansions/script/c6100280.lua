@@ -137,22 +137,22 @@ end
 
 -- === 效果② ===
 
-function s.spfilter_base(c)
-	return c:IsSetCard(0x613) and c:IsType(TYPE_MONSTER)
+function s.spfilter_base(c,e,tp)
+	return c:IsSetCard(0x613) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.spfilter_base(chkc) end
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.spfilter_base(chkc,e,tp) end
 	-- 检查连接区是否有位置
 	local zone=Duel.GetLinkedZone(tp)
 	if chk==0 then
-		return zone~=0 
-			and Duel.IsExistingTarget(s.spfilter_base,tp,LOCATION_GRAVE,0,2,nil)
+		return zone~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE,tp,LOCATION_REASON_TOFIELD,zone)>0
+			and Duel.IsExistingTarget(s.spfilter_base,tp,LOCATION_GRAVE,0,2,nil,e,tp)
 			and e:GetHandler():IsAbleToDeck()
 	end
 	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,s.spfilter_base,tp,LOCATION_GRAVE,0,2,2,nil)
+	local g=Duel.SelectTarget(tp,s.spfilter_base,tp,LOCATION_GRAVE,0,2,2,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
@@ -166,17 +166,13 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	if #g==0 then return end
 	-- 选1只回卡组
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tg2=tg:FilterSelect(tp,s.spfilter_base,1,1,nil)
+	local tg2=tg:FilterSelect(tp,s.spfilter_base,1,1,nil,e,tp)
 	tg:Sub(tg2)
 	local tc=tg2:GetFirst()
 	local tc2=tg:GetFirst()
-	if tc and zone~=0 and tg:GetFirst():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone) then
+	if tc and zone~=0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone)
-			Duel.SendtoDeck(tc2,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	end
-	
-	-- 自身回卡组
-	if c:IsRelateToEffect(e) then
+		Duel.SendtoDeck(tc2,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 end

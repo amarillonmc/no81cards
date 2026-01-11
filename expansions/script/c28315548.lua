@@ -10,7 +10,9 @@ function c28315548.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,28315548)
 	e1:SetTarget(c28315548.sptg)
+	e1:SetCost(c28315548.cost)
 	e1:SetOperation(c28315548.spop)
+	e1:SetLabel(1)
 	c:RegisterEffect(e1)
 	--lvchange
 	local e2=Effect.CreateEffect(c)
@@ -108,4 +110,15 @@ function c28315548.atkcon(e)
 end
 function c28315548.atkval(e,c)
 	return c:GetLevel()*100
+end
+function c28315548.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local ct=Duel.GetFlagEffectLabel(tp,28315548) or 0
+	ct=ct|e:GetLabel()
+	if ct==e:GetLabel() then
+		Duel.RegisterFlagEffect(tp,28315548,RESET_PHASE+PHASE_END,0,1,ct)
+	else
+		Duel.SetFlagEffectLabel(tp,28315548,ct)
+	end
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28318749,e,0,0,0,0)
 end

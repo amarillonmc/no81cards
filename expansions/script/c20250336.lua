@@ -18,6 +18,7 @@ function c20250336.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,20250337)
+	e2:SetCondition(c20250336.lvcon)
 	e2:SetTarget(c20250336.lvtg)
 	e2:SetOperation(c20250336.lvop)
 	c:RegisterEffect(e2)
@@ -42,29 +43,47 @@ function c20250336.initial_effect(c)
 	e5:SetOperation(c20250336.activate)
 	c:RegisterEffect(e5)
 end
+
 function c20250336.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCounter(tp,1,0,0x154a)>0
+	return Duel.GetCounter(tp,1,0,0x154a)>=1
 end
+
 function c20250336.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_COUNTER,nil,1,0,0x154a)
 end
+
 function c20250336.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) then
 		c:AddCounter(0x154a,2)
 	end
 end
+
+function c20250336.lvcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetCounter(0x154a)>=1
+end
+
 function c20250336.lvtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:GetLevel()>0 and c:GetCounter(0x154a)>=1 end
+	if chk==0 then return c:GetLevel()>0 end
 end
+
 function c20250336.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToChain() or c:IsFacedown() then return end
 	local down=c:IsLevelAbove(2)
-	local lv=aux.SelectFromOptions(tp,{true,aux.Stringid(20250336,2)},{down,aux.Stringid(20250336,3),-1})
+	local op
+	if not down then 
+		op=Duel.SelectOption(tp,aux.Stringid(20250336,2))
+	else
+		op=Duel.SelectOption(tp,aux.Stringid(20250336,2),aux.Stringid(20250336,3))
+	end
+	local lv=1
+	if down and op==1 then lv=-1 end
+	
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_LEVEL)
@@ -76,17 +95,20 @@ function c20250336.lvop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,0)
-	e2:SetReset(RESET_PHASE+PHASE_END)
 	e2:SetTarget(c20250336.splimit)
+	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 end
-function c20250336.splimit(e,c)
-	return not c:IsType(TYPE_SYNCHRO) and c:IsLocation(LOCATION_EXTRA)
+
+function c20250336.splimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return c:IsLocation(LOCATION_EXTRA) and not c:IsType(TYPE_SYNCHRO)
 end
+
 function c20250336.dckcon(e,tp,eg,ep,ev,re,r,rp)
 	local x=e:GetHandler():GetFlagEffect(20250336)
 	return x~=e:GetHandler():GetCounter(0x154a)
 end 
+
 function c20250336.dckop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
 	c:ResetFlagEffect(20250336)
@@ -98,14 +120,17 @@ function c20250336.dckop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+20250336,e,0,0,tp,0) 
 	end
 end
+
 function c20250336.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetCounter(0x154a)==0 
 end
+
 function c20250336.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 end
 	Duel.SetTargetPlayer(tp)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,1-tp,LOCATION_HAND)
 end
+
 function c20250336.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
 	local g=Duel.GetFieldGroup(p,0,LOCATION_HAND)

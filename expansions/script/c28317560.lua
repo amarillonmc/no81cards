@@ -8,8 +8,10 @@ function c28317560.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,28317560)
 	e1:SetCondition(c28317560.spcon)
+	e1:SetCost(c28317560.cost)
 	e1:SetTarget(c28317560.sptg)
 	e1:SetOperation(c28317560.spop)
+	e1:SetLabel(1)
 	c:RegisterEffect(e1)
 	--spsummon
 	local e2=Effect.CreateEffect(c)
@@ -21,8 +23,10 @@ function c28317560.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38317560)
 	e2:SetCondition(c28317560.spcon2)
+	e2:SetCost(c28317560.cost)
 	--e2:SetTarget(c28317560.sptg2)
 	e2:SetOperation(c28317560.spop2)
+	e2:SetLabel(2)
 	c:RegisterEffect(e2)
 end
 function c28317560.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -58,15 +62,7 @@ function c28317560.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28317560.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToChain() and c:IsFaceup() then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetDescription(aux.Stringid(28317560,1))
-		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_LEAVE_FIELD)
-		e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
-		e1:SetOperation(c28317560.regop)
-		c:RegisterEffect(e1)
-	end
+	if c:IsRelateToChain() and c:IsFaceup() then c28317560.effop(c) end
 	if Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(c28317560.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)>0 and Duel.SelectYesNo(tp,aux.Stringid(28317560,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28317560.spfilter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
@@ -74,6 +70,15 @@ function c28317560.spop2(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
+end
+function c28317560.effop(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(28317560,1))
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_LEAVE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetOperation(c28317560.regop)
+	c:RegisterEffect(e1)
 end
 function c28317560.regop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -86,4 +91,15 @@ function c28317560.regop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(tc,0,p,p,false,false,POS_FACEUP)
 	end
 	e:Reset()
+end
+function c28317560.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local ct=Duel.GetFlagEffectLabel(tp,28317560) or 0
+	ct=ct|e:GetLabel()
+	if ct==e:GetLabel() then
+		Duel.RegisterFlagEffect(tp,28317560,RESET_PHASE+PHASE_END,0,1,ct)
+	else
+		Duel.SetFlagEffectLabel(tp,28317560,ct)
+	end
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28384553,e,0,0,0,0)
 end

@@ -2,7 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 
-	-- 这张卡不能通常召唤，把对方场上1只怪兽送去墓地的场合可以从手卡特殊召唤
+	-- 这张卡不能通常召唤，把自己场上1只怪兽送去墓地才能特殊召唤
 	c:EnableReviveLimit()
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -15,7 +15,7 @@ function s.initial_effect(c)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
 	
-	-- 把这张卡特殊召唤的回合，自己不能把卡的效果发动
+	-- 这张卡特殊召唤的回合自己不能把怪兽的效果发动
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_SPSUMMON_COST)
@@ -28,7 +28,7 @@ function s.initial_effect(c)
 	-- 「地狱黑鲨 雷斯」在自己场上只能有1张表侧表示存在
 	c:SetUniqueOnField(1,0,id)
 	
-	-- 自己·对方的主要阶段内，场上的这张卡不受其他卡的效果影响
+	-- 只要这张卡在怪兽区域存在，这张卡在自己·对方的战斗阶段不受卡的效果影响
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_IMMUNE_EFFECT)
@@ -49,7 +49,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 
--- 这张卡不能通常召唤，把对方场上1只怪兽送去墓地的场合可以从手卡特殊召唤
+-- 这张卡不能通常召唤，把自己场上1只怪兽送去墓地才能特殊召唤
 function s.spfilter(c,tp)
     return c:IsAbleToGraveAsCost() and Duel.GetMZoneCount(tp,c,tp)>0
 end
@@ -57,11 +57,15 @@ end
 function s.spcon(e,c)
     if c==nil then return true end
     local tp=c:GetControler()
-    return Duel.IsExistingMatchingCard(s.spfilter,tp,0,LOCATION_MZONE,1,nil,tp)
+    return Duel.IsExistingMatchingCard(
+        s.spfilter,tp,LOCATION_MZONE,0,1,nil,tp
+    )
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-    local g=Duel.GetMatchingGroup(s.spfilter,tp,0,LOCATION_MZONE,nil,tp)
+    local g=Duel.GetMatchingGroup(
+        s.spfilter,tp,LOCATION_MZONE,0,nil,tp
+    )
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
     local sg=g:Select(tp,1,1,nil)
     if #sg>0 then
@@ -78,9 +82,13 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
     end
 end
 
--- 把这张卡特殊召唤的回合，自己不能把卡的效果发动
+-- 这张卡特殊召唤的回合自己不能把怪兽的效果发动
 function s.spcost(e,c,tp)
     return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0
+end
+
+function s.aclimit(e,re,tp)
+	return re:IsActiveType(TYPE_MONSTER)
 end
 
 function s.spcop(e,tp,eg,ep,ev,re,r,rp)
@@ -90,15 +98,13 @@ function s.spcop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e1:SetTargetRange(1,0)
-	e1:SetValue(1)
+	e1:SetValue(s.aclimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
 
--- 自己·对方的主要阶段内，场上的这张卡不受其他卡的效果影响
+-- 只要这张卡在怪兽区域存在，这张卡在自己·对方的战斗阶段不受卡的效果影响
 function s.efilter(e,te)
-    if Duel.IsMainPhase() then
-        return te:GetOwner()~=e:GetOwner()
-    end
-    return false
+	local ph=Duel.GetCurrentPhase()
+	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end

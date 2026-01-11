@@ -82,23 +82,18 @@ function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
 end
 
-function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_DICE,nil,0,tp,1)
-end
-
 function s.efop(e,tp,eg,ep,ev,re,r,rp)
 	local dc=Duel.TossDice(tp,1)
 	local c=e:GetHandler()
 	if dc==1 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-		e1:SetTargetRange(0,1)
-		e1:SetValue(function(e,re,tp) return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) end)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
+    local e1=Effect.CreateEffect(c)
+        e1:SetType(EFFECT_TYPE_FIELD)
+        e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+        e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+        e1:SetTargetRange(LOCATION_MZONE,0)
+        e1:SetValue(1)
+        e1:SetReset(RESET_PHASE+PHASE_END)
+        Duel.RegisterEffect(e1,tp)
 	elseif dc==2 then
 		if Duel.IsPlayerCanDraw(tp,3) then
 			Duel.Draw(tp,3,REASON_EFFECT)
@@ -109,14 +104,14 @@ function s.efop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoGrave(g,REASON_EFFECT)
 		end
 	elseif dc==4 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-		e1:SetTargetRange(1,0)
-		e1:SetValue(function(e,re,tp) return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) end)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
+        local e1=Effect.CreateEffect(c)
+        e1:SetType(EFFECT_TYPE_FIELD)
+        e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+        e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+        e1:SetTargetRange(0,LOCATION_MZONE)
+        e1:SetValue(1)
+        e1:SetReset(RESET_PHASE+PHASE_END)
+        Duel.RegisterEffect(e1,tp)
 	elseif dc==5 then
 		if Duel.IsPlayerCanDraw(1-tp,3) then
 			Duel.Draw(1-tp,3,REASON_EFFECT)

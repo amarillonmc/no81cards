@@ -9,8 +9,10 @@ function c28316558.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,28316558)
 	e1:SetCondition(c28316558.spcon)
+	e1:SetCost(c28316558.cost)
 	e1:SetTarget(c28316558.sptg)
 	e1:SetOperation(c28316558.spop)
+	e1:SetLabel(1)
 	c:RegisterEffect(e1)
 	--to hand
 	local e2=Effect.CreateEffect(c)
@@ -22,8 +24,10 @@ function c28316558.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38316558)
 	e2:SetCondition(c28316558.thcon)
+	e2:SetCost(c28316558.cost)
 	--e2:SetTarget(c28316558.thtg)
 	e2:SetOperation(c28316558.thop)
+	e2:SetLabel(2)
 	c:RegisterEffect(e2)
 end
 function c28316558.spcon(e,tp,eg,ep,ev,re,r,rp)
@@ -59,15 +63,7 @@ function c28316558.thfilter(c)
 end
 function c28316558.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToChain() and c:IsFaceup() then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetDescription(aux.Stringid(28316558,1))
-		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_LEAVE_FIELD)
-		e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
-		e1:SetOperation(c28316558.regop)
-		c:RegisterEffect(e1)
-	end
+	if c:IsRelateToChain() and c:IsFaceup() then c28316558.effop(c) end
 	if Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(c28316558.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28316558,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c28316558.thfilter,tp,LOCATION_DECK,0,1,1,nil)
@@ -76,6 +72,15 @@ function c28316558.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,g)
 		end
 	end
+end
+function c28316558.effop(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(28316558,1))
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_LEAVE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetOperation(c28316558.regop)
+	c:RegisterEffect(e1)
 end
 function c28316558.spfilter(c,e,p,code)
 	return c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,p,false,false)
@@ -86,9 +91,23 @@ function c28316558.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c28316558.spfilter,p,LOCATION_GRAVE,0,nil,e,p,c:GetPreviousCodeOnField())
 	if c:IsReason(REASON_DESTROY) and #g>0 and Duel.GetMZoneCount(p)>0 then
 		Duel.Hint(HINT_CARD,0,28316558)
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
-		local tc=g:Select(p,1,1,nil):GetFirst()
+		local tc=g:GetFirst()
+		if #g>=2 then
+			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
+			tc=g:Select(p,1,1,nil):GetFirst()
+		end
 		Duel.SpecialSummon(tc,0,p,p,false,false,POS_FACEUP)
 	end
 	e:Reset()
+end
+function c28316558.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local ct=Duel.GetFlagEffectLabel(tp,28316558) or 0
+	ct=ct|e:GetLabel()
+	if ct==e:GetLabel() then
+		Duel.RegisterFlagEffect(tp,28316558,RESET_PHASE+PHASE_END,0,1,ct)
+	else
+		Duel.SetFlagEffectLabel(tp,28316558,ct)
+	end
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28384553,e,0,0,0,0)
 end

@@ -1,88 +1,104 @@
---亚斯克第一王子 阿方冯思
-function c75080018.initial_effect(c)
-	--change code
-	aux.EnableChangeCode(c,75080003,LOCATION_MZONE+LOCATION_GRAVE)
-	--link summon
-	aux.AddLinkProcedure(c,nil,2,2,c75080018.lcheck)
+--开世之人 阿方冯斯
+local s,id=GetID()
+function s.initial_effect(c)
+	--连接召唤：包含「纯白义勇队」怪兽的属性不同的怪兽2只
 	c:EnableReviveLimit()
-	--indes
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e0:SetCondition(c75080018.regcon)
-	e0:SetOperation(c75080018.regop)
-	c:RegisterEffect(e0)
-	--spsummon
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3754),2,2,s.lcheck)
+
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetHintTiming(0,TIMING_END_PHASE)
-	e1:SetCountLimit(1,75080018)
-	e1:SetCondition(c75080018.spcon)
-	e1:SetTarget(c75080018.sptg)
-	e1:SetOperation(c75080018.spop)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetCode(EFFECT_CHANGE_CODE)
+	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
+	e1:SetValue(75080003) 
 	c:RegisterEffect(e1)
-	--
+
 	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,0))
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetHintTiming(TIMING_STANDBY_PHASE)
-	e2:SetCountLimit(1,75080018)
-	e2:SetCost(c75080018.cost)
-	e2:SetOperation(c75080018.operation)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetCountLimit(1,id)
+	e2:SetCondition(s.spcon)
+	e2:SetTarget(s.sptg)
+	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
+
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(id,1))
+	e3:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_BATTLE_START)
+	e3:SetCountLimit(1,id) 
+	e3:SetCondition(s.batcon)
+	e3:SetOperation(s.batop)
+	c:RegisterEffect(e3)
 end
-function c75080018.lcheck(g,lc)
-	return g:IsExists(Card.IsLinkSetCard,1,nil,0x3754)
+
+function s.lcheck(g)
+	return g:GetClassCount(Card.GetLinkAttribute)==g:GetCount()
 end
-function c75080018.regcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
+
+function s.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp and re:IsActiveType(TYPE_MONSTER)
 end
-function c75080018.regop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(75080018,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+
+function s.tdfilter(c)
+	return c:IsLevel(4) and c:IsAbleToDeck()
 end
-function c75080018.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(75080018)~=0
+function s.spfilter(c,e,tp)
+	return c:IsSetCard(0x3754) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c75080018.spfilter(c,e,tp,zone)
-	return c:IsSetCard(0x3754) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,zone)
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and s.tdfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(s.tdfilter,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectTarget(tp,s.tdfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
-function c75080018.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local zone=e:GetHandler():GetLinkedZone()
-		return zone~=0 and Duel.GetMZoneCount(tp)>0
-			and Duel.IsExistingMatchingCard(c75080018.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp,zone)
-	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
-end
-function c75080018.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local zone=c:GetLinkedZone()
-	if c:IsRelateToEffect(e) and zone~=0 and Duel.GetMZoneCount(tp)>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,c75080018.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp,zone)
-		if g:GetCount()>0 then
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP,zone)
+
+function s.spop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
+		if tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+			if #g>0 then
+				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+			end
 		end
 	end
 end
-function c75080018.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsReleasable() end
-	Duel.Release(e:GetHandler(),REASON_COST)
+
+function s.batcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsRelateToBattle()
 end
-function c75080018.operation(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_INACTIVATE)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetValue(c75080018.effectfilter)
-	Duel.RegisterEffect(e1,tp)
-end
-function c75080018.effectfilter(e,ct)
-	local te,tp=Duel.GetChainInfo(ct,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return e:GetHandler():GetControler()==tp and te:GetHandler():IsSetCard(0x3754)
+
+function s.batop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local bc=c:GetBattleTarget()
+	if c:IsRelateToEffect(e) and c:IsFaceup() then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_SET_ATTACK_FINAL)
+		e1:SetValue(c:GetAttack()*2)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL)
+		c:RegisterEffect(e1)
+		if bc and bc:IsRelateToBattle() and bc:IsFaceup() then
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_SET_ATTACK_FINAL)
+			e2:SetValue(math.ceil(bc:GetAttack()/2))
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_DAMAGE_CAL)
+			bc:RegisterEffect(e2)
+			local e3=e2:Clone()
+			e3:SetCode(EFFECT_SET_DEFENSE_FINAL)
+			e3:SetValue(math.ceil(bc:GetDefense()/2))
+			bc:RegisterEffect(e3)
+		end
+	end
 end

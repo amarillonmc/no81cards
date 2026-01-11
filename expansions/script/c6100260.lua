@@ -60,7 +60,7 @@ end
 -- === 效果② ===
 function s.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE and Duel.IsExistingMatchingCard(s.posfilter,tp,0,LOCATION_MZONE,1,nil)
 end
 
 function s.tdfilter(c)
@@ -74,11 +74,10 @@ end
 function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.tdfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(s.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	local count=Duel.GetMatchingGroupCount(s.posfilter,tp,0,LOCATION_MZONE,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	-- 任意数量：从1到墓地总数
-	local g=Duel.SelectTarget(tp,s.tdfilter,tp,LOCATION_GRAVE,0,1,99,nil)
+	local g=Duel.SelectTarget(tp,s.tdfilter,tp,LOCATION_GRAVE,0,1,count,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,#g,0,0)
-	-- 盖怪是后续可选，不一定必选，且数量不确定，这里只做info提示
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,nil,0,1-tp,LOCATION_MZONE)
 end
 
@@ -90,11 +89,10 @@ function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 		local ct=og:FilterCount(Card.IsLocation,nil,LOCATION_DECK+LOCATION_EXTRA)
 		if ct>0 then
 			local pg=Duel.GetMatchingGroup(s.posfilter,tp,0,LOCATION_MZONE,nil)
-			if #pg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+			if #pg>0 then
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-				-- 选最多有那个数量
-				local sg=pg:Select(tp,1,ct,nil)
+				local sg=pg:Select(tp,ct,ct,nil)
 				Duel.HintSelection(sg)
 				Duel.ChangePosition(sg,POS_FACEDOWN_DEFENSE)
 			end
@@ -109,5 +107,5 @@ end
 
 function s.atkval(e,c)
 	-- 返回自己场上「朦雨」怪兽的数量
-	return Duel.GetMatchingGroupCount(s.atkfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)
+	return Duel.GetMatchingGroupCount(s.atkfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,e:GetHandler())
 end

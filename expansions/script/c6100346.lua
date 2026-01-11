@@ -27,8 +27,10 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 
+-- 过滤函数：属于「朦雨」且场上/墓地无同名卡
 function s.spfilter(c,e,tp)
 	return c:IsSetCard(0x613) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,c:GetCode())
 end
 
 -- 通用Target逻辑

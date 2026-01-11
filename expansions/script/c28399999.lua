@@ -3,6 +3,9 @@ function c28399999.initial_effect(c)
 	aux.AddCodeList(c,28399999)
 	c:SetUniqueOnField(1,0,28399999)
 	c:SetSPSummonOnce(28399999)
+	aux.EnableChangeCode(c,28399999)
+	c:EnableReviveLimit()
+	aux.EnablePendulumAttribute(c)
 	--Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
@@ -130,6 +133,24 @@ function c28399999.initial_effect(c)
 	e24:SetTarget(c28399999.rectg)
 	e24:SetOperation(c28399999.recop)
 	c:RegisterEffect(e24)
+	--indes
+	local e25=Effect.CreateEffect(c)
+	e25:SetType(EFFECT_TYPE_SINGLE)
+	e25:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)--EFFECT_INDESTRUCTABLE_EFFECT
+	e25:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e25:SetRange(LOCATION_MZONE)
+	e25:SetValue(1)
+	c:RegisterEffect(e25)
+	--cannot be target
+	local e26=Effect.CreateEffect(c)
+	e26:SetType(EFFECT_TYPE_FIELD)
+	e26:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e26:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e26:SetRange(LOCATION_MZONE)
+	e26:SetTargetRange(LOCATION_MZONE,0)
+	e26:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x283))
+	e26:SetValue(aux.tgoval)
+	c:RegisterEffect(e26)
 	--disable
 	local e32=Effect.CreateEffect(c)
 	e32:SetCategory(CATEGORY_DISABLE)
@@ -228,22 +249,6 @@ function c28399999.drop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	Duel.Draw(p,d,REASON_EFFECT)--Duel.Draw(tp,1,REASON_EFFECT)
 end
---search
-function c28399999.thfilter(c,chk)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and (chk==0 or aux.NecroValleyFilter()(c))
-end
-function c28399999.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28399999.thfilter,tp,LOCATION_DECK,0,1,nil,0) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-end
-function c28399999.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,c28399999.thfilter,tp,LOCATION_DECK,0,1,1,nil,1):GetFirst()
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
-	end
-end
 --attack up-activated
 function c28399999.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsSummonPlayer,1,nil,tp) and not eg:IsContains(e:GetHandler())
@@ -265,18 +270,6 @@ function c28399999.atkop(e,tp,eg,ep,ev,re,r,rp)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_UPDATE_DEFENSE)
 		tc:RegisterEffect(e2)
-	end
-end
---spsummon-self
-function c28399999.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
-end
-function c28399999.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToChain() then
-		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 --spsummon-other
@@ -334,4 +327,64 @@ function c28399999.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28399999.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.NegateEffect(ev)
+end
+--Speedroid Terrortop
+	--spsummon-self
+	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,28399999)
+	e1:SetCondition(c28399999.spcon)
+	e1:SetTarget(c28399999.sptg)
+	e1:SetOperation(c28399999.spop)
+	c:RegisterEffect(e1)
+	--search
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(28399999,0))
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetType(EFFECT_TYPE_TRIGGER_O+EFFECT_TYPE_SINGLE)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,28399999+1)
+	e2:SetTarget(c28399999.thtg)
+	e2:SetOperation(c28399999.thop)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	c:RegisterEffect(e3)
+--
+function c28399999.cfilter(c)
+	return c:IsSetCard(0x283) and c:IsFaceup()
+end
+function c28399999.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(c28399999.cfilter,tp,LOCATION_MZONE,0,1,nil)
+end
+--spsummon-self
+function c28399999.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+end
+function c28399999.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToChain() then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
+end
+--search
+function c28399999.thfilter(c,chk)
+	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and (chk==0 or aux.NecroValleyFilter()(c))
+end
+function c28399999.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28399999.thfilter,tp,LOCATION_DECK,0,1,nil,0) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+function c28399999.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local tc=Duel.SelectMatchingCard(tp,c28399999.thfilter,tp,LOCATION_DECK,0,1,1,nil,1):GetFirst()
+	if tc then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
+	end
 end

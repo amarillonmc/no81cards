@@ -29,26 +29,67 @@ function s.initial_effect(c)
 	
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_FIELD)
-	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e3:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 	e3:SetRange(LOCATION_FZONE)
+	e3:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e3:SetTargetRange(LOCATION_ONFIELD,0)
-	e3:SetTarget(s.indtg)
-	e3:SetValue(aux.indoval)
+	e3:SetTarget(s.immtg)
+	e3:SetValue(aux.tgoval)
 	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e4:SetValue(aux.indoval)
+	c:RegisterEffect(e4)
 end
 
-function s.thfilter(c)
-	return c:IsCode(40020509) and c:IsAbleToHand()
+function s.thfilter(c,tp)
+	if not c:IsCode(40020509) then return false end
+	
+	local b_hand = c:IsAbleToHand()
+	
+	local p_space = Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)
+
+	local b_pzone = p_space and not c:IsForbidden()
+	
+	return b_hand or b_pzone
 end
 
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
+
 	if not e:GetHandler():IsRelateToEffect(e) then return end
-	local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
+	
+	local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil,tp)
+	
 	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=g:Select(tp,1,1,nil)
-		Duel.SendtoHand(sg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,sg)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+
+		local sc=g:Select(tp,1,1,nil):GetFirst()
+		
+		if sc then
+			local b_hand = sc:IsAbleToHand()
+			local p_space = Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)
+			local b_pzone = p_space and not sc:IsForbidden()
+			
+			local op=0
+			if b_hand and b_pzone then
+
+				op=Duel.SelectOption(tp,aux.Stringid(id,3),aux.Stringid(id,4))
+			elseif b_hand then
+
+				op=0
+			else
+
+				op=1
+			end
+			
+			if op==0 then
+				Duel.SendtoHand(sc,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,sc)
+			else
+
+				Duel.MoveToField(sc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+			end
+		end
 	end
 end
 
@@ -86,11 +127,7 @@ function s.lockop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function s.indtg(e,c)
 
-	local b1 = c:IsCode(40020509) and (c:IsLocation(LOCATION_PZONE) or c:GetSequence()==0 or c:GetSequence()==4) 
-
-	local b2 = c:IsFacedown()
-	
-	return b1 or b2
+function s.immtg(e,c)
+	return (c:IsFaceup() and c:IsCode(40020509) and c:IsLocation(LOCATION_PZONE)) or c:IsFacedown()
 end

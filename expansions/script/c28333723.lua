@@ -41,18 +41,17 @@ function c28333723.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLP(tp)<=3000 then loc=loc+LOCATION_DECK end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28333723.spfilter),tp,loc,0,1,1,nil,e,tp):GetFirst()
-	if sc and Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 and e:GetHandler():IsRelateToChain() then
+	if sc and Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 and sc.effop then sc.effop(sc) end-- and e:GetHandler():IsRelateToChain()
 		--local c=e:GetHandler()
 		--local code=c:IsRelateToChain() and c:GetCode() or 0
-		local e1=Effect.CreateEffect(e:GetHandler())
+		--[[local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(28333723,1))
 		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_LEAVE_FIELD)
 		e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
 		e1:SetOperation(c28333723.regop)
 		e1:SetLabel(e:GetHandler():GetCode())
-		sc:RegisterEffect(e1)
-	end
+		sc:RegisterEffect(e1)]]
 end
 function c28333723.thfilter(c,code)
 	return c:IsCode(code) and c:IsAbleToHand()

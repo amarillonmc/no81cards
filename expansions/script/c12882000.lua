@@ -44,45 +44,7 @@ function s.initial_effect(c)
 		ce2:SetCode(EVENT_PHASE_START+PHASE_DRAW)
 		ce2:SetOperation(s.clear)
 		Duel.RegisterEffect(ce2,0)
-		--fix
-		local ce3=Effect.CreateEffect(c)
-		ce3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-		ce3:SetCode(EVENT_ADJUST)
-		ce3:SetOperation(s.hackop)
-		Duel.RegisterEffect(ce3,0)
 	end
-end
-function s.hackfilter(e)
-	return e:IsHasType(EFFECT_TYPE_SINGLE) and (e:GetCode()==EVENT_SPSUMMON_SUCCESS or e:GetCode()==EVENT_SUMMON_SUCCESS)
-end
-function s.hackop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.Exile then return false end
-	local g=Duel.GetFieldGroup(0,0xff,0xff)
-	for tc in aux.Next(g) do
-	local tab={tc:GetCardRegistered(s.hackfilter,0xf)}
-		for _,ke in ipairs(tab) do
-			if not s.checkin(s.record_tab,ke) then
-				if ke:IsHasType(TYPE_CONTINUOUS) then
-					local op = ke:GetOperation() or aux.TRUE
-					ke:SetOperation(function(be,btp,beg,bep,bev,bre,br,brp)
-						if be:GetHandler():IsLocation(LOCATION_MZONE) then
-							op(be,btp,beg,bep,bev,bre,br,brp)
-						end
-					end)
-				else
-					local tg = ke:GetTarget() or aux.TRUE
-					ke:SetTarget(function(be,btp,beg,bep,bev,bre,br,brp,bchk)
-						if bchk==0 then return be:GetHandler():IsLocation(LOCATION_MZONE) and 
-							tg(be,btp,beg,bep,bev,bre,br,brp,bchk) 
-						end
-						do tg(be,btp,beg,bep,bev,bre,br,brp,bchk) end					  
-					end)
-				end 
-				table.insert(s.record_tab,ke)
-			end
-		end
-	end
-	e:Reset()
 end
 function s.faceup_check(c)
 	return c:IsFaceup() and c:IsSetCard(0x5a7d)
@@ -159,7 +121,6 @@ function s.seqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	e:SetLabel(seq)
 	Duel.Hint(HINT_ZONE,tp,flag)
-	--Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
 end
 function s.checkin(tab,val)
 	for _,v in ipairs(tab) do
@@ -341,11 +302,11 @@ function s.spfilter2(c,e,tp)
 	return c:IsCode(id) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.spop2(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.spfilter2),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
+	if Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
 	and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		Duel.Hint(HINT_CARD,0,id)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter2),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
+		local g=Duel.SelectMatchingCard(tp,s.spfilter2,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 		if #g>0 then
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end

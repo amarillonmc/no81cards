@@ -54,8 +54,6 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 			and Duel.IsExistingMatchingCard(s.filter_sp,tp,LOCATION_HAND,0,1,nil,e,tp) 
 			and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-			
-			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 			local g=Duel.SelectMatchingCard(tp,s.filter_sp,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 			if #g>0 then

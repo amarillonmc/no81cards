@@ -88,12 +88,12 @@ end
 
 -- 效果③
 function s.resfilter(c,tp)
-	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:GetReasonPlayer()==1-tp and not c:IsCode(id)
+	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD) and c:GetReasonPlayer()==1-tp
 end
 
 function s.rescon(e,tp,eg,ep,ev,re,r,rp)
 	-- 触发条件：自己场上的卡因对方(rp==1-tp)的效果离开场上
-	return rp==1-tp and eg:IsExists(s.resfilter,1,nil,tp)
+	return rp==1-tp and eg:IsExists(s.resfilter,1,e:GetHandler(),tp)
 end
 
 function s.restg(e,tp,eg,ep,ev,re,r,rp,chk)

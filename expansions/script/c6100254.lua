@@ -61,8 +61,8 @@ end
 
 -- === 效果② ===
 function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,1000) end
-	Duel.PayLPCost(tp,1000)
+	if chk==0 then return Duel.CheckLPCost(tp,500) end
+	Duel.PayLPCost(tp,500)
 end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -75,8 +75,6 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ConfirmDecktop(tp,3)
 	local g=Duel.GetDecktopGroup(tp,3)
 	if #g>0 then
-		Duel.DisableShuffleCheck()
-		
 		-- 检查其中是否有「朦雨」卡
 		local tg=g:Filter(Card.IsSetCard,nil,0x613)
 		

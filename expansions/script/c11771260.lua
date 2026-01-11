@@ -28,6 +28,7 @@ function s.initial_effect(c)
 	-- 这张卡特殊召唤的场合，以自己的墓地·除外状态的1张陷阱卡为对象才能发动，那张卡在自己场上盖放或当作永续陷阱卡使用在自己的魔法与陷阱区域表侧表示放置
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
+	e3:SetCategory(CATEGORY_SSET)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
@@ -81,7 +82,7 @@ end
 
 -- 这张卡特殊召唤的场合，以自己的墓地·除外状态的1张陷阱卡为对象才能发动，那张卡在自己场上盖放或当作永续陷阱卡使用在自己的魔法与陷阱区域表侧表示放置
 function s.setfilter(c)
-	return c:IsType(TYPE_TRAP) and (c:IsSSetable() or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
+	return c:IsFaceupEx() and c:IsType(TYPE_TRAP) and (c:IsSSetable() or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
 end
 
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

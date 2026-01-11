@@ -3,7 +3,7 @@ function c20250330.initial_effect(c)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(20250330,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_COUNTER)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,20250330)
@@ -14,7 +14,7 @@ function c20250330.initial_effect(c)
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(20250330,1))
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetCountLimit(1,20250331)
@@ -32,31 +32,38 @@ function c20250330.initial_effect(c)
 	e4:SetCode(EVENT_FREE_CHAIN)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetCountLimit(1,20250332)
+	e4:SetCondition(c20250330.lvcon) 
 	e4:SetTarget(c20250330.lvtg)
 	e4:SetOperation(c20250330.lvop)
 	c:RegisterEffect(e4)
 end
+
 function c20250330.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCounter(tp,1,0,0x154a)<1
+	return Duel.GetCounter(tp,1,0,0x154a)==0
 end
+
 function c20250330.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
+
 function c20250330.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) then
 		c:AddCounter(0x154a,3)
 	end
 end
+
 function c20250330.filter(c)
 	return c:IsSetCard(0x54a) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
+
 function c20250330.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c20250330.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
+
 function c20250330.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c20250330.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
@@ -65,15 +72,29 @@ function c20250330.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
+
+function c20250330.lvcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetCounter(0x154a)>=1
+end
+
 function c20250330.lvtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:GetLevel()>0 and c:GetCounter(0x154a)>=1 end
+	if chk==0 then return c:GetLevel()>0 end
 end
+
 function c20250330.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToChain() or c:IsFacedown() then return end
 	local down=c:IsLevelAbove(2)
-	local lv=aux.SelectFromOptions(tp,{true,aux.Stringid(20250330,3)},{down,aux.Stringid(20250330,4),-1})
+	local op
+	if not down then 
+		op=Duel.SelectOption(tp,aux.Stringid(20250330,3))
+	else
+		op=Duel.SelectOption(tp,aux.Stringid(20250330,3),aux.Stringid(20250330,4))
+	end
+	local lv=1
+	if down and op==1 then lv=-1 end
+	
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_UPDATE_LEVEL)
@@ -85,10 +106,11 @@ function c20250330.lvop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(1,0)
-	e2:SetReset(RESET_PHASE+PHASE_END)
 	e2:SetTarget(c20250330.splimit)
+	e2:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e2,tp)
 end
-function c20250330.splimit(e,c)
-	return not c:IsType(TYPE_SYNCHRO) and c:IsLocation(LOCATION_EXTRA)
+
+function c20250330.splimit(e,c,sump,sumtype,sumpos,targetp,se)
+	return c:IsLocation(LOCATION_EXTRA) and not c:IsType(TYPE_SYNCHRO)
 end
