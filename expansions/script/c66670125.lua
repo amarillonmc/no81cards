@@ -5,6 +5,7 @@ function s.initial_effect(c)
 	-- 这张卡召唤·特殊召唤的场合才能发动，从卡组把1张「苍途」魔法·陷阱卡在自己场上盖放
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetCountLimit(1,id)

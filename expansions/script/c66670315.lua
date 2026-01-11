@@ -23,6 +23,7 @@ function s.initial_effect(c)
 	-- 把自己的手卡·场上1只怪兽解放才能发动，从卡组把1张「苍途」陷阱卡在自己场上盖放
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(id,0))
+	e4:SetCategory(CATEGORY_SSET)
 	e4:SetType(EFFECT_TYPE_IGNITION)
 	e4:SetRange(LOCATION_SZONE)
 	e4:SetCountLimit(1,id)

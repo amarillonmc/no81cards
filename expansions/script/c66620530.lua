@@ -16,6 +16,7 @@ function s.initial_effect(c)
 	
 	-- 自己的「绮奏」怪兽进行战斗的回合的战斗阶段结束时才能发动，墓地的这张卡在自己场上盖放
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PHASE+PHASE_BATTLE)
 	e2:SetRange(LOCATION_GRAVE)

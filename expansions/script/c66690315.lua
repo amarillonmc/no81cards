@@ -5,6 +5,7 @@ function s.initial_effect(c)
 	-- 作为这张卡的发动时的效果处理，可以从卡组把「蒸汽朋克回响机关阵」以外的1张「蒸汽朋克」魔法·陷阱卡在自己场上盖放
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)

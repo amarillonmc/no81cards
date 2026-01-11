@@ -5,6 +5,7 @@ function s.initial_effect(c)
 	-- 把这张卡从手卡丢弃才能发动，自己的卡组·墓地·除外状态的1张「堕福」永续魔法·永续陷阱卡在自己场上盖放或在自己的超量怪兽下面重叠作为超量素材
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,id)
@@ -58,7 +59,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.Overlay(sg:GetFirst(),Group.FromCards(tc))
 			end
 		else
-		    Duel.SSet(tp,tc)
+			Duel.SSet(tp,tc)
 		end
 	end
 end

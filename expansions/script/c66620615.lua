@@ -37,6 +37,7 @@ function c66620615.initial_effect(c)
 	
 	-- 自己·对方的准备阶段，自己场上有机械族融合怪兽存在的场合才能发动，墓地的这张卡在自己场上盖放，这个效果盖放的这张卡从场上离开的场合除外
 	local e5=Effect.CreateEffect(c)
+	e5:SetCategory(CATEGORY_SSET)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e5:SetRange(LOCATION_GRAVE)

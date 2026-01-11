@@ -17,7 +17,7 @@ function s.initial_effect(c)
 	
 	-- 这张卡召唤·特殊召唤的场合，支付300基本分才能发动，这个回合的结束阶段，自己的卡组·墓地·除外状态的1张「蒸汽朋克」魔法·陷阱卡在自己场上盖放
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_GRAVE_ACTION)
+	e2:SetCategory(CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)

@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	-- 对方把怪兽的效果发动的场合才能发动，这张卡从手卡特殊召唤，那之后，可以从手卡·卡组选1张「蒸汽朋克阶跃同频」在自己的魔法与陷阱区域盖放，这个效果盖放的卡在盖放的回合也能发动
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
