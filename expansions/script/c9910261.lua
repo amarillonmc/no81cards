@@ -1,5 +1,6 @@
 --幽鬼人偶 兰
 function c9910261.initial_effect(c)
+	aux.AddCodeList(c,9910251)
 	--add counter
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910261,0))

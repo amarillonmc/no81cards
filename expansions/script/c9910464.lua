@@ -34,7 +34,7 @@ function c9910464.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(c9910464.tgfilter1,tp,LOCATION_ONFIELD,0,c,e)
 	if chkc then return false end
-	if chk==0 then return g:CheckSubGroup(c9910464.filter1,1,g:GetCount(),e,tp,c) end
+	if chk==0 then return #g>0 and g:CheckSubGroup(c9910464.filter1,1,g:GetCount(),e,tp,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9910464,1))
 	local g1=g:SelectSubGroup(tp,c9910464.filter1,false,1,g:GetCount(),e,tp,c)
 	local ct=g1:GetCount()+1

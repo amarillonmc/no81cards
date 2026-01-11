@@ -1,6 +1,6 @@
 --陵墓噬尸虫
 function c9911628.initial_effect(c)
-	aux.AddCodeList(c,9911614)
+	aux.AddCodeList(c,9911601,9911614)
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)

@@ -1,5 +1,6 @@
 --神树精灵 先代化身
 function c9910352.initial_effect(c)
+	aux.AddCodeList(c,9910307)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SUMMON)

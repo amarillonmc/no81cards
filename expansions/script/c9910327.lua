@@ -1,5 +1,6 @@
 --神树勇者的满开
 function c9910327.initial_effect(c)
+	aux.AddCodeList(c,9910307)
 	--act field
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910327,0))

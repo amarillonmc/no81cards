@@ -1,5 +1,6 @@
 --沐光凯旋之月神
 function c9910084.initial_effect(c)
+	aux.AddCodeList(c,9910059)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910084,0))

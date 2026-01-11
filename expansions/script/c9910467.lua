@@ -1,5 +1,6 @@
 --宛若韶光永驻
 function c9910467.initial_effect(c)
+	aux.AddCodeList(c,9910467)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_COUNTER)

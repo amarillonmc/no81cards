@@ -1,5 +1,6 @@
 --破茧之月神
 function c9910056.initial_effect(c)
+	aux.AddCodeList(c,9910059)
 	--synchro summon
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsRace,RACE_FAIRY),1)
 	c:EnableReviveLimit()

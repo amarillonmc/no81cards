@@ -1,5 +1,6 @@
 --神树勇者 结城友奈
 function c9910305.initial_effect(c)
+	aux.AddCodeList(c,9910307)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)

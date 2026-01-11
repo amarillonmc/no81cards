@@ -12,6 +12,7 @@ function c22023620.initial_effect(c)
 	e1:SetOperation(c22023620.activate)
 	c:RegisterEffect(e1)
 end
+c22023620.has_text_type=TYPE_DUAL
 function c22023620.filter(c,e,tp)
 	return c:IsType(TYPE_DUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
