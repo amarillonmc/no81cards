@@ -60,7 +60,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=e:GetLabel()
 	local rep=c:IsStatus(STATUS_EFFECT_REPLACED)
 	if c:IsRelateToEffect(e) and Duel.Remove(c,nil,REASON_EFFECT+REASON_TEMPORARY)~=0 and c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT) then
-		--if rep then c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3)) end
+		if rep then c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,3)) end
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e2:SetCode(EVENT_MOVE)
@@ -392,10 +392,8 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 						local tc=tg:GetFirst()
 						if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
 							aux.FCheckAdditional=cm.fcheck
-							aux.FGoalCheckAdditional=cm.fgcheck
 							local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
 							aux.FCheckAdditional=nil
-							aux.FGoalCheckAdditional=nil
 							tc:SetMaterial(mat1)
 							Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 							Duel.BreakEffect()

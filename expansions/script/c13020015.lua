@@ -121,7 +121,7 @@ function cm.operation(e, tp, eg, ep, ev, re, r, rp)
 		if g:GetCount() > 0 then
 			if Duel.SendtoHand(g, nil, REASON_EFFECT) ~= 0 then
 				Duel.ConfirmCards(1 - tp, g)
-				if xg.ky(tp, m, 1) then
+				if Duel.SelectYesNo(tp, aux.Stringid(m, 1)) then
 					--Duel.ChangePosition(tc, POS_FACEUP_DEFENSE, POS_FACEUP_DEFENSE, POS_FACEUP_ATTACK, POS_FACEUP_ATTACK)
 					Duel.ChangePosition(tc, POS_FACEUP_DEFENSE, POS_FACEDOWN_DEFENSE, POS_FACEUP_ATTACK,
 						POS_FACEUP_ATTACK)

@@ -1,6 +1,7 @@
 --结界守护者 辛歇耳
 local cm,m=GetID()
 function cm.initial_effect(c)
+	aux.AddCodeList(c,11451544)
 	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
