@@ -44,7 +44,7 @@ end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local ct=Duel.GetFlagEffect(tp,id)
-	if chk==0 then return c:CheckRemoveOverlayCard(tp,ct,REASON_COST) and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
+	if chk==0 then return ct>0 and c:CheckRemoveOverlayCard(tp,ct,REASON_COST) and Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_MZONE,1,nil) end
 	c:RemoveOverlayCard(tp,ct,ct,REASON_COST)
 	if c:GetOverlayCount()==0 then Duel.SetChainLimit(s.chlimit) end
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
