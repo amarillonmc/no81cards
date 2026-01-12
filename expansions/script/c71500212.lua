@@ -15,7 +15,11 @@ s.pool={71500200,71500202,71500204,71500206,71500208,71500210,71500212}
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	--Generate Pool
-	local pool=s.pool
+	local pool={}
+	for i=1,#s.pool do
+		table.insert(pool,s.pool[i])
+	end
+	
 	local selected_codes={}
 	
 	--Select 3 random cards

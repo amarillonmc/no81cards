@@ -25,25 +25,18 @@ function s.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsControler,1,nil,tp) 
 		and r&REASON_EFFECT~=0 
 		and re and re:GetHandler() 
-		and not re:GetHandler():IsSetCard(0x781) --Replace 0x333 with "Destiny Foresight" Setcode
+		and not re:GetHandler():IsSetCard(0x781)
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	--Select 5 random
-	local pool={}
-	for _,code in ipairs(s.pool) do
-		table.insert(pool,code)
-	end
-	local selected_codes={}
+	local codes={}
 	for i=1,5 do
-		if #pool==0 then break end
-		local idx=s.create()
-		table.insert(selected_codes,pool[idx])
-		table.remove(pool,idx)
+		Duel.Hint(HINT_CARD,tp,s.create())
+		table.insert(codes,s.create())
 	end
-	
-	local codes=selected_codes
 	table.sort(codes)
+
 	local afilter={codes[1],OPCODE_ISCODE}
 	if #codes>1 then
 		--or ... or c:IsCode(codes[i])
@@ -55,7 +48,7 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
-	local ac=Duel.AnnounceCard(tp,table.unpack(opcodes))
+	local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
 	
 	--Create and Add
 	local tc=Duel.CreateToken(tp,ac)
@@ -66,10 +59,29 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.DiscardHand(tp,nil,1,1,REASON_EFFECT+REASON_DISCARD)
 	end
 end
+local A=1103515245
+local B=12345
+local M=32767 --1073741824
+function s.roll(min,max)
+	min=tonumber(min)
+	max=tonumber(max)
+	if not s.r then s.r=Duel.GetRandomNumber(132000016) end
+	s.r=((s.r*A+B)%M)/M
+	if min~=nil then
+		if max==nil then
+			return math.floor(s.r*min)+1
+		else
+			max=max-min+1
+			return math.floor(s.r*max+min)
+		end
+	end
+	return s.r
+end
 function s.create()
 	local _TGetID=GetID
+	local ac=nil
 	while not ac do
-		local int=Duel.GetRandomNumber(1,132000016)
+		local int=s.roll(1,132000016)
 		--continuously updated
 		if int>132000000 and int<132000014 then int=int+739100000 end
 		if int==132000014 then int=460524290 end
@@ -107,5 +119,5 @@ function s.create()
 		end
 	end
 	GetID=_TGetID
-	return ac	
+	return ac   
 end
