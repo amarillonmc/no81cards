@@ -19,6 +19,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<7 then return end
 	Duel.ConfirmDecktop(tp,7)
+	local ag=Group.CreateGroup()
 	local g=Duel.GetDecktopGroup(tp,7)
 	if #g>0 then
 		local codes={}

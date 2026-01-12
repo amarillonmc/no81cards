@@ -67,7 +67,11 @@ function s.matop(e, tp, eg, ep, ev, re, r, rp)
 			local mat = g:GetFirst()
 			-- 变成超量素材
 			-- 如果是对方的卡，Duel.Overlay 会处理移动逻辑
-			Duel.Overlay(tc, mat)
+				local og=mat:GetOverlayGroup()
+				if og:GetCount()>0 then
+					Duel.SendtoGrave(og,REASON_RULE)
+				end
+				Duel.Overlay(tc,mat)
 		end
 	end
 end

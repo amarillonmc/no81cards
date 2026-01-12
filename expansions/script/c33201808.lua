@@ -104,7 +104,7 @@ function s.disop(e, tp, eg, ep, ev, re, r, rp)
 			
 			-- 步骤3：那之后，可以塞素材
 			-- 只有成功无效了，才能处理“那之后”
-			if target:IsRelateToEffect(e) and not target:IsImmuneToEffect(e) and tc:IsCanOverlay() then 
+			if target:IsRelateToEffect(e) and not target:IsImmuneToEffect(e) and target:IsCanOverlay() then 
 				Duel.BreakEffect()
 				local og=target:GetOverlayGroup()
 				if og:GetCount()>0 then

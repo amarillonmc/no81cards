@@ -28,7 +28,7 @@ end
 
 --字段：朦雨
 function s.costfilter(c)
-	return c:IsSetCard(0x613) and c:IsAbleToGraveAsCost()
+	return c:IsSetCard(0x613) and c:IsAbleToGrave()
 end
 
 function s.spfilter(c)
@@ -37,7 +37,7 @@ end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil) and c:IsAbleToGraveAsCost() 
+	if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil) and c:IsAbleToGrave() 
 			and Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,c) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end

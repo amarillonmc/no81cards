@@ -19,7 +19,7 @@ function s.initial_effect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON + CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_IGNITION) -- 启动效果
 	e2:SetRange(LOCATION_SZONE)   -- 在魔陷区发动
-	e2:SetCountLimit(1, id +10000)		-- 【安全起见】添加了卡名硬限制
+	e2:SetCountLimit(1, id +10000)	  -- 【安全起见】添加了卡名硬限制
 	e2:SetCondition(s.spcon)
 	e2:SetTarget(s.sptg)
 	e2:SetOperation(s.spop)
@@ -110,6 +110,7 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 	
 	if #g > 0 then
 		Duel.SendtoDeck(g, nil, SEQ_DECKSHUFFLE, REASON_EFFECT)
+		Duel.ShuffleDeck(tp)
 	end
 end
 

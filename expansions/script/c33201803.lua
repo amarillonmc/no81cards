@@ -18,8 +18,8 @@ function s.initial_effect(c)
 	e2:SetDescription(aux.Stringid(id, 0))
 	e2:SetCategory(CATEGORY_TOHAND + CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_IGNITION) -- 启动效果
-	e2:SetRange(LOCATION_SZONE)	  -- 在魔陷区发动（无论是装备状态还是永续魔法状态）
-	e2:SetCountLimit(1, id+10000)		  -- 卡名硬限制
+	e2:SetRange(LOCATION_SZONE)   -- 在魔陷区发动（无论是装备状态还是永续魔法状态）
+	e2:SetCountLimit(1, id+10000)		 -- 卡名硬限制
 	e2:SetCondition(s.thcon1)
 	e2:SetTarget(s.thtg1)
 	e2:SetOperation(s.thop1)
@@ -106,6 +106,7 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 	
 	if #g > 0 then
 		Duel.SendtoDeck(g, nil, SEQ_DECKSHUFFLE, REASON_EFFECT)
+		Duel.ShuffleDeck(tp)
 	end
 end
 

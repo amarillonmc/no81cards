@@ -63,14 +63,14 @@ function s.limop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e6,tp)
 end
 function s.scount(e,tp,eg,ep,ev,re,r,rp)
-	if ep~=tp or not re:IsActiveType(TYPE_MONSTER) or (re:GetHandler() and not re:GetHandler():IsSetCard(0xc9)) then return end
+	if ep~=tp or not re:IsActiveType(TYPE_MONSTER) or (re:GetHandler() and re:GetHandler():IsSetCard(0xc9)) then return end
 	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
 end
 function s.econ1(e)
 	return Duel.GetFlagEffect(tp,id)>2
 end
 function s.ocount(e,tp,eg,ep,ev,re,r,rp)
-	if ep==tp or not re:IsActiveType(TYPE_MONSTER) or (re:GetHandler() and not re:GetHandler():IsSetCard(0xc9)) then return end
+	if ep==tp or not re:IsActiveType(TYPE_MONSTER) or (re:GetHandler() and re:GetHandler():IsSetCard(0xc9)) then return end
 	Duel.RegisterFlagEffect(tp,id+o,RESET_PHASE+PHASE_END,0,1)
 end
 function s.econ2(e)

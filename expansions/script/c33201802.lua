@@ -110,6 +110,7 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 	
 	if #g > 0 then
 		Duel.SendtoDeck(g, nil, SEQ_DECKSHUFFLE, REASON_EFFECT)
+		Duel.ShuffleDeck(tp)
 	end
 end
 

@@ -22,7 +22,7 @@ function s.initial_effect(c)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_ACTIVATE_CONDITION)
-	e2:SetCountLimit(1)	   
+	e2:SetCountLimit(1)	
 	e2:SetCondition(s.descon)
 	e2:SetTarget(s.destg)
 	e2:SetOperation(s.desop)
@@ -115,6 +115,7 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 	
 	if #g > 0 then
 		Duel.SendtoDeck(g, nil, SEQ_DECKSHUFFLE, REASON_EFFECT)
+		Duel.ShuffleDeck(tp)
 	end
 end
 

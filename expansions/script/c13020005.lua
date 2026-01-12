@@ -36,7 +36,8 @@ function cm.filter66(c)
 end
 
 function cm.ffilter(c, fc, sub, mg, sg)
-	return c:IsAbleToGraveAsCost() and (c:GetOriginalType() & TYPE_UNION ~= 0 or c:GetOriginalType() & TYPE_EQUIP ~= 0)
+	return c:IsAbleToGraveAsCost() and
+		(c:GetOriginalType() & TYPE_UNION ~= 0 or c:IsType(TYPE_EQUIP)) --(c:GetOriginalType() & TYPE_UNION ~= 0 or c:GetOriginalType() & TYPE_EQUIP ~= 0)
 end
 
 function cm.filter(c, c2)
