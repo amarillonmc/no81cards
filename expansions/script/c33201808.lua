@@ -104,18 +104,26 @@ function s.disop(e, tp, eg, ep, ev, re, r, rp)
 			
 			-- 步骤3：那之后，可以塞素材
 			-- 只有成功无效了，才能处理“那之后”
-			if target:IsRelateToEffect(e) and not target:IsImmuneToEffect(e) and target:IsCanOverlay() then 
+			if target:IsRelateToEffect(e) and not target:IsImmuneToEffect(e) and target:IsCanOverlay() 
+				and Duel.IsExistingMatchingCard(s.xyzfilter, tp, LOCATION_MZONE, 0, 1, target) 
+				and Duel.SelectYesNo(tp,aux.Stringid(id, 1)) then 
+
 				Duel.BreakEffect()
 				local og=target:GetOverlayGroup()
 				if og:GetCount()>0 then
 					Duel.SendtoGrave(og,REASON_RULE)
 				end
-				Duel.Overlay(c,Group.FromCards(target))
+				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TARGET)
+				local mc=Duel.SelectMatchingCard(tp, s.xyzfilter, tp, LOCATION_MZONE, 0, 1, 1, target):GetFirst()
+				Duel.Overlay(mc,Group.FromCards(target))
 			end
 		end
 	end
 end
 
+function s.xyzfilter(c)
+	return c:IsFaceup() and c:IsRace(RACE_INSECT) and c:IsType(TYPE_XYZ)
+end
 -- ===========================
 -- 效果②：攻击力上升
 -- ===========================
