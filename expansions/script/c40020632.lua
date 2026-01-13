@@ -114,11 +114,15 @@ end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
-
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-		if e:GetHandler():IsControler(tp) and e:GetHandler():IsSequence(0,4) and e:GetHandler():IsFilter(s.costfilter) then ft=ft+1 end
 
-		return Duel.GetMZoneCount(tp,nil,tp)>0 
+		local c=e:GetHandler()
+		local seq=c:GetSequence()
+		if c:IsControler(tp) and seq>=0 and seq<=4 and s.costfilter(c) then
+			ft=ft+1
+		end
+
+		return ft>0
 			and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
