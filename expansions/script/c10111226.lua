@@ -26,7 +26,7 @@ function s.initial_effect(c)
    -- 主要效果
     local e3 = Effect.CreateEffect(c)
     e3:SetDescription(aux.Stringid(id, 0))
-    e3:SetCategory(CATEGORY_DISABLE + CATEGORY_ATKCHANGE)
+    e3:SetCategory(EFFECT_FLAG_CARD_TARGET+CATEGORY_DISABLE+CATEGORY_ATKCHANGE)
     e3:SetType(EFFECT_TYPE_IGNITION) -- 启动效果
     e3:SetRange(LOCATION_MZONE)     -- 在怪兽区域可发动
     e3:SetCountLimit(1)             -- 一回合一次
