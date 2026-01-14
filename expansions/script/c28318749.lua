@@ -202,6 +202,6 @@ function c28318749.hintop(e,tp,eg,ep,ev,re,r,rp)
 		te:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 		te:SetTargetRange(1,0)
 		te:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(te,p)
+		Duel.RegisterEffect(te,tp)
 	end
 end

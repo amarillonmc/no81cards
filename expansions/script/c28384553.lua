@@ -16,7 +16,7 @@ function c28384553.initial_effect(c)
 	--destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
@@ -73,16 +73,16 @@ function c28384553.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 function c28384553.valcheck(e,c)
 	local val=c:GetMaterial():GetClassCount(Card.GetCode)
-	e:GetLabelObject():SetLabel(val)
+	c:RegisterFlagEffect(28384553,RESET_EVENT+0xff0000,0,1,val)
 end
 function c28384553.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=e:GetLabel()
+	local ct,phchk=e:GetHandler():GetFlagEffectLabel(28384553),Duel.GetCurrentPhase()==PHASE_END and 1 or 0
 	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if chk==0 then return ct>0 and #g>0 end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c28384553.desop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=e:GetHandler():IsRelateToChain() and e:GetLabel() or 0
+	local ct,phchk=e:GetLabel()
 	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if ct>0 and #g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
@@ -107,17 +107,14 @@ function c28384553.desop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.Destroy(sg,REASON_EFFECT)
 	end
-	local lp=Duel.GetLP(tp)
 	local c=e:GetHandler()
-	if c:IsRelateToChain() and c:IsFaceup() and lp~=3000 and Duel.SelectYesNo(tp,aux.Stringid(28384553,1)) then
-		Duel.BreakEffect()
-		Duel.SetLP(tp,3000)
-		local val=math.abs(3000-lp)
+	local val=math.abs(3000-Duel.GetLP(tp))
+	if c:IsRelateToChain() and c:IsFaceup() and val~=0 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(val)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,2)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)--+RESET_PHASE+PHASE_END
 		c:RegisterEffect(e1)
 	end
 end
@@ -149,6 +146,6 @@ function c28384553.hintop(e,tp,eg,ep,ev,re,r,rp)
 		te:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 		te:SetTargetRange(1,0)
 		te:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(te,p)
+		Duel.RegisterEffect(te,tp)
 	end
 end

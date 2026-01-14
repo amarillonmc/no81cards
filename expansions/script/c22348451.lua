@@ -6,7 +6,6 @@ function cm.initial_effect(c)
 	--apply effect
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(22348451,0))
-	e1:SetCategory(CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetRange(LOCATION_HAND)

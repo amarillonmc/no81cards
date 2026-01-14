@@ -31,7 +31,7 @@ end
 
 -- 过滤器：不能通常召唤的「破碎世界」怪兽
 function s.filter(c)
-	return c:IsSetCard(0x616) and c:IsAbleToHand() and not c:IsSummonableCard()
+	return c:IsSetCard(0x616) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and not c:IsSummonableCard()
 end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
