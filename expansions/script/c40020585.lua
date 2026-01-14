@@ -54,7 +54,9 @@ function s.indtg(e, c)
 end
 
 function s.drcon(e, tp, eg, ep, ev, re, r, rp)
-	return re and s.ForceFighter(re:GetHandler()) and rp == tp
+	return (r & REASON_EFFECT) ~= 0 
+		and re and s.ForceFighter(re:GetHandler()) 
+		and rp == tp
 end
 
 function s.drtg(e, tp, eg, ep, ev, re, r, rp, chk)
