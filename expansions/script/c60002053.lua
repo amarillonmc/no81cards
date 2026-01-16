@@ -16,7 +16,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 	--disable
 	local e6=Effect.CreateEffect(c)
-	e6:SetCategory(CATEGORY_DISABLE)
+	e6:SetCategory(CATEGORY_NEGATE+CATEGORY_DAMAGE)
 	e6:SetType(EFFECT_TYPE_QUICK_O)
 	e6:SetRange(LOCATION_MZONE)
 	e6:SetCode(EVENT_CHAINING)
@@ -54,15 +54,13 @@ function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	return rc:IsLocation(LOCATION_HAND+LOCATION_EXTRA+LOCATION_REMOVED+LOCATION_GRAVE+LOCATION_DECK) and Duel.IsChainNegatable(ev) and rc:GetControler()~=tp
+	local loc,p=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION,CHAININFO_TRIGGERING_PLAYER)
+	return p==1-tp and bit.band(loc,LOCATION_ONFIELD)==0 and Duel.IsChainNegatable(ev)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,eg,1,0,0)
-	end
+	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) then

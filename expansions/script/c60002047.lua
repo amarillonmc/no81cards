@@ -48,7 +48,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.tfilter(c,tp)
-	return c:IsControler(tp) and c:IsFaceup() and c:IsAttack(3950)
+	return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsAttack(3950)
 end
 function cm.negcon(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
