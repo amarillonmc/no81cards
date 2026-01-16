@@ -9,6 +9,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(s.splimit)
 	c:RegisterEffect(e1)
 	--todeck
 	local e2=Effect.CreateEffect(c)
@@ -36,6 +37,9 @@ function s.initial_effect(c)
 	e3:SetOperation(s.desop)
 	c:RegisterEffect(e3)
 	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,s.chainfilter)
+end
+function s.splimit(e,se,sp,st)
+	return se:GetHandler():IsCode(12866600)
 end
 function s.chainfilter(re,tp,cid)
 	return not (re:GetHandler():IsCode(12866600))

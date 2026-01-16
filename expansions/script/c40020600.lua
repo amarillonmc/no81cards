@@ -65,24 +65,24 @@ end
 
 function s.spfilter(c, e, tp)
 	return s.ForceFighter(c) and c:IsRank(4) and c:IsType(TYPE_XYZ)
-		and c:IsCanBeSpecialSummoned(e, 0, tp, false, false)
+		and c:IsCanBeSpecialSummoned(e, 0, tp, true, false)
 end
 
 function s.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
-	if chk == 0 then return Duel.GetLocationCountFromEx(tp) > 0
-		and Duel.IsExistingMatchingCard(s.spfilter, tp, LOCATION_EXTRA, 0, 1, nil, e, tp) end
+
+	if chk == 0 then return Duel.IsExistingMatchingCard(s.spfilter, tp, LOCATION_EXTRA, 0, 1, nil, e, tp) end
 	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, nil, 1, tp, LOCATION_EXTRA)
 end
 
 function s.spop(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
-	if Duel.GetLocationCountFromEx(tp) <= 0 then return end
+
 	
 	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
 	local g = Duel.SelectMatchingCard(tp, s.spfilter, tp, LOCATION_EXTRA, 0, 1, 1, nil, e, tp)
 	local sc = g:GetFirst()
 	
-	if sc and Duel.SpecialSummon(sc, 0, tp, tp, false, false, POS_FACEUP) > 0 then
+	if sc and Duel.SpecialSummon(sc, 0, tp, tp, true, false, POS_FACEUP) > 0 then
 		if c:IsRelateToEffect(e) and c:IsLocation(LOCATION_SZONE) then
 			Duel.Overlay(sc, Group.FromCards(c))
 		end

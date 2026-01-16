@@ -19,11 +19,13 @@ function c22021820.initial_effect(c)
 	e2:SetOperation(c22021820.spop)
 	c:RegisterEffect(e2)
 end
+function c22021820.cfilter(c)
+	return c:IsFaceup()
+end
 function c22021820.ntcon(e,c,minc)
 	if c==nil then return true end
-	return minc==0 and c:IsLevelAbove(5)
-		and Duel.GetFieldGroupCount(tp,LOCATION_PZONE,0)>0
-		and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+	return minc==0 and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c22021820.cfilter,c:GetControler(),LOCATION_PZONE,0,1,nil)
 end
 function c22021820.filter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
