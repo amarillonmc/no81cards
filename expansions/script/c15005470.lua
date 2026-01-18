@@ -86,7 +86,7 @@ function cm.indcon(e)
 	return c:GetFlagEffectLabel(m)==e:GetLabel()
 end
 function cm.chaincon(e,tp,eg,ep,ev,re,r,rp,chk)
-	return e:GetHandler():IsPublic()
+	return e:GetHandler():IsPublic() and rp==1-tp
 end
 function cm.chainop(e,tp,eg,ep,ev,re,r,rp)
 	local roll=Duel.TossDice(tp,1)
