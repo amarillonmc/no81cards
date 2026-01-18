@@ -3,15 +3,15 @@ local s,id,o=GetID()
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
 function s.initial_effect(c)
-	if c:IsOriginalCodeRule(id) and KOISHI_CHECK then	   
+	if c:IsOriginalCodeRule(id) and KOISHI_CHECK then	 
 		local tp=0 
 		if Duel.GetFieldGroupCount(0,0,LOCATION_DECK)>0 or Duel.GetFieldGroupCount(0,LOCATION_EXTRA,0)>0 then tp=1 end
 		local pname=s.getplayername(tp)
-		local lv=Duel.GetRegistryValue("pname")
+		local lv=Duel.GetRegistryValue(pname)
 		if lv then
 			s.setlv(c,lv)
 		else
-			Duel.SetRegistryValue("pname",1)
+			Duel.SetRegistryValue(pname,1)
 			s.setlv(c,1)
 		end
 	end
@@ -130,12 +130,12 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if KOISHI_CHECK then
 		local pname=s.getplayername(tp)
-		local lv=Duel.GetRegistryValue("pname")
+		local lv=Duel.GetRegistryValue(pname)
 		if lv then
 			lv=lv+1
-			Duel.SetRegistryValue("pname",lv)	
+			Duel.SetRegistryValue(pname,lv)   
 		else
-			Duel.SetRegistryValue("pname",1)
+			Duel.SetRegistryValue(pname,1)
 		end
 		local g=Duel.GetFieldGroup(0,0x7f,0x7f)
 		local xg=Duel.GetOverlayGroup(0,0x7f,0x7f)

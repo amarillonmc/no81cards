@@ -13,6 +13,7 @@ function cm.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e1:SetCost(cm.seqcost)
 	e1:SetTarget(cm.seqtg)
 	e1:SetOperation(cm.seqop)
 	c:RegisterEffect(e1)
@@ -27,6 +28,10 @@ function cm.initial_effect(c)
 	e2:SetTarget(cm.sptg2)
 	e2:SetOperation(cm.spop2)
 	c:RegisterEffect(e2)
+end
+function cm.seqcost(e,tp,eg,ep,ev,re,r,rp,chk)
+    if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+    e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function cm.desfilter(c)
 	return not c:IsLocation(LOCATION_SZONE) or c:GetSequence()<5
