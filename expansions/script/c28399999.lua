@@ -30,6 +30,7 @@ function c28399999.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_MZONE)
 	e3:SetCost(aux.bfgcost)
 	e3:SetTarget(c28399999.rmtg)
 	e3:SetOperation(c28399999.rmop)
@@ -176,7 +177,7 @@ function c28399999.desfilter(c)
 	return c:IsFaceup()
 end
 function c28399999.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and chck:IsControler(1-tp) and c28399999.desfilter(chkc) end
+	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and c28399999.desfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c28399999.desfilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,c28399999.desfilter,tp,0,LOCATION_ONFIELD,1,1,nil)
@@ -353,14 +354,13 @@ end
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
---
+--spsummon-self
 function c28399999.cfilter(c)
 	return c:IsSetCard(0x283) and c:IsFaceup()
 end
 function c28399999.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c28399999.cfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(c28399999.cfilter,tp,LOCATION_MZONE,0,1,nil) or Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
---spsummon-self
 function c28399999.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
@@ -374,7 +374,7 @@ function c28399999.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --search
 function c28399999.thfilter(c,chk)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and (chk==0 or aux.NecroValleyFilter()(c))
+	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsFaceupEx() and (chk==0 or aux.NecroValleyFilter()(c))-- and c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function c28399999.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28399999.thfilter,tp,LOCATION_DECK,0,1,nil,0) end
@@ -383,8 +383,8 @@ end
 function c28399999.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tc=Duel.SelectMatchingCard(tp,c28399999.thfilter,tp,LOCATION_DECK,0,1,1,nil,1):GetFirst()
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
-	end
+	if not tc then return end
+	Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,tc)
+	--if not tc:IsLocation(LOCATION_HAND) then return end
 end

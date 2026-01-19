@@ -1,8 +1,8 @@
 --山田组首领 山田秀·天都教父
 function c88881049.initial_effect(c)
-	--xyz summon
+	 --xyz summon
 	c:EnableReviveLimit()
-	aux.AddXyzProcedureLevelFree(c,c88881049.mfilter,nil,2,2)
+	aux.AddXyzProcedureLevelFree(c,c88881049.mfilter,c88881049.xyzcheck,2,99)
 	--immune
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -45,8 +45,11 @@ function c88881049.initial_effect(c)
 	e6:SetValue(c88881049.val)
 	c:RegisterEffect(e6)
 end
-function c88881049.mfilter(c)
-	return c:IsSetCard(0xc02) and c:IsRank(4)
+function c88881049.mfilter(c,xyzc)
+	return c:IsXyzType(TYPE_MONSTER) and c:IsRank(4)
+end
+function c88881049.xyzcheck(g)
+	return g:IsExists(Card.IsSetCard,1,nil,0xc02)
 end
 function c88881049.atkval(e,c)
 	return Duel.GetMatchingGroupCount(Card.IsSetCard,e:GetHandler():GetControler(),LOCATION_REMOVED+LOCATION_GRAVE,0,nil,0xc02)*-300

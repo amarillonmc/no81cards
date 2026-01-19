@@ -1,71 +1,37 @@
 --女神之令-授
-local s, id = GetID()
-
+local s,id,o=GetID()
 function s.initial_effect(c)
-	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_RELEASE+CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetTarget(s.rstg)
-	e1:SetOperation(s.rsop)
+	--①：仪式召唤 (卡组/墓地/除外)
+	local e1=aux.AddRitualProcGreater2(c,s.filter,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_DECK,nil,nil,true)
 	c:RegisterEffect(e1)
+
+	--destroy replace
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EFFECT_DESTROY_REPLACE)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetTarget(s.reptg)
+	e2:SetValue(s.repval)
+	e2:SetOperation(s.repop)
+	c:RegisterEffect(e2)
 end
 
-function s.costfilter1(c)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+-- === 效果①：仪式召唤 ===
+function s.filter(c,e,tp)
+	return c:IsSetCard(0x611)
 end
 
-function s.costfilter2(c)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_SPELL+TYPE_TRAP)
+function s.repfilter(c,tp)
+	return c:IsFaceup() and c:IsSetCard(0x611)
+		and c:IsOnField() and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
 end
-
-function s.ritualfilter(c,e,tp)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,true)
+function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToRemove() and eg:IsExists(s.repfilter,1,nil,tp) end
+	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
 end
-
-function s.rstg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		-- 检查是否有足够的卡可以送墓
-		local g2=Duel.GetMatchingGroup(s.costfilter1,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
-		local g3=Duel.GetMatchingGroup(s.costfilter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,nil)
-		return #g2>0 and #g3>0 and Duel.IsExistingMatchingCard(s.ritualfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_HAND,0,1,nil,e,tp)
-	end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,2,tp,LOCATION_HAND+LOCATION_ONFIELD)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED)
+function s.repval(e,c)
+	return s.repfilter(c,e:GetHandlerPlayer())
 end
-
-function s.rsop(e,tp,eg,ep,ev,re,r,rp)
-	-- 选择送墓的卡
-	if Duel.IsExistingMatchingCard(s.ritualfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_HAND,0,1,nil,e,tp) then
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g1=Duel.SelectMatchingCard(tp,s.costfilter1,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g2=Duel.SelectMatchingCard(tp,s.costfilter2,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
-	
-	if #g1==0 or #g2==0 then return end
-	g1:Merge(g2)
-	
-	-- 送墓
-	if Duel.SendtoGrave(g1,REASON_EFFECT+REASON_RELEASE)==2 then
-		-- 选择仪式怪兽
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,s.ritualfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
-		local tc=g:GetFirst()
-		if tc then
-			-- 特殊召唤
-			Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-			tc:CompleteProcedure()
-			-- 赋予不成为效果对象的抗性
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-			e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-			e1:SetRange(LOCATION_MZONE)
-			e1:SetValue(aux.tgoval)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
-		end
-	end
-	end
+function s.repop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_EFFECT)
 end

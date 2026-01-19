@@ -16,7 +16,7 @@ function c28316347.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,28316347)
-	e2:SetTarget(c28316347.rectg)
+	--e2:SetTarget(c28316347.rectg)
 	e2:SetOperation(c28316347.recop)
 	c:RegisterEffect(e2)
 	c28316347.recover_effect=e2
@@ -48,7 +48,7 @@ function c28316347.recop(e,tp,eg,ep,ev,re,r,rp)
 		{b2,aux.Stringid(28316347,1)},
 		{b3,aux.Stringid(28316347,2)})
 	if op==1 then
-		Duel.Recover(tp,1000,REASON_EFFECT)
+		Duel.Recover(tp,2000,REASON_EFFECT)
 	elseif op==2 then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	elseif op==3 then

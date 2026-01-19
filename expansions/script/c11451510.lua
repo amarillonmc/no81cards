@@ -58,7 +58,7 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function cm.mfilter(c)
-	return c:IsSetCard(0x97d) and not c:IsType(TYPE_TOKEN)
+	return c:IsType(TYPE_TRAP) and not c:IsType(TYPE_TOKEN)
 end
 function cm.xyzfilter(c,mg,tp)
 	return c:IsXyzSummonable(mg) or c:IsLinkSummonable(mg) --and Duel.GetLocationCountFromEx(tp,tp,mg,c)>0

@@ -1,61 +1,158 @@
 --女神之令-启
-local s, id = GetID()
-
+local s,id=GetID()
 function s.initial_effect(c)
 
-	-- 效果①：特召+仪式召唤
+	--①：特召卡组 & 可选仪式召唤
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_RELEASE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,id)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
+
+	--手卡发动许可
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE)
+	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetCondition(s.handcon)
+	c:RegisterEffect(e2)
+
+	--②：无效发动
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(id,1))
+	e3:SetCategory(CATEGORY_NEGATE)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCountLimit(1,id+1)
+	e3:SetCondition(s.negcon)
+	e3:SetCost(aux.bfgcost)
+	e3:SetTarget(s.negtg)
+	e3:SetOperation(s.negop)
+	c:RegisterEffect(e3)
+	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,s.chainfilter)
 end
 
-function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function s.chainfilter(re,tp,cid)
+	return not re:IsActiveType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP) 
 end
 
-function s.ritualfilter(c,e,tp)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,0,tp,false,true)
+function s.handcon(e)
+	local tp=e:GetHandlerPlayer()
+	--条件：自己回合 且 标记存在
+	return Duel.GetTurnPlayer()==tp and Duel.GetCustomActivityCount(id,1-tp,ACTIVITY_CHAIN)~=0
+end
+
+--------------------------------------------------------------------------------
+-- ①效果
+--------------------------------------------------------------------------------
+function s.filter(c,e,tp)
+	return c:IsSetCard(0x611) and c:IsType(TYPE_MONSTER)
+		and (c:IsAbleToGrave() or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
+end
+
+--后半段过滤器：仪式召唤目标
+function s.ritfilter(c)
+	return c:IsSetCard(0x611) and c:IsType(TYPE_RITUAL)
 end
 
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,0,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,0,tp,LOCATION_DECK)
 end
 
-function s.tgfilter(c)
-	return c:IsSetCard(0x611) and c:IsReleasable() and c:IsType(TYPE_MONSTER) and not c:IsType(TYPE_RITUAL)
-end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	-- 从卡组特召女神之令怪兽
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-	if #g>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)>0 then
-		-- 选择是否进行仪式召唤
-		if Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil,0x611)
-			and Duel.IsExistingMatchingCard(s.ritualfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp)
-			and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,2)) --请选择操作
+	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	local tc=g:GetFirst()
+	if not tc then return end
+	
+	--判断可用的操作
+	local b1=tc:IsAbleToGrave()
+	local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	
+	local res=false
+	local op=0
+	
+	if b1 and b2 then
+		op=Duel.SelectOption(tp,1191,1152) --"特殊召唤", "送去墓地"
+	elseif b1 then
+		op=0
+	elseif b2 then
+		op=1
+	else
+		return
+	end
+	
+	if op==0 then
+		res=Duel.SendtoGrave(tc,REASON_EFFECT)>0
+	else
+		res=Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0
+	end
+	
+	--后半段：可选仪式召唤
+	if res then
+		--准备仪式素材和目标
+		local mg=Duel.GetRitualMaterial(tp)
+		if Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,s.ritfilter,e,tp,mg,nil,Card.GetLevel,"Greater") then
 			
-			-- 选择解放的怪兽（非仪式）
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-			local g1=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
-			if #g1>0 and Duel.Release(g1,REASON_EFFECT)>0 then
-				-- 选择仪式怪兽
+			--询问玩家是否发动
+			if Duel.SelectYesNo(tp,aux.Stringid(id,2)) then --"要进行仪式召唤吗？"
+				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-				local g2=Duel.SelectMatchingCard(tp,s.ritualfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
-				if #g2>0 then
-					local tc=g2:GetFirst()
-					-- 当作仪式召唤特殊召唤
-					Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-					tc:CompleteProcedure()
+				
+				--选择仪式怪兽
+				local tg=Duel.SelectMatchingCard(tp,aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,s.ritfilter,e,tp,mg,nil,Card.GetLevel,"Greater")
+				local rc=tg:GetFirst()
+				
+				if rc then
+					--筛选可用素材
+					mg=mg:Filter(Card.IsCanBeRitualMaterial,rc,rc)
+					if rc.mat_filter then
+						mg=mg:Filter(rc.mat_filter,rc,tp)
+					end
+					
+					--选择并解放素材
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+					local mat=mg:SelectWithSumGreater(tp,Card.GetLevel,rc:GetLevel(),rc)
+					rc:SetMaterial(mat)
+					Duel.Release(mat,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
+					
+					--执行特召
+					Duel.BreakEffect()
+					Duel.SpecialSummon(rc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+					rc:CompleteProcedure()
 				end
 			end
 		end
 	end
+end
+
+--------------------------------------------------------------------------------
+-- ②效果
+--------------------------------------------------------------------------------
+
+--被取对象判断
+function s.tgfilter(c,tp)
+	return c:IsSetCard(0x611) and c:IsType(TYPE_MONSTER) and c:IsControler(tp) and c:IsLocation(LOCATION_MZONE)
+end
+
+function s.negcon(e,tp,eg,ep,ev,re,r,rp)
+	if rp==tp or not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
+	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
+	return g and g:IsExists(s.tgfilter,1,nil,tp)
+end
+
+function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+end
+
+function s.negop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.NegateEffect(ev)
 end

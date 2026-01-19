@@ -38,7 +38,7 @@ function c75075618.initial_effect(c)
     e7:SetDescription(aux.Stringid(75075618,0))
     e7:SetCategory(CATEGORY_DAMAGE+CATEGORY_RECOVER)
     e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-    e7:SetCode(EVENT_LEAVE_DECK)
+    e7:SetCode(EVENT_MOVE)
     e7:SetRange(LOCATION_MZONE)
 	e7:SetProperty(EFFECT_FLAG_DELAY)
     e7:SetCountLimit(1)
@@ -49,7 +49,6 @@ function c75075618.initial_effect(c)
     e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
     e6:SetRange(LOCATION_FZONE)
     e6:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
-    e6:SetCondition(c75075618.con1)
     e6:SetTarget(c75075618.tg1)
     e6:SetLabelObject(e7)
     c:RegisterEffect(e6)
@@ -66,7 +65,7 @@ function c75075618.initial_effect(c)
 end
 -- 1
 function c75075618.con1(e)
-	return Duel.IsExistingMatchingCard(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil,0x5754)
+	return Duel.IsExistingMatchingCard(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil,0x5754)
 end
 function c75075618.tg1(e,c)
     return c:IsFaceup() and Duel.IsExistingMatchingCard(Card.IsSetCard,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,1,nil,0x5754) and not c:IsSetCard(0x5754)
@@ -79,10 +78,12 @@ function c75075618.atkcon(e)
 end
 -- 2
 function c75075618.filter2(c,tp)
-    return c:IsPreviousLocation(LOCATION_DECK+LOCATION_EXTRA)
+    return (c:GetPreviousLocation()==LOCATION_DECK or c:GetPreviousLocation()==LOCATION_EXTRA)
+        and c:GetOwner()==tp
 end
 function c75075618.con2(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c75075618.filter2,1,nil)
+    return eg:IsExists(c75075618.filter2,1,nil,tp) 
+        or eg:IsExists(c75075618.filter2,1,nil,1-tp)
 end
 function c75075618.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return true end

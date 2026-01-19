@@ -44,7 +44,7 @@ function c28384553.mfilter(c)
 	return c:IsFusionType(TYPE_FUSION) and c:IsRace(RACE_FAIRY)
 end
 function c28384553.matfilter(c)
-	return c:IsAbleToExtraAsCost() and c:IsRace(RACE_FAIRY) and c:IsCanBeFusionMaterial()
+	return c:IsAbleToExtraAsCost() and c:IsFusionType(TYPE_FUSION) and c:IsRace(RACE_FAIRY) and c:IsCanBeFusionMaterial()
 end
 function c28384553.gcheck(mg,tp,fc)
 	return Duel.GetLocationCountFromEx(tp,tp,mg,fc)>0
@@ -79,6 +79,7 @@ function c28384553.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct,phchk=e:GetHandler():GetFlagEffectLabel(28384553),Duel.GetCurrentPhase()==PHASE_END and 1 or 0
 	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if chk==0 then return ct>0 and #g>0 end
+	e:SetLabel(ct,phchk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c28384553.desop(e,tp,eg,ep,ev,re,r,rp)
@@ -109,7 +110,7 @@ function c28384553.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	local c=e:GetHandler()
 	local val=math.abs(3000-Duel.GetLP(tp))
-	if c:IsRelateToChain() and c:IsFaceup() and val~=0 then
+	if phchk==1 and c:IsRelateToChain() and c:IsFaceup() and val~=0 then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)

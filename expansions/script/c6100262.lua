@@ -89,6 +89,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,s.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then
+		Duel.HintSelection(g)
 		if Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
 			-- 那之后，可以选自己墓地1张「朦雨」魔法·陷阱卡在自己场上盖放
 			local sg=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_GRAVE,0,nil)

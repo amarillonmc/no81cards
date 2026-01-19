@@ -25,15 +25,12 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 
 	local e2 = Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id, 0))
-	e2:SetCategory(CATEGORY_DRAW)
-	e2:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET + EFFECT_FLAG_DELAY)
+	e2:SetDescription(aux.Stringid(id,0))
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_TO_DECK)
-	e2:SetRange(LOCATION_PZONE)
-	e2:SetCountLimit(1, id)
+	e2:SetRange(LOCATION_PZONE) 
+	e2:SetCountLimit(1,id)
 	e2:SetCondition(s.drcon)
-	e2:SetTarget(s.drtg)
 	e2:SetOperation(s.drop)
 	c:RegisterEffect(e2)
 
@@ -54,22 +51,30 @@ function s.indtg(e, c)
 end
 
 function s.drcon(e, tp, eg, ep, ev, re, r, rp)
-	return (r & REASON_EFFECT) ~= 0 
-		and re and s.ForceFighter(re:GetHandler()) 
-		and rp == tp
-end
-
-function s.drtg(e, tp, eg, ep, ev, re, r, rp, chk)
-	if chk == 0 then return Duel.IsPlayerCanDraw(tp, 1) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0, CATEGORY_DRAW, nil, 0, tp, 1)
+	return (r & REASON_EFFECT) ~= 0
+		and re and s.ForceFighter(re:GetHandler())
+		and rp == tp 
 end
 
 function s.drop(e, tp, eg, ep, ev, re, r, rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end 
-	local p, d = Duel.GetChainInfo(0, CHAININFO_TARGET_PLAYER, CHAININFO_TARGET_PARAM)
-	Duel.Draw(p, d, REASON_EFFECT)
+
+	if Duel.IsPlayerCanDraw(tp, 1) and Duel.SelectYesNo(tp, aux.Stringid(id, 2)) then
+		Duel.Hint(HINT_CARD, 0, id)
+
+		if Duel.Draw(tp, 1, REASON_EFFECT) > 0 then
+
+			local g = Duel.GetMatchingGroup(Card.IsAbleToDeck, tp, LOCATION_GRAVE, LOCATION_GRAVE, nil)
+			if g:GetCount() > 0 and Duel.SelectYesNo(tp, aux.Stringid(id, 3)) then
+
+				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
+
+				local sg = g:Select(tp, 1, 1, nil)
+				Duel.HintSelection(sg)
+
+				Duel.SendtoDeck(sg, nil, SEQ_DECKBOTTOM, REASON_EFFECT)
+			end
+		end
+	end
 end
 
 function s.pzcon(e,tp,eg,ep,ev,re,r,rp)

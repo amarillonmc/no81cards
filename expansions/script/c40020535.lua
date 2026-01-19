@@ -9,115 +9,103 @@ end
 
 function s.initial_effect(c)
 
-	local e1 = Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id, 0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON + CATEGORY_FUSION_SUMMON + CATEGORY_REMOVE)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetHintTiming(0, TIMINGS_CHECK_MONSTER + TIMING_MAIN_END)
-	e1:SetCountLimit(1, id)
+	e1:SetCode(EVENT_DAMAGE)
+	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e1:SetCountLimit(1,id,EFFECT_COUNT_CODE_OATH)
 	e1:SetCondition(s.fuscon)
 	e1:SetTarget(s.fustg)
 	e1:SetOperation(s.fusop)
 	c:RegisterEffect(e1)
 
-	local e2 = Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id, 1))
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1, id + 100)
-	e2:SetCost(aux.bfgcost)
-	e2:SetTarget(s.settg)
-	e2:SetOperation(s.setop)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetType(EFFECT_TYPE_ACTIVATE)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetHintTiming(TIMING_BATTLE_START)
+
+	e2:SetTarget(s.locktg)
+	e2:SetOperation(s.lockop)
 	c:RegisterEffect(e2)
 end
 
-function s.fuscon(e, tp, eg, ep, ev, re, r, rp)
-	return Duel.GetCurrentPhase() == PHASE_MAIN1 or Duel.GetCurrentPhase() == PHASE_MAIN2
+function s.fuscon(e,tp,eg,ep,ev,re,r,rp)
+	return ep==tp and (r&REASON_BATTLE+REASON_EFFECT)~=0
 end
 
-function s.matfilter(c)
-	return s.HighEvo(c) and (c:IsType(TYPE_MONSTER) or c:IsType(TYPE_TRAP)) and c:IsAbleToRemove() and (c:IsOnField() or c:IsLocation(LOCATION_GRAVE))
+function s.fusfilter(c)
+	return s.HighEvo(c) and c:IsType(TYPE_FUSION)
 end
 
-function s.filter_fusion(c, e, tp, m, f, chkf)
-	return c:IsType(TYPE_FUSION) and (not f or f(c))
-		and c:IsCanBeSpecialSummoned(e, SUMMON_TYPE_FUSION, tp, false, false)
-		and c:CheckFusionMaterial(m, nil, chkf)
+
+function s.fextra(e,tp,mg)
+	return Duel.GetMatchingGroup(Fusion.IsMonsterFilter(Card.IsAbleToGrave),tp,LOCATION_DECK+LOCATION_HAND+LOCATION_ONFIELD,0,nil)
 end
 
-function s.fustg(e, tp, eg, ep, ev, re, r, rp, chk)
-	if chk == 0 then
-		local chkf = tp
-		local mg1 = Duel.GetMatchingGroup(s.matfilter, tp, LOCATION_ONFIELD + LOCATION_GRAVE, 0, nil)
-		local res = Duel.IsExistingMatchingCard(s.filter_fusion, tp, LOCATION_EXTRA, 0, 1, nil, e, tp, mg1, nil, chkf)
-		if not res then
-			local ce = Duel.GetChainMaterial(tp)
-			if ce ~= nil then
-				local fgroup = ce:GetTarget()
-				local mg2 = fgroup(ce, e, tp)
-				local mf = ce:GetValue()
-				res = Duel.IsExistingMatchingCard(s.filter_fusion, tp, LOCATION_EXTRA, 0, 1, nil, e, tp, mg2, mf, chkf)
-			end
-		end
-		return res
+function s.fustg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+
+		return Fusion.SummonEffTG(nil,e,tp,nil,nil,s.fusfilter,nil,s.fextra)
 	end
-	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, nil, 1, tp, LOCATION_EXTRA)
-	Duel.SetOperationInfo(0, CATEGORY_REMOVE, nil, 1, tp, LOCATION_ONFIELD + LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_FUSION_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
+function s.faceup_monster(c)
+	return c:IsFaceup() and c:IsType(TYPE_MONSTER)
+end
+function s.fusop(e,tp,eg,ep,ev,re,r,rp)
 
-function s.fusop(e, tp, eg, ep, ev, re, r, rp)
-	local chkf = tp
-	local mg1 = Duel.GetMatchingGroup(s.matfilter, tp, LOCATION_ONFIELD + LOCATION_GRAVE, 0, nil)
-	local sg1 = Duel.GetMatchingGroup(s.filter_fusion, tp, LOCATION_EXTRA, 0, nil, e, tp, mg1, nil, chkf)
+	local fus_success = Fusion.SummonEffOP(nil,e,tp,nil,nil,s.fusfilter,nil,s.fextra)
 	
-	local mg2 = nil
-	local sg2 = nil
-	local ce = Duel.GetChainMaterial(tp)
-	if ce ~= nil then
-		local fgroup = ce:GetTarget()
-		mg2 = fgroup(ce, e, tp)
-		local mf = ce:GetValue()
-		sg2 = Duel.GetMatchingGroup(s.filter_fusion, tp, LOCATION_EXTRA, 0, nil, e, tp, mg2, mf, chkf)
-	end
+	if fus_success then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e1:SetTargetRange(1,0)
+		e1:SetTarget(function(e,c) return not c:IsType(TYPE_FUSION) and c:IsLocation(LOCATION_EXTRA) end)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
 
-	if sg1:GetCount() > 0 or (sg2 ~= nil and sg2:GetCount() > 0) then
-		local sg = sg1:Clone()
-		if sg2 then sg:Merge(sg2) end
-		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
-		local tg = sg:Select(tp, 1, 1, nil)
-		local tc = tg:GetFirst()
-		
-		if sg1:IsContains(tc) and (sg2 == nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp, ce:GetDescription())) then
-			local mat1 = Duel.SelectFusionMaterial(tp, tc, mg1, nil, chkf)
-			tc:SetMaterial(mat1)
-			Duel.Remove(mat1, POS_FACEUP, REASON_EFFECT + REASON_MATERIAL + REASON_FUSION)
+		if Duel.IsExistingMatchingCard(s.faceup_monster,tp,0,LOCATION_MZONE,1,nil)
+			and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then 
+			
 			Duel.BreakEffect()
-			Duel.SpecialSummon(tc, SUMMON_TYPE_FUSION, tp, tp, false, false, POS_FACEUP)
-		else
-			local mat2 = Duel.SelectFusionMaterial(tp, tc, mg2, nil, chkf)
-			local fop = ce:GetOperation()
-			fop(ce, e, tp, tc, mat2)
+			s.do_lock_effect(e,tp)
 		end
-		tc:CompleteProcedure()
 	end
 end
 
-function s.setfilter(c)
-	return s.HighEvo(c) and c:IsType(TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS) and c:IsSSetable()
+
+function s.locktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.faceup_monster,tp,0,LOCATION_MZONE,1,nil) end
 end
 
-function s.settg(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and s.setfilter(chkc) end
-	if chk == 0 then return Duel.IsExistingTarget(s.setfilter, tp, LOCATION_GRAVE, 0, 1, nil) end
-	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SET)
-	local g = Duel.SelectTarget(tp, s.setfilter, tp, LOCATION_GRAVE, 0, 1, 1, nil)
-	Duel.SetOperationInfo(0, CATEGORY_LEAVE_GRAVE, g, 1, 0, 0)
+function s.lockop(e,tp,eg,ep,ev,re,r,rp)
+	s.do_lock_effect(e,tp)
 end
 
-function s.setop(e, tp, eg, ep, ev, re, r, rp)
-	local tc = Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsSSetable() then
-		Duel.SSet(tp, tc)
+
+function s.do_lock_effect(e,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPPO)
+
+	local g=Duel.SelectMatchingCard(tp,s.faceup_monster,tp,0,LOCATION_MZONE,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.HintSelection(g)
+		
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_ATTACK)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+		
+		local e2=e1:Clone()
+		e2:SetCode(EFFECT_CANNOT_BE_BATTLE_TARGET)
+		e2:SetValue(1)
+		tc:RegisterEffect(e2)
 	end
 end

@@ -52,7 +52,7 @@ function cm.dice(e,tp,eg,ep,d,re,r,rp)
 		t[#t+1]=3
 		if Duel.IsPlayerCanDraw(tp,1) then t[#t+1]=4 end
 		t[#t+1]=5
-		if c:IsRelateToEffect(e) and c:IsCanTurnSet() and c:IsFaceup() then t[#t+1]=6 end
+		if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>1 then t[#t+1]=6 end
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(m,CURSE_TRIGGER_DIVE))
 		local d1=Duel.AnnounceNumber(tp,table.unpack(t))
 		Duel.Hint(HINT_NUMBER,1-tp,d1)
@@ -71,7 +71,7 @@ function cm.dice(e,tp,eg,ep,d,re,r,rp)
 	elseif d==3 then
 		local d1=Duel.TossDice(tp,1)
 		local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
-		if not (d1==2 and #g==0) and not (d1==4 and not Duel.IsPlayerCanDraw(tp,1)) and not (d1==6 and not (c:IsRelateToEffect(e) and c:IsCanTurnSet() and c:IsFaceup())) and CURSE_TRIGGER_FIN==0 and Duel.SelectYesNo(tp,aux.Stringid(m,4+CURSE_TRIGGER_DIVE)) then
+		if not (d1==2 and #g==0) and not (d1==4 and not Duel.IsPlayerCanDraw(tp,1)) and not (d1==6 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<=1) and CURSE_TRIGGER_FIN==0 and Duel.SelectYesNo(tp,aux.Stringid(m,4+CURSE_TRIGGER_DIVE)) then
 			CURSE_TRIGGER_DIVE=CURSE_TRIGGER_DIVE+1
 			cm.dice(e,tp,eg,ep,d1,re,r,rp)
 			--Duel.RaiseEvent(c,e:GetValue(),re,r,rp,ep,d1)
@@ -91,11 +91,18 @@ function cm.dice(e,tp,eg,ep,d,re,r,rp)
 		--Duel.RaiseEvent(c,e:GetValue(),re,r,rp,ep,d2)
 		CURSE_TRIGGER_DIVE=CURSE_TRIGGER_DIVE-1
 	elseif d==6 then
-		if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(92362073,2))
+		local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_DECK,0,1,1,nil)
+		local tc=g:GetFirst()
+		if tc then
+			Duel.ShuffleDeck(tp)
+			Duel.MoveSequence(tc,SEQ_DECKTOP)
+		end
+		--[[if c:IsRelateToEffect(e) and c:IsCanTurnSet() then
 			Duel.BreakEffect()
 			c:CancelToGrave()
 			Duel.ChangePosition(c,POS_FACEDOWN)
 			Duel.RaiseEvent(c,EVENT_SSET,e,REASON_EFFECT,tp,tp,0)
-		end
+		end--]]
 	end
 end

@@ -109,10 +109,15 @@ end
 function s.imop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ty=e:GetLabel()
+	local count=0
+		if ty==TYPE_MONSTER then count=3 
+		elseif ty==TYPE_SPELL then count=4 
+			elseif ty==TYPE_TRAP then count=5 
+		end
 	if c:IsRelateToEffect(e) and c:IsFaceup() and ty~=0 then
 		-- 不会成为...种类的卡的效果的对象
 		local e1=Effect.CreateEffect(c)
-		e1:SetDescription(aux.Stringid(id,4))
+		e1:SetDescription(aux.Stringid(id,count))
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 		e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
@@ -144,6 +149,7 @@ function s.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return ty~=0 and Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_GRAVE,0,1,nil,ty) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,s.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil,ty)
+	Duel.HintSelection(g)
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 

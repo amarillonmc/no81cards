@@ -1,171 +1,153 @@
 --女神之令-光秀
-local s, id = GetID()
-
+local s,id=GetID()
 function s.initial_effect(c)
-
-	-- 效果①：主要阶段展示手卡发动
-	local e1 = Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id, 0))
-	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_TOHAND)
+	--①：展示手卡发动
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1, id)
-	e1:SetCost(s.mtcost1)
-	e1:SetTarget(s.mttg1)
-	e1:SetOperation(s.mtop1)
+	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
+	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.e1con)
+	e1:SetCost(s.e1cost)
+	e1:SetTarget(s.e1tg)
+	e1:SetOperation(s.e1op)
 	c:RegisterEffect(e1)
-	local e0 = Effect.CreateEffect(c)
-	e0:SetDescription(aux.Stringid(id, 1))
-	e0:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON)
-	e0:SetType(EFFECT_TYPE_IGNITION)
-	e0:SetRange(LOCATION_HAND)
-	e0:SetCountLimit(1, id)
-	e0:SetCost(s.mtcost1)
-	e0:SetTarget(s.mttg2)
-	e0:SetOperation(s.mtop2)
-	c:RegisterEffect(e0)
-	
-	-- 效果②：召唤/特召回合赋予场发效果
-	local e2 = Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id, 2))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_HANDES)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1, id+1)
-	e2:SetCondition(s.sccon)
-	e2:SetTarget(s.sctg)
-	e2:SetOperation(s.scop)
+	--②：特召 & 赋予Flag & 可选堆墓
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_HAND)
+	e2:SetCountLimit(1,id+1)
+	e2:SetTarget(s.e2tg)
+	e2:SetOperation(s.e2op)
 	c:RegisterEffect(e2)
-   --to grave
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e3:SetCode(EVENT_TO_GRAVE)
-	e3:SetOperation(s.regop)
-	c:RegisterEffect(e3)
 end
 
-function s.regop(e,tp,eg,ep,ev,re,r,rp)
+--条件：手卡 或 (场上+Flag)
+function s.e1con(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsLocation(LOCATION_HAND) or e:GetHandler():GetFlagEffect(id)>0
+end
+
+--Target过滤：回收怪兽
+function s.thfilter1(c)
+	return c:IsSetCard(0x611) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+end
+--Target过滤：检索魔法
+function s.thfilter2(c)
+	return c:IsSetCard(0x611) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
+end
+
+--Cost过滤：展示本家S/T
+function s.rvfilter(c,e,tp,mc)
+	if not (c:IsSetCard(0x611) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsPublic()) then return false end
+	--魔法卡分支检查：展示卡送墓，回收墓地/除外怪兽
+	if c:IsType(TYPE_SPELL) then
+		return Duel.IsExistingMatchingCard(s.thfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
+	--陷阱卡分支检查：自身送墓，检索魔法
+	elseif c:IsType(TYPE_TRAP) then
+		return mc:IsAbleToGrave() 
+			and Duel.IsExistingMatchingCard(s.thfilter2,tp,LOCATION_DECK,0,1,nil)
+	end
+	return false
+end
+
+function s.e1cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.rvfilter,tp,LOCATION_HAND,0,1,nil,e,tp,c) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g=Duel.SelectMatchingCard(tp,s.rvfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp,c)
+	Duel.ConfirmCards(1-tp,g)
+	e:SetLabelObject(g:GetFirst()) --记录展示的卡
+	Duel.ShuffleHand(tp)
 end
 
--- 效果①：目标设置
-function s.mtfilter1(c,e,tp)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function s.e1tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local rc=e:GetLabelObject()
+	if chk==0 then return true end
+	
+	if rc:IsType(TYPE_SPELL) then
+		--魔法：送墓展示卡，回收
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_TOGRAVE)
+		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,rc,1,0,0)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
+	else
+		--陷阱：送墓自身，检索
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
+		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,e:GetHandler(),1,0,0)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	end
 end
 
-function s.mtfilter2(c)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToGrave()
-end
-
-function s.cfilter1(c)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_SPELL) and not c:IsPublic()
-end
-
-function s.cfilter2(c)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_TRAP) and not c:IsPublic()
-end
-
-function s.mtcost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	e:SetLabel(100)
-	return true
-end
-
-function s.mttg1(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.e1op(e,tp,eg,ep,ev,re,r,rp)
+	local rc=e:GetLabelObject()
 	local c=e:GetHandler()
-	if chk==0 then return e:GetLabel()==100 and Duel.IsExistingMatchingCard(s.mtfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(s.cfilter1,tp,LOCATION_HAND,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-	local rc=Duel.SelectMatchingCard(tp,s.cfilter1,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
-	Duel.ConfirmCards(1-tp,rc)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND+CATEGORY_SEARCH,nil,1,0,0)
-end
-
--- 效果①：操作处理
-function s.mtop1(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg=Duel.SelectMatchingCard(tp,s.mtfilter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
-		if #sg>0 and Duel.SendtoHand(sg,nil,REASON_EFFECT) then
-			Duel.ConfirmCards(1-tp,sg)
-			Duel.SendtoGrave(c,REASON_EFFECT)
+	
+	--分支：魔法卡
+	if rc:IsType(TYPE_SPELL) then
+		--1. 给人观看的卡送去墓地 (需确认还在手卡)
+		if rc:IsLocation(LOCATION_HAND) and Duel.SendtoGrave(rc,REASON_EFFECT)>0 and rc:IsLocation(LOCATION_GRAVE) then
+			--2. 回收
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfilter1),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+			if #g>0 then
+				Duel.SendtoHand(g,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,g)
+			end
 		end
-end
-
-function s.mttg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return e:GetLabel()==100 and Duel.IsExistingMatchingCard(s.mtfilter2,tp,LOCATION_DECK,0,1,nil) and Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_HAND,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELECT)
-	local rc=Duel.SelectMatchingCard(tp,s.cfilter2,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
-	Duel.ConfirmCards(1-tp,rc)
-	Duel.SetTargetCard(rc)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
-end
-
--- 效果①：操作处理
-function s.mtop2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) and Duel.SendtoGrave(tc,REASON_EFFECT) then 
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local sc=Duel.SelectMatchingCard(tp,mtfilter2,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
-		if sc then
-		Duel.SendtoGrave(sc,REASON_EFFECT)
+		
+	--分支：陷阱卡
+	elseif rc:IsType(TYPE_TRAP) then
+		--1. 这张卡送去墓地
+		if c:IsRelateToEffect(e) and Duel.SendtoGrave(c,REASON_EFFECT)>0 and c:IsLocation(LOCATION_GRAVE) then
+			--2. 检索魔法
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			local g=Duel.SelectMatchingCard(tp,s.thfilter2,tp,LOCATION_DECK,0,1,1,nil)
+			if #g>0 then
+				Duel.SendtoHand(g,nil,REASON_EFFECT)
+				Duel.ConfirmCards(1-tp,g)
+			end
 		end
 	end
 end
 
-function s.sccon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(id)>0
+function s.otherfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x611)
 end
 
-
-
--- 效果②：赋予场发效果
-function s.sctg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.dcfilter,tp,LOCATION_HAND,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+function s.tgfilter(c)
+	return c:IsSetCard(0x611) and c:IsAbleToGrave()
 end
 
-function s.thfilter(c)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+function s.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 
-function s.dcfilter(c)
-	return c:IsSetCard(0x611) and c:IsDisabled()
-end
-
-function s.scop(e,tp,eg,ep,ev,re,r,rp)
+function s.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND,0,1,1,nil)
-	-- 丢弃手卡
-	if Duel.SendtoGrave(tg,REASON_EFFECT)>0 and Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP) then
-	   -- 效果①：主要阶段/战斗阶段展示手卡发动
-	local e1 = Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id, 0))
-	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-	e1:SetCountLimit(1, id)
-	e1:SetCost(s.mtcost1)
-	e1:SetTarget(s.mttg1)
-	e1:SetOperation(s.mtop1)
-	c:RegisterEffect(e1)
-	local e0 = Effect.CreateEffect(c)
-	e0:SetDescription(aux.Stringid(id, 1))
-	e0:SetCategory(CATEGORY_REMOVE+CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
-	e0:SetType(EFFECT_TYPE_QUICK_O)
-	e0:SetCode(EVENT_FREE_CHAIN)
-	e0:SetRange(LOCATION_MZONE)
-	e0:SetReset(RESET_EVENT+RESETS_STANDARD)
-	e0:SetCountLimit(1, id)
-	e0:SetCost(s.mtcost1)
-	e0:SetTarget(s.mttg2)
-	e0:SetOperation(s.mtop2)
-	c:RegisterEffect(e0)
-	 Duel.SpecialSummonComplete()
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		local ct={1,2,3,4}
+		local ac=Duel.AnnounceNumber(tp,table.unpack(ct))
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_LEVEL)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(ac)
+		c:RegisterEffect(e1)
+		--赋予①效果在场上发动的能力
+		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
+		
+		--检查场上是否有其他本家怪兽
+		local g=Duel.GetMatchingGroup(s.tgfilter,tp,LOCATION_DECK,0,nil)
+		if Duel.IsExistingMatchingCard(s.otherfilter,tp,LOCATION_MZONE,0,1,c) 
+			and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			local sg=g:Select(tp,1,1,nil)
+			Duel.SendtoGrave(sg,REASON_EFFECT)
+		end
 	end
 end

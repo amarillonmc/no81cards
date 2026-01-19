@@ -10,6 +10,7 @@ function c28315544.initial_effect(c)
 	e1:SetCost(c28315544.spcost)
 	e1:SetTarget(c28315544.sptg)
 	e1:SetOperation(c28315544.spop)
+	e1:SetLabel(1)
 	c:RegisterEffect(e1)
 	--recover
 	local e2=Effect.CreateEffect(c)
@@ -21,8 +22,10 @@ function c28315544.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38315544)
 	e2:SetCondition(c28315544.reccon)
+	e2:SetCost(c28315544.cost)
 	e2:SetTarget(c28315544.rectg)
 	e2:SetOperation(c28315544.recop)
+	e2:SetLabel(2)
 	c:RegisterEffect(e2)
 end
 function c28315544.chkfilter(c)
@@ -30,6 +33,7 @@ function c28315544.chkfilter(c)
 end
 function c28315544.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28315544.chkfilter,tp,LOCATION_HAND,0,1,nil) end
+	c28315544.cost(e,tp,eg,ep,ev,re,r,rp,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,c28315544.chkfilter,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.ConfirmCards(1-tp,g)
@@ -76,4 +80,15 @@ function c28315544.recop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(sg)
 		Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	end
+end
+function c28315544.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local ct=Duel.GetFlagEffectLabel(tp,28315544) or 0
+	ct=ct|e:GetLabel()
+	if ct==e:GetLabel() then
+		Duel.RegisterFlagEffect(tp,28315544,RESET_PHASE+PHASE_END,0,1,ct)
+	else
+		Duel.SetFlagEffectLabel(tp,28315544,ct)
+	end
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28362118,e,0,0,0,0)
 end

@@ -51,6 +51,7 @@ function c20250329.initial_effect(c)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c) 
 	e3:SetCategory(CATEGORY_DESTROY)
+	e1:SetDescription(aux.Stringid(20250329,1))
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_CUSTOM+20250329) 
 	e3:SetProperty(EFFECT_FLAG_DELAY)
@@ -78,7 +79,7 @@ function c20250329.discon(e,tp,eg,ep,ev,re,r,rp)
 end 
 function c20250329.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler() 
-	if Duel.IsCanRemoveCounter(1-tp,0,1,0x154a,1,REASON_EFFECT) and Duel.SelectEffectYesNo(1-tp,c,aux.Stringid(20250329,0)) then 
+	if Duel.IsCanRemoveCounter(1-tp,0,1,0x154a,1,REASON_EFFECT) and Duel.SelectEffectYesNo(1-tp,c,aux.Stringid(20250329,2)) then 
 		Duel.RemoveCounter(1-tp,0,1,0x154a,1,REASON_EFFECT) 
 	else 
 		Duel.NegateEffect(ev)

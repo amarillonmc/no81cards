@@ -1,16 +1,14 @@
 --乱世巨星
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--control
-	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_CONTROL+CATEGORY_TOHAND)
+ local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetCode(EVENT_CHAINING)
 	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
-	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetTarget(s.target)
-	e1:SetOperation(s.operation)
+	e1:SetCondition(s.con)
+	e1:SetTarget(aux.nbtg)
+	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
 		--change name
 	local e2=Effect.CreateEffect(c)
@@ -20,55 +18,58 @@ function s.initial_effect(c)
 	e2:SetRange(LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_ONFIELD)
 	e2:SetValue(88800029)
 	c:RegisterEffect(e2)
+	--spsummon
+	local e12=Effect.CreateEffect(c)
+	e12:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e12:SetType(EFFECT_TYPE_QUICK_O)
+	e12:SetCode(EVENT_FREE_CHAIN)
+	e12:SetRange(LOCATION_GRAVE)
+	e12:SetCost(s.spcost)
+	e12:SetTarget(s.sptg)
+	e12:SetOperation(s.spop)
+	c:RegisterEffect(e12)
+end
+function s.cfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0xc02) and c:IsType(TYPE_MONSTER)
+end
+function s.con(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.IsChainNegatable(ev) and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE))
 end
 function s.thfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_WARRIOR) and c:IsAttribute(ATTRIBUTE_DARK)
+	return c:IsSetCard(0xc02) and c:IsFaceup() and c:IsAbleToHand()
 end
-function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(s.thfilter,tp,LOCATION_MZONE,0,1,nil)
-		and Duel.IsExistingTarget(Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g1=Duel.SelectTarget(tp,s.thfilter,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
-	local g2=Duel.SelectTarget(tp,Card.IsControlerCanBeChanged,tp,0,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_CONTROL,g2,1,0,0)
-end
-function s.operation(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local _,hg=Duel.GetOperationInfo(0,CATEGORY_TOHAND)
-	local hc=hg:GetFirst()
-	local chk=hc:IsSetCard(0xc02)
-	if hc:IsControler(tp) and hc:IsRelateToEffect(e)
-		and Duel.SendtoHand(hc,nil,REASON_EFFECT)>0 and hc:IsLocation(LOCATION_HAND) then
-		local _,tg=Duel.GetOperationInfo(0,CATEGORY_CONTROL)
-		local tc=tg:GetFirst()
-		if tc:IsControler(1-tp) and tc:IsRelateToEffect(e)
-			and Duel.GetControl(tc,tp)>0 and not chk then
-			local fid=c:GetFieldID()
-			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,fid)
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-			e1:SetCode(EVENT_PHASE+PHASE_END)
-			e1:SetCountLimit(1)
-			e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
-			e1:SetLabelObject(tc)
-			e1:SetLabel(fid)
-			e1:SetCondition(s.thcon)
-			e1:SetOperation(s.thop)
-			e1:SetReset(RESET_PHASE+PHASE_END)
-			Duel.RegisterEffect(e1,tp)
-		end
+function s.activate(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
+		Duel.Destroy(eg,REASON_EFFECT)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+		local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
+		local tc=g:GetFirst()
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_DISABLE_CHAIN_FIELD)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
 	end
 end
-function s.thcon(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	if tc:GetFlagEffectLabel(id)~=e:GetLabel() then
-		e:Reset()
-		return false
-	else return true end
+function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
+	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
-function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.SendtoHand(e:GetLabelObject(),nil,REASON_EFFECT)
+function s.spfilter(c,e,tp)
+	return c:IsRace(RACE_WARRIOR) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>-1
+		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+end
+function s.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
 end

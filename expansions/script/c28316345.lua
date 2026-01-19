@@ -11,6 +11,7 @@ function c28316345.initial_effect(c)
 	e1:SetCost(c28316345.spcost)
 	e1:SetTarget(c28316345.sptg)
 	e1:SetOperation(c28316345.spop)
+	e1:SetLabel(1)
 	c:RegisterEffect(e1)
 	--recover
 	local e2=Effect.CreateEffect(c)
@@ -22,8 +23,10 @@ function c28316345.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38316345)
 	e2:SetCondition(c28316345.reccon)
+	e2:SetCost(c28316345.cost)
 	e2:SetTarget(c28316345.rectg)
 	e2:SetOperation(c28316345.recop)
+	e2:SetLabel(2)
 	c:RegisterEffect(e2)
 end
 function c28316345.chkfilter(c)
@@ -31,6 +34,7 @@ function c28316345.chkfilter(c)
 end
 function c28316345.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28316345.chkfilter,tp,LOCATION_HAND,0,1,nil) end
+	c28316345.cost(e,tp,eg,ep,ev,re,r,rp,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,c28316345.chkfilter,tp,LOCATION_HAND,0,1,1,nil)
 	if g:GetFirst():IsLevel(4) then e:SetLabel(1) else e:SetLabel(0) end
@@ -61,7 +65,7 @@ function c28316345.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28316345.reccon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_HAND+LOCATION_EXTRA) and #eg==1 and not eg:IsContains(e:GetHandler())
+	return eg:IsExists(Card.IsSummonLocation,1,nil,LOCATION_HAND+LOCATION_EXTRA) and #eg==1 and not eg:IsContains(e:GetHandler())
 end
 function c28316345.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x283)
@@ -88,4 +92,15 @@ function c28316345.recop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
+end
+function c28316345.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local ct=Duel.GetFlagEffectLabel(tp,28316345) or 0
+	ct=ct|e:GetLabel()
+	if ct==e:GetLabel() then
+		Duel.RegisterFlagEffect(tp,28316345,RESET_PHASE+PHASE_END,0,1,ct)
+	else
+		Duel.SetFlagEffectLabel(tp,28316345,ct)
+	end
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28362118,e,0,0,0,0)
 end

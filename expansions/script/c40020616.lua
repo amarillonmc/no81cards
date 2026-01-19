@@ -1,134 +1,137 @@
 --银河眼灵魂龙
 local s, id = GetID()
 
-
 function s.initial_effect(c)
-
-	aux.EnableChangeCode(c,93717133,LOCATION_MZONE+LOCATION_GRAVE)
-
-	local e1 = Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id, 0))
-	e1:SetCategory(CATEGORY_NEGATE + CATEGORY_SPECIAL_SUMMON + CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_CHAINING)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP + EFFECT_FLAG_DAMAGE_CAL)
-	e1:SetRange(LOCATION_HAND + LOCATION_GRAVE)
-	e1:SetCountLimit(1, id)
-	e1:SetCondition(s.negcon)
-	e1:SetTarget(s.negtg)
-	e1:SetOperation(s.negop)
+	aux.AddXyzProcedure(c,nil,8,2)
+	c:EnableReviveLimit()
+	
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1,id)
+	e1:SetCost(s.tdcost)
+	e1:SetTarget(s.tdtg)
+	e1:SetOperation(s.tdop)
 	c:RegisterEffect(e1)
-
-
-	local e2 = Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id, 1))
-	e2:SetCategory(CATEGORY_TOHAND + CATEGORY_SEARCH)
-	e2:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1, id + 100) 
-	e2:SetCondition(s.thcon)
-	e2:SetTarget(s.thtg)
-	e2:SetOperation(s.thop)
+	
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_DISABLE+CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_CHAINING)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,id+100)
+	e2:SetCondition(s.discon)
+	e2:SetCost(s.discost)
+	e2:SetTarget(s.distg)
+	e2:SetOperation(s.disop)
 	c:RegisterEffect(e2)
-
-	local e3 = e2:Clone()
-	e3:SetCode(EVENT_REMOVE)
-	c:RegisterEffect(e3)
 end
 
-
-function s.tgfilter(c, tp)
-	return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsSetCard(0x107b)
+function s.GalPho(c)
+	return c:IsSetCard(0x7b) or c:IsSetCard(0x55)
 end
 
-function s.negcon(e, tp, eg, ep, ev, re, r, rp)
-	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
-	local g = Duel.GetChainInfo(ev, CHAININFO_TARGET_CARDS)
-	return g and g:IsExists(s.tgfilter, 1, nil, tp) and rp == 1-tp and Duel.IsChainNegatable(ev)
+function s.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 
-function s.negtg(e, tp, eg, ep, ev, re, r, rp, chk)
-	if chk == 0 then 
-		return Duel.GetLocationCount(tp, LOCATION_MZONE) > 0 
-			and e:GetHandler():IsCanBeSpecialSummoned(e, 0, tp, false, false) 
-	end
-	Duel.SetOperationInfo(0, CATEGORY_NEGATE, eg, 1, 0, 0)
-	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, e:GetHandler(), 1, 0, 0)
-
-	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, nil, 1, tp, LOCATION_EXTRA)
+function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,0,LOCATION_GRAVE)
 end
 
-function s.xyzfilter(c)
-	return c:IsSetCard(0x107b) and c:IsXyzSummonable(nil)
-end
+function s.tdop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,2)) 
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
 
-function s.negop(e, tp, eg, ep, ev, re, r, rp)
-	local c = e:GetHandler()
-	if Duel.NegateActivation(ev) and c:IsRelateToEffect(e) then
-		if Duel.SpecialSummon(c, 0, tp, tp, false, false, POS_FACEUP) > 0 then
-
-			local g = Duel.GetMatchingGroup(s.xyzfilter, tp, LOCATION_EXTRA, 0, nil)
-			if g:GetCount() > 0 and Duel.SelectYesNo(tp, aux.Stringid(id, 2)) then 
-				Duel.BreakEffect()
-				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
-				local sc = g:Select(tp, 1, 1, nil):GetFirst()
-				if sc then
-					Duel.XyzSummon(tp, sc, nil)
-					if sc:IsLocation(LOCATION_MZONE) and sc:IsFaceup() then
-						local e1 = Effect.CreateEffect(c)
-						e1:SetDescription(aux.Stringid(id, 3))
-						e1:SetType(EFFECT_TYPE_SINGLE)
-						e1:SetCode(EFFECT_DIRECT_ATTACK)
-						e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-						e1:SetReset(RESET_EVENT + RESETS_STANDARD)
-						sc:RegisterEffect(e1)
-						
-						local e2 = Effect.CreateEffect(c)
-						e2:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_CONTINUOUS)
-						e2:SetCode(EVENT_DAMAGE_STEP_END)
-						e2:SetLabelObject(e1)
-						e2:SetCondition(function(e) 
-							return Duel.GetAttackTarget() == nil 
-						end)
-						e2:SetOperation(function(e)
-							e:GetLabelObject():Reset()
-							e:Reset()
-						end)
-						e2:SetReset(RESET_EVENT + RESETS_STANDARD)
-						sc:RegisterEffect(e2)
-					end
-				end
-			end
+		if tc:IsControler(tp) and s.GalPho(tc) and tc:IsAbleToHand() 
+			and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then 
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
+		else
+			Duel.SendtoDeck(tc,nil,2,REASON_EFFECT)
 		end
 	end
 end
 
 
-function s.thcon(e, tp, eg, ep, ev, re, r, rp)
-	local c = e:GetHandler()
-
-	return c:IsReason(REASON_COST) and re:IsActivated() and re:GetHandler():IsType(TYPE_XYZ)
-		and c:IsPreviousLocation(LOCATION_OVERLAY)
+function s.discon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp and re:IsActiveType(TYPE_MONSTER)
 end
 
-function s.searchfilter(c)
+function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 
-	return (c:IsSetCard(0x7b) or c:IsSetCard(0x55)) 
-		and c:IsType(TYPE_SPELL + TYPE_TRAP) 
-		and c:IsAbleToHand()
+	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_COST) end
+	Duel.RemoveOverlayCard(tp,1,0,1,1,REASON_COST)
 end
 
-function s.thtg(e, tp, eg, ep, ev, re, r, rp, chk)
-	if chk == 0 then return Duel.IsExistingMatchingCard(s.searchfilter, tp, LOCATION_DECK, 0, 1, nil) end
-	Duel.SetOperationInfo(0, CATEGORY_TOHAND, nil, 1, tp, LOCATION_DECK)
+
+function s.xyzfilter(c,e,tp,mc)
+
+	return s.GalPho(c) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) 
+		and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0 
+		and mc:IsCanBeXyzMaterial(c)
 end
 
-function s.thop(e, tp, eg, ep, ev, re, r, rp)
-	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_ATOHAND)
-	local g = Duel.SelectMatchingCard(tp, s.searchfilter, tp, LOCATION_DECK, 0, 1, 1, nil)
-	if g:GetCount() > 0 then
-		Duel.SendtoHand(g, nil, REASON_EFFECT)
-		Duel.ConfirmCards(1-tp, g)
+function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then 
+
+		if c:IsLocation(LOCATION_GRAVE) and not (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)) then
+			return false 
+		end
+
+		return Duel.IsExistingMatchingCard(s.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	if c:IsLocation(LOCATION_GRAVE) then
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	end
+end
+
+function s.matfilter(c)
+	return c:IsSetCard(0x107b) and c:IsType(TYPE_MONSTER)
+end
+
+function s.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	
+	if Duel.NegateEffect(ev) then
+
+		if c:IsRelateToEffect(e) and c:IsLocation(LOCATION_GRAVE) then
+			if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then
+				return 
+			end
+		end
+		
+		if c:IsRelateToEffect(e) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and not c:IsImmuneToEffect(e) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local g=Duel.SelectMatchingCard(tp,s.xyzfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,c)
+			local sc=g:GetFirst()
+			if sc then
+				sc:SetMaterial(Group.FromCards(c))
+				Duel.Overlay(sc,Group.FromCards(c))
+				if Duel.SpecialSummon(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)>0 then
+					sc:CompleteProcedure()
+					
+					if Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.matfilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
+						and Duel.SelectYesNo(tp,aux.Stringid(id,4)) then 
+						
+						Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+						local matg=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.matfilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+						if matg:GetCount()>0 then
+							Duel.Overlay(sc,matg)
+						end
+					end
+				end
+			end
+		end
 	end
 end

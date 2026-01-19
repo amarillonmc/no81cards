@@ -46,6 +46,8 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local tg=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,c)
+	local tc=tg:GetFirst()
+	if tc and tc:IsOnField() and tc:IsFacedown() then Duel.ConfirmCards(tp,tc) end
 	tg:AddCard(c)
 	if #tg>0 then
 	Duel.SendtoGrave(tg,REASON_EFFECT)
@@ -61,7 +63,7 @@ end
 
 function s.rescon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	return ep==tp and re:IsActiveType(TYPE_MONSTER) and not rc:IsType(TYPE_LINK)
+	return ep==tp and re:IsActiveType(TYPE_MONSTER) and rc:IsAttribute(ATTRIBUTE_WATER) and not rc:IsType(TYPE_LINK)
 		and re:GetActivateLocation()==LOCATION_MZONE
 end
 

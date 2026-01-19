@@ -72,15 +72,16 @@ function c28382113.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=e:GetHandler():GetFlagEffectLabel(28382113)
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,0,nil)
 	if chk==0 then return ct and ct>0 and #g>0 end
+	local phchk=(Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and 1 or 0
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28382113,1))
-	e:SetLabel(ct)
+	e:SetLabel(ct,phchk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c28382113.gcheck(sg,tp)
 	return sg:IsExists(Card.IsControler,1,nil,tp)
 end
 function c28382113.desop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=e:GetLabel()
+	local ct,phchk=e:GetLabel()
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	if ct>0 and #g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
@@ -88,7 +89,7 @@ function c28382113.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(dg)
 		Duel.Destroy(dg,REASON_EFFECT)
 	end
-	if Duel.GetLP(tp)<=3000 and Duel.IsChainNegatable(ev) and Duel.SelectYesNo(tp,aux.Stringid(28382113,0)) then
+	if phchk==1 and Duel.IsChainNegatable(ev) and Duel.SelectYesNo(tp,aux.Stringid(28382113,0)) then
 		Duel.NegateEffect(ev)
 	end
 end

@@ -72,5 +72,6 @@ function s.repval(e,c)
 end
 
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,id)
 	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_EFFECT+REASON_REPLACE)
 end

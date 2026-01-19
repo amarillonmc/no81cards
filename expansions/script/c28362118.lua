@@ -47,6 +47,14 @@ function c28362118.initial_effect(c)
 	e3:SetTarget(c28362118.cttg)
 	e3:SetOperation(c28362118.ctop)
 	c:RegisterEffect(e3)
+	if not HOKURA_EFFECT_HINT then
+		HOKURA_EFFECT_HINT = true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_PREDRAW)
+		ge1:SetOperation(c28362118.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
 function c28362118.GetLinkCount(c)
 	if c:IsSetCard(0x286) then
@@ -180,4 +188,35 @@ function c28362118.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetTargetsRelateToChain()
 	if #g~=2 then return end
 	Duel.SwapControl(g:GetFirst(),g:GetNext())
+end
+function c28362118.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local member_list={28315544,28314946,28316345,28316048,28316849}
+	for p=0,1 do
+		local g=Duel.GetMatchingGroup(Card.IsCode,p,0xff,0,nil,table.unpack(member_list))
+		if g:GetClassCount(Card.GetCode)==#member_list then
+			local ge1=Effect.CreateEffect(e:GetHandler())
+			ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			ge1:SetCode(EVENT_CUSTOM+28362118)
+			ge1:SetOperation(c28362118.hintop)
+			Duel.RegisterEffect(ge1,p)
+		end
+	end
+	e:Reset()
+end
+function c28362118.hintop(e,tp,eg,ep,ev,re,r,rp)
+	--if rp~=tp then return end
+	local member_list={28315544,28314946,28316345,28316048,28316849}
+	local code_ascver={28314946,28315544,28316048,28316345,28316849}--ascending order
+	for _,te in pairs({Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+28362118)}) do te:Reset() end
+	for i,code in pairs(member_list) do
+		local ct=Duel.GetFlagEffectLabel(tp,code) or 0
+		local te=Effect.CreateEffect(e:GetHandler())
+		te:SetDescription(aux.Stringid(code_ascver[i],ct+5))
+		te:SetType(EFFECT_TYPE_FIELD)
+		te:SetCode(EFFECT_FLAG_EFFECT+28362118)
+		te:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		te:SetTargetRange(1,0)
+		te:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(te,tp)
+	end
 end

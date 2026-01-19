@@ -1,115 +1,195 @@
 --女神之令-简
-local s, id = GetID()
-
+local s,id=GetID()
 function s.initial_effect(c)
-	-- 仪式怪兽定义
 	c:EnableReviveLimit()
-	-- 效果①：展示手卡并丢弃
-	local e1 = Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id, 0))
-	e1:SetCategory(CATEGORY_HANDES+CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetRange(LOCATION_GRAVE)
-	e1:SetCountLimit(1, id)
-	e1:SetCondition(s.discon)
-	e1:SetCost(aux.bfgcost)
-	e1:SetTarget(s.distg)
-	e1:SetOperation(s.disop)
+	aux.AddCodeList(c,6100138)
+	--全局检查：本回合自己是否召唤·特殊召唤过本家怪兽
+	if not s.global_check then
+		s.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SUMMON_SUCCESS)
+		ge1:SetOperation(s.checkop)
+		Duel.RegisterEffect(ge1,0)
+		local ge2=ge1:Clone()
+		ge2:SetCode(EVENT_SPSUMMON_SUCCESS)
+		Duel.RegisterEffect(ge2,0)
+	end
+
+	--①：二速特召（本回合满足过条件即可发动）
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.spcon)
+	e1:SetTarget(s.sptg)
+	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-	
-	-- 效果②：连锁模仿效果
-	local e2 = Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id, 1))
-	e2:SetCategory(CATEGORY_REMOVE)
+
+	--②：二速多选一（展示魔法仪式召唤 / 展示陷阱盖怪）
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1, id+1)
-	e2:SetCondition(s.cpcon)
-	e2:SetCost(s.cpcost)
-	e2:SetTarget(s.cptg)
-	e2:SetOperation(s.cpop)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e2:SetCountLimit(1,id+1)
+	e2:SetTarget(s.efftg)
+	e2:SetOperation(s.effop)
 	c:RegisterEffect(e2)
 end
 
--- 效果①：条件检查
-function s.discon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0
+--------------------------------------------------------------------------------
+-- 全局检查
+--------------------------------------------------------------------------------
+function s.checkop(e,tp,eg,ep,ev,re,r,rp)
+	for tc in aux.Next(eg) do
+		if tc:IsSetCard(0x611) then
+			--给召唤该怪兽的玩家注册Flag
+			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),id,RESET_PHASE+PHASE_END,0,1)
+		end
+	end
 end
 
+--------------------------------------------------------------------------------
+-- ①效果
+--------------------------------------------------------------------------------
 
--- 效果①：目标设置
-function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
+--Condition: 检查Flag是否存在
+function s.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFlagEffect(tp,id)>0
 end
 
-function s.thfilter(c)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_SPELL) and c:IsType(TYPE_RITUAL) and c:IsAbleToHand()
+--Target: 仪式特召自身
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 
--- 效果①：操作处理
-function s.disop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()   
-	-- 随机丢弃手卡
-	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
-	if #g==0 then return end
-	local sg=g:RandomSelect(tp,1)
-	local tc=sg:GetFirst()
-	if Duel.SendtoGrave(tc,REASON_EFFECT+REASON_DISCARD)>0 then
-		-- 检查丢弃的卡
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local tg=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
-			if #tg>0 then
-				Duel.SendtoHand(tg,nil,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,tg)
+--Operation: 执行特召
+function s.spop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and Duel.CheckLPCost(tp,1000) then
+	Duel.PayLPCost(tp,1000)
+		c:SetMaterial(nil) --标记为仪式召唤
+		Duel.SpecialSummon(c,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+		c:CompleteProcedure()
+				if c:IsLevelAbove(1) and Duel.SelectYesNo(tp,aux.Stringid(id,4)) then --"要让等级上升吗？"
+				Duel.BreakEffect()
+				--选择上升 1 到 4 星
+				local val=Duel.AnnounceNumber(tp,1,2)
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_UPDATE_LEVEL)
+				e1:SetValue(val)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				c:RegisterEffect(e1)
 			end
 	end
 end
 
--- 效果②：条件检查 - 仪式召唤的这张卡
-function s.cpcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
+--------------------------------------------------------------------------------
+-- ②效果
+--------------------------------------------------------------------------------
+
+--检查手卡是否有本家魔法（Cost用）
+function s.rvspell(c)
+	return c:IsSetCard(0x611) and c:IsType(TYPE_SPELL) and not c:IsPublic()
 end
 
--- 效果②：cost - 解放自身
-function s.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	e:SetLabel(1)
-	if chk==0 then return true end
+--检查是否能进行仪式召唤（Target check用）
+function s.ritcheck(c,e,tp)
+	if not (c:IsSetCard(0x611) and c:IsType(TYPE_RITUAL) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true)) then return false end
+	local lv=c:GetLevel()
+	--获取玩家可用的仪式素材（手卡+场上）
+	local mg=Duel.GetRitualMaterial(tp)
+	--如果待召唤怪兽在手卡，需要将其从素材列表中移除
+	if c:IsLocation(LOCATION_HAND) then mg:RemoveCard(c) end
+	--检查是否存在满足等级合计的素材组合
+	return mg:CheckWithSumGreater(Card.GetRitualLevel,lv,c)
 end
 
--- 效果②：目标设置 - 选择墓地的通常魔法/陷阱
-function s.cpfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSetCard(0x611) and c:IsAbleToGraveAsCost()
-		and c:CheckActivateEffect(true,true,false)~=nil and not c:IsType(TYPE_COUNTER) 
+--检查手卡是否有本家陷阱（Cost用）
+function s.rvtrap(c)
+	return c:IsSetCard(0x611) and c:IsType(TYPE_TRAP) and not c:IsPublic()
 end
 
-function s.cptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-	if e:GetLabel()==0 then return false end
-		e:SetLabel(0)
-		return e:GetHandler():IsReleasable() and Duel.IsExistingMatchingCard(s.cpfilter,tp,LOCATION_DECK,0,1,nil)
+--检查是否有能变里侧的对方怪兽
+function s.posfilter(c)
+	return c:IsCanTurnSet()
+end
+
+function s.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
+	--条件1：有魔法展示 + 能从手/卡组仪式召唤
+	local b1 = Duel.IsExistingMatchingCard(s.rvspell,tp,LOCATION_HAND,0,1,nil)
+			and Duel.IsExistingMatchingCard(s.ritcheck,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)
+	
+	--条件2：有陷阱展示 + 能盖对方怪兽
+	local b2 = Duel.IsExistingMatchingCard(s.rvtrap,tp,LOCATION_HAND,0,1,nil)
+			and Duel.IsExistingMatchingCard(s.posfilter,tp,0,LOCATION_MZONE,1,nil)
+	
+	if chk==0 then return b1 or b2 end
+
+	local op=0
+	if b1 and b2 then
+		op=Duel.SelectOption(tp,aux.Stringid(id,2),aux.Stringid(id,3))
+	elseif b1 then
+		op=Duel.SelectOption(tp,aux.Stringid(id,2))
+	else
+		op=Duel.SelectOption(tp,aux.Stringid(id,3))+1
 	end
-	e:SetLabel(0)
-	Duel.Release(e:GetHandler(),REASON_COST)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,s.cpfilter,tp,LOCATION_DECK,0,1,1,nil)
-	local te,ceg,cep,cev,cre,cr,crp=g:GetFirst():CheckActivateEffect(true,true,true)
-	Duel.SendtoGrave(g,REASON_COST)
-	e:SetProperty(te:GetProperty())
-	local tg=te:GetTarget()
-	if tg then tg(e,tp,ceg,cep,cev,cre,cr,crp,1) end
-	te:SetLabelObject(e:GetLabelObject())
-	e:SetLabelObject(te)
-	Duel.ClearOperationInfo(0)
+	e:SetLabel(op)
+	
+	if op==0 then
+		--盖放通常不设Category，除非涉及墓地
+	else
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+	end
+	
 end
 
--- 效果②：操作处理 - 模仿效果
-function s.cpop(e,tp,eg,ep,ev,re,r,rp)
-	local te=e:GetLabelObject()
-	if te then
-		e:SetLabelObject(te:GetLabelObject())
-		local op=te:GetOperation()
-		if op then op(e,tp,eg,ep,ev,re,r,rp) end
+function s.effop(e,tp,eg,ep,ev,re,r,rp)
+	local op=e:GetLabel()
+	
+	if op==0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+		local g=Duel.SelectMatchingCard(tp,s.rvspell,tp,LOCATION_HAND,0,1,1,nil)
+		Duel.ConfirmCards(1-tp,g)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		--选择要召唤的仪式怪兽
+		local tg=Duel.SelectMatchingCard(tp,s.ritcheck,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+		local tc=tg:GetFirst()
+		if tc then
+			local lv=tc:GetLevel()
+			local mg=Duel.GetRitualMaterial(tp)
+			if tc:IsLocation(LOCATION_HAND) then mg:RemoveCard(tc) end
+			
+			--选择并解放素材
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+			local mat=mg:SelectWithSumGreater(tp,Card.GetRitualLevel,lv,tc)
+			tc:SetMaterial(mat)
+			--注意：这里使用通用的Release，而非ReleaseRitualMaterial，因为不是通过仪式魔法卡发动
+			Duel.Release(mat,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
+			
+			--特殊召唤
+			Duel.BreakEffect()
+			Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+			tc:CompleteProcedure()
+		end 
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+		local g=Duel.SelectMatchingCard(tp,s.rvtrap,tp,LOCATION_HAND,0,1,1,nil)
+		Duel.ConfirmCards(1-tp,g)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+		local g=Duel.SelectMatchingCard(tp,s.posfilter,tp,0,LOCATION_MZONE,1,1,nil)
+		if #g>0 then
+			Duel.HintSelection(g)
+			Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
+		end
 	end
 end

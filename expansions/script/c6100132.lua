@@ -1,158 +1,167 @@
 --女神之令-谦玄
-local s, id = GetID()
-
+local s,id=GetID()
 function s.initial_effect(c)
-	-- 仪式怪兽定义
 	c:EnableReviveLimit()
-
-	-- 效果①：回收并选择效果
-	local e1 = Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id, 0))
-	e1:SetCategory(CATEGORY_TODECK+CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_DISABLE+CATEGORY_REMOVE)
-	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1, id)
-	e1:SetTarget(s.rttg)
-	e1:SetOperation(s.rtop)
+	aux.AddCodeList(c,6100138)
+	--①：仪式召唤成功，盖放S/T (本回合可发动)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.setcon)
+	e1:SetTarget(s.settg)
+	e1:SetOperation(s.setop)
 	c:RegisterEffect(e1)
-	
-	-- 效果②：战斗破坏效果
-	local e2 = Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id, 1))
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_ATKCHANGE)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_BATTLE_DESTROYING)
-	e2:SetCountLimit(1, id+1)
-	e2:SetCondition(s.atkcon)
-	e2:SetTarget(s.atktg)
-	e2:SetOperation(s.atkop)
+
+	--②：洗回卡组，堆墓并 (抽卡 OR 无效除外)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e2:SetCountLimit(1,id+1)
+	e2:SetCost(s.e2cost)
+	e2:SetTarget(s.e2tg)
+	e2:SetOperation(s.e2op)
 	c:RegisterEffect(e2)
 end
 
--- 效果①：目标设置
-function s.rtfilter(c)
-	return c:IsSetCard(0x611) and c:IsAbleToDeck()
+--------------------------------------------------------------------------------
+-- ①效果
+--------------------------------------------------------------------------------
+
+function s.setcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
 end
 
-function s.spfilter(c,e,tp)
-   return c:IsSetCard(0x611) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+--盖放过滤器：本家S/T，且能盖放
+function s.setfilter(c)
+	return c:IsSetCard(0x611) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 
-function s.tgfilter1(c)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_SPELL) and c:IsAbleToGrave()
+function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 end
 
-function s.tgfilter2(c)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_TRAP) and c:IsAbleToGrave()
-end
-
-function s.nbfilter(c)
-	return c:IsFaceup() and c:IsAbleToRemove()
-end
-
-function s.rttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and s.rtfilter(chkc) end
-	 if chk==0 then return Duel.IsExistingTarget(s.rtfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
-		and ((Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(s.tgfilter1,tp,LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)
-		or Duel.IsExistingMatchingCard(s.nbfilter,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(s.tgfilter2,tp,LOCATION_DECK,0,1,nil))
-	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,s.rtfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,3,nil)
-	Duel.HintSelection(g)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,3,0,0)
-end
-
--- 效果①：操作处理
-function s.rtop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if g:GetCount()<=0 then return end
-	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	local og=Duel.GetOperatedGroup()
-	if not og:IsExists(Card.IsLocation,1,nil,LOCATION_DECK) then return end
-	Duel.ShuffleDeck(tp)
-	Duel.BreakEffect()
-	local op=0
-	local b1=Duel.IsExistingMatchingCard(s.tgfilter1,tp,LOCATION_DECK,0,1,nil,e,tp)
-	local b3=Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)
-	local b2=Duel.IsExistingMatchingCard(s.tgfilter2,tp,LOCATION_DECK,0,1,nil)
-	local b4=Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil)
-	Duel.Hint(HINT_SELECTMSG,tp,0)
-	if b1 and b2 and b3 and b4 then op=Duel.SelectOption(tp,aux.Stringid(id,2),aux.Stringid(id,3))
-	elseif b1 and b3 then op=Duel.SelectOption(tp,aux.Stringid(id,2))
-	elseif b2 and b4 then Duel.SelectOption(tp,aux.Stringid(id,3)) op=1
-	else return end
-	if op==0 then
-		local tg=Duel.SelectMatchingCard(tp,s.tgfilter1,tp,LOCATION_DECK,0,1,1,nil)
-		Duel.SendtoGrave(tg,REASON_EFFECT)
-		local sc=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,1,nil,e,tp)
-			Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
-	else
-		local tg1=Duel.SelectMatchingCard(tp,s.tgfilter2,tp,LOCATION_DECK,0,1,1,nil)
-		Duel.SendtoGrave(tg1,REASON_EFFECT)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-		local tc=Duel.SelectMatchingCard(tp,s.nbfilter,tp,0,LOCATION_ONFIELD,1,1,nil):GetFirst()
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetValue(RESET_TURN_SET)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e2)
-		if tc:IsType(TYPE_TRAPMONSTER) then
-			local e3=Effect.CreateEffect(c)
-			e3:SetType(EFFECT_TYPE_SINGLE)
-			e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
-			e3:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e3)
+function s.setop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc and Duel.SSet(tp,tc)>0 then
+		--如果是陷阱卡或速攻魔法，允许当回合发动
+		if tc:IsType(TYPE_TRAP) or tc:IsType(TYPE_QUICKPLAY) then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			if tc:IsType(TYPE_TRAP) then
+				e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+			else
+				e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+			end
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
 		end
-		Duel.AdjustInstantly()
-		Duel.NegateRelatedChain(tc,RESET_TURN_SET)
-		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	end
 end
 
--- 效果②：条件检查 - 战斗破坏
-function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsRelateToBattle() and Duel.GetAttacker()==e:GetHandler()
+--------------------------------------------------------------------------------
+-- ②效果
+--------------------------------------------------------------------------------
+function s.cfilter(c,tp)
+	if not (c:IsSetCard(0x611) and c:IsAbleToDeck()) then return false end
+	--怪兽：抽1
+	if c:IsType(TYPE_MONSTER) then
+		return Duel.IsPlayerCanDraw(tp,1)
+	--魔法：回卡组底
+	elseif c:IsType(TYPE_SPELL) then
+		return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,c)
+	--陷阱：无效并除外
+	elseif c:IsType(TYPE_TRAP) then
+		return Duel.IsExistingMatchingCard(s.negfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+	end
+	return false
 end
 
-function s.tdfilter(c)
-	return c:IsSetCard(0x611) and c:IsAbleToDeck()
+function s.negfilter(c)
+	return c:IsFaceup() and aux.NegateAnyFilter(c) and c:IsAbleToRemove()
 end
 
--- 效果②：目标设置
-function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
-end
-
--- 效果②：操作处理
-function s.atkop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	-- 选择回收的卡
+function s.e2cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,s.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
-	if #g>0 and Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
-		-- 攻击力提升
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(1000)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		c:RegisterEffect(e1)
-		-- 追加攻击
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e2:SetCode(EFFECT_EXTRA_ATTACK)
-		e2:SetValue(1)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e2)
+	local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp)
+	local tc=g:GetFirst()
+	
+	--记录种类
+	local label=0
+	if tc:IsType(TYPE_MONSTER) then label=1
+	elseif tc:IsType(TYPE_SPELL) then label=2
+	elseif tc:IsType(TYPE_TRAP) then label=3 
+	end
+	e:SetLabel(label)
+	Duel.HintSelection(g)
+	Duel.SendtoDeck(tc,nil,SEQ_DECKBOTTOM,REASON_COST)
+end
+
+function s.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local label=e:GetLabel()
+	
+	if label==1 then
+		e:SetCategory(CATEGORY_DRAW)
+		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+	elseif label==2 then
+		e:SetCategory(CATEGORY_TODECK)
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,0,LOCATION_GRAVE+LOCATION_REMOVED)
+	elseif label==3 then
+		e:SetCategory(CATEGORY_DISABLE+CATEGORY_REMOVE)
+		Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,0,LOCATION_ONFIELD)
+		Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,0,LOCATION_ONFIELD)
+	end
+end
+
+function s.e2op(e,tp,eg,ep,ev,re,r,rp)
+	local label=e:GetLabel()
+	
+	--怪兽：抽1
+	if label==1 then
+		Duel.Draw(tp,1,REASON_EFFECT)
+		
+	--魔法：回卡组底
+	elseif label==2 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil)
+		if #g>0 then
+			Duel.HintSelection(g)
+			Duel.SendtoDeck(g,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
+		end
+		
+	--陷阱：无效并除外
+	elseif label==3 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local g=Duel.SelectMatchingCard(tp,s.negfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
+		local tc=g:GetFirst()
+		if tc then
+			Duel.HintSelection(g)
+			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e2)
+			
+			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		end
 	end
 end

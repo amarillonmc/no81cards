@@ -10,6 +10,7 @@ function c28316849.initial_effect(c)
 	e1:SetCost(c28316849.spcost)
 	e1:SetTarget(c28316849.sptg)
 	e1:SetOperation(c28316849.spop)
+	e1:SetLabel(1)
 	c:RegisterEffect(e1)
 	--to deck
 	local e2=Effect.CreateEffect(c)
@@ -21,16 +22,19 @@ function c28316849.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38316849)
 	e2:SetCondition(c28316849.reccon)
+	e2:SetCost(c28316849.cost)
 	e2:SetTarget(c28316849.rectg)
 	e2:SetOperation(c28316849.recop)
+	e2:SetLabel(2)
 	c:RegisterEffect(e2)
-c28316849.shinycounter=true
+c28316849.counter_add_list={0x1283}
 end
 function c28316849.chkfilter(c)
 	return c:IsSetCard(0x283) and c:IsNonAttribute(ATTRIBUTE_WIND) and c:IsType(TYPE_MONSTER) and not c:IsPublic()
 end
 function c28316849.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28316849.chkfilter,tp,LOCATION_HAND,0,1,nil) end
+	c28316849.cost(e,tp,eg,ep,ev,re,r,rp,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,c28316849.chkfilter,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.ConfirmCards(1-tp,g)
@@ -76,4 +80,15 @@ function c28316849.recop(e,tp,eg,ep,ev,re,r,rp)
 			sc:AddCounter(0x1283,1)
 		end
 	end
+end
+function c28316849.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local ct=Duel.GetFlagEffectLabel(tp,28316849) or 0
+	ct=ct|e:GetLabel()
+	if ct==e:GetLabel() then
+		Duel.RegisterFlagEffect(tp,28316849,RESET_PHASE+PHASE_END,0,1,ct)
+	else
+		Duel.SetFlagEffectLabel(tp,28316849,ct)
+	end
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28362118,e,0,0,0,0)
 end

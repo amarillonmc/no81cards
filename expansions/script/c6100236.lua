@@ -50,19 +50,19 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_MZONE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	Duel.HintSelection(g)
 	Duel.SendtoHand(g,nil,REASON_COST)
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
@@ -80,7 +80,7 @@ end
 
 -- 选项2：送墓特召额外
 function s.op2costfilter(c)
-	return c:IsSetCard(0x613) and c:IsAbleToGrave()
+	return c:IsSetCard(0x613) and c:IsAbleToGrave() and c:IsFaceup()
 end
 function s.op2spfilter(c,e,tp)
 	return c:IsSetCard(0x613) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsType(TYPE_SYNCHRO)
@@ -124,6 +124,8 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	
 	if op==0 then
 		local tg=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil)
+		local tc=tg:GetFirst()
+		if tc and tc:IsOnField() and tc:IsFacedown() then Duel.ConfirmCards(tp,tc) end
 		if Duel.SendtoGrave(tg,REASON_EFFECT) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 		local g=Duel.SelectMatchingCard(tp,s.op1filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)

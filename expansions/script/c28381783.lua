@@ -15,7 +15,7 @@ function c28381783.initial_effect(c)
 	c:RegisterEffect(e0)
 	--destroy
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_GRAVE_ACTION)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	--e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -67,27 +67,26 @@ end
 function c28381783.descon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_FUSION)
 end
-function c28381783.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=e:GetHandler():GetFlagEffectLabel(28381783)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_DECK,0,1,nil,0x285) and ct and ct>0 end
-	e:SetLabel(ct)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,tp,LOCATION_DECK)
-end
 function c28381783.thfilter(c)
-	return c:IsSetCard(0x285) and c:IsAbleToHand() and c:IsFaceupEx() and aux.NecroValleyFilter()(c)
+	return c:IsSetCard(0x285) and c:IsAbleToHand()-- and c:IsFaceupEx() and aux.NecroValleyFilter()(c)
+end
+function c28381783.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local mt,phchk=e:GetHandler():GetFlagEffectLabel(28381783),Duel.GetCurrentPhase()==PHASE_STANDBY and 1 or 0
+	if chk==0 then return Duel.IsExistingMatchingCard(c28381783.thfilter,tp,LOCATION_DECK,0,1,nil) and mt and mt>0 end
+	e:SetLabel(mt,phchk)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c28381783.desop(e,tp,eg,ep,ev,re,r,rp)
-	local ct=e:GetLabel()
-	if ct>0 then
+	local mt,phchk=e:GetLabel()
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local tg=Duel.SelectMatchingCard(tp,c28381783.thfilter,tp,LOCATION_DECK,0,1,mt,nil)
+	local ct=Duel.SendtoHand(tg,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,tg)
+	if ct~=0 and phchk==0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_DECK,0,1,ct,nil,0x285)
+		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_MZONE,0,ct,ct,nil)
+		Duel.HintSelection(g)
 		Duel.Destroy(g,REASON_EFFECT)
-	end
-	if Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(c28381783.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28381783,0)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tg=Duel.SelectMatchingCard(tp,c28381783.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
-		Duel.HintSelection(tg)
-		Duel.SendtoHand(tg,nil,REASON_EFFECT)
 	end
 end
 function c28381783.valcheck(e,c)

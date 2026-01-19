@@ -27,7 +27,7 @@ function s.initial_effect(c)
 	e3:SetCategory(CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCountLimit(1,11569002)
 	e3:SetCondition(c11569000.ovcon)
@@ -93,11 +93,9 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		sc:CompleteProcedure()
 	end
 end
-function c11569000.ovfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x107b) and c:IsControler(tp)
-end
 function c11569000.ovcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c11569000.ovfilter,1,nil,tp)
+	local rc=re:GetHandler()
+	return re:IsActiveType(TYPE_MONSTER) and rc:IsSetCard(0x7b)
 end
 function c11569000.ovfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_XYZ)

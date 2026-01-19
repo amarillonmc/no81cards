@@ -127,47 +127,31 @@ function c28366684.slcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
-function c28366684.anfilter(c)
-	return c:IsSetCard(0x285) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
-end
-function c28366684.alfilter(c)
-	return c:IsSetCard(0x287) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+function c28366684.cfilter(c)
+	return (c:IsSetCard(0x285) and c:IsAbleToHand() or c:IsSetCard(0x287) and c:IsAbleToGrave()) and c:IsType(TYPE_MONSTER)
 end
 function c28366684.sltg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(c28366684.anfilter,tp,LOCATION_DECK,0,1,nil)
-	local b2=Duel.IsExistingMatchingCard(c28366684.alfilter,tp,LOCATION_DECK,0,1,nil)
-	if chk==0 then return b1 or b2 end
+	if chk==0 then return Duel.IsExistingMatchingCard(c28366684.cfilter,tp,LOCATION_DECK,0,1,nil) end
 end
 function c28366684.setfilter(c)
 	return c:IsSetCard(0x283) and c:IsType(TYPE_SPELL) and c:IsSSetable()
 end
 function c28366684.slop(e,tp,eg,ep,ev,re,r,rp)
-	local b1=Duel.IsExistingMatchingCard(c28366684.anfilter,tp,LOCATION_DECK,0,1,nil)
-	local b2=Duel.IsExistingMatchingCard(c28366684.alfilter,tp,LOCATION_DECK,0,1,nil)
-	if b1 or b2 then
-		local op=aux.SelectFromOptions(tp,
-			{b1,aux.Stringid(28366684,2)},
-			{b2,aux.Stringid(28366684,3)})
-		if op==1 then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local tc=Duel.SelectMatchingCard(tp,c28366684.cfilter,tp,LOCATION_DECK,0,1,1,nil):GetFirst()
+	if tc then
+		if tc:IsSetCard(0x285) then
 			local lp=Duel.GetLP(tp)
 			Duel.SetLP(tp,lp-1000)
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local g=Duel.SelectMatchingCard(tp,c28366684.anfilter,tp,LOCATION_DECK,0,1,1,nil)
-			if g:GetCount()>0 then
-				Duel.SendtoHand(g,nil,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,g)
-			end
-		elseif op==2 then
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,tc)
+		elseif c:IsSetCard(0x287) then
 			if Duel.Recover(tp,1000,REASON_EFFECT)~=0 then
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-				local g=Duel.SelectMatchingCard(tp,c28366684.alfilter,tp,LOCATION_DECK,0,1,1,nil)
-				if g:GetCount()>0 then
-					Duel.SendtoGrave(g,REASON_EFFECT)
-				end 
+				Duel.SendtoGrave(tc,REASON_EFFECT)
 			end
 		end
 	end
-	if e:GetHandler():IsRelateToEffect(e) and e:GetHandler():IsRankAbove(8) and Duel.IsExistingMatchingCard(c28366684.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28366684,1)) then
+	if e:GetHandler():IsRelateToChain() and e:GetHandler():IsRankAbove(8) and Duel.IsExistingMatchingCard(c28366684.setfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28366684,1)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 		local tg=Duel.SelectMatchingCard(tp,c28366684.setfilter,tp,LOCATION_DECK,0,1,1,nil)
 		Duel.SSet(tp,tg)

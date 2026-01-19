@@ -3,7 +3,7 @@ function c75075600.initial_effect(c)
 	-- 特殊召唤
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(75075600,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
 	e1:SetCountLimit(1,75075600)
@@ -64,7 +64,7 @@ end
 -- 2
 function c75075600.con2(e,tp,eg,ep,ev,re,r,rp)
     local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-    return ep==1-tp and loc==LOCATION_HAND and re:IsActiveType(TYPE_MONSTER) and Duel.IsExistingMatchingCard(aux.TRUE,e:GetHandlerPlayer(),LOCATION_FZONE,LOCATION_FZONE,1,nil)
+    return ep==1-tp and loc==LOCATION_HAND and re:IsActiveType(TYPE_MONSTER) and Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)>0 and Duel.GetFieldCard(tp,LOCATION_FZONE,0)~=nil and Duel.GetFieldCard(1-tp,LOCATION_FZONE,0)~=nil
 end
 function c75075600.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then

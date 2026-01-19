@@ -22,10 +22,9 @@ function cm.initial_effect(c)
 	--nontuner
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_NONTUNER)
+	e2:SetCode(EFFECT_TUNER)
 	e2:SetValue(c11513085.tnval)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 	c:RegisterEffect(e2)
 	--spsummon from szone
 	local e3=Effect.CreateEffect(c)

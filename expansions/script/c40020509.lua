@@ -16,13 +16,12 @@ function s.initial_effect(c)
 
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_DRAW)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVING)
 	e1:SetRange(LOCATION_PZONE)
-	e1:SetCountLimit(1)
-	e1:SetTarget(s.acttg)
-	e1:SetOperation(s.actop)
+	e1:SetCountLimit(1,id) 
+	e1:SetCondition(s.solvecon)
+	e1:SetOperation(s.solveop)
 	c:RegisterEffect(e1)
 
 	local e2 = Effect.CreateEffect(c)
@@ -50,56 +49,62 @@ function s.acttarget(e, c)
 	   and s.HighEvo(c)
 end
 
+function s.solvecon(e,tp,eg,ep,ev,re,r,rp)
+
+	local rc=re:GetHandler()
+	return rp==tp 
+		and rc:IsType(TYPE_MONSTER) and s.HighEvo(rc)
+		and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_SZONE,0,1,nil)
+end
+
 function s.filter(c)
 	return c:IsFacedown() and s.HighEvo(c) and c:IsType(TYPE_TRAP) 
 end
 
 function s.setfilter(c)
-	return c:IsType(TYPE_TRAP)  and c:IsSSetable()
+	return c:IsType(TYPE_TRAP) and c:IsSSetable()
 end
 
-function s.acttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_SZONE) and s.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_SZONE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RESOLVECARD)
-	Duel.SelectTarget(tp,s.filter,tp,LOCATION_SZONE,0,1,1,nil)
-end
+function s.solveop(e,tp,eg,ep,ev,re,r,rp)
 
-function s.actop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if not tc or not tc:IsRelateToEffect(e) or not tc:IsFacedown() then return end
-
-	Duel.ChangePosition(tc,POS_FACEUP)
-
-	local te=tc:GetActivateEffect()
-
-	if te then
-
-		local teg,tep,tev,tre,tr,trp = nil,tp,0,nil,0,0
-		
-
-		local tg=te:GetTarget()
-		if tg then
-
-			tg(te,tp,teg,tep,tev,tre,tr,trp,1)
-		end
-		
-		local op=te:GetOperation()
-		if op then
-			tc:CreateEffectRelation(te)
-			op(te,tp,teg,tep,tev,tre,tr,trp)
-			tc:ReleaseEffectRelation(te)
-		end
-	end
+	if not Duel.SelectYesNo(tp,aux.Stringid(id,0)) then return end
 	
-	local g=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_HAND,0,nil)
-	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local sg=g:Select(tp,1,1,nil)
-		if sg:GetCount()>0 then
-			if Duel.SSet(tp,sg)>0 then
-				Duel.Draw(tp,1,REASON_EFFECT)
+	Duel.Hint(HINT_CARD,0,id)
+	
+
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RESOLVECARD)
+	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_SZONE,0,1,1,nil)
+	local tc=g:GetFirst()
+	
+	if tc then
+		Duel.ChangePosition(tc,POS_FACEUP)
+		local te=tc:GetActivateEffect()
+		
+		if te then
+
+			local teg,tep,tev,tre,tr,trp = nil,tp,0,nil,0,0
+
+			local tg=te:GetTarget()
+			if tg then
+				tg(te,tp,teg,tep,tev,tre,tr,trp,1)
+			end
+			local op=te:GetOperation()
+			if op then
+				tc:CreateEffectRelation(te)
+				op(te,tp,teg,tep,tev,tre,tr,trp)
+				tc:ReleaseEffectRelation(te)
+			end
+
+			local hg=Duel.GetMatchingGroup(s.setfilter,tp,LOCATION_HAND,0,nil)
+			if hg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+				Duel.BreakEffect()
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+				local sg=hg:Select(tp,1,1,nil)
+				if sg:GetCount()>0 then
+					if Duel.SSet(tp,sg)>0 then
+						Duel.Draw(tp,1,REASON_EFFECT)
+					end
+				end
 			end
 		end
 	end
