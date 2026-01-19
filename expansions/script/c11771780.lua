@@ -204,6 +204,7 @@ end
 
 -- 4: Battle Phase
 function s.bpcon(e)
+	local ph=Duel.GetCurrentPhase()
 	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE and s.attcount(e:GetHandlerPlayer())>=4
 end
 function s.bptg(e,c)

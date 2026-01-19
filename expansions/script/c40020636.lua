@@ -65,8 +65,10 @@ function s.pcop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true) then
 
 			local c=e:GetHandler()
+
 			if Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,TYPE_FUSION) 
-				and c:IsRelateToEffect(e) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
+				and c:IsLocation(LOCATION_GRAVE) 
+				and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
 				and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
 				and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 				
