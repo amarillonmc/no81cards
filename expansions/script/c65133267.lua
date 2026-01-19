@@ -26,7 +26,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.matfilter(c)
-	return c:IsSetCard(0x838) and not c:IsType(TYPE_LINK)
+	return not c:IsLinkType(TYPE_LINK) and c:IsLinkSetCard(0x838)
 end
 function s.plcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
