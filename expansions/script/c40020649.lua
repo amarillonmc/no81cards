@@ -69,7 +69,7 @@ function s.mfilter(c)
 	return s.ForceFighter(c) and c:IsFaceup() and c:GetLevel()>0
 end
 
-function s.synchk_manual(sc,c,tc)
+function s.synchk_manual(sc,e,c,tc)
 
 	if not (s.ForceFighter(sc) and sc:IsType(TYPE_SYNCHRO)) then return false end
 
@@ -77,7 +77,8 @@ function s.synchk_manual(sc,c,tc)
 
 	if tc:IsType(TYPE_TUNER) then return false end
 
-	return sc:IsCanBeSpecialSummoned(nil,SUMMON_TYPE_SYNCHRO,c:GetControler(),false,false)
+
+	return sc:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,c:GetControler(),false,false)
 end
 
 function s.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -90,7 +91,8 @@ function s.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 
 		local mg=Duel.GetMatchingGroup(s.mfilter,tp,LOCATION_MZONE,0,nil)
 		for tc in aux.Next(mg) do
-			if Duel.IsExistingMatchingCard(s.synchk_manual,tp,LOCATION_EXTRA,0,1,nil,c,tc) then
+
+			if Duel.IsExistingMatchingCard(s.synchk_manual,tp,LOCATION_EXTRA,0,1,nil,e,c,tc) then
 				return true
 			end
 		end
@@ -109,6 +111,7 @@ function s.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		e:SetLabel(0)
 	end
 end
+
 
 function s.scop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -138,7 +141,6 @@ function s.scop(e,tp,eg,ep,ev,re,r,rp)
 					end
 				end
 				
-				-- 5. 进行同调召唤
 				Duel.SynchroSummon(tp,sc,nil,mg)
 			end
 		end

@@ -59,22 +59,35 @@ function cm.initial_effect(c)
 	e7:SetCode(EVENT_CHAINING)
 	e7:SetRange(LOCATION_EXTRA)
 	e7:SetCountLimit(1,11513094)
-	e7:SetCondition(c11513094.fscon1)
+	e7:SetCondition(c11513094.fscon11)
 	e7:SetTarget(c11513094.fstg1)
 	e7:SetOperation(c11513094.fsop1)
 	c:RegisterEffect(e7)
 	local e8=e7:Clone()
-	e8:SetCountLimit(1,11514094)
-	e8:SetCondition(c11513094.fscon2)
+	e8:SetCountLimit(1,11513094)
+	e8:SetCondition(c11513094.fscon12)
 	e8:SetTarget(c11513094.fstg2)
 	e8:SetOperation(c11513094.fsop2)
 	c:RegisterEffect(e8)
 	local e9=e7:Clone()
-	e9:SetCountLimit(1,11515094)
-	e9:SetCondition(c11513094.fscon3)
+	e9:SetCountLimit(1,11513094)
+	e9:SetCondition(c11513094.fscon13)
 	e9:SetTarget(c11513094.fstg3)
 	e9:SetOperation(c11513094.fsop3)
 	c:RegisterEffect(e9)
+
+	local ee7=e7:Clone()
+	ee7:SetCountLimit(1,11514094)
+	ee7:SetCondition(c11513094.fscon21)
+	c:RegisterEffect(ee7)
+	local ee8=e7:Clone()
+	ee8:SetCountLimit(1,11514094)
+	ee8:SetCondition(c11513094.fscon22)
+	c:RegisterEffect(ee8)
+	local ee9=e7:Clone()
+	ee9:SetCountLimit(1,11514094)
+	ee9:SetCondition(c11513094.fscon23)
+	c:RegisterEffect(ee9)
 	--mo
 	local e10=Effect.CreateEffect(c)
 	e10:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
@@ -183,17 +196,29 @@ function c11513094.effop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function c11513094.fscon1(e,tp,eg,ep,ev,re,r,rp)
+function c11513094.fscon11(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return (re:IsHasCategory(CATEGORY_DRAW) or re:IsHasCategory(CATEGORY_TOHAND)) and c:IsFaceup()
+	return (re:IsHasCategory(CATEGORY_DRAW) or re:IsHasCategory(CATEGORY_TOHAND)) and c:IsFaceup() and rp==tp
 end
-function c11513094.fscon2(e,tp,eg,ep,ev,re,r,rp)
+function c11513094.fscon21(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return re:IsHasCategory(CATEGORY_TOGRAVE) and c:IsFaceup()
+	return (re:IsHasCategory(CATEGORY_DRAW) or re:IsHasCategory(CATEGORY_TOHAND)) and c:IsFaceup() and rp==1-tp
 end
-function c11513094.fscon3(e,tp,eg,ep,ev,re,r,rp)
+function c11513094.fscon12(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return re:IsHasCategory(CATEGORY_REMOVE) and c:IsFaceup()
+	return re:IsHasCategory(CATEGORY_TOGRAVE) and c:IsFaceup() and rp==tp
+end
+function c11513094.fscon22(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return re:IsHasCategory(CATEGORY_TOGRAVE) and c:IsFaceup() and rp==1-tp
+end
+function c11513094.fscon13(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return re:IsHasCategory(CATEGORY_REMOVE) and c:IsFaceup() and rp==tp
+end
+function c11513094.fscon23(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return re:IsHasCategory(CATEGORY_REMOVE) and c:IsFaceup() and rp==1-tp
 end
 function c11513094.filter0(c)
 	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToDeck()
