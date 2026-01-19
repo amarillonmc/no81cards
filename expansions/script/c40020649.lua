@@ -20,7 +20,7 @@ function s.initial_effect(c)
 
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_DECKDES) 
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON) 
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_HAND+LOCATION_EXTRA) 
@@ -44,23 +44,23 @@ function s.indct(e,re,r,rp)
 	else return 0 end
 end
 
+function s.ymtcheck(tp)
+	return Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_PZONE,0,1,nil,40020585) or
+		   Duel.IsExistingMatchingCard(aux.FilterBoolFunction(Card.IsCode,40020585),tp,LOCATION_EXTRA,0,1,nil)
+end
+
 function s.sccon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-
 	local ph=Duel.GetCurrentPhase()
+	
 	local b1 = (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE and Duel.GetTurnPlayer()==tp)
 	local b2 = ((ph==PHASE_MAIN1 or ph==PHASE_MAIN2) and Duel.GetTurnPlayer()==1-tp)
 	if not (b1 or b2) then return false end
 	
-
 	if c:IsLocation(LOCATION_HAND) then
 		return true
 	elseif c:IsLocation(LOCATION_EXTRA) then
-
-		return c:IsFaceup() and (
-			Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_PZONE,0,1,nil,40020585) or
-			Duel.IsExistingMatchingCard(aux.FilterBoolFunction(Card.IsCode,40020585),tp,LOCATION_EXTRA,0,1,nil)
-		)
+		return c:IsFaceup() and s.ymtcheck(tp)
 	end
 	return false
 end
@@ -69,10 +69,15 @@ function s.mfilter(c)
 	return s.ForceFighter(c) and c:IsFaceup() and c:GetLevel()>0
 end
 
-function s.synchk(c,tc,tp,sc_card)
-	return sc_card:GetLevel() == c:GetLevel() + tc:GetLevel()
-		and s.ForceFighter(sc_card)
-		and sc_card:IsSynchroSummonable(nil, Group.FromCards(c,tc))
+function s.synchk_manual(sc,c,tc)
+
+	if not (s.ForceFighter(sc) and sc:IsType(TYPE_SYNCHRO)) then return false end
+
+	if sc:GetLevel() ~= c:GetLevel() + tc:GetLevel() then return false end
+
+	if tc:IsType(TYPE_TUNER) then return false end
+
+	return sc:IsCanBeSpecialSummoned(nil,SUMMON_TYPE_SYNCHRO,c:GetControler(),false,false)
 end
 
 function s.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
@@ -84,10 +89,8 @@ function s.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 			or not c:IsCanBeSpecialSummoned(e,0,tp,false,false) then return false end
 
 		local mg=Duel.GetMatchingGroup(s.mfilter,tp,LOCATION_MZONE,0,nil)
-
 		for tc in aux.Next(mg) do
-
-			if Duel.IsExistingMatchingCard(s.synchk,tp,LOCATION_EXTRA,0,1,nil,c,tc,tp) then
+			if Duel.IsExistingMatchingCard(s.synchk_manual,tp,LOCATION_EXTRA,0,1,nil,c,tc) then
 				return true
 			end
 		end
@@ -96,6 +99,7 @@ function s.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SMATERIAL)
 	local g=Duel.SelectTarget(tp,s.mfilter,tp,LOCATION_MZONE,0,1,1,nil)
+	
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 	
@@ -113,13 +117,15 @@ function s.scop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
 		if tc:IsRelateToEffect(e) and tc:IsFaceup() and not tc:IsImmuneToEffect(e) then
 			local mg=Group.FromCards(c,tc)
-
-			local sc_g=Duel.GetMatchingGroup(s.synchk,tp,LOCATION_EXTRA,0,nil,c,tc,tp)
+			
+			local sc_g=Duel.GetMatchingGroup(function(sc)
+				return s.ForceFighter(sc) and sc:IsSynchroSummonable(nil,mg)
+			end,tp,LOCATION_EXTRA,0,nil)
 			
 			if sc_g:GetCount()>0 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 				local sc=sc_g:Select(tp,1,1,nil):GetFirst()
-
+				
 				if e:GetLabel()==1 then
 					for mat in aux.Next(mg) do
 						local e_redirect=Effect.CreateEffect(c)
@@ -132,6 +138,7 @@ function s.scop(e,tp,eg,ep,ev,re,r,rp)
 					end
 				end
 				
+				-- 5. 进行同调召唤
 				Duel.SynchroSummon(tp,sc,nil,mg)
 			end
 		end

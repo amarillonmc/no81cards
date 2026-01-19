@@ -21,7 +21,7 @@ function s.initial_effect(c)
 
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_LVCHANGE)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
@@ -96,7 +96,7 @@ function s.resop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_UPDATE_LEVEL)
 				e1:SetValue(-2)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD_DISABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD)
 				c:RegisterEffect(e1)
 			end
 		end

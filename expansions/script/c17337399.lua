@@ -2,14 +2,16 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,17337400)
+
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_REMOVE)
 	e1:SetRange(LOCATION_FZONE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(0,1)
+	e1:SetTargetRange(0,1)  
 	e1:SetTarget(s.rmlimit)
 	c:RegisterEffect(e1)
+
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
@@ -25,7 +27,7 @@ end
 
 function s.rmlimit(e,c,rp,r,re)
 	local tp=e:GetHandlerPlayer()
-	return c:IsControler(1-tp) and c:IsLocation(LOCATION_GRAVE) and re:GetOwnerPlayer()~=tp
+	return c:IsControler(tp) and c:IsLocation(LOCATION_GRAVE) and re:GetOwnerPlayer()~=tp
 end
 
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)

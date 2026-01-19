@@ -33,7 +33,7 @@ function cm.initial_effect(c)
 	--special summon
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
+
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_MOVE)
@@ -63,7 +63,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,2,0,0)
 end
 function cm.xyzfilter(c,mg)
-	return c:IsXyzSummonable(mg,2,2) and c:IsSetCard(0x10db)
+	return c:IsXyzSummonable(mg,2,2) and c:IsAttribute(ATTRIBUTE_DARK)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

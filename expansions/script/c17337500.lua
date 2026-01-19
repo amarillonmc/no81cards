@@ -13,6 +13,7 @@ function s.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.negcon)
+	e1:SetCost(s.negcost)
 	e1:SetTarget(s.negtg)
 	e1:SetOperation(s.negop)
 	c:RegisterEffect(e1)
@@ -41,23 +42,30 @@ function s.tdfilter(c)
 	return c:IsAbleToDeck() and (c:IsSetCard(0x3f50) or aux.IsCodeListed(c,17337400))
 end
 
-function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_GRAVE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,s.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil)
+	if #g>0 then
+		local tc=g:GetFirst()
+		e:SetLabelObject(tc) 
+		Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_COST)
+	end
+end
+
+function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_GRAVE,0,nil)
-	if g:GetCount()>0 then
-		Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
+	local tc=e:GetLabelObject()
+	if tc and tc:IsCode(17337400) then
+		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 	end
 end
 
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,s.tdfilter,tp,LOCATION_GRAVE,0,1,1,nil)
-	if #g==0 then return end
-	local tc=g:GetFirst()
-	if Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
-		if Duel.NegateActivation(ev) and tc:IsCode(17337400) and Duel.IsPlayerCanDraw(tp,1)
-			and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+	if Duel.NegateActivation(ev) then
+		local tc=e:GetLabelObject()
+		if tc and tc:IsCode(17337400) and Duel.IsPlayerCanDraw(tp,1) then
 			Duel.BreakEffect()
 			Duel.Draw(tp,1,REASON_EFFECT)
 		end
