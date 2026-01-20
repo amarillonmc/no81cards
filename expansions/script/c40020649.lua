@@ -135,7 +135,7 @@ function s.scop(e,tp,eg,ep,ev,re,r,rp)
 						e_redirect:SetType(EFFECT_TYPE_SINGLE)
 						e_redirect:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
 						e_redirect:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-						e_redirect:SetValue(LOCATION_DECK)
+						e_redirect:SetValue(LOCATION_DECKSHF)
 						e_redirect:SetReset(RESET_EVENT+RESETS_STANDARD)
 						mat:RegisterEffect(e_redirect,true)
 					end

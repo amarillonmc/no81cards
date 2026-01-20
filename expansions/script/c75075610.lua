@@ -31,7 +31,7 @@ function c75075610.initial_effect(c)
 	e5:SetType(EFFECT_TYPE_QUICK_O)
     e5:SetCode(EVENT_FREE_CHAIN)
 	e5:SetRange(LOCATION_MZONE)
-    e5:SetCountLimit(1,75075608)
+    e5:SetCountLimit(1,75075609)
     e5:SetTarget(c75075610.con5)
     e5:SetCost(c75075610.cost5)
 	e5:SetOperation(c75075610.op5)
@@ -43,7 +43,7 @@ function c75075610.initial_effect(c)
 	e6:SetType(EFFECT_TYPE_QUICK_O)
 	e6:SetCode(EVENT_FREE_CHAIN)
 	e6:SetRange(LOCATION_MZONE)
-	e6:SetCountLimit(1,75075609)
+	e6:SetCountLimit(1,75075610)
 	e6:SetCost(c75075610.cost6)
 	e6:SetTarget(c75075610.tg6)
 	e6:SetOperation(c75075610.op6)
@@ -54,7 +54,7 @@ function c75075610.initial_effect(c)
 	e7:SetType(EFFECT_TYPE_QUICK_O)
 	e7:SetCode(EVENT_FREE_CHAIN)
 	e7:SetRange(LOCATION_MZONE)
-	e7:SetCountLimit(1,75075610)
+	e7:SetCountLimit(1,75075602)
 	e7:SetCost(c75075610.cost7)
 	e7:SetTarget(c75075610.tg7)
 	e7:SetOperation(c75075610.op7)
@@ -105,24 +105,25 @@ function c75075610.filter6(c,ft,tp)
 	return c:IsSetCard(0x5754)
 		and (ft>0 or (c:IsControler(tp) and c:GetSequence()<5)) and (c:IsControler(tp) or c:IsFaceup())
 end
-function c75075610.filter66(c)
-    return c:IsFaceup() and c:IsAbleToRemove() and not c:IsAttack(c:GetBaseAttack())
+function c75075610.cost6(e,tp,eg,ep,ev,re,r,rp,chk)
+	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
+	if chk==0 then return ft>-1 and Duel.CheckReleaseGroup(tp,c75075610.filter6,1,nil,ft,tp) end
+	local g=Duel.SelectReleaseGroup(tp,c75075610.filter6,1,1,nil,ft,tp)
+	Duel.Release(g,REASON_COST)
 end
 function c75075610.tg6(e,tp,eg,ep,ev,re,r,rp,chk)
-    if chk==0 then
-        Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-        return Duel.IsExistingMatchingCard(c75075610.filter66,tp,0,LOCATION_MZONE,1,nil) 
-    end
-    Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
-    Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_MZONE)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_ONFIELD)
 end
 function c75075610.op6(e,tp,eg,ep,ev,re,r,rp)
-    Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-    local g=Duel.SelectMatchingCard(tp,c75075610.filter66,tp,0,LOCATION_MZONE,1,1,nil)
-    if #g>0 then
-        Duel.HintSelection(g)
-        Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-    end
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
+	if g:GetCount()>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local sg=g:Select(tp,1,1,nil)
+		Duel.HintSelection(sg)
+		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
+	end
 end
 -- 4
 function c75075610.cost7(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -130,7 +131,7 @@ function c75075610.cost7(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c75075610.filter7(c,tp)
-	return c:IsSetCard(0x5754) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true) and c:IsType(TYPE_FIELD)
+	return c:IsSetCard(0x5754) and c:IsType(TYPE_FIELD) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
 function c75075610.tg7(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c75075610.filter7,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil,tp) end

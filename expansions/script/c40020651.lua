@@ -86,7 +86,6 @@ function s.resop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	
-	-- 苏生
 	if tc:IsRelateToEffect(e) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 then
 
 		if c:IsRelateToEffect(e) and c:IsFaceup() and c:GetLevel()>=3 then
@@ -105,5 +104,5 @@ end
 
 
 function s.tnval(e,c)
-	return e:GetHandler()
+	return e:GetHandler():IsControler(c:GetControler())
 end
