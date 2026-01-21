@@ -17,7 +17,7 @@ function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
 	return not (c:IsType(TYPE_FUSION) and c:IsRace(RACE_MACHINE)) and c:IsLocation(LOCATION_EXTRA)
 end
 function s.filter1(c,e)
-	return not c:IsImmuneToEffect(e)
+	return c:IsType(TYPE_MONSTER) and not c:IsImmuneToEffect(e)
 end
 function s.filter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and c:IsSetCard(0x6c73) and (not f or f(c))
@@ -26,7 +26,7 @@ end
 function s.thfilter(c,e,tp)
 	if not (c:IsSetCard(0x6c73) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()) then return false end
 	local chkf=tp
-	local mg1=Duel.GetFusionMaterial(tp)
+	local mg1=Duel.GetFusionMaterial(tp):Filter(s.filter1,nil,e)
 	local res=Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1+c,nil,chkf)
 	if not res then
 		local ce=Duel.GetChainMaterial(tp)
