@@ -60,11 +60,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e12)
 end
 function c29065510.lvtg(e,c)
-	return c:IsLevelAbove(1) and c:IsSetCard(0x87af)
+	return c:IsLevelAbove(1) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29065510.lvval(e,c,rc)
 	local lv=c:GetLevel()
-	if rc:IsSetCard(0x87af) then return rc:GetRank()+lv*0x10000
+	if (rc:IsSetCard(0x87af) or (_G["c"..rc:GetCode()] and  _G["c"..rc:GetCode()].named_with_Arknight)) then return rc:GetRank()+lv*0x10000
 	else return lv end
 end
 -------------------------------------------------

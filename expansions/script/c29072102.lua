@@ -38,8 +38,10 @@ function c29072102.initial_effect(c)
 end
 --cost
 function c29072102.chainfilter(re,tp,cid)
-	local rc=re:GetHandler()
-	return (rc:IsSetCard(0x87af) and rc:IsAttribute(ATTRIBUTE_WATER)) or not re:IsActiveType(TYPE_MONSTER) or not rc:IsAttribute(ATTRIBUTE_WATER)
+	local c=re:GetHandler()
+	local attr=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_ATTRIBUTE)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+		or not re:IsActiveType(TYPE_MONSTER) or attr&ATTRIBUTE_WATER~=0
 end
 function c29072102.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(29072102,tp,ACTIVITY_CHAIN)==0 end
@@ -53,7 +55,8 @@ function c29072102.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function c29072102.aclimit(e,re,tp)
-	return not re:GetHandler():IsSetCard(0x87af) and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsAttribute(ATTRIBUTE_WATER)
+	local c=re:GetHandler()
+	return not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsAttribute(ATTRIBUTE_WATER)
 end
 --e2
 function c29072102.efilter(e,re)

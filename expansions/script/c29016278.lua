@@ -11,7 +11,7 @@ function c29016278.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c29016278.filter1(c)
-	return c:IsRace(RACE_FISH) and c:IsSetCard(0x87af) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsRace(RACE_FISH) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function c29016278.filter2(c)
 	return c:IsSetCard(0x67af) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()

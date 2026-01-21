@@ -90,10 +90,7 @@ function c29065500.thandop2(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(29065500,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_BATTLE,0,1)
 end
 function c29065500.thfilter(c)
-	return c:IsSetCard(0x87af) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
-end
-function c29065500.thfilter1(c)
-	return c:IsSetCard(0x87af) and c:IsAbleToHand()
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_SPELL) and c:IsAbleToHand()
 end
 function c29065500.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c29065500.thfilter,tp,LOCATION_DECK,0,1,nil) end

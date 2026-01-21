@@ -1,6 +1,7 @@
 --方舟骑士团-临光·耀骑士
 local m=29016634
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	aux.AddCodeList(c,29080291) 
 	c:EnableReviveLimit()
@@ -38,7 +39,7 @@ function cm.splimit(e,se,sp,st)
 	return sc:IsSetCard(0x87af) 
 end
 function cm.filter(c)
-	return c:IsSetCard(0x87af) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,nil) end

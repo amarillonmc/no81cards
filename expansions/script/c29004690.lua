@@ -51,7 +51,7 @@ function c29004690.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c29004690.filter(c)
-	return c:IsFaceup() and c:IsRace(RACE_FISH) and c:IsSetCard(0x87af) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsRace(RACE_FISH) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER)
 end
 function c29004690.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

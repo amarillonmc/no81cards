@@ -1,5 +1,6 @@
 --方舟骑士团-白金
 local cm,m,o=GetID()
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
@@ -25,7 +26,7 @@ function cm.initial_effect(c)
 end
 --e2
 function cm.thf1(c)
-	return c:IsSetCard(0x87af) and c:IsFaceup()
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsFaceup()
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(cm.thf1,tp,LOCATION_FZONE,0,1,nil)
@@ -41,7 +42,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 --e1
 function cm.cof1(c)
-	return not c:IsCode(m) and c:IsSetCard(0x87af) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToGraveAsCost()
+	return not c:IsCode(m) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToGraveAsCost()
 end
 function cm.cos1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.cof1,tp,LOCATION_DECK,0,1,nil) end

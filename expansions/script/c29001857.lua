@@ -1,5 +1,6 @@
 --方舟骑士团-瑕光
 local cm,m,o=GetID()
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--SpecialSummon
 	local e2=Effect.CreateEffect(c)
@@ -43,7 +44,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetMatchingGroup(cm.posfilter,tp,0,LOCATION_MZONE,nil)
 			if g:GetCount()>0 then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-				local sg=Duel.SelectMatchingCard(tp,cm.posfilter,tp,0,LOCATION_MZONE,1,1,nil)	   
+				local sg=Duel.SelectMatchingCard(tp,cm.posfilter,tp,0,LOCATION_MZONE,1,1,nil)	  
 				if #sg>0 then
 				Duel.HintSelection(sg)
 				Duel.ChangePosition(sg,POS_FACEDOWN_DEFENSE)
@@ -52,7 +53,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 end
 --e1
 function cm.tdfilter(c)
-	return c:IsSetCard(0x87af) and c:IsAbleToDeck()
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToDeck()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tdfilter,tp,LOCATION_GRAVE,0,1,nil) and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end

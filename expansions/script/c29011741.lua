@@ -32,6 +32,12 @@ function c29011741.initial_effect(c)
 	c:RegisterEffect(e2)
 	Duel.AddCustomActivityCounter(29011741,ACTIVITY_CHAIN,c29011741.chainfilter)
 end
+function c29011741.chainfilter(re,tp,cid)
+	local c=re:GetHandler()
+	local attr=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_ATTRIBUTE)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+		or not re:IsActiveType(TYPE_MONSTER) or attr&ATTRIBUTE_WATER~=0
+end
 --SpecialSummon and Destroy
 function c29011741.cfilter(c)
 	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER)
@@ -83,11 +89,6 @@ function c29011741.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
---Cost
-function c29011741.chainfilter(re,tp,cid)
-	local rc=re:GetHandler()
-	return (rc:IsSetCard(0x87af) and rc:IsAttribute(ATTRIBUTE_WATER)) or not re:IsActiveType(TYPE_MONSTER) or not rc:IsAttribute(ATTRIBUTE_WATER)
-end
 function c29011741.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(29011741,tp,ACTIVITY_CHAIN)==0 end
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -100,5 +101,6 @@ function c29011741.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function c29011741.aclimit(e,re,tp)
-	return not re:GetHandler():IsSetCard(0x87af) and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsAttribute(ATTRIBUTE_WATER)
+	local c=re:GetHandler()
+	return not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsAttribute(ATTRIBUTE_WATER)
 end

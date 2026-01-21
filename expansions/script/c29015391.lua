@@ -15,7 +15,7 @@ end
 cm.kinkuaoi_Lightakm=true
 --e1
 function cm.tgf1(c,e,tp,code)
-	if not (c:IsSetCard(0x87af) and c:IsAttribute(ATTRIBUTE_LIGHT)) then return false end
+	if not ((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAttribute(ATTRIBUTE_LIGHT)) then return false end
 	if code then return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and not c:IsCode(code) end
 	if not Duel.IsExistingMatchingCard(cm.tgf1,tp,LOCATION_DECK+LOCATION_HAND,0,1,nil,e,tp,c:GetCode()) then return false end
 	local seq=c:GetSequence()

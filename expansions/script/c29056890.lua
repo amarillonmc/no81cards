@@ -38,8 +38,12 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)
 end
 --e2
+function cm.rmfilter(c)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+		and c:IsAbleToRemoveAsCost(POS_FACEDOWN)
+end
 function cm.cos2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemoveAsCost,tp,LOCATION_DECK,0,nil):Filter(Card.IsSetCard,nil,0x87af)
+	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,LOCATION_DECK,0,nil)
 	if chk==0 then return #g>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	g=g:Select(tp,1,1,nil):GetFirst()

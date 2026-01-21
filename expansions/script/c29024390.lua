@@ -1,4 +1,5 @@
 --深海歌者·斯卡蒂
+c29024390.named_with_Arknight=1
 function c29024390.initial_effect(c)
 	aux.AddCodeList(c,22702055)
 	--activate
@@ -34,7 +35,7 @@ function c29024390.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function c29024390.spfilter(c,e,tp)
-	if not (c:IsSetCard(0x87af) and c:IsLevelAbove(5) and c:IsRace(RACE_FISH) and c:IsType(TYPE_MONSTER)) then return false end
+	if not ((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsLevelAbove(5) and c:IsRace(RACE_FISH) and c:IsType(TYPE_MONSTER)) then return false end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	return c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
 end

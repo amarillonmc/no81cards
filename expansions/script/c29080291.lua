@@ -1,5 +1,6 @@
 --方舟骑士团-临光
 local cm,m,o=GetID()
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--summon
 	local e0=Effect.CreateEffect(c)
@@ -46,7 +47,7 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>2 end
 end
 function cm.opf1(c,e,tp)
-	return c:IsSetCard(0x87af) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -83,7 +84,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and ex and tg~=nil and tc+tg:FilterCount(cm.descheck,nil,tp)-tg:GetCount()>0
 end
 function cm.check(c)
-	return c:IsFaceup() and c:IsSetCard(0x87af)
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

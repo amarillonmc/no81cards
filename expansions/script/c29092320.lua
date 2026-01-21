@@ -1,5 +1,6 @@
 --方舟骑士团-逻各斯
 local s,id,o=GetID()
+cm.named_with_Arknight=1
 function s.initial_effect(c)
 	---xyz summon
 	aux.AddXyzProcedure(c,s.mfilter,6,3,nil,nil,3)
@@ -33,14 +34,14 @@ function s.initial_effect(c)
 	
 end
 function s.mfilter(c)
-	return c:IsSetCard(0x87af) and c:IsAttribute(ATTRIBUTE_DARK)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAttribute(ATTRIBUTE_DARK)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
 end
 function s.thfilter(c)
-	return c:IsType(TYPE_SPELL) and c:IsSetCard(0x87af) and c:IsAbleToHand()
+	return c:IsType(TYPE_SPELL) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE+LOCATION_DECK,0,1,nil) end

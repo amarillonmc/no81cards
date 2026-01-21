@@ -1,5 +1,6 @@
 --方舟骑士团-远牙
 local cm,m,o=GetID()
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -16,7 +17,7 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>4 end
 end
 function cm.opf1(c)
-	return c:IsType(TYPE_SPELL) and c:IsSetCard(0x87af) and c:IsAbleToHand()
+	return c:IsType(TYPE_SPELL) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand()
 end
 function cm.opf2(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_LIGHT)

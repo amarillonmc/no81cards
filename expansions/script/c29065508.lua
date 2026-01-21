@@ -1,4 +1,5 @@
 --方舟骑士-陈
+c29065508.named_with_Arknight=1
 function c29065508.initial_effect(c)
 	aux.AddCodeList(c,29065500) 
 	--xyz summon
@@ -35,7 +36,7 @@ function c29065508.thfilter(c,tc)
 	return aux.IsCodeListed(c,tc:GetCode()) and c:IsAbleToHand()
 end
 function c29065508.tgfilter(c,tp)
-	return c:IsSetCard(0x87af) and c:IsFaceup() and Duel.IsExistingMatchingCard(c29065508.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,c)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsFaceup() and Duel.IsExistingMatchingCard(c29065508.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,c)
 end
 function c29065508.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingTarget(c29065508.tgfilter,tp,LOCATION_MZONE,0,1,e:GetHandler(),tp) end

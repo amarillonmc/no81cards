@@ -42,7 +42,7 @@ function c29065549.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c29065549.matfilter(c)
-	return c:IsLinkSetCard(0x87af) or (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+	return c:IsLinkSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)
 end
 function c29065549.cocon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsCanAddCounter(0x10ae,1) and e:GetHandler():IsRelateToBattle()

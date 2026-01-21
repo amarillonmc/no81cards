@@ -1,6 +1,7 @@
 --方舟骑士团－Mon3tr
 local m=29059050
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)   
@@ -108,7 +109,7 @@ function cm.spop1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function cm.addfilter(c,e,tp)
-	if not (c:IsSetCard(0x87af) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsType(TYPE_MONSTER) and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode())) then return false end
+	if not ((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsType(TYPE_MONSTER) and not Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode())) then return false end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	return c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))  
 end
@@ -140,7 +141,7 @@ function cm.addop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.splimit(e,c)
-	return not c:IsSetCard(0x87af) and c:IsLocation(LOCATION_EXTRA)
+	return not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsLocation(LOCATION_EXTRA)
 end
 function cm.pentg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

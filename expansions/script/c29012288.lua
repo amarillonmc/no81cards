@@ -1,6 +1,7 @@
 --方舟骑士团·驰援
 local m=29012288
 local c29012288=_G["c"..m]
+c29012288.named_with_Arknight=1
 function c29012288.initial_effect(c)
 	--Activate
 	local e0=Effect.CreateEffect(c)
@@ -39,7 +40,7 @@ function c29012288.initial_effect(c)
 	
 end
 function c29012288.spfilter(c,e,tp)
-	return c:IsSetCard(0x87af) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)<Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0) or c:IsLocation(LOCATION_HAND))
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)<Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE,0) or c:IsLocation(LOCATION_HAND))
 end
 function c29012288.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -59,10 +60,10 @@ function c29012288.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c29012288.eftg(e,c)
-	return c:IsSetCard(0x87af) and c:IsLocation(LOCATION_EXTRA) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_XYZ) and c:IsRankBelow(6)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsLocation(LOCATION_EXTRA) and c:IsType(TYPE_MONSTER) and c:IsType(TYPE_XYZ) and c:IsRankBelow(6)
 end
 function c29012288.xyzfilter(c,e)
-	return c:IsSetCard(0x87af) and c:IsType(TYPE_MONSTER) and c:IsCanBeXyzMaterial(e:GetHandler()) and not c:IsCode(e:GetHandler():GetCode())
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsCanBeXyzMaterial(e:GetHandler()) and not c:IsCode(e:GetHandler():GetCode())
 end
 function c29012288.cfilter(c)
 	return c:IsDiscardable()

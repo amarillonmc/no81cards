@@ -61,7 +61,7 @@ function c29052475.tkop(e,tp,eg,ep,ev,re,r,rp)
 end
 --e1
 function c29052475.thfilter(c,e,tp)
-	return c:IsSetCard(0x87af) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c.kinkuaoi_Akscsst
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER) and c.kinkuaoi_Akscsst
 end
 function c29052475.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

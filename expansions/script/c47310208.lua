@@ -121,7 +121,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
     local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfilter2),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
     if #g>0 then
         local tc=g:GetFirst()
-        if not tc:IsType(TYPE_EFFECT) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+        if not tc:IsType(TYPE_EFFECT) and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
          and Duel.GetMZoneCount(tp)>0 and Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(id,4)) then
             Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
         else

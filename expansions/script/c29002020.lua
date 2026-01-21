@@ -84,7 +84,7 @@ function c29002020.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 function c29002020.cfilter(c,tp)
-	return c:IsSetCard(0x87af) and (c:IsControler(tp) or c:IsFaceup())
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and (c:IsControler(tp) or c:IsFaceup())
 end
 function c29002020.sprcon(e,c)
 	if c==nil then return true end

@@ -1,5 +1,6 @@
 --方舟骑士团-夜烟
 local cm,m=GetID()
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--token
 	local e1=Effect.CreateEffect(c)

@@ -56,7 +56,7 @@ function c29020954.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsPlayerAffectedByEffect(tp,29063234) and e:GetLabelObject():CheckCountLimit(tp)
 end
 function c29020954.filter(c,e,tp)
-	return c:IsRace(RACE_FISH) and c:IsSetCard(0x87af) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
+	return c:IsRace(RACE_FISH) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP)
 end
 function c29020954.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -94,7 +94,7 @@ function c29020954.condition(e,tp,eg,ep,ev,re,r,rp)
 	return (ph==PHASE_MAIN2 or ph==PHASE_END)
 end
 function c29020954.tdfilter(c)
-	return ((c:IsRace(RACE_FISH) and c:IsSetCard(0x87af)) or c:IsType(TYPE_TRAP)) and c:IsAbleToDeck()
+	return ((c:IsRace(RACE_FISH) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))) or c:IsType(TYPE_TRAP)) and c:IsAbleToDeck()
 end
 function c29020954.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
@@ -113,7 +113,7 @@ function c29020954.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c29020954.actfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_FISH) and c:IsSetCard(0x87af)
+	return c:IsFaceup() and c:IsRace(RACE_FISH) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29020954.handcon(e)
 	local g=Duel.GetMatchingGroup(c29020954.actfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)

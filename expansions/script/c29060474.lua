@@ -17,7 +17,8 @@ function cm.con1(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetCurrentChain()
 	if ct<2 then return end
 	local te,p=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-	return te and te:GetHandler():IsSetCard(0x87af) and p==tp and rp==1-tp
+	local c=te:GetHandler()
+	return te and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and p==tp and rp==1-tp
 end
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -31,7 +32,7 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,ng,ng:GetCount(),0,0)
 end
 function cm.opf1(c)
-	return c:IsSetCard(0x87af) and c:IsAttribute(ATTRIBUTE_LIGHT)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAttribute(ATTRIBUTE_LIGHT)
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	for i=1,ev do

@@ -57,7 +57,7 @@ function c29048675.initial_effect(c)
 end
 --e1 NegateEffect
 function c29048675.cfilter(c)
-	return c:IsFaceup() and c:IsRace(RACE_FISH) and c:IsSetCard(0x87af)
+	return c:IsFaceup() and c:IsRace(RACE_FISH) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end
 function c29048675.condition(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c29048675.cfilter,tp,LOCATION_MZONE,0,nil)

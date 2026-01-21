@@ -22,7 +22,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.atktg(e,c)
-	return c:IsSetCard(0x87af) and c:GetDefense()>=2000
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:GetDefense()>=2000
 end
 --e1
 function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -37,7 +37,7 @@ function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetOperatedGroup():GetFirst()
 	Duel.ConfirmCards(1-tp,tc)
 	Duel.BreakEffect()
-	if tc:IsType(TYPE_MONSTER) and tc:IsSetCard(0x87af) then
+	if tc:IsType(TYPE_MONSTER) and (tc:IsSetCard(0x87af) or (_G["c"..tc:GetCode()] and  _G["c"..tc:GetCode()].named_with_Arknight)) then
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		end

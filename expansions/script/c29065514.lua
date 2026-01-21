@@ -89,7 +89,7 @@ function c29065514.ffilter(c)
 	return c:IsCode(29065500) and c:IsFaceup()
 end
 function c29065514.filter(c,e,tp,ft)
-	return ((c:IsSetCard(0x87af) and Duel.IsExistingMatchingCard(c29065514.ffilter,tp,LOCATION_MZONE,0,1,nil)) or c:IsCode(29065500)) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP))
+	return (((c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and Duel.IsExistingMatchingCard(c29065514.ffilter,tp,LOCATION_MZONE,0,1,nil)) or c:IsCode(29065500)) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP))
 end
 function c29065514.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)

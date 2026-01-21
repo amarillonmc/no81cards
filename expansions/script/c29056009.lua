@@ -1,4 +1,5 @@
 --方舟骑士-凯尔希
+c29056009.named_with_Arknight=1
 function c29056009.initial_effect(c)
 	aux.AddCodeList(c,29065500,29065502,29065578)
 --search
@@ -60,7 +61,7 @@ function c29056009.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --search
 function c29056009.thfilter(c)
-	return c:IsSetCard(0x87af) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 
 function c29056009.amyfilter(c)
@@ -81,12 +82,4 @@ function c29056009.thop(e,tp,eg,ep,ev,re,r,rp)
 	local sg1=g:SelectSubGroup(tp,aux.dncheck,false,1,ct)
 	Duel.SendtoHand(sg1,nil,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,sg1)
-end
---summon with no tribute
-function c29056009.cfilter(c)
-	return not c:IsSetCard(0x87af) and c:IsType(TYPE_EFFECT)
-end
-function c29056009.ntcon(e,c,minc)
-	if c==nil then return true end
-	return minc==0 and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0 and not Duel.IsExistingMatchingCard(c29056009.cfilter,c:GetControler(),LOCATION_MZONE,0,1,nil)
 end

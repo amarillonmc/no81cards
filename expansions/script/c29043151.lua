@@ -1,4 +1,5 @@
 --方舟骑士团-天火
+c29043151.named_with_Arknight=1
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,29065532)
@@ -30,7 +31,7 @@ function s.initial_effect(c)
 end
 s.kinkuaoi_Akscsst=true
 function s.cpfilter(c)
-	return c:IsSetCard(0x87af) and c:GetType()==TYPE_SPELL+TYPE_RITUAL and c:IsAbleToGraveAsCost()
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:GetType()==TYPE_SPELL+TYPE_RITUAL and c:IsAbleToGraveAsCost()
 		and c:CheckActivateEffect(true,true,false)~=nil
 end
 function s.cpcost(e,tp,eg,ep,ev,re,r,rp,chk)

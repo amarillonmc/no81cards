@@ -1,4 +1,5 @@
 --引领者 -方舟骑士-
+c29068155.named_with_Arknight=1
 function c29068155.initial_effect(c)
 	aux.AddCodeList(c,29065500)
 	--change name
@@ -25,7 +26,7 @@ function c29068155.initial_effect(c)
 end
 --e2
 function c29068155.spfilter(c,e,tp)
-	return c:IsSetCard(0x87af) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c29068155.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

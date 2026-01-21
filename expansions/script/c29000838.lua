@@ -1,5 +1,6 @@
 --方舟骑士团-灰毫
 local cm,m,o=GetID()
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1190)
@@ -48,7 +49,7 @@ function cm.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function cm.opf1(c)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsSetCard(0x87af) and c:IsAbleToHand()
+	return c:IsAttribute(ATTRIBUTE_LIGHT) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand()
 end
 function cm.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

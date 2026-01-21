@@ -49,7 +49,7 @@ function c29033034.nefilter(c)
 	return c:IsFaceup() and not (c:IsType(TYPE_NORMAL) or c:IsType(TYPE_TOKEN))
 end
 function c29033034.filter(c)
-	return c:IsFaceup() and c:IsRace(RACE_FISH) and c:IsSetCard(0x87af) and c:IsType(TYPE_MONSTER)
+	return c:IsFaceup() and c:IsRace(RACE_FISH) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_MONSTER)
 end
 function c29033034.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) and Duel.IsExistingMatchingCard(c29033034.filter,tp,LOCATION_MZONE,0,1,nil) end

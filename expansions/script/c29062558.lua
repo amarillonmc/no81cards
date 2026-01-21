@@ -1,6 +1,7 @@
 --方舟骑士团·燃血
 local m=29062558
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -74,7 +75,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x87af) and c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_XYZ)
 end
 function cm.handcon(e)
 	return Duel.IsExistingMatchingCard(cm.filter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)

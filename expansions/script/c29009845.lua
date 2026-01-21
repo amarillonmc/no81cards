@@ -1,4 +1,5 @@
 --方舟骑士团-格雷伊
+c29009845.named_with_Arknight=1
 function c29009845.initial_effect(c)
 	--token
 	local e1=Effect.CreateEffect(c)
@@ -31,7 +32,7 @@ end
 c29009845.kinkuaoi_Akscsst=true
 --e3
 function c29009845.rthfilter(c)
-	return c:IsSetCard(0x87af) and c:IsAbleToHand() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsAbleToHand() and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER)
 end
 function c29009845.rfilter(c)
 	return c:IsType(TYPE_TOKEN) and c:IsReleasableByEffect()

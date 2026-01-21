@@ -1,8 +1,9 @@
 --先驱者 -方舟骑士团-
+c29009213.named_with_Arknight=1
 function c29009213.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0x87af),2,2)
+	aux.AddLinkProcedure(c,c29009213.mfilter,2,2)
 	aux.AddCodeList(c,29056009,29065510) 
 	--activate Arknights RHOSDES ISLAND
 	local e2=Effect.CreateEffect(c)
@@ -27,7 +28,9 @@ function c29009213.initial_effect(c)
 	e3:SetOperation(c29009213.regop)
 	c:RegisterEffect(e3)
 end
----e2
+function c29009213.mfilter(c)
+	return c:IsLinkSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)
+end
 function c29009213.accon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN2
 end

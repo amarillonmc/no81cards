@@ -1,6 +1,7 @@
 --足践烈火
 local m=29019317
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -20,10 +21,10 @@ function c29019317.cfilter(c)
 	return c:IsSummonLocation(LOCATION_EXTRA)
 end
 function c29019317.spfilter1(c,e,tp)
-	return c:IsFaceup() and c:IsSetCard(0x87af) and Duel.IsExistingMatchingCard(c29019317.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.IsExistingMatchingCard(c29019317.cfilter,tp,0,LOCATION_MZONE,1,nil)
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and Duel.IsExistingMatchingCard(c29019317.spfilter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c) and aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) and Duel.IsExistingMatchingCard(c29019317.cfilter,tp,0,LOCATION_MZONE,1,nil)
 end
 function c29019317.spfilter2(c,e,tp,mc)
-	return c:IsType(TYPE_XYZ) and c:IsSetCard(0x87af) and mc:IsCanBeXyzMaterial(c)
+	return c:IsType(TYPE_XYZ) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and mc:IsCanBeXyzMaterial(c)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 		and not Duel.IsExistingMatchingCard(c29019317.cfilter,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode())
 end

@@ -1,4 +1,5 @@
 --方舟骑士深层归还
+c29065511.named_with_Arknight=1
 function c29065511.initial_effect(c)
 	aux.AddCodeList(c,29065500)
 	--Activate
@@ -12,7 +13,7 @@ function c29065511.initial_effect(c)
 	c:RegisterEffect(e1)
 end 
 function c29065511.spfil1(c,e,tp) 
-	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x87af)
+	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
 end 
 function c29065511.spfil2(c,e,tp) 
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsCode(29065502)

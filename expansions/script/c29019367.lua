@@ -1,6 +1,7 @@
 --方舟骑士团·出鞘
 local m=29019367
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	
 	local e1=Effect.CreateEffect(c)
@@ -37,13 +38,13 @@ function c29019367.rop(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function c29019367.hafilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x87af) and c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsType(TYPE_XYZ)
 end
 function c29019367.actcon(e)
 	return Duel.IsExistingMatchingCard(c29019367.hafilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
 function c29019367.tgfilter(c,tp)
-	return c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsSetCard(0x87af) and c:IsControler(tp)
+	return c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsControler(tp)
 end
 function c29019367.wxcon(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end

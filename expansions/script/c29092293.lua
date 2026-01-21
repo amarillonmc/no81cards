@@ -1,6 +1,7 @@
 --方舟骑士团-乌尔比安
 local m=29092293
 local cm=_G["c"..m]
+cm.named_with_Arknight=1
 function cm.initial_effect(c)
 	--disable summon
 	local e1=Effect.CreateEffect(c)
@@ -30,8 +31,10 @@ function cm.initial_effect(c)
 	Duel.AddCustomActivityCounter(m,ACTIVITY_CHAIN,cm.chainfilter)
 end
 function cm.chainfilter(re,tp,cid)
+	local c=re:GetHandler()
 	local attr=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_ATTRIBUTE)
-	return not (re:IsActiveType(TYPE_MONSTER) and attr&ATTRIBUTE_WATER~=0 and not re:GetHandler():IsSetCard(0x87af))
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight))
+		or not re:IsActiveType(TYPE_MONSTER) or attr&ATTRIBUTE_WATER~=0
 end
 function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()==0 and eg:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_WATER)
@@ -48,7 +51,8 @@ function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.aclimit(e,re,tp)
-	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsAttribute(ATTRIBUTE_WATER) and not re:GetHandler():IsSetCard(0x87af)
+	local c=re:GetHandler()
+	return not (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsAttribute(ATTRIBUTE_WATER)
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -66,7 +70,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thcheck(c)
-	return c:IsAbleToHand() and c:IsSetCard(0x87af) and c:IsFaceup() and c:IsRace(RACE_FISH)
+	return c:IsAbleToHand() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsFaceup() and c:IsRace(RACE_FISH)
 end
 function cm.gthcheck(c)
 	return c:IsAbleToHand() and c:IsType(TYPE_TRAP)

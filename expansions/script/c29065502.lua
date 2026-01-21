@@ -1,6 +1,7 @@
 --方舟骑士团-博士
 local m=29065502
 local cm=_G["c"..m]
+c29065502.named_with_Arknight=1
 function cm.initial_effect(c)
 	aux.AddCodeList(c,29065500) 
 	--draw
@@ -51,7 +52,7 @@ function c29065502.amyfilter(c)
 	return c:IsCode(29065500) and c:IsFaceup()
 end
 function c29065502.spfilter(c,e,tp)
-	return c:IsSetCard(0x87af) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c29065502.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -67,7 +68,7 @@ function c29065502.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c29065502.spfilter2(c,e,tp)
-	return c:IsSetCard(0x87af) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c29065502.drop(e,tp,eg,ep,ev,re,r,rp)
 	local off=1
