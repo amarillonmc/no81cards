@@ -52,6 +52,13 @@ function s.chop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 		e3:SetTargetRange(1,0)
 		Duel.RegisterEffect(e3,tp)
+		--
+		local e6=Effect.CreateEffect(c)
+		e6:SetDescription(aux.Stringid(12847200,12))
+		e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e6:SetCode(EVENT_FREE_CHAIN)
+		e6:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
+		Duel.RegisterEffect(e6,tp)
 	end
 	c:SetEntityCode(89631139)
 	Duel.ConfirmCards(tp,c)
