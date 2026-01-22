@@ -119,17 +119,23 @@ function s.atkop(e, tp, eg, ep, ev, re, r, rp)
 	local g = Duel.GetMatchingGroup(aux.TRUE, tp, 0, LOCATION_MZONE, nil)
 	if g:GetCount() > 0 then
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_OPPO)
-		local tc = g:Select(tp, 1, 1, nil):GetFirst()
-		Duel.HintSelection(tc)
 
-		if tc:IsCanTurnSet() then
-			Duel.ChangePosition(tc, POS_FACEDOWN_DEFENSE)
-		else
+		local sg = g:Select(tp, 1, 1, nil) 
 
-			if c:CheckRemoveOverlayCard(tp, 1, REASON_EFFECT) 
-				and Duel.SelectYesNo(tp, aux.Stringid(id, 2)) then 
-				c:RemoveOverlayCard(tp, 1, 1, REASON_EFFECT)
-				Duel.SendtoGrave(tc, REASON_EFFECT)
+		local tc = sg:GetFirst()
+
+		if tc then
+
+			Duel.HintSelection(sg) 
+
+			if tc:IsCanTurnSet() then
+				Duel.ChangePosition(tc, POS_FACEDOWN_DEFENSE)
+			else
+				if c:CheckRemoveOverlayCard(tp, 1, REASON_EFFECT) 
+					and Duel.SelectYesNo(tp, aux.Stringid(id, 2)) then 
+					c:RemoveOverlayCard(tp, 1, 1, REASON_EFFECT)
+					Duel.SendtoGrave(tc, REASON_EFFECT)
+				end
 			end
 		end
 	end

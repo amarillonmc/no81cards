@@ -82,9 +82,10 @@ function s.ctop(e, tp, eg, ep, ev, re, r, rp)
 	end
 end
 
-function s.xyzcon(e, tp, eg, ep, ev, re, r, rp)
-	local ph = Duel.GetCurrentPhase()
-	return ph == PHASE_MAIN1 or ph == PHASE_MAIN2 or (ph >= PHASE_BATTLE_START and ph <= PHASE_BATTLE_END)
+function s.xyzcon(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
+	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
+		or (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)
 end
 
 function s.xyztg(e, tp, eg, ep, ev, re, r, rp, chk)
