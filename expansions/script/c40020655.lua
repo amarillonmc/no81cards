@@ -28,9 +28,9 @@ function s.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e2:SetTargetRange(0,1)
-	e2:SetCondition(s.costcon)
+	e2:SetTarget(s.acttg)
 	e2:SetCost(s.costchk)
-	e2:SetOperation(s.actop)
+	e2:SetOperation(s.costop)
 	c:RegisterEffect(e2)
 
 	local e3=Effect.CreateEffect(c)
@@ -91,20 +91,38 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function s.costcon(e)
-	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
+function s.acttg(e,te,tp)
+
+	if Duel.GetTurnPlayer() ~= e:GetHandlerPlayer() then return false end
+
+	if not Duel.IsExistingMatchingCard(Card.IsCode, e:GetHandlerPlayer(), LOCATION_PZONE, 0, 1, nil, 40020585) then return false end
+	return true
 end
 
-function s.costchk(e,te_or_c,tp)
+function s.costchk(e,te,tp)
 
-	return Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,3,nil)
+	return Duel.IsExistingMatchingCard(Card.IsAbleToDeck, tp, LOCATION_GRAVE, 0, 3, nil)
 end
 
 function s.costop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
+	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE,0,3,3,nil)
+	
 	if g:GetCount()==3 then
-		Duel.SendtoDeck(g,nil,SEQ_DECKBOTTOM,REASON_COST)
+
+		Duel.SendtoDeck(g, nil, SEQ_DECKTOP, REASON_COST)
+
+		local ct = g:GetCount()
+		if ct > 1 then
+			Duel.SortDecktop(tp, tp, ct)
+		end
+		
+
+		for i = 1, ct do
+			local mg = Duel.GetDecktopGroup(tp, 1)
+			Duel.MoveSequence(mg:GetFirst(), SEQ_DECKBOTTOM)
+		end
 	end
 end

@@ -25,8 +25,8 @@ function s.chop(e,tp,eg,ep,ev,re,r,rp)
 		local ag=cg:RandomSelect(tp,#cg-1)
 		for tc in aux.Next(ag) do
 			tc:SetEntityCode(89631139)
+			if not tc:IsLocation(LOCATION_HAND) then Duel.ConfirmCards(tp,tc) end
 		end
-		Duel.ConfirmCards(tp,ag)
 	end
 	local g2=Duel.GetMatchingGroup(s.filter,tp,LOCATION_HAND+LOCATION_DECK,0,nil)
 	if #g2>=15 then
@@ -53,15 +53,16 @@ function s.chop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetTargetRange(1,0)
 		Duel.RegisterEffect(e3,tp)
 		--
-		local e6=Effect.CreateEffect(c)
-		e6:SetDescription(aux.Stringid(12847200,12))
-		e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e6:SetCode(EVENT_FREE_CHAIN)
-		e6:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
-		Duel.RegisterEffect(e6,tp)
+		local e5=Effect.CreateEffect(c)
+		e5:SetDescription(aux.Stringid(197042,2))
+		e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e5:SetCode(EVENT_FREE_CHAIN)
+		e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
+		e5:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return Duel.GetCurrentChain()==0 and Duel.IsMainPhase() end)
+		Duel.RegisterEffect(e5,tp)
 	end
 	c:SetEntityCode(89631139)
-	Duel.ConfirmCards(tp,c)
+	if not c:IsLocation(LOCATION_HAND) then Duel.ConfirmCards(tp,c) end
 end
 function s.thfilter(c)
 	return (c:IsCode(89631139) or aux.IsCodeListed(c,89631139))
@@ -84,8 +85,11 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local sg2=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if #sg2>0 then
-		Duel.SendtoHand(sg2,nil,REASON_RULE)
-		Duel.ConfirmCards(1-tp,sg2)
+		local tc=sg2:GetFirst()
+		local token=Duel.CreateToken(tp,tc:GetOriginalCode())
+		Duel.Exile(tc,REASON_RULE)
+		Duel.SendtoHand(token,nil,REASON_RULE)
+		Duel.ConfirmCards(1-tp,token)
 	end
 	Duel.BreakEffect()
 	local g=Group.CreateGroup()
@@ -127,8 +131,10 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_OPSELECTED,0,aux.Stringid(id,3))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local sg=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil)
-	if #sg>0 and Duel.SSet(tp,sg,tp)>0 then
+	if #sg>0 then
 		local dc=sg:GetFirst()
+		Duel.MoveToField(dc,tp,tp,LOCATION_SZONE,POS_FACEDOWN,true)
+		Duel.ConfirmCards(1-tp,dc)
 		if dc:IsType(TYPE_QUICKPLAY) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetDescription(aux.Stringid(id,4))
