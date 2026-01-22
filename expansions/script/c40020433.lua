@@ -94,22 +94,23 @@ function s.e3tg(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
 	end
 	
 	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_FACEUP)
-	local tc = Duel.SelectTarget(tp, function(tc) 
+
+	local g = Duel.SelectTarget(tp, function(tc) 
 			return s.XiGundam(tc) and tc:IsFaceup() 
 			   and Duel.IsExistingMatchingCard(s.eqfilter, tp, LOCATION_DECK, 0, 1, nil, tc, tp)
-		end, tp, LOCATION_MZONE, 0, 1, nil)
+		end, tp, LOCATION_MZONE, 0, 1, 1, nil)
 	
 	Duel.SetOperationInfo(0, CATEGORY_EQUIP, nil, 1, tp, LOCATION_DECK)
 end
 
 function s.e3op(e, tp, eg, ep, ev, re, r, rp)
 	local c = e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
+	if not c:IsRelateToEffect(e) then return end 
 	
 	local tc = Duel.GetFirstTarget()
 	if Duel.GetLocationCount(tp, LOCATION_SZONE) <= 0 then return end
 	
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
+	if tc and tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_EQUIP)
 		local g = Duel.SelectMatchingCard(tp, s.eqfilter, tp, LOCATION_DECK, 0, 1, 1, nil, tc, tp)
 		local ec = g:GetFirst()
