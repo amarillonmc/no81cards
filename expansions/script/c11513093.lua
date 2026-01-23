@@ -107,7 +107,7 @@ function c11513093.thcon(e,tp,eg,ep,ev,re,r,rp)
 		and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 function c11513093.thfilter(c)
-	return c:IsRace(RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToHand()
+	return c:IsRace(RACE_DRAGON) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsSetCard(0x0ff1) and c:IsAbleToHand()
 end
 function c11513093.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c11513093.thfilter,tp,LOCATION_DECK,0,1,nil) end

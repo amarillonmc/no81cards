@@ -145,7 +145,7 @@ function c28366684.slop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SetLP(tp,lp-1000)
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)
-		elseif c:IsSetCard(0x287) then
+		elseif tc:IsSetCard(0x287) then
 			if Duel.Recover(tp,1000,REASON_EFFECT)~=0 then
 				Duel.SendtoGrave(tc,REASON_EFFECT)
 			end

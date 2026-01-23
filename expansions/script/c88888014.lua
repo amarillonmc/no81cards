@@ -1,6 +1,7 @@
 --青眼明光龙
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,89631139)
 	c:EnableReviveLimit()
 	--splimit
 	local e0=Effect.CreateEffect(c)

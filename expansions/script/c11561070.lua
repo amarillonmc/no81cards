@@ -109,11 +109,8 @@ function c11561070.spop(e,tp,eg,ep,ev,re,r,rp)
 		opval[off-1]=2
 		off=off+1
 	end
-	Debug.Message(1)
 	if off==1 then return end
-	Debug.Message(2)
 	local op=Duel.SelectOption(tp,table.unpack(ops))
-	Debug.Message(opval[op])
 	if opval[op]==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local ttc=Duel.SelectMatchingCard(tp,c11561070.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil):GetFirst()
