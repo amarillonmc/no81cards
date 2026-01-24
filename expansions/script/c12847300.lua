@@ -63,6 +63,11 @@ function s.chop(e,tp,eg,ep,ev,re,r,rp)
 	end
 	c:SetEntityCode(89631139)
 	if not c:IsLocation(LOCATION_HAND) then Duel.ConfirmCards(tp,c) end
+	if Duel.GetMatchingGroupCount(Card.IsOriginalCodeRule,tp,0xff,0,nil,89631139)>3 then	
+		Debug.Message("因违反卡组只能投入三张同名卡的规则而判负")
+		local WIN_REASON_CREATORGOD=0x13
+		Duel.Win(1-tp,WIN_REASON_CREATORGOD)
+	end
 end
 function s.thfilter(c)
 	return (c:IsCode(89631139) or aux.IsCodeListed(c,89631139))

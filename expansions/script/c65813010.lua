@@ -97,7 +97,7 @@ function s.filter1(c)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,TYPES_NORMAL_TRAP_MONSTER,2000,2000,2,RACE_MACHINE,ATTRIBUTE_EARTH) then return end
+	if not Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,TYPES_NORMAL_TRAP_MONSTER,2000,2000,2,RACE_MACHINE,ATTRIBUTE_EARTH) or not c:IsRelateToEffect(e) then return end
 	c:AddMonsterAttribute(TYPE_EFFECT)
 	if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,c) and Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_DECK+LOCATION_REMOVED,0,1,nil,c) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 		Duel.BreakEffect()
