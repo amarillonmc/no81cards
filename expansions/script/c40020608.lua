@@ -80,7 +80,7 @@ function s.damcon(e, tp, eg, ep, ev, re, r, rp)
 	local a = Duel.GetAttacker()
 	if not a then return false end
 	if a:IsControler(1-tp) then a = Duel.GetAttackTarget() end
-	return a and s.ForceFighter(a) and ep ~= tp
+	return a and (s.ForceFighter(a) or s.MachForce(a)) and ep ~= tp
 end
 
 function s.damop(e, tp, eg, ep, ev, re, r, rp)
@@ -89,7 +89,7 @@ end
 
 function s.atkcon(e, tp, eg, ep, ev, re, r, rp)
 	local a = Duel.GetAttacker()
-	return a and a:IsControler(tp) and s.ForceFighter(a)
+	return a and a:IsControler(tp) and (s.ForceFighter(a) or s.MachForce(a))
 end
 
 function s.atkop(e, tp, eg, ep, ev, re, r, rp)

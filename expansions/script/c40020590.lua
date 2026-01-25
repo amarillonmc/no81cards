@@ -21,7 +21,7 @@ function s.initial_effect(c)
 	e2:SetCategory(CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_SINGLE + EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_DELAY + EFFECT_FLAG_CARD_TARGET)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1, id + 100)
 	e2:SetTarget(s.tdtg)
 	e2:SetOperation(s.tdop)
@@ -32,7 +32,7 @@ function s.initial_effect(c)
 end
 
 function s.cfilter(c)
-	return s.ForceFighter(c) and not c:IsCode(id)
+	return s.ForceFighter(c)  and not c:IsCode(id)
 end
 
 function s.spcon(e, c)
@@ -42,22 +42,27 @@ function s.spcon(e, c)
 		and Duel.IsExistingMatchingCard(s.cfilter, tp, LOCATION_MZONE, 0, 1, nil)
 end
 
-function s.tdtg(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsAbleToDeck() end
-	if chk == 0 then return Duel.IsExistingTarget(Card.IsAbleToDeck, tp, LOCATION_GRAVE, LOCATION_GRAVE, 1, nil) end
-	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
-	local g = Duel.SelectTarget(tp, Card.IsAbleToDeck, tp, LOCATION_GRAVE, LOCATION_GRAVE, 1, 1, nil)
-	Duel.SetOperationInfo(0, CATEGORY_TODECK, g, 1, 0, 0)
+function s.tdfilter(c)
+	return c:IsAbleToDeck() and (c:IsLocation(LOCATION_GRAVE) or (c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()))
 end
 
 function s.setfilter(c)
 	return s.ForceFighter(c) and c:IsType(TYPE_SPELL + TYPE_TRAP) and c:IsSSetable()
 end
 
+function s.tdtg(e, tp, eg, ep, ev, re, r, rp, chk)
+	if chk == 0 then return Duel.IsExistingMatchingCard(s.tdfilter, tp, LOCATION_GRAVE + LOCATION_EXTRA, LOCATION_GRAVE + LOCATION_EXTRA, 1, nil) end
+	Duel.SetOperationInfo(0, CATEGORY_TODECK, nil, 1, 0, LOCATION_GRAVE + LOCATION_EXTRA)
+end
+
 function s.tdop(e, tp, eg, ep, ev, re, r, rp)
-	local tc = Duel.GetFirstTarget()
-	if tc and tc:IsRelateToEffect(e) then
-		if Duel.SendtoDeck(tc, nil, SEQ_DECKBOTTOM, REASON_EFFECT) > 0 and tc:IsLocation(LOCATION_DECK) then
+	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
+
+	local g = Duel.SelectMatchingCard(tp, s.tdfilter, tp, LOCATION_GRAVE + LOCATION_EXTRA, LOCATION_GRAVE + LOCATION_EXTRA, 1, 1, nil)
+	if g:GetCount() > 0 then
+		Duel.HintSelection(g)
+
+		if Duel.SendtoDeck(g, nil, SEQ_DECKSHUFFLE, REASON_EFFECT) > 0 then
 
 			if Duel.GetLocationCount(tp, LOCATION_SZONE) > 0 
 				and Duel.IsExistingMatchingCard(s.setfilter, tp, LOCATION_HAND + LOCATION_DECK + LOCATION_GRAVE, 0, 1, nil) 
@@ -65,9 +70,10 @@ function s.tdop(e, tp, eg, ep, ev, re, r, rp)
 				
 				Duel.BreakEffect()
 				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SET)
-				local g = Duel.SelectMatchingCard(tp, s.setfilter, tp, LOCATION_HAND + LOCATION_DECK + LOCATION_GRAVE, 0, 1, 1, nil)
-				if g:GetCount() > 0 then
-					Duel.SSet(tp, g)
+
+				local sg = Duel.SelectMatchingCard(tp, aux.NecroValleyFilter(s.setfilter), tp, LOCATION_HAND + LOCATION_DECK + LOCATION_GRAVE, 0, 1, 1, nil)
+				if sg:GetCount() > 0 then
+					Duel.SSet(tp, sg)
 				end
 			end
 		end

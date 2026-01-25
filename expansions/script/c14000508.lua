@@ -38,10 +38,28 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
+	--cannot diabled
+	local e2_1=Effect.CreateEffect(c)
+	e2_1:SetType(EFFECT_TYPE_SINGLE)
+	e2_1:SetCode(EFFECT_CANNOT_DISABLE)
+	e2_1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
+	e2_1:SetRange(LOCATION_MZONE)
+	e2_1:SetValue(1)
+	c:RegisterEffect(e2_1)
+	--material
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(m,2))
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_PHASE+PHASE_END)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1)
+	e3:SetTarget(cm.mttg)
+	e3:SetOperation(cm.mtop)
+	c:RegisterEffect(e3)
 end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and (re:IsActiveType(TYPE_SPELL) or re:GetHandler():IsType(TYPE_SPELL) or spo.named(re:GetHandler()))
@@ -83,4 +101,19 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-
+function cm.mtfilter(c)
+	return c:IsType(TYPE_PENDULUM) and c:IsType(TYPE_MONSTER) and c:IsCanOverlay()
+end
+function cm.mttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ)
+		and Duel.IsExistingMatchingCard(cm.mtfilter,tp,LOCATION_EXTRA,0,1,nil) end
+end
+function cm.mtop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	local g=Duel.SelectMatchingCard(tp,cm.mtfilter,tp,LOCATION_EXTRA,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.Overlay(c,g)
+	end
+end

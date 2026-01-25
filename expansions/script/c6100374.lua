@@ -167,6 +167,10 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 end
 
 -- === 效果②：墓地效果 ===
+function s.lvfilter(c)
+	return c:IsFaceup() and c:IsLevelAbove(1) 
+end
+
 function s.gycon(e,tp,eg,ep,ev,re,r,rp)
 	-- 对方连锁自己的卡的效果把卡的效果发动时
 	if not (rp==1-tp and ev>1) then return false end
@@ -177,7 +181,6 @@ end
 function s.gyop(e,tp,eg,ep,ev,re,r,rp)
 	-- 预约结束阶段效果
 	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetDescription(aux.Stringid(id,2))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
@@ -185,6 +188,23 @@ function s.gyop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetOperation(s.setop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
+	Duel.BreakEffect()
+		local mg=Duel.GetMatchingGroup(s.lvfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+		if #mg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+			local sg=mg:Select(tp,1,1,nil)
+			local sc=sg:GetFirst()
+			if sc then
+				Duel.HintSelection(sg)
+				local lv=Duel.AnnounceLevel(tp,1,4)
+				local e1=Effect.CreateEffect(e:GetOwner())
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_UPDATE_LEVEL)
+				e1:SetValue(lv)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				sc:RegisterEffect(e1)
+			end
+		end
 end
 
 function s.setfilter(c)
@@ -193,10 +213,6 @@ end
 
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK,0,1,nil)
-end
-
-function s.lvfilter(c)
-	return c:IsFaceup() and c:IsLevelAbove(1) 
 end
 
 function s.setop(e,tp,eg,ep,ev,re,r,rp)
@@ -221,24 +237,6 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ConfirmCards(1-tp,tc)
 		else
 			Duel.SSet(tp,tc)
-		end
-		
-		-- 那之后，可以让场上1只怪兽的等级上升最多4星
-		local mg=Duel.GetMatchingGroup(s.lvfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-		if #mg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-			local sg=mg:Select(tp,1,1,nil)
-			local sc=sg:GetFirst()
-			if sc then
-				Duel.HintSelection(sg)
-				local lv=Duel.AnnounceLevel(tp,1,4)
-				local e1=Effect.CreateEffect(e:GetOwner())
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_UPDATE_LEVEL)
-				e1:SetValue(lv)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-				sc:RegisterEffect(e1)
-			end
 		end
 	end
 end

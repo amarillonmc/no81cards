@@ -9,13 +9,13 @@ function s.initial_effect(c)
 
 	aux.EnablePendulumAttribute(c)
  
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
+	local e1 = Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id, 1))
+	e1:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
 	e1:SetRange(LOCATION_PZONE)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(s.indtg)
-	e1:SetValue(s.indct)
+	e1:SetCondition(s.pencon)
+	e1:SetOperation(s.penop)
 	c:RegisterEffect(e1)
 
 	local e2=Effect.CreateEffect(c)
@@ -26,7 +26,7 @@ function s.initial_effect(c)
 	e2:SetRange(LOCATION_HAND+LOCATION_EXTRA) 
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END+TIMING_BATTLE_START+TIMING_BATTLE_END)
-	e2:SetCountLimit(1,id)
+	e2:SetCountLimit(1,id+100)
 	e2:SetCondition(s.sccon)
 	e2:SetTarget(s.sctg)
 	e2:SetOperation(s.scop)
@@ -34,14 +34,59 @@ function s.initial_effect(c)
 end
 
 
-function s.indtg(e,c)
-	return  s.ForceFighter(c)
+function s.yamatofilter(c)
+	return c:IsFaceup() and c:IsCode(40020585)
 end
 
-function s.indct(e,re,r,rp)
-	if bit.band(r,REASON_BATTLE)~=0 then
-		return 1
-	else return 0 end
+function s.tgfilter(c)
+	return c:IsAbleToDeck() and (c:IsLocation(LOCATION_GRAVE) or (c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()))
+end
+
+function s.pencon(e, tp, eg, ep, ev, re, r, rp)
+
+	if Duel.GetFlagEffect(tp, id) ~= 0 then return false end
+	
+	if not Duel.IsExistingMatchingCard(s.yamatofilter, tp, LOCATION_PZONE + LOCATION_EXTRA, 0, 1, nil) then return false end
+	
+	if not Duel.IsExistingMatchingCard(s.tgfilter, tp, LOCATION_GRAVE + LOCATION_EXTRA, LOCATION_GRAVE + LOCATION_EXTRA, 1, nil) then return false end
+	
+	return re:IsHasType(EFFECT_TYPE_ACTIONS) or re:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+
+function s.penop(e, tp, eg, ep, ev, re, r, rp)
+	if Duel.GetFlagEffect(tp, id) ~= 0 then return end
+	
+	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
+	if Duel.SelectYesNo(tp, aux.Stringid(id, 1)) then
+		Duel.RegisterFlagEffect(tp, id, RESET_PHASE + PHASE_END, 0, 1)
+		Duel.Hint(HINT_CARD, 0, id)
+		
+		local g = Duel.SelectMatchingCard(tp, s.tgfilter, tp, LOCATION_GRAVE + LOCATION_EXTRA, LOCATION_GRAVE + LOCATION_EXTRA, 1, 1, nil)
+		
+		if g:GetCount() > 0 then
+			Duel.HintSelection(g)
+			if Duel.SendtoDeck(g, nil, SEQ_DECKSHUFFLE, REASON_EFFECT) > 0 then
+				local tc = g:GetFirst()
+				if not tc:IsLocation(LOCATION_GRAVE + LOCATION_EXTRA) then
+					
+					local c = e:GetHandler()
+
+					if c:IsRelateToEffect(e) then
+						if Duel.GetTurnPlayer() == tp then
+
+							if Duel.GetLocationCount(tp, LOCATION_MZONE) > 0 
+								and c:IsCanBeSpecialSummoned(e, 0, tp, false, false) then
+								Duel.SpecialSummon(c, 0, tp, tp, false, false, POS_FACEUP)
+							end
+						else
+
+							Duel.SendtoHand(c, nil, REASON_EFFECT)
+						end
+					end
+				end
+			end
+		end
+	end
 end
 
 function s.ymtcheck(tp)

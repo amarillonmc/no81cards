@@ -6,6 +6,7 @@ function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
 end
+
 function s.initial_effect(c)
 
 	c:EnableReviveLimit()
@@ -56,8 +57,15 @@ function s.matfilter(c)
 	return c:IsCode(40020585) and c:IsFaceup()
 end
 
+
+function s.thfilter(c)
+	return c:IsAbleToHand() and (c:IsLocation(LOCATION_ONFIELD) or (c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()))
+end
+
 function s.effcost(e, tp, eg, ep, ev, re, r, rp, chk)
-	if chk == 0 then return Duel.IsExistingMatchingCard(s.matfilter, tp, LOCATION_PZONE, 0, 1, nil) end
+
+	if chk == 0 then return Duel.IsExistingMatchingCard(s.matfilter, tp, LOCATION_PZONE, 0, 1, nil) 
+		and e:GetHandler():IsType(TYPE_XYZ) end
 	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_XMATERIAL)
 	local g = Duel.SelectMatchingCard(tp, s.matfilter, tp, LOCATION_PZONE, 0, 1, 1, nil)
 	if g:GetCount() > 0 then
@@ -66,30 +74,47 @@ function s.effcost(e, tp, eg, ep, ev, re, r, rp, chk)
 end
 
 function s.efftg(e, tp, eg, ep, ev, re, r, rp, chk)
-	local g = Duel.GetFieldGroup(tp, 0, LOCATION_ONFIELD)
-	if chk == 0 then return g:GetCount() > 0 end
-	Duel.SetOperationInfo(0, CATEGORY_TOHAND, g, g:GetCount(), 0, 0)
-	Duel.SetOperationInfo(0, CATEGORY_TODECK, nil, 1, 1-tp, LOCATION_HAND)
 
+	if chk == 0 then return Duel.IsExistingMatchingCard(s.thfilter, tp, 0, LOCATION_ONFIELD + LOCATION_EXTRA, 1, nil) end
+	
+	local g = Duel.GetMatchingGroup(s.thfilter, tp, 0, LOCATION_ONFIELD + LOCATION_EXTRA, nil)
+	Duel.SetOperationInfo(0, CATEGORY_TOHAND, g, g:GetCount(), 0, 0)
+
+	Duel.SetOperationInfo(0, CATEGORY_TODECK, nil, 1, 1-tp, LOCATION_HAND)
 end
 
 function s.effop(e, tp, eg, ep, ev, re, r, rp)
-	local g = Duel.GetFieldGroup(tp, 0, LOCATION_ONFIELD)
+
+	local g = Duel.GetMatchingGroup(s.thfilter, tp, 0, LOCATION_ONFIELD + LOCATION_EXTRA, nil)
 	if g:GetCount() > 0 then
-		if Duel.SendtoHand(g, nil, REASON_EFFECT) > 0 then
-
-			Duel.BreakEffect()
-			local hg = Duel.GetFieldGroup(tp, 0, LOCATION_HAND)
-			if hg:GetCount() > 3 then
-				Duel.Hint(HINT_SELECTMSG, 1 - tp, HINTMSG_ATOHAND) 
-
-				local kg = hg:Select(1 - tp, 3, 3, nil)
-				hg:Sub(kg) 
-				if hg:GetCount() > 0 then
-					Duel.SendtoDeck(hg, nil, SEQ_DECKSHUFFLE, REASON_EFFECT)
-				end
-			end
+		Duel.SendtoHand(g, nil, REASON_EFFECT)
+	end
+	
+	Duel.ShuffleHand(1 - tp)
+	local hg = Duel.GetFieldGroup(tp, 0, LOCATION_HAND)
+	
+	if hg:GetCount() > 3 then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG, 1 - tp, aux.Stringid(id, 1)) 
+		local kg = hg:Select(1 - tp, 3, 3, nil)
+		hg:Sub(kg) 
+		
+		if hg:GetCount() > 0 then
+			Duel.SendtoDeck(hg, nil, SEQ_DECKSHUFFLE, REASON_EFFECT)
 		end
+	end
+
+	Duel.BreakEffect()
+	local count = 0
+	local g_hand = Duel.GetFieldGroup(tp, 0, LOCATION_HAND)
+	local g_field = Duel.GetFieldGroup(tp, 0, LOCATION_ONFIELD)
+	local g_extra = Duel.GetMatchingGroup(Card.IsFaceup, tp, 0, LOCATION_EXTRA, nil)
+	
+	count = g_hand:GetCount() + g_field:GetCount() + g_extra:GetCount()
+	
+	if count >= 5 then
+		local lp = Duel.GetLP(1 - tp)
+		Duel.SetLP(1 - tp, lp - 3000)
 	end
 end
 

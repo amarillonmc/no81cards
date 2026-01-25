@@ -19,6 +19,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
 	e2:SetCountLimit(1,id+1)
+	e2:SetCost(s.e2cost)
 	e2:SetTarget(s.e2tg)
 	e2:SetOperation(s.e2op)
 	c:RegisterEffect(e2)
@@ -26,7 +27,9 @@ end
 
 --条件：手卡 或 (场上+Flag)
 function s.e1con(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsLocation(LOCATION_HAND) or e:GetHandler():GetFlagEffect(id)>0
+	local c=e:GetHandler()
+	if c:IsLocation(LOCATION_HAND) then return true end
+	return c:IsLocation(LOCATION_MZONE) and (c:IsStatus(STATUS_SUMMON_TURN) or c:IsStatus(STATUS_SPSUMMON_TURN))
 end
 
 --Target过滤：回收怪兽
@@ -111,43 +114,54 @@ function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function s.otherfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x611)
+function s.cfilter2(c,tp)
+	local type_val = c:GetType() & 0x7 --获取基本类型(怪/魔/陷)
+	return c:IsAbleToRemoveAsCost() 
+		and Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil,type_val)
 end
 
-function s.tgfilter(c)
-	return c:IsSetCard(0x611) and c:IsAbleToGrave()
+--堆墓过滤器：种类不同
+function s.tgfilter(c,type_val)
+	--位运算：c的类型 与 记录的类型 按位与为0，表示无重叠
+	return c:IsSetCard(0x611) and c:IsAbleToGrave() and (c:GetType() & type_val) == 0
+end
+
+function s.e2cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_GRAVE,0,1,nil,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectMatchingCard(tp,s.cfilter2,tp,LOCATION_GRAVE,0,1,1,nil,tp)
+	local tc=g:GetFirst()
+	Duel.Remove(tc,POS_FACEUP,REASON_COST)
+	--记录被除外卡的类型
+	e:SetLabel(tc:GetType() & 0x7)
 end
 
 function s.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 
 function s.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	--1. 特殊召唤
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		local ct={1,2,3,4}
-		local ac=Duel.AnnounceNumber(tp,table.unpack(ct))
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_LEVEL)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(ac)
-		c:RegisterEffect(e1)
-		--赋予①效果在场上发动的能力
-		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
-		
-		--检查场上是否有其他本家怪兽
-		local g=Duel.GetMatchingGroup(s.tgfilter,tp,LOCATION_DECK,0,nil)
-		if Duel.IsExistingMatchingCard(s.otherfilter,tp,LOCATION_MZONE,0,1,c) 
-			and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-			Duel.BreakEffect()
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-			local sg=g:Select(tp,1,1,nil)
-			Duel.SendtoGrave(sg,REASON_EFFECT)
+		local type_val=e:GetLabel()
+		--2. 堆墓不同种类
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+		local g=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_DECK,0,1,1,nil,type_val)
+		if #g>0 and Duel.SendtoGrave(g,REASON_EFFECT)>0 then
+			--3. 可选升星
+			if c:IsFaceup() and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then --"要提升等级吗？"
+				local val=Duel.AnnounceNumber(tp,1,2,3,4)
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_UPDATE_LEVEL)
+				e1:SetValue(val)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+				c:RegisterEffect(e1)
+			end
 		end
 	end
-end
+end 

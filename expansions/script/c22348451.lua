@@ -3,6 +3,12 @@ local m=22348451
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	c:SetSPSummonOnce(22348451)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetValue(c22348451.mlimit)
+	c:RegisterEffect(e0)
 	--apply effect
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(22348451,0))
@@ -28,6 +34,9 @@ function cm.initial_effect(c)
 	e2:SetOperation(c22348451.cpop)
 	c:RegisterEffect(e2)
 	
+end
+function c22348451.mlimit(e,c,st)
+	return st==SUMMON_TYPE_FUSION
 end
 function c22348451.apcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(100)

@@ -5,6 +5,7 @@ function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
 end
+
 function s.initial_effect(c)
 	
 	c:EnableReviveLimit()
@@ -36,7 +37,7 @@ function s.initial_effect(c)
 end
 
 function s.matfilter(c)
-	return s.ForceFighter(c)
+	return s.ForceFighter(c) 
 end
 
 function s.spcon(e, tp, eg, ep, ev, re, r, rp)

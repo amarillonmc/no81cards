@@ -57,7 +57,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.repcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:GetHandler()~=e:GetHandler()
+	return re:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
 function s.tgfilter(c)
 	return c:IsSetCard(0x838,0x19e,0x1b1) and c:IsAbleToGraveAsCost()
@@ -69,7 +69,7 @@ function s.repcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,rp,LOCATION_ONFIELD,0,1,nil) end
 end
 function s.repop_main(e,tp,eg,ep,ev,re,r,rp)
 	local g=Group.CreateGroup()
@@ -79,7 +79,7 @@ function s.repop_main(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ChangeChainOperation(ev,s.repop)
 end
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,0,nil)
 	g=g:Filter(Card.IsType,nil,TYPE_SPELL+TYPE_TRAP)
 	if #g>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)

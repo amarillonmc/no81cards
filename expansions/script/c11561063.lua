@@ -120,7 +120,7 @@ function c11561063.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsType(TYPE_MONSTER)
 end
 function c11561063.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetOverlayGroup(tp,1,0):IsExists(c11561063.spfilter,1,nil,e,tp) and Duel.GetMZoneCount(1-tp)~=0 end
+	if chk==0 then return Duel.GetOverlayGroup(tp,1,0):IsExists(c11561063.spfilter,1,nil,e,tp) and Duel.GetMZoneCount(1-tp)~=0 and Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,LOCATION_ONFIELD+LOCATION_OVERLAY,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,1-tp,LOCATION_OVERLAY)
 end
 function c11561063.gcheckfilter(g)
@@ -139,18 +139,24 @@ function c11561063.spop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=g:SelectSubGroup(tp,c11561063.gcheck,false,1,ft)
 	if sg:GetCount()>0 and Duel.SpecialSummon(sg,0,tp,1-tp,false,false,POS_FACEUP)~=0 then
 		local tc=Duel.GetOperatedGroup():GetCount()
-		if tc>0 and Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,1,nil) and c:IsRelateToEffect(e) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+		if tc>0 and Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,0,LOCATION_ONFIELD+LOCATION_OVERLAY,1,nil) and Duel.IsExistingMatchingCard(Card.IsCanOverlay,tp,LOCATION_ONFIELD+LOCATION_OVERLAY,0,1,nil) and c:IsRelateToEffect(e) then
 			Duel.BreakEffect()
-			local xg=Duel.SelectMatchingCard(tp,Card.IsCanOverlay,tp,0,LOCATION_ONFIELD,1,tc,nil)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPPO)
+			local xg=Duel.SelectMatchingCard(tp,Card.IsCanOverlay,tp,0,LOCATION_ONFIELD+LOCATION_OVERLAY,1,tc,nil)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SELF)
+			local xg2=Duel.SelectMatchingCard(tp,Card.IsCanOverlay,tp,LOCATION_ONFIELD+LOCATION_OVERLAY,0,1,tc,nil)
+			xg:Merge(xg2)
 			local xtc=xg:GetFirst()
 			while xtc do
+				if not xtc:IsImmuneToEffect(e) then
 				local og=xtc:GetOverlayGroup()
 				if og:GetCount()>0 then
 					Duel.SendtoGrave(og,REASON_RULE)
 				end
 				Duel.Overlay(c,Group.FromCards(xtc))
+				end
 				xtc=xg:GetNext()
+				
 			end
 		end
 	end

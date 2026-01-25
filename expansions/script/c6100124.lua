@@ -38,8 +38,8 @@ function s.e1con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsLocation(LOCATION_MZONE) or e:GetHandler():GetFlagEffect(id)>0
 end
 
-function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x611) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function s.spfilter(c)
+	return c:IsAbleToDeck() or c:IsAbleToExtra()
 end
 
 --Cost过滤：展示本家S/T
@@ -49,7 +49,7 @@ function s.rvfilter(c,e,tp,mc)
 	--分支1：魔法卡 -> 展示卡送墓，检索仪式
 	if c:IsType(TYPE_SPELL) then
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-			and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,nil,e,tp)
+			and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,nil)
 	
 	--分支2：陷阱卡 -> 自身送墓，盖放展示卡
 	elseif c:IsType(TYPE_TRAP) then
@@ -74,10 +74,9 @@ function s.e1tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	
 	if rc:IsType(TYPE_SPELL) then
-		e:SetCategory(CATEGORY_TOGRAVE+CATEGORY_TOHAND+CATEGORY_SEARCH)
+		e:SetCategory(CATEGORY_TODECK)
 		--提示：展示卡送墓
-		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,rc,1,0,0)
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,rc,1,0,0)
 	else
 		e:SetCategory(CATEGORY_TOGRAVE)
 		--提示：自身送墓
@@ -92,10 +91,11 @@ function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 	if rc:IsType(TYPE_SPELL) then
 		if rc:IsLocation(LOCATION_HAND) and Duel.SendtoGrave(rc,REASON_EFFECT)>0 and rc:IsLocation(LOCATION_GRAVE)
 			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil,e,tp)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+			local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_REMOVED,LOCATION_REMOVED,1,1,nil)
 			if #g>0 then
-				Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+				Duel.HintSelection(g)
+				Duel.SendtoDeck(g,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
 			end
 		end
 		
@@ -143,7 +143,7 @@ function s.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	--1. 回到手卡
 	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_HAND) then
-		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
+		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,nil,1,0)
 		
 		--2. 追加效果：除外对方墓地
 		if e:GetLabel()==1 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,nil) 

@@ -26,7 +26,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER_E+TIMING_MAIN_END)
+	e2:SetHintTiming(0,TIMING_MAIN_END)
 	e2:SetCountLimit(1,id+100)
 	e2:SetCondition(s.sccon)
 	e2:SetTarget(s.sctg)
@@ -59,7 +59,7 @@ end
 
 
 
-function s.syncfilter(c,nil)
+function s.syncfilter(c)
 
 	return s.RoaringAzure(c) and c:IsSynchroSummonable(nil)
 end

@@ -25,7 +25,9 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.e1con(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsLocation(LOCATION_HAND) or e:GetHandler():GetFlagEffect(id)>0
+	local c=e:GetHandler()
+	if c:IsLocation(LOCATION_HAND) then return true end
+	return c:IsLocation(LOCATION_MZONE) and (c:IsStatus(STATUS_SUMMON_TURN) or c:IsStatus(STATUS_SPSUMMON_TURN))
 end
 function s.rvfilter(c,e,tp,mc)
 	if not (c:IsSetCard(0x611) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsPublic()) then return false end
@@ -34,7 +36,7 @@ function s.rvfilter(c,e,tp,mc)
 			and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil)
 	elseif c:IsType(TYPE_TRAP) then
 		return mc:IsAbleToGrave()
-			and Duel.IsExistingMatchingCard(s.thfilter1,tp,LOCATION_DECK,0,1,nil)
+			and Duel.IsExistingMatchingCard(s.thfilter1,tp,LOCATION_REMOVED,0,1,nil)
 	end
 	return false
 end
@@ -43,7 +45,7 @@ function s.thfilter(c)
 	return c:IsSetCard(0x611) and c:IsType(TYPE_RITUAL) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function s.thfilter1(c)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_MONSTER) and c:IsLevel(4) and c:IsAbleToHand()
+	return c:IsSetCard(0x611) and c:IsAbleToGrave()
 end
 function s.e1cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -63,9 +65,8 @@ function s.e1tg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,rc,1,0,0)
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	else
-		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE)
+		e:SetCategory(CATEGORY_TOGRAVE)
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,e:GetHandler(),1,0,0)
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	end
 end
 function s.e1op(e,tp,eg,ep,ev,re,r,rp)
@@ -85,9 +86,9 @@ function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 	elseif rc:IsType(TYPE_TRAP) then
 		if c:IsRelateToEffect(e) and Duel.SendtoGrave(c,REASON_EFFECT)>0 and c:IsLocation(LOCATION_GRAVE) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local g=Duel.SelectMatchingCard(tp,s.thfilter1,tp,LOCATION_DECK,0,1,1,nil)
+			local g=Duel.SelectMatchingCard(tp,s.thfilter1,tp,LOCATION_REMOVED,0,1,1,nil)
 			if #g>0 then
-				Duel.SendtoHand(g,nil,REASON_EFFECT)
+				Duel.SendtoGrave(g,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,g)
 			end
 		end
@@ -116,23 +117,30 @@ function s.e2tg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local cost_type=e:GetLabel()
+	
+	--1. 特殊召唤
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		local type1=e:GetLabel()
+		
+		--2. 检索不同种类
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,s.thfilter2,tp,LOCATION_DECK,0,1,1,nil,type1)
+		local g=Duel.SelectMatchingCard(tp,s.thfilter2,tp,LOCATION_DECK,0,1,1,nil,cost_type)
 		if #g>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
+			if Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
+				Duel.ConfirmCards(1-tp,g)
+				
+				--3. 可选升星
+				if c:IsFaceup() and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then --"要让等级上升吗？"
+					Duel.BreakEffect()
+					local val=Duel.AnnounceNumber(tp,1,2,3,4)
+					local e1=Effect.CreateEffect(c)
+					e1:SetType(EFFECT_TYPE_SINGLE)
+					e1:SetCode(EFFECT_UPDATE_LEVEL)
+					e1:SetValue(val)
+					e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+					c:RegisterEffect(e1)
+				end
+			end
 		end
-		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
 	end
-		local ct={1,2,3,4}
-		local ac=Duel.AnnounceNumber(tp,table.unpack(ct))
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_LEVEL)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		e1:SetValue(ac)
-		c:RegisterEffect(e1)
 end

@@ -43,6 +43,10 @@ function s.trfilter(c)
 	return c:IsSetCard(0x611) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
 end
 
+function s.thfilter(c)
+	return c:IsSetCard(0x611) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
+end
+
 --Cost过滤：展示本家S/T
 function s.rvfilter(c,e,tp,mc)
 	if not (c:IsSetCard(0x611) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsPublic()) then return false end
@@ -55,7 +59,7 @@ function s.rvfilter(c,e,tp,mc)
 	--分支2：陷阱卡 -> 自身送墓，回收仪式魔法
 	elseif c:IsType(TYPE_TRAP) then
 		return mc:IsAbleToGrave() --自身要能送墓
-			and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_REMOVED,0,1,nil)
+			and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,nil)
 	end
 	return false
 end
@@ -79,10 +83,10 @@ function s.e1tg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,rc,1,0,0)
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	else
-		e:SetCategory(CATEGORY_TOGRAVE+CATEGORY_TODECK)
+		e:SetCategory(CATEGORY_TOGRAVE+CATEGORY_TOHAND)
 		--提示：自身送墓
 		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,e:GetHandler(),1,0,0)
-		Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LLOCATION_REMOVED)
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LLOCATION_REMOVED)
 	end
 end
 
@@ -105,9 +109,10 @@ function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 		--●陷阱卡：这张卡送去墓地。自己的墓地·除外状态的1张「女神之令」仪式魔法卡加入手卡。
 		if c:IsRelateToEffect(e) and Duel.SendtoGrave(c,REASON_EFFECT)>0 and c:IsLocation(LOCATION_GRAVE) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_REMOVED,0,1,1,nil)
+			local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,nil)
 			if #g>0 then
-				Duel.SendtoDeck(g,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
+				Duel.HintSelection(g)
+				Duel.SendtoHand(g,nil,REASON_EFFECT)
 			end
 		end
 	end
@@ -139,7 +144,7 @@ function s.e2op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	--1. 回到手卡
 	if c:IsRelateToEffect(e) and Duel.SendtoHand(c,nil,REASON_EFFECT)>0 and c:IsLocation(LOCATION_HAND) then
-		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
+		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,nil,1,0)
 		
 		--2. 追加效果：对方场上1张卡弹回手卡（不取对象）
 		if e:GetLabel()==1 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,0,LOCATION_ONFIELD,1,nil) 

@@ -56,8 +56,8 @@ function s.filter(c,e,tp)
 end
 
 --后半段过滤器：仪式召唤目标
-function s.ritfilter(c)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_RITUAL)
+function s.ritcheck(c,e,tp)
+	return c:IsSetCard(0x611)
 end
 
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -67,7 +67,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,2)) --请选择操作
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD) --请选择操作
 	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	if not tc then return end
@@ -95,41 +95,28 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		res=Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0
 	end
 	
-	--后半段：可选仪式召唤
-	if res then
-		--准备仪式素材和目标
-		local mg=Duel.GetRitualMaterial(tp)
-		if Duel.IsExistingMatchingCard(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,s.ritfilter,e,tp,mg,nil,Card.GetLevel,"Greater") then
-			
-			--询问玩家是否发动
-			if Duel.SelectYesNo(tp,aux.Stringid(id,2)) then --"要进行仪式召唤吗？"
-				Duel.BreakEffect()
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-				
-				--选择仪式怪兽
-				local tg=Duel.SelectMatchingCard(tp,aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,s.ritfilter,e,tp,mg,nil,Card.GetLevel,"Greater")
-				local rc=tg:GetFirst()
-				
-				if rc then
-					--筛选可用素材
-					mg=mg:Filter(Card.IsCanBeRitualMaterial,rc,rc)
-					if rc.mat_filter then
-						mg=mg:Filter(rc.mat_filter,rc,tp)
-					end
-					
-					--选择并解放素材
-					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-					local mat=mg:SelectWithSumGreater(tp,Card.GetLevel,rc:GetLevel(),rc)
-					rc:SetMaterial(mat)
-					Duel.Release(mat,REASON_EFFECT+REASON_MATERIAL+REASON_RITUAL)
-					
-					--执行特召
-					Duel.BreakEffect()
-					Duel.SpecialSummon(rc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
-					rc:CompleteProcedure()
-				end
-			end
+	::cancel::
+	local mg=Duel.GetRitualMaterial(tp)
+	local g=Duel.GetMatchingGroup(aux.RitualUltimateFilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,s.ritcheck,e,tp,mg,nil,Card.GetLevel,"Greater")
+	if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local tc=g:Select(tp,1,1,nil):GetFirst()
+		mg=mg:Filter(Card.IsCanBeRitualMaterial,tc,tc)
+		if tc.mat_filter then
+			mg=mg:Filter(tc.mat_filter,tc,tp)
+		else
+			mg:RemoveCard(tc)
 		end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		aux.GCheckAdditional=aux.RitualCheckAdditional(tc,tc:GetLevel(),"Greater")
+		local mat=mg:SelectSubGroup(tp,aux.RitualCheck,true,1,tc:GetLevel(),tp,tc,tc:GetLevel(),"Greater")
+		aux.GCheckAdditional=nil
+		if not mat then goto cancel end
+		tc:SetMaterial(mat)
+		Duel.ReleaseRitualMaterial(mat)
+		Duel.BreakEffect()
+		Duel.SpecialSummon(tc,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
+		tc:CompleteProcedure()
 	end
 end
 

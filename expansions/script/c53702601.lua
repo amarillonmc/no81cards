@@ -1256,3 +1256,105 @@ function s.Checkmate_chop(_op,_g)
 				_op(e,tp,eg,ep,ev,re,r,rp)
 			end
 end
+function s.Sarcoveil_Sort(c)
+	if s.Sarcoveil_Grave_Sort then return end
+	s.Sarcoveil_Grave_Sort=true
+	local ge1=Effect.CreateEffect(c)
+	ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	ge1:SetCode(EVENT_TO_GRAVE)
+	ge1:SetCondition(s.Sarcoveil_Sort_Con)
+	ge1:SetOperation(s.Sarcoveil_Sort_Op)
+	Duel.RegisterEffect(ge1,0)
+end
+function s.SarcoveilTG_Fil(c)
+	return c:IsLocation(LOCATION_GRAVE) and c.gravetop_effect
+end
+function s.Sarcoveil_Sort_Con(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(s.SarcoveilTG_Fil,1,nil)
+end
+function s.Sarcoveil_Sort_Op(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+	local turnp=Duel.GetTurnPlayer()
+	local x=(turnp==0 and 1) or -1
+	for p=turnp,1-turnp,x do
+		local sg=Group.CreateGroup()
+		local sorting={}
+		local ct=0
+		local mg=g:Filter(Card.IsControler,nil,p)
+		local gct=mg:GetCount()
+		if gct>1 and mg:IsExists(s.SarcoveilTG_Fil,1,nil) then
+			while true do
+				if #mg==0 then break end
+				Duel.Hint(HINT_SELECTMSG,p,aux.Stringid(53767028,15))
+				local sc=mg:SelectUnselect(sg,p,true,#sg>0,#mg,gct)
+				if not sc then break elseif mg:IsContains(sc) then
+					mg:RemoveCard(sc)
+					sg:AddCard(sc)
+					ct=ct+1
+					sorting[sc]=ct
+				else
+					sg:RemoveCard(sc)
+					mg:AddCard(sc)
+					sorting[sc]=nil
+				end
+			end
+			for i=ct,0,-1 do
+				for tc in aux.Next(sg) do
+					if sorting[tc]==i then Duel.MoveSequence(tc,0) end
+				end
+			end
+		end
+	end
+end
+function s.Sarcoveil_tgfilter1(c,ct,res)
+	return c:IsDiscardable(REASON_ACTION) and ((res and Duel.IsExistingMatchingCard(s.Sarcoveil_tgfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,c,ct,c)) or (not res and (ct==0 or Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,ct,c,REASON_ACTION))))
+end
+function s.Sarcoveil_tgfilter2(c,ct,tc)
+	return c:IsSetCard(0xa53b) and c:IsType(TYPE_MONSTER) and c:IsFaceupEx() and c:IsAbleToGraveAsCost() and (ct==0 or Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,ct,c,REASON_ACTION))
+end
+function s.Sarcoveil_fscost(e,c,tp)
+	local ct,dezard=0,false
+	local le={c:IsHasEffect(EFFECT_FLIPSUMMON_COST)}
+	for _,v in pairs(le) do
+		local tg=v:GetTarget() or aux.TRUE
+		if tg(v,c) then
+			local label=v:GetLabel()
+			if label~=53771033 then ct=label+ct else dezard=true end
+		end
+	end
+	return (not dezard and (ct==0 or Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,ct,nil,REASON_ACTION))) or Duel.IsExistingMatchingCard(s.Sarcoveil_tgfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,c,ct,c)
+end
+function s.Sarcoveil_fsop(e,tp,eg,ep,ev,re,r,rp)
+	local c=Sarcoveil_Fsing
+	if not c then return end
+	local ct,dezard=0,false
+	local le={c:IsHasEffect(EFFECT_FLIPSUMMON_COST)}
+	if Sarcoveil_FS_Costs then SNNM.RemoveElements(Sarcoveil_FS_Costs,le) end
+	for _,v in pairs(le) do
+		if v~=e then
+			local tg=v:GetTarget() or aux.TRUE
+			if tg(v,c) then
+				local label1=v:GetLabel()
+				if label1~=53771033 then ct=label1+ct else dezard=true end
+			end
+		end
+	end
+	for _,v in pairs(le) do
+		if v==e then
+			local label2=v:GetLabel()
+			if label2~=53771033 then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+				Duel.DiscardHand(tp,s.Sarcoveil_tgfilter1,label2,label2,REASON_COST+REASON_DISCARD,c,ct-label2,dezard)
+			else
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+				local g=Duel.SelectMatchingCard(tp,s.Sarcoveil_tgfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,c,ct,c)
+				Duel.HintSelection(g)
+				Duel.SendtoGrave(g,REASON_ACTION)
+			end
+		end
+	end
+	if #le<=1 then Sarcoveil_FS_Costs=nil else
+		if not Sarcoveil_FS_Costs then Sarcoveil_FS_Costs={} end
+		table.insert(Sarcoveil_FS_Costs,e)
+	end
+end

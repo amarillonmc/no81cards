@@ -61,7 +61,7 @@ end
 
 --检测是否有本家仪式怪兽被仪式召唤
 function s.cfilter(c,tp)
-	return c:IsControler(tp) and (c:IsRace(RACE_WARRIOR) or c:IsRace(RACE_SPELLCASTER)) and c:IsType(TYPE_RITUAL) and c:IsSummonType(SUMMON_TYPE_RITUAL)
+	return c:IsControler(tp) and c:IsSetCard(0x611) and c:IsType(TYPE_RITUAL) and c:IsSummonType(SUMMON_TYPE_RITUAL)
 end
 
 function s.rthcon(e,tp,eg,ep,ev,re,r,rp)
@@ -77,6 +77,5 @@ function s.rthop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) then
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,c)
 	end
 end

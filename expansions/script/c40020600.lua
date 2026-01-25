@@ -36,6 +36,14 @@ function s.initial_effect(c)
 	e3:SetCondition(s.imcon)
 	e3:SetValue(s.efilter)
 	c:RegisterEffect(e3)
+	--act limit
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_CHAINING)
+	e4:SetRange(LOCATION_FZONE)
+	e4:SetCondition(s.imcon)
+	e4:SetOperation(s.chainop)
+	c:RegisterEffect(e4)
 end
 
 
@@ -95,4 +103,16 @@ end
 
 function s.efilter(e, re)
 	return e:GetHandlerPlayer() ~= re:GetOwnerPlayer()
+end
+function s.chainop(e,tp,eg,ep,ev,re,r,rp)
+
+	if rp~=tp then return end
+
+	if not re:IsHasCategory(CATEGORY_DRAW) then return end
+	if s.ForceFighter(re:GetHandler()) then
+		Duel.SetChainLimit(s.chainlm)
+	end
+end
+function s.chainlm(e,rp,tp)
+	return tp==rp
 end

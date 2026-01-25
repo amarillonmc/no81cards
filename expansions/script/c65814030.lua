@@ -7,9 +7,15 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e1:SetCondition(s.setcon1)
 	e1:SetTarget(s.tftg)
 	e1:SetOperation(s.tfop)
 	c:RegisterEffect(e1)
+	local e10=e1:Clone()
+	e10:SetType(EFFECT_TYPE_QUICK_O)
+	e10:SetCode(EVENT_FREE_CHAIN)
+	e10:SetCondition(s.setcon2)
+	c:RegisterEffect(e10)
 	--
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
@@ -57,6 +63,15 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 
+function s.cfilter(c)
+	return c:IsSetCard(0x6a31) and c:IsFaceup()
+end
+function s.setcon1(e,tp,eg,ep,ev,re,r,rp)
+	return not Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
+end
+function s.setcon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
+end
 function s.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c) end

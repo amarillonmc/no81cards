@@ -147,6 +147,7 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local g=Duel.SelectMatchingCard(tp,s.mfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,2,nil)
 		if #g>0 then
+			Duel.HintSelection(g)
 			if Duel.Remove(g,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)~=0 then
 				local og=Duel.GetOperatedGroup()
 				if og:GetCount()>0 then

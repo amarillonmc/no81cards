@@ -5,6 +5,7 @@ function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
 end
+
 function s.initial_effect(c)
 	
 	local e1 = Effect.CreateEffect(c)

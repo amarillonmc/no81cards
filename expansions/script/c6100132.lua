@@ -52,6 +52,9 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 	local tc=g:GetFirst()
+		if tc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) then
+			Duel.HintSelection(g)
+		end
 	if tc and Duel.SSet(tp,tc)>0 then
 		--如果是陷阱卡或速攻魔法，允许当回合发动
 		if tc:IsType(TYPE_TRAP) or tc:IsType(TYPE_QUICKPLAY) then
@@ -73,7 +76,7 @@ end
 -- ②效果
 --------------------------------------------------------------------------------
 function s.cfilter(c,tp)
-	if not (c:IsSetCard(0x611) and c:IsAbleToDeck()) then return false end
+	if not (c:IsSetCard(0x611) and (c:IsAbleToDeckAsCost() or c:IsAbleToExtraAsCost())) then return false end
 	--怪兽：抽1
 	if c:IsType(TYPE_MONSTER) then
 		return Duel.IsPlayerCanDraw(tp,1)

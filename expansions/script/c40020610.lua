@@ -75,7 +75,7 @@ end
 
 function s.actcon(e)
 	local a = Duel.GetAttacker()
-	return a and a:IsControler(e:GetHandlerPlayer()) and s.ForceFighter(a)
+	return a and a:IsControler(e:GetHandlerPlayer()) and (s.ForceFighter(a) or s.MachForce(a))
 end
 
 function s.aclimit(e, re, tp)

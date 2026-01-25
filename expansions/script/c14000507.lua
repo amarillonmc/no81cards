@@ -2,6 +2,21 @@
 local m=14000507
 local cm=_G["c"..m]
 cm.named_with_Spositch=1
+if not require and loadfile then
+	function require(str)
+		require_list=require_list or {}
+		if not require_list[str] then
+			if string.find(str,"%.") then
+				require_list[str]=loadfile(str)
+			else
+				require_list[str]=loadfile(str..".lua")
+			end
+			require_list[str]()
+			return require_list[str]
+		end
+		return require_list[str]
+	end
+end
 xpcall(function() require("expansions/script/c14000501") end,function() require("script/c14000501") end)
 function cm.initial_effect(c)
 	--link summon
@@ -20,10 +35,18 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
+	--cannot diabled
+	local e2_1=Effect.CreateEffect(c)
+	e2_1:SetType(EFFECT_TYPE_SINGLE)
+	e2_1:SetCode(EFFECT_CANNOT_DISABLE)
+	e2_1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
+	e2_1:SetRange(LOCATION_MZONE)
+	e2_1:SetValue(1)
+	c:RegisterEffect(e2_1)
 	--
 	local e3=e1:Clone()
 	e3:SetCode(m)
@@ -38,6 +61,18 @@ function cm.initial_effect(c)
 	e4:SetTarget(cm.costtg)
 	e4:SetOperation(cm.costop)
 	c:RegisterEffect(e4)
+	--disable
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(m,1))
+	e5:SetCategory(CATEGORY_DESTROY)
+	e5:SetType(EFFECT_TYPE_QUICK_O)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCode(EVENT_CHAINING)
+	e5:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	e5:SetCondition(cm.discon)
+	e5:SetTarget(cm.distg)
+	e5:SetOperation(cm.disop)
+	c:RegisterEffect(e5)
 end
 function cm.lfilter(c)
 	return c:IsLinkType(TYPE_TUNER)
@@ -78,4 +113,21 @@ function cm.eqfilter(c,e,tp)
 end
 function cm.eqlimit(e,c)
 	return e:GetOwner()==c
+end
+function cm.discon(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rc:GetOriginalType()&TYPE_MONSTER~=0 and Duel.IsChainNegatable(ev) and re:GetHandler()~=e:GetHandler()
+end
+function cm.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:GetEquipCount()>=3 end
+end
+function cm.disop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=c:GetEquipGroup()
+	if #g>0 and c:IsRelateToEffect(e) then
+		if Duel.Remove(g,POS_FACEUP,REASON_EFFECT) then
+			Duel.NegateActivation(ev)
+		end
+	end
 end

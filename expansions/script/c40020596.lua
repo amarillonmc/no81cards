@@ -5,22 +5,23 @@ function s.ForceFighter(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_ForceFighter
 end
+
 function s.initial_effect(c)
 
-	local e1 = Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id, 0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON + CATEGORY_TOHAND)
-	e1:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET + EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_TO_GRAVE)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCountLimit(1, id)
-	e1:SetCondition(s.thcon)
+	e1:SetCountLimit(1,id)
 	e1:SetTarget(s.thtg)
 	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
-	local e2 = e1:Clone()
-	e2:SetCode(EVENT_REMOVE)
+	local e2=e1:Clone()
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_LEAVE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCondition(s.lfcon)
 	c:RegisterEffect(e2)
 
 	local e3 = Effect.CreateEffect(c)
@@ -36,38 +37,38 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
-function s.cfilter(c, tp)
-
-	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)
-		and s.ForceFighter(c) and not c:IsCode(id)
-		and (c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_REMOVED))
-		and c:IsAbleToHand()
+function s.lfcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(s.lffilter,1,nil,tp)
 end
 
-function s.thcon(e, tp, eg, ep, ev, re, r, rp)
-	return eg:IsExists(s.cfilter, 1, nil, tp)
+function s.lffilter(c,tp)
+	return c:IsPreviousControler(tp) and s.ForceFighter(c) and c:IsType(TYPE_MONSTER) 
+		and c:IsPreviousLocation(LOCATION_MZONE)
 end
 
-function s.thtg(e, tp, eg, ep, ev, re, r, rp, chk, chkc)
-	if chkc then return eg:IsContains(chkc) and s.cfilter(chkc, tp) end
-	if chk == 0 then return Duel.GetLocationCount(tp, LOCATION_MZONE) > 0
-		and e:GetHandler():IsCanBeSpecialSummoned(e, 0, tp, false, false)
-		and eg:IsExists(s.cfilter, 1, nil, tp) end
+function s.thfilter(c)
+	return s.ForceFighter(c) and not c:IsCode(id) and c:IsAbleToHand() 
+		and (c:IsLocation(LOCATION_GRAVE) or (c:IsLocation(LOCATION_EXTRA) and c:IsFaceup()))
+end
+
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
+		and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil) end
 	
-	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_RTOHAND)
-	local g = eg:FilterSelect(tp, s.cfilter, 1, 1, nil, tp)
-	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0, CATEGORY_SPECIAL_SUMMON, e:GetHandler(), 1, 0, 0)
-	Duel.SetOperationInfo(0, CATEGORY_TOHAND, g, 1, 0, 0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_EXTRA)
 end
 
-function s.thop(e, tp, eg, ep, ev, re, r, rp)
-	local c = e:GetHandler()
-	local tc = Duel.GetFirstTarget()
-	
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c, 0, tp, tp, false, false, POS_FACEUP) > 0 then
-		if tc and tc:IsRelateToEffect(e) then
-			Duel.SendtoHand(tc, nil, REASON_EFFECT)
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil)
+		if g:GetCount()>0 then
+			Duel.SendtoHand(g,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,g)
 		end
 	end
 end

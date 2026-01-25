@@ -62,10 +62,10 @@ function c9911619.conop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterFlagEffect(tp,9911619,0,0,1)
 		end
 	else
-		if tc:IsAbleToGrave() and Duel.IsPlayerCanDraw(tp,2) and Duel.SelectYesNo(tp,aux.Stringid(9911619,2)) then
+		if tc:IsAbleToGrave() and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(9911619,2)) then
 			Duel.BreakEffect()
 			if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) then
-				Duel.Draw(tp,2,REASON_EFFECT)
+				Duel.Draw(tp,1,REASON_EFFECT)
 			end
 		end
 	end

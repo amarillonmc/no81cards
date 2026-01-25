@@ -67,7 +67,8 @@ function s.spcon_discard(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsReason(REASON_EFFECT) and c:IsReason(REASON_DISCARD) 
 		and c:IsPreviousLocation(LOCATION_HAND)
-		and re and re:GetHandler() and (s.RoaringAzure(re:GetHandler()) or rc:IsCode(CODE_HURACAN))
+		and re and re:GetHandler() 
+		and (s.RoaringAzure(re:GetHandler()) or re:GetHandler():IsCode(CODE_HURACAN))
 end
 
 function s.filter_leave(c,tp)
@@ -91,7 +92,7 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		if Duel.IsPlayerCanDraw(tp,2) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+		if Duel.IsPlayerCanDraw(tp,2) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
 			Duel.Draw(tp,2,REASON_EFFECT)
 			Duel.ShuffleHand(tp)
