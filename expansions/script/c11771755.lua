@@ -127,7 +127,7 @@ end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp) 
-		and c:GetReasonPlayer()==1-tp and c:GetPreviousOverlayCount()>0
+		and c:GetReasonPlayer()==1-tp and c:GetPreviousOverlayCountOnField()>0
 end
 function s.spfilter(c,e,tp)
 	return c:IsSetCard(0x6c74) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx()

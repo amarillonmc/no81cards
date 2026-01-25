@@ -110,17 +110,20 @@ function c11771570.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemoveAsCost() end
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
-function c11771570.filter2(c,attr)
-	return c:IsAttribute(attr) and c:IsAbleToRemove()
+function c11771570.filter2_light(c)
+	return c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsAbleToRemove()
+end
+function c11771570.filter2_dark(c)
+	return c:IsType(TYPE_MONSTER) and c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToRemove()
 end
 function c11771570.filter3(c,e,tp)
-	return c:IsSetCard(0xcf) and c:IsType(TYPE_MONSTER) and not c:IsSummonableCard() and c:IsCanBeSpecialSummoned(e,0,tp,true,false)
+	return c:IsSetCard(0xcf) and c:IsType(TYPE_MONSTER) and not c:IsSummonableCard()
 end
 function c11771570.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local lg=Duel.GetMatchingGroup(c11771570.filter2,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,e:GetHandler(),ATTRIBUTE_LIGHT)
-		local dg=Duel.GetMatchingGroup(c11771570.filter2,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,e:GetHandler(),ATTRIBUTE_DARK)
-		return lg:GetCount()>0 and dg:GetCount()>0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c11771570.filter3,tp,LOCATION_DECK,0,1,nil,e,tp)
+		local lg=Duel.GetMatchingGroup(c11771570.filter2_light,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)
+		local dg=Duel.GetMatchingGroup(c11771570.filter2_dark,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)
+		return lg:GetCount()>0 and dg:GetCount()>0 and Duel.IsExistingMatchingCard(c11771570.filter3,tp,LOCATION_DECK,0,1,nil,e,tp)
 	end
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -135,26 +138,19 @@ function c11771570.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function c11771570.op2(e,tp,eg,ep,ev,re,r,rp)
-	local lg=Duel.GetMatchingGroup(c11771570.filter2,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil,ATTRIBUTE_LIGHT)
-	local dg=Duel.GetMatchingGroup(c11771570.filter2,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil,ATTRIBUTE_DARK)
+	local lg=Duel.GetMatchingGroup(c11771570.filter2_light,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)
+	local dg=Duel.GetMatchingGroup(c11771570.filter2_dark,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,nil)
 	if lg:GetCount()==0 or dg:GetCount()==0 then return end
-	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rg1=lg:Select(tp,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rg2=dg:Select(tp,1,1,nil)
 	rg1:Merge(rg2)
-	
-	if Duel.Remove(rg1,POS_FACEUP,REASON_EFFECT)==2 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	if Duel.Remove(rg1,POS_FACEUP,REASON_EFFECT)==2 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,c11771570.filter3,tp,LOCATION_DECK,0,1,1,nil,e,tp)
-		local tc=g:GetFirst()
-		if tc and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)>0 then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CANNOT_TRIGGER)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
+		if g:GetCount()>0 then
+			Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
 		end
 	end
 end

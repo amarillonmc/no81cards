@@ -25,7 +25,7 @@ function s.initial_effect(c)
 end
 
 function s.ffilter(c,fc,sub,mg,sg)
-	return c:IsSetCard(0x3a31) and Duel.IsPlayerCanRelease(c:GetControler()) and c:IsType(TYPE_MONSTER)
+	return Duel.IsPlayerCanRelease(c:GetControler()) and c:IsType(TYPE_MONSTER)
 end
 
 function s.damcon(e,tp,eg,ep,ev,re,r,rp)
