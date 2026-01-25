@@ -37,7 +37,7 @@ function s.exmfilter(c)
 	return c:IsLocation(LOCATION_HAND) and c:IsCode(id)
 end
 function s.matval(e,lc,mg,c,tp)
-	if not lc:IsSetCard(0x838) then return false,nil end
+	if not lc:IsSetCard(0x838) or not lc:IsRace(RACE_MACHINE) then return false,nil end
 	return true,not mg or mg:IsExists(s.mfilter,1,nil,tp) and not mg:IsExists(s.exmfilter,1,nil)
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
