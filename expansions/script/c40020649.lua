@@ -43,7 +43,7 @@ function s.tgfilter(c)
 end
 
 function s.pencon(e, tp, eg, ep, ev, re, r, rp)
-
+	if re:GetHandler()==e:GetHandler() then return false end
 	if Duel.GetFlagEffect(tp, id) ~= 0 then return false end
 	
 	if not Duel.IsExistingMatchingCard(s.yamatofilter, tp, LOCATION_PZONE + LOCATION_EXTRA, 0, 1, nil) then return false end

@@ -83,7 +83,7 @@ end
 function c28382113.desop(e,tp,eg,ep,ev,re,r,rp)
 	local ct,phchk=e:GetLabel()
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	if ct>0 and #g>0 then
+	if ct>0 and g:IsExists(Card.IsControler,1,nil,tp) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=g:SelectSubGroup(tp,c28382113.gcheck,false,1,ct,tp)
 		Duel.HintSelection(dg)
