@@ -61,14 +61,30 @@ end
 function s.ovfilter1(c)
 	return c:IsFaceup() and c:IsLevel(3) and c:IsRace(RACE_INSECT) and c:IsCanOverlay()
 end
-function s.spcon(e,c)
+function s.spcon(e,c,mg1,min,max)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(s.ovfilter1,tp,LOCATION_MZONE+LOCATION_SZONE,0,2,nil)
+------------------------MustMaterialCheck---------------------------------------
+				local mg=nil
+				if mg1 then
+					mg=mg1:Filter(Card.IsCanBeXyzMaterial,nil,c)
+				else
+					mg=Duel.GetMatchingGroup(Card.IsCanBeXyzMaterial,tp,LOCATION_MZONE+LOCATION_SZONE,0,nil,c)
+				end
+-----------------------------------------------------------------------------------
+	return mg:Filter(s.ovfilter1,nil):GetCount()>1
 end
-function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
+function s.spop(e,tp,eg,ep,ev,re,r,rp,c,mg1,min,max)
+------------------------MustMaterialCheck---------------------------------------
+				local mg=nil
+				if mg1 then
+					mg=mg1:Filter(Card.IsCanBeXyzMaterial,nil,c)
+				else
+					mg=Duel.GetMatchingGroup(Card.IsCanBeXyzMaterial,tp,LOCATION_MZONE+LOCATION_SZONE,0,nil,c)
+				end
+-----------------------------------------------------------------------------------
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,0))
-	local g=Duel.SelectMatchingCard(tp,s.ovfilter1,tp,LOCATION_MZONE+LOCATION_SZONE,0,2,63,nil)
+	local g=mg:Select(tp,2,63,nil)
 	for mc in aux.Next(g) do
 		local mg=mc:GetOverlayGroup()
 		if mg:GetCount()~=0 then

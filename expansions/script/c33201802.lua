@@ -110,7 +110,6 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 	
 	if #g > 0 then
 		Duel.SendtoDeck(g, nil, SEQ_DECKSHUFFLE, REASON_EFFECT)
-		Duel.ShuffleDeck(tp)
 	end
 end
 
@@ -160,27 +159,29 @@ function s.spop(e, tp, eg, ep, ev, re, r, rp)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_DISABLE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1,true)
+			tc:RegisterEffect(e1)
 			local e2=Effect.CreateEffect(c)
 			e2:SetType(EFFECT_TYPE_SINGLE)
 			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 			e2:SetValue(RESET_TURN_SET)
 			e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e2,true)
+			tc:RegisterEffect(e2)
 			tc=g:GetNext()
 		end
 		Duel.SpecialSummonComplete()
 	end
 	-- 限制：自己不是超量怪兽不能从额外卡组特殊召唤
-	local e1 = Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET + EFFECT_FLAG_OATH)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetTargetRange(1, 0)
-	e1:SetTarget(s.splimit)
-	e1:SetReset(RESET_PHASE + PHASE_END)
-	Duel.RegisterEffect(e1, tp)
+	local e3 = Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET + EFFECT_FLAG_OATH)
+	e3:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e3:SetTargetRange(1, 0)
+	e3:SetTarget(s.splimit)
+	e3:SetReset(RESET_PHASE + PHASE_END)
+	Duel.RegisterEffect(e3, tp)
 end
 
 function s.splimit(e, c)
