@@ -106,7 +106,7 @@ function cm.target(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then
 		return (b1 or b2) and c:GetFlagEffect(FLAG_ID_UNION) == 0
 	end
-	c:RegisterFlagEffect(FLAG_ID_UNION, RESET_EVENT + 0x7e0000 + RESET_PHASE + PHASE_END, 0, 1)
+	c:RegisterFlagEffect(FLAG_ID_UNION, RESET_EVENT + RESETS_STANDARD - RESET_TOFIELD + RESET_PHASE + PHASE_END, 0, 1)
 
 	local ops = {}
 	local opval = {}

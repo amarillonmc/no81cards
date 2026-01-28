@@ -63,21 +63,21 @@ function cm.spop(e, tp, eg, ep, ev, re, r, rp)
 		local tc = Duel.GetFieldCard(p, LOCATION_MZONE, seq)
 
 		-- for _, player in ipairs({ tp, 1 - tp }) do
-		--	 for seq = 0, 4 do
-		--		 local tc = Duel.GetFieldCard(player, LOCATION_MZONE, seq)
-		--		 if tc then
-		--			 -- 计算从c来看的逆时针位置
-		--			 local relativePos
-		--			 if player == tp then -- 自己场上
-		--				 relativePos = (seq - c:GetSequence() + 5) % 5
-		--			 else				 -- 对方场上
-		--				 relativePos = (c:GetSequence() - seq + 5) % 5
-		--			 end
-		--			 if relativePos + 1 == dice then -- 从下1区开始算1-6
-		--				 g:AddCard(tc)
-		--			 end
-		--		 end
-		--	 end
+		--   for seq = 0, 4 do
+		--	   local tc = Duel.GetFieldCard(player, LOCATION_MZONE, seq)
+		--	   if tc then
+		--		   -- 计算从c来看的逆时针位置
+		--		   local relativePos
+		--		   if player == tp then -- 自己场上
+		--			   relativePos = (seq - c:GetSequence() + 5) % 5
+		--		   else				-- 对方场上
+		--			   relativePos = (c:GetSequence() - seq + 5) % 5
+		--		   end
+		--		   if relativePos + 1 == dice then -- 从下1区开始算1-6
+		--			   g:AddCard(tc)
+		--		   end
+		--	   end
+		--   end
 		-- end
 
 		-- 将找到的怪兽装备给这张卡
@@ -120,7 +120,7 @@ function cm.target(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then
 		return (b1 or b2) and c:GetFlagEffect(FLAG_ID_UNION) == 0
 	end
-	c:RegisterFlagEffect(FLAG_ID_UNION, RESET_EVENT + 0x7e0000 + RESET_PHASE + PHASE_END, 0, 1)
+	c:RegisterFlagEffect(FLAG_ID_UNION, RESET_EVENT + RESETS_STANDARD - RESET_TOFIELD + RESET_PHASE + PHASE_END, 0, 1)
 
 	local ops = {}
 	local opval = {}
