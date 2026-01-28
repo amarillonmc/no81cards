@@ -1257,6 +1257,7 @@ function s.Checkmate_chop(_op,_g)
 			end
 end
 function s.Sarcoveil_Sort(c)
+    if not CATEGORY_MSET then CATEGORY_MSET=0 en
 	if s.Sarcoveil_Grave_Sort then return end
 	s.Sarcoveil_Grave_Sort=true
 	local ge1=Effect.CreateEffect(c)
