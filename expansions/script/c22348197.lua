@@ -45,13 +45,13 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	c22348197.discard_effect=e3
 	--count
-		local e4=Effect.CreateEffect(c)
-		e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-		e4:SetCode(EVENT_TO_HAND)
-		e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-		e4:SetCondition(c22348197.checkcon)
-		e4:SetOperation(c22348197.checkop)
-		c:RegisterEffect(e4)
+		local e5=Effect.CreateEffect(c)
+		e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+		e5:SetCode(EVENT_TO_HAND)
+		e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e5:SetCondition(c22348197.checkcon)
+		e5:SetOperation(c22348197.checkop)
+		c:RegisterEffect(e5)
 end
 function c22348197.checkcon(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsReason(REASON_DRAW)
@@ -79,13 +79,14 @@ function c22348197.spop1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(tc,tp,REASON_EFFECT)
 	end
 end
+function c22348197.thhfilter(c,e)
+	return c:IsRelateToEffect(e) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and (c:IsFaceupEx() or c:IsLocation(LOCATION_ONFIELD))
+end
 function c22348197.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local ag=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
-	local tg=ag:Filter(Card.IsRelateToEffect,nil,re)
-	local g=tg:Filter(Card.IsType,nil,TYPE_MONSTER)
-	local gg=g:Filter(Card.IsAbleToHand,nil)
+	local gg=ag:Filter(c22348197.thhfilter,nil,re)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and g:GetCount()~=0 and Duel.SelectYesNo(tp,aux.Stringid(22348197,3)) then
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and gg:GetCount()~=0 and Duel.SelectYesNo(tp,aux.Stringid(22348197,3)) then
 		Duel.BreakEffect()
 		Duel.SendtoHand(gg,tp,REASON_EFFECT)
 	end
@@ -94,7 +95,7 @@ function c22348197.sccon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(22348197)>0
 end
 function c22348197.sccon2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsPlayerAffectedByEffect(tp,22348205)
+	return Duel.IsPlayerAffectedByEffect(tp,22348205) and not (e:GetHandler():GetFlagEffect(22348197)>0)
 end
 function c22348197.sccost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end

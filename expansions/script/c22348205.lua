@@ -45,7 +45,7 @@ function c22348205.ntcon(e,c,minc)
 	return minc==0 and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
 function c22348205.nttg(e,c)
-	return c:IsRace(RACE_PLANT)
+	return c:IsRace(RACE_PLANT) and c:IsLevelAbove(5)
 end
 function c22348205.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
