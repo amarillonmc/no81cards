@@ -86,7 +86,7 @@ end
 function c9911268.mvop1(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,9911268)>0 then return end
 	Duel.Hint(HINT_CARD,0,9911268)
-	Duel.RegisterFlagEffect(tp,9911268,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,9911268,RESET_PHASE+PHASE_END,0,1)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(9911268,0))
 	local tc=eg:FilterSelect(tp,c9911268.mvfilter,1,1,nil,tp):GetFirst()
@@ -108,7 +108,7 @@ end
 function c9911268.mvop2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFlagEffect(tp,9911268)>0 then return end
 	Duel.Hint(HINT_CARD,0,9911268)
-	Duel.RegisterFlagEffect(tp,9911268,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(tp,9911268,RESET_PHASE+PHASE_END,0,1)
 	local g=e:GetLabelObject()
 	local tg=g:Filter(c9911268.mvfilter,nil,tp)
 	g:DeleteGroup()

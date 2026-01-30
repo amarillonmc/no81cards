@@ -113,7 +113,7 @@ function c9910488.limop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c9910488.resetop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():ResetFlagEffect(56638325)
+	e:GetHandler():ResetFlagEffect(9910488)
 	e:Reset()
 end
 function c9910488.limop2(e,tp,eg,ep,ev,re,r,rp)
