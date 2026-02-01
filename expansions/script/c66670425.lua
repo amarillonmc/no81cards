@@ -66,8 +66,10 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp,mg)
 	local tc=g:GetFirst()
 	if not tc then return end
-	Duel.ConfirmCards(tp,g)
-	Duel.ConfirmCards(1-tp,g)
+	local hg=g:Filter(Card.IsLocation,nil,LOCATION_HAND+LOCATION_DECK)
+	local og=g:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
+	if #hg>0 then Duel.ConfirmCards(1-tp,hg) end
+	if #og>0 then Duel.HintSelection(og) end
 	if g:FilterCount(Card.IsLocation,nil,LOCATION_HAND)>=1 then
 		Duel.ShuffleHand(tp)
 	end

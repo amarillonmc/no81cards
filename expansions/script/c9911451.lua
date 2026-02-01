@@ -100,8 +100,9 @@ function c9911451.thop(e,tp,eg,ep,ev,re,r,rp)
 	if tc1 and tc2 and aux.NecroValleyFilter()(tc2) then
 		local sg=Group.FromCards(tc1,tc2)
 		Duel.DisableShuffleCheck()
+		tc1:SetStatus(STATUS_TO_HAND_WITHOUT_CONFIRM,true)
 		if Duel.SendtoHand(sg,tp,REASON_EFFECT)>0 then
-			Duel.ConfirmCards(1-tp,sg)
+			Duel.ConfirmCards(1-tp,tc2)
 			Duel.ShuffleHand(tp)
 		end
 	end
