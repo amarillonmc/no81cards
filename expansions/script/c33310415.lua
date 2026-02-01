@@ -29,6 +29,7 @@ function s.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetCondition(s.tdcon2)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	c:RegisterEffect(e3)
 	
@@ -48,6 +49,13 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+end
+
+function s.cfilter(c)
+	return c:IsFaceup() and c:IsCode(33310400)
+end
+function s.tdcon2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 
 function s.thfilter(c)
