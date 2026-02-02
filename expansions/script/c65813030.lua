@@ -8,7 +8,6 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,id)
 	e2:SetCost(s.descost)
 	e2:SetTarget(s.destg)
 	e2:SetOperation(s.desop)
@@ -31,7 +30,7 @@ function s.matfilter(c)
 end
 
 function s.cfilter(c)
-	return c:IsSetCard(0x5a31) and c:IsSSetable()
+	return c:IsSetCard(0x5a31) and c:IsSSetable() and c:IsType(TYPE_TRAP)
 end
 function s.filter1(c)
 	return c:IsSetCard(0x5a31) and c:IsType(TYPE_MONSTER) and c:IsFaceup() and c:IsAbleToHandAsCost()
