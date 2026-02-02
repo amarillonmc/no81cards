@@ -120,7 +120,7 @@ function s.op3(e,tp,eg,ep,ev,re,r,rp)
 	g1:Merge(g2)
 	for tc in aux.Next(g1) do
 		tc:SetMaterial(nil)
-		if Duel.SpecialSummonStep(tc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)>0 then
+		if Duel.SpecialSummonStep(tc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP) then
 			tc:CompleteProcedure()
 		end
 	end
