@@ -7,8 +7,10 @@ function c28316347.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,38316347)
 	e1:SetCondition(c28316347.spcon)
+	e1:SetCost(c28316347.cost)
 	e1:SetTarget(c28316347.sptg)
 	e1:SetOperation(c28316347.spop)
+	e1:SetLabel(1)
 	c:RegisterEffect(e1)
 	--recover
 	local e2=Effect.CreateEffect(c)
@@ -16,8 +18,10 @@ function c28316347.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,28316347)
+	e2:SetCost(c28316347.cost)
 	--e2:SetTarget(c28316347.rectg)
 	e2:SetOperation(c28316347.recop)
+	e2:SetLabel(2)
 	c:RegisterEffect(e2)
 	c28316347.recover_effect=e2
 end
@@ -57,4 +61,15 @@ function c28316347.recop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(g)
 		Duel.Release(g,REASON_EFFECT)
 	end
+end
+function c28316347.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local ct=Duel.GetFlagEffectLabel(tp,28316347) or 0
+	ct=ct|e:GetLabel()
+	if ct==e:GetLabel() then
+		Duel.RegisterFlagEffect(tp,28316347,RESET_PHASE+PHASE_END,0,1,ct)
+	else
+		Duel.SetFlagEffectLabel(tp,28316347,ct)
+	end
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28318749,e,0,0,0,0)
 end

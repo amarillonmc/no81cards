@@ -5,7 +5,8 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,2))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,m)
 	e1:SetCost(cm.spcost)
@@ -26,6 +27,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	--local aa={}
+   -- for i=1,math.min(3,Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)) do
+	 --   aa[i]=i
+	--end
+	--local num=Duel.AnnounceNumber(tp,table.unpack(aa))
 	local g=Duel.GetDecktopGroup(tp,1)
 	if chk==0 then return #g~=0 end
 	local op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))
@@ -41,13 +47,25 @@ end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,0)>0 and Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil)==Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil) then
-		local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil)
-		local qg=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)
-		Duel.ConfirmCards(tp,qg)
-		g:Merge(qg)
-		local thg=g:Filter(Card.IsSetCard,nil,0x6622):Select(tp,1,1,nil)
-		Duel.SendtoHand(thg,tp,REASON_EFFECT)
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil)~=0 and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)~=0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+		if Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil)>Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil) then
+			local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_DECK,0,nil,0x6622):Filter(Card.IsAbleToHand,nil):Select(tp,1,1,nil)
+			Duel.SendtoHand(g,tp,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,g)
+		elseif Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil)<Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil) then
+			local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil)
+			local qg=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)
+			Duel.ConfirmCards(tp,qg)
+			g:Merge(qg)
+			local thg=g:Filter(Card.IsSetCard,nil,0x6622):Select(tp,1,1,nil)
+			Duel.SendtoHand(thg,tp,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,thg)
+		else
+			Duel.Draw(tp,1,REASON_EFFECT)
+			local g=Duel.GetDecktopGroup(tp,3)
+			Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
+		end
+		
 	end
 end
 function cm.con(e)

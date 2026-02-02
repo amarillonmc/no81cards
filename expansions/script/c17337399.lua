@@ -17,10 +17,10 @@ function s.initial_effect(c)
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_FZONE)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET) 
 	e2:SetCountLimit(1,id)
 	e2:SetCondition(s.spcon)
-	e2:SetTarget(s.thtg)
+	e2:SetTarget(s.thtg) 
 	e2:SetOperation(s.thop)
 	c:RegisterEffect(e2)
 end
@@ -39,26 +39,35 @@ function s.filter(c,e,tp,check)
 		and (c:IsAbleToHand() or (check and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 
-function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local check=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp,check) end
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,0)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.filter(chkc,e,tp,check) end
+	if chk==0 then return Duel.IsExistingTarget(s.filter,tp,LOCATION_GRAVE,0,1,nil,e,tp,check) end
+	
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,s.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,check)
+	
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
 end
 
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end
+	local tc=Duel.GetFirstTarget() 
+	if not tc or not tc:IsRelateToEffect(e) then return end
+	
 	local check=Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.filter),tp,LOCATION_GRAVE,0,1,1,nil,e,tp,check)
-	if #g==0 then return end
-	local tc=g:GetFirst()
+	local b1=tc:IsAbleToHand()
+	local b2=check and tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	
 	local op=0
-	if tc:IsAbleToHand() and (not check or not tc:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		or Duel.SelectOption(tp,1190,1152)==0) then
-		op=0
-	else
+	if b1 and b2 then
+		op=Duel.SelectOption(tp,1190,1152)
+	elseif b2 then
 		op=1
+	else
+		op=0
 	end
+
 	if op==0 then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)

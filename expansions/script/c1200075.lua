@@ -143,12 +143,19 @@ function s.limop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:Select(tp,1,1,nil):GetFirst()
 		Duel.SendtoHand(tc,tp,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
-		
-		Duel.BreakEffect()
-		local sg=Duel.GetFieldGroup(tp,LOCATION_REMOVED,LOCATION_REMOVED)
-		Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+		--local sg=Duel.GetFieldGroup(tp,LOCATION_REMOVED,LOCATION_REMOVED)
+		--Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	
 	end
+	
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e3:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e3:SetTargetRange(1,1)
+	e3:SetValue(s.aclimit)
+	e3:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e3,tp)
 end
 function s.aclimit(e,re,tp)
 	return re:GetActivateLocation()==LOCATION_REMOVED

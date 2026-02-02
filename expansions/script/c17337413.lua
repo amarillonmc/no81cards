@@ -1,76 +1,207 @@
 --半魔的伯爵
 local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,17337400)
+	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_HANDES)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_BECOME_TARGET)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.spcon)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
+	
+	local e4=e1:Clone()
+	e4:SetCode(EVENT_BE_BATTLE_TARGET)
+	e4:SetCondition(s.spcon2)
+	c:RegisterEffect(e4)
+	
+	--discard and apply effect (ignition)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_REMOVE)
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_DISABLE+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,id+1)
-	e2:SetTarget(s.thtg)
-	e2:SetOperation(s.thop)
+	e2:SetCondition(aux.NOT(s.descon))
+	e2:SetCost(s.discost)
+	e2:SetTarget(s.distg)
+	e2:SetOperation(s.disop)
 	c:RegisterEffect(e2)
+	--discard and apply effect (quick)
+	local e3=e2:Clone()
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e3:SetCondition(s.descon)
+	c:RegisterEffect(e3)
 end
-function s.cfilter(c)
-	return c:IsCode(17337400) and (c:IsLocation(LOCATION_MZONE) or c:IsLocation(LOCATION_GRAVE))
-end
+
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
+	return eg:IsExists(function(c) 
+		return c:IsSetCard(0x3f50) and c:IsControler(tp) 
+	end, 1, nil)
 end
+function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
+	local at=Duel.GetAttackTarget()
+	return at and at:IsFaceup() and at:IsControler(tp) and at:IsSetCard(0x3f50)
+end
+
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	if chk==0 then 
+		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
+			and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
-function s.cffilter(c)
-	return c:IsLocation(LOCATION_HAND) or c:IsFacedown()
+
+function s.check_field(c)
+	return c:IsFaceup() and c:IsSetCard(0x3f50)
 end
+
+function s.thfilter(c,tp)
+	if not (c:IsSetCard(0x3f50) and c:IsAbleToHand() and c:IsFaceupEx()) then return false end
+	
+	local hand_g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+
+	if c:IsLocation(LOCATION_DECK) then
+		return hand_g:IsExists(Card.IsType,1,nil,TYPE_MONSTER) or c:IsType(TYPE_MONSTER)
+	elseif c:IsLocation(LOCATION_GRAVE) then
+		return hand_g:IsExists(Card.IsType,1,nil,TYPE_SPELL) or c:IsType(TYPE_SPELL)
+	elseif c:IsLocation(LOCATION_REMOVED) then
+		return hand_g:IsExists(Card.IsType,1,nil,TYPE_TRAP) or c:IsType(TYPE_TRAP)
+	end
+	
+	return false
+end
+
+function s.get_loc(c)
+	if c:IsLocation(LOCATION_DECK) then return 1
+	elseif c:IsLocation(LOCATION_GRAVE) then return 2
+	elseif c:IsLocation(LOCATION_REMOVED) then return 3
+	else return 0 end
+end
+
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
-		local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD+LOCATION_HAND)
-		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-			local cg=g:Filter(s.cffilter,nil)
-			Duel.ConfirmCards(tp,cg)
-			Duel.ShuffleHand(1-tp)
+		local g=Duel.GetMatchingGroup(s.check_field,tp,LOCATION_ONFIELD,0,nil)
+		local codes={}
+		for tc in aux.Next(g) do
+			local code=tc:GetCode()
+			if not codes[code] then
+				codes[code]=true
+			end
+		end
+		
+		local count=0
+		for _ in pairs(codes) do
+			count=count+1
+		end
+
+		if count>=3 then
+			local tg=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,tp)
+			if tg:GetCount()>0 then
+				if Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+					local sg=tg:Select(tp,1,1,nil)
+					if sg:GetCount()>0 then
+						local tc=sg:GetFirst()
+						local loc=s.get_loc(tc)
+						local discard_type=0
+						if loc==1 then
+							discard_type=TYPE_MONSTER
+						elseif loc==2 then
+							discard_type=TYPE_SPELL
+						elseif loc==3 then
+							discard_type=TYPE_TRAP
+						end
+
+						if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 then
+							Duel.ConfirmCards(1-tp,tc)
+
+							if discard_type~=0 then
+
+								local hand=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
+								local discard_g=hand:Filter(Card.IsType,nil,discard_type)
+								
+								if discard_g:GetCount()>0 then
+									Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+									local discard_sg=discard_g:Select(tp,1,1,nil)
+									if discard_sg:GetCount()>0 then
+										Duel.SendtoGrave(discard_sg,REASON_EFFECT+REASON_DISCARD)
+									end
+								else
+									Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(id,3))
+								end
+							end
+						end
+					end
+				end
+			end
 		end
 	end
 end
-function s.rmfilter(c)
-	return c:IsSetCard(0x3f50) and c:IsAbleToRemove()
+
+function s.descon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(function(c) 
+		return c:IsFaceup() and c:IsSetCard(0x3f50) and c~=e:GetHandler()
+	end, tp, LOCATION_MZONE, 0, 1, nil)
 end
-function s.thfilter(c)
-	return c:IsSetCard(0x3f50) and c:IsAbleToHand()
+
+function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+	local g=Duel.SelectMatchingCard(tp,Card.IsDiscardable,tp,LOCATION_HAND,0,1,1,nil)
+	local tc=g:GetFirst()
+	local typ=0
+	if tc:IsType(TYPE_MONSTER) then typ=1
+	elseif tc:IsType(TYPE_SPELL) then typ=2
+	elseif tc:IsType(TYPE_TRAP) then typ=3 end
+	e:SetLabel(typ)
+	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
-function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.rmfilter,tp,LOCATION_DECK,0,1,nil)
-		and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+
+function s.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsFaceup() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local typ=e:GetLabel()
+	if typ==1 then
+		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
+	elseif typ==2 then
+		Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
+	elseif typ==3 then
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
+	end
 end
-function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.rmfilter,tp,LOCATION_DECK,0,nil)
-	if #g==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local rg=g:Select(tp,1,1,nil)
-	if #rg>0 and Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)>0 and rg:GetFirst():IsLocation(LOCATION_REMOVED) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local tg=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if #tg>0 then
-			Duel.SendtoHand(tg,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tg)
+
+function s.disop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	local typ=e:GetLabel()
+	if tc and tc:IsRelateToEffect(e) and tc:IsFaceup() then
+		if typ==1 then
+			Duel.Destroy(tc,REASON_EFFECT)
+		elseif typ==2 then
+			Duel.NegateRelatedChain(tc,RESET_TURN_SET)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e1)
+			local e2=Effect.CreateEffect(e:GetHandler())
+			e2:SetType(EFFECT_TYPE_SINGLE)
+			e2:SetCode(EFFECT_DISABLE_EFFECT)
+			e2:SetValue(RESET_TURN_SET)
+			e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+			tc:RegisterEffect(e2)
+		elseif typ==3 then
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		end
 	end
 end

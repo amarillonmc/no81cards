@@ -42,7 +42,7 @@ function c98500150.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function c98500150.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end 
-	local op=Duel.SelectOption(tp,aux.Stringid(98500150,7),aux.Stringid(98500150,8))
+	local op=Duel.SelectOption(tp,aux.Stringid(98500150,9),aux.Stringid(98500150,10))
 	if op==0 then
 		Duel.ChangePosition(e:GetHandler(),POS_FACEUP_ATTACK)
 	else
@@ -50,7 +50,7 @@ function c98500150.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c98500150.filter(c)
-	return c:IsFacedown() or c:IsFaceup() and  c:IsControlerCanBeChanged()
+	return c:IsControlerCanBeChanged()
 end
 function c98500150.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) and c98500150.filter(chkc) end
@@ -78,7 +78,7 @@ function c98500150.filter3(c)
 end
 function c98500150.hsptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	 if chkc then return chkc:IsLocation(LOCATION_MZONE) and c98500150.filter3(chkc) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (e:GetHandler():IsSummonable(true,nil) or e:GetHandler():IsMSetable(true,nil)) and (Duel.IsExistingTarget(c98500150.filter3,tp,LOCATION_MZONE,0,1,nil) or (Duel.IsPlayerAffectedByEffect(tp,98500000) and Duel.IsExistingTarget(c98500150.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil))) end
+	if chk==0 then return (e:GetHandler():IsSummonable(true,nil) or e:GetHandler():IsMSetable(true,nil)) and (Duel.IsExistingTarget(c98500150.filter3,tp,LOCATION_MZONE,0,1,nil) or (Duel.IsPlayerAffectedByEffect(tp,98500000) and Duel.IsExistingTarget(c98500150.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil))) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	if Duel.IsPlayerAffectedByEffect(tp,98500000) then
 		local g=Duel.SelectTarget(tp,c98500150.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
@@ -111,22 +111,22 @@ function c98500150.hspop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetOperation(c98500150.efilter)
 		Duel.RegisterEffect(e4,tp)
 	Duel.BreakEffect()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return false end
+	--if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return false end
 	local ts={}
 	local index=1
 	if e:GetHandler():IsSummonable(true,nil) then
-		ts[index]=aux.Stringid(98500150,9)
+		ts[index]=aux.Stringid(98500150,7)
 		index=index+1
 	end
 	if e:GetHandler():IsMSetable(true,nil) then
-	   ts[index]=aux.Stringid(98500150,10)
+	   ts[index]=aux.Stringid(98500150,8)
 	   index=index+1
 	end
 	local c=e:GetHandler()
 	local opt=Duel.SelectOption(tp,table.unpack(ts))
-	if ts[opt+1]==aux.Stringid(98500150,9) then
+	if ts[opt+1]==aux.Stringid(98500150,7) then
 		Duel.Summon(tp,c,true,nil)
-	elseif ts[opt+1]==aux.Stringid(98500150,10) then
+	elseif ts[opt+1]==aux.Stringid(98500150,8) then
 		Duel.MSet(tp,c,true,nil)
 	end
 	local tc=Duel.GetFirstTarget()
@@ -153,11 +153,10 @@ function c98500150.desop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.Destroy(sg,REASON_EFFECT)~=0 then
 			Duel.BreakEffect()
 			if Duel.IsExistingTarget(c98500150.filter4,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(98500150,4)) then
-				 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONTROL)
-				local g2=Duel.SelectMatchingCard(tp,c98500150.filter,tp,0,LOCATION_MZONE,1,1,nil)
+				local g2=Duel.SelectMatchingCard(tp,c98500150.filter,tp,0,LOCATION_MZONE,1,1,nil) if #g2>0 then
 				local tc2=g2:GetFirst() 
 					Duel.GetControl(tc2,tp,PHASE_END,1)
-				
+				end
 			end
 		end
 	end

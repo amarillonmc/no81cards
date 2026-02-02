@@ -39,6 +39,14 @@ function c28352281.initial_effect(c)
 	e3:SetOperation(c28352281.reop)
 	c:RegisterEffect(e3)
 	c28352281.recover_effect=e3
+	if not ALSTRO_EFFECT_HINT then
+		ALSTRO_EFFECT_HINT = true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_PREDRAW)
+		ge1:SetOperation(c28352281.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 end
 function c28352281.sprfilter(c)
 	return c:IsRace(RACE_FAIRY) and c:IsType(TYPE_SYNCHRO) and c:IsReleasable(REASON_SPSUMMON)
@@ -88,6 +96,7 @@ function c28352281.operation(e,tp,eg,ep,ev,re,r,rp)
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_FIELD)
 		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+		e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e2:SetRange(LOCATION_MZONE)
 		e2:SetTargetRange(LOCATION_ONFIELD,0)
 		e2:SetCondition(c28352281.imcon)
@@ -120,8 +129,7 @@ function c28352281.defcon(e)
 	return Duel.GetLP(e:GetHandlerPlayer())>10000
 end
 function c28352281.defval(e,c)
-	local tp=c:GetControler()
-	return (Duel.GetLP(tp)-10000)/2
+	return math.ceil((Duel.GetLP(c:GetControler())-10000)/2)
 end
 function c28352281.imcon(e)
 	local tp=e:GetHandlerPlayer()
@@ -142,5 +150,36 @@ function c28352281.reop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ShuffleHand(p)
 		Duel.BreakEffect()
 		Duel.DiscardHand(p,nil,1,1,REASON_EFFECT)
+	end
+end
+function c28352281.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local member_list={28315943,28315944,28316347}
+	for p=0,1 do
+		local g=Duel.GetMatchingGroup(Card.IsCode,p,0xff,0,nil,table.unpack(member_list))
+		if g:GetClassCount(Card.GetCode)==#member_list then
+			local ge1=Effect.CreateEffect(e:GetHandler())
+			ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			ge1:SetCode(EVENT_CUSTOM+28352281)
+			ge1:SetOperation(c28352281.hintop)
+			Duel.RegisterEffect(ge1,p)
+		end
+	end
+	e:Reset()
+end
+function c28352281.hintop(e,tp,eg,ep,ev,re,r,rp)
+	--if rp~=tp then return end
+	local member_list={28315943,28315944,28316347}
+	local code_ascver={28315943,28316347,28315944}--ascending order
+	for _,te in pairs({Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+28352281)}) do te:Reset() end
+	for i,code in pairs(member_list) do
+		local ct=Duel.GetFlagEffectLabel(tp,code) or 0
+		local te=Effect.CreateEffect(e:GetHandler())
+		te:SetDescription(aux.Stringid(code_ascver[i],ct+5))
+		te:SetType(EFFECT_TYPE_FIELD)
+		te:SetCode(EFFECT_FLAG_EFFECT+28352281)
+		te:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		te:SetTargetRange(1,0)
+		te:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(te,tp)
 	end
 end

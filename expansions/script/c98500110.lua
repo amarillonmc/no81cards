@@ -3,7 +3,7 @@ function c98500110.initial_effect(c)
 	--be target
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(98500110,0))
-	e1:SetCategory(CATEGORY_DRAW+CATEGORY_POSITION)
+	e1:SetCategory(CATEGORY_POSITION)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
@@ -38,7 +38,7 @@ function c98500110.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c98500110.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsFacedown() and re:IsActiveType(TYPE_MONSTER)
+	return e:GetHandler():IsFacedown() 
 end
 function c98500110.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end 
@@ -52,23 +52,18 @@ end
 function c98500110.filter(c)
 	return c:IsFaceup() and c:IsCanTurnSet()
 end
+function c98500110.setfilter(c)
+	return c:IsSetCard(0x985) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+end
 function c98500110.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
-	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(1)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,nil,1,0,0)
+   if chk==0 then return Duel.IsExistingMatchingCard(c98500110.setfilter,tp,LOCATION_DECK,0,1,nil) end
 end
 function c98500110.operation(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	if Duel.Draw(p,d,REASON_EFFECT)~=0 and Duel.SelectYesNo(tp,aux.Stringid(98500110,3)) then
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,c98500110.filter,tp,LOCATION_MZONE,0,1,1,nil)
-		local tc=g:GetFirst()
-		if tc:IsLocation(LOCATION_MZONE) and tc:IsFaceup() then
-			Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
-		end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local g=Duel.SelectMatchingCard(tp,c98500110.setfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.SSet(tp,tc)
 	end
 end
 function c98500110.filter3(c)
@@ -111,13 +106,20 @@ end
 function c98500110.desop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
 	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSGS_DETROY)
 		local sg=g:Select(tp,1,1,nil)
 		Duel.HintSelection(sg)
 		if Duel.Destroy(sg,REASON_EFFECT)~=0 then
 			Duel.BreakEffect()
 			if Duel.IsExistingTarget(c98500110.filter4,tp,0,LOCATION_ONFIELD,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(98500110,4)) then
-				Duel.Draw(tp,1,REASON_EFFECT)
+			   local g2=Duel.GetFieldGroup(1-tp,LOCATION_GRAVE,LOCATION_REMOVED)
+				  if g2:GetCount()>0 then
+					 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+			   local sg1=g2:Select(tp,1,1,nil)
+					 Duel.HintSelection(sg1)
+					 Duel.SendtoDeck(sg1,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+				   
+				end
 			end
 		end
 	end

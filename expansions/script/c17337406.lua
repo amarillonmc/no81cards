@@ -1,93 +1,65 @@
 --半魔的冰结之绊
-local s,id=GetID()
+local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,17337402,17337404)
+	aux.AddCodeList(c,17337402,17337404) 
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	c:RegisterEffect(e0)
+
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,id)
-	e1:SetCondition(s.condition)
-	e1:SetCost(s.cost)
-	e1:SetTarget(s.target)
-	e1:SetOperation(s.activate)
+	e1:SetCondition(s.descon1)
+	e1:SetTarget(s.destg1)
+	e1:SetOperation(s.desop1)
 	c:RegisterEffect(e1)
 
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,0))
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	e2:SetCondition(s.handcon)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EFFECT_DESTROY_REPLACE)
+	e2:SetRange(LOCATION_GRAVE)
+	e2:SetCountLimit(1,id+o)
+	e2:SetTarget(s.reptg)
+	e2:SetValue(s.repval)
+	e2:SetOperation(s.repop)
 	c:RegisterEffect(e2)
-
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EFFECT_DESTROY_REPLACE)
-	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCountLimit(1,id+1)
-	e3:SetTarget(s.reptg)
-	e3:SetValue(s.repval)
-	e3:SetOperation(s.repop)
-	c:RegisterEffect(e3)
 end
 
-function s.princessfilter(c)
-	return c:IsCode(17337402) and c:IsFaceup()
+function s.cfilter(c,code)
+	return c:IsFaceup() and c:IsCode(code)
+end
+function s.descon1(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil,17337402)
+		and Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil,17337404)
 end
 
-function s.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.princessfilter,tp,LOCATION_MZONE,0,1,nil)
+function s.destg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
+	if chk==0 then return #g>0 end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,#g,0,0)
 end
 
-function s.cfilter(c)
-	return c:IsCode(17337404) and not c:IsPublic()
-end
-
-function s.elfilter(c)
-	return c:IsCode(17337404) and c:IsFaceup()
-end
-
-function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(s.elfilter,tp,LOCATION_MZONE,0,1,nil)
-	local b2=Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_HAND,0,1,nil)
-	if chk==0 then return b1 or b2 end
-	if b1 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-		e:SetLabel(1)
-	else
-		e:SetLabel(0)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_HAND,0,1,1,nil)
-		Duel.ConfirmCards(1-tp,g)
-		Duel.ShuffleHand(tp)
-	end
-end
-
-function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,LOCATION_ONFIELD)
-end
-
-function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+function s.desop1(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 	if #g>0 then
-		Duel.HintSelection(g)
 		Duel.Destroy(g,REASON_EFFECT)
 	end
 end
 
-function s.handcon(e)
-	return Duel.IsExistingMatchingCard(s.princessfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
-end
-
 function s.repfilter(c,tp)
-	return c:IsFaceup() and c:IsCode(17337402)
-		and c:IsOnField() and c:IsControler(tp) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
+	return c:IsFaceup() and (c:IsCode(17337402) or c:IsCode(17337404))
+		and c:IsOnField() and c:IsControler(tp) 
+		and (c:IsReason(REASON_EFFECT) or c:IsReason(REASON_BATTLE)) 
+		and not c:IsReason(REASON_REPLACE)
 end
 
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToRemove() and eg:IsExists(s.repfilter,1,nil,tp) end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+	return Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(id,1))
 end
 
 function s.repval(e,c)

@@ -31,7 +31,7 @@ function c11513093.cgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local d1=(re:IsHasCategory(CATEGORY_DRAW) or re:IsHasCategory(CATEGORY_TOHAND)) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=1 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK,0,1,nil)
 	local d2=re:IsHasCategory(CATEGORY_TOGRAVE) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=1 and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_DECK,0,1,nil)
 	local d3=re:IsHasCategory(CATEGORY_REMOVE) and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=1 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_DECK,0,1,nil)
-	if chk==0 then return d1 or d2 or d3 and Duel.GetLocationCount(tp,LOCATION_MZONE)>-1 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return d1 or d2 or d3 and Duel.GetLocationCount(tp,LOCATION_MZONE)>-1 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(c11513092.penfilter,tp,LOCATION_EXTRA,0,1,nil) and (Duel.CheckLocation(tp,LOCATION_PZONE,0) or Duel.CheckLocation(tp,LOCATION_PZONE,1)) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c11513093.cgop(e,tp,eg,ep,ev,re,r,rp)
@@ -68,7 +68,7 @@ function c11513093.cgop(e,tp,eg,ep,ev,re,r,rp)
 	elseif opval[op]==3 then
 		Duel.ChangeChainOperation(ev,c11513093.rerepop)
 	end
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c11513093.penfilter,tp,LOCATION_EXTRA,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(11513093,3)) then
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c11513093.penfilter,tp,LOCATION_EXTRA,0,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		Duel.BreakEffect()
 		local g=Duel.SelectMatchingCard(tp,c11513093.penfilter,tp,LOCATION_EXTRA,0,1,1,nil)
@@ -79,7 +79,7 @@ function c11513093.cgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c11513093.penfilter(c)
-	return c:IsCode(11513094) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden() and c:IsFacedown()
+	return c:IsCode(11513094) and c:IsType(TYPE_PENDULUM) and not c:IsForbidden()
 end
 function c11513093.threpop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)

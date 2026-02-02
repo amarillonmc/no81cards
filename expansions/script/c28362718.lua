@@ -3,7 +3,7 @@ function c28362718.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetHintTiming(0,TIMING_DRAW_PHASE+TIMING_END_PHASE)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DRAW+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCost(c28362718.cost)
@@ -54,34 +54,25 @@ function c28362718.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLP(tp)<=3000 or Duel.CheckLPCost(tp,2000) end
 	if Duel.GetLP(tp)>3000 then Duel.PayLPCost(tp,2000) end
 end
-function c28362718.cfilter(c,code1,code2)
-	return c:IsCode(code1,code2) and c:IsFaceup()
+function c28362718.spfilter(c,e,tp)
+	return c:IsSetCard(0x285) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c28362718.thfilter(c,tp,code)
-	return c:IsSetCard(0x285) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
-		and not Duel.IsExistingMatchingCard(c28362718.cfilter,tp,LOCATION_ONFIELD,0,1,nil,c:GetCode(),code)
-end
-function c28362718.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local code=e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetHandler():GetCode() or 0
-	if chk==0 then return Duel.IsExistingMatchingCard(c28362718.thfilter,tp,LOCATION_DECK,0,1,nil,tp,code) and (Duel.GetLP(tp)>3000 or Duel.IsPlayerCanDraw(tp,1)) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+function c28362718.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return false end
+		local loc=LOCATION_HAND+LOCATION_GRAVE
+		if Duel.GetLP(tp)<=3000 then loc=loc+LOCATION_DECK end
+		return Duel.IsExistingMatchingCard(c28362718.spfilter,tp,loc,0,1,nil,e,tp)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_DECK)
 end
 function c28362718.activate(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,c28362718.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp,0):GetFirst()
-	if tc then
-		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
-	end
-	if Duel.GetLP(tp)<=3000 and Duel.Draw(tp,1,REASON_EFFECT)~=0 then
-		--Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,aux.ExceptThisCard(e))
-		if #g>0 then
-			Duel.HintSelection(g)
-			Duel.Destroy(g,REASON_EFFECT)
-		end
-	end
+	if Duel.GetMZoneCount(tp)<=0 then return end
+	local loc=LOCATION_HAND+LOCATION_GRAVE
+	if Duel.GetLP(tp)<=3000 then loc=loc+LOCATION_DECK end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c28362718.spfilter),tp,loc,0,1,1,nil,e,tp):GetFirst()
+	if sc and Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)~=0 and sc.effop then sc.effop(sc) end
 end
 function c28362718.fscon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsType,1,nil,TYPE_MONSTER) and not eg:IsContains(e:GetHandler())

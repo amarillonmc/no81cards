@@ -80,7 +80,7 @@ function c98500140.filter3(c)
 end
 function c98500140.hsptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c98500140.filter3(chkc) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (e:GetHandler():IsSummonable(true,nil) or e:GetHandler():IsMSetable(true,nil)) and (Duel.IsExistingTarget(c98500140.filter3,tp,LOCATION_MZONE,0,1,nil) or (Duel.IsPlayerAffectedByEffect(tp,98500080) and Duel.IsExistingTarget(c98500140.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil))) end
+	if chk==0 then return (e:GetHandler():IsSummonable(true,nil) or e:GetHandler():IsMSetable(true,nil)) and (Duel.IsExistingTarget(c98500140.filter3,tp,LOCATION_MZONE,0,1,nil) or (Duel.IsPlayerAffectedByEffect(tp,98500080) and Duel.IsExistingTarget(c98500140.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil))) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	if Duel.IsPlayerAffectedByEffect(tp,98500080) then
 		local g=Duel.SelectTarget(tp,c98500140.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
@@ -99,7 +99,7 @@ function c98500140.hspop(e,tp,eg,ep,ev,re,r,rp)
 		e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e0:SetCode(EVENT_SUMMON_SUCCESS)
 		e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_OATH)
-		e0:SetCountLimit(1,98500510)
+		e0:SetCountLimit(1,98500143)
 		e0:SetReset(RESET_EVENT+0x7e0000+RESET_PHASE+PHASE_END)
 		e0:SetOperation(c98500140.efilter)
 		c:RegisterEffect(e0)
@@ -107,13 +107,13 @@ function c98500140.hspop(e,tp,eg,ep,ev,re,r,rp)
 		e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 		e4:SetCode(EVENT_MSET)
 		e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_OATH)
-		e4:SetCountLimit(1,98500510)
+		e4:SetCountLimit(1,98500143)
 		e4:SetReset(RESET_PHASE+PHASE_END)
 	 -- e4:SetLabelObject(c)
 		e4:SetOperation(c98500140.efilter)
 		Duel.RegisterEffect(e4,tp)
 	Duel.BreakEffect()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return false end
+	--if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return false end
 	local ts={}
 	local index=1
 	if e:GetHandler():IsSummonable(true,nil) then

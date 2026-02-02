@@ -35,7 +35,12 @@ function cm.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) and Duel.SpecialSummon(e:GetHandler(),0,tp,tp,false,false,POS_FACEUP)>0 then
-		local rg=Duel.GetDecktopGroup(tp,1)
+		local aa={}
+		for i=1,math.min(3,Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)) do
+			aa[i]=i
+		end
+		local num=Duel.AnnounceNumber(tp,table.unpack(aa))
+		local g=Duel.GetDecktopGroup(tp,num)
 		Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
 	end
 end

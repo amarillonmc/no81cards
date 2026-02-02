@@ -23,7 +23,7 @@ function c98500210.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE)
 	e4:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e4:SetCode(EFFECT_ADD_EXTRA_TRIBUTE)
-	e4:SetTargetRange(LOCATION_ONFIELD,LOCATION_ONFIELD)
+	e4:SetTargetRange(LOCATION_SZONE,0)
 	e4:SetTarget(c98500210.exrtg)
 	e4:SetValue(POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)
 	local e5=Effect.CreateEffect(c)
@@ -44,7 +44,7 @@ function c98500210.initial_effect(c)
 	--destroy
 	local e7=Effect.CreateEffect(c)
 	e7:SetDescription(aux.Stringid(98500210,1))
-	e7:SetCategory(CATEGORY_DRAW+CATEGORY_POSITION)
+	e7:SetCategory(CATEGORY_POSITION)
 	e7:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e7:SetRange(LOCATION_FZONE)
 	e7:SetCountLimit(1)
@@ -54,26 +54,21 @@ function c98500210.initial_effect(c)
 	c:RegisterEffect(e7)
 end
 function c98500210.rmcfilter(c,tp)
-	return c:IsType(TYPE_MONSTER) and not c:IsPublic()
-		and Duel.IsExistingMatchingCard(c98500210.rmfilter,tp,LOCATION_DECK,0,1,nil,c:GetCode())
+	return c:IsSetCard(0x985) and c:IsAbleToHand()
 end
 function c98500210.rmfilter(c,code)
 	return c:IsSetCard(0x985) and not c:IsCode(code) and c:IsAbleToHand() and c:IsType(TYPE_MONSTER)
 end
 function c98500210.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98500210.rmcfilter,tp,LOCATION_HAND,0,1,nil,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,tp,LOCATION_HAND)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
+	 if chk==0 then return Duel.IsExistingMatchingCard(c98500210.rmcfilter,tp,LOCATION_DECK,0,1,nil) end
+	 Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c98500210.rmop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g1=Duel.SelectMatchingCard(tp,c98500210.rmcfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
-	if g1:GetCount()>0 then
-		Duel.ConfirmCards(1-tp,g1)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g2=Duel.SelectMatchingCard(tp,c98500210.rmfilter,tp,LOCATION_DECK,0,1,1,nil,g1:GetFirst():GetCode())
-		Duel.SendtoHand(g2,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g2)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,c98500210.rmcfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function c98500210.exrtg(e,c)
@@ -81,29 +76,10 @@ function c98500210.exrtg(e,c)
 end
 function c98500210.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,1-tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
 end
 function c98500210.activate(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,0,nil)
-	local ct=g:GetCount()
-	if ct>0 then
-		Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
-		local g2=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_MZONE,0,nil)
-		local ct2=g2:GetCount()
-		local g3=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,0,LOCATION_MZONE,nil)
-		local ct3=g3:GetCount()
-		if ct3>0 then
-			Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_POSCHANGE)
-			local g4=Duel.SelectMatchingCard(1-tp,Card.IsCanTurnSet,tp,0,LOCATION_MZONE,1,ct2,nil)
-			Duel.ChangePosition(g4,POS_FACEDOWN_DEFENSE)
-			Duel.BreakEffect()
-			local g5=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
-			local ct5=g5:GetCount()
-			Duel.Draw(1-tp,ct5,REASON_EFFECT)
-			local g6=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
-			local ct6=g6:GetCount()
-			Duel.Draw(tp,ct6,REASON_EFFECT)
-		end
-	end
+	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,1-tp,0,LOCATION_MZONE,nil)
+	Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
 end

@@ -57,8 +57,7 @@ end
 
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,0,nil)
-	if #g>0 then
-		Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
+	if #g>0 and Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)~=0 then
 		Duel.BreakEffect()
 
 		local g2=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_MZONE,0,nil)
@@ -66,44 +65,16 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ChangePosition(g2,POS_FACEUP_ATTACK)
 		end
 
-		local g3=Duel.GetMatchingGroup(s.condition2,tp,LOCATION_MZONE,0,nil)
-		local dg=Group.CreateGroup()
-
-		local colset={}
-		for tc in aux.Next(g3) do
-			local seq=tc:GetSequence()
-			if tc:IsLocation(LOCATION_MZONE) then
-				if seq==5 then 
-					colset[3]=true
-				elseif seq==6 then 
-					colset[1]=true
-				elseif seq>=0 and seq<=4 then 
-					colset[seq]=true
-				end
-			end
-		end
-
-		for i=0,4 do
-			if colset[i] then
-				local oc=Duel.GetFieldCard(1-tp,LOCATION_MZONE,i)
-				if oc then
-					dg:AddCard(oc)
-				end
-
-				if i==3 then 
-					local oc_ex=Duel.GetFieldCard(1-tp,LOCATION_MZONE,6)
-					if oc_ex then
-						dg:AddCard(oc_ex)
-					end
-				elseif i==1 then 
-					local oc_ex=Duel.GetFieldCard(1-tp,LOCATION_MZONE,5)
-					if oc_ex then
-						dg:AddCard(oc_ex)
-					end
-				end
-			end
-		end
+		local g3=Duel.GetMatchingGroup(function(c) 
+			return c:IsFaceup() and c:IsSetCard(0x3f50) and c:IsAttackPos() 
+		end,tp,LOCATION_MZONE,0,nil)
 		
+		local dg=Group.CreateGroup()
+		for tc in aux.Next(g3) do
+			local colg=tc:GetColumnGroup()
+			local enemy_monsters=colg:Filter(Card.IsControler,nil,1-tp):Filter(Card.IsLocation,nil,LOCATION_MZONE)
+			dg:Merge(enemy_monsters)
+		end	   
 		if #dg>0 then
 			Duel.Destroy(dg,REASON_EFFECT)
 		end

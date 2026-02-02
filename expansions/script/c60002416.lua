@@ -17,7 +17,8 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,m)
+	--e2:SetCountLimit(1,m)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetTarget(cm.cttg)
 	e2:SetOperation(cm.ctop)
 	c:RegisterEffect(e2)
@@ -54,15 +55,15 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.cttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tp=e:GetHandlerPlayer()
-	local sg=Duel.GetDecktopGroup(1-tp,3)
-	if chk==0 then return #sg==3 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,0)>0 and Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil)==Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil) and e:GetHandler():GetEquipCount()==0 end
+	local sg=Duel.GetDecktopGroup(1-tp,5)
+	if chk==0 then return #sg==5 and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,0)>0 and Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil)==Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil) and e:GetHandler():GetEquipCount()==0 end
 end
 
 function cm.ctop(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()
 	local c=e:GetHandler()
-	Duel.ConfirmDecktop(1-tp,3)
-	local sg=Duel.GetDecktopGroup(1-tp,3)
+	Duel.ConfirmDecktop(1-tp,5)
+	local sg=Duel.GetDecktopGroup(1-tp,5)
 	local ec=sg:GetFirst()
 	local u=0
 	for i=1,#sg do
@@ -103,9 +104,6 @@ function cm.remtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tp=e:GetHandlerPlayer()
 	local c=e:GetHandler()
 	if chk==0 then return eg:IsExists(cm.filter,1,nil,tp)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) 
-		and Duel.GetFieldGroupCount(tp,LOCATION_REMOVED,0)>0 and Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil)==Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)
 		and Duel.GetFlagEffect(tp,m)==0 end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
@@ -114,10 +112,17 @@ function cm.remop(e,tp,eg,ep,ev,re,r,rp)
 	local tp=e:GetHandlerPlayer()
 	local c=e:GetHandler()
 	local ec=c:GetEquipGroup():Select(tp,1,1,nil)
-	local dc=Duel.GetDecktopGroup(tp,1)
-	ec:Merge(dc)
-	if Duel.Remove(dc,POS_FACEUP,REASON_EFFECT)~=0 then
-		local des=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
-		Duel.Destroy(des,REASON_EFFECT)
+	local des=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,1,1,nil)
+	local g=Group.FromCards(ec,des)
+	if Duel.Destroy(g,REASON_EFFECT)~=0 and Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil)~=0 and Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil)~=0 then
+		if Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil)>Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil) then
+			local g=Duel.GetDecktopGroup(tp,1)
+			Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
+		elseif Duel.GetMatchingGroupCount(Card.IsFaceup,tp,LOCATION_REMOVED,0,nil)<Duel.GetMatchingGroupCount(Card.IsFacedown,tp,LOCATION_REMOVED,0,nil) then
+			local g=Duel.GetDecktopGroup(tp,1)
+			Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+		else
+			if Duel.SendtoHand(c,nil,REASON_EFFECT)~=0 then Duel.Draw(tp,2,REASON_EFFECT) end
+		end
 	end
 end

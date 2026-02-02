@@ -66,15 +66,30 @@ function c98500200.filter(c)
 	return c:IsPosition(POS_FACEDOWN)
 end
 function c98500200.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98500200.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c98500200.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) or Duel.IsExistingMatchingCard(c98500200.filter,tp,0,LOCATION_EXTRA,1,nil) end
+	local b1=Duel.IsExistingMatchingCard(c98500200.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	local b2=Duel.IsExistingMatchingCard(c98500200.filter,tp,0,LOCATION_EXTRA,1,nil)
+   local op=aux.SelectFromOptions(tp,
+		{b1,aux.Stringid(98500200,6)},
+		{b2,aux.Stringid(98500200,7)})
+	e:SetLabel(op)
 end
 function c98500200.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local op=e:GetLabel()
+	if op==1 then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c98500200.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	if g:GetCount()>0 then
 		Duel.Overlay(c,g)
 	end
+	elseif op==2 then
+	local g=Duel.GetMatchingGroup(c98500200.filter,tp,0,LOCATION_EXTRA,nil)
+	if g:GetCount()>0 then
+	local sg=g:RandomSelect(tp,1)
+		Duel.Overlay(c,sg)
+	end
+   end
 end
 function c98500200.copfilter(c)
 	return c:IsType(TYPE_EFFECT)
@@ -110,17 +125,18 @@ function c98500200.posop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) then
 		if Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)~=0 and tc:GetControler()==1-tp then
-			if Duel.SelectYesNo(tp,aux.Stringid(98500200,5)) then
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
-				local tc2=Duel.SelectMatchingCard(tp,c98500200.posfilter,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
-				Duel.ChangePosition(tc2,POS_FACEDOWN_DEFENSE)
-			end
 			local c=e:GetHandler()
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_CANNOT_CHANGE_POSITION)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 			tc:RegisterEffect(e1)
+			end
+				Duel.BreakEffect()
+			   if Duel.SelectYesNo(tp,aux.Stringid(98500200,5)) then
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+				local tc2=Duel.SelectMatchingCard(tp,c98500200.posfilter,tp,LOCATION_MZONE,0,1,1,nil):GetFirst()
+				Duel.ChangePosition(tc2,POS_FACEDOWN_DEFENSE)
+			end
 		end
 	end
-end

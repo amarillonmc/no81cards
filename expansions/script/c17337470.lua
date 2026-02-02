@@ -4,12 +4,13 @@ function s.initial_effect(c)
 	aux.AddCodeList(c,17337409,17337411)
 	c:EnableReviveLimit()
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3f50),5,2,nil,nil,99)
+
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetValue(aux.tgoval)
+	e1:SetValue(s.efilter)
 	c:RegisterEffect(e1)
 
 	local e2=Effect.CreateEffect(c)
@@ -25,25 +26,33 @@ function s.initial_effect(c)
 	e2:SetOperation(s.negop)
 	c:RegisterEffect(e2)
 end
-function s.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev)
+
+function s.efilter(e,te)
+	return te:IsActiveType(TYPE_SPELL+TYPE_TRAP)
 end
+
+function s.negcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsChainNegatable(ev)
+end
+
 function s.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	local g=c:GetOverlayGroup()
+	local has=g:IsExists(Card.IsCode,1,nil,17337409,17337411)
+	e:SetLabel(has and 1 or 0)
 	c:RemoveOverlayCard(tp,1,1,REASON_COST)
 end
+
 function s.negtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 end
+
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) then
-		local c=e:GetHandler()
-		local materials=c:GetOverlayGroup()
-		if materials:IsExists(Card.IsCode,1,nil,17337409,17337411) and re:GetHandler():IsAbleToRemove() 
-		and re:GetHandler():IsRelateToEffect(re) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-			Duel.BreakEffect()
+		if e:GetLabel()==1 and re:GetHandler():IsAbleToRemove() 
+			and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.Remove(re:GetHandler(),POS_FACEUP,REASON_EFFECT)
 		end
 	end

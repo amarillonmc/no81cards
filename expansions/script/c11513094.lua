@@ -5,14 +5,14 @@ function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--material
 	aux.AddMaterialCodeList(c,11513092,11513093)
-	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsFusionCode,11513092,11513093),c11513094.matfilter,true)
+	aux.AddFusionProcFun2(c,c11513094.matfilter,aux.FilterBoolFunction(Card.IsFusionCode,11513092,11513093),true)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)
 	--toh
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11513094,0))
 	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW+CATEGORY_TOGRAVE)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e1:SetCode(EVENT_TO_HAND)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
@@ -54,7 +54,7 @@ function cm.initial_effect(c)
 	--fusion
 	local e7=Effect.CreateEffect(c)
 	e7:SetDescription(aux.Stringid(11513094,3))
-	e7:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_TODECK)
+	e7:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_TODECK)
 	e7:SetType(EFFECT_TYPE_QUICK_O)
 	e7:SetCode(EVENT_CHAINING)
 	e7:SetRange(LOCATION_EXTRA)
@@ -108,19 +108,30 @@ function c11513094.valcheck(e,c)
 	e:GetLabelObject():SetLabel(ct)
 end
 
+function c11513094.ctfilter(c,tp)
+	return c:GetControler()==tp
+end
 function c11513094.tttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,nil)  end
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_HAND)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,e:GetHandler(),1,0,0)
 end
 function c11513094.ttop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local rc=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,1,nil)
-	if #rc>0 then Duel.Remove(rc,POS_FACEUP,REASON_EFFECT) end
-	Duel.Draw(tp,1,REASON_EFFECT)
 	if c:IsRelateToEffect(e) then Duel.SendtoGrave(c,REASON_EFFECT) end
+	if eg:FilterCount(Card.IsControler,nil,tp)>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local rc=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,1,nil)
+		if #rc>0 then Duel.Remove(rc,POS_FACEUP,REASON_EFFECT) end
+		Duel.Draw(tp,1,REASON_EFFECT)
+	end
+	if eg:FilterCount(Card.IsControler,nil,1-tp)>0 then
+		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
+		local rc=Duel.SelectMatchingCard(1-tp,Card.IsAbleToRemove,1-tp,LOCATION_HAND,0,1,1,nil)
+		if #rc>0 then Duel.Remove(rc,POS_FACEUP,REASON_EFFECT) end
+		Duel.Draw(1-tp,1,REASON_EFFECT)
+	end
 end
 function c11513094.effilter(c)
 	return c:IsFaceup() and (c:IsType(TYPE_EFFECT) or not c:IsType(TYPE_MONSTER))
@@ -157,12 +168,12 @@ function c11513094.efop(e,tp,eg,ep,ev,re,r,rp)
 		e98:SetCondition(c11513094.effcon2)
 		e98:SetTarget(c11513094.efftg2)
 		e98:SetOperation(c11513094.effop2)
-		c:RegisterEffect(e98)
+		tc:RegisterEffect(e98)
 		local e97=e99:Clone()
 		e97:SetCondition(c11513094.effcon3)
 		e97:SetTarget(c11513094.efftg3)
 		e97:SetOperation(c11513094.effop3)
-		c:RegisterEffect(e97)
+		tc:RegisterEffect(e97)
 	end
 end
 function c11513094.effcon1(e,tp,eg,ep,ev,re,r,rp)
@@ -247,6 +258,7 @@ function c11513094.fstg1(e,tp,eg,ep,ev,re,r,rp,chk)
 		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,1)
 end
 function c11513094.fstg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -266,6 +278,7 @@ function c11513094.fstg2(e,tp,eg,ep,ev,re,r,rp,chk)
 		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,1)
 end
 function c11513094.fstg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -285,6 +298,7 @@ function c11513094.fstg3(e,tp,eg,ep,ev,re,r,rp,chk)
 		return res
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,1)
 end
 function c11513094.fsop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -318,7 +332,15 @@ function c11513094.fsop1(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
-	end
+		if Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+			local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Select(tp,1,1,nil)
+			if g:GetCount()>0 then
+				Duel.BreakEffect()
+				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			end
+		end
+	end 
 end
 function c11513094.fsop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -352,6 +374,14 @@ function c11513094.fsop2(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
+		if Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+			local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Select(tp,1,1,nil)
+			if g:GetCount()>0 then
+				Duel.BreakEffect()
+				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			end
+		end
 	end
 end
 function c11513094.fsop3(e,tp,eg,ep,ev,re,r,rp)
@@ -386,6 +416,14 @@ function c11513094.fsop3(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
+		if Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+			local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Select(tp,1,1,nil)
+			if g:GetCount()>0 then
+				Duel.BreakEffect()
+				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			end
+		end
 	end
 end
 function c11513094.regop(e,tp,eg,ep,ev,re,r,rp)
@@ -398,7 +436,7 @@ end
 function c11513094.mocon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ct=e:GetLabelObject():GetLabel()
-	return c:IsLocation(LOCATION_EXTRA) and ct>0 -- and c:IsFaceup()
+	return c:IsLocation(LOCATION_EXTRA) and ct>0 and c:IsPreviousLocation(LOCATION_MZONE)-- and c:IsFaceup()
 end
 function c11513094.motg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=e:GetLabelObject():GetLabel()

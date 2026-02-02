@@ -17,7 +17,7 @@ function s.initial_effect(c)
 
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER)
@@ -28,24 +28,28 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 
-function s.cfilter1(c)
-	return c:IsCode(17337400) and not c:IsPublic()
-end
-
-function s.confilter1(c)
-	return c:IsFaceup() and c:IsCode(17337400)
+function s.chkfilter1(c)
+	return c:IsFaceupEx() and c:IsCode(17337400)
 end
 
 function s.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(s.cfilter1,tp,LOCATION_HAND,0,1,nil)
-	local b2=Duel.IsExistingMatchingCard(s.confilter1,tp,LOCATION_MZONE,0,1,nil)
-	if chk==0 then return b1 or b2 end
-	if b1 then
-		if b2 and not Duel.SelectYesNo(tp,aux.Stringid(id,2)) then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local g=Duel.SelectMatchingCard(tp,s.cfilter1,tp,LOCATION_HAND,0,1,1,nil)
-		Duel.ConfirmCards(1-tp,g)
-		Duel.ShuffleHand(tp)
+	if chk==0 then 
+		return Duel.IsExistingMatchingCard(s.chkfilter1,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)
+	end
+
+	local sg=Duel.GetMatchingGroup(s.chkfilter1,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	local ct=math.min(1,sg:GetCount())
+	if ct==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local rg=sg:Select(tp,1,ct,nil)
+	if rg:GetCount()>0 then
+		local hg=rg:Filter(Card.IsLocation,nil,LOCATION_HAND)
+		local og=rg-hg
+		Duel.ConfirmCards(1-tp,hg)
+		Duel.HintSelection(og)
+		if hg:GetCount()>=1 then
+			Duel.ShuffleHand(tp)
+		end
 	end
 end
 
@@ -70,24 +74,28 @@ function s.activate1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
-function s.cfilter2(c)
-	return c:IsCode(17337402) and not c:IsPublic()
-end
-
-function s.confilter2(c)
-	return c:IsFaceup() and c:IsCode(17337402)
+function s.chkfilter2(c)
+	return c:IsFaceupEx() and c:IsCode(17337402)
 end
 
 function s.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_HAND,0,1,nil)
-	local b2=Duel.IsExistingMatchingCard(s.confilter2,tp,LOCATION_MZONE,0,1,nil)
-	if chk==0 then return b1 or b2 end
-	if b1 then
-		if b2 and not Duel.SelectYesNo(tp,aux.Stringid(id,3)) then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local g=Duel.SelectMatchingCard(tp,s.cfilter2,tp,LOCATION_HAND,0,1,1,nil)
-		Duel.ConfirmCards(1-tp,g)
-		Duel.ShuffleHand(tp)
+	if chk==0 then 
+		return Duel.IsExistingMatchingCard(s.chkfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)
+	end
+
+	local sg=Duel.GetMatchingGroup(s.chkfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	local ct=math.min(1,sg:GetCount())
+	if ct==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local rg=sg:Select(tp,1,ct,nil)
+	if rg:GetCount()>0 then
+		local hg=rg:Filter(Card.IsLocation,nil,LOCATION_HAND)
+		local og=rg-hg
+		Duel.ConfirmCards(1-tp,hg)
+		Duel.HintSelection(og)
+		if hg:GetCount()>=1 then
+			Duel.ShuffleHand(tp)
+		end
 	end
 end
 
@@ -98,15 +106,15 @@ end
 function s.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-			and Duel.IsExistingMatchingCard(s.thfilter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp) 
+			and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.thfilter2),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) 
 	end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
 end
 
 function s.activate2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,s.thfilter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfilter2),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if #g>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end

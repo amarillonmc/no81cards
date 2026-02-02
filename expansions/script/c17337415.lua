@@ -10,7 +10,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e0)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_NEGATE+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_DISABLE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCountLimit(1,id)
@@ -40,48 +40,44 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsChainNegatable(ev)
 end
 function s.tdfilter(c)
-	return c:IsCode(17337400) and (c:IsLocation(LOCATION_HAND) or c:IsLocation(LOCATION_MZONE) or c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_REMOVED))
-		and c:IsAbleToDeck()
+	return c:IsCode(17337400) and c:IsAbleToDeck()
 end
-function s.showfilter(c)
-	return c:IsCode(17337409) and c:IsLocation(LOCATION_HAND) and not c:IsPublic()
-end
-function s.exfilter(c)
-	return c:IsCode(17337409) and (c:IsLocation(LOCATION_MZONE) or c:IsLocation(LOCATION_GRAVE))
+function s.chkfilter(c)
+	return c:IsFaceupEx() and c:IsCode(17337409)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local b1=Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
-			and Duel.IsExistingMatchingCard(s.showfilter,tp,LOCATION_HAND,0,1,nil)
-		local b2=Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
-			and Duel.IsExistingMatchingCard(s.exfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
-		return b1 or b2
+			and Duel.IsExistingMatchingCard(s.chkfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
+		return b1
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,s.tdfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 	if #g>0 then
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 	end
-	local b1=Duel.IsExistingMatchingCard(s.showfilter,tp,LOCATION_HAND,0,1,nil)
-	local b2=Duel.IsExistingMatchingCard(s.exfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
-	if b1 then
-		if b2 and not Duel.SelectYesNo(tp,aux.Stringid(id,2)) then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local sg=Duel.SelectMatchingCard(tp,s.showfilter,tp,LOCATION_HAND,0,1,1,nil)
-		Duel.ConfirmCards(1-tp,sg)
-		Duel.ShuffleHand(tp)
+
+	local sg=Duel.GetMatchingGroup(s.chkfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,nil)
+	local ct=math.min(1,sg:GetCount())
+	if ct==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local rg=sg:Select(tp,1,ct,nil)
+	if rg:GetCount()>0 then
+		local hg=rg:Filter(Card.IsLocation,nil,LOCATION_HAND)
+		local og=rg-hg
+		Duel.ConfirmCards(1-tp,hg)
+		Duel.HintSelection(og)
+		if hg:GetCount()>=1 then
+			Duel.ShuffleHand(tp)
+		end
 	end
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
-	if re:GetHandler():IsRelateToEffect(re) then
-		Duel.SetOperationInfo(0,CATEGORY_TODECK,eg,1,0,0)
-	end
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
-		Duel.SendtoDeck(eg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	if Duel.NegateEffect(ev) then
 	end
 end
 function s.repfilter(c,tp)

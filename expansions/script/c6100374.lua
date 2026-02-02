@@ -49,16 +49,17 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 -- === 效果①：融合 ===
--- 手卡发动条件：自己回合
 function s.handcon(e)
-	return Duel.GetTurnPlayer()==e:GetHandlerPlayer()
+	local tp=e:GetHandlerPlayer()
+	-- 对方是已把卡的效果发动的自己回合
+	return Duel.GetTurnPlayer()==tp and Duel.GetFlagEffect(1-tp,id)>0
 end
 
--- 额外素材过滤器：墓地可除外的怪兽
+-- 墓地素材过滤器
 function s.filter0(c)
 	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove()
 end
--- 基础素材过滤器：手卡/场上的怪兽
+-- 基础素材过滤器
 function s.filter1(c,e)
 	return not c:IsImmuneToEffect(e)
 end
@@ -68,9 +69,12 @@ function s.filter2(c,e,tp,m,f,chkf)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
 
--- 限制函数：墓地素材最多1张
+-- 融合检查逻辑：如果使用了墓地素材，目标必须是光属性且墓地素材<=1
 function s.fcheck(tp,sg,fc)
-	return sg:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)<=1
+	if sg:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) then
+		return fc:IsAttribute(ATTRIBUTE_LIGHT) and sg:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)<=1
+	end
+	return true
 end
 function s.gcheck(sg)
 	return sg:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)<=1
@@ -80,19 +84,16 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local chkf=tp
 		local mg1=Duel.GetFusionMaterial(tp)
-		local mg2=Group.CreateGroup()
-		-- 对方已把卡的效果发动的场合
-		if Duel.GetFlagEffect(1-tp,id)>0 then
-			mg2=Duel.GetMatchingGroup(s.filter0,tp,LOCATION_GRAVE,0,nil)
-		end
-		if #mg2>0 then
-			mg1:Merge(mg2)
-			aux.FCheckAdditional=s.fcheck
-			aux.GCheckAdditional=s.gcheck
-		end
+		local mg2=Duel.GetMatchingGroup(s.filter0,tp,LOCATION_GRAVE,0,nil)
+		
+		mg1:Merge(mg2)
+		aux.FCheckAdditional=s.fcheck
+		aux.GCheckAdditional=s.gcheck
+		
 		local res=Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg1,nil,chkf)
 		aux.FCheckAdditional=nil
 		aux.GCheckAdditional=nil
+		
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
 			if ce~=nil then
@@ -110,22 +111,16 @@ end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg1=Duel.GetFusionMaterial(tp):Filter(s.filter1,nil,e)
-	local exmat=false
-	local mg2=Group.CreateGroup()
-	if Duel.GetFlagEffect(1-tp,id)>0 then
-		mg2=Duel.GetMatchingGroup(s.filter0,tp,LOCATION_GRAVE,0,nil)
-	end
-	if #mg2>0 then
-		mg1:Merge(mg2)
-		exmat=true
-	end
-	if exmat then
-		aux.FCheckAdditional=s.fcheck
-		aux.GCheckAdditional=s.gcheck
-	end
+	local mg2=Duel.GetMatchingGroup(s.filter0,tp,LOCATION_GRAVE,0,nil)
+	
+	mg1:Merge(mg2)
+	aux.FCheckAdditional=s.fcheck
+	aux.GCheckAdditional=s.gcheck
+	
 	local sg1=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 	aux.FCheckAdditional=nil
 	aux.GCheckAdditional=nil
+	
 	local mg3=nil
 	local sg2=nil
 	local ce=Duel.GetChainMaterial(tp)
@@ -135,22 +130,24 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		local mf=ce:GetValue()
 		sg2=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg3,mf,chkf)
 	end
+	
 	if #sg1>0 or (sg2~=nil and #sg2>0) then
 		local sg=sg1:Clone()
 		if sg2 then sg:Merge(sg2) end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tg=sg:Select(tp,1,1,nil)
 		local tc=tg:GetFirst()
+		
 		if sg1:IsContains(tc) and (sg2==nil or not sg2:IsContains(tc) or not Duel.SelectYesNo(tp,ce:GetDescription())) then
-			if exmat then
-				aux.FCheckAdditional=s.fcheck
-				aux.GCheckAdditional=s.gcheck
-			end
+			aux.FCheckAdditional=s.fcheck
+			aux.GCheckAdditional=s.gcheck
+			
 			local mat1=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)
 			aux.FCheckAdditional=nil
 			aux.GCheckAdditional=nil
+			
 			tc:SetMaterial(mat1)
-			-- 区分处理：墓地除外，其他送墓
+			-- 分类处理：墓地的除外，其他的送墓
 			local rg=mat1:Filter(Card.IsLocation,nil,LOCATION_GRAVE)
 			mat1:Sub(rg)
 			Duel.SendtoGrave(mat1,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)

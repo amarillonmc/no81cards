@@ -9,7 +9,7 @@ function c98500190.initial_effect(c)
 	--be target
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(98500190,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_ANNOUNCE)
+	e1:SetCategory(CATEGORY_ANNOUNCE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
@@ -62,7 +62,7 @@ function c98500190.initial_effect(c)
 	e6:SetCode(EFFECT_LIMIT_SET_PROC)
 	c:RegisterEffect(e6)
 	--change pos
-	local e7=Effect.CreateEffect(c)
+	--[[local e7=Effect.CreateEffect(c)
 	e7:SetDescription(aux.Stringid(98500190,1))
 	e7:SetCategory(CATEGORY_POSITION)
 	e7:SetType(EFFECT_TYPE_QUICK_O)
@@ -72,7 +72,7 @@ function c98500190.initial_effect(c)
 	e7:SetCountLimit(1,98500193)
 	e7:SetTarget(c98500190.postg2)
 	e7:SetOperation(c98500190.posop2)
-	c:RegisterEffect(e7)
+	c:RegisterEffect(e7)]]
 end
 function c98500190.condition(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsFacedown()
@@ -87,13 +87,13 @@ function c98500190.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function c98500190.filter(c)
-	return c:IsType(TYPE_CONTINUOUS) and c:IsSSetable()
+	return c:IsSetCard(0x985) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function c98500190.filter2(c,e,tp)
-	return c:IsType(TYPE_FLIP) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and c:IsAttackBelow(3000)
+	return c:IsSetCard(0x985) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,true,false) and c:IsAttackBelow(3000)
 end
 function c98500190.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_DECK,1,nil) and ((Duel.IsExistingMatchingCard(c98500190.filter,tp,LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (Duel.IsExistingMatchingCard(c98500190.filter2,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0)) end
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,0,LOCATION_DECK,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_ANNOUNCE,nil,0,tp,0)
 end
 function c98500190.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -106,7 +106,8 @@ function c98500190.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ShuffleDeck(1-tp)
 		local g=Duel.GetMatchingGroup(Card.IsCode,tp,0,LOCATION_DECK,nil,ac)
 		if g:GetCount()>0 then
-			Duel.NegateEffect(ev)
+			Duel.NegateEffect(ev) 
+		if  Duel.SelectYesNo(tp,aux.Stringid(98500190,11)) then
 			local ts={}
 			local index=1
 			if Duel.IsExistingMatchingCard(c98500190.filter,tp,LOCATION_DECK,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
@@ -137,6 +138,7 @@ function c98500190.operation(e,tp,eg,ep,ev,re,r,rp)
 				local g=Duel.SelectMatchingCard(tp,c98500190.filter2,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil,e,tp)
 				local tc=g:GetFirst()
 				Duel.SpecialSummon(tc,0,tp,tp,true,false,POS_FACEUP)
+			   end
 			end
 		end
 	end
@@ -146,7 +148,7 @@ function c98500190.filter3(c)
 end
 function c98500190.hsptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c98500190.filter3(chkc) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (e:GetHandler():IsSummonable(true,nil) or e:GetHandler():IsMSetable(true,nil)) and (Duel.IsExistingTarget(c98500190.filter3,tp,LOCATION_MZONE,0,1,nil) or (Duel.IsPlayerAffectedByEffect(tp,98500080) and Duel.IsExistingTarget(c98500190.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil))) end
+	if chk==0 then return (e:GetHandler():IsSummonable(true,nil) or e:GetHandler():IsMSetable(true,nil)) and (Duel.IsExistingTarget(c98500190.filter3,tp,LOCATION_MZONE,0,1,nil) or (Duel.IsPlayerAffectedByEffect(tp,98500080) and Duel.IsExistingTarget(c98500190.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil))) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	if Duel.IsPlayerAffectedByEffect(tp,98500080) then
 		local g=Duel.SelectTarget(tp,c98500190.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
@@ -160,7 +162,7 @@ function c98500190.filter4(c)
 	return c:IsFacedown()
 end
 function c98500190.hspop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return false end
+	--if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return false end
 	local ts={}
 	local index=1
 	if e:GetHandler():IsSummonable(true,nil) then
@@ -210,10 +212,13 @@ function c98500190.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.HintSelection(g1)
 	if Duel.SendtoDeck(g1,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g2=Duel.SelectMatchingCard(tp,c98500190.filter3,tp,0,LOCATION_ONFIELD,1,1,nil)
+		local g2=Duel.SelectMatchingCard(tp,c98500190.filter3,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+		if g2:GetCount()>0 then
+		local tc=g2:GetFirst()
 		Duel.HintSelection(g2)
-		if Duel.ChangePosition(g2,POS_FACEDOWN_DEFENSE)~=1 then
-			Duel.SendtoDeck(g2,nil,SEQ_DECKSHUFFLE,REASON_RULE)
+		if Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)~=1 and tc:GetControler()==1-tp then 
+			Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_RULE)
+		   end
 		end
 	end
 end

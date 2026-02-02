@@ -8,14 +8,18 @@ function c28372877.initial_effect(c)
 	e0:SetCost(c28372877.cost)
 	--e0:SetOperation(c28372877.activate)
 	c:RegisterEffect(e0)
-	--destroy replace
+	--draw
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_DESTROY_REPLACE)
+	e1:SetDescription(aux.Stringid(28372877,1))
+	e1:SetCategory(CATEGORY_DRAW+CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_DESTROYED)
+	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_FZONE)
-	e1:SetTarget(c28372877.reptg)
-	e1:SetValue(c28372877.repval)
-	e1:SetOperation(c28372877.repop)
+	e1:SetCountLimit(1)
+	e1:SetCondition(c28372877.drcon)
+	e1:SetTarget(c28372877.drtg)
+	e1:SetOperation(c28372877.drop)
 	c:RegisterEffect(e1)
 end
 function c28372877.cost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -40,28 +44,23 @@ function c28372877.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,sg)
 	end
 end
-function c28372877.repfilter(c,tp)
-	return c:IsControler(tp) and c:IsLocation(LOCATION_MZONE) and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
+function c28372877.cfilter(c,tp)
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:GetPreviousLevelOnField()==3 and c:IsPreviousControler(tp)
 end
-function c28372877.tdfilter(c,ct)
-	return (c:IsReason(REASON_DESTROY) and c:GetTurnID()==Duel.GetTurnCount() and c:IsType(TYPE_MONSTER) and ct~=2 or ct~=1 and c:IsSetCard(0x285) and c:IsFaceupEx()) and c:IsAbleToDeck()
+function c28372877.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return eg:IsExists(c28372877.cfilter,1,nil,tp)
 end
-function c28372877.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c28372877.tdfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,0)
-	if chk==0 then return g:CheckSubGroup(aux.gfcheck,2,2,c28372877.tdfilter,1,2)
-		and eg:IsExists(c28372877.repfilter,1,nil,tp) end
-	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96)
+function c28372877.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,2) end
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,2)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,0,0)
 end
-function c28372877.repval(e,c)
-	return c28372877.repfilter(c,e:GetHandlerPlayer())
-end
-function c28372877.gcheck(g)
-	return g:FilterCount(c28372877.tdfilter,nil,1)>=#g/2 and g:FilterCount(c28372877.tdfilter,nil,2)>=#g/2 and #g%2==0--g:CheckSubGroup(c28372877.ctcheck,#g/2,#g/2,g)
-end
-function c28372877.repop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c28372877.tdfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,0)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local sg=g:SelectSubGroup(tp,c28372877.gcheck,false,2,#g)
+function c28372877.drop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.Draw(tp,2,REASON_EFFECT)==0 then return end
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
+	g:AddCard(e:GetHandler())
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local sg=g:Select(tp,1,1,nil)
 	Duel.HintSelection(sg)
-	Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	Duel.Destroy(sg,REASON_EFFECT)
 end

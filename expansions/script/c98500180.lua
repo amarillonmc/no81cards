@@ -142,7 +142,7 @@ function c98500180.filter3(c)
 end
 function c98500180.hsptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c98500180.filter3(chkc) end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and (e:GetHandler():IsSummonable(true,nil) or e:GetHandler():IsMSetable(true,nil)) and (Duel.IsExistingTarget(c98500180.filter3,tp,LOCATION_MZONE,0,1,nil) or (Duel.IsPlayerAffectedByEffect(tp,16104622) and Duel.IsExistingTarget(c98500180.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil))) end
+	if chk==0 then return (e:GetHandler():IsSummonable(true,nil) or e:GetHandler():IsMSetable(true,nil)) and (Duel.IsExistingTarget(c98500180.filter3,tp,LOCATION_MZONE,0,1,nil) or (Duel.IsPlayerAffectedByEffect(tp,16104622) and Duel.IsExistingTarget(c98500180.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil))) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	if Duel.IsPlayerAffectedByEffect(tp,16104622) then
 		local g=Duel.SelectTarget(tp,c98500180.filter3,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
@@ -156,7 +156,7 @@ function c98500180.filter4(c)
 	return c:IsFacedown()
 end
 function c98500180.hspop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return false end
+	--if Duel.GetLocationCount(tp,LOCATION_MZONE)<1 then return false end
 	local ts={}
 	local index=1
 	if e:GetHandler():IsSummonable(true,nil) then
