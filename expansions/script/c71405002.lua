@@ -4,7 +4,7 @@ function s.initial_effect(c)
 	if not (yume and yume.prism) then
 		yume=yume or {}
 		yume.import_flag=true
-		c:CopyEffect(71404000,0)
+		c:CopyEffect(71405000,0)
 		yume.import_flag=false
 	end
 	yume.prism.addCounter()

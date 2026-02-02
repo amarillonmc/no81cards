@@ -60,7 +60,7 @@ end
 function c28368431.chkfilter(c,p)
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(p) and c:IsReason(REASON_DESTROY)
 end
-function c28368431.spcon(e,tp,eg,ep,ev,re,r,rp)
+function c28368431.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c28368431.chkfilter,1,nil,tp)
 end
 function c28368431.regop(e,tp,eg,ep,ev,re,r,rp)

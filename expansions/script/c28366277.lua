@@ -60,7 +60,7 @@ function c28366277.activate(e,tp,eg,ep,ev,re,r,rp)
 	if #tg==0 then return end
 	Duel.ConfirmCards(1-tp,tg)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,#tg,#tg,nil)
+	local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,#tg,#tg,aux.ExceptThisCard(e))
 	Duel.HintSelection(dg)
 	Duel.Destroy(dg,REASON_EFFECT)
 end

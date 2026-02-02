@@ -69,7 +69,7 @@ end
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToChain() then
-		Duel.SSet(tp,tc)~=0
+		Duel.SSet(tp,tc)
 	end
 end
 function s.cost3(e,tp,eg,ep,ev,re,r,rp,chk)

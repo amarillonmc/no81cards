@@ -198,7 +198,7 @@ function s.rmop1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SetLP(tp,Duel.GetLP(tp)-g:GetCount()*1000)
 		if Duel.GetLP(tp)<=0 then
 			Duel.SetLP(tp,4000)
-			Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+65820000,e,REASON_COST,tp,tp,4000)
+			Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+65820000,e,REASON_EFFECT,tp,tp,4000)
 		end
 	end
 end

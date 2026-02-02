@@ -62,7 +62,6 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	if not c:IsRelateToChain() then return end
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
-
 function s.filter2(c)
 	return c:IsSetCard(0x716) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsAbleToHand() or c:IsSSetable())
 end
@@ -139,9 +138,9 @@ function yume.prism.Cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return yume.prism.checkCounter(tp) end
 	yume.prism.regCostLimit(e,tp)
 end
-function yume.prism.CounterFilter(re,tp,cid)
-	return c:IsLocation(LOCATION_ONFIELD) and c:GetSequence()<5
-		or not c:IsLocation(LOCATION_ONFIELD) and c:GetPreviousSequence()<5
+function yume.prism.CounterFilter(c)
+	return c:IsLocation(LOCATION_MZONE) and c:GetSequence()<5
+		or not c:IsLocation(LOCATION_MZONE) and c:GetPreviousSequence()<5
 end
 function yume.prism.regCostLimit(e,tp)
 	--zone limit

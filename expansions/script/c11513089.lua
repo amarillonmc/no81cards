@@ -23,16 +23,20 @@ end
 function c11513089.ddtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return true end
-	local g=Duel.GetMatchingGroup(c11513089.filter,tp,0,LOCATION_MZONE,c,c)
-	local atk=g:GetMaxGroup(Card.GetAttack):GetFirst():GetAttack()
+	local g=Duel.GetMatchingGroup(c11513089.filter,tp,LOCATION_MZONE,LOCATION_MZONE,c,c)
+	local atk=g:Filter(Card.IsAttackAbove,nil,0):GetMaxGroup(Card.GetAttack):GetFirst():GetTextAttack()
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,atk)
+	if atk then
+	   if atk<0 then atk=0 end
+	   Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,atk)
+	end
 end
 function c11513089.ddop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(c11513089.filter,tp,0,LOCATION_MZONE,c,c)
-	local atk=g:GetMaxGroup(Card.GetAttack):GetFirst():GetAttack()
-	if Duel.Destroy(g,REASON_EFFECT)~=0 then
+	local g=Duel.GetMatchingGroup(c11513089.filter,tp,LOCATION_MZONE,LOCATION_MZONE,c,c)
+	local atk=g:Filter(Card.IsAttackAbove,nil,0):GetMaxGroup(Card.GetAttack):GetFirst():GetTextAttack()
+	if atk and atk<0 then atk=0 end
+	if Duel.Destroy(g,REASON_EFFECT)~=0 and atk then
 			Duel.Damage(1-tp,atk,REASON_EFFECT)
 	end
 end
