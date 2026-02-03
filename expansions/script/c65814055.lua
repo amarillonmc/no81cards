@@ -20,7 +20,7 @@ function s.initial_effect(c)
 	--
 	local e51=Effect.CreateEffect(c)
 	e51:SetDescription(aux.Stringid(id,1))
-	e51:SetCategory(CATEGORY_TOHAND)
+	e51:SetCategory(CATEGORY_TOHAND+CATEGORY_SSET)
 	e51:SetType(EFFECT_TYPE_QUICK_O)
 	e51:SetCode(EVENT_FREE_CHAIN)
 	e51:SetRange(LOCATION_SZONE)

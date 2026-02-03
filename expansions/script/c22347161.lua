@@ -55,7 +55,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e5)
 	--special summon
 	local e6=Effect.CreateEffect(c)
-	e6:SetCategory(CATEGORY_TOEXTRA+CATEGORY_SPECIAL_SUMMON)
+	e6:SetCategory(CATEGORY_TOEXTRA+CATEGORY_SPECIAL_SUMMON+CATEGORY_SSET)
 	e6:SetType(EFFECT_TYPE_QUICK_O)
 	e6:SetCode(EVENT_FREE_CHAIN)
 	e6:SetProperty(EFFECT_FLAG_CARD_TARGET)

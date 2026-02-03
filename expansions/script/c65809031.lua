@@ -13,7 +13,7 @@ function s.initial_effect(c)
 	
 	-- 效果②：除外时丢弃对方手卡回收
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_HANDES+CATEGORY_POSITION)
+	e2:SetCategory(CATEGORY_HANDES+CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_REMOVED)
 	e2:SetCountLimit(1,id)

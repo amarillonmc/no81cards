@@ -3,7 +3,7 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	--发动
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_POSITION+CATEGORY_DISABLE)
+	e1:SetCategory(CATEGORY_POSITION+CATEGORY_DISABLE+CATEGORY_MSET+CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(s.target)
@@ -135,13 +135,13 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 				fusiong=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 			end
 		end
-        local g114514=Group.CreateGroup()
-        if linkg then g114514:Merge(linkg) end
-        if xyzg then g114514:Merge(xyzg) end
-        if Synchrog then g114514:Merge(Synchrog) end
-        if fusiong then g114514:Merge(fusiong) end
-        if g114514:GetCount()<=0 then return end
-        if not Duel.SelectYesNo(tp,aux.Stringid(id,0)) then return end
+		local g114514=Group.CreateGroup()
+		if linkg then g114514:Merge(linkg) end
+		if xyzg then g114514:Merge(xyzg) end
+		if Synchrog then g114514:Merge(Synchrog) end
+		if fusiong then g114514:Merge(fusiong) end
+		if g114514:GetCount()<=0 then return end
+		if not Duel.SelectYesNo(tp,aux.Stringid(id,0)) then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tc=g114514:Select(tp,0,1,nil):GetFirst()
 		if tc then 

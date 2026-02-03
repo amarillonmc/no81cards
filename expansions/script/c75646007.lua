@@ -37,8 +37,8 @@ function s.initial_effect(c)
 	e3:SetOperation(s.chainop)
 	c:RegisterEffect(e3)
 end
-function s.spfilter(c,re,tp)
-	return c:IsSetCard(0x2c0) and c:IsControler(tp)
+function s.spfilter(c,tp)
+	return c:IsSetCard(0x2c0) and c:IsControler(tp) and c:IsLocation(LOCATION_GRAVE)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return not eg:IsContains(e:GetHandler()) and eg:IsExists(s.spfilter,1,nil,tp)

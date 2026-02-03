@@ -11,6 +11,7 @@ function s.initial_effect(c)
 	e1:SetOperation(s.tfop)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -45,10 +46,10 @@ function s.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.stop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,s.stfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
-	if g:GetCount()>0 then
-		local tc=g:GetFirst()
-		if tc then Duel.SSet(tp,tc) end
-	end
+	local rg=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsAbleToRemove),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil,tp,POS_FACEUP)
+	if #rg==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local mg=rg:Select(tp,1,5,nil)
+	Duel.HintSelection(mg)
+	Duel.Remove(mg,POS_FACEUP,REASON_EFFECT)
 end
