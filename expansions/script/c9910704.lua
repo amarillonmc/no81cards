@@ -1,5 +1,5 @@
 --远古造物 威瓦亚虫
-dofile("expansions/script/c9910700.lua")
+Duel.LoadScript("c9910700.lua")
 function c9910704.initial_effect(c)
 	--special summon
 	QutryYgzw.AddSpProcedure(c,1)

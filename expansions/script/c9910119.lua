@@ -1,5 +1,5 @@
 --战车道少女·冷泉麻子
-dofile("expansions/script/c9910100.lua")
+Duel.LoadScript("c9910100.lua")
 function c9910119.initial_effect(c)
 	--special summon
 	QutryZcd.SelfSpsummonEffect(c,CATEGORY_TOHAND,true,nil,true,nil,false,c9910119.afttd2)

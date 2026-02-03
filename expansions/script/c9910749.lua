@@ -1,5 +1,5 @@
 --远远古造物 古老原枝藻
-dofile("expansions/script/c9910700.lua")
+Duel.LoadScript("c9910700.lua")
 function c9910749.initial_effect(c)
 	--flag
 	QutryYgzw.AddTgFlag(c)

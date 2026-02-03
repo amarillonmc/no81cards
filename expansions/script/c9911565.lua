@@ -1,5 +1,5 @@
 --紫炎蔷薇浮现初心
-dofile("expansions/script/c9911550.lua")
+Duel.LoadScript("c9911550.lua")
 function c9911565.initial_effect(c)
 	--Activate only search
 	local e1=Effect.CreateEffect(c)

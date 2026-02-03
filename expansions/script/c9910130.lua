@@ -1,5 +1,5 @@
 --战车道少女·喀秋莎
-dofile("expansions/script/c9910100.lua")
+Duel.LoadScript("c9910100.lua")
 function c9910130.initial_effect(c)
 	--special summon
 	QutryZcd.SelfSpsummonEffect(c,CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION,true,nil,true,nil,false,c9910130.afttd2)

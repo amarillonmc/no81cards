@@ -1,5 +1,5 @@
 --远古造物 异齿兽
-dofile("expansions/script/c9910700.lua")
+Duel.LoadScript("c9910700.lua")
 function c9910708.initial_effect(c)
 	--special summon
 	QutryYgzw.AddSpProcedure(c,2)

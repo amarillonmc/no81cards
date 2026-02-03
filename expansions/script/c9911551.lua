@@ -1,5 +1,5 @@
 --紫炎蔷薇响彻舞台
-dofile("expansions/script/c9911550.lua")
+Duel.LoadScript("c9911550.lua")
 function c9911551.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

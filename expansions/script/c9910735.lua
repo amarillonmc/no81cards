@@ -1,5 +1,5 @@
 --远古造物 毁灭刃齿虎
-dofile("expansions/script/c9910700.lua")
+Duel.LoadScript("c9910700.lua")
 function c9910735.initial_effect(c)
 	--special summon
 	QutryYgzw.AddSpProcedure(c,3)

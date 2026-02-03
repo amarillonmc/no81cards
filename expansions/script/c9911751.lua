@@ -1,5 +1,5 @@
 --共难的远古造物
-dofile("expansions/script/c9910700.lua")
+Duel.LoadScript("c9910700.lua")
 function c9911751.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

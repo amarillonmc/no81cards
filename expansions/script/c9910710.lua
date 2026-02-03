@@ -1,5 +1,5 @@
 --远古造物 顶囊蕨
-dofile("expansions/script/c9910700.lua")
+Duel.LoadScript("c9910700.lua")
 function c9910710.initial_effect(c)
 	--special summon
 	QutryYgzw.AddSpProcedure(c,1)

@@ -1,5 +1,5 @@
 --战车道少女·武部沙织
-dofile("expansions/script/c9910100.lua")
+Duel.LoadScript("c9910100.lua")
 function c9910110.initial_effect(c)
 	--special summon
 	QutryZcd.SelfSpsummonEffect(c,0,false,c9910110.exchk2,false,c9910110.beftd2,true,nil)

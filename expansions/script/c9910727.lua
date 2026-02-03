@@ -1,5 +1,5 @@
 --远古造物栖所 冈瓦纳
-dofile("expansions/script/c9910700.lua")
+Duel.LoadScript("c9910700.lua")
 function c9910727.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)

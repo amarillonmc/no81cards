@@ -1,5 +1,5 @@
 --战车道少女·西住真穗
-dofile("expansions/script/c9910100.lua")
+Duel.LoadScript("c9910100.lua")
 function c9910108.initial_effect(c)
 	--special summon
 	QutryZcd.SelfSpsummonEffect(c,CATEGORY_DECKDES,false,c9910108.exchk2,false,c9910108.beftd2,true,nil)

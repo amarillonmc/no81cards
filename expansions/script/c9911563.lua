@@ -1,5 +1,5 @@
 --缭绕紫炎蔷薇的低语
-dofile("expansions/script/c9911550.lua")
+Duel.LoadScript("c9911550.lua")
 function c9911563.initial_effect(c)
 	--pendulum summon
 	aux.EnablePendulumAttribute(c)

@@ -1,5 +1,5 @@
 --战车道少女·橙黄白毫
-dofile("expansions/script/c9910100.lua")
+Duel.LoadScript("c9910100.lua")
 function c9910127.initial_effect(c)
 	--special summon
 	QutryZcd.SelfSpsummonEffect(c,CATEGORY_RECOVER+CATEGORY_DRAW,false,c9910127.exchk2,false,c9910127.beftd2,true,nil)

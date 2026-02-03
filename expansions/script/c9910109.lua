@@ -1,5 +1,5 @@
 --战车道少女·逸见艾丽卡
-dofile("expansions/script/c9910100.lua")
+Duel.LoadScript("c9910100.lua")
 function c9910109.initial_effect(c)
 	--special summon
 	QutryZcd.SelfSpsummonEffect(c,0,true,nil,true,nil,true,nil)
