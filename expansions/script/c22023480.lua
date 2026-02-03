@@ -54,10 +54,10 @@ function c22023480.initial_effect(c)
 end
 c22023480.toss_dice=true
 function c22023480.eqlimit(e,c)
-	return c:IsCode(22022320,22023410)
+	return c:IsFaceup() and (c:IsCode(22022320,22023410) or c.effect_canequip_hogu)
 end
 function c22023480.filter(c)
-	return c:IsFaceup() and c:IsCode(22022320,22023410)
+	return c:IsFaceup() and (c:IsCode(22022320,22023410) or c.effect_canequip_hogu)
 end
 function c22023480.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c22023480.filter(chkc) end

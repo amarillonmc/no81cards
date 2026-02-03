@@ -36,13 +36,16 @@ function s.initial_effect(c)
 	e3:SetDescription(aux.Stringid(id,2))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_LEAVE_FIELD)
+	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,id+o*2)
 	e3:SetCondition(s.spcon)
 	e3:SetTarget(s.sptg)
 	e3:SetOperation(s.spop)
 	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EVENT_REMOVE)
+	c:RegisterEffect(e4)
 end
 
 -- Xyz Procedure Filters
@@ -76,8 +79,7 @@ function s.attop(e,tp,eg,ep,ev,re,r,rp)
 		
 		-- Additional Attach
 		local ag=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)
-		if ag:GetClassCount(Card.GetAttribute)>=3 
-			and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.oppattfilter),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil,tp) 
+		if ag:GetClassCount(Card.GetAttribute)>=3 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.oppattfilter),tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,nil,tp) 
 			and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)

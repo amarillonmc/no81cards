@@ -53,7 +53,7 @@ function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
-function s.filter1a(c,e,tp)
+function s.filter1a(c)
 	return c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD)
 end
 function s.op1(e,tp,eg,ep,ev,re,r,rp)

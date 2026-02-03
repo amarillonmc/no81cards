@@ -1,5 +1,4 @@
 --光耀之精灵王 戴斯蒂娜
--- c12345687.lua
 local s,id,o=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
@@ -36,13 +35,16 @@ function s.initial_effect(c)
 	e3:SetDescription(aux.Stringid(id,2))
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_LEAVE_FIELD)
+	e3:SetCode(EVENT_TO_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e3:SetCountLimit(1,id+o*2)
 	e3:SetCondition(s.xyzcon)
 	e3:SetTarget(s.xyztg)
 	e3:SetOperation(s.xyzop)
 	c:RegisterEffect(e3)
+	local e4=e3:Clone()
+	e4:SetCode(EVENT_REMOVE)
+	c:RegisterEffect(e4)
 end
 
 -- Xyz Procedure Filters
@@ -66,7 +68,7 @@ function s.atttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		and Duel.IsExistingTarget(s.attfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 end
 function s.attop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()	
+	local c=e:GetHandler()  
 	if c:IsRelateToChain() and c:IsType(TYPE_XYZ) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 		local g=Duel.SelectMatchingCard(tp,s.attfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,2,nil)

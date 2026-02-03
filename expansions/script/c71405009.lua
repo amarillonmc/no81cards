@@ -47,7 +47,7 @@ end
 function s.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return e:GetLabel()==1 or
-		Duel.IsPlayerCanRemove(tp,nil,REASON_COST) and c:GetOverlayCount()>0
+		c:GetOverlayGroup():IsExists(Card.IsAbleToRemoveAsCost,1,nil) and c:GetOverlayCount()>0
 	end
 	if e:GetLabel()~=1 then
 		local g=c:GetOverlayGroup()
@@ -59,8 +59,7 @@ end
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(s.filter1,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if chk==0 then return
-		Duel.IsPlayerCanRemove(tp,nil,REASON_COST) and Duel.IsPlayerCanDraw(tp,1)
-		and g:GetCount()>1
+		Duel.IsPlayerCanDraw(tp,1) and g:GetCount()>1
 	end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,nil,LOCATION_ONFIELD)
@@ -75,7 +74,7 @@ end
 function s.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return e:GetLabel()==1 or
-		Duel.IsPlayerCanRemove(tp,nil,REASON_COST) and c:GetOverlayCount()>2
+		c:GetOverlayGroup():IsExists(Card.IsAbleToRemoveAsCost,3,nil) and c:GetOverlayCount()>2
 	end
 	if e:GetLabel()~=1 then
 		local g=c:GetOverlayGroup()

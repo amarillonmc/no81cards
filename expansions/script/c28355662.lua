@@ -30,7 +30,7 @@ function c28355662.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c28355662.excondition(e)
-	return Duel.GetLP(e:GetHandlerPlayer())~=3000
+	return Duel.GetLP(e:GetHandlerPlayer())~=4000
 end
 function c28355662.excost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end

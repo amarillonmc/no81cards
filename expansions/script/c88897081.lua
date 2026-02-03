@@ -45,7 +45,7 @@ function s.ovfilter_op(c)
 	return c:IsCanOverlay() and not c:IsType(TYPE_TOKEN)
 end
 function s.ovfilter_my(c)
-	return c:IsFaceup() and c:IsSetCard(0xc0e) and c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and (c:IsLevel(9) or c:IsRank(9)) and c:IsType(TYPE_XYZ)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=Duel.IsExistingMatchingCard(s.tdfilter,tp,0,LOCATION_ONFIELD,1,nil)

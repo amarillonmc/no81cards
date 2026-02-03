@@ -1,13 +1,14 @@
 --终驰管理员
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--Special Summon
+	--special summon rule
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOGRAVE)
-	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
 	e1:SetRange(LOCATION_HAND)
-	e1:SetCost(s.spcost)
+	e1:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCondition(s.spcon)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
@@ -33,33 +34,32 @@ function s.initial_effect(c)
 	e4:SetOperation(s.efop)
 	c:RegisterEffect(e4)
 end
-function s.costfilter(c)
-	return c:IsAbleToGraveAsCost()
+function s.cfilter(c,tp,f)
+	return f(c) and Duel.GetMZoneCount(tp,c)>0
 end
-function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,c) end
+function s.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,c,tp,Card.IsAbleToGraveAsCost)
+end
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,c,tp,Card.IsAbleToGraveAsCost)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,c)
-	Duel.SendtoGrave(g,REASON_COST)
+	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
+	if tc then
+		e:SetLabelObject(tc)
+		return true
+	else return false end
 end
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,0,1-tp,LOCATION_EXTRA)
-end
-function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		if Duel.GetFieldGroupCount(tp,0,LOCATION_GRAVE)==0 
-			and Duel.GetFieldGroupCount(tp,0,LOCATION_EXTRA)>0 
-			and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
-			Duel.BreakEffect()
-			local g=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
-			local sg=g:RandomSelect(tp,1)
-			Duel.SendtoGrave(sg,REASON_EFFECT)
-		end
+function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	Duel.SendtoGrave(g,REASON_SPSUMMON)
+	if Duel.GetFieldGroupCount(tp,0,LOCATION_GRAVE)==0 
+		and Duel.GetFieldGroupCount(tp,0,LOCATION_EXTRA)>0 
+		and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
+		local g=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA)
+		local sg=g:RandomSelect(tp,1)
+		Duel.SendtoGrave(sg,REASON_EFFECT)
 	end
 end
 function s.thfilter(c)

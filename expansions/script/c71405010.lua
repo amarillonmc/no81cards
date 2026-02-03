@@ -43,7 +43,7 @@ end
 function s.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return e:GetLabel()==1 or
-		Duel.IsPlayerCanRemove(tp,nil,REASON_COST) and c:GetOverlayCount()>0
+		c:GetOverlayGroup():IsExists(Card.IsAbleToRemoveAsCost,1,nil) and c:GetOverlayCount()>0
 	end
 	if e:GetLabel()~=1 then
 		local g=c:GetOverlayGroup()
@@ -59,9 +59,9 @@ function s.filter1(c,tp)
 end
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and s.filter1(chkc,tp) end
-	if chk==0 then return Duel.IsExistingTarget(s.filter1,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,nil,tp) end
+	if chk==0 then return Duel.IsExistingTarget(s.filter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local tc=Duel.SelectTarget(tp,s.filter1,tp,0,LOCATION_GRAVE+LOCATION_REMOVED,1,1,nil,tp):GetFirst()
+	local tc=Duel.SelectTarget(tp,s.filter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp):GetFirst()
 	if tc:IsLocation(LOCATION_GRAVE) then
 		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,tc,1,0,0)
 	end
@@ -75,7 +75,7 @@ end
 function s.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return e:GetLabel()==1 or
-		Duel.IsPlayerCanRemove(tp,nil,REASON_COST) and c:GetOverlayCount()>1
+		c:GetOverlayGroup():IsExists(Card.IsAbleToRemoveAsCost,2,nil) and c:GetOverlayCount()>1
 	end
 	if e:GetLabel()~=1 then
 		local g=c:GetOverlayGroup()
