@@ -76,9 +76,11 @@ function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(function(c) 
-		return c:IsFaceup() and c:IsSetCard(0x3f50) and c~=e:GetHandler()
-	end, tp, LOCATION_MZONE, 0, 1, nil)
+	return Duel.IsExistingMatchingCard(s.desconfilter,tp,LOCATION_MZONE,0,1,nil)
+end
+
+function s.desconfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x3f50) and not c:IsCode(id)
 end
 
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)

@@ -83,12 +83,16 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.atkcon(e,tp,eg,ep,ev,re,r,rp)
-	local res=not Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsSetCard(0x3f50) and c~=e:GetHandler() end,tp,LOCATION_MZONE,0,1,nil)
+	local res=not Duel.IsExistingMatchingCard(s.quick_check_filter,tp,LOCATION_MZONE,0,1,nil,id)
 	return Duel.GetTurnPlayer()==tp and res
 end
 
 function s.atkcon_quick(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(function(c) return c:IsFaceup() and c:IsSetCard(0x3f50) and c~=e:GetHandler() end,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(s.quick_check_filter,tp,LOCATION_MZONE,0,1,nil,id)
+end
+
+function s.quick_check_filter(c,id)
+	return c:IsFaceup() and c:IsSetCard(0x3f50) and not c:IsCode(id)
 end
 
 function s.atkfilter(c)
