@@ -78,6 +78,7 @@ function cm.regop(e,tp,eg,ep,ev,re,r,rp)
 	e3:SetTargetRange(LOCATION_MZONE,0)
 	e3:SetTarget(cm.eftg)
 	e3:SetLabelObject(e2)
+	e3:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e3,tp)
 end
 function cm.eftg(e,c)

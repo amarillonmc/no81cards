@@ -57,7 +57,7 @@ end
 
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local bt=Duel.GetAttackTarget()
-	return bt and bt:IsControler(tp) and bt:IsSetCard(0x3f50)
+	return bt and bt:IsControler(tp) and bt:IsSetCard(0x3f50) and bt:IsFaceup()
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

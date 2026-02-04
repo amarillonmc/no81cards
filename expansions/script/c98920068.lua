@@ -38,11 +38,13 @@ end
 function c98920068.operation(e,tp,eg,ep,ev,re,r,rp)  
 	local g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,aux.ExceptThisCard(e))
 	local g2=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
+	local st=0
+	if g2:GetCount()==0 then st=1 end
 	if Duel.SendtoHand(g,nil,REASON_EFFECT) then
 	   local og=Duel.GetOperatedGroup():Filter(Card.IsControler,nil,1-tp)
 	   local cst=og:FilterCount(Card.IsLocation,nil,LOCATION_HAND)
 	   local sg=Duel.GetMatchingGroup(c98920068.spfilter,tp,LOCATION_DECK+LOCATION_HAND+LOCATION_EXTRA+LOCATION_GRAVE,0,nil,e,tp)
-	   if cst==#og and sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(98920068,1)) then
+	   if not cst==#og and st=0 and sg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(98920068,1)) then
 		  Duel.BreakEffect()
 		  Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		  local kg=sg:Select(tp,1,1,nil)
