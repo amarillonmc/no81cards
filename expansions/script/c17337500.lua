@@ -72,7 +72,7 @@ end
 function s.mira_filter(c,tp)
 	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE)
 		and (c:IsSetCard(0x3f50) or aux.IsCodeListed(c,17337400))
-		and c:GetReasonPlayer()==1-tp -
+		and c:GetReasonPlayer()==1-tp
 end
 function s.self_leave_con(e,tp,eg,ep,ev,re,r,rp)
 	return s.mira_filter(e:GetHandler(),tp)
