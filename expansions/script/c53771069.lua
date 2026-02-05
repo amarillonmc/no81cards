@@ -28,7 +28,7 @@ function c53771069.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>=4
 end
 function c53771069.cfilter(c,e,tp)
-	return not c:IsPublic() or c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEDOWN_DEFENSE,1-tp)
+	return not c:IsPublic() or (c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEDOWN_DEFENSE,1-tp) and c:IsType(TYPE_MONSTER))
 end
 function c53771069.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(1-tp)>0
@@ -36,30 +36,35 @@ function c53771069.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 end
+function c53771069.spfilter(c,e,tp)
+	return c:IsCanBeSpecialSummoned(e,0,tp,true,false,POS_FACEDOWN_DEFENSE,1-tp) and c:IsType(TYPE_MONSTER)
+end
 function c53771069.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	Duel.ConfirmCards(tp,g)
-	if #g==0 or Duel.GetMZoneCount(1-tp)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local tc=Duel.SelectMatchingCard(tp,Card.IsCanBeSpecialSummoned,tp,0,LOCATION_HAND,1,1,nil,e,0,tp,true,false,POS_FACEDOWN_DEFENSE,1-tp):GetFirst()
-	if tc then
-		Duel.SpecialSummon(tc,0,tp,1-tp,true,false,POS_FACEDOWN_DEFENSE)
-		tc:RegisterFlagEffect(53771069,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(53771069,4))
-		tc:SetStatus(STATUS_CANNOT_CHANGE_FORM,false)
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_FLIPSUMMON_COST)
-		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-		e1:SetLabel(1)
-		e1:SetLabelObject(tc)
-		e1:SetTargetRange(0xff,0xff)
-		e1:SetTarget(c53771069.fstg)
-		e1:SetCost(SNNM.Sarcoveil_fscost)
-		e1:SetOperation(SNNM.Sarcoveil_fsop)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-		Duel.ConfirmCards(1-tp,tc)
+	if #g>0 and Duel.GetLocationCount(1-tp,LOCATION_MZONE,tp)>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+		local tc=Duel.SelectMatchingCard(tp,c53771069.spfilter,tp,0,LOCATION_HAND,1,1,nil,e,tp):GetFirst()
+		if tc then
+			Duel.SpecialSummon(tc,0,tp,1-tp,true,false,POS_FACEDOWN_DEFENSE)
+			tc:RegisterFlagEffect(53771069,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(53771069,4))
+			tc:SetStatus(STATUS_CANNOT_CHANGE_FORM,false)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_FLIPSUMMON_COST)
+			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+			e1:SetLabel(1)
+			e1:SetLabelObject(tc)
+			e1:SetTargetRange(0xff,0xff)
+			e1:SetTarget(c53771069.fstg)
+			e1:SetCost(SNNM.Sarcoveil_fscost)
+			e1:SetOperation(SNNM.Sarcoveil_fsop)
+			e1:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e1,tp)
+			Duel.ConfirmCards(1-tp,tc)
+		end
 	end
+	Duel.ShuffleHand(1-tp)
 end
 function c53771069.fstg(e,c,tp)
 	if c:GetFlagEffect(53771069)==0 or e:GetLabelObject()~=c then return false end
