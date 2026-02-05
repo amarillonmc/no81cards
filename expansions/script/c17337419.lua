@@ -103,7 +103,7 @@ function s.targetfilter(c)
 end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c:IsFaceup() and s.targetfilter(chkc) end
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.targetfilter(chkc) end
 	if chk==0 then 
 		local b1=Duel.IsExistingTarget(s.targetfilter,tp,LOCATION_MZONE,0,1,nil)
 		local b2=Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
