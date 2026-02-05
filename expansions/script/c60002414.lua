@@ -58,6 +58,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local aa={}
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return end
 	for i=1,math.min(3,Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)) do
 		aa[i]=i
 	end
@@ -67,6 +68,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local aa={}
+	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return end
 	for i=1,math.min(3,Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)) do
 		aa[i]=i
 	end

@@ -84,7 +84,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp,c,mg1,min,max)
 				end
 -----------------------------------------------------------------------------------
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,0))
-	local g=mg:Select(tp,2,63,nil)
+	local g=mg:Filter(s.ovfilter1,nil):Select(tp,2,63,nil)
 	for mc in aux.Next(g) do
 		local mg=mc:GetOverlayGroup()
 		if mg:GetCount()~=0 then

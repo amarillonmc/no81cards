@@ -2,16 +2,16 @@
 function c28327394.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
+	e1:SetHintTiming(0,TIMING_STANDBY_PHASE+TIMING_END_PHASE)
 	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCountLimit(1,28327394+EFFECT_COUNT_CODE_OATH)
-	e1:SetHintTiming(0,TIMING_STANDBY_PHASE+TIMING_END_PHASE)
-	e1:SetCondition(c28327394.decon)
-	e1:SetCost(c28327394.decost)
-	e1:SetTarget(c28327394.detg)
-	e1:SetOperation(c28327394.deop)
+	e1:SetCondition(c28327394.condition)
+	e1:SetCost(c28327394.cost)
+	e1:SetTarget(c28327394.target)
+	e1:SetOperation(c28327394.activate)
 	c:RegisterEffect(e1)
 	--salvage
 	local e2=Effect.CreateEffect(c)
@@ -25,18 +25,18 @@ function c28327394.initial_effect(c)
 	e2:SetOperation(c28327394.thop)
 	c:RegisterEffect(e2)
 end
-function c28327394.decon(e,tp,eg,ep,ev,re,r,rp)
+function c28327394.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
-function c28327394.decost(e,tp,eg,ep,ev,re,r,rp,chk)
+function c28327394.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(1)
 	if chk==0 then return true end
 end
 function c28327394.cfilter(c)
 	return c:IsRace(RACE_FAIRY) and not c:IsPublic()
 end
-function c28327394.detg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return false end
+function c28327394.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) end
 	if chk==0 then
 		if e:GetLabel()==0 then return false end
 		e:SetLabel(0)
@@ -47,6 +47,7 @@ function c28327394.detg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,c28327394.cfilter,tp,LOCATION_HAND,0,1,ct,nil)
 	Duel.ConfirmCards(1-tp,g)
+	Duel.ShuffleHand(tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local tg=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_ONFIELD,g:GetCount(),g:GetCount(),nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,tg,tg:GetCount(),0,0)
@@ -54,7 +55,7 @@ end
 function c28327394.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER)
 end
-function c28327394.deop(e,tp,eg,ep,ev,re,r,rp)
+function c28327394.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetTargetsRelateToChain()
 	if Duel.Destroy(g,REASON_EFFECT)~=0 and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c28327394.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(28327394,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
