@@ -33,21 +33,23 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e4,tp)
 end
 function s.costtg(e,te,tp)
-	e:SetLabelObject(te:GetHandler())
+	e:SetLabelObject(te)
+	local tc=te:GetHandler()
+	local typ=tc:GetType()&0x7
+	e:SetLabel(typ)
 	return true
 end
 function s.costchk(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	local tc=e:GetLabelObject()
-	local typ=tc:GetType()&0x7
-	return Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_HAND,0,1,tc,typ)
+	local te=e:GetLabelObject()
+	local typ=e:GetLabel()
+	return Duel.IsExistingMatchingCard(Card.IsType,te:GetHandlerPlayer(),LOCATION_HAND,0,1,te:GetHandler(),typ)
 end
 function s.costop(e,tp,eg,ep,ev,re,r,rp)
-	local ctype=0
-	local tc=e:GetLabelObject()
-	local typ=tc:GetType()&0x7
+	local te=e:GetLabelObject()
+	local typ=e:GetLabel()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_HAND,0,1,1,tc,typ)
+	local g=Duel.SelectMatchingCard(tp,Card.IsType,te:GetHandlerPlayer(),LOCATION_HAND,0,1,1,te:GetHandler(),typ)
 	if #g>0 then
 		Duel.ConfirmCards(1-tp,g)
 		Duel.ShuffleHand(tp)

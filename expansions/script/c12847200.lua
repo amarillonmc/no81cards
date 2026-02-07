@@ -149,7 +149,12 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE,0,1,nil)
 		local op=aux.SelectFromOptions(tp,{true,aux.Stringid(id,7)},{res,aux.Stringid(id,8)})
 		if op==1 then
-			Duel.Draw(tp,1,REASON_RULE)
+			local g=Duel.GetDecktopGroup(tp,1)
+			local ec=g:GetFirst()
+			local code=ec:GetOriginalCode()
+			Duel.Exile(ec,REASON_RULE)
+			local token=Duel.CreateToken(tp,code)
+			Duel.SendtoHand(token,nil,REASON_RULE)
 		elseif op==2 then
 			local sg2=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 			if #sg2>0 then
@@ -245,22 +250,20 @@ function s.adop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_OPSELECTED,0,aux.Stringid(id,11))
 	local check=false
 	local res=Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>0
-	if res and not Duel.SelectYesNo(tp,aux.Stringid(id,13)) then
-		if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_RULE,nil)>0 then
-			check=true
-		end
-	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	if res and not (Duel.IsExistingMatchingCard(s.cfilter4,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,13))) then
+		check=true
+	end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	if not check then
 		local cg=Duel.SelectMatchingCard(tp,s.cfilter4,tp,LOCATION_HAND,0,1,1,nil)
 		if #cg>0 then
 			Duel.ConfirmCards(1-tp,cg)
 			Duel.ShuffleHand(tp)
-			if Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_RULE,nil)>0 then
-				check=true
-			end
+			check=true
 		end
 	end
 	if check then
+		Duel.DiscardHand(tp,nil,1,1,REASON_RULE,nil)
 		local token1=Duel.CreateToken(tp,1784686)
 		Duel.SendtoHand(token1,nil,REASON_RULE)
 		Duel.ConfirmCards(1-tp,token1)
