@@ -21,6 +21,7 @@ function c9911060.initial_effect(c)
 	e2:SetCost(c9911060.rccost)
 	e2:SetTarget(c9911060.rctg)
 	e2:SetOperation(c9911060.rcop)
+	e2:SetLabel(9911060)
 	c:RegisterEffect(e2)
 end
 function c9911060.spcfilter(c)
@@ -35,7 +36,6 @@ function c9911060.rccon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function c9911060.rccost(e,tp,eg,ep,ev,re,r,rp,chk)
-	e:SetLabel(100)
 	if chk==0 then return true end
 end
 function c9911060.rcfilter1(c,e)
@@ -52,11 +52,7 @@ function c9911060.rctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local b1=Duel.IsCanRemoveCounter(tp,1,1,0x1954,3,REASON_COST) and dg:CheckSubGroup(c9911060.fselect,3,3,1)
 	local b2=Duel.IsCanRemoveCounter(tp,1,1,0x1954,6,REASON_COST) and dg:CheckSubGroup(c9911060.fselect,3,3,2)
 	if chkc then return false end
-	if chk==0 then
-		if e:GetLabel()~=100 then return false end
-		e:SetLabel(0)
-		return b1 or b2
-	end
+	if chk==0 then return e:IsCostChecked() and (b1 or b2) end
 	local ct=aux.SelectFromOptions(tp,{b1,aux.Stringid(9911060,0)},{b2,aux.Stringid(9911060,1)})
 	Duel.RemoveCounter(tp,1,1,0x1954,ct*3,REASON_COST)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)

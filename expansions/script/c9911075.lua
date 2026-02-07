@@ -22,6 +22,7 @@ function c9911075.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1,9911075)
+	e3:SetCost(c9911075.thcost)
 	e3:SetTarget(c9911075.thtg)
 	e3:SetOperation(c9911075.thop)
 	c:RegisterEffect(e3)
@@ -41,6 +42,10 @@ function c9911075.initial_effect(c)
 end
 function c9911075.deftg(e,c)
 	return c:IsFaceup() and c:GetCounter(0x1954)>0
+end
+function c9911075.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckLPCost(tp,500) end
+	Duel.PayLPCost(tp,500)
 end
 function c9911075.thfilter(c)
 	return (c:IsCode(9911056) or aux.IsCodeListed(c,9911056)) and c:IsAbleToHand()
