@@ -2,29 +2,24 @@
 local m=40011485
 local cm=_G["c"..m]
 function cm.initial_effect(c)
-	--activate
-	local e0=Effect.CreateEffect(c)
-	e0:SetDescription(aux.Stringid(m,0))
-	e0:SetType(EFFECT_TYPE_ACTIVATE)
-	e0:SetCode(EVENT_FREE_CHAIN)
-	e0:SetHintTiming(0,TIMING_END_PHASE)
-	c:RegisterEffect(e0)
-	--activate (return)
+	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,1))
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,m)
-	e1:SetHintTiming(0,TIMING_END_PHASE)
-	e1:SetTarget(cm.sptg)
-	e1:SetOperation(cm.spop)
 	c:RegisterEffect(e1)
-	local e2=e1:Clone()
-	e1:SetDescription(aux.Stringid(m,2))
+	--spsummon
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,2))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
+	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
-	c:RegisterEffect(e2)   
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e2:SetCountLimit(1,m)
+	e2:SetCondition(cm.spcon)
+	e2:SetTarget(cm.sptg)
+	e2:SetOperation(cm.spop)
+	c:RegisterEffect(e2)
 	--destroy
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,3))
@@ -38,6 +33,9 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.tgtg)
 	e3:SetOperation(cm.tgop)
 	c:RegisterEffect(e3) 
+end
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2
 end
 function cm.spfilter(c,e,tp)
 	return c:IsSetCard(0xcf1a) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

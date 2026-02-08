@@ -1,6 +1,6 @@
 --方舟骑士团-逻各斯
 local s,id,o=GetID()
-cm.named_with_Arknight=1
+s.named_with_Arknight=1
 function s.initial_effect(c)
 	---xyz summon
 	aux.AddXyzProcedure(c,s.mfilter,6,3,nil,nil,3)

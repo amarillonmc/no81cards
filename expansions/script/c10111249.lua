@@ -1,4 +1,5 @@
 --天霆號アーゼウス
+local s,id,o=GetID()
 function s.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,12,2,s.ovfilter,aux.Stringid(id,0),2,s.xyzop)
