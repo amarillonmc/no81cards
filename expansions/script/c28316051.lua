@@ -94,8 +94,11 @@ function c28316051.regop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c28316051.ffilter,p,LOCATION_GRAVE,0,nil,p)
 	if c:IsReason(REASON_DESTROY) and #g>0 then
 		Duel.Hint(HINT_CARD,0,28316051)
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_OPERATECARD)
-		local tc=g:Select(p,1,1,nil):GetFirst()
+		local tc=g:GetFirst()
+		if #g>1 then
+			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_OPERATECARD)
+			tc=g:Select(p,1,1,nil):GetFirst()
+		end
 		Duel.HintSelection(Group.FromCards(tc))
 		local fc=Duel.GetFieldCard(p,LOCATION_FZONE,0)
 		if fc then
