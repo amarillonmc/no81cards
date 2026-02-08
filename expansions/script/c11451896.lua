@@ -74,12 +74,23 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local tp=Duel.GetTurnPlayer()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sg=Duel.SelectMatchingCard(tp,cm.filter,tp,LOCATION_HAND+LOCATION_GRAVE,0,1,1,nil)
-	Duel.Remove(sg,POS_FACEUP,REASON_COST)
+	if sg:GetFirst():IsLocation(LOCATION_HAND) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(m,2))
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
+		e1:SetCode(EFFECT_PUBLIC)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		sg:GetFirst():RegisterEffect(e1)
+		Duel.ConfirmCards(1-tp,sg:GetFirst())
+	else
+		Duel.Remove(sg,POS_FACEUP,REASON_COST)
+	end
 	Duel.RaiseSingleEvent(c,EVENT_CUSTOM+m,e,0,0,0,sg:GetFirst():GetAttribute())
 	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 end
 function cm.filter(c)
-	return c:IsAbleToRemoveAsCost() and c:IsType(TYPE_MONSTER)
+	return ((c:IsAbleToRemoveAsCost() and c:IsLocation(LOCATION_GRAVE)) or (not c:IsPublic() and c:IsLocation(LOCATION_HAND))) and c:IsType(TYPE_MONSTER)
 end
 function cm.cclfilter(c,tc)
 	local seq1=aux.GetColumn(c)

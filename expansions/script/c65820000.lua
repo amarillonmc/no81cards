@@ -11,6 +11,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,12))
+	e2:SetCategory(CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_CUSTOM+65820000)
 	e2:SetRange(LOCATION_GRAVE)
@@ -36,7 +37,7 @@ function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function s.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return math.max(Duel.GetFlagEffect(tp,65820099)-Duel.GetFlagEffect(tp,65820100),0)<10 end
+	if chk==0 then return Duel.GetFlagEffect(tp,65820099)<10 end
 	Duel.SetTargetPlayer(tp)
 end
 function s.thfilter(c)
@@ -44,13 +45,13 @@ function s.thfilter(c)
 end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local count=math.max(Duel.GetFlagEffect(p,65820099)-Duel.GetFlagEffect(p,65820100),0)
+	local count=Duel.GetFlagEffect(p,65820099)
 	if count>=10 then return end
-	for i=0,10,1 do
+	for i=0,10 do
 		Duel.ResetFlagEffect(p,EFFECT_FLAG_EFFECT+65820000+i)
 	end
 	Duel.RegisterFlagEffect(p,65820099,0,0,1)
-	local count1=math.max(Duel.GetFlagEffect(p,65820099)-Duel.GetFlagEffect(p,65820100),0)
+	local count1=math.max(Duel.GetFlagEffect(p,65820099),0)
 	local te=Effect.CreateEffect(e:GetHandler())
 	te:SetDescription(aux.Stringid(65820000,count1))
 	te:SetType(EFFECT_TYPE_FIELD)

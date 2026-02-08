@@ -2,11 +2,13 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(id,4))
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	e0:SetCondition(s.condition1)
 	c:RegisterEffect(e0)
 	local e10=Effect.CreateEffect(c)
+	e10:SetDescription(aux.Stringid(id,4))
 	e10:SetType(EFFECT_TYPE_SINGLE)
 	e10:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
 	e10:SetCondition(s.condition2)
@@ -79,12 +81,12 @@ s.effect_lixiaoguo=true
 --正面【表】
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return math.max(Duel.GetFlagEffect(tp,65820099)-Duel.GetFlagEffect(tp,65820100),0)==0 and c:GetFlagEffect(65820010)==0
+	return Duel.GetFlagEffect(tp,65820099)==0 and c:GetFlagEffect(65820010)==0
 end
 --反面【表】
 function s.condition2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return math.max(Duel.GetFlagEffect(tp,65820099)-Duel.GetFlagEffect(tp,65820100),0)==0 and c:GetFlagEffect(65820010)>0
+	return Duel.GetFlagEffect(tp,65820099)==0 and c:GetFlagEffect(65820010)>0
 end
 function s.condition4(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -105,7 +107,7 @@ function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function s.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil,e) end
 	Duel.SetTargetPlayer(tp)
 end
 function s.thfilter(c)
@@ -115,25 +117,24 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local tc=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,nil):GetFirst()
-	if tc then
-		--翻面
-		Duel.ConfirmCards(1-tp,tc)
-		if tc:GetFlagEffect(65820010)==0 then 
-			tc:RegisterFlagEffect(65820010,0,EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(65820010,1))		
-		else
-			tc:ResetFlagEffect(65820010)
-		end
-		Duel.RaiseEvent(tc,EVENT_CUSTOM+65820010,e,REASON_EFFECT,tp,nil,nil)
+	if not tc then return end
+	--翻面
+	Duel.ConfirmCards(1-tp,tc)
+	if tc:GetFlagEffect(65820010)==0 then 
+		tc:RegisterFlagEffect(65820010,0,EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(65820010,1))
+	else
+		tc:ResetFlagEffect(65820010)
 	end
+	Duel.RaiseEvent(tc,EVENT_CUSTOM+65820010,e,REASON_EFFECT,tp,nil,nil)
 	
 	local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-	local count=math.max(Duel.GetFlagEffect(p,65820099)-Duel.GetFlagEffect(p,65820100),0)
+	local count=math.max(Duel.GetFlagEffect(p,65820099),0)
 	if count>=10 or not Duel.SelectYesNo(tp,aux.Stringid(id,2)) then return end
-	for i=0,10,1 do
+	for i=0,10 do
 		Duel.ResetFlagEffect(p,EFFECT_FLAG_EFFECT+65820000+i)
 	end
 	Duel.RegisterFlagEffect(p,65820099,0,0,1)
-	local count1=math.max(Duel.GetFlagEffect(p,65820099)-Duel.GetFlagEffect(p,65820100),0)
+	local count1=math.max(Duel.GetFlagEffect(p,65820099),0)
 	local te=Effect.CreateEffect(e:GetHandler())
 	te:SetDescription(aux.Stringid(65820000,count1))
 	te:SetType(EFFECT_TYPE_FIELD)
@@ -147,12 +148,12 @@ end
 --正面【里】
 function s.condition1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return math.max(Duel.GetFlagEffect(tp,65820099)-Duel.GetFlagEffect(tp,65820100),0)>0 and c:GetFlagEffect(65820010)==0
+	return Duel.GetFlagEffect(tp,65820099)>0 and c:GetFlagEffect(65820010)==0
 end
 --反面【里】
 function s.condition3(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return math.max(Duel.GetFlagEffect(tp,65820099)-Duel.GetFlagEffect(tp,65820100),0)>0 and c:GetFlagEffect(65820010)>0
+	return Duel.GetFlagEffect(tp,65820099)>0 and c:GetFlagEffect(65820010)>0
 end
 function s.condition5(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -161,11 +162,14 @@ end
 function s.rmcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	
-	for i=0,10,1 do
+	for i=0,10 do
 		Duel.ResetFlagEffect(tp,EFFECT_FLAG_EFFECT+65820000+i)
 	end
-	Duel.RegisterFlagEffect(tp,65820100,0,0,1)
-	local count=math.max(Duel.GetFlagEffect(tp,65820099)-Duel.GetFlagEffect(tp,65820100),0)
+	local count=math.max(Duel.GetFlagEffect(tp,65820099)-1,0)
+	Duel.ResetFlagEffect(tp,65820099)
+	for i=1,count do
+		Duel.RegisterFlagEffect(tp,65820099,0,0,1)
+	end
 	local te=Effect.CreateEffect(e:GetHandler())
 	te:SetDescription(aux.Stringid(65820000,count))
 	te:SetType(EFFECT_TYPE_FIELD)

@@ -30,7 +30,7 @@ function c98930004.dfilter(c)
 	return c:IsSetCard(0xad0) and c:IsDiscardable()
 end
 function c98930004.tgfilter(c)
-	return c:IsSetCard(0xad0) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	return c:IsSetCard(0xad0) and c:IsAbleToGrave()
 end
 function c98930004.drcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable()

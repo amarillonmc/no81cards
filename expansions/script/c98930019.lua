@@ -47,8 +47,7 @@ function s.tdfilter(c)
 end
 function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED) and chkc:IsControler(tp) and s.tdfilter(chkc) end
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingTarget(s.tdfilter,tp,LOCATION_REMOVED,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(s.tdfilter,tp,LOCATION_REMOVED,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,s.tdfilter,tp,LOCATION_REMOVED,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
@@ -83,13 +82,14 @@ function c98930019.mvfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x14b)
 end
 function c98930019.mvtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	 local g=Duel.GetFieldGroup(tp,0,LOCATION_MZONE)
-	if chk==0 then return #g>0 end
+	 local g=Duel.GetFieldGroup(tp,LOCATION_MZONE,LOCATION_MZONE)
+	if chk==0 then return #g>1 end
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
 function c98930019.mvop(e,tp,eg,ep,ev,re,r,rp)
+	local at=Duel.GetAttacker()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local tc=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
+	local tc=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_MZONE,1,1,at):GetFirst()
 	if tc and Duel.Destroy(tc,REASON_EFFECT)~=0 then
 		local lp=Duel.GetLP(tp)
 		Duel.SetLP(tp,lp-1000)

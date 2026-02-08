@@ -1,4 +1,4 @@
---超古代的黑暗法师 德古拉·马格玛
+--超古代的魔女 卡蜜拉
 function c98930022.initial_effect(c)
 	--cannot spsummon
 	local e1=Effect.CreateEffect(c)
@@ -46,9 +46,11 @@ function c98930022.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
 end
 function c98930022.drop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	local ft=math.min(2,Duel.GetLocationCount(tp,LOCATION_MZONE))
+	if ft==0 then return end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c98930022.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c98930022.filter),tp,LOCATION_GRAVE,0,1,ft,nil,e,tp)
 	if g:GetCount()>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end

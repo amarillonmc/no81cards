@@ -35,6 +35,7 @@ function c98930011.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(c98930011.desfilter,tp,LOCATION_MZONE,0,nil)
 	if chk==0 then return g:GetCount()>0 end
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,0)
+	re:GetHandler():CreateEffectRelation(e)
 end
 function c98930011.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
@@ -46,7 +47,20 @@ function c98930011.activate(e,tp,eg,ep,ev,re,r,rp)
 		if atk>0 then
 			Duel.Damage(1-tp,atk/2,REASON_EFFECT)
 		end
+		local e1=Effect.CreateEffect(tc)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetCode(EFFECT_IMMUNE_EFFECT)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+		e1:SetValue(c98930011.efilter(re))
+		tc:RegisterEffect(e1)
 	end
+end
+function c98930011.efilter(re)
+	return	function(e,te)
+				return te==re and te:IsActivated()
+			end
 end
 function c98930011.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xad0)

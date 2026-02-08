@@ -16,7 +16,6 @@ function c98930023.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_TO_GRAVE)
 	e1:SetCountLimit(1,98930023)
-	e1:SetCost(c98930023.scost)
 	e1:SetCondition(c98930023.spcon)
 	e1:SetTarget(c98930023.sptg)
 	e1:SetOperation(c98930023.spop)
@@ -27,7 +26,6 @@ function c98930023.initial_effect(c)
 	e2:SetCode(EVENT_REMOVE)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,98930023)
-	e2:SetCost(c98930023.scost)
 	e2:SetCondition(c98930023.thcon)
 	e2:SetTarget(c98930023.thtg)
 	e2:SetOperation(c98930023.spop)
@@ -38,10 +36,6 @@ function c98930023.thcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c98930023.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	 if chk==0 then return e:GetHandler():IsSSetable() end
-end
-function c98930023.scost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD,nil)
 end
 function c98930023.filter1(c,e)
 	return not c:IsImmuneToEffect(e)

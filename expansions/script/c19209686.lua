@@ -1,5 +1,6 @@
 --归回净乐士妄想幻视
 function c19209686.initial_effect(c)
+	aux.AddCodeList(c,19209669)
 	--act in hand
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)

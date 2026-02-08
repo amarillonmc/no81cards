@@ -106,13 +106,24 @@ function c22348207.sctg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return true end
 end
 function c22348207.scop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_PHASE+PHASE_END)
-	e1:SetCountLimit(1)
-	e1:SetOperation(c22348207.thop)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
+
+	if Duel.SelectOption(tp,aux.Stringid(22348207,6),aux.Stringid(22348207,7))==0 then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_END)
+		e1:SetCountLimit(1)
+		e1:SetOperation(c22348207.thop)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		Duel.RegisterEffect(e1,tp)
+	else
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+		e1:SetCountLimit(1)
+		e1:SetOperation(c22348207.thop)
+		e1:SetReset(RESET_PHASE+PHASE_STANDBY)
+		Duel.RegisterEffect(e1,tp)
+	end
 end
 function c22348207.filter11(c)
 	return c:IsSetCard(0x707) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and not c:IsCode(22348207)

@@ -13,6 +13,7 @@ function c98930010.initial_effect(c)
 	e1:SetRange(LOCATION_SZONE)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e1:SetCountLimit(1,98930010)
+	e1:SetCondition(c98930010.condition)
 	e1:SetTarget(c98930010.target)
 	e1:SetOperation(c98930010.activate)
 	c:RegisterEffect(e1)
@@ -27,6 +28,9 @@ function c98930010.initial_effect(c)
 	e2:SetCost(aux.bfgcost)
 	e2:SetOperation(c98930010.atkop)
 	c:RegisterEffect(e2)
+end
+function c98930010.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2 or Duel.GetTurnPlayer()~=tp and Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE
 end
 function c98930010.filter1(c,e)
 	return not c:IsImmuneToEffect(e)

@@ -30,7 +30,7 @@ function s.initial_effect(c)
 end
 
 function s.filter(c)
-	return c:IsLevelBelow(4) and c:IsSetCard(0x6a31) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsLevelBelow(4) and c:IsSetCard(0x6a31) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsCode(id)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end

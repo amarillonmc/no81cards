@@ -2,20 +2,12 @@
 function c98930013.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,c98930013.matfilter,aux.FilterBoolFunction(Card.IsFusionSetCard,0xad0),true)
-	--cannot spsummon
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetValue(c98930013.splimit)
-	c:RegisterEffect(e1)
 	--indes
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
 	--act 1
@@ -121,8 +113,9 @@ end
 function c98930013.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local tc=Duel.SelectMatchingCard(tp,Card.IsFaceup,tp,0,LOCATION_MZONE,1,1,nil):GetFirst()
-	if not tc then return end
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)
+	local tc=g:GetFirst()
+	while tc do
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_SET_ATTACK)
@@ -163,6 +156,8 @@ function c98930013.adop(e,tp,eg,ep,ev,re,r,rp)
 		local e7=e4:Clone()
 		e7:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 		tc:RegisterEffect(e7)
+		tc=g:GetNext()
+	end
 end
 function c98930013.fuslimit(e,c,sumtype)
 	return sumtype==SUMMON_TYPE_FUSION

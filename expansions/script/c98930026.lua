@@ -1,46 +1,50 @@
 --超古代的巨人 影之继承者
+local s,id,o=GetID()
 function c98930026.initial_effect(c)
 	 --synchro summon
 	c:EnableReviveLimit()
 	aux.AddSynchroMixProcedure(c,c98930026.matfilter1,nil,nil,c98930026.matfilter2,1,99)
    --destroy
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(98930026,0))
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_DESTROY)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetRange(LOCATION_MZONE)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCode(EVENT_FREE_CHAIN) -- 任意时点
+	e1:SetRange(LOCATION_MZONE) -- 假设是怪兽卡，若为其他类型需调整
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCountLimit(1)
-	e1:SetCondition(c98930026.descon1)
-	e1:SetTarget(c98930026.destg)
-	e1:SetOperation(c98930026.desop)
+	e1:SetCountLimit(1,id) -- 1回合1次
+	e1:SetCost(s.cost)
+	e1:SetTarget(s.target)
+	e1:SetOperation(s.operation)
 	c:RegisterEffect(e1)
-	--indes
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(98930026,0))
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCondition(c98930026.descon2)
-	e2:SetTarget(c98930026.indtg)
-	e2:SetOperation(c98930026.indop)
-	c:RegisterEffect(e2) 
    --spsummon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(98930026,1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_TO_GRAVE)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e3:SetCountLimit(1,84330568)
 	e3:SetCondition(c98930026.spcon)
 	e3:SetTarget(c98930026.sptg)
 	e3:SetOperation(c98930026.spop)
 	c:RegisterEffect(e3)
+	if not s.global_check then
+		s.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAIN_SOLVED)
+		ge1:SetOperation(s.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function s.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if not rc:IsRelateToEffect(re) or not re:IsActiveType(TYPE_MONSTER) then return end
+	local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)
+	if loc==LOCATION_MZONE and rc:GetFlagEffect(id+o+p)==0 then
+		rc:RegisterFlagEffect(id+o+p,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	end
 end
 function c98930026.matfilter1(c,syncard)
 	return c:IsTuner(syncard) or c:IsSetCard(0xad0)
@@ -48,62 +52,56 @@ end
 function c98930026.matfilter2(c,syncard)
 	return c:IsNotTuner(syncard) and c:IsSetCard(0xad0)
 end
-function c98930026.descon1(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsAttribute(ATTRIBUTE_DARK)
+function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
-function c98930026.descon2(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsAttribute(ATTRIBUTE_LIGHT)
-end
-function c98930026.desfilter(c)
-	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_XYZ)
-end
-function c98930026.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(1-tp) end
-	if chk==0 then return Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_MZONE,1,nil)
-		and Duel.IsExistingMatchingCard(c98930026.tgfilter,tp,LOCATION_HAND,0,1,c) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-end
-function c98930026.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	local g=Duel.SelectMatchingCard(tp,c98930026.tgfilter,tp,LOCATION_HAND,0,1,1,nil)
-	if Duel.SendtoGrave(g,REASON_EFFECT) and g:GetFirst():IsLocation(LOCATION_GRAVE) and tc:IsRelateToEffect(e) then
-		Duel.Destroy(tc,REASON_EFFECT)
+-- 目标：场上1张表侧表示卡
+function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and chkc:IsFaceup() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local g=Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	-- 根据属性预设置可能的结果
+	local c=e:GetHandler()
+	local attr=c:GetAttribute()
+	if attr&(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)==0 then
+		-- 不是光或暗属性，不应发动（这里通过条件限制，但已在发动条件中检查）
+		e:SetCategory(0)
+	elseif attr&ATTRIBUTE_DARK~=0 then
+		e:SetCategory(CATEGORY_DESTROY)
+	else
+		e:SetCategory(0)
 	end
 end
-function c98930026.tgfilter(c)
-	return c:IsSetCard(0xad0) and c:IsAbleToGrave()
-end
-function c98930026.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xb2)
-end
-function c98930026.indtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and c98930026.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c98930026.filter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsExistingMatchingCard(c98930026.tgfilter,tp,LOCATION_HAND,0,1,c) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	Duel.SelectTarget(tp,c98930026.filter,tp,LOCATION_MZONE,0,1,1,nil)
-end
-function c98930026.indop(e,tp,eg,ep,ev,re,r,rp)
+function s.operation(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	local g=Duel.SelectMatchingCard(tp,c98930026.tgfilter,tp,LOCATION_HAND,0,1,1,nil)
-	if Duel.SendtoGrave(g,REASON_EFFECT) and g:GetFirst():IsLocation(LOCATION_GRAVE) and tc:IsRelateToEffect(e) then
-		local e1=Effect.CreateEffect(e:GetHandler())
+	if not tc or not tc:IsRelateToEffect(e) then return end
+	local attr=c:GetAttribute()
+	-- 检查是否为光或暗属性
+	if attr&(ATTRIBUTE_LIGHT+ATTRIBUTE_DARK)==0 then return end
+	-- 暗属性：破坏
+	if attr&ATTRIBUTE_DARK~=0 then
+		Duel.Destroy(tc,REASON_EFFECT)
+	-- 光属性：直到回合结束只有1次不被战斗·效果破坏
+	elseif attr&ATTRIBUTE_LIGHT~=0 then
+		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 		e1:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
-		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 		e1:SetCountLimit(1)
-		e1:SetValue(c98930026.valcon)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		e1:SetValue(s.valcon)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
 	end
 end
-function c98930026.valcon(e,re,r,rp)
+function s.valcon(e,re,r,rp)
 	return bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0
 end
 function c98930026.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return c:IsReason(REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsSummonType(SUMMON_TYPE_SYNCHRO)
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c98930026.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -123,18 +121,11 @@ function c98930026.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonComplete()
 	if not re then return false end
 	local rc=re:GetHandler()
-	if rc:IsCode(98930021) and Duel.SelectYesNo(tp,aux.Stringid(98930026,2)) then
-	   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	   local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,0,LOCATION_MZONE,1,1,nil)
-	   if g:GetCount()>0 then
-		   Duel.HintSelection(g)
-		   Duel.Destroy(g,REASON_EFFECT) 
-		   local e1=Effect.CreateEffect(c)
-		   e1:SetType(EFFECT_TYPE_SINGLE)
-		   e1:SetCode(EFFECT_UPDATE_ATTACK)
-		   e1:SetValue(900)
-		   e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		   c:RegisterEffect(e1)
-	   end
+	if rc:IsCode(98930021) and Duel.IsExistingMatchingCard(c98930026.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil,1-tp) and Duel.SelectYesNo(tp,aux.Stringid(98930026,2)) then
+		 local g=Duel.GetMatchingGroup(c98930026.cfilter,tp,LOCATION_MZONE,LOCATION_MZONE,nil,1-tp)
+		 Duel.SendtoGrave(g,REASON_EFFECT)
 	end
+end
+function c98930026.cfilter(c,p)
+	return c:IsFaceup() and (c:GetFlagEffect(id+o+p)>0 or c:IsAttribute(ATTRIBUTE_DARK))
 end

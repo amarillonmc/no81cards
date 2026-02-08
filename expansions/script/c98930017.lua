@@ -2,14 +2,6 @@
 function c98930017.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,c98930017.matfilter,aux.FilterBoolFunction(Card.IsFusionSetCard,0xad0),true)
-	--cannot spsummon
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_S98930017SUMMON_CONDITION)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetValue(c98930017.splimit)
-	c:RegisterEffect(e1)
 	--cannot be targeted
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)

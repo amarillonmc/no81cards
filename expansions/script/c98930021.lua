@@ -26,9 +26,7 @@ function c98930021.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.tfilter(c,tp)
-	local b1=c:IsSetCard(0xad0) and c:IsLevel(4)
-	local b2=c:IsSetCard(0xad0) and c:IsLevelAbove(5)
-	return c:IsFaceup() and Duel.GetMZoneCount(tp,c)>0 and (b1 or b2)
+	return c:IsFaceup() and Duel.GetMZoneCount(tp,c)>0 and c:IsSetCard(0xad0) and c:IsAttribute(ATTRIBUTE_DARK)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -61,7 +59,7 @@ function c98930021.desop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		Duel.Destroy(c,REASON_EFFECT)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,c98930021.rtfilter,tp,LOCATION_REMOVED,0,1,1,nil)
+		local g=Duel.GetMatchingGroup(c98930021.rtfilter,tp,LOCATION_REMOVED,0,nil)
 		if #g>0 then
 			Duel.SendtoGrave(g,nil,REASON_EFFECT+REASON_RETURN)
 		end
@@ -71,5 +69,5 @@ function c98930021.rtfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xad0)
 end
 function c98930021.dfilter(c,tp)
-	return c:IsSetCard(0xad0) and c:IsLevelAbove(7) and c:IsControler(tp) and c:IsAttribute(ATTRIBUTE_DARK)
+	return c:IsSetCard(0xad0) and c:IsControler(tp) and c:IsAttribute(ATTRIBUTE_DARK)
 end

@@ -2,13 +2,11 @@
 function c98930006.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE) 
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,98930006)
 	e1:SetCost(c98930006.cost)
-	e1:SetTarget(c98930006.target)
 	e1:SetOperation(c98930006.activate)
 	c:RegisterEffect(e1) 
 	--fusion Summon
@@ -23,29 +21,49 @@ function c98930006.initial_effect(c)
 	e2:SetTarget(c98930006.fusiontg)
 	e2:SetOperation(c98930006.fusionop)
 	c:RegisterEffect(e2)
+	if not c98930006.global_check then
+		c98930006.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
+		ge1:SetOperation(c98930006.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function c98930006.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		if tc:IsSetCard(0xad0) then
+			Duel.RegisterFlagEffect(tc:GetSummonPlayer(),98930006,RESET_PHASE+PHASE_END,0,1)
+		end
+		tc=eg:GetNext()
+	end
 end
 function c98930006.filter(c)
 	return c:IsSetCard(0xad0) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function c98930006.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.IsExistingMatchingCard(c98930006.filter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	local g=Duel.SelectMatchingCard(tp,Card.IsDiscardable,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
-end
-function c98930006.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98930006.filter,tp,LOCATION_DECK,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+	local g2=Duel.SelectMatchingCard(tp,c98930006.filter,tp,LOCATION_DECK,0,1,1,nil)
+	Duel.SendtoGrave(g2,REASON_COST)
 end
 function c98930006.activate(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c98930006.filter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoGrave(g,REASON_EFFECT)
-		c:CancelToGrave()
-		Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	e1:SetOperation(c98930006.droperation)
+	Duel.RegisterEffect(e1,tp)
+	e:GetHandler():CancelToGrave()
+	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+end
+function c98930006.droperation(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,98930006)
+	Duel.Damage(1-tp,Duel.GetFlagEffect(tp,98930006)*100,REASON_EFFECT)
 end
 function c98930006.filter0(c)
 	return c:IsType(TYPE_MONSTER) and c:IsCanBeFusionMaterial() and c:IsAbleToRemove()

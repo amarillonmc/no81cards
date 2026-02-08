@@ -91,7 +91,7 @@ function cm.initial_effect(c)
 	e11:SetTarget(c11513094.motg)
 	e11:SetOperation(c11513094.moop)
 	e11:SetLabelObject(e10)
-	c:RegisterEffect(e11)
+	--c:RegisterEffect(e11)
 end
 function c11513094.matfilter(c)
 	return c:IsFusionAttribute(ATTRIBUTE_DARK+ATTRIBUTE_LIGHT) and c:IsRace(RACE_DRAGON)
