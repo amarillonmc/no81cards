@@ -1,5 +1,7 @@
 --防御阵线 压制
 local s,id,o=GetID()
+if not CATEGORY_MSET then CATEGORY_MSET=0 end
+if not CATEGORY_SSET then CATEGORY_SSET=0 end
 function s.initial_effect(c)
 	--act in set turn
 	local e0=Effect.CreateEffect(c)

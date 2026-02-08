@@ -69,7 +69,7 @@ function c53771001.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,0,LOCATION_DECK)
 end
 function c53771001.thfilter(c,g)
-	return c:IsAbleToHand() and not c:IsLocation(LOCATION_HAND) and g:IsExists(c53771001.tgfilter,1,c)
+	return c:IsAbleToHand() and not c:IsLocation(LOCATION_HAND) and g:IsExists(c53771001.tgfilter,1,nil)
 end
 function c53771001.tgfilter(c)
 	return c:IsSetCard(0xa53b) and c:IsAbleToGrave()

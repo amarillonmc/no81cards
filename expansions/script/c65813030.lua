@@ -95,13 +95,13 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	elseif sel==3 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_DECK,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,HINTMSG_TOGRAVE,0,1,1,nil)
 		if g:GetCount()>0 then
 			Duel.SSet(tp,g)
 		end
 	elseif sel==4 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_DECK,0,1,1,nil)
+		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_REMOVED,0,1,1,nil)
 		if g:GetCount()>0 then
 			Duel.SSet(tp,g)
 		end
