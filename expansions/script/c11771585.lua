@@ -27,6 +27,7 @@ function c11771585.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,11771586)
+	e2:SetCondition(c11771585.con2)
 	e2:SetTarget(c11771585.tg2)
 	e2:SetOperation(c11771585.op2)
 	c:RegisterEffect(e2)
@@ -54,21 +55,23 @@ function c11771585.initial_effect(c)
 end
 -- 记录效果发动
 function c11771585.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local rc=re:GetHandler()
-	if rc:IsLocation(LOCATION_HAND) and re:IsActiveType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP) then
+	local loc=re:GetActivateLocation()
+	if loc==LOCATION_HAND and re:IsActiveType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP) then
 		Duel.RegisterFlagEffect(rp,11771583,RESET_PHASE+PHASE_END,0,1)
 	end
-	if rc:IsLocation(LOCATION_GRAVE) and re:IsActiveType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP) then
+	if loc==LOCATION_GRAVE and re:IsActiveType(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP) then
 		Duel.RegisterFlagEffect(rp,11771584,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 -- 特殊召唤限制
 function c11771585.limit(e,se,sp,st)
-	return se and se:IsActiveType(TYPE_MONSTER) and se:GetHandler():IsRace(RACE_WARRIOR)
+	return se and se:IsActiveType(TYPE_MONSTER) and se:GetHandler() and se:GetHandler():IsRace(RACE_WARRIOR)
 end
 -- 1
 function c11771585.con1(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,11771583)>0 and Duel.GetFlagEffect(tp,11771584)>0
+	local hand_flag=Duel.GetFlagEffect(tp,11771583)>0 or Duel.GetFlagEffect(1-tp,11771583)>0
+	local grave_flag=Duel.GetFlagEffect(tp,11771584)>0 or Duel.GetFlagEffect(1-tp,11771584)>0
+	return hand_flag and grave_flag
 end
 function c11771585.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -91,6 +94,9 @@ function c11771585.op1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 -- 2
+function c11771585.con2(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0
+end
 function c11771585.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
@@ -116,29 +122,37 @@ function c11771585.op3(e,tp,eg,ep,ev,re,r,rp)
 	local g2=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	local ct1=g1:GetCount()
 	local ct2=g2:GetCount()
+	local actual_ct1=0
+	local actual_ct2=0
 	if ct1>0 then
 		Duel.SendtoDeck(g1,nil,SEQ_DECKTOP,REASON_EFFECT)
-		Duel.SortDecktop(tp,tp,ct1)
-		for i=1,ct1 do
-			local mg=Duel.GetDecktopGroup(tp,1)
-			Duel.MoveSequence(mg:GetFirst(),SEQ_DECKBOTTOM)
+		actual_ct1=g1:FilterCount(Card.IsLocation,nil,LOCATION_DECK)
+		if actual_ct1>0 then
+			Duel.SortDecktop(tp,tp,actual_ct1)
+			for i=1,actual_ct1 do
+				local mg=Duel.GetDecktopGroup(tp,1)
+				Duel.MoveSequence(mg:GetFirst(),SEQ_DECKBOTTOM)
+			end
 		end
 	end
 	if ct2>0 then
 		Duel.SendtoDeck(g2,nil,SEQ_DECKTOP,REASON_EFFECT)
-		Duel.SortDecktop(1-tp,1-tp,ct2)
-		for i=1,ct2 do
-			local mg=Duel.GetDecktopGroup(1-tp,1)
-			Duel.MoveSequence(mg:GetFirst(),SEQ_DECKBOTTOM)
+		actual_ct2=g2:FilterCount(Card.IsLocation,nil,LOCATION_DECK)
+		if actual_ct2>0 then
+			Duel.SortDecktop(1-tp,1-tp,actual_ct2)
+			for i=1,actual_ct2 do
+				local mg=Duel.GetDecktopGroup(1-tp,1)
+				Duel.MoveSequence(mg:GetFirst(),SEQ_DECKBOTTOM)
+			end
 		end
 	end
-	if ct1>0 or ct2>0 then
+	if actual_ct1>0 or actual_ct2>0 then
 		Duel.BreakEffect()
-		if ct1>0 then
-			Duel.Draw(tp,ct1,REASON_EFFECT)
+		if actual_ct1>0 then
+			Duel.Draw(tp,actual_ct1,REASON_EFFECT)
 		end
-		if ct2>0 then
-			Duel.Draw(1-tp,ct2,REASON_EFFECT)
+		if actual_ct2>0 then
+			Duel.Draw(1-tp,actual_ct2,REASON_EFFECT)
 		end
 	end
 end

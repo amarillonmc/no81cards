@@ -1,5 +1,6 @@
 --源于阴影 诘问
 local s,id,o=GetID()
+if not CATEGORY_SSET then CATEGORY_SSET=0 end
 function s.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
