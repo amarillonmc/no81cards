@@ -1,5 +1,6 @@
 --源于黑影 重生
 local s,id,o=GetID()
+if not CATEGORY_SSET then CATEGORY_SSET=0 end
 function s.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
@@ -7,6 +8,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e0)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
+	e3:SetCategory(CATEGORY_SSET)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_CUSTOM+65820000)
 	e3:SetRange(LOCATION_SZONE)

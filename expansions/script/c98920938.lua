@@ -20,7 +20,7 @@ function c98920938.initial_effect(c)
 	e1:SetDescription(aux.Stringid(98920938,0))
 	e1:SetCategory(CATEGORY_RELEASE)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e1:SetCode(EVENT_DESTROY)
+	e1:SetCode(EVENT_DESTROYED)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,98920938)
@@ -59,17 +59,17 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c98920938.cfilter(c,tp)
-	return c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousSetCard(0x141)
+	return c:IsPreviousControler(tp) and c:GetOriginalAttribute()&ATTRIBUTE_FIRE>0 and c:IsReason(REASON_BATTLE+REASON_EFFECT)
 end
 function c98920938.rlcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c98920938.cfilter,1,nil,tp) and e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED)
 end
 function c98920938.rltg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckReleaseGroupEx(1-tp,nil,1,REASON_RULE,false,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,1-tp,LOCATION_MZONE)
+	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0 end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,0,LOCATION_MZONE)
 end
 function c98920938.rlop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetFieldGroup(tp,0,LOCATION_MZONE)
+	local g=Duel.GetMatchingGroup(nil,1-tp,LOCATION_MZONE,0,nil)
 	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_TOGRAVE)
 		local sg=g:Select(1-tp,1,1,nil)
