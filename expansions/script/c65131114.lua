@@ -34,16 +34,22 @@ end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsControler,1,nil,tp)
 end
+function s.thefilter(c,e)
+	return c:IsRelateToEffect(e)
+end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tg=eg:Filter(Card.IsControler,nil,tp)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true,POS_FACEDOWN_DEFENSE) and tg:GetCount()>0 end
+	for tc in aux.Next(tg) do
+		tc:CreateEffectRelation(e)
+	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tg,1,tp,LOCATION_SZONE)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tg=eg:Filter(Card.IsControler,nil,tp)
+	local tg=eg:Filter(s.thefilter,nil,e)
 	if tg:GetCount()>0 then
 		if Duel.SendtoHand(tg,nil,REASON_EFFECT)>0 and c:IsRelateToEffect(e) then
 			Duel.SpecialSummon(c,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEDOWN_DEFENSE)
@@ -78,13 +84,13 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 		tg=tg:Select(tp,1,ft,nil)
 	end
 	Duel.SSet(tp,tg)
-	for tc in aux.Next(tg) do	 
+	for tc in aux.Next(tg) do	
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
 		e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)	 
+		tc:RegisterEffect(e1)	
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)

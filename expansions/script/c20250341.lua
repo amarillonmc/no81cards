@@ -33,23 +33,29 @@ function c20250341.initial_effect(c)
 	e4:SetCondition(c20250341.dckcon) 
 	e4:SetOperation(c20250341.dckop)
 	c:RegisterEffect(e4)
-	local e5=Effect.CreateEffect(c)
+	local e5=Effect.CreateEffect(c) 
+	e5:SetDescription(aux.Stringid(20250341,1))
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_CUSTOM+20250341) 
 	e5:SetProperty(EFFECT_FLAG_DELAY)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetCountLimit(1,20250342)
 	e5:SetCondition(c20250341.descon)
-	e5:SetTarget(c20250341.target)
-	e5:SetOperation(c20250341.activate)
+	e5:SetTarget(c20250341.settg)
+	e5:SetOperation(c20250341.setop)
 	c:RegisterEffect(e5)
 	--immune
 	local e6=Effect.CreateEffect(c)
 	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e6:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e6:SetProperty(EFFECT_FLAG_DELAY)
+	e6:SetCondition(c20250341.imcon)
 	e6:SetOperation(c20250341.imop)
 	c:RegisterEffect(e6)
+end
+
+function c20250341.imcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO)
 end
 function c20250341.imop(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():AddCounter(0x154a,2)
@@ -109,42 +115,38 @@ function c20250341.setfilter(c)
 	return c:IsSetCard(0x54a) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 
-function c20250341.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local ct=math.min(2,Duel.GetLocationCount(tp,LOCATION_SZONE))
-		return ct>0 and Duel.IsExistingMatchingCard(c20250341.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
-	end
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+function c20250341.settg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsExistingMatchingCard(c20250341.setfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
 end
 
-function c20250341.activate(e,tp,eg,ep,ev,re,r,rp)
-	local ct=math.min(2,Duel.GetLocationCount(tp,LOCATION_SZONE))
-	if ct<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+function c20250341.setop(e,tp,eg,ep,ev,re,r,rp)
+	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
+	if ft<=0 then return end
+	if ft>2 then ft=2 end
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c20250341.setfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
-	if #g>0 then
-		local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,ct)
-		if #sg>0 then
-			Duel.SSet(tp,sg)
-			for tc in aux.Next(sg) do
-				if tc:IsType(TYPE_QUICKPLAY) then
-					local e1=Effect.CreateEffect(e:GetHandler())
-					e1:SetDescription(aux.Stringid(20250341,3))
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
-					e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-					tc:RegisterEffect(e1)
-				end
-				if tc:IsType(TYPE_TRAP) then
-					local e1=Effect.CreateEffect(e:GetHandler())
-					e1:SetDescription(aux.Stringid(20250341,3))
-					e1:SetType(EFFECT_TYPE_SINGLE)
-					e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
-					e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-					e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-					tc:RegisterEffect(e1)
-				end
+	if #g==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
+	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,ft)
+	if #sg>0 then
+		Duel.SSet(tp,sg)
+		for tc in aux.Next(sg) do
+			if tc:IsType(TYPE_QUICKPLAY) then
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetDescription(aux.Stringid(20250341,3))
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_QP_ACT_IN_SET_TURN)
+				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1)
+			elseif tc:IsType(TYPE_TRAP) then
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetDescription(aux.Stringid(20250341,3))
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_TRAP_ACT_IN_SET_TURN)
+				e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				tc:RegisterEffect(e1)
 			end
 		end
 	end
