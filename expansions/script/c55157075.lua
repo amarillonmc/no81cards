@@ -81,12 +81,15 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	if g:GetCount()>0 and Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)>0 then
 		Duel.AdjustAll()
-		local syng=Duel.GetMatchingGroup(s.syncsumfilter,tp,LOCATION_EXTRA,0,nil)
+		local mg=Duel.GetSynchroMaterial(tp):Filter(Card.IsSetCard,nil,0x16c)
+		local syng=Duel.GetMatchingGroup(Card.IsSynchroSummonable,tp,LOCATION_EXTRA,0,nil,nil,mg)
+		--local syng=Duel.GetMatchingGroup(s.syncsumfilter,tp,LOCATION_EXTRA,0,nil)
 		if #syng>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg1=Duel.SelectMatchingCard(tp,s.syncsumfilter,tp,LOCATION_EXTRA,0,1,1,nil)
-			Duel.SynchroSummon(tp,sg1:GetFirst(),nil)
+			local sg1=g:Select(tp,1,1,nil)
+			--local sg1=Duel.SelectMatchingCard(tp,s.syncsumfilter,tp,LOCATION_EXTRA,0,1,1,nil)
+			Duel.SynchroSummon(tp,sg1:GetFirst(),nil,mg)
 		end
 	end
 end

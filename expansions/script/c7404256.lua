@@ -4,7 +4,6 @@ function s.initial_effect(c)
 	--tribute
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,id)
@@ -31,7 +30,7 @@ end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	--summon proc
 	local e5=Effect.CreateEffect(e:GetHandler())
-	e5:SetDescription(aux.Stringid(id,2))
+	e5:SetDescription(aux.Stringid(id,3))
 	e5:SetType(EFFECT_TYPE_FIELD)
 	e5:SetCode(EFFECT_SUMMON_PROC)
 	e5:SetTargetRange(LOCATION_HAND,0)
@@ -41,6 +40,21 @@ function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	e5:SetValue(SUMMON_TYPE_ADVANCE)
 	e5:SetReset(EVENT_PHASE+PHASE_END)
 	Duel.RegisterEffect(e5,tp)
+	--reset
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetCountLimit(1)
+	e1:SetLabelObject(e5)
+	e1:SetOperation(s.resetop)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function s.resetop(e,tp,eg,ep,ev,re,r,rp)
+	local resete=e:GetLabelObject()
+	if resete then
+		resete:Reset()
+	end
 end
 function s.exfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x1a4) and c:IsAbleToGrave()

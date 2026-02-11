@@ -1,6 +1,6 @@
 function c98920814.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsLevel,6),2,2)
+	aux.AddXyzProcedure(c,nil,6,2)
 	c:EnableReviveLimit()
 	--atk change and gain
 	local e1=Effect.CreateEffect(c)
