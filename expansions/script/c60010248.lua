@@ -53,8 +53,142 @@ function cm.pkop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 		end
 	end
+	--not immune
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_ADJUST)
+	e5:SetOperation(cm.adjustop)
+	e5:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e5,tp)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e6:SetCode(m)
+	e6:SetTargetRange(1,1)
+	e6:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e6,tp)
 end
-
+function cm.nmfilter(c)
+	return c:IsHasEffect(EFFECT_INDESTRUCTABLE_EFFECT) or c:IsHasEffect(EFFECT_CANNOT_BE_EFFECT_TARGET) or c:IsHasEffect(EFFECT_INDESTRUCTABLE) or c:IsHasEffect(EFFECT_INDESTRUCTABLE_BATTLE) or c:IsHasEffect(EFFECT_INDESTRUCTABLE_COUNT) or c:IsHasEffect(EFFECT_CANNOT_BE_BATTLE_TARGET) or c:IsHasEffect(EFFECT_IGNORE_BATTLE_TARGET) or c:IsHasEffect(EFFECT_IMMUNE_EFFECT)
+end
+function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(cm.nmfilter,tp,0xff,0xff,nil)
+	local opt=0
+	for tc in aux.Next(g) do
+		local eset1={tc:IsHasEffect(EFFECT_INDESTRUCTABLE_EFFECT)}
+		local eset2={tc:IsHasEffect(EFFECT_CANNOT_BE_EFFECT_TARGET)}
+		local eset3={tc:IsHasEffect(EFFECT_INDESTRUCTABLE_BATTLE)}
+		local eset4={tc:IsHasEffect(EFFECT_CANNOT_BE_BATTLE_TARGET)}
+		local eset5={tc:IsHasEffect(EFFECT_INDESTRUCTABLE_COUNT)}
+		local eset6={tc:IsHasEffect(EFFECT_IGNORE_BATTLE_TARGET)}
+		local eset7={tc:IsHasEffect(EFFECT_INDESTRUCTABLE)}
+		local eset8={tc:IsHasEffect(EFFECT_IMMUNE_EFFECT)}
+		for _,te in pairs(eset1) do
+			if te:IsHasType(EFFECT_TYPE_FIELD) then
+				local tg=te:GetTarget() or aux.TRUE
+				te:SetTarget(cm.chtg(tg,e))
+				opt=1
+			else
+				local con=te:GetCondition() or aux.TRUE
+				te:SetCondition(cm.chcon(con,e))
+				opt=1
+			end
+		end
+		for _,te in pairs(eset2) do
+			if te:IsHasType(EFFECT_TYPE_FIELD) then
+				local tg=te:GetTarget() or aux.TRUE
+				te:SetTarget(cm.chtg(tg,e))
+				opt=1
+			else
+				local con=te:GetCondition() or aux.TRUE
+				te:SetCondition(cm.chcon(con,e))
+				opt=1
+			end
+		end
+		for _,te in pairs(eset3) do
+			if te:IsHasType(EFFECT_TYPE_FIELD) then
+				local tg=te:GetTarget() or aux.TRUE
+				te:SetTarget(cm.chtg(tg,e))
+				opt=1
+			else
+				local con=te:GetCondition() or aux.TRUE
+				te:SetCondition(cm.chcon(con,e))
+				opt=1
+			end
+		end
+		for _,te in pairs(eset4) do
+			if te:IsHasType(EFFECT_TYPE_FIELD) then
+				local tg=te:GetTarget() or aux.TRUE
+				te:SetTarget(cm.chtg(tg,e))
+				opt=1
+			else
+				local con=te:GetCondition() or aux.TRUE
+				te:SetCondition(cm.chcon(con,e))
+				opt=1
+			end
+		end
+		for _,te in pairs(eset5) do
+			if te:IsHasType(EFFECT_TYPE_FIELD) then
+				local tg=te:GetTarget() or aux.TRUE
+				te:SetTarget(cm.chtg(tg,e))
+				opt=1
+			else
+				local con=te:GetCondition() or aux.TRUE
+				te:SetCondition(cm.chcon(con,e))
+				opt=1
+			end
+		end
+		for _,te in pairs(eset6) do
+			if te:IsHasType(EFFECT_TYPE_FIELD) then
+				local tg=te:GetTarget() or aux.TRUE
+				te:SetTarget(cm.chtg(tg,e))
+				opt=1
+			else
+				local con=te:GetCondition() or aux.TRUE
+				te:SetCondition(cm.chcon(con,e))
+				opt=1
+			end
+		end
+		for _,te in pairs(eset7) do
+			if te:IsHasType(EFFECT_TYPE_FIELD) then
+				local tg=te:GetTarget() or aux.TRUE
+				te:SetTarget(cm.chtg(tg,e))
+				opt=1
+			else
+				local con=te:GetCondition() or aux.TRUE
+				te:SetCondition(cm.chcon(con,e))
+				opt=1
+			end
+		end
+		for _,te in pairs(eset8) do
+			if te:IsHasType(EFFECT_TYPE_FIELD) then
+				local tg=te:GetTarget() or aux.TRUE
+				te:SetTarget(cm.chtg(tg,e))
+				opt=1
+			else
+				local con=te:GetCondition() or aux.TRUE
+				te:SetCondition(cm.chcon(con,e))
+				opt=1
+			end
+		end
+	end
+	if opt==1 then Duel.Readjust() end
+end
+function cm.chtg(_tg,ce)
+	return function(e,c,...)
+				if Duel.IsPlayerAffectedByEffect(c:GetControler(),m) then return false end
+				return _tg(e,c,...)
+			end
+end
+function cm.chcon(_con,ce)
+	return function(e,...)
+				local tp=e:GetHandler():GetControler()
+				if e:IsHasType(EFFECT_TYPE_EQUIP) then tp=e:GetHandler():GetEquipTarget():GetControler() end
+				if Duel.IsPlayerAffectedByEffect(tp,m) then return false end
+				return _con(e,...)
+			end
+end
 function cm.cfilter(c,g)
 	return g:IsContains(c) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
 end
