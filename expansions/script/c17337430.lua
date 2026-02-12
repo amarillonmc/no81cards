@@ -26,7 +26,7 @@ function s.initial_effect(c)
 end
 
 function s.tgfilter(c)
-	return c:IsCode(17337400) and c:IsAbleToGrave()
+	return c:IsCode(17337400) and c:IsAbleToGraveAsCost()
 end
 
 function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)

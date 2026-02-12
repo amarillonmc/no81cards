@@ -1,3 +1,4 @@
+-- 半魔的忠仆
 local s,id=GetID()
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
@@ -30,25 +31,25 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
+function s.cfilter(c)
+	return c:IsSetCard(0x3f50) and c:IsFaceup()
+end
+
 function s.tfilter(c,tp)
 	return c:IsSetCard(0x3f50) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsControler(tp)
 end
-
 function s.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttackTarget()
 	return tc and s.tfilter(tc,tp)
 end
-
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	return g and g:GetCount()==1 and s.tfilter(g:GetFirst(),tp)
 end
-
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetMZoneCount(tp)>0 
 		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	
 	local tc=nil
 	if e:GetCode()==EVENT_BE_BATTLE_TARGET then
 		tc=Duel.GetAttackTarget()
@@ -57,16 +58,13 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		tc=g:GetFirst()
 	end
 	e:SetLabelObject(tc)
-	
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,tc,1,0,0)
 end
-
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=e:GetLabelObject() 
 	if not c:IsRelateToEffect(e) then return end
-
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 then
 		if c:IsDefensePos() and tc and tc:IsLocation(LOCATION_MZONE) and tc:IsControler(tp) then
 			if tc:IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
@@ -78,7 +76,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.thfilter(c)
-	return c:IsSetCard(0x3f50) and c:IsFaceupEx() and c:IsAbleToHand()
+	return c:IsSetCard(0x3f50) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -93,14 +91,17 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
+
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget() 
 	if not tc or not tc:IsRelateToEffect(e) then return end
-	if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) then
+
+	if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA) then
 		if not c:IsRelateToEffect(e) then return end
+
 		if Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP) then
-			if Duel.IsExistingMatchingCard(aux.FilterBoolFunction(Card.IsSetCard,0x3f50),tp,LOCATION_MZONE,0,1,c) then
+			if Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,c) then
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
 				e1:SetCode(EFFECT_UPDATE_ATTACK)
