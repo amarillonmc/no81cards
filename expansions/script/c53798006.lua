@@ -25,7 +25,7 @@ function c53798006.xyzop(e,tp,chk)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
 function c53798006.valcheck(e,c)
-	e:GetLabelObject():SetLabel(c:GetMaterial():GetSum(Card.GetAttack()))
+	e:GetLabelObject():SetLabel(c:GetMaterial():GetSum(Card.GetAttack))
 end
 function c53798006.desop(e,tp,eg,ep,ev,re,r,rp)
 	local atk=e:GetLabel()

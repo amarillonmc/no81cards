@@ -73,7 +73,7 @@ function c28368431.regop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetLP(tp,3000)
 end
 function c28368431.cfilter(c)
-	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:IsReason(REASON_BATTLE+REASON_EFFECT)
+	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousPosition(POS_FACEUP) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsType(TYPE_TOKEN)
 end
 function c28368431.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:Filter(c28368431.cfilter,nil):GetSum(Card.GetPreviousAttackOnField)+eg:Filter(c28368431.cfilter,nil):GetSum(Card.GetPreviousDefenseOnField)>=Duel.GetLP(tp) and not eg:IsContains(e:GetHandler())
