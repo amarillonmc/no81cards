@@ -51,11 +51,11 @@ function s.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	else op=Duel.SelectOption(tp,aux.Stringid(id,1))+1 end
 	e:SetLabel(op)
 	if op==0 then
-		Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(65810040,0))
+		Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(65814090,0))
 		e:SetCategory(CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 	else
-		Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(65810040,1))
+		Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(65814090,1))
 		e:SetCategory(CATEGORY_GRAVE_ACTION+CATEGORY_TODECK)
 		Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 	end

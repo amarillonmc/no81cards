@@ -59,9 +59,12 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 	if chk==0 then return #g>0 end
 end
+function s.cfilter11(c,tp)
+	return not c:IsHasEffect(EFFECT_LEAVE_FIELD_REDIRECT)
+end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsHasEffect,tp,0,LOCATION_ONFIELD,nil,EFFECT_LEAVE_FIELD_REDIRECT)
+	local g=Duel.GetMatchingGroup(cfilter11,tp,0,LOCATION_ONFIELD,nil)
 	for tc in aux.Next(g) do
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(id,0))
@@ -70,7 +73,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(LOCATION_GRAVE)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE)
-		tc:RegisterEffect(e1,true)
+		tc:RegisterEffect(e1)
 	end
 end
 
@@ -103,7 +106,7 @@ function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.activate1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsHasEffect,tp,0,LOCATION_ONFIELD,nil,EFFECT_LEAVE_FIELD_REDIRECT)
+	local g=Duel.GetMatchingGroup(cfilter11,tp,0,LOCATION_ONFIELD,nil)
 	for tc in aux.Next(g) do
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(id,1))
@@ -112,7 +115,7 @@ function s.activate1(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(LOCATION_REMOVED)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
-		tc:RegisterEffect(e1,true)
+		tc:RegisterEffect(e1)
 	end
 end
 
@@ -125,7 +128,7 @@ function s.mecon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsHasEffect,tp,0,LOCATION_ONFIELD,nil,EFFECT_LEAVE_FIELD_REDIRECT)
+	local g=Duel.GetMatchingGroup(cfilter11,tp,0,LOCATION_ONFIELD,nil)
 	for tc in aux.Next(g) do
 		local e1=Effect.CreateEffect(c)
 		e1:SetDescription(aux.Stringid(id,2))
@@ -134,6 +137,6 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(LOCATION_DECK)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_SET_AVAILABLE)
-		tc:RegisterEffect(e1,true)
+		tc:RegisterEffect(e1)
 	end
 end
