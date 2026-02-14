@@ -6,7 +6,7 @@ function c12856070.initial_effect(c)
 	aux.AddCodeList(c,12856000)
 	--position
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_POSITION)
+	e1:SetCategory(CATEGORY_POSITION+CATEGORY_MSET)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCost(c12856070.cost)

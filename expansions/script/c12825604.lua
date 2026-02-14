@@ -6,7 +6,7 @@ function c12825604.initial_effect(c)
 	c:EnableReviveLimit()
 	chiki.c4a71Limit(c)
 	chiki.c4a71tohand(c,c12825604.tgtg,c12825604.tgop,CATEGORY_TOGRAVE)
-	chiki.c4a71kang2(c,nil,c12825604.settg,c12825604.setop,nil,12825604,1109,12825609)
+	chiki.c4a71kang2(c,nil,c12825604.settg,c12825604.setop,CATEGORY_SSET,12825604,1109,12825609)
 end
 function c12825604.filter(c)
 	return c:IsSetCard(0x4a76) and c:IsType(TYPE_QUICKPLAY) and c:IsSSetable()

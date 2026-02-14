@@ -4,7 +4,7 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,12825604)
 	chiki.c4a71rankup(c,s.filter1,s.filter2,12825609)
-	chiki.chikiav(c,nil,nil,s.effcon,s.target,s.operation,nil,12825609,1102)
+	chiki.chikiav(c,nil,nil,s.effcon,s.target,s.operation,CATEGORY_SSET,12825609,1102)
 end
 function s.filter1(c)
 	return c:IsFaceup() and c:IsSetCard(0x4a76) and not c:IsCode(12825604)

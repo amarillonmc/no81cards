@@ -30,7 +30,7 @@ function c12852005.initial_effect(c)
 	--turnset
 	local e21=Effect.CreateEffect(c)
 	e21:SetDescription(aux.Stringid(12852005,0))
-	e21:SetCategory(CATEGORY_POSITION)
+	e21:SetCategory(CATEGORY_POSITION+CATEGORY_MSET)
 	e21:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e21:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e21:SetRange(LOCATION_MZONE)

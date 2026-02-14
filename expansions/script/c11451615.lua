@@ -120,8 +120,10 @@ function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.ceop(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,nil)
-	local g2=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
+	local exc=nil
+	if re:IsHasType(EFFECT_TYPE_ACTIVATE) and not re:GetHandler():IsType(TYPE_CONTINUOUS) then exc=aux.ExceptThisCard(re) end
+	local g1=Duel.GetMatchingGroup(nil,rp,LOCATION_ONFIELD,0,exc)
+	local g2=Duel.GetMatchingGroup(nil,rp,0,LOCATION_ONFIELD,nil)
 	if ep~=tp and #g1>0 and #g2>0 and Duel.SelectYesNo(tp,aux.Stringid(m,1)) then
 		Duel.Hint(HINT_CARD,0,m)
 		local g=Group.CreateGroup()
@@ -131,7 +133,9 @@ function cm.ceop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
-	local g1=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,nil)
+	local exc=nil
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and not e:GetHandler():IsType(TYPE_CONTINUOUS) then exc=aux.ExceptThisCard(e) end
+	local g1=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,0,exc)
 	local g2=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
 	if #g1>0 and #g2>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
