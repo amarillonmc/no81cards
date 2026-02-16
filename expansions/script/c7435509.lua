@@ -37,6 +37,7 @@ function s.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1)
+	e3:SetCost(s.lvcost)
 	e3:SetOperation(s.lvop)
 	c:RegisterEffect(e3)
 end
@@ -59,6 +60,10 @@ function s.thorspfilter(c,e,tp)
 	if not c:IsCode(7435501) or not c:IsLevel(5) then return false end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	return c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
+end
+function s.lvcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDiscardDeckAsCost(tp,1) end
+	Duel.DiscardDeck(tp,1,REASON_COST)
 end
 function s.lvop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
