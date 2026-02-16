@@ -91,7 +91,7 @@ function c111443942.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c111443942.sdfilter(c)
-	return not c:IsOriginalCodeRule(23912837)
+	return not c:IsOriginalCodeRule(23912837,34950192)
 end
 function c111443942.sdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler():GetOwner()
@@ -99,10 +99,10 @@ function c111443942.sdop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	while tc do
 		if tc:GetFlagEffect(111443942)==0 then
-			local code=tc:GetOriginalCode()
 			local ae=tc:GetActivateEffect()
-			local oath=0
-			if c111443942.sdfilter(tc) then oath=EFFECT_COUNT_CODE_OATH end
+			--local code=tc:GetOriginalCode()
+			--local oath=0
+			--if c111443942.sdfilter(tc) then oath=EFFECT_COUNT_CODE_OATH end
 			local e1=ae:Clone() --Effect.CreateEffect(tc)
 			--e1:SetType(EFFECT_TYPE_ACTIVATE)
 			--e1:SetCode(ae:GetCode())
