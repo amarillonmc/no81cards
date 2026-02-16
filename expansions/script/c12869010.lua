@@ -17,10 +17,17 @@ function c12869010.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
+	e2:SetCondition(c12869010.icon)
 	e2:SetCost(c12869010.spcost1)
 	e2:SetTarget(c12869010.sptg1)
 	e2:SetOperation(c12869010.spop1)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCondition(c12869010.qcon)
+	e3:SetTarget(c12869010.qtg)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e3)
 end
 function c12869010.filter(c,e,tp,sc)
 	if not c:IsType(TYPE_LINK) then return false end
@@ -72,13 +79,12 @@ function c12869010.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(c,0,tp,sump,false,false,POS_FACEUP,sel_zone)
 		if tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
 		local e1=Effect.CreateEffect(c)
-		e1:SetDescription(aux.Stringid(12869010,2))
-		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 		e1:SetValue(500)
 		tc:RegisterEffect(e1)
+		tc:RegisterFlagEffect(12869011,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(12869010,2))
 	end
 end
 function c12869010.costfilter(c)
@@ -103,4 +109,21 @@ function c12869010.spop1(e,tp,eg,ep,ev,re,r,rp)
 		end
 	Duel.SpecialSummonComplete()
 	end
+end
+function c12869010.icon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(12869010)==0 or e:GetHandler():IsOriginalCodeRule(12869095) and not Duel.IsEnvironment(12869005)
+end
+function c12869010.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(12869010)>0 and Duel.IsEnvironment(12869005)
+end
+function c12869010.qtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and Duel.IsPlayerCanSpecialSummonMonster(tp,12869000,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_WATER) end
+	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,2,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,0,0)
+	if e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) then
+		Duel.SetChainLimit(c12869010.chainlm)
+	end
+end
+function c12869010.chainlm(e,ep,tp)
+	return tp==ep
 end

@@ -1,7 +1,6 @@
 -- 加菲尔
 local s,id=GetID()
 function s.initial_effect(c)
-
 	aux.AddCodeList(c,17337426)
 	
 	c:EnableReviveLimit()

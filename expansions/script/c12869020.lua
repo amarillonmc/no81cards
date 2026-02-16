@@ -18,9 +18,16 @@ function c12869020.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
 	e2:SetCost(c12869020.spcost1)
+	e2:SetCondition(c12869020.icon)
 	e2:SetTarget(c12869020.sptg1)
 	e2:SetOperation(c12869020.spop1)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCondition(c12869020.qcon)
+	e3:SetTarget(c12869020.qtg)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e3)
 end
 function c12869020.filter(c,e,tp,sc)
 	if not c:IsType(TYPE_LINK) then return false end
@@ -110,4 +117,21 @@ function c12869020.spop1(e,tp,eg,ep,ev,re,r,rp)
 		end
 	Duel.SpecialSummonComplete()
 	end
+end
+function c12869020.icon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(12869020)==0 or e:GetHandler():IsOriginalCodeRule(12869095) and not Duel.IsEnvironment(12869005)
+end
+function c12869020.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(12869020)>0 and Duel.IsEnvironment(12869005)
+end
+function c12869020.qtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and Duel.IsPlayerCanSpecialSummonMonster(tp,12869000,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_WATER) end
+	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,2,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,0,0)
+	if e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) then
+		Duel.SetChainLimit(c12869020.chainlm)
+	end
+end
+function c12869020.chainlm(e,ep,tp)
+	return tp==ep
 end

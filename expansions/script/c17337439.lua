@@ -1,8 +1,6 @@
--- 半魔的骑士演讲
 local s,id=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,17337400)
-
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
@@ -13,7 +11,6 @@ function s.initial_effect(c)
 	e1:SetTarget(s.target1)
 	e1:SetOperation(s.activate1)
 	c:RegisterEffect(e1)
-
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
@@ -25,23 +22,18 @@ function s.initial_effect(c)
 	e2:SetOperation(s.activate2)
 	c:RegisterEffect(e2)
 end
-
 function s.chkfilter1(c)
 	return c:IsCode(17337400) and (c:IsFaceup() or not c:IsLocation(LOCATION_MZONE))
 end
-
 function s.target1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and chkc:IsFaceup() end
-
 	if chk==0 then 
 		return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_MZONE,0,1,nil)
 			and Duel.IsExistingMatchingCard(s.chkfilter1,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
 	end
-
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,Card.IsFaceup,tp,LOCATION_MZONE,0,1,99,nil)
 end
-
 function s.activate1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
@@ -49,7 +41,6 @@ function s.activate1(e,tp,eg,ep,ev,re,r,rp)
 	if #cg>0 then
 		Duel.ConfirmCards(1-tp,cg)
 		if cg:GetFirst():IsLocation(LOCATION_HAND) then Duel.ShuffleHand(tp) end
-
 		local tg=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
 		if #tg>0 then
 			for tc in aux.Next(tg) do
@@ -62,7 +53,6 @@ function s.activate1(e,tp,eg,ep,ev,re,r,rp)
 				local e2=e1:Clone()
 				e2:SetCode(EFFECT_UPDATE_DEFENSE)
 				tc:RegisterEffect(e2)
-
 				local e3=Effect.CreateEffect(c)
 				e3:SetType(EFFECT_TYPE_SINGLE)
 				e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -79,7 +69,6 @@ end
 function s.indval(e,re,r,rp)
 	return (r&REASON_BATTLE+REASON_EFFECT)~=0
 end
-
 function s.thfilter2(c,e,tp,ft)
 	return c:IsCode(17337400) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
@@ -100,8 +89,7 @@ function s.activate2(e,tp,eg,ep,ev,re,r,rp)
 		local op=0
 		if b1 and b2 then op=Duel.SelectOption(tp,1190,1152)
 		elseif b1 then op=0
-		else op=1 end
-		
+		else op=1 end		
 		if op==0 then
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,tc)

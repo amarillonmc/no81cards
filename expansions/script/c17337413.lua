@@ -1,7 +1,6 @@
 --半魔的伯爵
 local s,id,o=GetID()
 function s.initial_effect(c)
-	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_HANDES+CATEGORY_SEARCH)
@@ -19,7 +18,6 @@ function s.initial_effect(c)
 	e4:SetCondition(s.spcon2)
 	c:RegisterEffect(e4)
 	
-	--discard and apply effect (ignition)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_DISABLE+CATEGORY_TOHAND)
@@ -32,7 +30,7 @@ function s.initial_effect(c)
 	e2:SetTarget(s.distg)
 	e2:SetOperation(s.disop)
 	c:RegisterEffect(e2)
-	--discard and apply effect (quick)
+	
 	local e3=e2:Clone()
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
@@ -42,10 +40,15 @@ function s.initial_effect(c)
 end
 
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(function(c) 
-		return c:IsSetCard(0x3f50) and c:IsControler(tp) 
-	end, 1, nil)
+	return eg:IsExists(function(c)
+		if not (c:IsControler(tp) and c:IsSetCard(0x3f50)) then return false end
+		if c:IsLocation(LOCATION_ONFIELD) then
+			return c:IsFaceup()
+		end
+		return c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
+	end,1,nil)
 end
+
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local at=Duel.GetAttackTarget()
 	return at and at:IsFaceup() and at:IsControler(tp) and at:IsSetCard(0x3f50)
@@ -64,18 +67,15 @@ function s.check_field(c)
 end
 
 function s.thfilter(c,tp)
-	if not (c:IsSetCard(0x3f50) and c:IsAbleToHand() and c:IsFaceupEx()) then return false end
-	
+	if not (c:IsSetCard(0x3f50) and c:IsAbleToHand() and c:IsFaceupEx()) then return false end	
 	local hand_g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
-
 	if c:IsLocation(LOCATION_DECK) then
 		return hand_g:IsExists(Card.IsType,1,nil,TYPE_MONSTER) or c:IsType(TYPE_MONSTER)
 	elseif c:IsLocation(LOCATION_GRAVE) then
 		return hand_g:IsExists(Card.IsType,1,nil,TYPE_SPELL) or c:IsType(TYPE_SPELL)
 	elseif c:IsLocation(LOCATION_REMOVED) then
 		return hand_g:IsExists(Card.IsType,1,nil,TYPE_TRAP) or c:IsType(TYPE_TRAP)
-	end
-	
+	end	
 	return false
 end
 
@@ -96,13 +96,11 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			if not codes[code] then
 				codes[code]=true
 			end
-		end
-		
+		end		
 		local count=0
 		for _ in pairs(codes) do
 			count=count+1
 		end
-
 		if count>=3 then
 			local tg=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,tp)
 			if tg:GetCount()>0 then
@@ -120,15 +118,11 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 						elseif loc==3 then
 							discard_type=TYPE_TRAP
 						end
-
 						if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 then
 							Duel.ConfirmCards(1-tp,tc)
-
 							if discard_type~=0 then
-
 								local hand=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
-								local discard_g=hand:Filter(Card.IsType,nil,discard_type)
-								
+								local discard_g=hand:Filter(Card.IsType,nil,discard_type)								
 								if discard_g:GetCount()>0 then
 									Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
 									local discard_sg=discard_g:Select(tp,1,1,nil)
@@ -154,7 +148,6 @@ end
 function s.desonfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3f50) and not c:IsCode(id)
 end
-
 function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
@@ -167,7 +160,6 @@ function s.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(typ)
 	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
 end
-
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsFaceup() end
 	if chk==0 then return Duel.IsExistingTarget(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
@@ -182,7 +174,6 @@ function s.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	end
 end
-
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	local typ=e:GetLabel()

@@ -58,6 +58,7 @@ function c11513086.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(c11513086.adjustopfilter,tp,LOCATION_EXTRA,LOCATION_EXTRA,nil)
 	local tc=sg:GetFirst()
 	while tc do
+		if (not tc:GetFlagEffect(11513086)) or tc:GetFlagEffect(11513086)==0 then
 		local e0=Effect.CreateEffect(tc)
 		e0:SetDescription(aux.Stringid(11514086,2))
 		e0:SetType(EFFECT_TYPE_FIELD)
@@ -70,6 +71,7 @@ function c11513086.adjustop(e,tp,eg,ep,ev,re,r,rp)
 		e0:SetValue(SUMMON_TYPE_SYNCHRO)
 		tc:RegisterEffect(e0)
 		tc:RegisterFlagEffect(11513086,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1,1)
+		end
 		tc=sg:GetNext()
 	end
 end
@@ -175,9 +177,9 @@ function c11513086.syntg(e,tp,eg,ep,ev,re,r,rp,chk,c,tuner,mg)
 		g2=mg:Filter(c11513086.matfilter2,nil,c)
 		g3=g2:Clone()
 	else
-		g1=Duel.GetMatchingGroup(c11513086.matfilter1,tp,LOCATION_MZONE+LOCATION_SZONE,LOCATION_MZONE,nil,c,tp)
-		g2=Duel.GetMatchingGroup(c11513086.matfilter2,tp,LOCATION_MZONE+LOCATION_SZONE,LOCATION_MZONE,nil,c)
-		g3=Duel.GetMatchingGroup(c11513086.matfilter2,tp,LOCATION_MZONE+LOCATION_HAND,LOCATION_MZONE,nil,c)
+		g1=Duel.GetMatchingGroup(c11513086.matfilter1,tp,LOCATION_MZONE+LOCATION_SZONE,0,nil,c,tp)
+		g2=Duel.GetMatchingGroup(c11513086.matfilter2,tp,LOCATION_MZONE+LOCATION_SZONE,0,nil,c)
+		g3=Duel.GetMatchingGroup(c11513086.matfilter2,tp,LOCATION_MZONE+LOCATION_HAND,0,nil,c)
 	end
 	local pe=Duel.IsPlayerAffectedByEffect(tp,EFFECT_MUST_BE_SMATERIAL)
 	local lv=c:GetLevel()

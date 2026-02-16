@@ -3,9 +3,7 @@ local s,id=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,17337400)
 	c:EnableReviveLimit()
-
 	aux.AddLinkProcedure(c,nil,2,2,s.lcheck)
-
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_TOHAND)

@@ -80,13 +80,11 @@ function s.chainop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-
 function s.chainop2(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetHandler():IsSetCard(0x3f50) and ep==tp then
 		Duel.SetChainLimit(s.chainlm)
 	end
 end
-
 function s.chainlm(e,rp,tp)
 	return tp==rp or tp~=e:GetHandlerPlayer()
 end

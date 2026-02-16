@@ -54,7 +54,7 @@ function cm.initial_effect(c)
 	--fusion
 	local e7=Effect.CreateEffect(c)
 	e7:SetDescription(aux.Stringid(11513094,3))
-	e7:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_TODECK)
+	e7:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e7:SetType(EFFECT_TYPE_QUICK_O)
 	e7:SetCode(EVENT_CHAINING)
 	e7:SetRange(LOCATION_EXTRA)
@@ -332,14 +332,6 @@ function c11513094.fsop1(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
-		if Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Select(tp,1,1,nil)
-			if g:GetCount()>0 then
-				Duel.BreakEffect()
-				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-			end
-		end
 	end 
 end
 function c11513094.fsop2(e,tp,eg,ep,ev,re,r,rp)
@@ -374,14 +366,6 @@ function c11513094.fsop2(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
-		if Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Select(tp,1,1,nil)
-			if g:GetCount()>0 then
-				Duel.BreakEffect()
-				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-			end
-		end
 	end
 end
 function c11513094.fsop3(e,tp,eg,ep,ev,re,r,rp)
@@ -416,14 +400,6 @@ function c11513094.fsop3(e,tp,eg,ep,ev,re,r,rp)
 			fop(ce,e,tp,tc,mat2)
 		end
 		tc:CompleteProcedure()
-		if Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-			local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Select(tp,1,1,nil)
-			if g:GetCount()>0 then
-				Duel.BreakEffect()
-				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-			end
-		end
 	end
 end
 function c11513094.regop(e,tp,eg,ep,ev,re,r,rp)

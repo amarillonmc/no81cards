@@ -1,4 +1,3 @@
--- 菜月昴
 local s,id=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,17337400)

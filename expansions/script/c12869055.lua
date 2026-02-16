@@ -25,14 +25,21 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_SSET)
 	e2:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
 	e2:SetCost(s.sscost)
+	e2:SetCondition(s.icon)
 	e2:SetTarget(s.sstg)
 	e2:SetOperation(s.ssop)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCondition(s.qcon)
+	e3:SetTarget(s.qtg)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e3)
 end
 function s.valcheck(e,c)
 	local g=c:GetMaterial()
@@ -107,4 +114,20 @@ function s.ssop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SSet(tp,tc)
 		end
 	end
+end
+function s.icon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(id)==0 or e:GetHandler():IsOriginalCodeRule(12869095) and not Duel.IsEnvironment(12869005)
+end
+function s.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(id)>0 and Duel.IsEnvironment(12869005)
+end
+function s.qtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end
+	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(12869055,3))
+	if e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) then
+		Duel.SetChainLimit(s.chainlm)
+	end
+end
+function s.chainlm(e,ep,tp)
+	return tp==ep
 end

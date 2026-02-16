@@ -1,6 +1,5 @@
 --半魔的坚盾
 function c17337426.initial_effect(c)
-	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(17337426,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -17,7 +16,6 @@ function c17337426.initial_effect(c)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetCondition(c17337426.spcon2)
 	c:RegisterEffect(e2)
-	--to deck
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(17337426,1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TODECK+CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
@@ -29,24 +27,29 @@ function c17337426.initial_effect(c)
 	e3:SetOperation(c17337426.tdop)
 	c:RegisterEffect(e3)
 end
+
 function c17337426.tfilter(c,tp)
 	return c:IsSetCard(0x3f50) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsControler(tp)
 end
+
 function c17337426.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttackTarget()
 	return tc and c17337426.tfilter(tc,tp)
 end
+
 function c17337426.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	if not g or g:GetCount()~=1 then return false end
 	return c17337426.tfilter(g:GetFirst(),tp)
 end
+
 function c17337426.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
+
 function c17337426.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToChain() or Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 or c:IsDefensePos() then return end
@@ -77,8 +80,7 @@ function c17337426.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 			and Duel.IsExistingTarget(c17337426.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,c,tp) 
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c17337426.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,c,tp)
-	
+	local g=Duel.SelectTarget(tp,c17337426.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,c,tp)	
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
@@ -86,8 +88,7 @@ end
 function c17337426.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget() 
-	if not tc or not tc:IsRelateToEffect(e) then return end
-	
+	if not tc or not tc:IsRelateToEffect(e) then return end	
 	if Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
 		if not c:IsRelateToEffect(e) then return end
 		if Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP) then

@@ -3,6 +3,7 @@ local s,id=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,17337409,17337411)
 	c:EnableReviveLimit()
+	
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x3f50),5,2,nil,nil,99)
 
 	local e1=Effect.CreateEffect(c)

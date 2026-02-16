@@ -32,6 +32,12 @@ function s.initial_effect(c)
 	e2:SetCost(s.imcost)
 	e2:SetOperation(s.imop)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCondition(s.qcon)
+	e3:SetTarget(s.qtg)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e3)
 end
 function s.valcheck(e,c)
 	local g=c:GetMaterial()
@@ -131,4 +137,19 @@ function s.imop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
+end
+function s.icon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(id)==0 or e:GetHandler():IsOriginalCodeRule(12869095) and not Duel.IsEnvironment(12869005)
+end
+function s.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(id)>0 and Duel.IsEnvironment(12869005)
+end
+function s.qtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	if e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) then
+		Duel.SetChainLimit(s.chainlm)
+	end
+end
+function s.chainlm(e,ep,tp)
+	return tp==ep
 end

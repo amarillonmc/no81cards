@@ -11,14 +11,14 @@ function c12869025.initial_effect(c)
 	e1:SetValue(1)
 	c:RegisterEffect(e1)
 	--link as level
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
+	--local e2=Effect.CreateEffect(c)
+	--e2:SetType(EFFECT_TYPE_SINGLE)
 	--e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e2:SetCode(EFFECT_ALLOW_SYNCHRO_KOISHI)
-	e2:SetValue(function(e,c)
-		return e:GetHandler():GetLink()
-	end)
-	c:RegisterEffect(e2)
+	--e2:SetCode(EFFECT_ALLOW_SYNCHRO_KOISHI)
+	--e2:SetValue(function(e,c)
+		--return e:GetHandler():GetLink()
+	--end)
+	--c:RegisterEffect(e2)
 	--add tuner type
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
@@ -38,6 +38,35 @@ function c12869025.initial_effect(c)
 	e4:SetTarget(c12869025.sptg)
 	e4:SetOperation(c12869025.spop)
 	c:RegisterEffect(e4)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_SYNCHRO_LEVEL_EX)
+	e0:SetRange(LOCATION_MZONE)
+	e0:SetValue(function(e) return e:GetHandler():GetLink() end)
+	c:RegisterEffect(e0)
+end
+function c12869025.syfilter(c)
+	return c:IsType(TYPE_SYNCHRO) and c:GetFlagEffect(id)==0
+end
+function c12869025.syntg(e,c)
+	if not c:IsType(TYPE_LINK) then return false end
+	for i=12869025,12869040 do
+		if c:IsOriginalSetCard(0x6a70) or c:IsHasEffect(i) then
+			return true
+		else
+			return false
+		end
+	end
+end
+function c12869025.mfilter(c)
+	if not c:IsType(TYPE_LINK) or c:GetFlagEffect(id)>0 then return false end
+	for i=12869025,12869040 do
+		if c:IsOriginalSetCard(0x6a70) or c:IsHasEffect(i) then
+			return true
+		else
+			return false
+		end
+	end
 end
 function c12869025.matfilter(c) 
 	return c:IsLinkSetCard(0x6a70) or c:IsCode(12869000)

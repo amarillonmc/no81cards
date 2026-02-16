@@ -30,9 +30,16 @@ function s.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e2:SetCountLimit(1)
 	e2:SetCost(s.thcost)
+	e2:SetCondition(s.icon)
 	e2:SetTarget(s.thtg)
 	e2:SetOperation(s.thop)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCondition(s.qcon)
+	e3:SetTarget(s.qtg)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e3)
 end
 function s.valcheck(e,c)
 	local g=c:GetMaterial()
@@ -103,4 +110,21 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+end
+function s.icon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(id)==0 or e:GetHandler():IsOriginalCodeRule(12869095) and not Duel.IsEnvironment(12869005)
+end
+function s.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(id)>0 and Duel.IsEnvironment(12869005)
+end
+function s.qtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(12869045,3))
+	if e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) then
+		Duel.SetChainLimit(s.chainlm)
+	end
+end
+function s.chainlm(e,ep,tp)
+	return tp==ep
 end

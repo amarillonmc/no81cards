@@ -56,7 +56,6 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if #g>0 then
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
 	end
-
 	local sg=Duel.GetMatchingGroup(s.chkfilter,tp,LOCATION_HAND+LOCATION_MZONE+LOCATION_GRAVE,0,nil)
 	local ct=math.min(1,sg:GetCount())
 	if ct==0 then return end

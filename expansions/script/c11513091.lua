@@ -3,25 +3,6 @@ local m=11513091
 local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--synchro custom
-	--synchro custom
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetCode(EFFECT_SYNCHRO_MATERIAL_CUSTOM)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCondition(c11513091.syncon)
-	e1:SetTarget(c11513091.syntg)
-	e1:SetValue(1)
-	e1:SetOperation(c11513091.synop)
-	c:RegisterEffect(e1)
-
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_SPSUM_PARAM)
-	e0:SetCondition(c11513091.syncon)
-	e0:SetCode(EFFECT_HAND_SYNCHRO)
-	e0:SetTarget(c11513091.syntfilter)
-	e0:SetTargetRange(0,1)
-	c:RegisterEffect(e0)
 	--special summon and synchro summon
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(11513091,0))
@@ -56,7 +37,36 @@ function cm.initial_effect(c)
 	e4:SetTarget(c11513091.sptg2)
 	e4:SetOperation(c11513091.spop2)
 	c:RegisterEffect(e4)
-	
+	--synchro level
+	local e7=Effect.CreateEffect(c)
+	e7:SetType(EFFECT_TYPE_SINGLE)
+	e7:SetCode(EFFECT_EXTRA_SYNCHRO_MATERIAL)
+	e7:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e7:SetRange(LOCATION_HAND)
+	e7:SetValue(1)
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetTargetRange(LOCATION_HAND,0)
+	--e6:SetTarget(c11513091.eftg)
+	e6:SetLabelObject(e7)
+	c:RegisterEffect(e6)
+	local e8=Effect.CreateEffect(c)
+	e8:SetType(EFFECT_TYPE_SINGLE)
+	e8:SetCode(EFFECT_TUNER_MATERIAL_LIMIT)
+	e8:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e8:SetTarget(c11513091.synlimit2)
+	c:RegisterEffect(e8)
+	local e9=Effect.CreateEffect(c)
+	e9:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e9:SetRange(LOCATION_MZONE)
+	e9:SetTargetRange(LOCATION_HAND,0)
+	e9:SetLabelObject(e8)
+	c:RegisterEffect(e9)
+end
+
+function c11513091.synlimit2(e,c)
+	return c:IsLocation(LOCATION_MZONE) and c:IsOriginalCodeRule(11513091)
 end
 function c11513091.syncon(e)
 	return e:GetHandler():IsLocation(LOCATION_MZONE)
@@ -150,7 +160,8 @@ end
 
 
 function c11513091.synfilter(c,syncard,tuner,f)
-	return c:IsFaceupEx() and c:IsCanBeSynchroMaterial(syncard,tuner) and (f==nil or f(c,syncard))
+	return c:IsFaceupEx() --and c:IsCanBeSynchroMaterial(syncard,tuner)
+ and (f==nil or f(c,syncard))
 end
 function c11513091.syncheck(c,g,mg,tp,lv,syncard,minc,maxc)
 	g:AddCard(c)
@@ -178,6 +189,25 @@ function c11513091.syntg(e,syncard,f,min,max)
 	local mg=Duel.GetSynchroMaterial(tp):Filter(c11513091.synfilter,c,syncard,c,f)
 	local exg=Duel.GetMatchingGroup(c11513091.synfilter,tp,LOCATION_HAND,0,c,syncard,c,f)
 	mg:Merge(exg)
+
+
+
+
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_EXTRA_SYNCHRO_MATERIAL)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,id)
+	e1:SetValue(s.matval)
+	c:RegisterEffect(e1)
+
+
+
+
+
+
+
 	return mg:IsExists(c11513091.syncheck,1,g,g,mg,tp,lv,syncard,minc,maxc)
 end
 function c11513091.synop(e,tp,eg,ep,ev,re,r,rp,syncard,f,min,max)

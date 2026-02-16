@@ -14,7 +14,6 @@ function s.initial_effect(c)
 	e1:SetTarget(s.atktg)
 	e1:SetOperation(s.atkop)
 	c:RegisterEffect(e1)
-
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY+CATEGORY_REMOVE+CATEGORY_TOKEN)
@@ -28,7 +27,6 @@ function s.initial_effect(c)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
 end
-
 function s.atkcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return not c:IsPublic() end
@@ -56,21 +54,16 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_UPDATE_DEFENSE)
 		tc:RegisterEffect(e2)
-
 		local g1=Duel.GetMatchingGroup(Card.IsCode,tp,LOCATION_MZONE,0,nil,17337435)
 		local g2=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-
 		if #g1>0 and #g2>1 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
-
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local dg1=g1:Select(tp,1,1,nil)
 			local tok=dg1:GetFirst()
-
 			g2:RemoveCard(tok)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-			local dg2=g2:Select(tp,1,1,nil)
-			
+			local dg2=g2:Select(tp,1,1,nil)			
 			dg1:Merge(dg2)
 			if #dg1==2 then
 				Duel.HintSelection(dg1)
@@ -79,7 +72,6 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(function(c)
 		return c:IsCode(17337402) and c:IsPreviousControler(tp) 

@@ -12,13 +12,11 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-
 	local e2=e1:Clone()
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetCondition(s.spcon2)
 	c:RegisterEffect(e2)
-
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,2))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
@@ -30,11 +28,9 @@ function s.initial_effect(c)
 	e3:SetOperation(s.thop)
 	c:RegisterEffect(e3)
 end
-
 function s.cfilter(c)
 	return c:IsSetCard(0x3f50) and c:IsFaceup()
 end
-
 function s.tfilter(c,tp)
 	return c:IsSetCard(0x3f50) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsControler(tp)
 end
@@ -74,7 +70,6 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-
 function s.thfilter(c)
 	return c:IsSetCard(0x3f50) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsAbleToHand()
 end
@@ -91,15 +86,12 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
-
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget() 
 	if not tc or not tc:IsRelateToEffect(e) then return end
-
 	if Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND+LOCATION_DECK+LOCATION_EXTRA) then
 		if not c:IsRelateToEffect(e) then return end
-
 		if Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP) then
 			if Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,c) then
 				local e1=Effect.CreateEffect(c)

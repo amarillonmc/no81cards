@@ -4,14 +4,12 @@ function s.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddCodeList(c,17337400,17337417) 
 	aux.AddFusionProcMix(c,true,17337417,17337400)
-
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e1:SetValue(aux.fuslimit)
 	c:RegisterEffect(e1)
-
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
 	e2:SetType(EFFECT_TYPE_QUICK_O)
@@ -23,7 +21,6 @@ function s.initial_effect(c)
 	e2:SetTarget(s.immtg)
 	e2:SetOperation(s.immop)
 	c:RegisterEffect(e2)
-
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCategory(CATEGORY_REMOVE)
@@ -36,11 +33,9 @@ function s.initial_effect(c)
 	e3:SetOperation(s.rmop)
 	c:RegisterEffect(e3)
 end
-
 function s.tdfilter(c)
 	return (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsAbleToDeck()
 end
-
 function s.immcon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp 
 end

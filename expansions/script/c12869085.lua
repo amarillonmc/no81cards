@@ -20,6 +20,12 @@ function s.initial_effect(c)
 	e2:SetCost(s.efcost)
 	e2:SetOperation(s.efop)
 	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCondition(s.qcon)
+	e3:SetTarget(s.qtg)
+	e3:SetType(EFFECT_TYPE_QUICK_O)
+	e3:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e3)
 end
 function s.filter(c,e,tp,sc)
 	if not c:IsType(TYPE_LINK) then return false end
@@ -75,6 +81,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EFFECT_CANNOT_TRIGGER)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
+		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
 	end
 end
 function s.costfilter(c,ec)
@@ -107,4 +114,19 @@ function s.efop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.tglimit(e,c)
 	return c:IsFaceup() and c:IsType(TYPE_SYNCHRO) and c:IsSetCard(0x6a70)
+end
+function s.icon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(id)==0 or e:GetHandler():IsOriginalCodeRule(12869095) and not Duel.IsEnvironment(12869005)
+end
+function s.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetFlagEffect(id)>0 and Duel.IsEnvironment(12869005)
+end
+function s.qtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	if e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) then
+		Duel.SetChainLimit(s.chainlm)
+	end
+end
+function s.chainlm(e,ep,tp)
+	return tp==ep
 end

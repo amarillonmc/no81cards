@@ -21,7 +21,7 @@ function c19209709.initial_effect(c)
 	--negate
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(19209709,1))
-	e2:SetCategory(CATEGORY_NEGATE+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_TOHAND)--CATEGORY_NEGATE
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
@@ -96,14 +96,14 @@ function c19209709.efilter(e,c,rp,r,re)
 	return c==e:GetLabelObject() and e:GetLabelObject():GetFlagEffect(19209709)~=0
 end
 function c19209709.discon(e,tp,eg,ep,ev,re,r,rp)
-	return ep==1-tp and re:IsHasCategory(CATEGORY_SPECIAL_SUMMON) and Duel.IsChainNegatable(ev)
+	return ep==1-tp and (re:IsHasCategory(CATEGORY_SEARCH) or re:IsHasCategory(CATEGORY_DRAW))-- and Duel.IsChainNegatable(ev)
 end
 function c19209709.thfilter(c,chk)
 	return c:IsCode(19209706) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsFaceupEx() and (chk==0 or aux.NecroValleyFilter()(c))-- and c:IsType(TYPE_SPELL+TYPE_TRAP)
 end
 function c19209709.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c19209709.thfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,0) end
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	--Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_MZONE+LOCATION_GRAVE)
 end
 function c19209709.disop(e,tp,eg,ep,ev,re,r,rp)
@@ -112,5 +112,5 @@ function c19209709.disop(e,tp,eg,ep,ev,re,r,rp)
 	if not tc then return end
 	Duel.HintSelection(Group.FromCards(tc))
 	if Duel.SendtoHand(tc,nil,REASON_EFFECT)==0 or not tc:IsLocation(LOCATION_HAND) then return end
-	Duel.NegateActivation(ev)
+	--Duel.NegateActivation(ev)
 end

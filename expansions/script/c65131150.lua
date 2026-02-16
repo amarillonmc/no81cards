@@ -1,6 +1,7 @@
 --秘计螺旋 腐化
 local s,id,o=GetID()
 function s.initial_effect(c)
+	c:SetUniqueOnField(1,0,id)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -135,7 +136,7 @@ function s.sfilter(c,tp)
 	return c:GetOriginalType()&(TYPE_SPELL+TYPE_TRAP)>0 and c:IsControler(tp) and not c:IsLocation(LOCATION_OVERLAY) and not c:IsType(TYPE_MONSTER) and c:GetReason()&REASON_REDIRECT==0 and c:GetFlagEffect(id)==0
 end
 function s.leavecon(e,tp,eg,ep,ev,re,r,rp)
-	return r&REASON_REDIRECT==0 and eg:FilterCount(s.sfilter,nil,tp)>0
+	return r&REASON_REDIRECT==0 and not eg:IsContains(e:GetHandler()) and eg:FilterCount(s.sfilter,nil,tp)>0
 end
 function s.leaveop(e,tp,eg,ep,ev,re,r,rp)
 	local g=eg:Filter(s.sfilter,nil,tp)

@@ -34,7 +34,7 @@ end
 
 -- === 效果① ===
 function s.nsfilter(c)
-	return c:IsAttribute(ATTRIBUTE_WATER) and c:IsSummonable(true,nil)
+	return c:IsSetCard(0x613) and c:IsSummonable(true,nil)
 end
 
 function s.thfilter(c)

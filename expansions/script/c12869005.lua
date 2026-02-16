@@ -28,17 +28,6 @@ function s.initial_effect(c)
 	e3:SetTarget(s.mattg)
 	e3:SetLabelObject(e2)
 	c:RegisterEffect(e3)
-	--to grave
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,2))
-	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
-	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1,id+1)
-	e2:SetTarget(s.tgtg)
-	e2:SetOperation(s.tgop)
-	--c:RegisterEffect(e2)
 end
 function s.thfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6a70)
@@ -64,25 +53,14 @@ function s.SynMixOperation(e,tp,eg,ep,ev,re,r,rp,c,smat,mg,min,max)
 	g:DeleteGroup()
 end
 function s.mattg(e,c)
-	return c:IsType(TYPE_SYNCHRO)
-end
-function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local c=e:GetHandler()
-	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and chkc~=c end
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,12869000,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_WATER) and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,0,1,c) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,0,1,1,c)
-	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,0)
-	Duel.SetOperationInfo(0,CATEGORY_TOKEN,nil,1,tp,0)
-end
-function s.tgop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.IsPlayerCanSpecialSummonMonster(tp,12869000,0,TYPES_TOKEN_MONSTER,0,0,1,RACE_AQUA,ATTRIBUTE_WATER) then
-		local token=Duel.CreateToken(tp,12869000)
-		local tc=Duel.GetFirstTarget()
-		if Duel.SpecialSummon(token,0,tp,tp,false,false,POS_FACEUP)>0 and tc:IsRelateToEffect(e) then
-			Duel.BreakEffect()
-			Duel.SendtoGrave(tc,REASON_EFFECT)
-		end
+	if not c:IsType(TYPE_SYNCHRO) then return false end
+	local tab={14000248,14010109,33730071,79029117,90700065,90700066,90700067,90700068,90700069,92361302,92361306,98731001}
+	for _,code in pairs(tab) do
+		if c:GetOriginalCode()==code then return false end
 	end
+	local eset={c:IsHasEffect(EFFECT_SPSUMMON_CONDITION)}
+	for _,te in pairs(eset) do
+		if te:GetOwner()==c and (te:GetValue()==0 or te:GetValue()==aux.FALSE) then return false end
+	end
+	return true
 end
