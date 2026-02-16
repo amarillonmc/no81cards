@@ -1,6 +1,5 @@
 --源于阴影 诘问
 local s,id,o=GetID()
-if not CATEGORY_SSET then CATEGORY_SSET=0 end
 function s.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
@@ -171,5 +170,6 @@ end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetHandler():IsRelateToEffect(e) then
 		Duel.SendtoHand(e:GetHandler(),nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,e:GetHandler())
 	end
 end

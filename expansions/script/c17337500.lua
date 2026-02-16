@@ -99,7 +99,7 @@ function s.sp_final_action(e,tp,eg,ep,ev,re,r,rp)
 		return 
 	end	
 	local c=e:GetOwner() 
-	if (c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_REMOVED))
+	if c:IsLocation(LOCATION_GRAVE) 
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) then
 		Duel.RegisterFlagEffect(tp,id+100,RESET_PHASE+PHASE_END,0,1)
