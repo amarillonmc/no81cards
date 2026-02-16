@@ -15,7 +15,7 @@ function c19209711.initial_effect(c)
 	--atk up
 	local e2=Effect.CreateEffect(c)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
-	e2:SetDescription(aux.Stringid(19209711,0))
+	e2:SetDescription(aux.Stringid(19209711,1))
 	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
