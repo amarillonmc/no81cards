@@ -88,7 +88,7 @@ function c98920576.thop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
-		if e:GetHandler():IsLocation(LOCATION_GRAVE) and Duel.SelectYesNo(tp,aux.Stringid(98920576,0)) then 
+		if e:GetHandler():IsRelateToChain() and Duel.SelectYesNo(tp,aux.Stringid(98920576,0)) then 
 		   local c=e:GetHandler()
 		   if not c:IsRelateToEffect(e) then return end
 		   if aux.NecroValleyNegateCheck(c) then return end
