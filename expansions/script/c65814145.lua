@@ -1,5 +1,7 @@
 --主宰之怒 守护者
 local s,id,o=GetID()
+if not CATEGORY_MSET then CATEGORY_MSET=0 end
+if not CATEGORY_SSET then CATEGORY_SSET=0 end
 function s.initial_effect(c)
 	--summon
 	local e1=Effect.CreateEffect(c)

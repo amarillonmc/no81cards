@@ -1,5 +1,7 @@
 --主宰之怒 刺蛇
 local s,id,o=GetID()
+if not CATEGORY_MSET then CATEGORY_MSET=0 end
+if not CATEGORY_SSET then CATEGORY_SSET=0 end
 function s.initial_effect(c)
 	--特招
 	local e1=Effect.CreateEffect(c)
