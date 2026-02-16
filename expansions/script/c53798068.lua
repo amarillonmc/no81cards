@@ -13,7 +13,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function s.appcon(e,tp,eg,ep,ev,re,r,rp)
-	return c:IsSummonType(SUMMON_TYPE_SYNCHRO) 
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) 
 		and Duel.GetTurnPlayer()==tp
 		and Duel.IsMainPhase()
 end

@@ -73,6 +73,7 @@ end
 
 function s.costchcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	local tp=c:GetControler()
 	return (Duel.GetFlagEffect(tp,65820099)==0 and c:GetFlagEffect(65820010)>0 or Duel.GetFlagEffect(tp,65820099)>0 and c:GetFlagEffect(65820010)==0)
 end
 function s.costchange(e,re,rp,val)
