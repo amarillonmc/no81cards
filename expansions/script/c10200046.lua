@@ -1,6 +1,6 @@
--- 午夜战栗·深红舞王
+--午夜战栗·深红舞王
 function c10200046.initial_effect(c)
-	-- 效果1
+	--①：展示手卡特殊召唤
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(10200046,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -11,7 +11,7 @@ function c10200046.initial_effect(c)
 	e1:SetTarget(c10200046.sptg)
 	e1:SetOperation(c10200046.spop)
 	c:RegisterEffect(e1)
-	-- 效果2
+	--②：移动或表示形式变更时破坏对方1张卡
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(10200046,1))
 	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_DAMAGE)
@@ -27,19 +27,19 @@ function c10200046.initial_effect(c)
 	e2b:SetCode(EVENT_CHANGE_POS)
 	e2b:SetCondition(c10200046.descon2)
 	c:RegisterEffect(e2b)
-	-- 效果3
+	--③：对方特殊召唤时移动到相邻区域
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(10200046,2))
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCountLimit(1,{10200046,1})
+	e3:SetCountLimit(1,10200047)
 	e3:SetCondition(c10200046.mvcon)
 	e3:SetTarget(c10200046.mvtg)
 	e3:SetOperation(c10200046.mvop)
 	c:RegisterEffect(e3)
 end
--- 1
+--①效果
 function c10200046.cfilter(c)
 	return c:IsSetCard(0xe25) and not c:IsPublic()
 end
@@ -64,7 +64,7 @@ function c10200046.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
--- 2
+--②效果
 function c10200046.descon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsContains(e:GetHandler())
 end
@@ -90,7 +90,7 @@ function c10200046.desop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
--- 3
+--③效果
 function c10200046.mvcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp)
 end

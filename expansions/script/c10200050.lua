@@ -1,6 +1,6 @@
--- 午夜战栗·墓语旁白
+--午夜战栗·墓语旁白
 function c10200050.initial_effect(c)
-	-- 效果1
+	--①：展示手卡，不用解放进行午夜战栗怪兽的召唤
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(10200050,0))
 	e1:SetCategory(CATEGORY_SUMMON)
@@ -11,34 +11,34 @@ function c10200050.initial_effect(c)
 	e1:SetTarget(c10200050.sumtg)
 	e1:SetOperation(c10200050.sumop)
 	c:RegisterEffect(e1)
-	-- 效果2
+	--②：召唤·反转召唤时从卡组把午夜战栗怪兽送去墓地
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(10200050,1))
 	e2:SetCategory(CATEGORY_TOGRAVE)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
-	e2:SetCountLimit(1,{10200050,1})
+	e2:SetCountLimit(1,10200051)
 	e2:SetTarget(c10200050.tgtg)
 	e2:SetOperation(c10200050.tgop)
 	c:RegisterEffect(e2)
 	local e2b=e2:Clone()
 	e2b:SetCode(EVENT_FLIP_SUMMON_SUCCESS)
 	c:RegisterEffect(e2b)
-	-- 效果3
+	--③：墓地存在，自己场上怪兽变成里侧守备时特殊召唤
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(10200050,2))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_CHANGE_POS)
 	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCountLimit(1,{10200050,2})
+	e3:SetCountLimit(1,10200052)
 	e3:SetCondition(c10200050.spcon)
 	e3:SetTarget(c10200050.sptg)
 	e3:SetOperation(c10200050.spop)
 	c:RegisterEffect(e3)
 end
--- 1
+--①效果
 function c10200050.cfilter(c)
 	return c:IsSetCard(0xe25) and not c:IsPublic()
 end
@@ -46,7 +46,6 @@ function c10200050.ntcon(e,c,minc)
 	if c==nil then return true end
 	return minc==0 and c:IsLevelAbove(1) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
 end
-
 function c10200050.sumfilter(c,tp)
 	return c:IsSetCard(0xe25) and c:IsLevelAbove(1)
 end
@@ -61,8 +60,7 @@ function c10200050.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.ShuffleHand(tp)
 end
 function c10200050.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c10200050.sumfilter,tp,LOCATION_HAND,0,1,nil,tp)
-	end
+	if chk==0 then return Duel.IsExistingMatchingCard(c10200050.sumfilter,tp,LOCATION_HAND,0,1,nil,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
 end
 function c10200050.sumop(e,tp,eg,ep,ev,re,r,rp)
@@ -83,7 +81,7 @@ function c10200050.sumop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
--- 2
+--②效果
 function c10200050.tgfilter(c)
 	return c:IsSetCard(0xe25) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
@@ -98,7 +96,7 @@ function c10200050.tgop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end
--- 3
+--③效果
 function c10200050.posfilter(c,tp)
 	return c:IsFacedown() and c:IsControler(tp) and c:IsPreviousPosition(POS_FACEUP)
 end
@@ -115,6 +113,7 @@ function c10200050.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		--离场时除外
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)

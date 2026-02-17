@@ -1,6 +1,6 @@
--- 午夜战栗·腐朽伴舞
+--午夜战栗·腐朽伴舞
 function c10200048.initial_effect(c)
-	-- 效果1
+	--①：午夜战栗怪兽移动或表示形式变更时从手卡·墓地特殊召唤
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(10200048,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -16,18 +16,18 @@ function c10200048.initial_effect(c)
 	e1b:SetCode(EVENT_CHANGE_POS)
 	e1b:SetCondition(c10200048.spcon2)
 	c:RegisterEffect(e1b)
-	-- 效果2
+	--②：特殊召唤时移动午夜战栗怪兽或变成里侧守备
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(10200048,1))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1,{10200048,1})
+	e2:SetCountLimit(1,10200049)
 	e2:SetTarget(c10200048.mvtg)
 	e2:SetOperation(c10200048.mvop)
 	c:RegisterEffect(e2)
 end
--- 1
+--①效果
 function c10200048.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xe25)
 end
@@ -47,6 +47,7 @@ function c10200048.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		--离场时除外
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
@@ -56,7 +57,7 @@ function c10200048.spop(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 end
--- 2
+--②效果
 function c10200048.mvfilter(c,tp)
 	if not c:IsFaceup() or not c:IsSetCard(0xe25) then return false end
 	if c:IsCanTurnSet() then return true end

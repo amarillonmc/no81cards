@@ -1,6 +1,6 @@
 --午夜战栗·月下狼影
 function c10200044.initial_effect(c)
-	-- 效果1
+	--①：自己场上没有怪兽存在的场合从手卡特殊召唤并检索
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(10200044,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SEARCH+CATEGORY_TOHAND)
@@ -11,17 +11,18 @@ function c10200044.initial_effect(c)
 	e1:SetTarget(c10200044.sptg1)
 	e1:SetOperation(c10200044.spop1)
 	c:RegisterEffect(e1)
-	-- 效果2
+	--②：向相邻区域移动并在原区域特招深红舞王
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(10200044,1))
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,{10200044,1})
+	e2:SetCountLimit(1,10200045)
 	e2:SetTarget(c10200044.mvtg)
 	e2:SetOperation(c10200044.mvop)
 	c:RegisterEffect(e2)
-		if not c10200044.global_check then
+	--全局监测：用于处理"向其他怪兽区域移动"的自定义事件
+	if not c10200044.global_check then
 		c10200044.global_check=true
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -30,7 +31,7 @@ function c10200044.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
--- 1
+--全局移动事件检测
 function c10200044.movecheckfilter(c)
 	return c:IsLocation(LOCATION_MZONE) and c:IsPreviousLocation(LOCATION_MZONE)
 		and c:GetPreviousSequence()~=c:GetSequence()
@@ -41,7 +42,7 @@ function c10200044.movecheckop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RaiseEvent(g,EVENT_CUSTOM+0xe25,re,r,rp,ep,ev)
 	end
 end
--- 2
+--①效果
 function c10200044.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
 end
@@ -79,7 +80,7 @@ end
 function c10200044.splimit(e,c)
 	return not c:IsRace(RACE_ZOMBIE)
 end
--- 3
+--②效果
 function c10200044.spfilter2(c,e,tp)
 	return c:IsCode(10200046) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end

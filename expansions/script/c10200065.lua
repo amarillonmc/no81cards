@@ -1,6 +1,6 @@
--- 午夜战栗·尸群围城
+--午夜战栗·尸群围城
 function c10200065.initial_effect(c)
-	-- 效果1
+	--①：移动并变更表示形式，根据表示形式适用效果
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(10200065,0))
 	e1:SetCategory(CATEGORY_POSITION+CATEGORY_DESTROY+CATEGORY_TODECK+CATEGORY_DRAW)
@@ -12,7 +12,7 @@ function c10200065.initial_effect(c)
 	e1:SetOperation(c10200065.activate)
 	c:RegisterEffect(e1)
 end
--- 1
+--效果
 function c10200065.tgfilter(c,tp)
 	if not c:IsFaceup() or not c:IsSetCard(0xe25) then return false end
 	if not c:IsCanChangePosition() then return false end
@@ -56,6 +56,7 @@ function c10200065.activate(e,tp,eg,ep,ev,re,r,rp)
 	if not tc or not tc:IsRelateToEffect(e) or tc:IsFacedown() then return end
 	local seq=tc:GetSequence()
 	if seq>4 then return end
+	--移动到相邻区域
 	local flag=0
 	if seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1) then flag=flag|(1<<(seq-1)) end
 	if seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1) then flag=flag|(1<<(seq+1)) end
@@ -65,13 +66,16 @@ function c10200065.activate(e,tp,eg,ep,ev,re,r,rp)
 	local nseq=math.log(zone,2)
 	Duel.MoveSequence(tc,nseq)
 	if tc:GetSequence()~=nseq then return end
+	--表示形式变更
 	if not tc:IsCanChangePosition() then return end
 	if tc:IsAttackPos() then
 		Duel.ChangePosition(tc,POS_FACEUP_DEFENSE)
 	else
 		Duel.ChangePosition(tc,POS_FACEUP_ATTACK)
 	end
+	--根据表示形式适用效果
 	if tc:IsAttackPos() then
+		--表侧攻击表示：破坏同纵列及相邻纵列的对方卡
 		local curseq=c10200065.getcolumnseq(tc)
 		if curseq<0 then return end
 		local seqs={curseq}
@@ -82,6 +86,7 @@ function c10200065.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Destroy(g,REASON_EFFECT)
 		end
 	else
+		--表侧守备表示：墓地5张午夜战栗卡回卡组，抽2张
 		if Duel.IsExistingMatchingCard(c10200065.tdfilter,tp,LOCATION_GRAVE,0,5,nil) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			local g=Duel.SelectMatchingCard(tp,c10200065.tdfilter,tp,LOCATION_GRAVE,0,5,5,nil)

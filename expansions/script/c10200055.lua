@@ -1,6 +1,6 @@
--- 午夜战栗·幽灵和声
+--午夜战栗·幽灵和声
 function c10200055.initial_effect(c)
-	-- 效果1
+	--①：卡名在场上·墓地当作腐朽伴舞
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_CHANGE_CODE)
@@ -8,25 +8,25 @@ function c10200055.initial_effect(c)
 	e1:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
 	e1:SetValue(10200048)
 	c:RegisterEffect(e1)
-	-- 效果2
+	--②：丢弃检索同名卡不在墓地的午夜战栗怪兽
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(10200055,0))
 	e2:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND)
-	e2:SetCountLimit(1,{10200055,1})
+	e2:SetCountLimit(1,10200056)
 	e2:SetCost(c10200055.thcost)
 	e2:SetTarget(c10200055.thtg)
 	e2:SetOperation(c10200055.thop)
 	c:RegisterEffect(e2)
-	-- 效果3
+	--③：墓地存在，午夜战栗怪兽移动或表示形式变更时特殊召唤
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(10200055,1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_CUSTOM+0xe25)
 	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCountLimit(1,{10200055,2})
+	e3:SetCountLimit(1,10200055)
 	e3:SetCondition(c10200055.spcon)
 	e3:SetTarget(c10200055.sptg)
 	e3:SetOperation(c10200055.spop)
@@ -36,7 +36,7 @@ function c10200055.initial_effect(c)
 	e3b:SetCondition(c10200055.spcon2)
 	c:RegisterEffect(e3b)
 end
--- 1
+--②效果
 function c10200055.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
@@ -57,7 +57,7 @@ function c10200055.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
--- 2
+--③效果
 function c10200055.cfilter(c,tp)
 	return c:IsFaceup() and c:IsSetCard(0xe25) and c:IsControler(tp)
 end
@@ -77,6 +77,7 @@ function c10200055.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+		--离场时除外
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)

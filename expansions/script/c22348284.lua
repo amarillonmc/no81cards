@@ -111,7 +111,9 @@ function c22348284.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		local tc=g:GetFirst()
 		if Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
-			Duel.Equip(tp,c,tc)
+			if c:IsRelateToEffect(e) then
+				Duel.Equip(tp,c,tc)
+			end
 			Duel.SpecialSummonComplete()
 		end
 	end

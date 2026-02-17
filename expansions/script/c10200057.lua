@@ -1,11 +1,11 @@
--- 午夜战栗·四万年的尸气
+--午夜战栗·四万年的尸气
 function c10200057.initial_effect(c)
-	-- Activate
+	--Activate
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)
 	e0:SetCode(EVENT_FREE_CHAIN)
 	c:RegisterEffect(e0)
-	-- 效果1
+	--①：双方召唤午夜战栗怪兽的解放减少1只
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_DECREASE_TRIBUTE)
@@ -14,24 +14,24 @@ function c10200057.initial_effect(c)
 	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0xe25))
 	e1:SetValue(c10200057.decval)
 	c:RegisterEffect(e1)
-	-- 效果2
+	--②：午夜战栗怪兽移动或表示形式变更或变成里侧守备
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(10200057,0))
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_FZONE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1,{10200057,1})
+	e2:SetCountLimit(1,10200058)
 	e2:SetTarget(c10200057.mvtg)
 	e2:SetOperation(c10200057.mvop)
 	c:RegisterEffect(e2)
-	-- 效果3
+	--③：不死族怪兽移动或表示形式变更时对方全部怪兽变成里侧守备
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(10200057,1))
 	e3:SetCategory(CATEGORY_POSITION)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_CUSTOM+0xe25)
 	e3:SetRange(LOCATION_FZONE)
-	e3:SetCountLimit(1,{10200057,2})
+	e3:SetCountLimit(1,10200057)
 	e3:SetCondition(c10200057.poscon)
 	e3:SetTarget(c10200057.postg)
 	e3:SetOperation(c10200057.posop)
@@ -41,20 +41,23 @@ function c10200057.initial_effect(c)
 	e3b:SetCondition(c10200057.poscon2)
 	c:RegisterEffect(e3b)
 end
--- 1
+--①效果
 function c10200057.decval(e,c)
 	return 1,1
 end
--- 2
+--②效果
 function c10200057.mvfilter(c,tp)
 	if not c:IsFaceup() or not c:IsSetCard(0xe25) then return false end
+	--能移动
 	local seq=c:GetSequence()
 	local b1=false
 	if seq<=4 then
 		b1=(seq>0 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1))
 			or (seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1))
 	end
+	--能表示形式变更
 	local b2=c:IsCanChangePosition()
+	--能变成里侧守备
 	local b3=c:IsCanTurnSet()
 	return b1 or b2 or b3
 end
@@ -68,6 +71,7 @@ function c10200057.mvop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc or not tc:IsRelateToEffect(e) or tc:IsFacedown() then return end
 	local seq=tc:GetSequence()
+	--检查各选项可用性
 	local b1=false
 	local flag=0
 	if seq<=4 then
@@ -78,6 +82,7 @@ function c10200057.mvop(e,tp,eg,ep,ev,re,r,rp)
 	local b2=tc:IsCanChangePosition()
 	local b3=tc:IsCanTurnSet()
 	if not b1 and not b2 and not b3 then return end
+	--构建选项
 	local ops={}
 	local opval={}
 	if b1 then
@@ -108,7 +113,7 @@ function c10200057.mvop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ChangePosition(tc,POS_FACEDOWN_DEFENSE)
 	end
 end
--- 3
+--③效果
 function c10200057.poscfilter(c,tp)
 	return c:IsRace(RACE_ZOMBIE) and c:IsControler(tp)
 end

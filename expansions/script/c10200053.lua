@@ -1,6 +1,6 @@
--- 午夜战栗·惊魂名伶
+--午夜战栗·惊魂名伶
 function c10200053.initial_effect(c)
-	-- 效果1
+	--①：场上有深红舞王，对方特殊召唤或攻击宣言时展示手卡特殊召唤
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(10200053,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_POSITION)
@@ -17,19 +17,19 @@ function c10200053.initial_effect(c)
 	e1b:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e1b:SetCondition(c10200053.spcon2)
 	c:RegisterEffect(e1b)
-	-- 效果2
+	--②：特殊召唤成功时移动午夜战栗怪兽，之后可以变成表侧守备
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(10200053,1))
 	e2:SetCategory(CATEGORY_POSITION)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1,{10200053,1})
+	e2:SetCountLimit(1,10200054)
 	e2:SetTarget(c10200053.mvtg)
 	e2:SetOperation(c10200053.mvop)
 	c:RegisterEffect(e2)
 end
--- 1
+--①效果
 function c10200053.chkfilter(c)
 	return c:IsFaceup() and c:IsCode(10200046)
 end
@@ -65,6 +65,7 @@ function c10200053.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	--可以把自己和同纵列怪兽变成里侧守备
 	if not Duel.SelectYesNo(tp,aux.Stringid(10200053,2)) then return end
 	local seq=c:GetSequence()
 	if seq>4 then
@@ -76,7 +77,7 @@ function c10200053.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ChangePosition(g,POS_FACEDOWN_DEFENSE)
 	end
 end
--- 2
+--②效果
 function c10200053.mvfilter(c,tp)
 	if not c:IsFaceup() or not c:IsSetCard(0xe25) then return false end
 	local seq=c:GetSequence()
@@ -106,6 +107,7 @@ function c10200053.mvop(e,tp,eg,ep,ev,re,r,rp)
 	local zone=Duel.SelectField(tp,1,LOCATION_MZONE,0,~flag)
 	local nseq=math.log(zone,2)
 	Duel.MoveSequence(tc,nseq)
+	--之后可以把自己场上1只怪兽变成表侧守备
 	if Duel.IsExistingMatchingCard(c10200053.deffilter,tp,LOCATION_MZONE,0,1,nil)
 		and Duel.SelectYesNo(tp,aux.Stringid(10200053,3)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)

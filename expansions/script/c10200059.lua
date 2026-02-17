@@ -1,30 +1,30 @@
--- 午夜战栗·迫近的午夜
+--午夜战栗·迫近的午夜
 function c10200059.initial_effect(c)
-	-- 效果1
+	--①：检索午夜战栗怪兽，之后可以移动或表示形式变更
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(10200059,0))
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,10200059)
+	e1:SetCountLimit(1,10200059,EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(c10200059.thtg)
 	e1:SetOperation(c10200059.thop)
 	c:RegisterEffect(e1)
-	-- 效果2
+	--②：对方召唤时墓地除外，午夜战栗怪兽表示形式变更或里侧守备
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(10200059,1))
 	e2:SetCategory(CATEGORY_POSITION)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,10200059)
+	e2:SetCountLimit(1,10200059,EFFECT_COUNT_CODE_OATH)
 	e2:SetCondition(c10200059.poscon)
 	e2:SetCost(aux.bfgcost)
 	e2:SetTarget(c10200059.postg)
 	e2:SetOperation(c10200059.posop)
 	c:RegisterEffect(e2)
 end
--- 1
+--①效果
 function c10200059.thfilter(c)
 	return c:IsSetCard(0xe25) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
@@ -49,6 +49,7 @@ function c10200059.thop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
 		Duel.ConfirmCards(1-tp,g)
 	end
+	--那之后，可以移动或表示形式变更
 	if not Duel.IsExistingMatchingCard(c10200059.mvfilter,tp,LOCATION_MZONE,0,1,nil,tp) then return end
 	if not Duel.SelectYesNo(tp,aux.Stringid(10200059,2)) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
@@ -86,7 +87,7 @@ function c10200059.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
--- 2
+--②效果
 function c10200059.poscon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp)
 end
