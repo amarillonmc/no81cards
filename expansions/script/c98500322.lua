@@ -1,7 +1,7 @@
 --真祖之太阳神
 function c98500322.initial_effect(c)
 	aux.AddCodeList(c,10000000,10000010,10000020)
-	aux.EnableChangeCode(c,10000010,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED)
+	--aux.EnableChangeCode(c,10000010,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED)
 	c:EnableReviveLimit()
 	--cannot special summon
 	local e0=Effect.CreateEffect(c)
@@ -65,8 +65,8 @@ function c98500322.initial_effect(c)
 	--to deck
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(98500322,3))
-	e6:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
-	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e6:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e6:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e6:SetCode(EVENT_TO_GRAVE)
 	e6:SetCountLimit(1,98520307)
 	e6:SetCondition(c98500322.tkcon)
@@ -91,6 +91,14 @@ function c98500322.initial_effect(c)
 	e11:SetTarget(c98500322.thstg)
 	e11:SetOperation(c98500322.thsop)
 	c:RegisterEffect(e11)
+	--change name
+	local e12=Effect.CreateEffect(c)
+	e12:SetType(EFFECT_TYPE_SINGLE)
+	e12:SetCode(EFFECT_CHANGE_CODE)
+	e12:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
+	e12:SetRange(LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED)
+	e12:SetValue(10000010)
+	c:RegisterEffect(e12)
 end
 function c98500322.selfspfilter(c,tp)
 	return c:IsCode(10000010) and Duel.GetMZoneCount(tp,c)>0 and c:GetFlagEffect(7373632)>0

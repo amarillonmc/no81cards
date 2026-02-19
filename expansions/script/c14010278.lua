@@ -31,7 +31,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetTarget(cm.distg)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-	local e2=e1:Clone
+	local e2=e1:Clone()
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_CHAIN_SOLVING)
 	e2:SetOperation(cm.disop)

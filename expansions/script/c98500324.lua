@@ -1,7 +1,7 @@
 --真祖之奥西里斯
 function c98500324.initial_effect(c)
 	aux.AddCodeList(c,10000020)
-	aux.EnableChangeCode(c,10000020,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED)
+	--aux.EnableChangeCode(c,10000020,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED)
 	c:EnableReviveLimit()
 	--cannot special summon
 	local e0=Effect.CreateEffect(c)
@@ -95,6 +95,14 @@ function c98500324.initial_effect(c)
 	e11:SetTarget(c98500324.thstg)
 	e11:SetOperation(c98500324.thsop)
 	c:RegisterEffect(e11)
+	--change name
+	local e12=Effect.CreateEffect(c)
+	e12:SetType(EFFECT_TYPE_SINGLE)
+	e12:SetCode(EFFECT_CHANGE_CODE)
+	e12:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
+	e12:SetRange(LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED)
+	e12:SetValue(10000020)
+	c:RegisterEffect(e12)
 	Duel.AddCustomActivityCounter(98500324,ACTIVITY_SPSUMMON,c98500324.counterfilter)
 end
 function c98500324.counterfilter(c)

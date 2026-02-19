@@ -61,7 +61,7 @@ function cm.initial_effect(c)
 	e9:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e9:SetCondition(cm.drcon2)
 	c:RegisterEffect(e9)
-	local e12=e3:Clone()
+	local e12=e9:Clone()
 	e12:SetCode(EVENT_CHANGE_POS)
 	c:RegisterEffect(e12)
 end
