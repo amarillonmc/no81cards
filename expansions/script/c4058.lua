@@ -309,13 +309,13 @@ function c4058.actop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local rc=re:GetHandler()
 	if re:GetActivateLocation()~=LOCATION_HAND then return end
-	if not rc:IsCode(16067089,93217231,80678380,1683982) then return end
+	if not rc:IsCode(16067089,93217231,80678380,1683982,95561146) then return end
 	Duel.RegisterFlagEffect(rc:GetControler(),rc:GetOriginalCode(),RESET_PHASE+PHASE_END,0,1)
 end
 
 --plus effect
 function c4058.dafilter(c)
-	return c:IsType(TYPE_TRAP) and c:IsCode(16067089,93217231,80678380,1683982) and Duel.GetFlagEffect(c:GetControler(),c:GetOriginalCode())==0
+	return c:IsType(TYPE_TRAP) and c:IsCode(16067089,93217231,80678380,1683982,95561146) and Duel.GetFlagEffect(c:GetControler(),c:GetOriginalCode())==0
 end
 function c4058.adop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -370,7 +370,7 @@ function c4058.sftg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		return (not fcon or fcon(e,tp,eg,ep,ev,re,r,rp))
 			and (not fcos or fcos(e,tp,eg,ep,ev,re,r,rp,0))
 			and (not ftg or ftg(e,tp,eg,ep,ev,re,r,rp,0))
-			and e:GetHandler():IsCode(16067089,93217231,80678380,1683982)
+			and e:GetHandler():IsCode(16067089,93217231,80678380,1683982,95561146)
 	end
 	if fcos then fcos(e,tp,eg,ep,ev,re,r,rp,1) end
 	if ftg then ftg(e,tp,eg,ep,ev,re,r,rp,1) end
@@ -391,7 +391,7 @@ function c4058.costchk(e,te_or_c,tp)
 	local tp=e:GetHandler():GetControler()
 	return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and Duel.IsPlayerAffectedByEffect(tp,4058) and Duel.GetFlagEffect(tp,e:GetHandler():GetOriginalCode())==0
-		and e:GetHandler():IsCode(16067089,93217231,80678380,1683982)
+		and e:GetHandler():IsCode(16067089,93217231,80678380,1683982,95561146)
 end
 function c4058.costop(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()

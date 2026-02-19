@@ -48,16 +48,16 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function s.ssfilter(c,tp)
-	return c:IsCode(92650018,95545183,91951471,81601517,92958307,31834488,35480699,81057455,62091148,98173209,67381587,31785398,97997309,27170599,86516889,7617062,37055344,40838625,74640994,28369508,19739265,56294501,89320376,69599136,90075978,14087893,38436986,58882608,59069885,74611888,32152870,69320362,98414735,74213995,73567374,41215808,78942513,8080257,81210420,53329234,30748475,19671102,60398723,12923641,27781371,41356845,23912837,28273805,80168720,59293853) and c:IsSSetable() and (c:IsType(TYPE_FIELD) or Duel.GetLocationCount(tp,LOCATION_SZONE)>0)
+function s.ssfilter(c)
+	return c:IsOriginalEffectProperty(function (e) return e:IsHasCategory(CATEGORY_MSET) end) and c:IsSSetable()
 end
 function s.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.ssfilter,tp,LOCATION_DECK,0,1,nil,tp)
+	return Duel.IsExistingMatchingCard(s.ssfilter,tp,LOCATION_DECK,0,1,nil)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-	local g=Duel.SelectMatchingCard(tp,s.ssfilter,tp,LOCATION_DECK,0,1,1,nil,tp)
+	local g=Duel.SelectMatchingCard(tp,s.ssfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then
 		Duel.SSet(tp,tc)

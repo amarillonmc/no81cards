@@ -78,6 +78,5 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not tc:CheckUniqueOnField(tp) then pos=POS_FACEDOWN_DEFENSE end
 	if Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,true,pos)>0 then
 		tc:CompleteProcedure()
-		if tc:IsPosition(POS_FACEDOWN) then Duel.ConfirmCards(1-tp,tc) end
 	end
 end

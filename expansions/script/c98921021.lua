@@ -40,7 +40,7 @@ function c98921021.spcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	return ft>-1 and Duel.IsExistingMatchingCard(c98921021.pfilter,tp,LOCATION_DECK,0,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+	return ft>0 and Duel.IsExistingMatchingCard(c98921021.pfilter,tp,LOCATION_DECK,0,1,nil,tp) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 end
 function c98921021.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
