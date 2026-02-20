@@ -30,11 +30,11 @@ function s.initial_effect(c)
 	--destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DESTROY)
-	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetCountLimit(1)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetCost(s.descost)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	--e1:SetCost(s.descost)
 	e1:SetTarget(s.destg)
 	e1:SetOperation(s.desop)
 	c:RegisterEffect(e1)
@@ -133,6 +133,19 @@ function s.sprcon2(e,c)
 	return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,c) and Duel.GetLocationCountFromEx(tp,tp,nil,c)~=0 and Duel.GetFlagEffect(tp,65820099)==0 and c:GetFlagEffect(65820010)>0 
 end
 function s.sprop2(e,tp,eg,ep,ev,re,r,rp,c)
+	local ag=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,c)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	local mg=ag:FilterSelect(tp,s.thfilter,1,1,nil,c)
+	c:SetMaterial(mg)
+	Duel.Overlay(c,mg)
+end
+--反面【里】
+function s.sprcon3(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_HAND,0,1,nil,c) and Duel.GetLocationCountFromEx(tp,tp,nil,c)~=0 and Duel.GetFlagEffect(tp,65820099)>0 and c:GetFlagEffect(65820010)>0 
+end
+function s.sprop3(e,tp,eg,ep,ev,re,r,rp,c)
 	local tp=c:GetControler()
 	
 	for i=0,10 do
@@ -151,20 +164,6 @@ function s.sprop2(e,tp,eg,ep,ev,re,r,rp,c)
 	te:SetTargetRange(1,0)
 	Duel.RegisterEffect(te,tp)
 	
-	local ag=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,c)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local mg=ag:FilterSelect(tp,s.thfilter,1,1,nil,c)
-	c:SetMaterial(mg)
-	Duel.Overlay(c,mg)
-end
---反面【里】
-function s.sprcon3(e,c)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_HAND,0,1,nil,c) and Duel.GetLocationCountFromEx(tp,tp,nil,c)~=0 and Duel.GetFlagEffect(tp,65820099)>0 and c:GetFlagEffect(65820010)>0 
-end
-function s.sprop3(e,tp,eg,ep,ev,re,r,rp,c)
-	local tp=c:GetControler()
 	local ag=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_HAND,0,nil,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local mg=ag:FilterSelect(tp,s.thfilter,1,1,nil,c)

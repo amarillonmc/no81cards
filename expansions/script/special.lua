@@ -237,7 +237,7 @@ function Auxiliary.PreloadUds()
 		elseif e:IsHasType(EFFECT_TYPE_XMATERIAL) and not table_range[e] then
 			table_range[e]=LOCATION_OVERLAY
 		end
-		if e:IsHasType(EFFECT_TYPE_SINGLE) and e:IsHasType(EFFECT_TYPE_TRIGGER_O) and e:GetCode()==EVENT_TO_DECK and not c:IsExtraDeckMonster() then
+		if e:IsHasType(EFFECT_TYPE_SINGLE) and e:IsHasType(EFFECT_TYPE_TRIGGER_O) and e:GetCode()==EVENT_TO_DECK and not c:IsExtraDeckMonster() and not c:IsType(TYPE_PENDULUM) then
 			e:SetType(EFFECT_TYPE_QUICK_O)
 			e:SetRange(LOCATION_DECK)
 			local prop,prop2=e:GetProperty()

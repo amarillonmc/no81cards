@@ -15,7 +15,7 @@ function c98500240.initial_effect(c)
 	--SPECIAL_SUMMON
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(98500240,0))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_MSET)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -70,12 +70,12 @@ function c98500240.actcon(e)
 	return Duel.IsExistingMatchingCard(c98500240.afilter2,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil) and not Duel.IsExistingMatchingCard(c98500240.afilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
 function c98500240.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:IsCostChecked() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,98500240,0,TYPES_EFFECT_TRAP_MONSTER,1000,2000,4,RACE_ILLUSION,ATTRIBUTE_EARTH) end
+	if chk==0 then return e:IsCostChecked() and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,98500240,0,TYPES_EFFECT_TRAP_MONSTER,1000,2000,4,RACE_BEASTWARRIOR,ATTRIBUTE_LIGHT) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function c98500240.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.IsPlayerCanSpecialSummonMonster(tp,98500240,0,TYPES_EFFECT_TRAP_MONSTER,1000,2000,4,RACE_ILLUSION,ATTRIBUTE_EARTH) then
+	if c:IsRelateToEffect(e) and Duel.IsPlayerCanSpecialSummonMonster(tp,98500240,0,TYPES_EFFECT_TRAP_MONSTER,1000,2000,4,RACE_BEASTWARRIOR,ATTRIBUTE_LIGHT) then
 		c:AddMonsterAttribute(TYPE_EFFECT+TYPE_FLIP)
 		if Duel.SpecialSummonStep(c,0,tp,tp,true,false,POS_FACEUP) then
 			c:RegisterFlagEffect(98500240,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(98500240,3))
