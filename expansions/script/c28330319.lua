@@ -11,10 +11,10 @@ function c28330319.initial_effect(c)
 	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28330319,1))
-	e2:SetCategory(CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	--e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)--EFFECT_FLAG_DELAY
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCondition(c28330319.thcon)
 	e2:SetCost(aux.bfgcost)
@@ -50,18 +50,34 @@ end
 function c28330319.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsSummonLocation,1,nil,LOCATION_EXTRA)
 end
-function c28330319.thfilter(c)
-	return c:IsSetCard(0x286) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+function c28330319.tfilter(c)
+	return c:IsLevel(4) and c:IsAbleToDeck() and c:IsAbleToHand()
 end
-function c28330319.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28330319.thfilter,tp,LOCATION_GRAVE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE)
+function c28330319.gcheck(sg)
+	return sg:IsExists(Card.IsSetCard,1,nil,0x286)
+end
+function c28330319.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return false end
+	local g=Duel.GetMatchingGroup(c28330319.tfilter,tp,LOCATION_GRAVE,0,nil):Filter(Card.IsCanBeEffectTarget,nil,e)
+	if chk==0 then return g:CheckSubGroup(c28330319.gcheck,3,3) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local sg=g:SelectSubGroup(tp,c28330319.gcheck,false,3,3)
+	Duel.SetTargetCard(sg)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,sg,1,0,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,sg,2,0,LOCATION_GRAVE)
 end
 function c28330319.thop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local tc=Duel.SelectMatchingCard(tp,c28330319.thfilter,tp,LOCATION_GRAVE,0,1,1,nil):GetFirst()
+	local g=Duel.GetTargetsRelateToChain()
+	local tg,atk=g:Filter(Card.IsSetCard,nil,0x286):GetMaxGroup(Card.GetAttack)
+	local tc=tg:GetFirst()
 	if tc then
+		if #tg>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+			tc=tg:Select(tp,1,1,nil):GetFirst()
+		end
+		Duel.HintSelection(Group.FromCards(tc))
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,tc)
+		g:RemoveCard(tc)
 	end
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end

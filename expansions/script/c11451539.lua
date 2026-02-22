@@ -54,6 +54,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft1=1 end
 	local ft2=math.min(5,Duel.GetLocationCount(1-tp,LOCATION_MZONE))
 	if Duel.IsPlayerAffectedByEffect(1-tp,59822133) then ft2=1 end
+	local ct1,ct2=0,0
 	if (ft1>0 and Duel.IsPlayerCanSpecialSummonMonster(tp,11451572,0,0x4011,1050,1050,10,RACE_MACHINE,0x3)) or (ft2>0 and Duel.IsPlayerCanSpecialSummonMonster(1-tp,11451572,0,0x4011,1050,1050,10,RACE_MACHINE,0x3)) then
 		local fid=e:GetHandler():GetFieldID()
 		local g=Group.CreateGroup()
@@ -114,6 +115,8 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetOperation(cm.desop)
 		Duel.RegisterEffect(e3,tp)
 		Duel.SpecialSummonComplete()
+		if ct1>ct2 then Duel.Draw(tp,1,REASON_EFFECT) end
+		if ct2>ct1 then Duel.Draw(1-tp,1,REASON_EFFECT) end
 	end
 end
 function cm.desfilter(c,fid)

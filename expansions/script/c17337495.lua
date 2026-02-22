@@ -28,6 +28,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
+	e2:SetCountLimit(1,id)
 	e2:SetTarget(s.rmtg)
 	e2:SetOperation(s.rmop)
 	c:RegisterEffect(e2)
@@ -37,6 +38,7 @@ function s.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(1,id)
 	e3:SetTarget(s.sptg)
 	e3:SetOperation(s.spop)
 	c:RegisterEffect(e3)
@@ -49,14 +51,17 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
+
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(0,id,RESET_PHASE+PHASE_END,0,1)
 	Duel.RegisterFlagEffect(1,id,RESET_PHASE+PHASE_END,0,1)
 end
+
 function s.ovfilter(c,tp,xyzc)
 	return c:IsFaceup() and c:IsSetCard(0x3f50) and c:IsCanBeXyzMaterial(xyzc)
 		and Duel.GetLocationCountFromEx(tp,tp,c,xyzc)>0
 end
+
 function s.ovcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
@@ -111,7 +116,7 @@ end
 function s.spfilter(c,e,tp,check_earl)
 	if not (c:IsSetCard(0x3f50) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)) then return false end
 	if c:IsLocation(LOCATION_DECK) then return check_earl end
-	return c:IsLocation(LOCATION_HAND+LOCATION_REMOVED)
+	return c:IsLocation(LOCATION_HAND+LOCATION_REMOVED) and c:IsFaceupEx()
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local check_earl=Duel.IsExistingMatchingCard(Card.IsCode,tp,LOCATION_GRAVE,0,1,nil,17337413)

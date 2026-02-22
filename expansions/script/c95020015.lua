@@ -58,7 +58,7 @@ function s.disop(e,tp,eg,ep,ev,re,r,rp)
 end
 --0
 function s.cfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3962)
+	return c:IsFaceup() and c:IsSetCard(0x3963)
 end
 function s.check(tp)
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,0,nil)

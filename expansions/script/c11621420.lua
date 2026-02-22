@@ -16,7 +16,6 @@ function c11621420.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetProperty(EFFECT_FLAG_CONTINUOUS_TARGET)
 	e2:SetHintTiming(0,TIMING_END_PHASE+TIMINGS_CHECK_MONSTER)
 	e2:SetCountLimit(1,m)
 	e2:SetCondition(cm.ntrcon)
@@ -68,55 +67,77 @@ function cm.ntrcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.ntrtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsSSetable() end
+	if chk==0 then return Duel.GetFieldGroupCount(tp,0,LOCATION_DECK+LOCATION_EXTRA)~=0 and c:IsSSetable() end
 end
 function cm.ntrop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()  
+	local c=e:GetHandler()
+	local g=Duel.GetFieldGroup(tp,0,LOCATION_EXTRA+LOCATION_DECK)
 	if c:IsRelateToEffect(e) and c:IsSSetable() then
-		Duel.SSet(tp,c)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-		local selected_zone=Duel.SelectField(tp,1,0,LOCATION_ONFIELD,nil)
-		--Card.GetSequence()
-		--Debug.Message("设备运行良好！选择的区域是："..selected_zone)
-		if selected_zone~=0 then 
-			local e1 = Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_FIELD + EFFECT_TYPE_CONTINUOUS)
-			e1:SetCode(EVENT_TO_GRAVE)
-			e1:SetLabel(selected_zone)
-			e1:SetCondition(function(e, tp, eg, ep, ev, re, r, rp)
-				return eg:IsExists(function(c)
-					local nseq=c:GetPreviousSequence()--+16
-					--Debug.Message("设备运行良好！选择的区域是："..nseq)
-					local loc=LOCATION_MZONE 
-					if bit.band(selected_zone,0x1f001f)~=0 then loc=LOCATION_MZONE end
-					if bit.band(selected_zone,0x1f001f00)~=0 then loc=LOCATION_SZONE end
-					if bit.band(selected_zone,0x20002000)~=0 then loc=LOCATION_FZONE end
-					--Debug.Message("设备运行良好！选择的区域是："..loc)
-					local seq=0
-					if selected_zone==65536 or selected_zone==65536*(2^8) then
-						seq=0
-					elseif selected_zone==65536*2 or selected_zone==65536*(2^9) then
-						seq=1
-					elseif selected_zone==65536*4 or selected_zone==65536*(2^10) then
-						seq=2  
-					elseif selected_zone==65536*9 or selected_zone==65536*(2^11) then
-						seq=3 
-					elseif selected_zone==65536*16 or selected_zone==65536*(2^12) then
-						seq=4  
-					else
-						seq=5 
-					end
-					return c:IsPreviousLocation(loc) and c:GetPreviousControler()~=tp and nseq==seq
-				end,1,nil)
-			end)
-			e1:SetOperation(function(e, tp, eg, ep, ev, re, r, rp)
-				Duel.Hint(HINT_CARD,0,m) 
-				Duel.Draw(tp,1,REASON_EFFECT)
-			end)
+		if Duel.SSet(tp,c)>0 and g:GetCount()>0 then
+			Duel.ConfirmCards(tp,g) 
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RESOLVECARD)
+			local tg=Duel.SelectMatchingCard(tp,Card.IsType,tp,0,LOCATION_EXTRA+LOCATION_DECK,1,1,nil,TYPE_MONSTER)
+			if tg:GetCount()==0 then return end
+			Duel.ConfirmCards(tp,tg)
+			local tc=tg:GetFirst()
+			local code=tc:GetOriginalCodeRule()
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_FIELD)
+			e1:SetCode(EFFECT_CHANGE_CODE)
+			e1:SetTargetRange(0,0x7f)
+			e1:SetTarget(cm.crtg)
+			e1:SetLabel(code)
+			e1:SetValue(11621403)
 			e1:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e1,tp)
+			--
+			local e2=Effect.CreateEffect(c)
+			e2:SetType(EFFECT_TYPE_FIELD)
+			e2:SetCode(EFFECT_CHANGE_RACE)
+			e2:SetTargetRange(0,0x7f)
+			e2:SetTarget(cm.crtg)
+			e2:SetLabel(code)
+			e2:SetValue(RACE_ZOMBIE)
+			e2:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e2,tp)
+			--
+			local e3=Effect.CreateEffect(c)
+			e3:SetType(EFFECT_TYPE_FIELD)
+			e3:SetCode(EFFECT_CHANGE_ATTRIBUTE)
+			e3:SetTargetRange(0,0x7f)
+			e3:SetTarget(cm.crtg)
+			e3:SetLabel(code)
+			e3:SetValue(ATTRIBUTE_LIGHT)
+			e3:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e3,tp)
+			--
+			local e4=Effect.CreateEffect(c)
+			e4:SetType(EFFECT_TYPE_FIELD)
+			if tc:IsLevelAbove(1) then
+				e4:SetCode(EFFECT_CHANGE_LEVEL)
+			end
+			if tc:IsRankAbove(1) then
+				e4:SetCode(EFFECT_CHANGE_RANK)
+			end
+			if tc:IsLinkAbove(1) then
+				e4:SetCode(EFFECT_UPDATE_LINK)
+			end
+			e4:SetTargetRange(0,0x7f)
+			e4:SetTarget(cm.crtg2)
+			e4:SetLabel(code)
+			e4:SetValue(3)
+			e4:SetReset(RESET_PHASE+PHASE_END)
+			Duel.RegisterEffect(e4,tp)
 		end
 	end
+end
+function cm.crtg(e,c)
+	local code=e:GetLabel()
+	return c:IsOriginalCodeRule(code)--c:IsCode(code)
+end
+function cm.crtg2(e,c)
+	local code=e:GetLabel()
+	return c:IsOriginalCodeRule(code) and c:IsLevelAbove(1)
 end
 --03
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

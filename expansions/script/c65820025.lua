@@ -19,7 +19,7 @@ function s.initial_effect(c)
 	e3:SetCode(EVENT_CUSTOM+65820000)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCountLimit(1,id)
+	--e3:SetCountLimit(1,id)
 	e3:SetCondition(s.condition)
 	e3:SetCost(aux.bfgcost)
 	e3:SetTarget(s.damtg)
@@ -39,7 +39,7 @@ end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(9999)
+	Duel.SetTargetParam(99999)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

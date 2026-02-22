@@ -63,17 +63,17 @@ end
 
 function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and chkc:IsControler(tp) and s.tdfilter(chkc) and chkc~=c end
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and s.tdfilter(chkc) and chkc~=c end
 	if chk==0 then 
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
 			and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-			and Duel.IsExistingTarget(s.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,c) 
+			and Duel.IsExistingTarget(s.tdfilter,tp,LOCATION_ONFIELD,0,1,c) 
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,s.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,c)
+	local g=Duel.SelectTarget(tp,s.tdfilter,tp,LOCATION_ONFIELD,0,1,1,c)
 	
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,LOCATION_GRAVE)
 end
 
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -86,13 +86,13 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-			e1:SetValue(c:GetAttack()*2)
+			e1:SetCode(EFFECT_UPDATE_ATTACK)
+			e1:SetValue(700)
 			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 			c:RegisterEffect(e1)
 			local e2=e1:Clone()
-			e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
-			e2:SetValue(c:GetDefense()*2)
+			e2:SetCode(EFFECT_UPDATE_DEFENSE)
+			e2:SetValue(700)
 			c:RegisterEffect(e2)
 		end
 		Duel.SpecialSummonComplete()

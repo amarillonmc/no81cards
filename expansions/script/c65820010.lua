@@ -96,8 +96,8 @@ function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	
 	local lp=Duel.GetLP(tp)
-	if lp>=800 then
-		Duel.PayLPCost(tp,800,REASON_COST)
+	if lp>=2000 then
+		Duel.PayLPCost(tp,2000,REASON_COST)
 	else
 		Duel.PayLPCost(tp,lp,REASON_COST)
 	end

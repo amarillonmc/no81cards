@@ -8,6 +8,9 @@ function s.initial_effect(c)
 		yume.import_flag=false
 	end
 	yume.prism.addCounter()
+	--same effect send this card to grave or banishment and summon another card check
+	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
+	local e0a=yume.AddThisCardBanishedAlreadyCheck(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_REMOVE)
@@ -27,13 +30,19 @@ function s.initial_effect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetRange(LOCATION_GRAVE+LOCATION_REMOVED)
+	e2:SetRange(LOCATION_GRAVE)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,id+100000)
+	e2:SetCondition(s.con2)
 	e2:SetCost(s.cost2)
 	e2:SetTarget(s.tg2)
+	e2:SetLabelObject(e0)
 	e2:SetOperation(s.op2)
 	c:RegisterEffect(e2)
+	local e2a=e1:Clone()
+	e2a:SetRange(LOCATION_REMOVED)
+	e2a:SetLabelObject(e0a)
+	c:RegisterEffect(e2a)
 	if not s.global_check then
 		s.global_check=true
 		local ge1=Effect.CreateEffect(c)
@@ -103,8 +112,12 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	end
 end
-function s.filtercon2(c,tp,se)
+function s.filtercon2(c,se)
 	return (se==nil or c:GetReasonEffect()~=se) and c:GetSummonLocation(LOCATION_EXTRA)
+end
+function s.con2(e,tp,eg,ep,ev,re,r,rp)
+	local se=e:GetLabelObject():GetLabelObject()
+	return eg:IsExists(s.filtercon2,2,nil,se)
 end
 function s.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return yume.prism.checkCounter(tp) and e:GetHandler():IsAbleToDeckAsCost() end

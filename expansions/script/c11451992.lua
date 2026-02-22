@@ -44,7 +44,7 @@ function cm.discon(e,tp,eg,ep,ev,re,r,rp)
 	if loc&LOCATION_SZONE~=0 and seq2>4 then return false end
 	local seq1=aux.MZoneSequence(c:GetSequence())
 	seq2=aux.MZoneSequence(seq2)
-	return pos&POS_FACEUP>0 and bit.band(loc,LOCATION_ONFIELD)~=0 and (op==1-tp and seq1==4-seq2 or op==tp and seq1==seq2)
+	return pos&POS_FACEUP>0 and bit.band(loc,LOCATION_ONFIELD)~=0 and (op==tp and seq1==seq2)
 end
 function cm.disop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,m)

@@ -129,8 +129,8 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(te,tp)
 	
 	local lp=Duel.GetLP(tp)
-	if lp>=1800 then
-		Duel.PayLPCost(tp,1800,REASON_COST)
+	if lp>=2500 then
+		Duel.PayLPCost(tp,2500,REASON_COST)
 	else
 		Duel.PayLPCost(tp,lp,REASON_COST)
 	end

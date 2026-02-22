@@ -2,6 +2,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,17337400)
+	
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_REMOVE)
@@ -10,6 +11,7 @@ function s.initial_effect(c)
 	e1:SetTargetRange(0,1)  
 	e1:SetTarget(s.rmlimit)
 	c:RegisterEffect(e1)
+	
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SPECIAL_SUMMON)
@@ -21,6 +23,7 @@ function s.initial_effect(c)
 	e2:SetTarget(s.thtg) 
 	e2:SetOperation(s.thop)
 	c:RegisterEffect(e2)
+	
 end
 function s.rmlimit(e,c,rp,r,re)
 	local tp=e:GetHandlerPlayer()
@@ -40,6 +43,8 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,s.filter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp,check)	
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,LOCATION_GRAVE)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	if not e:GetHandler():IsRelateToEffect(e) then return end

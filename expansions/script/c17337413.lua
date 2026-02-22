@@ -38,17 +38,15 @@ function s.initial_effect(c)
 	e3:SetCondition(s.descon)
 	c:RegisterEffect(e3)
 end
-
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(function(c)
 		if not (c:IsControler(tp) and c:IsSetCard(0x3f50)) then return false end
 		if c:IsLocation(LOCATION_ONFIELD) then
 			return c:IsFaceup()
 		end
-		return c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
+		return c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and c:IsFaceupEx()
 	end,1,nil)
 end
-
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local at=Duel.GetAttackTarget()
 	return at and at:IsFaceup() and at:IsControler(tp) and at:IsSetCard(0x3f50)
@@ -59,7 +57,9 @@ function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
 			and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false)
 	end
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED)
 end
 
 function s.check_field(c)

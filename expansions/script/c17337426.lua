@@ -27,7 +27,6 @@ function c17337426.initial_effect(c)
 	e3:SetOperation(c17337426.tdop)
 	c:RegisterEffect(e3)
 end
-
 function c17337426.tfilter(c,tp)
 	return c:IsSetCard(0x3f50) and c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsControler(tp)
 end
@@ -36,7 +35,6 @@ function c17337426.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetAttackTarget()
 	return tc and c17337426.tfilter(tc,tp)
 end
-
 function c17337426.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
@@ -68,23 +66,25 @@ function c17337426.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function c17337426.tdfilter(c,tp)
-	return c:IsSetCard(0x3f50) and c:IsFaceupEx() and c:IsAbleToDeck()
+	return c:IsSetCard(0x3f50) and c:IsFaceup() and c:IsAbleToDeck()
+end
+function c17337426.cfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x3f50) 
 end
 
 function c17337426.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and chkc:IsControler(tp) and c17337426.tdfilter(chkc,tp) and chkc~=c end
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and c17337426.tdfilter(chkc,tp) and chkc~=c end
 	if chk==0 then 
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
 			and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-			and Duel.IsExistingTarget(c17337426.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,c,tp) 
+			and Duel.IsExistingTarget(c17337426.tdfilter,tp,LOCATION_ONFIELD,0,1,c,tp) 
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c17337426.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,c,tp)	
+	local g=Duel.SelectTarget(tp,c17337426.tdfilter,tp,LOCATION_ONFIELD,0,1,1,c,tp)	
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,LOCATION_GRAVE)
 end
-
 function c17337426.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget() 
@@ -95,13 +95,13 @@ function c17337426.tdop(e,tp,eg,ep,ev,re,r,rp)
 			if Duel.IsExistingMatchingCard(c17337426.cfilter,tp,LOCATION_MZONE,0,1,c) then
 				local e1=Effect.CreateEffect(c)
 				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_SET_ATTACK_FINAL)
-				e1:SetValue(c:GetAttack()*2)
+				e1:SetCode(EFFECT_UPDATE_ATTACK)
+				e1:SetValue(700)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 				c:RegisterEffect(e1)
 				local e2=e1:Clone()
-				e2:SetCode(EFFECT_SET_DEFENSE_FINAL)
-				e2:SetValue(c:GetDefense()*2)
+				e2:SetCode(EFFECT_UPDATE_DEFENSE)
+				e2:SetValue(700)
 				c:RegisterEffect(e2)
 			end
 		end

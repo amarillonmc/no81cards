@@ -48,7 +48,7 @@ function cm.atkfilter(c)
 	return c:IsType(TYPE_TRAP) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
 end
 function cm.atkval(e,c)
-	return Duel.GetMatchingGroupCount(cm.atkfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,nil)*600
+	return Duel.GetMatchingGroupCount(cm.atkfilter,c:GetControler(),LOCATION_GRAVE+LOCATION_ONFIELD+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_ONFIELD+LOCATION_REMOVED,nil)*600
 end
 --
 function cm.refilter(c,tp)

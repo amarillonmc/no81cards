@@ -7,6 +7,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_OATH)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
@@ -39,6 +40,9 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,3)
 end
 function s.thfilter(c)
+	return c:IsSetCard(0x3a32)
+end
+function s.thfilter1(c)
 	return c.effect_lixiaoguo
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -49,8 +53,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 then
 		Duel.ConfirmCards(1-p,g)
 		local c=e:GetHandler()
-		local g1=Duel.GetMatchingGroup(s.thfilter,p,LOCATION_HAND,0,1,nil)
-		g:Remove(s.thfilter,nil)
+		local g1=Duel.GetMatchingGroup(s.thfilter1,p,LOCATION_HAND,0,1,nil)
 		if #g1>0 then
 			local tc=g1:GetFirst()
 			while tc do
@@ -60,9 +63,10 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 					tc:ResetFlagEffect(65820010)
 				end
 				tc=g1:GetNext()
-				Duel.RaiseEvent(g,EVENT_CUSTOM+65820010,e,REASON_EFFECT,tp,nil,nil)
+				Duel.RaiseEvent(g1,EVENT_CUSTOM+65820010,e,REASON_EFFECT,tp,nil,nil)
 			end
 		end
+		g:Remove(s.thfilter,nil)
 		Duel.SendtoDeck(g,p,SEQ_DECKSHUFFLE,REASON_EFFECT)
 	end
 	Duel.ShuffleHand(p)

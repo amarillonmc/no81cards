@@ -16,6 +16,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(1153)
+	e1:SetCategory(CATEGORY_LEAVE_GRAVE+CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
@@ -73,7 +74,7 @@ function s.stfilter(c)
 	return c:IsSetCard(0xc31,0xc32,0xc37) and c:IsSSetable() and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceupEx()
 end
 function s.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.stfilter),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.stfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
 function s.stop(e,tp,eg,ep,ev,re,r,rp)

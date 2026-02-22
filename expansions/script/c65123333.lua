@@ -1,4 +1,6 @@
 local s,id,o=GetID()
+if not CATEGORY_SSET then CATEGORY_SSET=0 end
+if not CATEGORY_MSET then CATEGORY_MSET=0 end
 local KOISHI_CHECK=false
 if Card.SetCardData then KOISHI_CHECK=true end
 local IO_CHECK=false

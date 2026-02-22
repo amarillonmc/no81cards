@@ -67,7 +67,7 @@ end
 
 -- 效果②目标：检索「嗡嗡军团」怪兽
 function s.thfilter(c)
-	return c:IsSetCard(0x3962)  and c:IsAbleToHand()
+	return c:IsSetCard(0x3963)  and c:IsAbleToHand()
 end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -1,6 +1,5 @@
 --源于阴影 融入
 local s,id,o=GetID()
-if not CATEGORY_SSET then CATEGORY_SSET=0 end
 function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -16,8 +15,8 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_CUSTOM+65820000)
 	e2:SetRange(LOCATION_GRAVE)
-	e2:SetCountLimit(1,id)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,id)
 	e2:SetCondition(s.spcon)
 	e2:SetTarget(s.sptg)
 	e2:SetOperation(s.spop)
@@ -27,8 +26,8 @@ end
 function s.rmcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local lp=Duel.GetLP(tp)
-	if lp>=1200 then
-		Duel.PayLPCost(tp,1200,REASON_COST)
+	if lp>=2000 then
+		Duel.PayLPCost(tp,2000,REASON_COST)
 	else
 		Duel.PayLPCost(tp,lp,REASON_COST)
 	end

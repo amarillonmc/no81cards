@@ -9,7 +9,7 @@ function c11621431.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e0:SetValue(c11621431.splimit)
 	c:RegisterEffect(e0)
-	--special summon (hand/grave)
+	--special summon (hand/grave)  修改①：解放2张卡名不同的「桃源乡」卡
 	local e1=Effect.CreateEffect(c) 
 	e1:SetDescription(aux.Stringid(11621431,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -19,16 +19,17 @@ function c11621431.initial_effect(c)
 	e1:SetTarget(c11621431.sptg)
 	e1:SetOperation(c11621431.spop)
 	c:RegisterEffect(e1) 
-	--negate
+	--negate  修改②：cost改为从卡组解放1张「桃源乡」卡
 	local e2=Effect.CreateEffect(c) 
 	e2:SetDescription(aux.Stringid(11621431,1))
-	e2:SetCategory(CATEGORY_NEGATE+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_NEGATE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
 	e2:SetCondition(c11621431.discon) 
+	e2:SetCost(c11621431.discost)	-- 新增cost
 	e2:SetTarget(c11621431.distg)
 	e2:SetOperation(c11621431.disop)
 	c:RegisterEffect(e2)
@@ -104,6 +105,7 @@ function c11621431.initial_effect(c)
 		Duel.RegisterEffect(ge1,0) 
 	end
 end
+
 function c11621431.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
 	if rc:IsSetCard(0x5220) and re:IsActiveType(TYPE_TRAP) then  
@@ -115,9 +117,11 @@ function c11621431.checkop(e,tp,eg,ep,ev,re,r,rp)
 		end 
 	end
 end
+
 function c11621431.splimit(e,se,sp,st)
 	return se:GetHandler():IsSetCard(0x5220) 
 end
+
 function c11621431.rfilter(c,tp)
 	local re=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
 	local val=nil
@@ -126,21 +130,26 @@ function c11621431.rfilter(c,tp)
 	end
 	return c:IsSetCard(0x5220) and (val==nil or val(re,c)~=true) 
 end
+
 function c11621431.rlgck(g,tp)
 	return aux.dncheck(g) 
 	   and Duel.GetMZoneCount(tp,g)>0 
 end
+
+-- 修改①：解放数量从3改为2
 function c11621431.spcost(e,tp,eg,ep,ev,re,r,rp,chk) 
 	local g=Duel.GetMatchingGroup(c11621431.rfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,e:GetHandler(),tp)
-	if chk==0 then return g:CheckSubGroup(c11621431.rlgck,3,3,tp) end
+	if chk==0 then return g:CheckSubGroup(c11621431.rlgck,2,2,tp) end  -- 2张
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-	local rg=g:SelectSubGroup(tp,c11621431.rlgck,false,3,3,tp)
+	local rg=g:SelectSubGroup(tp,c11621431.rlgck,false,2,2,tp)		  -- 2张
 	Duel.Release(rg,REASON_COST) 
 end
+
 function c11621431.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
+
 function c11621431.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	local c=e:GetHandler()
@@ -148,44 +157,50 @@ function c11621431.spop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,SUMMON_TYPE_RITUAL,tp,tp,false,true,POS_FACEUP)
 	end
 end
+
 function c11621431.discon(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and Duel.IsChainNegatable(ev)
 end 
-function c11621431.dthfil(c) 
-	local re=Duel.IsPlayerAffectedByEffect(tp,EFFECT_CANNOT_RELEASE)
-	local val=nil
-	if re then
-		val=re:GetValue()
-	end
-	return c:IsSetCard(0x5220) and c:IsAbleToHand() and (val==nil or val(re,c)~=true)  
-end 
-function c11621431.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c11621431.dthfil,tp,LOCATION_DECK,0,1,nil) end 
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+
+-- 新增cost过滤器：可从卡组解放的「桃源乡」卡
+function c11621431.costfilter(c)
+	return c:IsSetCard(0x5220) and c:IsAbleToGraveAsCost()
 end
+
+-- 新增cost函数
+function c11621431.discost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c11621431.costfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c11621431.costfilter,tp,LOCATION_DECK,0,1,1,nil)
+	Duel.Release(g,REASON_COST)
+end
+
+-- 修改②：target不再需要检查卡组，只返回true
+function c11621431.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)   -- 只保留无效类别
+end
+
 function c11621431.disop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
-	local tc=Duel.SelectMatchingCard(tp,c11621431.dthfil,tp,LOCATION_DECK,0,1,1,nil):GetFirst() 
-	if tc and Duel.SendtoHand(tc,tp,REASON_EFFECT)~=0 then 
-		Duel.ConfirmCards(1-tp,tc)
-		if Duel.Release(tc,REASON_RULE)~=0 and Duel.NegateActivation(ev) and c:IsRelateToEffect(e) then 
-			c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11621431,2))
-			local e1=Effect.CreateEffect(c) 
-			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
-			e1:SetCode(EVENT_CHAINING)
-			e1:SetRange(LOCATION_MZONE) 
-			e1:SetCondition(c11621431.datkcon) 
-			e1:SetOperation(c11621431.datkop) 
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
-			c:RegisterEffect(e1)   
-		end 
+	-- 直接无效，不再处理加入手卡和解放
+	if Duel.NegateActivation(ev) and c:IsRelateToEffect(e) then 
+		local e1=Effect.CreateEffect(c) 
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS) 
+		e1:SetCode(EVENT_CHAINING)
+		e1:SetRange(LOCATION_MZONE) 
+		e1:SetCondition(c11621431.datkcon) 
+		e1:SetOperation(c11621431.datkop) 
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD) 
+		c:RegisterEffect(e1)   
 	end 
 end
+
 function c11621431.datkcon(e,tp,eg,ep,ev,re,r,rp)  
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)  
 	return rp==tp and re:GetHandler():IsSetCard(0x5220) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_TRAP) and g:GetCount()>0 
 end 
+
 function c11621431.datkop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler() 
 	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,0,LOCATION_MZONE,nil)   
@@ -203,6 +218,7 @@ function c11621431.datkop(e,tp,eg,ep,ev,re,r,rp)
 		end 
 	end 
 end 
+
 function c11621431.atkval(e) 
 	local tp=e:GetHandlerPlayer() 
 	local flag=Duel.GetFlagEffectLabel(tp,11621431)
@@ -212,29 +228,31 @@ function c11621431.atkval(e)
 		return flag*200 
 	end 
 end 
+
 function c11621431.crckfil(c) 
 	return c:IsFaceup() and (c:IsAttack(0) or c:IsDefense(0))
 end 
+
 function c11621431.crtg(e,c)
 	local tp=e:GetHandlerPlayer() 
 	local g=Duel.GetMatchingGroup(c11621431.crckfil,tp,0,LOCATION_MZONE,nil)
 	return g:IsExists(Card.IsOriginalCodeRule,1,nil,c:GetOriginalCodeRule()) 
 end
+
 function c11621431.crtg1(e,c)
 	local tp=e:GetHandlerPlayer() 
 	local g=Duel.GetMatchingGroup(c11621431.crckfil,tp,0,LOCATION_MZONE,nil)
 	return g:IsExists(Card.IsOriginalCodeRule,1,nil,c:GetOriginalCodeRule()) and c:IsLevelAbove(1)
 end
+
 function c11621431.crtg2(e,c)
 	local tp=e:GetHandlerPlayer() 
 	local g=Duel.GetMatchingGroup(c11621431.crckfil,tp,0,LOCATION_MZONE,nil)
 	return g:IsExists(Card.IsOriginalCodeRule,1,nil,c:GetOriginalCodeRule()) and c:IsRankAbove(1)
 end
+
 function c11621431.crtg3(e,c)
 	local tp=e:GetHandlerPlayer() 
 	local g=Duel.GetMatchingGroup(c11621431.crckfil,tp,0,LOCATION_MZONE,nil)
 	return g:IsExists(Card.IsOriginalCodeRule,1,nil,c:GetOriginalCodeRule()) and c:IsLinkAbove(1)
 end
-
-
-

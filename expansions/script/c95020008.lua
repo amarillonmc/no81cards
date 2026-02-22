@@ -62,7 +62,7 @@ function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.spfilter(c,e,tp)
-	return not c:IsCode(id) and c:IsSetCard(0x3962) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return not c:IsCode(id) and c:IsSetCard(0x3963) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

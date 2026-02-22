@@ -36,7 +36,7 @@ function c28368431.thfilter(c,tp,code)
 end
 function c28368431.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local code=e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetHandler():GetCode() or 0
-	if chk==0 then return Duel.IsExistingMatchingCard(c28368431.thfilter,tp,LOCATION_DECK,0,1,nil,tp,code) and (Duel.GetLP(tp)>3000 or Duel.IsPlayerCanDraw(tp,1)) end
+	if chk==0 then return Duel.IsExistingMatchingCard(c28368431.thfilter,tp,LOCATION_DECK,0,1,nil,tp,code) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c28368431.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -52,7 +52,7 @@ function c28368431.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_LEAVE_FIELD)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(c28368431.regcon)
+	--e1:SetCondition(c28368431.regcon)
 	e1:SetOperation(c28368431.regop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)

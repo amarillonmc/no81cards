@@ -32,7 +32,7 @@ end
 
 -- ===== 效果①处理 =====
 function s.lpfilter(c)
-	return c:IsSetCard(0x3962) and c:IsRace(RACE_INSECT) -- 
+	return c:IsSetCard(0x3963) and c:IsRace(RACE_INSECT) -- 
 end
 
 function s.lpcon(e,tp,eg,ep,ev,re,r,rp)
@@ -46,7 +46,7 @@ end
 -- ===== 效果②处理 =====
 function s.cfilter(c,tp)
 	return c:IsPreviousControler(tp) and c:IsReason(REASON_BATTLE+REASON_EFFECT)
-		and c:IsSetCard(0x3962) and c:IsRace(RACE_INSECT)
+		and c:IsSetCard(0x3963) and c:IsRace(RACE_INSECT)
 		and c:GetPreviousAttackOnField()>0
 end
 

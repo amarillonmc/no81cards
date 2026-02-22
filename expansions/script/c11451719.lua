@@ -32,15 +32,25 @@ function cm.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e3:SetTargetRange(1,0)
 	e3:SetCondition(cm.costcon)
-	--e3:SetTarget(cm.costtg)
+	e3:SetTarget(cm.costtg)
 	e3:SetOperation(cm.costop)
 	c:RegisterEffect(e3)
 	if not TRADIATION_OF_CRIMSONBLAZE then
 		TRADIATION_OF_CRIMSONBLAZE=true
 		local _AnnounceNumber=Duel.AnnounceNumber
 		function Duel.AnnounceNumber(p,...)
-			if cm[1+p] and Duel.SelectYesNo(p,aux.Stringid(m,1)) then
-				Duel.SetChainLimitTillChainEnd(cm.chlimit)
+			local te=cm[1+p]
+			if te and te:GetHandlerPlayer()==p and Duel.SelectYesNo(p,aux.Stringid(m,1)) then
+				--Duel.SetChainLimitTillChainEnd(cm.chlimit)
+				local e2=Effect.CreateEffect(te:GetHandler())
+				e2:SetType(EFFECT_TYPE_FIELD)
+				e2:SetCode(EFFECT_IMMUNE_EFFECT)
+				e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+				e2:SetTargetRange(LOCATION_ONFIELD,0)
+				e2:SetValue(cm.imfilter)
+				e2:SetOwnerPlayer(p)
+				e2:SetReset(RESET_CHAIN)
+				Duel.RegisterEffect(e2,p)
 				local tab={...}
 				local d=Duel.TossDice(p,1)
 				if not tab[d] then d=math.max(d%(#tab),1) end
@@ -54,10 +64,13 @@ function cm.initial_effect(c)
 		end
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetCode(EVENT_CHAINING)
+		ge1:SetCode(EVENT_CHAIN_SOLVING)
 		ge1:SetOperation(cm.checkop)
 		Duel.RegisterEffect(ge1,0)
 	end
+end
+function cm.imfilter(e,te,c)
+	return te:GetOwner()~=c
 end
 function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
 	cm[1]=false
@@ -139,16 +152,19 @@ function cm.costcon(e)
 end
 function cm.costtg(e,te,tp)
 	local code=te:GetOwner():GetOriginalCode()
-	--continuously updating
-	local tab={11451711,11451712,11451713,11451714,11451715,70916046,71100107,11451835}
+	--[[continuously updating
+	local tab={11451711,11451712,11451713,11451714,11451715,70916046,71100107,11451835,11451935}
 	for _,ct in pairs(tab) do
 		if ct==code and not te:IsHasType(EFFECT_TYPE_TRIGGER_O) then return true end
-	end
-	return false
+	end--]]
+	e:SetLabelObject(te)
+	return true
 end
 function cm.costop(e,tp,eg,ep,ev,re,r,rp)
 	if cm[0] then return end
-	cm[1+tp]=true
+	local te=e:GetLabelObject()
+	local tp=te:GetHandlerPlayer()
+	cm[1+tp]=te
 	cm[2-tp]=false
 	cm[0]=true
 end

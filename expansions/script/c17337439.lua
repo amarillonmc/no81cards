@@ -67,7 +67,9 @@ function s.activate1(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.indval(e,re,r,rp)
-	return (r&REASON_BATTLE+REASON_EFFECT)~=0
+	if bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0 then
+		return 1
+	else return 0 end
 end
 function s.thfilter2(c,e,tp,ft)
 	return c:IsCode(17337400) and (c:IsAbleToHand() or (ft>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))

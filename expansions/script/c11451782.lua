@@ -184,7 +184,7 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 	local te=e:GetLabelObject()
 	if cm[0] or CONVIATRESS_BUFF[te] then return end
 	local tg=te:GetTarget() or aux.TRUE
-	if te:GetHandler():GetType()&0x20004==0x20004 and te:IsHasType(EFFECT_TYPE_ACTIVATE) and not te:GetCost() and not te:GetTarget() and not te:GetOperation() then
+	if te:GetHandler():GetType()&0x20004==0x20004 and te:IsHasType(EFFECT_TYPE_ACTIVATE) and not te:GetCost() and not te:GetTarget() then
 		local extg=Duel.GetMatchingGroup(cm.extfilter,tp,LOCATION_HAND+LOCATION_SZONE,0,nil)
 		if #extg>0 and Duel.SelectYesNo(tp,aux.Stringid(11451779,2)) then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -326,13 +326,14 @@ function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
 	if ep~=tp and ev==e:GetLabel() then Duel.NegateEffect(ev) end
 end
 function cm.imfilter(e,re)
-	local i=1
+	return re:GetOwnerPlayer()~=e:GetHandlerPlayer()
+	--[[local i=1
 	while type(c11451782[i])=="table" do
 		local te,tf,cid,ep=table.unpack(c11451782[i])
 		if te==re and ep~=e:GetHandlerPlayer() then return true end
 		i=i+1
 	end
-	return false
+	return false--]]
 end
 function cm.filter(c,tp)
 	return (c:IsRace(RACE_WARRIOR) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()) or (c:IsCode(m+1) and c:GetActivateEffect():IsActivatable(tp))

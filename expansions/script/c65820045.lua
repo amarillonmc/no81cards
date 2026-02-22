@@ -1,6 +1,5 @@
 --源于黑影 重生
 local s,id,o=GetID()
-if not CATEGORY_SSET then CATEGORY_SSET=0 end
 function s.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_ACTIVATE)

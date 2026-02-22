@@ -13,7 +13,7 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-
+	
 	local e2=Effect.CreateEffect(c)
 	e2:SetCode(EVENT_BE_BATTLE_TARGET)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
@@ -23,7 +23,7 @@ function s.initial_effect(c)
 	e2:SetTarget(s.sptg)
 	e2:SetOperation(s.spop)
 	c:RegisterEffect(e2)
-
+	
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCategory(CATEGORY_TOHAND+CATEGORY_DRAW)
@@ -31,30 +31,25 @@ function s.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetCountLimit(1,id+1)
-	e3:SetCondition(s.thcon)
 	e3:SetTarget(s.thtg)
 	e3:SetOperation(s.thop)
 	c:RegisterEffect(e3)
-
-	local e4=e3:Clone()
-	e4:SetType(EFFECT_TYPE_QUICK_O)
-	e4:SetCode(EVENT_FREE_CHAIN) 
-	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e4:SetCondition(s.thcon_quick)
-	c:RegisterEffect(e4)
 end
+
 function s.is_valid_target(c,tp)
 	if not (c:IsControler(tp) and c:IsSetCard(0x3f50)) then return false end
 	if c:IsLocation(LOCATION_ONFIELD) then
 		return c:IsFaceup()
 	end
-	return c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED)
+	return c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and c:IsFaceupEx()
 end
+
 function s.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	return g and g:IsExists(s.is_valid_target,1,nil,tp)
 end
+
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local bt=Duel.GetAttackTarget()
 	return bt and bt:IsControler(tp) and bt:IsSetCard(0x3f50) and bt:IsFaceup()
@@ -92,16 +87,6 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-end
-function s.thcon(e,tp,eg,ep,ev,re,r,rp)
-	local res=not Duel.IsExistingMatchingCard(s.quick_check_filter,tp,LOCATION_MZONE,0,1,nil,id)
-	return Duel.GetTurnPlayer()==tp and res
-end
-function s.thcon_quick(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.quick_check_filter,tp,LOCATION_MZONE,0,1,nil,id)
-end
-function s.quick_check_filter(c,id)
-	return c:IsFaceup() and c:IsSetCard(0x3f50) and not c:IsCode(id)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and chkc:IsSetCard(0x3f50) end

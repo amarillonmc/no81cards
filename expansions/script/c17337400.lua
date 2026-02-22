@@ -27,7 +27,6 @@ function s.initial_effect(c)
 	e3:SetOperation(s.regop)
 	c:RegisterEffect(e3)
 end
-
 function s.cfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_MONSTER) 
 		and (c:IsSetCard(0x3f50) or aux.IsCodeListed(c,17337400)) 
@@ -44,17 +43,28 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
 end
 function s.tgfilter(c,e,tp)
-	if not c:IsType(TYPE_MONSTER) then return false end
-	if not (c:IsSetCard(0x3f50) or aux.IsCodeListed(c,17337400)) then return false end
-	return c:IsAbleToHand() or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
+	if not (c:IsControler(tp) and c:IsType(TYPE_MONSTER) 
+		and (c:IsSetCard(0x3f50) or aux.IsCodeListed(c,17337400))) then return false end
+	local loc_check = false
+	if c:IsLocation(LOCATION_ONFIELD) then
+		loc_check = c:IsFaceup()
+	else
+		loc_check = c:IsLocation(LOCATION_GRAVE)
+	end
+	if not loc_check then return false end
+	local can_to_hand = c:IsAbleToHand() or c:IsAbleToExtra()
+	local can_sp_summon = Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)   
+	return can_to_hand or can_sp_summon
 end
+
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and s.tgfilter(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,e,tp) end	
+	if chk==0 then return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,e,tp) end	   
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil,e,tp)	
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_MZONE)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE)
+	local g=Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil,e,tp)	
+	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,LOCATION_GRAVE)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

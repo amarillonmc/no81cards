@@ -40,7 +40,12 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetMatchingGroupCount(Card.IsPublic,tp,LOCATION_HAND,0,nil)*4
-	Duel.DiscardDeck(tp,ct,REASON_EFFECT)
+	if Duel.DiscardDeck(tp,ct,REASON_EFFECT)>0 then
+		local sg=Duel.GetOperatedGroup():Filter(function(c) return c:IsLocation(LOCATION_GRAVE) and c:IsAbleToHand() end,nil)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+		local g=sg:Select(tp,1,1,nil)
+		if #g>0 then Duel.SendtoHand(g,nil,REASON_EFFECT) end
+	end		
 	--summon proc
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetDescription(aux.Stringid(m,0))
@@ -116,7 +121,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetLabel(fid)
 	e1:SetCondition(cm.rmcon)
 	e1:SetOperation(cm.rmop)
-	Duel.RegisterEffect(e1,tp)
+	--Duel.RegisterEffect(e1,tp)
 end
 function cm.rmfilter(c,fid)
 	return c:GetFlagEffectLabel(m)==fid

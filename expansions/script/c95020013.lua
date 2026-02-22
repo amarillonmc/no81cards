@@ -42,7 +42,7 @@ function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.setfilter(c)
-	return c:IsSetCard(0x3962) and (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS)) and c:CheckUniqueOnField(tp)
+	return c:IsSetCard(0x3963) and (c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsType(TYPE_CONTINUOUS)) and c:CheckUniqueOnField(tp)
 end
 
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -73,7 +73,7 @@ function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x3962) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,0x60)
+	return c:IsSetCard(0x3963) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp,0x60)
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
