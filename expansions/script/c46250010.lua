@@ -99,6 +99,6 @@ end
 
 local re=Card.IsSetCard
 Card.IsSetCard=function(c,name)
-	if name==0xfc0 and c:IsCode(35089369) then return true end
+	if name==0xfc0 and c:IsCode(35089369,51548207) then return true end
 	return re(c,name)
 end

@@ -1,4 +1,6 @@
 --影之侵染
+local m=98941056
+local cm=_G["c"..m]
 local s,id,o=GetID()
 function c98941056.initial_effect(c)
 	--Activate
@@ -13,6 +15,16 @@ function c98941056.initial_effect(c)
 	e10:SetRange(LOCATION_DECK)
 	e10:SetCost(s.cost3)
 	c:RegisterEffect(e10)
+	local e30=Effect.CreateEffect(c)
+	e30:SetType(EFFECT_TYPE_FIELD)
+	e30:SetCode(EFFECT_ACTIVATE_COST)
+	e30:SetRange(LOCATION_DECK)
+	e30:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e30:SetTargetRange(1,0)
+	e30:SetLabelObject(e10)
+	e30:SetTarget(cm.actarget)
+	e30:SetOperation(cm.costop)
+	c:RegisterEffect(e30)
 	--Fusion
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(98941056,0))
@@ -43,8 +55,8 @@ function c98941056.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToDeck() and Duel.GetFlagEffect(tp,id)==0 end
+	local c=e:GetHandler() 
+	if chk==0 then return c:IsAbleToDeck() and e:GetHandler():IsStatus(STATUS_EFFECT_ENABLED) end
 	Duel.SendtoDeck(c,nil,2,REASON_EFFECT)
 end
 function c98941056.eftg(e,c)
@@ -55,6 +67,38 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if re:GetValue()~=id+1 then return end
 	if rc:IsLocation(LOCATION_MZONE) and rc:GetFlagEffect(id)==0 then
 		rc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+	end
+end
+function cm.actarget(e,te,tp)
+	e:SetLabelObject(te)
+	return te:GetHandler()==e:GetHandler()
+end
+function cm.costop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	e:GetHandler():CreateEffectRelation(te)
+	local c=e:GetHandler()
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+	e1:SetOperation(cm.rsop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+end
+function cm.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
 	end
 end
 function c98941056.thfilter(c)
@@ -97,8 +141,6 @@ function s.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 		Duel.ConfirmCards(1-tp,g:GetFirst())
 	end
-	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,EFFECT_FLAG_OATH,1)
 end
 function c98941056.filter0(c)
 	return c:IsFaceup() and c:IsCanBeFusionMaterial()
