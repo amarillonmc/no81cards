@@ -2,6 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SSET)
 	e2:SetDescription(1153)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_HAND+LOCATION_MZONE)

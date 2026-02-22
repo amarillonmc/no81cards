@@ -21,7 +21,7 @@ function c22024020.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetCode(EVENT_BE_MATERIAL)
 	e3:SetCountLimit(1,22024021)
 	e3:SetCondition(c22024020.condition)
 	e3:SetTarget(c22024020.sptg)
@@ -44,7 +44,8 @@ function c22024020.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c22024020.condition(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsLocation(LOCATION_GRAVE) and r==REASON_FUSION
+	local c=e:GetHandler()
+	return c:IsLocation(LOCATION_GRAVE) and r==REASON_FUSION
 end
 function c22024020.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
