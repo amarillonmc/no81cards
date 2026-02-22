@@ -92,6 +92,7 @@ function cm.sop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummonStep=function(c,st,sp,top,...)
 						if aux.GetValueType(c)~="Card" then return _SpecialSummonStep(c,st,sp,top,...) end
 						local dg=Group.FromCards(c):Filter(Card.IsLocation,nil,LOCATION_DECK):Filter(Card.IsAbleToRemove,nil)
+						local g=Group.FromCards(c)
 						if t==Duel.GetTurnCount() and #dg>0 then
 							Duel.Remove(dg,POS_FACEUP,REASON_EFFECT,sp)
 							g=(g-dg)+dg:Filter(Card.IsLocation,nil,LOCATION_REMOVED)

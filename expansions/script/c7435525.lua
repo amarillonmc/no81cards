@@ -32,7 +32,7 @@ function s.matfilter(c)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		if not Duel.IsPlayerCanSpecialSummonMonster(tp,7435551,0,TYPE_TOKEN+TYPE_MONSTER+TYPE_RITUAL+TYPE_EFFECT,2000,0,5,RACE_ZOMBIE,ATTRIBUTE_WIND) then return false end
+		if not Duel.IsPlayerCanSpecialSummonMonster(tp,7435551,0,TYPE_TOKEN+TYPE_MONSTER+TYPE_RITUAL+TYPE_EFFECT,2000,0,5,RACE_ZOMBIE,ATTRIBUTE_WIND,POS_FACEUP,tp,SUMMON_TYPE_RITUAL) then return false end
 		local mg=Duel.GetRitualMaterial(tp)
 		local mg=mg:Filter(s.matfilter,nil)
 		local res=mg:CheckSubGroup(s.RitualCheck,1,nil,tp)
@@ -56,7 +56,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local token=Duel.CreateToken(tp,7435551)
 	local m=Duel.GetRitualMaterial(tp)
 	local mg=m:Filter(s.matfilter,nil)
-	if Duel.IsPlayerCanSpecialSummonMonster(tp,7435551,0,TYPE_TOKEN+TYPE_MONSTER+TYPE_RITUAL+TYPE_EFFECT,2000,0,5,RACE_ZOMBIE,ATTRIBUTE_WIND) and mg:CheckSubGroup(s.RitualCheck,1,nil,tp) then
+	if Duel.IsPlayerCanSpecialSummonMonster(tp,7435551,0,TYPE_TOKEN+TYPE_MONSTER+TYPE_RITUAL+TYPE_EFFECT,2000,0,5,RACE_ZOMBIE,ATTRIBUTE_WIND,POS_FACEUP,tp,SUMMON_TYPE_RITUAL) and mg:CheckSubGroup(s.RitualCheck,1,nil,tp) then
 		--Debug.Message("3")
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 		local mat=mg:SelectSubGroup(tp,s.RitualCheck,true,1,5,tp)

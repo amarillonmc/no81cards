@@ -78,7 +78,7 @@ end
 function c28384553.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct,phchk=e:GetHandler():GetFlagEffectLabel(28384553),Duel.GetCurrentPhase()==PHASE_END and 1 or 0
 	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if chk==0 then return ct>0 and #g>0 end
+	if chk==0 then return ct and ct>0 and #g>0 end
 	e:SetLabel(ct,phchk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end

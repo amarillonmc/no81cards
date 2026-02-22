@@ -167,7 +167,9 @@ function s.resetop2(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function s.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=e:GetLabelObject()
+	local tg=e:GetLabelObject()
+	local sg=tg:Filter(Card.IsLocation,nil,LOCATION_SZONE)
+	if sg:GetCount()>0 then return false end
 	for tc in aux.Next(sg) do
 		tc:SetStatus(STATUS_LEAVE_CONFIRMED,true)
 	end

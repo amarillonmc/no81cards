@@ -22,7 +22,7 @@ function s.initial_effect(c)
 	local e3=Effect.CreateEffect(c)
 	e3:SetCategory(CATEGORY_TOGRAVE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
-	e3:SetCode(EVENT_FREE_CHAIN)
+	e3:SetCode(EVENT_CHAINING)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1,id)
 	e3:SetCondition(s.tgcon)
@@ -72,8 +72,8 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Equip(tp,c,tc)
 	end
 end
-function s.tgcon(e)
-	return e:GetHandler():GetEquipTarget()
+function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():GetEquipTarget() and re:IsHasType(EFFECT_TYPE_ACTIVATE) and ep~=tp
 end
 function s.tgfilter(c)
 	return aux.IsCodeListed(c,75040001) and c:IsAbleToGrave() and c:IsType(TYPE_TRAP)
