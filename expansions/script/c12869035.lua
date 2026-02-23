@@ -60,10 +60,23 @@ function c12869035.indop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1)
+	e1:SetCondition(c12869035.icon)
 	e1:SetTarget(c12869035.tg)
 	e1:SetOperation(c12869035.op)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1,true)
+	local e2=e1:Clone()
+	e2:SetCondition(c12869035.qcon)
+	e2:SetTarget(c12869035.qtg)
+	rc:RegisterEffect(e2,true)
+	if not rc:IsType(TYPE_EFFECT) then
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_ADD_TYPE)
+		e3:SetValue(TYPE_EFFECT)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		rc:RegisterEffect(e3,true)
+	end
 end
 function c12869035.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() and chkc:IsAbleToRemove() end
@@ -71,6 +84,9 @@ function c12869035.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	if e:GetHandler():IsOriginalCodeRule(12869095) then 
+		Duel.SetChainLimit(c12869035.chainlm)
+	end
 	e:Reset()
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(12869035,3))
 end
@@ -79,4 +95,23 @@ function c12869035.op(e,tp,eg,ep,ev,re,r,rp)
 	if tc:IsRelateToEffect(e) then
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	end
+end
+function c12869035.icon(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetHandler():IsOriginalCodeRule(12869095) or not Duel.IsEnvironment(12869005)
+end
+function c12869035.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsOriginalCodeRule(12869095) and Duel.IsEnvironment(12869005)
+end
+function c12869035.qtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsOnField() and chkc:IsAbleToRemove() end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	e:Reset()
+	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(12869035,3))
+	Duel.SetChainLimit(c12869035.chainlm)
+end
+function c12869035.chainlm(e,ep,tp)
+	return tp==ep
 end

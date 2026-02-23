@@ -15,7 +15,7 @@ function c9910200.initial_effect(c)
 	--position/return to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910200,1))
-	e2:SetCategory(CATEGORY_POSITION+CATEGORY_TOHAND)
+	e2:SetCategory(CATEGORY_POSITION+CATEGORY_MSET+CATEGORY_TOHAND)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)

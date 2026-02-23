@@ -21,7 +21,7 @@ function c9910070.initial_effect(c)
 	--effect gain
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(9910070,0))
-	e3:SetCategory(CATEGORY_POSITION)
+	e3:SetCategory(CATEGORY_POSITION+CATEGORY_MSET)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)

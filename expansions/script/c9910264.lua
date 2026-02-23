@@ -2,7 +2,7 @@
 function c9910264.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_COUNTER+CATEGORY_NEGATE+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_COUNTER+CATEGORY_NEGATE+CATEGORY_REMOVE+CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCondition(c9910264.condition)

@@ -39,7 +39,7 @@ function c9910255.initial_effect(c)
 	--position
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(9910255,1))
-	e6:SetCategory(CATEGORY_POSITION)
+	e6:SetCategory(CATEGORY_POSITION+CATEGORY_MSET)
 	e6:SetType(EFFECT_TYPE_QUICK_O)
 	e6:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e6:SetCode(EVENT_FREE_CHAIN)

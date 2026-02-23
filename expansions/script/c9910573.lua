@@ -3,7 +3,7 @@ function c9910573.initial_effect(c)
 	--flip
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910573,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_GRAVE_ACTION)
+	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,9910573)
@@ -33,6 +33,14 @@ function c9910573.spfilter(c,e,tp)
 end
 function c9910573.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910573.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	local chain=Duel.GetCurrentChain()
+	if chain>1 then
+		local te=Duel.GetChainInfo(chain-1,CHAININFO_TRIGGERING_EFFECT)
+		if te and te:GetHandler()==e:GetHandler() then
+			e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_MSET)
+		end
+	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9910573.operation(e,tp,eg,ep,ev,re,r,rp)

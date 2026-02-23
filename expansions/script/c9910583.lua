@@ -22,7 +22,7 @@ function c9910583.initial_effect(c)
 	--spsummon
 	local e4=e2:Clone()
 	e4:SetDescription(aux.Stringid(9910583,1))
-	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_MSET)
 	e4:SetTarget(c9910583.sptg)
 	e4:SetOperation(c9910583.spop)
 	c:RegisterEffect(e4)

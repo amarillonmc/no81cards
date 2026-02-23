@@ -7,7 +7,7 @@ function c9910564.initial_effect(c)
 	QutryTxjp.AddTgFlag(c)
 	--to hand
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE+CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_MSET+CATEGORY_REMOVE+CATEGORY_DRAW)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_HAND)

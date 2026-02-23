@@ -3,7 +3,6 @@ function c9910580.initial_effect(c)
 	--flip
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910580,0))
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_GRAVE_ACTION)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
 	e1:SetCountLimit(1,9910580)
@@ -38,14 +37,19 @@ function c9910580.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectTarget(tp,c9910580.setfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if g:GetFirst():IsType(TYPE_MONSTER) then
-		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DESTROY)
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_MSET)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 	else
-		e:SetCategory(CATEGORY_DESTROY)
+		e:SetCategory(CATEGORY_SSET)
 		Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,g,1,0,0)
 	end
-	local dg=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,0,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,dg,1,0,0)
+	local chain=Duel.GetCurrentChain()
+	if chain>1 then
+		local te=Duel.GetChainInfo(chain-1,CHAININFO_TRIGGERING_EFFECT)
+		if te and te:GetHandler()==e:GetHandler() then
+			e:SetCategory(e:GetCategory()+CATEGORY_TOHAND)
+		end
+	end
 end
 function c9910580.operation(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -85,7 +89,7 @@ function c9910580.geop(e,tp,eg,ep,ev,re,r,rp,chk)
 	while tc do
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetDescription(aux.Stringid(9910580,2))
-		e1:SetCategory(CATEGORY_POSITION)
+		e1:SetCategory(CATEGORY_POSITION+CATEGORY_MSET)
 		e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP+EFFECT_TYPE_TRIGGER_O)
 		e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)

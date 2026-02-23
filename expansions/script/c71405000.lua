@@ -116,7 +116,7 @@ function s.op3(e,tp,eg,ep,ev,re,r,rp)
 	local tc1=g1:GetFirst()
 	if not tc1 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g2=Duel.SelectMatchingCard(tp,s.filterc3,tp,LOCATION_EXTRA,0,1,1,tc1,e,tp,lv-tc1:GetLevel()+1,false)
+	local g2=Duel.SelectMatchingCard(tp,s.filterc3,tp,LOCATION_EXTRA,0,1,1,tc1,lv-tc1:GetLevel()+1,e,tp,false)
 	g1:Merge(g2)
 	for tc in aux.Next(g1) do
 		tc:SetMaterial(nil)

@@ -6,7 +6,7 @@ function c9910104.initial_effect(c)
 	--get effect
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910104,0))
-	e2:SetCategory(CATEGORY_POSITION)
+	e2:SetCategory(CATEGORY_POSITION+CATEGORY_MSET)
 	e2:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_QUICK_O)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_FREE_CHAIN)

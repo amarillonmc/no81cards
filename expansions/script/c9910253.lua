@@ -13,7 +13,7 @@ function c9910253.initial_effect(c)
 	c:RegisterEffect(e1)
 	--add counter & set
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_COUNTER+CATEGORY_LEAVE_GRAVE)
+	e2:SetCategory(CATEGORY_COUNTER+CATEGORY_LEAVE_GRAVE+CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)

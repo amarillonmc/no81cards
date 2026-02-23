@@ -2,7 +2,6 @@
 function c9910579.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_POSITION)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
@@ -53,14 +52,10 @@ function c9910579.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	e:SetLabel(s)
 	if s==0 then
+		e:SetCategory(CATEGORY_POSITION)
 		Duel.SetOperationInfo(0,CATEGORY_POSITION,g1,g1:GetCount(),0,0)
-		local tep=nil
-		if Duel.GetCurrentChain()>1 then tep=Duel.GetChainInfo(Duel.GetCurrentChain()-1,CHAININFO_TRIGGERING_PLAYER) end
-		if e:IsHasType(EFFECT_TYPE_ACTIVATE) and tep and tep==1-tp then
-			e:SetCategory(CATEGORY_POSITION+CATEGORY_TOHAND)
-		end
 	else
-		e:SetCategory(CATEGORY_POSITION+CATEGORY_SPECIAL_SUMMON)
+		e:SetCategory(CATEGORY_POSITION+CATEGORY_MSET+CATEGORY_SPECIAL_SUMMON)
 		Duel.SetOperationInfo(0,CATEGORY_POSITION,g2,g2:GetCount(),0,0)
 	end
 end

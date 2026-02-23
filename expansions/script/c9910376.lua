@@ -14,7 +14,7 @@ function c9910376.initial_effect(c)
 	c:RegisterEffect(e1)
 	--remove & set
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_TODECK)
+	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_SSET+CATEGORY_TODECK)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)

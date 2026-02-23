@@ -36,7 +36,7 @@ function c9910085.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	local cate=CATEGORY_NEGATE+CATEGORY_DESTROY+CATEGORY_REMOVE 
 	if bit.band(re:GetHandler():GetOriginalType(),TYPE_MONSTER)~=0 then
-		e:SetCategory(cate+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
+		e:SetCategory(cate+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON+CATEGORY_MSET+CATEGORY_SSET)
 	else
 		e:SetCategory(cate)
 	end

@@ -17,6 +17,8 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1)
+	e2:SetCondition(s.icon)
+	e2:SetTarget(s.eftg)
 	e2:SetCost(s.efcost)
 	e2:SetOperation(s.efop)
 	c:RegisterEffect(e2)
@@ -93,6 +95,12 @@ function s.efcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local cg=Duel.SelectMatchingCard(tp,s.costfilter,tp,LOCATION_DECK,0,1,1,nil)
 	Duel.SendtoGrave(cg,REASON_COST)
+end
+function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	if e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) and e:GetHandler():IsOriginalCodeRule(12869095) then
+		Duel.SetChainLimit(s.chainlm)
+	end
 end
 function s.efop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())

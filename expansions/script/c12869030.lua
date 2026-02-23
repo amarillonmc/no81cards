@@ -58,10 +58,23 @@ function c12869030.indop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_NO_TURN_RESET)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)
+	e1:SetCondition(c12869030.icon)
 	e1:SetTarget(c12869030.tg)
 	e1:SetOperation(c12869030.op)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1,true)
+	local e2=e1:Clone()
+	e2:SetCondition(c12869030.qcon)
+	e2:SetTarget(c12869030.qtg)
+	rc:RegisterEffect(e2,true)
+	if not rc:IsType(TYPE_EFFECT) then
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_ADD_TYPE)
+		e3:SetValue(TYPE_EFFECT)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		rc:RegisterEffect(e3,true)
+	end
 end
 function c12869030.filter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsSetCard(0x6a70) and c:IsType(TYPE_LINK)
@@ -73,6 +86,9 @@ function c12869030.tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectTarget(tp,c12869030.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,e,tp)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+	if e:GetHandler():IsOriginalCodeRule(12869095) then 
+		Duel.SetChainLimit(c12869030.chainlm)
+	end
 	e:Reset()
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(12869030,3))
 end
@@ -88,4 +104,24 @@ function c12869030.op(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 	end
 	Duel.SpecialSummonComplete()
+end
+function c12869030.icon(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetHandler():IsOriginalCodeRule(12869095) or not Duel.IsEnvironment(12869005)
+end
+function c12869030.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsOriginalCodeRule(12869095) and Duel.IsEnvironment(12869005)
+end
+function c12869030.qtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and c12869030.filter(chkc,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(c12869030.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectTarget(tp,c12869030.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+	Duel.SetChainLimit(c12869030.chainlm)
+	e:Reset()
+	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(12869030,3))
+end
+function c12869030.chainlm(e,ep,tp)
+	return tp==ep
 end

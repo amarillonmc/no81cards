@@ -2,7 +2,6 @@
 function c9910575.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_POSITION)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,9910575+EFFECT_COUNT_CODE_OATH)
@@ -49,7 +48,9 @@ function c9910575.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	e:SetLabel(s)
 	if s==0 then
-		e:SetCategory(CATEGORY_POSITION+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES)
+		e:SetCategory(CATEGORY_POSITION+CATEGORY_SPECIAL_SUMMON+CATEGORY_MSET+CATEGORY_DECKDES)
+	else
+		e:SetCategory(CATEGORY_POSITION+CATEGORY_MSET)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,nil,1,0,0)
 end

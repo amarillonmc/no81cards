@@ -60,11 +60,24 @@ function c12869040.indop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetHintTiming(0,TIMING_MAIN_END+TIMING_END_PHASE+TIMING_STANDBY_PHASE+TIMINGS_CHECK_MONSTER)
 	e1:SetCountLimit(1)
+	e1:SetCondition(c12869040.icon)
 	e1:SetTarget(c12869040.target)
 	e1:SetCondition(c12869040.condition)
 	e1:SetOperation(c12869040.op)
 	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 	rc:RegisterEffect(e1,true)
+	local e2=e1:Clone()
+	e2:SetCondition(c12869040.qcon)
+	e2:SetTarget(c12869040.qtg)
+	rc:RegisterEffect(e2,true)
+	if not rc:IsType(TYPE_EFFECT) then
+		local e3=Effect.CreateEffect(c)
+		e3:SetType(EFFECT_TYPE_SINGLE)
+		e3:SetCode(EFFECT_ADD_TYPE)
+		e3:SetValue(TYPE_EFFECT)
+		e3:SetReset(RESET_EVENT+RESETS_STANDARD)
+		rc:RegisterEffect(e3,true)
+	end
 end
 function c12869040.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Auxiliary.nbcon(tp,re) end
@@ -77,6 +90,9 @@ function c12869040.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	else
 		e:SetCategory(e:GetCategory()&~CATEGORY_GRAVE_ACTION)
 	end
+	if e:GetHandler():IsOriginalCodeRule(12869095) then 
+		Duel.SetChainLimit(c12869040.chainlm)
+	end
 	e:Reset()
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(12869040,3))
 end
@@ -87,4 +103,28 @@ function c12869040.op(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.NegateActivation(ev) and re:GetHandler():IsRelateToEffect(re) then
 		Duel.Remove(eg,POS_FACEUP,REASON_EFFECT)
 	end
+end
+function c12869040.icon(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetHandler():IsOriginalCodeRule(12869095) or not Duel.IsEnvironment(12869005)
+end
+function c12869040.qcon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsOriginalCodeRule(12869095) and Duel.IsEnvironment(12869005)
+end
+function c12869040.qtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Auxiliary.nbcon(tp,re) end
+	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
+	if re:GetHandler():IsRelateToEffect(re) then
+		Duel.SetOperationInfo(0,CATEGORY_REMOVE,eg,1,0,0)
+	end
+	if re:GetActivateLocation()==LOCATION_GRAVE then
+		e:SetCategory(e:GetCategory()|CATEGORY_GRAVE_ACTION)
+	else
+		e:SetCategory(e:GetCategory()&~CATEGORY_GRAVE_ACTION)
+	end
+	Duel.SetChainLimit(c12869040.chainlm)
+	e:Reset()
+	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(12869040,3))
+end
+function c12869040.chainlm(e,ep,tp)
+	return tp==ep
 end

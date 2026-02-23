@@ -13,7 +13,7 @@ function c9910266.initial_effect(c)
 	c:RegisterEffect(e1)
 	--add counter / special summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_COUNTER+CATEGORY_SPECIAL_SUMMON+CATEGORY_POSITION)
+	e2:SetCategory(CATEGORY_COUNTER+CATEGORY_SPECIAL_SUMMON+CATEGORY_POSITION+CATEGORY_MSET)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCode(EVENT_BECOME_TARGET)

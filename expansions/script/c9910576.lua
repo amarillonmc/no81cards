@@ -25,26 +25,37 @@ function c9910576.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 end
-function c9910576.tgfilter(c)
+function c9910576.tgfilter(c,tp,res)
 	return c:IsType(TYPE_FLIP) and c:IsAbleToGrave()
+		and (c:IsLocation(LOCATION_HAND) or Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=2 or res)
 end
 function c9910576.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingMatchingCard(c9910576.tgfilter,tp,LOCATION_HAND,0,1,nil) end
+	local loc=LOCATION_HAND
+	local chain=Duel.GetCurrentChain()
+	Debug.Message("chain=")
+	Debug.Message(chain)
+	if chain>0 then
+		local te=Duel.GetChainInfo(chain,CHAININFO_TRIGGERING_EFFECT)
+		if te:GetHandler()==e:GetHandler() then loc=LOCATION_HAND+LOCATION_DECK end
+	end
+	Debug.Message("loc=")
+	Debug.Message(loc)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910576.tgfilter,tp,loc,0,1,nil,tp,false) and Duel.IsPlayerCanDraw(tp,1) end
+	e:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DRAW)
+	if loc==LOCATION_HAND+LOCATION_DECK then e:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES+CATEGORY_DRAW) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c9910576.operation(e,tp,eg,ep,ev,re,r,rp)
-	local loc=LOCATION_HAND 
+	local loc=LOCATION_HAND
 	local chain=Duel.GetCurrentChain()
 	if chain>1 then
 		local te=Duel.GetChainInfo(chain-1,CHAININFO_TRIGGERING_EFFECT)
 		if te:GetHandler()==e:GetHandler() then loc=LOCATION_HAND+LOCATION_DECK end
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c9910576.tgfilter,tp,loc,0,1,1,nil)
-	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0
-		and g:GetFirst():IsLocation(LOCATION_GRAVE) then
+	local g=Duel.SelectMatchingCard(tp,c9910576.tgfilter,tp,loc,0,1,1,nil,tp,true)
+	if g:GetCount()>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0 and g:GetFirst():IsLocation(LOCATION_GRAVE) then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
