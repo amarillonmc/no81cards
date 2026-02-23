@@ -47,8 +47,8 @@ function c67200672.ovfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x667b) and c:IsType(TYPE_XYZ) and not c:IsCode(67200672)
 end
 function c67200672.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end
-	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
+	if chk==0 then return Duel.GetFlagEffect(tp,67200672)==0 end
+	Duel.RegisterFlagEffect(tp,67200672,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
 function c67200672.atkval(e,c)
 	local g=e:GetHandler():GetOverlayGroup()

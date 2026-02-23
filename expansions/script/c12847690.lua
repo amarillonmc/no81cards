@@ -37,12 +37,28 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		local ag=sg:Filter(Card.IsAbleToHand,nil)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg1=ag:Select(tp,1,1,nil)
-		if #sg1>0 and Duel.SendtoHand(sg1,nil,REASON_EFFECT)>0 then
+		local tc=sg1:GetFirst()
+		if tc and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) then
 			Duel.ConfirmCards(1-tp,sg1)
 			sg:Sub(sg1)
 			if #sg>0 then
 				Duel.SendtoGrave(sg,REASON_EFFECT)
 			end
+			if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+				local e1=Effect.CreateEffect(e:GetHandler())
+				e1:SetType(EFFECT_TYPE_FIELD)
+				e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+				e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+				e1:SetTargetRange(1,0)
+				e1:SetLabelObject(tc)
+				e1:SetTarget(s.splimit)
+				e1:SetReset(RESET_PHASE+PHASE_END)
+				Duel.RegisterEffect(e1,tp)
+			end
 		end
 	end
+end
+function s.splimit(e,c)
+	local tc=e:GetLabelObject()
+	return not (c:IsRace(tc:GetRace()) and c:IsAttribute(tc:GetAttribute())) and not c:IsLocation(LOCATION_EXTRA)
 end

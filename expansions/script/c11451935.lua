@@ -28,7 +28,7 @@ function cm.initial_effect(c)
 	e3:SetCode(EVENT_CHAIN_SOLVED)
 	e3:SetRange(LOCATION_GRAVE+LOCATION_DECK)
 	e3:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e3:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
+	--e3:SetCountLimit(1)
 	e3:SetCondition(cm.con)
 	e3:SetOperation(cm.op)
 	c:RegisterEffect(e3)
@@ -106,6 +106,9 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			cm[tc]=1
 			cm[c]=nil
 			return
+		else
+			g:RemoveCard(c)
+			for rc in aux.Next(g) do cm[rc]=2 end
 		end
 	end
 	if re:GetHandler():IsRelateToEffect(re) then
