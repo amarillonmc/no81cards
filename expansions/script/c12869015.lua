@@ -88,7 +88,7 @@ function c12869015.spop(e,tp,eg,ep,ev,re,r,rp)
 		local e2=e1:Clone()
 		e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 		tc:RegisterEffect(e2)
-		tc:RegisterFlagEffect(12869016,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(12869015,2))
+		tc:RegisterFlagEffect(12869016,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,2,0,aux.Stringid(12869015,2))
 	end
 end
 function c12869015.costfilter(c)
