@@ -41,7 +41,7 @@ end
 --Effect 1 Functions
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	--Referencing c1712616 (Beetle Trooper) logic
-	return rp~=tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev) and not c:IsStatus(STATUS_BATTLE_DESTROYED)
+	return rp~=tp and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainNegatable(ev) and not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED)
 end
 
 function s.negcostfilter(c,tp)
