@@ -2,7 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6a70),aux.NonTuner(nil),1)
+	aux.AddSynchroMixProcedure(c,aux.Tuner(aux.FilterBoolFunction(Card.IsSetCard,0x6a70)),nil,nil,aux.NonTuner(nil),1,99)
 	c:EnableReviveLimit()
 	--token
 	local e1=Effect.CreateEffect(c)
@@ -101,9 +101,6 @@ end
 function s.sstg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(12869055,3))
-	if e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) and e:GetHandler():IsOriginalCodeRule(12869095) then
-		Duel.SetChainLimit(s.chainlm)
-	end
 end
 function s.ssop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
@@ -119,10 +116,11 @@ function s.ssop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.icon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(id)==0 or e:GetHandler():IsOriginalCodeRule(12869095) and not Duel.IsEnvironment(12869005)
+	return e:GetHandler():GetFlagEffect(id)==0
 end
 function s.qcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(id)>0 and Duel.IsEnvironment(12869005)
+	return e:GetHandler():GetFlagEffect(id)>0 
+	and (Duel.IsEnvironment(12869005) or Duel.IsMainPhase() and Duel.GetCurrentChain()==0 and Duel.GetTurnPlayer()==tp)
 end
 function s.qtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK,0,1,nil) end

@@ -97,10 +97,11 @@ function s.efcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(cg,REASON_COST)
 end
 function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return e:GetHandler():GetFlagEffect(id+o)==0 end
 	if e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) and e:GetHandler():IsOriginalCodeRule(12869095) then
 		Duel.SetChainLimit(s.chainlm)
 	end
+	e:GetHandler():RegisterFlagEffect(id+o,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function s.efop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -130,10 +131,11 @@ function s.qcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(id)>0 and Duel.IsEnvironment(12869005)
 end
 function s.qtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return e:GetHandler():GetFlagEffect(id+o)==0 end
 	if e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) then
 		Duel.SetChainLimit(s.chainlm)
 	end
+	e:GetHandler():RegisterFlagEffect(id+o,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 end
 function s.chainlm(e,ep,tp)
 	return tp==ep

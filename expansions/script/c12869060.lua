@@ -2,7 +2,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--synchro summon
-	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x6a70),aux.NonTuner(nil),1)
+	aux.AddSynchroMixProcedure(c,aux.Tuner(aux.FilterBoolFunction(Card.IsSetCard,0x6a70)),nil,nil,aux.NonTuner(nil),1,99)
 	c:EnableReviveLimit()
 	--token
 	local e1=Effect.CreateEffect(c)
@@ -30,6 +30,7 @@ function s.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_NO_TURN_RESET)
 	e2:SetCountLimit(1)
 	e2:SetTarget(s.imtg)
+	e2:SetCondition(s.icon)
 	e2:SetCost(s.imcost)
 	e2:SetOperation(s.imop)
 	c:RegisterEffect(e2)
@@ -124,9 +125,6 @@ function s.imcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.imtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
-	if e:GetHandler():IsSummonType(SUMMON_TYPE_SYNCHRO) and e:GetHandler():IsOriginalCodeRule(12869095) then
-		Duel.SetChainLimit(s.chainlm)
-	end
 end
 function s.imop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -146,10 +144,11 @@ function s.efilter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function s.icon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(id)==0 or e:GetHandler():IsOriginalCodeRule(12869095) and not Duel.IsEnvironment(12869005)
+	return e:GetHandler():GetFlagEffect(id)==0
 end
 function s.qcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffect(id)>0 and Duel.IsEnvironment(12869005)
+	return e:GetHandler():GetFlagEffect(id)>0 
+	and (Duel.IsEnvironment(12869005) or Duel.IsMainPhase() and Duel.GetCurrentChain()==0 and Duel.GetTurnPlayer()==tp)
 end
 function s.qtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
