@@ -41,6 +41,11 @@ end
 function c9910933.damtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,300)
+	if Duel.GetCurrentChain()>1 then
+		e:SetCategory(CATEGORY_DAMAGE+CATEGORY_SSET)
+	else
+		e:SetCategory(CATEGORY_DAMAGE)
+	end
 end
 function c9910933.setfilter1(c)
 	return c:IsSetCard(0x3954) and c:IsType(TYPE_TRAP) and c:IsSSetable()

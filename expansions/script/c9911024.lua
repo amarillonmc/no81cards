@@ -3,7 +3,7 @@ function c9911024.initial_effect(c)
 	aux.AddRitualProcGreater2(c,c9911024.ritual_filter,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
 	--to hand
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_ATKCHANGE)
+	e1:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_GRAVE)

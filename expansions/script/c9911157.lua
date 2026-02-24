@@ -5,7 +5,6 @@ function c9911157.initial_effect(c)
 	c:EnableReviveLimit()
 	--to hand
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
@@ -50,9 +49,10 @@ end
 function c9911157.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.CheckRemoveOverlayCard(tp,1,0,1,REASON_EFFECT)
 		and Duel.IsExistingMatchingCard(c9911157.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	if e:GetLabel()==1 then
-		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_POSITION)
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_POSITION+CATEGORY_MSET)
 	end
 end
 function c9911157.thop(e,tp,eg,ep,ev,re,r,rp)

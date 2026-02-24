@@ -2,6 +2,7 @@
 function c9911159.initial_effect(c)
 	--set
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_HANDES+CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE+LOCATION_HAND)
 	e1:SetCountLimit(1,9911159)

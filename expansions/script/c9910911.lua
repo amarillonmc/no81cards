@@ -4,6 +4,7 @@ function c9910911.initial_effect(c)
 	aux.AddRitualProcGreater2(c,c9910911.filter,LOCATION_HAND+LOCATION_EXTRA,c9910911.mfilter)
 	--set
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_PHASE+PHASE_END)
 	e2:SetRange(LOCATION_GRAVE)

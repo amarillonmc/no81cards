@@ -3,7 +3,7 @@ function c9911022.initial_effect(c)
 	c:EnableReviveLimit()
 	--set
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DECKDES)
+	e1:SetCategory(CATEGORY_SSET+CATEGORY_TOGRAVE+CATEGORY_DECKDES)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9911022)

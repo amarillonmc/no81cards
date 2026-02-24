@@ -2,7 +2,7 @@
 function c9910923.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_TODECK+CATEGORY_CONTROL)
+	e1:SetCategory(CATEGORY_DISABLE+CATEGORY_SSET+CATEGORY_TODECK+CATEGORY_CONTROL)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCountLimit(1,9910923)

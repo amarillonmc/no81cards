@@ -2,7 +2,7 @@
 function c9910929.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_REMOVE+CATEGORY_SSET+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCountLimit(1,9910929)
