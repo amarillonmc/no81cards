@@ -8,7 +8,7 @@ function c9910728.initial_effect(c)
 	QutryYgzw.AddTgFlag(c)
 	--to grave & set
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_LEAVE_GRAVE)
+	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_LEAVE_GRAVE+CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)

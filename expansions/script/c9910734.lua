@@ -26,7 +26,7 @@ function c9910734.initial_effect(c)
 	c:RegisterEffect(e2)
 	--set
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_LEAVE_GRAVE)
+	e3:SetCategory(CATEGORY_LEAVE_GRAVE+CATEGORY_SSET)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetRange(LOCATION_GRAVE)

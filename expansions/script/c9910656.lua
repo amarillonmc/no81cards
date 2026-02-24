@@ -21,7 +21,7 @@ function c9910656.initial_effect(c)
 	c:RegisterEffect(e2)
 	--set
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_REMOVE)
+	e3:SetCategory(CATEGORY_SSET+CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_BECOME_TARGET)
 	e3:SetRange(LOCATION_MZONE+LOCATION_GRAVE)

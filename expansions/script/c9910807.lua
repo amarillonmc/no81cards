@@ -3,6 +3,7 @@ function c9910807.initial_effect(c)
 	aux.AddRitualProcGreater2(c,c9910807.filter,LOCATION_HAND+LOCATION_GRAVE,c9910807.filter)
 	--set
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,9910807)

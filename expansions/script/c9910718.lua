@@ -20,6 +20,7 @@ function c9910718.initial_effect(c)
 	c:RegisterEffect(e2)
 	--set & destroy
 	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_SSET+CATEGORY_DESTROY)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_GRAVE)

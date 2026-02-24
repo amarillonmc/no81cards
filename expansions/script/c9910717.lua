@@ -4,7 +4,7 @@ function c9910717.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910717,0))
-	e1:SetCategory(CATEGORY_POSITION)
+	e1:SetCategory(CATEGORY_POSITION+CATEGORY_MSET)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,9910717+EFFECT_COUNT_CODE_OATH)
@@ -14,7 +14,7 @@ function c9910717.initial_effect(c)
 	--cost
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910717,1))
-	e2:SetCategory(CATEGORY_POSITION)
+	e2:SetCategory(CATEGORY_POSITION+CATEGORY_MSET)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetCountLimit(1,9910717+EFFECT_COUNT_CODE_OATH)
@@ -89,9 +89,12 @@ function c9910717.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
 	local g=Duel.GetMatchingGroup(Card.IsCanTurnSet,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,g:GetCount(),0,0)
+	local cate=CATEGORY_POSITION+CATEGORY_MSET
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		cate=cate+CATEGORY_SSET
 		Duel.SetChainLimit(c9910717.chlimit)
 	end
+	e:SetCategory(cate)
 end
 function c9910717.chlimit(e,ep,tp)
 	return tp==ep

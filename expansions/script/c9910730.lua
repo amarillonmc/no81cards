@@ -4,6 +4,7 @@ function c9910730.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(9910730,0))
+	e1:SetCategory(CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetCode(EVENT_FREE_CHAIN)
@@ -15,6 +16,7 @@ function c9910730.initial_effect(c)
 	--cost
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(9910730,1))
+	e2:SetCategory(CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_FREE_CHAIN)
@@ -83,12 +85,12 @@ function c9910730.target2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if ft>2 then ft=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 	local g=Duel.SelectTarget(tp,QutryYgzw.SetFilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,ft,nil,e,tp)
-	local cate=0
+	local cate=CATEGORY_SSET
 	if g:IsExists(Card.IsLocation,1,nil,LOCATION_GRAVE) then
-		cate=cate+CATEGORY_LEAVE_GRAVE 
+		cate=cate+CATEGORY_LEAVE_GRAVE
 	end
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
-		cate=cate+CATEGORY_REMOVE 
+		cate=cate+CATEGORY_REMOVE
 		Duel.SetChainLimit(c9910730.chlimit)
 	end
 	e:SetCategory(cate)

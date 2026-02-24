@@ -24,7 +24,7 @@ function c9910854.initial_effect(c)
 	c:RegisterEffect(e2)
 	--return
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_TODECK)
+	e3:SetCategory(CATEGORY_SSET+CATEGORY_TOHAND)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e3:SetCode(EVENT_PHASE+PHASE_END)
 	e3:SetRange(LOCATION_MZONE)
