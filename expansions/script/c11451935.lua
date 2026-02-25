@@ -86,7 +86,7 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return rc:IsSetCard(0x3977) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function cm.nfilter(c)
-	return cm.special_summon[c] and c:IsCanBeSpecialSummoned(cm.special_summon[c],0,c:GetControler(),true,true)
+	return cm.special_summon[c] and c:IsSpecialSummonable(0) --c:IsCanBeSpecialSummoned(cm.special_summon[c],0,c:GetControler(),true,true)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -99,7 +99,8 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		g:AddCard(c)
-		local tc=g:Select(tp,1,1,nil):GetFirst()
+		local tc=g:GetFirst()
+		if #g>0 then tc=g:Select(tp,1,1,nil):GetFirst() end
 		if tc~=c then
 			g:RemoveCard(c)
 			for rc in aux.Next(g) do cm[rc]=2 end
