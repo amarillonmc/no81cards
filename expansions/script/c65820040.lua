@@ -28,6 +28,7 @@ function s.initial_effect(c)
 	e6:SetOperation(s.tnop)
 	c:RegisterEffect(e6)
 end
+
 function s.sprfilter(c,tp,g,sc)   
 	return (c:IsLocation(LOCATION_SZONE) or (c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsCanBeXyzMaterial(nil)))
 	 and c:IsSetCard(0x3a32)
@@ -35,6 +36,7 @@ end
 function s.spgckfil(g,e,tp) 
 	return Duel.GetLocationCountFromEx(tp,tp,g,nil)
 end  
+
 function s.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler() 
@@ -45,7 +47,15 @@ function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_ONFIELD,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local g1=g:SelectSubGroup(tp,s.spgckfil,false,2,2,e,tp)
-	c:SetMaterial(g1) 
+	local sg=Group.CreateGroup()
+	local tc=g1:GetFirst()
+	while tc do
+		local sg1=tc:GetOverlayGroup()
+		sg:Merge(sg1)
+		tc=g1:GetNext()
+	end
+	Duel.SendtoGrave(sg,REASON_RULE)
+	c:SetMaterial(g1)
 	Duel.Overlay(c,g1)
 end
 

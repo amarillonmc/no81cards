@@ -48,6 +48,9 @@ function c28366277.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28366277.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
+function c28366277.gcheck(sg)
+	return sg:IsExists(Card.IsType,nil,TYPE_MONSTER)
+end
 function c28366277.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetLP(tp)>3000 and 1 or 2
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
@@ -59,8 +62,9 @@ function c28366277.activate(e,tp,eg,ep,ev,re,r,rp)
 	tg=tg:Filter(Card.IsLocation,nil,LOCATION_HAND)
 	if #tg==0 then return end
 	Duel.ConfirmCards(1-tp,tg)
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,aux.ExceptThisCard(e))
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local dg=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_HAND+LOCATION_ONFIELD,0,#tg,#tg,aux.ExceptThisCard(e))
+	local dg=g:SelectSubGroup(tp,c28366277.gcheck,false,#tg,#tg)
 	Duel.HintSelection(dg)
 	Duel.Destroy(dg,REASON_EFFECT)
 end
