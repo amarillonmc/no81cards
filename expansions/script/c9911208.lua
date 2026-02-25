@@ -11,7 +11,7 @@ function c9911208.initial_effect(c)
 	c:RegisterEffect(e1)
 	--sset
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_DECKDES+CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_SSET+CATEGORY_DECKDES+CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,9911208)

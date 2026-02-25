@@ -42,6 +42,9 @@ function c9911751.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9911751.tdfilter,tp,0,LOCATION_ONFIELD,1,nil) end
 	local g=Duel.GetMatchingGroup(c9911751.tdfilter,tp,0,LOCATION_ONFIELD,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
+	local cate=CATEGORY_TODECK
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetLabel()~=0 then cate=cate+CATEGORY_SSET end
+	e:SetCategory(cate)
 end
 function c9911751.activate(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c9911751.tdfilter,tp,0,LOCATION_ONFIELD,nil)

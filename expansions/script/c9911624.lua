@@ -5,7 +5,7 @@ function c9911624.initial_effect(c)
 	c:EnableReviveLimit()
 	--confirm
 	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_DECKDES)
+	e4:SetCategory(CATEGORY_DECKDES+CATEGORY_SSET+CATEGORY_REMOVE)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e4:SetProperty(EFFECT_FLAG_DELAY)

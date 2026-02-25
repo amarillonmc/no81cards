@@ -5,7 +5,7 @@ function c9911433.initial_effect(c)
 	c:EnableReviveLimit()
 	--activate limit
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DRAW+CATEGORY_DESTROY)
+	e1:SetCategory(CATEGORY_SSET+CATEGORY_DRAW+CATEGORY_DESTROY)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1)

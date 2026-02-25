@@ -100,9 +100,9 @@ function c9911671.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	e:SetLabel(op)
 	if op==0 then
-		e:SetCategory(CATEGORY_LEAVE_GRAVE)
+		e:SetCategory(CATEGORY_LEAVE_GRAVE+CATEGORY_SSET)
 	else
-		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE+CATEGORY_LEAVE_GRAVE)
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TOGRAVE+CATEGORY_LEAVE_GRAVE+CATEGORY_SSET)
 	end
 end
 function c9911671.gselect(g,ft)

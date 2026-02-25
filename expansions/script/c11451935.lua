@@ -45,8 +45,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 		local rc=te:GetHandler()
 		local sg=Group.FromCards(c,rc)
 		sg:KeepAlive()
-		c:RegisterFlagEffect(m+3,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1)
-		rc:RegisterFlagEffect(m+3,RESET_EVENT+RESETS_STANDARD,0,1)
+		local fid=c:GetFieldID()
+		c:RegisterFlagEffect(m+3,RESET_EVENT+RESETS_STANDARD-RESET_TOFIELD,0,1,fid)
+		rc:RegisterFlagEffect(m+3,RESET_EVENT+RESETS_STANDARD,0,1,fid)
 		--destroy
 		local e2=Effect.CreateEffect(c)
 		e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
@@ -58,24 +59,26 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 		local e4=Effect.CreateEffect(c)
 		e4:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 		e4:SetCode(EVENT_LEAVE_FIELD_P)
+		e4:SetLabel(fid)
 		e4:SetLabelObject(sg)
 		e4:SetOperation(cm.chkop)
 		Duel.RegisterEffect(e4,tp)
 		local e3=Effect.CreateEffect(c)
 		e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
 		e3:SetCode(EVENT_LEAVE_FIELD)
+		e3:SetLabel(fid)
 		e3:SetOperation(cm.desop2)
 		e3:SetLabelObject(e4)
 		Duel.RegisterEffect(e3,tp)
 	end
 end
 function cm.chkop(e,tp,eg,ep,ev,re,r,rp)
-	local sg=e:GetLabelObject():Filter(function(c) return c:GetFlagEffect(m+3)>0 end,nil)
+	local sg=e:GetLabelObject():Filter(function(c) return c:GetFlagEffectLabel(m+3) and c:GetFlagEffectLabel(m+3)==e:GetLabel() end,nil)
 	if #Group.__band(sg,eg)>0 then e:SetLabel(1) else e:SetLabel(0) end
 end
 function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
 	if e:GetLabelObject():GetLabel()~=1 then return end
-	local sg=e:GetLabelObject():GetLabelObject():Filter(function(c) return c:GetFlagEffect(m+3)>0 end,nil)
+	local sg=e:GetLabelObject():GetLabelObject():Filter(function(c) return c:GetFlagEffectLabel(m+3) and c:GetFlagEffectLabel(m+3)==e:GetLabel() end,nil)
 	e:GetLabelObject():GetLabelObject():DeleteGroup()
 	e:GetLabelObject():Reset()
 	e:Reset()
@@ -86,7 +89,7 @@ function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return rc:IsSetCard(0x3977) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function cm.nfilter(c)
-	return cm.special_summon[c] and c:IsSpecialSummonable(0) --c:IsCanBeSpecialSummoned(cm.special_summon[c],0,c:GetControler(),true,true)
+	return cm.special_summon[c] and c:IsCanBeSpecialSummoned(cm.special_summon[c],0,c:GetControler(),true,true)
 end
 function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -100,7 +103,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		g:AddCard(c)
 		local tc=g:GetFirst()
-		if #g>0 then tc=g:Select(tp,1,1,nil):GetFirst() end
+		if #g>1 then tc=g:Select(tp,1,1,nil):GetFirst() end
 		if tc~=c then
 			g:RemoveCard(c)
 			for rc in aux.Next(g) do cm[rc]=2 end
@@ -168,7 +171,7 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e2)
 		e:UseCountLimit(tp,1)
-		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2))
+		if not rep then c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2)) end
 		c:RegisterFlagEffect(11451717,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,ct,aux.Stringid(11451717,ct-3))
 		c:RegisterFlagEffect(11451718,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,9-ct,aux.Stringid(11451718,9-ct))
 		local e1=Effect.CreateEffect(c)

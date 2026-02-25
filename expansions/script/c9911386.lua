@@ -13,7 +13,7 @@ function c9911386.initial_effect(c)
 	c:RegisterEffect(e1)
 	--to hand or set
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_LEAVE_GRAVE)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_LEAVE_GRAVE+CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_GRAVE)
 	e2:SetCountLimit(1,9911387)
