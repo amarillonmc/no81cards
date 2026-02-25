@@ -1,4 +1,3 @@
--- 半魔的骑士领主
 local s,id=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,17337400)
@@ -39,16 +38,17 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		and Duel.IsPlayerCanDraw(tp,ct) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectTarget(tp,s.thfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil,tp)
-	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not (tc and tc:IsRelateToEffect(e)) then return end
-	local ct=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
-	if ct>0 and Duel.Draw(tp,ct,REASON_EFFECT)==ct then
+	if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and (tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA)) then
 		Duel.BreakEffect()
-		if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and (tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA)) then
+		local ct=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
+		if ct>0 and Duel.Draw(tp,ct,REASON_EFFECT)==ct then
+			Duel.BreakEffect()
 			local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Select(tp,ct,ct,nil)
 			if #g>0 then
 				Duel.SendtoDeck(g,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
