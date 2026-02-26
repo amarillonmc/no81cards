@@ -63,24 +63,24 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
+function s.target_filter(c)
+	return c:IsFaceup() and c:IsSetCard(0x3f50)
+end
 function s.thfilter(c,type_mask)
 	if c:IsType(type_mask) then return false end
 	return (c:IsSetCard(0x3f50) or aux.IsCodeListed(c,17337400)) and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and chkc:IsSetCard(0x3f50) end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsSetCard,tp,LOCATION_ONFIELD,0,1,nil,0x3f50) end
-	
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and s.target_filter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(s.target_filter,tp,LOCATION_ONFIELD,0,1,nil) end	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,Card.IsSetCard,tp,LOCATION_ONFIELD,0,1,1,nil,0x3f50)
+	local g=Duel.SelectTarget(tp,s.target_filter,tp,LOCATION_ONFIELD,0,1,1,nil)	
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if not (tc and tc:IsRelateToEffect(e)) then return end
-
-	local type_mask = tc:GetType()&(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)
-	
+	if not (tc and tc:IsRelateToEffect(e) and tc:IsFaceup()) then return end
+	local type_mask = tc:GetType()&(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil,type_mask)
 	if #g>0 then

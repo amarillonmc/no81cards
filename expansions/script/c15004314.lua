@@ -52,7 +52,7 @@ function cm.tgop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanSendtoGrave(1-tp) then tg:Remove(Card.IsControler,nil,1-tp) end
 	if #tg>0 then
 		Duel.BreakEffect()
-		Duel.SendtoGrave(sg,REASON_RULE,1-tp)
+		Duel.SendtoGrave(tg,REASON_RULE,1-tp)
 	end
 end
 function cm.cost(e,tp,eg,ep,ev,re,r,rp,chk)

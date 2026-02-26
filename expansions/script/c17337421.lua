@@ -89,17 +89,22 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and chkc:IsSetCard(0x3f50) end
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and chkc:IsSetCard(0x3f50) and chkc:IsFaceup() end
 	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) 
-		and Duel.IsExistingTarget(Card.IsSetCard,tp,LOCATION_ONFIELD,0,1,nil,0x3f50) end
+		and Duel.IsExistingTarget(s.thfilter2,tp,LOCATION_ONFIELD,0,1,nil) end	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,Card.IsSetCard,tp,LOCATION_ONFIELD,0,1,1,nil,0x3f50)
+	local g=Duel.SelectTarget(tp,s.thfilter2,tp,LOCATION_ONFIELD,0,1,1,nil)	
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
+
+function s.thfilter2(c)
+	return c:IsFaceup() and c:IsSetCard(0x3f50) and c:IsAbleToHand()
+end
+
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) then
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
 end
