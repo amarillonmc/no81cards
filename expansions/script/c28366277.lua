@@ -49,7 +49,7 @@ function c28366277.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
 function c28366277.gcheck(sg)
-	return sg:IsExists(Card.IsType,nil,TYPE_MONSTER)
+	return sg:IsExists(Card.IsType,1,nil,TYPE_MONSTER)
 end
 function c28366277.activate(e,tp,eg,ep,ev,re,r,rp)
 	local ct=Duel.GetLP(tp)>3000 and 1 or 2
