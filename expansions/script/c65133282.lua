@@ -53,7 +53,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function s.tdfilter1(c)
-	return c:IsSetCard(0x838) and not c:IsSummonableCard() and c:IsAbleToDeck() and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE))
+	return c:IsSetCard(0x838) and c:IsType(TYPE_MONSTER) and not c:IsSummonableCard() and c:IsAbleToDeck() and c:IsFaceupEx()
 end
 function s.tdfilter2(c)
 	return c:IsAbleToDeck()

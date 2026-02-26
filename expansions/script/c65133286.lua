@@ -39,10 +39,10 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.splimit(e,se,sp,st)
-	Debug.Message(se:GetHandler():IsSetCard(0x838))
 	return se:GetHandler():IsSetCard(0x838) or se:GetHandler()==e:GetHandler()
 end
 function s.immval(e,te)
+	local c=e:GetHandler()
 	if te:IsActiveType(TYPE_MONSTER) and te:GetOwnerPlayer()==1-e:GetHandlerPlayer() then
 		if c:GetOriginalLevel()>0 and c:GetOriginalLevel()<sc:GetLevel() then return true end
 		if c:GetOriginalRank()>0 and c:GetOriginalRank()<sc:GetRank() then return true end
