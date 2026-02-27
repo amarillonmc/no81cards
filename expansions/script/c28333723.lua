@@ -111,5 +111,7 @@ function c28333723.setop(e,tp,eg,ep,ev,re,r,rp)
 		sg:Sub(mg)
 		Duel.SpecialSummon(mg,0,tp,tp,false,false,POS_FACEDOWN_DEFENSE)
 	end
-	Duel.SSet(tp,sg)
+	Duel.SSet(tp,sg,tp,false)
+	sg:Merge(mg)
+	Duel.ConfirmCards(1-tp,sg)
 end

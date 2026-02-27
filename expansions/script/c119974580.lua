@@ -91,18 +91,17 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
 	local tc=g:GetFirst()
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-	if tc:IsAbleToHand() or ft>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) then
-		if Duel.SelectOption(tp,1190,1152)==0 then
-			Duel.SendtoHand(tc,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tc)
-		elseif Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_CANNOT_ATTACK)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-			tc:RegisterEffect(e1)
-			Duel.SpecialSummonComplete()
-		end
+	local op=aux.SelectFromOptions(tp,{tc:IsAbleToHand(),1190},{ft>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false),1152})
+	if op==0 then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
+	elseif Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_CANNOT_ATTACK)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e1)
+		Duel.SpecialSummonComplete()
 	end
 end
 function s.spfilter(c,e,tp)
