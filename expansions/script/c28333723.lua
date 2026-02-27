@@ -80,13 +80,14 @@ function c28333723.efop(e,tp,eg,ep,ev,re,r,rp)
 		local op=Duel.SelectOption(tp,table.unpack(des_list))
 		te=e_list[op+1]
 	end
+	c28333723.effect_list={}
 	--copy
 	e:SetProperty(te:GetProperty())
 	local tg=te:GetTarget()
 	if tg then tg(e,tp,eg,ep,ev,re,r,rp,1) end
 	local op=te:GetOperation()
 	if op then op(e,tp,eg,ep,ev,re,r,rp) end
-	e:SetProperty(0)
+	e:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)--Original Property
 end
 function c28333723.setfilter(c,e,tp,chk)
 	return c:IsSetCard(0x285) and (c:IsSSetable() or Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEDOWN_DEFENSE)) and (chk==0 or aux.NecroValleyFilter()(c))
