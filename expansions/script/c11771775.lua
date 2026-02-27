@@ -189,9 +189,8 @@ function s.psop(e,tp,eg,ep,ev,re,r,rp)
 	
 	e1:Reset()
 end
-function s.cfilter(c,tp,se)
-	return c:IsFaceup() and c:IsSummonPlayer(tp) and (c:IsLevel(9) or c:IsRace(9))
-		and (se==nil or c:GetReasonEffect()~=se)
+function s.cfilter(c,tp)
+	return c:IsFaceup() and c:IsSummonPlayer(tp) and (c:IsLevel(9) or c:IsRace(9))and (c:IsSummonType(SUMMON_TYPE_XYZ) or c:IsSummonType(SUMMON_TYPE_PENDULUM))
 end
 function s.tfcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter,1,nil,tp)
