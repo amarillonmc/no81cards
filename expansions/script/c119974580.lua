@@ -92,7 +92,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=g:GetFirst()
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local op=aux.SelectFromOptions(tp,{tc:IsAbleToHand(),1190},{ft>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false),1152})
-	if op==0 then
+	if op==1 then
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
 	elseif Duel.SpecialSummonStep(tc,0,tp,tp,false,false,POS_FACEUP) then

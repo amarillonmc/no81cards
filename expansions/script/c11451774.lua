@@ -81,12 +81,12 @@ function cm.rfilter(c)
 	return c:GetFlagEffect(11451771)>0
 end
 function Group.ForEach(group,func,...)
-    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
-        local d_group=group:Clone()
-        for tc in aux.Next(d_group) do
-            func(tc,...)
-        end
-    end
+	if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+		local d_group=group:Clone()
+		for tc in aux.Next(d_group) do
+			func(tc,...)
+		end
+	end
 end
 function cm.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local phase=Duel.GetCurrentPhase()
@@ -196,7 +196,7 @@ function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
 	local tt=Duel.GetAttackTarget()
 	if tt then g:AddCard(tt) end
 	local tg=g:Filter(Card.IsAbleToHand,nil)
-	Duel.SendtoHand(tg,nil,REASON_EFFECT)
+	Duel.SendtoHand(tg,nil,REASON_EFFECT+REASON_REPLACE)
 	e:Reset()
 end
 function cm.thfilter(c,code)
@@ -277,5 +277,5 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 	if not g then return end
 	local sg=g:Filter(cm.filter6,nil)
 	g:DeleteGroup()
-	Duel.SendtoHand(sg,tp,REASON_EFFECT+REASON_REPLACE)
+	Duel.SendtoHand(sg,tp,REASON_EFFECT)
 end
