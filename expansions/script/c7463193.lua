@@ -87,7 +87,6 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			--copy effect
 			local e9=Effect.CreateEffect(c)
 			e9:SetDescription(aux.Stringid(id,1))
-			e9:SetCategory(CATEGORY_SPECIAL_SUMMON)
 			e9:SetType(EFFECT_TYPE_QUICK_O)
 			e9:SetHintTiming(TIMING_MAIN_END,TIMING_MAIN_END)
 			e9:SetCode(EVENT_FREE_CHAIN)

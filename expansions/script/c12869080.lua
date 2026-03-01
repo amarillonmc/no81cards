@@ -30,19 +30,20 @@ end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	return rp==1-tp
 end
-function s.cfilter(c,rc)
-	return c:IsSetCard(0x6a70) and (c:IsType(TYPE_SYNCHRO) or rc:IsAbleToRemove() and c:IsType(TYPE_LINK)) and c:IsAbleToRemoveAsCost()
+function s.cfilter(c,re)
+	local rc=re:GetHandler()
+	return c:IsSetCard(0x6a70) and (c:IsType(TYPE_SYNCHRO) or rc:IsAbleToRemove() and rc:IsRelateToEffect(re) and c:IsType(TYPE_LINK)) and c:IsAbleToExtraAsCost() and c:IsFaceupEx()
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_GRAVE,0,1,nil,re:GetHandler()) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_GRAVE,0,1,2,nil,re:GetHandler())
+	if chk==0 then return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,re) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,2,nil,re)
 	g:KeepAlive()
 	e:SetLabelObject(g)
-	Duel.Remove(g,POS_FACEUP,REASON_COST)
+	Duel.SendtoDeck(g,nil,2,REASON_COST)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return e:IsCostChecked() end
 	local g=e:GetLabelObject()
 	if g:IsExists(Card.IsType,1,nil,TYPE_SYNCHRO) then
 		Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
