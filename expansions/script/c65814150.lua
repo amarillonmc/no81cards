@@ -1,7 +1,5 @@
 --主宰之怒 主巢
 local s,id,o=GetID()
-if not CATEGORY_MSET then CATEGORY_MSET=0 end
-if not CATEGORY_SSET then CATEGORY_SSET=0 end
 function s.initial_effect(c)
 	--activate
 	local e1=Effect.CreateEffect(c)
@@ -26,7 +24,7 @@ end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
-		return Duel.IsExistingMatchingCard(s.ffilter,tp,LOCATION_DECK,0,1,nil,e,tp,ft) and Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c) and Duel.GetFlagEffect(tp,id)==0 end
+		return Duel.IsExistingMatchingCard(s.ffilter,tp,LOCATION_DECK,0,1,nil,e,tp,ft) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c) and Duel.GetFlagEffect(tp,id)==0 end
 	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,0,1)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
@@ -42,8 +40,8 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		else
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_ATTACK+POS_FACEDOWN_DEFENSE)
 		end
-		if not Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c) then return end
-		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,c)
-		Duel.SendtoGrave(g,REASON_EFFECT+REASON_RULE)
+		if not Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c) then return end
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,c)
+		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end

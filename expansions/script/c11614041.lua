@@ -21,7 +21,7 @@ function s.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,id+1)
 	e2:SetTarget(s.negtg)
 	e2:SetOperation(s.negop)
 	c:RegisterEffect(e2)
@@ -67,6 +67,7 @@ function s.negop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabelObject(tc)
 		e1:SetOperation(s.countop)
 		Duel.RegisterEffect(e1,tp)
+		c:CreateEffectRelation(e1)
 		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1,0)
 	end
 end
@@ -81,7 +82,8 @@ function s.countop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.apply_resolution(e,tp,tc,ac)
-	local c=e:GetHandler()
+	local c=e:GetOwner()
+	if not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_CARD,0,id)
 	--Negate effects
 	local e1=Effect.CreateEffect(c)

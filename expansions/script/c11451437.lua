@@ -81,7 +81,7 @@ end
 function cm.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sg=e:GetLabelObject()
 	Card.SetMaterial(c,sg)
-	Duel.SendtoGrave(sg,REASON_COST+REASON_MATERIAL)
+	Duel.SendtoGrave(sg,REASON_SPSUMMON+REASON_MATERIAL)
 end
 function cm.filter2(c)
 	return c:IsFacedown() and c:IsAbleToHand()
@@ -92,12 +92,12 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,LOCATION_HAND)
 end
 function Group.ForEach(group,func,...)
-    if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
-        local d_group=group:Clone()
-        for tc in aux.Next(d_group) do
-            func(tc,...)
-        end
-    end
+	if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+		local d_group=group:Clone()
+		for tc in aux.Next(d_group) do
+			func(tc,...)
+		end
+	end
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_REMOVED,0,1,nil) then return end
@@ -116,10 +116,16 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.grtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(1-tp) and chkc:IsAbleToRemove(tp,POS_FACEDOWN) end
-	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,c,tp,POS_FACEDOWN) and c:IsAbleToRemove(tp,POS_FACEDOWN) end
+	if chkc then return false end
+	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,c,tp,POS_FACEDOWN) and Duel.IsExistingTarget(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,c,tp,POS_FACEDOWN) and c:IsAbleToRemove(tp,POS_FACEDOWN) end
+	local g1=Duel.GetMatchingGroup(function(c) return c:IsAbleToRemove(tp,POS_FACEDOWN) and c:IsCanBeEffectTarget(e) end,tp,LOCATION_GRAVE,0,1,c)
+	local g2=Duel.GetMatchingGroup(function(c) return c:IsAbleToRemove(tp,POS_FACEDOWN) and c:IsCanBeEffectTarget(e) end,tp,LOCATION_GRAVE,0,1,c)
+	local mc=math.min(ct1,ct2)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,2,c,tp,POS_FACEDOWN)
+	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,0,mc,c,tp,POS_FACEDOWN)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+	local g3=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,#g,#g,1,c,tp,POS_FACEDOWN)
+	g:Merge(g3)
 	g:AddCard(c)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,0)
 end

@@ -1,61 +1,80 @@
 --人理之诗 包围苍天的小世界
 function c22025050.initial_effect(c)
-	aux.AddCodeList(c,22025040)
+	aux.AddCodeList(c,22025040,22025820)
+	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(22025050,0))
-	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_ATKCHANGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e1:SetCountLimit(1,22025050+EFFECT_COUNT_CODE_OATH)
+	e1:SetCode(EVENT_CHAINING)
 	e1:SetTarget(c22025050.target)
 	e1:SetOperation(c22025050.activate)
 	c:RegisterEffect(e1)
+	--aeg
+	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_REMOVE)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_CHAIN_SOLVING)
+	e3:SetRange(LOCATION_GRAVE)
+	e3:SetCondition(c22025050.aegcon)
+	e3:SetOperation(c22025050.aegop)
+	c:RegisterEffect(e3)
+end
+function c22025050.lmfilter(c)
+	return c:IsFaceup() and c:IsSetCard(22025040) 
 end
 function c22025050.filter(c)
-	return c:IsFaceup() and c:IsSetCard(0xff1)
+	return c:IsFaceup() and c:IsSetCard(0xff1) 
 end
-
-function c22025050.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c22025050.filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(c22025050.filter,tp,LOCATION_MZONE,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,c22025050.filter,tp,LOCATION_MZONE,0,1,1,nil)
-	if g:GetFirst():IsCode(22025040) then
-		Duel.SetTargetPlayer(tp)
-		Duel.SetTargetParam(1)
-		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+function c22025050.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c22025050.filter,tp,LOCATION_MZONE,0,1,nil) end
+	if Duel.IsExistingMatchingCard(c22025050.lmfilter,tp,LOCATION_MZONE,0,1,nil) and e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		Duel.SetChainLimit(c22025050.chainlm)
 	end
 end
-
+function c22025050.chainlm(e,rp,tp)
+	return tp==rp
+end
 function c22025050.activate(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsControler(tp) then
-		local e1=Effect.CreateEffect(e:GetHandler())
-		e1:SetDescription(aux.Stringid(22025050,0))
-		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
-		e1:SetValue(1)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(e:GetHandler())
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_IMMUNE_EFFECT)
-		e2:SetValue(c22025050.efilter)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-		tc:RegisterEffect(e2)
-		if tc:IsCode(22025040) then
-			local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-			Duel.Draw(p,d,REASON_EFFECT)
-		end
+	local c=e:GetHandler()
+		local g=Duel.GetMatchingGroup(c22025050.filter,tp,LOCATION_MZONE,0,nil)
+		local tc=g:GetFirst()
+		while tc do
+			local e4=Effect.CreateEffect(e:GetHandler())
+			e4:SetType(EFFECT_TYPE_SINGLE)
+			e4:SetCode(EFFECT_IMMUNE_EFFECT)
+			e4:SetValue(c22025050.efilter)
+			e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_CHAIN)
+			e4:SetOwnerPlayer(tp)
+			tc:RegisterEffect(e4)
+			tc=g:GetNext()
 	end
 end
-
-function c22025050.efilter(e,te)
+function c22025050.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
+end
+function c22025050.aegcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local ec=te:GetHandler()
-	if ec:IsHasCardTarget(c) or (te:IsHasType(EFFECT_TYPE_ACTIONS) and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(te)) then return false
+	return rp==tp and re:GetHandler():IsCode(22025820) and Duel.GetFlagEffect(tp,22026360)==0 and c:IsAbleToRemove()
+end
+function c22025050.aegop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(22025050,0)) then
+		Duel.Hint(HINT_CARD,0,22025050)
+		Duel.Remove(c,POS_FACEUP,REASON_EFFECT)
+		Duel.RegisterFlagEffect(tp,22025050,RESET_PHASE+PHASE_END,0,1)
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_FIELD)
+		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+		e1:SetTargetRange(LOCATION_MZONE,0)
+		e1:SetReset(RESET_PHASE+PHASE_END)
+		e1:SetValue(1)
+		Duel.RegisterEffect(e1,tp)
+		local e2=Effect.CreateEffect(c)
+		e2:SetDescription(aux.Stringid(22025050,1))
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e2:SetReset(RESET_PHASE+PHASE_END)
+		e2:SetTargetRange(1,0)
+		Duel.RegisterEffect(e2,tp)
 	end
-	return te:GetOwnerPlayer()~=c:GetControler()
 end

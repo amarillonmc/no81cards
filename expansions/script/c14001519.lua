@@ -89,7 +89,7 @@ function cm.exsetcon(e,tp,eg,ep,ev,re,r,rp)
 	local fug=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp)
 	local fdg=Duel.GetMatchingGroup(Card.IsFacedown,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,tp)
 	local dhg=Duel.GetMatchingGroup(cm.cfilter,tp,LOCATION_HAND,0,nil,tp)
-	return #fug>#fdg and #dhg>1 and (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or c:IsSSetable()) and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+	return #dhg>1 and (Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 or c:IsSSetable()) and Duel.GetTurnPlayer()==tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
 end
 function cm.exsetop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -219,7 +219,7 @@ function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.tcfilter(c)
-	return c:IsFaceup() and c:IsCanTurnSet() and not c:IsLocation(LOCATION_PZONE)
+	return cm.EoS(c) and c:IsFaceup() and c:IsCanTurnSet() and not c:IsLocation(LOCATION_PZONE)
 end
 function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.tcfilter,tp,LOCATION_ONFIELD,0,1,nil) end

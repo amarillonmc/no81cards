@@ -23,6 +23,7 @@ function c22025070.initial_effect(c)
 	e3:SetCode(EFFECT_CANNOT_ATTACK)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetTargetRange(LOCATION_MZONE,0)
+	e3:SetCondition(c22025070.atkcon)
 	e3:SetTarget(c22025070.ftarget)
 	c:RegisterEffect(e3)
 	--extra attack
@@ -31,6 +32,15 @@ function c22025070.initial_effect(c)
 	e4:SetCode(EFFECT_EXTRA_ATTACK)
 	e4:SetValue(c22025070.val)
 	c:RegisterEffect(e4)
+	--aeg
+	local e5=Effect.CreateEffect(c)
+	e5:SetCategory(CATEGORY_REMOVE+CATEGORY_DRAW)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetCode(EVENT_CHAIN_SOLVING)
+	e5:SetRange(LOCATION_SZONE)
+	e5:SetCondition(c22025070.aegcon)
+	e5:SetOperation(c22025070.aegop)
+	c:RegisterEffect(e5)
 end
 function c22025070.eqlimit(e,c)
 	return c:IsFaceup() and (c:IsCode(22025040) or c.effect_canequip_hogu)
@@ -58,4 +68,27 @@ end
 function c22025070.val(e,c)
 	local ct=Duel.GetFieldGroupCount(c:GetControler(),LOCATION_HAND,0)
 	return math.max(0,ct-1)
+end
+function c22025070.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tp=c:GetControler()
+	return Duel.GetFlagEffect(tp,22025070)==0 
+end
+function c22025070.aegcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	return rp==tp and re:GetHandler():IsCode(22025820) and Duel.GetFlagEffect(tp,22025070)==0
+end
+function c22025070.aegop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if Duel.SelectEffectYesNo(tp,e:GetHandler(),aux.Stringid(22025070,0)) then
+		Duel.Hint(HINT_CARD,0,22025070)
+		Duel.RegisterFlagEffect(tp,22025070,RESET_PHASE+PHASE_END,0,1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetDescription(aux.Stringid(22025070,1))
+		e2:SetType(EFFECT_TYPE_FIELD)
+		e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+		e2:SetReset(RESET_PHASE+PHASE_END)
+		e2:SetTargetRange(1,0)
+		Duel.RegisterEffect(e2,tp)
+	end
 end

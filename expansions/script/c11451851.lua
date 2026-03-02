@@ -204,7 +204,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e0)
 	--search
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_COIN+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_COIN+CATEGORY_TODECK+CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCost(cm.thcost)

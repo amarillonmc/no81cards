@@ -1,14 +1,15 @@
 --人理之基 阿喀琉斯
 function c22025040.initial_effect(c)
-	aux.AddCodeList(c,22020940)
-	--summon with no tribute
+	aux.AddCodeList(c,22025820)
+	--summon 
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(22025040,0))
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_SUMMON_PROC)
-	e0:SetCondition(c22025040.ntcon)
-	e0:SetValue(SUMMON_VALUE_SELF)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_SPSUMMON_PROC)
+	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE)
+	e0:SetRange(LOCATION_HAND)
+	e0:SetCountLimit(1,22025040+EFFECT_COUNT_CODE_OATH)
+	e0:SetCondition(c22025040.spcon)
 	c:RegisterEffect(e0)
 	--immune
 	local e1=Effect.CreateEffect(c)
@@ -32,30 +33,45 @@ function c22025040.initial_effect(c)
 	local e3=e2:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
-	--negate attack
+	--
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(22025040,2))
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_BE_BATTLE_TARGET)
-	e4:SetCountLimit(1)
-	e4:SetOperation(c22025040.negop)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e4:SetCode(EVENT_CHAINING)
+	e4:SetCountLimit(1,22025042)
+	e4:SetCondition(c22025040.atkcon)
+	e4:SetTarget(c22025040.atktg)
+	e4:SetOperation(c22025040.atkop)
 	c:RegisterEffect(e4)
+	--ere
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(22025040,2))
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e5:SetProperty(EFFECT_FLAG_DELAY)
+	e5:SetRange(LOCATION_GRAVE)
+	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
+	e5:SetCode(EVENT_CHAINING)
+	e5:SetCountLimit(1,22025042)
+	e5:SetCondition(c22025040.atkcon1)
+	e5:SetCost(c22025040.erecost)
+	e5:SetTarget(c22025040.atktg)
+	e5:SetOperation(c22025040.atkop)
+	c:RegisterEffect(e5)
 end
-function c22025040.efilter(e,te)
-	local c=e:GetHandler()
-	local ec=te:GetHandler()
-	if ec:IsHasCardTarget(c) or (te:IsHasType(EFFECT_TYPE_ACTIONS) and te:IsHasProperty(EFFECT_FLAG_CARD_TARGET) and c:IsRelateToEffect(te)) then return false
-	end
-	return te:GetOwnerPlayer()~=c:GetControler()
+function c22025040.filter(c)
+	return c:IsFaceup() and c:IsSetCard(0xff1)
 end
-function c22025040.cfilter(c)
-	return c:IsFaceup() and c:IsCode(22020940)
-end
-function c22025040.ntcon(e,c,minc)
+function c22025040.spcon(e,c)
 	if c==nil then return true end
-	return minc==0 and c:IsLevelAbove(5) and Duel.GetLocationCount(c:GetControler(),LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(c22025040.cfilter,c:GetControler(),LOCATION_ONFIELD,0,1,nil)
+	local tp=c:GetControler()
+	return Duel.GetFieldGroupCount(tp,0,LOCATION_MZONE)>0
+		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(c22025040.filter,tp,LOCATION_MZONE,0,1,nil)
 end
+
 function c22025040.thfilter(c)
 	return aux.IsCodeListed(c,22025040) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand()
 end
@@ -71,9 +87,42 @@ function c22025040.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 	end
 end
-function c22025040.sdcon(e)
-	return e:GetHandler():GetOwnerTargetCount()>0
+function c22025040.atkcon(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsCode(22025820) and ep==tp
 end
-function c22025040.negop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.NegateAttack()
+function c22025040.atkfilter(c)
+	return c:IsSetCard(0xff1) and c:IsFaceup()
+end
+function c22025040.atktg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and c22025040.atkfilter(chkc) end
+	if chk==0 then return Duel.IsExistingTarget(c22025040.atkfilter,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,c22025040.atkfilter,tp,LOCATION_MZONE,0,1,1,nil)
+end
+function c22025040.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) then
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetDescription(aux.Stringid(22025040,2))
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
+		e1:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetValue(1)
+		tc:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetCode(EFFECT_DIRECT_ATTACK)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e2)
+	end
+end
+function c22025040.erecost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.Hint(HINT_CARD,0,22020980)
+	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
+end
+function c22025040.atkcon1(e,tp,eg,ep,ev,re,r,rp)
+	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:GetHandler():IsCode(22025820) and ep==tp and Duel.IsPlayerAffectedByEffect(tp,22020980)
 end

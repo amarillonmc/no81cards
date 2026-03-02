@@ -51,9 +51,6 @@ function s.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 
-function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x6a31)
-end
 function s.cfilter(c)
 	return c:IsSetCard(0x6a31) and c:IsFaceup()
 end
@@ -65,7 +62,7 @@ function s.setcon2(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,2,c) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,2,c) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,2,tp,LOCATION_HAND+LOCATION_ONFIELD)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
@@ -74,10 +71,10 @@ function s.tfop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	if not c:IsRelateToEffect(e) then return end
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
-	if not Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c) then return end
-	local tc=Duel.GetMatchingGroupCount(s.spfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,c)
-	local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,tc,math.min(tc,2),c)
-	Duel.SendtoGrave(g,REASON_EFFECT+REASON_RULE)
+	if not Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c) then return end
+	local tc=Duel.GetMatchingGroupCount(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,c)
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,tc,math.min(tc,2),c)
+	Duel.SendtoGrave(g,REASON_EFFECT)
 end
 
 function s.srcon(e,tp,eg,ep,ev,re,r,rp)

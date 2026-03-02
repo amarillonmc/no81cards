@@ -24,6 +24,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--to grave
 	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_SSET)
 	e3:SetType(EFFECT_TYPE_TRIGGER_F+EFFECT_TYPE_SINGLE)
 	e3:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_LEAVE_FIELD)

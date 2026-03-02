@@ -26,7 +26,7 @@ function cm.initial_effect(c)
 	--c:RegisterEffect(e3)
 	--search
 	local e4=Effect.CreateEffect(c)
-	e4:SetCategory(CATEGORY_DECKDES+CATEGORY_TOGRAVE)
+	e4:SetCategory(CATEGORY_DECKDES+CATEGORY_TOGRAVE+CATEGORY_SSET)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
 	e4:SetRange(LOCATION_GRAVE)

@@ -21,6 +21,7 @@ function cm.initial_effect(c)
 	--sset
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(11451537,4))
+	e2:SetCategory(CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_BATTLE_DESTROYED)
 	e2:SetRange(LOCATION_GRAVE)
@@ -45,7 +46,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local g=sg:Select(tp,1,1,nil)
 		if #g>0 then Duel.SendtoHand(g,nil,REASON_EFFECT) end
-	end		
+	end	 
 	--summon proc
 	local e2=Effect.CreateEffect(e:GetHandler())
 	e2:SetDescription(aux.Stringid(m,0))

@@ -15,7 +15,7 @@ function cm.initial_effect(c)
 	cm.hand_effect[c]=e1
 	--draw
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_POSITION+CATEGORY_TOGRAVE+CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_POSITION+CATEGORY_TOGRAVE+CATEGORY_DRAW+CATEGORY_MSET)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_FLIP+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,m)

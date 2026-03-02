@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	--trap
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
-	e3:SetCategory(CATEGORY_POSITION+CATEGORY_EQUIP)
+	e3:SetCategory(CATEGORY_POSITION+CATEGORY_EQUIP+CATEGORY_MSET)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetRange(LOCATION_SZONE)
 	--e3:SetCountLimit(1,m)

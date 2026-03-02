@@ -51,9 +51,9 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		else
 			Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 		end
-		if not Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c) then return end
-		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,c)
-		Duel.SendtoGrave(g,REASON_EFFECT+REASON_RULE)
+		if not Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,c) then return end
+		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,c)
+		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end
 

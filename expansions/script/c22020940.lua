@@ -1,0 +1,65 @@
+--人理之基 伊阿宋
+function c22020940.initial_effect(c)
+	aux.AddCodeList(c,22025820)
+	--activate from hand
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(22020940,1))
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsCode,22025820))
+	e1:SetTargetRange(LOCATION_HAND,0)
+	e1:SetValue(22020940)
+	c:RegisterEffect(e1)
+	local e2=e1:Clone()
+	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	c:RegisterEffect(e2)
+	--draw
+	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(22020940,0))
+	e3:SetCategory(CATEGORY_DRAW)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCountLimit(3,22020940)
+	e3:SetCondition(c22020940.drcon)
+	e3:SetTarget(c22020940.drtg)
+	e3:SetOperation(c22020940.drop)
+	c:RegisterEffect(e3)
+	--draw ere`
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(22020940,0))
+	e4:SetCategory(CATEGORY_DRAW)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_CHAINING)
+	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetRange(LOCATION_GRAVE)
+	e4:SetCountLimit(3,22020940)
+	e4:SetCondition(c22020940.drcon1)
+	e4:SetCost(c22020940.erecost)
+	e4:SetTarget(c22020940.drtg)
+	e4:SetOperation(c22020940.drop)
+	c:RegisterEffect(e4)
+end
+function c22020940.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==tp and re:GetHandler():IsCode(22025820) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+function c22020940.drtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+end
+function c22020940.drop(e,tp,eg,ep,ev,re,r,rp)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	Duel.Draw(p,d,REASON_EFFECT)
+end
+function c22020940.erecost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	Duel.Hint(HINT_CARD,0,22020980)
+	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
+end
+function c22020940.drcon1(e,tp,eg,ep,ev,re,r,rp)
+	return rp==tp and re:GetHandler():IsCode(22025820) and Duel.IsPlayerAffectedByEffect(tp,22020980) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+end

@@ -11,20 +11,21 @@ function c98500504.initial_effect(c)
 	--to grave
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(98500504,1))
-	e2:SetCategory(CATEGORY_TOGRAVE)
+	e2:SetCategory(CATEGORY_SUMMON+CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1)
-	e2:SetTarget(c98500504.tgtg)
-	e2:SetOperation(c98500504.tgop)
+	e2:SetTarget(c98500504.sumtg)
+	e2:SetOperation(c98500504.sumop)
 	c:RegisterEffect(e2)
 	--SpecialSummon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(98500504,2))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_INACTIVATE+EFFECT_FLAG_CAN_FORBIDDEN+EFFECT_FLAG_NO_TURN_RESET)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
+	e3:SetCountLimit(1)
 	e3:SetCost(c98500504.spcost)
 	e3:SetTarget(c98500504.sptg)
 	e3:SetOperation(c98500504.spop)
@@ -85,7 +86,48 @@ function c98500504.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.SelectMatchingCard(tp,c98500504.filter2,tp,LOCATION_HAND+LOCATION_DECK,0,1,1,nil,e,tp,code):GetFirst()
 	if tc and Duel.SpecialSummon(tc,SUMMON_VALUE_ASSAULT_MODE,tp,tp,false,true,POS_FACEUP)>0 then
 		tc:CompleteProcedure()
-		Duel.BreakEffect()
-		Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+	   
+	  
+	end
+end
+function c98500504.sumfilter(c)
+	return c:IsSetCard(0x42) and c:IsSummonable(true,nil)
+end
+function c98500504.sumfilter2(c,e,tp)
+   return c:IsSetCard(0x42) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function c98500504.sumfilter3(c)
+	return c:IsSetCard(0x4b) and c:IsFaceup()
+end
+function c98500504.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c98500504.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) or (Duel.IsExistingMatchingCard(c98500504.sumfilter2,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(c98500504.sumfilter3,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0) end
+	local b1=Duel.IsExistingMatchingCard(c98500504.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) 
+	local b2=Duel.IsExistingMatchingCard(c98500504.sumfilter2,tp,LOCATION_GRAVE,0,1,nil,e,tp) and Duel.IsExistingMatchingCard(c98500504.sumfilter3,tp,LOCATION_MZONE,0,1,nil) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
+	local op=aux.SelectFromOptions(tp,
+		{b1,aux.Stringid(98500504,4)},
+		{b2,aux.Stringid(98500504,5)})
+	e:SetLabel(op)
+	if op==1 then
+	   Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
+	else
+	   Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
+	end
+end
+function c98500504.sumop(e,tp,eg,ep,ev,re,r,rp)
+	local op=e:GetLabel()
+	if op==1 then
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+	local g=Duel.SelectMatchingCard(tp,c98500504.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.Summon(tp,tc,true,nil)
+	end
+	elseif op==2 then 
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c98500504.sumfilter2),tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
 	end
 end

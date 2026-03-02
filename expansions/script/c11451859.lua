@@ -13,7 +13,7 @@ function cm.initial_effect(c)
 	--set
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,11))
-	e3:SetCategory(CATEGORY_TODECK)
+	e3:SetCategory(CATEGORY_TODECK+CATEGORY_SSET+CATEGORY_MSET)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetRange(LOCATION_GRAVE)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
@@ -175,7 +175,7 @@ function cm.SelectSubGroup(g,tp,f,cancelable,min,max,...)
 					end
 				end
 			end
-            if check then return false end
+			if check then return false end
 		--classification is essential for efficiency, and this part is only for backup
 		else
 			iter={1}

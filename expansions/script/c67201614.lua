@@ -42,7 +42,7 @@ function c67201614.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 --
 function c67201614.efcon(e,tp,eg,ep,ev,re,r,rp)
-	return r==REASON_XYZ
+	return r==REASON_XYZ and e:GetHandler():IsSetCard(0x367f) and e:GetHandler():GetAttribute()==ATTRIBUTE_EARTH
 end
 function c67201614.efop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

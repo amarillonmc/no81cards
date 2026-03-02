@@ -21,7 +21,7 @@ function cm.initial_effect(c)
 	--
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,0))
-	e3:SetCategory(CATEGORY_SUMMON)
+	e3:SetCategory(CATEGORY_SUMMON+CATEGORY_MSET)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_HAND+LOCATION_MZONE)

@@ -17,7 +17,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e0)
 	--advance
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SUMMON)
+	e1:SetCategory(CATEGORY_SUMMON+CATEGORY_MSET)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
@@ -241,7 +241,7 @@ function cm.smfilter22(c,e,tp,fg)
 	local eset2={c:IsHasEffect(EFFECT_LIMIT_SET_PROC)}
 	local eset3={c:IsHasEffect(EFFECT_SUMMON_PROC)}
 	local eset4={c:IsHasEffect(EFFECT_SET_PROC)}
-	local e1,e2=Effect.CreateEffect(c),Effect.CreateEffect(c)
+	local e1,e2=Effect.CreateEffect(e:GetHandler()),Effect.CreateEffect(e:GetHandler())
 	local _GetLocationCount=Duel.GetLocationCount
 	local _GetMZoneCount=Duel.GetMZoneCount
 	if aux.GetValueType(fg)=="Group" then

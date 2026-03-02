@@ -22,7 +22,7 @@ function s.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,id+1)
 	e2:SetTarget(s.e2tg)
 	e2:SetOperation(s.e2op)
 	c:RegisterEffect(e2)
@@ -114,6 +114,7 @@ function s.e2op(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabel(ac,ac)
 		e1:SetLabelObject(tc)
 		Duel.RegisterEffect(e1,tp)
+		c:CreateEffectRelation(e1)
 		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
 	end
 end
@@ -128,6 +129,8 @@ function s.countop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.apply_resolution(e,tp,tc,ac)
+	local c=e:GetOwner()
+	if not c:IsRelateToEffect(e) then return end
 	if tc and tc:GetFlagEffect(id)>0 and Duel.Destroy(tc,REASON_EFFECT)~=0 then
 		local og=Duel.GetOperatedGroup()
 		local destroyed_tc=og:GetFirst()

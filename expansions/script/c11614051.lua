@@ -25,7 +25,7 @@ function s.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e3:SetCountLimit(1)
+	e3:SetCountLimit(1,id)
 	e3:SetTarget(s.declaretg)
 	e3:SetOperation(s.declareop)
 	c:RegisterEffect(e3)
@@ -62,6 +62,7 @@ function s.declareop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabelObject(tc)
 		e1:SetOperation(s.countop)
 		Duel.RegisterEffect(e1,tp)
+		c:CreateEffectRelation(e1)
 	end
 end
 function s.countop(e,tp,eg,ep,ev,re,r,rp)
@@ -75,7 +76,8 @@ function s.countop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.apply_resolution(e,tp,tc,ac)
-	local c=e:GetHandler()
+	local c=e:GetOwner()
+	if not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_CARD,0,id)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)

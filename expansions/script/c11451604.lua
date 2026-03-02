@@ -22,6 +22,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 	--set
 	local e3=Effect.CreateEffect(c)
+	e3:SetCategory(CATEGORY_SSET)
 	e3:SetType(EFFECT_TYPE_IGNITION)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCost(cm.dacost)

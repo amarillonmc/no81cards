@@ -1,12 +1,11 @@
 --环形世界
 --21.12.18
-local m=11451648
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--turn set
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_POSITION)
+	e1:SetCategory(CATEGORY_POSITION+CATEGORY_MSET)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTarget(cm.target)

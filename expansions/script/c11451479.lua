@@ -1,6 +1,5 @@
 --多瑟拉之虫惑魔
-local m=11451479
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--link summon
 	aux.AddLinkProcedure(c,nil,2,2,cm.lcheck)
@@ -30,7 +29,7 @@ function cm.initial_effect(c)
 	--set
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(m,1))
-	e4:SetCategory(CATEGORY_LEAVE_GRAVE)
+	e4:SetCategory(CATEGORY_LEAVE_GRAVE+CATEGORY_SSET)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_CHAINING)

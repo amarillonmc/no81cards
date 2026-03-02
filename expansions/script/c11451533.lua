@@ -19,7 +19,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 	--destroy
 	local e2=e1:Clone()
-	e2:SetCategory(0)
+	e2:SetCategory(CATEGORY_SSET)
 	e2:SetDescription(aux.Stringid(11451537,3))
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,m+6)

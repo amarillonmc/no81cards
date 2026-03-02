@@ -24,7 +24,7 @@ function s.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
-	e2:SetCountLimit(1)
+	e2:SetCountLimit(1,id)
 	e2:SetTarget(s.dstg)
 	e2:SetOperation(s.dsop)
 	c:RegisterEffect(e2)
@@ -89,6 +89,7 @@ function s.dsop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetLabelObject(tc)
 		e1:SetOperation(s.countop)
 		Duel.RegisterEffect(e1,tp)
+		c:CreateEffectRelation(e1)
 	end
 end
 function s.countop(e,tp,eg,ep,ev,re,r,rp)
@@ -102,7 +103,8 @@ function s.countop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.apply_resolution(e,tp,tc,ac)
-	local c=e:GetHandler()
+	local c=e:GetOwner()
+	if not c:IsRelateToEffect(e) then return end
 	Duel.Hint(HINT_CARD,0,id)
 	if tc and tc:GetFlagEffect(id)>0 then
 		Duel.SendtoGrave(tc,REASON_EFFECT)

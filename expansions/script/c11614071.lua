@@ -28,33 +28,19 @@ function s.initial_effect(c)
 	e2:SetValue(s.immval)
 	c:RegisterEffect(e2)
 end
-function s.tgfilter(c,e,tp)
-	return c:IsSetCard(0x5226) and c:IsType(TYPE_LINK) and c:IsFaceup() and c:IsAbleToExtra()
-		and Duel.GetLocationCountFromEx(tp,tp,c)>0
-		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_EXTRA,0,1,nil,e,tp,c:GetLink(),c:GetCode())
+function s.filter(c)
+	return c:IsLinkSummonable(nil) and c:IsSetCard(0x5226)
 end
-function s.spfilter(c,e,tp,lnk,code)
-	return c:IsRace(RACE_BEAST+RACE_WINDBEAST) and c:IsType(TYPE_LINK) and c:GetLink()==lnk and not c:IsCode(code)
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and s.tgfilter(chkc,e,tp) end
-	if chk==0 then return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE,0,1,nil,e,tp) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE,0,1,1,nil,e,tp)
-	Duel.SetOperationInfo(0,CATEGORY_TOEXTRA,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_EXTRA,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
-	if not tc or not tc:IsRelateToChain() then return end
-	if Duel.SendtoDeck(tc,nil,0,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_EXTRA) then
-		if Duel.GetLocationCountFromEx(tp)<=0 then return end
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,tc:GetLink(),tc:GetCode())
-		if #g>0 then
-			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
-		end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_EXTRA,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		Duel.LinkSummon(tp,tc,nil)
 	end
 end
 function s.immtg(e,c)
