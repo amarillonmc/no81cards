@@ -91,9 +91,16 @@ function s.limit_hack_op(e)
 						return not nc:IsCode(id) and not (nc:IsSetCard(0x3a32) and Duel.IsPlayerAffectedByEffect(nc:GetControler(),id)) and resolve_target(ne,nc,...) 
 					end	)
 				resolve_effect:SetValue(
-					function(ne,nte,ntp,...)
-						return not nte:GetHandler():IsCode(id) and not (nte:GetHandler():IsSetCard(0x3a32) and Duel.IsPlayerAffectedByEffect(nte:GetHandlerPlayer(),id)) and resolve_value(ne,nte,ntp,...)
-					end	)
+				function(ne,nte,ntp,...)
+					if nte:GetHandler():IsCode(id) or (nte:GetHandler():IsSetCard(0x3a32) and Duel.IsPlayerAffectedByEffect(nte:GetHandlerPlayer(),id)) then
+	   					return false
+	  				end
+   					if type(resolve_value) == "function" then
+	   					return resolve_value(ne,nte,ntp,...)
+					else
+						return resolve_value
+   					end
+				end	)
 			end
 		end
 	end
@@ -139,7 +146,14 @@ function s.limit_hack_op2(e)
 					end	)
 				spsummon_effect:SetValue(
 					function(ne,nte,ntp,...)
-						return not (nte:GetHandler():IsSetCard(0x3a32) and Duel.IsPlayerAffectedByEffect(nc:GetControler(),id)) and spsummon_value(ne,nte,ntp,...)
+						if nte:GetHandler():IsSetCard(0x3a32) and Duel.IsPlayerAffectedByEffect(nc:GetControler(),id) then
+		 					return false
+	   					end
+						if type(spsummon_value) == "function" then
+							return spsummon_value(ne,nte,ntp,...)
+						else
+							return spsummon_value
+						end
 					end	)				
 		end
 	end

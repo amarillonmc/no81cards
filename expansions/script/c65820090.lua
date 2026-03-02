@@ -38,6 +38,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		local ct=g:GetCount()
 		if Duel.IsExistingMatchingCard(Card.IsOriginalCodeRule,tp,LOCATION_HAND,0,ct,nil,id) then
+			Duel.ShuffleHand(tp)
 			local g1=Duel.SelectMatchingCard(tp,Card.IsOriginalCodeRule,tp,LOCATION_HAND,0,ct,ct,nil,id)
 			Duel.ConfirmCards(1-tp,g1)
 		else
