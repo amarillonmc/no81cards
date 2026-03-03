@@ -106,8 +106,9 @@ end
 function s.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:IsCostChecked() end
 end
-function s.spfilter2(c,e,tp)
-	return c:IsLocation(LOCATION_GRAVE) and c:IsControler(tp) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function s.spfilter2(c,e,tp,ec)
+	local proc=c:IsCode(12866705,12866890,12866825) and ec:IsCode(12866600)
+	return c:IsLocation(LOCATION_GRAVE) and c:IsControler(tp) and c:IsCanBeSpecialSummoned(e,0,tp,proc,proc)
 end
 function s.spop2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -115,9 +116,13 @@ function s.spop2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetLP(tp,lp-2000)
 	local g=e:GetLabelObject():GetLabelObject()
 	if Duel.GetLP(tp)<lp and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and 
-	#g>0 and g:IsExists(s.spfilter2,1,nil,e,tp) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
-		local sg=g:Filter(s.spfilter2,nil,e,tp)
-		local tc=sg:Select(tp,1,1,nil)
-		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
+	#g>0 and g:IsExists(s.spfilter2,1,nil,e,tp,c) and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+		local sg=g:Filter(s.spfilter2,nil,e,tp,c)
+		local tc=sg:Select(tp,1,1,nil):GetFirst()
+		if tc then
+			local proc=tc:IsCode(12866705,12866890,12866825) and c:IsCode(12866600)
+			Duel.SpecialSummon(tc,0,tp,tp,proc,proc,POS_FACEUP)
+			if proc then tc:CompleteProcedure() end
+		end
 	end
 end

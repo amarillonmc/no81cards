@@ -11,6 +11,8 @@ function c22023280.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c22023280.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	local tp=c:GetControler()
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
 	local gc=g:GetCount()
 	if chk==0 then return gc>0 and g:FilterCount(Card.IsAbleToRemove,nil)==gc and Duel.IsPlayerCanDraw(tp,gc) end
@@ -18,6 +20,8 @@ function c22023280.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,gc)
 end
 function c22023280.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local tp=c:GetControler()
 	local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 	local gc=g:GetCount()
 	if gc>0 and g:FilterCount(Card.IsAbleToRemove,nil)==gc then

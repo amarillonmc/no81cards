@@ -308,7 +308,7 @@ function yume.ResetExtraPendulumEffect(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function yume.RegOpWhenWouldBeSpSummoned(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetCurrentChain()>1 then
+	if Duel.GetCurrentChain()>0 then
 		Duel.SetChainLimit(aux.FALSE)
 	end
 	e:Reset()

@@ -36,7 +36,7 @@ function c71403004.initial_effect(c)
 	c:RegisterEffect(ep2)
 	--monster movement effect
 	yume.RegPPTTetrisBasicMoveEffect(c,71403004)
-	--special summon
+	--to hand
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71403004,1))
 	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND)

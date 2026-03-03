@@ -91,8 +91,7 @@ function s.rvfilter(c,tp,e)
 	--展示陷阱 -> 特召 (检查墓地/除外是否有怪兽 & M区是否有空位)
 	--因为是Cost阶段，必须预判是否有Target
 	elseif c:IsType(TYPE_TRAP) then
-		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-			and Duel.IsExistingTarget(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler(),e,tp)
+		return  Duel.IsExistingTarget(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler(),e,tp) and Duel.GetMZoneCount(tp,e:GetHandler())>0
 	end
 	return false
 end
@@ -122,7 +121,7 @@ function s.e2tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	
 	--分支：陷阱卡展示 (苏生) - 需要取对象
 	if label==2 then
-		if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler(),e,tp) end
+		if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler(),e,tp)  end
 		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
 		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 		
