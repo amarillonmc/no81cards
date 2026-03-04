@@ -120,7 +120,7 @@ function cm.grtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,1,c,tp,POS_FACEDOWN) and Duel.IsExistingTarget(Card.IsAbleToRemove,tp,0,LOCATION_GRAVE,1,c,tp,POS_FACEDOWN) and c:IsAbleToRemove(tp,POS_FACEDOWN) end
 	local g1=Duel.GetMatchingGroup(function(c) return c:IsAbleToRemove(tp,POS_FACEDOWN) and c:IsCanBeEffectTarget(e) end,tp,LOCATION_GRAVE,0,1,c)
 	local g2=Duel.GetMatchingGroup(function(c) return c:IsAbleToRemove(tp,POS_FACEDOWN) and c:IsCanBeEffectTarget(e) end,tp,LOCATION_GRAVE,0,1,c)
-	local mc=math.min(ct1,ct2)
+	local mc=math.min(#g1,#g2)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,0,mc,c,tp,POS_FACEDOWN)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -132,9 +132,9 @@ end
 function cm.grop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-	local g=g:Filter(Card.IsRelateToEffect,nil,e)
-	if g:GetCount()~=0 and c:IsRelateToEffect(e) then
-		g:AddCard(c)
-		Duel.Remove(g,POS_FACEDOWN,REASON_EFFECT)
+	local sg=g:Filter(Card.IsRelateToEffect,nil,e)
+	if sg:GetCount()~=0 and c:IsRelateToEffect(e) then
+		sg:AddCard(c)
+		Duel.Remove(sg,POS_FACEDOWN,REASON_EFFECT)
 	end
 end
