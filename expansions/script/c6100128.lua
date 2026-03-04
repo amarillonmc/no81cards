@@ -82,16 +82,11 @@ end
 --Cost过滤器：展示手卡S/T，并检查对应效果是否可执行
 function s.rvfilter(c,tp,e)
 	if not (c:IsSetCard(0x611) and not c:IsPublic()) then return false end
-	
-	--展示魔法 -> 盖陷阱 (检查卡组是否有陷阱 & S区是否有空位)
 	if c:IsType(TYPE_SPELL) then
 		return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 
-			and Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK,0,1,nil)
-			
-	--展示陷阱 -> 特召 (检查墓地/除外是否有怪兽 & M区是否有空位)
-	--因为是Cost阶段，必须预判是否有Target
+			and Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK,0,1,nil)	   
 	elseif c:IsType(TYPE_TRAP) then
-		return  Duel.IsExistingTarget(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler(),e,tp) and Duel.GetMZoneCount(tp,e:GetHandler())>0
+		return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler(),e,tp) and Duel.GetMZoneCount(tp,e:GetHandler())>0
 	end
 	return false
 end
@@ -104,40 +99,29 @@ function s.e2cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.SelectMatchingCard(tp,s.rvfilter,tp,LOCATION_HAND,0,1,1,nil,tp,e)
 	Duel.ConfirmCards(1-tp,g)
-	local rc=g:GetFirst()
-	
-	--设置Label：1=魔法分支，2=陷阱分支
-	if rc:IsType(TYPE_SPELL) then
-		e:SetLabel(1)
-	else
-		e:SetLabel(2)
-	end
-	
+	e:SetLabelObject(g:GetFirst())
+	Duel.ShuffleHand(tp)
 	Duel.Release(c,REASON_COST)
 end
 
 function s.e2tg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local label=e:GetLabel()
-	
-	--分支：陷阱卡展示 (苏生) - 需要取对象
-	if label==2 then
-		if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler(),e,tp)  end
-		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
-		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
-		
-	--分支：魔法卡展示 (盖放) - 不取对象
-	else
+	local rc=e:GetLabelObject()
+	if chk==0 then return true end
+	if rc:IsType(TYPE_SPELL) then
 		if chk==0 then return Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK,0,1,nil) end
 		e:SetCategory(0)
 		e:SetProperty(0) --清除取对象属性
+	else
+		if chk==0 then return Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,e:GetHandler(),e,tp)  end
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 	end
 end
 
 function s.e2op(e,tp,eg,ep,ev,re,r,rp)
-	local label=e:GetLabel()
-	
-	--分支：魔法卡 (盖放陷阱)
-	if label==1 then
+	local rc=e:GetLabelObject()
+	if chk==0 then return true end
+	if rc:IsType(TYPE_SPELL) then
 		if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
 		local g=Duel.SelectMatchingCard(tp,s.setfilter,tp,LOCATION_DECK,0,1,1,nil)
@@ -152,7 +136,6 @@ function s.e2op(e,tp,eg,ep,ev,re,r,rp)
 			tc:RegisterEffect(e1)
 		end
 		
-	--分支：陷阱卡 (特召怪兽)
 	else
 		local g=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,e:GetHandler(),e,tp)
 		local tc=g:GetFirst()

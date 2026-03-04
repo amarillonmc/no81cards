@@ -240,6 +240,7 @@ function Auxiliary.PreloadUds()
 		if e:IsHasType(EFFECT_TYPE_SINGLE) and e:IsHasType(EFFECT_TYPE_TRIGGER_O) and e:GetCode()==EVENT_TO_DECK and not c:IsExtraDeckMonster() and not c:IsType(TYPE_PENDULUM) then
 			e:SetType(EFFECT_TYPE_QUICK_O)
 			e:SetRange(LOCATION_DECK)
+			e:SetCountLimit(1)
 			local prop,prop2=e:GetProperty()
 			e:SetProperty(prop|(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DAMAGE_CAL),prop2)
 			local con=e:GetCondition() or aux.TRUE
