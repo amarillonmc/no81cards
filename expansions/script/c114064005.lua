@@ -191,7 +191,7 @@ function c114064005.repval(e,c)
 end
 
 function c114064005.kufilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsCode(80831721,15471265,20065322,25573054,40703222,89086566) or c:IsSetCard(0xa4))
+	return c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:IsCode(6309986,80831721,15471265,20065322,25573054,40703222,89086566) or c:IsSetCard(0xa4))
 end
 function c114064005.kmfilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0xa4)

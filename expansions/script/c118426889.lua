@@ -75,13 +75,13 @@ end
 function c118426889.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if chk==0 then return Duel.IsExistingMatchingCard(c118426889.filter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,c) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,true,true,POS_FACEUP) end
+	if chk==0 then return aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_LMATERIAL) and Duel.IsExistingMatchingCard(c118426889.filter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,tp,c) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,true,true,POS_FACEUP) end
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,2,0,LOCATION_ONFIELD)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,tp,LOCATION_EXTRA)
 end
 function c118426889.operation2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end
+	if not c:IsRelateToEffect(e) or not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_LMATERIAL) then return end
 	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local tg=Duel.SelectMatchingCard(tp,c118426889.filter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,tp,c)

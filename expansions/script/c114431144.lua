@@ -131,7 +131,7 @@ function c114431144.excost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(g1,nil,2,REASON_COST)
 end
 function c114431144.pdfilter(c,e,tp,xyzc)
-	return c:IsCode(74641045) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsCanBeXyzMaterial(xyzc)
+	return aux.MustMaterialCheck(c,tp,EFFECT_MUST_BE_XMATERIAL) and c:IsCode(74641045) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsCanBeXyzMaterial(xyzc)
 end
 function c114431144.extg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
