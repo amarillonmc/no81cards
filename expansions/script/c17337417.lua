@@ -1,6 +1,7 @@
 --半魔的智库
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,17337400)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)

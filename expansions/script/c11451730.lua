@@ -48,7 +48,7 @@ function cm.fuslimit(e,c,sumtype)
 end
 function cm.tg(e,c)
 	local phase=Duel.GetCurrentPhase()
-	return c:IsSummonType(SUMMON_TYPE_SPECIAL) and not ((phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL or e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) or c:IsStatus(STATUS_BATTLE_DESTROYED)) --and c:IsStatus(STATUS_SPSUMMON_TURN)
+	return not c:IsType(TYPE_TOKEN) and c:IsSummonType(SUMMON_TYPE_SPECIAL) and not ((phase==PHASE_DAMAGE and not Duel.IsDamageCalculated()) or phase==PHASE_DAMAGE_CAL or e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) or c:IsStatus(STATUS_BATTLE_DESTROYED)) --and c:IsStatus(STATUS_SPSUMMON_TURN)
 end
 function cm.rmcon(e,tp,eg,ep,ev,re,r,rp)
 	local p=e:GetHandler():GetOwner()
