@@ -176,7 +176,7 @@ function c28335633.tdcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c28335633.tdfilter(c)
-	return c:IsSetCard(0x286) and c:IsAbleToDeck() and c:IsAbleToHand() and c:IsFaceupEx()
+	return c:IsSetCard(0x286) and c:IsAbleToDeck() and c:IsFaceupEx()
 end
 function c28335633.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
@@ -192,6 +192,7 @@ function c28335633.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function c28335633.tdop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Draw(tp,1,REASON_EFFECT)==0 then return end
+	Duel.ShuffleHand(tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
 	local g=Duel.GetTargetsRelateToChain()
