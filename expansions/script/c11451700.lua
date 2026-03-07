@@ -1,6 +1,5 @@
 --谈判
-local m=11451700
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
@@ -16,7 +15,7 @@ function cm.filter1(c,e)
 	return c:IsOnField() and not c:IsImmuneToEffect(e)
 end
 function cm.filter2(c,e,tp,m,f,chkf)
-	local m1=m
+	local m1=m:Clone()
 	m1:RemoveCard(c)
 	return c:IsType(TYPE_FUSION) and (not f or f(c)) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m1,nil,chkf)
 end
@@ -45,7 +44,6 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 		local res4=flag3 and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg4,nil,chkf)
 		local res5=flag4 and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg5,nil,chkf)
 		local res6=flag5 and Duel.IsExistingMatchingCard(cm.filter4,tp,LOCATION_EXTRA,0,1,nil,e,tp)
-		Debug.Message(Duel.IsExistingMatchingCard(cm.filter4,tp,LOCATION_EXTRA,0,1,nil,e,tp))
 		local res=res1 or res2 or res3 or res4 or res5 or res6
 		if not res then
 			local ce=Duel.GetChainMaterial(tp)
@@ -119,5 +117,6 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.SpecialSummon(tc,SUMMON_TYPE_FUSION,tp,tp,false,false,POS_FACEUP)
 		end
+		tc:CompleteProcedure()
 	end
 end
