@@ -142,7 +142,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(s.thconfilter,tp,LOCATION_MZONE,0,1,nil)
+	return Duel.IsExistingMatchingCard(s.desonfilter,tp,LOCATION_MZONE,0,1,nil)
 end
 
 function s.desonfilter(c)
