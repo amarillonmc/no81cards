@@ -141,7 +141,5 @@ function s.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
-	if e:GetLabelObject():GetFlagEffect(id)==0 then
-		e:Reset()
-	end
+	e:Reset()
 end

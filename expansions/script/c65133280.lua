@@ -53,7 +53,9 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 		local code=tc:GetOriginalCode()
 		s.match_summons[code]=true
 	end
-	Duel.SetRegistryValue("Kitt_Summon",s.get_match_data_string())
+	if MATCH_MODE then
+		Duel.SetRegistryValue("Kitt_Summon",s.get_match_data_string())
+	end
 end
 function s.get_match_data_string()
 	local codes={}
@@ -81,7 +83,7 @@ end
 
 function s.eqtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(s.eqfilter,tp,LOCATION_DECK+LOCATION_EXTRA,LOCATION_DECK+LOCATION_EXTRA,1,nil) end
+		and Duel.IsExistingMatchingCard(s.eqfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_EQUIP,nil,1,tp,LOCATION_DECK+LOCATION_EXTRA)
 end
 function s.eqlimit(e,c)
@@ -93,7 +95,7 @@ function s.eqop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsFacedown() or not c:IsRelateToChain() then return end
 	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
-	local g=Duel.SelectMatchingCard(tp,s.eqfilter,tp,LOCATION_DECK+LOCATION_EXTRA,LOCATION_DECK+LOCATION_EXTRA,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.eqfilter,tp,LOCATION_DECK+LOCATION_EXTRA,0,1,1,nil)
 	local tc=g:GetFirst()
 	if tc then
 		if not Duel.Equip(tp,tc,c) then return end
