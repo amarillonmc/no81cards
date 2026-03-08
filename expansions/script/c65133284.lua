@@ -55,7 +55,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.spfilter(c)
-	return (c:IsSetCard(0x838) or c:IsRace(RACE_ZOMBIE)) and c:IsAbleToRemoveAsCost()
+	return (c:IsSetCard(0x838) or c:IsRace(RACE_ZOMBIE)) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 end
 function s.spcon(e,c)
 	if c==nil then return true end

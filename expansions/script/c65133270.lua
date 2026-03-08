@@ -9,7 +9,6 @@ function s.initial_effect(c)
 	--reset and heal
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_TODECK+CATEGORY_RECOVER)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCondition(s.rescon)
@@ -47,7 +46,7 @@ function s.rescon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.resop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToChain() and c:IsAbleToExtra() and Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
+	if Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 then
 		local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 		if #g>0 then
 			Duel.BreakEffect()

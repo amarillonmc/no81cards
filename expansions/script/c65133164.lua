@@ -82,7 +82,7 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
 function s.thfilter(c,att)
-	return c:IsAttribute(att) and c:IsAbleToHand()
+	return c:IsAttribute(att) and c:IsFaceup() and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
