@@ -39,7 +39,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_DECK)
+	return not e:GetHandler():IsPreviousLocation(LOCATION_HAND)
 		and re and re:GetHandler():IsSetCard(0x838) and r&REASON_EFFECT~=0
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

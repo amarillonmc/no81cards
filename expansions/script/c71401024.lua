@@ -1,6 +1,11 @@
 --蝶梦-「萦」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401024.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--place
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71401001,2))
@@ -9,9 +14,9 @@ function c71401024.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(c71401024.con1)
 	e1:SetCountLimit(1,71401024)
-	e1:SetCost(yume.ButterflyLimitCost)
-	e1:SetTarget(yume.ButterflyPlaceTg)
-	e1:SetOperation(yume.ButterflySpellOp)
+	e1:SetCost(yume.heart_crystals.LimitCost)
+	e1:SetTarget(yume.heart_crystals.PlaceTg)
+	e1:SetOperation(yume.heart_crystals.SpellOp)
 	c:RegisterEffect(e1)
 	--to hand
 	local e2=Effect.CreateEffect(c)
@@ -26,12 +31,11 @@ function c71401024.initial_effect(c)
 	e2:SetTarget(c71401024.tg2)
 	e2:SetOperation(c71401024.op2)
 	c:RegisterEffect(e2)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401024.con1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp
 end
-
 function c71401024.con2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS and eg:IsExists(Card.IsPreviousLocation,1,nil,LOCATION_EXTRA)
 end

@@ -16,7 +16,7 @@ function c28384553.initial_effect(c)
 	--destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_ATKCHANGE)
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
@@ -82,6 +82,9 @@ function c28384553.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(ct,phchk)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
 end
+function c28384553.spfilter(c,e,tp,id)
+	return c:IsReason(REASON_DESTROY) and c:GetTurnID()==id and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and aux.NecroValleyFilter()(c) and c:IsLevel(3)
+end
 function c28384553.desop(e,tp,eg,ep,ev,re,r,rp)
 	local ct,phchk=e:GetLabel()
 	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
@@ -108,15 +111,14 @@ function c28384553.desop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.Destroy(sg,REASON_EFFECT)
 	end
-	local c=e:GetHandler()
-	local val=math.abs(3000-Duel.GetLP(tp))
-	if phchk==1 and c:IsRelateToChain() and c:IsFaceup() and val~=0 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_UPDATE_ATTACK)
-		e1:SetValue(val)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)--+RESET_PHASE+PHASE_END
-		c:RegisterEffect(e1)
+	local g=Duel.GetMatchingGroup(c28384553.spfilter,tp,LOCATION_GRAVE,0,nil,e,tp,Duel.GetTurnCount())
+	if phchk==1 and Duel.GetMZoneCount(tp)>0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(28384553,2)) then
+		local ft=Duel.IsPlayerAffectedByEffect(tp,59822133) and 1 or Duel.GetMZoneCount(tp)
+		if #g>ft then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			g=g:Select(tp,ft,ft,nil)
+		end
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end
 end
 function c28384553.checkop(e,tp,eg,ep,ev,re,r,rp)

@@ -1,0 +1,50 @@
+local s,id=GetID()
+function s.initial_effect(c)
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_ACTIVATE)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	c:RegisterEffect(e0)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_FZONE)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetCondition(s.immcon)
+	e1:SetValue(s.efilter)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_DESTROYED)
+	e2:SetRange(LOCATION_FZONE)
+	e2:SetOperation(s.setcardop)
+	c:RegisterEffect(e2)
+end
+function s.immfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0x5f51) and c:IsType(TYPE_MONSTER)
+end
+function s.immcon(e)
+	return Duel.IsExistingMatchingCard(s.immfilter, e:GetHandlerPlayer(), LOCATION_MZONE, LOCATION_MZONE, 1, nil)
+end
+function s.efilter(e, te)
+	return te:GetOwner() ~= e:GetOwner()
+end
+function s.setcardop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	if #g>0 then
+		Duel.Hint(HINT_CARD,0,id)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+		local sg=g:Select(tp,1,1,nil)
+		local tc=sg:GetFirst()
+		if tc then
+			Duel.HintSelection(sg)
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_ADD_SETCODE)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+			e1:SetValue(0x5f51)
+			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+			tc:RegisterEffect(e1)
+			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
+		end
+	end
+end

@@ -114,4 +114,9 @@ function c28333723.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SSet(tp,sg,tp,false)
 	sg:Merge(mg)
 	Duel.ConfirmCards(1-tp,sg)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local tc=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil):GetFirst()
+	if not tc then return end
+	Duel.HintSelection(Group.FromCards(tc))
+	Duel.Destroy(tc,REASON_EFFECT)
 end

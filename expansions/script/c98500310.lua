@@ -111,7 +111,7 @@ function c98500310.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c98500310.splimit(e,c)
-	return not c:IsRace(RACE_DIVINE)
+	return c:IsLevel(12) and c:IsAttribute(ATTRIBUTE_DIVINE) and c:IsLocation(LOCATION_HAND)
 end
 
 function c98500310.spcostfilter1(c)

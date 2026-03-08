@@ -2,11 +2,11 @@
 function c28318606.initial_effect(c)
 	--Activate
 	local e1=Effect.CreateEffect(c)
-	e1:SetHintTiming(0,TIMING_DRAW_PHASE)
+	e1:SetHintTiming(TIMING_DRAW_PHASE+TIMING_STANDBY_PHASE)
 	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,28318606+EFFECT_COUNT_CODE_OATH)
+	e1:SetCountLimit(1,28318606+1)
 	e1:SetCondition(c28318606.condition)
 	e1:SetTarget(c28318606.target)
 	e1:SetOperation(c28318606.activate)
@@ -24,15 +24,28 @@ function c28318606.initial_effect(c)
 	e2:SetTarget(c28318606.target)
 	e2:SetOperation(c28318606.operation)
 	c:RegisterEffect(e2)
+	if not c28318606.global_check then
+		c28318606.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
+		ge1:SetOperation(c28318606.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function c28318606.checkop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.RegisterFlagEffect(Duel.GetTurnPlayer(),28318606,RESET_PHASE+PHASE_END,0,1)
 end
 function c28318606.condition(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0
+	return Duel.GetFlagEffect(tp,28318606)==0
 end
 function c28318606.cfilter(c,e,tp)
 	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and (c:IsAbleToHand() or (Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
 end
 function c28318606.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c28318606.cfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end
+	local ct=e:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.GetCurrentPhase()==PHASE_STANDBY and 1 or 0
+	e:SetLabel(ct)
 end
 function c28318606.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
@@ -49,7 +62,7 @@ function c28318606.activate(e,tp,eg,ep,ev,re,r,rp)
 	else
 		Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
 	end
-	if Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28318606,0)) then
+	if chk==1 and Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28318606,0)) then
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
