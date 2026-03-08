@@ -34,17 +34,18 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	--token
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(98500507,0))
+	e3:SetDescription(aux.Stringid(40844552,0))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCountLimit(1,m)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetTarget(s.target)
 	e3:SetOperation(s.operation)
 	c:RegisterEffect(e3)
 	--lv change
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(98500507,0))
+	e1:SetDescription(aux.Stringid(26082117,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetCountLimit(1)
 	e1:SetRange(LOCATION_MZONE)
@@ -92,7 +93,22 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	if not Duel.IsPlayerCanSpecialSummonMonster(tp,40844553,0,TYPES_TOKEN_MONSTER,1000,1000,4,RACE_WARRIOR,ATTRIBUTE_EARTH,POS_FACEUP_DEFENSE) then return end
-	if Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+	local b1=Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) and Duel.IsPlayerCanSpecialSummonMonster(tp,40844553,0,TYPES_TOKEN_MONSTER,1000,1000,4,RACE_WARRIOR,ATTRIBUTE_EARTH,POS_FACEUP_DEFENSE)
+	local b2=Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_MZONE,0,1,nil) and Duel.IsPlayerCanSpecialSummonMonster(tp,40844553,0,TYPES_TOKEN_MONSTER,1000,1000,4,RACE_WARRIOR,ATTRIBUTE_EARTH,POS_FACEUP_DEFENSE)
+	local op=aux.SelectFromOptions(tp,
+		{b1,aux.Stringid(id,0)},
+		{b2,aux.Stringid(id,1)})
+	if op==1 then
+		local ft=math.min((Duel.GetLocationCount(tp,LOCATION_MZONE)),2)
+		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
+		local ct=Duel.DiscardHand(tp,Card.IsDiscardable,1,ft,REASON_COST+REASON_DISCARD,nil)
+		repeat
+		local token=Duel.CreateToken(tp,40844553)
+		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
+		ct=ct-1
+		until ct==0
+		Duel.SpecialSummonComplete()
+	elseif op==2 then
 		local ft=math.min((Duel.GetLocationCount(tp,LOCATION_MZONE)),2)
 		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -104,22 +120,12 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		ct=ct-1
 		until ct==0
 		Duel.SpecialSummonComplete()
-	else
-		local ft=math.min((Duel.GetLocationCount(tp,LOCATION_MZONE)),2)
-		if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
-		local ct=Duel.DiscardHand(tp,Card.IsDiscardable,1,ft,REASON_COST+REASON_DISCARD,nil)
-		repeat
-		local token=Duel.CreateToken(tp,40844553)
-		Duel.SpecialSummonStep(token,0,tp,tp,false,false,POS_FACEUP_DEFENSE)
-		ct=ct-1
-		until ct==0
-		Duel.SpecialSummonComplete()
 	end
 end
 function s.tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local lv=e:GetHandler():GetLevel()
-	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(98500507,1))
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(26082117,1))
 	e:SetLabel(Duel.AnnounceLevel(tp,1,6,lv))
 end
 function s.op(e,tp,eg,ep,ev,re,r,rp)
