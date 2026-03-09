@@ -29,6 +29,7 @@ function c28318606.initial_effect(c)
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_PHASE+PHASE_BATTLE_START)
+		ge1:SetCountLimit(1)
 		ge1:SetOperation(c28318606.checkop)
 		Duel.RegisterEffect(ge1,0)
 	end
