@@ -4,13 +4,14 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	aux.AddCodeList(c,14000260)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,nil,1)
+	--aux.AddSynchroProcedure(c,nil,nil,1)
+	aux.AddSynchroMixProcedure(c,aux.Tuner(nil),nil,nil,nil,1,99)
 	c:EnableReviveLimit()
 	--special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_NEGATE+EFFECT_FLAG_CANNOT_INACTIVATE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CANNOT_INACTIVATE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)

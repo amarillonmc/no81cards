@@ -4,7 +4,7 @@ local cm=_G["c"..m]
 function cm.initial_effect(c)
 	aux.AddCodeList(c,14000260)
 	--synchro summon
-	aux.AddSynchroProcedure(c,nil,nil,1)
+	aux.AddSynchroMixProcedure(c,aux.Tuner(nil),nil,nil,nil,1,99)
 	c:EnableReviveLimit()
 	--special summon
 	local e1=Effect.CreateEffect(c)
