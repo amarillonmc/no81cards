@@ -72,6 +72,7 @@ function c43990116.xyzop(e,tp,eg,ep,ev,re,r,rp)
 		c43990116.XyzTarget(e,tp,eg,ep,ev,re,r,rp,chk,c)
 		c43990116.XyzOperation(e,tp,eg,ep,ev,re,r,rp,c)
 		Duel.SpecialSummon(c,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)
+		c:CompleteProcedure()
 	end
 end
 function c43990116.Xyzfilter(c,sc)
