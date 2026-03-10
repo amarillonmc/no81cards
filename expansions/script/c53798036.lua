@@ -56,7 +56,7 @@ end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	-- Condition: Opponent's Normal or Quick-Play Spell
 	if rp==tp or not re:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
-	if not (re:IsActiveType(TYPE_SPELL) and (re:IsActiveType(TYPE_NORMAL) or re:IsActiveType(TYPE_QUICKPLAY))) then return end
+	if not (re:GetActiveType()==TYPE_SPELL or re:IsActiveType(TYPE_QUICKPLAY)) then return end
 	
 	local g=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_MZONE,nil)
 	-- Logic: Opponent can destroy 1 valid monster. If not, negate.
