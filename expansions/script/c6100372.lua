@@ -60,7 +60,7 @@ end
 
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and c:GetLevel()>=3 then
 		-- 等级下降2星
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
