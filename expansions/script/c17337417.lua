@@ -53,6 +53,7 @@ end
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.thfilter1(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(s.thfilter1,tp,LOCATION_MZONE,0,1,nil) end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,s.thfilter1,tp,LOCATION_MZONE,0,1,1,nil)
 end
@@ -86,7 +87,6 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 				e2:SetReset(RESET_PHASE+PHASE_END)
 				Duel.RegisterEffect(e2,tp)
 				rc:RegisterFlagEffect(id+1,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
-
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 				local hg=ex_g:Select(tp,1,1,nil)
 				if #hg>0 then
@@ -134,6 +134,7 @@ function s.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then 
 		return Duel.IsExistingTarget(s.filter_fusion_check,tp,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp,c)
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectTarget(tp,s.filter_fusion_check,tp,LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp,c)
 	local mg=g:Clone()
@@ -157,15 +158,13 @@ function s.op2(e,tp,eg,ep,ev,re,r,rp)
 		mg3=fgroup(ce,e,tp)
 		local mf=ce:GetValue()
 		sg2=Duel.GetMatchingGroup(s.filter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg3,mf,chkf)
-	end
-	
+	end	
 	if sg1:GetCount()>0 or (sg2~=nil and sg2:GetCount()>0) then
 		local sg=sg1:Clone()
 		if sg2 then sg:Merge(sg2) end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local tg=sg:Select(tp,1,1,nil)
-		local fc=tg:GetFirst()
-		
+		local fc=tg:GetFirst()		
 		if sg1:IsContains(fc) and (sg2==nil or not sg2:IsContains(fc) or ce and not Duel.SelectYesNo(tp,ce:GetDescription())) then
 			fc:SetMaterial(mg)
 			Duel.SendtoDeck(mg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
