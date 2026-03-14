@@ -368,9 +368,9 @@ function cm.mvop(e,tp,eg,ep,ev,re,r,rp,opt,lab)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local sg=Group.CreateGroup()
 		if not chk then
-			sg=g1:Select(tp,1,ct,nil)
+			sg=g1:Select(tp,1,ct//5,nil)
 		else
-			sg=g1:CancelableSelect(tp,1,ct,nil)
+			sg=g1:CancelableSelect(tp,1,ct//5,nil)
 		end
 		if sg and #sg>0 then
 			if fid~=0 then Duel.RaiseEvent(c,11451718,e,fid,0,0,0) end
