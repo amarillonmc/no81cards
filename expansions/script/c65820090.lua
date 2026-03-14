@@ -41,6 +41,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ShuffleHand(tp)
 			local g1=Duel.SelectMatchingCard(tp,Card.IsOriginalCodeRule,tp,LOCATION_HAND,0,ct,ct,nil,id)
 			Duel.ConfirmCards(1-tp,g1)
+			Duel.ShuffleHand(tp)
 		else
 			local g1=Duel.GetFieldGroup(tp,LOCATION_HAND,0)
 			if g1:GetCount()>0 then
