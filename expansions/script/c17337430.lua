@@ -9,7 +9,8 @@ function s.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN) 
 	e1:SetTarget(s.thtg)
 	e1:SetOperation(s.thop)
-	c:RegisterEffect(e1)	
+	c:RegisterEffect(e1)
+	
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_TODECK+CATEGORY_TOGRAVE)
@@ -45,7 +46,6 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		local tg=sg:RandomSelect(1-tp,1)
 		if #tg>0 then
 			Duel.SendtoHand(tg,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,tg)
 		end
 	end
 end
