@@ -38,7 +38,7 @@ function c28333723.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardDeck(tp,ct,REASON_COST)
 end
 function c28333723.chkfilter(c,tp)
-	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(tp)-- and c:IsPreviousPosition(POS_FACEUP) and c:GetPreviousLevelOnField()==3
+	return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE)-- and c:IsPreviousControler(tp) and c:IsPreviousPosition(POS_FACEUP) and c:GetPreviousLevelOnField()==3
 end
 function c28333723.efcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c28333723.chkfilter,1,nil,tp)

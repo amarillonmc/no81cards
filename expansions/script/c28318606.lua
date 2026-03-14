@@ -35,7 +35,7 @@ function c28318606.initial_effect(c)
 	end
 end
 function c28318606.checkop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(Duel.GetTurnPlayer(),28318606,RESET_PHASE+PHASE_END,0,1)
+	Duel.RegisterFlagEffect(Duel.GetTurnPlayer(),28318606,0,0,1)
 end
 function c28318606.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetFlagEffect(tp,28318606)==0
