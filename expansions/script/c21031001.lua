@@ -34,7 +34,7 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.handcon(e)
 	local tp=e:GetHandlerPlayer()
-	return Duel.GetFlagEffect(1-tp,id) or Duel.IsExistingMatchingCard(Card.IsFacedown,1-tp,LOCATION_SZONE,LOCATION_SZONE,1,nil)
+	return Duel.GetFlagEffect(1-tp,id)>0 or Duel.IsExistingMatchingCard(Card.IsFacedown,1-tp,LOCATION_SZONE,LOCATION_SZONE,1,nil)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return (Duel.GetFieldGroupCount(tp,LOCATION_MZONE+LOCATION_SZONE,0)+Duel.GetFieldGroupCount(1-tp,LOCATION_MZONE+LOCATION_SZONE,0))==2 end
