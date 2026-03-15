@@ -63,10 +63,44 @@ function s.desop1(e,tp,eg,ep,ev,re,r,rp)
 end
 
 
-function s.sprfilter(c,tp,g,sc)  
-	local tp=c:GetControler()
-	return (c:IsLocation(LOCATION_SZONE) and (Duel.GetFlagEffect(tp,65820099)==0 and c:GetFlagEffect(65820010)==0 or Duel.GetFlagEffect(tp,65820099)>0 and c:GetFlagEffect(65820010)>0) or c:IsLocation(LOCATION_EXTRA) and (Duel.GetFlagEffect(tp,65820099)>0 and c:GetFlagEffect(65820010)==0 or Duel.GetFlagEffect(tp,65820099)==0 and c:GetFlagEffect(65820010)>0) or (c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsCanBeXyzMaterial(nil)))
-	 and c:IsSetCard(0x3a32)
+function s.sprfilter(c,sc)  
+	local tp=sc:GetControler()
+	return 
+	(
+		(
+		c:IsLocation(LOCATION_SZONE) 
+		and 
+			(
+				(
+				Duel.GetFlagEffect(tp,65820099)==0 and sc:GetFlagEffect(65820010)==0 
+				)
+			or 
+				(
+				Duel.GetFlagEffect(tp,65820099)>0 and sc:GetFlagEffect(65820010)>0
+				)
+			)
+		)
+		or 
+		(
+			c:IsLocation(LOCATION_EXTRA) 
+			and 
+			(
+				(
+				Duel.GetFlagEffect(tp,65820099)>0 and sc:GetFlagEffect(65820010)==0 
+				)
+			or 
+				(
+				Duel.GetFlagEffect(tp,65820099)==0 and sc:GetFlagEffect(65820010)>0
+				)
+			) 
+		or 
+			(
+			c:IsFaceup() and c:IsLocation(LOCATION_MZONE) and c:IsCanBeXyzMaterial(sc)
+			)
+		)
+	)
+	and 
+	c:IsSetCard(0x3a32) and not c:IsCode(id)
 end 
 function s.spgckfil(g,e,tp,sc) 
 	return Duel.GetLocationCountFromEx(tp,tp,g,nil)
@@ -75,15 +109,15 @@ end
 function s.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler() 
-	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_ONFIELD+LOCATION_EXTRA,0,c)
+	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_ONFIELD+LOCATION_EXTRA,0,c,c)
 	return g:CheckSubGroup(s.spgckfil,2,2,e,tp)
 end
 function s.sprop(e,tp,eg,ep,ev,re,r,rp,c) 
 	local c=e:GetHandler()
 	local tp=c:GetControler() 
-	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_ONFIELD+LOCATION_EXTRA,0,c)
+	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_ONFIELD+LOCATION_EXTRA,0,c,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g1=g:SelectSubGroup(tp,s.spgckfil,false,2,2,e,tp)
+	local g1=g:SelectSubGroup(tp,s.spgckfil,true,2,2,e,tp)
 	if g1:IsExists(Card.IsLocation,1,c,LOCATION_EXTRA) then
 		for i=0,10 do
 			Duel.ResetFlagEffect(tp,EFFECT_FLAG_EFFECT+65820000+i)
