@@ -127,12 +127,10 @@ function s.descost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g=Duel.SelectMatchingCard(tp,s.filter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,0,#mg+1,nil)
 	Duel.HintSelection(g)
-	local g1=g+mg	--Group.__add(g,mg)
+	local g1=g+mg
 	if g1 then
-		local count=Duel.SendtoDeck(g1,nil,SEQ_DECKSHUFFLE,REASON_COST)
-		if count then 
-			e:SetLabel(count)
-		end
+		e:SetLabel(g1:GetCount())
+		Duel.SendtoDeck(g1,nil,SEQ_DECKSHUFFLE,REASON_COST)
 	end
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)

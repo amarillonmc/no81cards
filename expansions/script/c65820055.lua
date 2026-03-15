@@ -40,11 +40,11 @@ function s.initial_effect(c)
 	e1:SetOperation(s.scop)
 	c:RegisterEffect(e1)
 	--反面【表】
-	local e11=e2:Clone()
+	local e11=e1:Clone()
 	e11:SetCondition(s.mecon1)
 	c:RegisterEffect(e11)
 	--反面【里】
-	local e12=e1:Clone()
+	local e12=e2:Clone()
 	e12:SetCost(s.rmcost)
 	e12:SetCondition(s.handcon1)
 	c:RegisterEffect(e12)

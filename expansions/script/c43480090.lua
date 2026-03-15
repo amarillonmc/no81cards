@@ -73,7 +73,7 @@ end
 function c43480090.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	local p=tp 
-	if Duel.IsPlayerAffectedByEffect(tp,4348050) then p=1-tp end 
+	if Duel.IsPlayerAffectedByEffect(tp,43480050) then p=1-tp end 
 	local dg=Duel.GetMatchingGroup(c43480090.desfil,p,LOCATION_MZONE,0,nil)
 	if dg:GetCount()>0 then 
 		Duel.Destroy(dg,REASON_EFFECT)
