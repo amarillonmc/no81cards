@@ -14,7 +14,7 @@ function s.initial_effect(c)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
-
+	
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -29,12 +29,15 @@ function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
 	return ph==PHASE_MAIN1 or ph==PHASE_MAIN2
 end
+
 function s.lvfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x5f51) and c:IsLevelAbove(1)
 end
+
 function s.desfilter(c)
-	return c:IsSetCard(0x5f51) and c:IsDestructable()
+	return c:IsSetCard(0x5f51)
 end
+
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.lvfilter(chkc) end
 	if chk==0 then 
@@ -57,34 +60,31 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(12)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
-	end   
+	end	
 	Duel.AdjustInstantly() 
 	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local dg=Duel.SelectMatchingCard(tp,s.desfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,#tg,c)   
+	local dg=Duel.SelectMatchingCard(tp,s.desfilter,tp,LOCATION_HAND+LOCATION_ONFIELD,0,#tg,#tg,c)   
 	if #dg>0 then
 		local conf=dg:Filter(Card.IsFacedown,nil)
-		if #conf>0 then Duel.ConfirmCards(1-tp,conf) end	 
+		if #conf>0 then Duel.ConfirmCards(1-tp,conf) end
 		local count = Duel.Destroy(dg,REASON_EFFECT)		
 		if count > 0 then
 			local sc=Duel.GetMatchingGroup(function(xyzc)
 				return xyzc:IsSetCard(0x5f51) and xyzc:IsType(TYPE_XYZ) 
-					and xyzc:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)
-			end,tp,LOCATION_EXTRA,0,nil)
+					and xyzc:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false)			end,tp,LOCATION_EXTRA,0,nil)
 			if #sc>0 and Duel.SelectEffectYesNo(tp,c,aux.Stringid(id,2)) then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 				local xyz=sc:Select(tp,1,1,nil):GetFirst()
 				local mg=Duel.GetMatchingGroup(function(mc)
-					return mc:IsFaceup() and mc:IsType(TYPE_MONSTER) and mc:IsCanBeXyzMaterial(xyz)
-				end,tp,LOCATION_MZONE,0,nil)
+					return mc:IsFaceup() and mc:IsType(TYPE_MONSTER) and mc:IsCanBeXyzMaterial(xyz)			   end,tp,LOCATION_MZONE,0,nil)
 				if #mg>=2 then
 					Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 					local mat=mg:FilterSelect(tp,function(mc) return mc:IsLevel(12) end,2,64,nil)
 					if #mat>=2 then
 						xyz:SetMaterial(mat)
 						Duel.Overlay(xyz,mat)
-						if Duel.SpecialSummon(xyz,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)~=0 then
-							xyz:CompleteProcedure()
+						if Duel.SpecialSummon(xyz,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)~=0 then						   xyz:CompleteProcedure()
 						end
 					end
 				end

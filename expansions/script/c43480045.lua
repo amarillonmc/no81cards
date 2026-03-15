@@ -19,7 +19,7 @@ function c43480045.initial_effect(c)
 	e2:SetCode(EVENT_CHAINING) 
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET) 
 	e2:SetRange(LOCATION_MZONE) 
-	e2:SetCountLimit(1,43480046) 
+	e2:SetCountLimit(1,4348006) 
 	e2:SetCondition(c43480045.rmdcon)
 	e2:SetTarget(c43480045.rmdtg) 
 	e2:SetOperation(c43480045.rmdop)  
@@ -74,8 +74,8 @@ function c43480045.eqop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c43480045.rmdcon(e,tp,eg,ep,ev,re,r,rp) 
 	local b1=re:IsActiveType(TYPE_MONSTER) and Duel.GetFlagEffect(tp,43480045)==0
-	local b2=re:IsActiveType(TYPE_SPELL) and Duel.GetFlagEffect(tp,4348046)==0 
-	local b3=re:IsActiveType(TYPE_TRAP) and Duel.GetFlagEffect(tp,4348047)==0 
+	local b2=re:IsActiveType(TYPE_SPELL) and Duel.GetFlagEffect(tp,4348006)==0 
+	local b3=re:IsActiveType(TYPE_TRAP) and Duel.GetFlagEffect(tp,43480047)==0 
 	return rp==1-tp and (b1 or b2 or b3) 
 end 
 function c43480045.desfil(c,e) 
@@ -91,10 +91,10 @@ function c43480045.rmdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		Duel.RegisterFlagEffect(tp,43480045,RESET_PHASE+PHASE_END,0,1)
 	end 
 	if re:IsActiveType(TYPE_SPELL) then 
-		Duel.RegisterFlagEffect(tp,4348046,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(tp,4348006,RESET_PHASE+PHASE_END,0,1)
 	end 
 	if re:IsActiveType(TYPE_TRAP) then 
-		Duel.RegisterFlagEffect(tp,4348047,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(tp,43480047,RESET_PHASE+PHASE_END,0,1)
 	end 
 end
 function c43480045.rmdop(e,tp,eg,ep,ev,re,r,rp)

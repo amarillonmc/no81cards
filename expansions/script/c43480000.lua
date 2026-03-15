@@ -30,7 +30,7 @@ function c43480000.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN) 
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,43480001) 
+	e2:SetCountLimit(1,434800001) 
 	e2:SetTarget(c43480000.eqtg)
 	e2:SetOperation(c43480000.eqop)
 	c:RegisterEffect(e2)
@@ -39,7 +39,7 @@ function c43480000.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)   
 	e3:SetRange(LOCATION_SZONE) 
-	e3:SetCountLimit(1,43480002) 
+	e3:SetCountLimit(1,434800002) 
 	e3:SetCondition(c43480000.spcon)
 	e3:SetTarget(c43480000.sptg)
 	e3:SetOperation(c43480000.spop)
@@ -82,7 +82,7 @@ end
 function c43480000.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	local p=tp 
-	if Duel.IsPlayerAffectedByEffect(tp,43480050) then p=1-tp end 
+	if Duel.IsPlayerAffectedByEffect(tp,4348050) then p=1-tp end 
 	local dg=Duel.GetMatchingGroup(c43480000.desfil,p,LOCATION_MZONE,0,nil)
 	if dg:GetCount()>0 then 
 		Duel.Destroy(dg,REASON_EFFECT)

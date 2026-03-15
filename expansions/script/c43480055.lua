@@ -77,7 +77,7 @@ function c43480055.pspop(e,tp,eg,ep,ev,re,r,rp)
 end  
 
 function c43480055.spfilter(c,e,tp)
-	return c:IsCode(43480030) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(4348030) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
 function c43480055.sptg(e,tp,eg,ep,ev,re,r,rp,chk)

@@ -42,9 +42,15 @@ function c43480040.pbfil(c)
 	return not c:IsPublic() and c:IsSetCard(0x3f13)  
 end 
 function c43480040.setcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c43480040.pbfil,tp,LOCATION_HAND,0,1,nil) end
-	local pg=Duel.SelectMatchingCard(tp,c43480040.pbfil,tp,LOCATION_HAND,0,1,1,nil) 
-	Duel.ConfirmCards(1-tp,pg) 
+	local replace = Duel.IsPlayerAffectedByEffect(tp, 43480080)
+	if chk == 0 then 
+		if replace then return true end
+		return Duel.IsExistingMatchingCard(c43480040.pbfil,tp,LOCATION_HAND,0,1,nil)
+	end
+	if not replace then
+		local pg=Duel.SelectMatchingCard(tp,c43480040.pbfil,tp,LOCATION_HAND,0,1,1,nil) 
+		Duel.ConfirmCards(1-tp,pg) 
+	end
 end
 function c43480040.setfilter(c)
 	return c:IsSetCard(0x3f13) and c:IsType(TYPE_TRAP) and c:IsSSetable()

@@ -51,7 +51,7 @@ function c43480005.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3f13)
 end
 function c43480005.pspcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c43480005.cfilter,tp,LOCATION_MZONE,0,1,nil) or Duel.IsEnvironment(43480070,tp) 
+	return Duel.IsExistingMatchingCard(c43480005.cfilter,tp,LOCATION_MZONE,0,1,nil) or Duel.IsEnvironment(4348070,tp) 
 end
 function c43480005.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -85,7 +85,7 @@ end
 function c43480005.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	local p=tp 
-	if Duel.IsPlayerAffectedByEffect(tp,43480050) then p=1-tp end 
+	if Duel.IsPlayerAffectedByEffect(tp,4348050) then p=1-tp end 
 	local dg=Duel.GetMatchingGroup(c43480005.desfil,p,LOCATION_MZONE,0,nil)
 	if dg:GetCount()>0 then 
 		Duel.Destroy(dg,REASON_EFFECT)
