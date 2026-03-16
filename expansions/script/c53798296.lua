@@ -1,7 +1,7 @@
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_ALL&~ATTRIBUTE_WIND),4,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsAttribute,ATTRIBUTE_ALL&~ATTRIBUTE_DARK),4,2)
 	c:EnableReviveLimit()
 	
 	--same race: cannot be material for same race
