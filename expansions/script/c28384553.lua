@@ -112,7 +112,7 @@ function c28384553.desop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Destroy(sg,REASON_EFFECT)
 	end
 	local g=Duel.GetMatchingGroup(c28384553.spfilter,tp,LOCATION_GRAVE,0,nil,e,tp,Duel.GetTurnCount())
-	if phchk==1 and Duel.GetMZoneCount(tp)>0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(28384553,2)) then
+	if phchk==1 and Duel.GetMZoneCount(tp)>0 and #g>0 and Duel.SelectYesNo(tp,aux.Stringid(28384553,1)) then
 		local ft=Duel.IsPlayerAffectedByEffect(tp,59822133) and 1 or Duel.GetMZoneCount(tp)
 		if #g>ft then
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
