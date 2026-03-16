@@ -2,6 +2,7 @@
 yume=yume or {}
 if c71401001 then
 function c71401001.initial_effect(c)
+	if yume.import_flag then return	end
 	--spsummon
 	--[[
 	Auxiliary effect to ensure this card in GY before effect cost for Magician's Rod.
@@ -41,14 +42,14 @@ function c71401001.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,71501001)
-	e2:SetCost(yume.ButterflyLimitCost)
+	e2:SetCost(yume.heart_crystals.LimitCost)
 	e2:SetTarget(c71401001.tg2)
 	e2:SetOperation(c71401001.op2)
 	c:RegisterEffect(e2)
 	local e2a=e2:Clone()
 	e2a:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e2a)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401001.costtg(e,te,tp)
 	return te:IsActiveType(TYPE_MONSTER)
@@ -66,7 +67,7 @@ function c71401001.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c71401001.filterc1,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401001.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
@@ -118,23 +119,25 @@ function c71401001.op2(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 end
-function yume.ButterflyCounter()
-	Duel.AddCustomActivityCounter(71401001,ACTIVITY_CHAIN,yume.ButterflyCounterFilter)
+if not yume.heart_crystals then
+yume.heart_crystals={}
+function yume.heart_crystals.Counter()
+	Duel.AddCustomActivityCounter(71401001,ACTIVITY_CHAIN,yume.heart_crystals.CounterFilter)
 end
-function yume.ButterflyCounterFilter(re,tp,cid)
+function yume.heart_crystals.CounterFilter(re,tp,cid)
 	return not re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
-function yume.RegButterflyCostLimit(e,tp)
+function yume.heart_crystals.regCostLimit(e,tp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_OATH)
 	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
 	e1:SetTargetRange(1,0)
-	e1:SetValue(yume.ButterflyAcLimit)
+	e1:SetValue(yume.heart_crystals.AcLimit)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
-function yume.ButterflyAcLimit(e,re,tp)
+function yume.heart_crystals.AcLimit(e,re,tp)
 	return re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function yume.AddThisCardBanishedAlreadyCheck(c)
@@ -145,25 +148,25 @@ function yume.AddThisCardBanishedAlreadyCheck(c)
 	c:RegisterEffect(e1)
 	return e1
 end
-function yume.AddButterflySpell(c,id)
+function yume.heart_crystals.addPlaceSpellIgnition(c,id)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71401001,2))
 	e1:SetRange(LOCATION_HAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetCountLimit(1,id)
-	e1:SetCost(yume.ButterflyLimitCost)
-	e1:SetTarget(yume.ButterflyPlaceTg)
-	e1:SetOperation(yume.ButterflySpellOp)
+	e1:SetCost(yume.heart_crystals.LimitCost)
+	e1:SetTarget(yume.heart_crystals.PlaceTg)
+	e1:SetOperation(yume.heart_crystals.SpellOp)
 	c:RegisterEffect(e1)
 end
-function yume.ButterflyPlaceTg(e,tp,eg,ep,ev,re,r,rp,chk)
+function yume.heart_crystals.PlaceTg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and e:GetHandler():CheckUniqueOnField(tp) end
 end
-function yume.ButterflyLimitCost(e,tp,eg,ep,ev,re,r,rp,chk)
+function yume.heart_crystals.LimitCost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
-function yume.ButterflySpellOp(e,tp,eg,ep,ev,re,r,rp)
+function yume.heart_crystals.SpellOp(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
@@ -176,18 +179,18 @@ function yume.ButterflySpellOp(e,tp,eg,ep,ev,re,r,rp)
 		c:RegisterEffect(e1)
 	end
 end
-function yume.AddButterflyTrap(c,id)
+function yume.heart_crystals.addPlaceTrapIgnition(c,id)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71401001,3))
 	e1:SetRange(LOCATION_HAND)
 	e1:SetType(EFFECT_TYPE_IGNITION)
 	e1:SetCountLimit(1,id)
-	e1:SetCost(yume.ButterflyLimitCost)
-	e1:SetTarget(yume.ButterflyPlaceTg)
-	e1:SetOperation(yume.ButterflyTrapOp)
+	e1:SetCost(yume.heart_crystals.LimitCost)
+	e1:SetTarget(yume.heart_crystals.PlaceTg)
+	e1:SetOperation(yume.heart_crystals.TrapOp)
 	c:RegisterEffect(e1)
 end
-function yume.ButterflyTrapOp(e,tp,eg,ep,ev,re,r,rp)
+function yume.heart_crystals.TrapOp(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) then return end
 	if Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true) then
@@ -199,4 +202,5 @@ function yume.ButterflyTrapOp(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(TYPE_TRAP+TYPE_CONTINUOUS)
 		c:RegisterEffect(e1)
 	end
+end
 end

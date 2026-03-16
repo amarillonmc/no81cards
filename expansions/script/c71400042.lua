@@ -1,6 +1,11 @@
 --构异梦境-巡行病房
-if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400042.initial_effect(c)
+	if not (yume and yume.yume_nikki) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71400001,0)
+		yume.import_flag=false
+	end
 	yume.temp_card_field[c]=yume.temp_card_field[c] or {}
 	yume.temp_card_field[c].id=71400042
 	yume.temp_card_field[c].ft=2

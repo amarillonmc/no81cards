@@ -8,21 +8,19 @@ function cm.initial_effect(c)
 	e1:SetCode(EFFECT_DEFENSE_ATTACK)
 	e1:SetValue(1)
 	c:RegisterEffect(e1)
-	--Removeth
+	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(43990115,0))
-	e2:SetCategory(CATEGORY_REMOVE+CATEGORY_TOHAND)
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetRange(LOCATION_HAND)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_SUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,43990115)
-	e2:SetCondition(c43990115.thcon)
 	e2:SetTarget(c43990115.thtg)
-	e2:SetOperation(c43990115.thop1)
+	e2:SetOperation(c43990115.thop)
 	c:RegisterEffect(e2)
 	local e3=e2:Clone()
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetOperation(c43990115.thop2)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
 	--atk
 	local e4=Effect.CreateEffect(c)
@@ -60,38 +58,8 @@ end
 function c43990115.indtg(e,c)
 	return c:IsSetCard(0x6510) and c:IsFaceup()
 end
-function c43990115.thop1(e,tp,eg,ep,ev,re,r,rp)
+function c43990115.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.Remove(c,POS_FACEUP,REASON_EFFECT)
-	end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local g=Duel.SelectMatchingCard(tp,c43990115.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g:GetCount()>0 then
-		Duel.SendtoHand(g,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,g)
-	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
-	e1:SetTargetRange(LOCATION_ONFIELD,0)
-	e1:SetTarget(c43990115.indtg)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	e1:SetValue(1)
-	Duel.RegisterEffect(e1,tp)
-end
-function c43990115.thop2(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)~=0 and c:GetOriginalCode()==43990115 then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_PHASE+PHASE_END)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabelObject(c)
-		e1:SetCountLimit(1)
-		e1:SetOperation(c43990115.retop)
-		Duel.RegisterEffect(e1,tp)
-	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,c43990115.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if g:GetCount()>0 then

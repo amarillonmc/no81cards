@@ -1,6 +1,11 @@
 --异梦笑颜兄妹
-if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400040.initial_effect(c)
+	if not (yume and yume.yume_nikki) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71400001,0)
+		yume.import_flag=false
+	end
 	c:SetUniqueOnField(1,0,71400040)
 	--link summon
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,2,yume.YumeLMGFilterFunction(c))

@@ -1,6 +1,11 @@
 --花幻-「簇」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401017.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_SPELLCASTER),aux.NonTuner(Card.IsRace,RACE_SPELLCASTER),1)
 	c:EnableReviveLimit()
@@ -22,7 +27,7 @@ function c71401017.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,71401017)
 	e2:SetCost(c71401017.cost2)
-	e2:SetTarget(yume.ButterflyPlaceTg)
+	e2:SetTarget(yume.heart_crystals.PlaceTg)
 	e2:SetOperation(c71401017.op2)
 	c:RegisterEffect(e2)
 	--to hand
@@ -38,7 +43,7 @@ function c71401017.initial_effect(c)
 	e3:SetTarget(c71401017.tg3)
 	e3:SetOperation(c71401017.op3)
 	c:RegisterEffect(e3)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401017.deffilter(c)
 	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsFaceup()
@@ -54,7 +59,7 @@ function c71401017.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c71401017.filterc2,tp,LOCATION_EXTRA,0,1,1,nil,tp)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401017.filter2(c,e,tp)
 	return c:IsType(TYPE_SYNCHRO) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsRace(RACE_SPELLCASTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -98,7 +103,7 @@ function c71401017.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	local mc=Duel.SelectMatchingCard(tp,c71401017.filterc3,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
 	Duel.Remove(mc,POS_FACEUP,REASON_COST)
 	e:SetLabel(mc:GetLevel())
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401017.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and c71401017.filter3(chkc,e:GetLabel()) end

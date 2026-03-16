@@ -1,6 +1,11 @@
 --花现-「祈」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401011.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--self special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71401001,0))
@@ -22,10 +27,10 @@ function c71401011.initial_effect(c)
 	e2:SetCountLimit(1,71501011)
 	e2:SetCondition(c71401011.con2)
 	e2:SetTarget(c71401011.tg2)
-	e2:SetCost(yume.ButterflyLimitCost)
+	e2:SetCost(yume.heart_crystals.LimitCost)
 	e2:SetOperation(c71401011.op2)
 	c:RegisterEffect(e2)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401011.filterc1(c)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsAbleToRemoveAsCost()
@@ -35,7 +40,7 @@ function c71401011.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c71401011.filterc1,tp,LOCATION_HAND,0,1,1,e:GetHandler())
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401011.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end

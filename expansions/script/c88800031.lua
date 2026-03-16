@@ -1,7 +1,7 @@
 --山田组干部 神田
 function c88800031.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,c88800031.mfilter,4,2)
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0xc02),4,2)
 	c:EnableReviveLimit()
 	--destroy
 	local e1=Effect.CreateEffect(c)
@@ -25,9 +25,6 @@ function c88800031.initial_effect(c)
 	e2:SetTarget(c88800031.target)
 	e2:SetOperation(c88800031.operation)
 	c:RegisterEffect(e2)
-end
-function c88800031.mfilter(c)
-	return c:IsRace(RACE_WARRIOR) and c:IsAttribute(ATTRIBUTE_DARK)
 end
 function c88800031.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsOnField() end

@@ -23,7 +23,7 @@ function c71403019.initial_effect(c)
 	c:RegisterEffect(ep1a)
 	--change pos
 	local ep2=Effect.CreateEffect(c)
-	ep2:SetCategory(CATEGORY_POSITION+CATEGORY_TOGRAVE)
+	ep2:SetCategory(CATEGORY_POSITION+CATEGORY_TOGRAVE+CATEGORY_DESTROY)
 	ep2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	ep2:SetCode(EVENT_SUMMON_SUCCESS)
 	ep2:SetRange(LOCATION_PZONE)
@@ -68,7 +68,6 @@ function c71403019.tgp2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		and Duel.IsExistingMatchingCard(c71403019.filterp2b,tp,LOCATION_DECK,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectTarget(tp,c71403019.filterp2a,tp,LOCATION_MZONE,0,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,#g,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function c71403019.opp2(e,tp,eg,ep,ev,re,r,rp)

@@ -1,6 +1,11 @@
 --蝶幻-「胧」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401008.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--synchro summon
 	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_SPELLCASTER),aux.NonTuner(Card.IsRace,RACE_SPELLCASTER),1)
 	c:EnableReviveLimit()
@@ -36,7 +41,7 @@ function c71401008.initial_effect(c)
 	e3:SetTarget(c71401008.tg3)
 	e3:SetOperation(c71401008.op3)
 	c:RegisterEffect(e3)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401008.indtg(e,c)
 	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsFaceup()
@@ -53,7 +58,7 @@ function c71401008.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c71401008.filterc2,tp,LOCATION_ONFIELD,0,1,1,nil,tp)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401008.op2(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
@@ -97,7 +102,7 @@ function c71401008.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c71401008.filterc3,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401008.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,1,nil) end

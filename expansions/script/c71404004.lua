@@ -1,6 +1,11 @@
 --凝宿之星意
-if not c71404000 then dofile("expansions/script/c71404000.lua") end
 function c71404004.initial_effect(c)
+	if not (yume and yume.stellar_memories) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71404000,0)
+		yume.import_flag=false
+	end
 	--link summon
 	aux.AddLinkProcedure(c,nil,3,99,c71404004.lcheck)
 	c:EnableReviveLimit()
@@ -73,6 +78,7 @@ end
 function c71404004.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and Duel.IsExistingMatchingCard(c71404004.filter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
+		and yume.stellar_memories.BanishorSendSpellCheck(71404014,tp)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end

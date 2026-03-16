@@ -1,6 +1,11 @@
 --蝶境-「漫」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401010.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--link summon
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_SPELLCASTER),2,2,c71401010.lcheck)
@@ -39,7 +44,7 @@ function c71401010.initial_effect(c)
 	e3:SetTarget(c71401010.tg3)
 	e3:SetOperation(c71401010.op3)
 	c:RegisterEffect(e3)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401010.lcheck(g)
 	return g:GetClassCount(Card.GetLinkAttribute)==g:GetCount()
@@ -49,7 +54,7 @@ function c71401010.tg1(e,c)
 end
 function c71401010.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401010.filter2(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -90,7 +95,7 @@ function c71401010.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sg=g:SelectSubGroup(tp,aux.dabcheck,false,2,2)
 	Duel.Remove(sg,POS_FACEUP,REASON_COST)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401010.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(c71401010.filter3,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end

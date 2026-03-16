@@ -221,7 +221,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	if opt==1 then
 		local d=Duel.Draw(tp,ct,REASON_EFFECT)
 		Duel.ShuffleHand(tp)
-		Duel.DiscardHand(tp,nil,d-1,d-1,REASON_EFFECT+REASON_DISCARD)
+		Duel.DiscardHand(tp,nil,d,d,REASON_EFFECT+REASON_DISCARD)
 		local bool=c:IsRelateToEffect(e) and c:IsControler(tp) and c:IsFaceup()
 		local seq=c:GetSequence()
 		local b1=seq>0 and seq<5 and Duel.CheckLocation(tp,LOCATION_MZONE,seq-1)
@@ -317,7 +317,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			local d=Duel.Draw(tp,ct,REASON_EFFECT)
 			Duel.ShuffleHand(tp)
-			Duel.DiscardHand(tp,nil,d-1,d-1,REASON_EFFECT+REASON_DISCARD)
+			Duel.DiscardHand(tp,nil,d,d,REASON_EFFECT+REASON_DISCARD)
 		end
 	end
 end

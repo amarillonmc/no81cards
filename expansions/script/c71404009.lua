@@ -1,8 +1,13 @@
 --星导之凝忆
-if not c71404000 then dofile("expansions/script/c71404000.lua") end
 local s,id,o=GetID()
 ---@param c Card
 function s.initial_effect(c)
+	if not (yume and yume.stellar_memories) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71404000,0)
+		yume.import_flag=false
+	end
 	c:EnableReviveLimit()
 	--equip
 	local e1=Effect.CreateEffect(c)

@@ -53,12 +53,15 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.retop3(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ReturnToField(e:GetLabelObject())
+	local c=e:GetLabelObject()
+	if not Duel.ReturnToField(c) and c:IsLocation(LOCATION_REMOVED) and Duel.GetMZoneCount(c:GetPreviousControler())>0 then
+		Duel.MoveToField(c,c:GetPreviousControler(),c:GetPreviousControler(),c:GetPreviousLocation(),c:GetPreviousPosition(),true)
+	end
 	e:Reset()
 end
 function cm.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return aux.exccon(e) or c:IsReason(REASON_DESTROY)
+	return aux.exccon(e) or c:IsReason(REASON_EFFECT)
 end
 function cm.thfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck()

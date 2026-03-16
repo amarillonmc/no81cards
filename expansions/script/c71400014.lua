@@ -1,6 +1,11 @@
 --幻异梦境-梦幻图书馆
-if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400014.initial_effect(c)
+	if not (yume and yume.yume_nikki) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71400001,0)
+		yume.import_flag=false
+	end
 	--red remedy
 	local e1a=Effect.CreateEffect(c)
 	e1a:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)

@@ -1,6 +1,11 @@
 --梦刻
-if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400066.initial_effect(c)
+	if not (yume and yume.yume_nikki) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71400001,0)
+		yume.import_flag=false
+	end
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71400066,0))

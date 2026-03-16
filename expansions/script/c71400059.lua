@@ -1,14 +1,21 @@
 --幻异梦境-蔷薇教堂
-if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400059.initial_effect(c)
+	if not (yume and yume.yume_nikki) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71400001,0)
+		yume.import_flag=false
+	end
+	--same effect send this card to grave and summon another card check
+	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
 	--Activate
 	--See AddYumeFieldGlobal
 	--xyzlv
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71400059,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetCountLimit(1,71400059)
 	e1:SetRange(LOCATION_FZONE)
+	e1:SetTarget(c71400059.tg1)
 	e1:SetOperation(c71400059.op1)
 	c:RegisterEffect(e1)
 	--activate field
@@ -20,12 +27,15 @@ function c71400059.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP)
 	e3:SetCode(EVENT_LEAVE_FIELD)
-	e3:SetCountLimit(1,71500059)
 	e3:SetRange(LOCATION_GRAVE)
+	e3:SetLabelObject(e0)
 	e3:SetCondition(c71400059.con3)
 	e3:SetTarget(c71400059.tg3)
 	e3:SetOperation(c71400059.op3)
 	c:RegisterEffect(e3)
+end
+function c71400059.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,71400059)==0 end
 end
 function c71400059.op1(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
@@ -36,6 +46,7 @@ function c71400059.op1(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(c71400059.xyzlv)
 	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e1,tp)
+	Duel.RegisterFlagEffect(tp,71400059,RESET_PHASE+PHASE_END,0,1)
 end
 function c71400059.xyztg(e,c)
 	return not c:IsLevel(4) and c:IsSetCard(0x714)
@@ -43,14 +54,15 @@ end
 function c71400059.xyzlv(e,c,rc)
 	return 0x40000+c:GetLevel()
 end
-function c71400059.filter3a(c)
-	return c:IsType(TYPE_XYZ) and (c:IsPreviousPosition(POS_FACEUP) or c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:GetOverlayGroup():IsExists(c71400059.filter3b,1,nil)
+function c71400059.filter3a(c,se)
+	return c:IsType(TYPE_XYZ) and (c:IsPreviousPosition(POS_FACEUP) or c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:GetOverlayGroup():IsExists(c71400059.filter3b,1,nil) and (se==nil or c:GetReasonEffect()~=se)
 end
 function c71400059.filter3b(c)
 	return c:IsSetCard(0x714) and not (c:IsType(TYPE_MONSTER) and c:IsLevel(4))
 end
 function c71400059.con3(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c71400059.filter3a,1,nil) and rp==1-tp
+	local se=e:GetLabelObject():GetLabelObject()
+	return eg:IsExists(c71400059.filter3a,1,nil,se) and rp==1-tp
 end
 function c71400059.filter3c(c,e,tp)
 	return c:IsSetCard(0x714) and c:IsType(TYPE_XYZ) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

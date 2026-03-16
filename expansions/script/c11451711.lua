@@ -83,7 +83,9 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 		e:Reset()
 	elseif flag>=9 then
 		c:ResetFlagEffect(11451718)
-		Duel.ReturnToField(c)
+		if not Duel.ReturnToField(c) and c:IsLocation(LOCATION_REMOVED) and Duel.GetMZoneCount(c:GetPreviousControler())>0 then
+			Duel.MoveToField(c,c:GetPreviousControler(),c:GetPreviousControler(),c:GetPreviousLocation(),c:GetPreviousPosition(),true)
+		end
 		e:Reset()
 	else
 		flag=flag+1

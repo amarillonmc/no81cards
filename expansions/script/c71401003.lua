@@ -1,7 +1,12 @@
 --蝶忆-「染」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401003.initial_effect(c)
-	yume.AddButterflyTrap(c,71401003)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
+	yume.heart_crystals.addPlaceTrapIgnition(c,71401003)
 	--tohand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71401003,0))
@@ -16,7 +21,7 @@ function c71401003.initial_effect(c)
 	e2:SetTarget(c71401003.tg2)
 	e2:SetOperation(c71401003.op2)
 	c:RegisterEffect(e2)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401003.con2(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and e:GetHandler():GetType()==TYPE_TRAP+TYPE_CONTINUOUS
@@ -29,7 +34,7 @@ function c71401003.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c71401003.filterc2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401003.filter2(c,tp,check)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsAttribute(ATTRIBUTE_LIGHT) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and (c:IsAbleToHand() or check and not c:IsForbidden() and c:CheckUniqueOnField(tp))

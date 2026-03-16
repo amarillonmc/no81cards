@@ -1,6 +1,11 @@
 --花境-「落」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401022.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--link summon
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkRace,RACE_SPELLCASTER),2,2,c71401022.lcheck)
@@ -36,7 +41,7 @@ function c71401022.initial_effect(c)
 	e3:SetTarget(c71401022.tg3)
 	e3:SetOperation(c71401022.op3)
 	c:RegisterEffect(e3)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401022.lcheck(g)
 	return aux.SameValueCheck(g,Card.GetLinkAttribute)
@@ -69,7 +74,7 @@ function c71401022.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	local attr=rc:GetAttribute()
 	Duel.SendtoDeck(rc,nil,SEQ_DECKSHUFFLE,REASON_COST)
 	e:SetLabel(attr)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401022.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:IsCostChecked() end
@@ -99,7 +104,7 @@ function c71401022.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local rg=g:SelectSubGroup(tp,c71401022.fselect3,false,2,2)
 	Duel.Remove(rg,POS_FACEUP,REASON_COST)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401022.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

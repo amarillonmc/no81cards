@@ -1,6 +1,11 @@
 --花幻-「连」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401021.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--synchro summon
 	aux.AddSynchroProcedure(c,c71401021.mfilter,aux.NonTuner(c71401021.mfilter),1)
 	c:EnableReviveLimit()
@@ -40,8 +45,8 @@ function c71401021.initial_effect(c)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE+TIMING_EQUIP)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,71401021)
-	e2:SetCost(yume.ButterflyLimitCost)
-	e2:SetTarget(yume.ButterflyPlaceTg)
+	e2:SetCost(yume.heart_crystals.LimitCost)
+	e2:SetTarget(yume.heart_crystals.PlaceTg)
 	e2:SetOperation(c71401021.op2)
 	c:RegisterEffect(e2)
 	--cannot activate
@@ -52,11 +57,11 @@ function c71401021.initial_effect(c)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCountLimit(1,71501021)
 	e3:SetCondition(c71401021.con3)
-	e3:SetCost(yume.ButterflyLimitCost)
+	e3:SetCost(yume.heart_crystals.LimitCost)
 	e3:SetTarget(c71401021.tg3)
 	e3:SetOperation(c71401021.op3)
 	c:RegisterEffect(e3)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 c71401021.material_type=TYPE_SYNCHRO
 function c71401021.mfilter(c)

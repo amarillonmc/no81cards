@@ -75,7 +75,7 @@ function cm.filter(c)
 	return c:IsSetCard(0x97d) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsForbidden() and c:IsHasEffect(EFFECT_REMAIN_FIELD)
 end
 function cm.tfilter(c)
-	return c:IsType(TYPE_COUNTER) and c:IsFaceup()
+	return c:IsType(TYPE_TRAP) and c:IsFaceup()
 end
 function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -191,7 +191,7 @@ function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsType(TYPE_TRAP) and rp==tp
 end
 function cm.filter2(c)
-	return c:IsType(TYPE_COUNTER) and c:IsFaceup() and c:IsSSetable(true)
+	return c:IsType(TYPE_TRAP) and c:IsFaceup() and c:IsSSetable(true)
 end
 function cm.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end

@@ -82,7 +82,7 @@ function cm.initial_effect(c)
 			end
 			return res
 		end
-		local ge1=Effect.CreateEffect(c)
+		--[[local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_CHAINING)
 		ge1:SetOperation(cm.check)
@@ -100,7 +100,7 @@ function cm.initial_effect(c)
 		ge4:SetCode(EVENT_CHAIN_NEGATED)
 		ge4:SetCondition(cm.rscon)
 		ge4:SetOperation(cm.reset)
-		Duel.RegisterEffect(ge4,0)
+		Duel.RegisterEffect(ge4,0)--]]
 	end
 	if not CONVIATRESS_BUFF then
 		CONVIATRESS_BUFF={}
@@ -161,7 +161,7 @@ function cm.clear(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.costcon(e)
-	cm.costing=false
+	cm[0]=false
 	return true
 end
 function cm.actarget2(e,te,tp)
@@ -221,22 +221,41 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 					if lab3 then
 						Duel.Hint(HINT_CARD,0,11451781)
 						local e1=Effect.CreateEffect(c)
-						e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-						e1:SetCode(EVENT_CHAIN_SOLVING)
-						e1:SetOperation(cm.ngop)
+						e1:SetType(EFFECT_TYPE_FIELD)
+						e1:SetCode(EFFECT_DISABLE)
+						e1:SetTargetRange(0,LOCATION_ONFIELD)
 						e1:SetReset(RESET_CHAIN)
-						e1:SetLabel(Duel.GetCurrentChain()+2)
 						Duel.RegisterEffect(e1,tp)
+						local e2=Effect.CreateEffect(c)
+						e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+						e2:SetCode(EVENT_CHAIN_SOLVING)
+						e2:SetOperation(cm.ngop)
+						e2:SetReset(RESET_CHAIN)
+						Duel.RegisterEffect(e2,tp)
+						local e3=Effect.CreateEffect(c)
+						e3:SetType(EFFECT_TYPE_FIELD)
+						e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+						e3:SetTargetRange(0,LOCATION_MZONE)
+						e3:SetReset(RESET_CHAIN)
+						Duel.RegisterEffect(e3,tp)
+						Duel.AdjustInstantly()
 					end
 					if lab4 then
 						Duel.Hint(HINT_CARD,0,11451782)
+						local e1=Effect.CreateEffect(c)
+						e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+						e1:SetLabelObject(e)
+						e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+						e1:SetOperation(cm.spop)
+						e1:Reset(RESET_CHAIN)
+						Duel.RegisterEffect(e1,tp)
 						local e2=Effect.CreateEffect(c)
-						e2:SetType(EFFECT_TYPE_FIELD)
-						e2:SetCode(EFFECT_IMMUNE_EFFECT)
-						e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-						e2:SetTargetRange(LOCATION_ONFIELD,0)
-						e2:SetValue(cm.imfilter)
-						e2:SetOwnerPlayer(tp)
+						e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+						e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+						e2:SetCode(EVENT_CHAIN_SOLVED)
+						e2:SetCountLimit(1)
+						e2:SetLabelObject(e1)
+						e2:SetOperation(cm.rsop2)
 						e2:SetReset(RESET_CHAIN)
 						Duel.RegisterEffect(e2,tp)
 					end
@@ -284,22 +303,41 @@ function cm.costop2(e,tp,eg,ep,ev,re,r,rp)
 								if lab3 then
 									Duel.Hint(HINT_CARD,0,11451781)
 									local e1=Effect.CreateEffect(c)
-									e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-									e1:SetCode(EVENT_CHAIN_SOLVING)
-									e1:SetOperation(cm.ngop)
+									e1:SetType(EFFECT_TYPE_FIELD)
+									e1:SetCode(EFFECT_DISABLE)
+									e1:SetTargetRange(0,LOCATION_ONFIELD)
 									e1:SetReset(RESET_CHAIN)
-									e1:SetLabel(Duel.GetCurrentChain()+1)
 									Duel.RegisterEffect(e1,tp)
+									local e2=Effect.CreateEffect(c)
+									e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+									e2:SetCode(EVENT_CHAIN_SOLVING)
+									e2:SetOperation(cm.ngop)
+									e2:SetReset(RESET_CHAIN)
+									Duel.RegisterEffect(e2,tp)
+									local e3=Effect.CreateEffect(c)
+									e3:SetType(EFFECT_TYPE_FIELD)
+									e3:SetCode(EFFECT_DISABLE_TRAPMONSTER)
+									e3:SetTargetRange(0,LOCATION_MZONE)
+									e3:SetReset(RESET_CHAIN)
+									Duel.RegisterEffect(e3,tp)
+									Duel.AdjustInstantly()
 								end
 								if lab4 then
 									Duel.Hint(HINT_CARD,0,11451782)
+									local e1=Effect.CreateEffect(c)
+									e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+									e1:SetLabelObject(e)
+									e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+									e1:SetOperation(cm.spop)
+									e1:Reset(RESET_CHAIN)
+									Duel.RegisterEffect(e1,tp)
 									local e2=Effect.CreateEffect(c)
-									e2:SetType(EFFECT_TYPE_FIELD)
-									e2:SetCode(EFFECT_IMMUNE_EFFECT)
-									e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-									e2:SetTargetRange(LOCATION_ONFIELD,0)
-									e2:SetValue(cm.imfilter)
-									e2:SetOwnerPlayer(tp)
+									e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+									e2:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+									e2:SetCode(EVENT_CHAIN_SOLVED)
+									e2:SetCountLimit(1)
+									e2:SetLabelObject(e1)
+									e2:SetOperation(cm.rsop2)
 									e2:SetReset(RESET_CHAIN)
 									Duel.RegisterEffect(e2,tp)
 								end
@@ -323,17 +361,42 @@ function cm.limop2(e,tp,eg,ep,ev,re,r,rp)
 	e:Reset()
 end
 function cm.ngop(e,tp,eg,ep,ev,re,r,rp)
-	if ep~=tp and ev==e:GetLabel() then Duel.NegateEffect(ev) end
+	local p,loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_CONTROLER,CHAININFO_TRIGGERING_LOCATION)
+	if bit.band(loc,LOCATION_ONFIELD)~=0 and p~=tp then
+		Duel.NegateEffect(ev)
+	end
+end
+function cm.filter22(c,re)
+	return c:IsLocation(LOCATION_MZONE) and c:GetReasonEffect()==re
+end
+function cm.rsop2(e,tp,eg,ep,ev,re,r,rp)
+	e:GetLabelObject():Reset()
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	local g=eg:Filter(cm.filter22,nil,e:GetLabelObject())
+	for tc in aux.Next(g) do
+		local e2=Effect.CreateEffect(e:GetHandler())
+		e2:SetDescription(aux.Stringid(11451782,3))
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_IMMUNE_EFFECT)
+		e2:SetProperty(EFFECT_FLAG_CLIENT_HINT+EFFECT_FLAG_SET_AVAILABLE)
+		e2:SetValue(cm.imfilter2)
+		e2:SetOwnerPlayer(tp)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e2,true)
+	end
 end
 function cm.imfilter(e,re)
-	return re:GetOwnerPlayer()~=e:GetHandlerPlayer()
-	--[[local i=1
+	local i=1
 	while type(c11451782[i])=="table" do
 		local te,tf,cid,ep=table.unpack(c11451782[i])
 		if te==re and ep~=e:GetHandlerPlayer() then return true end
 		i=i+1
 	end
-	return false--]]
+	return false
+end
+function cm.imfilter2(e,re)
+	return re:GetOwnerPlayer()~=e:GetOwnerPlayer()
 end
 function cm.filter(c,tp)
 	return (c:IsRace(RACE_WARRIOR) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()) or (c:IsCode(m+1) and c:GetActivateEffect():IsActivatable(tp))

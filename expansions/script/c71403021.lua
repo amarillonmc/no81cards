@@ -23,7 +23,7 @@ function c71403021.initial_effect(c)
 	c:RegisterEffect(ep1a)
 	--change pos
 	local ep2=Effect.CreateEffect(c)
-	ep2:SetCategory(CATEGORY_POSITION+CATEGORY_TOGRAVE)
+	ep2:SetCategory(CATEGORY_POSITION+CATEGORY_DESTROY)
 	ep2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	ep2:SetCode(EVENT_SUMMON_SUCCESS)
 	ep2:SetRange(LOCATION_PZONE)
@@ -48,7 +48,7 @@ function c71403021.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetRange(LOCATION_EXTRA)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_TOEXTRA)
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_TOEXTRA+CATEGORY_SPECIAL_SUMMON)
 	e2:SetCountLimit(1,71513021)
 	e2:SetCost(yume.PPTLimitCost)
 	e2:SetCondition(yume.RegPPTPuyopuyoBasicExtraCon)
@@ -74,10 +74,10 @@ function c71403021.tgp2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return #g1>0 and #g2>0 and not (#g1==#g3 and #g2==#g3 and #g1==1) end
 	local excard=nil
 	if #g2==#g3 and #g3==1 then excard=g3:GetFirst() end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_POSCHANGE)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=g1:Select(tp,1,1,excard)
 	Duel.SetTargetCard(g)
-	Duel.SetOperationInfo(0,CATEGORY_POSITION,g,#g+1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_POSITION,nil,1,0,0)
 end
 function c71403021.opp2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -119,6 +119,7 @@ function c71403021.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 		or Duel.IsExistingMatchingCard(c71403021.filter2b,tp,LOCATION_ONFIELD,0,1,nil,tp))
 		and Duel.IsExistingMatchingCard(c71403021.filter2c,tp,LOCATION_DECK,0,1,nil,e,tp)
 	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c71403021.filter2second(c)
 	return c:IsSetCard(0x715) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()

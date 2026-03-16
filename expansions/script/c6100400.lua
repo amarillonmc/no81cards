@@ -74,14 +74,26 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 -- === 效果② ===
-function s.revfilter(c)
-	return c:IsSetCard(0x611) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsPublic()
+function s.fgfilter(c)
+
+	return c:IsRace(RACE_WARRIOR+RACE_SPELLCASTER)  
+		and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup())
+end
+
+function s.revfilter(c,tp)
+	if not (c:IsSetCard(0x611) and c:IsType(TYPE_SPELL+TYPE_TRAP) and not c:IsPublic()) then return false end
+	-- 预检：如果是魔法卡，必须我方有满足条件的怪兽，且对方手卡数>0
+	if c:IsType(TYPE_SPELL) then
+		return Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 
+			and Duel.IsExistingMatchingCard(s.fgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
+	end
+	return true
 end
 
 function s.effcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.revfilter,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.revfilter,tp,LOCATION_HAND,0,1,nil,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,s.revfilter,tp,LOCATION_HAND,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.revfilter,tp,LOCATION_HAND,0,1,1,nil,tp)
 	Duel.ConfirmCards(1-tp,g)
 	local tc=g:GetFirst()
 	if tc:IsType(TYPE_SPELL) then
@@ -107,16 +119,20 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	
 	if ty==1 then
-		-- ●魔法：这个回合，自己场上的「女神之令」卡在1回合各只有1次不会被战斗·效果破坏。
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD)
-		e1:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
-		e1:SetTargetRange(LOCATION_ONFIELD,0)
-		e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x611))
-		e1:SetValue(s.indct)
-		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,tp)
-		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1) -- 提示效果已适用
+		-- ●魔法：尽可能把自己的场上·墓地的战士族·魔法师族而光属性的怪兽的数量的对方的手卡确认。
+		local ct=Duel.GetMatchingGroupCount(s.fgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)
+		local opp_hand=Duel.GetFieldGroup(tp,0,LOCATION_HAND)
+		if ct>0 and #opp_hand>0 then
+			local count = math.min(ct, #opp_hand)
+			-- 随机选择对方手卡进行确认
+			local sg=opp_hand:RandomSelect(tp,count)
+			Duel.ConfirmCards(tp,sg)
+			if Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+			Duel.BreakEffect()
+			Duel.Recover(tp,500,REASON_EFFECT)
+			end
+			Duel.ShuffleHand(1-tp)
+		end
 		
 	elseif ty==2 then
 		-- ●陷阱：宣言1～6的任意等级。这个回合，对方场上的怪兽的等级下降宣言的等级。
@@ -129,13 +145,5 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(-lv)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
-	end
-end
-
-function s.indct(e,re,r,rp)
-	if (r&(REASON_BATTLE+REASON_EFFECT))~=0 then
-		return 1
-	else
-		return 0
 	end
 end

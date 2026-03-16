@@ -1,6 +1,11 @@
 --蝶蚀-「巡」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401009.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_SPELLCASTER),4,2)
 	c:EnableReviveLimit()
@@ -40,7 +45,7 @@ function c71401009.initial_effect(c)
 	e3:SetTarget(c71401009.tg3)
 	e3:SetOperation(c71401009.op3)
 	c:RegisterEffect(e3)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401009.atkfilter(c)
 	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsFaceup()
@@ -51,7 +56,7 @@ end
 function c71401009.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) and Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
 	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401009.filter2(c)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemove()
@@ -74,7 +79,7 @@ function c71401009.op2(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 		e1:SetCode(EFFECT_CANNOT_ACTIVATE)
 		e1:SetTargetRange(1,0)
-		e1:SetValue(yume.ButterflyAcLimit)
+		e1:SetValue(yume.heart_crystals.AcLimit)
 		if Duel.GetCurrentPhase()==PHASE_MAIN1 then
 			e1:SetReset(RESET_PHASE+PHASE_MAIN1)
 		else
@@ -108,7 +113,7 @@ function c71401009.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c71401009.filterc3,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401009.filter3(c)
 	return c:IsType(TYPE_MONSTER) and c:IsAbleToRemove()

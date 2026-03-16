@@ -1,5 +1,4 @@
 --幻异梦境-梦幻图书馆
-xpcall(function() require("expansions/script/c71400001") end,function() require("script/c71400001") end)
 function c71400014.initial_effect(c)
 	--Activate
 	--See AddYumeFieldGlobal

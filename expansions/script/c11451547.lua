@@ -99,7 +99,7 @@ function cm.initial_effect(c)
 	end
 end
 function cm.filter(c,event)
-	if not (c:IsCanOverlay(tp) and c:GetType()&0x100004==0x100004) then return false end
+	if not (c:IsCanOverlay(tp) and c:IsType(TYPE_TRAP)) then return false end
 	local _IsCostChecked=Effect.IsCostChecked
 	Effect.IsCostChecked=function(e) Effect.IsCostChecked=_IsCostChecked return true end
 	local te=c:CheckActivateEffect(false,true,false)
@@ -134,7 +134,7 @@ function cm.adtg(event)
 			end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
 			local ac=Duel.AnnounceCard(tp,table.unpack(afilter))
-			getmetatable(e:GetHandler()).announce_filter={TYPE_COUNTER,OPCODE_ISTYPE}
+			getmetatable(e:GetHandler()).announce_filter={TYPE_TRAP,OPCODE_ISTYPE}
 			Duel.SetTargetParam(ac)
 			Duel.GetCurrentChain=_GetCurrentChain
 			Duel.SetOperationInfo(0,CATEGORY_ANNOUNCE,nil,0,tp,0)

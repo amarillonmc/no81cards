@@ -196,24 +196,8 @@ function cm.desrepop(e,tp,eg,ep,ev,re,r,rp)
 	local tt=Duel.GetAttackTarget()
 	if tt then g:AddCard(tt) end
 	local tg=g:Filter(Card.IsAbleToHand,nil)
-	Duel.SendtoHand(tg,nil,REASON_EFFECT+REASON_REPLACE)
+	Duel.SendtoHand(tg,nil,REASON_RULE+REASON_REPLACE)
 	e:Reset()
-end
-function cm.thfilter(c,code)
-	return c:IsCode(code) and c:IsAbleToHand()
-end
-function cm.damop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_CARD,0,m)
-	local g=Duel.GetMatchingGroup(cm.thfilter,tp,LOCATION_DECK,0,nil,e:GetLabel())
-	if #g>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local hg=g:Select(tp,1,1,nil)
-		Duel.SendtoHand(hg,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,hg)
-	end
-end
-function cm.atkval(e,c)
-	return cm[e:GetHandlerPlayer()]
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())

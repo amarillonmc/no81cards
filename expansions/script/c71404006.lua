@@ -1,8 +1,13 @@
 --凝域之星意
-if not c71404000 then dofile("expansions/script/c71404000.lua") end
 local s,id,o=GetID()
 ---@param c Card
 function s.initial_effect(c)
+	if not (yume and yume.stellar_memories) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71404000,0)
+		yume.import_flag=false
+	end
 	--link summon
 	aux.AddLinkProcedure(c,nil,3,99,s.lcheck)
 	c:EnableReviveLimit()
@@ -10,7 +15,7 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_SPECIAL_SUMMON+CATEGORY_DECKDES+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_REMOVE+CATEGORY_TODECK)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -57,12 +62,12 @@ end
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
+		and yume.stellar_memories.BanishorSendSpellCheck(71404015,tp)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local op_flag=false
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if ft>0 and c:IsFaceup() and c:IsRelateToEffect(e) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
@@ -77,13 +82,10 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				e1:SetValue(s.eqlimit)
 				tc:RegisterEffect(e1)
-				op_flag=true
 			end
 		end
 	end
-	if op_flag then
-		yume.stellar_memories.OptionalMultiRitualSummon(e,tp,aux.Stringid(id,1),"Greater",LOCATION_DECK,LOCATION_ONFIELD,2)
-	end
+	yume.stellar_memories.BanishorSendSpell(71404015,tp,aux.Stringid(id-1,3),aux.Stringid(id-1,4))
 end
 function s.eqlimit(e,c)
 	return e:GetOwner()==c
@@ -129,7 +131,6 @@ end
 function s.chainlm(e,rp,tp)
 	return tp==rp
 end
-
 function s.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.GetFlagEffect(tp,71404000,tp)==0

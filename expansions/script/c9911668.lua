@@ -13,7 +13,7 @@ function c9911668.initial_effect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_BATTLE_START+TIMING_BATTLE_END+TIMING_END_PHASE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,9911669)
 	e2:SetCondition(c9911668.xyzcon)
@@ -47,28 +47,21 @@ function c9911668.conop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c9911668.xyzcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()~=tp and (Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2)
+	return Duel.GetTurnPlayer()~=tp
 end
-function c9911668.mfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x5957) and not c:IsType(TYPE_TOKEN)
-end
-function c9911668.xyzfilter(c,mg)
-	return c:IsXyzSummonable(mg)
+function c9911668.xyzfilter(c)
+	return c:IsXyzSummonable(nil)
 end
 function c9911668.xyztg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local g=Duel.GetMatchingGroup(c9911668.mfilter,tp,LOCATION_MZONE,0,nil)
-		return Duel.IsExistingMatchingCard(c9911668.xyzfilter,tp,LOCATION_EXTRA,0,1,nil,g)
-	end
+	if chk==0 then return Duel.IsExistingMatchingCard(c9911668.xyzfilter,tp,LOCATION_EXTRA,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
 function c9911668.xyzop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c9911668.mfilter,tp,LOCATION_MZONE,0,nil)
-	local xyzg=Duel.GetMatchingGroup(c9911668.xyzfilter,tp,LOCATION_EXTRA,0,nil,g)
-	if xyzg:GetCount()>0 then
+	local g=Duel.GetMatchingGroup(c9911668.xyzfilter,tp,LOCATION_EXTRA,0,nil)
+	if g:GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local xyz=xyzg:Select(tp,1,1,nil):GetFirst()
-		Duel.XyzSummon(tp,xyz,g,1,6)
+		local tg=g:Select(tp,1,1,nil)
+		Duel.XyzSummon(tp,tg:GetFirst(),nil)
 	end
 end
 function c9911668.cfilter(c,tp)

@@ -1,6 +1,11 @@
 --花梦-「荧」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401019.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--place
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71401001,2))
@@ -8,9 +13,9 @@ function c71401019.initial_effect(c)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,71401019)
-	e1:SetCost(yume.ButterflyLimitCost)
-	e1:SetTarget(yume.ButterflyPlaceTg)
-	e1:SetOperation(yume.ButterflySpellOp)
+	e1:SetCost(yume.heart_crystals.LimitCost)
+	e1:SetTarget(yume.heart_crystals.PlaceTg)
+	e1:SetOperation(yume.heart_crystals.SpellOp)
 	c:RegisterEffect(e1)
 	--summon
 	local e2=Effect.CreateEffect(c)
@@ -23,7 +28,7 @@ function c71401019.initial_effect(c)
 	e2:SetTarget(c71401019.tg2)
 	e2:SetOperation(c71401019.op2)
 	c:RegisterEffect(e2)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401019.con2(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS
@@ -67,7 +72,7 @@ function c71401019.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local rc=Duel.SelectMatchingCard(tp,c71401019.filterc2,tp,LOCATION_MZONE,0,1,1,nil,tp,e:GetHandler()):GetFirst()
 	Duel.SetTargetParam(rc:GetCode())
 	Duel.SendtoHand(rc,nil,REASON_COST)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401019.op2(e,tp,eg,ep,ev,re,r,rp)
 	local code=Duel.GetChainInfo(0,CHAININFO_TARGET_PARAM)

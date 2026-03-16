@@ -1,8 +1,13 @@
 --星现之凝忆
-if not c71404000 then dofile("expansions/script/c71404000.lua") end
 local s,id,o=GetID()
 ---@param c Card
 function s.initial_effect(c)
+	if not (yume and yume.stellar_memories) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71404000,0)
+		yume.import_flag=false
+	end
 	c:EnableReviveLimit()
 	--banish from extra deck
 	local e1=Effect.CreateEffect(c)
@@ -22,7 +27,7 @@ function s.initial_effect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
-	e2:SetCategory(CATEGORY_EQUIP)
+	e2:SetCategory(CATEGORY_EQUIP+CATEGORY_REMOVE+CATEGORY_TODECK)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,id+100000)
 	e2:SetCost(yume.stellar_memories.LimitCost)
@@ -65,7 +70,8 @@ function s.filter2(c)
 end
 function s.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
-		and Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+		and Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
+		and yume.stellar_memories.BanishorSendSpellCheck(71404015,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function s.op2(e,tp,eg,ep,ev,re,r,rp)
@@ -87,24 +93,10 @@ function s.op2(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_EXTRA_LINK_MATERIAL)
-	e2:SetTargetRange(LOCATION_HAND,0)
-	e2:SetTarget(s.mattg)
-	e2:SetValue(s.matval)
-	e2:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e2,tp)
+	yume.stellar_memories.BanishorSendSpell(71404015,tp,aux.Stringid(id,3),aux.Stringid(id,4))
 end
 function s.eqlimit(e,c)
 	return e:GetOwner()==c
-end
-function s.mattg(e,c)
-	return c:IsType(TYPE_MONSTER)
-end
-function s.matval(e,lc,mg,c,tp)
-	if not (lc:IsRace(RACE_SPELLCASTER) and e:GetHandlerPlayer()==tp) then return false,nil end
-	return true,true
 end
 function s.filter3(c,tp)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsAbleToRemove(tp)

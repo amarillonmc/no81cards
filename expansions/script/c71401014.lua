@@ -1,6 +1,11 @@
 --花构-「离」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401014.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--xyz summon
 	c:EnableReviveLimit()
 	aux.AddXyzProcedureLevelFree(c,c71401014.mfilter,nil,2,2)
@@ -20,8 +25,8 @@ function c71401014.initial_effect(c)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE+TIMING_EQUIP)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,71401014)
-	e2:SetCost(yume.ButterflyLimitCost)
-	e2:SetTarget(yume.ButterflyPlaceTg)
+	e2:SetCost(yume.heart_crystals.LimitCost)
+	e2:SetTarget(yume.heart_crystals.PlaceTg)
 	e2:SetOperation(c71401014.op2)
 	c:RegisterEffect(e2)
 	--remove monster
@@ -34,11 +39,11 @@ function c71401014.initial_effect(c)
 	e3:SetCountLimit(1,71501014)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e3:SetCondition(c71401014.con3)
-	e3:SetCost(yume.ButterflyLimitCost)
+	e3:SetCost(yume.heart_crystals.LimitCost)
 	e3:SetTarget(c71401014.tg3)
 	e3:SetOperation(c71401014.op3)
 	c:RegisterEffect(e3)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401014.mfilter(c)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsRank(4)

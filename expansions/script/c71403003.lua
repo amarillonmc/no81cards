@@ -6,7 +6,8 @@ function c71403003.initial_effect(c)
 		yume.import_flag=true
 		c:CopyEffect(71403001,0)
 		yume.import_flag=false
-	end	--pendulum summon
+	end
+	--pendulum summon
 	aux.EnablePendulumAttribute(c,true)
 	--scale
 	local ep1=Effect.CreateEffect(c)

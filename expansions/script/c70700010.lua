@@ -1,105 +1,69 @@
-local m=70700010
-local cm=_G["c"..m]
-cm.name="能力者的效果变换"
-function cm.initial_effect(c)
+--伯吉斯异兽·奥托亚翼虫
+local s,id=GetID()
+function s.initial_effect(c)
+	--xyz summon
+	aux.AddXyzProcedure(c,nil,2,2,s.ovfilter,aux.Stringid(id,0),99,s.xyzop)
+	c:EnableReviveLimit()
+	--immune
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DECKDES)
-	e1:SetType(EFFECT_TYPE_ACTIVATE)
-	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetOperation(cm.activate)
-	e1:SetTarget(cm.target)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetValue(s.efilter)
 	c:RegisterEffect(e1)
+	--Search
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_SOLVING)
-	e2:SetRange(LOCATION_SZONE)
-	e2:SetOperation(cm.changeop)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(1,id)
+	e2:SetCost(s.thcost)
+	e2:SetTarget(s.thtg)
+	e2:SetOperation(s.thop)
 	c:RegisterEffect(e2)
 end
-function cm.tgfilter(c)
-	return c:IsSetCard(0x92b)
+function s.ovfilter(c)
+	return c:IsFaceup() and c:IsSetCard(0xd4) 
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsPlayerCanDiscardDeck(tp,3) end
+function s.xyzop(e,tp,chk)
+	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end
+	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
 end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp)
-	if not e:GetHandler():IsRelateToEffect(e) then return end
-	if Duel.IsPlayerCanDiscardDeck(tp,3) then
-		Duel.ConfirmDecktop(tp,3)
-		Duel.SendtoGrave(Duel.GetDecktopGroup(tp,3):Filter(cm.tgfilter,nil),REASON_EFFECT+REASON_REVEAL)
-	end
+function s.efilter(e,te)
+	return te:IsActiveType(TYPE_MONSTER) and te:GetOwner()~=e:GetOwner()
 end
-function cm.changeop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,m)>0 then return end
-	local ex_1,tg_1=Duel.GetOperationInfo(ev,CATEGORY_DESTROY)
-	local s1=(ex_1 and tg_1~=nil and tg_1:IsExists(Card.IsType,1,nil,TYPE_MONSTER))
-	local ex_2,tg_2=Duel.GetOperationInfo(ev,CATEGORY_REMOVE)
-	local s2=(ex_2 and tg_2~=nil and tg_2:IsExists(Card.IsType,1,nil,TYPE_MONSTER))
-	local ex_3,tg_3=Duel.GetOperationInfo(ev,CATEGORY_TODECK)
-	local s3=(ex_3 and tg_3~=nil and tg_3:IsExists(Card.IsType,1,nil,TYPE_MONSTER))
-	if not (s1 or s2 or s3) then return false end
-	if not Duel.SelectYesNo(tp,aux.Stringid(m,3)) then return false end
-	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
-	local op
-	if s1 then
-		if s2 then
-			if s3 then
-				op=1+Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1),aux.Stringid(m,2))
-				e:SetLabel(op+1)
-			else
-				op=1+Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))
-			end
-		else
-			if s3 then
-				op=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,2))
-				if op==0 then op=1 end
-				if op==1 then op=3 end
-			else
-				op=1
-			end
-		end
+
+function s.thfilter(c)
+	return c:IsSetCard(0xd4) and c:IsType(TYPE_TRAP) and c:IsAbleToHand()
+end
+function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
+	local ct=0
+	local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil,e,tp)
+	if g:GetClassCount(Card.GetCode)==0 then return false end
+	if g:GetClassCount(Card.GetCode)>=2 then
+		ct=e:GetHandler():RemoveOverlayCard(tp,1,2,REASON_COST)
 	else
-		if s2 then
-			if s3 then
-				op=2+Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))
-			else
-				op=2
-			end
-		else
-			op=3
+		ct=e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	end
+	e:SetLabel(ct)
+end
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	local ct=e:GetLabel()
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,ct,tp,LOCATION_DECK)
+end
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
+	if g:GetCount()>0 then
+		local ct=e:GetLabel()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+		local sg=g:SelectSubGroup(tp,aux.dncheck,false,ct,ct)
+		if sg then
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sg)
 		end
-	end
-	Duel.Hint(HINT_CARD,0,m)
-	local g=Group.CreateGroup()
-	Duel.ChangeTargetCard(ev,g)
-	if op==1 then Duel.ChangeChainOperation(ev,cm.changedop_1) end
-	if op==2 then Duel.ChangeChainOperation(ev,cm.changedop_2) end
-	if op==3 then Duel.ChangeChainOperation(ev,cm.changedop_3) end
-end
-function cm.filter_1(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP)
-end
-function cm.changedop_1(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.SelectMatchingCard(tp,cm.filter_1,tp,0,LOCATION_ONFIELD,1,2,nil)
-	if g:GetCount()~=0 then
-		Duel.Destroy(g,REASON_EFFECT)
-	end
-end
-function cm.filter_2(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToRemove()
-end
-function cm.changedop_2(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.SelectMatchingCard(tp,cm.filter_2,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,2,nil)
-	if g:GetCount()~=0 then
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
-	end
-end
-function cm.filter_3(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToDeck()
-end
-function cm.changedop_3(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.SelectMatchingCard(tp,cm.filter_3,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,2,nil)
-	if g:GetCount()~=0 then
-		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end
 end

@@ -1,6 +1,11 @@
 --蝶现-「像」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401004.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--same effect sends this card to grave or banishes it, and spsummon another card check
 	local e0=aux.AddThisCardInGraveAlreadyCheck(c)
 	local e0a=yume.AddThisCardBanishedAlreadyCheck(c)
@@ -24,7 +29,6 @@ function c71401004.initial_effect(c)
 	e1a:SetLabelObject(e0)
 	c:RegisterEffect(e1a)
 	local e1b=e1a:Clone()
-	e1b:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1b:SetRange(LOCATION_REMOVED)
 	e1b:SetLabelObject(e0a)
 	c:RegisterEffect(e1b)
@@ -37,11 +41,11 @@ function c71401004.initial_effect(c)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetCountLimit(1,71501004)
 	e2:SetCondition(c71401004.con2)
-	e2:SetCost(yume.ButterflyLimitCost)
+	e2:SetCost(yume.heart_crystals.LimitCost)
 	e2:SetTarget(c71401004.tg2)
 	e2:SetOperation(c71401004.op2)
 	c:RegisterEffect(e2)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401004.filtercon1(c,tp,se)
 	return se==nil or c:GetReasonEffect()~=se
@@ -59,7 +63,7 @@ function c71401004.cost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c71401004.filterc1,tp,LOCATION_MZONE,0,1,1,nil,tp)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401004.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end

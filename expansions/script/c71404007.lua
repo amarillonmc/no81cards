@@ -1,8 +1,13 @@
 --星芒之凝忆
-if not c71404000 then dofile("expansions/script/c71404000.lua") end
 local s,id,o=GetID()
 ---@param c Card
-function c71404007.initial_effect(c)
+function s.initial_effect(c)
+	if not (yume and yume.stellar_memories) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71404000,0)
+		yume.import_flag=false
+	end
 	c:EnableReviveLimit()
 	--equip
 	local e1=Effect.CreateEffect(c)
@@ -10,7 +15,7 @@ function c71404007.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_DRAW_PHASE+TIMING_END_PHASE)
-	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_SPECIAL_SUMMON+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_REMOVE+CATEGORY_TODECK)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,id)
 	e1:SetCondition(s.con1)
@@ -28,7 +33,7 @@ function c71404007.initial_effect(c)
 	e2:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_SPELLCASTER))
 	e2:SetValue(s.atkval)
 	c:RegisterEffect(e2)
-	--link summon
+	--special summon
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
@@ -37,8 +42,8 @@ function c71404007.initial_effect(c)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCountLimit(1,id+100000)
 	e3:SetCost(yume.stellar_memories.LimitCost)
-	e3:SetTarget(yume.stellar_memories.LinkSummonTg)
-	e3:SetOperation(yume.stellar_memories.LinkSummonOp)
+	e3:SetTarget(s.tg3)
+	e3:SetOperation(s.op3)
 	c:RegisterEffect(e3)
 	yume.stellar_memories.GlobalCheck(c)
 	Duel.AddCustomActivityCounter(id,ACTIVITY_SPSUMMON,s.chainfilter)
@@ -52,67 +57,33 @@ end
 function s.con1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCustomActivityCount(id,tp,ACTIVITY_SPSUMMON)>0
 end
-function s.filter1sp(c,e,tp,ct)
-	return c:IsType(TYPE_LINK) and c:IsType(TYPE_MONSTER) and c:GetLink()<=ct*2 and c:IsFaceupEx() and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP,tp)
-end
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 or Duel.GetLocationCount(tp,LOCATION_SZONE)==0 then return false end
-		local ct=Duel.GetMatchingGroupCount(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil,tp)
-		local g1=Duel.GetMatchingGroup(s.filter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-		local g2=Duel.GetMatchingGroup(s.filter1sp,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e,tp,ct)
-		return yume.stellar_memories.QuickDualSelectCheck(g1,g2,{{1,2},{1,1}})
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+		and Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
+		and yume.stellar_memories.BanishorSendSpellCheck(71404016,tp)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_GRAVE+LOCATION_ONFIELD)
 end
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if ft>0 and c:IsFaceup() and c:IsRelateToEffect(e) then
-		local g1=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.filter1),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
-		local g2=nil
-		local ct=Duel.GetMatchingGroupCount(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil,tp)
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then
-			g2=Group.CreateGroup()
-		else
-			g2=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.filter1sp),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e,tp,ct)
-		end
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_EQUIP)
 		if ft>2 then ft=2 end
-		local sg1,sg2=yume.stellar_memories.QuickDualSelect(tp,g1,g2,{{1,ft},{1,1}},HINTMSG_EQUIP,HINTMSG_SPSUMMON,s.opf,c,tp)
-		if sg2:GetCount()==0 then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			sg2=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.filter1sp),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp,ct)
-		end
-		if sg2:GetCount()>0 then
-			Duel.BreakEffect()
-			local spc=sg2:GetFirst()
-			Duel.SpecialSummon(spc,0,tp,tp,false,false,POS_FACEUP)
-			ct=math.ceil(spc:GetLink()/2)
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local bg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,ct,ct,nil,tp)
-			if bg:GetCount()>0 then
-				Duel.Remove(bg,POS_FACEUP,REASON_EFFECT)
+		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.filter1),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,ft,nil)
+		for tc in aux.Next(g) do
+			if Duel.Equip(tp,tc,c) then
+				local e1=Effect.CreateEffect(c)
+				e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_EQUIP_LIMIT)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+				e1:SetValue(s.eqlimit)
+				tc:RegisterEffect(e1)
 			end
 		end
 	end
-end
-function s.opf(sg,c,tp)
-	local op_flag=false
-	for tc in aux.Next(sg) do
-		if Duel.Equip(tp,tc,c) then
-			local e1=Effect.CreateEffect(c)
-			e1:SetProperty(EFFECT_FLAG_OWNER_RELATE)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_EQUIP_LIMIT)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			e1:SetValue(s.eqlimit)
-			tc:RegisterEffect(e1)
-			op_flag=true
-		end
-	end
-	return op_flag
+	yume.stellar_memories.BanishorSendSpell(71404016,tp,aux.Stringid(id,2),aux.Stringid(id,3))
 end
 function s.eqlimit(e,c)
 	return e:GetOwner()==c
@@ -122,7 +93,7 @@ function s.con2(e,tp,eg,ep,ev,re,r,rp)
 	return qc and qc:IsType(TYPE_LINK)
 end
 function s.atkfilter(c)
-	return c:IsFaceup() and c:GetOriginalType()&TYPE_MONSTER~=0 and c:IsRace(RACE_SPELLCASTER)
+	return c:IsFaceup() and c:GetOriginalType()&TYPE_MONSTER~=0
 end
 function s.lv_or_lk(c)
 	if c:IsType(TYPE_LINK) then return c:GetLink()
@@ -130,4 +101,21 @@ function s.lv_or_lk(c)
 end
 function s.atkval(e,c)
 	return Duel.GetMatchingGroup(s.atkfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil):GetSum(s.lv_or_lk)*100
+end
+function s.filter3(c,e,tp)
+	return c:IsType(TYPE_LINK) and c:IsType(TYPE_MONSTER) and c:IsRace(RACE_SPELLCASTER) and c:IsFaceupEx() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function s.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(s.filter3,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp)
+	end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
+end
+function s.op3(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.filter3),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
+	if #g>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
 end

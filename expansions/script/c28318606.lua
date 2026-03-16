@@ -67,6 +67,7 @@ function c28318606.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local rg=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
+		Duel.HintSelection(rg)
 		Duel.SendtoHand(rg,nil,REASON_EFFECT)
 	end
 	local e0=Effect.CreateEffect(e:GetHandler())

@@ -1,6 +1,11 @@
 --异梦海底的潜水员-橘黄子
-if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400043.initial_effect(c)
+	if not (yume and yume.yume_nikki) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71400001,0)
+		yume.import_flag=false
+	end
 	c:SetSPSummonOnce(71400043)
 	--link summon
 	aux.AddLinkProcedure(c,c71400043.matfilter,1,1,c71400043.mgfilterfunc(c))

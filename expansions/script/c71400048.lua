@@ -1,6 +1,11 @@
 --正在磨牙的那个东西
-if not c71400001 then dofile("expansions/script/c71400001.lua") end
 function c71400048.initial_effect(c)
+	if not (yume and yume.yume_nikki) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71400001,0)
+		yume.import_flag=false
+	end
 	--synchro summon
 	aux.AddSynchroMixProcedure(c,aux.Tuner(yume.YumeCheck,c),nil,nil,c71400048.mfilter,1,99,c71400048.gfilter(c))
 	--summon limit

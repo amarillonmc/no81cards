@@ -3,7 +3,7 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsRace,RACE_PSYCHO),aux.FilterBoolFunction(Card.IsFusionAttribute,ATTRIBUTE_FIRE),true)
+	aux.AddFusionProcFun2(c,aux.FilterBoolFunction(Card.IsRace,RACE_PSYCHO),aux.FilterBoolFunction(Card.IsFusionAttribute,ATTRIBUTE_FIRE+ATTRIBUTE_WIND),true)
 	--effect1
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11451711,4))
@@ -11,7 +11,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetCountLimit(1)
+	e1:SetCountLimit(1,m)
 	e1:SetTarget(cm.retg)
 	e1:SetOperation(cm.reop)
 	c:RegisterEffect(e1)
@@ -69,8 +69,8 @@ function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 		e2:SetOperation(cm.mvop1)
 		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
 		c:RegisterEffect(e2)
-		e:UseCountLimit(tp,1)
-		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END-RESET_TEMP_REMOVE-RESET_LEAVE,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2))
+		--e:UseCountLimit(tp,1)
+		c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2)) ---RESET_TEMP_REMOVE-RESET_LEAVE
 		c:RegisterFlagEffect(11451717,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,ct,aux.Stringid(11451717,ct-3))
 		c:RegisterFlagEffect(11451718,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,9-ct,aux.Stringid(11451718,9-ct))
 		local e1=Effect.CreateEffect(c)
@@ -96,7 +96,9 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 		e:Reset()
 	elseif flag>=9 then
 		c:ResetFlagEffect(11451718)
-		Duel.ReturnToField(c)
+		if not Duel.ReturnToField(c) and c:IsLocation(LOCATION_REMOVED) and Duel.GetMZoneCount(c:GetPreviousControler())>0 then
+			Duel.MoveToField(c,c:GetPreviousControler(),c:GetPreviousControler(),c:GetPreviousLocation(),c:GetPreviousPosition(),true)
+		end
 		e:Reset()
 	else
 		flag=flag+1

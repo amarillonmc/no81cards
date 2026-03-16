@@ -1,7 +1,12 @@
 --蝶梦-「绽」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401002.initial_effect(c)
-	yume.AddButterflySpell(c,71401002)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
+	yume.heart_crystals.addPlaceSpellIgnition(c,71401002)
 	--search
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71401002,0))
@@ -16,14 +21,14 @@ function c71401002.initial_effect(c)
 	--e2:SetTarget(c71401002.tg2)
 	e2:SetOperation(c71401002.op2)
 	c:RegisterEffect(e2)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401002.con2(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER) and e:GetHandler():GetType()==TYPE_SPELL+TYPE_CONTINUOUS
 end
 function c71401002.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(71401001,tp,ACTIVITY_CHAIN)==0 end
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401002.filter2(c,tp,check)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsLevel(4) and c:IsAttribute(ATTRIBUTE_DARK) and (c:IsAbleToHand() or check and not c:IsForbidden() and c:CheckUniqueOnField(tp))

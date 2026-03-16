@@ -51,6 +51,7 @@ function cm.initial_effect(c)
 				e2:SetOwnerPlayer(p)
 				e2:SetReset(RESET_CHAIN)
 				Duel.RegisterEffect(e2,p)
+				Duel.Hint(HINT_CARD,0,m)
 				local tab={...}
 				local d=Duel.TossDice(p,1)
 				if not tab[d] then d=math.max(d%(#tab),1) end
@@ -113,7 +114,7 @@ function cm.rmop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(sg)
 		local sc=sg:GetFirst()
 		if Duel.Remove(sc,nil,REASON_EFFECT+REASON_TEMPORARY)~=0 and sc:IsLocation(LOCATION_REMOVED) and not sc:IsReason(REASON_REDIRECT) then
-			sc:RegisterFlagEffect(11451718,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,8,aux.Stringid(11451718,8))
+			sc:RegisterFlagEffect(11451718,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,4,aux.Stringid(11451718,4))
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetCode(EVENT_CHAIN_SOLVED)

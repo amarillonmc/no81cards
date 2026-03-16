@@ -3,6 +3,7 @@ yume=yume or {}
 yume.temp_card_field=yume.temp_card_field or {}
 if c71400001 then
 function c71400001.initial_effect(c)
+	if yume.import_flag then return	end
 	--Activate(nofield)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -22,7 +23,6 @@ function c71400001.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=yume.YumeFieldCheck(tp,0,1)
 	local b2=yume.IsYumeFieldOnField(tp) and Duel.IsExistingMatchingCard(c71400001.filter,tp,LOCATION_DECK,0,1,nil)
 	if chk==0 then return b1 or b2 end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	local op=0
 	if b1 and b2 then
 		op=Duel.SelectOption(tp,aux.Stringid(71400001,2),aux.Stringid(71400001,0))
@@ -57,6 +57,8 @@ function c71400001.filter(c)
 end
 end
 --global part
+if not yume.yume_nikki then
+yume.yume_nikki=true
 function yume.AddYumeSummonLimit(c,ssm)
 --1=special summon monster, 0=non special summon monster
 	ssm=ssm or 0
@@ -275,4 +277,5 @@ function yume.UniquifyCardName(g)
 		g:Remove(Card.IsCode,tc,tc:GetCode())
 		tc=g:GetNext()
 	end
+end
 end

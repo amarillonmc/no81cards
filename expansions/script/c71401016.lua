@@ -1,6 +1,11 @@
 --蝶构-「逢」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401016.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--xyz summon
 	c:EnableReviveLimit()
 	aux.AddXyzProcedureLevelFree(c,c71401016.mfilter,nil,2,2)
@@ -21,7 +26,7 @@ function c71401016.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,71401016)
-	e2:SetCost(yume.ButterflyLimitCost)
+	e2:SetCost(yume.heart_crystals.LimitCost)
 	e2:SetTarget(c71401016.tg2)
 	e2:SetOperation(c71401016.op2)
 	c:RegisterEffect(e2)
@@ -35,11 +40,11 @@ function c71401016.initial_effect(c)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_SZONE)
 	e3:SetCondition(c71401016.con3)
-	e3:SetCost(yume.ButterflyLimitCost)
+	e3:SetCost(yume.heart_crystals.LimitCost)
 	e3:SetTarget(c71401016.tg3)
 	e3:SetOperation(c71401016.op3)
 	c:RegisterEffect(e3)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401016.mfilter(c)
 	return c:IsRace(RACE_SPELLCASTER) and c:IsRank(4)

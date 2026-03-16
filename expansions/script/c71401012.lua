@@ -1,6 +1,11 @@
 --花梦-「结」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401012.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--place
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71401001,2))
@@ -9,9 +14,9 @@ function c71401012.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCondition(c71401012.con1)
 	e1:SetCountLimit(1,71401012)
-	e1:SetCost(yume.ButterflyLimitCost)
-	e1:SetTarget(yume.ButterflyPlaceTg)
-	e1:SetOperation(yume.ButterflySpellOp)
+	e1:SetCost(yume.heart_crystals.LimitCost)
+	e1:SetTarget(yume.heart_crystals.PlaceTg)
+	e1:SetOperation(yume.heart_crystals.SpellOp)
 	c:RegisterEffect(e1)
 	--disable
 	local e2=Effect.CreateEffect(c)
@@ -21,11 +26,11 @@ function c71401012.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetCountLimit(1,71501012)
-	e2:SetCost(yume.ButterflyLimitCost)
+	e2:SetCost(yume.heart_crystals.LimitCost)
 	e2:SetTarget(c71401012.tg2)
 	e2:SetOperation(c71401012.op2)
 	c:RegisterEffect(e2)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401012.con1(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER)

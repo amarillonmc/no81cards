@@ -1,6 +1,11 @@
 --花构-「洄」
-if not c71401001 then dofile("expansions/script/c71401001.lua") end
 function c71401015.initial_effect(c)
+	if not (yume and yume.heart_crystals) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71401001,0)
+		yume.import_flag=false
+	end
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_SPELLCASTER),4,2)
 	c:EnableReviveLimit()
@@ -24,7 +29,7 @@ function c71401015.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,71401015)
 	e2:SetCost(c71401015.cost2)
-	e2:SetTarget(yume.ButterflyPlaceTg)
+	e2:SetTarget(yume.heart_crystals.PlaceTg)
 	e2:SetOperation(c71401015.op2)
 	c:RegisterEffect(e2)
 	--material
@@ -36,12 +41,12 @@ function c71401015.initial_effect(c)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e3:SetCode(EVENT_FREE_CHAIN)
-	e3:SetCost(yume.ButterflyLimitCost)
+	e3:SetCost(yume.heart_crystals.LimitCost)
 	e3:SetCondition(c71401015.con3)
 	e3:SetTarget(c71401015.tg3)
 	e3:SetOperation(c71401015.op3)
 	c:RegisterEffect(e3)
-	yume.ButterflyCounter()
+	yume.heart_crystals.Counter()
 end
 function c71401015.filter1(c)
 	return c:GetOriginalType()&TYPE_MONSTER~=0
@@ -57,7 +62,7 @@ function c71401015.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,c71401015.filter2c,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.Remove(g,POS_FACEUP,REASON_COST)
-	yume.RegButterflyCostLimit(e,tp)
+	yume.heart_crystals.regCostLimit(e,tp)
 end
 function c71401015.filter2(c,e,tp)
 	return c:IsType(TYPE_XYZ) and (c:IsLocation(LOCATION_GRAVE) or c:IsFaceup()) and c:IsRace(RACE_SPELLCASTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)

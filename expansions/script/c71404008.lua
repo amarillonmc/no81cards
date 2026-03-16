@@ -1,8 +1,13 @@
 --凝锋之星意
-if not c71404000 then dofile("expansions/script/c71404000.lua") end
 local s,id,o=GetID()
 ---@param c Card
 function s.initial_effect(c)
+	if not (yume and yume.stellar_memories) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71404000,0)
+		yume.import_flag=false
+	end
 	--link summon
 	aux.AddLinkProcedure(c,nil,3,99,s.lcheck)
 	c:EnableReviveLimit()
@@ -29,17 +34,17 @@ function s.initial_effect(c)
 	e2:SetCondition(s.con2)
 	e2:SetValue(aux.ChangeBattleDamage(1,DOUBLE_DAMAGE))
 	c:RegisterEffect(e2)
-	--ritual summon
+	--banish or return 星忆锋芒
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
-	e3:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON)
+	e3:SetCategory(CATEGORY_REMOVE+CATEGORY_TODECK)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_REMOVE)
 	e3:SetCountLimit(1,id+100000)
 	e3:SetCost(yume.stellar_memories.LimitCost)
-	e3:SetTarget(yume.stellar_memories.RitualUltimateTarget("Greater",LOCATION_HAND,LOCATION_ONFIELD+LOCATION_EXTRA,nil))
-	e3:SetOperation(yume.stellar_memories.RitualUltimateOperation("Greater",LOCATION_HAND,LOCATION_ONFIELD+LOCATION_EXTRA,nil))
+	e3:SetTarget(s.tg3)
+	e3:SetOperation(s.op3)
 	c:RegisterEffect(e3)
 	yume.stellar_memories.GlobalCheck(c)
 	if not s.global_check then
@@ -108,6 +113,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+	Duel.BreakEffect()
 	local g1=Duel.GetMatchingGroup(s.filter1a,0,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	local g2=Group.CreateGroup()
 	local cols={}
@@ -132,4 +138,10 @@ function s.con2(e)
 	local d=Duel.GetAttackTarget()
 	return qc and qc:IsType(TYPE_RITUAL) and (a:IsRace(RACE_SPELLCASTER)
 		or d and d:IsRace(RACE_SPELLCASTER))
+end
+function s.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return yume.stellar_memories.BanishorSendSpellCheck(71404016,tp)	end
+end
+function s.op3(e,tp,eg,ep,ev,re,r,rp)
+	yume.stellar_memories.BanishorSendSpell(71404016,tp,aux.Stringid(id,2),aux.Stringid(id,3))
 end

@@ -1,7 +1,12 @@
 --凝羽之星意
-if not c71404000 then dofile("expansions/script/c71404000.lua") end
 ---@param c Card
 function c71404002.initial_effect(c)
+	if not (yume and yume.stellar_memories) then
+		yume=yume or {}
+		yume.import_flag=true
+		c:CopyEffect(71404000,0)
+		yume.import_flag=false
+	end
 	--link summon
 	aux.AddLinkProcedure(c,nil,2,2,c71404002.lcheck)
 	c:EnableReviveLimit()
