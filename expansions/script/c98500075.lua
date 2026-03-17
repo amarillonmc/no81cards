@@ -62,30 +62,30 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 		local tc=g:GetFirst()
 		while tc do
 			tc:CompleteProcedure()
-			if tc:IsCode(6007213) and (not Duel.GetFlagEffect(tp,m)==0) and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
+			if tc:IsCode(6007213) and Duel.GetFlagEffect(tp,m)==0 and Duel.IsExistingMatchingCard(cm.filter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,4)) then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 				local g2=Duel.SelectMatchingCard(tp,cm.filter2,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 				Duel.SendtoHand(g2,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,g2)
-				Duel.RegisterFlagEffect(tp,m+2,RESET_PHASE+PHASE_END,0,1)
-			elseif tc:IsCode(32491822) and (not Duel.GetFlagEffect(tp,m)==0) and Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,5)) then  
+				Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+			elseif tc:IsCode(32491822) and Duel.GetFlagEffect(tp,m)==0 and Duel.IsExistingMatchingCard(cm.filter3,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,5)) then  
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 				local g2=Duel.SelectMatchingCard(tp,cm.filter3,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 				Duel.SendtoHand(g2,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,g2)
-				Duel.RegisterFlagEffect(tp,m+2,RESET_PHASE+PHASE_END,0,1)
-			elseif tc:IsCode(69890967) and (not Duel.GetFlagEffect(tp,m)==0) and Duel.IsExistingMatchingCard(cm.filter4,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,6)) then  
+				Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+			elseif tc:IsCode(69890967) and Duel.GetFlagEffect(tp,m)==0 and Duel.IsExistingMatchingCard(cm.filter4,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,6)) then  
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 				local g2=Duel.SelectMatchingCard(tp,cm.filter4,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 				Duel.SendtoHand(g2,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,g2)
-				Duel.RegisterFlagEffect(tp,m+2,RESET_PHASE+PHASE_END,0,1)
-			elseif tc:IsSetCard(0x144) and (not Duel.GetFlagEffect(tp,m)==0) and c:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(cm.filter5,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,7)) then
+				Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
+			elseif tc:IsSetCard(0x144) and Duel.GetFlagEffect(tp,m)==0 and c:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(cm.filter5,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,7))  then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 				local g2=Duel.SelectMatchingCard(tp,cm.filter5,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 				Duel.SendtoHand(g2,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,g2)
-				Duel.RegisterFlagEffect(tp,m+2,RESET_PHASE+PHASE_END,0,1)
+				Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 			end
 			tc=g:GetNext()
 		end
