@@ -37,7 +37,7 @@ function s.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetCountLimit(1,id+1) -- 这个卡名的②效果1回合只能使用1次
+	e2:SetCountLimit(1,id+10000) -- 这个卡名的②效果1回合只能使用1次
 	e2:SetCondition(s.gycon)
 	e2:SetCost(s.gycost)
 	e2:SetTarget(s.gytg)
