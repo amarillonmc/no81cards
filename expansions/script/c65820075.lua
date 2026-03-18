@@ -167,7 +167,6 @@ function s.sprop3(e,tp,eg,ep,ev,re,r,rp,c)
 	local mg=ag:FilterSelect(tp,s.thfilter,1,1,nil,c)
 	c:SetMaterial(mg)
 	Duel.Overlay(c,mg)
-	Duel.ShuffleHand(tp)
 end
 
 
