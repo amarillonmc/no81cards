@@ -1913,7 +1913,7 @@ function cm.SRoverDrawOp(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
 	Duel.RegisterEffect(e2,tp)
 end
-function cm.SeadowRoverSyn(c)
+--[[function cm.SeadowRoverSyn(c)
 	c:EnableReviveLimit()
 	aux.AddSynchroProcedure(c,nil,aux.NonTuner(nil),1)
 	local e2=Effect.CreateEffect(c)
@@ -1936,7 +1936,7 @@ function cm.SeadowRoverSyn(c)
 	e4:SetTarget(cm.SRoverDrawtg2)
 	e4:SetOperation(cm.SRoverDrawOp2)
 	c:RegisterEffect(e4)
-end
+end]]--
 function cm.SRovercfilter(c,tp)
 	return c:IsSetCard(0x3534) and c:IsAbleToDeckAsCost() and Duel.IsExistingMatchingCard(cm.SRovercfilter1,tp,LOCATION_HAND,0,1,c) and c:IsPublic() and c:IsType(TYPE_MONSTER) and not c:IsType(TYPE_TUNER)
 end

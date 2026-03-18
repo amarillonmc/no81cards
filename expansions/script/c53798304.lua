@@ -2,32 +2,10 @@ local s,id,o=GetID()
 function s.initial_effect(c)
 	--xyz summon
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,nil,4,3)
+	aux.AddXyzProcedureLevelFree(c,s.mfilter,s.xyzcheck,2,3)
 	
 	--treat 8 as 4 for this card
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_XYZ_LEVEL)
-	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e1:SetRange(LOCATION_EXTRA)
-	e1:SetTargetRange(LOCATION_MZONE,0)
-	e1:SetTarget(s.lvtg)
-	e1:SetValue(s.lvval)
-	c:RegisterEffect(e1)
-	
-	--double material grant for this card
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetCode(EFFECT_DOUBLE_XMATERIAL)
-	e2:SetTarget(s.matval)
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
-	e3:SetRange(LOCATION_EXTRA)
-	e3:SetTargetRange(LOCATION_MZONE,0)
-	e3:SetTarget(s.lvtg)
-	e3:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-	e3:SetLabelObject(e2)
-	c:RegisterEffect(e3)
+
 
 	--Quick effect
 	local e4=Effect.CreateEffect(c)
@@ -43,6 +21,28 @@ function s.initial_effect(c)
 	e4:SetTarget(s.target)
 	e4:SetOperation(s.operation)
 	c:RegisterEffect(e4)
+end
+
+function s.mfilter(c,xyzc)
+	return c:IsXyzLevel(xyzc,4) or (c:IsXyzLevel(xyzc,8) and c:IsControler(xyzc:GetControler()))
+end
+function s.xyzcheck(g,xyzc,tp)
+	local function check_combination(cards,index,current_val,used_8)
+		if index>#cards then return current_val==3 end
+		local tc=cards[index]
+		local res=false
+		if tc:IsXyzLevel(xyzc,4) then
+			res=check_combination(cards,index+1,current_val+1,used_8)
+		end
+		if not res and not used_8 and tc:IsXyzLevel(xyzc,8) and tc:IsControler(tp) then
+			res=check_combination(cards,index+1,current_val+2,true)
+		end
+		return res
+	end
+	
+	local cards={}
+	for tc in aux.Next(g) do table.insert(cards,tc) end
+	return check_combination(cards,1,0,false)
 end
 
 -- Functions for alternate Xyz material

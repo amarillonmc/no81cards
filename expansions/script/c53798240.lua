@@ -68,6 +68,14 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 				e1:SetOperation(s.negop)
 				e1:SetReset(RESET_EVENT+RESETS_STANDARD)
 				tc:RegisterEffect(e1,true)
+				if not tc:IsType(TYPE_EFFECT) then
+					local e2=Effect.CreateEffect(c)
+					e2:SetType(EFFECT_TYPE_SINGLE)
+					e2:SetCode(EFFECT_ADD_TYPE)
+					e2:SetValue(TYPE_EFFECT)
+					e2:SetReset(RESET_EVENT+RESETS_STANDARD)
+					tc:RegisterEffect(e2,true)
+				end
 				tc=g:GetNext()
 			end
 		end

@@ -1360,3 +1360,199 @@ function s.Sarcoveil_fsop(e,tp,eg,ep,ev,re,r,rp)
 		table.insert(Sarcoveil_FS_Costs,e)
 	end
 end
+
+-- 定义特殊的过滤器：检查手卡中可用的「幻海袭」素材
+-- 必须满足：是「幻海袭」、能回卡组、能作为同调素材、满足等级要求
+function s.SRoverSynCustomFilter(c, sc, tuner, mg)
+	if not (c:IsLocation(LOCATION_HAND) and c:IsSetCard(0x3534) 
+		and c:IsAbleToDeckAsCost() and c:IsPublic() and c:IsCanBeSynchroMaterial(sc)) then return false end
+	
+	-- 如果还没有选调整（当前c是调整）
+	if not tuner then
+		return c:IsTuner(sc) and mg:IsExists(s.SRoverSynCustomFilter, 1, c, sc, c, mg)
+	else
+		-- 如果已经选了调整（当前c是非调整），检查等级合计
+		return c:IsNotTuner(sc) and c:GetSynchroLevel(sc) + tuner:GetSynchroLevel(sc) == sc:GetLevel()
+	end
+end
+
+-- 同调召唤条件 (Condition)
+function s.SRoverSynCondition(e,c,smat,mg,min,max)
+	if c==nil then return true end
+	if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
+	
+	-- 【部分1】正规同调判定
+	-- 直接生成并调用系统原生的 SynCondition，确保所有兼容性（手卡同调效果、Effect 8173184 等）
+	-- 标准同调：minc=1, maxc=99 (实际受等级限制)
+	local minc_std = 1
+	local maxc_std = 99
+	local std_cond_func = Auxiliary.SynCondition(nil,nil,minc_std,maxc_std)
+	local res_std = std_cond_func(e,c,smat,mg,min,max)
+
+	-- 【部分2】特殊同调判定（手卡洗回）
+	local res_custom = false
+	-- 只有当允许的素材数量范围包含2时，才进行检测 (1+1=2)
+	if (not min or min<=2) and (not max or max>=2) then
+		local tp = c:GetControler()
+		-- 1. 检查额外区域空位 (洗回卡组不占用主怪兽区，但必须有EX区空位)
+		-- 注意：如果素材都在手卡，LocationCountFromEx 必须>0
+		local hand_group = Duel.GetMatchingGroup(Card.IsLocation, tp, LOCATION_HAND, 0, nil, LOCATION_HAND)
+		if Duel.GetLocationCountFromEx(tp, tp, nil, c) > 0 then
+			-- 2. 检查“必须作为同调素材”的限制 (Auxiliary.MustMaterialCheck)
+			-- 如果场上有被《同调呼唤》等效果指定的怪兽，则不能使用手卡洗回召唤（除非那张卡也在手卡且符合条件，这很罕见）
+			-- 传入 nil 代表我们暂时假设使用手卡的一组怪兽，它们通常不包含场上必须使用的卡
+			if Auxiliary.MustMaterialCheck(nil, tp, EFFECT_MUST_BE_SMATERIAL) then
+				-- 3. 检查是否有指定的必须使用的素材 (smat)
+				if smat then
+					-- 如果指定了素材，该素材必须在手卡、是本家、能回卡组、能做素材
+					if s.SRoverSynCustomFilter(smat, c, nil, hand_group) then
+						-- 检查是否存在配对
+						if smat:IsTuner(c) then
+							res_custom = hand_group:IsExists(s.SRoverSynCustomFilter, 1, smat, c, smat, hand_group)
+						else
+							-- smat是非调整，需要在手卡找调整
+							res_custom = hand_group:IsExists(function(tc) 
+								return s.SRoverSynCustomFilter(tc, c, nil, hand_group) and s.SRoverSynCustomFilter(smat, c, tc, hand_group)
+							end, 1, nil)
+						end
+					end
+				else
+					-- 4. 没有指定素材，自由检查手卡配对
+					res_custom = hand_group:IsExists(s.SRoverSynCustomFilter, 1, nil, c, nil, hand_group)
+				end
+			end
+		end
+	end
+
+	-- 将检测结果存入 e 的 Label
+	-- 0=无，1=仅正规，2=仅特殊，3=双修
+	local op_val = 0
+	if res_std then op_val = op_val + 1 end
+	if res_custom then op_val = op_val + 2 end
+	e:SetLabel(op_val)
+
+	return op_val > 0
+end
+
+-- 同调召唤目标选择 (Target)
+function s.SRoverSynTarget(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg,min,max)
+	local op_val = e:GetLabel()
+	if chk==0 then return true end
+
+	local perform_std = false
+	local perform_custom = false
+
+	-- 玩家选择逻辑
+	if op_val == 3 then
+		local op = Duel.SelectOption(tp, aux.Stringid(id,0), aux.Stringid(id,1))
+		if op == 0 then perform_std = true else perform_custom = true end
+	elseif op_val == 1 then
+		perform_std = true
+	else
+		perform_custom = true
+	end
+
+	if perform_std then
+		-- 【执行正规同调】
+		e:SetLabel(0) -- 标记为正规操作
+		-- 调用系统原生的 SynTarget
+		local std_tgt_func = Auxiliary.SynTarget(nil,nil,1,99)
+		return std_tgt_func(e,tp,eg,ep,ev,re,r,rp,chk,c,smat,mg,min,max)
+	elseif perform_custom then
+		-- 【执行特殊同调】
+		e:SetLabel(1) -- 标记为特殊操作
+		local hg = Duel.GetMatchingGroup(Card.IsLocation, tp, LOCATION_HAND, 0, nil, LOCATION_HAND)
+		local g = Group.CreateGroup()
+		local tuner = nil
+		local nontuner = nil
+		local cancel = Duel.IsSummonCancelable()
+
+		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
+		
+		-- 选卡逻辑
+		if smat then
+			-- 必须包含 smat
+			if smat:IsTuner(c) then
+				tuner = smat
+				g:AddCard(tuner)
+				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
+				nontuner = hg:FilterSelect(tp, s.SRoverSynCustomFilter, 1, 1, nil, c, tuner, hg):GetFirst()
+				g:AddCard(nontuner)
+			else
+				nontuner = smat
+				g:AddCard(nontuner)
+				Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
+				tuner = hg:FilterSelect(tp, function(tc) 
+					return s.SRoverSynCustomFilter(tc, c, nil, hg) and s.SRoverSynCustomFilter(nontuner, c, tc, hg)
+				end, 1, 1, nil):GetFirst()
+				g:AddCard(tuner)
+			end
+		else
+			-- 自由选择：先选调整
+			tuner = hg:FilterSelect(tp, s.SRoverSynCustomFilter, 1, 1, nil, c, nil, hg):GetFirst()
+			if not tuner then return false end -- 理论上Condition通过了不应为空，防万一
+			g:AddCard(tuner)
+			
+			-- 再选匹配的非调整
+			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
+			nontuner = hg:FilterSelect(tp, s.SRoverSynCustomFilter, 1, 1, nil, c, tuner, hg):GetFirst()
+			if not nontuner then return false end
+			g:AddCard(nontuner)
+		end
+
+		if g:GetCount() == 2 then
+			g:KeepAlive()
+			e:SetLabelObject(g)
+			return true
+		else
+			return false
+		end
+	end
+end
+
+-- 同调召唤操作 (Operation)
+function s.SRoverSynOperation(e,tp,eg,ep,ev,re,r,rp,c,smat,mg,min,max)
+	local op_type = e:GetLabel() -- 获取Target阶段设置的操作类型
+	
+	if op_type == 0 then
+		-- 【正规同调操作】
+		-- 直接调用系统原生的 SynOperation
+		local std_op_func = Auxiliary.SynOperation(nil,nil,1,99)
+		std_op_func(e,tp,eg,ep,ev,re,r,rp,c,smat,mg,min,max)
+	else
+		-- 【特殊同调操作】
+		local g = e:GetLabelObject()
+		if g then
+			c:SetMaterial(g)
+			-- 关键：Reason 包含 MATERIAL+SYNCHRO，确保触发素材效果
+			Duel.SendtoDeck(g, nil, SEQ_DECKSHUFFLE, REASON_MATERIAL+REASON_SYNCHRO)
+			g:DeleteGroup()
+		end
+	end
+end
+
+-- 注册函数
+function s.SeadowRoverSyn(c)
+	c:EnableReviveLimit()
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(1164)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetCondition(s.SRoverSynCondition)
+	e1:SetTarget(s.SRoverSynTarget)
+	e1:SetOperation(s.SRoverSynOperation)
+	e1:SetValue(SUMMON_TYPE_SYNCHRO)
+	c:RegisterEffect(e1)
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(c:GetOriginalCode(),2))
+	e4:SetCategory(CATEGORY_DRAW)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetCode(EVENT_LEAVE_FIELD)
+	e4:SetCondition(SNNM.SRoverDrawCon2)
+	e4:SetTarget(SNNM.SRoverDrawtg2)
+	e4:SetOperation(SNNM.SRoverDrawOp2)
+	c:RegisterEffect(e4)
+end

@@ -5,16 +5,17 @@ if not require and dofile then function require(str) return dofile(str..".lua") 
 if not pcall(function() require("expansions/script/c53702500") end) then require("script/c53702500") end
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
-	local e0=Effect.CreateEffect(c)
-	e0:SetProperty(EFFECT_FLAG_UNCOPYABLE)
-	e0:SetType(EFFECT_TYPE_FIELD)
-	e0:SetCode(EFFECT_SPSUMMON_PROC)
-	e0:SetRange(LOCATION_EXTRA)
-	e0:SetCondition(cm.spcon)
-	e0:SetTarget(cm.target)
-	e0:SetOperation(cm.activate)
-	e0:SetValue(SUMMON_TYPE_XYZ)
-	c:RegisterEffect(e0)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(1165)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetCondition(cm.XyzCondition)
+	e1:SetTarget(cm.XyzTarget)
+	e1:SetOperation(cm.XyzOperation)
+	e1:SetValue(SUMMON_TYPE_XYZ)
+	c:RegisterEffect(e1)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
@@ -75,44 +76,98 @@ function cm.initial_effect(c)
 	end
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	for tc in aux.Next(eg) do if rp~=e:GetHandler():GetControler() and tc:IsReason(REASON_DESTROY) then tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1) end end
+	for tc in aux.Next(eg) do if (tc:IsReason(REASON_BATTLE) or rp~=e:GetHandler():GetControler()) and tc:IsLocation(LOCATION_GRAVE) then tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1) end end
 end
-function cm.xyzfilter(c)
-	return (c:IsFaceup() or not c:IsLocation(LOCATION_MZONE))
-		and ((c:IsSetCard(0x3534) and c:IsType(TYPE_SYNCHRO) and c:GetFlagEffect(m)~=0) or not c:IsLocation(LOCATION_GRAVE))
+function cm.mfilter(c,xyzc)
+	-- 必须能作为超量素材
+	if not c:IsCanBeXyzMaterial(xyzc) then return false end
+	
+	-- 情况1：场上的9星怪兽
+	if c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsLevel(9) then
+		return true
+	end
+	
+	-- 情况2：墓地被对方破坏的「幻海袭」同调怪兽
+	-- 检查 FlagEffect 确认是否被对方破坏
+	if c:IsLocation(LOCATION_GRAVE) and c:IsSetCard(0x3534) and c:IsType(TYPE_SYNCHRO) and c:GetFlagEffect(m)>0 then
+		return true
+	end
+	
+	return false
 end
-function cm.spcon(e,c,og,min,max)
+-- 目标检查：位置判定
+function cm.xyzgoal(g,tp,xyzc)
+	return Duel.GetLocationCountFromEx(tp,tp,g,xyzc)>0
+end
+-- 召唤条件
+function cm.XyzCondition(e,c,og,min,max)
 	if c==nil then return true end
+	if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
 	local tp=c:GetControler()
-	local zone=Duel.GetFieldGroup(tp,LOCATION_MZONE+LOCATION_GRAVE,0)
+	-- 默认要求：2只以上
 	local minc=2
-	local maxc=zone:GetCount() 
+	local maxc=99
 	if min then
 		if min>minc then minc=min end
 		if max<maxc then maxc=max end
-		if minc>maxc then return false end
 	end
-	return Duel.CheckXyzMaterial(c,cm.xyzfilter,9,minc,maxc,zone)
+	if maxc<minc then return false end
+	
+	local mg=nil
+	if og then
+		mg=og
+	else
+		-- 获取场上和墓地的符合条件的卡
+		mg=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,c)
+	end
+	
+	-- 必须作为素材的检查 (MustMaterial)
+	local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
+	if sg:IsExists(Auxiliary.MustMaterialCounterFilter,1,nil,mg) then return false end
+	
+	Duel.SetSelectedCard(sg)
+	-- 调弦之魔术师等卡的额外检查 (TuneMagician Check)
+	Auxiliary.GCheckAdditional=Auxiliary.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
+	local res=mg:CheckSubGroup(cm.xyzgoal,minc,maxc,tp,c)
+	Auxiliary.GCheckAdditional=nil
+	return res
 end
-function cm.target(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
+-- 召唤目标选择
+function cm.XyzTarget(e,tp,eg,ep,ev,re,r,rp,chk,c,og,min,max)
 	if og and not min then
 		return true
 	end
-	local zone=Duel.GetFieldGroup(tp,LOCATION_MZONE+LOCATION_GRAVE,0)
 	local minc=2
-	local maxc=zone:GetCount() 
+	local maxc=99
 	if min then
-		 if min>minc then minc=min end
-		 if max<maxc then maxc=max end
+		if min>minc then minc=min end
+		if max<maxc then maxc=max end
 	end
-	local g=Duel.SelectXyzMaterial(tp,c,cm.xyzfilter,9,minc,maxc,zone)
-	if g then
+	
+	local mg=nil
+	if og then
+		mg=og
+	else
+		mg=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,c)
+	end
+	
+	local sg=Duel.GetMustMaterial(tp,EFFECT_MUST_BE_XMATERIAL)
+	Duel.SetSelectedCard(sg)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	
+	local cancel=Duel.IsSummonCancelable()
+	Auxiliary.GCheckAdditional=Auxiliary.TuneMagicianCheckAdditionalX(EFFECT_TUNE_MAGICIAN_X)
+	local g=mg:SelectSubGroup(tp,cm.xyzgoal,cancel,minc,maxc,tp,c)
+	Auxiliary.GCheckAdditional=nil
+	
+	if g and g:GetCount()>0 then
 		g:KeepAlive()
 		e:SetLabelObject(g)
 		return true
 	else return false end
 end
-function cm.activate(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
+-- 召唤操作
+function cm.XyzOperation(e,tp,eg,ep,ev,re,r,rp,c,og,min,max)
 	if og and not min then
 		local sg=Group.CreateGroup()
 		local tc=og:GetFirst()
