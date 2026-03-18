@@ -145,6 +145,7 @@ function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	Duel.SendtoGrave(sg,REASON_RULE)
 	c:SetMaterial(g1) 
 	Duel.Overlay(c,g1)
+	g1:DeleteGroup()
 end
 
 
