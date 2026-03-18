@@ -82,7 +82,7 @@ function s.sprfilter(c,sc)
 		)
 		or 
 		(
-			c:IsLocation(LOCATION_EXTRA) 
+			c:IsLocation(LOCATION_EXTRA) and c:IsCanBeXyzMaterial(sc)
 			and 
 			(
 				(
