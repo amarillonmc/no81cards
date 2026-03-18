@@ -11,7 +11,7 @@ function s.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e2:SetCode(id)
+	e2:SetCode(71500208)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetTargetRange(1,0)
 	c:RegisterEffect(e2)
@@ -58,7 +58,8 @@ function s.initial_effect(c)
 		_Recover=Duel.Recover
 		function Duel.Recover(p,val,r,step)
 			if not step then step=false end
-			if Duel.GetFlagEffect(p,id)>0 and Duel.GetFlagEffect(p,EFFECT_REVERSE_RECOVER)==0 then val=val*2 end
+			if Duel.IsPlayerAffectedByEffect(p,71500208) and Duel.GetFlagEffect(p,EFFECT_REVERSE_RECOVER)==0 
+			then val=val*2 end
 			_Recover(p,val,r,step)
 		end
 	end

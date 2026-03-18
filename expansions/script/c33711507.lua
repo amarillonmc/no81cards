@@ -6,7 +6,7 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(66570171,0))
 	e1:SetType(EFFECT_TYPE_QUICK_O)
-	e1:SetRange(LOCATION_HAND+LOCATION_GRAVE)
+	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCost(cm.cost)
 	e1:SetCondition(cm.con)
@@ -83,6 +83,6 @@ function cm.damcon(e,c)
 	local g=Duel.GetDecktopGroup(tp,1)
 	return g:IsContains(e:GetHandler()) and e:GetHandler():IsFaceup()
 end
-function cm.val(e,c)
+function cm.val(e,c,dam)
 	return dam*2
 end

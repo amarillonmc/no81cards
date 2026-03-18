@@ -41,7 +41,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
 	e1:SetOperation(cm.operation)
-	e1:SetReset(RESET_PHASE+PHASE_END,1)
+	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
 function cm.operation(e,tp,eg,ep,ev,re,r,rp)
@@ -53,9 +53,9 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	else op=2
 	end
 	if op==0 then
-		Duel.Damage(1-tp,cm[tp],REASON_EFFECT,true)
+		Duel.Damage(1-tp,cm[tp],REASON_EFFECT)
 	elseif op==1 then
-		Duel.Recover(tp,cm[tp],REASON_EFFECT,true)
+		Duel.Recover(tp,cm[tp],REASON_EFFECT)
 	else
 		Duel.Damage(tp,3000,REASON_EFFECT,true)
 		Duel.Damage(1-tp,3000,REASON_EFFECT,true)

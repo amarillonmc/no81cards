@@ -1,5 +1,4 @@
 --命运预见『星星』
---命运预见『星星』
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,id)
@@ -10,6 +9,16 @@ function s.initial_effect(c)
 	e1:SetOperation(s.activate)
 	c:RegisterEffect(e1)
 end
+local KOISHI_CHECK=false
+if Card.SetCardData then KOISHI_CHECK=true end
+function s.filter(g,f,nc,...)
+	if aux.GetValueType(f)=="function" then return g:Filter(f,nc,...) end
+	local ng=g:Clone()
+	if aux.GetValueType(nc)=="Card" then ng:RemoveCard(nc) end
+	if aux.GetValueType(nc)=="Group" then ng:Sub(nc) end
+	return ng
+end
+
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	--Delayed Trigger
@@ -81,43 +90,41 @@ function s.create()
 	local _TGetID=GetID
 	local ac=nil
 	while not ac do
-		local int=s.roll(1,132000016)
-		--continuously updated
-		if int>132000000 and int<132000014 then int=int+739100000 end
-		if int==132000014 then int=460524290 end
-		if int==132000015 then int=978210027 end
-		if int==132000016 then int=250000000 end
-		if KOISHI_CHECK then
-			local cc,ca,ctype=Duel.ReadCard(int,CARDDATA_CODE,CARDDATA_ALIAS,CARDDATA_TYPE)
-			if cc then
-				local dif=cc-ca
-				local real=0
-				if dif>-10 and dif<10 then
-					real=ca
+				local int=s.roll(1,132000015)
+				--continuously updated
+				if int>132000000 and int<132000014 then int=int+739100000 end
+				if int==132000014 then int=460524290 end
+				if int==132000015 then int=978210027 end
+				if KOISHI_CHECK then
+					local cc,ca,ctype=Duel.ReadCard(int,CARDDATA_CODE,CARDDATA_ALIAS,CARDDATA_TYPE)
+					if cc then
+						local dif=cc-ca
+						local real=0
+						if dif>-10 and dif<10 then
+							real=ca
+						else
+							real=cc
+						end
+						if ctype&TYPE_TOKEN==0 then
+							ac=real
+						end
+					end
 				else
-					real=cc
-				end
-				if ctype&TYPE_TOKEN==0 and not cm.list(real) then
-					ac=real
-				end
-			end
-		else
-			if not _G["c"..int] then
-				_G["c"..int]={}
-				_G["c"..int].__index=_G["c"..int]
-			end
-			GetID=function()
-				return _G["c"..int],int,int<100000000 and 1 or 100
-			end
-			if pcall(function() dofile("expansions/script/c"..int..".lua") end) or pcall(function() dofile("script/c"..int..".lua") end) then
-				_G["c"..int]=nil
-				local bool,token=pcall(Duel.CreateToken,tp,int)
-				if bool and not token:IsType(TYPE_TOKEN) then
-					ac=token:GetCode()
+					if not _G["c"..int] then
+						_G["c"..int]={}
+						_G["c"..int].__index=_G["c"..int]
+					end
+					m=function()
+						return _G["c"..int],int
+					end
+					if pcall(function() require("expansions/script/c"..int) end) or pcall(function() require("script/c"..int) end) then
+						_G["c"..int]=nil
+						local bool,token=pcall(Duel.CreateToken,tp,int)
+						if bool and not token:IsType(TYPE_TOKEN) then
+							ac=token:GetCode()
+						end
+					end
 				end
 			end
-		end
-	end
-	GetID=_TGetID
 	return ac   
 end
