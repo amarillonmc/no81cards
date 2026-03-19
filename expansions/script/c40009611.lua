@@ -63,6 +63,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 		local g2=Duel.SelectMatchingCard(tp,cm.xctgfilter,tp,LOCATION_FZONE,0,1,1,nil)
 		Duel.HintSelection(g2)
 		local tc=g2:GetFirst()
+		Duel.ConfirmCards(tp,tg)
 		Duel.Overlay(tc,tg)
 	end
 end

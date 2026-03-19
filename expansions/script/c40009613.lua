@@ -9,7 +9,7 @@ end
 function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,cm.mfilter,3,2)
-	c:EnableReviveLimit()	
+	c:EnableReviveLimit()   
 	--tograve
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
@@ -84,6 +84,7 @@ function cm.xcop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.HintSelection(g2)
 		local sg=g1:RandomSelect(1-tp,1)
 		local tc=g2:GetFirst()
+		Duel.ConfirmCards(tp,sg)
 		Duel.Overlay(tc,sg)
 	end
 end

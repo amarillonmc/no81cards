@@ -89,6 +89,7 @@ function cm.xcop(e,tp,eg,ep,ev,re,r,rp)
 	if g0:GetCount()>0 and tg:GetCount()>0 then
 		local g2=Duel.SelectMatchingCard(tp,cm.xctgfilter,tp,LOCATION_FZONE,0,1,1,nil)
 		Duel.HintSelection(g2)
+		Duel.ConfirmCards(tp,tg)
 		local tc=g2:GetFirst()
 		Duel.Overlay(tc,tg)
 	end

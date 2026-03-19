@@ -90,6 +90,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.HintSelection(g2)
 			--local sg=g1:RandomSelect(1-tp,1)
 			local tc=g2:GetFirst()
+			Duel.ConfirmCards(tp,g1)
 			Duel.Overlay(tc,g1)
 		end
 	elseif op==1 then
@@ -99,6 +100,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.HintSelection(g2)
 			--local sg=g1:RandomSelect(1-tp,1)
 			local tc=g2:GetFirst()
+			Duel.ConfirmCards(tp,g11)
 			Duel.Overlay(tc,g11)
 		end
 	else
@@ -108,6 +110,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.HintSelection(g2)
 			--local sg=g1:RandomSelect(1-tp,1)
 			local tc=g2:GetFirst()
+			Duel.ConfirmCards(tp,g111)
 			Duel.Overlay(tc,g111)
 		end
 	end
