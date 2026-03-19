@@ -97,12 +97,12 @@ function c11771290.op1(e,tp,eg,ep,ev,re,r,rp)
             local e1=Effect.CreateEffect(e:GetHandler())
             e1:SetType(EFFECT_TYPE_SINGLE)
             e1:SetCode(EFFECT_DISABLE)
-            e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+            e1:SetReset(RESET_EVENT+RESETS_STANDARD)
             tc:RegisterEffect(e1)
             local e2=Effect.CreateEffect(e:GetHandler())
             e2:SetType(EFFECT_TYPE_SINGLE)
             e2:SetCode(EFFECT_DISABLE_EFFECT)
-            e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+            e2:SetReset(RESET_EVENT+RESETS_STANDARD)
             tc:RegisterEffect(e2)
         end
     elseif d==6 then
@@ -128,6 +128,7 @@ function c11771290.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c11771290.op2(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
+    if not c:IsRelateToEffect(e) then return end
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
     local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,aux.ExceptThisCard(e))
     if #g>0 then

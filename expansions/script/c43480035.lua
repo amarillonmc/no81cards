@@ -33,18 +33,19 @@ function c43480035.pbfil(c)
 	return not c:IsPublic() and c:IsSetCard(0x3f13)  
 end 
 function c43480035.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local replace = Duel.IsPlayerAffectedByEffect(tp, 43480080)
-	if chk == 0 then 
-		if replace then return true end
-		return Duel.IsExistingMatchingCard(c43480035.pbfil,tp,LOCATION_HAND,0,1,nil)
+	if chk==0 then 
+		if Duel.IsPlayerAffectedByEffect(tp,43480080) then 
+		return true 
+		else return Duel.IsExistingMatchingCard(c43480035.pbfil,tp,LOCATION_HAND,0,1,nil)
+		end
 	end
-	if not replace then
+	if not Duel.IsPlayerAffectedByEffect(tp,43480080) then
 		local pg=Duel.SelectMatchingCard(tp,c43480035.pbfil,tp,LOCATION_HAND,0,1,1,nil) 
 		Duel.ConfirmCards(1-tp,pg) 
 	end
 end
 function c43480035.thfilter(c)
-	return c:IsCode(4348070) and c:IsAbleToHand()
+	return c:IsCode(43480070) and c:IsAbleToHand()
 end
 function c43480035.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c43480035.thfilter,tp,LOCATION_DECK,0,1,nil) end

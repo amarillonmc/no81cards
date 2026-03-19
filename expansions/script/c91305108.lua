@@ -1,6 +1,6 @@
 --龙唤士 卡露兹
 if not pcall(function() require("expansions/script/c130005101") end) then require("script/c130005101") end
-local m,cm=rscf.DefineCard(130005108,"DragonCaller")
+local m,cm=rscf.DefineCard(91305108,"DragonCaller")
 function cm.initial_effect(c)
 	local e2=rsef.STO(c,EVENT_SUMMON_SUCCESS,{m,1},nil,"td,dr","de",nil,nil,rsop.target({cm.tdfilter,"td",LOCATION_GRAVE },{1,"dr"}),cm.tdop)
 	local e3=rsef.STO(c,EVENT_RELEASE,{m,2},nil,"th","de",nil,nil,rsop.target(cm.thfilter,"th",LOCATION_GRAVE),cm.thop)

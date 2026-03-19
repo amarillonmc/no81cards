@@ -1,6 +1,6 @@
 --龙唤士 琳
 if not pcall(function() require("expansions/script/c130005101") end) then require("script/c130005101") end
-local m,cm=rscf.DefineCard(130005106,"DragonCaller")
+local m,cm=rscf.DefineCard(91305106,"DragonCaller")
 function cm.initial_effect(c)
 	local e1=rsef.QO(c,nil,{m,0},nil,"th",nil,LOCATION_MZONE+LOCATION_HAND,nil,rscost.cost(Card.IsReleasable,"res"),nil,cm.op)
 	local e2=rsef.I(c,{m,1},nil,"td,th","tg",LOCATION_GRAVE,nil,nil,rstg.target({cm.thfilter2,"td",LOCATION_GRAVE,0,3,3,c},rsop.list(Card.IsAbleToHand,"th")),cm.tdop)

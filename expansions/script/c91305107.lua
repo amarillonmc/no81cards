@@ -15,7 +15,7 @@ if not require and loadfile then
 	end
 end
 if not pcall(function() require("expansions/script/c130005101") end) then require("script/c130005101") end
-local m,cm=rscf.DefineCard(130005107,"DragonCaller")
+local m,cm=rscf.DefineCard(91305107,"DragonCaller")
 function cm.initial_effect(c)
 	local e1=rsef.STO(c,EVENT_SUMMON_SUCCESS,{m,0},nil,"sp","de",nil,nil,rsop.target(cm.spfilter,"sp",LOCATION_GRAVE),cm.spop)
 	local e2=rsef.RegisterClone(c,e1,"code",EVENT_SPSUMMON_SUCCESS)

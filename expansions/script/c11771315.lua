@@ -2,11 +2,11 @@
 function c11771315.initial_effect(c)
 	--link summon
 	c:EnableReviveLimit()
-	aux.AddLinkProcedure(c,c11771315.filter0,2,99)
+	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkType,TYPE_EFFECT),2,99,c11771315.lcheck)
 	-- 自由骰子
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(11771315,0))
-	e1:SetCategory(CATEGORY_DICE)
+	e1:SetCategory(CATEGORY_DICE+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_MZONE)
@@ -37,8 +37,11 @@ function c11771315.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 -- link
-function c11771315.filter0(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_DICE))
+function c11771315.lcheck(g)
+    local function hasDiceEffect(c)
+        return c:IsEffectProperty(aux.EffectPropertyFilter(EFFECT_FLAG_DICE))
+    end
+    return g:IsExists(hasDiceEffect, 1, nil)
 end
 -- 1
 function c11771315.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
