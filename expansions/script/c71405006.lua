@@ -38,6 +38,7 @@ function s.con2(e,tp,eg,ep,ev,re,r,rp)
 	return not e:GetHandler():IsStatus(STATUS_BATTLE_DESTROYED) and rp==1-tp and Duel.IsChainDisablable(ev)
 end
 function s.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return c:GetMaterial():GetCount()==0 or Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,nil) end
 	if c:GetMaterial():GetCount()>0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -69,7 +70,7 @@ function s.filter3(c)
 end
 function s.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter3,tp,LOCATION_MZONE,0,1,nil) or Duel.IsExistingMatchingCard(Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,nil) end
-	if c:GetMaterial():GetCount()>0 then
+	if not Duel.IsExistingMatchingCard(s.filter3,tp,LOCATION_MZONE,0,1,nil) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemoveAsCost,tp,LOCATION_HAND,0,1,1,nil)
 		Duel.Remove(g,POS_FACEUP,REASON_COST)

@@ -70,10 +70,10 @@ function s.thtg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local tc=g:GetFirst()
 	Duel.SetTargetCard(tc)
 	if tc:IsReason(REASON_RELEASE) then
-		e:SetCategory(e:GetProperty()|CATEGORY_SPECIAL_SUMMON)
+		e:SetCategory(e:GetCategory()|CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
 		e:SetLabel(1)
 	else
-		e:SetCategory(e:GetProperty()&~CATEGORY_SPECIAL_SUMMON)
+		e:SetCategory(e:GetCategory()&~CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON)
 		e:SetLabel(0)
 		Duel.SetOperationInfo(0,CATEGORY_TODECK,tc,1,0,0)
 	end
