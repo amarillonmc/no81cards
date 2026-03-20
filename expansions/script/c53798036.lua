@@ -6,12 +6,11 @@ function s.initial_effect(c)
 	--Indes (Effect 1)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_INDESTRUCTABLE_COUNT)
+	e1:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetTargetRange(LOCATION_MZONE,0)
 	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
-	e1:SetTarget(s.indtg)
-	e1:SetValue(s.indval)
+	e1:SetValue(1)
 	e1:SetCountLimit(1,id)
 	c:RegisterEffect(e1)
 	local e2=e1:Clone()
@@ -56,7 +55,7 @@ end
 function s.negop(e,tp,eg,ep,ev,re,r,rp)
 	-- Condition: Opponent's Normal or Quick-Play Spell
 	if rp==tp or not re:IsHasType(EFFECT_TYPE_ACTIVATE) then return end
-	if not (re:GetActiveType()==TYPE_SPELL or re:IsActiveType(TYPE_QUICKPLAY)) then return end
+	if not (re:IsActiveType(TYPE_SPELL) and (re:IsActiveType(TYPE_NORMAL) or re:IsActiveType(TYPE_QUICKPLAY))) then return end
 	
 	local g=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_MZONE,nil)
 	-- Logic: Opponent can destroy 1 valid monster. If not, negate.

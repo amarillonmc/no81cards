@@ -86,7 +86,7 @@ function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=e:GetLabelObject()
+	local g=e:GetLabelObject():Filter(Card.IsLocation,nil,LOCATION_EXTRA)
 	if chk==0 then return g and g:GetCount()>0 and aux.MustMaterialCheck(e:GetHandler(),tp,EFFECT_MUST_BE_XMATERIAL) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
