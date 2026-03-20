@@ -52,7 +52,7 @@ function c43480015.cfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0x3f13)
 end
 function c43480015.pspcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.IsExistingMatchingCard(c43480015.cfilter,tp,LOCATION_MZONE,0,1,nil) or Duel.IsEnvironment(4348070,tp) 
+	return Duel.IsExistingMatchingCard(c43480015.cfilter,tp,LOCATION_MZONE,0,1,nil) or Duel.IsEnvironment(43480070,tp) 
 end
 function c43480015.psptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -65,11 +65,11 @@ function c43480015.pspop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)  
 	end
 end
-function c43480015.desfil(c) 
-	return not (c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM))  
+function c43480015.desfil(c,tp) 
+	return not (c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
 end 
 function c43480015.destg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local dg=Duel.GetMatchingGroup(c43480015.desfil,tp,LOCATION_MZONE,0,nil)
+	local dg=Duel.GetMatchingGroup(c43480015.desfil,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
 	if chk==0 then return true end 
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,dg,dg:GetCount(),0,0)
 end
@@ -77,11 +77,11 @@ function c43480015.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	local p=tp 
 	if Duel.IsPlayerAffectedByEffect(tp,4348050) then p=1-tp end 
-	local dg=Duel.GetMatchingGroup(c43480015.desfil,p,LOCATION_MZONE,0,nil)
+	local dg=Duel.GetMatchingGroup(c43480015.desfil,p,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
 	if dg:GetCount()>0 then 
 		Duel.Destroy(dg,REASON_EFFECT)
 	end 
-end
+end 
 function c43480015.rlfil1(c) 
 	return c:GetOriginalType()&TYPE_MONSTER~=0 and c:GetTextAttack()>0  
 end 

@@ -30,7 +30,7 @@ function c43480000.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN) 
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,434800001) 
+	e2:SetCountLimit(1,43480001) 
 	e2:SetTarget(c43480000.eqtg)
 	e2:SetOperation(c43480000.eqop)
 	c:RegisterEffect(e2)
@@ -39,7 +39,7 @@ function c43480000.initial_effect(c)
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_IGNITION)   
 	e3:SetRange(LOCATION_SZONE) 
-	e3:SetCountLimit(1,434800002) 
+	e3:SetCountLimit(1,43480002) 
 	e3:SetCondition(c43480000.spcon)
 	e3:SetTarget(c43480000.sptg)
 	e3:SetOperation(c43480000.spop)
@@ -71,11 +71,11 @@ function c43480000.pspop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SpecialSummonComplete()
 	end
 end
-function c43480000.desfil(c) 
-	return not (c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM))  
+function c43480000.desfil(c,tp) 
+	return not (c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
 end 
 function c43480000.destg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local dg=Duel.GetMatchingGroup(c43480000.desfil,tp,LOCATION_MZONE,0,nil)
+	local dg=Duel.GetMatchingGroup(c43480000.desfil,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
 	if chk==0 then return true end 
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,dg,dg:GetCount(),0,0)
 end
@@ -83,7 +83,7 @@ function c43480000.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	local p=tp 
 	if Duel.IsPlayerAffectedByEffect(tp,4348050) then p=1-tp end 
-	local dg=Duel.GetMatchingGroup(c43480000.desfil,p,LOCATION_MZONE,0,nil)
+	local dg=Duel.GetMatchingGroup(c43480000.desfil,p,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
 	if dg:GetCount()>0 then 
 		Duel.Destroy(dg,REASON_EFFECT)
 	end 
