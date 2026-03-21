@@ -25,6 +25,23 @@ function cm.initial_effect(c)
 	e3:SetTarget(cm.target)
 	e3:SetOperation(cm.operation)
 	c:RegisterEffect(e3)
+	if not cm.global_check then
+		cm.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_MOVE)
+		ge1:SetOperation(cm.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function cm.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		if tc:IsLocation(LOCATION_MZONE) and tc:IsPreviousLocation(LOCATION_REMOVED) and not tc:IsReason(REASON_SPSUMMON) then
+			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+		end
+		tc=eg:GetNext()
+	end
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER) and re:GetActivateLocation()==LOCATION_HAND
@@ -38,16 +55,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(300)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_MOVE)
-	e2:SetCondition(cm.mvcon)
-	e2:SetOperation(cm.mvop)
-	e2:SetReset(RESET_PHASE+PHASE_END)
-	--Duel.RegisterEffect(e2,tp)
 end
 function cm.atktg(e,c)
-	return cm.rtfilter(c)
+	return c:GetFlagEffect(m)>0
 end
 function cm.mvcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.rtfilter,1,nil)

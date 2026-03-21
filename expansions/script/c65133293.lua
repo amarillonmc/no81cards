@@ -40,7 +40,7 @@ function s.ctop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.thfilter(c)
-	return c:IsCode(65133296) and c:IsAbleToHand()
+	return c:IsCode(65133294) and c:IsAbleToHand()
 end
 function s.faceupfilter(c)
 	return c:IsFaceup() and c:IsType(TYPE_MONSTER)

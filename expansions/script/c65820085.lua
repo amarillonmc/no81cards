@@ -15,6 +15,16 @@ function s.initial_effect(c)
 	e0:SetCondition(s.sprcon)
 	e0:SetOperation(s.sprop)
 	c:RegisterEffect(e0)
+	local e11=Effect.CreateEffect(c)
+	e11:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e11:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e11:SetOperation(s.speop)
+	c:RegisterEffect(e11)
+	--[[local e12=Effect.CreateEffect(c)
+	e12:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e12:SetCode(EVENT_SPSUMMON_NEGATED)
+	e12:SetOperation(s.activate)
+	c:RegisterEffect(e12)]]
 	--destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -100,7 +110,7 @@ function s.sprfilter(c,sc)
 		)
 	)
 	and 
-	c:IsSetCard(0x3a32) and not c:IsCode(id)
+	c:IsSetCard(0x3a32) --and not c:IsCode(id)
 end 
 function s.spgckfil(g,e,tp,sc) 
 	return Duel.GetLocationCountFromEx(tp,tp,g,nil)
@@ -115,6 +125,12 @@ end
 function s.sprop(e,tp,eg,ep,ev,re,r,rp,c) 
 	local c=e:GetHandler()
 	local tp=c:GetControler() 
+	local g11=Duel.GetMatchingGroup(s.spfilter1,tp,LOCATION_EXTRA,0,1,1,nil)
+	local tc1=g11:GetFirst()
+	while tc1 do
+		tc1:ResetFlagEffect(id)
+		tc1=g11:GetNext()
+	end
 	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_ONFIELD+LOCATION_EXTRA,0,c,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
 	local g1=g:SelectSubGroup(tp,s.spgckfil,true,2,2,e,tp)
@@ -140,16 +156,53 @@ function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	while tc do
 		local sg1=tc:GetOverlayGroup()
 		sg:Merge(sg1)
+		tc:RegisterFlagEffect(id,0,EFFECT_FLAG_SET_AVAILABLE,1)
 		tc=g1:GetNext()
 	end
 	Duel.SendtoGrave(sg,REASON_RULE)
-	c:SetMaterial(g1) 
-	Duel.Overlay(c,g1)
-	g1:DeleteGroup()
+	local tc2=g1:GetFirst()
+	while tc2 do
+		if not tc2:IsLocation(LOCATION_EXTRA) then
+			c:SetMaterial(Group.FromCards(tc2))
+			Duel.Overlay(c,Group.FromCards(tc2))
+		end
+		tc2=g1:GetNext()
+	end
 end
 
+function s.spfilter1(c)
+	return c:GetFlagEffect(id)>0
+end
+function s.speop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(s.spfilter1,tp,LOCATION_EXTRA,0,1,1,nil)
+	if not g then return end
+	if c:IsSummonType(SUMMON_TYPE_XYZ) then
+		if c:IsLocation(LOCATION_MZONE) then
+			c:SetMaterial(g)
+			Duel.Overlay(c,g)
+		else
+			Duel.SendtoGrave(g,REASON_RULE)
+		end
+	end
+	local tc=g:GetFirst()
+	while tc do
+		tc:ResetFlagEffect(id)
+		tc=g:GetNext()
+	end
+end
 
-
+function s.activate(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local g=Duel.GetMatchingGroup(s.spfilter1,tp,LOCATION_EXTRA,0,1,1,nil)
+	if not g then return end
+	Duel.SendtoGrave(g,REASON_RULE)
+	local tc=g:GetFirst()
+	while tc do
+		tc:ResetFlagEffect(id)
+		tc=g:GetNext()
+	end
+end
 
 
 function s.filter(c)
