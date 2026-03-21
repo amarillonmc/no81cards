@@ -63,7 +63,7 @@ function c43480035.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 
 end
 function c43480035.spfilter(c,e,tp)
-	return c:IsCode(4348030) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsCode(43480030) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c43480035.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c43480035.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) end
