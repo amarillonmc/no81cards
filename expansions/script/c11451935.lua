@@ -74,10 +74,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 end
 function cm.chkop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=e:GetLabelObject():Filter(function(c) return c:GetFlagEffectLabel(m+3) and c:GetFlagEffectLabel(m+3)==e:GetLabel() end,nil)
-	if #Group.__band(sg,eg)>0 then e:SetLabel(1) else e:SetLabel(0) end
+	if #Group.__band(sg,eg)>0 then e:SetValue(1) else e:SetValue(0) end
 end
 function cm.desop2(e,tp,eg,ep,ev,re,r,rp)
-	if e:GetLabelObject():GetLabel()~=1 then return end
+	if e:GetLabelObject():GetValue()~=1 then return end
 	local sg=e:GetLabelObject():GetLabelObject():Filter(function(c) return c:GetFlagEffectLabel(m+3) and c:GetFlagEffectLabel(m+3)==e:GetLabel() end,nil)
 	e:GetLabelObject():GetLabelObject():DeleteGroup()
 	e:GetLabelObject():Reset()
