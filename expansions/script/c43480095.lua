@@ -95,11 +95,11 @@ function c43480095.slevel(e,c)
 		return lv
 	end 
 end
-function c43480095.desfil(c) 
-	return not (c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM))  
+function c43480095.desfil(c,tp) 
+	return not (c:IsFaceup() and c:IsSetCard(0x3f13) and c:IsType(TYPE_PENDULUM)) and ((not Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(tp)) or Duel.IsPlayerAffectedByEffect(tp,43480050) and c:IsControler(1-tp))
 end 
 function c43480095.destg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	local dg=Duel.GetMatchingGroup(c43480095.desfil,tp,LOCATION_MZONE,0,nil)
+	local dg=Duel.GetMatchingGroup(c43480095.desfil,tp,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
 	if chk==0 then return true end 
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,dg,dg:GetCount(),0,0)
 end
@@ -107,11 +107,11 @@ function c43480095.desop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()  
 	local p=tp 
 	if Duel.IsPlayerAffectedByEffect(tp,4348050) then p=1-tp end 
-	local dg=Duel.GetMatchingGroup(c43480095.desfil,p,LOCATION_MZONE,0,nil)
+	local dg=Duel.GetMatchingGroup(c43480095.desfil,p,LOCATION_MZONE,LOCATION_MZONE,nil,tp)
 	if dg:GetCount()>0 then 
 		Duel.Destroy(dg,REASON_EFFECT)
 	end 
-end
+end 
 function c43480095.disfilter(c)
 	return aux.NegateAnyFilter(c)
 end
