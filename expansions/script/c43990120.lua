@@ -42,10 +42,27 @@ function cm.initial_effect(c)
 	e3:SetTarget(c43990120.retg)
 	e3:SetOperation(c43990120.reop)
 	c:RegisterEffect(e3)
+	if not c43990120.global_check then
+		c43990120.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_MOVE)
+		ge1:SetOperation(c43990120.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
 	
 end
+function c43990120.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		if tc:IsLocation(LOCATION_MZONE) and tc:IsPreviousLocation(LOCATION_REMOVED) and not tc:IsReason(REASON_SPSUMMON) then
+			tc:RegisterFlagEffect(43990120,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		end
+		tc=eg:GetNext()
+	end
+end
 function c43990120.spfilter(c)
-	return c:IsFaceup() and c:IsPreviousLocation(LOCATION_REMOVED) and not c:IsReason(REASON_SPSUMMON) and not c:IsReason(REASON_SUMMON) and c:IsSetCard(0x6510)
+	return c:IsFaceup() and c:GetFlagEffect(43990120)~=0 and c:IsSetCard(0x6510)
 end
 function c43990120.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c43990120.spfilter,tp,LOCATION_MZONE,0,1,nil)
@@ -89,7 +106,7 @@ function c43990120.retop(e,tp,eg,ep,ev,re,r,rp)
 	local g=e:GetLabelObject()
 	local sg=g:Filter(c43990120.retfilter,nil)
 	if sg:GetCount()>1 and Duel.GetLocationCount(1-tp,LOCATION_MZONE)==1 then
-		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,1))
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 		local tc=sg:Select(tp,1,1,nil):GetFirst()
 		Duel.ReturnToField(tc)
 	else
@@ -109,7 +126,7 @@ function c43990120.discostfilter(c)
 end
 function c43990120.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c43990120.discostfilter,tp,LOCATION_REMOVED,0,1,nil) end
-	local g=Duel.GetMatchingGroup(c14357527.sprfilter,tp,LOCATION_REMOVED,0,nil)
+	local g=Duel.GetMatchingGroup(c43990120.discostfilter,tp,LOCATION_REMOVED,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local sg=g:CancelableSelect(tp,1,2,nil)
 	Duel.SendtoHand(sg,nil,REASON_COST)
@@ -136,19 +153,20 @@ function c43990120.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_MZONE)
 end
 function c43990120.reop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,0,1,1,nil)
 	local tc=g:GetFirst()
-	if tc and Duel.Remove(c,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
+	if tc and Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
 		tc:RegisterFlagEffect(43990120,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		g:KeepAlive()
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_PHASE+PHASE_END)
 		e1:SetReset(RESET_PHASE+PHASE_END)
-		e1:SetLabelObject(c)
+		e1:SetLabelObject(g)
 		e1:SetCountLimit(1)
 		e1:SetOperation(c43990120.retop)
 		Duel.RegisterEffect(e1,tp)
 	end
 end
-

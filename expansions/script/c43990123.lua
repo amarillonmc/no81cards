@@ -34,15 +34,28 @@ function cm.initial_effect(c)
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_SPSUMMON_SUCCESS)
-		ge1:SetOperation(c43990123.checkop)
+		ge1:SetOperation(c43990123.checkop1)
 		Duel.RegisterEffect(ge1,0)
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_MOVE)
+		ge2:SetOperation(c43990123.checkop2)
+		Duel.RegisterEffect(ge2,0)
 	end
-	
+end
+function c43990123.checkop2(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		if tc:IsLocation(LOCATION_MZONE) and tc:IsPreviousLocation(LOCATION_REMOVED) and not tc:IsReason(REASON_SPSUMMON) then
+			tc:RegisterFlagEffect(43990123,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		end
+		tc=eg:GetNext()
+	end
 end
 function c43990123.checkfliter(c)
 	return c:IsCode(43990116) and c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_SPECIAL)
 end
-function c43990123.checkop(e,tp,eg,ep,ev,re,r,rp)
+function c43990123.checkop1(e,tp,eg,ep,ev,re,r,rp)
 	if eg:IsExists(c43990123.checkfliter,1,nil,rp) then
 		Duel.RegisterFlagEffect(rp,43990123,RESET_PHASE+PHASE_END,0,1)
 	end
@@ -52,10 +65,10 @@ function c43990123.handcon(e)
 end
 
 function c43990123.brfilter1(c)
-	return c:IsFaceup() and c:IsPreviousLocation(LOCATION_REMOVED) and not c:IsReason(REASON_SPSUMMON) and not c:IsReason(REASON_SUMMON) and c:IsSetCard(0x6510)
+	return c:IsFaceup() and c:GetFlagEffect(43990123)~=0 and c:IsSetCard(0x6510)
 end
 function c43990123.brfilter2(c)
-	return c:IsFaceup() and c:IsPreviousLocation(LOCATION_REMOVED) and not c:IsReason(REASON_SPSUMMON) and not c:IsReason(REASON_SUMMON) and c:IsCode(c43990120)
+	return c:IsFaceup() and c:GetFlagEffect(43990123)~=0 and c:IsCode(c43990120)
 end
 function c43990123.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct1=Duel.GetMatchingGroupCount(c43990123.brfilter1,tp,LOCATION_MZONE,0,nil)
@@ -90,11 +103,11 @@ function c43990123.thfilter(c)
 end
 function c43990123.bmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToDeck() and Duel.IsExistingMatchingCard(c43990123.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return c:IsAbleToDeck() and c:IsFaceup() and Duel.IsExistingMatchingCard(c43990123.thfilter,tp,LOCATION_DECK,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,tp,LOCATION_DECK+LOCATION_REMOVED)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function c43990123.taop(e,tp,eg,ep,ev,re,r,rp)
+function c43990123.bmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)~=0 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)

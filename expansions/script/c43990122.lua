@@ -100,7 +100,7 @@ function c43990122.bmcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c43990122.bmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToDeck() end
+	if chk==0 then return c:IsAbleToDeck() and c:IsFaceup() end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,tp,LOCATION_DECK+LOCATION_REMOVED)
 end
 function c43990122.bmop(e,tp,eg,ep,ev,re,r,rp)

@@ -30,6 +30,23 @@ function cm.initial_effect(c)
 	e3:SetTarget(c43990121.tatg)
 	e3:SetOperation(c43990121.taop)
 	c:RegisterEffect(e3)
+	if not c43990121.global_check then
+		c43990121.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_MOVE)
+		ge1:SetOperation(c43990121.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function c43990121.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=eg:GetFirst()
+	while tc do
+		if tc:IsLocation(LOCATION_MZONE) and tc:IsPreviousLocation(LOCATION_REMOVED) and not tc:IsReason(REASON_SPSUMMON) then
+			tc:RegisterFlagEffect(43990121,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		end
+		tc=eg:GetNext()
+	end
 end
 function c43990121.hffilter(c)
 	return c:IsFaceup() and c:IsCode(43990120)
@@ -45,7 +62,7 @@ function c43990121.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 function c43990121.brfilter(c)
-	return c:IsFaceup() and c:IsPreviousLocation(LOCATION_REMOVED) and not c:IsReason(REASON_SPSUMMON) and not c:IsReason(REASON_SUMMON) and c:IsSetCard(0x6510)
+	return c:IsFaceup() and c:GetFlagEffect(43990121)~=0 and c:IsSetCard(0x6510)
 end
 function c43990121.tdtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetMatchingGroupCount(c43990121.brfilter,tp,LOCATION_MZONE,0,nil)
@@ -71,7 +88,7 @@ function c43990121.tacon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c43990121.tatg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(c43990121.tdcfilter,tp,LOCATION_MZONE,0,1,nil) and c:IsAbleToDeck() end
+	if chk==0 then return Duel.IsExistingMatchingCard(c43990121.tdcfilter,tp,LOCATION_MZONE,0,1,nil) and c:IsFaceup() and c:IsAbleToDeck() end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,c,1,tp,LOCATION_DECK+LOCATION_REMOVED)
 end
 function c43990121.taop(e,tp,eg,ep,ev,re,r,rp)
