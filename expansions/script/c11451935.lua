@@ -120,21 +120,27 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	else
 		cm[c]=1
 	end
-	if Duel.GetCurrentChain()==1 then
-		local sg=Duel.GetMatchingGroup(Card.IsStatus,0,LOCATION_SZONE,LOCATION_SZONE,nil,STATUS_LEAVE_CONFIRMED)
-		sg:KeepAlive()
-		for tc in aux.Next(sg) do
-			tc:SetStatus(STATUS_LEAVE_CONFIRMED,false)
-			tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+	if Duel.GetCurrentPhase()~=PHASE_DAMAGE then
+		if Duel.GetCurrentChain()==1 then
+			local sg=Duel.GetMatchingGroup(Card.IsStatus,0,LOCATION_SZONE,LOCATION_SZONE,nil,STATUS_LEAVE_CONFIRMED)
+			sg:KeepAlive()
+			for tc in aux.Next(sg) do
+				tc:SetStatus(STATUS_LEAVE_CONFIRMED,false)
+				tc:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
+			end
+			local tde=Effect.CreateEffect(c)
+			tde:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			tde:SetCode(EVENT_CHAIN_END)
+			tde:SetLabelObject(sg)
+			tde:SetOperation(cm.tdop)
+			Duel.RegisterEffect(tde,tp)
 		end
-		local tde=Effect.CreateEffect(c)
-		tde:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		tde:SetCode(EVENT_CHAIN_END)
-		tde:SetLabelObject(sg)
-		tde:SetOperation(cm.tdop)
-		Duel.RegisterEffect(tde,tp)
+		Duel.SpecialSummonRule(tp,c,0)
+	else
+		local te=cm.special_summon[c]
+		te:GetOperation()(te,tp,eg,ep,ev,re,r,rp,c)
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 	end
-	Duel.SpecialSummonRule(tp,c,0)
 end
 function cm.tdop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=e:GetLabelObject():Filter(function(c) return c:GetFlagEffect(m)>0 end,nil)
