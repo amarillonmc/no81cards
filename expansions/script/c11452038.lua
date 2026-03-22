@@ -2,6 +2,12 @@
 local cm,m=GetID()
 function cm.initial_effect(c)
 	--check
+	local e00=Effect.CreateEffect(c)
+	e00:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e00:SetCode(EVENT_REMOVE)
+	e00:SetCondition(aux.ThisCardInGraveAlreadyCheckReg)
+	c:RegisterEffect(e00)
+	--check
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
@@ -16,23 +22,32 @@ function cm.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_CHAINING)
-	e2:SetRange(LOCATION_SZONE)
+	e2:SetRange(LOCATION_SZONE+LOCATION_REMOVED)
 	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetOperation(cm.regop)
 	c:RegisterEffect(e2)
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EVENT_CHAIN_SOLVED)
-	e3:SetRange(LOCATION_SZONE)
+	e3:SetDescription(aux.Stringid(m,2))
+	e3:SetCategory(CATEGORY_REMOVE)
+	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e3:SetCode(EVENT_CHAINING)
+	e3:SetRange(LOCATION_SZONE+LOCATION_REMOVED)
+	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCondition(cm.damcon)
+	e3:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk) local c=e:GetHandler() if chk==0 then return c:GetFlagEffect(m)==0 end if c:IsLocation(LOCATION_REMOVED) then c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) end end)
 	e3:SetOperation(cm.damop)
 	c:RegisterEffect(e3)
 	--spsummon
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetDescription(aux.Stringid(m,2))
+	e4:SetCategory(CATEGORY_REMOVE)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e4:SetRange(LOCATION_SZONE)
+	e4:SetRange(LOCATION_SZONE+LOCATION_REMOVED)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
+	e4:SetLabelObject(e00)
+	e4:SetCondition(cm.spcon)
+	e4:SetTarget(function(e,tp,eg,ep,ev,re,r,rp,chk) local c=e:GetHandler() if chk==0 then return c:GetFlagEffect(m)==0 end if c:IsLocation(LOCATION_REMOVED) then c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1) end end)
 	e4:SetOperation(cm.spop)
 	c:RegisterEffect(e4)
 end
@@ -41,11 +56,19 @@ function cm.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterFlagEffect(0,11451760,RESET_CHAIN,0,1)
 end
 function cm.regop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
+	--e:GetHandler():RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_CHAIN,0,1)
 end
 function cm.damcon(e,tp,eg,ep,ev,re,r,rp)
 	local rc=re:GetHandler()
-	return rc:IsSetCard(0x9977) and re:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetHandler():GetFlagEffect(m)>0
+	return rc:IsSetCard(0x9977) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
+end
+function cm.spfilter1(c,se)
+	if not (se==nil or c:GetReasonEffect()~=se) then return false end
+	return c:IsFaceup() and c:IsSetCard(0x9977)
+end
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local se=e:GetLabelObject():GetLabelObject()
+	return eg:IsExists(cm.spfilter1,1,nil,se)
 end
 function cm.filter(c)
 	return c:IsSetCard(0x9977) and (c:IsAbleToRemove() or c:IsAbleToExtra())
@@ -73,8 +96,8 @@ function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
-	local eeg=eg:Filter(cm.spfilter,nil)
-	if #eeg==0 then return end
+	--local eeg=eg:Filter(cm.spfilter,nil)
+	--if #eeg==0 then return end
 	local eeg1=eg:Filter(cm.filter1,nil)
 	local eeg2=Group.CreateGroup() --eg:Filter(Card.IsType,nil,TYPE_TRAP)
 	local eeg3=eg-eeg1-eeg2

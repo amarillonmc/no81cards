@@ -1,70 +1,90 @@
---终烬超验
 local s,id=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,function(c) return c:IsSetCard(0x5f51) end,12,2)
-
+	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x5f51),13,2,nil,nil,99)
+	
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e0:SetRange(LOCATION_MZONE)
+	e0:SetCountLimit(1)
+	e0:SetCondition(s.mtcon)
+	e0:SetOperation(s.mtop)
+	c:RegisterEffect(e0)
+	
 	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_SINGLE)
-	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e1:SetValue(s.splimit)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCountLimit(1,id)
+	e1:SetTarget(s.destg)
+	e1:SetOperation(s.desop)
 	c:RegisterEffect(e1)
-
+	
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,0))
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,id)
-	e2:SetTarget(s.ovtg)
-	e2:SetOperation(s.ovop)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_DESTROYED)
+	e2:SetCountLimit(1,id+1)
+	e2:SetOperation(s.regop)
 	c:RegisterEffect(e2)
-
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e3:SetCode(EFFECT_DESTROY_REPLACE)
-	e3:SetRange(LOCATION_MZONE)
-	e3:SetTarget(s.reptg)
-	e3:SetValue(s.repval)
-	e3:SetOperation(s.repop)
-	c:RegisterEffect(e3)
 end
 
-function s.splimit(e,se,sp,st)
-	return se and se:GetHandler():IsSetCard(0x5f51) and se:GetHandler():IsType(TYPE_SPELL+TYPE_TRAP)
+function s.mtcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnPlayer()==tp
 end
 
-function s.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler()) end
-end
-function s.ovop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsRelateToEffect(e) then return end	
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
-	local tc=g:GetFirst()	
-	if tc then
-		Duel.HintSelection(g)
-		local og=tc:GetOverlayGroup()
-		if #og>0 then Duel.SendtoGrave(og,REASON_RULE) end
-		Duel.Overlay(c,tc)
+function s.mtop(e,tp,eg,ep,ev,re,r,rp)
+	if e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) then
+		e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+	else
+		Duel.Destroy(e:GetHandler(),REASON_RULE)
 	end
 end
-function s.repfilter(c,tp)
-	return c:IsControler(tp) and c:IsLocation(LOCATION_ONFIELD) 
-		and c:IsReason(REASON_EFFECT+REASON_BATTLE) and not c:IsReason(REASON_REPLACE)
+
+function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSetCard,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,0x5f51) end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,PLAYER_ALL,LOCATION_HAND+LOCATION_ONFIELD)
 end
-function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local c=e:GetHandler()
-	if chk==0 then return eg:IsExists(s.repfilter,1,nil,tp)
-		and c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT) end
-	return Duel.SelectEffectYesNo(tp,c,96)
+function s.desop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectMatchingCard(tp,Card.IsSetCard,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,99,nil,0x5f51)
+	if #g>0 then
+		for tc in aux.Next(g) do
+			if tc:IsFacedown() or tc:IsLocation(LOCATION_HAND) then Duel.ConfirmCards(1-tp,tc) end
+		end
+		local ct=Duel.Destroy(g,REASON_EFFECT)
+		if ct>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+			local sg=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,0,ct,nil)
+			if #sg>0 then
+				Duel.BreakEffect()
+				Duel.Destroy(sg,REASON_EFFECT)
+			end
+		end
+	end
 end
-function s.repval(e,c)
-	return s.repfilter(c,e:GetHandlerPlayer())
+function s.regop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_DESTROYED)
+	e1:SetOperation(s.delayed_th)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
-function s.repop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_EFFECT)
+function s.delayed_th(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,id)
+	e:Reset()
+	local g=Duel.GetMatchingGroup(function(c)
+		local hg=Duel.GetMatchingGroup(function(cc) return cc:IsReason(REASON_DESTROY) and cc:GetTurnID()==Duel.GetTurnCount() end,tp,LOCATION_GRAVE+LOCATION_REMOVED,LOCATION_GRAVE+LOCATION_REMOVED,nil)
+		return c:IsAbleToHand() and hg:IsExists(Card.IsCode,1,nil,c:GetCode())
+	end,tp,LOCATION_GRAVE,0,nil)
+	if #g>0 then
+		local sg=g:Select(tp,1,1,nil)
+		Duel.SendtoHand(sg,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,sg)
+	end
 end

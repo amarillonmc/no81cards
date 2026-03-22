@@ -10,7 +10,6 @@ function c9910668.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetCountLimit(1,9910668)
-	e1:SetCondition(c9910668.discon)
 	e1:SetTarget(c9910668.distg)
 	e1:SetOperation(c9910668.disop)
 	c:RegisterEffect(e1)
@@ -24,9 +23,6 @@ function c9910668.initial_effect(c)
 	e2:SetCondition(c9910668.dscon)
 	e2:SetTarget(aux.TargetBoolFunction(Card.IsLocation,LOCATION_DECK))
 	c:RegisterEffect(e2)
-end
-function c9910668.discon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsSummonType(SUMMON_TYPE_XYZ)
 end
 function c9910668.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_ONFIELD,1,nil) end
@@ -79,7 +75,7 @@ function c9910668.damop(e,tp,eg,ep,ev,re,r,rp)
 		return
 	end
 	Duel.Hint(HINT_CARD,0,9910668)
-	Duel.Damage(1-tp,600,REASON_EFFECT)
+	Duel.Damage(1-tp,800,REASON_EFFECT)
 	tc:ResetFlagEffect(9910668)
 	e:Reset()
 end

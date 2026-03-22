@@ -28,6 +28,7 @@ function c28316149.initial_effect(c)
 	e2:SetOperation(c28316149.thop)
 	e2:SetLabel(2)
 	c:RegisterEffect(e2)
+	c28316149.field_effect=e2
 end
 function c28316149.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp or (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)

@@ -1,70 +1,60 @@
---终烬降临
 local s,id=GetID()
 function s.initial_effect(c)
-
+	aux.AddCodeList(c,17390000)
+	
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,id)
 	e1:SetTarget(s.target)
-	e1:SetOperation(s.activate)
+	e1:SetOperation(s.operation)
 	c:RegisterEffect(e1)
 	
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_DESTROYED)
 	e2:SetCountLimit(1,id+1)
-	e2:SetTarget(s.thtg)
-	e2:SetOperation(s.thop)
+	e2:SetOperation(s.regop)
 	c:RegisterEffect(e2)
-	
-end
-
-local LOC_ALL_BUT_DECK = LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED
-function s.confilter(c)
-	return c:IsSetCard(0x5f51)
 end
 
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		local g=Duel.GetMatchingGroup(s.confilter,tp,LOC_ALL_BUT_DECK,0,e:GetHandler())
-		return g:GetClassCount(Card.GetCode)>=18
-	end
+	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,0x5f51)
+	if chk==0 then return g:GetClassCount(Card.GetCode)>=18 end
 end
 
-function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(s.confilter,tp,LOC_ALL_BUT_DECK,0,c)	
+function s.operation(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,0x5f51)
 	if g:GetClassCount(Card.GetCode)<18 then return end
-	local confirm_g=Group.CreateGroup()
-	local tmp_g=g:Clone()	
-	for i=1,18 do
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local sg=tmp_g:Select(tp,1,1,nil)
-		local tc=sg:GetFirst()
-		confirm_g:AddCard(tc)
-		tmp_g:Remove(Card.IsCode,nil,tc:GetCode())
-	end
-	Duel.ConfirmCards(tp,confirm_g)
-	Duel.ConfirmCards(1-tp,confirm_g)
-	local check=Duel.IsExistingMatchingCard(function(c) 
-		return c:IsCode(17390000) and c:IsFaceup() and c:GetOverlayCount()==0 
-	end,tp,LOCATION_MZONE,0,1,nil)
-	Duel.SetLP(1-tp,Duel.GetLP(1-tp)-10000)
-	if not check then
-		Duel.SetLP(tp,Duel.GetLP(tp)-10000)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local sg=g:SelectSubGroup(tp,aux.dncheck,false,18,18)
+	if sg then
+		Duel.ConfirmCards(1-tp,sg)
+		Duel.BreakEffect()
+		local chk=Duel.IsExistingMatchingCard(function(c) return c:IsCode(17390000) and c:IsFaceup() and c:GetOverlayCount()==0 end,tp,LOCATION_MZONE,0,1,nil)
+		if chk then
+			Duel.SetLP(1-tp,Duel.GetLP(1-tp)-10000)
+		else
+			Duel.SetLP(tp,Duel.GetLP(tp)-10000)
+			Duel.SetLP(1-tp,Duel.GetLP(1-tp)-10000)
+		end
 	end
 end
-
-function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToHand() end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,e:GetHandler(),1,0,0)
+function s.regop(e,tp,eg,ep,ev,re,r,rp)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_DESTROYED)
+	e1:SetOperation(s.delayed_th)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
 end
-
-function s.thop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
-		Duel.SendtoHand(c,nil,REASON_EFFECT)
+function s.delayed_th(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,id)
+	e:Reset()
+	local tc=Duel.GetFirstMatchingCard(function(c) return c:IsCode(id) and c:IsAbleToHand() end,tp,LOCATION_GRAVE,0,nil)
+	if tc then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
 	end
 end

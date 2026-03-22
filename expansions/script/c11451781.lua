@@ -29,8 +29,9 @@ function cm.initial_effect(c)
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e4:SetCode(EVENT_BATTLE_DESTROYED)
+	e4:SetCode(EVENT_DESTROYED)
 	e4:SetRange(LOCATION_SZONE)
+	e4:SetProperty(EFFECT_FLAG_DAMAGE_STEP)
 	e4:SetCountLimit(1)
 	e4:SetCondition(cm.condition2)
 	e4:SetTarget(cm.target)
@@ -361,7 +362,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE) and Duel.GetCurrentChain()==0 and e:GetHandler():GetFlagEffect(11451779)>0
 end
 function cm.filter4(c,tp)
-	return c:GetPreviousControler()==tp
+	return c:GetPreviousControler()==tp and c:IsReason(REASON_BATTLE+REASON_EFFECT)
 end
 function cm.condition2(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.filter4,1,nil,tp)

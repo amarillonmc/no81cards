@@ -38,8 +38,8 @@ function c28366277.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c28366277.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLP(tp)<=3000 or Duel.CheckLPCost(tp,2000) end
-	if Duel.GetLP(tp)>3000 then Duel.PayLPCost(tp,2000) end
+	if chk==0 then return true end
+	Duel.PayLPCost(tp,math.floor(Duel.GetLP(tp)/2))
 end
 function c28366277.thfilter(c)
 	return c:IsSetCard(0x285) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()

@@ -44,7 +44,7 @@ function c28355662.spfilter(c,e,tp)
 	return c:IsSetCard(0x285) and c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK) and (Duel.GetMZoneCount(1-tp,nil,tp,LOCATION_REASON_CONTROL)>0 or Duel.GetFieldCard(tp,LOCATION_MZONE,2) or c:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK,0x4))--c:IsAbleToChangeControler() and 
 end
 function c28355662.target(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c28355662.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end-- and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
+	if chk==0 then return Duel.IsExistingMatchingCard(c28355662.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetMZoneCount(tp)>0 end-- and Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil)
 	--local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_MZONE,0,nil)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 	--Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)

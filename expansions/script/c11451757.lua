@@ -65,7 +65,7 @@ if not Duel.GetMustMaterial then
 	end
 end
 function cm.mfilter(c,xyzc)
-	return c:IsXyzType(TYPE_MONSTER) and c:IsXyzLevel(xyzc,9)
+	return c:IsXyzType(TYPE_MONSTER) and c:IsXyzLevel(xyzc,7)
 end
 function cm.xyzcheck(g)
 	return g:GetClassCount(Card.GetRace)==#g

@@ -65,7 +65,7 @@ if not Duel.GetMustMaterial then
 	end
 end
 function cm.mfilter(c,xyzc)
-	return c:IsXyzType(TYPE_MONSTER) and (c:IsRank(9) or (c:IsXyzLevel(xyzc,9) and xyzc:GetFlagEffect(m-17)>0))
+	return c:IsXyzType(TYPE_MONSTER) and (c:IsRank(7) or (c:IsXyzLevel(xyzc,7) and xyzc:GetFlagEffect(m-17)>0))
 end
 function cm.spfilter2(c,e,tp,mc)
 	return c:IsRace(RACE_DRAGON) and c:IsType(TYPE_XYZ) and c:IsRank(9) and mc:IsCanBeXyzMaterial(c) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_XYZ,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0

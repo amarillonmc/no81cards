@@ -54,7 +54,7 @@ function c28368431.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	--e1:SetCondition(c28368431.regcon)
 	e1:SetOperation(c28368431.regop)
-	e1:SetReset(RESET_PHASE+PHASE_END)
+	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e1,tp)
 end
 function c28368431.chkfilter(c,p)
@@ -85,7 +85,7 @@ function c28368431.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c28368431.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=eg:Filter(c28368431.cfilter,nil)
-	if chk==0 then return g:IsExists(Card.IsCanBeSpecialSummoned,1,nil,e,0,tp,false,false) end
+	if chk==0 then return g:IsExists(Card.IsCanBeSpecialSummoned,1,nil,e,0,tp,false,false,0x5,tp) end
 	Duel.SetTargetCard(g)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,tp,nil)
 end

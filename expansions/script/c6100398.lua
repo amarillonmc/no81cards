@@ -150,7 +150,7 @@ end
 
 -- === 效果③：代破 ===
 function s.repfilter(c,tp)
-	return c:IsFaceup() and c:IsLocation(LOCATION_ONFIELD) 
+	return c:IsLocation(LOCATION_ONFIELD) 
 		and c:IsReason(REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 
@@ -165,11 +165,11 @@ end
 function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	-- 检查是否有“场上的卡”要被效果破坏
 	if chk==0 then return eg:IsExists(s.repfilter,1,nil,tp)
-		and Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_ONFIELD,0,1,nil,e,tp,eg) end
+		and Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,nil,e,tp,eg) end
 	
 	if Duel.SelectEffectYesNo(tp,e:GetHandler(),96) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESREPLACE)
-		local g=Duel.SelectMatchingCard(tp,s.desfilter,tp,LOCATION_ONFIELD,0,1,1,e:GetHandler(),e,tp,eg)
+		local g=Duel.SelectMatchingCard(tp,s.desfilter,tp,LOCATION_ONFIELD+LOCATION_HAND,0,1,1,e:GetHandler(),e,tp,eg)
 		Duel.Hint(HINT_CARD,0,id)
 		Duel.HintSelection(g)
 		e:SetLabelObject(g:GetFirst())

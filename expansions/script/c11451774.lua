@@ -7,6 +7,7 @@ function cm.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
+	e1:SetHintTiming(TIMING_DRAW_PHASE)
 	e1:SetCondition(cm.spcon)
 	e1:SetTarget(cm.sptg)
 	e1:SetOperation(cm.spop)
@@ -139,7 +140,7 @@ function cm.clear2(e,tp,eg,ep,ev,re,r,rp)
 	BATTLE_CARD_CHECK={}
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE --and Duel.GetFlagEffect(0,11451771)>0
+	return Duel.GetCurrentPhase()~=PHASE_MAIN1 and Duel.GetCurrentPhase()~=PHASE_MAIN2 or Duel.GetTurnPlayer()~=tp
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsStatus(STATUS_CHAINING) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK) end
@@ -159,15 +160,31 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		i=i+1
 	end
 	if st then
-		--destroy sub
-		local e4=Effect.CreateEffect(c)
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e1:SetCode(EVENT_BATTLE_CONFIRM)
+		e1:SetCountLimit(1)
+		e1:SetOperation(cm.comop)
+		Duel.RegisterEffect(e1,tp)
+		--[[local e4=Effect.CreateEffect(c)
 		e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e4:SetCode(EFFECT_DESTROY_REPLACE)
 		e4:SetTarget(cm.desreptg)
 		e4:SetValue(cm.desrepval)
 		e4:SetOperation(cm.desrepop)
-		Duel.RegisterEffect(e4,tp)
+		Duel.RegisterEffect(e4,tp)--]]
 	end
+end
+function cm.comop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_CARD,0,m)
+	local at=Duel.GetAttacker()
+	if not at then return false end
+	local g=Group.FromCards(at)
+	local tt=Duel.GetAttackTarget()
+	if tt then g:AddCard(tt) end
+	local tg=g:Filter(Card.IsAbleToHand,nil)
+	Duel.SendtoHand(tg,nil,REASON_RULE+REASON_REPLACE)
+	e:Reset()
 end
 function cm.nimfilter(c,e)
 	return not c:IsImmuneToEffect(e)
@@ -182,7 +199,7 @@ function cm.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		local tt=Duel.GetAttackTarget()
 		if tt then g:AddCard(tt) end
 		local tg=g:Filter(Card.IsAbleToHand,nil)
-		return #tg>0 and tg:IsExists(cm.nimfilter,1,nil,e)
+		return #tg>0 --and tg:IsExists(cm.nimfilter,1,nil,e)
 	end
 	return true
 end

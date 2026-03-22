@@ -70,7 +70,7 @@ function c28382113.descon(e,tp,eg,ep,ev,re,r,rp)
 end
 function c28382113.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=e:GetHandler():GetFlagEffectLabel(28382113)
-	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,0,nil)
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,0,e:GetHandler())
 	if chk==0 then return ct and ct>0 and #g>0 end
 	local phchk=(Duel.GetCurrentPhase()==PHASE_MAIN1 or Duel.GetCurrentPhase()==PHASE_MAIN2) and 1 or 0
 	e:GetHandler():RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(28382113,1))
@@ -82,7 +82,7 @@ function c28382113.gcheck(sg,tp)
 end
 function c28382113.desop(e,tp,eg,ep,ev,re,r,rp)
 	local ct,phchk=e:GetLabel()
-	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_MZONE,LOCATION_MZONE,aux.ExceptThisCard(e))
 	if ct>0 and g:IsExists(Card.IsControler,1,nil,tp) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local dg=g:SelectSubGroup(tp,c28382113.gcheck,false,1,ct,tp)
