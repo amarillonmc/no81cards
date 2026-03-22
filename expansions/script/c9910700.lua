@@ -114,3 +114,105 @@ function QutryYgzw.TgOperation()
 				end
 			end
 end
+function QutryYgzw.AddLinkProcedure(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(1166)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SPSUMMON_PROC)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetCondition(QutryYgzw.LinkCondition(aux.FilterBoolFunction(Card.IsLinkSetCard,0xc950),2,99))
+	e1:SetTarget(QutryYgzw.LinkTarget(aux.FilterBoolFunction(Card.IsLinkSetCard,0xc950),2,99))
+	e1:SetOperation(QutryYgzw.LinkOperation(aux.FilterBoolFunction(Card.IsLinkSetCard,0xc950),2,99))
+	e1:SetValue(SUMMON_TYPE_LINK)
+	c:RegisterEffect(e1)
+end
+function QutryYgzw.LConditionFilter(c,f,lc)
+	return (((c:IsFaceup() or not c:IsOnField()) and c:IsCanBeLinkMaterial(lc))) and (not f or f(c))
+end
+function QutryYgzw.GetLinkMaterials(tp,f,lc)
+	local mg=Duel.GetMatchingGroup(QutryYgzw.LConditionFilter,tp,LOCATION_MZONE+LOCATION_DECK,0,nil,f,lc)
+	local mg2=Duel.GetMatchingGroup(aux.LExtraFilter,tp,LOCATION_HAND+LOCATION_SZONE,LOCATION_ONFIELD,nil,f,lc,tp)
+	if mg2:GetCount()>0 then mg:Merge(mg2) end
+	return mg
+end
+function QutryYgzw.LCheckGoal(sg,tp,lc,gf,lmat)
+	local ct=1
+	if Duel.IsPlayerAffectedByEffect(tp,9911762) then ct=2 end
+	return sg:CheckWithSumEqual(Auxiliary.GetLinkCount,lc:GetLink(),#sg,#sg) and Duel.GetLocationCountFromEx(tp,tp,sg,lc)>0 and (not gf or gf(sg)) and not sg:IsExists(Auxiliary.LUncompatibilityFilter,1,nil,sg,lc,tp) and (not lmat or sg:IsContains(lmat)) and not sg:IsExists(Card.IsLocation,ct,nil,LOCATION_DECK)
+end
+function QutryYgzw.LinkCondition(f,minc,maxc,gf)
+	return  function(e,c,og,lmat,min,max)
+				if c==nil then return true end
+				if c:IsType(TYPE_PENDULUM) and c:IsFaceup() then return false end
+				local minc=minc
+				local maxc=maxc
+				if min then
+					if min>minc then minc=min end
+					if max<maxc then maxc=max end
+					if minc>maxc then return false end
+				end
+				local tp=c:GetControler()
+				local mg=nil
+				if og then
+					mg=og:Filter(QutryYgzw.LConditionFilter,nil,f,c)
+				else
+					mg=QutryYgzw.GetLinkMaterials(tp,f,c)
+				end
+				if lmat~=nil then
+					if not QutryYgzw.LConditionFilter(lmat,f,c) then return false end
+					mg:AddCard(lmat)
+				end
+				local fg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
+				if fg:IsExists(aux.MustMaterialCounterFilter,1,nil,mg) then return false end
+				Duel.SetSelectedCard(fg)
+				local limit=99
+				if c:IsLink(2) then limit=2 end
+				return mg:CheckSubGroup(QutryYgzw.LCheckGoal,2,limit,tp,c,gf,lmat)
+			end
+end
+function QutryYgzw.LinkTarget(f,minc,maxc,gf)
+	return  function(e,tp,eg,ep,ev,re,r,rp,chk,c,og,lmat,min,max)
+				local minc=minc
+				local maxc=maxc
+				if min then
+					if min>minc then minc=min end
+					if max<maxc then maxc=max end
+					if minc>maxc then return false end
+				end
+				local mg=nil
+				if og then
+					mg=og:Filter(QutryYgzw.LConditionFilter,nil,f,c)
+				else
+					mg=QutryYgzw.GetLinkMaterials(tp,f,c)
+				end
+				if lmat~=nil then
+					if not QutryYgzw.LConditionFilter(lmat,f,c) then return false end
+					mg:AddCard(lmat)
+				end
+				local fg=aux.GetMustMaterialGroup(tp,EFFECT_MUST_BE_LMATERIAL)
+				Duel.SetSelectedCard(fg)
+				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_LMATERIAL)
+				local cancel=Duel.IsSummonCancelable()
+				local limit=99
+				if c:IsLink(2) then limit=2 end
+				local sg=mg:SelectSubGroup(tp,QutryYgzw.LCheckGoal,cancel,2,limit,tp,c,gf,lmat)
+				if sg then
+					sg:KeepAlive()
+					e:SetLabelObject(sg)
+					return true
+				else return false end
+			end
+end
+function QutryYgzw.LinkOperation(f,minc,maxc,gf)
+	return  function(e,tp,eg,ep,ev,re,r,rp,c,og,lmat,min,max)
+				local g=e:GetLabelObject()
+				c:SetMaterial(g)
+				aux.LExtraMaterialCount(g,c,tp)
+				g1=g:Filter(Card.IsLocation,nil,LOCATION_DECK)
+				g:Sub(g1)
+				Duel.SendtoGrave(g1,REASON_MATERIAL+REASON_LINK)
+				Duel.SendtoGrave(g,REASON_MATERIAL+REASON_LINK)
+				g:DeleteGroup()
+			end
+end

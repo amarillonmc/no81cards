@@ -2,7 +2,7 @@
 Duel.LoadScript("c9910700.lua")
 function c9910740.initial_effect(c)
 	--link summon
-	aux.AddLinkProcedure(c,aux.FilterBoolFunction(Card.IsLinkSetCard,0xc950),2)
+	QutryYgzw.AddLinkProcedure(c)
 	c:EnableReviveLimit()
 	--flag
 	QutryYgzw.AddTgFlag(c)
