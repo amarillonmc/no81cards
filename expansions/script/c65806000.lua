@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_DUEL)
+	--e1:SetCountLimit(1,id+EFFECT_COUNT_CODE_DUEL)
 	e1:SetOperation(s.drop)
 	c:RegisterEffect(e1)
 	--immune
@@ -41,9 +41,11 @@ end
 
 
 function s.drop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(tp,id)~=0 then return end
+	Duel.RegisterFlagEffect(tp,id,0,0,0)
 	Duel.Hint(HINT_CARD,0,id)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_HAND,0,nil)
 	local count=0
+	--local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_HAND,0,nil)
 	--[[if g then
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_TODECK)
 		local sg=g:Select(tp,0,math.min(g:GetCount(),8),nil)
