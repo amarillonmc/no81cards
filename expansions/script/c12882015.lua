@@ -81,29 +81,32 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetDescription(aux.Stringid(id,1))
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		ge1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 		ge1:SetCode(EVENT_PHASE+PHASE_END)
-		if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_END then
-			ge1:SetReset(EVENT_PHASE+PHASE_END+RESET_SELF_TURN,2)
-			ge1:SetValue(Duel.GetTurnCount())
-			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+EVENT_PHASE+PHASE_END+RESET_SELF_TURN,0,2)
-		else
-			ge1:SetReset(EVENT_PHASE+PHASE_END+RESET_SELF_TURN)
-			ge1:SetValue(0)
-			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+EVENT_PHASE+PHASE_END+RESET_SELF_TURN,0,1)
-		end
 		ge1:SetCountLimit(1)
+		ge1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+		ge1:SetLabel(Duel.GetTurnCount())
+		ge1:SetLabelObject(tc)
+		if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_END then
+			ge1:SetLabel(Duel.GetTurnCount(),fid)
+			ge1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN,2)
+			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_SELF_TURN,0,2,fid)
+		else
+			ge1:SetLabel(0,fid)
+			ge1:SetReset(RESET_PHASE+PHASE_END+RESET_SELF_TURN)
+			tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END+RESET_SELF_TURN,0,1,fid)
+		end
 		ge1:SetCondition(s.descon)
 		ge1:SetOperation(s.desop)
 		Duel.RegisterEffect(ge1,tp)
 	end
 end
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetTurnPlayer()~=tp or Duel.GetTurnCount()==e:GetValue() then return false end
-	return Duel.IsExistingMatchingCard(function(c) return c:GetFlagEffect(id)>0 end,tp,LOCATION_SZONE,0,1,nil)
+	local tc=e:GetLabelObject()
+	local turn,fid=e:GetLabel()
+	return Duel.GetTurnPlayer()==tp and Duel.GetTurnCount()~=turn and tc:GetFlagEffectLabel(id)==fid
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(function(c) return c:GetFlagEffect(id)>0 end,tp,LOCATION_SZONE,0,nil)
-	Duel.Destroy(g,REASON_EFFECT)
-	e:Reset()
+	Duel.Hint(HINT_CARD,0,id)
+	local tc=e:GetLabelObject()
+	Duel.Destroy(tc,REASON_EFFECT)
 end
