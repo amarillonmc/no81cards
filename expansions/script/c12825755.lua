@@ -64,10 +64,11 @@ function s.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if not aux.NecroValleyFilter()(c) then return end
-	if not tc or not tc:IsRelateToEffect(e) or not c:IsRelateToEffect(e) then return end
-	if not Duel.Overlay(tc,Group.FromCards(c)) then return end
-	if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then 
-		Duel.BreakEffect()
-		Duel.Draw(tp,1,REASON_EFFECT)
+	if tc and tc:IsRelateToEffect(e) and c:IsRelateToEffect(e) then
+		Duel.Overlay(tc,Group.FromCards(c))
+		if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then 
+			Duel.BreakEffect()
+			Duel.Draw(tp,1,REASON_EFFECT)
+		end
 	end
 end
