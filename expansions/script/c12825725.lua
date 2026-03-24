@@ -63,9 +63,11 @@ function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND)
 end
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
-	if #g>0 then
-		Duel.Destroy(g,REASON_EFFECT)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
+	local sg=g:RandomSelect(tp,1)
+	if #sg>0 then
+		Duel.HintSelection(sg)
+		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	end
 end
 function s.thfilter(c,e,tp)
