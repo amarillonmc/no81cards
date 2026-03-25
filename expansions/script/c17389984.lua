@@ -99,13 +99,13 @@ function s.delayed_sp_op(e,tp,eg,ep,ev,re,r,rp)
 		end
 		Duel.SpecialSummonComplete()
 	end
-endfunction s.delayed_sp_con(e,tp,eg,ep,ev,re,r,rp)
+end
+function s.delayed_sp_con(e,tp,eg,ep,ev,re,r,rp)
 	if not eg or #eg==0 then return false end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.spfilter),tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,e,tp)
 	return ft>0 and #g>0
 end
-
 function s.delayed_sp_op(e,tp,eg,ep,ev,re,r,rp)
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if Duel.IsPlayerAffectedByEffect(tp,CARD_BLUEEYES_SPIRIT) then ft=1 end   
