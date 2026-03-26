@@ -21,13 +21,13 @@ local e2=Effect.CreateEffect(c)
 	e2:SetOperation(s.drop)
 	c:RegisterEffect(e2)
 end
-function s.tgfil1(c,e,tp) 
-	return c:IsFaceup() and c:IsLevelAbove(5) and c:IsType(TYPE_SYNCHRO)
+function s.tgfil1(c,e,tp,mg) 
+	return c:IsFaceup() and c:IsLevelAbove(5) and c:IsType(TYPE_SYNCHRO) and (not mg or mg:IsContains(c))
 end
-function s.hspcon(e,c)
+function s.hspcon(e,c,smat,mg1)
 	if c==nil then return true end
-	local tp=c:GetControler() 
-	return Duel.IsExistingMatchingCard(s.tgfil1,tp,LOCATION_MZONE,0,1,nil,e,tp)
+	local tp=c:GetControler()
+	return Duel.IsExistingMatchingCard(s.tgfil1,tp,LOCATION_MZONE,0,1,nil,e,tp,mg1)
 end
 function s.hspop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sc=Duel.SelectMatchingCard(tp,s.tgfil1,tp,LOCATION_MZONE,0,1,1,nil,e,tp):GetFirst()

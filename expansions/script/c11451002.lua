@@ -92,10 +92,10 @@ function cm.rffilter(c)
 end
 function cm.reop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
 	if #g==0 then return end
 	Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_REMOVE)
-	local tc=g:Select(1-tp,1,1,nil):GetFirst()
+	local tc=g:Select(tp,1,1,nil):GetFirst()
 	local b1=tc:IsFaceup() and not tc:IsStatus(STATUS_EFFECT_ENABLED)
 	if Duel.Remove(tc,nil,REASON_EFFECT+REASON_TEMPORARY)>0 then
 		local fid=c:GetFieldID()
@@ -144,7 +144,7 @@ function cm.returntofield(tc)
 				Duel.SendtoGrave(gc,REASON_RULE)
 				Duel.BreakEffect()
 			end
-			Duel.MoveToField(tc,p,p,LOCATION_FZONE,POS_FACEUP,true)
+			Duel.MoveToField(tc,p,p,LOCATION_FZONE,tc:GetPreviousPosition(),true)
 			return
 		end
 		Duel.ReturnToField(tc)
