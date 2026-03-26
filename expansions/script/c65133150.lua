@@ -1,6 +1,4 @@
 --幻叙的大总理 将军
-CATEGORY_MSET=0x100000000	--包含盖放怪兽效果
-CATEGORY_SSET=0x200000000	--包含盖放魔陷效果
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,65133150)
@@ -61,6 +59,7 @@ function s.initial_effect(c)
 	e7:SetCategory(CATEGORY_SSET)
 	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e7:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e7:SetProperty(EFFECT_FLAG_DELAY)
 	e7:SetTarget(s.settg)
 	e7:SetOperation(s.setop)
 	c:RegisterEffect(e7)

@@ -1,5 +1,4 @@
 --幻叙从者 荷妮特
---幻叙从者 荷妮特
 local s,id,o=GetID()
 function s.initial_effect(c)
 	--fusion material
@@ -8,7 +7,9 @@ function s.initial_effect(c)
 	--spsummon limit
 	c:SetSPSummonOnce(id)
 	--contact fusion
-	aux.AddContactFusionProcedure(c,s.cfilter,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,s.cop,s.creq)
+	local e0=aux.AddContactFusionProcedure(c,s.cfilter,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,s.cop)
+	local con=e0:GetCondition()
+	e0:SetCondition(s.scon(con))
 	--spsummon effect
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -50,8 +51,8 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
-function s.ffilter(c)
-	return c:IsSetCard(0x838)
+function s.ffilter(c,fc,sub,mg,sg)
+	return c:IsSetCard(0x838) and c:IsType(TYPE_MONSTER) and (not sg or not sg:IsExists(Card.IsFusionAttribute,1,c,c:GetFusionAttribute()))
 end
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	if re:IsHasType(EFFECT_TYPE_ACTIVATE) then
@@ -62,11 +63,13 @@ end
 function s.cfilter(c)
 	return c:IsSetCard(0x838) and c:IsAbleToDeckAsCost()
 end
-function s.creq(g,tp)
-	return Duel.GetFlagEffect(0,id)+Duel.GetFlagEffect(1,id)>=5 and g:GetClassCount(Card.GetAttribute)==#g
-end
 function s.cop(g,tp)
 	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST+REASON_MATERIAL)
+end
+function s.scon(con)
+	return function(e,tp,eg,ep,ev,re,r,rp)
+		return con(e,tp,eg,ep,ev,re,r,rp) and Duel.GetFlagEffect(0,id)+Duel.GetFlagEffect(1,id)>=5
+	end
 end
 function s.attg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
