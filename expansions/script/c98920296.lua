@@ -39,8 +39,7 @@ function c98920296.target(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c98920296.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
-	if tc and tc:IsRelateToEffect(e) and tc:IsFaceup() then 
-		 Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)	  
+	if tc and tc:IsRelateToEffect(e) and Duel.Remove(tc,POS_FACEDOWN,REASON_EFFECT)~=0 and tc:IsLocation(0x20) then
 		 local atk=tc:GetBaseAttack()   
 		 local mg=Duel.GetMatchingGroup(c98920296.sfilter,tp,LOCATION_MZONE,0,nil) 
 		 local tc1=mg:GetFirst()
