@@ -53,7 +53,17 @@ function s.cgtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.pscg(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	Duel.SkipPhase(Duel.GetTurnPlayer(),ph,RESET_PHASE+ph,1)
+    if ph==PHASE_MAIN1 then
+	    Duel.SkipPhase(Duel.GetTurnPlayer(),ph,RESET_PHASE+ph,1)
+        local e1=Effect.CreateEffect(e:GetHandler())
+	    e1:SetType(EFFECT_TYPE_FIELD)
+	    e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	    e1:SetCode(EFFECT_CANNOT_ACTIVATE)
+	    e1:SetTargetRange(1,1)
+	    e1:SetValue(aux.TRUE)
+	    e1:SetReset(RESET_PHASE+PHASE_MAIN1)
+	    Duel.RegisterEffect(e1,tp)
+    end
 end
 function s.discon(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()

@@ -61,12 +61,12 @@ end
 
 --E2 Condition: Opponent Special Summoned
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp) and Duel.GetCurrentChain()==0
+	return eg:IsExists(Card.IsSummonPlayer,1,nil,1-tp)
 end
 
 --E2 Target
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetCurrentChain()==0 end
 	local g=Duel.GetMatchingGroup(aux.TRUE,tp,0,LOCATION_MZONE,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,1-tp,LOCATION_HAND)
