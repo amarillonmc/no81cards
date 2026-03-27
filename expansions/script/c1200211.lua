@@ -206,7 +206,7 @@ function s.rtop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,id+2,RESET_PHASE+PHASE_END,0,1)
 end
 function s.sumfilter(c,e,tp)
-	return c:IsSummonable(true,nil) and c:IsType(TYPE_SPIRIT)
+	return c:IsLevelBelow(4) and c:IsSummonable(true,nil) and c:IsType(TYPE_SPIRIT)
 		and not c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
@@ -274,8 +274,8 @@ function s.qcon(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.sphandcon(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetFlagEffect(tp,supercode)<=0 or Duel.GetCurrentChain()<=0 then return false end
 	local tp=e:GetHandler():GetControler()
+	if Duel.GetFlagEffect(tp,supercode)<=0 or Duel.GetCurrentChain()<=0 then return false end
 	local p=Duel.GetChainInfo(0,CHAININFO_TRIGGERING_PLAYER)
 	return Duel.GetFlagEffect(tp,supercode)>0 and p~=tp
 end

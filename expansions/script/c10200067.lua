@@ -10,7 +10,7 @@ function c10200067.initial_effect(c)
 	c:RegisterEffect(e1)
 end
 function c10200067.cfilter(c,tp)
-	return c:IsRace(RACE_BEASTWARRIOR+RACE_WINGEDBEAST+RACE_FAIRY) and c:IsReleasable()
+	return c:IsRace(RACE_BEASTWARRIOR+RACE_WINDBEAST+RACE_FAIRY) and c:IsReleasable()
 		and Duel.IsExistingMatchingCard(c10200067.spfilter,tp,LOCATION_DECK,0,1,nil,c)
 end
 function c10200067.spfilter(c,mc)
