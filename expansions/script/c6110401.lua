@@ -1,123 +1,131 @@
 --剑装拓展模组 鸫
-local m=6110401
-local cm=_G["c"..m]
-
-function cm.initial_effect(c)
+local s,id=GetID()
+function s.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_MACHINE),4,2,nil,nil,99)
 	c:EnableReviveLimit()
-	--can not be xyz material
-	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e3:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
-	e3:SetCondition(cm.xyzcon)
-	e3:SetValue(1)
-	c:RegisterEffect(e3)
-	--overlay
+	--不可作为超量素材限制（超量召唤的回合）
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e0:SetValue(1)
+	e0:SetCondition(s.xyzlimit)
+	c:RegisterEffect(e0)
+
+	--①：特召成功，吸素材（手墓除外2张 -> 可选场上1张）
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,0))
-	e1:SetCategory(CATEGORY_TOGRAVE)
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY)  
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)  
-	e1:SetCountLimit(1,m)
-	e1:SetTarget(cm.ovtg)
-	e1:SetOperation(cm.ovop)
-	c:RegisterEffect(e1) 
-	--to grave
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCountLimit(1,id)
+	e1:SetTarget(s.mattg)
+	e1:SetOperation(s.matop)
+	c:RegisterEffect(e1)
+
+	--②：二速堆墓或除外
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(m,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_TOGRAVE+CATEGORY_REMOVE+CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_MAIN_END)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,m+1)
-	e2:SetCost(cm.thcost)
-	e2:SetTarget(cm.thtg)
-	e2:SetOperation(cm.thop)
-	c:RegisterEffect(e2) 
+	e2:SetCountLimit(1,id+1)
+	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e2:SetCost(s.tgcost)
+	e2:SetTarget(s.tgtg)
+	e2:SetOperation(s.tgop)
+	c:RegisterEffect(e2)
+
 end
-function cm.xyzcon(e)
+--------------------------------------------------------------------------------
+-- 限制：超量召唤的回合不能作为素材
+--------------------------------------------------------------------------------
+function s.xyzlimit(e)
 	local c=e:GetHandler()
-	return c:IsStatus(STATUS_SPSUMMON_TURN) and c:IsSummonType(SUMMON_TYPE_XYZ)
+	return c:IsSummonType(SUMMON_TYPE_XYZ) and c:IsStatus(STATUS_SPSUMMON_TURN)
 end
-function cm.ofilter(c,e)
-	return c:IsCanOverlay() and (not e or not c:IsImmuneToEffect(e)) and c:IsRace(RACE_MACHINE)
+
+--------------------------------------------------------------------------------
+-- ①效果
+--------------------------------------------------------------------------------
+
+--过滤器：手卡/墓地/除外的机械族怪兽
+function s.matfilter(c)
+	return c:IsRace(RACE_MACHINE) and c:IsType(TYPE_MONSTER) and c:IsCanOverlay()
 end
-function cm.ovtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler()  and Duel.IsExistingMatchingCard(cm.ofilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,2,nil) end
+
+function s.mattg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsType(TYPE_XYZ)
+		and Duel.IsExistingMatchingCard(s.matfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,2,nil) end
 end
-function cm.filter(c)
-	return c:IsCanOverlay()
-end
-function cm.ovop(e,tp,eg,ep,ev,re,r,rp)
+
+function s.matop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-		local g=Duel.SelectMatchingCard(tp,cm.ofilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,2,2,nil,e)
-		local dg=Duel.GetMatchingGroup(cm.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
-		if g:GetCount()>0 and Duel.Overlay(c,g)~=0 and dg:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
-		Duel.BreakEffect()
-		local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c)
-		local tc=g:GetFirst()
-		if tc then
-			local og=tc:GetOverlayGroup()
-			if og:GetCount()>0 then
+	if not c:IsRelateToEffect(e) or not c:IsType(TYPE_XYZ) then return end
+	local g=Duel.GetMatchingGroup(s.matfilter,tp,LOCATION_HAND+LOCATION_GRAVE+LOCATION_REMOVED,0,nil)
+	if #g<2 then return end
+	
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+	local sg=g:Select(tp,2,2,nil)
+	Duel.Overlay(c,sg)
+		local fg=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
+		if #fg>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
+			local tcg=fg:Select(tp,1,1,nil)
+			if #tcg>0 and not tcg:GetFirst():IsImmuneToEffect(e) then
+				Duel.HintSelection(tcg)
+				local og=tcg:GetFirst():GetOverlayGroup()
+				if og:GetCount()>0 then
 				Duel.SendtoGrave(og,REASON_RULE)
+				end
+				Duel.Overlay(c,tcg)
 			end
-			Duel.Overlay(c,tc)
 		end
-	end
 end
-function cm.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
+
+--------------------------------------------------------------------------------
+-- ②效果
+--------------------------------------------------------------------------------
+
+function s.tgcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,2,REASON_COST) end
 	e:GetHandler():RemoveOverlayCard(tp,2,2,REASON_COST)
 end
-function cm.tgfilter(c)
+
+function s.tgfilter(c)
 	return c:IsSetCard(0x610) and (c:IsAbleToGrave() or c:IsAbleToRemove())
 end
-function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil)
-	local b2=Duel.IsExistingMatchingCard(cm.tgfilter,tp,LOCATION_DECK,0,1,nil)
-	if chk==0 then return b1 or b2 end
-	local off=1
-	local ops,opval={},{}
-	if b1 then
-		ops[off]=aux.Stringid(m,3)
-		opval[off]=0
-		off=off+1
-	end
-	if b2 then
-		ops[off]=aux.Stringid(m,4)
-		opval[off]=1
-		off=off+1
-	end
-	local op=Duel.SelectOption(tp,table.unpack(ops))+1
-	local sel=opval[op]
-	e:SetLabel(sel)
-	if sel==0 then
-		e:SetCategory(CATEGORY_TOGRAVE)
-		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
-	else
-		e:SetCategory(CATEGORY_REMOVE)
-		Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
-	end
+
+function s.tgtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK)
 end
-function cm.thop(e,tp,eg,ep,ev,re,r,rp)
-local c=e:GetHandler()
-	local sel=e:GetLabel()
-	if sel==0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoGrave(g,REASON_EFFECT)
+
+function s.tgop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,3)) --请选择要操作的卡
+	local g=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+	local tc=g:GetFirst()
+	if tc then
+		local b1=tc:IsAbleToGrave()
+		local b2=tc:IsAbleToRemove()
+		local op=0
+		
+		if b1 and b2 then
+			op=Duel.SelectOption(tp,aux.Stringid(id,3),aux.Stringid(id,4)) --"送去墓地", "除外"
+		elseif b1 then
+			op=0
+		else
+			op=1
 		end
-	else
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g1=Duel.SelectMatchingCard(tp,cm.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
-	if g1:GetCount()>0 then
-		Duel.Remove(g1,POS_FACEUP,REASON_EFFECT)
-	end
+		
+		if op==0 then
+			Duel.SendtoGrave(tc,REASON_EFFECT)
+		else
+			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		end
 	end
 end

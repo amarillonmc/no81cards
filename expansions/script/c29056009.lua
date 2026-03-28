@@ -47,17 +47,21 @@ function c29056009.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return (Duel.GetAttacker()==c or Duel.GetAttackTarget()==c)
 end
 function c29056009.spfilter(c,e,tp)
-	return c:IsCode(29065578) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
+	if not (c:IsCode(29056009) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)) then return false end
+	if c:IsLocation(LOCATION_EXTRA) then 
+		return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
+	else
+		return Duel.GetMZoneCount(tp)>0
+	end
 end
 function c29056009.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0 and Duel.IsExistingMatchingCard(c29056009.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c29056009.spfilter),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA+LOCATION_GRAVE)
 end
 function c29056009.spop(e,tp,eg,ep,ev,re,r,rp)
-	--if Duel.GetLocationCountFromEx(tp,tp,nil,c)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,c29056009.spfilter,tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e,tp)
-	Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c29056009.spfilter),tp,LOCATION_EXTRA+LOCATION_GRAVE,0,1,1,nil,e,tp)
+		Duel.SpecialSummon(g,0,tp,tp,true,true,POS_FACEUP)
 end
 --search
 function c29056009.thfilter(c)
@@ -79,7 +83,7 @@ function c29056009.thop(e,tp,eg,ep,ev,re,r,rp)
 	local ct=1
 	if e:GetLabel()==1 then ct=2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-	local sg1=g:SelectSubGroup(tp,aux.dncheck,false,1,ct)
-	Duel.SendtoHand(sg1,nil,REASON_EFFECT)
-	Duel.ConfirmCards(1-tp,sg1)
+	local g1=Duel.SelectMatchingCard(tp,c29056009.thfilter,tp,LOCATION_DECK,0,1,ct,nil)
+	Duel.SendtoHand(g1,nil,REASON_EFFECT)
+	Duel.ConfirmCards(1-tp,g1)
 end

@@ -1,8 +1,9 @@
 -- 方舟骑士团-陈·赤刃明霄
 local s,id=GetID()
+s.named_with_Arknight=1
 function s.initial_effect(c)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,4,4,s.ovfilter,aux.Stringid(id,0),4,s.xyzop)
+	aux.AddXyzProcedure(c,nil,6,4,s.ovfilter,aux.Stringid(id,0),4,s.xyzop)
 	c:EnableReviveLimit()
 	--indes
 	local e1=Effect.CreateEffect(c)
@@ -38,7 +39,7 @@ function s.initial_effect(c)
 end
 
 function s.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x87af) and c:IsRace(RACE_WYRM)
+	return c:IsFaceup() and (c:IsSetCard(0x87af) or (_G["c"..c:GetCode()] and  _G["c"..c:GetCode()].named_with_Arknight)) and c:IsRace(RACE_WYRM)
 end
 function s.xyzop(e,tp,chk)
 	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end
@@ -71,7 +72,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 		elseif col==6 then
 			col=3
 		end
-        local dg=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_ONFIELD,nil,col,1-tp)
+		local dg=Duel.GetMatchingGroup(s.desfilter,tp,0,LOCATION_ONFIELD,nil,col,1-tp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 		local sg=dg:Select(tp,1,1,nil)
 		if sg:GetCount()>0 then
