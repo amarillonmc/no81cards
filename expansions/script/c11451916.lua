@@ -103,7 +103,7 @@ function cm.initial_effect(c)
 		end
 		local _SpecialSummonRule=Duel.SpecialSummonRule
 		function Duel.SpecialSummonRule(tp,tc,sumtype)
-			if sumtype~=SUMMON_TYPE_PENDULUM then _SpecialSummonRule(tp,tc,sumtype) end
+			if sumtype~=SUMMON_TYPE_PENDULUM then _SpecialSummonRule(tp,tc,sumtype) return end
 			local tp=tc:GetControler()
 			if 1==1 then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
 				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))

@@ -102,7 +102,7 @@ function cm.initial_effect(c)
 		end
 		local _SpecialSummonRule=Duel.SpecialSummonRule
 		function Duel.SpecialSummonRule(tp,tc,sumtype)
-			if sumtype~=SUMMON_TYPE_PENDULUM then _SpecialSummonRule(tp,tc,sumtype) end
+			if sumtype~=SUMMON_TYPE_PENDULUM then _SpecialSummonRule(tp,tc,sumtype) return end
 			local tp=tc:GetControler()
 			if 1==1 then --and not Duel.IsPlayerAffectedByEffect(tp,59822133) then
 				Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(11451912,0))
@@ -215,24 +215,25 @@ function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(cm.spfilter,1,nil)
 end
 function cm.rmfilter(c)
-	return c:IsStatus(STATUS_EFFECT_ENABLED) and c:IsAbleToRemove()
+	return (c:IsStatus(STATUS_EFFECT_ENABLED) or c:IsFacedown()) and c:IsAbleToRemove()
 end
 function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(cm.rmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c) and cm.rmfilter(c) end
 	c:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(11451011,2))
 	if Duel.GetCurrentChain()>1 then
 		e:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CANNOT_DISABLE+0x200)
 	else e:SetProperty(EFFECT_FLAG_DELAY) end
-	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,2,PLAYER_ALL,LOCATION_ONFIELD)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if #g==0 then return end
+	local g=Duel.GetMatchingGroup(cm.rmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,c)
+	if #g==0 or not cm.rmfilter(c) then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local rg=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil,tp)
+	local rg=Duel.SelectMatchingCard(tp,cm.rmfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,tp)
+	rg:AddCard(c)
 	if Duel.Remove(rg,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)>0 then
 		local og=Duel.GetOperatedGroup()
 		og=og:Filter(cm.rffilter,nil)
@@ -288,7 +289,7 @@ function cm.returntofield(tc)
 			Duel.SendtoGrave(gc,REASON_RULE)
 			Duel.BreakEffect()
 		end
-		Duel.MoveToField(tc,p,p,LOCATION_FZONE,POS_FACEUP,true)
+		Duel.MoveToField(tc,p,p,LOCATION_FZONE,tc:GetPreviousPosition(),true)
 		return
 	end
 	if tc:GetPreviousTypeOnField()&TYPE_EQUIP>0 then

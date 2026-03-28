@@ -133,7 +133,7 @@ function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	end
 	local g=Duel.GetMatchingGroup(s.sprfilter,tp,LOCATION_ONFIELD+LOCATION_EXTRA,0,c,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g1=g:SelectSubGroup(tp,s.spgckfil,true,2,2,e,tp)
+	local g1=g:SelectSubGroup(tp,s.spgckfil,false,2,2,e,tp)
 	if g1:IsExists(Card.IsLocation,1,c,LOCATION_EXTRA) then
 		for i=0,10 do
 			Duel.ResetFlagEffect(tp,EFFECT_FLAG_EFFECT+65820000+i)
