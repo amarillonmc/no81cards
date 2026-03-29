@@ -13,12 +13,13 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct=Duel.GetTurnCount()+1
 	if chk==0 then return ct<=22 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOZONE)
-	local zone=Duel.SelectDisableField(tp,ct,LOCATION_ONFIELD,0,0)
+	local zone=Duel.SelectDisableField(tp,ct,LOCATION_ONFIELD,LOCATION_ONFIELD,0)
 	e:SetLabel(zone)
 	Duel.Hint(HINT_ZONE,tp,zone)
 end
-function s.get_zone_bit(c)
+function s.get_zone_bit(c,tp)
 	local seq=c:GetSequence()
+	if c:IsControler(1-tp) then nseq=nseq+16 end
 	if c:IsLocation(LOCATION_MZONE) then
 		return 1<<seq
 	elseif c:IsLocation(LOCATION_SZONE) then
@@ -42,10 +43,10 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetLabel(zone)
 	e1:SetOperation(s.banop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)	
+	Duel.RegisterEffect(e1,tp)  
 end
-function s.filter(c,zone)
-	local b=s.get_zone_bit(c)
+function s.filter(c,zone,tp)
+	local b=s.get_zone_bit(c,tp)
 	return bit.band(zone,b)~=0
 end
 function s.banop(e,tp,eg,ep,ev,re,r,rp)
@@ -54,7 +55,7 @@ function s.banop(e,tp,eg,ep,ev,re,r,rp)
 	local zone=e:GetLabel()
 	local sg=e:GetLabelObject()
 	--Check cards in the selected zones
-	local g=Duel.GetMatchingGroup(s.filter,tp,LOCATION_ONFIELD,0,nil,zone)
+	local g=Duel.GetMatchingGroup(s.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,zone,tp)
 	if #g>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT+REASON_TEMPORARY)~=0 then
 		local og=Duel.GetOperatedGroup()
 		og:KeepAlive()

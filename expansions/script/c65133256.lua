@@ -67,12 +67,12 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 			if op==1 then
 				Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,0,0)
 			elseif op==2 then
-				e:SetCategory(CATEGORY_SEARCH)
+				e:SetCategory(e:GetCategory()|CATEGORY_SEARCH)
 				Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_DECK+LOCATION_REMOVED)
 			elseif op==4 then
 				Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
 			elseif op==5 then
-				e:SetCategory(CATEGORY_SSET)
+				e:SetCategory(e:GetCategory()|CATEGORY_SSET)
 			end
 		end
 		if not (b[1] or b[2] or b[3] or b[4] or b[5]) or num==ct or not Duel.SelectYesNo(tp,aux.Stringid(id,7)) then

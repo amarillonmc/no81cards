@@ -23,49 +23,20 @@ function s.initial_effect(c)
 	e2:SetTarget(s.target)
 	e2:SetOperation(s.operation)
 	c:RegisterEffect(e2)
-	if not s.globle_check then
-		--chain check
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		e1:SetCode(EVENT_CHAIN_SOLVING)
-		e1:SetOperation(s.chainop)
-		Duel.RegisterEffect(e1,0)
-		s.globle_check=true
-		AKM_hack_fusion_mat_get=Duel.GetFusionMaterial
-		function Duel.GetFusionMaterial(player)
-			local ori_group=AKM_hack_fusion_mat_get(player)
-			local exg=Group.CreateGroup()
-			exg=Duel.GetMatchingGroup(s.filter0,player,0,LOCATION_MZONE,nil)
-			exg=Group.__bxor(exg,ori_group):Filter(s.filter0,nil,e)
+	if not aux.checkxyzfusionhack then
+		aux.checkxyzfusionhack=true
+		gm_hack_fusion_check=Card.CheckFusionMaterial
+		function Card.CheckFusionMaterial(card,Group_fus,Card_g,int_chkf,not_mat)
+			local exg=Duel.GetMatchingGroup(s.getexc,int_chkf,0,LOCATION_MZONE,nil)
 			if exg:GetCount()>0 then
-				if Duel.GetFlagEffect(0,id+1)~=0 and Duel.GetFlagEffect(0,id+2)==0 then
-					Duel.RegisterFlagEffect(0,id+2,RESET_EVENT+RESET_CHAIN,0,1)
-					local e1=Effect.CreateEffect(c)
-					e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
-					e1:SetCode(EVENT_CHAIN_SOLVED)
-					e1:SetOperation(s.resetop)
-					e1:SetReset(RESET_EVENT+RESET_CHAIN)
-					Duel.RegisterEffect(e1,0)
-					local e2=e1:Clone()
-					e2:SetCode(EVENT_CHAIN_NEGATED)
-					Duel.RegisterEffect(e2,0)
-				end
-				local hg=Group.__add(exg,ori_group)
-				return hg
+				Group_fus:Merge(exg)
 			end
-			return ori_group
+			return gm_hack_fusion_check(card,Group_fus,Card_g,int_chkf,not_mat)
 		end
 	end
 end
-function s.chainop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.RegisterFlagEffect(0,id+1,RESET_EVENT+RESET_CHAIN,0,1)
-end
-function s.resetop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.ResetFlagEffect(0,id+2)
-	e:Reset()
-end
-function s.filter0(c,fc)
-	return c:GetFlagEffect(id)>0 and c:IsCanBeFusionMaterial(fc)
+function s.getexc(c)
+	return c:GetFlagEffect(id)>0 and c:IsFaceup()
 end
 function s.rfilter(c,tp)
 	return Duel.GetMZoneCount(tp,c)>0
@@ -144,6 +115,6 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
 	if tc:IsFaceup() and tc:IsRelateToEffect(e) and not tc:IsImmuneToEffect(e) then
-	tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		tc:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 	end
 end
