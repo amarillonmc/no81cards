@@ -57,11 +57,11 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function s.tdtg(e,tp,eg,ep,ev,re,r,rp,chk) 
-	if chk==0 then return Duel.IsExistingMatchingCard(aux.OR(Card.IsAbleToExtra,Card.IsAbleToExtra),tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.OR(Card.IsAbleToExtra,Card.IsAbleToDeck),tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
 end
 function s.tdop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,aux.OR(Card.IsAbleToExtra,Card.IsAbleToExtra),tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,aux.OR(Card.IsAbleToExtra,Card.IsAbleToDeck),tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
 	if #g>0 then
 		Duel.HintSelection(g)
 		Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)

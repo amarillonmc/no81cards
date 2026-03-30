@@ -103,13 +103,12 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.gyeqcon(e,tp,eg,ep,ev,re,r,rp)
-	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsRace(RACE_WARRIOR) and re:GetHandler():IsControler(tp)
-		and re:GetHandler():IsLocation(LOCATION_MZONE)
+	return re:IsActiveType(TYPE_MONSTER) and re:GetHandler():IsRace(RACE_WARRIOR) and re:GetHandler():IsControler(tp) and re:GetHandler():IsLocation(LOCATION_MZONE)
 end
 function s.gyeqop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=re:GetHandler()
-	if c:IsRelateToChain() and tc:IsRelateToChain() and tc:IsFaceup() and tc:IsControler(tp) then
+	if c:IsRelateToChain() and tc:IsFaceup() and tc:IsLocation(LOCATION_MZONE) and tc:IsControler(tp) then
 		Duel.Equip(tp,c,tc)
 	end
 end

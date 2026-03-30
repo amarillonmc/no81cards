@@ -4,13 +4,14 @@ function s.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFunRep(c,s.ffilter,2,false)
 	aux.AddContactFusionProcedure(c,Card.IsAbleToGraveAsCost,LOCATION_HAND+LOCATION_MZONE,0,Duel.SendtoGrave,REASON_COST+REASON_MATERIAL)
-	--spsummon condition
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(s.splimit)
-	c:RegisterEffect(e0)
+	--special summon condition
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetRange(LOCATION_EXTRA)
+	e1:SetValue(aux.fuslimit)
+	c:RegisterEffect(e1)
 	--Cannot be target
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
@@ -35,10 +36,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function s.ffilter(c)
-	return c:IsSetCard(0x838)
-end
-function s.splimit(e,se,sp,st)
-	return not e:GetHandler():IsLocation(LOCATION_EXTRA) or bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION or not se
+	return c:IsSetCard(0x838) and c:IsType(TYPE_MONSTER)
 end
 function s.tgtg(e,c)
 	return c:IsSetCard(0x838)
@@ -52,7 +50,7 @@ function s.spfilter(c,e,tp)
 		and c:IsCanBeEffectTarget(e)
 end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(s.spfilter,1,e:GetHandler(),e,tp)
+	return eg:IsExists(s.spfilter,1,e:GetHandler(),e,tp) and not eg:IsContains(e:GetHandler())
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return eg:IsContains(chkc) and s.spfilter(chkc,e,tp) and chkc~=e:GetHandler() end

@@ -97,7 +97,7 @@ function s.cfilter(c,tp)
 end
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return not eg:IsContains(c)
+	return not eg:IsContains(c) and eg:IsExists(s.cfilter,1,nil,tp)
 end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
