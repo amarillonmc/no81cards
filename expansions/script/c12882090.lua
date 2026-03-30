@@ -78,6 +78,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,c)
 	if #g==0 then return end
+	Duel.HintSelection(g)
 	if Duel.Destroy(g,REASON_EFFECT)==0 then return end
 	if not tc or not tc:IsRelateToEffect(e) then return end
 	if tc:IsType(TYPE_SPELL+TYPE_TRAP) and tc:IsSSetable() and (not tc:IsAbleToHand() or Duel.SelectOption(tp,1190,1153)==1) then
@@ -110,6 +111,7 @@ function s.op2(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_END)
 	e1:SetCountLimit(1)
+	e1:SetCondition(s.rmcon)
 	e1:SetOperation(s.rmop)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
@@ -117,9 +119,12 @@ end
 function s.rmfilter(c)
 	return c:IsCode(id) and c:IsAbleToRemove()
 end
+function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsExistingMatchingCard(s.rmfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)
+end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
-	if not Duel.IsExistingMatchingCard(s.rmfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil) then return end
 	if not Duel.SelectYesNo(tp,aux.Stringid(id,1)) then return end
+	Duel.Hint(HINT_CARD,0,id)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,0,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local sg=g:SelectSubGroup(tp,function(g) return g:IsExists(s.rmfilter,1,nil) end,false,1,3)
