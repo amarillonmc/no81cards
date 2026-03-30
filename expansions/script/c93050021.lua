@@ -1,81 +1,70 @@
---幻叙-黑夜之剑
-local s,id,o=GetID()
+--幻叙-破灭暗影
+local s,id=GetID()
 function s.initial_effect(c)
+	c:SetSPSummonOnce(id)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,8,2,s.ovfilter,aux.Stringid(id,0),2,s.xyzop)
+	aux.AddXyzProcedure(c,nil,8,2,s.ovfilter,aux.Stringid(id,0))
 	c:EnableReviveLimit()
-	--material
+	--immune
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,1))
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e1:SetCode(EVENT_TO_GRAVE)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetCode(EFFECT_IMMUNE_EFFECT)
 	e1:SetRange(LOCATION_MZONE)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e1:SetTarget(s.mttg)
-	e1:SetOperation(s.mtop)
+	e1:SetValue(s.efilter)
 	c:RegisterEffect(e1)
-	--change effect
+	--destroy
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,2))
-	e2:SetType(EFFECT_TYPE_QUICK_O)
-	e2:SetCode(EVENT_CHAINING)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetCondition(s.chcon)
-	e2:SetCost(s.chcost)
-	e2:SetTarget(s.chtg)
-	e2:SetOperation(s.chop)
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_DESTROY)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e2:SetCode(EVENT_BATTLED)
+	e2:SetCondition(s.descon)
+	e2:SetTarget(s.destg)
+	e2:SetOperation(s.desop)
 	c:RegisterEffect(e2)
 end
 function s.ovfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x838) and c:GetOverlayGroup():GetCount()>=4
-end
-function s.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end
-	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
-end
-function s.cfilter(c,tp)
-	return c:IsReason(REASON_DESTROY) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE)
-		and c:IsCanOverlay() and (not e or c:IsRelateToEffect(e))
-end
-function s.mttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return eg:IsExists(s.cfilter,1,nil,nil,tp) end
-	local g=eg:Filter(s.cfilter,nil,nil,tp)
-	Duel.SetTargetCard(g)
-end
-function s.mtop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=eg:Filter(s.cfilter,nil,e,tp)
-	local tc=g:GetFirst()
-	if not tc or not (c:IsRelateToChain() and c:IsType(TYPE_XYZ)) then return end
-	if g:GetCount()>1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-		tc=g:Select(tp,1,1,nil):GetFirst()
-	end
-	Duel.Overlay(c,tc)
-end
-function s.filter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x838)
-end
-function s.chcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetHandler():GetOverlayGroup():Filter(s.filter,nil)
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(s.filter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
 	return g:GetClassCount(Card.GetAttribute)>=4
 end
-function s.chcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+function s.filter(c)
+	return c:IsSetCard(0x838) and c:IsType(TYPE_MONSTER)
 end
-function s.chfilter(c,e,tp)
-	return c:IsSetCard(0x838) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function s.efilter(e,te)
+	return te:GetOwnerPlayer()~=e:GetHandlerPlayer() and te:IsActivated()
 end
-function s.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return not re:GetHandler():IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) end
+function s.descon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetAttacker()==e:GetHandler()
 end
-function s.chop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Group.CreateGroup()
-	Duel.ChangeTargetCard(ev,g)
-	Duel.ChangeChainOperation(ev,s.repop)
+function s.sfilter(c,p,seq,loc)
+	local sseq=c:GetSequence()
+	if c:IsControler(1-p) then
+		return loc==LOCATION_MZONE and c:IsLocation(LOCATION_MZONE)
+			and (sseq==5 and seq==3 or sseq==6 and seq==1)
+	end
+	if c:IsLocation(LOCATION_SZONE) then
+		return sseq<5 and (sseq==seq or loc==LOCATION_SZONE and math.abs(sseq-seq)==1)
+	end
+	if sseq<5 then
+		return sseq==seq or loc==LOCATION_MZONE and math.abs(sseq-seq)==1
+	else
+		return loc==LOCATION_MZONE and (sseq==5 and seq==1 or sseq==6 and seq==3)
+	end
 end
-function s.repop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Destroy(e:GetHandler(),REASON_EFFECT)
+function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local bc=e:GetHandler():GetBattleTarget()
+	if chk==0 then return true end
+	local g=Duel.GetMatchingGroup(s.sfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,bc,bc:GetControler(),bc:GetSequence(),bc:GetLocation())
+	g:AddCard(bc)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
+end
+function s.desop(e,tp,eg,ep,ev,re,r,rp)
+	local bc=e:GetHandler():GetBattleTarget()
+	if bc:IsRelateToBattle(e) then
+		local g=Duel.GetMatchingGroup(s.sfilter,0,LOCATION_ONFIELD,LOCATION_ONFIELD,bc,bc:GetControler(),bc:GetSequence(),bc:GetLocation())
+		g:AddCard(bc)
+		Duel.Destroy(g,REASON_EFFECT)
+	end
 end

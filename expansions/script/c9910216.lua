@@ -1,6 +1,6 @@
 --天空漫步者 保坂实里
 function c9910216.initial_effect(c)
-	--spsummon link
+	--spsummon
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -9,9 +9,9 @@ function c9910216.initial_effect(c)
 	e1:SetTarget(c9910216.sptg)
 	e1:SetOperation(c9910216.spop)
 	c:RegisterEffect(e1)
-	--summon
+	--draw & summon
 	local e2=Effect.CreateEffect(c)
-	e2:SetCategory(CATEGORY_SUMMON)
+	e2:SetCategory(CATEGORY_DRAW+CATEGORY_SUMMON)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
@@ -75,17 +75,6 @@ function c9910216.spop(e,tp,eg,ep,ev,re,r,rp)
 		local zone=c9910216.get_zone(tc,tp)
 		if zone~=0 then Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP,zone) end
 	end
-	local e1=Effect.CreateEffect(c)
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetTargetRange(1,0)
-	e1:SetTarget(c9910216.splimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-end
-function c9910216.splimit(e,c)
-	return not c:IsRace(RACE_PSYCHO)
 end
 function c9910216.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -94,21 +83,27 @@ function c9910216.sumcon(e,tp,eg,ep,ev,re,r,rp)
 	return g and g:IsContains(c)
 end
 function c9910216.sumcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
-	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsAbleToDeckAsCost() end
+	Duel.HintSelection(Group.FromCards(c))
+	Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
+end
+function c9910216.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) end
+	Duel.SetTargetPlayer(tp)
+	Duel.SetTargetParam(1)
+	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function c9910216.sumfilter(c)
 	return c:IsRace(RACE_PSYCHO) and c:IsSummonable(true,nil)
 end
-function c9910216.sumtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c9910216.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,0,0)
-end
 function c9910216.sumop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
-	local g=Duel.SelectMatchingCard(tp,c9910216.sumfilter,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,nil)
-	local tc=g:GetFirst()
-	if tc then
-		Duel.Summon(tp,tc,true,nil)
+	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
+	if Duel.Draw(p,d,REASON_EFFECT)>0 and Duel.IsExistingMatchingCard(c9910216.sumfilter,tp,LOCATION_HAND,0,1,nil)
+		and Duel.SelectYesNo(tp,aux.Stringid(9910216,0)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SUMMON)
+		local sumc=Duel.SelectMatchingCard(tp,c9910216.sumfilter,tp,LOCATION_HAND,0,1,1,nil):GetFirst()
+		if sumc then Duel.Summon(tp,sumc,true,nil) end
 	end
 end

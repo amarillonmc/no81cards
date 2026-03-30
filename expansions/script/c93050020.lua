@@ -1,83 +1,68 @@
---幻叙-黎明之剑
-local s,id,o=GetID()
+--幻叙-映倒曙光
+local s,id=GetID()
 function s.initial_effect(c)
+	c:SetSPSummonOnce(id)
 	--xyz summon
-	aux.AddXyzProcedure(c,nil,4,2,s.ovfilter,aux.Stringid(id,0),2,s.xyzop)
+	aux.AddXyzProcedure(c,nil,4,2,s.ovfilter,aux.Stringid(id,0))
 	c:EnableReviveLimit()
-	--material
+	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,1))
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e1:SetCode(EVENT_TO_GRAVE)
-	e1:SetRange(LOCATION_MZONE)
-	e1:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
-	e1:SetTarget(s.mttg)
-	e1:SetOperation(s.mtop)
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCountLimit(1,id)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetTarget(s.thtg)
+	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
-	--spsummon
+	--destroy replace
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,2))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_DESTROY_REPLACE)
 	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1)
-	e2:SetCondition(s.spcon)
-	e2:SetCost(s.spcost)
-	e2:SetTarget(s.sptg)
-	e2:SetOperation(s.spop)
+	e2:SetTarget(s.desreptg)
+	e2:SetValue(s.desrepval)
+	e2:SetOperation(s.desrepop)
 	c:RegisterEffect(e2)
 end
 function s.ovfilter(c)
-	return c:IsFaceup() and c:IsType(TYPE_XYZ) and c:IsSetCard(0x838) and c:GetOverlayGroup():GetCount()>=2
-end
-function s.xyzop(e,tp,chk)
-	if chk==0 then return Duel.GetFlagEffect(tp,id)==0 end
-	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,EFFECT_FLAG_OATH,1)
-end
-function s.cfilter(c,tp)
-	return c:IsReason(REASON_DESTROY) and c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousLocation(LOCATION_MZONE)
-		and c:IsCanOverlay() and (not e or c:IsRelateToEffect(e))
-end
-function s.mttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chk==0 then return eg:IsExists(s.cfilter,1,nil,nil,tp) end
-	local g=eg:Filter(s.cfilter,nil,nil,tp)
-	Duel.SetTargetCard(g)
-end
-function s.mtop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local g=eg:Filter(s.cfilter,nil,e,tp)
-	local tc=g:GetFirst()
-	if not tc or not (c:IsRelateToChain() and c:IsType(TYPE_XYZ)) then return end
-	if g:GetCount()>1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-		tc=g:Select(tp,1,1,nil):GetFirst()
-	end
-	Duel.Overlay(c,tc)
-end
-function s.filter(c)
-	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x838)
-end
-function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local g=e:GetHandler():GetOverlayGroup():Filter(s.filter,nil)
+	local tp=c:GetControler()
+	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
 	return g:GetClassCount(Card.GetAttribute)>=2
 end
-function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():CheckRemoveOverlayCard(tp,1,REASON_COST) end
-	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_COST)
+function s.cfilter(c)
+	return c:IsSetCard(0x838) and c:IsType(TYPE_MONSTER)
 end
-function s.spfilter(c,e,tp)
-	return c:IsSetCard(0x838) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function s.thfilter(c)
+	return c:IsSetCard(0x838) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
-function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
-function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+function s.thop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if #g>0 then
-		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
+end
+function s.repfilter(c,tp)
+	return c:IsControler(tp) and c:IsFaceup() and c:IsLocation(LOCATION_MZONE)
+		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
+end
+function s.desreptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return eg:IsExists(s.repfilter,1,nil,tp)
+		and c:CheckRemoveOverlayCard(tp,1,REASON_EFFECT) end
+	return Duel.SelectEffectYesNo(tp,c,96)
+end
+function s.desrepval(e,c)
+	return s.repfilter(c,e:GetHandlerPlayer())
+end
+function s.desrepop(e,tp,eg,ep,ev,re,r,rp)
+	e:GetHandler():RemoveOverlayCard(tp,1,1,REASON_EFFECT)
+	Duel.Hint(HINT_CARD,0,id)
 end

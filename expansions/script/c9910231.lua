@@ -1,6 +1,5 @@
 --天空漫步者-起降台
 function c9910231.initial_effect(c)
-	c:SetUniqueOnField(1,0,9910231)
 	--Activate
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -12,7 +11,7 @@ function c9910231.initial_effect(c)
 	e2:SetRange(LOCATION_SZONE)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
 	e2:SetCode(EFFECT_LINK_SPELL_KOISHI)
-	e2:SetValue(LINK_MARKER_TOP)
+	e2:SetValue(LINK_MARKER_TOP_LEFT+LINK_MARKER_TOP_RIGHT)
 	c:RegisterEffect(e2)
 	--extra summon
 	local e3=Effect.CreateEffect(c)
@@ -35,6 +34,25 @@ function c9910231.initial_effect(c)
 	e4:SetTarget(c9910231.tdtg)
 	e4:SetOperation(c9910231.tdop)
 	c:RegisterEffect(e4)
+	--pos
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD)
+	e5:SetCode(EFFECT_SET_POSITION)
+	e5:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e5:SetRange(LOCATION_SZONE)
+	e5:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e5:SetTarget(c9910231.postg)
+	e5:SetValue(POS_FACEUP_ATTACK)
+	c:RegisterEffect(e5)
+	--race
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_FIELD)
+	e6:SetCode(EFFECT_CHANGE_RACE)
+	e6:SetRange(LOCATION_SZONE)
+	e6:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e6:SetTarget(c9910231.postg)
+	e6:SetValue(RACE_PSYCHO)
+	c:RegisterEffect(e6)
 end
 function c9910231.tdcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()==tp
@@ -61,4 +79,7 @@ function c9910231.tdop(e,tp,eg,ep,ev,re,r,rp)
 		local g=Duel.GetMatchingGroup(c9910231.tdfilter,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil,tc:GetLink())
 		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
 	end
+end
+function c9910231.postg(e,c)
+	return e:GetHandler():GetLinkedGroup():IsContains(c)
 end

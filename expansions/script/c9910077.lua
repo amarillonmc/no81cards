@@ -33,10 +33,7 @@ function c9910077.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_OVERLAY)
 end
 function c9910077.spfilter(c,e,tp)
-	return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-end
-function c9910077.tdfilter(c)
-	return c:IsAttribute(ATTRIBUTE_DARK) and c:IsAbleToDeck()
+	return c:IsSetCard(0x9951) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c9910077.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
@@ -48,32 +45,22 @@ function c9910077.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,sg)
 		Duel.ShuffleHand(tp)
 		local og=Duel.GetOperatedGroup():Filter(Card.IsLocation,nil,LOCATION_HAND)
-		local g1=og:Filter(c9910077.spfilter,nil,e,tp)
-		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and #g1>0 and Duel.SelectYesNo(tp,aux.Stringid(9910077,0)) then
+		if og:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_LIGHT) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+			and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c9910077.spfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp)
+			and Duel.SelectYesNo(tp,aux.Stringid(9910077,0)) then
 			Duel.BreakEffect()
-			if #g1>1 then
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-				g1=g1:Select(tp,1,1,nil)
-				Duel.HintSelection(g1)
-			end
-			Duel.SpecialSummon(g1,0,tp,tp,false,false,POS_FACEUP)
-			og:Sub(g1)
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sp=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910077.spfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
+			Duel.SpecialSummon(sp,0,tp,tp,false,false,POS_FACEUP)
 		end
-		local g2=og:Filter(c9910077.tdfilter,nil)
-		if #g2>0 and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil)
+		if og:IsExists(Card.IsAttribute,1,nil,ATTRIBUTE_DARK)
+			and Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,nil)
 			and Duel.SelectYesNo(tp,aux.Stringid(9910077,1)) then
 			Duel.BreakEffect()
-			if #g2>1 then
-				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-				g2=g2:Select(tp,1,1,nil)
-			end
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			local tg=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,1,1,nil)
-			if #tg>0 then
-				g2:Merge(tg)
-				Duel.HintSelection(g2)
-				Duel.SendtoDeck(g2,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
-			end
+			Duel.HintSelection(tg)
+			Duel.SendtoDeck(tg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		end
 	end
 end

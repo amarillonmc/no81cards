@@ -70,23 +70,43 @@ function c28315844.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28315844.effop(c)
+	--operation
+	local id=c:IsOriginalCodeRule(28333723) and 4 or 1
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(28315844,id))
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_CUSTOM+28333723)
+	e0:SetRange(0xff)
+	e0:SetOperation(c28315844.regop)
+	c:RegisterEffect(e0)
+	--trigger
+	local flag=not ANTICA_EFFECT_HINT and EFFECT_FLAG_DELAY or 0--console
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(28315844,1))
+	e1:SetDescription(aux.Stringid(28315844,id))
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_LEAVE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
-	e1:SetOperation(c28315844.regop)
+	e1:SetCode(EVENT_DESTROYED)
+	e1:SetProperty(flag+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetOperation(c28315844.checkop)
+	e1:SetLabelObject(e0)
 	c:RegisterEffect(e1)
+end
+function c28315844.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local p=e:GetHandler():GetPreviousControler()
+	if not ANTICA_EFFECT_HINT then Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,te,0,0,0,0) else
+		c28384553.process_list[p][#c28384553.process_list[p]+1]=te
+	end
+	e:Reset()
 end
 function c28315844.regcheck(g)
 	return (g:FilterCount(Card.IsControler,nil,0)==1 or Duel.GetFieldGroupCount(0,LOCATION_ONFIELD,0)==0)
 		and (g:FilterCount(Card.IsControler,nil,1)==1 or Duel.GetFieldGroupCount(1,LOCATION_ONFIELD,0)==0)
 end
 function c28315844.regop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local p=c:GetPreviousControler()
+	if re~=e then return end
+	local p=e:GetHandler():GetPreviousControler()
 	local g=Duel.GetFieldGroup(p,LOCATION_ONFIELD,LOCATION_ONFIELD)
-	if c:IsReason(REASON_DESTROY) and #g>0 then-- and Duel.SelectYesNo(p,aux.Stringid(28315844,2))
+	if #g>0 then-- and Duel.SelectYesNo(p,aux.Stringid(28315844,2))
 		Duel.Hint(HINT_CARD,0,28315844)
 		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_DESTROY)
 		local sg=g:SelectSubGroup(p,c28315844.regcheck,false,1,2)

@@ -1,6 +1,7 @@
 --永世的凝结
 local s,id,o=GetID()
 function s.initial_effect(c)
+
 	--①：发动效果
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -23,45 +24,49 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 
--- 检查是否有可解放的水属性连接怪兽
-function s.cfilter(c)
-	return c:IsAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_LINK) and c:IsReleasable()
-end
-
--- 手卡发动条件：存在Cost所需的怪兽
-function s.handcon(e)
-	return Duel.IsExistingMatchingCard(s.cfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
-end
-
--- 发动代价
-function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then
-		-- 如果是从手卡发动，必须能解放怪兽
-		if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
-			return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil)
-		else
-			return true
-		end
-	end
-	-- 只有从手卡发动时才执行解放
-	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
-		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_MZONE,0,1,1,nil)
-		Duel.Release(g,REASON_COST)
-	end
-end
-
--- 取对象过滤器：自己的场上·墓地 水属性 连接怪兽
 function s.tgfilter(c)
 	return c:IsAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_LINK)
 end
 
+function s.cfilter(c,tp)
+	if not (c:IsAttribute(ATTRIBUTE_WATER) and c:IsType(TYPE_LINK) and c:IsReleasable()) then return false end
+	if Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,c) then return true end
+	return c:GetLeaveFieldDest()==LOCATION_GRAVE
+end
+
+-- 手卡发动条件
+function s.handcon(e)
+	return Duel.IsExistingMatchingCard(s.cfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil,e:GetHandlerPlayer())
+end
+
+function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
+		if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
+			return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil,tp)
+		end
+		return true
+	end
+	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+		local g=Duel.SelectMatchingCard(tp,s.cfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
+		Duel.Release(g,REASON_COST)
+	end
+end
+
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE+LOCATION_GRAVE) and chkc:IsControler(tp) and s.tgfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
-		and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_MZONE,1,nil) end
+	if chk==0 then 
+		if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
+			return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_MZONE,0,1,nil,tp)
+				and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_MZONE,1,nil)
+		else
+			return Duel.IsExistingTarget(s.tgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
+				and Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_MZONE,1,nil)
+		end
+	end
+	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
+	local g=Duel.SelectTarget(tp,s.tgfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,1-tp,LOCATION_MZONE)
 end
 
@@ -69,12 +74,11 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc and tc:IsRelateToEffect(e) then
 		local lk=tc:GetLink()
-		-- 选最多有那个连接标记数量的对方场上的怪兽
 		if lk>0 then
 			local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_MZONE,nil)
 			if #g>0 then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-				-- 1到lk张
+				-- 选最多有那个连接标记数量的对方场上的怪兽
 				local sg=g:Select(tp,1,lk,nil)
 				if #sg>0 then
 					Duel.HintSelection(sg)

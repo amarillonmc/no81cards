@@ -14,9 +14,10 @@ function c28316149.initial_effect(c)
 	e1:SetLabel(1)
 	c:RegisterEffect(e1)
 	--to hand
+	if not CATEGORY_MSET then CATEGORY_MSET,CATEGORY_SSET = 0,0 end
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28316149,1))
-	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_MSET+CATEGORY_SSET+CATEGORY_DECKDES)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e2:SetCode(EVENT_LEAVE_FIELD)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
@@ -71,18 +72,39 @@ function c28316149.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28316149.effop(c)
+	--operation
+	local id=c:IsOriginalCodeRule(28333723) and 4 or 1
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(28316149,id))
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_CUSTOM+28333723)
+	e0:SetRange(0xff)
+	e0:SetOperation(c28316149.regop)
+	c:RegisterEffect(e0)
+	--trigger
+	local flag=not ANTICA_EFFECT_HINT and EFFECT_FLAG_DELAY or 0--console
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(28316149,1))
+	e1:SetDescription(aux.Stringid(28316149,id))
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_LEAVE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
-	e1:SetOperation(c28316149.regop)
+	e1:SetCode(EVENT_DESTROYED)
+	e1:SetProperty(flag+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetOperation(c28316149.checkop)
+	e1:SetLabelObject(e0)
 	c:RegisterEffect(e1)
+end
+function c28316149.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local p=e:GetHandler():GetPreviousControler()
+	if not ANTICA_EFFECT_HINT then Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,te,0,0,0,0) else
+		c28384553.process_list[p][#c28384553.process_list[p]+1]=te
+	end
+	e:Reset()
 end
 function c28316149.mmmfilter(c,e,p,code)
 	return c:IsCode(code) and (c:IsSSetable() or Duel.GetMZoneCount(p)>0 and c:IsCanBeSpecialSummoned(e,0,p,false,false,POS_FACEDOWN_DEFENSE))
 end
 function c28316149.regop(e,tp,eg,ep,ev,re,r,rp)
+	if re~=e then return end
 	local c=e:GetHandler()
 	local p=c:GetPreviousControler()
 	local g=Duel.GetMatchingGroup(c28316149.mmmfilter,p,LOCATION_DECK,0,nil,e,p,c:GetPreviousCodeOnField())

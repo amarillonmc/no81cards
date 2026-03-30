@@ -135,15 +135,22 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 		end
 		
 	elseif ty==2 then
-		-- ●陷阱：宣言1～6的任意等级。这个回合，对方场上的怪兽的等级下降宣言的等级。
-		local lv=Duel.AnnounceLevel(tp,1,6)
-		
+		-- ●陷阱：这个回合，对方场上怪兽下降自己场上对应怪兽数量的数值
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD)
 		e1:SetCode(EFFECT_UPDATE_LEVEL)
 		e1:SetTargetRange(0,LOCATION_MZONE)
-		e1:SetValue(-lv)
+		e1:SetValue(s.lvval)
 		e1:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(e1,tp)
 	end
+end
+function s.lvval(e,c)
+	local tp=e:GetHandlerPlayer()
+	local ct=Duel.GetMatchingGroupCount(s.fgfilter_field,tp,LOCATION_MZONE,0,nil)
+	return -ct
+end
+
+function s.fgfilter_field(c)
+	return c:IsRace(RACE_WARRIOR|RACE_SPELLCASTER) and c:IsFaceup()
 end

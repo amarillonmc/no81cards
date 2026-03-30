@@ -33,11 +33,21 @@ function c28384553.initial_effect(c)
 	c:RegisterEffect(ce1)
 	if not ANTICA_EFFECT_HINT then
 		ANTICA_EFFECT_HINT = true
+		--CountLimit display
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_PREDRAW)
 		ge1:SetOperation(c28384553.checkop)
 		Duel.RegisterEffect(ge1,0)
+		c28384553.process_list={}
+		c28384553.process_list[0],c28384553.process_list[1]={},{}
+		--Deathrattle console
+		local ge2=Effect.CreateEffect(c)
+		ge2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge2:SetCode(EVENT_DESTROYED)
+		ge2:SetProperty(EFFECT_FLAG_DELAY)
+		ge2:SetOperation(c28384553.intop)--Interface
+		Duel.RegisterEffect(ge2,0)
 	end
 end
 function c28384553.mfilter(c)
@@ -137,6 +147,7 @@ function c28384553.checkop(e,tp,eg,ep,ev,re,r,rp)
 end
 function c28384553.hintop(e,tp,eg,ep,ev,re,r,rp)
 	--if rp~=tp then return end
+	--if r~=0 then return end
 	local member_list={28316149,28316051,28316558,28315844,28317560}
 	local code_ascver={28315844,28316051,28316149,28316558,28317560}--ascending order
 	for _,te in pairs({Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+28384553)}) do te:Reset() end
@@ -150,5 +161,27 @@ function c28384553.hintop(e,tp,eg,ep,ev,re,r,rp)
 		te:SetTargetRange(1,0)
 		te:SetReset(RESET_PHASE+PHASE_END)
 		Duel.RegisterEffect(te,tp)
+	end
+end
+function c28384553.intop(e,tp,eg,ep,ev,re,r,rp)
+	for p in aux.TurnPlayers() do
+		--if #c28384553.process_list[p]==0 then return end
+		while #c28384553.process_list[p]>1 do
+			local ops={aux.Stringid(28384553,3)}
+			for _,te in ipairs(c28384553.process_list[p]) do table.insert(ops,te:GetDescription()) end
+			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_RESOLVEEFFECT)
+			local sel=Duel.SelectOption(p,table.unpack(ops))
+			if sel==0 then
+				for _,te in ipairs(c28384553.process_list[p]) do
+					Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,te,0,0,0,0)
+				end
+				c28384553.process_list[p]={}
+			else
+				Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,c28384553.process_list[p][sel],0,0,0,0)
+				table.remove(c28384553.process_list[p],sel)
+			end
+		end
+		Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,c28384553.process_list[p][1],0,0,0,0)
+		c28384553.process_list[p]={}
 	end
 end

@@ -18,7 +18,7 @@ end
 
 -- 连接素材：连接怪兽以外的机械族·暗属性怪兽
 function s.matfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsAttribute(ATTRIBUTE_DARK) and not c:IsLinkType(TYPE_LINK)
+	return c:IsSetCard(0x610)) and not c:IsLinkType(TYPE_LINK)
 end
 
 function s.cfilter(c)
@@ -39,7 +39,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_EXTRA_SUMMON_COUNT)
 	e1:SetTargetRange(LOCATION_HAND+LOCATION_MZONE,0)
-	e1:SetTarget(aux.TargetBoolFunction(Card.IsRace,RACE_MACHINE))
+	e1:SetTarget(aux.TargetBoolFunction(Card.IsSetCard,0x610))
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end

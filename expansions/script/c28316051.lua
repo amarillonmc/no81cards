@@ -77,18 +77,31 @@ function c28316051.tgop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28316051.effop(c)
+	--operation
+	local id=c:IsOriginalCodeRule(28333723) and 4 or 1
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(28316051,id))
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_CUSTOM+28333723)
+	e0:SetRange(0xff)
+	e0:SetOperation(c28316051.regop)
+	c:RegisterEffect(e0)
+	--trigger
+	local flag=not ANTICA_EFFECT_HINT and EFFECT_FLAG_DELAY or 0--console
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(28316051,1))
+	e1:SetDescription(aux.Stringid(28316051,id))
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_LEAVE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
-	e1:SetOperation(c28316051.regop)
+	e1:SetCode(EVENT_DESTROYED)
+	e1:SetProperty(flag+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetOperation(c28316051.checkop)
+	e1:SetLabelObject(e0)
 	c:RegisterEffect(e1)
 end
 function c28316051.ffilter(c,p)
 	return c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(p,true,true) and aux.NecroValleyFilter()(c)
 end
 function c28316051.regop(e,tp,eg,ep,ev,re,r,rp)
+	if re~=e then return end
 	local c=e:GetHandler()
 	local p=c:GetPreviousControler()
 	local g=Duel.GetMatchingGroup(c28316051.ffilter,p,LOCATION_GRAVE,0,nil,p)
@@ -112,6 +125,14 @@ function c28316051.regop(e,tp,eg,ep,ev,re,r,rp)
 		local cost=te:GetCost()
 		if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 		Duel.RaiseEvent(tc,4179255,te,0,p,p,Duel.GetCurrentChain())
+	end
+	e:Reset()
+end
+function c28316051.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local p=e:GetHandler():GetPreviousControler()
+	if not ANTICA_EFFECT_HINT then Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,te,0,0,0,0) else
+		c28384553.process_list[p][#c28384553.process_list[p]+1]=te
 	end
 	e:Reset()
 end

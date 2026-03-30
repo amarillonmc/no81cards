@@ -73,22 +73,46 @@ function c28317560.spop2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c28317560.effop(c)
+	--operation
+	local id=c:IsOriginalCodeRule(28333723) and 4 or 1
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(28317560,id))
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_CUSTOM+28333723)
+	e0:SetRange(0xff)
+	e0:SetOperation(c28317560.regop)
+	c:RegisterEffect(e0)
+	--trigger
+	local flag=not ANTICA_EFFECT_HINT and EFFECT_FLAG_DELAY or 0--console
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(28317560,1))
+	e1:SetDescription(aux.Stringid(28317560,id))
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
-	e1:SetCode(EVENT_LEAVE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CLIENT_HINT)
-	e1:SetOperation(c28317560.regop)
+	e1:SetCode(EVENT_DESTROYED)
+	e1:SetProperty(flag+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetOperation(c28317560.checkop)
+	e1:SetLabelObject(e0)
 	c:RegisterEffect(e1)
 end
+function c28317560.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local p=e:GetHandler():GetPreviousControler()
+	if not ANTICA_EFFECT_HINT then Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,te,0,0,0,0) else
+		c28384553.process_list[p][#c28384553.process_list[p]+1]=te
+	end
+	e:Reset()
+end
 function c28317560.regop(e,tp,eg,ep,ev,re,r,rp)
+	if re~=e then return end
 	local c=e:GetHandler()
 	local p=c:GetPreviousControler()
 	local g=Duel.GetMatchingGroup(c28317560.spfilter,p,LOCATION_HAND,0,nil,e,p)
 	if c:IsReason(REASON_DESTROY) and #g>0 and Duel.GetMZoneCount(p)>0 then
 		Duel.Hint(HINT_CARD,0,28317560)
-		Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
-		local tc=g:Select(p,1,1,nil):GetFirst()
+		local tc=g:GetFirst()
+		if #g>1 then
+			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
+			tc=g:Select(p,1,1,nil):GetFirst()
+		end
 		Duel.SpecialSummon(tc,0,p,p,false,false,POS_FACEUP)
 	end
 	e:Reset()

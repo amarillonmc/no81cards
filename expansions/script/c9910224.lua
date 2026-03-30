@@ -58,21 +58,16 @@ end
 function c9910224.tdtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_GRAVE) and c9910224.tdfilter(chkc) and chkc~=c end
-	if chk==0 then return Duel.IsPlayerCanDraw(tp,1)
-		and Duel.IsExistingTarget(c9910224.tdfilter,tp,LOCATION_GRAVE,0,1,c) end
+	if chk==0 then return Duel.IsPlayerCanDraw(tp,1) and Duel.IsExistingTarget(c9910224.tdfilter,tp,LOCATION_GRAVE,0,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	Duel.SelectTarget(tp,c9910224.tdfilter,tp,LOCATION_GRAVE,0,1,1,c)
+	local g=Duel.SelectTarget(tp,c9910224.tdfilter,tp,LOCATION_GRAVE,0,1,1,c)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,2)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
 end
 function c9910224.tdop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=Duel.GetFirstTarget()
 	if Duel.Draw(tp,1,REASON_EFFECT)==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_HAND,0,1,1,nil)
-	if tc:IsRelateToEffect(e) then g:AddCard(tc) end
-	if g:GetCount()>0 then
-		Duel.BreakEffect()
-		Duel.SendtoDeck(g,nil,2,REASON_EFFECT)
-	end
+	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect(e) then return end
+	Duel.BreakEffect()
+	Duel.SendtoDeck(tc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 end

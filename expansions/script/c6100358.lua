@@ -15,26 +15,17 @@ function s.initial_effect(c)
 	
 	--②：改名
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetCode(EFFECT_CHANGE_CODE)
-	e2:SetRange(LOCATION_MZONE+LOCATION_GRAVE)
-	e2:SetValue(6110002) -- 剑装机岚 #0C0607
+	e2:SetDescription(aux.Stringid(id,1))
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_REMOVE)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCountLimit(1,id+1)
+	e2:SetCondition(s.spcon1)
+	e2:SetTarget(s.sptg1)
+	e2:SetOperation(s.spop1)
 	c:RegisterEffect(e2)
-	
-	--③：连锁本家魔陷 -> 苏生
-	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(id,1))
-	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
-	e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e3:SetCode(EVENT_CHAINING)
-	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetRange(LOCATION_GRAVE)
-	e3:SetCountLimit(1,id+1)
-	e3:SetCondition(s.rescon)
-	e3:SetTarget(s.restg)
-	e3:SetOperation(s.resop)
-	c:RegisterEffect(e3)
+
 end
 
 -- === 效果① ===
@@ -97,27 +88,28 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 -- === 效果③ ===
-function s.rescon(e,tp,eg,ep,ev,re,r,rp)
-	-- 自己发动 & 是魔陷效果 & 是「剑装」卡
-	return rp==tp and re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and re:GetHandler():IsSetCard(0x610) and Duel.GetTurnCount()~=e:GetHandler():GetTurnID()
+function s.spcon1(e,tp,eg,ep,ev,re,r,rp)
+	-- 墓地的这张卡被除外的场合
+	return e:GetHandler():IsPreviousLocation(LOCATION_GRAVE)
 end
 
-function s.restg(e,tp,eg,ep,ev,re,r,rp,chk)
+function s.sptg1(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 end
 
-function s.resop(e,tp,eg,ep,ev,re,r,rp)
+function s.spop1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
-		-- 离场除外
+		-- 从场上离开的场合回到卡组最下面
 		local e1=Effect.CreateEffect(c)
-		e1:SetDescription(aux.Stringid(id,5))
+		e1:SetDescription(3301) -- 系统自带："从场上离开的场合回到卡组最下面"
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_LEAVE_FIELD_REDIRECT)
 		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_CLIENT_HINT)
-		e1:SetValue(LOCATION_REMOVED)
+		e1:SetValue(LOCATION_DECKBOT)
 		e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
 		c:RegisterEffect(e1,true)
 	end

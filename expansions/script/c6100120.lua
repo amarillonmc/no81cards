@@ -36,7 +36,7 @@ function s.rvfilter(c,e,tp,mc)
 			and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil)
 	elseif c:IsType(TYPE_TRAP) then
 		return mc:IsAbleToGrave()
-			and Duel.IsExistingMatchingCard(s.thfilter1,tp,LOCATION_REMOVED,0,1,nil)
+			and Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,e:GetHandler())
 	end
 	return false
 end
@@ -84,12 +84,13 @@ function s.e1op(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	elseif rc:IsType(TYPE_TRAP) then
-		if c:IsRelateToEffect(e) and Duel.SendtoGrave(c,REASON_EFFECT)>0 and c:IsLocation(LOCATION_GRAVE) then
-			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-			local g=Duel.SelectMatchingCard(tp,s.thfilter1,tp,LOCATION_REMOVED,0,1,1,nil)
+		if c:IsRelateToEffect(e) then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			local g=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
 			if #g>0 then
+				Duel.HintSelection(g)
+				g:AddCard(c)
 				Duel.SendtoGrave(g,REASON_EFFECT)
-				Duel.ConfirmCards(1-tp,g)
 			end
 		end
 	end

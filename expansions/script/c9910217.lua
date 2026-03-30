@@ -8,6 +8,7 @@ function c9910217.initial_effect(c)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetCountLimit(1,9910217)
 	e1:SetCondition(c9910217.spcon)
+	e1:SetCost(c9910217.spcost)
 	e1:SetTarget(c9910217.sptg)
 	e1:SetOperation(c9910217.spop)
 	c:RegisterEffect(e1)
@@ -26,7 +27,16 @@ function c9910217.initial_effect(c)
 end
 function c9910217.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local race=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_RACE)
-	return Duel.GetTurnPlayer()~=tp and re:IsActiveType(TYPE_MONSTER) and race&RACE_PSYCHO>0
+	return re:IsActiveType(TYPE_MONSTER) and race&RACE_PSYCHO>0
+end
+function c9910217.costfilter(c)
+	return c:IsSetCard(0x6956) and not c:IsCode(9910217) and c:IsAbleToGraveAsCost()
+end
+function c9910217.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c9910217.costfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,c9910217.costfilter,tp,LOCATION_DECK,0,1,1,nil)
+	Duel.SendtoGrave(g,REASON_COST)
 end
 function c9910217.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
@@ -39,7 +49,6 @@ function c9910217.linkfilter(c)
 end
 function c9910217.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local count=0
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
 		Duel.AdjustAll()
 		local g=Duel.GetMatchingGroup(c9910217.linkfilter,tp,LOCATION_EXTRA,0,nil)
@@ -61,7 +70,7 @@ function c9910217.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return c:IsAbleToDeckAsCost() end
 	Duel.HintSelection(Group.FromCards(c))
-	Duel.SendtoDeck(c,nil,2,REASON_COST)
+	Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c9910217.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end

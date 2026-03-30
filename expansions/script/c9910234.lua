@@ -2,12 +2,13 @@
 function c9910234.initial_effect(c)
 	--negate
 	local e1=Effect.CreateEffect(c)
+	e1:SetCategory(CATEGORY_TOGRAVE+CATEGORY_SPECIAL_SUMMON)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,9910234)
 	e1:SetCondition(c9910234.condition)
-	e1:SetCost(c9910234.cost)
+	e1:SetTarget(c9910234.target)
 	e1:SetOperation(c9910234.operation)
 	c:RegisterEffect(e1)
 	--special summon
@@ -24,28 +25,54 @@ function c9910234.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function c9910234.condition(e,tp,eg,ep,ev,re,r,rp)
-	local res=false
-	for i=1,ev-1 do
-		local tgp=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_PLAYER)
-		if tgp~=tp then res=true end
+	for i=1,ev do
+		local te=Duel.GetChainInfo(i,CHAININFO_TRIGGERING_EFFECT)
+		local tc=te:GetHandler()
+		if te:GetHandler():IsSetCard(0x6956) then return true end
 	end
-	return res and rp==tp and re:GetHandler():IsSetCard(0x6956)
+	return false
 end
-function c9910234.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToGraveAsCost() end
-	Duel.SendtoGrave(e:GetHandler(),REASON_COST)
+function c9910234.target(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsAbleToGrave()
+		or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)) end
 end
 function c9910234.operation(e,tp,eg,ep,ev,re,r,rp)
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CHAIN_SOLVING)
-	e2:SetCondition(c9910234.negcon)
-	e2:SetOperation(c9910234.negop)
-	e2:SetReset(RESET_CHAIN)
-	Duel.RegisterEffect(e2,tp)
+	local c=e:GetHandler()
+	if not c:IsRelateToEffect(e) then return end
+	local b1=c:IsAbleToGrave()
+	local b2=(Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false))
+	local off=1
+	local ops={}
+	local opval={}
+	if b1 then
+		ops[off]=1191
+		opval[off]=0
+		off=off+1
+	end
+	if b2 then
+		ops[off]=1152
+		opval[off]=1
+		off=off+1
+	end
+	local op=Duel.SelectOption(tp,table.unpack(ops))+1
+	local sel=opval[op]
+	if sel==0 then
+		if Duel.SendtoGrave(c,REASON_EFFECT)~=0 and c:IsLocation(LOCATION_GRAVE) then
+			local e1=Effect.CreateEffect(e:GetHandler())
+			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e1:SetCode(EVENT_CHAIN_SOLVING)
+			e1:SetCondition(c9910234.negcon)
+			e1:SetOperation(c9910234.negop)
+			e1:SetReset(RESET_CHAIN)
+			Duel.RegisterEffect(e1,tp)
+		end
+	elseif sel==1 then
+		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
 function c9910234.negcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(tp,9910234)==0 and ep~=tp
+	return rp==1-tp and Duel.GetFlagEffect(tp,9910234)==0
 end
 function c9910234.negop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,9910234)
@@ -63,8 +90,10 @@ function c9910234.spcon(e,tp,eg,ep,ev,re,r,rp)
 	return g and g:IsContains(c)
 end
 function c9910234.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToDeckAsCost() end
-	Duel.SendtoDeck(e:GetHandler(),nil,2,REASON_COST)
+	local c=e:GetHandler()
+	if chk==0 then return c:IsAbleToDeckAsCost() end
+	Duel.HintSelection(Group.FromCards(c))
+	Duel.SendtoDeck(c,nil,SEQ_DECKSHUFFLE,REASON_COST)
 end
 function c9910234.spfilter(c,e,tp)
 	return c:IsSetCard(0x6956) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -82,15 +111,4 @@ function c9910234.spop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
 	end
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e1:SetTargetRange(1,0)
-	e1:SetValue(c9910234.aclimit)
-	e1:SetReset(RESET_PHASE+PHASE_END)
-	Duel.RegisterEffect(e1,tp)
-end
-function c9910234.aclimit(e,re,tp)
-	return re:IsActiveType(TYPE_MONSTER) and not re:GetHandler():IsRace(RACE_PSYCHO)
 end

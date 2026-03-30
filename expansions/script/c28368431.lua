@@ -47,15 +47,32 @@ function c28368431.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,tc)
 	end
 	--curse
+	--operation
+	local e0=Effect.CreateEffect(e:GetHandler())
+	e0:SetDescription(aux.Stringid(28368431,0))
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_CUSTOM+28333723)
+	e0:SetRange(0xff)
+	e0:SetOperation(c28368431.regop)
+	e0:SetReset(RESET_PHASE+PHASE_END,2)
+	Duel.RegisterEffect(e0,tp)
+	--trigger
+	local flag=not ANTICA_EFFECT_HINT and EFFECT_FLAG_DELAY or 0--console
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetDescription(aux.Stringid(28368431,0))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_DESTROYED)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	--e1:SetCondition(c28368431.regcon)
-	e1:SetOperation(c28368431.regop)
+	e1:SetProperty(flag+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetOperation(c28368431.checkop)
+	e1:SetLabelObject(e0)
 	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e1,tp)
+end
+function c28368431.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	if not ANTICA_EFFECT_HINT then Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,te,0,0,0,0) else
+		c28384553.process_list[tp][#c28384553.process_list[tp]+1]=te
+	end
 end
 function c28368431.chkfilter(c,p)
 	return c:IsPreviousLocation(LOCATION_MZONE) and c:IsPreviousControler(p) and c:IsReason(REASON_DESTROY)
@@ -64,6 +81,7 @@ function c28368431.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c28368431.chkfilter,1,nil,tp)
 end
 function c28368431.regop(e,tp,eg,ep,ev,re,r,rp)
+	if re~=e then return end
 	Duel.Hint(HINT_CARD,0,28368431)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local tc=Duel.SelectMatchingCard(tp,Card.IsAbleToDeck,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil):GetFirst()
