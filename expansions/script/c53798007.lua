@@ -54,7 +54,7 @@ function c53798007.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c53798007.cfilter(c,code)
-	if not (c:IsReason(REASON_EFFECT) and c:IsLocation(LOCATION_GRAVE) and c:IsType(TYPE_MONSTER)) return false end
+	if not (c:IsReason(REASON_EFFECT) and c:IsLocation(LOCATION_GRAVE) and c:IsType(TYPE_MONSTER)) then return false end
 	return c:GetReasonEffect():IsActivated() and code==53798007
 end
 function c53798007.regop(e,tp,eg,ep,ev,re,r,rp)
