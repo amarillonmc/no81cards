@@ -30,41 +30,33 @@ function s.initial_effect(c)
 	e2:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e2:SetValue(s.splimit)
 	c:RegisterEffect(e2)
-	--Cannot be Tributed
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE)
-	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCode(EFFECT_CANNOT_RELEASE)
-	c:RegisterEffect(e2)
-	--Cannot be Banished
-	local e3=e2:Clone()
-	e3:SetCode(EFFECT_CANNOT_REMOVE)
+	--cannot release
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE)
+	e3:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetCode(EFFECT_UNRELEASABLE_SUM)
+	e3:SetValue(1)
 	c:RegisterEffect(e3)
-	--Cannot be Material
-	local e4=e2:Clone()
-	e4:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
-	e4:SetValue(s.fuslimit)
+	local e4=e3:Clone()
+	e4:SetCode(EFFECT_UNRELEASABLE_NONSUM)
 	c:RegisterEffect(e4)
-	local e5=e4:Clone()
-	e5:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
+	--cannot remove
+	local e5=e3:Clone()
+	e5:SetCode(EFFECT_CANNOT_REMOVE)
 	c:RegisterEffect(e5)
-	local e6=e4:Clone()
-	e6:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
+	--Cannot be Material
+	local e6=e3:Clone()
+	e6:SetCode(EFFECT_CANNOT_BE_FUSION_MATERIAL)
 	c:RegisterEffect(e6)
-	local e7=e4:Clone()
-	e7:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
+	local e7=e3:Clone()
+	e7:SetCode(EFFECT_CANNOT_BE_SYNCHRO_MATERIAL)
 	c:RegisterEffect(e7)
-	--Attack all
-	local e8=Effect.CreateEffect(c)
-	e8:SetType(EFFECT_TYPE_SINGLE)
-	e8:SetCode(EFFECT_ATTACK_ALL)
-	e8:SetValue(1)
+	local e8=e3:Clone()
+	e8:SetCode(EFFECT_CANNOT_BE_XYZ_MATERIAL)
 	c:RegisterEffect(e8)
-	--Piercing damage
-	local e9=Effect.CreateEffect(c)
-	e9:SetType(EFFECT_TYPE_SINGLE)
-	e9:SetCode(EFFECT_PIERCE)
+	local e9=e3:Clone()
+	e9:SetCode(EFFECT_CANNOT_BE_LINK_MATERIAL)
 	c:RegisterEffect(e9)
 	--Negate effect
 	local e10=Effect.CreateEffect(c)
@@ -78,9 +70,18 @@ function s.initial_effect(c)
 	e10:SetTarget(s.negtg)
 	e10:SetOperation(s.negop)
 	c:RegisterEffect(e10)
-end
-function s.fuslimit(e,c,sumtype)
-	return sumtype==SUMMON_TYPE_FUSION
+
+	--attack all
+	local e11=Effect.CreateEffect(c)
+	e11:SetType(EFFECT_TYPE_SINGLE)
+	e11:SetCode(EFFECT_ATTACK_ALL)
+	e11:SetValue(1)
+	c:RegisterEffect(e11)
+	--pierce
+	local e12=Effect.CreateEffect(c)
+	e12:SetType(EFFECT_TYPE_SINGLE)
+	e12:SetCode(EFFECT_PIERCE)
+	c:RegisterEffect(e12)
 end
 function s.condition(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -98,25 +99,27 @@ end
 function s.shogunfilter(c)
 	return c:IsCode(65133150) and c:IsFaceup()
 end
-function s.cmatfilter(c)
-	return c:IsRace(RACE_MACHINE) and c:IsReleasable()
+function s.hspfilter(c,tp,sc)
+	return c:IsRace(RACE_MACHINE) and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL)
+end
+function s.fselect(g,tp,c)
+	return Duel.GetLocationCountFromEx(tp,tp,g,c)>0
 end
 function s.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(s.shogunfilter,tp,LOCATION_ONFIELD,0,1,nil)
-		and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
-		and Duel.IsExistingMatchingCard(s.cmatfilter,tp,LOCATION_MZONE,0,2,nil)
+	local rg=Duel.GetReleaseGroup(tp,false,REASON_SPSUMMON):Filter(s.hspfilter,nil)
+	return rg:CheckSubGroup(s.fselect,2,2,tp,c)
 end
 function s.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
-	local g=Duel.GetMatchingGroup(s.cmatfilter,tp,LOCATION_MZONE,0,nil)
-	local sg=g:CancelableSelect(tp,2,2,nil)
+	local rg=Duel.GetReleaseGroup(tp,false,REASON_SPSUMMON):Filter(s.hspfilter,nil)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
+	local sg=rg:SelectSubGroup(tp,s.fselect,true,2,2,tp,c)
 	if sg then
 		sg:KeepAlive()
 		e:SetLabelObject(sg)
 		return true
-	end
-	return false
+	else return false end
 end
 function s.sprop(e,tp,eg,ep,ev,re,r,rp,c)
 	local sg=e:GetLabelObject()

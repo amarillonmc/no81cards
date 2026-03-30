@@ -9,7 +9,7 @@ function s.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(s.splimit)
+	e0:SetValue(aux.fuslimit)
 	c:RegisterEffect(e0)
 	--special summon from extra
 	local e1=Effect.CreateEffect(c)
@@ -21,7 +21,6 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sprtg)
 	e1:SetOperation(s.sprop)
 	c:RegisterEffect(e1)
-	e0:SetLabelObject(e1)
 	--cannot be target
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
@@ -48,10 +47,6 @@ function s.initial_effect(c)
 end
 function s.matfilter(c)
 	return c:IsAttribute(ATTRIBUTE_LIGHT)
-end
-function s.splimit(e,se,sp,st)
-	return not e:GetHandler():IsLocation(LOCATION_EXTRA) 
-		or bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION or se==e:GetLabelObject()
 end
 function s.sprfilter(c)
 	return c:IsCode(65133118) and c:GetCounter(0x838)>=3 and c:IsReleasable()
