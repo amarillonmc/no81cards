@@ -4,7 +4,7 @@ function c29056009.initial_effect(c)
 	aux.AddCodeList(c,29065500,29065502,29065578)
 --search
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(39392286,0))
+	e1:SetDescription(aux.Stringid(29056009,0))
 	e1:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -16,9 +16,10 @@ function c29056009.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
+	c29056009.summon_effect=e1 
 	--chenweiduixiang sp
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(29056009,0))
+	e3:SetDescription(aux.Stringid(29056009,1))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_BECOME_TARGET)
@@ -33,21 +34,20 @@ function c29056009.initial_effect(c)
 	e4:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e4:SetCondition(c29056009.spcon2)
 	c:RegisterEffect(e4)
-	c29056009.summon_effect=e1 
 end
 	--chenweiduixiang sp
-function c29056009.tgfilter(c,e)
-	return c:IsLocation(LOCATION_ONFIELD) and c:GetControler()==e:GetHandler():GetControler()
+function c29056009.tgfilter(c,tp)
+	return c:IsLocation(LOCATION_ONFIELD) and c:IsControler(tp)
 end
 function c29056009.spcon1(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(c29056009.tgfilter,1,nil,e) and rp==1-tp
+	return eg:IsExists(c29056009.tgfilter,1,nil,tp) and rp==1-tp
 end
 function c29056009.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return (Duel.GetAttacker()==c or Duel.GetAttackTarget()==c)
 end
 function c29056009.spfilter(c,e,tp)
-	if not (c:IsCode(29056009) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)) then return false end
+	if not (c:IsCode(29065578) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)) then return false end
 	if c:IsLocation(LOCATION_EXTRA) then 
 		return Duel.GetLocationCountFromEx(tp,tp,nil,c)>0
 	else

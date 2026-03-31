@@ -70,7 +70,7 @@ function s.con2(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.thfilter2(c,tp)
 	if not c:IsSetCard(0x5a7d) then return false end
-	local g=Duel.GetMatchingGroup(s.cfilter,tp,LOCATION_ONFIELD,0,nil)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_ONFIELD,0,nil)
 	local typ=0
 	for tc in aux.Next(g) do
 		typ=typ|(tc:GetType()&0x7)

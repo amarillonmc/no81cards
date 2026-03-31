@@ -2,7 +2,7 @@ local s,id=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(c,s.matfilter1,s.matfilter2,true)
-	aux.AddContactFusionProcedure(c,s.cfilter,LOCATION_MZONE,0,aux.ContactFusionSendToDeck(c))
+	aux.AddContactFusionProcedure(c,s.cfilter,LOCATION_ONFIELD,0,aux.ContactFusionSendToDeck(c))
 	
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
