@@ -58,6 +58,13 @@ function c28315943.recop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,tc)
 		if not c:IsRelateToChain() or c:IsFacedown() then return end
 		--c:SetHint(CHINT_CARD,tcode)
+		local e0=Effect.CreateEffect(e:GetHandler())
+		e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		e0:SetCode(EVENT_MOVE)
+		e0:SetCondition(c28315943.hitcon)
+		e0:SetOperation(c28315943.hitop)
+		e0:SetLabel(tcode,acode)
+		Duel.RegisterEffect(e0,tp)
 		local e1=Effect.CreateEffect(e:GetHandler())
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_LEAVE_FIELD)
@@ -66,6 +73,23 @@ function c28315943.recop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetOperation(c28315943.regop)
 		e1:SetLabel(tcode,acode)
 		Duel.RegisterEffect(e1,tp)
+	end
+end
+function c28315943.movfilter(c,tcode,acode)
+	return c:IsLocation(LOCATION_MZONE) and c:IsFaceup() and c:IsCode(tcode,acode)
+end
+function c28315943.hitcon(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	return eg:IsExists(c28315943.movfilter,1,nil,e:GetLabel()) and g:CheckSubGroup(aux.gfcheck,2,2,Card.IsCode,e:GetLabel())
+end
+function c28315943.hitop(e,tp,eg,ep,ev,re,r,rp)
+	local tcode,acode=e:GetLabel()
+	local g=Duel.GetMatchingGroup(Card.IsFaceup,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
+	local ag,tg=g:Filter(Card.IsCode,nil,acode),g:Filter(Card.IsCode,nil,tcode)
+	for ac in aux.Next(ag) do
+		for tc in aux.Next(tg) do
+			ac:SetCardTarget(tc)
+		end
 	end
 end
 function c28315943.chkfilter(c,code)

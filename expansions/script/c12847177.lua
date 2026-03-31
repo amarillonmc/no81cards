@@ -47,6 +47,14 @@ function s.initial_effect(c)
 	e4:SetCondition(s.lscon)
 	e4:SetOperation(s.lsop)
 	c:RegisterEffect(e4)
+	--
+	local e5=Effect.CreateEffect(c)
+	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e5:SetRange(LOCATION_HAND)
+	e5:SetCode(EFFECT_SEND_REPLACE)
+	e5:SetTarget(s.reptg)
+	e5:SetValue(s.repval)
+	c:RegisterEffect(e5)
 	if not s.global_check then
 		s.global_check=true
 		grandsaber_table={}
@@ -69,7 +77,7 @@ function s.initial_effect(c)
 					end
 				elseif aux.GetValueType(target)=="Group" then
 					local exg=Group.CreateGroup()
-					exg=target:Filter(function(c) return c:IsRace(RACE_WARRIOR) and not c:IsLocation(LOCATION_EXTRA) and target:GetFlagEffect(id)==0 end,nil)
+					exg=target:Filter(s.filter0,nil)
 					if #exg>0 and Duel.SelectYesNo(sumplayer,aux.Stringid(id,0)) then
 						Duel.Hint(HINT_SELECTMSG,sumplayer,HINTMSG_OPERATECARD)
 						local cg=exg:Select(sumplayer,1,1,nil)
@@ -146,6 +154,9 @@ function s.initial_effect(c)
 		end
 	end
 end
+function s.filter0(c)
+	return c:IsRace(RACE_WARRIOR) and not c:IsLocation(LOCATION_EXTRA) and c:GetFlagEffect(id)==0
+end
 function s.eqfilter(c)
 	return c:GetFlagEffect(id+2)>0
 end
@@ -207,4 +218,32 @@ function s.lsop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetCode(EFFECT_CANNOT_SUMMON)
 	Duel.RegisterEffect(e2,p)
 	e:GetHandler():RegisterFlagEffect(id+2,RESET_EVENT+RESETS_STANDARD,0,1)
+end
+function s.repfilter(c)
+	return c:IsLocation(LOCATION_MZONE)
+end
+function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Debug.Message(eg:IsExists(s.repfilter,1,nil) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)) end
+	if Duel.SelectYesNo(tp,aux.Stringid(14001430,0)) then
+		local g=eg:Filter(s.repfilter,nil,tp)
+		local ct=g:GetCount()
+		if ct>1 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+			g=g:Select(tp,1,1,nil)
+		end
+		local tc=g:GetFirst()
+		local e1=Effect.CreateEffect(c)
+		e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+		e1:SetValue(aux.FALSE)
+		e1:SetReset(RESET_CHAIN)
+		tc:RegisterEffect(e1)
+		Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)
+		return true
+	else return false end
+end
+function s.repval(e,c)
+	return false
 end
