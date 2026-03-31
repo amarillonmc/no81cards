@@ -97,13 +97,17 @@ function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	if c:IsPreviousLocation(LOCATION_ONFIELD) then
+		e:SetLabel(1)
+	else
+		e:SetLabel(0)
+	end
 end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) and Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
-		if not tc:IsLocation(LOCATION_REMOVED) then return end
-		if c:IsPreviousLocation(LOCATION_ONFIELD) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
+	if Duel.Remove(tc,0,REASON_EFFECT+REASON_TEMPORARY)~=0 then
+		if e:GetLabel()==1 and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 			local e1=Effect.CreateEffect(c)
 			e1:SetDescription(aux.Stringid(id,2))
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -141,5 +145,7 @@ function s.retcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
-	e:Reset()
+	if e:GetLabelObject():GetFlagEffect(id)==0 then
+		e:Reset()
+	end
 end
