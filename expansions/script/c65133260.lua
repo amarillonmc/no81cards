@@ -19,7 +19,7 @@ function s.initial_effect(c)
 		_ChangeChainOperation=Duel.ChangeChainOperation
 		function Duel.ChangeChainOperation(ev,op)
 			local e,tp=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)
-			if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetMatchingGroupCount(s.affilter,tp,LOCATION_DECK+LOCATION_HAND,0,nil) >0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
+			if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.GetMatchingGroupCount(s.affilter,tp,LOCATION_DECK+LOCATION_HAND,0,nil,tp)>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
 				_ChangeChainOperation(ev,s.chop2(op))
 			else
 				_ChangeChainOperation(ev,op)
@@ -47,7 +47,7 @@ end
 function s.chop2(op)
 	return function(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetLocationCount(tp,LOCATION_SZONE)==0 then return end
-		local tc=Duel.GetMatchingGroup(s.affilter,tp,LOCATION_DECK+LOCATION_HAND,0,nil):Select(tp,1,1,nil):GetFirst()
+		local tc=Duel.GetMatchingGroup(s.affilter,tp,LOCATION_DECK+LOCATION_HAND,0,nil,tp):Select(tp,1,1,nil):GetFirst()
 		if tc then
 			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			local ae=Effect.CreateEffect(e:GetHandler())

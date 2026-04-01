@@ -95,7 +95,7 @@ function c16323045.activate2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c16323045.filter(c)
-	return c:IsLevel(4) and c:IsRace(RACE_MACHINE) and c:IsSetCard(0x3dcf) and c:IsAbleToHand()
+	return c:IsLevelBelow(4) and c:IsRace(RACE_MACHINE) and c:IsSetCard(0x3dcf) and c:IsAbleToHand()
 end
 function c16323045.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c16323045.filter,tp,LOCATION_DECK,0,1,nil) end
