@@ -85,21 +85,26 @@ function c19209525.tgop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c19209525.spfilter2(c,e,tp)
-	return c:IsSetCard(0x3b50) and not c:IsCode(19209525) and c:IsFaceupEx() and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+function c19209525.spfilter2(c,e,tp,chk)
+	return c:IsSetCard(0x3b50) and not c:IsCode(19209525) and c:IsFaceupEx() and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and (c:IsLocation(LOCATION_GRAVE) and Duel.GetMZoneCount(tp)>0 or c:IsLocation(LOCATION_EXTRA) and Duel.GetLocationCountFromEx(tp,tp,nil,c)>0) and (chk==0 or aux.NecroValleyFilter()(c))
 end
 function c19209525.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetMZoneCount(tp)>0
-		and Duel.IsExistingMatchingCard(c19209525.spfilter2,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,e,tp)
-	end
+	if chk==0 then return Duel.IsExistingMatchingCard(c19209525.spfilter2,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,e,tp,0) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_EXTRA)
 end
 function c19209525.spop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.GetMZoneCount(tp)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local sc=Duel.SelectMatchingCard(tp,c19209525.spfilter2,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,e,tp,1):GetFirst()
+	if sc and Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) and Duel.IsExistingMatchingCard(c19209525.spfilter2,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,e,tp,1) and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.SelectYesNo(tp,aux.Stringid(19209525,2)) then
+		local sg=Duel.SelectMatchingCard(tp,c19209525.spfilter2,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,e,tp,1)
+		Duel.SpecialSummonStep(sg,0,tp,tp,false,false,POS_FACEUP)
+	end
+	Duel.SpecialSummonComplete()
+	--[[if Duel.GetMZoneCount(tp)<=0 then return end
 	local ft=Duel.GetLocationCount(tp,LOCATION_MZONE)
 	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	local g=Duel.GetMatchingGroup(c19209525.spfilter2,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,nil,e,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local sg=g:SelectSubGroup(tp,aux.dncheck,false,1,math.min(2,ft))
-	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)]]--
 end

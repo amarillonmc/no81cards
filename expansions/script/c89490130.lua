@@ -62,6 +62,7 @@ function s.initial_effect(c)
 	e1:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e1:SetTarget(s.target2)
 	e1:SetOperation(s.operation2)
 	c:RegisterEffect(e1)
@@ -71,7 +72,7 @@ function s.imfilter(c)
 end
 function s.spcon(e,c)
 	if c==nil then return true end
-	local g=Duel.GetMatchingGroup(s.imfilter,tp,LOCATION_EXTRA,0,nil)
+	local g=Duel.GetMatchingGroup(s.imfilter,e:GetHandlerPlayer(),LOCATION_EXTRA,0,nil)
 	return g:GetClassCount(Card.GetCode)>=5
 end
 function s.splimit(e,c,sump,sumtype,sumpos,targetp)

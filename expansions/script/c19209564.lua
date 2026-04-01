@@ -47,7 +47,7 @@ function c19209564.activate(e,tp,eg,ep,ev,re,r,rp)
 		return
 	end
 	Duel.ConfirmDecktop(tp,dcount-seq)
-	Duel.DisableShuffleCheck(true)
+	--Duel.DisableShuffleCheck(true)
 	Duel.SendtoHand(sc,tp,REASON_EFFECT)
 	Duel.ConfirmCards(1-tp,sc)
 	Duel.ShuffleHand(tp)
