@@ -70,7 +70,7 @@ function cm.check0(e,tp,eg,ep,ev,re,r,rp)
 		end
 		pcall(tg,te,te:GetHandlerPlayer(),eg,ep,ev,re,r,rp,0)
 		--Card.IsCanBeSpecialSummoned=_IsCanBeSpecialSummoned
-		if cm[1] then cm[re]=true end
+		if cm[1] then cm[te]=true end
 		cm[1]=nil
 	end
 end
