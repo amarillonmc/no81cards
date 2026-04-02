@@ -86,10 +86,10 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.ShuffleHand(tp)
 			g:Sub(sg)
 		end
-		
-		-- 剩下的卡回到卡组（通常处理为洗回卡组）
+
 		if #g>0 then
 			Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 		end
 	end
+	Duel.ShuffleDeck(tp)
 end
