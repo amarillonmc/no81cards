@@ -45,8 +45,8 @@ function c16323035.initial_effect(c)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCountLimit(1,16323035)
-	e2:SetTarget(c16323035.distg)
-	e2:SetOperation(c16323035.disop)
+	e2:SetTarget(c16323035.distg1)
+	e2:SetOperation(c16323035.disop1)
 	c:RegisterEffect(e2)
 	--negate
 	local e3=Effect.CreateEffect(c)
@@ -113,10 +113,10 @@ end
 function c16323035.retop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.ReturnToField(e:GetLabelObject())
 end
-function c16323035.distg(e,tp,eg,ep,ev,re,r,rp,chk)
+function c16323035.distg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,1,nil) end
 end
-function c16323035.disop(e,tp,eg,ep,ev,re,r,rp)
+function c16323035.disop1(e,tp,eg,ep,ev,re,r,rp)
 	local ct=0
 	local ng=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,0,LOCATION_ONFIELD,nil)
 	for nc in aux.Next(ng) do

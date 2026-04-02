@@ -24,7 +24,7 @@ function c22348466.initial_effect(c)
 	--destroy
 	local e4=Effect.CreateEffect(c)
 	e4:SetDescription(aux.Stringid(22348466,1))
-	e4:SetCategory(CATEGORY_DESTROY)
+	e4:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetCode(EVENT_TO_GRAVE)
 	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
