@@ -12,7 +12,7 @@ function s.initial_effect(c)
     local e2=Effect.CreateEffect(c)
     e2:SetCategory(CATEGORY_TODECK+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND)
     e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-    e2:SetCode(EVENT_CUSTOM+id)
+    e2:SetCode(EVENT_DESTROYED)
     e2:SetProperty(EFFECT_FLAG_DELAY)
     e2:SetRange(LOCATION_GRAVE)
     e2:SetCountLimit(1,0,EFFECT_COUNT_CODE_CHAIN)
@@ -20,15 +20,6 @@ function s.initial_effect(c)
     e2:SetTarget(s.sptg)
     e2:SetOperation(s.spop)
     c:RegisterEffect(e2)
-    if not s.global_check then
-        s.global_check=true
-        local ge1=Effect.CreateEffect(c)
-        ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-        ge1:SetCode(EVENT_DESTROYED)
-        ge1:SetCondition(s.regcon)
-        ge1:SetOperation(s.regop)
-        Duel.RegisterEffect(ge1,0)
-    end
 end
 function s.splimit(e,c)
     return not c:IsType(TYPE_RITUAL)
@@ -51,19 +42,8 @@ end
 function s.cfilter(c,tp)
     return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
-function s.regcon(e,tp,eg,ep,ev,re,r,rp)
-    local v=0
-    if eg:IsExists(s.cfilter,1,nil,0) then v=v+1 end
-    if eg:IsExists(s.cfilter,1,nil,1) then v=v+2 end
-    if v==0 then return false end
-    e:SetLabel(({0,1,PLAYER_ALL})[v])
-    return true
-end
-function s.regop(e,tp,eg,ep,ev,re,r,rp)
-    Duel.RaiseEvent(eg,EVENT_CUSTOM+id,re,r,rp,ep,e:GetLabel())
-end
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-    return ev==tp or ev==PLAYER_ALL
+    return not eg:IsContains(e:GetHandler()) and eg:IsExists(s.cfilter,1,nil,tp)
 end
 function s.tdfilter(c)
     return c:IsType(TYPE_SPELL) and c:IsAbleToDeck()

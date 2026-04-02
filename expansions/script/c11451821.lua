@@ -121,7 +121,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP) then
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
 		local sg=Group.CreateGroup()
 		for tc in aux.Next(cm[0]) do
 			local con=tc.condition3
@@ -131,7 +131,6 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if #sg==0 then return end
 		local tc=sg:Select(tp,1,1,nil):GetFirst()
 		tc.operation3(e,tp,eg,ep,ev,re,r,rp)
-		Duel.SpecialSummonComplete()
 	end
 end
 function cm.chcon(e,tp,eg,ep,ev,re,r,rp)
@@ -146,7 +145,7 @@ function cm.chop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.RitualUltimateFilter(c,filter,e,tp,m1,m2,level_function,greater_or_equal,chk)
-	if bit.band(c:GetType(),0x81)~=0x81 or (filter and not filter(c,e,tp,chk)) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
+	if bit.band(c:GetType(),0x81)~=0x81 or not c:IsAttribute(ATTRIBUTE_WATER) or (filter and not filter(c,e,tp,chk)) or not c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_RITUAL,tp,false,true) then return false end
 	local mg=m1 --:Filter(Card.IsCanBeRitualMaterial,c,c)
 	if m2 then
 		mg:Merge(m2)
@@ -163,7 +162,7 @@ function cm.RitualUltimateFilter(c,filter,e,tp,m1,m2,level_function,greater_or_e
 	return res
 end
 function cm.mfilter(c)
-	return c:IsAttribute(ATTRIBUTE_WATER) and c:IsAbleToRemove()
+	return c:IsAbleToRemove() --and c:IsAttribute(ATTRIBUTE_WATER)
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)

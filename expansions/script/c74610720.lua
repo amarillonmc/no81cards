@@ -17,10 +17,12 @@ function s.initial_effect(c)
     e2:SetOperation(s.effop)
     c:RegisterEffect(e2)
     local e3=Effect.CreateEffect(c)
-    e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+    e3:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
     e3:SetProperty(EFFECT_FLAG_DELAY)
     e3:SetCode(EVENT_DESTROYED)
+    e3:SetRange(LOCATION_GRAVE)
     e3:SetCountLimit(1,id+1)
+    e3:SetCondition(s.placecon)
     e3:SetTarget(s.placetg)
     e3:SetOperation(s.placeop)
     c:RegisterEffect(e3)
@@ -59,10 +61,10 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
     local tc=Duel.SelectMatchingCard(tp,s.effilter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp):GetFirst()
     if tc then
-        Duel.RegisterFlagEffect(tp,id+2,RESET_PHASE+PHASE_END,0,2)
+        Duel.RegisterFlagEffect(tp,id+2,RESET_PHASE+PHASE_END,0,1)
         Duel.HintSelection(Group.FromCards(tc))
         Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1,tc:GetOriginalCode())
-        tc:RegisterFlagEffect(id+3,RESET_EVENT+RESETS_STANDARD,0,1)
+        tc:RegisterFlagEffect(id+3,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,2))
         local c=e:GetHandler()
         local e2=Effect.CreateEffect(c)
         e2:SetDescription(aux.Stringid(id,2))
@@ -84,7 +86,6 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
             e1:SetReset(RESET_EVENT+RESETS_STANDARD)
             tc:RegisterEffect(e1)
         end
-        tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(74610720,3))
     end
 end
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
@@ -101,6 +102,12 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
     if #g>0 then
         Duel.Destroy(g,REASON_EFFECT)
     end
+end
+function s.cfilter(c,tp)
+    return c:IsReason(REASON_BATTLE+REASON_EFFECT) and c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)
+end
+function s.placecon(e,tp,eg,ep,ev,re,r,rp)
+    return not eg:IsContains(e:GetHandler()) and eg:IsExists(s.cfilter,1,nil,tp)
 end
 function s.placetg(e,tp,eg,ep,ev,re,r,rp,chk)
     if chk==0 then return true end
