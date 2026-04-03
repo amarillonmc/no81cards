@@ -35,7 +35,7 @@ function c9911558.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g2=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,g)
 	g:Merge(g2)
-	Duel.SetOperationInfo(0,CATEGORY_RELEASE,g,2,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,PLAYER_ALL,LOCATION_REMOVED)
 end
 function c9911558.spfilter1(c,e,tp)
