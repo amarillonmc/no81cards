@@ -92,11 +92,12 @@ function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
+	if not tc:IsRelateToEffect() then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
 	local g=Duel.SelectMatchingCard(tp,s.rmfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if #g<=0 then return end
 	local gc=g:GetFirst()
-	if Duel.Remove(gc,POS_FACEUP,REASON_EFFECT)>0 and gc:IsLocation(LOCATION_REMOVED) and tc:IsRelateToEffect(e) then
+	if Duel.Remove(gc,POS_FACEUP,REASON_EFFECT)>0 and gc:IsLocation(LOCATION_REMOVED) then
 		Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
 	end
 end
