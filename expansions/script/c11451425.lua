@@ -22,7 +22,6 @@ function cm.initial_effect(c)
 	e4:SetCode(EVENT_PHASE+PHASE_END)
 	e4:SetRange(LOCATION_SZONE+LOCATION_HAND)
 	e4:SetHintTiming(0,TIMING_END_PHASE)
-	e4:SetCondition(cm.condition)
 	e4:SetCost(cm.cost)
 	e4:SetTarget(cm.target)
 	e4:SetOperation(cm.operation)
@@ -32,9 +31,6 @@ function cm.initial_effect(c)
 end
 function cm.con(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():GetFlagEffect(m)==0
-end
-function cm.condition(e,tp,eg,ep,ev,re,r,rp)
-	return tp~=Duel.GetTurnPlayer()
 end
 function cm.filter(c,tp)
 	return c:IsSetCard(0x6978) and bit.band(c:GetType(),0x82)==0x82 and c:IsAbleToDeckAsCost() and c:CheckActivateEffect(true,true,false)~=nil

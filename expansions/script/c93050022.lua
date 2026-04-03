@@ -46,7 +46,7 @@ end
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	local c=e:GetHandler()
-	if c and c:IsRelateToEffect(e) and not re:GetHandler():IsLocation(LOCATION_OVERLAY+LOCATION_GRAVE+LOCATION_REMOVED) then
+	if c and c:IsRelateToEffect(e) and not e:GetHandler():IsLocation(LOCATION_OVERLAY+LOCATION_GRAVE+LOCATION_REMOVED) then
 		Duel.Destroy(c,REASON_EFFECT)
 	end
 end

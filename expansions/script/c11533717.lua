@@ -71,7 +71,7 @@ function c11533717.initial_effect(c)
 	e2:SetCode(EVENT_FREE_CHAIN) 
 	e2:SetRange(LOCATION_GRAVE) 
 	e2:SetCountLimit(1,21533717)
-	--e2:SetCost(c11533717.cost) 
+	e2:SetCost(c11533717.spcost) 
 	e2:SetTarget(c11533717.sptg)
 	e2:SetOperation(c11533717.spop)
 	c:RegisterEffect(e2)
@@ -209,28 +209,30 @@ function c11533717.atkop(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetMatchingGroupCount(Card.IsAttribute,tp,LOCATION_GRAVE+LOCATION_MZONE,0,nil,ATTRIBUTE_WATER)*300 end)
 	e1:SetReset(RESET_PHASE+PHASE_END) 
 	Duel.RegisterEffect(e1,tp) 
-end  
-function c11533717.xtdfil(c,e,tp)
-	local g=Group.FromCards(c,e:GetHandler())
-	return c:IsAbleToDeck() and c:IsAttribute(ATTRIBUTE_WATER) and Duel.IsExistingMatchingCard(c11533717.spfilter,tp,LOCATION_DECK,0,1,g,e,tp) 
 end
+function c11533717.spcostfilter(c)
+	return c:IsAttribute(ATTRIBUTE_WATER) and c:IsAbleToDeckAsCost()
+end
+function c11533717.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(c11533717.spcostfilter,tp,LOCATION_GRAVE,0,2,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+	local g=Duel.SelectMatchingCard(tp,c11533717.spcostfilter,tp,LOCATION_GRAVE,0,2,2,nil)
+	Duel.HintSelection(g)
+	Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_COST)
+end 
 function c11533717.spfilter(c,e,tp)
 	return c:IsSetCard(0x3a) and c:IsLevelBelow(2) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c11533717.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c11533717.xtdfil,tp,LOCATION_GRAVE,0,2,nil,e,tp) end 
-	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,tp,LOCATION_GRAVE)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.IsExistingMatchingCard(c11533717.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) end 
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK)
 end
 function c11533717.spop(e,tp,eg,ep,ev,re,r,rp) 
-	local c=e:GetHandler()
-	if Duel.IsExistingMatchingCard(c11533717.xtdfil,tp,LOCATION_GRAVE,0,2,nil,e,tp) then 
-		local g=Duel.SelectMatchingCard(tp,c11533717.xtdfil,tp,LOCATION_GRAVE,0,2,2,nil,e,tp)  
-		if Duel.SendtoDeck(g,nil,2,REASON_EFFECT) and Duel.IsExistingMatchingCard(c11533717.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) then 
-			local sg=Duel.SelectMatchingCard(tp,c11533717.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp) 
-			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP) 
-		end 
-	end 
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,c11533717.spfilter,tp,LOCATION_DECK,0,1,1,nil,e,tp)
+	if g:GetCount()>0 then
+		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+	end
 end
-
 
