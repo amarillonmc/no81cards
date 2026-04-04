@@ -133,7 +133,7 @@ function s.eff2op(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.eff3con(e,tp,eg,ep,ev,re,r,rp)
 	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
-	return ep~=tp and Duel.IsChainDisablable(ev) and loc~=LOCATION_ONFIELD
+	return ep~=tp and Duel.IsChainDisablable(ev) and loc|LOCATION_ONFIELD==0
 end
 function s.eff3tg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
