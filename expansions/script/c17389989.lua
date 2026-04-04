@@ -1,3 +1,4 @@
+--终烬始祖
 local s,id=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
@@ -11,9 +12,11 @@ function s.initial_effect(c)
 	e1:SetTarget(s.thtg)
 	e1:SetOperation(s.thop)
 	c:RegisterEffect(e1)
+	
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_DESTROYED)
+	e2:SetCountLimit(1,id+1)
 	e2:SetOperation(s.regop)
 	c:RegisterEffect(e2)
 	if not s.global_check then
@@ -25,6 +28,7 @@ function s.initial_effect(c)
 		Duel.RegisterEffect(ge1,0)
 	end
 end
+
 function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 	for tc in aux.Next(eg) do
 		local code = tc:GetCode()
@@ -32,20 +36,24 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterFlagEffect(1,code+1,RESET_PHASE+PHASE_END,0,1)
 	end
 end
+
 function s.matfilter(c,lc,sumtype,tp)
 	if not c:IsSetCard(0x5f51,lc,sumtype,tp) then return false end
 	return Duel.GetFlagEffect(tp,c:GetCode()+1)>0
 end
+
 function s.thfilter(c,codes)
 	return c:IsAbleToHand() and c:IsCode(table.unpack(codes))
 end
+
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(function(c) return c:IsSetCard(0x5f51) and c:IsType(TYPE_MONSTER) and not c:IsPublic() end,tp,LOCATION_EXTRA,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(function(c) return c:IsCode(17390000) and c:IsType(TYPE_MONSTER) and not c:IsPublic() end,tp,LOCATION_EXTRA,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
+
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,function(c) return c:IsSetCard(0x5f51) and c:IsType(TYPE_MONSTER) and not c:IsPublic() end,tp,LOCATION_EXTRA,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,function(c) return c:IsCode(17390000) and c:IsType(TYPE_MONSTER) and not c:IsPublic() end,tp,LOCATION_EXTRA,0,1,1,nil)
 	if #g>0 then
 		Duel.ConfirmCards(1-tp,g)
 		local code=g:GetFirst():GetCode()
@@ -57,6 +65,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
@@ -65,6 +74,7 @@ function s.regop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetReset(RESET_PHASE+PHASE_END)
 	Duel.RegisterEffect(e1,tp)
 end
+
 function s.delayed_th(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	e:Reset()

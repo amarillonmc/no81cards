@@ -83,7 +83,7 @@ function s.delayed_sp_op(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstMatchingCard(aux.NecroValleyFilter(function(c,e,tp)
 		return c:IsCode(id) and c:IsCanBeSpecialSummoned(e,0,tp,true,true)
 	end),tp,LOCATION_GRAVE,0,nil,e,tp)
-	if #g>0 and tc and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 then
+	if #g>0 and tc then
 		Duel.Hint(HINT_CARD,0,id)
 		e:Reset() 		
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)

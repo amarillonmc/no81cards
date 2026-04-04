@@ -104,7 +104,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 		local sg=aux.SelectCardFromFieldFirst(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
 		Duel.HintSelection(sg)
 		Duel.BreakEffect()
-		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	end
 end
 function s.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
