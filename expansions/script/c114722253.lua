@@ -34,7 +34,6 @@ function c114722253.initial_effect(c)
 	e4:SetTarget(c114722253.sttg2)
 	c:RegisterEffect(e4)
 end
-c114722253.card_code_list={46986414}
 function c114722253.filter(c)
 	return aux.IsCodeListed(c,46986414) and c:IsSSetable() and not c:IsCode(114722253)
 end
@@ -43,6 +42,7 @@ function c114722253.activate(e,tp,eg,ep,ev,re,r,rp)
 	local dg=Duel.GetMatchingGroup(c114722253.filter,tp,LOCATION_DECK,0,nil)
 	local n=dg:GetClassCount(Card.GetCode)
 	if n>Duel.GetLocationCount(tp,LOCATION_SZONE) then n=Duel.GetLocationCount(tp,LOCATION_SZONE) end
+	n=math.min(n,Duel.GetMatchingGroupCount(Card.IsDiscardable,tp,LOCATION_HAND,0,nil))
 	if n>0 and Duel.SelectYesNo(tp,aux.Stringid(114722253,2)) then
 		local m=Duel.DiscardHand(tp,Card.IsDiscardable,1,n,REASON_EFFECT+REASON_DISCARD)
 		local hg=Group.CreateGroup()

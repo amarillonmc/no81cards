@@ -97,7 +97,7 @@ function c19209525.spop(e,tp,eg,ep,ev,re,r,rp)
 	local sc=Duel.SelectMatchingCard(tp,c19209525.spfilter2,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,e,tp,1):GetFirst()
 	if sc and Duel.SpecialSummonStep(sc,0,tp,tp,false,false,POS_FACEUP) and Duel.IsExistingMatchingCard(c19209525.spfilter2,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,nil,e,tp,1) and not Duel.IsPlayerAffectedByEffect(tp,59822133) and Duel.SelectYesNo(tp,aux.Stringid(19209525,2)) then
 		local sg=Duel.SelectMatchingCard(tp,c19209525.spfilter2,tp,LOCATION_GRAVE+LOCATION_EXTRA,0,1,1,nil,e,tp,1)
-		Duel.SpecialSummonStep(sg,0,tp,tp,false,false,POS_FACEUP)
+		Duel.SpecialSummonStep(sg:GetFirst(),0,tp,tp,false,false,POS_FACEUP)
 	end
 	Duel.SpecialSummonComplete()
 	--[[if Duel.GetMZoneCount(tp)<=0 then return end
