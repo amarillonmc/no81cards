@@ -3,8 +3,24 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,cm.filter0,2,true)
-	aux.AddContactFusionProcedure(c,cm.filter,LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,Duel.Remove,POS_FACEUP,REASON_COST)
+	aux.AddFusionProcFun2(c,cm.filter0,cm.filter02,true)
+	local e11=aux.AddContactFusionProcedure(c,Card.IsAbleToRemoveAsCost,LOCATION_GRAVE+LOCATION_ONFIELD,LOCATION_GRAVE+LOCATION_ONFIELD,Duel.Remove,POS_FACEUP,REASON_COST)
+	local op=e11:GetOperation()
+	e11:SetOperation(function(e,tp,...) 
+		local c=e:GetHandler()
+		if c:GetOriginalCode()~=m then
+			local g=Duel.GetMatchingGroup(function(c) return c:IsCode(m) end,tp,LOCATION_EXTRA,0,nil)
+			Duel.ConfirmCards(1-tp,g:GetFirst())
+		end
+		op(e,tp,...)
+	end)
+	local e21=Effect.CreateEffect(c)
+	e21:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e21:SetRange(LOCATION_EXTRA)
+	e21:SetTargetRange(LOCATION_EXTRA,0)
+	e21:SetTarget(function(e,c) return c:IsCode(m-1) end)
+	e21:SetLabelObject(e11)
+	c:RegisterEffect(e21)
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -34,6 +50,8 @@ function cm.initial_effect(c)
 		cm.global_check=true
 		cm[0]={}
 		cm[1]={}
+		cm[1000]={}
+		cm[1001]={}
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		ge1:SetCode(EVENT_MOVE)
@@ -137,7 +155,7 @@ function cm.chkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	if rp~=0 and rp~=1 then return end
 	while tc do
-		if tc:IsLocation(LOCATION_MZONE) and tc:IsPreviousLocation(LOCATION_MZONE) and (tc:GetPreviousSequence()~=tc:GetSequence() or tc:GetPreviousControler()~=tc:GetControler()) then
+		if tc:IsLocation(LOCATION_ONFIELD) and tc:IsPreviousLocation(LOCATION_ONFIELD) and (tc:GetPreviousSequence()~=tc:GetSequence() or tc:GetPreviousControler()~=tc:GetControler() or tc:GetPreviousLocation()~=tc:GetLocation()) then
 			tc:RegisterFlagEffect(m+rp,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
 			cm[rp][tc:GetCode()]=true
 			--Debug.Message(rp)
@@ -150,8 +168,8 @@ function cm.chkop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	if rp~=0 and rp~=1 then return end
 	while tc do
-		tc:RegisterFlagEffect(m+rp,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
-		cm[rp][tc:GetCode()]=true
+		tc:RegisterFlagEffect(m+1000+rp,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET,0,1)
+		cm[rp+1000][tc:GetCode()]=true
 		--Debug.Message(rp)
 		--Debug.Message(tc:GetCode())
 		tc=eg:GetNext()
@@ -161,9 +179,13 @@ function cm.filter0(c,fc)
 	local rp=fc:GetControler() or 0
 	return c:GetFlagEffect(m+rp)>0 or cm[rp][c:GetCode()]
 end
+function cm.filter02(c,fc)
+	local rp=fc:GetControler() or 0
+	return c:GetFlagEffect(m+rp+1000)>0 or cm[rp+1000][c:GetCode()]
+end
 function cm.filter(c,fc)
 	local rp=fc:GetControler() or 0
-	return c:IsAbleToRemoveAsCost() and ((c:IsOnField() and c:GetFlagEffect(m+rp)>0) or (c:IsLocation(LOCATION_GRAVE) and cm[rp][c:GetCode()])) --and not (c:IsOnField() and c:IsFacedown() and c:IsControler(1-rp))
+	return c:IsAbleToRemoveAsCost() and ((c:IsOnField() and (c:GetFlagEffect(m+rp)>0 or c:GetFlagEffect(m+rp+1000)>0)) or (c:IsLocation(LOCATION_GRAVE) and (cm[rp][c:GetCode()] or cm[rp+1000][c:GetCode()]))) --and not (c:IsOnField() and c:IsFacedown() and c:IsControler(1-rp))
 end
 function cm.cfilter(c)
 	return c:IsPreviousLocation(LOCATION_DECK) and not (c:IsLocation(LOCATION_DECK) and c:IsControler(c:GetPreviousControler()))

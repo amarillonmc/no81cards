@@ -32,7 +32,7 @@ end
 
 -- === 效果① ===
 function s.tgfilter(c)
-	return c:IsSetCard(0x613) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
+	return c:IsSetCard(0x613) and c:IsAbleToGrave()
 end
 
 function s.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -45,7 +45,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
 	local g=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
 	local tc=g:GetFirst()
-	if tc and Duel.SendtoGrave(tc,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_GRAVE) then
+	if tc and Duel.SendtoGrave(tc,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_GRAVE) and tc:IsType(TYPE_MONSTER) then
 		local c=e:GetHandler()
 		local lv=tc:GetLevel()
 		if c:IsRelateToEffect(e) and c:IsFaceup() and lv>0 then

@@ -75,7 +75,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE,zone)>0 then
 			-- 赋予抗性：不会成为对方的效果的对象
 			local e1=Effect.CreateEffect(c)
-			e1:SetDescription(aux.Stringid(id,2))
+			e1:SetDescription(aux.Stringid(id,1))
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)
 			e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
@@ -105,7 +105,7 @@ end
 
 function s.resop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 then
+	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0 and Duel.GetMatchingGroupCount(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,nil)>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 		-- 选对方场上1张卡回到持有者卡组
 		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,0,LOCATION_ONFIELD,nil)
 		if #g>0 then

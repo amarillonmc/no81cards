@@ -97,7 +97,7 @@ function s.recon(e)
 end
 function s.con0(e,tp,eg,ep,ev,re,r,rp)
 	local ph=Duel.GetCurrentPhase()
-	return e:GetHandler():GetFlagEffect(id)>0 and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
+	return e:GetHandler():GetFlagEffect(id)>0-- and ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
 
 

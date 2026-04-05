@@ -69,7 +69,7 @@ function c9910591.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.DiscardHand(tp,Card.IsDiscardable,1,1,REASON_COST+REASON_DISCARD)
 end
 function c9910591.filter1(c)
-	return c:IsFaceup() and c:IsRace(RACE_PSYCHO) and c:IsAbleToHand()
+	return c:IsFaceupEx() and c:IsRace(RACE_PSYCHO) and c:IsAbleToHand()
 end
 function c9910591.filter2(c,p)
 	return c:IsFaceup() and c:IsRace(RACE_PSYCHO) and (c:GetFlagEffect(9910591+p)>0 or c:GetFlagEffect(9910592+p)>0)
@@ -81,7 +81,7 @@ function c9910591.filter4(c,b2,b3)
 	return c:IsAbleToHand() or (b2 and b3)
 end
 function c9910591.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local b1=Duel.IsExistingTarget(c9910591.filter1,tp,LOCATION_MZONE,0,1,nil)
+	local b1=Duel.IsExistingTarget(c9910591.filter1,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil)
 		and Duel.IsExistingTarget(Card.IsAbleToHand,tp,0,LOCATION_MZONE,1,nil)
 	local b2=Duel.IsExistingTarget(c9910591.filter2,tp,LOCATION_MZONE,0,1,nil,tp)
 		and Duel.IsExistingTarget(aux.TRUE,tp,0,LOCATION_MZONE,1,nil)
@@ -89,7 +89,7 @@ function c9910591.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	if chk==0 then return b1 or b2 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g1=Duel.SelectTarget(tp,c9910591.filter3,tp,LOCATION_MZONE,0,1,1,nil,b1,b2,p)
+	local g1=Duel.SelectTarget(tp,c9910591.filter3,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil,b1,b2,p)
 	local tc=g1:GetFirst()
 	e:SetLabelObject(tc)
 	local b3=c9910591.filter2(tc,tp)

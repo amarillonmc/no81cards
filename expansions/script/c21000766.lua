@@ -48,7 +48,7 @@ function s.initial_effect(c)
 	
 	local e5=Effect.CreateEffect(c)
 	e5:SetDescription(aux.Stringid(id,2))
-	e5:SetCategory(CATEGORY_DESTROY)
+	e5:SetCategory(CATEGORY_DESTROY+CATEGORY_TOHAND)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e5:SetCode(EVENT_ATTACK_ANNOUNCE)
 	e5:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -127,26 +127,26 @@ function s.prop01(e,tp,eg,ep,ev,re,r,rp)
 	local eq=c:GetEquipTarget()
 	if not c:IsRelateToEffect(e) or eq:IsImmuneToEffect(e) or not eq:IsAbleToRemove() then return end
 	if Duel.Remove(eq,POS_FACEUP,REASON_EFFECT)>0 and eq:IsLocation(LOCATION_REMOVED) and Duel.IsExistingMatchingCard(s.filter01,tp,LOCATION_DECK,0,1,nil) then
-		if not eq:IsCode(21000763) then
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_FIELD)
-			e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
-			e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
-			e1:SetTargetRange(1,0)
-			e1:SetLabel(eq:GetCode())
-			e1:SetTarget(s.slimit)
-			e1:SetReset(RESET_PHASE+PHASE_END)
-			Duel.RegisterEffect(e1,tp)
-			local e2=e1:Clone()
-			e2:SetCode(EFFECT_CANNOT_ACTIVATE)
-			e2:SetTarget(s.alimit)
-			Duel.RegisterEffect(e2,tp)
-			local e3=Effect.CreateEffect(c)
-			e3:SetType(EFFECT_TYPE_SINGLE)
-			e3:SetCode(EFFECT_CANNOT_TRIGGER)
-			e3:SetReset(RESET_PHASE+PHASE_END)
-			eq:RegisterEffect(e3,true)
-		end
+		--if not eq:IsCode(21000763) then
+		--	local e1=Effect.CreateEffect(e:GetHandler())
+		--	e1:SetType(EFFECT_TYPE_FIELD)
+		--	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+		--	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		--	e1:SetTargetRange(1,0)
+		--	e1:SetLabel(eq:GetCode())
+		--	e1:SetTarget(s.slimit)
+		--	e1:SetReset(RESET_PHASE+PHASE_END)
+		--	Duel.RegisterEffect(e1,tp)
+		--	local e2=e1:Clone()
+		--	e2:SetCode(EFFECT_CANNOT_ACTIVATE)
+		--	e2:SetTarget(s.alimit)
+		--	Duel.RegisterEffect(e2,tp)
+		--	local e3=Effect.CreateEffect(c)
+		--	e3:SetType(EFFECT_TYPE_SINGLE)
+		--	e3:SetCode(EFFECT_CANNOT_TRIGGER)
+		--	e3:SetReset(RESET_PHASE+PHASE_END)
+		--	eq:RegisterEffect(e3,true)
+		--end
 		
 		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
@@ -170,14 +170,17 @@ end
 
 function s.target3(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_SZONE) end
-	if chk==0 then return Duel.IsExistingTarget(nil,tp,0,LOCATION_SZONE,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_SZONE,LOCATION_SZONE,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g=Duel.SelectTarget(tp,nil,tp,0,LOCATION_SZONE,1,1,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,g:GetCount(),0,LOCATION_SZONE)
+	local g=Duel.SelectTarget(tp,nil,tp,LOCATION_SZONE,LOCATION_SZONE,1,1,nil)
+	--Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,LOCATION_SZONE)
 end
 function s.prop3(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
-	if g:GetCount()~=0 then
-		Duel.Destroy(g,REASON_EFFECT)
+	local tc=Duel.GetFirstTarget()
+	if tc:IsAbleToHand()
+		and Duel.SelectOption(tp,aux.Stringid(id,5),aux.Stringid(id,6))==1 then
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+	else
+		Duel.Destroy(tc,REASON_EFFECT)
 	end
 end

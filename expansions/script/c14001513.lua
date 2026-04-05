@@ -3,6 +3,12 @@ local m=14001513
 local cm=_G["c"..m]
 cm.named_with_EoS=1
 function cm.initial_effect(c)
+	--Activate
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_ACTIVATE)
+	e0:SetCode(EVENT_FREE_CHAIN)
+	e0:SetOperation(cm.actop)
+	c:RegisterEffect(e0)
 	--set
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
@@ -14,7 +20,6 @@ function cm.initial_effect(c)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EFFECT_DESTROY_REPLACE)
 	e2:SetRange(LOCATION_HAND)
-	e2:SetCondition(cm.repcon)
 	e2:SetTarget(cm.reptg)
 	e2:SetValue(cm.repval)
 	e2:SetOperation(cm.repop)
@@ -67,11 +72,14 @@ function cm.EoS(c)
 	local m=_G["c"..c:GetCode()]
 	return m and m.named_with_EoS
 end
-function cm.repcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+function cm.actop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	if c:IsRelateToEffect(e) and e:IsHasType(EFFECT_TYPE_ACTIVATE) then
+		c:CancelToGrave()
+	end
 end
 function cm.repfilter(c,tp)
-	return c:IsOnField() and not c:IsReason(REASON_REPLACE)
+	return not c:IsReason(REASON_REPLACE)
 end
 function cm.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -105,8 +113,6 @@ function cm.ssetcon(e,tp,eg,ep,ev,re,r,rp)
 		while tc do
 			local code=tc:GetOriginalCodeRule()
 			local ccode=_G["c"..code]
-			local catt=tc:GetOriginalAttribute()
-			if (catt==ATTRIBUTE_LIGHT and Duel.GetTurnPlayer()~=tp) or (catt==ATTRIBUTE_DARK and Duel.GetTurnPlayer()==tp) and not tc:IsExtraDeckMonster() then return end
 			if eg:IsContains(tc) and ccode.settg(e,tp,eg,ep,ev,re,r,rp,0) and Duel.GetFlagEffect(tp,code)==0 then
 				if Duel.GetCurrentChain()==0 then
 					if tc:IsFacedown() and Duel.SelectEffectYesNo(tp,tc) then
@@ -140,19 +146,19 @@ function cm.retop(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.setcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return eg:IsContains(c) and Duel.GetTurnPlayer()==tp
+	return eg:IsContains(c)
 end
 function cm.settg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,2,nil) end
-	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,2)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_HANDES,nil,0,tp,1)
 end
 function cm.setop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	local ct=Duel.DiscardHand(tp,nil,2,2,REASON_EFFECT+REASON_DISCARD)
-	if ct>0 and Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+	local ct=Duel.DiscardHand(tp,nil,1,2,REASON_EFFECT+REASON_DISCARD)
+	if ct>0 and Duel.IsPlayerCanDraw(tp,ct) and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		Duel.BreakEffect()
-		Duel.Draw(tp,1,REASON_EFFECT)
+		Duel.Draw(tp,ct,REASON_EFFECT)
 	end
 end
 function cm.tcfilter(c)

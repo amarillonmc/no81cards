@@ -162,7 +162,7 @@ function cm.RitualUltimateFilter(c,filter,e,tp,m1,m2,level_function,greater_or_e
 	return res
 end
 function cm.mfilter(c)
-	return c:IsAbleToRemove() and c:IsType(TYPE_MONSTER) --and c:IsAttribute(ATTRIBUTE_WATER)
+	return c:IsAbleToRemove() --and c:IsAttribute(ATTRIBUTE_WATER)
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local mg=Duel.GetMatchingGroup(cm.mfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil)

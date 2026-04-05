@@ -89,7 +89,7 @@ end
 
 
 function s.eqlimit(e,c)
-	return c:IsCode(21000763)
+	return true
 end
 function s.filter110(c)
 	return c:IsFaceup()
@@ -228,7 +228,7 @@ end
 
 
 function s.counterfilter(c)
-	return not c:IsSummonLocation(LOCATION_EXTRA) or c:IsSetCard(0x605)
+	return not c:IsSummonLocation(LOCATION_EXTRA) or c:IsSetCard(0x615)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_SPSUMMON)==0 end
@@ -242,7 +242,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit1(e,c,sump,sumtype,sumpos,targetp,se)
-	return c:IsLocation(LOCATION_EXTRA) and not c:IsSetCard(0x605)
+	return c:IsLocation(LOCATION_EXTRA) and not c:IsSetCard(0x615)
 end
 function s.thfilter(c,e,tp)
 	return c:IsCode(21000763) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsFaceupEx()

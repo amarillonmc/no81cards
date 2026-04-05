@@ -34,7 +34,7 @@ function s.xyzcheck(g)
 	return true
 end
 function s.ovfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x605) and Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)<Duel.GetFieldGroupCount(c:GetControler(),0,LOCATION_MZONE) and not c:IsType(TYPE_XYZ)
+	return c:IsFaceup() and c:IsSetCard(0x604) and Duel.GetFieldGroupCount(c:GetControler(),LOCATION_MZONE,0)<Duel.GetFieldGroupCount(c:GetControler(),0,LOCATION_MZONE) and not c:IsType(TYPE_XYZ)
 end
 
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)

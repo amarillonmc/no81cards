@@ -64,6 +64,12 @@ function s.prop(e,tp,eg,ep,ev,re,r,rp)
 		e3:SetCode(EFFECT_PIERCE)
 		e3:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e3)
+		local e4=Effect.CreateEffect(c)
+		e4:SetType(EFFECT_TYPE_SINGLE)
+		e4:SetCode(EFFECT_ATTACK_ALL)
+		e4:SetValue(1)
+		e4:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		tc:RegisterEffect(e4)
 	end
 end
 

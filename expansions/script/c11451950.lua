@@ -3,17 +3,36 @@ local cm,m=GetID()
 function cm.initial_effect(c)
 	--fusion material
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,function(c) return c:IsRace(RACE_PSYCHO) and c:IsFusionSetCard(0xe) end,1,true)
+	--[[aux.AddFusionProcFunRep(c,function(c) return c:IsRace(RACE_PSYCHO) and c:IsFusionSetCard(0xe) end,1,true)
 	local e10=aux.AddContactFusionProcedure(c,cm.filter,LOCATION_GRAVE+LOCATION_MZONE,0,cm.tdcfop(c))
 	local con=e10:GetCondition()
 	local op=e10:GetOperation()
 	e10:SetCondition(function(e,...)
+		local c=e:GetHandler()
 		return c:GetFlagEffect(m)>0 and con(e,...)
 	end)
 	e10:SetOperation(function(e,...) 
+		local c=e:GetHandler()
 		c:ResetFlagEffect(m)
 		op(e,...)
-	end)
+	end)--]]
+	aux.AddFusionProcFun2(c,cm.filter0,cm.filter02,true)
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_SPSUMMON_PROC)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetRange(LOCATION_EXTRA)
+	e2:SetCondition(cm.spcon)
+	e2:SetTarget(cm.sptg)
+	e2:SetOperation(cm.spop)
+	c:RegisterEffect(e2)
+	local e21=Effect.CreateEffect(c)
+	e21:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e21:SetRange(LOCATION_EXTRA)
+	e21:SetTargetRange(LOCATION_EXTRA,0)
+	e21:SetTarget(function(e,c) return c:IsCode(m+1) end)
+	e21:SetLabelObject(e2)
+	c:RegisterEffect(e21)
 	--spsummon condition
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
@@ -21,15 +40,18 @@ function cm.initial_effect(c)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
 	c:RegisterEffect(e0)
 	--spsummon
-	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	e2:SetCode(EVENT_CUSTOM+m)
-	e2:SetLabelObject(e10)
-	e2:SetRange(LOCATION_EXTRA)
-	e2:SetOperation(cm.op)
-	c:RegisterEffect(e2)
+	local e20=Effect.CreateEffect(c)
+	e20:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e20:SetCode(EVENT_CUSTOM+m)
+	e20:SetLabelObject(e2)
+	e20:SetRange(LOCATION_EXTRA)
+	e20:SetOperation(cm.op)
+	c:RegisterEffect(e20)
+	local e201=e21:Clone()
+	e201:SetLabelObject(e20)
+	c:RegisterEffect(e201)
 	--
-	local custom_code=cm.RegisterMergedDelayedEvent_ToSingleCard(c,m,{EVENT_MOVE,EVENT_LEAVE_FIELD,EVENT_CUSTOM+m+1})
+	local custom_code=cm.RegisterMergedDelayedEvent_ToSingleCard(c,m,{EVENT_MOVE,EVENT_LEAVE_FIELD,EVENT_CUSTOM+m+3})
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(m,1))
 	e3:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
@@ -72,6 +94,39 @@ function cm.initial_effect(c)
 		ge2:SetOperation(cm.chkop)
 		Duel.RegisterEffect(ge2,0)
 	end
+end
+function cm.filter0(c,fc)
+	if not c11451951 then return false end
+	local rp=fc:GetControler() or 0
+	return c:GetFlagEffect(11451951+rp)>0 or c11451951[rp][c:GetCode()]
+end
+function cm.filter02(c,fc)
+	if not c11451951 then return false end
+	local rp=fc:GetControler() or 0
+	return c:GetFlagEffect(11451951+rp+1000)>0 or c11451951[rp+1000][c:GetCode()]
+end
+function cm.spfilter(c,fc,tp)
+	return cm.filter(c) and Duel.GetLocationCountFromEx(tp,tp,c,fc)>0 and c:IsCanBeFusionMaterial(fc,SUMMON_TYPE_SPECIAL)
+end
+function cm.spcon(e,c)
+	if c==nil then return true end
+	local tp=c:GetControler()
+	return c:GetFlagEffect(m)>0 and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,c,tp)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,c,tp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
+	if tc then
+		e:SetLabelObject(tc)
+		return true
+	else return false end
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
+	local tc=e:GetLabelObject()
+	c:SetMaterial(Group.FromCards(tc))
+	c:ResetFlagEffect(m)
+	cm.tdcfop(c)(Group.FromCards(tc))
 end
 function cm.RegisterMergedDelayedEvent_ToSingleCard(c,code,events)
 	local g=Group.CreateGroup()
@@ -116,8 +171,8 @@ function cm.RegisterMergedDelayedEvent_ToSingleCard(c,code,events)
 									g:Clear()
 									g2:Clear()
 								end 
-							end 
-							if Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_END) and not g:IsExists(Card.IsStatus,1,nil,STATUS_ACT_FROM_HAND) and not g2:IsExists(function(c) return c:GetEquipCount()>0 or c:GetOverlayCount()>0 end,1,nil) then
+							end
+							if Duel.GetCurrentChain()==0 and not Duel.CheckEvent(EVENT_CHAIN_END) and not g:IsExists(function(c) return c:IsStatus(STATUS_ACT_FROM_HAND) and c:IsStatus(STATUS_CHAINING) and c:IsFaceup() end,1,nil) and not g2:IsExists(function(c) return c:GetEquipCount()>0 or c:GetOverlayCount()>0 end,1,nil) then
 								local _eg=g:Clone()
 								local _eg2=g2:Clone()
 								if #g>0 and #g2>0 then
@@ -193,16 +248,20 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	c:RegisterFlagEffect(m,RESET_CHAIN,0,1)
-	if Duel.GetFlagEffect(tp,m)>0 or not c:IsSpecialSummonable(0) then c:ResetFlagEffect(m) return end
-	if Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
-		te:GetTarget()(te,tp,eg,ep,ev,re,r,rp,1,c)
-		te:GetOperation()(te,tp,eg,ep,ev,re,r,rp,c)
+	if Duel.GetFlagEffect(tp,c:GetOriginalCode())>0 or not c:IsSpecialSummonable(0) then c:ResetFlagEffect(m) return end
+	if Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,0)) then
+		if c:GetOriginalCode()~=m then
+			local g=Duel.GetMatchingGroup(function(c) return c:IsCode(m) end,tp,LOCATION_EXTRA,0,nil)
+			Duel.ConfirmCards(1-tp,g:GetFirst())
+		end
+		cm.sptg(e,tp,eg,ep,ev,re,r,rp,1,c)
+		cm.spop(e,tp,eg,ep,ev,re,r,rp,c)
 		Duel.SpecialSummon(c,0,tp,tp,true,true,POS_FACEUP)
 		c:CompleteProcedure()
 	else
 		c:ResetFlagEffect(m)
 	end
-	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
+	Duel.RegisterFlagEffect(tp,c:GetOriginalCode(),RESET_CHAIN,0,1)
 end
 function cm.filter(c)
 	return c:IsRace(RACE_PSYCHO) and c:IsFusionSetCard(0xe) and (c:IsLocation(LOCATION_MZONE) and c:IsAbleToHandAsCost()) or (c:IsLocation(LOCATION_GRAVE) and c:IsAbleToDeckAsCost())

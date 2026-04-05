@@ -44,7 +44,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		rc:CancelToGrave() -- 阻止卡片进入墓地，以便洗回卡组
 		if Duel.SendtoDeck(rc,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)>0 and rc:IsLocation(LOCATION_DECK+LOCATION_EXTRA) then
 			-- 场上有表侧表示的魔法·陷阱卡存在的场合，再把那些卡全部破坏
-			local g=Duel.GetMatchingGroup(s.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+			local g=Duel.GetMatchingGroup(s.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,e:GetHandler())
 			if #g>0 then
 				Duel.BreakEffect()
 				Duel.Destroy(g,REASON_EFFECT)
