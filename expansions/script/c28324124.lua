@@ -12,25 +12,19 @@ end
 function c28324124.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local exc=e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetHandler() or nil
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_ONFIELD,0,1,exc) end
-	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then
-		Duel.SetChainLimit(aux.FALSE)
-	end
+	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then Duel.SetChainLimit(aux.FALSE) end
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_ONFIELD)
+end
+function c28324124.gcheck(sg)
+	return sg:FilterCount(Card.IsOnField,nil)==1 and (sg:FilterCount(Card.IsLocation,nil,LOCATION_DECK)==0 or sg:FilterCount(Card.IsLocation,nil,LOCATION_GRAVE)==1)
 end
 function c28324124.activate(e,tp,eg,ep,ev,re,r,rp)
 	local exc=e:IsHasType(EFFECT_TYPE_ACTIVATE) and aux.ExceptThisCard(e) or nil
+	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_DECK,0,exc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_ONFIELD,0,1,1,exc)
-	if g:GetCount()==0 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local gg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,0,1,nil)
-	if gg:GetCount()~=0 then
-		g:Merge(gg)
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local dg=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,LOCATION_DECK,0,0,1,nil)
-		if dg:GetCount()~=0 then g:Merge(dg) end
-	end
-	Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
+	local sg=g:SelectSubGroup(tp,c28324124.gcheck,false,1,3)
+	if sg:GetCount()==0 then return end
+	Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	local og=Duel.GetOperatedGroup()
 	local fid=e:GetHandler():GetFieldID()
 	for tc in aux.Next(og) do
