@@ -33,13 +33,8 @@ function cm.initial_effect(c)
 	e2:SetCost(cm.spcost2)
 	c:RegisterEffect(e2)
 end
-function cm.spfilter(c,se)
-	if not (se==nil or c:GetReasonEffect()~=se) then return false end
-	return c:IsFaceup() and c:IsSetCard(0x9977)
-end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local se=e:GetLabelObject():GetLabelObject()
-	return eg:IsExists(cm.spfilter,1,nil,se) and not eg:IsContains(e:GetHandler())
+	local not eg:IsContains(e:GetHandler())
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>0
