@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e2)
 end
 function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
-	local not eg:IsContains(e:GetHandler())
+	return not eg:IsContains(e:GetHandler())
 end
 function cm.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCurrentChain()>0
