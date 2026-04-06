@@ -19,6 +19,7 @@ function c28333723.initial_effect(c)
 	e1:SetOperation(c28333723.efop)
 	c:RegisterEffect(e1)
 	--set
+	if not CATEGORY_MSET then CATEGORY_MSET,CATEGORY_SSET = 0,0 end
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_MSET+CATEGORY_SSET)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -46,7 +47,7 @@ end
 function c28333723.efilter(e)
 	local ct=#c28333723.effect_list
 	if e:IsHasRange(LOCATION_ONFIELD) and e:IsActivated() then c28333723.effect_list[ct+1]=e end
-	return e:IsHasRange(LOCATION_ONFIELD) and e:IsActivated()
+	return false--e:IsHasRange(LOCATION_ONFIELD) and e:IsActivated()
 end
 function c28333723.cfilter(c,e,tp,eg,ep,ev,re,r,rp)
 	if not (c:IsSetCard(0x285) and c:IsType(TYPE_MONSTER)) then return false end
