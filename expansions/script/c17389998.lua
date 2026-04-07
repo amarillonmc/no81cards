@@ -1,7 +1,6 @@
 local s,id=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,17390000)
-	
+	aux.AddCodeList(c,17390000)   
 	local e1=Effect.CreateEffect(c)
 	e1:SetCategory(CATEGORY_DAMAGE)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
@@ -9,8 +8,7 @@ function s.initial_effect(c)
 	e1:SetCountLimit(1,id)
 	e1:SetTarget(s.target)
 	e1:SetOperation(s.operation)
-	c:RegisterEffect(e1)
-	
+	c:RegisterEffect(e1)   
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e2:SetCode(EVENT_DESTROYED)
@@ -18,18 +16,25 @@ function s.initial_effect(c)
 	e2:SetOperation(s.regop)
 	c:RegisterEffect(e2)
 end
-
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,0x5f51)
 	if chk==0 then return g:GetClassCount(Card.GetCode)>=18 end
 end
-
+function s.dnfilter(c,sg)
+	return not sg:IsExists(Card.IsCode,1,nil,c:GetCode())
+end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(Card.IsSetCard,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,nil,0x5f51)
 	if g:GetClassCount(Card.GetCode)<18 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local sg=g:SelectSubGroup(tp,aux.dncheck,false,18,18)
-	if sg then
+	local sg=Group.CreateGroup()
+	for i=1,18 do
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+		local tc=g:FilterSelect(tp,s.dnfilter,1,1,nil,sg):GetFirst()
+		if tc then
+			sg:AddCard(tc)
+		end
+	end  
+	if #sg==18 then
 		Duel.ConfirmCards(1-tp,sg)
 		Duel.BreakEffect()
 		local chk=Duel.IsExistingMatchingCard(function(c) return c:IsCode(17390000) and c:IsFaceup() and c:GetOverlayCount()==0 end,tp,LOCATION_MZONE,0,1,nil)

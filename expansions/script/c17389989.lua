@@ -47,13 +47,13 @@ function s.thfilter(c,codes)
 end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(function(c) return c:IsCode(17390000) and c:IsType(TYPE_MONSTER) and not c:IsPublic() end,tp,LOCATION_EXTRA,0,1,nil) end
+	if chk==0 then return Duel.IsExistingMatchingCard(function(c) return c:IsCode(17390000,17389989) and c:IsType(TYPE_MONSTER) and not c:IsPublic() end,tp,LOCATION_EXTRA,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,function(c) return c:IsCode(17390000) and c:IsType(TYPE_MONSTER) and not c:IsPublic() end,tp,LOCATION_EXTRA,0,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,function(c) return c:IsCode(17390000,17389989) and c:IsType(TYPE_MONSTER) and not c:IsPublic() end,tp,LOCATION_EXTRA,0,1,1,nil)
 	if #g>0 then
 		Duel.ConfirmCards(1-tp,g)
 		local code=g:GetFirst():GetCode()
