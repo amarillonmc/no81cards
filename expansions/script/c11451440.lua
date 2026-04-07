@@ -29,7 +29,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.mzfilter(c)
-	return c:IsAbleToGraveAsCost() and (c:GetLevel()>=1) and c:IsRace(RACE_PSYCHO)
+	return c:IsAbleToGraveAsCost() and c:IsRace(RACE_PSYCHO) --and (c:GetLevel()>=1)
 end
 function cm.fselect(g,lv,c)
 	local tp=c:GetControler()

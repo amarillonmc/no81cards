@@ -41,7 +41,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e4)
 end
 function cm.mzfilter(c)
-	return c:IsAbleToGraveAsCost() and (c:GetLevel()>=1)
+	return c:IsAbleToGraveAsCost() --and (c:GetLevel()>=1)
 end
 function cm.fselect(g,lv,c)
 	local tp=c:GetControler()

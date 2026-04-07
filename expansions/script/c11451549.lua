@@ -34,7 +34,7 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function cm.mzfilter(c)
-	return c:IsAbleToDeckOrExtraAsCost() and c:GetLevel()>=1 and c:IsRace(RACE_PSYCHO) and (c:IsLocation(LOCATION_GRAVE) or c:IsFacedown())
+	return c:IsAbleToDeckOrExtraAsCost() and c:IsRace(RACE_PSYCHO) and (c:IsLocation(LOCATION_GRAVE) or c:IsFacedown()) --and (c:GetLevel()>=1)
 end
 function cm.slfilter(c,sc)
 	return c:IsLocation(sc:GetLocation()) and (c:GetLevel()-sc:GetLevel())%5==0
