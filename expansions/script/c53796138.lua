@@ -278,6 +278,54 @@ function cm.initial_effect(c)
 				return 0
 			else return f2(sc,code,...) end
 		end]]--
+		local dfuncs1={}
+		local dfs1={"SelectMatchingCard","SelectTarget","SelectReleaseGroup","SelectReleaseGroupEx"}
+		for _,v in ipairs(dfs1) do
+			dfuncs1[v]=Duel[v]
+			Duel[v]=function(sp,filter,...)
+				local fil=filter
+				if Duel.IsExistingMatchingCard(Card.IsHasEffect,0,LOCATION_EXTRA,LOCATION_EXTRA,1,nil,m) then
+					if filter then
+						fil=function(c,...)return filter(c,...) and c:IsLocation(0xff)end
+					else
+						fil=function(c)return c:IsLocation(0xff)end
+					end
+				end
+				return dfuncs1[v](sp,fil,...)
+			end
+		end
+		local gfuncs={}
+		local gfs={"Select","RandomSelect","FilterSelect","SelectWithSumEqual","SelectWithSumGreater"}
+		for _,v in ipairs(gfs) do
+			gfuncs[v]=Group[v]
+			Group[v]=function(group,...)
+				local g=group
+				if Duel.IsExistingMatchingCard(Card.IsHasEffect,0,LOCATION_EXTRA,LOCATION_EXTRA,1,nil,m) then
+					if group then
+						g=group:Filter(Card.IsLocation,nil,0xff)
+					else
+						g=Group.CreateGroup()
+					end
+				end
+				return gfuncs[v](g,...)
+			end
+		end
+		local dfuncs2={}
+		local dfs2={"GetMatchingGroup","GetFirstMatchingCard"}
+		for _,v in ipairs(dfs2) do
+			dfuncs2[v]=Duel[v]
+			Duel[v]=function(filter,...)
+				local fil=filter
+				if Duel.IsExistingMatchingCard(Card.IsHasEffect,0,LOCATION_EXTRA,LOCATION_EXTRA,1,nil,m) then
+					if filter then
+						fil=function(c,...)return filter(c,...) and c:IsLocation(0xff)end
+					else
+						fil=function(c)return c:IsLocation(0xff)end
+					end
+				end
+				return dfuncs2[v](fil,...)
+			end
+		end
 	end
 end
 function cm.adjust(e,tp,eg,ep,ev,re,r,rp)
