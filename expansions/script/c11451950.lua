@@ -264,7 +264,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,c:GetOriginalCode(),RESET_CHAIN,0,1)
 end
 function cm.filter(c)
-	return c:IsRace(RACE_PSYCHO) and c:IsFusionSetCard(0xe) and (c:IsLocation(LOCATION_MZONE) and c:IsAbleToHandAsCost()) or (c:IsLocation(LOCATION_GRAVE) and c:IsAbleToDeckAsCost())
+	return c:IsRace(RACE_PSYCHO) and c:IsFusionSetCard(0xe) and ((c:IsLocation(LOCATION_MZONE) and c:IsAbleToHandAsCost()) or (c:IsLocation(LOCATION_GRAVE) and c:IsAbleToDeckAsCost()))
 end
 function cm.cfilter(c,tp)
 	return c:IsPreviousLocation(LOCATION_HAND) and not (c:IsLocation(LOCATION_HAND) and c:IsControler(c:GetPreviousControler()))

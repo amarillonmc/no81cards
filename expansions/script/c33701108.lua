@@ -99,7 +99,7 @@ end
 function c33701108.disop(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
 	if Duel.NegateEffect(ev) and c:GetOverlayCount()==0 then  
-		Duel.Draw(tp,1,REASON_EFFECT)
+		Duel.Draw(1-tp,1,REASON_EFFECT)
 	end 
 end
 
