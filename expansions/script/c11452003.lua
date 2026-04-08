@@ -1,7 +1,7 @@
 -- 施瓦丁格与烬梦匣
 local s,id,o=GetID()
 function s.initial_effect(c)
-c:EnableReviveLimit()
+	c:EnableReviveLimit()
 	c:SetSPSummonOnce(id)
 
 	-- ①：自定义融合召唤手续
@@ -31,6 +31,14 @@ c:EnableReviveLimit()
 	c:RegisterEffect(e4)
 end
 
+function Group.ForEach(group,func,...)
+	if aux.GetValueType(group)=="Group" and group:GetCount()>0 then
+		local d_group=group:Clone()
+		for tc in aux.Next(d_group) do
+			func(tc,...)
+		end
+	end
+end
 -- ==========================================================
 -- 融合召唤手续与素材拦截处理
 -- ==========================================================
