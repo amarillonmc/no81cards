@@ -43,6 +43,7 @@ function cm.initial_effect(c)
 	local e20=Effect.CreateEffect(c)
 	e20:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e20:SetCode(EVENT_CUSTOM+m)
+	e20:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e20:SetLabelObject(e2)
 	e20:SetRange(LOCATION_EXTRA)
 	e20:SetOperation(cm.op)
@@ -248,8 +249,30 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local te=e:GetLabelObject()
 	c:RegisterFlagEffect(m,RESET_CHAIN,0,1)
-	if Duel.GetFlagEffect(tp,c:GetOriginalCode())>0 or not c:IsSpecialSummonable(0) then c:ResetFlagEffect(m) return end
-	if Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,0)) then
+	if cm[c]==1 or Duel.GetFlagEffect(tp,m)>0 or not c:IsSpecialSummonable(0) then cm[c]=nil c:ResetFlagEffect(m) return end
+	if cm[c]==2 or Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,0)) then
+		if not cm[c] then
+			local sg=Duel.GetMatchingGroup(function(c) return c:IsCode(m+1) and c:IsSpecialSummonable(0) end,tp,LOCATION_EXTRA,0,nil)
+			local g=Duel.GetMatchingGroup(function(c) return c:IsCode(m) and c:IsSpecialSummonable(0) end,tp,LOCATION_EXTRA,0,nil)
+			local g0=sg+g
+			if #sg>0 then
+				if Duel.SelectEffectYesNo(tp,sg:GetFirst(),aux.Stringid(m,0)) then
+					c:ResetFlagEffect(m)
+					for tc in aux.Next(g0) do cm[tc]=1 end
+					cm[c]=nil
+					cm[sg:GetFirst()]=2
+					return
+				elseif c:GetOriginalCode()~=m then
+					c:ResetFlagEffect(m)
+					for tc in aux.Next(g0) do cm[tc]=1 end
+					cm[c]=nil
+					cm[g:GetFirst()]=2
+					return
+				end
+			end
+		else
+			cm[c]=nil
+		end
 		if c:GetOriginalCode()~=m then
 			local g=Duel.GetMatchingGroup(function(c) return c:IsCode(m) end,tp,LOCATION_EXTRA,0,nil)
 			Duel.ConfirmCards(1-tp,g:GetFirst())
@@ -261,7 +284,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	else
 		c:ResetFlagEffect(m)
 	end
-	Duel.RegisterFlagEffect(tp,c:GetOriginalCode(),RESET_CHAIN,0,1)
+	Duel.RegisterFlagEffect(tp,m,RESET_CHAIN,0,1)
 end
 function cm.filter(c)
 	return c:IsRace(RACE_PSYCHO) and c:IsFusionSetCard(0xe) and ((c:IsLocation(LOCATION_MZONE) and c:IsAbleToHandAsCost()) or (c:IsLocation(LOCATION_GRAVE) and c:IsAbleToDeckAsCost()))

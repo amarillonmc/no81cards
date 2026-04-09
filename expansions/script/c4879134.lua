@@ -67,18 +67,18 @@ function s.thop1(e,tp,eg,ep,ev,re,r,rp)
 end
 end
 
-function s.spfilter(c,tp)
+function s.spfilter(c)
 	return (c:IsSetCard(0xae51) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand() and c:IsFaceup()) and not c:IsCode(id)
 end
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and s.spfilter(chkc,tp) end
+	if chkc then return chkc:IsControler(tp) and chkc:IsLocation(LOCATION_MZONE) and s.spfilter(chkc) end
 	local c=e:GetHandler()
 	if chk==0 then return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
-		and Duel.IsExistingTarget(s.spfilter,tp,LOCATION_MZONE,0,1,nil,tp)
+		and Duel.IsExistingTarget(s.spfilter,tp,LOCATION_MZONE,0,1,nil)
 		 end
 	Duel.RegisterFlagEffect(tp,id,RESET_CHAIN,0,1)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g=Duel.SelectTarget(tp,s.spfilter,tp,LOCATION_MZONE,0,1,1,nil,tp)
+	local g=Duel.SelectTarget(tp,s.spfilter,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
@@ -90,7 +90,7 @@ Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 		if  Duel.SelectYesNo(tp,aux.Stringid(id,2)) and Duel.IsExistingMatchingCard(s.efffilter,tp,LOCATION_HAND,0,1,nil,tp) then
 		
 Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local sg=Duel.SelectMatchingCard(tp,s.efffilter,tp,LOCATION_HAND,0,1,1,nil)
+	local sg=Duel.SelectMatchingCard(tp,s.efffilter,tp,LOCATION_HAND,0,1,1,nil,tp)
 Duel.ConfirmCards(1-tp,sg)
 if #sg>0 and sg:GetFirst():IsLevelBelow(5) then
 	local att=sg:GetFirst():GetAttribute()
@@ -102,21 +102,19 @@ if #sg>0 and sg:GetFirst():IsLevelBelow(5) then
 				 local fg=g:Select(tp,1,1,nil)
 				 Duel.SendtoHand(fg,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,fg)
-	end
+end
 
-elseif sg:GetFirst():IsLevelAbove(5) then
-
+elseif #sg>0 and sg:GetFirst():IsLevelAbove(5) then
 			 local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetCode(EFFECT_UPDATE_ATTACK)
 		e1:SetValue(sg:GetFirst():GetLevel()*200)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
 		c:RegisterEffect(e1)
-	   
 	 end
 			end
 end
-	end
+end
 
 
 function s.atkfilter(c)
