@@ -37,21 +37,69 @@ function s.initial_effect(c)
 	e4:SetTarget(s.efftg)
 	e4:SetOperation(s.effop)
 	c:RegisterEffect(e4)
-
 	-- 【引擎劫持模块】：只在对局开始时执行一次
 	if not s.global_hooked then
 		s.global_hooked = true
-		-- 初始化全局黑客表
 		s.restricted_codes = s.restricted_codes or {}
-		
 		local unpack = table.unpack or unpack
+		
+		-- ==========================================
+		-- 核心修复：劫持 Effect 的底层元表方法
+		-- 解决增殖的G等连续效果提早注册闭包导致绕过追踪的Bug
+		-- ==========================================
+
+		-- 拦截 SetOperation
+		local old_SetOperation = Effect.SetOperation
+		Effect.SetOperation = function(e, op)
+			if type(op) == "function" then
+				local wrapped_op = function(...)
+					local prev_code = s.active_code
+					local args = {...}
+					local e_inner = args[1] -- 传入的第一个参数必然是 Effect 对象本身
+					if aux.GetValueType(e_inner) == "Effect" then
+						local owner = e_inner:GetOwner()
+						if owner then
+							-- 无论这是谁的效果，只要执行，就点亮对应卡名的追踪灯！
+							s.active_code = owner:GetOriginalCodeRule()
+						end
+					end
+					local res = {op(...)}
+					s.active_code = prev_code -- 执行完毕后熄灭/恢复追踪灯
+					return unpack(res)
+				end
+				return old_SetOperation(e, wrapped_op)
+			end
+			return old_SetOperation(e, op)
+		end
+
+		-- 拦截 SetTarget
+		local old_SetTarget = Effect.SetTarget
+		Effect.SetTarget = function(e, tg)
+			if type(tg) == "function" then
+				local wrapped_tg = function(...)
+					local prev_code = s.active_code
+					local args = {...}
+					local e_inner = args[1]
+					if aux.GetValueType(e_inner) == "Effect" then
+						local owner = e_inner:GetOwner()
+						if owner then
+							s.active_code = owner:GetOriginalCodeRule()
+						end
+					end
+					local res = {tg(...)}
+					s.active_code = prev_code
+					return unpack(res)
+				end
+				return old_SetTarget(e, wrapped_tg)
+			end
+			return old_SetTarget(e, tg)
+		end
+		-- ==========================================
 		
 		-- 1. 劫持 IsAbleToHand (阻断增援等空发)
 		local old_IsAbleToHand = Card.IsAbleToHand
 		Card.IsAbleToHand = function(tc, ...)
-			-- 如果当前正在执行的代码是被宣言的卡，且处于被限制的回合
 			if s.active_code and s.restricted_codes[s.active_code] == Duel.GetTurnCount() then
-				-- 仅拦截从卡组/墓地/除外区加手 (不影响场上弹回手卡)
 				if tc:IsLocation(LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA) then
 					return false
 				end
@@ -79,14 +127,11 @@ function s.initial_effect(c)
 		local old_SendtoHand = Duel.SendtoHand
 		Duel.SendtoHand = function(tg, p, r, ...)
 			if (r & REASON_EFFECT) ~= 0 and s.active_code and s.restricted_codes[s.active_code] == Duel.GetTurnCount() then
-				-- 兼容 tg 可能是 Card 或 Group 的情况
-				if type(tg) == "userdata" then
-					if tg.IsLocation then
-						if tg:IsLocation(LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA) then return 0 end
-					elseif tg.Filter then
-						local g = tg:Filter(Card.IsLocation, nil, LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA)
-						if #g > 0 then return 0 end
-					end
+				if aux.GetValueType(tg) == "Card" then
+					if tg:IsLocation(LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA) then return 0 end
+				elseif aux.GetValueType(tg) == "Group" then
+					local g = tg:Filter(Card.IsLocation, nil, LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA)
+					if #g > 0 then return 0 end
 				end
 			end
 			return old_SendtoHand(tg, p, r, ...)
