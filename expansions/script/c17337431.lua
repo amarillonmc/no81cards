@@ -22,26 +22,33 @@ function s.initial_effect(c)
 	e2:SetOperation(s.activate2)
 	c:RegisterEffect(e2)
 end
+
 function s.chkfilter1(c)
 	return c:IsFaceupEx() and c:IsCode(17337400) 
 end
+
 function s.chkfilter2(c)
 	return c:IsFaceupEx() and c:IsCode(17337402) 
 end
+
 function s.spfilter1(c,e,tp)
 	return c:IsCode(17337402) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+
 function s.spfilter2(c,e,tp)
 	return c:IsCode(17337400) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
+
 function s.target1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
 			and Duel.IsExistingMatchingCard(s.chkfilter1,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)
 			and Duel.IsExistingMatchingCard(s.spfilter1,tp,LOCATION_HAND+LOCATION_DECK,0,1,nil,e,tp)
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK)
 end
+
 function s.activate1(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(s.chkfilter1,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
 	if #g==0 then return end   
@@ -61,14 +68,17 @@ function s.activate1(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
+
 function s.target2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then 
 		return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
 			and Duel.IsExistingMatchingCard(s.chkfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil)
 			and Duel.IsExistingMatchingCard(s.spfilter2,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp)
 	end
+	Duel.Hint(HINT_OPSELECTED,1-tp,e:GetDescription())
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
 end
+
 function s.activate2(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(s.chkfilter2,tp,LOCATION_HAND+LOCATION_MZONE,0,nil)
 	if #g==0 then return end	
