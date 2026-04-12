@@ -42,8 +42,9 @@ function c43990122.checkfliter(c)
 	return c:IsCode(43990116) and c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_SPECIAL)
 end
 function c43990122.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if eg:IsExists(c43990122.checkfliter,1,nil,rp) then
-		Duel.RegisterFlagEffect(rp,43990122,RESET_PHASE+PHASE_END,0,1)
+	if eg:IsExists(c43990122.checkfliter,1,nil) then
+		Duel.RegisterFlagEffect(0,43990122,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(1,43990122,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 function c43990122.handcon(e)
@@ -68,15 +69,15 @@ function c43990122.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler() 
 	local g=Duel.GetMatchingGroup(c43990122.thdfilter,tp,LOCATION_DECK,0,nil)
 	local e1= #g>1 and g:CheckSubGroup(c43990122.gcheck,2,2)
-	local e2= Duel.IsExistingMatchingCard(c43990122.checkfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(c43990122.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133)
+	local e2= Duel.IsExistingMatchingCard(c43990122.checkfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(c43990122.spfilter,tp,LOCATION_DECK,0,2,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133)
 	if chk==0 then return e1 or e2 end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,tp,LOCATION_DECK)
 end
 function c43990122.thop(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(c43990122.thdfilter,tp,LOCATION_DECK,0,nil)
 	local e1= #g>1 and g:CheckSubGroup(c43990122.gcheck,2,2)
-	local e2= Duel.IsExistingMatchingCard(c43990122.checkfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(c43990122.spfilter,tp,LOCATION_DECK,0,1,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133)
-	if e1 and (not b2 or not Duel.SelectYesNo(tp,aux.Stringid(id,2))) then
+	local e2= Duel.IsExistingMatchingCard(c43990122.checkfilter,tp,LOCATION_ONFIELD,0,1,nil) and Duel.IsExistingMatchingCard(c43990122.spfilter,tp,LOCATION_DECK,0,2,nil,e,tp) and Duel.GetLocationCount(tp,LOCATION_MZONE)>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133)
+	if e1 and (not e2 or not Duel.SelectYesNo(tp,aux.Stringid(43990122,1))) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:SelectSubGroup(tp,c43990122.gcheck,false,2,2)
 		if #sg>0 then
@@ -96,7 +97,7 @@ function c43990122.cfilter(c)
 end
 function c43990122.bmcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	return eg:IsExists(c43990121.cfilter,1,nil)
+	return eg:IsExists(c43990122.cfilter,1,nil)
 end
 function c43990122.bmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

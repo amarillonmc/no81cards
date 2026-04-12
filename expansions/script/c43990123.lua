@@ -56,8 +56,9 @@ function c43990123.checkfliter(c)
 	return c:IsCode(43990116) and c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_SPECIAL)
 end
 function c43990123.checkop1(e,tp,eg,ep,ev,re,r,rp)
-	if eg:IsExists(c43990123.checkfliter,1,nil,rp) then
-		Duel.RegisterFlagEffect(rp,43990123,RESET_PHASE+PHASE_END,0,1)
+	if eg:IsExists(c43990123.checkfliter,1,nil) then
+		Duel.RegisterFlagEffect(1,43990123,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(0,43990123,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 function c43990123.handcon(e)

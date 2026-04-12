@@ -42,7 +42,7 @@ end
 function c43990121.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsLocation(LOCATION_MZONE) and tc:IsPreviousLocation(LOCATION_REMOVED) and not tc:IsReason(REASON_SPSUMMON) then
+		if tc:IsLocation(LOCATION_MZONE) and tc:IsPreviousLocation(LOCATION_REMOVED) and not tc:IsReason(REASON_SPSUMMON) and not tc:IsReason(REASON_SUMMON) then
 			tc:RegisterFlagEffect(43990121,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
 		end
 		tc=eg:GetNext()

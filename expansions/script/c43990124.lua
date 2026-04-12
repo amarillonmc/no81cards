@@ -45,8 +45,9 @@ function c43990124.checkfliter(c)
 	return c:IsSetCard(0x6510) and c:IsFaceup() and c:IsSummonType(SUMMON_TYPE_SPECIAL)
 end
 function c43990124.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if eg:IsExists(c43990124.checkfliter,1,nil,rp) then
-		Duel.RegisterFlagEffect(rp,43990124,RESET_PHASE+PHASE_END,0,1)
+	if eg:IsExists(c43990124.checkfliter,1,nil) then
+		Duel.RegisterFlagEffect(1,43990124,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(0,43990124,RESET_PHASE+PHASE_END,0,1)
 	end
 end
 function c43990124.handcon(e)
