@@ -1,6 +1,7 @@
 --心象风景死寂
 local s,id,o=GetID()
 function s.initial_effect(c)
+	aux.AddCodeList(c,19209511)
 	--①
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
