@@ -119,7 +119,7 @@ function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,PLAYER_ALL,LOCATION_ONFIELD)
 	end
 	if b2 then
-		cat=cat+CATEGORY_SUMMON
+		cat=cat+CATEGORY_SUMMON+CATEGORY_MSET
 		Duel.SetOperationInfo(0,CATEGORY_SUMMON,nil,1,tp,LOCATION_HAND)
 	end
 	if b3 then

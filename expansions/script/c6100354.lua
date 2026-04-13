@@ -15,16 +15,13 @@ function s.initial_effect(c)
 	e0:SetValue(aux.synlimit)
 	c:RegisterEffect(e0)
 
-	--①：特召炸表侧魔陷 + 封场地
+	--indes
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(id,0))
-	e1:SetCategory(CATEGORY_DESTROY)
-	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e1:SetCountLimit(1,id)
-	e1:SetTarget(s.destg)
-	e1:SetOperation(s.desop)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e1:SetCode(EFFECT_CANNOT_REMOVE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCondition(s.indcon)
 	c:RegisterEffect(e1)
 
 	--②：堆墓获抗性
@@ -56,35 +53,8 @@ function s.initial_effect(c)
 end
 
 -- === 效果① ===
-function s.desfilter(c)
-	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsFaceup()
-end
-
-function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
-	local g=Duel.GetMatchingGroup(s.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,#g,0,0)
-end
-
-function s.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.desfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
-	if #g>0 then
-		Duel.Destroy(g,REASON_EFFECT)
-	end
-	-- 封锁场地魔法发动直到下个回合结束
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD)
-	e1:SetCode(EFFECT_CANNOT_ACTIVATE)
-	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
-	e1:SetDescription(aux.Stringid(id,3))
-	e1:SetTargetRange(1,1)
-	e1:SetValue(s.aclimit)
-	e1:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e1,tp)
-end
-
-function s.aclimit(e,re,tp)
-	return re:IsHasType(EFFECT_TYPE_ACTIVATE) and re:IsActiveType(TYPE_FIELD)
+function s.indcon(e)
+	return e:GetHandler():IsLinkState()
 end
 
 -- === 效果② ===

@@ -1,0 +1,96 @@
+--讳谶之死灵术士
+function c9911441.initial_effect(c)
+	--effect draw
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
+	e1:SetCode(EVENT_FREE_CHAIN)
+	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCountLimit(1,9911441)
+	e1:SetCost(c9911441.cost)
+	e1:SetOperation(c9911441.operation)
+	c:RegisterEffect(e1)
+	--redirect
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetCode(EVENT_TO_GRAVE)
+	e2:SetOperation(c9911441.redop)
+	c:RegisterEffect(e2)
+	local e3=e2:Clone()
+	e3:SetCode(EVENT_REMOVE)
+	c:RegisterEffect(e3)
+end
+function c9911441.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	local c=e:GetHandler()
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,c) and c:IsDiscardable() end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
+	local g=Duel.SelectMatchingCard(tp,Card.IsDiscardable,tp,LOCATION_HAND,0,0,99,c)
+	g:AddCard(c)
+	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
+	e:SetLabel(#g)
+end
+function c9911441.operation(e,tp,eg,ep,ev,re,r,rp)
+	local ct=e:GetLabel()
+	if ct<1 then return end
+	Duel.SetLP(tp,Duel.GetLP(tp)-ct*700)
+	if c9911441.draw_effect and not Duel.CheckEvent(EVENT_PREDRAW) then c9911441.draw_effect:Reset() end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetCode(EFFECT_DRAW_COUNT)
+	e1:SetTargetRange(1,0)
+	e1:SetCondition(c9911441.drcon)
+	if Duel.GetTurnPlayer()==tp and Duel.GetCurrentPhase()==PHASE_DRAW then
+		e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN,2)
+		e1:SetLabel(Duel.GetTurnCount())
+	else
+		e1:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
+		e1:SetLabel(0)
+	end
+	e1:SetValue(ct)
+	Duel.RegisterEffect(e1,tp)
+	c9911441.draw_effect=e1
+end
+function c9911441.drcon(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.GetTurnCount()~=e:GetLabel()
+end
+function c9911441.redop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(tp,9911441)>0 or not Duel.SelectYesNo(tp,aux.Stringid(9911441,0)) then return end
+	Duel.Hint(HINT_CARD,0,9911441)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CODE)
+	local ac=Duel.AnnounceCard(tp)
+	Duel.SelectYesNo(1-tp,aux.Stringid(9911441,2))
+	Duel.Hint(HINT_CARD,0,ac)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+	e1:SetTargetRange(LOCATION_DECK,LOCATION_DECK)
+	e1:SetTarget(c9911441.rmtarget)
+	e1:SetLabel(ac)
+	e1:SetValue(LOCATION_REMOVED)
+	e1:SetReset(RESET_PHASE+PHASE_END,2)
+	Duel.RegisterEffect(e1,tp)
+	local e2=Effect.CreateEffect(e:GetHandler())
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e2:SetCode(81674782)
+	e2:SetTargetRange(0xff,0xff)
+	e2:SetTarget(c9911441.checktg)
+	e2:SetReset(RESET_PHASE+PHASE_END,2)
+	Duel.RegisterEffect(e2,tp)
+	local e3=Effect.CreateEffect(e:GetHandler())
+	e3:SetDescription(aux.Stringid(9911441,1))
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
+	e3:SetTargetRange(1,1)
+	e3:SetReset(RESET_PHASE+PHASE_END,2)
+	Duel.RegisterEffect(e3,tp)
+	Duel.RegisterFlagEffect(tp,9911441,0,0,1)
+end
+function c9911441.rmtarget(e,c)
+	return c:IsOriginalCodeRule(e:GetLabel())
+end
+function c9911441.checktg(e,c)
+	return not c:IsPublic()
+end

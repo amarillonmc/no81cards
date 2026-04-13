@@ -24,15 +24,16 @@ function s.initial_effect(c)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e0:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e0:SetCondition(s.chcon)
 	e0:SetOperation(s.chop)
 	c:RegisterEffect(e0)
 
 	-- 强制触发：对方进行选择和执行
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e4:SetCode(EVENT_CUSTOM+id)
-	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_EVENT_PLAYER)
+	e4:SetProperty(EFFECT_FLAG_EVENT_PLAYER) --EFFECT_FLAG_DELAY
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetTarget(s.efftg)
 	e4:SetOperation(s.effop)
@@ -93,6 +94,63 @@ function s.initial_effect(c)
 				return old_SetTarget(e, wrapped_tg)
 			end
 			return old_SetTarget(e, tg)
+		end
+
+		-- ==========================================
+		-- 第二层：决斗开始时的全盘逆向审查 (针对此卡加载前就已经加载的卡片)
+		-- 依赖 KoishiPro 特有 API: GetCardRegistered
+		-- ==========================================
+		if Card.GetCardRegistered then
+			local e_retro = Effect.CreateEffect(c)
+			e_retro:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+			e_retro:SetCode(EVENT_PHASE_START+PHASE_DRAW) -- 在第一回合的抽卡阶段前触发
+			e_retro:SetCountLimit(1, EFFECT_COUNT_CODE_DUEL)
+			e_retro:SetOperation(function(e, tp, eg, ep, ev, re, r, rp)
+				-- 获取对局中存在的所有卡片 (涵盖卡组、额外、手卡、场上、墓地、除外区)
+				local g = Duel.GetMatchingGroup(aux.TRUE, 0, 0xff, 0xff, nil)
+				
+				for tc in aux.Next(g) do
+					-- 参数7：获取全部效果 (常量可能因内核而异，7 为截图所示)
+					local effs = {tc:GetCardRegistered(aux.TRUE, 7, tc)}
+					
+					for _, eff in ipairs(effs) do
+						if aux.GetValueType(eff) == "Effect" then
+							
+							-- 处理 Target
+							local tg = eff:GetTarget()
+							if tg and type(tg) == "function" then
+								local wrapped_tg = function(...)
+									local prev_code = s.active_code
+									local owner = eff:GetOwner()
+									if owner then s.active_code = owner:GetOriginalCodeRule() end
+									local res = {tg(...)}
+									s.active_code = prev_code
+									return unpack(res)
+								end
+								-- 绕过元表直接调底层，或者依赖上面已经劫持的元表都可以，这里直接覆盖
+								old_SetTarget(eff, wrapped_tg) 
+							end
+							
+							-- 处理 Operation
+							local op = eff:GetOperation()
+							if op and type(op) == "function" and not eff.laplace_op_hooked then
+								eff.laplace_op_hooked = true
+								local wrapped_op = function(...)
+									local prev_code = s.active_code
+									local owner = eff:GetOwner()
+									if owner then s.active_code = owner:GetOriginalCodeRule() end
+									local res = {op(...)}
+									s.active_code = prev_code
+									return unpack(res)
+								end
+								old_SetOperation(eff, wrapped_op)
+							end
+							
+						end
+					end
+				end
+			end)
+			Duel.RegisterEffect(e_retro, 0)
 		end
 		-- ==========================================
 		

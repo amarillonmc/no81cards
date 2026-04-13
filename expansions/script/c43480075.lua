@@ -5,7 +5,7 @@ function s.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	c:EnableReviveLimit()
 	aux.AddFusionProcMix(c, true, true, s.matfilter1, s.matfilter2)
-	aux.AddContactFusionProcedure(c,s.cfilter,LOCATION_EXTRA+LOCATION_MZONE+LOCATION_GRAVE,0,aux.ContactFusionSendToDeck(c))
+	aux.AddContactFusionProcedure(c,s.cfilter,LOCATION_HAND+LOCATION_MZONE,0,aux.ContactFusionSendToDeck(c))
 	
 
 	-- 【灵摆效果】：墓地/额外特招
@@ -32,7 +32,7 @@ function s.initial_effect(c)
 	e2:SetOperation(s.thop)
 	c:RegisterEffect(e2)
 
-	-- ②：对方怪兽效果发动时（自己的回合）
+	--[[ ②：对方怪兽效果发动时（自己的回合）
 	local e3 = Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id, 2))
 	e3:SetCategory(CATEGORY_SPECIAL_SUMMON + CATEGORY_TOEXTRA)
@@ -58,6 +58,7 @@ function s.initial_effect(c)
 	local e5 = e4:Clone()
 	e5:SetCode(EVENT_DESTROYED)
 	c:RegisterEffect(e5)
+	]]
 end
 
 

@@ -35,7 +35,7 @@ function c9910083.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function c9910083.thfilter(c)
-	return c:IsSetCard(0x9951) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return c:IsFaceupEx() and c:IsSetCard(0x9951) and c:IsAbleToHand() and not c:IsCode(9910083)
 end
 function c9910083.spfilter(c,e,tp)
 	return c:IsLevelBelow(4) and c:IsRace(RACE_FAIRY) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
@@ -44,21 +44,21 @@ function c9910083.activate(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)<5 then return end
 	Duel.ConfirmDecktop(tp,5)
 	local g=Duel.GetDecktopGroup(tp,5)
-	local sg=g:Filter(Card.IsRace,nil,RACE_FAIRY)
-	if g:GetCount()>0 and g:IsExists(c9910083.thfilter,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(9910083,0)) then
+	Duel.SortDecktop(tp,tp,5)
+	local ct=g:Filter(Card.IsRace,nil,RACE_FAIRY):GetClassCount(Card.GetAttribute)
+	if ct>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(c9910083.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(9910083,0)) then
+		Duel.BreakEffect()
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local sg1=g:FilterSelect(tp,c9910083.thfilter,1,1,nil)
-		Duel.SendtoHand(sg1,nil,REASON_EFFECT)
-		Duel.ConfirmCards(1-tp,sg1)
-		Duel.ShuffleHand(tp)
+		local tc=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(c9910083.thfilter),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil):GetFirst()
+		Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,tc)
+		if tc:IsPreviousLocation(LOCATION_DECK) then Duel.ShuffleDeck(tp) end
+		ct=ct-1
 	end
-	Duel.ShuffleDeck(tp)
-	if sg and sg:GetClassCount(Card.GetAttribute)>=2
-		and Duel.IsExistingMatchingCard(c9910083.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
+	if ct>0 and Duel.IsExistingMatchingCard(c9910083.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp) and Duel.IsPlayerCanDraw(tp,1)
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(9910083,1)) then
 		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg2=Duel.SelectMatchingCard(tp,c9910083.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-		Duel.SpecialSummon(sg2,0,tp,tp,false,false,POS_FACEUP)
+		local sg=Duel.SelectMatchingCard(tp,c9910083.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+		if Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)>0 then Duel.Draw(tp,1,REASON_EFFECT) end
 	end
 end

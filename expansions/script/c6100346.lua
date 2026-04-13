@@ -80,8 +80,8 @@ end
 
 -- === 效果② ===
 function s.gycost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,1000) end
-	Duel.PayLPCost(tp,1000)
+	if chk==0 then return Duel.CheckLPCost(tp,500) end
+	Duel.PayLPCost(tp,500)
 end
 
 function s.gytarget(e,tp,eg,ep,ev,re,r,rp,chk)

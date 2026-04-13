@@ -1,10 +1,8 @@
---半魔的智库
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,17337400)
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetCode(EFFECT_TRAP_ACT_IN_HAND)
 	e0:SetCondition(s.actcon)
 	c:RegisterEffect(e0)
 	local e1=Effect.CreateEffect(c)
@@ -16,6 +14,7 @@ function s.initial_effect(c)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e1:SetCountLimit(1,id)
+	e1:SetCondition(s.condition)
 	e1:SetCost(s.cost)
 	e1:SetTarget(s.tg1)
 	e1:SetOperation(s.op1)
@@ -29,10 +28,14 @@ function s.initial_effect(c)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
 	e2:SetCountLimit(1,id+1)
+	e2:SetCondition(s.condition)
 	e2:SetCost(s.cost)
 	e2:SetTarget(s.tg2)
 	e2:SetOperation(s.op2)
 	c:RegisterEffect(e2)
+end
+function s.condition(e,tp,eg,ep,ev,re,r,rp)
+	return Duel.IsMainPhase()
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return not e:GetHandler():IsPublic() end
@@ -41,15 +44,12 @@ end
 function s.actcon(e)
 	return Duel.IsExistingMatchingCard(s.cfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,1,nil)
 end
-
 function s.cfilter(c)
 	return c:IsFaceup() and c:IsCode(17337400)
 end
-
 function s.thfilter1(c)
 	return c:IsCode(17337400) and c:IsFaceup()
 end
-
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsControler(tp) and s.thfilter1(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(s.thfilter1,tp,LOCATION_MZONE,0,1,nil) end
@@ -57,7 +57,6 @@ function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	Duel.SelectTarget(tp,s.thfilter1,tp,LOCATION_MZONE,0,1,1,nil)
 end
-
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
@@ -68,7 +67,6 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetValue(s.efilter)
 		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
 		tc:RegisterEffect(e1)
-
 		local ex_g=Duel.GetMatchingGroup(Card.IsAbleToHand,tp,LOCATION_REMOVED,LOCATION_REMOVED,nil)
 		if Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_HAND,0,1,nil) 
 			and #ex_g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
@@ -97,37 +95,30 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-
 function s.efilter(e,re)
 	return re:GetOwnerPlayer()~=e:GetHandlerPlayer()
 end
-
 function s.retcon(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	if tc:GetFlagEffect(id+1)~=0 then return true
 	else e:Reset() return false end
 end
-
 function s.retop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=e:GetLabelObject()
 	Duel.SendtoHand(tc,nil,REASON_EFFECT)
 end
-
 function s.thfilter2(c)
 	return c:IsCode(17337400) and c:IsAbleToDeck() and c:IsFaceupEx()
 end
-
 function s.filter_fusion_check(tc,e,tp,c)
 	if not s.thfilter2(tc) then return false end
 	local mg=Group.FromCards(c,tc)
 	return Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,mg,nil,tp)
 end
-
 function s.filter2(c,e,tp,m,f,chkf)
 	return c:IsType(TYPE_FUSION) and (not f or f(c))
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_FUSION,tp,false,false) and c:CheckFusionMaterial(m,nil,chkf)
 end
-
 function s.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return chkc:IsLocation(LOCATION_MZONE+LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and s.filter_fusion_check(chkc,e,tp,c) end
@@ -142,7 +133,6 @@ function s.tg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,mg,2,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 end
-
 function s.op2(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()

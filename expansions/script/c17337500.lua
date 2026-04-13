@@ -22,6 +22,21 @@ function s.initial_effect(c)
 	e2:SetCondition(s.spcon_check)
 	e2:SetOperation(s.reg_delayed_sp)
 	c:RegisterEffect(e2)
+	if not s.global_check then
+		s.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_TO_GRAVE)
+		ge1:SetOperation(s.checkop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function s.checkop(e,tp,eg,ep,ev,re,r,rp)
+	for tc in aux.Next(eg) do
+		if tc:IsCode(17337400) then
+			Duel.RegisterFlagEffect(tc:GetPreviousControler(),id+2,0,0,1)
+		end
+	end
 end
 function s.lcheck(g,lc)
 	return g:IsExists(Card.IsFusionCode,1,nil,17337400)
@@ -33,24 +48,25 @@ function s.thfilter(c,tp)
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD+LOCATION_GRAVE) and s.thfilter(chkc,tp) end
-	local ct=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
+	local ct=Duel.GetFlagEffect(tp,id+2) 
 	if chk==0 then return ct>0 and Duel.IsExistingTarget(s.thfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil,tp) 
 		and Duel.IsPlayerCanDraw(tp,ct) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local g=Duel.SelectTarget(tp,s.thfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil,tp)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,LOCATION_GRAVE)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,ct)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,ct,tp,LOCATION_HAND)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not (tc and tc:IsRelateToEffect(e)) then return end
 	if Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and (tc:IsLocation(LOCATION_HAND+LOCATION_EXTRA)) then
-		Duel.BreakEffect()
-		local ct=Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)
+		local ct=Duel.GetFlagEffect(tp,id+2)
 		if ct>0 and Duel.Draw(tp,ct,REASON_EFFECT)==ct then
 			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)		   
 			local g=Duel.GetFieldGroup(tp,LOCATION_HAND,0):Select(tp,ct,ct,nil)
-			if #g>0 then
+			if #g>0 then			   
 				Duel.SendtoDeck(g,nil,SEQ_DECKBOTTOM,REASON_EFFECT)
 			end
 		end
