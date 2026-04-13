@@ -1,3 +1,4 @@
+--拜布莉丝之虫惑魔
 local s,id,o=GetID()
 function s.initial_effect(c)
 	aux.AddXyzProcedureLevelFree(c,s.mfilter,nil,2,2)
@@ -29,7 +30,6 @@ function s.initial_effect(c)
 	e3:SetCode(EVENT_CHAINING)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetRange(LOCATION_MZONE)
-	e3:SetCondition(s.sccon)
 	e3:SetTarget(s.sctg)
 	e3:SetOperation(s.scop)
 	c:RegisterEffect(e3)
