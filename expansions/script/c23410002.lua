@@ -48,6 +48,7 @@ function cm.condition(e,tp,eg,ep,ev,re,r,rp)
 end
 function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
+	if c:IsRelateToChain() then c:CancelToGrave() end
 	if Duel.SendtoDeck(c,nil,1,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_MZONE,0,1,nil) then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end

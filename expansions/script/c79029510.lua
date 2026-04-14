@@ -31,7 +31,7 @@ function c79029510.activate(e,tp,eg,ep,ev,re,r,rp)
 	if opt==0 then
 		opt=Duel.SelectOption(p,aux.Stringid(79029510,0),aux.Stringid(79029510,1))
 	else
-		opt=Duel.SelectOption(p,aux.Stringid(79029510,0))
+		opt=Duel.SelectOption(p,aux.Stringid(79029510,0),aux.Stringid(79029510,0))
 	end
 	if opt==0 then
 		Duel.Win(1-p,WIN_REASON_MARRY)

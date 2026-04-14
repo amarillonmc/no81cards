@@ -27,7 +27,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local sel2=0
 	if Duel.IsExistingMatchingCard(cm.actfilter,tp,LOCATION_MZONE,0,1,nil) then sel=2 end 
 	if sel~=2 and #g>0 then
-		sel2=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))+1
+		sel2=Duel.SelectOption(tp,1191,1113)+1
 	end
 	if (sel2==1 or sel==2) and Duel.IsPlayerCanSpecialSummonCount(tp,2) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
@@ -118,7 +118,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 				e4:SetValue(tc:GetDefense()/2)
 				token3:RegisterEffect(e4,true)
 				Duel.SpecialSummonComplete()
-			end	 
+			end  
 		end
 	end
 	if (sel2==2 or sel==2) then
