@@ -49,7 +49,13 @@ function s.initial_effect(c)
 end
 --①
 function s.tg1filter(c)
-	return c:IsFaceup()
+	if not c:IsFaceup() then return false end
+	local code=c:GetOriginalCodeRule()
+	local labels={Duel.GetFlagEffectLabel(0,id)}
+	for _,v in ipairs(labels) do
+		if v==code then return false end
+	end
+	return true
 end
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.tg1filter,tp,0,LOCATION_MZONE,1,nil) end
@@ -58,7 +64,7 @@ end
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISABLE)
-	local g=Duel.SelectMatchingCard(tp,s.tg1filter,tp,0,LOCATION_MZONE,1,1,nil)
+	local g=Duel.SelectMatchingCard(tp,s.tg1filter,tp,0,LOCATION_MZONE,1,1,nil,tp)
 	local tc=g:GetFirst()
 	local code=tc:GetOriginalCodeRule()
 	-- negate
@@ -78,7 +84,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetLabel(code)
 	e2:SetReset(RESET_PHASE+PHASE_END,1)
 	Duel.RegisterEffect(e2,tp)
-	--TODO: 记录该效果所适用的code，在该效果的无效适用期间，该效果不能再次选择相同code的卡牌
+	Duel.RegisterFlagEffect(0,id,RESET_PHASE+PHASE_END,0,1,code)
 end
 function s.distg(e,c)
 	local code=e:GetLabel()

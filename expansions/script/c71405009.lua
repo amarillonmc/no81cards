@@ -107,7 +107,7 @@ function s.op3(e,tp,eg,ep,ev,re,r,rp)
 	local sc=g:GetFirst()
 	if sc then
 		sc:SetMaterial(nil)
-		if Duel.SpecialSummonStep(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP)>0 then
+		if Duel.SpecialSummonStep(sc,SUMMON_TYPE_XYZ,tp,tp,false,false,POS_FACEUP) then
 			sc:CompleteProcedure()
 		end
 		Duel.SpecialSummonComplete()
