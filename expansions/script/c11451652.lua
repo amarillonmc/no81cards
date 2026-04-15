@@ -3,6 +3,7 @@
 local cm,m=GetID()
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
+	aux.AddCodeList(c,22398665)
 	--effect
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,0))
