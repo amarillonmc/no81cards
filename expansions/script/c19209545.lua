@@ -54,7 +54,7 @@ function c19209545.cfilter(c)
 	return c:IsSetCard(0x3b50) and c:IsType(TYPE_PENDULUM) and c:IsFaceup() and (c:IsAbleToRemove() or not c:IsForbidden())
 end
 function c19209545.settg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsOnField() and c:IsControler(tp) and c19209545.cfilter(chkc) end
+	if chkc then return chkc:IsOnField() and chkc:IsControler(tp) and c19209545.cfilter(chkc) end
 	if chk==0 then return Duel.IsExistingTarget(c19209545.cfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g=Duel.SelectTarget(tp,c19209545.cfilter,tp,LOCATION_ONFIELD,0,1,1,nil)
