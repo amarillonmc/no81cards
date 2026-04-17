@@ -112,8 +112,8 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.HintSelection(sg)
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		end
-		e:Reset()
 	end
+	e:Reset()
 end
 function s.checkcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
