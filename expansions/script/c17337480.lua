@@ -1,14 +1,15 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
+	aux.AddCodeList(c,17337400,17337402,17337404) 
 	aux.AddFusionProcFun2(c,s.matfilter1,s.matfilter2,true)
-	aux.AddContactFusionProcedure(c,s.cfilter,LOCATION_ONFIELD,0,aux.ContactFusionSendToDeck(c))
+	aux.AddContactFusionProcedure(c,s.cfilter,LOCATION_ONFIELD,0,aux.ContactFusionSendToDeck(c))	
 	local e0=Effect.CreateEffect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
 	e0:SetValue(s.splimit)
-	c:RegisterEffect(e0)
+	c:RegisterEffect(e0)	
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EFFECT_DESTROY_REPLACE)
@@ -17,7 +18,7 @@ function s.initial_effect(c)
 	e1:SetTarget(s.reptg)
 	e1:SetValue(s.repval)
 	e1:SetOperation(s.repop)
-	c:RegisterEffect(e1)
+	c:RegisterEffect(e1)	
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON+CATEGORY_TOKEN)
@@ -31,22 +32,28 @@ function s.initial_effect(c)
 	e2:SetOperation(s.desop)
 	c:RegisterEffect(e2)
 end
+
 function s.splimit(e,se,sp,st)
 	return e:GetHandler():GetLocation()~=LOCATION_EXTRA
 end
+
 function s.matfilter1(c)
 	return c:IsFusionCode(17337402) 
 end
+
 function s.matfilter2(c)
 	return c:IsFusionCode(17337400,17337404) 
 end
+
 function s.cfilter(c)
 	return (s.matfilter1(c) or s.matfilter2(c)) and c:IsAbleToDeckOrExtraAsCost()
 end
+
 function s.repfilter(c,tp)
 	return c:IsSetCard(0x3f50) and c:IsOnField() and c:IsControler(tp)
 		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
+
 function s.atkfilter(c)
 	return c:IsFaceup() and c:IsAttribute(ATTRIBUTE_WATER)
 end
@@ -55,9 +62,11 @@ function s.reptg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.IsExistingMatchingCard(s.atkfilter,tp,LOCATION_MZONE,0,1,nil) end
 	return Duel.SelectEffectYesNo(tp,e:GetHandler(),96) 
 end
+
 function s.repval(e,c)
 	return s.repfilter(c,e:GetHandlerPlayer())
 end
+
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATKDEF)
 	local g=Duel.SelectMatchingCard(tp,s.atkfilter,tp,LOCATION_MZONE,0,1,1,nil)
@@ -75,6 +84,7 @@ function s.repop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e2)
 	end
 end
+
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) end
 	if chk==0 then return Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end

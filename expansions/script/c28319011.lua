@@ -50,10 +50,11 @@ function c28319011.activate(e,tp,eg,ep,ev,re,r,rp,op)
 		if not te then return end
 		local tg=te:GetTarget()
 		if tg and tg(e,tp,eg,ep,ev,re,r,rp,0) then
-		Duel.BreakEffect()
-		Duel.SetLP(tp,Duel.GetLP(tp)-1500)
-		local op=te:GetOperation()
-		if op then op(e,tp,eg,ep,ev,re,r,rp) end
+			Duel.BreakEffect()
+			Duel.SetLP(tp,Duel.GetLP(tp)-1500)
+			local op=te:GetOperation()
+			if op then op(e,tp,eg,ep,ev,re,r,rp) end
+		end
 	end
 end
 function c28319011.tdcon(e,tp,eg,ep,ev,re,r,rp)
