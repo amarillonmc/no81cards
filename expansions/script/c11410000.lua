@@ -142,7 +142,14 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		if KOISHI_CHECK then
 			Duel.Exile(c,0)
 		else
-			Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+			e1:SetValue(3)
+			c:RegisterEffect(e1,true)
+			Duel.SendtoGrave(c,REASON_RULE)
 		end
 	elseif c:IsLocation(LOCATION_HAND) and #g>=36 then
 		if not cm.r then
@@ -157,7 +164,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 		end--]]
 		local ct=cm.roll(1,#g)-1
 		local tc=g:Filter(function(c) return c:GetSequence()==ct end,nil):GetFirst()
-		if KOISHI_CHECK then
+		if not KOISHI_CHECK then
 			c:SetEntityCode(tc:GetOriginalCode())
 			if not tc.initial_effect then
 				c:ReplaceEffect(80316585,0)
@@ -195,7 +202,14 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			Duel.DisableShuffleCheck()
 			Duel.Exile(tc,0)
 		else
-			Duel.Remove(c,POS_FACEDOWN,REASON_RULE)
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+			e1:SetValue(3)
+			c:RegisterEffect(e1,true)
+			Duel.SendtoGrave(c,REASON_RULE)
 			Duel.DisableShuffleCheck()
 			Duel.SendtoHand(tc,nil,REASON_RULE)
 		end
