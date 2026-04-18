@@ -46,8 +46,8 @@ end
 function c43990123.checkop2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	while tc do
-		if tc:IsLocation(LOCATION_MZONE) and tc:IsPreviousLocation(LOCATION_REMOVED) and not tc:IsReason(REASON_SPSUMMON) then
-			tc:RegisterFlagEffect(43990123,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,0,1)
+		if tc:IsLocation(LOCATION_MZONE) and tc:IsPreviousLocation(LOCATION_REMOVED) and not tc:IsReason(REASON_SPSUMMON) and not tc:IsReason(REASON_SUMMON) then
+			tc:RegisterFlagEffect(43990123,RESET_EVENT+RESETS_STANDARD,0,1)
 		end
 		tc=eg:GetNext()
 	end
@@ -69,7 +69,7 @@ function c43990123.brfilter1(c)
 	return c:IsFaceup() and c:GetFlagEffect(43990123)~=0 and c:IsSetCard(0x6510)
 end
 function c43990123.brfilter2(c)
-	return c:IsFaceup() and c:GetFlagEffect(43990123)~=0 and c:IsCode(c43990120)
+	return c:IsFaceup() and c:GetFlagEffect(43990123)~=0 and c:IsCode(43990120)
 end
 function c43990123.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ct1=Duel.GetMatchingGroupCount(c43990123.brfilter1,tp,LOCATION_MZONE,0,nil)
