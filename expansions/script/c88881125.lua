@@ -51,24 +51,28 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.Remove(e:GetHandler(),POS_FACEUP,REASON_COST)
 end
 function s.stg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(s.stfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND+LOCATION_REMOVED,0,1,nil,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.stfilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) 
+	or Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.stfilter1),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end
 end
 function s.stfilter(c,tp)
-	return c:IsCode(88881120) and not c:IsForbidden() and c:CheckUniqueOnField(tp)
+	return c:IsCode(88881120) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and c:IsType(TYPE_CONTINUOUS)
+end
+function s.stfilter1(c,tp)
+	return c:IsCode(88881120) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and c:IsType(TYPE_FIELD)
 end
 function s.operation(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.stfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND+LOCATION_REMOVED,0,nil)
-	if g:GetCount()>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-		local tc=Duel.SelectMatchingCard(tp,s.stfilter,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_HAND+LOCATION_REMOVED,0,1,1,nil,tp):GetFirst()
-		if tc then
-			local fc=Duel.GetFieldCard(tp,LOCATION_SZONE,5)
-			if fc then
-				Duel.SendtoGrave(fc,REASON_RULE)
-				Duel.BreakEffect()
-			end
-			Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+	local g1=Group.CreateGroup()
+	if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then g1=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.stfilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) end
+	g1:Merge(Duel.GetMatchingGroup(aux.NecroValleyFilter(s.stfilter1),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp))
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
+	local tc=g1:Select(tp,1,1,nil):GetFirst()
+	if tc and tc:IsType(TYPE_CONTINUOUS) then Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true) end
+	if tc and tc:IsType(TYPE_FIELD) then 
+		local fc=Duel.GetFieldCard(tp,LOCATION_FZONE,0)
+		if fc then
+			Duel.Destroy(fc,REASON_RULE)
 		end
+		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true) 
 	end
 end
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
