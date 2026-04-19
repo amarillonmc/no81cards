@@ -49,7 +49,7 @@ function s.initial_effect(c)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		local b1 = Duel.IsPlayerCanDiscardDeck(tp,1)
+		local b1 = Duel.GetFieldGroupCount(tp, LOCATION_DECK, 0) > 0
 		local b2 = Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_GRAVE,0,1,nil)
 		return (b1 or b2) and Duel.GetLocationCount(tp,LOCATION_MZONE) > 0
 			and e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) and ep ~= tp and ev > 0
@@ -61,7 +61,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	local c = e:GetHandler()
 	local ct, ct2 = 0, 0
 	for i = 1, ev do
-		local b1 = Duel.IsPlayerCanDiscardDeck(tp,1)
+		local b1 = Duel.GetFieldGroupCount(tp, LOCATION_DECK, 0) > 0
 		local b2 = Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_GRAVE,0,1,nil)
 		if not b1 and not b2 then break end
 		local op = 0
@@ -73,7 +73,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 			op = Duel.SelectOption(1-tp, aux.Stringid(id,2)) + 1
 		end
 		if op == 0 then
-			if Duel.DiscardDeck(tp,1,REASON_EFFECT)>0 and Duel.GetOperatedGroup():GetFirst():IsLocation(LOCATION_GRAVE) then
+			if Duel.Destroy(Duel.GetDecktopGroup(tp, 1), REASON_EFFECT) > 0 and Duel.GetOperatedGroup():GetFirst():IsLocation(LOCATION_GRAVE) then
 				ct = ct + 1
 			end
 		else

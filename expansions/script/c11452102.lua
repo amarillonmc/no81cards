@@ -3,7 +3,7 @@ local s,id=GetID()
 function s.initial_effect(c)
 	--Trap activation
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetCategory(CATEGORY_DRAW+CATEGORY_SSET)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetOperation(s.activate)
@@ -78,6 +78,11 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 		local tc=Duel.SelectMatchingCard(tp,s.pfilter,tp,LOCATION_HAND,0,1,1,nil,tp):GetFirst()
 		if tc then
 			res = Duel.MoveToField(tc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
+			local te=tc:GetActivateEffect()
+			te:UseCountLimit(tp,1,true)
+			local tep=tc:GetControler()
+			local cost=te:GetCost()
+			if cost then cost(te,tep,eg,ep,ev,re,r,rp,1) end
 		end
 	elseif sel==2 then
 		Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)

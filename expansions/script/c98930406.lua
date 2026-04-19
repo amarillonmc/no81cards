@@ -8,20 +8,31 @@ function c98930406.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,98930406+EFFECT_COUNT_CODE_OATH)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
-	e1:SetCost(c98930406.cost)
 	e1:SetOperation(c98930406.activate)
 	c:RegisterEffect(e1)	
-	local e3=e1:Clone()
-	e3:SetCondition(c98930406.con1)
-	e3:SetRange(LOCATION_DECK)
-	c:RegisterEffect(e3)
+	local e10=e1:Clone()
+	e10:SetDescription(aux.Stringid(98930406,8))
+	e10:SetRange(LOCATION_DECK)
+	e10:SetCondition(c98930406.con1)
+	e10:SetCost(c98930406.cost)
+	c:RegisterEffect(e10)
+	local e30=Effect.CreateEffect(c)
+	e30:SetType(EFFECT_TYPE_FIELD)
+	e30:SetCode(EFFECT_ACTIVATE_COST)
+	e30:SetRange(LOCATION_DECK)
+	e30:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e30:SetTargetRange(1,0)
+	e30:SetLabelObject(e10)
+	e30:SetTarget(c98930406.actarget)
+	e30:SetOperation(c98930406.costop)
+	c:RegisterEffect(e30)
 	--eat
 	local e2=Effect.CreateEffect(c)
 	e2:SetCategory(CATEGORY_DISABLE)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_FREE_CHAIN)
 	e2:SetRange(LOCATION_SZONE)
-	e2:SetCountLimit(1,98930506)
+	e2:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
 	e2:SetCost(c98930406.negcost)
 	e2:SetCondition(c98930406.discon)
 	e2:SetTarget(c98930406.distg)
@@ -40,18 +51,47 @@ function c98930406.initial_effect(c)
 	e4:SetOperation(c98930406.disop2)
 	c:RegisterEffect(e4)
 end
+function c98930406.actarget(e,te,tp)
+	e:SetLabelObject(te)
+	return te:GetHandler()==e:GetHandler()
+end
+function c98930406.costop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,false)
+	e:GetHandler():CreateEffectRelation(te)
+	local c=e:GetHandler()
+	local ev0=Duel.GetCurrentChain()+1
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e1:SetCode(EVENT_CHAIN_SOLVED)
+	e1:SetCountLimit(1)
+	e1:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return ev==ev0 end)
+	e1:SetOperation(c98930406.rsop)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,tp)
+	local e2=e1:Clone()
+	e2:SetCode(EVENT_CHAIN_NEGATED)
+	Duel.RegisterEffect(e2,tp)
+end
+function c98930406.rsop(e,tp,eg,ep,ev,re,r,rp)
+	local rc=re:GetHandler()
+	if e:GetCode()==EVENT_CHAIN_SOLVED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_EFFECT_ENABLED,true)
+	end
+	if e:GetCode()==EVENT_CHAIN_NEGATED and rc:IsRelateToEffect(re) then
+		rc:SetStatus(STATUS_ACTIVATE_DISABLED,true)
+	end
+end
 function c98930406.spfilter(c,e,tp)
 	return c:IsCode(98930401) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c98930406.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local ft=Duel.GetLocationCount(tp,LOCATION_SZONE)
 	if chk==0 then return ft>0 or e:GetHandler():IsLocation(LOCATION_SZONE) end
-	if e:GetHandler():IsLocation(LOCATION_DECK) then
-		Duel.MoveToField(e:GetHandler(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)
-		local tc=Duel.GetFieldGroup(tp,LOCATION_FZONE,0):GetFirst()
-		local te=tc:IsHasEffect(98930403,tp)
-		te:UseCountLimit(tp)
-	end
+	local tc=Duel.GetFieldGroup(tp,LOCATION_FZONE,0):GetFirst()
+	local te=tc:IsHasEffect(98930403,tp)
+	te:UseCountLimit(tp)
 end
 function c98930406.con1(e)
 	local tp=e:GetHandlerPlayer()
@@ -106,9 +146,9 @@ function c98930406.distg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and (Duel.IsExistingMatchingCard(Card.IsFaceup,tp,0,LOCATION_MZONE,1,nil) or Duel.IsExistingMatchingCard(Card.IsType,tp,0,LOCATION_GRAVE,1,nil,TYPE_MONSTER)) end
 end
 function c98930406.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98930406.cfilter,tp,LOCATION_SZONE,0,1,e:GetHandler()) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGraveAsCost,tp,LOCATION_SZONE,0,1,e:GetHandler()) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	local g=Duel.SelectMatchingCard(tp,c98930406.cfilter,tp,LOCATION_SZONE-LOCATION_FZONE,0,1,1,e:GetHandler())
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGraveAsCost,tp,LOCATION_SZONE-LOCATION_FZONE,0,1,1,e:GetHandler())
 	Duel.SendtoGrave(g,REASON_COST)
 end
 function c98930406.cfilter1(c,tp)

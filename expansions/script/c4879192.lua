@@ -1,0 +1,131 @@
+--时隙圣徒 希尔
+local s,id,o=GetID()
+function s.initial_effect(c)
+	 aux.AddCodeList(c,4879171)
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
+	e1:SetType(EFFECT_TYPE_IGNITION)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCost(s.pbcost) 
+	e1:SetTarget(s.pbtg)
+	e1:SetOperation(s.pbop)
+	c:RegisterEffect(e1)
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(id,0))
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_SPECIAL_SUMMON)
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetCode(EVENT_TO_HAND)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetCondition(s.spcon1)
+	e2:SetCost(s.pbcost) 
+	e2:SetTarget(s.pbtg)
+	e2:SetOperation(s.pbop)
+	c:RegisterEffect(e2)
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+	e3:SetRange(LOCATION_HAND)
+	e3:SetTargetRange(LOCATION_FZONE,0)
+	e3:SetTarget(s.indtg)
+	e3:SetValue(1)
+	c:RegisterEffect(e3)
+	 local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(id,0))
+	e4:SetCategory(CATEGORY_TOHAND)
+	e4:SetType(EFFECT_TYPE_QUICK_O)
+	e4:SetCode(EVENT_FREE_CHAIN)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetCountLimit(1,id)
+	e4:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e4:SetTarget(s.destg)
+	e4:SetOperation(s.desop)
+	c:RegisterEffect(e4)
+end
+function s.desfilter1(c)
+	return Duel.IsExistingMatchingCard(nil,0,LOCATION_ONFIELD,LOCATION_ONFIELD,1,c)
+end
+function s.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(s.desfilter1,tp,LOCATION_ONFIELD,0,1,nil) end
+	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,2,0,0)
+end
+function s.desop(e,tp,eg,ep,ev,re,r,rp)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g1=Duel.SelectMatchingCard(tp,s.desfilter1,tp,LOCATION_ONFIELD,0,1,1,nil)
+	if #g1==0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
+	local g2=Duel.SelectMatchingCard(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,g1)
+	g1:Merge(g2)
+	Duel.HintSelection(g1)
+	Duel.SendtoHand(g1,nil,REASON_EFFECT)
+end
+function s.spcon1(e,tp,eg,ep,ev,re,r,rp)
+	return not e:GetHandler():IsReason(REASON_DRAW)
+end
+function s.pbcost(e,tp,eg,ep,ev,re,r,rp,chk) 
+	local c=e:GetHandler()
+	if chk==0 then return not c:IsPublic() end
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetCode(EFFECT_PUBLIC)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+	c:RegisterEffect(e1)
+end
+function s.pbtg(e,tp,eg,ep,ev,re,r,rp,chk) 
+	if chk==0 then return true end
+end
+function s.pbop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetRange(LOCATION_HAND)
+	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
+	e1:SetCountLimit(1)
+	e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_STANDBY,3)
+	e1:SetCondition(s.spcon)
+	e1:SetOperation(s.spop)
+	e1:SetLabel(0)
+	c:RegisterEffect(e1)
+  --	  local e2=Effect.CreateEffect(c)
+   -- e2:SetType(EFFECT_TYPE_FIELD)
+  --  e2:SetCode(EFFECT_INDESTRUCTABLE_EFFECT)
+  --  e2:SetTargetRange(LOCATION_ONFIELD,0)
+  --  e2:SetLabel(fid)
+  --  e2:SetLabelObject(c)
+  --  e2:SetTarget(s.indtg)
+ --   e2:SetValue(1)
+  --  e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+RESET_PHASE+PHASE_STANDBY,5)
+  --  Duel.RegisterEffect(e2,tp)
+  --  e2:SetLabelObject(e1)
+   s[c]=e1
+	c:RegisterFlagEffect(1082946,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,3,0,nil)
+	c:RegisterFlagEffect(4879171,RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,3,0,nil)
+ 
+end
+function s.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return  e:GetHandler():IsPublic()
+end
+function s.spfilter(c,e,tp)
+	return c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+end
+function s.spop(e,tp,eg,ep,ev,re,r,rp) 
+	local c=e:GetHandler()
+	local ct=e:GetLabel()
+	c:SetTurnCounter(ct+1)
+	if ct+1==3 then
+   if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)>0  and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+	Duel.BreakEffect()
+   Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,nil)
+	if #g>0 then
+		Duel.HintSelection(g)
+		Duel.Destroy(g,REASON_EFFECT)
+	end
+   end
+	else e:SetLabel(ct+1) end
+end
+function s.indtg(e,c)
+	return c:IsCode(4879171) and e:GetHandler():IsPublic()
+end
