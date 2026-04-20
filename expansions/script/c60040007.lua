@@ -57,7 +57,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
 	if Duel.Damage(p,d,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,20,nil) then
 		Duel.BreakEffect()
-		local rg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,nil):select(tp,20,20,nil)
+		local rg=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,LOCATION_GRAVE,0,nil):Select(tp,20,20,nil)
 		Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)
 		Duel.Damage(p,4000,REASON_EFFECT)
 	end
