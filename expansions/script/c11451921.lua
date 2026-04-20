@@ -99,7 +99,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.acfilter(c,tp,eg,ep,ev,re,r,rp)
 	if not c:IsSetCard(0x6978) then return end
-	if c:IsType(TYPE_SPELL+TYPE_TRAP) and ((c:CheckActivateEffect(false,false,false)~=nil and c:GetActivateEffect():GetCode()~=EVENT_CHAINING and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (c:IsType(TYPE_CONTINUOUS) and c:GetActivateEffect():IsActivatable(tp)) or (c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true))) then return true end
+	if c:IsType(TYPE_SPELL+TYPE_TRAP) and ((c:CheckActivateEffect(false,false,false)~=nil and c:GetActivateEffect():GetCode()~=EVENT_CHAINING and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (c:IsType(TYPE_CONTINUOUS) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp)) or (c:IsType(TYPE_FIELD) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true))) then return true end
 	local te=c.hand_effect
 	if not te or (te[c]:GetCode()==EVENT_CHAINING and te[c]:IsHasType(EFFECT_TYPE_QUICK_O)) or (c:IsType(TYPE_MONSTER) and cm[te] and cm[te][tp] and cm[te][tp]==Duel.GetTurnCount()) then return false end
 	te=te[c]
@@ -134,7 +134,7 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 				local c=cg:GetFirst()
 				g:RemoveCard(c)
 				local b1,b2=false,false
-				if c:IsType(TYPE_SPELL+TYPE_TRAP) and ((c:CheckActivateEffect(false,false,false)~=nil and c:GetActivateEffect():GetCode()~=EVENT_CHAINING and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (c:IsType(TYPE_CONTINUOUS) and c:GetActivateEffect():IsActivatable(tp)) or (c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true))) then b1=true end
+				if c:IsType(TYPE_SPELL+TYPE_TRAP) and ((c:CheckActivateEffect(false,false,false)~=nil and c:GetActivateEffect():GetCode()~=EVENT_CHAINING and Duel.GetLocationCount(tp,LOCATION_SZONE)>0) or (c:IsType(TYPE_CONTINUOUS) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp)) or (c:IsType(TYPE_FIELD) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp,true,true))) then b1=true end
 				local te=c.hand_effect
 				if te and not (te[c]:GetCode()==EVENT_CHAINING and te[c]:IsHasType(EFFECT_TYPE_QUICK_O)) and not (c:IsType(TYPE_MONSTER) and cm[te] and cm[te][tp] and cm[te][tp]==Duel.GetTurnCount()) then
 					te=te[c]

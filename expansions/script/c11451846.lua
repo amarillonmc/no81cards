@@ -82,7 +82,7 @@ function cm.atop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 function cm.filter(c,tp)
-	return c:IsSetCard(0x6f) and c:IsType(TYPE_TRAP) and ((c:CheckActivateEffect(false,false,false)~=nil and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not c:IsType(TYPE_CONTINUOUS)) or (c:IsType(TYPE_CONTINUOUS) and c:GetActivateEffect():IsActivatable(tp)) or c:IsAbleToHand())
+	return c:IsSetCard(0x6f) and c:IsType(TYPE_TRAP) and ((c:CheckActivateEffect(false,false,false)~=nil and Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and not c:IsType(TYPE_CONTINUOUS)) or (c:IsType(TYPE_CONTINUOUS) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp)) or c:IsAbleToHand())
 end
 function cm.costfilter(c,tp)
 	return c:IsSetCard(0x6f) and c:IsAbleToGraveAsCost() and Duel.IsExistingMatchingCard(cm.filter,tp,LOCATION_DECK,0,1,c,tp)
@@ -118,7 +118,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 then
 		local tc=g:GetFirst()
 		if tc:IsType(TYPE_CONTINUOUS) then
-			if not tc:GetActivateEffect():IsActivatable(tp) or Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))==0 then
+			if not tc:GetActivateEffect() or not tc:GetActivateEffect():IsActivatable(tp) or Duel.SelectOption(tp,aux.Stringid(m,1),aux.Stringid(m,2))==0 then
 				Duel.SendtoHand(tc,nil,REASON_EFFECT)
 				Duel.ConfirmCards(tp,tc)
 			else

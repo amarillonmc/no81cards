@@ -90,7 +90,7 @@ end
 function s.cfilter(c,se)
 	if not (se==nil or c:GetReasonEffect()~=se) then return false end
 	local code1,code2=c:GetPreviousCodeOnField()
-	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP) and (code1==65812000 or code2==65812000)
+	return c:IsPreviousLocation(LOCATION_ONFIELD) and c:IsPreviousPosition(POS_FACEUP) and (code1==65812000 or code2==65812000 or code1==65899970 or code2==65899970)
 end
 function s.setcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(s.cfilter,1,nil,se) and not eg:IsContains(e:GetHandler())

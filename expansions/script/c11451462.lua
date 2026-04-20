@@ -37,7 +37,7 @@ function cm.lvplus(c)
 	if c:GetLevel()>=1 and c:IsType(TYPE_MONSTER) then return c:GetLevel() else return 2 end
 end
 function cm.filter(c,tp)
-	return c:IsSetCard(0x97a) and c:IsType(TYPE_SPELL+TYPE_TRAP) and (c:GetActivateEffect():IsActivatable(tp,false,true) or (c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)))
+	return c:IsSetCard(0x97a) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:GetActivateEffect() and (c:GetActivateEffect():IsActivatable(tp,false,true) or (c:IsType(TYPE_FIELD) and c:GetActivateEffect():IsActivatable(tp,true,true)))
 end
 function cm.filter2(c)
 	return c:IsSetCard(0x97a) and c:IsAbleToRemove()

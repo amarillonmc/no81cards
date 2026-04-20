@@ -350,7 +350,7 @@ function cm.imfilter2(e,re)
 	return re:GetOwnerPlayer()~=e:GetOwnerPlayer()
 end
 function cm.filter(c,tp)
-	return (c:IsRace(RACE_WARRIOR) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()) or (c:IsCode(m+1) and c:GetActivateEffect():IsActivatable(tp))
+	return (c:IsRace(RACE_WARRIOR) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()) or (c:IsCode(m+1) and c:GetActivateEffect() and c:GetActivateEffect():IsActivatable(tp))
 end
 function cm.filter1(c)
 	return c:IsRace(RACE_WARRIOR) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
