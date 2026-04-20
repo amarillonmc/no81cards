@@ -98,7 +98,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.SelectYesNo(tp,aux.Stringid(id,5)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RELEASE)
 		local g=Duel.SelectReleaseGroup(tp,s.rfilter,1,1,nil,tp)
-		e:SetLabel(math.max(g:GetFirst():GetBaseAttack(),0))
+		e:SetLabel(1)
 		Duel.Release(g,REASON_COST)
 	end
 end
@@ -109,9 +109,6 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local g=Duel.GetFieldGroup(tp,LOCATION_GRAVE,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,g:GetCount(),0,0)
-	if num>=0 then
-		--Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,num)
-	end
 	if e:GetHandler():IsStatus(STATUS_ACT_FROM_HAND) then
 		e:SetLabel(num,100)
 	end
@@ -125,7 +122,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		--Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
 	end
 	
-	if num1>=0 then
+	if num1>0 then
 		--Duel.Recover(tp,num1,REASON_EFFECT)
 		if Duel.IsPlayerCanDraw(tp,1) and Duel.SelectYesNo(tp,aux.Stringid(id,0)) then
 		

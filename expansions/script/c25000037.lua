@@ -50,7 +50,7 @@ function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.costfilter(c,event)
 	if not (bit.band(c:GetType(),TYPE_TRAP+TYPE_COUNTER)==TYPE_TRAP+TYPE_COUNTER and c:IsAbleToDeckAsCost()) then return false end
-	local te=c:CheckActivateEffect(true,true,false)
+	local te=c:CheckActivateEffect(false,true,false)
 	return te and te:GetCode()==event
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
