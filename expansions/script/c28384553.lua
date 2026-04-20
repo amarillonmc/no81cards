@@ -150,9 +150,9 @@ function c28384553.hintop(e,tp,eg,ep,ev,re,r,rp)
 	--if r~=0 then return end
 	local member_list={28316149,28316051,28316558,28315844,28317560}
 	local code_ascver={28315844,28316051,28316149,28316558,28317560}--ascending order
-	for _,te in pairs({Duel.IsPlayerAffectedByEffect(tp,EFFECT_FLAG_EFFECT+28384553)}) do te:Reset() end
+	for _,te in pairs({Duel.IsPlayerAffectedByEffect(rp,EFFECT_FLAG_EFFECT+28384553)}) do te:Reset() end
 	for i,code in pairs(member_list) do
-		local ct=Duel.GetFlagEffectLabel(tp,code) or 0
+		local ct=Duel.GetFlagEffectLabel(rp,code) or 0
 		local te=Effect.CreateEffect(e:GetHandler())
 		te:SetDescription(aux.Stringid(code_ascver[i],ct+5))
 		te:SetType(EFFECT_TYPE_FIELD)
@@ -160,7 +160,7 @@ function c28384553.hintop(e,tp,eg,ep,ev,re,r,rp)
 		te:SetProperty(EFFECT_FLAG_PLAYER_TARGET+EFFECT_FLAG_CLIENT_HINT)
 		te:SetTargetRange(1,0)
 		te:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(te,tp)
+		Duel.RegisterEffect(te,rp)
 	end
 end
 function c28384553.intop(e,tp,eg,ep,ev,re,r,rp)

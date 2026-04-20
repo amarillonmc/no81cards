@@ -9,30 +9,34 @@ function c28316558.initial_effect(c)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCountLimit(1,28316558)
 	e1:SetCondition(c28316558.spcon)
+	e1:SetCost(c28316558.cost)
 	e1:SetTarget(c28316558.sptg)
 	e1:SetOperation(c28316558.spop)
+	e1:SetLabel(1)
 	c:RegisterEffect(e1)
-	--tohand
+	--to hand
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(28316558,1))
-	e2:SetCategory(CATEGORY_DAMAGE+CATEGORY_TOHAND+CATEGORY_SEARCH)
+	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_GRAVE_SPSUMMON+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,38316558)
 	e2:SetCondition(c28316558.thcon)
-	e2:SetTarget(c28316558.thtg)
+	e2:SetCost(c28316558.cost)
+	--e2:SetTarget(c28316558.thtg)
 	e2:SetOperation(c28316558.thop)
+	e2:SetLabel(2)
 	c:RegisterEffect(e2)
+	c28316558.field_effect=e2
 end
 function c28316558.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp
+	return Duel.GetTurnPlayer()==tp or (Duel.GetCurrentPhase()>=PHASE_BATTLE_START and Duel.GetCurrentPhase()<=PHASE_BATTLE)
 end
 function c28316558.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	if chk==0 then return Duel.GetMZoneCount(tp)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,c,1,0,0)
 	if Duel.GetLP(tp)>3000 then
 		Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,tp,2000)
@@ -43,26 +47,11 @@ function c28316558.chkfilter(c)
 end
 function c28316558.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 or not c:IsRelateToEffect(e) then return end
-	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(c28316558.chkfilter,tp,LOCATION_HAND,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28316558,3)) then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local g=Duel.SelectMatchingCard(tp,c28316558.chkfilter,tp,LOCATION_HAND,0,1,1,nil)
-		Duel.ConfirmCards(1-tp,g)
-		Duel.ShuffleHand(tp)
-		Duel.Damage(1-tp,500,REASON_EFFECT)
-	end
-	if Duel.GetLP(tp)>3000 then
-		Duel.Damage(tp,2000,REASON_EFFECT)
-	end
-end
-function c28316558.cfilter(c,tp)
-	return c:IsFaceup() and c:IsSetCard(0x283) and c:IsControler(tp)
+	if c:IsRelateToEffect(e) then Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP) end
+	if Duel.GetLP(tp)>3000 then Duel.Damage(tp,2000,REASON_EFFECT) end
 end
 function c28316558.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetTurnPlayer()==tp and not eg:IsContains(e:GetHandler()) and eg:IsExists(c28316558.cfilter,1,nil,tp)
-end
-function c28316558.thfilter(c)
-	return c:IsSetCard(0x283) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
+	return not eg:IsContains(e:GetHandler()) and eg:IsExists(Card.IsControler,1,nil,tp)
 end
 function c28316558.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -70,16 +59,79 @@ function c28316558.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetTargetParam(500)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,500)
 end
+function c28316558.thfilter(c)
+	return (c:IsSetCard(0x283) and c:IsLevel(3) or c:IsCode(28335405)) and c:IsAbleToHand()
+end
 function c28316558.thop(e,tp,eg,ep,ev,re,r,rp)
-	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-	Duel.Damage(p,d,REASON_EFFECT)
+	local c=e:GetHandler()
+	if c:IsRelateToChain() and c:IsFaceup() then c28316558.effop(c) end
 	if Duel.GetLP(tp)<=3000 and Duel.IsExistingMatchingCard(c28316558.thfilter,tp,LOCATION_DECK,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(28316558,2)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local g=Duel.SelectMatchingCard(tp,c28316558.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 		if g:GetCount()>0 then
-			Duel.BreakEffect()
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,g)
 		end
 	end
+end
+function c28316558.effop(c)
+	--operation
+	local id=c:IsOriginalCodeRule(28333723) and 4 or 1
+	local e0=Effect.CreateEffect(c)
+	e0:SetDescription(aux.Stringid(28316558,id))
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e0:SetCode(EVENT_CUSTOM+28333723)
+	e0:SetRange(0xff)
+	e0:SetOperation(c28316558.regop)
+	c:RegisterEffect(e0)
+	--trigger
+	local flag=not ANTICA_EFFECT_HINT and EFFECT_FLAG_DELAY or 0--console
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(28316558,id))
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_LEAVE_FIELD)
+	e1:SetProperty(flag+EFFECT_FLAG_CLIENT_HINT)
+	e1:SetOperation(c28316558.checkop)
+	e1:SetLabelObject(e0)
+	c:RegisterEffect(e1)
+end
+function c28316558.checkop(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local p=e:GetHandler():GetPreviousControler()
+	if e:GetHandler():IsReason(REASON_DESTROY) then
+		if not ANTICA_EFFECT_HINT then Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28333723,te,0,0,0,0) else
+			c28384553.process_list[p][#c28384553.process_list[p]+1]=te
+		end
+	end
+	e:Reset()
+end
+function c28316558.spfilter(c,e,p,code)
+	return c:IsCode(code) and c:IsCanBeSpecialSummoned(e,0,p,false,false)
+end
+function c28316558.regop(e,tp,eg,ep,ev,re,r,rp)
+	if re~=e then return end
+	local c=e:GetHandler()
+	local p=c:GetPreviousControler()
+	local g=Duel.GetMatchingGroup(c28316558.spfilter,p,LOCATION_GRAVE,0,nil,e,p,c:GetPreviousCodeOnField())
+	if c:IsReason(REASON_DESTROY) and #g>0 and Duel.GetMZoneCount(p)>0 then
+		Duel.Hint(HINT_CARD,0,28316558)
+		local tc=g:GetFirst()
+		if #g>=2 then
+			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
+			tc=g:Select(p,1,1,nil):GetFirst()
+		end
+		Duel.SpecialSummon(tc,0,p,p,false,false,POS_FACEUP)
+	end
+	e:Reset()
+end
+function c28316558.cost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
+	local ct=Duel.GetFlagEffectLabel(tp,28316558) or 0
+	ct=ct|e:GetLabel()
+	if ct==e:GetLabel() then
+		Duel.RegisterFlagEffect(tp,28316558,RESET_PHASE+PHASE_END,0,1,ct)
+	else
+		Duel.SetFlagEffectLabel(tp,28316558,ct)
+	end
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28384553,e,0,tp,0,0)
 end

@@ -135,5 +135,5 @@ function c28316149.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	else
 		Duel.SetFlagEffectLabel(tp,28316149,ct)
 	end
-	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28384553,e,0,0,0,0)
+	Duel.RaiseEvent(e:GetHandler(),EVENT_CUSTOM+28384553,e,0,tp,0,0)
 end
