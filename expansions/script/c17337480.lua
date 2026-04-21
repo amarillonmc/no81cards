@@ -1,7 +1,7 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
-	aux.AddCodeList(c,17337400,17337402,17337404) 
+	aux.AddMaterialCodeList(c,17337400,17337402,17337404) 
 	aux.AddFusionProcFun2(c,s.matfilter1,s.matfilter2,true)
 	aux.AddContactFusionProcedure(c,s.cfilter,LOCATION_ONFIELD,0,aux.ContactFusionSendToDeck(c))	
 	local e0=Effect.CreateEffect(c)
