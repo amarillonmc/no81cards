@@ -1,6 +1,14 @@
 -- 有求必应屋
 local s,id,o=GetID()
 function s.initial_effect(c)
+	--增加海燕卡名
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_SINGLE)
+	e0:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e0:SetCode(EFFECT_ADD_CODE)
+	e0:SetRange(0xff)
+	e0:SetValue(11451631)
+	c:RegisterEffect(e0)
 end
 if not s.enable_all_field_code then
 	s.enable_all_field_code=true
@@ -67,5 +75,24 @@ if not s.enable_all_field_code then
 		else
 			return s._is_fusion_set_card(c, ...)
 		end
+	end
+	local old_AddCodeList = aux.AddCodeList
+	function aux.AddCodeList(c, ...)
+    	local args = { ... }
+    	local new_args = {}
+    	for _, code in ipairs(args) do
+       	 table.insert(new_args, code)
+       	 local ctype = Duel.ReadCard(code, CARDDATA_TYPE)
+       	 if ctype and bit.band(ctype, TYPE_FIELD) ~= 0 then
+           	 local already = false
+           	 for _, v in ipairs(new_args) do
+            	    if v == id then already = true; break end
+          	  end
+        	    if not already then
+      	          table.insert(new_args, id)
+    	        end
+  	      end
+	    end
+  	  old_AddCodeList(c, table.unpack(new_args))
 	end
 end
