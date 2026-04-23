@@ -4,6 +4,7 @@ function s.initial_effect(c)
 	aux.AddCodeList(c,17337400)
 	c:EnableReviveLimit()
 	aux.AddLinkProcedure(c,nil,2,2,s.lcheck)
+	
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_TOHAND)
@@ -33,11 +34,9 @@ function s.initial_effect(c)
 	e2:SetOperation(s.thop)
 	c:RegisterEffect(e2)
 end
-
 function s.lcheck(g,lc)
 	return g:IsExists(Card.IsSetCard,1,nil,0x3f50)
 end
-
 function s.retcon(e,tp,eg,ep,ev,re,r,rp)
 	local lg=e:GetHandler():GetLinkedGroup()
 	return eg:IsExists(function(c) 
@@ -62,19 +61,20 @@ function s.retop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 	end
 end
-
-function s.target_filter(c)
-	return c:IsFaceup() and c:IsSetCard(0x3f50)
-end
 function s.thfilter(c,type_mask)
 	if c:IsType(type_mask) then return false end
 	return (c:IsSetCard(0x3f50) or aux.IsCodeListed(c,17337400)) and c:IsAbleToHand()
 end
+function s.target_filter(c,tp)
+	if not (c:IsFaceup() and c:IsSetCard(0x3f50)) then return false end
+	local type_mask = c:GetType()&(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)
+	return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil,type_mask)
+end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and s.target_filter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(s.target_filter,tp,LOCATION_ONFIELD,0,1,nil) end	
+	if chkc then return chkc:IsLocation(LOCATION_ONFIELD) and chkc:IsControler(tp) and s.target_filter(chkc,tp) end
+	if chk==0 then return Duel.IsExistingTarget(s.target_filter,tp,LOCATION_ONFIELD,0,1,nil,tp) end	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-	local g=Duel.SelectTarget(tp,s.target_filter,tp,LOCATION_ONFIELD,0,1,1,nil)	
+	local g=Duel.SelectTarget(tp,s.target_filter,tp,LOCATION_ONFIELD,0,1,1,nil,tp)	
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)

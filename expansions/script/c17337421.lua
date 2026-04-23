@@ -43,13 +43,11 @@ function s.is_valid_target(c,tp)
 	end
 	return c:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and c:IsFaceupEx()
 end
-
 function s.spcon1(e,tp,eg,ep,ev,re,r,rp)
 	if not re:IsHasProperty(EFFECT_FLAG_CARD_TARGET) then return false end
 	local g=Duel.GetChainInfo(ev,CHAININFO_TARGET_CARDS)
 	return g and g:IsExists(s.is_valid_target,1,nil,tp)
 end
-
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local bt=Duel.GetAttackTarget()
 	return bt and bt:IsControler(tp) and bt:IsSetCard(0x3f50) and bt:IsFaceup()
@@ -74,11 +72,15 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 			local bt=Duel.GetAttackTarget()
 			if bt then g:AddCard(bt) end
 		end		
-		if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
+		local valid_g = g:Filter(function(tc,tp)
+			local type_mask = tc:GetType()&(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)
+			return Duel.IsExistingMatchingCard(s.thfilter_search,tp,LOCATION_DECK,0,1,nil,type_mask)
+		end, nil, tp)
+		if #valid_g>0 and Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
-			local tc=g:Select(tp,1,1,nil):GetFirst()
-			local type_mask=tc:GetType()&(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)		   
+			local tc=valid_g:Select(tp,1,1,nil):GetFirst()
+			local type_mask=tc:GetType()&(TYPE_MONSTER+TYPE_SPELL+TYPE_TRAP)					 
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 			local sc=Duel.SelectMatchingCard(tp,s.thfilter_search,tp,LOCATION_DECK,0,1,1,nil,type_mask)
 			if #sc>0 then
@@ -97,11 +99,9 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
-
 function s.thfilter2(c)
 	return c:IsFaceup() and c:IsSetCard(0x3f50) and c:IsAbleToHand()
 end
-
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() and Duel.SendtoHand(tc,nil,REASON_EFFECT)>0 and tc:IsLocation(LOCATION_HAND) then

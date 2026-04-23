@@ -35,6 +35,7 @@ function s.initial_effect(c)
 	e4:SetCode(EVENT_CUSTOM+id)
 	e4:SetProperty(EFFECT_FLAG_EVENT_PLAYER) --EFFECT_FLAG_DELAY
 	e4:SetRange(LOCATION_MZONE)
+	--e4:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return eg:IsContains(e:GetHandler()) end)
 	e4:SetTarget(s.efftg)
 	e4:SetOperation(s.effop)
 	c:RegisterEffect(e4)
@@ -42,6 +43,7 @@ function s.initial_effect(c)
 	if not s.global_hooked then
 		s.global_hooked = true
 		s.restricted_codes = s.restricted_codes or {}
+		s.laplace_hooked = s.laplace_hooked or setmetatable({}, {__mode="k"})
 		local unpack = table.unpack or unpack
 		
 		-- ==========================================
@@ -151,8 +153,140 @@ function s.initial_effect(c)
 				end
 			end)
 			Duel.RegisterEffect(e_retro, 0)
+			Debug.Message("服务器上有Card.GetCardRegistered函数。（测试信息）")
+		else
+			Debug.Message("服务器上没有Card.GetCardRegistered函数。（测试信息）")
 		end
 		-- ==========================================
+
+		local e_cost = Effect.GlobalEffect()
+		e_cost:SetType(EFFECT_TYPE_FIELD)
+		e_cost:SetCode(EFFECT_ACTIVATE_COST)
+		e_cost:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		e_cost:SetTargetRange(1,1)
+		-- Target 会在引擎判定“能否发动”时被触发，时机极其完美
+		e_cost:SetTarget(function(e,te,tp)
+			local tc = te:GetHandler()
+			
+			-- 检测发动效果的卡，是否命中了被宣言的卡名
+			-- IsOriginalCodeRule 能够完美自动处理“海”这种别名马甲
+			local is_restricted = false
+			for code, turn in pairs(s.restricted_codes) do
+				if turn == Duel.GetTurnCount() and tc:IsOriginalCodeRule(code) then
+					is_restricted = true
+					break
+				end
+			end
+			
+			-- 如果是宣言卡，且还没被套过壳，立刻注入！
+			if is_restricted and not s.laplace_hooked[te] then
+				s.laplace_hooked[te] = true
+				
+				local tg = te:GetTarget()
+				if tg and type(tg) == "function" then
+					te:SetTarget(function(...)
+						local prev = s.active_code
+						s.active_code = tc:GetOriginalCodeRule()
+						local res = {tg(...)}
+						s.active_code = prev
+						return unpack(res)
+					end)
+				end
+				
+				local op = te:GetOperation()
+				if op and type(op) == "function" then
+					te:SetOperation(function(...)
+						local prev = s.active_code
+						s.active_code = tc:GetOriginalCodeRule()
+						local res = {op(...)}
+						s.active_code = prev
+						return unpack(res)
+					end)
+				end
+			end
+			return true -- 始终返回 true，不作为真正的 COST 阻挡发动
+		end)
+		e_cost:SetCost(aux.TRUE)
+		e_cost:SetOperation(aux.TRUE)
+		Duel.RegisterEffect(e_cost, 0)
+		
+		-- ==========================================
+		-- 底层动作拦截（阻断加手/抽卡）
+		-- ==========================================
+		local old_IsAbleToHand = Card.IsAbleToHand
+		Card.IsAbleToHand = function(tc, ...)
+			-- 使用遍历字典的方式，完美支持多重宣言
+			local restricted = false
+			if s.active_code then
+				for code, turn in pairs(s.restricted_codes) do
+					if turn == Duel.GetTurnCount() and (s.active_code == code or tc:IsOriginalCodeRule(code)) then
+						restricted = true
+						break
+					end
+				end
+			end
+			
+			if restricted and tc:IsLocation(LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA) then
+				return false
+			end
+			return old_IsAbleToHand(tc, ...)
+		end
+		
+		local old_Draw = Duel.Draw
+		Duel.Draw = function(p, val, r)
+			local restricted = false
+			if s.active_code and (r & REASON_EFFECT) ~= 0 then
+				for code, turn in pairs(s.restricted_codes) do
+					-- 这里不传 tc，直接看点亮的 active_code 是否在封锁名单中
+					if turn == Duel.GetTurnCount() and s.active_code == code then
+						restricted = true
+						break
+					end
+				end
+			end
+			if restricted then return 0 end
+			return old_Draw(p, val, r)
+		end
+		
+		local old_IsPlayerCanDraw = Duel.IsPlayerCanDraw
+		Duel.IsPlayerCanDraw = function(p, ...)
+			local restricted = false
+			if s.active_code then
+				for code, turn in pairs(s.restricted_codes) do
+					if turn == Duel.GetTurnCount() and s.active_code == code then
+						restricted = true
+						break
+					end
+				end
+			end
+			if restricted then return false end
+			return old_IsPlayerCanDraw(p, ...)
+		end
+		
+		local old_SendtoHand = Duel.SendtoHand
+		Duel.SendtoHand = function(tg, p, r, ...)
+			local restricted = false
+			if s.active_code and (r & REASON_EFFECT) ~= 0 then
+				for code, turn in pairs(s.restricted_codes) do
+					if turn == Duel.GetTurnCount() and s.active_code == code then
+						restricted = true
+						break
+					end
+				end
+			end
+			
+			if restricted then
+				if type(tg) == "userdata" then
+					if tg.IsLocation then
+						if tg:IsLocation(LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA) then return 0 end
+					elseif tg.Filter then
+						local g = tg:Filter(Card.IsLocation, nil, LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED+LOCATION_EXTRA)
+						if #g > 0 then return 0 end
+					end
+				end
+			end
+			return old_SendtoHand(tg, p, r, ...)
+		end
 		
 		-- 1. 劫持 IsAbleToHand (阻断增援等空发)
 		local old_IsAbleToHand = Card.IsAbleToHand
@@ -420,6 +554,15 @@ function s.chop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	-- 将事件的 ep 设定为对方玩家 (1-c:GetControler())
 	Duel.RaiseSingleEvent(c,EVENT_CUSTOM+id,re,r,1-c:GetControler(),1-c:GetControler(),0)
+	-- 强制触发：对方进行选择和执行
+	--[[local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e4:SetCode(EVENT_CUSTOM+id)
+	e4:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return eg:IsContains(e:GetHandler()) end)
+	e4:SetTarget(s.efftg)
+	e4:SetOperation(s.effop)
+	Duel.RegisterEffect(e4,1-tp)
+	Duel.RaiseEvent(Group.FromCards(c),EVENT_CUSTOM+id,re,r,1-c:GetControler(),1-c:GetControler(),0)--]]
 end
 
 function s.efftg(e,tp,eg,ep,ev,re,r,rp,chk)
