@@ -135,8 +135,8 @@ function s.initial_effect(c)
 							
 							-- 处理 Operation
 							local op = eff:GetOperation()
-							if op and type(op) == "function" and not eff.laplace_op_hooked then
-								eff.laplace_op_hooked = true
+							if op and type(op) == "function" and not s.laplace_hooked[eff] then
+								s.laplace_hooked[eff] = true
 								local wrapped_op = function(...)
 									local prev_code = s.active_code
 									local owner = eff:GetOwner()
@@ -153,9 +153,9 @@ function s.initial_effect(c)
 				end
 			end)
 			Duel.RegisterEffect(e_retro, 0)
-			Debug.Message("服务器上有Card.GetCardRegistered函数。（测试信息）")
+			--Debug.Message("服务器上有Card.GetCardRegistered函数。（测试信息）")
 		else
-			Debug.Message("服务器上没有Card.GetCardRegistered函数。（测试信息）")
+			--Debug.Message("服务器上没有Card.GetCardRegistered函数。（测试信息）")
 		end
 		-- ==========================================
 
