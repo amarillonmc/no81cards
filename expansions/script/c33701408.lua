@@ -124,7 +124,7 @@ function cm.dselect1(e,tp,eg,ep,ev,re,r,rp)
 			Duel.SendtoDeck(rg,nil,2,REASON_RULE)
 		end
 		e:GetLabelObject():DeleteGroup()
-	else op=1 then
+	elseif op=1 then
 		Duel.Recover(tp,5000,REASON_EFFECT)
 	end
 end
