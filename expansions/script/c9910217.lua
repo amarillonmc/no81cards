@@ -74,6 +74,8 @@ function c9910217.discost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function c9910217.distg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	local g=Duel.GetMatchingGroup(aux.NegateAnyFilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_DISABLE,g,1,0,0)
 end
 function c9910217.disop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()

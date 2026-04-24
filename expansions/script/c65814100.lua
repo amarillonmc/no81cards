@@ -76,6 +76,7 @@ function s.postg2(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return c:IsFacedown() and c:CheckUniqueOnField(tp) and c:GetFlagEffect(id)==0 end
 	c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD-RESET_TURN_SET+RESET_PHASE+PHASE_END,0,1)
 	Duel.SetOperationInfo(0,CATEGORY_POSITION,c,1,0,0)
+	Duel.ConfirmCards(1-tp,c)
 end
 function s.posop2(e,tp,eg,ep,ev,re,r,rp) 
 	local c=e:GetHandler()
