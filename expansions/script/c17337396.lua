@@ -1,4 +1,3 @@
---艾尔莎·葛兰希尔黛
 local s,id,o=GetID()
 function s.initial_effect(c)
 	c:EnableReviveLimit()
@@ -77,7 +76,8 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp,c)
 	g:DeleteGroup()
 end
 function s.gycon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD+LOCATION_HAND+LOCATION_DECK)
+	local c=e:GetHandler()
+	return c:IsReason(REASON_BATTLE) or c:IsReason(REASON_EFFECT)
 end
 function s.tgtfilter(c,tp)
 	if not c:IsFaceup() then return false end
