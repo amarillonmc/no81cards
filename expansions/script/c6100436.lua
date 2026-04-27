@@ -95,9 +95,8 @@ function s.efcon(e,tp,eg,ep,ev,re,r,rp)
 	-- 核心修复：检查发动源卡片身上是否带有“从手卡发动”的状态标记
 	local is_from_hand = re:GetHandler():IsStatus(STATUS_ACT_FROM_HAND)
 	
-	-- 判定：1回合各能选择1次 (利用 id+1 标记手卡，id+2 标记场上)
-	local b1 = is_from_hand and c:GetFlagEffect(tp,id)==0
-	local b2 = not is_from_hand and c:GetFlagEffect(tp,id+1)==0
+	local b1 = is_from_hand and Duel.GetFlagEffect(tp,id)==0
+	local b2 = not is_from_hand and Duel.GetFlagEffect(tp,id+1)==0
 	
 	return b1 or b2
 end
@@ -120,9 +119,9 @@ function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(is_from_hand and 1 or 0)
 	
 	if is_from_hand then
-		c:RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
 	else
-		c:RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
+		Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
 		Duel.SetOperationInfo(0,CATEGORY_CONTROL,nil,1,1-tp,LOCATION_MZONE)
 	end
 end
