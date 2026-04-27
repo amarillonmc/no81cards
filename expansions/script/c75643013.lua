@@ -18,6 +18,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	--effect
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_RECOVER)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
@@ -29,7 +30,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	--negate
 	local e3=Effect.CreateEffect(c)
-	e3:SetDescription(aux.Stringid(id,4))
+	e3:SetDescription(aux.Stringid(id,2))
 	e3:SetCategory(CATEGORY_DISABLE)
 	e3:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_CHAINING)
@@ -74,47 +75,25 @@ function s.efcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function s.efcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,800) end
-	Duel.PayLPCost(tp,800)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) end
+	Duel.PayLPCost(tp,1000)
 end
 function s.thfilter(c)
 	return aux.IsCodeListed(c,75643010) and c:IsAbleToHand() and c:IsFaceupEx()
 end
 function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsPlayerCanDraw(tp,1) and Duel.IsCanRemoveCounter(tp,1,0,0x32c6,4,REASON_EFFECT)
-	local b2=Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
-	if chk==0 then return b1 or b2 end
-	local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(id,2)},
-		{b2,aux.Stringid(id,3)})
-	e:SetLabel(op)
-	if op==1 then
-		e:SetCategory(CATEGORY_DRAW+CATEGORY_RECOVER)
-		Duel.SetTargetPlayer(tp)
-		Duel.SetTargetParam(1)
-		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-		Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,2000)
-		elseif op==2 then
-		e:SetCategory(CATEGORY_TOHAND)
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
-	end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,2000)
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function s.efop(e,tp,eg,ep,ev,re,r,rp)
-	local op=e:GetLabel()
-	if op==1 then
-		if Duel.RemoveCounter(tp,1,0,0x32c6,4,REASON_EFFECT) then
-			local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
-			if Duel.Draw(p,d,REASON_EFFECT)>0 then
-				Duel.BreakEffect()
-				Duel.Recover(tp,2000,REASON_EFFECT)
-			end
-		end
-	elseif op==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.thfilter),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
+	if g:GetCount()>0 then
+		if Duel.SendtoHand(g,nil,REASON_EFFECT)>0 then
 			Duel.ConfirmCards(1-tp,g)
+			Duel.BreakEffect()
+			Duel.Recover(tp,2000,REASON_EFFECT)
 		end
 	end
 end
@@ -125,11 +104,9 @@ function s.discon(e,tp,eg,ep,ev,re,r,rp)
 	return te and aux.IsCodeListed(te:GetHandler(),75643010) and p==tp and rp==1-tp and c:IsSetCard(0x52c6)
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0x32c6,2,REASON_EFFECT) end
+	if chk==0 then return true end
 	Duel.SetOperationInfo(0,CATEGORY_DISABLE,eg,1,0,0)
 end
 function s.disop(e,tp,eg,ep,ev,re,r,rp)
-	if Duel.RemoveCounter(tp,1,0,0x32c6,2,REASON_EFFECT) then
-		Duel.NegateEffect(ev)
-	end
+	Duel.NegateEffect(ev)
 end

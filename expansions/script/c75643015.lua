@@ -18,6 +18,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	--effect
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_TOGRAVE)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
@@ -29,7 +30,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e2)
 	--to hand
 	local e4=Effect.CreateEffect(c)
-	e4:SetDescription(aux.Stringid(id,4))
+	e4:SetDescription(aux.Stringid(id,2))
 	e4:SetCategory(CATEGORY_TOHAND)
 	e4:SetType(EFFECT_TYPE_XMATERIAL+EFFECT_TYPE_QUICK_O)
 	e4:SetCode(EVENT_FREE_CHAIN)
@@ -74,41 +75,21 @@ function s.efcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function s.efcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,800) end
-	Duel.PayLPCost(tp,800)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) end
+	Duel.PayLPCost(tp,1000)
 end
 function s.tgfilter(c)
 	return aux.IsCodeListed(c,75643010) and c:IsAbleToGrave()
 end
 function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,TYPE_SPELL+TYPE_TRAP) and Duel.IsCanRemoveCounter(tp,1,0,0x32c6,4,REASON_EFFECT)
-	local b2=Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil)
-	if chk==0 then return b1 or b2 end
-	local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(id,2)},
-		{b2,aux.Stringid(id,3)})
-	e:SetLabel(op)
-	if op==1 then
-		e:SetCategory(CATEGORY_DESTROY)
-		local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,TYPE_SPELL+TYPE_TRAP)
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,g:GetCount(),0,0)
-		elseif op==2 then 
-		Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
-	end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,nil,1,tp,LOCATION_DECK)
 end
 function s.efop(e,tp,eg,ep,ev,re,r,rp)
-	local op=e:GetLabel()
-	if op==1 then
-		if Duel.RemoveCounter(tp,1,0,0x32c6,4,REASON_EFFECT) then
-			local sg=Duel.GetMatchingGroup(Card.IsType,tp,0,LOCATION_ONFIELD,aux.ExceptThisCard(e),TYPE_SPELL+TYPE_TRAP)
-			Duel.Destroy(sg,REASON_EFFECT)
-		end
-	elseif op==2 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-		local g=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoGrave(g,REASON_EFFECT)
-		end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+	local g=Duel.SelectMatchingCard(tp,s.tgfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoGrave(g,REASON_EFFECT)
 	end
 end
 function s.gfcon(e)

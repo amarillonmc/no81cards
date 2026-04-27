@@ -18,6 +18,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 	--effect
 	local e2=Effect.CreateEffect(c)
+	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
@@ -80,48 +81,16 @@ end
 function s.thfilter(c)
 	return aux.IsCodeListed(c,75643010) and c:IsAbleToHand()
 end
-function s.adfilter(c)
-	return c:IsFaceup() and c:IsSetCard(0x52c6)
-end
 function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil)
-	local b2=true
-	if chk==0 then return b1 or b2 end
-	local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(id,2)},
-		{b2,aux.Stringid(id,3)})
-	e:SetLabel(op)
-	if op==1 then
-		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
-		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
-		elseif op==2 then
-		e:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DEFCHANGE)
-	end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 end
 function s.efop(e,tp,eg,ep,ev,re,r,rp)
-	local op=e:GetLabel()
-	if op==1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
-		local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
-		if g:GetCount()>0 then
-			Duel.SendtoHand(g,nil,REASON_EFFECT)
-			Duel.ConfirmCards(1-tp,g)
-		end
-	elseif op==2 then
-		local g=Duel.GetMatchingGroup(s.adfilter,tp,LOCATION_MZONE,0,nil)
-		local tc=g:GetFirst()
-		while tc do
-			local e1=Effect.CreateEffect(e:GetHandler())
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_UPDATE_ATTACK)
-			e1:SetValue(800)
-			e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(e1)
-			local e2=e1:Clone()
-			e2:SetCode(EFFECT_UPDATE_DEFENSE)
-			tc:RegisterEffect(e2)
-			tc=g:GetNext()
-		end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
+	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
+	if g:GetCount()>0 then
+		Duel.SendtoHand(g,nil,REASON_EFFECT)
+		Duel.ConfirmCards(1-tp,g)
 	end
 end
 function s.gfcon(e)

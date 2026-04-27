@@ -26,7 +26,7 @@ function s.ntcon(e,c,minc)
 	return minc==0 and c:IsLevelAbove(5) and (Duel.GetFieldGroupCount(tp,LOCATION_MZONE,0)==0 or Duel.IsExistingMatchingCard(s.ntfilter,tp,LOCATION_FZONE,0,1,nil)) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
 end
 function s.tgfilter(c)
-	return not c:IsCode(id) and c:IsSetCard(0xc3b) and c:IsAbleToGrave()
+	return not c:IsCode(id) and c:IsSetCard(0xc3b) and c:IsType(TYPE_MONSTER) and c:IsAbleToGrave()
 end
 function s.lvtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.tgfilter,tp,LOCATION_DECK,0,1,nil) end

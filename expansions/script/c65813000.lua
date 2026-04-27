@@ -16,7 +16,7 @@ function s.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_HAND)
 	e1:SetCode(EVENT_FREE_CHAIN)
-	e1:SetCountLimit(1,id)
+	--e1:SetCountLimit(1,id)
 	e1:SetCost(s.stcost)
 	e1:SetTarget(s.rettg)
 	e1:SetOperation(s.retop)
@@ -26,7 +26,7 @@ function s.initial_effect(c)
 	e11:SetType(EFFECT_TYPE_QUICK_O)
 	e11:SetRange(LOCATION_MZONE)
 	e11:SetCode(EVENT_FREE_CHAIN)
-	e11:SetCountLimit(1,id)
+	--e11:SetCountLimit(1,id)
 	e11:SetCost(s.spcost1)
 	e11:SetTarget(s.rettg)
 	e11:SetOperation(s.retop)
@@ -69,9 +69,6 @@ function s.spcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsReleasable() end
 	Duel.Release(e:GetHandler(),REASON_COST)
 end
-function s.retfilter(c)
-	return c:IsFacedown() and c:IsAbleToHand()
-end
 function s.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsSSetable,tp,LOCATION_HAND,0,1,c) end
@@ -87,7 +84,7 @@ end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:IsCostChecked()
 		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,TYPES_NORMAL_TRAP_MONSTER,2000,2000,2,RACE_MACHINE,ATTRIBUTE_EARTH) end
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,TYPES_EFFECT_TRAP_MONSTER,2000,2000,2,RACE_MACHINE,ATTRIBUTE_EARTH) end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function s.filter(c,tc)
@@ -95,7 +92,7 @@ function s.filter(c,tc)
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if not Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,TYPES_NORMAL_TRAP_MONSTER,2000,2000,2,RACE_MACHINE,ATTRIBUTE_EARTH) or not c:IsRelateToEffect(e) then return end
+	if not Duel.IsPlayerCanSpecialSummonMonster(tp,id,0,TYPES_EFFECT_TRAP_MONSTER,2000,2000,2,RACE_MACHINE,ATTRIBUTE_EARTH) or not c:IsRelateToEffect(e) then return end
 	c:AddMonsterAttribute(TYPE_EFFECT)
 	if Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)~=0 and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil,c) and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 		Duel.BreakEffect()

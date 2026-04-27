@@ -68,54 +68,34 @@ function s.efcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.cfilter,tp,LOCATION_ONFIELD,0,1,nil)
 end
 function s.efcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.CheckLPCost(tp,800) end
-	Duel.PayLPCost(tp,800)
+	if chk==0 then return Duel.CheckLPCost(tp,1000) end
+	Duel.PayLPCost(tp,1000)
 end
 function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local b1=Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil)
-	local b2=Duel.IsAbleToEnterBP() and Duel.IsCanRemoveCounter(tp,1,0,0x32c6,4,REASON_EFFECT)
-	if chk==0 then return b1 or b2 end
-	local op=aux.SelectFromOptions(tp,
-		{b1,aux.Stringid(id,2)},
-		{b2,aux.Stringid(id,3)})
-	e:SetLabel(op)
-	if op==1 then
-		e:SetCategory(CATEGORY_DESTROY+CATEGORY_DAMAGE)
-		local g=Duel.GetMatchingGroup(nil,tp,0,LOCATION_ONFIELD,nil)
-		local dam=e:GetHandler():GetAttack()
-		Duel.SetTargetPlayer(1-tp)
-		Duel.SetTargetParam(dam)
-		Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,dam)
-		Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-		elseif op==2 then
-	end
+	if chk==0 then return Duel.IsAbleToEnterBP() end
 end
 function s.efop(e,tp,eg,ep,ev,re,r,rp)
-	local op=e:GetLabel()
-	if op==1 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-		local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
-		if #g>0 then
-			Duel.HintSelection(g)
-			if Duel.Destroy(g,REASON_EFFECT)>0 then
-				local p=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER)
-				Duel.Damage(p,e:GetHandler():GetAttack(),REASON_EFFECT)
-			end
-		end
-	elseif op==2 then
-		local c=e:GetHandler()
-		if Duel.RemoveCounter(tp,1,0,0x32c6,4,REASON_EFFECT) then 
-			if c:IsFaceup() and c:IsRelateToEffect(e) then
-				local e1=Effect.CreateEffect(c)
-				e1:SetType(EFFECT_TYPE_SINGLE)
-				e1:SetCode(EFFECT_EXTRA_ATTACK)
-				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-				e1:SetValue(2)
-				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
-				c:RegisterEffect(e1)
-			end
-		end
+	local c=e:GetHandler()
+	if c:IsFaceup() and c:IsRelateToEffect(e) then
+		local e1=Effect.CreateEffect(c)
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetProperty(EFFECT_FLAG_SINGLE_RANGE+EFFECT_FLAG_CANNOT_DISABLE)
+		e1:SetRange(LOCATION_MZONE)
+		e1:SetCode(EFFECT_IMMUNE_EFFECT)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		e1:SetValue(s.efilter)
+		c:RegisterEffect(e1)
+		local e2=Effect.CreateEffect(c)
+		e2:SetType(EFFECT_TYPE_SINGLE)
+		e2:SetCode(EFFECT_EXTRA_ATTACK)
+		e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+		e2:SetValue(2)
+		e2:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END)
+		c:RegisterEffect(e2)
 	end
+end
+function s.efilter(e,re)
+	return e:GetOwnerPlayer()~=re:GetOwnerPlayer()
 end
 function s.gfcon(e)
 	local c=e:GetHandler()

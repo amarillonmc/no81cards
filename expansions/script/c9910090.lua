@@ -80,6 +80,7 @@ function c9910090.atkop(e,tp,eg,ep,ev,re,r,rp)
 		tc:RegisterEffect(e1)
 		local g=Duel.GetFieldGroup(tp,LOCATION_ONFIELD,LOCATION_ONFIELD)
 		if g:GetCount()>0 and Duel.SelectYesNo(tp,aux.Stringid(9910090,1)) then
+			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 			local tg=g:Select(tp,1,1,nil)
 			Duel.HintSelection(tg)

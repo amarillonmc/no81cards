@@ -50,15 +50,15 @@ end
 function s.spcon2(e,tp,eg,ep,ev,re,r,rp)
 	local tc=eg:GetFirst()
 	local rc=tc:GetReasonCard()
+	e:SetLabelObject(tc)
 	return eg:GetCount()==1 and rc:IsControler(tp) and rc:IsSetCard(0xc3a) and tc:IsType(TYPE_MONSTER) and tc:IsReason(REASON_BATTLE) and tc:IsLocation(LOCATION_GRAVE)
 end
 function s.sptg2(e,tp,eg,ep,ev,re,r,rp,chk)
-	local tc=eg:GetFirst()
+	local tc=e:GetLabelObject()
 	local rc=tc:GetReasonCard()
-	local bc=rc:GetBattleTarget()
-	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and bc:IsCanBeSpecialSummoned(e,0,tp,false,false) end
-	Duel.SetTargetCard(bc)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,bc,1,0,0)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc:IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetTargetCard(tc)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,tc,1,0,0)
 end
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()

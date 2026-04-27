@@ -33,8 +33,8 @@ function s.initial_effect(c)
 end
 
 -- === 效果①：条件与目标 ===
-function s.rvfilter(c)
-	return (c:IsCode(6100146) or (c:IsType(TYPE_SPELL) and aux.IsCodeListed(c,6100146))) and not c:IsPublic()
+function s.op1_filter(c)
+	return c:IsFaceup() and aux.IsCodeListed(c,6100146)
 end
 
 function s.thfilter1(c,ec)
@@ -45,7 +45,7 @@ function s.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	
 	local b1 = Duel.GetFlagEffect(tp,id)==0 
-		and Duel.IsExistingMatchingCard(s.rvfilter, tp, LOCATION_HAND, 0, 1, c)
+		and Duel.IsExistingMatchingCard(s.op1_filter, tp, LOCATION_ONFIELD, 0, 1, c)
 	local b2 = Duel.GetFlagEffect(tp,id+1)==0 
 		and Duel.IsExistingMatchingCard(s.thfilter1, tp, LOCATION_ONFIELD, LOCATION_ONFIELD, 1, c, c)
 		
@@ -80,32 +80,23 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	
 	if op==0 then
 		-- ● 选项1：展示，开启随机除外大宇宙
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-		local g=Duel.SelectMatchingCard(tp,s.rvfilter,tp,LOCATION_HAND,0,1,1,nil)
-		if #g>0 then
-			Duel.ConfirmCards(1-tp,g)
-			Duel.ShuffleHand(tp)
-			
-			-- 注册劫持进入对方墓地的替换效果
+		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,3)) -- "选择1张记述了愚者的卡"
+		local g=Duel.SelectMatchingCard(tp,s.op1_filter,tp,LOCATION_ONFIELD,0,1,1,c)
+		local tc=g:GetFirst()
+		if tc then
+			Duel.HintSelection(g)
 			local e1=Effect.CreateEffect(c)
 			e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 			e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_RANGE+EFFECT_FLAG_IGNORE_IMMUNE)
 			e1:SetCode(EFFECT_SEND_REPLACE)
+			e1:SetLabelObject(tc)
 			e1:SetTargetRange(0,0xff)
+			e1:SetCondition(s.repcon)
 			e1:SetTarget(s.reptg)
 			e1:SetValue(s.repval)
 			e1:SetOperation(s.repop)
 			e1:SetReset(RESET_PHASE+PHASE_END)
 			Duel.RegisterEffect(e1,tp)
-
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_FIELD)
-		e2:SetCode(EFFECT_TO_GRAVE_REDIRECT)
-		e2:SetProperty(EFFECT_FLAG_SET_AVAILABLE+EFFECT_FLAG_IGNORE_IMMUNE)
-		e2:SetTargetRange(0,LOCATION_ONFIELD)
-		e2:SetValue(LOCATION_REMOVED)
-		Duel.RegisterEffect(e2,tp)
-			
 			Duel.RegisterFlagEffect(tp,id+10,RESET_PHASE+PHASE_END,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
 		end
 		
@@ -124,6 +115,12 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 end
 
 -- = 随机除外大宇宙的核心劫持 =
+function s.repcon(e)
+	local tc=e:GetLabelObject()
+	-- 只要那张卡在场上存在
+	return tc and tc:IsLocation(LOCATION_ONFIELD)
+end
+
 function s.repfilter(c,tp)
 	-- 被送去对方墓地的卡 且 允许被除外
 	return c:GetDestination()==LOCATION_GRAVE and c:GetOwner()==1-tp and c:IsAbleToRemove() and not c:IsLocation(LOCATION_ONFIELD)

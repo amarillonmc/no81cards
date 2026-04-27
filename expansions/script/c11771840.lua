@@ -51,7 +51,7 @@ end
 
 function s.negcon(e,tp,eg,ep,ev,re,r,rp)
 	return ep~=tp
-		and re:IsActiveType(TYPE_MONSTER) and Duel.IsChainDisablable(ev)
+		 and Duel.IsChainDisablable(ev)
 end
 function s.cfilter(c)
 	return c:IsLevel(10) and c:IsRace(RACE_WARRIOR) and not c:IsSummonableCard()

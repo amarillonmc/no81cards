@@ -167,12 +167,5 @@ function s.mtop(e,tp,eg,ep,ev,re,r,rp)
 	e1:SetValue(val)
 	e1:SetReset(RESET_PHASE+PHASE_END,2)
 	Duel.RegisterEffect(e1,tp)
-	
-	local e2=Effect.CreateEffect(e:GetHandler())
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_UPDATE_ATTACK)
-	e2:SetTargetRange(0,LOCATION_MZONE)
-	e2:SetValue(-val)
-	e2:SetReset(RESET_PHASE+PHASE_END,2)
-	Duel.RegisterEffect(e2,tp)
+
 end

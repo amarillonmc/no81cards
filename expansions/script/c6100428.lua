@@ -21,10 +21,12 @@ function s.initial_effect(c)
 
 	--②：作为同调素材，赋予允许速攻手卡发动的光环
 	local e2=Effect.CreateEffect(c)
-	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e2:SetDescription(aux.Stringid(id,3))
+	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_BE_MATERIAL)
-	e2:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
 	e2:SetCondition(s.mtcon)
+	e2:SetTarget(s.mttg)
 	e2:SetOperation(s.mtop)
 	c:RegisterEffect(e2)
 end
@@ -136,32 +138,26 @@ function s.actcostop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
--- === 效果②：同调素材附着光环 ===
+-- === 效果②：同调素材赋予延时玩家光环 ===
 function s.mtcon(e,tp,eg,ep,ev,re,r,rp)
 	return r==REASON_SYNCHRO and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 
-function s.mtop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local rc=c:GetReasonCard()
-	if rc then
-		-- 允许手发速攻魔法
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetType(EFFECT_TYPE_FIELD)
-	e2:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetTarget(s.qptg)
-	e2:SetTargetRange(LOCATION_HAND,0)
-	e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-	rc:RegisterEffect(e2)
-		
-		-- UI客户端光环提示
-		rc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,3))
-	end
+function s.mttg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return true end
 end
 
-function s.qptg(e,c)
-	-- 判定是否具有对愚者的记述
-	return aux.IsCodeListed(c,6100146)
+function s.mtop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+		if Duel.GetFlagEffect(1-tp,id+100)>0 then return false end
+	-- 允许在对方回合从手卡发动速攻魔法 (赋给玩家自身的规则状态)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_QP_ACT_IN_NTPHAND)
+	e1:SetTargetRange(LOCATION_HAND,0)
+	e1:SetCondition(function(eff) return Duel.GetTurnPlayer() ~= eff:GetHandlerPlayer() end)
+	e1:SetTarget(function(eff,tc) return aux.IsCodeListed(tc,6100146) end)
+	e1:SetReset(RESET_PHASE+PHASE_END, 2)
+	Duel.RegisterEffect(e1, tp)
+		Duel.RegisterFlagEffect(1-tp,id+100,nil,0,1)
 end

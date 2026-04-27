@@ -29,10 +29,13 @@ function s.costfil(c)
 	return c:IsSetCard(0xc569) and c:IsType(TYPE_MONSTER) and c:IsReleasable()
 end
 function s.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsCanRemoveCounter(tp,1,0,0xc569,1,REASON_COST) or Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) end
-	if Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then
-		local g=Duel.SelectReleaseGroup(tp,s.costfil,1,1,nil)
-		Duel.Release(g,REASON_COST)
+	local c=e:GetHandler()
+	local b1=Duel.IsExistingMatchingCard(s.costfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,c)
+	local b2=Duel.IsCanRemoveCounter(tp,1,0,0xc569,1,REASON_COST)
+	if chk==0 then return b1 or b2 end
+	if b1 and (not b2 or Duel.SelectOption(tp,aux.Stringid(id,1),aux.Stringid(id,2))==0)then
+		local g=Duel.SelectMatchingCard(tp,s.costfil,tp,LOCATION_HAND+LOCATION_MZONE,0,1,1,c)
+			Duel.Release(g,REASON_COST)
 	else
 		Duel.RemoveCounter(tp,1,0,0xc569,1,REASON_COST)
 	end

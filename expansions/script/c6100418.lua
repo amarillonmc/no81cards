@@ -19,11 +19,11 @@ function s.initial_effect(c)
 	e1:SetOperation(s.effop)
 	c:RegisterEffect(e1)
 
-	--②：作为同调素材离场
+	--②：作为同调素材离场，改星
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,4)) -- "赋予卡名记述"
+	e2:SetDescription(aux.Stringid(id,3)) -- "变更等级"
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e2:SetProperty(EFFECT_FLAG_DELAY)
+	e2:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e2:SetCode(EVENT_BE_MATERIAL)
 	e2:SetCondition(s.mtcon)
 	e2:SetTarget(s.mttg)
@@ -134,34 +134,55 @@ function s.rep_ch_op(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
--- === 效果②：全局注入卡名记述 ===
+-- === 效果②：同调素材离场，改星 ===
 function s.mtcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	return r==REASON_SYNCHRO and c:IsPreviousLocation(LOCATION_ONFIELD)
 end
-function s.mttg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,nil,TYPE_SPELL) end
+
+function s.mttg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_MZONE) and chkc:IsFaceup() and chkc:IsLevelAbove(1) end
+	if chk==0 then return Duel.IsExistingTarget(function(c) return c:IsFaceup() and c:IsLevelAbove(1) end,tp,LOCATION_MZONE,LOCATION_MZONE,1,nil) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
+	Duel.SelectTarget(tp,function(c) return c:IsFaceup() and c:IsLevelAbove(1) end,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 end
+
 function s.mtop(e,tp,eg,ep,ev,re,r,rp)
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
-	local g=Duel.SelectMatchingCard(tp,Card.IsType,tp,LOCATION_HAND+LOCATION_ONFIELD,0,1,1,nil,TYPE_SPELL)
-	local tc=g:GetFirst()
-	if tc then
-		if tc:IsFacedown() then Duel.ConfirmCards(1-tp,tc) end
-		Duel.ShuffleHand(tp)
-		-- 底层核心元表改写黑科技
-		local code = tc:GetOriginalCodeRule()
-		local mt = _G["c"..code]
-		if mt then
-			-- 将 6100146 (愚者) 注入底层表
-			if not mt.card_code_list then mt.card_code_list = {} end
-			mt.card_code_list[6100146] = true
-			
-			-- 遍历全场(0xff)，为手卡、墓地、场上、除外区的该同名卡打上可见的文本标记
-			local ag=Duel.GetMatchingGroup(Card.IsOriginalCodeRule,tp,0xff,0xff,nil,code)
-			for ac in aux.Next(ag) do
-				ac:RegisterFlagEffect(0,nil,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,4))
-			end
+	local tc=Duel.GetFirstTarget()
+	if tc:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsLevelAbove(1) then
+		local b1 = true
+		local b2 = tc:GetLevel() > 1
+		local op = 0
+		
+		if b1 and b2 then
+			op = Duel.SelectOption(tp,aux.Stringid(id,5),aux.Stringid(id,6))
+		elseif b1 then
+			Duel.SelectOption(tp,aux.Stringid(id,5))
+			op = 0
+		else
+			return
 		end
+		
+		local max_dec = math.min(3, tc:GetLevel() - 1)
+		local lv = 0
+		if op == 0 then
+			lv = Duel.AnnounceNumber(tp, 1, 2, 3)
+		else
+			if max_dec == 1 then
+				lv = Duel.AnnounceNumber(tp, 1)
+			elseif max_dec == 2 then
+				lv = Duel.AnnounceNumber(tp, 1, 2)
+			else
+				lv = Duel.AnnounceNumber(tp, 1, 2, 3)
+			end
+			lv = -lv
+		end
+		
+		local e1=Effect.CreateEffect(e:GetHandler())
+		e1:SetType(EFFECT_TYPE_SINGLE)
+		e1:SetCode(EFFECT_UPDATE_LEVEL)
+		e1:SetValue(lv)
+		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(e1)
 	end
 end

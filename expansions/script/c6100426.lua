@@ -90,7 +90,7 @@ function s.effop(e,tp,eg,ep,ev,re,r,rp)
 		if max_sel < 0 then return end
 		Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_CONFIRM)
 		-- 可以不选（即选0张，直接翻最底线的3张）
-		local g = Duel.SelectMatchingCard(tp, s.spellfilter, tp, LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED, 0, 0, max_sel, c)
+		local g = Duel.SelectMatchingCard(tp, s.spellfilter, tp, LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED, 0, 1, max_sel, c)
 		local n = 0
 		if #g > 0 then
 			Duel.ConfirmCards(1-tp, g)

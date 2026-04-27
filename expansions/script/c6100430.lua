@@ -35,6 +35,7 @@ function s.initial_effect(c)
 
 	--②：作为同调素材，赋予同调怪兽取对象抗性
 	local e3=Effect.CreateEffect(c)
+	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3:SetCode(EVENT_BE_MATERIAL)
 	e3:SetCondition(s.mtcon)
@@ -115,7 +116,7 @@ function s.mtop(e,tp,eg,ep,ev,re,r,rp)
 	if rc then
 		-- 为召唤出的同调怪兽赋予不会成为对方效果的对象的能力
 		local e1=Effect.CreateEffect(c)
-		e1:SetDescription(3061) -- 客户端提示文本："不会成为对方效果的对象"
+		e1:SetDescription(aux.Stringid(id,1))
 		e1:SetType(EFFECT_TYPE_SINGLE)
 		e1:SetProperty(EFFECT_FLAG_CLIENT_HINT)
 		e1:SetCode(EFFECT_CANNOT_BE_EFFECT_TARGET)

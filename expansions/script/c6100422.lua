@@ -19,9 +19,9 @@ function s.initial_effect(c)
 	e1:SetOperation(s.effop)
 	c:RegisterEffect(e1)
 
-	--②：作为同调素材离场，变成抽卡
+	--②：作为同调素材离场，改写效果为抽卡
 	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(id,4)) -- "变更效果为抽卡"
+	e2:SetDescription(aux.Stringid(id,5)) -- "变更对方效果为抽卡"
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_BE_MATERIAL)
@@ -32,21 +32,48 @@ function s.initial_effect(c)
 end
 
 -- === 效果①：条件与目标 ===
-function s.spellfilter(c)
-	if not c:IsType(TYPE_SPELL) then return false end
-	if c:IsLocation(LOCATION_REMOVED) and c:IsFacedown() then return false end
-	return true
+function s.filterA(c,ec)
+	if c==ec then return false end
+	-- 判定表侧与里侧的真实卡片类型
+	local ty = c:GetType()
+	if c:IsFacedown() then ty = c:GetOriginalType() end
+	return (ty & TYPE_SPELL)~=0 and c:IsAbleToDeck()
+end
+
+function s.filterB(c)
+	return c:IsType(TYPE_SPELL) and aux.IsCodeListed(c,6100146) and c:IsAbleToDeck()
 end
 
 function s.thfilter(c,ec)
 	return c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsAbleToHand() and c~=ec
 end
 
+-- 子组验证器：确保手卡/场上的组选完后，卡组里一定有足量且完全不同名的牌可用
+function s.gcheckA(sgA, gB)
+	if not aux.dncheck(sgA) then return false end
+	local count = #sgA
+	-- 从卡组候选群中，剔除所有和 sgA 里同名的卡
+	local valid_B = gB:Filter(function(c) return not sgA:IsExists(Card.IsCode, 1, nil, c:GetCode()) end, nil)
+	-- 如果剔除后，卡组里剩余的不同名卡种类数量 >= sgA的数量，则代表这套组合合法
+	return valid_B:GetClassCount(Card.GetCode) >= count
+end
+
 function s.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	
-	local b1 = Duel.GetFlagEffect(tp,id)==0 and Duel.IsPlayerCanDraw(tp,1) 
-		and Duel.IsExistingMatchingCard(s.spellfilter, tp, LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED, 0, 1, c)
+	local b1 = false
+	if Duel.GetFlagEffect(tp,id)==0 and Duel.IsPlayerCanDraw(tp, 1) then
+		local gA = Duel.GetMatchingGroup(s.filterA, tp, LOCATION_HAND+LOCATION_ONFIELD, 0, c, c)
+		local gB = Duel.GetMatchingGroup(s.filterB, tp, LOCATION_DECK, 0, nil)
+		-- 预检：至少有一张 A 和一张 B 不同名
+		for cA in aux.Next(gA) do
+			if gB:IsExists(function(cB) return cB:GetCode() ~= cA:GetCode() end, 1, nil) then
+				b1 = true
+				break
+			end
+		end
+	end
+	
 	local b2 = Duel.GetFlagEffect(tp,id+1)==0 
 		and Duel.IsExistingMatchingCard(s.thfilter, tp, LOCATION_ONFIELD, LOCATION_ONFIELD, 1, c, c)
 		
@@ -67,7 +94,7 @@ function s.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	
 	if op==0 then
 		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
-		Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED)
+		Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,2,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_DECK)
 		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 	elseif op==1 then
 		Duel.RegisterFlagEffect(tp,id+1,RESET_PHASE+PHASE_END,0,1)
@@ -75,85 +102,64 @@ function s.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 
--- === 选项1 专属的组合验证器 ===
--- 限制所选卡片组合：每个区域最多只能存在1张
-function s.gcheck(g)
-	return g:FilterCount(Card.IsLocation, nil, LOCATION_HAND) <= 1
-		and g:FilterCount(Card.IsLocation, nil, LOCATION_ONFIELD) <= 1
-		and g:FilterCount(Card.IsLocation, nil, LOCATION_GRAVE) <= 1
-		and g:FilterCount(Card.IsLocation, nil, LOCATION_REMOVED) <= 1
-end
-
 -- === 效果①：处理分歧 ===
 function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	local op=e:GetLabel()
 	local c=e:GetHandler()
 	
-if op==0 then
-	-- ● 选项1：各区域选卡，确认，洗切置顶/置底，按比例抽卡并赋予记述
-	local cg = Duel.GetMatchingGroup(s.spellfilter, tp, LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED, 0, c)
-	if #cg == 0 then return end
-	
-	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_TODECK)
-	-- 一键选卡，最少1张，最多4张
-	local tg = cg:SelectSubGroup(tp, s.gcheck, false, 1, 4)
-	
-	if tg and #tg > 0 then
-		-- 向对方全部公开（包括里侧除外、盖放的魔法卡）
-		Duel.ConfirmCards(1-tp, tg)
+	if op==0 then
+		-- ● 选项1：选出两边，确认洗切抽卡
+		local gA = Duel.GetMatchingGroup(s.filterA, tp, LOCATION_HAND+LOCATION_ONFIELD, 0, c, c)
+		local gB = Duel.GetMatchingGroup(s.filterB, tp, LOCATION_DECK, 0, nil)
+		if #gA == 0 or #gB == 0 then return end
 		
-		-- 询问玩家放回卡组的方向
-		local opt = Duel.SelectOption(tp, aux.Stringid(id, 5), aux.Stringid(id, 6))
-		local draw_ct = tg:FilterCount(Card.IsLocation, nil, LOCATION_HAND+LOCATION_ONFIELD)
-		Duel.SendtoDeck(tg, nil, SEQ_DECKSHUFFLE, REASON_EFFECT)
-		local og = Duel.GetOperatedGroup():Filter(Card.IsLocation, nil, LOCATION_DECK+LOCATION_EXTRA)
-		local ct = #og
+		Duel.Hint(HINT_SELECTMSG, tp, aux.Stringid(id, 3)) -- "选择手卡·场上的魔法卡"
+		local sel_A = gA:SelectSubGroup(tp, s.gcheckA, false, 1, 99, gB)
+		Duel.ConfirmCards(1-tp,sel_A)
+		if not sel_A or #sel_A == 0 then return end
+		
+		local count = #sel_A
+		local valid_B = gB:Filter(function(tc) return not sel_A:IsExists(Card.IsCode, 1, nil, tc:GetCode()) end, nil)
+		
+		Duel.Hint(HINT_SELECTMSG, tp, aux.Stringid(id, 4)) -- "选择卡组的魔法卡"
+		local sel_B = valid_B:SelectSubGroup(tp, aux.dncheck, false, count, count)
+		if not sel_B or #sel_B ~= count then return end
+		
+		local sg = sel_A:Clone()
+		sg:Merge(sel_B)
+		
+		-- 确认全套阵容
+		Duel.ConfirmCards(1-tp, sg)
+		
+		-- 【核心修正】：只对来自手卡和场上的卡执行送回卡组的动作
+		Duel.DisableShuffleCheck()
+		Duel.SendtoDeck(sel_A, nil, SEQ_DECKTOP, REASON_EFFECT)
+		
+		-- 重新提取我们选中的全部卡片（此时它们必须全都在卡组里）
+		local tg = sg:Filter(Card.IsLocation, nil, LOCATION_DECK)
+		local ct = #tg
 		
 		if ct > 0 then
-			if opt == 0 then
-				-- 随机抽取并暴力置于顶端，模拟“暗盘置顶洗切”
-				for i=1, ct do
-					local tc = (i < ct) and og:RandomSelect(tp, 1):GetFirst() or og:GetFirst()
-					Duel.MoveSequence(tc, SEQ_DECKTOP)
-					og:RemoveCard(tc)
+			for i=1, ct do
+				local tc
+				if i < ct then
+					tc = tg:RandomSelect(tp, 1):GetFirst()
+				else
+					tc = tg:GetFirst()
 				end
-			else
-				-- 随机抽取并暴力置于底端
-				for i=1, ct do
-					local tc = (i < ct) and og:RandomSelect(tp, 1):GetFirst() or og:GetFirst()
-					Duel.MoveSequence(tc, SEQ_DECKBOTTOM)
-					og:RemoveCard(tc)
-				end
+				Duel.MoveSequence(tc, SEQ_DECKTOP)
+				tg:RemoveCard(tc)
 			end
 			
-			-- 抽从手卡·场上回到卡组的数量，并给对方观看
-			if draw_ct > 0 and Duel.Draw(tp, draw_ct, REASON_EFFECT) > 0 then
-				Duel.BreakEffect()
-				local dg = Duel.GetOperatedGroup()
-				Duel.ConfirmCards(1-tp, dg)
-				Duel.ShuffleHand(tp)
-
-				local mg = dg:Filter(Card.IsType, nil, TYPE_SPELL)
-				for dc_tc in aux.Next(mg) do
-					local code = dc_tc:GetOriginalCodeRule()
-					local mt = _G["c"..code]
-					if mt then
-						if not mt.card_code_list then mt.card_code_list = {} end
-						mt.card_code_list[6100146] = true
-						
-						-- 为该同名卡打上可见的文本光环标记
-						local ag = Duel.GetMatchingGroup(Card.IsOriginalCodeRule, tp, 0xff, 0xff, nil, code)
-						for ac in aux.Next(ag) do
-							ac:RegisterFlagEffect(0, RESET_EVENT+RESETS_STANDARD, EFFECT_FLAG_CLIENT_HINT, 1, 0, aux.Stringid(id,4))
-						end
-					end
-				end
+			local draw_ct = sel_A:FilterCount(Card.IsLocation, nil, LOCATION_DECK)
+			
+			if draw_ct > 0 then
+				Duel.Draw(tp, draw_ct, REASON_EFFECT)
 			end
 		end
-	end
-		
+
 	elseif op==1 then
-		-- ● 选项2：这张卡和另外1张魔陷回手
+		-- ● 选项2：这张卡和场上1张魔陷回手
 		if not c:IsRelateToEffect(e) then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 		local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,c,c)
