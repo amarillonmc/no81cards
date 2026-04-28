@@ -75,7 +75,7 @@ function cm.damop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.damcon1(e,tp,eg,ep,ev,re,r,rp)
-	return re=e:GetLabelObject() and e:GetHandlerPlayer()~=tp
+	return re==e:GetLabelObject() and e:GetHandlerPlayer()~=tp
 end
 function cm.damcost1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then

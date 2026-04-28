@@ -42,7 +42,7 @@ function c33701067.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 		and Duel.GetFieldGroupCount(tp,0,LOCATION_ONFIELD)>0
 		and Duel.IsExistingMatchingCard(c33701067.desfilter,tp,LOCATION_ONFIELD,0,1,nil) end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,2,0,0)
-	Duel.SetChainLimit(c33701067.chlimit)
+	Duel.SetChainLimit(aux.FALSE)--Duel.SetChainLimit(c33701067.chlimit)
 end
 function c33701067.chlimit(e,ep,tp)
 	return tp==ep
@@ -54,10 +54,12 @@ function c33701067.desop(e,tp,eg,ep,ev,re,r,rp)
 	if #g*#og==0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local sg=g:Select(tp,1,#og,nil)
-	local oc=Duel.SendtoHand(sg,REASON_EFFECT)
+	Duel.HintSelection(sg)
+	local oc=Duel.SendtoHand(sg,nil,REASON_EFFECT)
 	if oc==0 then return end
 	Duel.BreakEffect()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
 	local sg2=og:Select(tp,oc,oc,nil)
-	Duel.SendtoHand(sg2,REASON_EFFECT)
+	Duel.HintSelection(sg2)
+	Duel.SendtoHand(sg2,nil,REASON_EFFECT)
 end
