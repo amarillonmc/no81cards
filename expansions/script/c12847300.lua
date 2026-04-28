@@ -58,11 +58,12 @@ function s.chop(e,tp,eg,ep,ev,re,r,rp)
 		e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e5:SetCode(EVENT_FREE_CHAIN)
 		e5:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
-		e5:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return Duel.GetCurrentChain()==0 and Duel.IsMainPhase() end)
+		e5:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return 
+			(Duel.GetFlagEffect(tp,id)==0 or Duel.GetFlagEffect(tp,id+o)==0) and Duel.GetCurrentChain()==0 and Duel.IsMainPhase()
+		end)
 		Duel.RegisterEffect(e5,tp)
 	end
 	c:SetEntityCode(89631139)
-	if not c:IsLocation(LOCATION_HAND) then Duel.ConfirmCards(tp,c) end
 	if Duel.GetMatchingGroupCount(Card.IsOriginalCodeRule,tp,0xff,0,nil,89631139)>3 then	
 		Debug.Message("因违反卡组只能投入三张同名卡的规则而判负")
 		local WIN_REASON_CREATORGOD=0x13
@@ -91,10 +92,8 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local sg2=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK,0,1,1,nil)
 	if #sg2>0 then
 		local tc=sg2:GetFirst()
-		local token=Duel.CreateToken(tp,tc:GetOriginalCode())
-		Duel.Exile(tc,REASON_RULE)
-		Duel.SendtoHand(token,nil,REASON_RULE)
-		Duel.ConfirmCards(1-tp,token)
+		Duel.SendtoHand(tc,nil,REASON_RULE)
+		Duel.ConfirmCards(1-tp,tc)
 	end
 	Duel.BreakEffect()
 	local g=Group.CreateGroup()
@@ -116,6 +115,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,id,0,0,1)
 	e1:Reset()
 	e2:Reset()
+	Duel.SetChainLimitTillChainEnd(s.chainlm)
 end
 function s.cfilter2(c)
 	return c:IsSetCard(0xdd) and c:IsFaceup()
@@ -160,4 +160,8 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	Duel.RegisterFlagEffect(tp,id+1,0,0,1)
+	Duel.SetChainLimitTillChainEnd(s.chainlm)
+end
+function s.chainlm(e,rp,tp)
+	return tp==rp
 end

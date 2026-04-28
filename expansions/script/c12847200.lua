@@ -108,11 +108,12 @@ function s.chop(e,tp,eg,ep,ev,re,r,rp)
 	e6:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e6:SetCode(EVENT_FREE_CHAIN)
 	e6:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE+EFFECT_FLAG_CANNOT_DISABLE)
-	e6:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return Duel.GetCurrentChain()==0 and Duel.IsMainPhase() end)
+	e6:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return 
+		(Duel.GetFlagEffect(tp,id)==0 or Duel.GetFlagEffect(tp,id+o)==0) and Duel.GetCurrentChain()==0 and Duel.IsMainPhase() 
+	end)
 	Duel.RegisterEffect(e6,tp)
 	--
 	c:SetEntityCode(46986414)
-	if not c:IsLocation(LOCATION_HAND) then Duel.ConfirmCards(tp,c) end
 	if Duel.GetMatchingGroupCount(Card.IsOriginalCodeRule,tp,0xff,0,nil,46986414)>3 then	
 		Debug.Message("因违反卡组只能投入三张同名卡的规则而判负")
 		local WIN_REASON_CREATORGOD=0x13
@@ -149,12 +150,7 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 		and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_GRAVE,0,1,nil)
 		local op=aux.SelectFromOptions(tp,{true,aux.Stringid(id,7)},{res,aux.Stringid(id,8)})
 		if op==1 then
-			local g=Duel.GetDecktopGroup(tp,1)
-			local ec=g:GetFirst()
-			local code=ec:GetOriginalCode()
-			Duel.Exile(ec,REASON_RULE)
-			local token=Duel.CreateToken(tp,code)
-			Duel.SendtoHand(token,nil,REASON_RULE)
+			Duel.Draw(tp,1,REASON_RULE)
 		elseif op==2 then
 			local sg2=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_GRAVE,0,1,1,nil)
 			if #sg2>0 then
@@ -177,6 +173,7 @@ function s.drop(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 	Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
+	Duel.SetChainLimitTillChainEnd(s.chainlm)
 end
 function s.cfilter2(c)
 	return c:IsCode(46986414,38033121) and not c:IsPublic()
@@ -235,6 +232,7 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	local sg3=Duel.SelectMatchingCard(tp,s.tffilter,tp,LOCATION_HAND,0,1,1,nil)
 	Duel.MoveToField(sg3:GetFirst(),tp,tp,LOCATION_MZONE,POS_FACEUP_ATTACK,true)
 	Duel.RegisterFlagEffect(tp,id+o,0,0,1)
+	Duel.SetChainLimitTillChainEnd(s.chainlm)
 end
 function s.cfilter4(c)
 	return c:IsCode(60709218) and not c:IsPublic()
@@ -274,4 +272,7 @@ function s.adop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,token2)
 	end
 	Duel.RegisterFlagEffect(tp,id+o*2,0,0,1)
+end
+function s.chainlm(e,rp,tp)
+	return tp==rp
 end
