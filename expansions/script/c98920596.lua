@@ -51,7 +51,7 @@ function c98920596.coinop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsRelateToEffect(e) or c:IsFacedown() then return end
 	local res=0
-	if c:IsHasEffect(73206827) then
+	if Duel.IsPlayerAffectedByEffect(tp,73206827) then
 		res=1-Duel.SelectOption(tp,60,61)
 	else res=Duel.TossCoin(tp,1) end
 	if res==1 then
