@@ -1,4 +1,4 @@
---EPiDOTE
+--SELENiTE
 local s,id=GetID()
 function s.sprule(c)
     c:EnableReviveLimit()
@@ -55,9 +55,12 @@ function s.disable(c)
     e1:SetTargetRange(0,LOCATION_MZONE)
 	c:RegisterEffect(e1)
 end
+function s.acfilter(c)
+    return c:IsFaceup() and c:GetOriginalType()&TYPE_LINK~=0 and c:GetOriginalRace()&RACE_SPELLCASTER~=0
+end
 function s.con(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
-    return c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS
+    return c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS and Duel.IsBattlePhase() and Duel.IsExistingMatchingCard(s.acfilter,tp,LOCATION_ONFIELD,0,1,c)
 end
 function s.distg(e,c)
 	return c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0
