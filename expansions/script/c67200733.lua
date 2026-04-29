@@ -25,8 +25,8 @@ function c67200733.initial_effect(c)
 	end   
 end
 function c67200733.checkop(e,tp,eg,ep,ev,re,r,rp)
-	if ep==tp then return end
-		Duel.RegisterFlagEffect(tp,67200733,RESET_PHASE+PHASE_END,0,1)
+	--if ep==tp then return end
+		Duel.RegisterFlagEffect(1-ep,67200733,RESET_PHASE+PHASE_END,0,1)
 	--end
 end
 --
