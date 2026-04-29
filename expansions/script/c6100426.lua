@@ -13,6 +13,7 @@ function s.initial_effect(c)
 	--①：卡片的发动 (二选一)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
+	e1:SetCategory(CATEGORY_TOHAND)
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetTarget(s.acttg)
@@ -50,7 +51,7 @@ function s.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
 	
 	-- 选项1：卡组至少有3张卡，且本回合没有使用过选项1
-	local b1 = Duel.GetFlagEffect(tp,id)==0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=3 and Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,c,TYPE_SPELL)>0
+	local b1 = Duel.GetFlagEffect(tp,id)==0 and Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>=3 and Duel.GetMatchingGroupCount(Card.IsType,tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE+LOCATION_REMOVED,0,c,TYPE_SPELL)>0 and Duel.GetDecktopGroup(tp,1):IsExists(Card.IsAbleToHand,1,nil)
 	-- 选项2：场上有其它魔法·陷阱卡可回手，且本回合没用过选项2
 	local b2 = Duel.GetFlagEffect(tp,id+1)==0 
 		and Duel.IsExistingMatchingCard(s.thfilter1, tp, LOCATION_ONFIELD, LOCATION_ONFIELD, 1, c, c)
@@ -71,6 +72,7 @@ function s.acttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	e:SetLabel(op)
 	
 	if op==0 then
+	e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1)
 		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 	elseif op==1 then
