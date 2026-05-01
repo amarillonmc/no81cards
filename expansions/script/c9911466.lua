@@ -34,6 +34,7 @@ function c9911466.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	local tc=g:GetFirst()
 	if tc:IsFaceup() then Duel.HintSelection(g)
 	else Duel.ConfirmCards(1-tp,tc) end
+	if tc:IsLocation(LOCATION_HAND) then Duel.ShuffleHand(tp) end
 	Duel.ClearTargetCard()
 	tc:CreateEffectRelation(e)
 	e:SetLabelObject(tc)

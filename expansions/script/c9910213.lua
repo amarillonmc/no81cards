@@ -26,14 +26,10 @@ function c9910213.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc,exc,cpchk)
 	local b1=Duel.IsExistingMatchingCard(c9910213.thfilter,tp,LOCATION_DECK,0,1,nil)
 		and (not e:IsCostChecked() or Duel.GetFlagEffect(tp,9910213)==0)
 	local b2=Duel.IsExistingTarget(c9910213.spfilter,tp,LOCATION_GRAVE,0,1,exc,e,tp)
-		and (not e:IsCostChecked() or Duel.GetFlagEffect(tp,9910595)==0)
+		and (not e:IsCostChecked() or Duel.GetFlagEffect(tp,9910595)==0 and Duel.CheckLPCost(tp,1000))
 	if chk==0 then
-		if e:GetLabel()~=0 and not cpchk then
-			e:SetLabel(0)
-			return b1 or (b2 and Duel.CheckLPCost(tp,1000))
-		else
-			return b1 or b2
-		end
+		if e:GetLabel()~=0 and not cpchk then e:SetLabel(0) end
+		return b1 or b2
 	end
 	local op=0
 	if b1 or b2 then

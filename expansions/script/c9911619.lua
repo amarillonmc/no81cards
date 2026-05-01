@@ -55,6 +55,7 @@ function c9911619.conop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=sg:GetFirst()
 	if tc:IsFaceup() then Duel.HintSelection(sg)
 	else Duel.ConfirmCards(1-tc:GetControler(),tc) end
+	if tc:IsLocation(LOCATION_HAND) then Duel.ShuffleHand(tp) end
 	local code=tc:GetOriginalCode()
 	if code==9911601 or code==9911614 then
 		if Duel.SelectYesNo(tp,aux.Stringid(9911619,1)) then
