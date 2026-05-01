@@ -125,6 +125,24 @@ if not dofile and Duel.LoadScript then
 				end
 	end
 end
+if not Duel.Exile then
+	function Duel.Exile(g,r)
+		if aux.GetValueType(g)=="Card" then g=Group.FromCards(g) end
+		local tab={}
+		for c in aux.Next(g) do
+			local e1=Effect.CreateEffect(c)
+			e1:SetType(EFFECT_TYPE_SINGLE)
+			e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+			e1:SetValue(3)
+			c:RegisterEffect(e1,true)
+			tab[#tab+1]=e1
+		end
+		Duel.SendtoGrave(g,r)
+		for _,te in pairs(tab) do te:Reset() end
+	end
+end
 function cm.nnfilter(c,ec)
 	if c:GetOriginalType()&0x11==0x11 and c:GetOriginalType()&TYPE_PENDULUM==0 then return false end
 	if not c.initial_effect then return true end

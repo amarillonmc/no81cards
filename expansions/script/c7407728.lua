@@ -53,7 +53,7 @@ function c7407728.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local tc1=g:GetFirst()
 	local tc2=Duel.GetFirstTarget()
-	if tc2:IsRelateToEffect(e) and tc1:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and tc2:IsType(TYPE_MONSTER) and tc2:IsCanBeBattleTarget(tc1) and tc2:IsControler(1-tp) and Duel.SpecialSummon(tc1,0,tp,tp,false,false,POS_FACEUP_ATTACK)>0 and tc2:IsLocation(LOCATION_MZONE) then
+	if tc1:IsCanBeSpecialSummoned(e,0,tp,false,false,POS_FACEUP_ATTACK) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SpecialSummon(tc1,0,tp,tp,false,false,POS_FACEUP_ATTACK)>0 and tc2:IsRelateToEffect(e) and tc2:IsType(TYPE_MONSTER) and tc2:IsCanBeBattleTarget(tc1) and tc2:IsControler(1-tp) and tc2:IsLocation(LOCATION_MZONE) then
 		Duel.CalculateDamage(tc1,tc2)
 	end
 end
