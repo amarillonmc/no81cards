@@ -6,7 +6,6 @@ function s.initial_effect(c)
 	aux.EnablePendulumAttribute(c)
 	c:EnableReviveLimit()
 	
-	--【怪兽效果】这张卡不能同调召唤
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
@@ -17,7 +16,7 @@ function s.initial_effect(c)
 	c:SetUniqueOnField(1,0,6100416)
 	
 	local p_proc=Effect.CreateEffect(c)
-	p_proc:SetDescription(aux.Stringid(id,0)) -- "放置在灵摆区域"
+	p_proc:SetDescription(aux.Stringid(id,0)) 
 	p_proc:SetType(EFFECT_TYPE_FIELD)
 	p_proc:SetCode(EFFECT_SPSUMMON_PROC_G)
 	p_proc:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
@@ -26,9 +25,8 @@ function s.initial_effect(c)
 	p_proc:SetOperation(s.pzop)
 	c:RegisterEffect(p_proc)
 	
-	--①：1回合1次，自己主要阶段才能发动。特召手卡·墓地的「破碎世界的愚者」
 	local p_ign=Effect.CreateEffect(c)
-	p_ign:SetDescription(aux.Stringid(id,1)) -- "特殊召唤「破碎世界的愚者」"
+	p_ign:SetDescription(aux.Stringid(id,1)) 
 	p_ign:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	p_ign:SetType(EFFECT_TYPE_IGNITION)
 	p_ign:SetRange(LOCATION_PZONE)
@@ -37,15 +35,23 @@ function s.initial_effect(c)
 	p_ign:SetOperation(s.spop)
 	c:RegisterEffect(p_ign)
 	
-	--①：只要这张卡在灵摆区域存在，可以把魔法卡当作通常怪兽特召 (不入连锁的手续)
-	local p_adj=Effect.CreateEffect(c)
-	p_adj:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-	p_adj:SetCode(EVENT_ADJUST)
-	p_adj:SetRange(LOCATION_PZONE)
-	p_adj:SetOperation(s.adjustop)
-	c:RegisterEffect(p_adj)
+	local ge0=Effect.CreateEffect(c)
+	ge0:SetType(EFFECT_TYPE_FIELD)
+	ge0:SetCode(EFFECT_SPSUMMON_PROC_G)
+	ge0:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
+	ge0:SetRange(LOCATION_HAND)
+	ge0:SetCondition(s.spell_spcon)
+	ge0:SetOperation(s.spell_spop)
+	--effect grant
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
+	e0:SetRange(LOCATION_PZONE)
+	e0:SetTargetRange(LOCATION_HAND,0)
+	e0:SetCondition(c6100416.efcon)
+	e0:SetTarget(aux.TargetBoolFunction(Card.IsType,TYPE_SPELL))
+	e0:SetLabelObject(ge0)
+	c:RegisterEffect(e0)
 
-	--③：把「破碎世界的愚者」当作调整使用
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
 	e4:SetCode(EFFECT_TUNER)
@@ -73,36 +79,30 @@ function s.actlimit(e,re,tp)
 	return re:IsActiveType(TYPE_FIELD) and re:IsHasType(EFFECT_TYPE_ACTIVATE)
 end
 
--- === 怪兽效果限制 ===
 function s.splimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_SYNCHRO)==0
 end
 
--- === 怪兽效果：放置灵摆区手续 ===
 function s.pzfilter_all(c)
 	return c:IsType(TYPE_SPELL) and c:IsAbleToGraveAsCost()
 end
 function s.pzfilter_req(c)
-	-- 要求是魔法卡、能够送墓，并且卡名记述了 6100146 (请确保对应的魔法卡本身有 aux.AddCodeList(c,6100146))
 	return c:IsType(TYPE_SPELL) and aux.IsCodeListed(c,6100146) and c:IsAbleToGraveAsCost()
 end
 
--- 动态空间检测：判断选取的卡片送墓后，灵摆区是否会有空位
 function s.pz_zone_check(c1,c2,tp)
 	local ct = 0
 	if Duel.CheckLocation(tp,LOCATION_PZONE,0) then ct = ct + 1 end
 	if Duel.CheckLocation(tp,LOCATION_PZONE,1) then ct = ct + 1 end
-	-- 如果作为Cost的卡在自己灵摆区，送去墓地后也会腾出空位
 	if c1 and c1:IsLocation(LOCATION_PZONE) and c1:IsControler(tp) then ct = ct + 1 end
 	if c2 and c2:IsLocation(LOCATION_PZONE) and c2:IsControler(tp) then ct = ct + 1 end
 	return ct > 0
 end
 
--- 检查第2张卡是否合法
 function s.pz_check2(c2,c1,tp)
 	return s.pz_zone_check(c1,c2,tp)
 end
--- 检查第1张卡是否合法（是否存在对应的第2张卡）
+
 function s.pz_check1(c1,tp,g2)
 	return g2:IsExists(s.pz_check2,1,c1,c1,tp)
 end
@@ -123,12 +123,10 @@ function s.pzop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	local g2=Duel.GetMatchingGroup(s.pzfilter_all,tp,LOCATION_HAND+LOCATION_ONFIELD,0,c)
 	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	-- 先选第1张（必须有愚者记述的魔法卡）
 	local sel1=g1:FilterSelect(tp,s.pz_check1,1,1,nil,tp,g2)
 	local tc1=sel1:GetFirst()
 	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
-	-- 再选第2张（任意魔法卡）
 	local sel2=g2:FilterSelect(tp,s.pz_check2,1,1,tc1,tc1,tp)
 	
 	sel1:Merge(sel2)
@@ -137,7 +135,6 @@ function s.pzop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	Duel.MoveToField(c,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 end
 
--- === 灵摆效果①：起动特召愚者 ===
 function s.spfilter(c,e,tp)
 	return c:IsCode(6100146) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
@@ -156,17 +153,16 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
 end
 
--- === 全局分发：只要在P区，就赋予手卡魔法卡特召能力 ===
 function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not c:IsLocation(LOCATION_PZONE) then return end
 	if c:GetFlagEffect(id)>0 then
 	local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND,0,nil,TYPE_SPELL)
 	for tc in aux.Next(g) do
-		-- 利用专属的隐藏 Effect ID 作为标记，避免给同1张魔法卡重复注册
+
 		if not tc:IsHasEffect(id) then
 			local sp=Effect.CreateEffect(c)
-			sp:SetDescription(aux.Stringid(id,2)) -- "当作通常怪兽特殊召唤"
+			sp:SetDescription(aux.Stringid(id,2))
 			sp:SetType(EFFECT_TYPE_FIELD)
 			sp:SetCode(EFFECT_SPSUMMON_PROC_G)
 			sp:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
@@ -187,19 +183,48 @@ function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
--- === 魔法卡的特召手续条件与执行 ===
+function c6100416.efcon(e)
+	return e:GetHandler():GetFlagEffect(id)~=0
+end
+
 function s.spell_spcon(e,c,og)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	-- 安全检测：检查发动者的灵摆区是否依然存在此卡
-	if not Duel.IsExistingMatchingCard(function(tc) return tc:IsCode(id) and tc:IsFaceup() end,tp,LOCATION_PZONE,0,1,nil) then return false end
-	
 	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),0,TYPE_NORMAL+TYPE_SPELL,0,0,3,RACE_SPELLCASTER,ATTRIBUTE_LIGHT)
+		and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),0,TYPE_NORMAL+TYPE_MONSTER+TYPE_SPELL,0,0,3,RACE_SPELLCASTER,ATTRIBUTE_LIGHT)--setcard
 end
 
 function s.spell_spop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
+	local KOISHI_CHECK=false
+	if Card.SetCardData then KOISHI_CHECK=true end
 	-- 将魔法卡属性转换为怪兽（通常怪兽·魔法师族·光·3星·攻/守0），由于包含了 TYPE_SPELL，它登场后“也当作魔法卡使用”
+	if KOISHI_CHECK then
+		c:RegisterFlagEffect(id,0,0,1,tc:GetOriginalType())
+		c:SetCardData(CARDDATA_TYPE,TYPE_NORMAL+TYPE_MONSTER+TYPE_SPELL)
+	end
 	c:AddMonsterAttribute(TYPE_NORMAL+TYPE_SPELL,ATTRIBUTE_LIGHT,RACE_SPELLCASTER,3,0,0)
-	Duel.SpecialSummon(c,0,tp,tp,true,false,POS_FACEUP)
+	if not KOISHI_CHECK then Duel.SpecialSummonStep(c,0,tp,tp,true,false,POS_FACEUP) end
+	if KOISHI_CHECK then
+		--summon cost
+		local ge0=Effect.CreateEffect(c)
+		ge0:SetType(EFFECT_TYPE_FIELD)
+		ge0:SetCode(EFFECT_SPSUMMON_COST)
+		ge0:SetTargetRange(LOCATION_HAND,0)
+		ge0:SetLabelObject(c)
+		ge0:SetCost(s.costchk)
+		ge0:SetOperation(s.costop)
+		Duel.RegisterEffect(ge0,tp)
+	end
+	if not KOISHI_CHECK then Duel.SpecialSummonComplete() end
+end
+function s.costchk(e,c,tp)
+	return true
+end
+function s.costop(e,tp,eg,ep,ev,re,r,rp)
+	local tc=e:GetLabelObject()
+	if tc:GetFlagEffect(id)~=0 then
+		tc:SetCardData(CARDDATA_TYPE,tc:GetFlagEffectLabel(id))
+		tc:ResetFlagEffect(id)
+	end
+	e:Reset()
 end
