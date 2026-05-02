@@ -55,14 +55,14 @@ function cm.drcon(e,tp,eg,ep,ev,re,r,rp)
     return re:IsActiveType(TYPE_SPELL+TYPE_TRAP) and rc:IsControler(tp) and aux.IsCodeListed(rc,46986414)
 end
 function cm.drtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-    if chk==0 then return Duel.IsExistingMatchingCard(aux.disfilter1,tp,0,LOCATION_ONFIELD,1,nil) end
+    if chk==0 then return Duel.IsExistingMatchingCard(aux.NegateMonsterFilter,tp,0,LOCATION_MZONE,1,nil) end
     Duel.SetOperationInfo(0,CATEGORY_DISABLE,nil,1,tp,LOCATION_ONFIELD)
     Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,1,tp,LOCATION_DECK)
 end
 function cm.drop(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-    local tg=Duel.SelectMatchingCard(tp,aux.disfilter1,tp,0,LOCATION_ONFIELD,1,1,nil)
+    local tg=Duel.SelectMatchingCard(tp,aux.NegateMonsterFilter,tp,0,LOCATION_MZONE,1,1,nil)
     if not tg then return end
     Duel.HintSelection(tg)
     local tc=tg:GetFirst()

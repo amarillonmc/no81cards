@@ -111,6 +111,9 @@ function s.chop(e,tp,eg,ep,ev,re,r,rp)
 	e6:SetCondition(function(e,tp,eg,ep,ev,re,r,rp) return 
 		(Duel.GetFlagEffect(tp,id)==0 or Duel.GetFlagEffect(tp,id+o)==0) and Duel.GetCurrentChain()==0 and Duel.IsMainPhase() 
 	end)
+	e6:SetOperation(function(e,tp,eg,ep,ev,re,r,rp) 
+		Duel.SetChainLimitTillChainEnd(s.chainlm)
+	end)
 	Duel.RegisterEffect(e6,tp)
 	--
 	c:SetEntityCode(46986414)
