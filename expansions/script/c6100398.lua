@@ -22,7 +22,7 @@ function s.initial_effect(c)
 	--②：降攻 + 条件无效
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_NEGATE+CATEGORY_DESTROY)
+	e2:SetCategory(CATEGORY_ATKCHANGE+CATEGORY_DISABLE+CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_QUICK_O)
 	e2:SetCode(EVENT_CHAINING)
 	e2:SetRange(LOCATION_MZONE)
@@ -141,7 +141,7 @@ function s.atkop(e,tp,eg,ep,ev,re,r,rp)
 	if zero_check and Duel.IsChainDisablable(ev) then
 		if Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			Duel.BreakEffect()
-			if Duel.NegateActivation(ev) then
+			if Duel.NegateEffect(ev) then
 				Duel.Destroy(re:GetHandler(),REASON_EFFECT)
 			end
 		end

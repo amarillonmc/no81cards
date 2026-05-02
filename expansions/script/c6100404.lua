@@ -61,7 +61,7 @@ function cm.initial_effect(c)
 	--addition
 	local e6=Effect.CreateEffect(c)
 	e6:SetDescription(aux.Stringid(m,1))
-	e6:SetCategory(CATEGORY_DRAW)
+	e6:SetCategory(CATEGORY_DRAW+CATEGORY_HANDES)
 	e6:SetType(EFFECT_TYPE_QUICK_O)
 	e6:SetCode(EVENT_CHAINING)
 	e6:SetRange(LOCATION_MZONE)
