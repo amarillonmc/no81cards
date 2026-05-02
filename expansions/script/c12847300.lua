@@ -163,5 +163,5 @@ function s.setop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SetChainLimitTillChainEnd(s.chainlm)
 end
 function s.chainlm(e,rp,tp)
-	return tp==rp
+	return false
 end

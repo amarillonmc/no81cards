@@ -128,19 +128,55 @@ end
 if not Duel.Exile then
 	function Duel.Exile(g,r)
 		if aux.GetValueType(g)=="Card" then g=Group.FromCards(g) end
-		local tab={}
-		for c in aux.Next(g) do
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-			e1:SetValue(3)
-			c:RegisterEffect(e1,true)
-			tab[#tab+1]=e1
+		if g:FilterCount(Card.IsLocation,nil,LOCATION_DECK)==#g then
+			local tab={}
+			for c in aux.Next(g) do
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
+				e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+				e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
+				e1:SetValue(3)
+				c:RegisterEffect(e1,true)
+				tab[#tab+1]=e1
+			end
+			local res=Duel.SendtoGrave(g,r)
+			for _,te in pairs(tab) do te:Reset() end
+			return res
+		else
+			return Duel.Remove(g,POS_FACEDOWN,r)
 		end
-		Duel.SendtoGrave(g,r)
-		for _,te in pairs(tab) do te:Reset() end
+	end
+end
+if not Card.SetEntityCode then
+	function Card.SetEntityCode(c,code,...)
+		if not c then return nil end
+		local p = c:GetControler()
+		local loc = c:GetLocation()
+		local seq = c:GetSequence()
+		local pos = c:GetPosition()
+		local xyz_target = c:GetOverlayTarget()
+		Duel.DisableShuffleCheck()
+		Duel.Remove(c,POS_FACEDOWN,r) --Duel.Exile(c,REASON_RULE)
+		local token = Duel.CreateToken(p, code)
+		if loc == LOCATION_MZONE or loc == LOCATION_SZONE then
+			Duel.MoveToField(token, p, p, loc, pos, true, 1 << seq)
+		elseif loc == LOCATION_DECK or (loc == LOCATION_EXTRA and pos == POS_FACEDOWN) then
+			Duel.SendtoDeck(token, p, 1, REASON_RULE)
+		elseif loc == LOCATION_HAND then
+			Duel.SendtoHand(token, p, REASON_RULE)
+		elseif loc == LOCATION_GRAVE then
+			Duel.SendtoGrave(token, REASON_RULE)
+		elseif loc == LOCATION_REMOVED then
+			Duel.Remove(token, pos, REASON_RULE)
+		elseif loc == LOCATION_EXTRA and pos == POS_FACEUP then
+			Duel.SendtoExtraP(token, p, REASON_RULE)
+		elseif loc == LOCATION_OVERLAY then
+			if xyz_target and xyz_target:IsOnField() then
+				Duel.Overlay(xyz_target, token)
+			end
+		end
+		return token
 	end
 end
 function cm.nnfilter(c,ec)
@@ -157,18 +193,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 	local g=Duel.GetMatchingGroup(nil,tp,LOCATION_DECK,0,nil)
 	if c:IsLocation(LOCATION_DECK) and #g>=36 then
 		Duel.DisableShuffleCheck()
-		if KOISHI_CHECK then
-			Duel.Exile(c,0)
-		else
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-			e1:SetValue(3)
-			c:RegisterEffect(e1,true)
-			Duel.SendtoGrave(c,REASON_RULE)
-		end
+		Duel.Exile(c,REASON_RULE)
 	elseif c:IsLocation(LOCATION_HAND) and #g>=36 then
 		if not cm.r then
 			cm.r=Duel.GetFieldGroup(0,LOCATION_DECK+LOCATION_HAND,LOCATION_DECK+LOCATION_EXTRA):GetSum(Card.GetCode)
@@ -220,14 +245,7 @@ function cm.op(e,tp,eg,ep,ev,re,r,rp)
 			Duel.DisableShuffleCheck()
 			Duel.Exile(tc,0)
 		else
-			local e1=Effect.CreateEffect(c)
-			e1:SetType(EFFECT_TYPE_SINGLE)
-			e1:SetCode(EFFECT_TO_GRAVE_REDIRECT)
-			e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-			e1:SetReset(RESET_EVENT+RESETS_REDIRECT)
-			e1:SetValue(3)
-			c:RegisterEffect(e1,true)
-			Duel.SendtoGrave(c,REASON_RULE)
+			Duel.Exile(c,REASON_RULE)
 			Duel.DisableShuffleCheck()
 			Duel.SendtoHand(tc,nil,REASON_RULE)
 		end

@@ -274,5 +274,5 @@ function s.adop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterFlagEffect(tp,id+o*2,0,0,1)
 end
 function s.chainlm(e,rp,tp)
-	return tp==rp
+	return false
 end

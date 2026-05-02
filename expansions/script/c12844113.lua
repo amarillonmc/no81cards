@@ -66,7 +66,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.tdfilter(c)
-	return s.lkfilter(c) and c:IsAbleToExtra()
+	return c:IsSetCard(0xa77) and c:IsLevel(0) and c:IsAbleToExtra()
 end
 function s.tetg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_GRAVE,0,1,e:GetHandler()) end
@@ -75,7 +75,6 @@ function s.tetg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.teop(e,tp,eg,ep,ev,re,r,rp)
 	local sg=Duel.GetMatchingGroup(aux.NecroValleyFilter(s.tdfilter),tp,LOCATION_GRAVE,0,e:GetHandler())
-	if #sg<3 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(7984540,1))
 	local sc=sg:Select(tp,1,3,nil)
 	if #sc~=0 then
