@@ -191,7 +191,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		end
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_XMATERIAL)
-	local g1=Duel.SelectTarget(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,2-op,2-op,e:GetHandler(),e)
+	local g1=aux.SelectTargetFromFieldFirst(tp,cm.filter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,2-op,2-op,e:GetHandler(),e)
 	if op==0 then
 		e:SetCategory(CATEGORY_TOHAND)
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,1,0,0)

@@ -1,7 +1,6 @@
 --急袭猛禽-联合猎鹰
 --21.05.21
-local m=11451569
-local cm=_G["c"..m]
+local cm,m=GetID()
 function cm.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,aux.FilterBoolFunction(Card.IsRace,RACE_WINDBEAST),1,2,nil,nil,99)
@@ -46,7 +45,7 @@ function cm.operation(e,tp,eg,ep,ev,re,r,rp)
 	end
 	if ct>=3 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-		local g=Duel.SelectMatchingCard(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
+		local g=aux.SelectCardFromFieldFirst(tp,Card.IsAbleToHand,tp,LOCATION_ONFIELD+LOCATION_GRAVE,LOCATION_ONFIELD+LOCATION_GRAVE,1,1,nil)
 		if #g>0 then
 			if rflag then Duel.BreakEffect() end
 			Duel.SendtoHand(g,nil,REASON_EFFECT)
