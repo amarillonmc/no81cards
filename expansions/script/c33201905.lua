@@ -33,7 +33,7 @@ function s.initial_effect(c)
 	-- ②：因战斗·效果以外送去墓地的场合，丢弃1手卡炸卡并可能抽卡
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
-	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_DRAW)
+	e2:SetCategory(CATEGORY_DESTROY)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_TO_GRAVE)
@@ -250,37 +250,25 @@ function s.gycon(e,tp,eg,ep,ev,re,r,rp)
 	-- (这包含了作为代价解放、作为超量/连接/同调素材等情况)
 	return not c:IsReason(REASON_BATTLE) and not c:IsReason(REASON_EFFECT)
 end
+function s.cffilter(c)
+	return not c:IsPublic() and c:IsSetCard(0x5328)
+end
 function s.gycost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
-	local g=Duel.SelectMatchingCard(tp,Card.IsDiscardable,tp,LOCATION_HAND,0,1,1,nil)
-	
-	-- 在将卡丢弃前，检查它是否为「特诺奇」卡，并使用 Label 暂存结果
-	local tc=g:GetFirst()
-	if tc:IsSetCard(0x5328) then
-		e:SetLabel(1)
-	else
-		e:SetLabel(0)
-	end
-	Duel.SendtoGrave(g,REASON_COST+REASON_DISCARD)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
+	local g=Duel.SelectMatchingCard(tp,s.cffilter,tp,LOCATION_HAND,0,1,1,nil)
+	Duel.ConfirmCards(1-tp,g)
+	Duel.ShuffleHand(tp)
 end
 function s.gytg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(nil,tp,0,LOCATION_ONFIELD,1,nil) end
 	-- “选”表示不取对象
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,nil,1,1-tp,LOCATION_ONFIELD)
-	if e:GetLabel()==1 then
-		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
-	end
 end
 function s.gyop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	-- 选对方场上1张卡破坏
 	local g=Duel.SelectMatchingCard(tp,nil,tp,0,LOCATION_ONFIELD,1,1,nil)
-	if #g>0 and Duel.Destroy(g,REASON_EFFECT)>0 then
-		-- 破坏成功后，那之后：判断刚才当做Cost丢掉的卡是不是本家
-		if e:GetLabel()==1 and Duel.IsPlayerCanDraw(tp,1) then
-			Duel.BreakEffect() -- 由于是“那之后”，这里需要插入效果断点
-			Duel.Draw(tp,1,REASON_EFFECT)
-		end
+	if #g>0 then Duel.Destroy(g,REASON_EFFECT)>0 end
 	end
 end

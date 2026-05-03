@@ -32,7 +32,7 @@ function c9910539.initial_effect(c)
 	e5:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e5:SetType(EFFECT_TYPE_IGNITION)
 	e5:SetRange(LOCATION_SZONE)
-	e5:SetCountLimit(1,9910539)
+	e5:SetCountLimit(2)
 	e5:SetCost(c9910539.thcost)
 	e5:SetTarget(c9910539.thtg)
 	e5:SetOperation(c9910539.thop)
@@ -61,11 +61,11 @@ function c9910539.val(e,c)
 	return Duel.GetMatchingGroupCount(Card.IsFaceup,0,LOCATION_REMOVED,LOCATION_REMOVED,nil)*150
 end
 function c9910539.thcfilter(c,tp)
-	return c:IsSetCard(0xa950) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
+	return (c:IsSetCard(0xa950) or c:IsType(TYPE_RITUAL)) and c:IsType(TYPE_MONSTER) and c:IsAbleToRemoveAsCost()
 		and Duel.IsExistingMatchingCard(c9910539.thfilter,tp,LOCATION_DECK,0,1,nil,c:GetCode())
 end
 function c9910539.thfilter(c,code)
-	return c:IsSetCard(0xa950) and c:IsType(TYPE_MONSTER) and not c:IsCode(code) and c:IsAbleToHand()
+	return (c:IsSetCard(0xa950) or c:IsType(TYPE_RITUAL)) and c:IsType(TYPE_MONSTER) and not c:IsCode(code) and c:IsAbleToHand()
 end
 function c9910539.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c9910539.thcfilter,tp,LOCATION_GRAVE,0,1,nil,tp) end

@@ -22,14 +22,8 @@ function c9911523.initial_effect(c)
 	e3:SetOperation(c9911523.thop)
 	c:RegisterEffect(e3)
 end
-function c9911523.cfilter(c,tp)
-	local b1=not c:IsSetCard(0x5952)
-	local b2=Duel.IsExistingMatchingCard(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)
-		and Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)>1 and Duel.IsPlayerCanDraw(tp,1)
-	return c:IsDiscardable() and (b1 or b2)
-end
 function c9911523.cost(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(c9911523.cfilter,tp,LOCATION_HAND,0,e:GetHandler(),tp)
+	local g=Duel.GetMatchingGroup(Card.IsDiscardable,tp,LOCATION_HAND,0,e:GetHandler())
 	if chk==0 then return #g>0 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DISCARD)
 	local dg=g:Select(tp,1,1,nil)
@@ -46,10 +40,7 @@ function c9911523.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetLabel()==1 then
-		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK+CATEGORY_DRAW)
-		local g=Duel.GetMatchingGroup(Card.IsAbleToDeck,tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
-		Duel.SetOperationInfo(0,CATEGORY_TODECK,g,1,0,0)
-		Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
+		e:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK+CATEGORY_GRAVE_ACTION+CATEGORY_DRAW)
 	end
 end
 function c9911523.activate(e,tp,eg,ep,ev,re,r,rp)
@@ -58,17 +49,17 @@ function c9911523.activate(e,tp,eg,ep,ev,re,r,rp)
 	if g:GetCount()>0 and Duel.SendtoHand(g,nil,REASON_EFFECT)>0 and g:GetFirst():IsLocation(LOCATION_HAND) then
 		Duel.ConfirmCards(1-tp,g)
 		local tg=Duel.GetMatchingGroup(aux.NecroValleyFilter(Card.IsAbleToDeck),tp,LOCATION_GRAVE,LOCATION_GRAVE,nil)
-		if e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetLabel()==1 and #tg>0 then
+		if e:IsHasType(EFFECT_TYPE_ACTIVATE) and e:GetLabel()==1 and #tg>0 and Duel.SelectYesNo(tp,aux.Stringid(9911523,0)) then
+			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 			local sg=tg:Select(tp,1,1,nil)
-			Duel.BreakEffect()
 			Duel.HintSelection(sg)
 			local res=0
 			local tc=sg:GetFirst()
 			if tc:IsType(TYPE_FUSION+TYPE_SYNCHRO+TYPE_XYZ+TYPE_LINK) or Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then
 				res=Duel.SendtoDeck(tc,nil,SEQ_DECKTOP,REASON_EFFECT)
 			else
-				local opt=Duel.SelectOption(tp,aux.Stringid(9911523,0),aux.Stringid(9911523,1))
+				local opt=Duel.SelectOption(tp,aux.Stringid(9911523,1),aux.Stringid(9911523,2))
 				if opt==0 then
 					res=Duel.SendtoDeck(tc,nil,SEQ_DECKTOP,REASON_EFFECT)
 				else

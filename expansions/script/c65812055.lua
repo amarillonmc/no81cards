@@ -4,7 +4,7 @@ function s.initial_effect(c)
 	aux.AddCodeList(c,65812000)
 	--
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND)
+	e1:SetCategory(CATEGORY_SEARCH+CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION)
 	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetRange(LOCATION_HAND)
@@ -50,6 +50,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
+		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function s.shfilter(c)
 	return c:GetFlagEffect(65812040)>0
@@ -74,7 +75,7 @@ function s.tfop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.sfilter2(c)
-	return (aux.IsCodeListed(c,65812000) or c:IsCode(65812000)) and c:IsAbleToHand()
+	return (aux.IsCodeListed(c,65812000) or c:IsCode(65812000)) and c:IsAbleToHand() and c:IsFaceupEx()
 end
 function s.effop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)

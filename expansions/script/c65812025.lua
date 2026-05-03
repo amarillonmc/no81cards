@@ -32,10 +32,10 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SendtoGrave(c,REASON_COST+REASON_DISCARD)
 end
 function s.tffilter(c,tp)
-	return c:IsCode(65812000) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and c:IsType(TYPE_CONTINUOUS)
+	return c:IsCode(65812000) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and c:IsType(TYPE_CONTINUOUS) and c:IsFaceupEx()
 end
 function s.tffilter1(c,tp)
-	return c:IsCode(65812000) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and c:IsType(TYPE_FIELD)
+	return c:IsCode(65812000) and not c:IsForbidden() and c:CheckUniqueOnField(tp) and c:IsType(TYPE_FIELD) and c:IsFaceupEx()
 end
 function s.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0 and Duel.IsExistingMatchingCard(aux.NecroValleyFilter(s.tffilter),tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp) 

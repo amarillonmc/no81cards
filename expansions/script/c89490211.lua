@@ -25,7 +25,7 @@ function s.initial_effect(c)
 	e1:SetOperation(s.setop)
 	c:RegisterEffect(e1)
 	c:EnableReviveLimit()
-		if not s.global_check then
+	if not s.global_check then
 		s.global_check=true
 		local ge1=Effect.CreateEffect(c)
 		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)

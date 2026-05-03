@@ -1,0 +1,60 @@
+--泻湖秘教徒亚克罗斯
+function c87531055.initial_effect(c)
+	--xyz summon
+	aux.AddXyzProcedure(c,nil,4,2)
+	c:EnableReviveLimit()
+	--Pos Change
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_SET_POSITION)
+	e1:SetProperty(EFFECT_FLAG_SET_AVAILABLE)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e1:SetCondition(c87531055.atkcon)
+	e1:SetValue(POS_FACEUP_ATTACK+NO_FLIP_EFFECT)
+	c:RegisterEffect(e1)
+	--activate from hand
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(87531055,0))
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_TRAP_ACT_IN_HAND)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetTargetRange(LOCATION_HAND,0)
+	e2:SetCountLimit(1)
+	e2:SetCondition(c87531055.atkcon)
+	e2:SetValue(87531055)
+	c:RegisterEffect(e2)
+	--Pos Change
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_FIELD)
+	e3:SetCode(EFFECT_SET_POSITION)
+	e3:SetRange(LOCATION_MZONE)
+	e3:SetTarget(c87531055.target)
+	e3:SetCondition(c87531055.defcon)
+	e3:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
+	e3:SetValue(POS_FACEUP_DEFENSE)
+	c:RegisterEffect(e3)
+	--act limit
+	local e4=Effect.CreateEffect(c)
+	e4:SetType(EFFECT_TYPE_FIELD)
+	e4:SetCode(EFFECT_CANNOT_ACTIVATE)
+	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e4:SetRange(LOCATION_MZONE)
+	e4:SetTargetRange(1,1)
+	e4:SetCondition(c87531055.defcon)
+	e4:SetValue(c87531055.limval)
+	c:RegisterEffect(e4)
+end
+function c87531055.atkcon(e)
+	return e:GetHandler():IsAttackPos()
+end
+function c87531055.defcon(e)
+	return e:GetHandler():IsDefensePos()
+end
+function c87531055.target(e,c)
+	return c:IsLevelAbove(4) and c:IsFaceup()
+end
+function c87531055.limval(e,re,rp)
+	local rc=re:GetHandler()
+	return re:IsActiveType(TYPE_SPELL) and re:GetHandler():IsType(TYPE_FIELD+TYPE_CONTINUOUS+TYPE_EQUIP)
+end

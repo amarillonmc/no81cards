@@ -7,123 +7,104 @@ function c9910526.initial_effect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetRange(LOCATION_PZONE)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)
-	e1:SetTargetRange(0,LOCATION_MZONE)
-	e1:SetValue(c9910526.atkval)
+	e1:SetTargetRange(LOCATION_MZONE,0)
+	e1:SetValue(c9910526.atkval1)
 	c:RegisterEffect(e1)
-	--cardtarget
-	local e2=Effect.CreateEffect(c)
-	e2:SetDescription(aux.Stringid(9910526,0))
-	e2:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
-	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e2:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DELAY)
-	e2:SetRange(LOCATION_MZONE)
-	e2:SetCountLimit(1,9910526)
-	e2:SetCondition(c9910526.ctgcon)
-	e2:SetTarget(c9910526.ctgtg)
-	e2:SetOperation(c9910526.ctgop)
+	local e2=e1:Clone()
+	e2:SetTargetRange(0,LOCATION_MZONE)
+	e2:SetValue(c9910526.atkval2)
 	c:RegisterEffect(e2)
-	--Destroy
+	--spsummon
 	local e3=Effect.CreateEffect(c)
-	e3:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
-	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
-	e3:SetCode(EVENT_LEAVE_FIELD_P)
-	e3:SetOperation(c9910526.checkop)
+	e3:SetDescription(aux.Stringid(9910526,0))
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_DECKDES+CATEGORY_GRAVE_ACTION+CATEGORY_GRAVE_SPSUMMON)
+	e3:SetType(EFFECT_TYPE_IGNITION)
+	e3:SetRange(LOCATION_HAND+LOCATION_EXTRA)
+	e3:SetCountLimit(1,9910526)
+	e3:SetCost(c9910526.spcost)
+	e3:SetTarget(c9910526.sptg)
+	e3:SetOperation(c9910526.spop)
 	c:RegisterEffect(e3)
-	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
-	e4:SetCode(EVENT_LEAVE_FIELD)
-	e4:SetOperation(c9910526.desop)
-	e4:SetLabelObject(e3)
-	c:RegisterEffect(e4)
 	--remove
-	local e5=Effect.CreateEffect(c)
-	e5:SetCategory(CATEGORY_REMOVE)
-	e5:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
-	e5:SetCode(EVENT_RELEASE)
-	e5:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
-	e5:SetCountLimit(1,9910535)
-	e5:SetTarget(c9910526.rmtg)
-	e5:SetOperation(c9910526.rmop)
-	c:RegisterEffect(e5)
-	c9910526.tsukisome_release_effect=e5
+	local e4=Effect.CreateEffect(c)
+	e4:SetCategory(CATEGORY_REMOVE)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetCode(EVENT_RELEASE)
+	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e4:SetCountLimit(1,9910535)
+	e4:SetTarget(c9910526.rmtg)
+	e4:SetOperation(c9910526.rmop)
+	c:RegisterEffect(e4)
+	c9910526.tsukisome_release_effect=e4
 end
 function c9910526.atkfilter(c)
 	return c:IsFaceup() and c:IsSetCard(0xa950) and c:GetLevel()>0
 end
-function c9910526.atkval(e)
+function c9910526.atkval1(e)
 	local lg=Duel.GetMatchingGroup(c9910526.atkfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)
-	return lg:GetSum(Card.GetLevel)*-50
+	return lg:GetSum(Card.GetLevel)*50
 end
-function c9910526.ctgcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsSummonPlayer,1,e:GetHandler(),1-tp)
+function c9910526.atkval2(e)
+	local lg=Duel.GetMatchingGroup(c9910526.atkfilter,e:GetHandlerPlayer(),LOCATION_MZONE,0,nil)
+	return lg:GetSum(Card.GetLevel)*(-50)
 end
-function c9910526.ctgfilter(c,tg)
-	return c:IsFaceup() and (not tg or not tg:IsContains(c) or c:GetFlagEffect(9910535)==0)
+function c9910526.spfilter(c,tp)
+	return (c:IsSetCard(0xa950) or c:IsType(TYPE_RITUAL)) and c:IsType(TYPE_MONSTER) and Duel.GetMZoneCount(tp,c)>0
 end
-function c9910526.ctgtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+function c9910526.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.CheckReleaseGroupEx(tp,c9910526.spfilter,1,REASON_COST,true,e:GetHandler(),tp) end
+	local g=Duel.SelectReleaseGroupEx(tp,c9910526.spfilter,1,1,REASON_COST,true,e:GetHandler(),tp)
+	Duel.Release(g,REASON_COST)
+end
+function c9910526.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetHandler():IsCanBeSpecialSummoned(e,0,tp,false,false) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
+end
+function c9910526.filter(c,e,tp)
+	return c:IsSetCard(0xa950) and c:IsType(TYPE_PENDULUM)
+		and (c:IsAbleToHand() or (Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and c:IsCanBeSpecialSummoned(e,0,tp,false,false)))
+end
+function c9910526.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local tg=c:GetCardTarget()
-	if chkc then return chkc:IsOnField() and chkc:IsControler(1-tp) and c9910526.ctgfilter(chkc,tg) end
-	if chk==0 then return Duel.IsExistingTarget(c9910526.ctgfilter,tp,0,LOCATION_ONFIELD,1,nil,tg) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
-	local g=Duel.SelectTarget(tp,c9910526.ctgfilter,tp,0,LOCATION_ONFIELD,1,1,nil,tg)
-end
-function c9910526.ctgop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and tc:IsFaceup() and tc:IsRelateToEffect(e) then
-		c:SetCardTarget(tc)
-		local fid=c:GetFieldID()
-		c:RegisterFlagEffect(9910526,RESET_EVENT+RESETS_STANDARD,0,1,fid)
-		tc:RegisterFlagEffect(9910535,RESET_EVENT+RESETS_STANDARD,0,1,fid)
+	if not c:IsRelateToEffect(e) then return end
+	if Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)==0 then return end
+	local g=Duel.GetMatchingGroup(aux.NecroValleyFilter(c9910526.filter),tp,LOCATION_DECK+LOCATION_GRAVE,0,nil)
+	if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(9910526,1)) then
+		Duel.BreakEffect()
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+		local sg=g:Select(tp,1,1,nil)
+		local sc=sg:GetFirst()
+		local b1=sc:IsAbleToHand()
+		local b2=Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and sc:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		local op=0
+		if b1 and b2 then op=Duel.SelectOption(tp,1190,1152)
+		elseif b1 then op=0
+		else op=1 end
+		if op==0 then
+			Duel.SendtoHand(sc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,sc)
+		else
+			Duel.SpecialSummon(sc,0,tp,tp,false,false,POS_FACEUP)
+		end
 	end
-end
-function c9910526.checkop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsDisabled() and c:GetFlagEffectLabel(9910526) then
-		e:SetLabel(c:GetFlagEffectLabel(9910526))
-	else e:SetLabel(0) end
-end
-function c9910526.ctgfilter2(c,fid)
-	return c:IsOnField() and c:GetFlagEffectLabel(9910535)==fid
-end
-function c9910526.desop(e,tp,eg,ep,ev,re,r,rp)
-	local lab=e:GetLabelObject():GetLabel()
-	if lab==0 then return end
-	local g=e:GetHandler():GetCardTarget()
-	local tg=g:Filter(c9910526.ctgfilter2,nil,lab)
-	if tg:GetCount()>0 then
-		Duel.Destroy(tg,REASON_EFFECT)
-	end
-end
-function c9910526.rmfilter1(c)
-	return c:IsAbleToRemove() and c:IsSetCard(0xa950)
-end
-function c9910526.rmfilter2(c,g)
-	return c:IsAbleToRemove() and g:IsExists(Card.IsType,1,nil,c:GetOriginalType()&0x7)
 end
 function c9910526.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=Duel.GetMatchingGroup(c9910526.rmfilter1,tp,LOCATION_GRAVE,0,nil)
-	if chk==0 then return #g>1 and Duel.IsExistingMatchingCard(c9910526.rmfilter2,tp,0,LOCATION_ONFIELD,1,nil,g) end
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_ONFIELD)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,2,tp,LOCATION_GRAVE)
-end
-function c9910526.gcheck(g,type1)
-	return g:IsExists(Card.IsType,1,nil,type1)
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,1-tp,LOCATION_HAND+LOCATION_ONFIELD+LOCATION_GRAVE)
 end
 function c9910526.rmop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(c9910526.rmfilter1,tp,LOCATION_GRAVE,0,nil)
-	if #g<2 then return end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local sg1=Duel.SelectMatchingCard(tp,c9910526.rmfilter2,tp,0,LOCATION_ONFIELD,1,1,nil,g)
-	local tc=sg1:GetFirst()
-	if tc then
+	local g1=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_HAND,nil)
+	local g2=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD+LOCATION_GRAVE,nil)
+	local sg=Group.CreateGroup()
+	if #g1>0 and (#g2==0 or Duel.SelectOption(tp,aux.Stringid(9910526,2),aux.Stringid(9910526,3))==0) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-		local sg2=g:SelectSubGroup(tp,c9910526.gcheck,false,2,2,tc:GetOriginalType()&0x7)
-		if #sg2==2 then
-			sg1:Merge(sg2)
-			Duel.HintSelection(sg1)
-			Duel.Remove(sg1,POS_FACEUP,REASON_EFFECT)
-		end
+		sg=g1:RandomSelect(tp,1)
+	else
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		sg=g2:Select(tp,1,1,nil)
+	end
+	if #sg>0 then
+		Duel.HintSelection(sg)
+		Duel.Remove(sg,POS_FACEUP,REASON_EFFECT)
 	end
 end

@@ -23,9 +23,9 @@ function s.initial_effect(c)
 	c:RegisterEffect(e0)
 
 	local e4=Effect.CreateEffect(c)
-	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
 	e4:SetCode(EVENT_CUSTOM+id)
-	e4:SetProperty(EFFECT_FLAG_EVENT_PLAYER)
+	e4:SetProperty(EFFECT_FLAG_EVENT_PLAYER+EFFECT_FLAG_DELAY)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetTarget(s.efftg)
 	e4:SetOperation(s.effop)
@@ -124,6 +124,7 @@ function s.fusop(e,tp,eg,ep,ev,re,r,rp,gc,chkfnf)
 
 	-- 【核心 2】：主动一波流除外，替代原本的送墓操作
 	if Duel.Remove(sg, POS_FACEUP, REASON_EFFECT+REASON_MATERIAL+REASON_FUSION+REASON_TEMPORARY) > 0 then
+		local ct = #sg * 2
 		-- 【核心 1】：注册 EFFECT_SEND_REPLACE，完全拦截系统原生的素材移动
 		sg:ForEach(Card.RegisterFlagEffect, id, RESET_EVENT+RESETS_STANDARD+RESET_PHASE+PHASE_END, 0, 1)
 		local e_rep = Effect.CreateEffect(c)
@@ -144,7 +145,7 @@ function s.fusop(e,tp,eg,ep,ev,re,r,rp,gc,chkfnf)
 			for oc in aux.Next(og) do
 				oc:RegisterFlagEffect(id+1, RESET_EVENT+RESETS_STANDARD, 0, 1, fid)
 				-- Minimun mod start: adding client hint, setting initial display to "Count: 3"
-				oc:RegisterFlagEffect(id+2, RESET_EVENT+RESETS_STANDARD, EFFECT_FLAG_CLIENT_HINT, 1, 1, aux.Stringid(11451718, 7)) 
+				oc:RegisterFlagEffect(id+2, RESET_EVENT+RESETS_STANDARD, EFFECT_FLAG_CLIENT_HINT, 1, 4-ct, aux.Stringid(11451718, 10-ct)) 
 				-- Minimun mod end
 			end
 			og:KeepAlive()
