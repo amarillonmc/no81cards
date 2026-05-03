@@ -50,7 +50,7 @@ function s.cfilter(c)
 end
 
 function s.repfilter(c,tp)
-	return c:IsSetCard(0x3f50) and c:IsOnField() and c:IsControler(tp)
+	return c:IsSetCard(0x3f50) and c:IsOnField() and c:IsControler(tp) and c:IsFaceup()
 		and c:IsReason(REASON_BATTLE+REASON_EFFECT) and not c:IsReason(REASON_REPLACE)
 end
 

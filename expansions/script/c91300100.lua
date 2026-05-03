@@ -69,6 +69,7 @@ function s.topop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
 		sc=g:Select(tp,1,1,nil):GetFirst()
 	end
+	if not sc then return end
 	Duel.MoveToField(sc,tp,tp,LOCATION_PZONE,POS_FACEUP,true)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)

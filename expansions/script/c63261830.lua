@@ -2,7 +2,7 @@
 function c63261830.initial_effect(c)
 	--synchro summon
 	c:EnableReviveLimit()
-	aux.AddSynchroMixProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x37),nil,nil,aux.NonTuner(nil),1,99)
+	aux.AddSynchroProcedure(c,aux.FilterBoolFunction(Card.IsSetCard,0x37),aux.NonTuner(nil),1)
 	--ritual
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
