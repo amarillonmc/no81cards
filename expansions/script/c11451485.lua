@@ -212,11 +212,13 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		local sg=g:SelectSubGroup(tp,aux.dncheck,false,2,2)
 		Duel.ConfirmCards(1-tp,sg)
 		Duel.Hint(HINT_SELECTMSG,1-tp,HINTMSG_ATOHAND)
-		local tg=sg:RandomSelect(1-tp,1,1,nil)
-		sg:Sub(tg)
-		Duel.SendtoHand(tg,nil,REASON_EFFECT)
+		local tc=sg:RandomSelect(1-tp,1,1,nil):GetFirst()
+		sg:RemoveCard(tc)
+		if tc:IsAbleToHand() then
+			tc:SetStatus(STATUS_TO_HAND_WITHOUT_CONFIRM,true)
+			Duel.SendtoHand(tc,nil,REASON_EFFECT)
+		end
 		if e:GetHandler():IsRelateToEffect(e) then Duel.Overlay(e:GetHandler(),sg) end
-		Duel.ConfirmCards(1-tp,tg)
 	elseif #g>0 and op==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local tg=g:Select(tp,1,1,nil)
