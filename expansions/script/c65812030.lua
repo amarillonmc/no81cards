@@ -55,8 +55,8 @@ end
 function s.shfilter(c)
 	return c:GetFlagEffect(65812010)>0
 end
-function s.tffilter(c,e,tp)
-	return Duel.GetMZoneCount(tp,c)>0 and (aux.IsCodeListed(c,65812000) or c:IsCode(65812000))
+function s.tffilter(c,tp)
+	return Duel.GetMZoneCount(tp,c)>0 and (aux.IsCodeListed(c,65812000) or c:IsCode(65812000)) and c:IsFaceupEx()
 end
 function s.tftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
