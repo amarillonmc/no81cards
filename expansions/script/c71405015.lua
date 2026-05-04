@@ -61,7 +61,7 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
 end
 --①
 function s.con1(e,tp,eg,ep,ev,re,r,rp)
-	return rp==1-tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsChainDisablable(ev)
+	return rp==1-tp and Duel.IsChainDisablable(ev)
 end
 function s.filter1(c)
 	return c:IsSetCard(0x716) and c:IsAbleToRemove()
@@ -88,8 +88,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 end
 --②
 function s.con2(e,tp,eg,ep,ev,re,r,rp)
-	return Duel.GetFlagEffect(0,id)>0
-		and rp==1-tp and re:IsHasType(EFFECT_TYPE_ACTIVATE) and Duel.IsChainDisablable(ev)
+	return Duel.GetFlagEffect(0,id)>0 and rp==1-tp and Duel.IsChainDisablable(ev)
 end
 function s.cost2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return yume.prism.checkCounter(tp) and e:GetHandler():IsAbleToDeckAsCost() end
