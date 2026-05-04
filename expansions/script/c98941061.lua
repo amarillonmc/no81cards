@@ -1,4 +1,5 @@
 --兽带斗神“达人”天樽二
+local s,id,o=GetID()
 function c98941061.initial_effect(c)
 	--xyz summon
 	aux.AddXyzProcedure(c,nil,8,2)
@@ -12,6 +13,7 @@ function c98941061.initial_effect(c)
 	e1:SetCost(c98941061.spcost)
 	e1:SetTarget(c98941061.sptg)
 	e1:SetOperation(c98941061.spop)
+	--Duel.AddCustomActivityCounter(98941061,ACTIVITY_CHAIN,c98941061.chainfilter)
 	local e33=Effect.CreateEffect(c)
 	e33:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
 	e33:SetRange(LOCATION_EXTRA)
@@ -66,10 +68,30 @@ function c98941061.initial_effect(c)
 	e7:SetValue(700)
 	e7:SetCondition(c98941061.atkcon)
 	c:RegisterEffect(e7)
+	if not s.global_check then
+		s.global_check=true
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+		ge1:SetCode(EVENT_CHAINING)
+		ge1:SetOperation(s.regop)
+		Duel.RegisterEffect(ge1,0)
+	end
+end
+function s.regop(e,tp,eg,ep,ev,re,r,rp)
+	local loc=Duel.GetChainInfo(ev,CHAININFO_TRIGGERING_LOCATION)
+	if loc==LOCATION_HAND then
+		local code=re:GetHandler():GetCode()
+		-- 加上 id 防止与其他 flag 冲突
+		Duel.RegisterFlagEffect(rp,code+id,RESET_PHASE+PHASE_END,0,1)
+	end
 end
 function c98941061.atkcon(e,tp,eg,ep,ev,re,r,rp)
 	local ec=e:GetHandler():GetEquipTarget()
 	return ec and ec:IsSetCard(0x179)
+end
+function c98941061.chainfilter(re,tp,cid)
+	local attr=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_ATTRIBUTE)
+	return not (re:IsActiveType(TYPE_MONSTER) and attr&(ATTRIBUTE_ALL&~ATTRIBUTE_LIGHT)~=0)
 end
 function c98941061.eftg(e,c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x179) and c:GetEquipGroup():IsContains(e:GetHandler())
@@ -81,7 +103,7 @@ function c98941061.costfilter(c,tp)
 	return c:IsCode(98941061)
 end
 function c98941061.spcost(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(c98941061.costfilter,tp,LOCATION_EXTRA,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
+	if chk==0 then return Duel.GetFlagEffect(tp,e:GetHandler():GetCode()+id)==0 and Duel.IsExistingMatchingCard(c98941061.costfilter,tp,LOCATION_EXTRA,0,1,nil) and Duel.IsExistingMatchingCard(Card.IsDiscardable,tp,LOCATION_HAND,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_CONFIRM)
 	local g=Duel.GetMatchingGroup(c98941061.costfilter,tp,LOCATION_EXTRA,0,nil,tp)
 	Duel.ConfirmCards(1-tp,g:GetFirst())

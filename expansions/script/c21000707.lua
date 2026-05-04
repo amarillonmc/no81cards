@@ -80,19 +80,19 @@ function s.prop(e,tp,eg,ep,ev,re,r,rp)
 	
 	if not flag then
 		ca = Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.filter2),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil):GetFirst()
-		c:CancelToGrave(false)
 	end
 	
 	if not flag2 then
 		ca = c
+		c:CancelToGrave(false)
 	end
 	
 	if flag and flag2 then
 		if Duel.SelectYesNo(tp,aux.Stringid(id,2)) then
 			ca = c
+			c:CancelToGrave(false)
 		else
 			ca = Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.filter2),tp,LOCATION_DECK+LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil):GetFirst()
-			c:CancelToGrave(false)
 		end
 	end
 	local tc=Duel.GetFirstTarget()
@@ -135,7 +135,6 @@ function s.prop(e,tp,eg,ep,ev,re,r,rp)
 		e20:SetReset(RESET_EVENT+RESETS_STANDARD)
 		ca:RegisterEffect(e20)
 	else
-		c:CancelToGrave(false)
 	end
 end
 

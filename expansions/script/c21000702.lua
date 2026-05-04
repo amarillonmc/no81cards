@@ -81,7 +81,7 @@ function s.con(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsReason(REASON_BATTLE) or (c:GetReasonPlayer()==1-tp and c:IsReason(REASON_EFFECT))
 end
 function s.filter(c,e,tp)
-	return c:IsSetCard(0x603) and c:IsAbleToRemove()
+	return c:IsSetCard(0x603) and c:IsAbleToRemove() and c:IsType(TYPE_MONSTER)
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) end

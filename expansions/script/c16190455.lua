@@ -23,29 +23,32 @@ function s.initial_effect(c)
 	e2:SetCost(s.actcost)
 	c:RegisterEffect(e2)        
 end
-function s.thfilter(c)
-	return c:IsFaceup() and c:IsCode(16170120) and c:IsAbleToHand()
+function s.thfilter(c,e,tp)
+	local b1=c:IsFaceup() and c:IsCode(16170120) and c:IsAbleToHand() and c:IsControler(tp)
+    local b2=c:IsControler(1-tp)
+	return c:IsCanBeEffectTarget(e) and (b1 or b2)
+end
+function s.fselect(g,tp)
+	return g:FilterCount(Card.IsControler,nil,tp)==1 and g:FilterCount(Card.IsControler,nil,1-tp)<=2
+    	and g:GetCount()>1
 end
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	local tg=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_MZONE,LOCATION_ONFIELD,nil,e,tp)
 	if chkc then return false end
-	if chk==0 then return Duel.IsExistingTarget(s.thfilter,tp,LOCATION_MZONE,0,1,nil)
-		and Duel.IsExistingTarget(nil,tp,0,LOCATION_ONFIELD,1,nil) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_RTOHAND)
-	local g1=Duel.SelectTarget(tp,s.thfilter,tp,LOCATION_MZONE,0,1,1,nil)
-    e:SetLabelObject(g1:GetFirst())
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g2=Duel.SelectTarget(tp,nil,tp,0,LOCATION_ONFIELD,1,2,nil)
-    Duel.SetOperationInfo(0,CATEGORY_TOHAND,g1,g1:GetCount(),0,0)
-	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g2,g2:GetCount(),0,0)
-    local g=Group.FromCards(g1:GetFirst(),g2:GetFirst())
-    g:KeepAlive()
-	Duel.SetChainLimit(s.limit(g))
+	if chk==0 then return tg:CheckSubGroup(s.fselect,2,3,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
+	local sg=tg:SelectSubGroup(tp,s.fselect,false,2,3,tp)
+    Duel.SetTargetCard(sg)
+    Duel.SetOperationInfo(0,CATEGORY_TOHAND,sg,sg:FilterCount(Card.IsControler,nil,tp),0,0)
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,sg,sg:FilterCount(Card.IsControler,nil,1-tp),0,0)
+    sg:KeepAlive()
+	Duel.SetChainLimit(s.limit(sg))
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
 	e1:SetCode(RESET_CHAIN)
 	e1:SetCountLimit(1)
-	e1:SetLabelObject(g)
+	e1:SetLabelObject(sg)
 	e1:SetOperation(s.retop)
 	e1:SetReset(RESET_CHAIN)
 	Duel.RegisterEffect(e1,tp)
@@ -62,19 +65,20 @@ function s.spfilter(c,e,tp)
 	return c:IsCode(16170120) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
-	local tc=e:GetLabelObject()
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
-    local dg=g:Filter(Card.IsControler,nil,1-tp)
-    if tc:IsRelateToEffect(e) and tc:IsControler(tp) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND)
-    	and dg:GetCount()>0 and dg:FilterCount(Card.IsRelateToEffect,nil,e)>0 and Duel.Destroy(dg,REASON_EFFECT)~=0 
-        and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
-		and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then 
-    	Duel.ShuffleHand(tp)
-		Duel.BreakEffect()
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-		local sg=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
-        if sg:GetCount()==0 then return end
-		Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+    local tc=g:Filter(Card.IsControler,nil,tp):GetFirst()
+    if tc and tc:IsRelateToEffect(e) and tc:IsControler(tp) and Duel.SendtoHand(tc,nil,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_HAND) then
+    	g:RemoveCard(tc)
+        local dg=g:Filter(Card.IsControler,nil,1-tp)
+    	if dg:GetCount()>0 and Duel.Destroy(dg,REASON_EFFECT)~=0 and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_HAND,0,1,nil,e,tp)
+			and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 and Duel.SelectYesNo(tp,aux.Stringid(id,1)) then 
+    		Duel.ShuffleHand(tp)
+			Duel.BreakEffect()
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+			local sg=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
+        	if sg:GetCount()==0 then return end
+			Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
+        end    
 	end
 end
 function s.costfilter(c)

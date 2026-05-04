@@ -43,7 +43,7 @@ function s.initial_effect(c)
 
 	local e0=Effect.CreateEffect(c)
 	e0:SetDescription(aux.Stringid(id,1))
-	e0:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e0:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_SEARCH)
 	e0:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e0:SetType(EFFECT_TYPE_QUICK_O)
 	e0:SetCode(EVENT_FREE_CHAIN)
@@ -120,7 +120,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 		and Duel.IsExistingMatchingCard(s.filter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local g1=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil,tp)
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,0,0)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND+LOCATION_DECK+LOCATION_GRAVE)
 end
 function s.prop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
