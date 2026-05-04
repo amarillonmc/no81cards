@@ -118,7 +118,7 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	local g=Duel.GetMatchingGroup(cm.spfilter,tp,LOCATION_MZONE+LOCATION_GRAVE,0,nil,c,tp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 	local tc=g:SelectUnselect(nil,tp,false,true,1,1)
-	if tc then
+	if tc and aux.GetValueType(tc)=="Card" then
 		e:SetLabelObject(tc)
 		return true
 	else return false end
