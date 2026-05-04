@@ -47,7 +47,7 @@ function s.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_GRANT)
 	e0:SetRange(LOCATION_PZONE)
 	e0:SetTargetRange(LOCATION_HAND,0)
-	e0:SetCondition(c6100416.efcon)
+	e0:SetCondition(s.efcon)
 	e0:SetTarget(aux.TargetBoolFunction(Card.IsType,TYPE_SPELL))
 	e0:SetLabelObject(ge0)
 	c:RegisterEffect(e0)
@@ -153,37 +153,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	e:GetHandler():RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,0,1)
 end
 
-function s.adjustop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
-	if not c:IsLocation(LOCATION_PZONE) then return end
-	if c:GetFlagEffect(id)>0 then
-	local g=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND,0,nil,TYPE_SPELL)
-	for tc in aux.Next(g) do
-
-		if not tc:IsHasEffect(id) then
-			local sp=Effect.CreateEffect(c)
-			sp:SetDescription(aux.Stringid(id,2))
-			sp:SetType(EFFECT_TYPE_FIELD)
-			sp:SetCode(EFFECT_SPSUMMON_PROC_G)
-			sp:SetProperty(EFFECT_FLAG_UNCOPYABLE+EFFECT_FLAG_CANNOT_DISABLE)
-			sp:SetRange(LOCATION_HAND)
-			sp:SetCondition(s.spell_spcon)
-			sp:SetOperation(s.spell_spop)
-			sp:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(sp)
-			
-			local marker=Effect.CreateEffect(c)
-			marker:SetType(EFFECT_TYPE_SINGLE)
-			marker:SetCode(id)
-			marker:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-			marker:SetReset(RESET_EVENT+RESETS_STANDARD)
-			tc:RegisterEffect(marker)
-		end
-		end
-	end
-end
-
-function c6100416.efcon(e)
+function s.efcon(e)
 	return e:GetHandler():GetFlagEffect(id)~=0
 end
 
