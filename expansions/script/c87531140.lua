@@ -60,7 +60,7 @@ function s.limitop(e,tp,eg,ep,ev,re,r,rp)
 			e2:SetReset(RESET_PHASE+PHASE_MAIN1+RESET_SELF_TURN)
 			Duel.RegisterFlagEffect(tp,id+o,RESET_PHASE+PHASE_MAIN1+RESET_SELF_TURN,0,1)
 		end 
-		Duel.RegisterEffect(e2,tp)	 
+		Duel.RegisterEffect(e2,tp)   
 	end
 end
 function s.cfilter(c,tp)
@@ -71,7 +71,7 @@ function s.tgcon(e,tp,eg,ep,ev,re,r,rp)
 end
 function s.tgop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
-	local g=eg:Filter(s.cfilter,nil)
+	local g=eg:Filter(s.cfilter,nil,tp)
 	for tc in aux.Next(g) do tc:RegisterFlagEffect(87531140,RESET_EVENT+RESETS_STANDARD,0,1) end
 	Duel.SendtoGrave(g,REASON_EFFECT)
 end
