@@ -53,7 +53,7 @@ function cm.initial_effect(c)
 	local e4_1=e4:Clone()
 	e4_1:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e4_1)
-	cm.summon_effect=e4   
+	cm.speffect=e4   
 	--
 
 	local e6=Effect.CreateEffect(c)

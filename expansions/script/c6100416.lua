@@ -199,7 +199,7 @@ function s.spell_spop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
 	if Card.SetCardData then KOISHI_CHECK=true end
 	-- 将魔法卡属性转换为怪兽（通常怪兽·魔法师族·光·3星·攻/守0），由于包含了 TYPE_SPELL，它登场后“也当作魔法卡使用”
 	if KOISHI_CHECK then
-		c:RegisterFlagEffect(id,0,0,1,tc:GetOriginalType())
+		c:RegisterFlagEffect(id,0,0,1,c:GetOriginalType())
 		c:SetCardData(CARDDATA_TYPE,TYPE_NORMAL+TYPE_MONSTER+TYPE_SPELL)
 	end
 	c:AddMonsterAttribute(TYPE_NORMAL+TYPE_SPELL,ATTRIBUTE_LIGHT,RACE_SPELLCASTER,3,0,0)

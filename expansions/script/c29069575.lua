@@ -14,7 +14,7 @@ function c29069575.initial_effect(c)
 	e1:SetTarget(c29069575.srtg)
 	e1:SetOperation(c29069575.srop)
 	c:RegisterEffect(e1)
-	c29069575.summon_effect=e1  
+	c29069575.speffect=e1  
 	--remove
 	local e4=Effect.CreateEffect(c)
 	e4:SetCategory(CATEGORY_REMOVE)

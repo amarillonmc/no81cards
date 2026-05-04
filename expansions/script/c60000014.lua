@@ -32,7 +32,7 @@ end
 function c60000014.drop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)==0 then return end
-	local tc=Duel.GetDecktopGroup(tp,1)
+	local tc=Duel.GetDecktopGroup(tp,1):GetFirst()
 	if Duel.SendtoGrave(tc,REASON_EFFECT)~=0 and tc:IsLocation(LOCATION_GRAVE) and tc:IsSetCard(0xee) then
 		if Duel.GetFieldGroupCount(tp,0,LOCATION_DECK)~=0 and Duel.SelectYesNo(tp,aux.Stringid(60000014,1)) then
 			Duel.ConfirmCards(tp,Duel.GetDecktopGroup(1-tp,1))

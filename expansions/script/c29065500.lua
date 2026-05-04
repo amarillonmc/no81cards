@@ -24,7 +24,7 @@ function c29065500.initial_effect(c)
 	local e3=e1:Clone()
 	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e3)
-	c29065500.summon_effect=e1   
+	c29065500.speffect=e1   
 	--fdcd
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_IGNITION)

@@ -16,7 +16,7 @@ function c29056009.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e2)
-	c29056009.summon_effect=e1 
+	c29056009.speffect=e1 
 	--chenweiduixiang sp
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(29056009,1))

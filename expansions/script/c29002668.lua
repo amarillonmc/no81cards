@@ -15,6 +15,7 @@ function s.initial_effect(c)
 	local e2=e1:Clone()
 	e2:SetCode(EVENT_SUMMON_SUCCESS)
 	c:RegisterEffect(e2)
+	s.speffect=e1 
 	--synchro effect
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))

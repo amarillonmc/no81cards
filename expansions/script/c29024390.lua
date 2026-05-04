@@ -15,6 +15,7 @@ function c29024390.initial_effect(c)
 	local e4=e3:Clone()
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
 	c:RegisterEffect(e4)
+	c29024390.speffect=e3 
 	--special summon other monsters
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(55273560,0))
