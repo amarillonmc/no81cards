@@ -57,8 +57,8 @@ function c19209933.cfop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,p,HINTMSG_SPSUMMON)
 			sg=sg:Select(p,1,1,nil)
 		end
-		if Duel.GetMZoneCount(p)>0 then local sc=sg:GetFirst() end
-		if sc and Duel.SpecialSummonStep(sc,0,p,p,false,false,POS_FACEUP) then
+		local sc=sg:GetFirst()
+		if Duel.GetMZoneCount(p)>0 and sc and Duel.SpecialSummonStep(sc,0,p,p,false,false,POS_FACEUP) then
 			local e1=Effect.CreateEffect(e:GetHandler())
 			e1:SetType(EFFECT_TYPE_SINGLE)
 			e1:SetCode(EFFECT_DISABLE)
