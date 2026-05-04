@@ -4,7 +4,7 @@ function s.initial_effect(c)
 	aux.AddCodeList(c,75643010)
 	--fusion
 	c:EnableReviveLimit()
-	aux.AddFusionProcCodeFun(c,75643000,aux.FilterBoolFunction(Card.IsFusionType,TYPE_XYZ),2,true,true)
+	aux.AddFusionProcCodeFun(c,75643000,aux.FilterBoolFunction(Card.IsFusionType,TYPE_XYZ),3,true,true)
 	aux.AddContactFusionProcedure(c,aux.FilterBoolFunction(Card.IsReleasable,REASON_SPSUMMON),LOCATION_MZONE+LOCATION_HAND,0,Duel.Release,REASON_SPSUMMON+REASON_MATERIAL)
 	--change name
 	aux.EnableChangeCode(c,75643000,LOCATION_MZONE+LOCATION_GRAVE)
@@ -67,8 +67,8 @@ end
 function s.retg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	Duel.SetTargetPlayer(tp)
-	Duel.SetTargetParam(2000)
-	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,2000)
+	Duel.SetTargetParam(3000)
+	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,3000)
 end
 function s.reop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)
