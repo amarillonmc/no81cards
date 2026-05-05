@@ -33,7 +33,7 @@ function c22348155.stcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK)
 end
 function c22348155.stfilter(c,tp)
-	return c:IsCode(22348156) and c:GetActivateEffect():IsActivatable(tp)
+	return c:IsCode(22348156) and c:GetActivateEffect():IsActivatable(tp,true,true)
 end
 function c22348155.sttg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c22348155.stfilter,tp,LOCATION_DECK,0,1,nil,tp) end

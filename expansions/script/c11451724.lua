@@ -208,7 +208,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 	local b2=seq<4 and Duel.CheckLocation(tp,LOCATION_MZONE,seq+1)
 	local b3=(seq==5 and Duel.CheckLocation(tp,LOCATION_MZONE,1)) or (seq==6 and Duel.CheckLocation(tp,LOCATION_MZONE,3))
 	local b4=(seq==1 and Duel.CheckLocation(tp,LOCATION_MZONE,5)) or (seq==3 and Duel.CheckLocation(tp,LOCATION_MZONE,6))
-	local q2=bool and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)+Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)>0Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)>0
+	local q2=bool and Duel.GetLocationCount(tp,LOCATION_MZONE,PLAYER_NONE,0)+Duel.GetLocationCount(1-tp,LOCATION_MZONE,PLAYER_NONE,0)>0
 	local g=Duel.GetMatchingGroup(cm.nfilter,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil,c,tp,false)
 	local q1=#g>0
 	if not q1 and not q2 then return end
@@ -306,7 +306,7 @@ function cm.mop(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
 			local tc=g:Select(tp,1,1,nil):GetFirst()
-			if tc and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then Duel.SendtoHand(tc,nil,REASON_EFFECT) elseif tc then Duel.Destroy(tc,REASON_EFFECT) end
+			if tc and tc:IsAbleToHand() and Duel.SelectYesNo(tp,aux.Stringid(m,3)) then Duel.SendtoHand(tc,nil,REASON_EFFECT) elseif tc then Duel.Destroy(tc,REASON_EFFECT) end
 		end
 	end
 end
