@@ -40,9 +40,9 @@ function c9910213.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc,exc,cpchk)
 	if op==1 then
 		if e:IsCostChecked() then
 			e:SetCategory(CATEGORY_RECOVER+CATEGORY_SEARCH+CATEGORY_TOHAND)
-			e:SetProperty(0)
 			Duel.RegisterFlagEffect(tp,9910213,RESET_PHASE+PHASE_END,0,1)
 		end
+		e:SetProperty(0)
 		e:SetOperation(c9910213.activate)
 		Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,1000)
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
@@ -53,9 +53,9 @@ function c9910213.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc,exc,cpchk)
 		end
 		if e:IsCostChecked() then
 			e:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_TOHAND+CATEGORY_GRAVE_ACTION+CATEGORY_GRAVE_SPSUMMON)
-			e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 			Duel.RegisterFlagEffect(tp,9910595,RESET_PHASE+PHASE_END,0,1)
 		end
+		e:SetProperty(EFFECT_FLAG_CARD_TARGET)
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 		local g=Duel.SelectTarget(tp,c9910213.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
 		e:SetOperation(c9910213.activate2)
