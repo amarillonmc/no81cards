@@ -28,7 +28,7 @@ function s.initial_effect(c)
 	--①：选墓地·除外返回卡组并检索
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
-	e2:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_GRAVE_ACTION)
+	e2:SetCategory(CATEGORY_TODECK+CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_IGNITION)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -61,13 +61,13 @@ end
 -- 先选出必须包含的通常龙族怪兽
 function s.cfilter1(c,tp,fc)
 	return c:IsRace(RACE_DRAGON) and c:IsType(TYPE_NORMAL) and c:IsAbleToRemoveAsCost()
-		and Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,c,tp,c,fc)
+		and Duel.IsExistingMatchingCard(s.cfilter2,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,c,tp,c,fc)
 end
 -- 再验证另一只龙族怪兽，且两者至少有其一在场上
 function s.cfilter2(c,tp,mc,fc)
 	if not (c:IsRace(RACE_DRAGON) and c:IsAbleToRemoveAsCost()) then return false end
 	-- 包含自己场上的卡
-	if not (c:IsLocation(LOCATION_ONFIELD) or mc:IsLocation(LOCATION_ONFIELD)) then return false end
+	if not (c:IsLocation(LOCATION_MZONE) or mc:IsLocation(LOCATION_MZONE)) then return false end
 	local g=Group.FromCards(c,mc)
 	return Duel.GetLocationCountFromEx(tp,tp,g,fc)>0
 end
@@ -75,17 +75,17 @@ end
 function s.sprcon(e,c)
 	if c==nil then return true end
 	local tp=c:GetControler()
-	return Duel.IsExistingMatchingCard(s.cfilter1,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil,tp,c)
+	return Duel.IsExistingMatchingCard(s.cfilter1,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,nil,tp,c)
 end
 
 function s.sprtg(e,tp,eg,ep,ev,re,r,rp,chk,c)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g1=Duel.SelectMatchingCard(tp,s.cfilter1,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil,tp,c)
+	local g1=Duel.SelectMatchingCard(tp,s.cfilter1,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,nil,tp,c)
 	if #g1==0 then return false end
 	local mc=g1:GetFirst()
 	
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g2=Duel.SelectMatchingCard(tp,s.cfilter2,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,mc,tp,mc,c)
+	local g2=Duel.SelectMatchingCard(tp,s.cfilter2,tp,LOCATION_MZONE+LOCATION_GRAVE,0,1,1,mc,tp,mc,c)
 	g1:Merge(g2)
 	g1:KeepAlive()
 	e:SetLabelObject(g1)
@@ -111,7 +111,7 @@ end
 
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return chkc:IsLocation(LOCATION_REMOVED+LOCATION_GRAVE) and chkc:IsControler(tp) and s.tdfilter(chkc) end
-	if chk==0 then return Duel.IsExistingTarget(s.tdfilter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,nil) and Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
+	if chk==0 then return Duel.IsExistingTarget(s.tdfilter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,1,nil) end
 	local g=Duel.GetMatchingGroup(s.tdfilter,tp,LOCATION_REMOVED+LOCATION_GRAVE,0,nil):Filter(Card.IsCanBeEffectTarget,nil,e)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local tg=g:SelectSubGroup(tp,aux.dncheck,false,1,g:GetCount())

@@ -158,13 +158,14 @@ function s.efcon(e)
 end
 
 function s.spell_spcon(e,c,og)
-	if c==nil then return true end
-	local tp=c:GetControler()
-	return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),0,TYPE_NORMAL+TYPE_MONSTER+TYPE_SPELL,0,0,3,RACE_SPELLCASTER,ATTRIBUTE_LIGHT)--setcard
+    if c==nil then return true end
+    local tp=c:GetControler()
+    return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+        and Duel.IsPlayerCanSpecialSummonMonster(tp,c:GetCode(),0,TYPE_NORMAL+TYPE_MONSTER+TYPE_SPELL,0,0,3,RACE_SPELLCASTER,ATTRIBUTE_LIGHT)--setcard
 end
 
 function s.spell_spop(e,tp,eg,ep,ev,re,r,rp,c,sg,og)
+  sg:AddCard(c)
 	local KOISHI_CHECK=false
 	if Card.SetCardData then KOISHI_CHECK=true end
 	-- 将魔法卡属性转换为怪兽（通常怪兽·魔法师族·光·3星·攻/守0），由于包含了 TYPE_SPELL，它登场后“也当作魔法卡使用”
