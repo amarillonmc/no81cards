@@ -41,6 +41,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 		if #sg>0 then
 			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 			Duel.ConfirmCards(1-tp,sg)
+			Duel.ShuffleHand(tp)
 		end
 	end
 end

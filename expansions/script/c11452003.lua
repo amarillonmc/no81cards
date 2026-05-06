@@ -48,7 +48,7 @@ end
 function s.CheckGroup(sg)
 	if sg:GetCount() < 2 then return false end
 	-- YGOPro自带的二分图匹配算法，完美验证每个怪兽能否对应不同的属性
-	return sg:GetClassCount(Card.GetFusionAttribute)>=2
+	return sg:GetClassCount(Card.GetFusionAttribute)==#sg
 end
 
 function s.CheckRecursive(mg, sg, cards, idx, minc, maxc)

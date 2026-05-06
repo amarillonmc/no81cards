@@ -27,7 +27,7 @@ function c67200991.initial_effect(c)
 	c:RegisterEffect(e1)   
 end
 function c67200991.filter(c)
-	return c:IsSetCard(0xc67a) and not c:IsCode(67200991) and c:IsAbleToHand() and IsType(TYPE_PENDULUM)
+	return c:IsSetCard(0xc67a) and not c:IsCode(67200991) and c:IsAbleToHand() and c:IsType(TYPE_PENDULUM)
 end
 function c67200991.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c67200991.filter,tp,LOCATION_DECK,0,1,nil) end
