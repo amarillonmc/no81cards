@@ -31,6 +31,7 @@ function c98920031.initial_effect(c)
 	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e4:SetProperty(EFFECT_FLAG_DELAY)
 	e4:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetCondition(c98920031.descon)
 	e4:SetTarget(c98920031.destg)
 	e4:SetOperation(c98920031.desop)
 	c:RegisterEffect(e4)
@@ -61,6 +62,9 @@ function c98920031.rscost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsDiscardable() end
 	Duel.SendtoGrave(e:GetHandler(),REASON_COST+REASON_DISCARD)
 end
+function c98920031.descon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsSummonType(SUMMON_TYPE_RITUAL)
+end
 function c98920031.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
 	local g=Duel.GetFieldGroup(tp,0,LOCATION_ONFIELD)
@@ -82,6 +86,6 @@ function c98920031.desop(e,tp,eg,ep,ev,re,r,rp)
 		e1:SetCode(EFFECT_CANNOT_BP)
 		e1:SetTargetRange(1,0)
 		e1:SetReset(RESET_PHASE+PHASE_END)
-		Duel.RegisterEffect(e1,turnp)			 
-	end	
+		Duel.RegisterEffect(e1,turnp)			
+	end 
 end

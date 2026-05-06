@@ -80,7 +80,7 @@ function c24501025.regop(e,tp,eg,ep,ev,re,r,rp)
 	e2:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetValue(c24501025.efilter)
-	e2:SetReset(+RESET_EVENT+RESETS_STANDARDRESET_PHASE+PHASE_END+RESET_SELF_TURN,ct)
+	e2:SetReset(RESET_EVENT+RESETS_STANDARDRESET_PHASE+PHASE_END+RESET_SELF_TURN,ct)
 	e:GetHandler():RegisterEffect(e2)
 end
 function c24501025.aclimit(e,re,tp)

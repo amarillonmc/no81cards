@@ -83,7 +83,7 @@ function cm.cvop2(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function cm.filter(c,e,re)
+function cm.filter(e,re)
 	return e:GetOwnerPlayer()~=re:GetOwnerPlayer() and re:IsActivated()
 end
 function cm.ofilter(c)
