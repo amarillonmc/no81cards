@@ -1,4 +1,6 @@
 --【背景音台】Shelter
+local m=33701502
+local cm=_G["c"..m]
 function cm.initial_effect(c)
 	--activate
 	local e0=Effect.CreateEffect(c)

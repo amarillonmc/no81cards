@@ -130,7 +130,7 @@ function s.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.tg3(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
-	if chkc then return chkc:IsOnField() and s.nbfilter(chkc) and c~=chkc end
+	if chkc then return chkc:IsOnField() and s.nbfilter(chkc) and chkc:IsControler(1-tp) end
 	if chk==0 then return Duel.IsExistingTarget(s.nbfilter,tp,0,LOCATION_ONFIELD,1,c) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_FACEUP)
 	local g=Duel.SelectTarget(tp,s.nbfilter,tp,0,LOCATION_ONFIELD,1,1,c)
