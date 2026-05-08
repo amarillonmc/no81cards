@@ -90,7 +90,7 @@ function s.cost3(e,tp,eg,ep,ev,re,r,rp,chk)
 	yume.prism.regCostLimit(e,tp)
 end
 function s.filterc3(c,lv,e,tp,recursive)
-	return c:IsLevelBelow(lv) and c:IsSetCard(0x716) and c:IsType(TYPE_SYNCHRO)
+	return c:IsLevelBelow(lv-1) and c:IsSetCard(0x716) and c:IsType(TYPE_SYNCHRO)
 		and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false)
 		and (not recursive or Duel.IsExistingMatchingCard(s.filterc3,tp,LOCATION_EXTRA,0,1,c,lv-c:GetLevel()+1,e,tp,false))
 end

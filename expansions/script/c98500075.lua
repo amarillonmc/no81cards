@@ -80,7 +80,7 @@ function cm.activate2(e,tp,eg,ep,ev,re,r,rp)
 				Duel.SendtoHand(g2,nil,REASON_EFFECT)
 				Duel.ConfirmCards(1-tp,g2)
 				Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
-			elseif tc:IsSetCard(0x144) and Duel.GetFlagEffect(tp,m)==0 and c:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(cm.filter5,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,7))  then
+			elseif tc:IsSetCard(0x144) and Duel.GetFlagEffect(tp,m)==0 and tc:IsType(TYPE_FUSION) and Duel.IsExistingMatchingCard(cm.filter5,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil) and Duel.SelectYesNo(tp,aux.Stringid(m,7))  then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 				local g2=Duel.SelectMatchingCard(tp,cm.filter5,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
 				Duel.SendtoHand(g2,nil,REASON_EFFECT)
