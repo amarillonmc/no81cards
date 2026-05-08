@@ -65,3 +65,4 @@ function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.Release(g,REASON_EFFECT)~=0 then
 		Duel.Draw(tp,1,REASON_EFFECT)
 	end
+end
