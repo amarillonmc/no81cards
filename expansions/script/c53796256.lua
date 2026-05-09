@@ -36,7 +36,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function s.slimit(e,c)
-	return s.check(c:GetBaseAttack()) or s.check(c:GetBaseDefense())
+	return s.check(c:GetBaseAttack()) or (s.check(c:GetBaseDefense()) and not c:IsType(TYPE_LINK))
 end
 function s.alimit(e,te)
 	local tc=te:GetHandler()
