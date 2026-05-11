@@ -41,7 +41,8 @@ function s.initial_effect(c)
 end
 function s.chainfilter(re,tp,cid)
 	local rc=re:GetHandler()
-	return not (rc:IsLocation(LOCATION_HAND) and rc:IsType(TYPE_PENDULUM) and rc:GetLeftScale()>=3)
+	local loc=Duel.GetChainInfo(cid,CHAININFO_TRIGGERING_LOCATION)
+	return not (re:IsActiveType(TYPE_MONSTER) and loc==LOCATION_HAND and rc:IsType(TYPE_PENDULUM) and rc:GetLeftScale()>=3)
 end
 function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)==0 end
@@ -56,7 +57,7 @@ function s.cost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.aclimit(e,re,tp)
 	local rc=re:GetHandler()
-	return rc:IsLocation(LOCATION_HAND) and rc:IsType(TYPE_PENDULUM) and rc:GetLeftScale()>=3
+	return re:IsActiveType(TYPE_MONSTER) and rc:IsLocation(LOCATION_HAND) and rc:IsType(TYPE_PENDULUM) and rc:GetLeftScale()>=3
 end
 function s.pcfilter(c)
 	if not c:IsType(TYPE_PENDULUM) then return false end
@@ -82,7 +83,7 @@ function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 end
 function s.thfilter(c)
-	return c:IsType(TYPE_PENDULUM) and c:IsDefense(2350) and c:IsAbleToHand()
+	return c:IsType(TYPE_PENDULUM) and c:GetBaseDefense()==2350 and c:IsAbleToHand()
 end
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK,0,1,nil) end
