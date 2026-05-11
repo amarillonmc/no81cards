@@ -101,15 +101,16 @@ function s.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
 		local lv=c:GetLevel()
 		return e:IsCostChecked() and lv>1
 			and aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL)
-			and ft>1
+			and ft>1 and not Duel.IsPlayerAffectedByEffect(tp,59822133)
 			and Duel.IsExistingMatchingCard(s.filterc3,tp,LOCATION_EXTRA,0,1,nil,lv,e,tp,true)
 	end
 	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(id,2))
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,2,tp,LOCATION_EXTRA)
 end
 function s.op3(e,tp,eg,ep,ev,re,r,rp)
-	if not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL) or
-		Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_SYNCHRO)<2 then return end
+	if not aux.MustMaterialCheck(nil,tp,EFFECT_MUST_BE_SMATERIAL)
+		or Duel.IsPlayerAffectedByEffect(tp,59822133)
+		or Duel.GetLocationCountFromEx(tp,tp,nil,TYPE_SYNCHRO)<2 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local lv=e:GetLabel()
 	local g1=Duel.SelectMatchingCard(tp,s.filterc3,tp,LOCATION_EXTRA,0,1,1,nil,lv,e,tp,true)

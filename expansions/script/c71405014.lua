@@ -77,6 +77,7 @@ end
 function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	local ft=math.min(2,Duel.GetLocationCount(tp,LOCATION_MZONE))
 	if ft<=0 then return end
+	if Duel.IsPlayerAffectedByEffect(tp,59822133) then ft=1 end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.filter1),tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,ft,nil,e,tp)
 	if g:GetCount()>0 then
