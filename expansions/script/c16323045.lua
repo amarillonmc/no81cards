@@ -16,7 +16,7 @@ function c16323045.initial_effect(c)
 	e2:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON)
 	e2:SetType(EFFECT_TYPE_ACTIVATE)
 	e2:SetCode(EVENT_FREE_CHAIN)
-	e2:SetCountLimit(1,16323045)
+	e2:SetCountLimit(1,16323045+1)
 	e2:SetTarget(c16323045.target2)
 	e2:SetOperation(c16323045.activate2)
 	c:RegisterEffect(e2)
@@ -95,7 +95,7 @@ function c16323045.activate2(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function c16323045.filter(c)
-	return c:IsLevelBelow(4) and c:IsRace(RACE_MACHINE) and c:IsSetCard(0x3dcf) and c:IsAbleToHand()
+	return c:IsLevelBelow(4) and c:IsSetCard(0x3dcf) and c:IsAbleToHand()
 end
 function c16323045.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c16323045.filter,tp,LOCATION_DECK,0,1,nil) end
@@ -108,4 +108,15 @@ function c16323045.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.SendtoHand(g,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,g)
 	end
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD)
+	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e1:SetTargetRange(1,0)
+	e1:SetTarget(c16323045.splimit)
+	e1:SetReset(RESET_PHASE+PHASE_END)
+	Duel.RegisterEffect(e1,tp)
+end
+function c16323045.splimit(e,c)
+	return not (c:IsSetCard(0x3dcf) or c:IsRace(RACE_MACHINE)) and c:IsLocation(LOCATION_EXTRA)
 end

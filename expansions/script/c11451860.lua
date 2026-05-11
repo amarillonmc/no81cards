@@ -156,7 +156,6 @@ function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if not re:GetHandler():IsSetCard(0x6e) or not c:IsSSetable() or cm.column~=0 then return end
 	if Duel.SelectEffectYesNo(tp,c) then
-		Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 		Duel.Hint(HINT_CARD,0,m)
 		Duel.SSet(tp,c,tp,true)
 		--c:RegisterFlagEffect(m-11,RESET_CHAIN,0,1)
@@ -164,10 +163,12 @@ function cm.dsop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.GetFlagEffect(tp,m)==0 end
 	e:GetHandler():SetStatus(STATUS_EFFECT_ENABLED,true)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetFlagEffect(tp,m)>0 then return end
+	Duel.RegisterFlagEffect(tp,m,RESET_PHASE+PHASE_END,0,1)
 	local c=e:GetHandler()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TARGET)
 	local fd=Duel.SelectField(tp,2,LOCATION_SZONE,0,~0x1f00)

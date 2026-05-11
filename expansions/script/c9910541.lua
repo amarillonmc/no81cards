@@ -60,7 +60,10 @@ function c9910541.target(e,tp,eg,ep,ev,re,r,rp,chk)
 			local tc=g:GetFirst()
 			if tc:IsFaceup() then Duel.HintSelection(g)
 			else Duel.ConfirmCards(1-tp,tc) end
-			if tc:IsLocation(LOCATION_HAND) then Duel.ShuffleHand(tp) end
+			if tc:IsLocation(LOCATION_HAND) then
+				Duel.ShuffleHand(tp)
+				tc:RegisterFlagEffect(0,RESET_EVENT+RESETS_STANDARD+RESET_CHAIN,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(9910541,5))
+			end
 			tc:CreateEffectRelation(e)
 			e:SetLabelObject(tc)
 		end

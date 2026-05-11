@@ -60,7 +60,7 @@ function c98500041.initial_effect(c)
 	c:RegisterEffect(e5)
 end
 function c98500041.hspfilter(c,tp,sc)
-	return c:IsFusionCode(43378048) and c:IsControler(tp) and Duel.GetLocationCountFromEx(tp,tp,c,sc)>0 and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL) and c:IsAbleToDeckOrExtraAsCost()
+	return c:IsFusionCode(43378048) and c:IsControler(tp) and Duel.GetLocationCountFromEx(tp,tp,c,sc)>0 and c:IsCanBeFusionMaterial(sc,SUMMON_TYPE_SPECIAL) and c:IsAbleToDeckOrExtraAsCost() and c:IsOriginalCodeRule(43378048)
 end
 function c98500041.hspcon(e,c)
 	if c==nil then return true end

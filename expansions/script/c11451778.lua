@@ -137,7 +137,13 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) and Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP_ATTACK) and Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE) then
+	local at=Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE)
+	local ct=Duel.GetCurrentChain()
+	if ct>=2 then
+		local te=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT)
+		if te:IsActiveType(TYPE_MONSTER) then at=true end
+	end
+	if c:IsRelateToEffect(e) and Duel.SpecialSummonStep(c,0,tp,tp,false,false,POS_FACEUP_ATTACK) and at then
 		local e4=Effect.CreateEffect(c)
 		e4:SetType(EFFECT_TYPE_SINGLE)
 		e4:SetCode(EFFECT_SET_BASE_ATTACK)

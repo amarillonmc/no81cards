@@ -183,7 +183,7 @@ function s.fustg(e,tp,eg,ep,ev,re,r,rp,chk)
 		if res then return true end
 		
 		-- 检查本家融合 (允许墓地)
-		local mg2=Duel.GetMatchingGroup(s.mfilter2,tp,LOCATION_GRAVE,0,nil,e) -- 墓地可除外
+		local mg2=Duel.GetMatchingGroup(s.mfilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e) -- 墓地可除外
 		mg2:Merge(mg1)
 		local old_chk=aux.FCheckAdditional
 		aux.FCheckAdditional=s.fcheck
@@ -194,7 +194,7 @@ function s.fustg(e,tp,eg,ep,ev,re,r,rp,chk)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_EXTRA)
 	Duel.SetOperationInfo(0,CATEGORY_RELEASE,nil,1,tp,LOCATION_HAND+LOCATION_ONFIELD)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,0,tp,LOCATION_GRAVE)
+	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,0,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 
 -- 限制墓地素材最多1张
@@ -206,7 +206,7 @@ function s.fusop(e,tp,eg,ep,ev,re,r,rp)
 	local chkf=tp
 	local mg=Duel.GetFusionMaterial(tp)
 	local mg1=mg:Filter(s.mfilter1,nil,e) -- 手卡/场上
-	local mg2=Duel.GetMatchingGroup(s.mfilter2,tp,LOCATION_GRAVE,0,nil,e) -- 墓地
+	local mg2=Duel.GetMatchingGroup(s.mfilter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,nil,e) -- 墓地
 	
 	local sg1=Duel.GetMatchingGroup(s.spfilter1,tp,LOCATION_EXTRA,0,nil,e,tp,mg1,nil,chkf)
 	
@@ -220,7 +220,6 @@ function s.fusop(e,tp,eg,ep,ev,re,r,rp)
 	local sg2=Duel.GetMatchingGroup(s.spfilter2,tp,LOCATION_EXTRA,0,nil,e,tp,mg_mix,nil,chkf)
 	aux.FCheckAdditional=old_chk
 	
-	-- 合并所有可融合怪兽
 	sg1:Merge(sg2)
 	
 	if #sg1>0 then
@@ -228,7 +227,6 @@ function s.fusop(e,tp,eg,ep,ev,re,r,rp)
 		local tg=sg1:Select(tp,1,1,nil)
 		local tc=tg:GetFirst()
 		
-		-- 如果选的是本家怪兽 (可以使用墓地)
 		if sg2:IsContains(tc) then
 			-- 再次应用限制
 			aux.FCheckAdditional=s.fcheck
@@ -238,11 +236,11 @@ function s.fusop(e,tp,eg,ep,ev,re,r,rp)
 			tc:SetMaterial(mat1)
 			
 			-- 分离区域进行处理
-			local mat_gy=mat1:Filter(Card.IsLocation,nil,LOCATION_GRAVE) -- 墓地素材 -> 除外
+			local mat_gy=mat1:Filter(Card.IsLocation,nil,LOCATION_GRAVE+LOCATION_REMOVED) -- 墓地素材 -> 除外
 			local mat_rel=mat1:Filter(aux.NOT(Card.IsLocation),nil,LOCATION_GRAVE) -- 手卡/场上 -> 解放
 			
 			if #mat_rel>0 then Duel.Release(mat_rel,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION) end
-			if #mat_gy>0 then Duel.Remove(mat_gy,POS_FACEUP,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION) end
+			if #mat_gy>0 then Duel.SendtoDeck(mat_gy,nil,SEQ_DECKSHUFFLE,REASON_EFFECT+REASON_MATERIAL+REASON_FUSION) end
 		else
 			-- 如果选的是普通怪兽 (仅手卡/场上)
 			local mat2=Duel.SelectFusionMaterial(tp,tc,mg1,nil,chkf)

@@ -205,7 +205,7 @@ function cm.initial_effect(c)
 	--search
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
-	e1:SetCategory(CATEGORY_COIN+CATEGORY_TOHAND+CATEGORY_SEARCH+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_COIN+CATEGORY_TODECK)
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
 	e1:SetCode(EVENT_TO_GRAVE)
@@ -258,19 +258,37 @@ function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(Card.IsType,1,nil,TYPE_SPELL)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToHand,tp,LOCATION_DECK,0,1,nil) and e:GetHandler():IsAbleToDeck() end
-	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
+	if chk==0 then return e:GetHandler():IsAbleToDeck() end
+	--Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK)
 	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
+	local ct=Duel.GetDrawCount(tp)
+	if Duel.GetTurnCount()==1 then
+		ct=1
+		local eset={Duel.IsPlayerAffectedByEffect(tp,EFFECT_DRAW_COUNT)}
+		for _,te in pairs(eset) do if te:GetValue()>ct then ct=te:GetValue() end end
+	end
+	local e2=Effect.CreateEffect(c)
+	e2:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_DRAW_COUNT)
+	e2:SetTargetRange(1,0)
+	e2:SetValue(ct+1)
+	if Duel.GetCurrentPhase()==PHASE_DRAW and Duel.GetTurnPlayer()==tp then
+		e2:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN,2)
+	else
+		e2:SetReset(RESET_PHASE+PHASE_DRAW+RESET_SELF_TURN)
+	end
+	Duel.RegisterEffect(e2,tp)
+	--[[local g=Duel.GetFieldGroup(tp,LOCATION_DECK,0)
 	if #g>0 then
 		local tc=g:GetMinGroup(Card.GetSequence):GetFirst()
 		Duel.DisableShuffleCheck()
 		Duel.SendtoHand(tc,tp,REASON_EFFECT)
-	end
+	end--]]
 	if c:IsRelateToEffect(e) then
 		local res=Duel.TossCoin(tp,1)
 		--if PNFL_PROPHECY_FLIGHT_DEBUG then res=1 end

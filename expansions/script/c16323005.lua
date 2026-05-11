@@ -40,11 +40,10 @@ function c16323005.spsop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP)
 end
 function c16323005.filter(c)
-	return (c:IsSetCard(0x3dcf) or c:IsRace(RACE_MACHINE)) and c:IsType(0x1)
-		and c:IsDiscardable(REASON_EFFECT)
+	return c:IsType(0x1) and c:IsDiscardable(REASON_EFFECT)
 end
 function c16323005.spfilter(c,e,tp)
-	return c:IsSetCard(0x3dcf) and c:IsLevel(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+	return c:IsSetCard(0x3dcf) and c:IsLevelBelow(4) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 function c16323005.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(c16323005.filter,tp,LOCATION_HAND,0,1,nil)

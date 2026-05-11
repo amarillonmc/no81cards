@@ -134,7 +134,13 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 	end
-	if not Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE) then return end
+	local at=Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE)
+	local ct=Duel.GetCurrentChain()
+	if ct>=2 then
+		local te=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT)
+		if te:IsActiveType(TYPE_MONSTER) then at=true end
+	end
+	if not at then return end
 	local tpact=false
 	local opact=false
 	local this_effect=false
@@ -144,9 +150,9 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 		if this_effect and ep0==tp then tpact=true break end
 		if re0==e then this_effect=true end
 	end
-	if tpact and opact and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_DECK,0,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+	if tpact and opact and Duel.IsExistingMatchingCard(cm.thfilter,tp,LOCATION_GRAVE,0,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOFIELD)
-		local tc=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_DECK,0,1,1,nil,tp):GetFirst()
+		local tc=Duel.SelectMatchingCard(tp,cm.thfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp):GetFirst()
 		if tc then
 			Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 			--[[local te=tc:GetActivateEffect()

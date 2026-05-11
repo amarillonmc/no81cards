@@ -563,7 +563,7 @@ function MTC.realname(tp,code1,code2)
 	end
 end
 
-
+--维护卡丘世界的和平
 function MTC.StrinovaPUS(c)
 	c:EnableReviveLimit()
 	--cannot special summon
@@ -666,5 +666,113 @@ function MTC.StrinovaChangeZonecon(e,tp,eg,ep,ev,re,r,rp)
 	e:SetLabel(loc)
 	return tf
 end
+--出场台词
+function MTC.First(c)
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_CONTINUOUS+EFFECT_TYPE_SINGLE)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetOperation(MTC.Firstop)
+	c:RegisterEffect(e1)
+end
+function MTC.Firstop(e,tp,eg,ep,ev,re,r,rp,c)
+	Duel.Hint(24,0,aux.Stringid(e:GetHandler():GetOriginalCodeRule(),15))
+end
+--我们是剪刀手，注定要颠覆世界的人！
+function MTC.StrinovaSCISSORS(c)
+	c:EnableReviveLimit()
+	--cannot special summon
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_SINGLE)
+	e1:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e1:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(aux.FALSE)
+	c:RegisterEffect(e1)
+	--special summon
+	local e2=Effect.CreateEffect(c)
+	e2:SetType(EFFECT_TYPE_FIELD)
+	e2:SetCode(EFFECT_SPSUMMON_PROC)
+	e2:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
+	e2:SetRange(LOCATION_HAND)
+	e2:SetCondition(MTC.StrinovaSCISSORScon)
+	e2:SetTarget(MTC.StrinovaSCISSORStg)
+	e2:SetOperation(MTC.StrinovaSCISSORSop)
+	c:RegisterEffect(e2)
+	--return
+	local e3=Effect.CreateEffect(c)
+	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
+	e3:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e3:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
+	e3:SetOperation(MTC.StrinovaSCISSORSreg)
+	c:RegisterEffect(e3)
+end
+function MTC.StrinovaSCISSORScon(e,c)
+	if c==nil then return true end
+	return Duel.IsExistingMatchingCard(Card.IsType,tp,LOCATION_HAND,0,1,c,TYPE_MONSTER) and Duel.GetLocationCount(tp,LOCATION_SZONE)>0
+end
+function MTC.StrinovaSCISSORStg(e,tp,eg,ep,ev,re,r,rp,chk,c)
+	local c=e:GetHandler()
+	local rg=Duel.GetMatchingGroup(Card.IsType,tp,LOCATION_HAND,0,c,TYPE_MONSTER)
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPERATECARD)
+	local sg=rg:Select(tp,1,1,nil)
+	if sg then
+		sg:KeepAlive()
+		e:SetLabelObject(sg)
+		return true
+	else return false end
+end
+function MTC.StrinovaSCISSORSop(e,tp,eg,ep,ev,re,r,rp,c)
+	local g=e:GetLabelObject()
+	if Duel.MoveToField(g:GetFirst(),tp,tp,LOCATION_SZONE,POS_FACEUP,true)~=0 and g:GetFirst():IsSetCard(0xa623) then
+		Duel.Draw(tp,1,REASON_SPSUMMON)
+	end
+	g:DeleteGroup()
+end
+function MTC.StrinovaSCISSORSreg(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	e1:SetDescription(1104)
+	e1:SetCategory(CATEGORY_DRAW)
+	e1:SetCode(EVENT_PHASE+PHASE_END)
+	e1:SetRange(LOCATION_MZONE)
+	e1:SetCountLimit(1)
+	e1:SetReset(RESET_EVENT+0x1ee0000+RESET_PHASE+PHASE_END)
+	e1:SetOperation(MTC.StrinovaSCISSORSretop)
+	c:RegisterEffect(e1)
+end
+function MTC.StrinovaSCISSORSretop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local b1=true
+	local b2=Duel.IsExistingMatchingCard(MTC.StrinovaSCISSORSretopfil,tp,LOCATION_MZONE,0,1,nil) 
+	local b3=Duel.IsExistingMatchingCard(MTC.StrinovaSCISSORSretopfil,tp,LOCATION_MZONE,0,1,nil) and c:IsAbleToHand()
+	if not b2 and not b3 then
+		if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+			Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+		else
+			Duel.Draw(tp,1,REASON_EFFECT)
+		end
+	else
+		local op=aux.SelectFromOptions(tp,
+					{b1,aux.Stringid(71290019,1)},
+					{b1,aux.Stringid(71290019,2)},
+					{b2,aux.Stringid(71290019,3)})
+		if op==1 then
+			if Duel.GetLocationCount(tp,LOCATION_SZONE)>0 then
+				Duel.MoveToField(c,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
+			else
+				Duel.Draw(tp,1,REASON_EFFECT)
+			end
+		elseif op==3 then
+			Duel.SendtoHand(c,nil,REASON_EFFECT)
+		end
+	end
+	
+end
+function MTC.StrinovaSCISSORSretopfil(c)
+	return c:IsFaceup() and c:IsType(TYPE_FUSION)
+end
+
+
+
 
 

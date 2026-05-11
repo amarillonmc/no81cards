@@ -26,7 +26,6 @@ function s.initial_effect(c)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1) -- 1回合1次 (软限制)
 	e2:SetCondition(s.chcon)
-	e2:SetCost(s.chcost)
 	e2:SetTarget(s.chtg)
 	e2:SetOperation(s.chop)
 	c:RegisterEffect(e2)
@@ -37,7 +36,7 @@ function s.initial_effect(c)
 	e3:SetCategory(CATEGORY_RELEASE+CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
-	e3:SetCode(EVENT_TO_GRAVE)
+	e3:SetCode(EVENT_LEAVE_FIELD)
 	e3:SetCondition(s.relcon)
 	e3:SetTarget(s.reltg)
 	e3:SetOperation(s.relop)
@@ -73,7 +72,7 @@ function s.tdfilter(c)
 end
 
 function s.chcon(e,tp,eg,ep,ev,re,r,rp)
-	return rp~=tp and Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_REMOVED,0,1,nil)
+	return ep==1-tp
 end
 
 function s.costfilter(c)
@@ -90,7 +89,8 @@ function s.chcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 
 function s.chtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return true end
+	if chk==0 then return Duel.IsExistingMatchingCard(s.tdfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil) end
+	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 
 function s.chop(e,tp,eg,ep,ev,re,r,rp)
@@ -101,19 +101,16 @@ end
 
 -- 改写后的效果处理
 function s.repop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetMatchingGroup(s.tdfilter,tp,0,LOCATION_REMOVED,nil)
+	local g=Duel.GetMatchingGroup(s.tdfilter,tp,0,LOCATION_REMOVED+LOCATION_GRAVE,nil)
 	
 	if #g>0 then
-		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 		local sg=g:Select(1-tp,1,1,nil)
 		if #sg>0 then
-			Duel.SendtoDeck(sg,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
+			Duel.HintSelection(sg)
+			Duel.SendtoHand(sg,nil,REASON_EFFECT)
 		end
 	end
-end
-
-function s.tdfilter(c)
-	return c:IsSetCard(0x614) and (c:IsAbleToDeck() or c:IsAbleToExtra())
 end
 
 -- === 效果③ ===
@@ -143,12 +140,12 @@ function s.relop(e,tp,eg,ep,ev,re,r,rp)
 	if #g>0 and Duel.Release(g,REASON_EFFECT)>0 then
 		-- 那之后，特召
 		if Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-			and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE,0,1,nil,e,tp) 
+			and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) 
 			and Duel.SelectYesNo(tp,aux.Stringid(id,3)) then
 			
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-			local sg=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_GRAVE,0,1,1,nil,e,tp)
+			local sg=Duel.SelectMatchingCard(tp,s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
 			if #sg>0 then
 				Duel.SpecialSummon(sg,0,tp,tp,false,false,POS_FACEUP)
 			end

@@ -1,11 +1,9 @@
 --天空漫步者 日向晶也
 function c9910209.initial_effect(c)
-	--spsummon & draw
+	--spsummon or banish
 	local e1=Effect.CreateEffect(c)
-	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_DRAW)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SUMMON_SUCCESS)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetTarget(c9910209.sptg)
 	e1:SetOperation(c9910209.spop)
 	c:RegisterEffect(e1)
@@ -25,31 +23,41 @@ end
 function c9910209.filter(c,e,tp)
 	return c:IsRace(RACE_PSYCHO) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function c9910209.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local ct=Duel.GetMatchingGroupCount(Card.IsLinkState,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	local num=math.floor(ct/2)
-	if chk==0 then return (Duel.GetMZoneCount(tp)>0 and Duel.IsExistingMatchingCard(c9910209.filter,tp,LOCATION_HAND,0,1,nil,e,tp))
-		or (num>0 and Duel.IsPlayerCanDraw(tp,num)) end
+function c9910209.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsAbleToRemove() end
+	local b1=Duel.GetMZoneCount(tp)>0 and Duel.IsExistingMatchingCard(c9910209.filter,tp,LOCATION_HAND,0,1,nil,e,tp)
+	local b2=Duel.IsExistingTarget(Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,nil)
+	if chk==0 then return b1 or b2 end
+	local op=0
+	if b1 and b2 then op=Duel.SelectOption(tp,aux.Stringid(9910209,0),aux.Stringid(9910209,1))
+	elseif b1 then op=Duel.SelectOption(tp,aux.Stringid(9910209,0))
+	else op=Duel.SelectOption(tp,aux.Stringid(9910209,1))+1 end
+	e:SetLabel(op)
+	if op==0 then
+		e:SetCategory(CATEGORY_SPECIAL_SUMMON)
+		e:SetProperty(EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+		Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_HAND)
+	else
+		e:SetCategory(CATEGORY_REMOVE)
+		e:SetProperty(EFFECT_FLAG_CARD_TARGET+EFFECT_FLAG_DAMAGE_STEP+EFFECT_FLAG_DELAY)
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
+		local g=Duel.SelectTarget(tp,Card.IsAbleToRemove,tp,LOCATION_GRAVE,LOCATION_GRAVE,1,1,nil)
+		Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	end
 end
 function c9910209.spop(e,tp,eg,ep,ev,re,r,rp)
-	local ct1=Duel.GetMatchingGroupCount(Card.IsLinkState,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	local num1=math.floor(ct1/2)
-	local b1=Duel.GetMZoneCount(tp)>0 and Duel.IsExistingMatchingCard(c9910209.filter,tp,LOCATION_HAND,0,1,nil,e,tp)
-	local b2=num1>0 and Duel.IsPlayerCanDraw(tp,num1)
-	local res=false
-	if b1 and (not b2 or Duel.SelectYesNo(tp,aux.Stringid(9910209,0))) then
-		res=true
+	if e:GetLabel()==0 then
+		if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 		local g=Duel.SelectMatchingCard(tp,c9910209.filter,tp,LOCATION_HAND,0,1,1,nil,e,tp)
 		if g:GetCount()>0 then
 			Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 		end
-	end
-	local ct2=Duel.GetMatchingGroupCount(Card.IsLinkState,tp,LOCATION_MZONE,LOCATION_MZONE,nil)
-	local num2=math.floor(ct2/2)
-	if num2>0 and Duel.IsPlayerCanDraw(tp,num2) and (not res or Duel.SelectYesNo(tp,aux.Stringid(9910209,1))) then
-		if res then Duel.BreakEffect() end
-		Duel.Draw(tp,num2,REASON_EFFECT)
+	else
+		local tc=Duel.GetFirstTarget()
+		if tc:IsRelateToChain() and aux.NecroValleyFilter()(tc) then
+			Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
+		end
 	end
 end
 function c9910209.thcon(e,tp,eg,ep,ev,re,r,rp)

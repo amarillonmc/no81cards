@@ -7,6 +7,7 @@ function c9910597.initial_effect(c)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e1:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_END_PHASE)
+	e1:SetCountLimit(1,9910597)
 	e1:SetTarget(c9910597.target)
 	e1:SetOperation(c9910597.activate)
 	c:RegisterEffect(e1)
@@ -63,19 +64,22 @@ function c9910597.activate(e,tp,eg,ep,ev,re,r,rp)
 		end
 	end
 end
-function c9910597.tdfilter(c,tp)
-	return c:IsAbleToDeck() and c:IsFaceupEx() and c:IsSetCard(0x6956) and (c:IsLocation(LOCATION_MZONE) or c:IsType(TYPE_MONSTER))
-		and Duel.IsExistingTarget(Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,c)
+function c9910597.tdfilter1(c)
+	return c:IsFaceup() and c:IsSetCard(0x6956) and c:IsAbleToDeck()
+end
+function c9910597.tdfilter2(c)
+	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x6956) and c:IsAbleToDeck()
 end
 function c9910597.chtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	local c=e:GetHandler()
 	if chkc then return false end
 	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsDiscardable,rp,0,LOCATION_HAND,1,nil,REASON_EFFECT)
-		and Duel.IsExistingTarget(c9910597.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,c,tp) end
+		and Duel.IsExistingTarget(c9910597.tdfilter1,tp,LOCATION_MZONE,0,1,nil)
+		and Duel.IsExistingTarget(c9910597.tdfilter2,tp,LOCATION_GRAVE,0,1,nil) end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g=Duel.SelectTarget(tp,c9910597.tdfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,nil,tp)
+	local g=Duel.SelectTarget(tp,c9910597.tdfilter1,tp,LOCATION_MZONE,0,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g2=Duel.SelectTarget(tp,Card.IsAbleToDeck,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,1,g)
+	local g2=Duel.SelectTarget(tp,c9910597.tdfilter2,tp,LOCATION_GRAVE,0,1,1,nil)
 	g:Merge(g2)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g,2,0,0)
 end

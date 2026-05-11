@@ -149,12 +149,18 @@ function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,e:GetHandler(),1,0,0)
 end
 function cm.rffilter(c)
-	return c:IsFaceup() and c:IsLocation(LOCATION_REMOVED) and not c:IsReason(REASON_REDIRECT)
+	return c:IsFaceup() and c:IsLocation(LOCATION_REMOVED) --and not c:IsReason(REASON_REDIRECT)
 end
 function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	if c:IsRelateToEffect(e) and Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)>0 then
-		if not Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE) then return end
+		local at=Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE)
+		local ct=Duel.GetCurrentChain()
+		if ct>=2 then
+			local te=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT)
+			if te:IsActiveType(TYPE_MONSTER) then at=true end
+		end
+		if not at then return end
 		local g=Group.CreateGroup()
 		local i=1
 		while type(cm[i])=="table" do
@@ -164,10 +170,10 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 			i=i+1
 		end
 		g:RemoveCard(c)
-		if #g>0 and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
+		if g:IsExists(Card.IsControler,1,nil,tp) and Duel.SelectYesNo(tp,aux.Stringid(m,0)) then
 			Duel.BreakEffect()
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-			local rg=g:Select(tp,1,#g,nil)
+			local rg=g:SelectSubGroup(tp,function(g) return g:IsExists(Card.IsControler,1,nil,tp) end,false,1,#g)
 			if #rg>0 and Duel.Remove(rg,POS_FACEUP,REASON_EFFECT)>0 then
 				local og=Duel.GetOperatedGroup():Filter(cm.rffilter,nil)
 				og:ForEach(Card.RegisterFlagEffect,m,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(m,1))

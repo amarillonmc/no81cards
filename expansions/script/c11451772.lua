@@ -152,7 +152,15 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 	end
-	if not Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE) then return end
+	local at=Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE)
+	local ct=Duel.GetCurrentChain()
+	if ct>=2 then
+		local te=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT)
+		if te:IsActiveType(TYPE_MONSTER) then at=true end
+	end
+	if not at then return end
+	Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,0))
+	Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,0))
 	local e1=Effect.CreateEffect(e:GetHandler())
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_UPDATE_ATTACK)

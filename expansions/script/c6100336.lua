@@ -34,14 +34,13 @@ function s.initial_effect(c)
 	e2:SetOperation(s.actop)
 	c:RegisterEffect(e2)
 	
-	--③：被其他卡解放 -> 盖放自身 & 除外墓地
+	--③：被其他卡解放 -> 苏生
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,3))
-	e3:SetCategory(CATEGORY_POSITION+CATEGORY_REMOVE)
+	e3:SetCategory(CATEGORY_SPECIAL_SUMMON)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
 	e3:SetCode(EVENT_RELEASE)
-	e3:SetCountLimit(1,id)
 	e3:SetCondition(s.spcon)
 	e3:SetTarget(s.sptg)
 	e3:SetOperation(s.spop)
@@ -141,34 +140,25 @@ end
 -- === 效果③：被其他卡解放 ===
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	-- EVENT_RELEASE 触发时，c 已在目的地 (墓地/除外区)，IsReason(REASON_EFFECT) 可直接判断是否为效果导致
-	-- 检查 re 是否存在且不是自身
 	return c:IsReason(REASON_EFFECT) and re and re:GetHandler()~=c
 end
 
-function s.rmfilter(c)
-	return c:IsSetCard(0x614) and c:IsType(TYPE_TRAP) and c:IsAbleToRemove()
+function s.spfilter(c,e,tp)
+	return c:IsSetCard(0x614) and c:IsType(TYPE_MONSTER) and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
-	local c=e:GetHandler()
-	if chkc then return chkc:IsLocation(LOCATION_GRAVE) and chkc:IsControler(tp) and s.rmfilter(chkc) and chkc~=c end
-	if chk==0 then return c:IsSSetable() 
-		and Duel.IsExistingTarget(s.rmfilter,tp,LOCATION_GRAVE,0,1,c) end
-	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectTarget(tp,s.rmfilter,tp,LOCATION_GRAVE,0,1,1,c)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
-	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,c,1,0,0)
+	if chkc then return chkc:IsLocation(LOCATION_GRAVE+LOCATION_REMOVED) and chkc:IsControler(tp) and s.spfilter(chkc,e,tp) end
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingTarget(s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,e,tp) end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectTarget(tp,s.spfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,e,tp)
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,g,1,0,0)
 end
 
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
-	local c=e:GetHandler()
 	local tc=Duel.GetFirstTarget()
-	if c:IsRelateToEffect(e) and c:IsSSetable() then
-		if Duel.SSet(tp,c)>0 then
-			if tc and tc:IsRelateToEffect(e) then
-				Duel.Remove(tc,POS_FACEUP,REASON_EFFECT)
-			end
-		end
+	if tc:IsRelateToEffect(e) and Duel.SendtoDeck(e:GetHandler(),nil,SEQ_DECKBOTTOM,REASON_EFFECT) then
+		Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)
 	end
 end

@@ -2,6 +2,9 @@
 local m=14010086
 local cm=_G["c"..m]
 cm.muteki_effect=true
+if not TYPE_MUTEKI then
+	TYPE_MUTEKI=0x80000000000
+end
 function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--xyz summon

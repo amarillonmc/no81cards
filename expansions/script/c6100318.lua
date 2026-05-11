@@ -31,22 +31,15 @@ end
 -- === 效果① ===
 function s.thcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return c:IsAbleToHand() end
+	if chk==0 then return c:IsAbleToHandAsCost() end
 	Duel.SendtoHand(c,nil,REASON_COST)
-	-- 回手后保持公开
-	if c:IsLocation(LOCATION_HAND) then
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_PUBLIC)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		c:RegisterEffect(e1)
-		c:RegisterFlagEffect(id,RESET_EVENT+RESETS_STANDARD,EFFECT_FLAG_CLIENT_HINT,1,0,aux.Stringid(id,5))
-	end
+	Duel.ShuffleHand(tp)
+	Duel.ConfirmCards(1-tp,c)
 end
 
 -- 墓地过滤器
 function s.gyfilter(c,tp)
-	return c:IsSetCard(0x614) and Duel.IsExistingMatchingCard(s.deckfilter,tp,LOCATION_DECK,0,1,nil,c)
+	return Duel.IsExistingMatchingCard(s.deckfilter,tp,LOCATION_DECK,0,1,nil,c)
 end
 
 -- 卡组过滤器：同种类，不同名
@@ -58,36 +51,31 @@ function s.deckfilter(c,rc)
 		   or (c:IsType(TYPE_TRAP) and rc:IsType(TYPE_TRAP)) )
 end
 
+function s.ttfilter(c,tp)
+	return c:IsSetCard(0x614) and c:IsAbleToDeck()
+end
+
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	-- 选项1：回复300
-	local b1=true
+	local b1=Duel.GetFieldGroupCount(tp,LOCATION_DECK,0)>0
 	-- 选项2：墓地匹配搜索 (HOPT)
 	local b2=(Duel.GetFlagEffect(tp,id)==0)
-		and Duel.IsExistingMatchingCard(s.gyfilter,tp,LOCATION_GRAVE,0,1,nil,tp)
+		and Duel.IsExistingMatchingCard(s.gyfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil,tp)
 
 	if chk==0 then return b1 or b2 end
-
-	local ops={}
-	local opval={}
-	local off=1
-	
-	ops[off]=aux.Stringid(id,1) -- 回复
-	opval[off]=1
-	off=off+1
-	
-	if b2 then
-		ops[off]=aux.Stringid(id,2) -- 检索/盖放
-		opval[off]=2
-		off=off+1
+	local op=0
+	if b1 and b2 then
+		op=Duel.SelectOption(tp,aux.Stringid(id,1),aux.Stringid(id,2))
+	elseif b1 then
+		op=Duel.SelectOption(tp,aux.Stringid(id,1))
+	else
+		op=Duel.SelectOption(tp,aux.Stringid(id,2))+1
 	end
-
-	local op=Duel.SelectOption(tp,table.unpack(ops))
-	local sel=opval[op+1]
-	e:SetLabel(sel)
-
-	if sel==1 then
-		Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,300)
-	elseif sel==2 then
+	e:SetLabel(op)
+	
+	if op==0 then
+		
+	else
 		Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,0,tp,LOCATION_DECK)
 		Duel.RegisterFlagEffect(tp,id,RESET_PHASE+PHASE_END,0,1) -- 记录使用
 	end
@@ -95,11 +83,11 @@ end
 
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local sel=e:GetLabel()
-	if sel==1 then
-		Duel.Recover(tp,300,REASON_EFFECT)
-	elseif sel==2 then
+	if sel==0 then
+		Duel.DiscardDeck(tp,1,REASON_EFFECT+REASON_RELEASE)
+	elseif sel==1 then
 		Duel.Hint(HINT_SELECTMSG,tp,aux.Stringid(id,4)) -- 选墓地参照卡
-		local g1=Duel.SelectMatchingCard(tp,s.gyfilter,tp,LOCATION_GRAVE,0,1,1,nil,tp)
+		local g1=Duel.SelectMatchingCard(tp,s.gyfilter,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil,tp)
 		local tc1=g1:GetFirst()
 		if tc1 then
 			Duel.HintSelection(g1)
@@ -131,6 +119,7 @@ function s.thop(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
+	Duel.ShuffleHand(tp)
 end
 
 -- === 效果② ===

@@ -1,0 +1,138 @@
+--超越者【勇双】 阿鲁摩塔赫尔
+local m=14002128
+local cm=_G["c"..m]
+cm.named_with_Almotaher=1
+function cm.initial_effect(c)
+	c:EnableReviveLimit()
+	aux.AddXyzProcedure(c,nil,8,2,nil,nil,99)
+	--lv change
+	local e0=Effect.CreateEffect(c)
+	e0:SetType(EFFECT_TYPE_FIELD)
+	e0:SetCode(EFFECT_XYZ_LEVEL)
+	e0:SetProperty(EFFECT_FLAG_IGNORE_IMMUNE)
+	e0:SetRange(LOCATION_EXTRA)
+	e0:SetTargetRange(0xff,0xff)
+	e0:SetTarget(cm.lvtg)
+	e0:SetValue(cm.lvval)
+	c:RegisterEffect(e0)
+	--Destroy
+	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(m,0))
+	e1:SetCategory(CATEGORY_DESTROY)
+	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e1:SetProperty(EFFECT_FLAG_DELAY)
+	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetTarget(cm.destg)
+	e1:SetOperation(cm.desop)
+	c:RegisterEffect(e1)
+	cm.Death_Embrace_effect1=e1
+	--atkup
+	local e2=Effect.CreateEffect(c)
+	e2:SetDescription(aux.Stringid(m,1))
+	e2:SetCategory(CATEGORY_DESTROY+CATEGORY_ATKCHANGE)
+	e2:SetType(EFFECT_TYPE_IGNITION)
+	e2:SetRange(LOCATION_MZONE)
+	e2:SetCountLimit(2)
+	e2:SetTarget(cm.atktg)
+	e2:SetOperation(cm.atkop)
+	c:RegisterEffect(e2)
+	cm.Death_Embrace_effect2=e2
+	--SpecialSummon
+	local e4=Effect.CreateEffect(c)
+	e4:SetDescription(aux.Stringid(m,2))
+	e4:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e4:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e4:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_DAMAGE_STEP)
+	e4:SetCode(EVENT_DESTROYED)
+	e4:SetCountLimit(1,m)
+	e4:SetTarget(cm.sptg)
+	e4:SetOperation(cm.spop)
+	c:RegisterEffect(e4)
+	local e5=Effect.CreateEffect(c)
+	e5:SetDescription(aux.Stringid(m,2))
+	e5:SetCategory(CATEGORY_SPECIAL_SUMMON)
+	e5:SetType(EFFECT_TYPE_QUICK_O)
+	e5:SetCode(EVENT_CHAINING)
+	e5:SetRange(LOCATION_MZONE)
+	e5:SetCountLimit(1,m)
+	e5:SetCondition(cm.spcon)
+	e5:SetTarget(cm.sptg)
+	e5:SetOperation(cm.spop)
+	c:RegisterEffect(e5)
+end
+function cm.Yachiyo(c)
+	local mt=_G["c"..c:GetCode()]
+	return mt and mt.named_with_Yachiyo
+end
+function cm.Almotaher(c)
+	local mt=_G["c"..c:GetCode()]
+	return mt and mt.named_with_Almotaher
+end
+function cm.lvtg(e,c)
+	return c:IsLevelAbove(1) and cm.Almotaher(c)
+end
+function cm.lvval(e,c,rc)
+	local lv=c:GetLevel()
+	if rc==e:GetHandler() then return 8
+	else return lv end
+end
+function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.IsExistingMatchingCard(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil) end
+	local g=Duel.GetMatchingGroup(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,nil)
+	local ct=1
+	if Duel.GetTurnPlayer()==tp then ct=2 end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,ct,0,0)
+end
+function cm.desop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.RaiseEvent(c,EVENT_CUSTOM+14002100,e,0,0,0,0)
+	local ct=1
+	if Duel.GetTurnPlayer()==tp then ct=2 end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+	local g=Duel.SelectMatchingCard(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,ct,nil)
+	if g:GetCount()>0 then
+		Duel.HintSelection(g)
+		Duel.Destroy(g,REASON_EFFECT)
+	end
+end
+function cm.atktg(e,tp,eg,ep,ev,re,r,rp,chk)
+	local g1=Duel.GetOverlayGroup(tp,1,1)
+	if chk==0 then return #g1>0 end
+	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,1,0,0)
+end
+function cm.atkop(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	Duel.RaiseEvent(c,EVENT_CUSTOM+14002100,e,0,0,0,0)
+	local g1=Duel.GetOverlayGroup(tp,1,1)
+	if #g1>0 then
+		Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
+		local g=g1:Select(tp,1,1,nil)
+		if g:GetCount()>0 then
+			if Duel.SendtoGrave(g,REASON_EFFECT+REASON_DESTROY)~=0 then
+				local e1=Effect.CreateEffect(c)
+				e1:SetType(EFFECT_TYPE_SINGLE)
+				e1:SetCode(EFFECT_UPDATE_ATTACK)
+				e1:SetValue(1200)
+				e1:SetReset(RESET_EVENT+RESETS_STANDARD+RESET_DISABLE)
+				c:RegisterEffect(e1)
+			end
+		end
+	end
+end
+function cm.spcon(e,tp,eg,ep,ev,re,r,rp)
+	return rp==1-tp
+end
+function cm.spfilter(c,e,tp)
+	return cm.Almotaher(c) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) and c:IsLevelBelow(5)
+end
+function cm.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
+		and Duel.IsExistingMatchingCard(cm.spfilter,tp,LOCATION_GRAVE+LOCATION_HAND,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_GRAVE+LOCATION_HAND)
+end
+function cm.spop(e,tp,eg,ep,ev,re,r,rp)
+	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
+	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(cm.spfilter),tp,LOCATION_GRAVE+LOCATION_HAND,0,1,1,nil,e,tp)
+	Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
+end

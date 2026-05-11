@@ -39,7 +39,7 @@ function c98500060.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 function c98500060.ffilter(c)
-	return c:IsAttack(0) and c:IsRace(RACE_FIEND)
+	return c:IsAttack(0) and c:IsRace(RACE_FIEND) and c:IsAttribute(ATTRIBUTE_DARK)
 end
 function c98500060.operation(e,tp,eg,ep,ev,re,r,rp)
 	local e1=Effect.CreateEffect(e:GetHandler())

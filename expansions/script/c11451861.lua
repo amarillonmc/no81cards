@@ -150,6 +150,7 @@ function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if e:IsHasType(EFFECT_TYPE_ACTIVATE) then --and re:GetHandler():IsRelateToEffect(re) then
 		local ev0=Duel.GetCurrentChain()
 		local e1=Effect.CreateEffect(re:GetHandler())
+		e1:SetDescription(aux.Stringid(m,5))
 		e1:SetType(EFFECT_TYPE_QUICK_F)
 		e1:SetCode(EVENT_CHAINING)
 		e1:SetRange(re:GetHandler():GetLocation())

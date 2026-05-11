@@ -52,6 +52,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 	local e4=e3:Clone()
 	e4:SetCode(EVENT_RELEASE)
+	e4:SetCondition(s.thcon2)
 	c:RegisterEffect(e4)
 end
 
@@ -167,7 +168,17 @@ end
 
 -- === 效果③ ===
 function s.spcon(e,tp,eg,ep,ev,re,r,rp)
-	return (rp==1-tp and e:GetHandler():IsPreviousControler(tp)) or (e:GetHandler():IsReason(REASON_EFFECT) and re and re:GetHandler()~=e:GetHandler())
+	local c=e:GetHandler()
+	-- 检查因对方从场上离开：战斗破坏 或 对方效果
+	if not (c:IsPreviousControler(tp) and c:IsPreviousLocation(LOCATION_ONFIELD)) then return false end
+	return c:IsReason(REASON_BATTLE) or (c:IsReason(REASON_EFFECT) and rp==1-tp)
+end
+
+function s.thcon2(e,tp,eg,ep,ev,re,r,rp)
+	-- 检查被其他卡解放
+	local re_c=nil
+	if re then re_c=re:GetHandler() end
+	return not re_c or re_c~=e:GetHandler()
 end
 
 function s.spfilter(c,e,tp)
@@ -176,14 +187,14 @@ end
 
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_MZONE)>0
-		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil,e,tp) end
-	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+		and Duel.IsExistingMatchingCard(s.spfilter,tp,LOCATION_REMOVED+LOCATION_GRAVE+LOCATION_DECK,0,1,nil,e,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_SPECIAL_SUMMON,nil,1,tp,LOCATION_REMOVED+LOCATION_GRAVE)
 end
 
 function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	if Duel.GetLocationCount(tp,LOCATION_MZONE)<=0 then return end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil,e,tp)
+	local g=Duel.SelectMatchingCard(tp,aux.NecroValleyFilter(s.spfilter),tp,LOCATION_DECK+LOCATION_REMOVED+LOCATION_GRAVE,0,1,1,nil,e,tp)
 	if #g>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
 	end

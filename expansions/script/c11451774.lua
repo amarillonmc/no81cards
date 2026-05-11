@@ -151,15 +151,23 @@ function cm.spop(e,tp,eg,ep,ev,re,r,rp)
 	if c:IsRelateToEffect(e) then
 		Duel.SpecialSummon(c,0,tp,tp,false,false,POS_FACEUP_ATTACK)
 	end
-	if not Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE) then return end
+	local at=Duel.CheckEvent(EVENT_ATTACK_ANNOUNCE)
+	local ct=Duel.GetCurrentChain()
+	if ct>=2 then
+		local te=Duel.GetChainInfo(ct-1,CHAININFO_TRIGGERING_EFFECT)
+		if te:IsActiveType(TYPE_MONSTER) then at=true end
+	end
+	if not at then return end
 	local st=false
 	local i=1
 	while type(cm[i])=="table" do
 		local te,tf,cid=table.unpack(cm[i])
-		if te:IsHasType(EFFECT_TYPE_ACTIVATE) then st=true end
+		if te:IsActiveType(TYPE_SPELL+TYPE_TRAP) then st=true end
 		i=i+1
 	end
 	if st then
+		Duel.Hint(HINT_OPSELECTED,tp,aux.Stringid(m,0))
+		Duel.Hint(HINT_OPSELECTED,1-tp,aux.Stringid(m,0))
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 		e1:SetCode(EVENT_BATTLE_CONFIRM)
@@ -183,7 +191,7 @@ function cm.comop(e,tp,eg,ep,ev,re,r,rp)
 	local tt=Duel.GetAttackTarget()
 	if tt then g:AddCard(tt) end
 	local tg=g:Filter(Card.IsAbleToHand,nil)
-	Duel.SendtoHand(tg,nil,REASON_RULE+REASON_REPLACE)
+	Duel.SendtoHand(tg,nil,REASON_RULE)
 	e:Reset()
 end
 function cm.nimfilter(c,e)
