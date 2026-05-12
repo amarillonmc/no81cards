@@ -54,7 +54,7 @@ function cm.immcon(e)
 	local ph=Duel.GetCurrentPhase()
 	return ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE
 end
-function cm.immfilter(c)
+function cm.immfilter(e,c)
 	return cm.Almotaher(c) and c:IsFaceup()
 end
 function cm.immval(e,te)

@@ -29,7 +29,7 @@ function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		local loc=LOCATION_HAND+LOCATION_MZONE
 		if Duel.IsExistingMatchingCard(aux.AND(Card.IsCode,Card.IsFaceup),tp,LOCATION_ONFIELD,0,1,nil,56099748) then loc=loc+LOCATION_DECK end
-		return Duel.IsExistingMatchingCard(s.filter,tp,loc,0,1,nil)
+		return Duel.IsExistingMatchingCard(s.filter,tp,loc,0,1,nil) and Duel.IsChainNegatable(ev) and (re:IsActiveType(TYPE_MONSTER) or re:IsHasType(EFFECT_TYPE_ACTIVATE))
 	end
 	Duel.SetOperationInfo(0,CATEGORY_NEGATE,eg,1,0,0)
 	if re:GetHandler():IsDestructable() and re:GetHandler():IsRelateToEffect(re) then
