@@ -78,7 +78,7 @@ function s.chainfilter(c)
 end
 function s.eqcfilter(c)
 	local tc=c:GetEquipTarget()
-	return tc and c:IsRace(RACE_SPELLCASTER)
+	return tc and tc:IsRace(RACE_SPELLCASTER)
 end
 function s.regop1(e,tp,eg,ep,ev,re,r,rp)
 	if eg:IsExists(s.eqcfilter,1,nil) then
