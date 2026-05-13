@@ -24,7 +24,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 		Duel.ConfirmCards(1-tp,g)
 		local tc=Duel.GetOperatedGroup():GetFirst()
 		if tc:IsCanBeSpecialSummoned(e,0,tp,false,false) and Duel.GetLocationCount(tp,LOCATION_MZONE)>0 
-			and Duel.SelectYesNo(tp,aux.Stringid(m,1)) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 end
+			and Duel.SelectYesNo(tp,aux.Stringid(m,1)) and Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP)~=0 then
 			tc:AddCounter(0x624,1)
 			Duel.RegisterFlagEffect(tp,60002148,0,0,1)
 		end

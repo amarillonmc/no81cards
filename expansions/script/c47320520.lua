@@ -62,6 +62,10 @@ function s.con(e,tp,eg,ep,ev,re,r,rp)
     local c=e:GetHandler()
     return c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS and Duel.IsBattlePhase() and Duel.IsExistingMatchingCard(s.acfilter,tp,LOCATION_ONFIELD,0,1,c)
 end
+function s.con2(e,tp,eg,ep,ev,re,r,rp)
+    local c=e:GetHandler()
+    return c:GetType()==TYPE_SPELL+TYPE_CONTINUOUS
+end
 function s.distg(e,c)
 	return c:IsType(TYPE_EFFECT) or c:GetOriginalType()&TYPE_EFFECT~=0
 end
@@ -73,7 +77,7 @@ function s.toextra(c)
 	e1:SetRange(LOCATION_SZONE)
     e1:SetProperty(EFFECT_FLAG_DELAY+EFFECT_FLAG_CARD_TARGET)
     e1:SetCountLimit(1,id)
-    e1:SetCondition(s.con)
+    e1:SetCondition(s.con2)
     e1:SetTarget(s.tetg)
     e1:SetOperation(s.teop)
 	c:RegisterEffect(e1)

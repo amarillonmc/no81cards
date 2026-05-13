@@ -30,7 +30,7 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.BreakEffect()
 			Duel.Remove(rg,POS_FACEDOWN,REASON_EFFECT)
 		end
-		local tg=Duel.GetFieldGroup(aux.TRUE,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0)
+		local tg=Duel.GetFieldGroup(aux.TRUE,tp,LOCATION_ONFIELD,0)
 		if tg:GetCount()>0 then
 			Duel.BreakEffect()
 			Duel.Draw(tp,tg:GetCount(),REASON_EFFECT)

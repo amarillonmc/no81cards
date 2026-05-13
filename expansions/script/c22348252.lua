@@ -39,7 +39,7 @@ function c22348252.target(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
 	local g=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,e:GetHandler())
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g,1,0,0)
-	if tc:IsSetCard(0x707) then
+	if tc and tc:IsSetCard(0x707) then
 	   Duel.SetChainLimit(c22348252.chlimit)
 	end
 end

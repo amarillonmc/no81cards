@@ -32,12 +32,12 @@ function cm.activate(e,tp,eg,ep,ev,re,r,rp)
 			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_OPTION)
 			sel=Duel.SelectOption(tp,aux.Stringid(m,0),aux.Stringid(m,1))+1
 			if sel==1 then
-				local sg1=Duel.GetMatchingGroup(function(c) return c:IsAttackBelow(tc:GetAttack()) and c:IsFaceup() end,tp,LOCATION_MZONE,LOCATION_MZONE,tc)
+				local sg1=Duel.GetMatchingGroup(function(c) return c:IsAttackBelow(tc:GetAttack()-1) and c:IsFaceup() end,tp,LOCATION_MZONE,LOCATION_MZONE,tc)
 				if sg1:GetCount()>0 then
 					Duel.SendtoGrave(sg1,REASON_EFFECT)
 				end
 			elseif sel==2 then
-				local sg1=Duel.GetMatchingGroup(function(c) return c:IsLevelBelow(tc:GetLevel()) and c:IsFaceup() end,tp,LOCATION_MZONE,LOCATION_MZONE,tc)
+				local sg1=Duel.GetMatchingGroup(function(c) return c:IsLevelBelow(tc:GetLevel()-1) and c:IsFaceup() end,tp,LOCATION_MZONE,LOCATION_MZONE,tc)
 				if sg1:GetCount()>0 then
 					Duel.SendtoGrave(sg1,REASON_EFFECT)
 				end
