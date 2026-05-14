@@ -45,7 +45,7 @@ function c60000014.drop(e,tp,eg,ep,ev,re,r,rp)
 				Duel.ConfirmCards(1-tp,g)
 			end
 		end
-	end
+	end 
 end
 function c60000014.filter(c)
 	return c:IsSetCard(0xee) and (c:IsType(TYPE_SPELL) or c:IsType(TYPE_TRAP)) and not c:IsSetCard(0x10ee) and c:IsAbleToHand()
