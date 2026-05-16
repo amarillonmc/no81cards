@@ -95,11 +95,11 @@ end
 -- Effect 3: Special Summon when destroyed
 function s.spfilter(c, e, tp)
 	return c:IsSetCard(0x4b) and c:IsLevel(10) and c:IsCanBeSpecialSummoned(e, SUMMON_TYPE_SYNCHRO, tp, true, true)
-		and c:IsLocation(LOCATION_EXTRA) or (c:IsLocation(LOCATION_GRAVE) and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0)
+		and (c:IsLocation(LOCATION_EXTRA) or (c:IsLocation(LOCATION_GRAVE) and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0))
 end
 
 function s.spcon(e, tp, eg, ep, ev, re, r, rp)
-	return rp ~= tp and e:GetHandler():IsPreviousControler(tp)
+	return bit.band(r,REASON_EFFECT+REASON_BATTLE)~=0 and e:GetHandler():IsPreviousLocation(LOCATION_ONFIELD)
 end
 
 function s.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
@@ -109,7 +109,7 @@ end
 
 function s.spop(e, tp, eg, ep, ev, re, r, rp)
 	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
-	local sc = Duel.SelectMatchingCard(tp, aux.NecroValleyFilter(s.spfilter), tp, LOCATION_EXTRA + LOCATION_GRAVE, 0, 1, 1, nil, e, tp):GetFirst()
+	local sc = Duel.SelectMatchingCard(tp,s.spfilter, tp, LOCATION_EXTRA + LOCATION_GRAVE, 0, 1, 1, nil, e, tp):GetFirst()
 	if sc then
 		Duel.SpecialSummon(sc, SUMMON_TYPE_SYNCHRO, tp, tp, true, true, POS_FACEUP)
 		sc:CompleteProcedure()

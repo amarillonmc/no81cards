@@ -9,6 +9,7 @@ function c98941060.initial_effect(c)
 	e0:SetType(EFFECT_TYPE_SINGLE)
 	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
 	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
+	e1:SetValue(c98941060.splimit1)
 	c:RegisterEffect(e0)
 	--
 	local e1=Effect.CreateEffect(c)
@@ -62,6 +63,9 @@ function s.tdcfopef(c)
 				end
 				Duel.SendtoDeck(g,nil,SEQ_DECKSHUFFLE,REASON_EFFECT)
 			end
+end
+function c98941060.splimit1(e,se,sp,st)
+	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 function s.fffilter(c)
 	return c:IsType(TYPE_MONSTER) and c:IsSetCard(0x71)

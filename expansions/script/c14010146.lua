@@ -177,7 +177,7 @@ function cm.CheckHandEffect(c,sec,e,tp,eg,ep,ev,re,r,rp)
 			tres=true
 			teg,tep,tev,tre,tr,trp=eg,ep,ev,re,r,rp
 		end
-		if types==EFFECT_TYPE_IGNITION then
+		if types&EFFECT_TYPE_IGNITION>0 then
 			tres=true
 			teg,tep,tev,tre,tr,trp=eg,ep,ev,re,r,rp
 		end

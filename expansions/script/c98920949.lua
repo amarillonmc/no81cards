@@ -104,8 +104,8 @@ end
 function s.tdfilter(c)
 	return (c:IsLocation(LOCATION_GRAVE) or c:IsLocation(LOCATION_REMOVED)) and c:IsSetCard(0x42) and c:IsAbleToDeck()
 end
-function s.thfilter(c, race)
-	return c:IsSetCard(0x42) and c:IsType(TYPE_MONSTER) and (not race or c:GetRace() ~= race) and c:IsAbleToHand()
+function s.thfilter(c)
+	return c:IsSetCard(0x42) and c:IsType(TYPE_MONSTER) and c:IsAbleToHand()
 end
 function s.thtg(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chkc then return false end
@@ -126,29 +126,19 @@ function s.thop(e, tp, eg, ep, ev, re, r, rp)
 	if #g == 0 then return end
 	local ct = Duel.SendtoDeck(g, nil, SEQ_DECKSHUFFLE, REASON_EFFECT)
 	if ct > 0 then
-		local added = {}
-		local race_list = {}
-		local tg = Duel.GetMatchingGroup(s.thfilter, tp, LOCATION_DECK, 0, nil)
-		for i = 1, ct do
-			Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_ATOHAND)
-			local sc = tg:SelectSubGroup(tp, function(sg) 
-				for rc in aux.Next(sg) do
-					if race_list[rc:GetRace()] then return false end
-				end
-				return true
-			end, false, 1, 1):GetFirst()
-			if sc then
-				race_list[sc:GetRace()] = true
-				Duel.SendtoHand(sc, nil, REASON_EFFECT)
-				Duel.ConfirmCards(1 - tp, sc)
-				table.insert(added, sc)
-			else
-				break
-			end
-		end
+		local mc=ct
+		local g=Duel.GetMatchingGroup(s.thfilter,tp,LOCATION_DECK,0,nil)
+		if g:GetCount()>0 and mc>0 then
+			Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TOGRAVE)
+			local fc=g:SelectSubGroup(tp,s.fselect,false,1,mc)
+			Duel.SendtoHand(fc,nil,REASON_EFFECT)
+			Duel.ConfirmCards(1-tp,fc)
+		end	
 	end
 end
-
+function s.fselect(g)
+	return g:GetClassCount(Card.GetRace)==g:GetCount()
+end
 -- Effect 3: Condition
 function s.spcon(e, tp, eg, ep, ev, re, r, rp)
 	return rp ~= tp and e:GetHandler():IsPreviousControler(tp)
@@ -157,7 +147,7 @@ end
 -- Effect 3: Target selection
 function s.spfilter(c, e, tp)
 	return c:IsSetCard(0x4b) and c:IsLevel(10) and c:IsCanBeSpecialSummoned(e, SUMMON_TYPE_SYNCHRO, tp, true, true)
-		and c:IsLocation(LOCATION_EXTRA) or (c:IsLocation(LOCATION_GRAVE) and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0)
+		and (c:IsLocation(LOCATION_EXTRA) or (c:IsLocation(LOCATION_GRAVE) and Duel.GetLocationCount(tp, LOCATION_MZONE) > 0))
 end
 function s.sptg(e, tp, eg, ep, ev, re, r, rp, chk)
 	if chk == 0 then return Duel.IsExistingMatchingCard(s.spfilter, tp, LOCATION_EXTRA + LOCATION_GRAVE, 0, 1, nil, e, tp) end
@@ -167,7 +157,7 @@ end
 -- Effect 3: Operation
 function s.spop(e, tp, eg, ep, ev, re, r, rp)
 	Duel.Hint(HINT_SELECTMSG, tp, HINTMSG_SPSUMMON)
-	local sc = Duel.SelectMatchingCard(tp, aux.NecroValleyFilter(s.spfilter), tp, LOCATION_EXTRA + LOCATION_GRAVE, 0, 1, 1, nil, e, tp):GetFirst()
+	local sc = Duel.SelectMatchingCard(tp, s.spfilter, tp, LOCATION_EXTRA + LOCATION_GRAVE, 0, 1, 1, nil, e, tp):GetFirst()
 	if sc then
 		Duel.SpecialSummon(sc, SUMMON_TYPE_SYNCHRO, tp, tp, true, true, POS_FACEUP)
 		sc:CompleteProcedure()
