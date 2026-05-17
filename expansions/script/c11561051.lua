@@ -5,7 +5,7 @@ function cm.initial_effect(c)
 	c:EnableCounterPermit(0x1)
 	--link summon
 	aux.AddLinkProcedure(c,nil,2,4,c11561051.lcheck)
-   -- aux.AddLinkProcedure(c,nil,2)
+	--aux.AddLinkProcedure(c,nil,2)
 	c:EnableReviveLimit()
 	--add counter
 	local e1=Effect.CreateEffect(c)
@@ -169,7 +169,7 @@ function c11561051.adop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function c11561051.aqcon1filter(c,tp)
-	return c:IsType(TYPE_MONSTER) and c:GetReasonPlayer()==1-tp
+	return c:IsType(TYPE_MONSTER) and c:GetReasonPlayer()==tp
 end
 function c11561051.aqcon1(e,tp,eg,ep,ev,re,r,rp)
 	return eg:IsExists(c11561051.aqcon1filter,1,nil,tp)
@@ -177,6 +177,7 @@ end
 function c11561051.adop1(e,tp,eg,ep,ev,re,r,rp)
 	local flag=Duel.GetFlagEffectLabel(tp,11561051)
 	local tc=eg:GetFirst()
+	Debug.Message(1)
 	local atk=0
 	while tc do
 		local tatk=tc:GetTextAttack()
