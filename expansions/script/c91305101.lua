@@ -1,73 +1,56 @@
 --唤士的幼龙-嘉儿
-if not require and loadfile then
-	function require(str)
-		require_list=require_list or {}
-		if not require_list[str] then
-			if string.find(str,"%.") then
-				require_list[str]=loadfile(str)
-			else
-				require_list[str]=loadfile(str..".lua")
-			end
-			pcall(require_list[str])
-			return require_list[str]
-		end
-		return require_list[str]
-	end
-end
-if not pcall(function() require("expansions/script/c91301000") end) then require("script/c91301000") end
-local m,cm=rscf.DefineCard(91305101,"DragonCaller")
-if rsdc then return end
-rsdc = cm 
+Duel.LoadScript("c91301000.lua")
+rsdc = rsdc or {}
 rscf.DefineSet(rsdc,"DragonCaller")
-
 function rsdc.SynchroFun(c,code,att,cate,cost,tg,op,limit)
+	local m=c:GetOriginalCode()
 	c:EnableReviveLimit()
 	aux.AddSynchroProcedure(c,rsdc.IsSet,aux.FilterBoolFunction(Card.IsAttribute,att),1)
-	local e1=rsef.QO(c,nil,{m,2},nil,"sp",nil,LOCATION_EXTRA,nil,rscost.cost({cm.resfilter,cm.resgcheck},"res",LOCATION_HAND+LOCATION_MZONE,0,2,2),rsop.target3(cm.checkfun,cm.spfilter,"sp"),cm.synop)
+	local e1=rsef.QO(c,nil,{m,2},nil,"sp",nil,LOCATION_EXTRA,nil,rscost.cost({rsdc.resfilter,rsdc.resgcheck},"res",LOCATION_HAND+LOCATION_MZONE,0,2,2),rsop.target3(rsdc.checkfun,rsdc.spfilter,"sp"),rsdc.synop)
 	e1:SetLabel(att)
-	local e2=rsef.QO(c,nil,{m,2},{1,code},"sp",nil,LOCATION_GRAVE,nil,rscost.cost(cm.resfilter2,"res",LOCATION_HAND+LOCATION_MZONE),rsop.target(cm.spfilter2,"sp"),cm.synop2)
+	local e2=rsef.QO(c,nil,{m,2},{1,m},"sp",nil,LOCATION_GRAVE,nil,rscost.cost(rsdc.resfilter2,"res",LOCATION_HAND+LOCATION_MZONE),rsop.target(rsdc.spfilter2,"sp"),rsdc.synop2)
 	e2:SetLabel(att)
-	local e3=rsef.STO(c,EVENT_SPSUMMON_SUCCESS,{code,0},{1,code+100},cate,"de",nil,cost,cm.synsptg(tg,limit),op)
+	local e3=rsef.STO(c,EVENT_SPSUMMON_SUCCESS,{m,0},{1,m+100},cate,"de",nil,cost,rsdc.synsptg(tg,limit),op)
 	return e1,e2,e3
 end
-function cm.spfilter(c,e,tp)
+function rsdc.spfilter(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_SYNCHRO,tp,false,false)
 end
-function cm.spfilter2(c,e,tp)
+function rsdc.spfilter2(c,e,tp)
 	return c:IsCanBeSpecialSummoned(e,0,tp,false,false)
 end
-function cm.checkfun(e,tp)
+function rsdc.checkfun(e,tp)
 	return not e:GetHandler():IsStatus(STATUS_CHAINING)
 end 
-function cm.resfilter(c,e,tp)
+function rsdc.resfilter(c,e,tp)
 	return (rsdc.IsSetM(c) or c:IsAttribute(e:GetLabel())) and c:IsReleasable()
 end
-function cm.resgcheck(g,e,tp)
+function rsdc.resgcheck(g,e,tp)
 	return Duel.GetLocationCountFromEx(tp,tp,g,e:GetHandler())>0
 end
-function cm.synop(e,tp)
+function rsdc.synop(e,tp)
 	local c=rscf.GetSelf(e)
 	if c then rssf.SpecialSummon(c,SUMMON_TYPE_SYNCHRO) c:CompleteProcedure() end
 end
-function cm.synop2(e,tp)
+function rsdc.synop2(e,tp)
 	local c=rscf.GetSelf(e)
 	if c then rssf.SpecialSummon(c) end
 end
-function cm.resfilter2(c,e,tp)
+function rsdc.resfilter2(c,e,tp)
 	return (rsdc.IsSetM(c) or c:IsAttribute(e:GetLabel())) and c:IsReleasable() and Duel.GetMZoneCount(tp,c,tp)>0
 end
-function cm.synsptg(tg,limit)
+function rsdc.synsptg(tg,limit)
 	return function(e,tp,eg,ep,ev,re,r,rp,chk)
 		if chk==0 then return not tg or tg(e,tp,eg,ep,ev,re,r,rp,0) end
 		if tg then
 			tg(e,tp,eg,ep,ev,re,r,rp,1)
 		end
 		if limit then
-			Duel.SetChainLimit(cm.chainlimit(e:GetHandler(),limit))
+			Duel.SetChainLimit(rsdc.chainlimit(e:GetHandler(),limit))
 		end
 	end
 end
-function cm.chainlimit(c,limit)
+function rsdc.chainlimit(c,limit)
 	return function(e,rp,tp)
 		return tp==rp or not limit(c,e:GetHandler(),e)
 	end
@@ -77,15 +60,16 @@ function rsdc.HandActFun(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_SINGLE)
 	e1:SetCode(EFFECT_TRAP_ACT_IN_HAND)
-	e1:SetCondition(cm.handcon)
+	e1:SetCondition(rsdc.handcon)
 	c:RegisterEffect(e1)
 	return e1
 end
-function cm.handcon(e)
+function rsdc.handcon(e)
 	return Duel.GetMatchingGroupCount(Card.IsType,e:GetHandlerPlayer(),LOCATION_ONFIELD,0,nil,TYPE_SPELL+TYPE_TRAP)==0
 end
 ------------------------------------
 
+local m,cm=rscf.DefineCard(91305101,"DragonCaller")
 function cm.initial_effect(c)
 	local e1=rsef.SV_ADD(c,"att",ATTRIBUTE_WATER+ATTRIBUTE_FIRE+ATTRIBUTE_WIND)
 	local e2=rsef.STO(c,EVENT_SUMMON_SUCCESS,{m,0},{1,m},"lv","de,tg",nil,nil,rstg.target2(cm.fun,cm.lvfilter,nil,LOCATION_MZONE),cm.lvop)

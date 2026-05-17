@@ -7,8 +7,21 @@
 local Version_Number = "2022.11.02"
 
 
+if not require and Duel.LoadScript then
+	function require(str)
+		require_list=require_list or {}
+		local name=str
+		for word in string.gmatch(str,"[^/]+") do
+			name=word
+		end
+		if not string.find(name,"%.") then name=name..".lua" end
+		if not require_list[str] then
+			require_list[str]=Duel.LoadScript(name)
+		end
+		return require_list[str]
+	end
+end
 Duel.LoadScript("c10100000.lua")
-Duel.LoadScript("c11410000.lua")
 if rsv then return end
 local s = {}
 rsv = { }  --"Base Function"
@@ -566,7 +579,7 @@ end
 function rsef.STO_Flip(reg_obj, desc_obj, lim_obj, ctgy, flag, con, cost, tg, op, rst_obj)
 	local desc_obj2, ctgy2, flag2 = s.switch_old_string(desc_obj, ctgy, flag)
 	local lim_obj2 = s.switch_old_count_limit(lim_obj)
-	return Scl.CreateFlipOptionalEffect(reg_obj, desc_obj2, lim_obj2, ctgy2, flag2, con, cost, tg, op, rst_obj)			 
+	return Scl.CreateFlipOptionalEffect(reg_obj, desc_obj2, lim_obj2, ctgy2, flag2, con, cost, tg, op, rst_obj)		  
 end
 function rsef.STF_Flip(reg_obj, desc_obj, lim_obj, ctgy, flag, con, cost, tg, op, rst_obj)
 	local desc_obj2, ctgy2, flag2 = s.switch_old_string(desc_obj, ctgy, flag)
