@@ -204,13 +204,11 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e0)
 	--search
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(m,1))
 	e1:SetCategory(CATEGORY_COIN+CATEGORY_TODECK)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
-	e1:SetCode(EVENT_TO_GRAVE)
+	e1:SetCode(EVENT_CHAINING)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCondition(cm.thcon)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
@@ -255,7 +253,7 @@ function cm.initial_effect(c)
 end
 cm.toss_coin=true
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return eg:IsExists(Card.IsType,1,nil,TYPE_SPELL)
+	return re:IsActiveType(TYPE_SPELL)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:GetHandler():IsAbleToDeck() end

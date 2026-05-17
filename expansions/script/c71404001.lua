@@ -23,7 +23,7 @@ function c71404001.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(71404001,1))
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetCategory(CATEGORY_EQUIP+CATEGORY_REMOVE+CATEGORY_TODECK)
+	e2:SetCategory(CATEGORY_EQUIP+CATEGORY_REMOVE)
 	e2:SetRange(LOCATION_MZONE)
 	e2:SetCountLimit(1,71504001)
 	e2:SetCost(yume.stellar_memories.LimitCost)
@@ -67,7 +67,7 @@ end
 function c71404001.tg2(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and Duel.IsExistingMatchingCard(c71404001.filter2,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
-		and yume.stellar_memories.BanishorSendSpellCheck(71404013,tp) end
+		and yume.stellar_memories.TempBanishSpellCheck(71404013,tp) end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
 function c71404001.op2(e,tp,eg,ep,ev,re,r,rp)
@@ -89,7 +89,7 @@ function c71404001.op2(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	yume.stellar_memories.BanishorSendSpell(71404013,tp,aux.Stringid(71404001,2),aux.Stringid(71404001,3))
+	yume.stellar_memories.TempBanishSpell(e:GetHandler(),71404013,tp)
 end
 function c71404001.eqlimit(e,c)
 	return e:GetOwner()==c

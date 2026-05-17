@@ -84,7 +84,7 @@ function s.rprcon(e,c)
 	return c:GetFlagEffect(id)>0
 end
 function s.setfilter(c)
-	return c:IsSetCard(0xca1) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
+	return c:IsSetCard(0xb201) and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function s.settg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.IsExistingMatchingCard(s.setfilter,tp,LOCATION_DECK,0,1,nil) end
@@ -120,7 +120,7 @@ function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.spfilter(c)
     for _,sumtype in pairs({0,SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ,SUMMON_TYPE_LINK,SUMMON_TYPE_SPECIAL,SUMMON_VALUE_SELF}) do
-		if c:IsSpecialSummonable(sumtype) and c:IsSetCard(0xca1) then return true end
+		if c:IsSpecialSummonable(sumtype) and c:IsSetCard(0xb201) then return true end
 	end
 	return false
 end

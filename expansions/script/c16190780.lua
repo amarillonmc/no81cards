@@ -36,7 +36,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)        
 end
 function s.confilter(c)
-	return c:IsSetCard(0xca1) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
+	return c:IsSetCard(0xb201) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
 function s.descon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.confilter,tp,LOCATION_MZONE+LOCATION_REMOVED,0,1,nil)
@@ -70,7 +70,7 @@ function s.actcon(e)
 	return e:GetHandler():IsStatus(STATUS_SET_TURN) and e:GetHandler():IsLocation(LOCATION_ONFIELD)
 end
 function s.cfilter(c,tp,mc)
-	return c:IsSetCard(0xca1) and ((c:IsFaceup() and c:GetSequence()<5) or c:IsLocation(LOCATION_HAND)) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xb201) and ((c:IsFaceup() and c:GetSequence()<5) or c:IsLocation(LOCATION_HAND)) and c:IsAbleToRemoveAsCost()
         and Duel.IsExistingMatchingCard(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,Group.FromCards(c,mc))
 end
 function s.actcost(e,tp,eg,ep,ev,re,r,rp,chk)
@@ -117,7 +117,7 @@ function s.rctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,800)
 end
 function s.thfilter(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0xca1) and not c:IsCode(id) and c:IsAbleToHand()
+	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0xb201) and not c:IsCode(id) and c:IsAbleToHand()
 end
 function s.rcop(e,tp,eg,ep,ev,re,r,rp)
 	local p,d=Duel.GetChainInfo(0,CHAININFO_TARGET_PLAYER,CHAININFO_TARGET_PARAM)

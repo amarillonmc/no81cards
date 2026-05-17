@@ -4,7 +4,7 @@ function s.initial_effect(c)
 	
 	-- 超量召唤条件
 	c:EnableReviveLimit()
-	aux.AddXyzProcedure(c,nil,3,2,nil,nil,99)
+	aux.AddXyzProcedure(c,nil,3,3,nil,nil,99)
 	
 	-- ①超量召唤夺取素材
 	local e1=Effect.CreateEffect(c)
@@ -30,7 +30,7 @@ function s.initial_effect(c)
 	e2:SetCost(s.drcost)
 	e2:SetTarget(s.drtg)
 	e2:SetOperation(s.drop)
-	c:RegisterEffect(e2)
+	--c:RegisterEffect(e2)
 	
 	-- ③反转解场效果
 	local e3=Effect.CreateEffect(c)

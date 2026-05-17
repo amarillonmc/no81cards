@@ -37,10 +37,10 @@ end
 function s.efcon(e,tp,eg,ep,ev,re,r,rp)
 	if ev<=1 then return false end
     local te,p=Duel.GetChainInfo(ev-1,CHAININFO_TRIGGERING_EFFECT,CHAININFO_TRIGGERING_PLAYER)    
-	return te and te:GetHandler():IsSetCard(0xca1)
+	return te and te:GetHandler():IsSetCard(0xb201)
 end
 function s.rmfilter(c)
-	return c:IsSetCard(0xca1) and c:IsType(TYPE_QUICKPLAY) and c:IsAbleToRemove()
+	return c:IsSetCard(0xb201) and c:IsType(TYPE_QUICKPLAY) and c:IsAbleToRemove()
 end
 function s.eftg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local b1=rp==tp and Duel.IsExistingMatchingCard(s.rmfilter,tp,LOCATION_DECK,0,1,nil)
@@ -83,7 +83,7 @@ function s.actcon(e)
 	return e:GetHandler():IsStatus(STATUS_SET_TURN) and e:GetHandler():IsLocation(LOCATION_ONFIELD)
 end
 function s.cfilter(c)
-	return c:IsSetCard(0xca1) and ((c:IsFaceup() and c:GetSequence()<5) or c:IsLocation(LOCATION_HAND)) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xb201) and ((c:IsFaceup() and c:GetSequence()<5) or c:IsLocation(LOCATION_HAND)) and c:IsAbleToRemoveAsCost()
 end
 function s.actcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -129,7 +129,7 @@ function s.rctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_RECOVER,nil,0,tp,800)
 end
 function s.setfilter(c)
-	return c:IsSetCard(0xca1) and not c:IsCode(id) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) 
+	return c:IsSetCard(0xb201) and not c:IsCode(id) and (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) 
     	and c:IsType(TYPE_SPELL+TYPE_TRAP) and c:IsSSetable()
 end
 function s.rcop(e,tp,eg,ep,ev,re,r,rp)

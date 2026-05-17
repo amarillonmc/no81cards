@@ -164,7 +164,7 @@ function cm.nfilter(c)
 	return c:GetType()==TYPE_TRAP and c:IsOriginalEffectProperty(cm.sp_filter) and c:CheckActivateEffect(false,false,false)~=nil
 end
 function cm.sp_filter(e)
-	return e:IsActivated() and e:IsHasCategory(CATEGORY_EQUIP)
+	return e:IsHasCategory(CATEGORY_EQUIP)
 end
 function cm.mtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()

@@ -65,7 +65,7 @@ function s.splimit(e,se,sp,st)
 	return not e:GetHandler():IsLocation(LOCATION_EXTRA)
 end
 function s.sprfilter(c)
-	return c:IsSetCard(0xca1) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xb201) and c:IsAbleToRemoveAsCost()
 end
 function s.fselect(g)
 	return g:GetClassCount(Card.GetCode)==g:GetCount()
@@ -112,7 +112,7 @@ function s.desop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.thfilter(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0xca1) and c:IsAbleToHand()
+	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsSetCard(0xb201) and c:IsAbleToHand()
 end
 function s.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
@@ -128,7 +128,7 @@ function s.distg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.spfilter(c)
     for _,sumtype in pairs({0,SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ,SUMMON_TYPE_LINK,SUMMON_TYPE_SPECIAL,SUMMON_VALUE_SELF}) do
-		if c:IsSpecialSummonable(sumtype) and c:IsSetCard(0xca1) then return true end
+		if c:IsSpecialSummonable(sumtype) and c:IsSetCard(0xb201) then return true end
 	end
 	return false
 end

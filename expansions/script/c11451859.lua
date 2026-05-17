@@ -297,7 +297,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function cm.chkval(e,te)
-	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) and e:GetHandler():IsAbleToHand() then
+	if te and te:GetHandler() and not te:IsHasProperty(EFFECT_FLAG_UNCOPYABLE) and (te:GetCode()<0x10000 or te:IsHasType(EFFECT_TYPE_ACTIONS)) then
 		if KOISHI_CHECK then
 			Duel.DisableActionCheck(true)
 			pcall(Duel.SendtoHand,e:GetHandler(),nil,REASON_EFFECT)

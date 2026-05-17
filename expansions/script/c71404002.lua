@@ -14,7 +14,7 @@ function c71404002.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(71404002,0))
 	e1:SetType(EFFECT_TYPE_IGNITION)
-	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_TODECK+CATEGORY_REMOVE)
+	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_REMOVE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCountLimit(1,71404002)
 	e1:SetCost(yume.stellar_memories.LimitCost)
@@ -56,7 +56,7 @@ end
 function c71404002.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and Duel.IsExistingMatchingCard(c71404002.filter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
-		and yume.stellar_memories.BanishorSendSpellCheck(71404013,tp)
+		and yume.stellar_memories.TempBanishSpellCheck(71404013,tp)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
@@ -79,7 +79,7 @@ function c71404002.op1(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	yume.stellar_memories.BanishorSendSpell(71404013,tp,aux.Stringid(71404001,2),aux.Stringid(71404001,3))
+	yume.stellar_memories.TempBanishSpell(e:GetHandler(),71404013,tp)
 	--Optional Multi Ritual
 	--yume.stellar_memories.OptionalMultiRitualSummon(e,tp,aux.Stringid(71404002,1),"Greater",LOCATION_SZONE,LOCATION_EXTRA)
 end

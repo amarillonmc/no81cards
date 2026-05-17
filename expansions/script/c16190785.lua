@@ -36,7 +36,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)    
 end
 function s.confilter(c)
-	return c:IsSetCard(0xca1) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
+	return c:IsSetCard(0xb201) and c:IsType(TYPE_MONSTER) and c:IsFaceup()
 end
 function s.lpcon(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(s.confilter,tp,LOCATION_MZONE+LOCATION_REMOVED,0,1,nil)
@@ -124,7 +124,7 @@ end
 function s.cfilter(c,tp)
 	local b1=Duel.GetFieldGroupCount(tp,LOCATION_HAND,0)>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_EXTRA)>0
     local b2=Duel.GetFieldGroupCount(tp,LOCATION_EXTRA,0)>0 and Duel.GetFieldGroupCount(tp,0,LOCATION_HAND)>0 
-	return c:IsSetCard(0xca1) and ((c:IsFaceup() and c:GetSequence()<5) or c:IsLocation(LOCATION_HAND)) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xb201) and ((c:IsFaceup() and c:GetSequence()<5) or c:IsLocation(LOCATION_HAND)) and c:IsAbleToRemoveAsCost()
 		and (b1 or b2)
 end
 function s.actcost(e,tp,eg,ep,ev,re,r,rp,chk)

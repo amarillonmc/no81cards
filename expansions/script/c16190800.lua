@@ -45,7 +45,7 @@ function s.checkop(e,tp,eg,ep,ev,re,r,rp)
     end        
 end
 function s.costfilter(c)
-	return c:IsSetCard(0xca1) and ((c:IsFaceup() and c:GetSequence()<5) or c:IsLocation(LOCATION_HAND+LOCATION_DECK)) and c:IsAbleToRemoveAsCost()
+	return c:IsSetCard(0xb201) and ((c:IsFaceup() and c:GetSequence()<5) or c:IsLocation(LOCATION_HAND+LOCATION_DECK)) and c:IsAbleToRemoveAsCost()
 end    	
 function s.efcost(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
@@ -88,7 +88,7 @@ function s.efop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 function s.rmtg(e,c)
-	return c:IsSetCard(0xca1) and c:IsType(TYPE_SPELL+TYPE_TRAP)
+	return c:IsSetCard(0xb201) and c:IsType(TYPE_SPELL+TYPE_TRAP)
 end    
 function s.rctg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return true end
@@ -98,7 +98,7 @@ function s.rctg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.spfilter(c)
     for _,sumtype in pairs({0,SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ,SUMMON_TYPE_LINK,SUMMON_TYPE_SPECIAL,SUMMON_VALUE_SELF}) do
-		if c:IsSpecialSummonable(sumtype) and c:IsSetCard(0xca1) then return true end
+		if c:IsSpecialSummonable(sumtype) and c:IsSetCard(0xb201) then return true end
 	end
 	return false
 end

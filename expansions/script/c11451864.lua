@@ -206,11 +206,11 @@ function cm.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(m,1))
 	e1:SetCategory(CATEGORY_COIN+CATEGORY_TODECK) --+CATEGORY_DRAW)
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_O)
+	e1:SetType(EFFECT_TYPE_QUICK_O)
 	e1:SetRange(LOCATION_HAND+LOCATION_MZONE)
-	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
+	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetCountLimit(1,EFFECT_COUNT_CODE_CHAIN)
-	e1:SetProperty(EFFECT_FLAG_DELAY)
+	--e1:SetProperty(EFFECT_FLAG_DELAY)
 	e1:SetCondition(cm.thcon)
 	e1:SetTarget(cm.thtg)
 	e1:SetOperation(cm.thop)
@@ -255,10 +255,20 @@ function cm.initial_effect(c)
 	if not cm.global_check then
 		local e1=Effect.CreateEffect(c)
 		e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
-		--e1:SetProperty(EFFECT_FLAG_DELAY)
 		e1:SetCode(EVENT_TOSS_COIN)
 		e1:SetOperation(cm.effop)
-		Duel.RegisterEffect(e1,0)
+		--Duel.RegisterEffect(e1,0)
+	end
+	if not PNFL_DUEL_ACT_CHECK then
+		PNFL_DUEL_ACT_CHECK={}
+		local ge1=Effect.CreateEffect(c)
+		ge1:SetType(EFFECT_TYPE_FIELD)
+		ge1:SetCode(EFFECT_ACTIVATE_COST)
+		ge1:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
+		ge1:SetTargetRange(1,1)
+		ge1:SetTarget(cm.chktg)
+		ge1:SetOperation(cm.check2)
+		Duel.RegisterEffect(ge1,0)
 	end
 end
 cm.toss_coin=true
@@ -274,17 +284,49 @@ function cm.effop(e,tp,eg,ep,ev,re,r,rp)
 		cm[re:GetHandler():GetCode()]=true
 	end
 end
+function cm.chktg(e,te,tp)
+	e:SetLabelObject(te)
+	return true
+end
+function cm.check2(e,tp,eg,ep,ev,re,r,rp)
+	local te=e:GetLabelObject()
+	local code,code2=te:GetHandler():GetCode()
+	table.insert(PNFL_DUEL_ACT_CHECK,code)
+	local e1=Effect.CreateEffect(e:GetHandler())
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
+	e1:SetCode(EVENT_CHAIN_NEGATED)
+	e1:SetLabel(Duel.GetCurrentChain()+1,#PNFL_DUEL_ACT_CHECK)
+	e1:SetOperation(cm.reset2)
+	e1:SetReset(RESET_CHAIN)
+	Duel.RegisterEffect(e1,0)
+	if code2 then
+		table.insert(PNFL_DUEL_ACT_CHECK,code2)
+		local e2=e1:Clone()
+		e2:SetLabel(Duel.GetCurrentChain()+1,#PNFL_DUEL_ACT_CHECK)
+		Duel.RegisterEffect(e2,0)
+	end
+end
+function cm.reset2(e,tp,eg,ep,ev,re,r,rp)
+	local ev0,loc=e:GetLabel()
+	if ev==ev0 then table.remove(PNFL_DUEL_ACT_CHECK,loc) end
+end
 function cm.thcon(e,tp,eg,ep,ev,re,r,rp)
-	return not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND)
+	return Duel.GetCurrentChain()>0 --not eg:IsContains(e:GetHandler()) or e:GetHandler():IsLocation(LOCATION_HAND)
 end
 function cm.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return e:GetHandler():IsAbleToDeck() end --and Duel.IsPlayerCanDraw(tp,1) end
+	local tg=Duel.GetMatchingGroup(cm.fdfilter,tp,LOCATION_DECK,0,nil)
+	if chk==0 then return e:GetHandler():IsAbleToDeck() and #tg>0 end --and Duel.IsPlayerCanDraw(tp,1) end
 	Duel.SetOperationInfo(0,CATEGORY_COIN,nil,0,tp,1)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
 	--Duel.SetOperationInfo(0,CATEGORY_DRAW,nil,0,tp,1)
 end
 function cm.fdfilter(c)
-	return cm[c:GetCode()] and c:IsFacedown()
+	if not c:IsFacedown() then return false end
+	for i=1,#PNFL_DUEL_ACT_CHECK do
+		local code=PNFL_DUEL_ACT_CHECK[i]
+		if c:IsCode(code) then return true end
+	end
+	return false --cm[c:GetCode()] and c:IsFacedown()
 end
 function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -312,7 +354,7 @@ function cm.thop(e,tp,eg,ep,ev,re,r,rp)
 		Duel.RegisterEffect(e1,tp)
 	end--]]
 	local tg=Duel.GetMatchingGroup(cm.fdfilter,tp,LOCATION_DECK,0,nil)
-	if #tg>0 and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
+	if #tg>0 then --and Duel.SelectYesNo(tp,aux.Stringid(m,2)) then
 		local g1=tg
 		local fg
 		local ph=Duel.GetCurrentPhase()

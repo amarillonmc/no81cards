@@ -54,10 +54,10 @@ function cm.initial_effect(c)
 		local _AddCounter=Card.AddCounter
 		function Card.AddCounter(c,typ,ct,...)
 			local tp=c:GetControler()
-			local sg=Duel.GetMatchingGroup(function(c) return c:GetOriginalCode()==m and c:IsSSetable() and not c:IsHasEffect(EFFECT_NECRO_VALLEY) end,c:GetControler(),LOCATION_DECK+LOCATION_GRAVE,0,nil)
+			local sg=Duel.GetMatchingGroup(function(c) return c:GetOriginalCode()==m and c:IsSSetable() and not c:IsHasEffect(EFFECT_NECRO_VALLEY) end,c:GetControler(),LOCATION_DECK,0,nil)
 			if c:IsType(TYPE_MONSTER) and c:IsHasEffect(EFFECT_COUNTER_LIMIT+0x1) and #sg>0 and Duel.SelectEffectYesNo(tp,c,aux.Stringid(m,0)) then
 				Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SET)
-				local g=Duel.SelectMatchingCard(tp,function(c) return c:GetOriginalCode()==m and c:IsSSetable() and not c:IsHasEffect(EFFECT_NECRO_VALLEY) end,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
+				local g=Duel.SelectMatchingCard(tp,function(c) return c:GetOriginalCode()==m and c:IsSSetable() and not c:IsHasEffect(EFFECT_NECRO_VALLEY) end,tp,LOCATION_DECK,0,1,1,nil)
 				local tc=g:GetFirst()
 				Duel.SSet(tp,tc)
 				return false

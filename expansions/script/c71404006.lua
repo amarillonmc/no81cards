@@ -15,7 +15,7 @@ function s.initial_effect(c)
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
-	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_REMOVE+CATEGORY_TODECK)
+	e1:SetCategory(CATEGORY_EQUIP+CATEGORY_REMOVE)
 	e1:SetRange(LOCATION_MZONE)
 	e1:SetCode(EVENT_CHAINING)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
@@ -62,7 +62,7 @@ end
 function s.tg1(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return Duel.GetLocationCount(tp,LOCATION_SZONE)>0
 		and Duel.IsExistingMatchingCard(s.filter1,tp,LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
-		and yume.stellar_memories.BanishorSendSpellCheck(71404015,tp)
+		and yume.stellar_memories.TempBanishSpellCheck(71404015,tp)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_LEAVE_GRAVE,nil,1,tp,LOCATION_GRAVE+LOCATION_REMOVED)
 end
@@ -85,7 +85,7 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 			end
 		end
 	end
-	yume.stellar_memories.BanishorSendSpell(71404015,tp,aux.Stringid(id-1,3),aux.Stringid(id-1,4))
+	yume.stellar_memories.TempBanishSpell(e:GetHandler(),71404015,tp)
 end
 function s.eqlimit(e,c)
 	return e:GetOwner()==c

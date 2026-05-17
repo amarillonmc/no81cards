@@ -6,7 +6,7 @@ function cm.initial_effect(c)
 	c:EnableReviveLimit()
 	--destroy
 	local e3=Effect.CreateEffect(c)
-	e3:SetCategory(CATEGORY_DESTROY+CATEGORY_DAMAGE)
+	e3:SetCategory(CATEGORY_TOGRAVE+CATEGORY_DAMAGE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetCode(EVENT_FREE_CHAIN)
 	e3:SetRange(LOCATION_MZONE)
@@ -30,20 +30,20 @@ function cm.initial_effect(c)
 	c:RegisterEffect(e6)
 end
 function cm.descon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetFlagEffectLabel(m+10000) and e:GetHandler():GetFlagEffectLabel(m+10000)>0
+	return e:GetHandler():GetFlagEffectLabel(m+1) and e:GetHandler():GetFlagEffectLabel(m+1)>0
 end
 function cm.destg(e,tp,eg,ep,ev,re,r,rp,chk)
 	local c=e:GetHandler()
-	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,nil) and c:GetFlagEffect(m)<c:GetFlagEffectLabel(m+10000) end
+	if chk==0 then return Duel.IsExistingMatchingCard(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,nil) and c:GetFlagEffect(m)<c:GetFlagEffectLabel(m+1) end
 	c:RegisterFlagEffect(m,RESET_EVENT+RESETS_STANDARD,0,1)
-	local g=Duel.GetMatchingGroup(Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,nil)
-	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,1,0,0)
+	local g=Duel.GetMatchingGroup(Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,nil)
+	Duel.SetOperationInfo(0,CATEGORY_TOGRAVE,g,1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_DAMAGE,nil,0,1-tp,1000)
 end
 function cm.desop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_REMOVE)
-	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToRemove,tp,0,LOCATION_ONFIELD,1,1,nil)
-	if #g>0 and Duel.Remove(g,POS_FACEUP,REASON_EFFECT)~=0 then
+	local g=Duel.SelectMatchingCard(tp,Card.IsAbleToGrave,tp,0,LOCATION_ONFIELD,1,1,nil)
+	if #g>0 and Duel.SendtoGrave(g,REASON_EFFECT)~=0 and g:GetFirst():IsLocation(LOCATION_GRAVE) then
 		Duel.Damage(1-tp,1000,REASON_EFFECT)
 	end
 end
@@ -51,7 +51,7 @@ function cm.matcon(e,tp,eg,ep,ev,re,r,rp)
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_LINK) and e:GetLabel()>0
 end
 function cm.matop(e,tp,eg,ep,ev,re,r,rp)
-	e:GetHandler():RegisterFlagEffect(m+10000,RESET_EVENT+RESETS_STANDARD,0,1,e:GetLabel())
+	e:GetHandler():RegisterFlagEffect(m+1,RESET_EVENT+RESETS_STANDARD,0,1,e:GetLabel())
 end
 function cm.valcheck(e,c)
 	local g=c:GetMaterial()

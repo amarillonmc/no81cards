@@ -35,7 +35,7 @@ function s.initial_effect(c)
 	e2:SetTargetRange(LOCATION_MZONE,LOCATION_MZONE)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
-	--ritual summon
+	--banish 星忆导刃
 	local e3a=Effect.CreateEffect(c)
 	e3a:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_CONTINUOUS)
 	e3a:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
@@ -44,7 +44,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3a)
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
-	e3:SetCategory(CATEGORY_REMOVE+CATEGORY_SPECIAL_SUMMON)
+	e3:SetCategory(CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_QUICK_O)
 	e3:SetHintTiming(0,TIMINGS_CHECK_MONSTER+TIMING_DRAW_PHASE+TIMING_END_PHASE)
 	e3:SetCode(EVENT_FREE_CHAIN)
@@ -52,11 +52,14 @@ function s.initial_effect(c)
 	e3:SetCountLimit(1,id+100000)
 	e3:SetCondition(s.con3)
 	e3:SetCost(yume.stellar_memories.LimitCost)
-	e3:SetTarget(yume.stellar_memories.RitualUltimateTarget("Greater",LOCATION_HAND,LOCATION_ONFIELD+LOCATION_DECK,nil))
-	e3:SetOperation(yume.stellar_memories.RitualUltimateOperation("Greater",LOCATION_HAND,LOCATION_ONFIELD+LOCATION_DECK,nil))
+	e3:SetTarget(s.tg3)
+	e3:SetOperation(s.op3)
 	c:RegisterEffect(e3)
 	yume.stellar_memories.GlobalCheck(c)
 	Duel.AddCustomActivityCounter(id,ACTIVITY_CHAIN,aux.FALSE)
+end
+function s.lcheck(g)
+	return g:IsExists(Card.IsLinkType,1,nil,TYPE_RITUAL)
 end
 function s.con1(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetCustomActivityCount(id,tp,ACTIVITY_CHAIN)>0
@@ -99,11 +102,11 @@ function s.op1(e,tp,eg,ep,ev,re,r,rp)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g1=Duel.SelectMatchingCard(tp,s.filter1a,tp,LOCATION_DECK,0,1,1,nil)
-	if g1:GetCount()>0 then
+	if #g1>0 then
 		local tc=g1:GetFirst()
 		Duel.SendtoHand(tc,nil,REASON_EFFECT)
 		Duel.ConfirmCards(1-tp,tc)
-		Duel.Damage(1-tp,tc:GetLevel()*200,REASON_EFFECT)
+		Duel.Damage(1-tp,tc:GetLevel()*300,REASON_EFFECT)
 	end
 end
 function s.eqlimit(e,c)
@@ -122,4 +125,11 @@ function s.lvtg(e,c)
 end
 function s.con3(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.GetTurnPlayer()~=tp and e:GetHandler():GetFlagEffect(id)>0
+end
+function s.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return yume.stellar_memories.TempBanishSpellCheck(71404017,tp) end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
+end
+function s.op3(e,tp,eg,ep,ev,re,r,rp)
+	yume.stellar_memories.TempBanishSpell(e:GetHandler(),71404017,tp)
 end

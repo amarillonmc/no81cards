@@ -34,7 +34,7 @@ function s.filter1(c,e,tp)
 	return c:IsReleasable() and c:IsSetCard(0x17a) and c:IsType(TYPE_LINK) and c:GetSequence()>4 and Duel.IsExistingMatchingCard(s.filter2,tp,LOCATION_EXTRA,0,1,nil,e,tp,c)
 end
 function s.filter2(c,e,tp,mc)
-	return c:IsSetCard(0x17a) and c:IsType(TYPE_LINK) and c:GetOriginalCodeRule()~=mc:GetOriginalCodeRule() and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
+	return c:IsSetCard(0x17a) and c:IsType(TYPE_LINK) and not c:IsOriginalCodeRule(mc:GetOriginalCodeRule()) and c:IsCanBeSpecialSummoned(e,SUMMON_TYPE_LINK,tp,false,false) and Duel.GetLocationCountFromEx(tp,tp,mc,c)>0
 end
 function s.target(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then return e:IsCostChecked() and Duel.CheckReleaseGroup(tp,s.filter1,1,nil,e,tp) end
@@ -46,9 +46,12 @@ end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local mc=e:GetLabelObject()
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
-	local g=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,mc)
-	if g:GetCount()>0 then
-		Duel.SpecialSummon(g,SUMMON_TYPE_LINK,tp,tp,false,false,POS_FACEUP)
+	local sc=Duel.SelectMatchingCard(tp,s.filter2,tp,LOCATION_EXTRA,0,1,1,nil,e,tp,mc):GetFirst()
+	if sc then
+		sc:SetMaterial(nil)
+		if Duel.SpecialSummon(sc,SUMMON_TYPE_LINK,tp,tp,false,false,POS_FACEUP)>0 then
+			sc:CompleteProcedure()
+		end
 	end
 end
 function s.cfilter(c,tp)
@@ -70,7 +73,7 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
-	if tc:IsRelateToEffect(e) then
+	if tc:IsRelateToEffect(e) and aux.NecroValleyFilter()(tc) then
 		local op=aux.SelectFromOptions(tp,{tc:IsAbleToHand(),1190},{Duel.GetMZoneCount(tp)>0 and Duel.IsExistingMatchingCard(s.spcfilter,tp,LOCATION_MZONE,0,1,nil) and tc:IsCanBeSpecialSummoned(e,0,tp,false,false),1152})
 		if op==1 then
 			Duel.SendtoHand(tc,nil,REASON_EFFECT)

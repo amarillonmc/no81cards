@@ -35,7 +35,7 @@ function s.rfilter(c)
 	return c:IsFaceup() and c:IsAbleToDeck()
 end
 function s.activate(e,tp,eg,ep,ev,re,r,rp)
-	local sg=Duel.GetTargetsRelateToChain()
+	local sg=Duel.GetTargetsRelateToChain():Filter(aux.NecroValleyFilter(),nil)
 	if #sg==0 then return end
 	Duel.SendtoDeck(sg,nil,SEQ_DECKTOP,REASON_EFFECT)
 	local og=Duel.GetOperatedGroup()
@@ -74,7 +74,7 @@ function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
-	if c:IsRelateToEffect(e) then
+	if c:IsRelateToEffect(e) and aux.NecroValleyFilter()(c) then
 		Duel.SendtoHand(c,nil,REASON_EFFECT)
 	end
 end

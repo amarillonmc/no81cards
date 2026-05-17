@@ -97,7 +97,7 @@ function s.efop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e4,tp)
 end
 function s.intfilter(e,c)
-	return c:IsSetCard(0xca1) and c:GetSequence()>4
+	return c:IsSetCard(0xb201) and c:GetSequence()>4
 end
 function s.damval(e,re,val,r,rp,rc)
 	if bit.band(r,REASON_EFFECT)~=0 then return 0
@@ -113,7 +113,7 @@ function s.negcost(e,tp,eg,ep,ev,re,r,rp,chk)
 end
 function s.spfilter(c)
     for _,sumtype in pairs({0,SUMMON_TYPE_FUSION,SUMMON_TYPE_SYNCHRO,SUMMON_TYPE_XYZ,SUMMON_TYPE_LINK,SUMMON_TYPE_SPECIAL,SUMMON_VALUE_SELF}) do
-		if c:IsSpecialSummonable(sumtype) and c:IsSetCard(0xca1) then return true end
+		if c:IsSpecialSummonable(sumtype) and c:IsSetCard(0xb201) then return true end
 	end
 	return false
 end

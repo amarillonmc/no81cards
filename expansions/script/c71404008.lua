@@ -37,7 +37,7 @@ function s.initial_effect(c)
 	--banish or return 星忆锋芒
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
-	e3:SetCategory(CATEGORY_REMOVE+CATEGORY_TODECK)
+	e3:SetCategory(CATEGORY_REMOVE)
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e3:SetProperty(EFFECT_FLAG_DELAY)
 	e3:SetCode(EVENT_REMOVE)
@@ -140,8 +140,8 @@ function s.con2(e)
 		or d and d:IsRace(RACE_SPELLCASTER))
 end
 function s.tg3(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then return yume.stellar_memories.BanishorSendSpellCheck(71404016,tp)	end
+	if chk==0 then return yume.stellar_memories.TempBanishSpellCheck(71404016,tp)	end
 end
 function s.op3(e,tp,eg,ep,ev,re,r,rp)
-	yume.stellar_memories.BanishorSendSpell(71404016,tp,aux.Stringid(id,2),aux.Stringid(id,3))
+	yume.stellar_memories.TempBanishSpell(e:GetHandler(),71404016,tp)
 end
